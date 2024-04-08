@@ -1,0 +1,24 @@
+run = "direnv exec . ./main.ts"
+
+[env]
+FLAG_DIRENV = "1"
+REPLIT_PID1_FLAG_DIRENV = "1"
+DENO_DIR = "/home/runner/${REPL_SLUG}/.deno"
+PATH="/nix/store/hnk04hvwrq98bkq6ijbp53piw3dbshhn-deno-1.41.3/bin:/nix/store/8m2xbccwbrpl84jckzz7c0mycidn7g6z-1password-cli-2.24.0/bin:/nix/store/5yp48xh59ji4sq7w2kw5w3iid3yspwri-ffmpeg-6.0-bin/bin:/nix/store/7ywggws38m4788rm8fvbcsmyddnq0q3m-patchelf-0.15.0/bin:/nix/store/ihhhd1r1a2wb4ndm24rnm83rfnjw5n0z-gcc-wrapper-12.3.0/bin:/nix/store/fdiknsmnnczx6brsbppyljcs9hqckawk-gcc-12.3.0/bin:/nix/store/vzkw8fka84r02bawr1c7jhw0j1lhzq85-glibc-2.38-44-bin/bin:/nix/store/rk067yylvhyb7a360n8k1ps4lb4xsbl3-coreutils-9.3/bin:/nix/store/0fp4c5pbk6lmlk59bv4hhxch3py2dq6h-binutils-wrapper-2.40/bin:/nix/store/3z013mdl9cvpgvavpj19rbilihz4clvi-binutils-2.40/bin:/nix/store/rk067yylvhyb7a360n8k1ps4lb4xsbl3-coreutils-9.3/bin:/nix/store/q7x6rjg6ya1gsg068fxj1sgf1k2n144n-findutils-4.9.0/bin:/nix/store/r9jlsp2szh2c1ns2milpc0qynqq28hq8-diffutils-3.10/bin:/nix/store/29w8hg0fis0pl3j4d3v0p02aicyw10lv-gnused-4.9/bin:/nix/store/r1lp9kxlrc6h7vrba90gm6i94s31xvvx-gnugrep-3.11/bin:/nix/store/r9w7hwj3ahip499dlr3zzk6601x2v9kf-gawk-5.2.2/bin:/nix/store/0ybz4c399fq3wiqc1ni0yylcxhs1x1hc-gnutar-1.35/bin:/nix/store/hcrf95x3r60kw71wgwbdybjfcq0ipkpj-gzip-1.13/bin:/nix/store/gfs0a87fzs9msav9ckdnciw3fappzgg2-bzip2-1.0.8-bin/bin:/nix/store/5vyb54sgl2x1ihrdfvj46vi2w1acv9nn-gnumake-4.4.1/bin:/nix/store/r9h133c9m8f6jnlsqzwf89zg9w0w78s8-bash-5.2-p15/bin:/nix/store/dp0pd2rljai6jlp7jb254vmbmyzik4nc-patch-2.7.6/bin:/nix/store/gvdfpnyr6smc7g9wy9fjp44j41j73f4b-xz-5.4.4-bin/bin:/nix/store/g0kc0z0wzs2s4kl377zssyxmmk5z9vim-file-5.45/bin"
+
+[nix]
+channel = "stable-23_11"
+
+[languages]
+[languages.deno]
+pattern = "**/*.{ts,js,tsx,jsx}"
+[languages.deno.languageServer]
+start = ["direnv", "exec", ".", "deno", "lsp"]
+[languages.deno.languageServer.initializationOptions]
+enable = true
+lint = true
+unstable = true
+
+[[ports]]
+localPort = 8000
+externalPort = 80
