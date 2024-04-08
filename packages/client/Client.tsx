@@ -40,20 +40,20 @@ export function Client() {
   );
 }
 
-// export async function rehydrate(props: Props) {
-//   await ensurePosthogClientIsSetUp(props.currentViewer.id, props.featureFlags);
-//   const root = document.querySelector("#root");
-//   if (root) {
-//     // @ts-ignore: hydrateRoot is not in the types for whatever reason.
-//     ReactDOMClient.hydrateRoot(root, <Client {...props} />);
-//   }
-// }
+export async function rehydrate(props) {
+  // await ensurePosthogClientIsSetUp(props.currentViewer.id, props.featureFlags);
+  const root = document.querySelector("#root");
+  if (root) {
+    // @ts-ignore: hydrateRoot is not in the types for whatever reason.
+    ReactDOMClient.hydrateRoot(root, <Client {...props} />);
+  }
+}
 
-// // @ts-ignore we can leave this alone
-// if (globalThis.__ENVIRONMENT__) {
-//   // @ts-ignore we can leave this alone
-//   await rehydrate(globalThis.__ENVIRONMENT__);
-// } else {
-//   // @ts-ignore we can leave this alone
-//   globalThis.__REHYDRATE__ = rehydrate;
-// }
+// @ts-ignore we can leave this alone
+if (globalThis.__ENVIRONMENT__) {
+  // @ts-ignore we can leave this alone
+  await rehydrate(globalThis.__ENVIRONMENT__);
+} else {
+  // @ts-ignore we can leave this alone
+  globalThis.__REHYDRATE__ = rehydrate;
+}

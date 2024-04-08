@@ -1,10 +1,69 @@
 {
+  "folders": {
+    "https://esm.sh/v135/unist-util-stringify-position@4.0.0/": "esm.sh/v135/#unist-util-stringify_5e210",
+    "https://esm.sh/v135/unist-util-position-from-estree@2.0.0/": "esm.sh/v135/#unist-util-position-_4d967",
+    "https://esm.sh/v135/estree-util-is-identifier-name@3.0.0/": "esm.sh/v135/#estree-util-is-ident_81148",
+    "https://esm.sh/v135/micromark-extension-mdxjs@3.0.0/": "esm.sh/v135/#micromark-extension-_2bdf8",
+    "https://esm.sh/v135/estree-util-attach-comments@3.0.0/": "esm.sh/v135/#estree-util-attach-c_0cd6e",
+    "https://esm.sh/v135/micromark-util-decode-numeric-character-reference@2.0.1/": "esm.sh/v135/#micromark-util-decod_0464d",
+    "https://esm.sh/v135/micromark-util-decode-string@2.0.0/": "esm.sh/v135/#micromark-util-decod_1377a",
+    "https://esm.sh/v135/micromark-extension-mdx-expression@3.0.0/": "esm.sh/v135/#micromark-extension-_dc41d",
+    "https://esm.sh/v135/micromark-util-sanitize-uri@2.0.0/": "esm.sh/v135/#micromark-util-sanit_071a0",
+    "https://esm.sh/v135/micromark-extension-mdx-md@2.0.0/": "esm.sh/v135/#micromark-extension-_78c5b",
+    "https://esm.sh/v135/mdast-util-mdx-expression@2.0.0/": "esm.sh/v135/#mdast-util-mdx-expre_24323",
+    "https://esm.sh/v135/micromark-util-normalize-identifier@2.0.0/": "esm.sh/v135/#micromark-util-norma_9dcb0",
+    "https://esm.sh/v135/decode-named-character-reference@1.0.2/": "esm.sh/v135/#decode-named-charact_d75d2",
+    "https://esm.sh/v135/micromark-util-combine-extensions@2.0.0/": "esm.sh/v135/#micromark-util-combi_e59bb",
+    "https://esm.sh/v135/micromark-extension-mdxjs-esm@3.0.0/": "esm.sh/v135/#micromark-extension-_f5c48",
+    "https://esm.sh/v135/micromark-extension-mdx-jsx@3.0.0/": "esm.sh/v135/#micromark-extension-_5333b",
+    "https://esm.sh/v135/micromark-util-subtokenize@2.0.0/": "esm.sh/v135/#micromark-util-subto_e7c0f",
+    "https://esm.sh/v135/micromark-core-commonmark@2.0.0/": "esm.sh/v135/#micromark-core-commo_034dd",
+    "https://esm.sh/v135/micromark-util-resolve-all@2.0.0/": "esm.sh/v135/#micromark-util-resol_d35c5",
+    "https://esm.sh/v135/micromark-factory-mdx-expression@2.0.1/": "esm.sh/v135/#micromark-factory-md_4c042",
+    "https://esm.sh/v135/micromark-util-events-to-acorn@2.0.2/": "esm.sh/v135/#micromark-util-event_ad96f",
+    "https://esm.sh/v135/character-reference-invalid@2.0.1/": "esm.sh/v135/#character-reference-_a21b3",
+    "https://esm.sh/v135/character-entities-legacy@3.0.0/": "esm.sh/v135/#character-entities-l_d082e",
+    "https://esm.sh/v135/micromark-util-html-tag-name@2.0.0/": "esm.sh/v135/#micromark-util-html-_3c3a0",
+    "https://esm.sh/v135/micromark-util-classify-character@2.0.0/": "esm.sh/v135/#micromark-util-class_fc673",
+    "https://esm.sh/v135/micromark-factory-whitespace@2.0.0/": "esm.sh/v135/#micromark-factory-wh_6c33f",
+    "https://esm.sh/v135/micromark-factory-destination@2.0.0/": "esm.sh/v135/#micromark-factory-de_1a984"
+  },
   "modules": {
     "https://deno.land/std/path/mod.ts": {
       "headers": {
         "location": "/std@0.221.0/path/mod.ts",
         "x-deno-warning": "Implicitly using latest version (0.221.0) for https://deno.land/std/path/mod.ts"
       }
-    }
+    },
+    "https://esm.sh/@mdx-js/mdx@3.0.0": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/@mdx-js/mdx@3.0.0/index.d.ts"
+      }
+    },
+    "https://esm.sh/v135/@mdx-js/mdx@3.0.0/denonext/internal-resolve-evaluate-options.js": {},
+    "https://esm.sh/v135/unist-util-stringify-position@4.0.0/denonext/unist-util-stringify-position.mjs": {},
+    "https://esm.sh/v135/unist-util-position-from-estree@2.0.0/denonext/unist-util-position-from-estree.mjs": {},
+    "https://esm.sh/v135/estree-util-is-identifier-name@3.0.0/denonext/estree-util-is-identifier-name.mjs": {},
+    "https://esm.sh/v135/vfile@6.0.1/denonext/do-not-use-conditional-minurl.js": {},
+    "https://esm.sh/v135/vfile@6.0.1/denonext/do-not-use-conditional-minpath.js": {},
+    "https://esm.sh/v135/vfile@6.0.1/denonext/do-not-use-conditional-minproc.js": {},
+    "https://esm.sh/v135/estree-util-attach-comments@3.0.0/denonext/estree-util-attach-comments.mjs": {},
+    "https://esm.sh/v135/micromark-util-decode-numeric-character-reference@2.0.1/denonext/micromark-util-decode-numeric-character-reference.mjs": {},
+    "https://esm.sh/v135/micromark-util-decode-string@2.0.0/denonext/micromark-util-decode-string.mjs": {},
+    "https://esm.sh/v135/micromark-extension-mdx-expression@3.0.0/denonext/micromark-extension-mdx-expression.mjs": {},
+    "https://esm.sh/v135/micromark-util-sanitize-uri@2.0.0/denonext/micromark-util-sanitize-uri.mjs": {},
+    "https://esm.sh/v135/micromark-util-normalize-identifier@2.0.0/denonext/micromark-util-normalize-identifier.mjs": {},
+    "https://esm.sh/v135/decode-named-character-reference@1.0.2/denonext/decode-named-character-reference.mjs": {},
+    "https://esm.sh/v135/micromark-util-combine-extensions@2.0.0/denonext/micromark-util-combine-extensions.mjs": {},
+    "https://esm.sh/v135/micromark-extension-mdxjs-esm@3.0.0/denonext/micromark-extension-mdxjs-esm.mjs": {},
+    "https://esm.sh/v135/micromark-extension-mdx-jsx@3.0.0/denonext/micromark-extension-mdx-jsx.mjs": {},
+    "https://esm.sh/v135/micromark-factory-mdx-expression@2.0.1/denonext/micromark-factory-mdx-expression.mjs": {},
+    "https://esm.sh/v135/micromark-util-events-to-acorn@2.0.2/denonext/micromark-util-events-to-acorn.mjs": {},
+    "https://esm.sh/v135/character-reference-invalid@2.0.1/denonext/character-reference-invalid.mjs": {},
+    "https://esm.sh/v135/micromark-util-html-tag-name@2.0.0/denonext/micromark-util-html-tag-name.mjs": {},
+    "https://esm.sh/v135/micromark-util-classify-character@2.0.0/denonext/micromark-util-classify-character.mjs": {},
+    "https://esm.sh/v135/micromark-factory-whitespace@2.0.0/denonext/micromark-factory-whitespace.mjs": {},
+    "https://esm.sh/v135/micromark-factory-destination@2.0.0/denonext/micromark-factory-destination.mjs": {}
   }
 }

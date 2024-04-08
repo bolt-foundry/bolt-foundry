@@ -1,3 +1,4 @@
+compile = "direnv exec . bff build"
 run = "direnv exec . ./main.ts"
 
 [env]

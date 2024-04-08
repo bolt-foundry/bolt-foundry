@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(mdast-util-to-string@4.0.0) denonext production */
+var f={};function l(t,r){let n=r||f,e=typeof n.includeImageAlt=="boolean"?n.includeImageAlt:!0,o=typeof n.includeHtml=="boolean"?n.includeHtml:!0;return c(t,e,o)}function c(t,r,n){if(s(t)){if("value"in t)return t.type==="html"&&!n?"":t.value;if(r&&"alt"in t&&t.alt)return t.alt;if("children"in t)return i(t.children,r,n)}return Array.isArray(t)?i(t,r,n):""}function i(t,r,n){let e=[],o=-1;for(;++o<t.length;)e[o]=c(t[o],r,n);return e.join("")}function s(t){return!!(t&&typeof t=="object")}export{l as toString};
+//# sourceMappingURL=mdast-util-to-string.mjs.map

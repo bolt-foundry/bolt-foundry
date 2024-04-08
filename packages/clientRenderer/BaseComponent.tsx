@@ -31,6 +31,7 @@ export function BaseComponent({ children, environment }: Props) {
   return (
     <html lang="en">
       <head>
+        <script type="module" async src="/build/Client.js" id="client-script" />
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link
@@ -93,6 +94,7 @@ export function BaseComponent({ children, environment }: Props) {
           referrerPolicy="strict-origin-when-cross-origin"
         >
         </script>
+        
       </head>
       <body>
         {children}
@@ -105,8 +107,10 @@ export function BaseComponent({ children, environment }: Props) {
             };
 
           if (globalThis.__REHYDRATE__) {
+          console.log('Rehydrating');
             await globalThis.__REHYDRATE__(globalThis.__ENVIRONMENT__);
           } else {
+            console.log('Initializing');
             // can't rehydrate yet. 
           }`,
           }}

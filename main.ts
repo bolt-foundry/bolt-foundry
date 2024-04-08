@@ -1,6 +1,6 @@
 #! /usr/bin/env -S deno run -A
 import { clientRenderer } from "packages/clientRenderer/clientRenderer.ts";
-import { log } from "deps.ts";
+import * as log from "std/log/mod.ts";
 
 log.setup({
   handlers: {
@@ -8,6 +8,10 @@ log.setup({
       formatter: log.formatters.jsonFormatter,
       useColors: true,
     }),
+    ["bffEsbuild.ts"]: new log.ConsoleHandler("DEBUG", {
+      formatter: log.formatters.jsonFormatter,
+      useColors: true,
+    })
   },
 });
 
@@ -31,6 +35,16 @@ routes.set("/resources/style.css", async () => {
   return new Response(style, {
     headers: {
       "content-type": "text/css",
+    },
+  });
+});
+
+routes.set("/build/Client.js", async () => {
+  const url = new URL(import.meta.resolve("build/Client.js"));
+  const style = await Deno.readTextFile(url);
+  return new Response(style, {
+    headers: {
+      "content-type": "application/javascript",
     },
   });
 });
