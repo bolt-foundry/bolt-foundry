@@ -41,6 +41,7 @@
         ];
 
         devShellPackages = with pkgs; [
+          jq
         ];
 
         deployPackages = with pkgs; [

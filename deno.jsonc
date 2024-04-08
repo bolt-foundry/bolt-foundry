@@ -1,0 +1,79 @@
+{
+  "unstable": ["temporal"],
+  "importMap": "import_map.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "jsxFactory": "React.createElement",
+    "jsxFragmentFactory": "React.Fragment",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "dom.asynciterable",
+      "webworker.importscripts",
+      "webworker.iterable",
+      "deno.ns",
+      "deno.unstable"
+    ]
+  },
+  "fmt": {
+    "exclude": [
+      "__generated__",
+      "packages/__generated__",
+      "node_modules",
+      ".sl",
+      ".deno",
+      "third-party",
+      "packages/third-party",
+      "packages/client/static",
+      "cdk.out",
+      "build",
+      "vendor",
+      "resources"
+    ]
+  },
+  "test": {
+    "exclude": [
+      "__generated__",
+      "packages/__generated__",
+      "node_modules",
+      ".sl",
+      ".deno",
+      "third-party",
+      "packages/third-party",
+      "packages/client/static",
+      "cdk.out",
+      "build",
+      "vendor",
+      "resources"
+    ]
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-deprecated-deno-api", "no-window"],
+      "include": [
+        "camelCase",
+        "no-console",
+        // "no-external-import",
+        "no-self-compare",
+        "no-sync-fn-in-async-fn"
+      ]
+    },
+    "exclude": [
+      "__generated__",
+      "packages/__generated__",
+      "node_modules",
+      ".sl",
+      ".deno",
+      "third-party",
+      "packages/third-party",
+      "packages/client/static",
+      "cdk.out",
+      "build",
+      "vendor",
+      "resources"
+    ]
+  },
+  "lock": true,
+  "nodeModulesDir": false,
+  "vendor": true
+}
