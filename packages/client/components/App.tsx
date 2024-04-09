@@ -3,7 +3,7 @@ import { React } from "deps.ts";
 import {ErrorBoundary} from "packages/client/components/ErrorBoundary.tsx";
 
 // import * as DashboardModule from "packages/client/pages/DashboardPrototype.tsx";
-// import * as LoginPageModule from "packages/client/pages/LoginPage.tsx";
+import { LoginPage } from "packages/client/pages/LoginPage.tsx";
 // import * as PricingPageModule from "packages/client/pages/PricingPage.tsx";
 import { Marketing } from "packages/client/pages/MarketingPage.tsx";
 // import * as ProjectPageModule from "packages/client/pages/ProjectPage.tsx";
@@ -27,7 +27,7 @@ export const routes = new Map([
   // ["/dashboard", { module: DashboardModule }],
   // ["/transcribe", { module: FreeTranscribePageModule }],
   // ["/terms", { module: TermsAndPrivacyPageModule }],
-  // ["/login", { module: LoginPageModule }],
+  ["/login", { Component: LoginPage }],
   // ["/pricing", { module: PricingPageModule }],
   // ["/signup/:plan?", { module: SignupPageModule }],
   // ["/verify", { module: ConfirmEmailPageModule }],

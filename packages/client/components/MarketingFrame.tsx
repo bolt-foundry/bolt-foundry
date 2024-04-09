@@ -119,9 +119,9 @@ export function MarketingFrame(
         </div>
         {showLoginLink && (
           <div className="nav-links mobile-hide" style={styles.rightSide}>
-            {/* <MarketingLoginAction
-              setForceScroll={setForceScroll}
-            /> */}
+            <Button
+              href="/login"
+              />
           </div>
         )}
         <div

@@ -1,9 +1,5 @@
 import { React } from "deps.ts";
-import {
-  colors,
-  colorsDark,
-  fonts,
-} from "packages/components/const.tsx";
+import { colors, colorsDark, fonts } from "packages/components/const.tsx";
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(
   (acc, [key, value]) => {
@@ -27,6 +23,9 @@ type Props = React.PropsWithChildren<{
   environment: Record<string, unknown>;
 }>;
 
+/*
+ * This only runs on the server!!!! It should never run on the client.
+ */
 export function BaseComponent({ children, environment }: Props) {
   return (
     <html lang="en">
@@ -94,7 +93,6 @@ export function BaseComponent({ children, environment }: Props) {
           referrerPolicy="strict-origin-when-cross-origin"
         >
         </script>
-        
       </head>
       <body>
         {children}
@@ -105,6 +103,15 @@ export function BaseComponent({ children, environment }: Props) {
             __html: `globalThis.__ENVIRONMENT__ = ${
               JSON.stringify(environment)
             };
+
+          function adjustAppHeight() {
+            let appHeight = window.innerHeight;
+            document.documentElement.style.setProperty('--app-height', \`\${appHeight}px\`);
+            
+          }
+          window.addEventListener('resize', adjustAppHeight);
+          window.addEventListener('orientationchange', adjustAppHeight);
+          adjustAppHeight();
 
           if (globalThis.__REHYDRATE__) {
           console.log('Rehydrating');

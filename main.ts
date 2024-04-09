@@ -1,6 +1,7 @@
 #! /usr/bin/env -S deno run -A
 import { clientRenderer } from "packages/clientRenderer/clientRenderer.ts";
 import * as log from "std/log/mod.ts";
+import { routes as appRoutes } from "packages/client/components/App.tsx";
 
 log.setup({
   handlers: {
@@ -11,7 +12,7 @@ log.setup({
     ["bffEsbuild.ts"]: new log.ConsoleHandler("DEBUG", {
       formatter: log.formatters.jsonFormatter,
       useColors: true,
-    })
+    }),
   },
 });
 
@@ -27,7 +28,10 @@ type Handler = (
 
 const routes = new Map<string, Handler>();
 
-routes.set("/", clientRenderer);
+for (const entry of appRoutes.entries()) {
+  const [path] = entry;
+  routes.set(path, clientRenderer);
+}
 
 routes.set("/resources/style.css", async () => {
   const url = new URL(import.meta.resolve("resources/style.css"));
@@ -58,37 +62,12 @@ const deploymentType = Deno.env.get("DEPLOYMENT_TYPE") ??
 
 if (deploymentType === DeploymentTypes.WEB) {
   Deno.serve(async (req) => {
-    const logger = log
+    const logger = log;
     const incomingUrl = new URL(req.url);
     logger.info(
       `Incoming request: ${req.method} ${incomingUrl.pathname}`,
     );
     const handler = routes.get(incomingUrl.pathname) ?? defaultRoute;
-    const environment = {};
-    return await handler(req, environment);
+    return await handler(req);
   });
 }
-
-// import { clientRenderer } from "packages/clientRenderer/main.replit.ts";
-// import { startupBackend } from "packages/events/mod.ts";
-
-// routes.set("/", clientRenderer);
-
-// function defaultRoute(request: Request) {
-//   return new Response("Hello World!");
-// }
-
-// Deno.serve(async (req) => {
-//   const headers = req.headers;
-//   const isWebsocket = headers.get("Upgrade") === "websocket";
-//   const url = new URL(req.url);
-//   const path = url.pathname;
-//   const handler = routes.get(path);
-//   const environment = {};
-//   await startupBackend();
-//   if (handler) {
-//     return await handler(req, environment);
-//   }
-
-//   return defaultRoute(req);
-// });

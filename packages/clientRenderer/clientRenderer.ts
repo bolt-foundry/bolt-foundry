@@ -6,9 +6,11 @@ import { Client } from "packages/client/Client.tsx";
 
 export async function clientRenderer(
   request: Request,
-  environment: Record<string, unknown>,
 ): Promise<Response> {
   const { pathname } = new URL(request.url);
+  const environment = {
+    pathname,
+  };
   const clientEnvironment = {
     initialPath: pathname,
     ...environment,
