@@ -1,0 +1,9 @@
+{
+  "src": "./packages",
+  "schema": "./packages/graphql/schema.graphql",
+  "language": "typescript",
+  "artifactDirectory": "packages/__generated__",
+  "featureFlags": {
+    "enable_relay_resolver_transform": true
+  }
+}

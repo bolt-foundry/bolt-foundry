@@ -1,6 +1,5 @@
 const moonFrames = ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘", "🌑"];
 function spinner(isATTY: boolean, frames = moonFrames) {
-  
   let i = 0;
   const frameDuration = 80;
   return setInterval(async () => {
@@ -20,7 +19,6 @@ function spinner(isATTY: boolean, frames = moonFrames) {
     }
   }, frameDuration);
 }
-
 
 export default function startSpinner() {
   const isATTY = Deno.stdout.isTerminal();

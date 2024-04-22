@@ -1,9 +1,7 @@
-// RouterContext.tsx
-import { React } from "deps.ts";
+import { getLogger, React } from "deps.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
-import { createLogger } from "packages/logs/mod.ts";
 import { routes } from "packages/client/components/App.tsx";
-const log = createLogger("RouterContext.tsx", "debug");
+const logger = getLogger(import.meta);
 
 const { createContext, useContext, useState } = React;
 export const registeredRoutes = new Set<string>();
@@ -34,12 +32,14 @@ export function addAllRoutes() {
   });
 }
 
-export function matchRouteWithParams(path: string, pathTemplate?: string) {
-  // log("matching route", path);
-  // log("registered routes", dynamicRoutes);
+export function matchRouteWithParams(path = "", pathTemplate?: string) {
   const defaultParams = { match: false, params: {} };
   const pathsToMatch = pathTemplate ? [pathTemplate] : Array(...dynamicRoutes);
+  logger.info(
+    `matchRouteWithParams: path: ${path}, pathsToMatch: ${pathsToMatch}`,
+  );
   const match = pathsToMatch.map((pathTemplate) => {
+    logger.debug(`matchRouteWithParams: pathTemplate: ${pathTemplate}`);
     const pathTemplateParts = pathTemplate.split("/");
     const currentPathParts = path.split("/");
 
@@ -54,21 +54,20 @@ export function matchRouteWithParams(path: string, pathTemplate?: string) {
       return acc;
     }, {} as Record<string, string | null>);
 
-    log("params before", params);
+    logger.debug("params before", params);
     // check if the path matches the template
     for (let i = 0; i < pathTemplateParts.length; i++) {
       // Skip if part is a parameter
       if (pathTemplateParts[i].startsWith(":")) {
-        log(
+        logger.debug(
           "debug",
           "part is a parameter",
           pathTemplateParts[i],
           currentPathParts[i] ?? "undefined",
         );
       } else if (pathTemplateParts[i] !== currentPathParts[i]) {
-        log(
-          "debug",
-          "parts do not match",
+        logger.debug(
+          "part is not a parameter",
           pathTemplateParts[i],
           currentPathParts[i],
         );
@@ -78,7 +77,7 @@ export function matchRouteWithParams(path: string, pathTemplate?: string) {
 
     return { match: true, params };
   }).find((route) => route.match === true);
-  log("match", match);
+  logger.info("match", match);
   return match ?? defaultParams;
 }
 type RouterContextType = {
@@ -132,11 +131,6 @@ export function RouterProvider(
 
   const navigate = (path: string) => {
     globalThis.history.pushState(null, "", path);
-    // @ts-expect-error #techdebt
-    if (globalThis.Intercom) {
-      // @ts-expect-error #techdebt
-      globalThis.Intercom("update");
-    }
     setCurrentPath(path);
   };
 

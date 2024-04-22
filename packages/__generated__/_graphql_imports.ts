@@ -1,0 +1,5 @@
+import "packages/__generated__/LoginPageCVQuery.graphql.ts"
+import "packages/__generated__/LoginPageLogoutMutation.graphql.ts"
+import "packages/__generated__/LoginFormLoginWithGoogleMutation.graphql.ts"
+import "packages/__generated__/GoogleDriveFilePickerQuery.graphql.ts"
+import "packages/__generated__/GoogleDriveFilePickerLinkGoogleAccountMutation.graphql.ts"

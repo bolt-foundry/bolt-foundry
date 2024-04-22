@@ -1,0 +1,111 @@
+{
+  "manifest": {
+    "/jsr.json": {
+      "size": 134,
+      "checksum": "sha256-d39aa3a0170b2681570ba256c35b01cf473abdce92bf77dba23f64e40d260d2d"
+    },
+    "/index.d.ts": {
+      "size": 14689,
+      "checksum": "sha256-2c7e1299667e6831dd63d62311454ea8f2cce7a41157439a2a54a990d9ff0aae"
+    },
+    "/README.md": {
+      "size": 10052,
+      "checksum": "sha256-283c742ca043f31fe4cd42e3513f0b8f44485aa56ff990b027f937c7929f206c"
+    },
+    "/LICENSE": {
+      "size": 1073,
+      "checksum": "sha256-c78e92b6ad00e83fb7e1d69aa0f6dcc13a97486ce2a22e74ffa3ad31eca3cc64"
+    },
+    "/index.js": {
+      "size": 141236,
+      "checksum": "sha256-07d590115aa2d79fb0e4823ecbe700ed6274b4eac54bd19804bfc98693377a51"
+    }
+  },
+  "moduleGraph1": {
+    "/index.js": {
+      "tsReferences": [
+        {
+          "type": "types",
+          "text": "./index.d.ts",
+          "range": [
+            [
+              0,
+              21
+            ],
+            [
+              0,
+              35
+            ]
+          ]
+        }
+      ]
+    },
+    "/index.d.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./pg-protocol",
+          "specifierRange": [
+            [
+              3,
+              30
+            ],
+            [
+              3,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "npm:@types/pg@8.6.6",
+          "specifierRange": [
+            [
+              30,
+              7
+            ],
+            [
+              30,
+              28
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@types/pg@8.6.6",
+          "specifierRange": [
+            [
+              184,
+              7
+            ],
+            [
+              184,
+              28
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@types/pg@8.6.6",
+          "specifierRange": [
+            [
+              210,
+              25
+            ],
+            [
+              210,
+              46
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./index.js"
+  }
+}

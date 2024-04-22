@@ -1,16 +1,15 @@
-import { React } from "deps.ts";
-// import { ReactDOMClient } from "packages/client/deps.ts";
-import {App} from "packages/client/components/App.tsx";
+import { getLogger, React } from "deps.ts";
+import { ReactDOMClient } from "packages/client/deps.ts";
+import { App } from "packages/client/components/App.tsx";
 import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
-// import AppEnvironmentProvider from "packages/client/contexts/AppEnvironmentContext.tsx";
-// // @ts-expect-error #techdebt
-// import type { Props as EnvironmentProps } from "packages/client/contexts/AppEnvironmentContext.tsx";
-import Spinner from "packages/components/Spinner.tsx";
+import type { AppEnvironmentProps as EnvironmentProps } from "packages/client/contexts/AppEnvironmentContext.tsx";
+import { Spinner } from "packages/bfDs/Spinner.tsx";
+import AppEnvironmentProvider from "packages/client/contexts/AppEnvironmentContext.tsx";
 // import { ensurePosthogClientIsSetUp } from "packages/events/mod.ts";
 
-const { Suspense } = React;
+const logger = getLogger(import.meta);
 
-// type Props = EnvironmentProps;
+const { Suspense } = React;
 
 const styles = {
   loading: {
@@ -22,7 +21,7 @@ const styles = {
   },
 };
 
-export function Client() {
+export function Client(props: EnvironmentProps) {
   return (
     <ErrorBoundary>
       <Suspense
@@ -32,28 +31,31 @@ export function Client() {
           </div>
         }
       >
-        {/* <AppEnvironmentProvider {...props}> */}
-        <App />
-        {/* </AppEnvironmentProvider> */}
+        <AppEnvironmentProvider {...props}>
+          <App />
+        </AppEnvironmentProvider>
       </Suspense>
     </ErrorBoundary>
   );
 }
 
-export async function rehydrate(props) {
+export function rehydrate(props: unknown) {
   // await ensurePosthogClientIsSetUp(props.currentViewer.id, props.featureFlags);
   const root = document.querySelector("#root");
   if (root) {
-    // @ts-ignore: hydrateRoot is not in the types for whatever reason.
+    logger.debug("rehydrating root", root);
+    // @ts-expect-error this seems like a react typing bug, not sure why this isn't typed.
     ReactDOMClient.hydrateRoot(root, <Client {...props} />);
+  } else {
+    logger.error("couldn't rehydrate, root not found");
   }
 }
 
-// @ts-ignore we can leave this alone
+// @ts-expect-error Not typed on the window yet
 if (globalThis.__ENVIRONMENT__) {
-  // @ts-ignore we can leave this alone
-  await rehydrate(globalThis.__ENVIRONMENT__);
+  // @ts-expect-error Not typed on the window yet
+  rehydrate(globalThis.__ENVIRONMENT__);
 } else {
-  // @ts-ignore we can leave this alone
+  // @ts-expect-error Not typed on the window yet
   globalThis.__REHYDRATE__ = rehydrate;
 }

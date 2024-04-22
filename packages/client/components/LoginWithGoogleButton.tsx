@@ -3,17 +3,16 @@
 /// <reference path="https://esm.sh/v135/@types/gapi.drive@0.0.9/index.d.ts" />
 /// <reference path="https://esm.sh/v135/@types/gapi@0.0.47/index.d.ts" />
 import { React } from "deps.ts";
+import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 
 const { useRef, useEffect } = React;
-const GO_OAUTH_CLIENT_ID = "lol"
 
 export function LoginWithGoogleButton() {
-
   // const { navigate } = useRouter();
   // const [commit] = useMutation(loginWithGoogleMutation);
 
   const googleSignInButtonRef = useRef(null);
-  // const { GOOGLE_OAUTH_CLIENT_ID } = useAppEnvironment();
+  const { GOOGLE_OAUTH_CLIENT_ID } = useAppEnvironment();
 
   const onLogin = (response: google.accounts.id.CredentialResponse) => {
     // commit({

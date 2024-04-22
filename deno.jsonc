@@ -28,11 +28,13 @@
       "cdk.out",
       "build",
       "vendor",
-      "resources"
+      "resources",
+      ".config"
     ]
   },
   "test": {
     "exclude": [
+      ".config",
       "__generated__",
       "packages/__generated__",
       "node_modules",
@@ -59,6 +61,7 @@
       ]
     },
     "exclude": [
+      ".config",
       "__generated__",
       "packages/__generated__",
       "node_modules",
@@ -75,5 +78,5 @@
   },
   "lock": true,
   "nodeModulesDir": false,
-  "vendor": true
+  "vendor": true,
 }

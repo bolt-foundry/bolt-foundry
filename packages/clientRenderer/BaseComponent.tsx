@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import { colors, colorsDark, fonts } from "packages/components/const.tsx";
+import { colors, colorsDark, fonts } from "packages/bfDs/const.tsx";
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(
   (acc, [key, value]) => {
@@ -95,7 +95,9 @@ export function BaseComponent({ children, environment }: Props) {
         </script>
       </head>
       <body>
-        {children}
+        <div id="root">
+          {children}
+        </div>
         <script
           type="module"
           defer={true}
@@ -114,10 +116,8 @@ export function BaseComponent({ children, environment }: Props) {
           adjustAppHeight();
 
           if (globalThis.__REHYDRATE__) {
-          console.log('Rehydrating');
-            await globalThis.__REHYDRATE__(globalThis.__ENVIRONMENT__);
+            globalThis.__REHYDRATE__(globalThis.__ENVIRONMENT__);
           } else {
-            console.log('Initializing');
             // can't rehydrate yet. 
           }`,
           }}

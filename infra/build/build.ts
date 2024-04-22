@@ -6,7 +6,11 @@ import { denoPlugin } from "infra/build/bffEsbuild.ts";
 import esbuildDenoMdxPlugin from "infra/build/esbuildDenoMdxPlugin.ts";
 
 export async function build(
-  buildOptions = { minify: true, sourcemap: false },
+  buildOptions = {
+    minify: true,
+    sourcemap: "inline",
+    sourceRoot: `${Deno.cwd()}`,
+  },
 ) {
   const path = import.meta.resolve("packages/client/Client.tsx");
   const url = new URL(path);

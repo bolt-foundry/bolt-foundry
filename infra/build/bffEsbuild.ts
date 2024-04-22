@@ -1,12 +1,7 @@
 import type { esbuild } from "./deps.ts";
 import { dirname, join } from "infra/build/deps.ts";
-
-const logger = {
-  debug: console.debug,
-  info: console.log,
-  warn: console.warn,
-  error: console.error,
-};
+import { getLogger } from "deps.ts";
+const logger = getLogger(import.meta);
 
 const REMOTE_MODULE_REGEX = /^https?:\/\//;
 const NODE_REGEX = /^node:/;
@@ -271,7 +266,16 @@ export const denoPlugin = {
           const packageJsonString = await Deno.readTextFile(packageJsonPath);
           const packageJson = JSON.parse(packageJsonString);
           const main = packageJson.main ?? "index.js";
-          const mainPath = join(packagePath, main);
+          let mainPath = join(packagePath, main);
+          //  check if mainPath is a directory
+          try {
+            const stat = await Deno.stat(mainPath);
+            if (stat.isDirectory) {
+              mainPath = join(mainPath, "index.js");
+            }
+          } catch {
+            // do nothing
+          }
 
           return {
             path: mainPath,

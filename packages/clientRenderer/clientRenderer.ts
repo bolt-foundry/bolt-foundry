@@ -1,28 +1,45 @@
 import { React } from "deps.ts";
-import { ReactDOMServer } from "deps.ts";
+import { ReactDOMServer } from "packages/clientRenderer/deps.ts";
 import { BaseComponent } from "packages/clientRenderer/BaseComponent.tsx";
 import { Client } from "packages/client/Client.tsx";
-// import getEnvironment from "packages/clientRenderer/relay-environment.ts";
+import { getEnvironment } from "packages/clientRenderer/relayEnvironment.ts";
+
+const importableEnvironmentVariables = [
+  "GOOGLE_OAUTH_CLIENT_ID",
+];
 
 export async function clientRenderer(
   request: Request,
 ): Promise<Response> {
   const { pathname } = new URL(request.url);
-  const environment = {
+  const environment: Record<string, string | undefined> = {
     pathname,
   };
+  importableEnvironmentVariables.forEach((key) => {
+    if (key != null) {
+      environment[key] = Deno.env.get(key);
+    }
+  });
   const clientEnvironment = {
     initialPath: pathname,
     ...environment,
     featureFlags: {},
     featureVariants: {},
   };
-  // const serverRelayEnvironment = getEnvironment();
-  const serverRelayEnvironment = {};
+  const serverRelayEnvironment = getEnvironment();
+  // const serverRelayEnvironment = {};
   const serverEnvironment = {
-    ...environment,
+    ...clientEnvironment,
     serverRelayEnvironment,
     POSTHOG_API_KEY: undefined,
+    GOOGLE_OAUTH_CLIENT_ID: undefined,
+    featureFlags: {},
+    featureVariants: {},
+    // Adding the missing properties with assumed placeholder values.
+    GOOGLE_DEVELOPER_API_KEY: undefined, // Replace `undefined` with the actual key if available
+    content: {}, // Assuming an empty object as default, update it as per your requirements
+    currentViewer: null, // Assuming `null`, adjust according to your application's user management logic
+    phBootstrap: undefined, // Placeholder, set accordingly
   };
   const serverRenderedClientElement = React.createElement(
     Client,

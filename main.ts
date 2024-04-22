@@ -1,29 +1,17 @@
 #! /usr/bin/env -S deno run -A
 import { clientRenderer } from "packages/clientRenderer/clientRenderer.ts";
-import * as log from "std/log/mod.ts";
+import { getLogger } from "deps.ts";
 import { routes as appRoutes } from "packages/client/components/App.tsx";
+import { handler as graphQlHandler } from "packages/graphql/graphql.ts";
+import { getGoogleOauthUrl } from "lib/googleOauth.ts";
 
-log.setup({
-  handlers: {
-    default: new log.ConsoleHandler("DEBUG", {
-      formatter: log.formatters.jsonFormatter,
-      useColors: true,
-    }),
-    ["bffEsbuild.ts"]: new log.ConsoleHandler("DEBUG", {
-      formatter: log.formatters.jsonFormatter,
-      useColors: true,
-    }),
-  },
-});
-
+const logger = getLogger(import.meta);
 enum DeploymentTypes {
   "WEB" = "WEB",
   "WORKER" = "WORKER",
 }
-type Environment = Record<string, never>;
 type Handler = (
   request: Request,
-  environment: Record<string, unknown>,
 ) => Promise<Response> | Response;
 
 const routes = new Map<string, Handler>();
@@ -53,6 +41,31 @@ routes.set("/build/Client.js", async () => {
   });
 });
 
+routes.set("/google/oauth/start", (req) => {
+  const redirectable = getGoogleOauthUrl(req);
+  // create temporary redirect response 302
+  return new Response(null, {
+    status: 302,
+    headers: {
+      location: redirectable,
+    },
+  })
+})
+
+routes.set("/google/oauth/end", (req) => {
+  const url = new URL(req.url)
+  const code = url.searchParams.get("code");
+  const body = `<html><body><script>window.opener.resolveGoogleAuth("${code}")</script></body></html>`;
+  return new Response(body, {
+    headers: {
+      "content-type": "text/html",
+    }
+  });
+});
+
+
+routes.set("/graphql", graphQlHandler);
+
 const defaultRoute = () => {
   return new Response("Not found", { status: 404 });
 };
@@ -62,7 +75,6 @@ const deploymentType = Deno.env.get("DEPLOYMENT_TYPE") ??
 
 if (deploymentType === DeploymentTypes.WEB) {
   Deno.serve(async (req) => {
-    const logger = log;
     const incomingUrl = new URL(req.url);
     logger.info(
       `Incoming request: ${req.method} ${incomingUrl.pathname}`,

@@ -42,6 +42,8 @@
 
         devShellPackages = with pkgs; [
           jq
+          jupyter
+          watchman
         ];
 
         deployPackages = with pkgs; [

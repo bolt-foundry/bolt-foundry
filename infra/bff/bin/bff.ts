@@ -1,5 +1,8 @@
 #! /usr/bin/env -S deno run -A
 import { friendMap } from "infra/bff/mod.ts";
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
 
 if (import.meta.main) {
   const friendsUrl = new URL(import.meta.resolve("infra/bff/friends"));
@@ -23,7 +26,11 @@ if (import.meta.main) {
   }
   for await (const friend of Deno.readDir(friendsUrl.pathname)) {
     if (friend.name.endsWith(".bff.ts")) {
-      await import(`infra/bff/friends/${friend.name}`);
+      try {
+        await import(`infra/bff/friends/${friend.name}`);
+      } catch (e) {
+        logger.error(`Error importing ${friend.name}`, e);
+      }
     }
   }
   const command = Deno.args[0] ?? "help";
