@@ -123,21 +123,16 @@ function generateColors(dark = false) {
     marketingBackground: `black linear-gradient(125deg, ${
       color(pallette.tertiary, 0, 0.5)
     }, ${color(pallette.fourthary, 0, 0.4)})`,
-    marketingGradient: `linear-gradient(90deg, ${color(pallette.secondary)}, ${
+    marketingGradient: `linear-gradient(in oklch 90deg, ${color(pallette.secondary)}, ${
       color(pallette.fourthary)
     })`,
-    verticalMarketingGradient: `linear-gradient(180deg, ${
-      color(pallette.tertiary)
-    }, ${color(pallette.fourthary)})`,
-    verticalOpositeMarketingGradient: `linear-gradient(360deg, ${
-      color(pallette.secondary)
-    }, ${color(pallette.fourthary)})`,
     videoControlsBackground: color(pallette.tertiary, +adjustment * 4),
     videoControl: color(pallette.tertiary),
     videoControlHover: color(pallette.secondary, -adjustment),
     transparentGray: color(pallette.secondaryText, 0, 0.1),
     transparentSecondary: color(pallette.secondary, 0, 0.2),
     transparentBackground: color(pallette.background, 0, 0.97),
+    transparentDark: color(pallette.tertiary, 0, 0.95),
   };
 }
 
@@ -145,9 +140,9 @@ export const colors = generateColors();
 export const colorsDark = generateColors(true);
 
 export const fonts = {
-  fontFamily: "'DM Sans', sans-serif",
-  marketingFontFamily: "'Ubuntu', sans-serif",
-  fontFamilyMono: "'DM Mono', monospace",
+  fontFamily: "\"DM Sans\", sans-serif",
+  marketingFontFamily: "Ubuntu, sans-serif",
+  fontFamilyMono: "DM Mono, monospace",
 };
 
 export const textStyles = {

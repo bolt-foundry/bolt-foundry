@@ -41,16 +41,20 @@ export async function clientRenderer(
     currentViewer: null, // Assuming `null`, adjust according to your application's user management logic
     phBootstrap: undefined, // Placeholder, set accordingly
   };
+  // this is the "frozen in time" render that gets built on the client.
   const serverRenderedClientElement = React.createElement(
     Client,
     serverEnvironment,
     null,
   );
+  // this inserts the render into "basecomponent" which is an html template
+  // client environment is what we pass to the rehydrate step.
   const el = React.createElement(
     BaseComponent,
     { environment: clientEnvironment },
     serverRenderedClientElement,
   );
+  // We then stream down the content as soon as a request comes in.
   const stream = await ReactDOMServer.renderToReadableStream(el);
   return new Response(stream, {
     headers: {

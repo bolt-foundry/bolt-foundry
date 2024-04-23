@@ -1,11 +1,16 @@
 import { getLogger, React } from "deps.ts";
 import { graphql, ReactRelay } from "packages/client/deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
-import { GoogleDriveFilePicker } from "packages/bfDs/GoogleDriveFilePicker.tsx";
+import {
+  GoogleDriveFilePicker,
+  GoogleDriveFilePickerFileType,
+} from "packages/bfDs/GoogleDriveFilePicker.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 
 const { useLazyLoadQuery } = ReactRelay;
 const logger = getLogger(import.meta);
+
+const mutation = await graphql
 
 const styles = {
   content: {
@@ -25,7 +30,16 @@ const handleProcessFile = () => {
   console.log("Processing...");
 };
 
+const { useState } = React;
+
 export function InternalBfPage() {
+  const [originGoogleFile, setOriginGoogleFile] = useState<
+    google.picker.DocumentObject
+  >();
+  const [destinationGoogleFolder, setDestinationGoogleFolder] = useState<
+    google.picker.DocumentObject
+  >();
+
   return (
     <MarketingFrame>
       <div style={{ flex: 1 }}>
@@ -50,7 +64,7 @@ export function InternalBfPage() {
             <div style={{ marginBottom: 16 }}>
               Choose a movie file from Google Drive.
             </div>
-            <GoogleDriveFilePicker />
+            <GoogleDriveFilePicker onPick={setOriginGoogleFile} />
           </div>
           <div style={styles.filebox}>
             <div style={{ fontSize: 24, fontWeight: "bold" }}>
@@ -59,8 +73,10 @@ export function InternalBfPage() {
             <div style={{ marginBottom: 16 }}>
               Choose a folder into which to save the output files.
             </div>
-            {/* <GoogleDriveFolderPicker /> */}
-            Add folder picker? Or make file picker support folders?
+            <GoogleDriveFilePicker
+              onPick={setDestinationGoogleFolder}
+              pickerType={GoogleDriveFilePickerFileType.FOLDER}
+            />
           </div>
           <div>
             <Button onClick={handleProcessFile} text="Process file" />

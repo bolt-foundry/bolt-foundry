@@ -46,19 +46,27 @@ const styles = {
   },
 };
 
-export function GoogleDriveFilePicker() {
+export enum GoogleDriveFilePickerFileType {
+  VIDEO = "video",
+  FOLDER = "folder",
+}
+
+type Props = {
+  onPick: (googleDocument: google.picker.DocumentObject) => void;
+  pickerType?: GoogleDriveFilePickerFileType;
+};
+
+export function GoogleDriveFilePicker({ onPick, pickerType }: Props) {
   const data = useLazyLoadQuery<GoogleDriveFilePickerQuery>(
     accessTokenQuery,
     {},
   );
+
+  const [pickedFile, setPickedFile] = useState<google.picker.DocumentObject>();
   const [googleAccessToken, setGoogleAccessToken] = useState(
     data?.currentViewer?.googleAccessToken,
   );
-  const [originGoogleFile, setOriginGoogleFile] = useState<google.picker.DocumentObject>();
-  const [destinationGoogleFolder, setDestinationGoogleFolder] = useState<
-    google.picker.DocumentObject
-  >();
-  
+
   const [commit] = useMutation<GoogleDriveFilePickerLinkGoogleAccountMutation>(
     linkGoogleAccountMutation,
   );
@@ -95,78 +103,35 @@ export function GoogleDriveFilePicker() {
     );
   }
   return (
-    <div style={styles.content}>
-      <div style={{ fontSize: 36, fontWeight: "bold" }}>
-        Prepare files
-      </div>
-      <div
-        style={{ fontSize: 18, marginBottom: 20, color: "var(--textSecondary" }}
-      >
-        Choose a file to process. This will create new files less than 2gb each
-        and place them in a folder you choose below.
-      </div>
-      <div style={styles.filebox}>
-        <div style={{ fontSize: 24, fontWeight: "bold" }}>
-          Input file
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          Choose a movie file from Google Drive.
-        </div>
-        <Button
-          kind="secondary"
-          onClick={() => openPicker(googleAccessToken, GOOGLE_OAUTH_CLIENT_ID).then(
+    <div style={styles.filebox}>
+      <Button
+        kind="secondary"
+        onClick={() =>
+          openPicker(googleAccessToken, GOOGLE_OAUTH_CLIENT_ID, pickerType ?? GoogleDriveFilePickerFileType.VIDEO).then(
             (res) => {
-              if (res[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+              if (
+                res[google.picker.Response.ACTION] ===
+                  google.picker.Action.PICKED
+              ) {
                 const docs = res[google.picker.Response.DOCUMENTS];
                 if (docs && docs.length > 0) {
                   const file = docs[0];
-                  setOriginGoogleFile(file);
-                  return
+                  setPickedFile(file);
+                  onPick(file);
+                  return;
                 }
               }
-              setOriginGoogleFile(undefined);
             },
           )}
-          text="Choose file..."
-        />{" "}
-        <span style={{ color: "var(--textSecondary)" }}>{originGoogleFile ? originGoogleFile[google.picker.Document.NAME] : "Select a file..."}</span>
-      </div>
-      <div style={styles.filebox}>
-        <div style={{ fontSize: 24, fontWeight: "bold" }}>
-          Output folder
-        </div>
-        <div style={{ marginBottom: 16 }}>
-          Choose a folder into which to save the output files.
-        </div>
-        <Button
-          kind="secondary"
-          onClick={() => openPicker(googleAccessToken, GOOGLE_OAUTH_CLIENT_ID, GoogleDriveFilePickerFileType.FOLDER).then((res) => {
-            if (res.action === google.picker.Action.PICKED) {
-              const docs = res[google.picker.Response.DOCUMENTS];
-              if (docs && docs.length > 0) {
-                const file = docs[0];
-                setDestinationGoogleFolder(file);
-                return
-              }
-            }
-            setDestinationGoogleFolder(undefined)
-          })}
-          text="Choose folder..."
-        />{" "}
-        <span style={{ color: "var(--textSecondary)" }}>
-          {destinationGoogleFolder ? destinationGoogleFolder[google.picker.Document.NAME] : "Select a folder..."}
-        </span>
-      </div>
-      <div>
-        <Button onClick={handleProcessFile} text="Process file" />
-      </div>
+        text="Choose file..."
+      />{" "}
+      <span style={{ color: "var(--textSecondary)" }}>
+        {pickedFile
+          ? pickedFile[google.picker.Document.NAME]
+          : "Select a file..."}
+      </span>
     </div>
   );
-}
-
-enum GoogleDriveFilePickerFileType {
-  VIDEO = "video",
-  FOLDER = "folder",
 }
 
 // Create and render a Google Picker object for selecting from Drive.

@@ -3,6 +3,7 @@ import { colors, colorsDark, fonts } from "packages/bfDs/const.tsx";
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(
   (acc, [key, value]) => {
+    console.log(`${key}: ${value}`)
     acc += `--${key}: ${value};\n`;
     return acc;
   },

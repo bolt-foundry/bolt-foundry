@@ -15,27 +15,6 @@ type Props = {
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  page: {
-    scrollMarginTop: "10vh",
-    fontFamily: fonts.fontFamily,
-    background: "var(--background)",
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    boxSizing: "border-box",
-    overflowY: "auto",
-  },
-  navBar: {
-    display: "flex",
-    alignItems: "center",
-    padding: "2vh",
-    minHeight: 32,
-    position: "sticky",
-    zIndex: 10,
-    top: 0,
-    background: "var(--transparentBackground)",
-    backdropFilter: "blur(3px)",
-  },
   footer: {
     minHeight: "5vh",
     display: "flex",
@@ -110,8 +89,8 @@ export function MarketingFrame(
   const [showMenu, setShowMenu] = React.useState(false);
 
   return (
-    <div className="marketing" style={styles.page}>
-      <nav className="nav start-center" style={styles.navBar}>
+    <div className="marketing">
+      <nav className="nav marketing-nav start-center">
         <div style={styles.logo}>
           <Link to="/">
             <BfLogo />
@@ -160,7 +139,7 @@ export function MarketingFrame(
           />
           <Button
             iconLeft="brand-tiktok"
-            kind="gradientOverlay"
+            kind="outline"
             href="https://www.tiktok.com/@bolt.foundry"
             hrefTarget="_blank"
             size="large"
@@ -170,7 +149,7 @@ export function MarketingFrame(
           />
           <Button
             iconLeft="brand-instagram"
-            kind="gradientOverlay"
+            kind="outline"
             href="https://www.instagram.com/boltfoundry/"
             hrefTarget="_blank"
             size="large"
@@ -180,7 +159,7 @@ export function MarketingFrame(
           />
           <Button
             iconLeft="brand-threads"
-            kind="gradientOverlay"
+            kind="outline"
             href="https://www.threads.net/@boltfoundry"
             hrefTarget="_blank"
             size="large"
@@ -190,7 +169,7 @@ export function MarketingFrame(
           />
           <Button
             iconLeft="brand-discord"
-            kind="gradientOverlay"
+            kind="outline"
             href="https://discord.gg/ZTVJkfxHkC"
             hrefTarget="_blank"
             size="large"

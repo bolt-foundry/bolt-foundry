@@ -607,6 +607,121 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 /* Marketing */
 
+.marketing {
+  scroll-margin-top: 10vh;
+  font-family: "DM Sans", sans-serif;
+  background: var(--background) linear-gradient(-10deg, var(--primaryColor) -70%, transparent 20%);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.marketing-nav {
+  background: linear-gradient(135deg, var(--primaryColor) -40%, var(--transparentSecondary) 10%, transparent 20%), 
+    linear-gradient(-135deg, var(--fourtharyColor) -50%, transparent 20%), 
+    linear-gradient(45deg, var(--transparentDark), 
+    var(--transparentDark));
+  display: flex;
+  align-items: center;
+  padding: 2vh;
+  min-height: 32px;
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  backdrop-filter: blur(3px);
+}
+
+.marketing-text {
+  font-size: max(16px, 1.6vw);
+  text-align: center;
+  font-weight: 600;
+  color: var(--textMarketing);
+}
+
+.marketing-hero {
+  background: 
+    /* linear-gradient(0deg, white 10%, transparent), */
+    radial-gradient(white 50%, transparent 100%),
+    linear-gradient(in oklch -25deg, var(--secondaryColor) 40%, var(--fourtharyColor) 60%);
+  background-size: 100% 140%;
+  background-position: -20%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 40px;
+  min-height: 60vh;
+}
+.marketing-title {
+  font-family: var(--marketingFontFamily);
+  font-weight: 700;
+  font-size: max(30px, 6vw);
+}
+.hero-text-blue {
+  background: var(--marketingGradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.marketing-cta {
+  color: var(--textMarketing);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  padding: 60px 40px;
+  justify-content: center;
+}
+
+.cta-section {
+  align-items: center;
+  background-color: var(--secondaryColor);
+  background: linear-gradient(15deg, var(--primaryColor) -30%, transparent 50%), 
+    linear-gradient(var(--secondaryColor), var(--secondaryColor));
+  color: white;
+  display: flex;
+  justify-content: space-around;
+}
+.cta-title {
+  font-size: max(24px, 2.2vw);
+  font-weight: 600;
+  margin-bottom: 1vh;
+  text-align: center;
+}
+
+.marketing-hscroll {
+  height: 40vh;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding: 60px 40px;
+  gap: 20px;
+  flex-direction: column;
+  margin-bottom: 60px;
+}
+.hscroll-content {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+.hscroll-video {
+  height: 100%;
+  position: relative;
+}
+.hscroll-video video {
+  border-radius: 8px;
+  height: 100%;
+}
+.hscroll-video .chrome {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
 .marketing-demo-container {
   flex: 2;
 }
@@ -619,10 +734,6 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .marketing-pricing-container {
   min-height: 37%;
   width: initial;
-}
-
-.marketing-title {
-  font-size: max(30px, 6vw);
 }
 
 .feature-square {
@@ -698,8 +809,9 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   justify-content: center;
   align-items: stretch;
   gap: 2.5vw;
-  margin: 5%;
-  padding: 0 5%;
+  padding: 60px;
+  max-width: 60rem;
+  margin: 0 auto;
 }
 
 .testimonial {
@@ -708,9 +820,12 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   align-items: center;
   justify-content: center;
   gap: 5vh;
-  background: var(--verticalMarketingGradient);
+  background: linear-gradient(in oklch -30deg, var(--fourtharyColor) -20%, var(--tertiaryColor));
   border-radius: 15px;
   padding: 5vh;
+}
+.testimonial.rowReverse-column {
+  background: linear-gradient(in oklch -330deg, var(--fourtharyColor) -20%, var(--tertiaryColor));
 }
 
 .testimonial-headshot {

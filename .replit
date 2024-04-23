@@ -62,3 +62,6 @@ message = "You probably forgot to run `bff relay` because this indicates a graph
 [[ports]]
 localPort = 8000
 externalPort = 80
+
+[objectStorage]
+defaultBucketID = "replit-objstore-6ef35620-563f-4621-9218-37230dc6977b"
