@@ -83,3 +83,11 @@ if (deploymentType === DeploymentTypes.WEB) {
     return await handler(req);
   });
 }
+
+if (deploymentType === DeploymentTypes.WORKER) {
+  const worker = new Worker(
+    import.meta.resolve("packages/worker/worker.ts"),
+    { type: "module" },
+  )
+  logger.info("Worker is worker");
+}
