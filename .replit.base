@@ -1,0 +1,10 @@
+onBoot = "./init.sh"
+run = "direnv exec . ./main.ts"
+hidden = ["**/*.lock"]
+
+[env]
+FLAG_DIRENV = "1"
+REPLIT_PID1_FLAG_DIRENV = "1"
+
+[nix]
+channel = "stable-23_11"

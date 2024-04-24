@@ -1,3 +1,7 @@
 /build/
 .deno/*
 .direnv/*
+.cache
+.config
+.local
+.replit
