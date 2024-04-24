@@ -716,10 +716,89 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   border-radius: 8px;
   height: 100%;
 }
-.hscroll-video .chrome {
+.hscroll-video-overlay {
+  border-radius: 8px;
   position: absolute;
-  height: 100%;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  background: linear-gradient(0deg, black, transparent 40%);
+}
+.hscroll-reels {
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px;
+}
+.hscroll-ig {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 10px;
+}
+.hscroll-post {
+  position: absolute;
+  bottom: 0;
+  width: 85%;
+  padding: 10px;
+  box-sizing: border-box;
+  font-size: 12px;
+}
+.hscroll-post-author {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.hscroll-post-picture {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+.hscroll-post-username {
+  flex: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hscroll-post-text {
+  font-size: 0.9em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.hscroll-chrome {
+  position: absolute;
+  bottom: 10px;
+  right: 0;
+  width: 15%;
+  gap: 8px;
+  font-size: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hscroll-chrome-likes {
+  background: url(https://bf-static-assets.s3.amazonaws.com/ig/chrome/ig-heart.png) no-repeat top center/contain;
+  width: 18px;
+  padding-top: 18px;
+}
+.hscroll-chrome-comments {
+  background: url(https://bf-static-assets.s3.amazonaws.com/ig/chrome/ig-comment.png) no-repeat top center/contain;
+  width: 18px;
+  padding-top: 18px;
+}
+.hscroll-chrome-share {
+  background: url(https://bf-static-assets.s3.amazonaws.com/ig/chrome/ig-share.png) no-repeat top center/contain;
+  width: 18px;
+  padding-top: 18px;
+}
+.hscroll-chrome-kebab {
+  background: url(https://bf-static-assets.s3.amazonaws.com/ig/chrome/ig-kebab.png) no-repeat top center/contain;
+  width: 18px;
+  padding-top: 18px;
 }
 
 .marketing-demo-container {
