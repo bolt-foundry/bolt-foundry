@@ -12,6 +12,13 @@ type VideoType = {
   comments?: number;
 };
 
+// Video instructions:
+// • Use PullTube to download the video from the url
+// • Rename video to `{account}-{igHash}.mp4`
+// • Download ig account image
+// • Rename image to `{account}.jpg`
+// • Upload video and image to S3 - bf-static-assets > ig
+// • Populate caption, like, and comments 
 const igVideos: Array<VideoType> = [
   {
     account: "blueridgecomedy",
@@ -23,54 +30,63 @@ const igVideos: Array<VideoType> = [
   {
     account: "blueridgecomedy",
     igHash: "C5ntRoFMKih",
+    caption: "Hich on birth control w/ @ShockleyComedy #comedy #funny #standupcomedy",
     likes: 35,
     comments: 0,
   },
   {
     account: "ronervin", // sunflowerarcadelounge
     igHash: "C4_IvG8Ay12",
+    caption: "And that's that #standup #comedy #nyc #dating #fitness",
     likes: 94,
     comments: 13,
   },
   {
     account: "thejoematarese",
     igHash: "C4sRTz7Cey1",
+    caption: "Italian Pronunciation #funny #italian #comedy #standup",
     likes: 57,
     comments: 2,
   },
   {
     account: "comiccure",
     igHash: "C4fZVYZhvf3",
+    caption: "\"Home\"made cookies w/ @callowaycomedy #comedy #funny #standup",
     likes: 23,
     comments: 7,
   },
   {
     account: "brickyscomedyclub",
     igHash: "C51KgciOVJ0",
+    caption: "Comedian of the Day: Nick Osman! Follow more of his content here on Insta at @nickosmanisntfunny",
     likes: 52,
     comments: 3,
   },
   {
     account: "brickyscomedyclub",
     igHash: "C55_j5Euovw",
+    caption: "Comedian of the Day: Mark Perkins! Follow more of his content here on Insta at @markperkinscomedy",
     likes: 77,
     comments: 0,
   },
   {
     account: "dougiedangerous",
     igHash: "C50XqIti53u",
+    caption: "Extreme Sports #comedy #funny #lol #sports #parasailing",
     likes: 44,
     comments: 2,
   },
   {
     account: "dougiedangerous",
     igHash: "C58F-ZQLEf0",
+    caption: "Wealth and Women #comedy #funny #standup #lol #nyc #amazon",
     likes: 45,
     comments: 0,
   },
   {
     account: "boltfoundry",
     igHash: "C5IBgT5uOQI",
+    caption: "It just doesn’t work!! #comedy #comedyclub @wiseguyscomedy @creepymustache",
     likes: 241,
     comments: 0,
   },
