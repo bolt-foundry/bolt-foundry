@@ -120,7 +120,11 @@ export function MarketingIGHscroll() {
         }
       };
       const endedHandler = () => {
-        setPlayingVideoRefIndex(playingVideoRefIndex + 1);
+        let next = playingVideoRefIndex + 1;
+        if (next >= igVideos.length) {
+          next = 0;
+        }
+        setPlayingVideoRefIndex(next);
       };
       videoRef.current.addEventListener("play", playHandler);
       videoRef.current.addEventListener("ended", endedHandler);
