@@ -37,6 +37,30 @@ export async function runShellCommand(
   return code;
 }
 
+export async function runShellCommandWithOutput(
+  commandArray: Array<string>,
+  useSpinner = true,): Promise<string> {
+  // deno-lint-ignore no-console
+  console.log(`Running command: ${commandArray.join(" ")}`);
+  let stopSpinner;
+  if (useSpinner) {
+    stopSpinner = startSpinner();
+  }
+  const cwd = Deno.env.get("BF_PATH") ?? Deno.cwd();
+
+  const cmd = new Deno.Command(commandArray[0], {
+    args: commandArray.slice(1),
+    stdout: "piped",
+    stderr: "piped",
+    cwd,
+  });
+
+  const process = cmd.spawn();
+  const { stdout } = await process.output();
+  stopSpinner ? stopSpinner() : null;
+  return new TextDecoder().decode(stdout);
+  }
+
 export function registerShellCommand(
   name: string,
   description: string,
