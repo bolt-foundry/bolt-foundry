@@ -35,7 +35,7 @@ export async function build(
   esbuild.stop();
 }
 
-const BFF_ROOT = Deno.env.get("BFF_ROOT") ?? "/bf/.";
+const BF_PATH = Deno.env.get("BF_PATH") ?? "/bf/.";
 let lastBuilt = 0;
 // @ts-expect-error #techdebt
 async function watchedBuild(buildOptions) {
@@ -52,11 +52,11 @@ async function watchedBuild(buildOptions) {
     const { paths } = event;
     for (const path of paths) {
       if (
-        !includedPaths.some((p) => path.startsWith(`${BFF_ROOT}/./${p}`)) ||
+        !includedPaths.some((p) => path.startsWith(`${BF_PATH}/./${p}`)) ||
         timeSinceLastBuild < 1000
       ) {
         // console.log(
-        //   `Skipping build due to change in ${path} -- ${timeSinceLastBuild}ms since last build -- ${BFF_ROOT}`,
+        //   `Skipping build due to change in ${path} -- ${timeSinceLastBuild}ms since last build -- ${BF_PATH}`,
         // );
         continue;
       }
