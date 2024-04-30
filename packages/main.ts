@@ -6,9 +6,10 @@ import { handler as graphQlHandler } from "packages/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";
 
 const logger = getLogger(import.meta);
-enum DeploymentTypes {
+export enum DeploymentTypes {
   "WEB" = "WEB",
   "WORKER" = "WORKER",
+  "DEVELOPMENT" = "DEVELOPMENT",
 }
 type Handler = (
   request: Request,
@@ -49,20 +50,20 @@ routes.set("/google/oauth/start", (req) => {
     headers: {
       location: redirectable,
     },
-  })
-})
-
-routes.set("/google/oauth/end", (req) => {
-  const url = new URL(req.url)
-  const code = url.searchParams.get("code");
-  const body = `<html><body><script>window.opener.resolveGoogleAuth("${code}")</script></body></html>`;
-  return new Response(body, {
-    headers: {
-      "content-type": "text/html",
-    }
   });
 });
 
+routes.set("/google/oauth/end", (req) => {
+  const url = new URL(req.url);
+  const code = url.searchParams.get("code");
+  const body =
+    `<html><body><script>window.opener.resolveGoogleAuth("${code}")</script></body></html>`;
+  return new Response(body, {
+    headers: {
+      "content-type": "text/html",
+    },
+  });
+});
 
 routes.set("/graphql", graphQlHandler);
 
@@ -71,23 +72,33 @@ const defaultRoute = () => {
 };
 
 const deploymentType = Deno.env.get("DEPLOYMENT_TYPE") ??
-  DeploymentTypes.WORKER;
+  DeploymentTypes.DEVELOPMENT;
 
-if (deploymentType === DeploymentTypes.WEB) {
-  Deno.serve(async (req) => {
-    const incomingUrl = new URL(req.url);
-    logger.info(
-      `Incoming request: ${req.method} ${incomingUrl.pathname}`,
+const shouldLaunchWeb = deploymentType === DeploymentTypes.WEB ||
+  deploymentType === DeploymentTypes.DEVELOPMENT;
+const shouldLaunchWorker = deploymentType === DeploymentTypes.WORKER ||
+  deploymentType === DeploymentTypes.DEVELOPMENT;
+
+if (import.meta.main) {
+  if (shouldLaunchWeb) {
+    Deno.serve(async (req) => {
+      const incomingUrl = new URL(req.url);
+      logger.info(
+        `Incoming request: ${req.method} ${incomingUrl.pathname}`,
+      );
+      const handler = routes.get(incomingUrl.pathname) ?? defaultRoute;
+      return await handler(req);
+    });
+  }
+
+  if (shouldLaunchWorker) {
+    const worker = new Worker(
+      import.meta.resolve("packages/worker/worker.ts"),
+      { type: "module" },
     );
-    const handler = routes.get(incomingUrl.pathname) ?? defaultRoute;
-    return await handler(req);
-  });
-}
-
-if (deploymentType === DeploymentTypes.WORKER) {
-  const worker = new Worker(
-    import.meta.resolve("packages/worker/worker.ts"),
-    { type: "module" },
-  )
-  logger.info("Worker is worker");
-}
+    logger.info("Launched worker");
+    if (deploymentType === DeploymentTypes.DEVELOPMENT) {
+      const keepaliveLogger = getLogger("workerKeepalive");
+      keepaliveLogger.disableAll();
+    }
+  }}

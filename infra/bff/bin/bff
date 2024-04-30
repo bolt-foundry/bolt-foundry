@@ -1,4 +1,0 @@
-#! /bin/sh
-
-cd $BFF_ROOT
-$BFF_ROOT/infra/bff/bin/bff.ts $@

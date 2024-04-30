@@ -3,11 +3,15 @@ import startSpinner from "lib/terminalSpinner.ts";
 
 export async function runShellCommand(
   commandArray: Array<string>,
+  useSpinner = true,
 ): Promise<number> {
   // deno-lint-ignore no-console
   console.log(`Running command: ${commandArray.join(" ")}`);
-  const stopSpinner = startSpinner();
-  const cwd = Deno.env.get("BFF_ROOT") ?? Deno.cwd();
+  let stopSpinner;
+  if (useSpinner) {
+    stopSpinner = startSpinner();
+  }
+  const cwd = Deno.env.get("BF_PATH") ?? Deno.cwd();
 
   const cmd = new Deno.Command(commandArray[0], {
     args: commandArray.slice(1),
@@ -18,7 +22,7 @@ export async function runShellCommand(
 
   const process = cmd.spawn();
   const { code, success } = await process.output();
-  stopSpinner();
+  stopSpinner ? stopSpinner() : null;
 
   if (success) {
     // deno-lint-ignore no-console
