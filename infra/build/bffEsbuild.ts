@@ -5,11 +5,11 @@ const logger = getLogger(import.meta);
 
 const REMOTE_MODULE_REGEX = /^https?:\/\//;
 const NODE_REGEX = /^node:/;
-const denoLockFilePath = `${Deno.env.get("BFF_ROOT")}/deno.lock`;
+const denoLockFilePath = `${Deno.env.get("BF_PATH")}/deno.lock`;
 const denoLockFile = await Deno.readTextFile(denoLockFilePath);
 const denoLock = JSON.parse(denoLockFile);
 const vendorManifestFilePath = `${
-  Deno.env.get("BFF_ROOT")
+  Deno.env.get("BF_PATH")
 }/vendor/manifest.json`;
 const vendorManifestFile = await Deno.readTextFile(vendorManifestFilePath);
 const vendorManifest = JSON.parse(vendorManifestFile);
@@ -101,7 +101,7 @@ async function getCacheLocations() {
   const npmModulesCache = join(npmModulesCacheRoot, "registry.npmjs.org");
   logger.debug("Cache locations fetched successfully.");
   return {
-    vendorLocation: `${Deno.env.get("BFF_ROOT")}/vendor`,
+    vendorLocation: `${Deno.env.get("BF_PATH")}/vendor`,
     denoDirLocation,
     remoteModulesCache,
     npmModulesCache,
