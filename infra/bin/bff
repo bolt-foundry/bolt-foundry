@@ -1,0 +1,4 @@
+#! /bin/sh
+
+cd $BF_PATH
+$BF_PATH/infra/bff/bin/bff.ts $@
