@@ -20,6 +20,7 @@ register(
       `github.com:
     git_protocol: https
     oauth_token: ${ghToken}
+    user: x-token-auth
   `,
       { create: true },
     );
