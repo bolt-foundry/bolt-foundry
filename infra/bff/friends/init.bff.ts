@@ -13,16 +13,16 @@ register(
     if (REPL_SLUG === "BF-Base") {
       throw new Error("Don't log into the base please! Fork instead.")
     }
+    const ghToken = await runShellCommandWithOutput(["replit-git-askpass", "Password for 'https://token@github.com': "])
     await Deno.writeTextFile(
       `${HOME}/${REPL_SLUG}/.config/gh/hosts.yml`,
       // the spacing is very significant b/c yaml.
       `github.com:
     git_protocol: https
+    oauth_token: ${ghToken}
   `,
       { create: true },
     );
-    const cmd = ["gh", "auth", "login", "-p", "https", "-w", "-s", "user"];
-    await runShellCommand(cmd, false);
     const usernameRawPromise = runShellCommandWithOutput([
       "gh",
       "api",
