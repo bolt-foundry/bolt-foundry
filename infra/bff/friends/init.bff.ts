@@ -10,6 +10,9 @@ register(
   async () => {
     const HOME = Deno.env.get("HOME") ?? "";
     const REPL_SLUG = Deno.env.get("REPL_SLUG") ?? "";
+    if (REPL_SLUG === "BF-Base") {
+      throw new Error("Don't log into the base please! Fork instead.")
+    }
     await Deno.writeTextFile(
       `${HOME}/${REPL_SLUG}/.config/gh/hosts.yml`,
       // the spacing is very significant b/c yaml.
