@@ -18,7 +18,7 @@ type VideoType = {
 // • Download ig account image
 // • Rename image to `{account}.jpg`
 // • Upload video and image to S3 - bf-static-assets > ig
-// • Populate caption, like, and comments 
+// • Populate caption, like, and comments
 const igVideos: Array<VideoType> = [
   {
     account: "blueridgecomedy",
@@ -30,7 +30,8 @@ const igVideos: Array<VideoType> = [
   {
     account: "blueridgecomedy",
     igHash: "C5ntRoFMKih",
-    caption: "Hich on birth control w/ @ShockleyComedy #comedy #funny #standupcomedy",
+    caption:
+      "Hich on birth control w/ @ShockleyComedy #comedy #funny #standupcomedy",
     likes: 35,
     comments: 0,
   },
@@ -51,21 +52,23 @@ const igVideos: Array<VideoType> = [
   {
     account: "comiccure",
     igHash: "C4fZVYZhvf3",
-    caption: "\"Home\"made cookies w/ @callowaycomedy #comedy #funny #standup",
+    caption: '"Home"made cookies w/ @callowaycomedy #comedy #funny #standup',
     likes: 23,
     comments: 7,
   },
   {
     account: "brickyscomedyclub",
     igHash: "C51KgciOVJ0",
-    caption: "Comedian of the Day: Nick Osman! Follow more of his content here on Insta at @nickosmanisntfunny",
+    caption:
+      "Comedian of the Day: Nick Osman! Follow more of his content here on Insta at @nickosmanisntfunny",
     likes: 52,
     comments: 3,
   },
   {
     account: "brickyscomedyclub",
     igHash: "C55_j5Euovw",
-    caption: "Comedian of the Day: Mark Perkins! Follow more of his content here on Insta at @markperkinscomedy",
+    caption:
+      "Comedian of the Day: Mark Perkins! Follow more of his content here on Insta at @markperkinscomedy",
     likes: 77,
     comments: 0,
   },
@@ -86,7 +89,8 @@ const igVideos: Array<VideoType> = [
   {
     account: "boltfoundry",
     igHash: "C5IBgT5uOQI",
-    caption: "It just doesn’t work!! #comedy #comedyclub @wiseguyscomedy @creepymustache",
+    caption:
+      "It just doesn’t work!! #comedy #comedyclub @wiseguyscomedy @creepymustache",
     likes: 241,
     comments: 0,
   },
@@ -123,6 +127,9 @@ export function MarketingIGHscroll() {
         let next = playingVideoRefIndex + 1;
         if (next >= igVideos.length) {
           next = 0;
+        }
+        if (videoRef?.current) {
+          videoRef.current.currentTime = 0;
         }
         setPlayingVideoRefIndex(next);
       };
