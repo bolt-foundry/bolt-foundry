@@ -50,6 +50,10 @@ register(
       "ui.username",
       `${username} <${email}>`,
     ]);
+    await runShellCommand([
+      "sl",
+      "pull",
+    ])
     return 0;
   },
 );
