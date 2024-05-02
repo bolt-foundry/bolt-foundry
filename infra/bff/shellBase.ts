@@ -3,9 +3,13 @@ import startSpinner from "lib/terminalSpinner.ts";
 
 export async function runShellCommand(
   commandArray: Array<string>,
-  env = Deno.env.toObject(),
+  additionalEnv = {},
   useSpinner = true,
 ): Promise<number> {
+  const env = {
+    ...Deno.env.toObject(),
+    ...additionalEnv,
+  }
   // deno-lint-ignore no-console
   console.log(`Running command: ${commandArray.join(" ")}`);
   let stopSpinner;
@@ -19,6 +23,7 @@ export async function runShellCommand(
     stdout: "inherit",
     stderr: "inherit",
     cwd,
+    env,
   });
 
   const process = cmd.spawn();
@@ -40,7 +45,12 @@ export async function runShellCommand(
 
 export async function runShellCommandWithOutput(
   commandArray: Array<string>,
+  additionalEnv = {},
   useSpinner = true,): Promise<string> {
+  const env = {
+    ...Deno.env.toObject(),
+    ...additionalEnv,
+  }
   // deno-lint-ignore no-console
   console.log(`Running command: ${commandArray.join(" ")}`);
   let stopSpinner;
@@ -54,6 +64,7 @@ export async function runShellCommandWithOutput(
     stdout: "piped",
     stderr: "piped",
     cwd,
+    env,
   });
 
   const process = cmd.spawn();
