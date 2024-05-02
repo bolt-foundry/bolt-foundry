@@ -44,6 +44,7 @@
           jq
           jupyter
           watchman
+          git
         ];
 
         deployPackages = with pkgs; [
