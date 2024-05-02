@@ -3,6 +3,7 @@ import startSpinner from "lib/terminalSpinner.ts";
 
 export async function runShellCommand(
   commandArray: Array<string>,
+  env = Deno.env.toObject(),
   useSpinner = true,
 ): Promise<number> {
   // deno-lint-ignore no-console
