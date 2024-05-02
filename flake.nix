@@ -45,6 +45,7 @@
           jupyter
           watchman
           git
+          unstablePkgs.sapling
         ];
 
         deployPackages = with pkgs; [
