@@ -4,17 +4,17 @@ import {
 } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/mod.ts";
 
-//           git config --global url.https://${{ secrets.PAT }}@github.com/.insteadOf https://github.com/
-
 register(
   "init",
   "Log in (using github) to begin development for the app.",
   async () => {
     const XDG_CONFIG_HOME = Deno.env.get("XDG_CONFIG_HOME")!;
     const REPL_SLUG = Deno.env.get("REPL_SLUG") ?? "";
-    // if (REPL_SLUG === "BF-Base") {
-    //   throw new Error("Don't log into the base please! Fork instead.")
-    // }
+    
+    if (REPL_SLUG === "BF-Base") {
+      throw new Error("Don't log into the base please! Fork instead.")
+    }
+    
     const cmd = ["gh", "auth", "login", "-p", "https", "-w", "-s", "user"];
     await runShellCommand(cmd, undefined, false);
 
