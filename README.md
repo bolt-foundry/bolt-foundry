@@ -1,3 +1,3 @@
 # Welcome to Bolt Foundry
 
-Hello world!
+Although we intend to fully open source this repo, for now, the entire thing is ©️ Content Foundry, Inc. All Rights Reserved.
