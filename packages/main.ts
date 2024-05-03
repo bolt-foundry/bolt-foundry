@@ -48,23 +48,24 @@ routes.set("/build/Client.js", async () => {
   });
 });
 
-routes.set("/login", (...args) => {
-  const [req] = args;
-  if (req.method === "POST") {
-    const postBody = req.body;
-    const { credential, replitId, replitCluster } = postBody;
-  };
-
+routes.set("/login", async (...args) => {
   const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
-  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ?? "boltfoundry.wtf";
+  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
+    "boltfoundry.wtf";
+  const [req] = args;
+  const url = new URL(req.url);
+  const hostname = url.hostname;
+  const credential = url.searchParams.get("credential");
+  if (credential) {
+    return clientRenderer(...args);
+  }
+
   switch (deploymentEnvironment) {
     case DeploymentEnvs.DEVELOPMENT: {
       return new Response(null, {
         status: 302,
         headers: {
-          location: `https://${redirectDomain}/login?sourceRepl=${
-            Deno.env.get("REPL_ID")
-          }&sourceCluster=${Deno.env.get("REPLIT_CLUSTER")}`,
+          location: `https://${redirectDomain}/login?hostname=${hostname}`,
         },
       });
     }
@@ -73,26 +74,82 @@ routes.set("/login", (...args) => {
   return clientRenderer(...args);
 });
 
-routes.set("/google/oauth/start", (_req) => {
-  const redirectable = getGoogleOauthUrl();
+routes.set("/google/oauth/start", (req) => {
+  const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
+  const shouldRedirect = deploymentEnvironment === DeploymentEnvs.DEVELOPMENT;
+  if (shouldRedirect) {
+    const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
+      "boltfoundry.wtf";
+    const url = new URL(req.url);
+    const hostname = url.hostname;
+    console.log(`Redirecting to https://${redirectDomain}/google/oauth/start?hostname=${hostname}`)
+    return new Response(null, {
+      status: 302,
+      headers: {
+        location:
+          `https://${redirectDomain}/google/oauth/start?hostname=${hostname}`,
+      },
+    });
+  }
+  const requestUrl = new URL(req.url);
+  const oauthUrl = getGoogleOauthUrl();
+  const hostname = requestUrl.searchParams.get("hostname");
+
+  const headers: Record<string, string> = {
+    location: oauthUrl,
+  };
+  if (hostname) {
+    headers["set-cookie"] = `bf_auth_redirect_domain=${hostname};`;
+  }
   // create temporary redirect response 302
   return new Response(null, {
     status: 302,
-    headers: {
-      location: redirectable,
-    },
+    headers,
   });
 });
 
 routes.set("/google/oauth/end", (req) => {
-  const url = new URL(req.url);
-  const code = url.searchParams.get("code");
-  const body =
-    `<html><body><script>window.opener.resolveGoogleAuth("${code}")</script></body></html>`;
+  const cookie = req.headers.get("Cookie");
+  const bfAuthRedirectDomainCookie = cookie?.split("; ").find((c) =>
+    c.startsWith("bf_auth_redirect_domain=")
+  );
+  const bfAuthRedirectDomain = bfAuthRedirectDomainCookie?.split("=")[1];
+  const requestUrl = new URL(req.url);
+  
+  if (bfAuthRedirectDomain) {
+    requestUrl.hostname = bfAuthRedirectDomain;
+    requestUrl.protocol = "https:";
+    console.log(`Redirecting to ${requestUrl.toString()}`)
+    return new Response(null, {
+      status: 302,
+      headers: {
+        location: requestUrl.toString(),
+      },
+    });
+  }
+
+  const code = requestUrl.searchParams.get("code");
+
+  const body = `<html><body><script>
+    window.addEventListener("message", (event) => {
+      if (event.data === "close") {
+        window.close();
+      }
+    });
+    window.opener.postMessage(
+      {
+        code: "${code}",
+      },
+      "*",
+    );
+    </script></body></html>`;
+  const headers: Record<string, string> = {
+    "content-type": "text/html",
+    "Cross-Origin-Opener-Policy": "",
+  };
+
   return new Response(body, {
-    headers: {
-      "content-type": "text/html",
-    },
+    headers,
   });
 });
 
