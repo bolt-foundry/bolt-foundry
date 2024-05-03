@@ -48,8 +48,23 @@ routes.set("/build/Client.js", async () => {
   });
 });
 
-routes.set("/google/oauth/start", (req) => {
-  const redirectable = getGoogleOauthUrl(req);
+routes.set("/login", (...args) => {
+  if (Deno.env.get("BF_ENV") === DeploymentEnvs.DEVELOPMENT) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        location: `https://boltfoundry.wtf/login?sourceRepl=${
+          Deno.env.get("REPL_ID")
+        }&sourceCluster=${Deno.env.get("REPLIT_CLUSTER")}`,
+      },
+    });
+  }
+
+  return clientRenderer(...args);
+});
+
+routes.set("/google/oauth/start", (_req) => {
+  const redirectable = getGoogleOauthUrl();
   // create temporary redirect response 302
   return new Response(null, {
     status: 302,
