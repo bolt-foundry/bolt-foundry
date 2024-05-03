@@ -48,23 +48,20 @@ routes.set("/build/Client.js", async () => {
   });
 });
 
-routes.set("/login", (...args) => {
-  const [req] = args;
-  if (req.method === "POST") {
-    const postBody = req.body;
-    const { credential, replitId, replitCluster } = postBody;
-  };
-
+routes.set("/login", async (...args) => {
   const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
-  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ?? "boltfoundry.wtf";
+  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
+    "boltfoundry.wtf";
+  const [req] = args;
+  const url = new URL(req.url);
+  const hostname = url.hostname;
+
   switch (deploymentEnvironment) {
     case DeploymentEnvs.DEVELOPMENT: {
       return new Response(null, {
         status: 302,
         headers: {
-          location: `https://${redirectDomain}/login?sourceRepl=${
-            Deno.env.get("REPL_ID")
-          }&sourceCluster=${Deno.env.get("REPLIT_CLUSTER")}`,
+          location: `https://${redirectDomain}/login?hostname=${hostname}`,
         },
       });
     }
