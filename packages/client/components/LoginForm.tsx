@@ -31,8 +31,30 @@ function GoogleLoginButton() {
 
   const googleSignInButtonRef = useRef(null);
   const { GOOGLE_OAUTH_CLIENT_ID } = useAppEnvironment();
+  const urlParams = new URLSearchParams(globalThis.location?.search) ?? new Map();
+  const hostname = urlParams.get("hostname");
+  const credential = urlParams.get("credential");
+  useEffect(() => {
+    if (credential) {
+      console.log('credential', credential);
+      commit({
+        variables: {
+          credential,
+        },
+        onCompleted: () => {
+          navigate("/bf_projects");
+        },
+      });
+    }
+  }, [credential])
 
   const onLogin = (response: google.accounts.id.CredentialResponse) => {
+    if (hostname) {
+      const replUrl = `https://${hostname}/login?credential=${response.credential}`;
+
+      globalThis.location.assign(replUrl);
+      return;
+    }
     logger.debug("Google login response", response);
     commit({
       variables: {
