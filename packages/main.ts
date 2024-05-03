@@ -48,23 +48,24 @@ routes.set("/build/Client.js", async () => {
   });
 });
 
-routes.set("/login", (...args) => {
-  const [req] = args;
-  if (req.method === "POST") {
-    const postBody = req.body;
-    const { credential, replitId, replitCluster } = postBody;
-  };
-
+routes.set("/login", async (...args) => {
   const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
-  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ?? "boltfoundry.wtf";
+  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
+    "boltfoundry.wtf";
+  const [req] = args;
+  const url = new URL(req.url);
+  const hostname = url.hostname;
+  const credential = url.searchParams.get("credential");
+  if (credential) {
+    return clientRenderer(...args);
+  }
+
   switch (deploymentEnvironment) {
     case DeploymentEnvs.DEVELOPMENT: {
       return new Response(null, {
         status: 302,
         headers: {
-          location: `https://${redirectDomain}/login?sourceRepl=${
-            Deno.env.get("REPL_ID")
-          }&sourceCluster=${Deno.env.get("REPLIT_CLUSTER")}`,
+          location: `https://${redirectDomain}/login?hostname=${hostname}`,
         },
       });
     }
@@ -84,11 +85,24 @@ routes.set("/google/oauth/start", (_req) => {
   });
 });
 
+
+
 routes.set("/google/oauth/end", (req) => {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
-  const body =
-    `<html><body><script>window.opener.resolveGoogleAuth("${code}")</script></body></html>`;
+  const body = `<html><body><script>
+    window.addEventListener("message", (event) => {
+      if (event.data === "close") {
+        window.close();
+      }
+    });
+    window.opener.postMessage(
+      JSON.stringify({
+        code,
+      }),
+      "*",
+    );
+    </script></body></html>`;
   return new Response(body, {
     headers: {
       "content-type": "text/html",
