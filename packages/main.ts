@@ -48,23 +48,48 @@ routes.set("/build/Client.js", async () => {
   });
 });
 
-routes.set("/login", (...args) => {
-  const [req] = args;
-  if (req.method === "POST") {
-    const postBody = req.body;
-    const { credential, replitId, replitCluster } = postBody;
-  };
-
+routes.set("/login", async (...args) => {
   const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
-  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ?? "boltfoundry.wtf";
+  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
+    "boltfoundry.wtf";
+  const [req] = args;
+  const url = new URL(req.url);
+  const hostname = url.hostname;
+  console.log("Processing");
+
+  // deal with cors prefilght
+  if (
+    req.method === "OPTIONS" &&
+    deploymentEnvironment === DeploymentEnvs.DEVELOPMENT
+  ) {
+    return new Response(null, {
+      headers: {
+        "Access-Control-Allow-Origin": redirectDomain,
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+      },
+    });
+  }
+
+  if (
+    req.method === "POST" &&
+    deploymentEnvironment === DeploymentEnvs.DEVELOPMENT
+  ) {
+    const postBody = req.body;
+    const { credential, hostname } = postBody;
+    const response = await clientRenderer(...args);
+    response.headers.set("Access-Control-Allow-Origin", "*");
+    response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    response.headers.set("Access-Control-Allow-Headers", "*");
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    return response;
+  }
+
   switch (deploymentEnvironment) {
     case DeploymentEnvs.DEVELOPMENT: {
       return new Response(null, {
         status: 302,
         headers: {
-          location: `https://${redirectDomain}/login?sourceRepl=${
-            Deno.env.get("REPL_ID")
-          }&sourceCluster=${Deno.env.get("REPLIT_CLUSTER")}`,
+          location: `https://${redirectDomain}/login?hostname=${hostname}`,
         },
       });
     }
