@@ -49,13 +49,20 @@ routes.set("/build/Client.js", async () => {
 });
 
 routes.set("/login", (...args) => {
-  const deploymentEnvironment = Deno.env.get("BF_ENV");
+  const [req] = args;
+  if (req.method === "POST") {
+    const postBody = req.body;
+    const { credential, replitId, replitCluster } = postBody;
+  };
+
+  const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
+  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ?? "boltfoundry.wtf";
   switch (deploymentEnvironment) {
     case DeploymentEnvs.DEVELOPMENT: {
       return new Response(null, {
         status: 302,
         headers: {
-          location: `https://boltfoundry.wtf/login?sourceRepl=${
+          location: `https://${redirectDomain}/login?sourceRepl=${
             Deno.env.get("REPL_ID")
           }&sourceCluster=${Deno.env.get("REPLIT_CLUSTER")}`,
         },
