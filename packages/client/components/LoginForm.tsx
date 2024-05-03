@@ -31,8 +31,31 @@ function GoogleLoginButton() {
 
   const googleSignInButtonRef = useRef(null);
   const { GOOGLE_OAUTH_CLIENT_ID } = useAppEnvironment();
+  const urlParams = new URLSearchParams(window.location.search);
+  const sourceRepl = urlParams.get("sourceRepl");
+  const sourceCluster = urlParams.get("sourceCluster");
 
   const onLogin = (response: google.accounts.id.CredentialResponse) => {
+    if (sourceRepl && sourceCluster) {
+      const replUrl = `https://${sourceRepl}.${sourceCluster}.replit.dev/login`;
+
+      fetch(replUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ credential: response.credential }),
+      })
+        .then((response) => {
+          if (response.redirected) {
+            window.location.href = response.url;
+          }
+        })
+        .catch((error) => {
+          console.error("Error posting data to replUrl:", error);
+        });
+      return;
+    }
     logger.debug("Google login response", response);
     commit({
       variables: {
