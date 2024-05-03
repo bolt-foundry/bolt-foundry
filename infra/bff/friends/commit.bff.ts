@@ -5,8 +5,8 @@ import {
 import { register } from "infra/bff/mod.ts";
 
 register(
-  "init",
-  "Log in (using github) to begin development for the app.",
+  "commit",
+  "Get ready to send your work to github",
   async () => {
     const XDG_CONFIG_HOME = Deno.env.get("XDG_CONFIG_HOME")!;
     const REPL_SLUG = Deno.env.get("REPL_SLUG") ?? "";
