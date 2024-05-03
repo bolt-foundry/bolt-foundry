@@ -11,6 +11,12 @@ export enum DeploymentTypes {
   "WORKER" = "WORKER",
   "DEVELOPMENT" = "DEVELOPMENT",
 }
+
+export enum DeploymentEnvs {
+  "DEVELOPMENT" = "DEVELOPMENT",
+  "STAGING" = "STAGING",
+  "PRODUCTION" = "PRODUCTION",
+}
 type Handler = (
   request: Request,
 ) => Promise<Response> | Response;
@@ -74,10 +80,19 @@ const defaultRoute = () => {
 const deploymentType = Deno.env.get("DEPLOYMENT_TYPE") ??
   DeploymentTypes.DEVELOPMENT;
 
-const shouldLaunchWeb = deploymentType === DeploymentTypes.WEB ||
-  deploymentType === DeploymentTypes.DEVELOPMENT;
-const shouldLaunchWorker = deploymentType === DeploymentTypes.WORKER ||
-  deploymentType === DeploymentTypes.DEVELOPMENT;
+let shouldLaunchWeb = true;
+let shouldLaunchWorker = true;
+
+switch (deploymentType) {
+  case DeploymentTypes.WEB: {
+    shouldLaunchWorker = false;
+    break;
+  }
+  case DeploymentTypes.WORKER: {
+    shouldLaunchWeb = false;
+    break;
+  }
+}
 
 if (import.meta.main) {
   if (shouldLaunchWeb) {
@@ -92,7 +107,7 @@ if (import.meta.main) {
   }
 
   if (shouldLaunchWorker) {
-    const worker = new Worker(
+    const _worker = new Worker(
       import.meta.resolve("packages/worker/worker.ts"),
       { type: "module" },
     );
@@ -101,4 +116,5 @@ if (import.meta.main) {
       const keepaliveLogger = getLogger("workerKeepalive");
       keepaliveLogger.disableAll();
     }
-  }}
+  }
+}
