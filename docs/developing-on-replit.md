@@ -18,11 +18,24 @@ and enter a description to help others know what your fork is intended to do.
 
 ![Example naming dialog](assets/developing-on-replit/bf-base-dropdown.png)
 
-### Spin up your fork
-
 At this point, Replit will automatically redirect you to your repl. You should
 be seeing this document as a result of that. Look in the upper left corner to
 ensure you've moved on from the base.
+
+### Edit your files
+
+This is the simple part, you'll probably find files using `cmd + p` to use the
+quick open dialog.
+
+### Preview changes
+
+To preview changes, all you need to do is hit the giant `▶ Run` button at the
+top of replit. Initially this will open the console, and then when the app is
+ready, it'll open a webview.
+
+To refresh after making a change, hit `cmd + enter` and it'll reload the server.
+
+### Commit changes
 
 Open the shell by using either the command pallate (cmd + k) and typing "shell",
 or ctrl + tilde (~) or as a tab in the UI. Within the shell, run the command:
@@ -43,25 +56,6 @@ All of our tooling is built for Replit, except one: Sapling. For now, that
 dependency still relies on us using VSCode. We anticipate that going away with
 the next release of sapling.
 
-### Edit your files
-
-This is the simple part, you'll probably find files using `cmd + p` to use the
-quick open dialog.
-
-### Preview changes
-
-To preview changes, all you need to do is hit the giant `▶ Run` button at the
-top of replit. Initially this will open the console, and then when the app is
-ready, it'll open a webview.
-
-To refresh after making a change, hit `cmd + enter` and it'll reload the server.
-
-### Commit changes
-
-For this, we'll head back to vscode, and press `cmd + shift + p` to open the
-quick open pallate. Pick "open interactive smartlog" and you'll get our primary
-way of committing code.
-
 #### Individual commits are "whole changes" bundled into one
 
 Your goal should be to commit individual units of changes one commit at a time.
@@ -78,7 +72,7 @@ pull requests and branches, etc., without you needing to do anything.
 Code review mostly happens synchronously via pair coding, but if you're working
 async, ping
 [#code-corner on Discord](https://discord.com/channels/1128726973770903703/1128760802636218568)
-with a link to the thing you'd like to review, and ping the `@Code Reviewers`
+with a link to the commit you'd like to review, and ping the `@Code Reviewers`
 role.
 
 ### Landing
