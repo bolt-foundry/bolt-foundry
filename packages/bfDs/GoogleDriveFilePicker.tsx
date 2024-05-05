@@ -107,7 +107,11 @@ export function GoogleDriveFilePicker({ onPick, pickerType }: Props) {
       <Button
         kind="secondary"
         onClick={() =>
-          openPicker(googleAccessToken, GOOGLE_OAUTH_CLIENT_ID, pickerType ?? GoogleDriveFilePickerFileType.VIDEO).then(
+          openPicker(
+            googleAccessToken,
+            GOOGLE_OAUTH_CLIENT_ID,
+            pickerType ?? GoogleDriveFilePickerFileType.VIDEO,
+          ).then(
             (res) => {
               if (
                 res[google.picker.Response.ACTION] ===
@@ -195,16 +199,11 @@ function authorizeGdrive(): Promise<string> {
     const features =
       `scrollbars=yes, width=${width}, height=${height}, top=${top}, left=${left}`;
     const popup = window.open(url, "Google Authorization", features);
-    // @ts-expect-error - added to window
-    window.resolveGoogleAuth = (result: string, error?: Error) => {
-      // @ts-expect-error - added to window
-      delete window.resolveGoogleAuth;
-      popup?.close();
-      if (error) {
-        reject(error);
-      } else {
-        resolve(result);
+    globalThis.addEventListener("message", (event) => {
+      if (event.data.code) {
+        resolve(event.data.code);
+        popup?.postMessage("close", "*");
       }
-    };
+    });
   });
 }
