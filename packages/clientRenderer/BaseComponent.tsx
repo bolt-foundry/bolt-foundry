@@ -3,7 +3,7 @@ import { colors, colorsDark, fonts } from "packages/bfDs/const.tsx";
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(
   (acc, [key, value]) => {
-    console.log(`${key}: ${value}`)
+    console.log(`${key}: ${value}`);
     acc += `--${key}: ${value};\n`;
     return acc;
   },
@@ -99,6 +99,8 @@ export function BaseComponent({ children, environment }: Props) {
         <div id="root">
           {children}
         </div>
+        <div id="modal-root"></div>
+        <div id="tooltip-root"></div>
         <script
           type="module"
           defer={true}
