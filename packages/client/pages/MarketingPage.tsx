@@ -262,6 +262,7 @@ export function Marketing(): React.ReactElement {
     useIntersectionObserver();
 
   const enableSignup = useFeatureFlag("enable_signup");
+  const enableGoogleLogin = useFeatureFlag("enable_google_login");
   
   const [currentModal, setCurrentModal] = useState<React.ReactNode | null>(
     null,
@@ -309,7 +310,7 @@ export function Marketing(): React.ReactElement {
 
   return (
     <MarketingFrame
-      showLoginLink={true}
+      showLoginLink={enableGoogleLogin}
       showFooter={true}
       modal={currentModal}
       closeModal={() => setCurrentModal(null)}
