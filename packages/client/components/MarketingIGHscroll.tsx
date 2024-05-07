@@ -22,13 +22,6 @@ type VideoType = {
 const igVideos: Array<VideoType> = [
   {
     account: "blueridgecomedy",
-    igHash: "C4xojmrq3VT",
-    caption: "Condom anxiety w/ @joesnotjoking #comedy #standupcomedy #funny",
-    likes: 38,
-    comments: 0,
-  },
-  {
-    account: "blueridgecomedy",
     igHash: "C5ntRoFMKih",
     caption:
       "Hich on birth control w/ @ShockleyComedy #comedy #funny #standupcomedy",
