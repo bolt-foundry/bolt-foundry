@@ -18,13 +18,22 @@ register(
     const cmd = ["gh", "auth", "login", "-p", "https", "-w", "-s", "user"];
     await runShellCommand(cmd, undefined, false);
 
-    const usernameRawPromise = runShellCommandWithOutput([
+    const nameRawPromise = runShellCommandWithOutput([
       "gh",
       "api",
       "/user",
       "--jq",
       ".name",
     ]);
+
+    const usernameRawPromise = runShellCommandWithOutput([
+      "gh",
+      "api",
+      "/user",
+      "--jq",
+      ".login",
+    ]);
+    
     const emailRawPromise = runShellCommandWithOutput([
       "gh",
       "api",
@@ -33,9 +42,10 @@ register(
       '.[] | select(.email | contains("boltfoundry.com")) | .email',
     ]);
 
-    const [usernameRaw, emailRaw] = await Promise.all([
-      usernameRawPromise,
+    const [nameRaw, emailRaw, usernameRaw] = await Promise.all([
+      nameRawPromise,
       emailRawPromise,
+      usernameRawPromise
     ]);
 
     const hostsYml = await Deno.readTextFile(
@@ -44,23 +54,24 @@ register(
 
     // who needs a yaml parser when you live on the edge?
     const token = hostsYml.split("oauth_token:")[1].trim().split("\n")[0];
-
+    const name = nameRaw.trim();
+    const email = emailRaw.trim();
+    const username = usernameRaw.trim();
     await runShellCommand([
       "git",
       "config",
       "--file",
       `${XDG_CONFIG_HOME}/git/config`,
-      `url.https://${token}@github.com/.insteadOf`,
+      `url.https://${username}:${token}@github.com/.insteadOf`,
       "https://github.com/",
-    ]);
-    const username = usernameRaw.trim();
-    const email = emailRaw.trim();
+    ],);
+    
     await runShellCommand([
       "sl",
       "config",
       "--user",
       "ui.username",
-      `${username} <${email}>`,
+      `${name} <${email}>`,
     ]);
     await runShellCommand([
       "sl",
