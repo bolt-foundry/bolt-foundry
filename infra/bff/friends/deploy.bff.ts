@@ -20,4 +20,3 @@ register(
     return 0;
   },
 );
-
