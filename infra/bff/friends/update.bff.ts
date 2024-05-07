@@ -9,7 +9,7 @@ register(
   "Pulls changes down.",
   async () => {
     const ghToken = await runShellCommandWithOutput([
-      "replitbf-git-askpass",
+      "replit-git-askpass",
       "Password for 'https://token@github.com': ",
     ]);
     await runShellCommand(["sl", "pull"], { GH_TOKEN: ghToken });
