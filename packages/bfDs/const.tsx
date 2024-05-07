@@ -123,9 +123,9 @@ function generateColors(dark = false) {
     marketingBackground: `black linear-gradient(125deg, ${
       color(pallette.tertiary, 0, 0.5)
     }, ${color(pallette.fourthary, 0, 0.4)})`,
-    marketingGradient: `linear-gradient(in oklch 90deg, ${color(pallette.secondary)}, ${
-      color(pallette.fourthary)
-    })`,
+    marketingGradient: `linear-gradient(in oklch 90deg, ${
+      color(pallette.secondary)
+    }, ${color(pallette.fourthary)})`,
     videoControlsBackground: color(pallette.tertiary, +adjustment * 4),
     videoControl: color(pallette.tertiary),
     videoControlHover: color(pallette.secondary, -adjustment),
@@ -140,7 +140,7 @@ export const colors = generateColors();
 export const colorsDark = generateColors(true);
 
 export const fonts = {
-  fontFamily: "\"DM Sans\", sans-serif",
+  fontFamily: "DM Sans, sans-serif",
   marketingFontFamily: "Ubuntu, sans-serif",
   fontFamilyMono: "DM Mono, monospace",
 };
