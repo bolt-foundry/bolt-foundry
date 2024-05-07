@@ -48,7 +48,12 @@ register(
     const name = nameRaw.trim() ?? "unknown Bolt Foundry Replit contributor";
     const email = emailRaw.trim() ?? "unknown@boltfoundry.com";
     const gitFile = `${XDG_CONFIG_HOME}/git/config`;
+    try {
+      
     await Deno.remove(gitFile);
+    } catch {
+      console.log("no git config file")
+    }
     await runShellCommand([
       "git",
       "config",
