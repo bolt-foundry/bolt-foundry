@@ -2,6 +2,7 @@ export * as ReactRelay from "react-relay";
 export * as RelayRuntime from "relay-runtime";
 // @deno-types="https://esm.sh/v135/@types/react@18.2.38/index.d.ts";
 import * as React from "react";
+export * as rxjs from "https://esm.sh/rxjs@7.8.1";
 
 // log stuff and random exports
 
