@@ -2,6 +2,9 @@ export * as ReactRelay from "react-relay";
 export * as RelayRuntime from "relay-runtime";
 // @deno-types="https://esm.sh/v135/@types/react@18.2.38/index.d.ts";
 import * as React from "react";
+import * as ReactDOMClient from "react-dom/client";
+import * as GraphqlWs from "https://esm.sh/graphql-ws@5.14.0";
+export * as rxjs from "https://esm.sh/rxjs@7.8.1";
 
 // log stuff and random exports
 
@@ -11,7 +14,7 @@ import chalk from "https://esm.sh/chalk@5.3.0";
 import logLevelPrefixPlugin from "https://esm.sh/loglevel-plugin-prefix@0.8.4";
 chalk.level = 3;
 
-export { React };
+export { React, ReactDOMClient, GraphqlWs };
 
 log.setDefaultLevel(log.levels.TRACE);
 

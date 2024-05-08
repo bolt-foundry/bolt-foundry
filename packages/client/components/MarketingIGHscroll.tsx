@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import Icon from "packages/bfDs/Icon.tsx";
+import { Icon } from "packages/bfDs/Icon.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 
 const { useEffect, useState, useRef } = React;
@@ -20,13 +20,6 @@ type VideoType = {
 // • Upload video and image to S3 - bf-static-assets > ig
 // • Populate caption, like, and comments
 const igVideos: Array<VideoType> = [
-  {
-    account: "blueridgecomedy",
-    igHash: "C4xojmrq3VT",
-    caption: "Condom anxiety w/ @joesnotjoking #comedy #standupcomedy #funny",
-    likes: 38,
-    comments: 0,
-  },
   {
     account: "blueridgecomedy",
     igHash: "C5ntRoFMKih",

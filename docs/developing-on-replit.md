@@ -41,7 +41,7 @@ Open the shell by using either the command pallate (cmd + k) and typing "shell",
 or ctrl + tilde (~) or as a tab in the UI. Within the shell, run the command:
 
 ```sh
-bff init
+bff commit 
 ```
 
 This will automatically log you into github, and open VS Code.

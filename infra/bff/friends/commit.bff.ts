@@ -10,21 +10,22 @@ register(
   async () => {
     const XDG_CONFIG_HOME = Deno.env.get("XDG_CONFIG_HOME")!;
     const REPL_SLUG = Deno.env.get("REPL_SLUG") ?? "";
-    
+
     if (REPL_SLUG === "BF-Base") {
-      throw new Error("Don't log into the base please! Fork instead.")
+      throw new Error("Don't log into the base please! Fork instead.");
     }
-    
+
     const cmd = ["gh", "auth", "login", "-p", "https", "-w", "-s", "user"];
     await runShellCommand(cmd, undefined, false);
 
-    const usernameRawPromise = runShellCommandWithOutput([
+    const nameRawPromise = runShellCommandWithOutput([
       "gh",
       "api",
       "/user",
       "--jq",
       ".name",
     ]);
+
     const emailRawPromise = runShellCommandWithOutput([
       "gh",
       "api",
@@ -33,8 +34,8 @@ register(
       '.[] | select(.email | contains("boltfoundry.com")) | .email',
     ]);
 
-    const [usernameRaw, emailRaw] = await Promise.all([
-      usernameRawPromise,
+    const [nameRaw, emailRaw] = await Promise.all([
+      nameRawPromise,
       emailRawPromise,
     ]);
 
@@ -44,23 +45,30 @@ register(
 
     // who needs a yaml parser when you live on the edge?
     const token = hostsYml.split("oauth_token:")[1].trim().split("\n")[0];
-
+    const name = nameRaw.trim() ?? "unknown Bolt Foundry Replit contributor";
+    const email = emailRaw.trim() ?? "unknown@boltfoundry.com";
+    const gitFile = `${XDG_CONFIG_HOME}/git/config`;
+    try {
+      
+    await Deno.remove(gitFile);
+    } catch {
+      console.log("no git config file")
+    }
     await runShellCommand([
       "git",
       "config",
       "--file",
-      `${XDG_CONFIG_HOME}/git/config`,
+      gitFile,
       `url.https://${token}@github.com/.insteadOf`,
       "https://github.com/",
     ]);
-    const username = usernameRaw.trim();
-    const email = emailRaw.trim();
+
     await runShellCommand([
       "sl",
       "config",
       "--user",
       "ui.username",
-      `${username} <${email}>`,
+      `${name} <${email}>`,
     ]);
     await runShellCommand([
       "sl",
@@ -71,9 +79,15 @@ register(
       "goto",
       "main",
     ]);
-    const localhostUrl = `http://localhost:8283/${Deno.env.get("REPLIT_SESSION")}/files/open-multiple`;
-    const vscodeUrl = `vscode://vscode-remote/ssh-remote+${Deno.env.get("REPL_ID")}@ssh.${Deno.env.get("REPLIT_CLUSTER")}.replit.dev:22/${Deno.env.get("HOME")}/${REPL_SLUG}/bolt-foundry`;
-    
+    const localhostUrl = `http://localhost:8283/${
+      Deno.env.get("REPLIT_SESSION")
+    }/files/open-multiple`;
+    const vscodeUrl = `vscode://vscode-remote/ssh-remote+${
+      Deno.env.get("REPL_ID")
+    }@ssh.${Deno.env.get("REPLIT_CLUSTER")}.replit.dev:22/${
+      Deno.env.get("HOME")
+    }/${REPL_SLUG}/bolt-foundry`;
+
     await fetch(localhostUrl, {
       method: "POST",
       headers: {

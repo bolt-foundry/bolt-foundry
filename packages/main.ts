@@ -11,6 +11,12 @@ export enum DeploymentTypes {
   "WORKER" = "WORKER",
   "DEVELOPMENT" = "DEVELOPMENT",
 }
+
+export enum DeploymentEnvs {
+  "DEVELOPMENT" = "DEVELOPMENT",
+  "STAGING" = "STAGING",
+  "PRODUCTION" = "PRODUCTION",
+}
 type Handler = (
   request: Request,
 ) => Promise<Response> | Response;
@@ -42,26 +48,108 @@ routes.set("/build/Client.js", async () => {
   });
 });
 
+routes.set("/login", async (...args) => {
+  const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
+  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
+    "boltfoundry.wtf";
+  const [req] = args;
+  const url = new URL(req.url);
+  const hostname = url.hostname;
+  const credential = url.searchParams.get("credential");
+  if (credential) {
+    return clientRenderer(...args);
+  }
+
+  switch (deploymentEnvironment) {
+    case DeploymentEnvs.DEVELOPMENT: {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          location: `https://${redirectDomain}/login?hostname=${hostname}`,
+        },
+      });
+    }
+  }
+
+  return clientRenderer(...args);
+});
+
 routes.set("/google/oauth/start", (req) => {
-  const redirectable = getGoogleOauthUrl(req);
+  const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
+  const shouldRedirect = deploymentEnvironment === DeploymentEnvs.DEVELOPMENT;
+  if (shouldRedirect) {
+    const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
+      "boltfoundry.wtf";
+    const url = new URL(req.url);
+    const hostname = url.hostname;
+    console.log(`Redirecting to https://${redirectDomain}/google/oauth/start?hostname=${hostname}`)
+    return new Response(null, {
+      status: 302,
+      headers: {
+        location:
+          `https://${redirectDomain}/google/oauth/start?hostname=${hostname}`,
+      },
+    });
+  }
+  const requestUrl = new URL(req.url);
+  const oauthUrl = getGoogleOauthUrl();
+  const hostname = requestUrl.searchParams.get("hostname");
+
+  const headers: Record<string, string> = {
+    location: oauthUrl,
+  };
+  if (hostname) {
+    headers["set-cookie"] = `bf_auth_redirect_domain=${hostname};`;
+  }
   // create temporary redirect response 302
   return new Response(null, {
     status: 302,
-    headers: {
-      location: redirectable,
-    },
+    headers,
   });
 });
 
 routes.set("/google/oauth/end", (req) => {
-  const url = new URL(req.url);
-  const code = url.searchParams.get("code");
-  const body =
-    `<html><body><script>window.opener.resolveGoogleAuth("${code}")</script></body></html>`;
+  const cookie = req.headers.get("Cookie");
+  const bfAuthRedirectDomainCookie = cookie?.split("; ").find((c) =>
+    c.startsWith("bf_auth_redirect_domain=")
+  );
+  const bfAuthRedirectDomain = bfAuthRedirectDomainCookie?.split("=")[1];
+  const requestUrl = new URL(req.url);
+  
+  if (bfAuthRedirectDomain) {
+    requestUrl.hostname = bfAuthRedirectDomain;
+    requestUrl.protocol = "https:";
+    console.log(`Redirecting to ${requestUrl.toString()}`)
+    return new Response(null, {
+      status: 302,
+      headers: {
+        location: requestUrl.toString(),
+      },
+    });
+  }
+
+  const code = requestUrl.searchParams.get("code");
+
+  const body = `<html><body><script>
+    window.addEventListener("message", (event) => {
+      if (event.data === "close") {
+        window.close();
+      }
+    });
+    window.opener.postMessage(
+      {
+        code: "${code}",
+      },
+      "*",
+    );
+    </script></body></html>`;
+  const headers: Record<string, string> = {
+    "content-type": "text/html",
+    "Cross-Origin-Opener-Policy": "",
+  };
+
   return new Response(body, {
-    headers: {
-      "content-type": "text/html",
-    },
+    headers,
   });
 });
 
@@ -74,10 +162,19 @@ const defaultRoute = () => {
 const deploymentType = Deno.env.get("DEPLOYMENT_TYPE") ??
   DeploymentTypes.DEVELOPMENT;
 
-const shouldLaunchWeb = deploymentType === DeploymentTypes.WEB ||
-  deploymentType === DeploymentTypes.DEVELOPMENT;
-const shouldLaunchWorker = deploymentType === DeploymentTypes.WORKER ||
-  deploymentType === DeploymentTypes.DEVELOPMENT;
+let shouldLaunchWeb = true;
+let shouldLaunchWorker = true;
+
+switch (deploymentType) {
+  case DeploymentTypes.WEB: {
+    shouldLaunchWorker = false;
+    break;
+  }
+  case DeploymentTypes.WORKER: {
+    shouldLaunchWeb = false;
+    break;
+  }
+}
 
 if (import.meta.main) {
   if (shouldLaunchWeb) {
@@ -92,7 +189,7 @@ if (import.meta.main) {
   }
 
   if (shouldLaunchWorker) {
-    const worker = new Worker(
+    const _worker = new Worker(
       import.meta.resolve("packages/worker/worker.ts"),
       { type: "module" },
     );
@@ -101,4 +198,5 @@ if (import.meta.main) {
       const keepaliveLogger = getLogger("workerKeepalive");
       keepaliveLogger.disableAll();
     }
-  }}
+  }
+}

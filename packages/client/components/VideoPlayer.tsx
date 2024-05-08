@@ -1,8 +1,8 @@
 import { Maybe, React, getLogger } from "deps.ts";
-import Icon from "packages/bfDs/Icon.tsx";
+import { Icon } from "packages/bfDs/Icon.tsx";
 import {useIntersectionObserver} from "packages/client/hooks/useIntersectionObserver.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
-import {throttle} from "lib/throttle.ts";
+import { throttle } from "lib/throttle.ts";
 const log = getLogger(import.meta)
 const logError = log.error
 

@@ -25,7 +25,7 @@ export function MarketingHero() {
         <br />
         Trusted by dozens of clubs and comedians.
       </div>
-      <div className="row-column">
+      {/* <div className="row-column">
         <Button
           link="/contact"
           text={"Get in touch"}
@@ -33,7 +33,7 @@ export function MarketingHero() {
           size="xlarge"
           testId="button-signup-marketing-hero"
         />
-      </div>
+      </div> */}
     </div>
   )
 }

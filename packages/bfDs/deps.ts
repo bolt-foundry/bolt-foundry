@@ -1,1 +1,1 @@
-export * from "packages/client/deps.ts";
+export * from "deps.ts";

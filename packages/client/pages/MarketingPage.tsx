@@ -319,7 +319,7 @@ export function Marketing(): React.ReactElement {
         <MarketingHero />
         <MarketingIGHscroll />
         <MarketingTestimonial />
-        <MarketingCallToAction />
+        {/* <MarketingCallToAction /> */}
       </div>
     </MarketingFrame>
   );

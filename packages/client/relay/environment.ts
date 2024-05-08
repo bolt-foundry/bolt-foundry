@@ -1,5 +1,5 @@
 import { RelayRuntime } from "deps.ts";
-import { GraphqlWs } from "packages/client/deps.ts";
+import { GraphqlWs } from "deps.ts";
 import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
