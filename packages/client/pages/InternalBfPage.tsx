@@ -1,5 +1,5 @@
-import { getLogger, React } from "deps.ts";
-import { graphql, ReactRelay } from "packages/client/deps.ts";
+import { getLogger, React, ReactRelay } from "deps.ts";
+// import { graphql, ReactRelay } from "deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import {
   GoogleDriveFilePicker,
@@ -10,7 +10,7 @@ import { Button } from "packages/bfDs/Button.tsx";
 const { useLazyLoadQuery } = ReactRelay;
 const logger = getLogger(import.meta);
 
-const mutation = await graphql
+// const mutation = await graphql
 
 const styles = {
   content: {

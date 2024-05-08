@@ -7,7 +7,7 @@ type Props = {
   backgroundColor?: string;
 };
 
-export default function Progress(
+export function Progress(
   {
     size = 48,
     spinnerColor = "var(--success)",
