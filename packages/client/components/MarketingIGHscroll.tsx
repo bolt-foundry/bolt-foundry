@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import Icon from "packages/bfDs/Icon.tsx";
+import { Icon } from "packages/bfDs/Icon.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 
 const { useEffect, useState, useRef } = React;

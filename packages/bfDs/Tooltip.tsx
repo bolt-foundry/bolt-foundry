@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { ReactDOMClient } from "packages/client/deps.ts";
-import Icon, { IconType } from "packages/bfDs/Icon.tsx";
+import { Icon, IconType } from "packages/bfDs/Icon.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 // import type FeatureMenu from "packages/bfDs/FeatureMenu.tsx";
@@ -326,7 +326,7 @@ function Menu({ menu }: MenuProps) {
   return <div className="tooltip-menu">{menu}</div>;
 }
 
-export default function Tooltip(
+export function Tooltip(
   {
     text,
     menu,

@@ -1,5 +1,5 @@
-import { React } from "deps.ts";
-import { graphql, ReactRelay } from "packages/client/deps.ts";
+import { React, ReactRelay } from "deps.ts";
+// import { graphql, ReactRelay } from "deps.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { getLogger } from "deps.ts";
@@ -12,58 +12,60 @@ export function LoginForm() {
   return <GoogleLoginButton />;
 }
 
-const loginWithGoogleMutation = await graphql`
-  mutation LoginFormLoginWithGoogleMutation($credential: String!) {
-    loginWithGoogle(credential: $credential) {
-      actor {
-        id
-        ... on BfPerson {
-          name
-        }
-      }
-    }
-  }
-`;
+// const loginWithGoogleMutation = await graphql`
+//   mutation LoginFormLoginWithGoogleMutation($credential: String!) {
+//     loginWithGoogle(credential: $credential) {
+//       actor {
+//         id
+//         ... on BfPerson {
+//           name
+//         }
+//       }
+//     }
+//   }
+// `;
 
 function GoogleLoginButton() {
   const { navigate } = useRouter();
-  const [commit] = useMutation(loginWithGoogleMutation);
+  // const [commit] = useMutation(loginWithGoogleMutation);
 
   const googleSignInButtonRef = useRef(null);
   const { GOOGLE_OAUTH_CLIENT_ID } = useAppEnvironment();
-  const urlParams = new URLSearchParams(globalThis.location?.search) ?? new Map();
+  const urlParams = new URLSearchParams(globalThis.location?.search) ??
+    new Map();
   const hostname = urlParams.get("hostname");
   const credential = urlParams.get("credential");
   useEffect(() => {
     if (credential) {
-      console.log('credential', credential);
-      commit({
-        variables: {
-          credential,
-        },
-        onCompleted: () => {
-          navigate("/bf_projects");
-        },
-      });
+      console.log("credential", credential);
+      // commit({
+      //   variables: {
+      //     credential,
+      //   },
+      //   onCompleted: () => {
+      //     navigate("/bf_projects");
+      //   },
+      // });
     }
-  }, [credential])
+  }, [credential]);
 
   const onLogin = (response: google.accounts.id.CredentialResponse) => {
     if (hostname) {
-      const replUrl = `https://${hostname}/login?credential=${response.credential}`;
+      const replUrl =
+        `https://${hostname}/login?credential=${response.credential}`;
 
       globalThis.location.assign(replUrl);
       return;
     }
     logger.debug("Google login response", response);
-    commit({
-      variables: {
-        credential: response.credential,
-      },
-      onCompleted: () => {
-        navigate("/bf_projects");
-      },
-    });
+    // commit({
+    //   variables: {
+    //     credential: response.credential,
+    //   },
+    //   onCompleted: () => {
+    //     navigate("/bf_projects");
+    //   },
+    // });
   };
 
   useEffect(() => {
