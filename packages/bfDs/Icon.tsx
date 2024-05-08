@@ -279,7 +279,7 @@ type Props = {
   color?: string;
 };
 
-export default function Icon(
+export function Icon(
   { name, size = 16, color = "var(--text)" }: Props,
 ) {
   return (

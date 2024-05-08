@@ -6,14 +6,14 @@ import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
 
 // import * as DashboardModule from "packages/client/pages/DashboardPrototype.tsx";
 import { LoginPage } from "packages/client/pages/LoginPage.tsx";
-import { InternalBfPage } from "packages/client/pages/InternalBfPage.tsx"
+import { InternalBfPage } from "packages/client/pages/InternalBfPage.tsx";
 // import * as PricingPageModule from "packages/client/pages/PricingPage.tsx";
 import { Marketing } from "packages/client/pages/MarketingPage.tsx";
-// import * as ProjectPageModule from "packages/client/pages/ProjectPage.tsx";
+import { ProjectPageWithFrame } from "packages/client/pages/ProjectPage.tsx";
 // import * as ProjectPageOldModule from "packages/client/components/ProjectPageOld.tsx";
 // import * as ReviewPageModule from "packages/client/pages/ReviewPage.tsx";
 // import * as SignupPageModule from "packages/client/pages/SignupPage.tsx";
-// import * as UITestModule from "packages/client/ui_components/Demo.tsx";
+// import * as UITestModule from "packages/bfDs/Demo.tsx";
 // import * as ConfirmEmailPageModule from "packages/client/pages/ConfirmEmailPage.tsx";
 // import * as ResetPasswordPageModule from "packages/client/pages/ResetPasswordPage.tsx";
 // import * as LocalVideoPageModule from "packages/client/pages/LocalVideoPage.tsx";
@@ -28,7 +28,8 @@ import {
 export const routes = new Map([
   ["/", { Component: Marketing }],
   ["/login", { Component: LoginPage }],
-  ["/internalBf", { Component: InternalBfPage }]
+  ["/internalBf", { Component: InternalBfPage }],
+  ["/projects", { Component: ProjectPageWithFrame }],
 ]);
 
 export function App() {

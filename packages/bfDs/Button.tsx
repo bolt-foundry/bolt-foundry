@@ -1,14 +1,15 @@
 import { React } from "deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
-import Icon, { IconType } from "packages/bfDs/Icon.tsx";
+import { Icon, IconType } from "packages/bfDs/Icon.tsx";
 import { Link } from "packages/client/components/Link.tsx";
-import Tooltip, {
+import {
+  Tooltip,
   TooltipJustification,
   TooltipMenu,
   TooltipPosition,
 } from "packages/bfDs/Tooltip.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
-import Progress from "packages/bfDs/Progress.tsx";
+import { Progress } from "packages/bfDs/Progress.tsx";
 // import FeatureMenu from "packages/client/components/FeatureMenu.tsx";
 
 export type ButtonSizeType = "xlarge" | "large" | "medium" | "small";

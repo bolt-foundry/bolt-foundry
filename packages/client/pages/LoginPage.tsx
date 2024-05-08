@@ -1,5 +1,5 @@
-import { React } from "deps.ts";
-import { graphql, ReactRelay } from "packages/client/deps.ts";
+import { React, ReactRelay } from "deps.ts";
+// import { graphql, ReactRelay } from "deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
@@ -28,28 +28,36 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-const logoutMutation = await graphql`
-  mutation LoginPageLogoutMutation {
-    logout {
-      __typename
-      }
-    }
-`;
+// const logoutMutation = await graphql`
+//   mutation LoginPageLogoutMutation {
+//     logout {
+//       __typename
+//       }
+//     }
+// `;
 
-const cvQuery = await graphql`
-  query LoginPageCVQuery {
-    currentViewer {
-      person {
-        name
-      }
-    }
-  }`;
+// const cvQuery = await graphql`
+//   query LoginPageCVQuery {
+//     currentViewer {
+//       person {
+//         name
+//       }
+//     }
+//   }`;
 
 function LoginPageContent() {
-  const cvData = useLazyLoadQuery<LoginPageCVQuery>(cvQuery, {});
+  // const cvData = useLazyLoadQuery<LoginPageCVQuery>(cvQuery, {});
+  const cvData = {
+    currentViewer: {
+      person: {
+        name: "Test",
+      },
+    },
+  };
+  const logoutInFlight = false;
 
-  const [_logoutError, setLogoutError] = React.useState<string | null>(null);
-  const [logoutCommit, logoutInFlight] = useMutation(logoutMutation);
+  // const [_logoutError, setLogoutError] = React.useState<string | null>(null);
+  // const [logoutCommit, logoutInFlight] = useMutation(logoutMutation);
 
   const loggedInPerson = cvData?.currentViewer?.person;
 
@@ -58,21 +66,22 @@ function LoginPageContent() {
   }, []);
 
   const onLogout = () => {
-    logoutCommit({
-      variables: {},
-      onCompleted: (response, errors) => {
-        if (errors) {
-          const errorMessage = errors.map((e: { message: string }) => e.message)
-            .join(", ");
-          setLogoutError(errorMessage);
-        } else {
-          window.location.assign("/"); // TODO fix navigate() in RouterContext
-        }
-      },
-      onError: (error) => {
-        setLogoutError(error.message);
-      },
-    });
+    console.log("logout");
+    // logoutCommit({
+    //   variables: {},
+    //   onCompleted: (response, errors) => {
+    //     if (errors) {
+    //       const errorMessage = errors.map((e: { message: string }) => e.message)
+    //         .join(", ");
+    //       setLogoutError(errorMessage);
+    //     } else {
+    //       window.location.assign("/"); // TODO fix navigate() in RouterContext
+    //     }
+    //   },
+    //   onError: (error) => {
+    //     setLogoutError(error.message);
+    //   },
+    // });
   };
 
   return (
