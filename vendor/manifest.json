@@ -540,6 +540,12 @@
     "https://esm.sh/v135/rxjs@7.8.1/dist/types/internal/testing/ColdObservable.d.ts": {},
     "https://esm.sh/v135/rxjs@7.8.1/dist/types/internal/testing/HotObservable.d.ts": {},
     "https://esm.sh/v135/rxjs@7.8.1/dist/types/internal/testing/SubscriptionLog.d.ts": {},
-    "https://esm.sh/v135/rxjs@7.8.1/dist/types/internal/testing/SubscriptionLoggable.d.ts": {}
+    "https://esm.sh/v135/rxjs@7.8.1/dist/types/internal/testing/SubscriptionLoggable.d.ts": {},
+    "https://deno.land/std/fs/mod.ts": {
+      "headers": {
+        "location": "/std@0.224.0/fs/mod.ts",
+        "x-deno-warning": "Implicitly using latest version (0.224.0) for https://deno.land/std/fs/mod.ts"
+      }
+    }
   }
 }
