@@ -1,5 +1,5 @@
 import { getLogger, React } from "deps.ts";
-import { ReactDOMClient } from "deps.ts";
+import { ReactDOMClient } from "packages/client/deps.ts";
 import { App } from "packages/client/components/App.tsx";
 import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
 import type { AppEnvironmentProps as EnvironmentProps } from "packages/client/contexts/AppEnvironmentContext.tsx";

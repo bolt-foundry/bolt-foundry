@@ -25,13 +25,13 @@ export function DeleteProjectButton(
 ) {
   // const [commitDeleteMutation, isDeleteInflight] = useMutation(deleteMutation);
   const isDeleteInflight = false;
-  const { currentViewer: { id: personId } } = useAppEnvironment();
-  const { navigate } = useRouter();
-  const connectionId = ConnectionHandler.getConnectionID(
-    personId ?? "",
-    "ProjectList_projects",
-  );
-  if (!projectId) return null;
+  // const { currentViewer: { id: personId } } = useAppEnvironment();
+  // const { navigate } = useRouter();
+  // const connectionId = ConnectionHandler.getConnectionID(
+  //   personId ?? "",
+  //   "ProjectList_projects",
+  // );
+  // if (!projectId) return null;
 
   const onDelete = () => {
     console.log("delete");

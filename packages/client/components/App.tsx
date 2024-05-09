@@ -30,6 +30,7 @@ export const routes = new Map([
   ["/login", { Component: LoginPage }],
   ["/internalBf", { Component: InternalBfPage }],
   ["/projects", { Component: ProjectPageWithFrame }],
+  // ["/projects/:projectId?", { Component: ProjectPageWithFrame }],
 ]);
 
 export function App() {

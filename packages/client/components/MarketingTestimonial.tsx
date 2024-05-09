@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import VideoPlayer from "packages/client/components/VideoPlayer.tsx";
+import { VideoPlayer } from "packages/client/components/VideoPlayer.tsx";
 
 export default function MarketingTestimonial() {
   return (
@@ -26,7 +26,8 @@ export default function MarketingTestimonial() {
         </div>
       </div>
       {/* Commenting out other testimonials for now */}
-      {/* <div className="rowReverse-column testimonial">
+      {
+        /* <div className="rowReverse-column testimonial">
         <div
           className="testimonial-headshot"
           style={{
@@ -69,7 +70,8 @@ export default function MarketingTestimonial() {
             </div>
           </div>
         </div>
-      </div> */}
+      </div> */
+      }
     </div>
   );
 }

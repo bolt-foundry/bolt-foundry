@@ -61,7 +61,8 @@ const { useLazyLoadQuery } = ReactRelay;
 
 function ProjectPage() {
   const { routeParams } = useRouter();
-  const { projectId } = routeParams;
+  // const { projectId } = routeParams; // TODO: route params don't work
+  const projectId = "1234"; // TEMP
   const includeProject = projectId != null;
   if (!projectId) {
     return <CreateNewProject project$key={null} />;
@@ -73,6 +74,8 @@ function ProjectPage() {
   // }) as ProjectPageOldQuery$data;
   const data = {
     project: {
+      id: "1234",
+      isReadyToView: true,
       clips: {
         edges: [],
       },

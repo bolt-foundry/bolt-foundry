@@ -1,10 +1,10 @@
-import { Maybe, React, getLogger } from "deps.ts";
+import { getLogger, Maybe, React } from "deps.ts";
 import { Icon } from "packages/bfDs/Icon.tsx";
-import {useIntersectionObserver} from "packages/client/hooks/useIntersectionObserver.ts";
+import { useIntersectionObserver } from "packages/client/hooks/useIntersectionObserver.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 import { throttle } from "lib/throttle.ts";
-const log = getLogger(import.meta)
-const logError = log.error
+const log = getLogger(import.meta);
+const logError = log.error;
 
 const { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } =
   React;
@@ -95,7 +95,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-const VideoPlayer = forwardRef<VideoPlayerHandles, VideoPlayerProps>(({
+export const VideoPlayer = forwardRef<VideoPlayerHandles, VideoPlayerProps>(({
   controls = "overlay",
   endTime = Infinity,
   lastWordStartTime,
@@ -500,5 +500,3 @@ const VideoPlayer = forwardRef<VideoPlayerHandles, VideoPlayerProps>(({
     </div>
   );
 });
-
-export default VideoPlayer;
