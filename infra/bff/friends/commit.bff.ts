@@ -3,6 +3,9 @@ import {
   runShellCommandWithOutput,
 } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/mod.ts";
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
 
 register(
   "commit",
@@ -10,6 +13,7 @@ register(
   async () => {
     const XDG_CONFIG_HOME = Deno.env.get("XDG_CONFIG_HOME")!;
     const REPL_SLUG = Deno.env.get("REPL_SLUG") ?? "";
+    const HOME = Deno.env.get("HOME") ?? "";
 
     if (REPL_SLUG === "BF-Base") {
       throw new Error("Don't log into the base please! Fork instead.");
@@ -49,26 +53,32 @@ register(
     const email = emailRaw.trim() ?? "unknown@boltfoundry.com";
     const gitFile = `${XDG_CONFIG_HOME}/git/config`;
     try {
-      
-    await Deno.remove(gitFile);
+      await Deno.remove(gitFile);
     } catch {
-      console.log("no git config file")
+      logger.info("no git config file");
     }
-    await runShellCommand([
-      "git",
-      "config",
-      "--file",
-      gitFile,
-      `url.https://${token}@github.com/.insteadOf`,
-      "https://github.com/",
-    ]);
-
-    await runShellCommand([
-      "sl",
-      "config",
-      "--user",
-      "ui.username",
-      `${name} <${email}>`,
+    await Promise.all([
+      runShellCommand([
+        "git",
+        "config",
+        "--file",
+        gitFile,
+        `url.https://${token}@github.com/.insteadOf`,
+        "https://github.com/",
+      ]),
+      runShellCommand([
+        "sl",
+        "config",
+        "--user",
+        "ui.username",
+        `${name} <${email}>`,
+      ]),
+      runShellCommand([
+        "ln",
+        "-s",
+        `${HOME}/${REPL_SLUG}/.local`,
+        `${HOME}/.local`,
+      ]),
     ]);
     await runShellCommand([
       "sl",
@@ -86,7 +96,7 @@ register(
       Deno.env.get("REPL_ID")
     }@ssh.${Deno.env.get("REPLIT_CLUSTER")}.replit.dev:22/${
       Deno.env.get("HOME")
-    }/${REPL_SLUG}/bolt-foundry`;
+    }/${REPL_SLUG}`;
 
     await fetch(localhostUrl, {
       method: "POST",

@@ -46,6 +46,9 @@
           gdb
           gnumake
           emscripten
+          gh
+          sapling
+          jupyter
         ];
 
         deployPackages = with pkgs; [
