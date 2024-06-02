@@ -61,21 +61,27 @@ class CustomError extends Error {
 // Define a function that fetches the results of an operation (query/mutation/etc)
 // and returns its results as a Promise:
 async function fetchQuery(
-  // @ts-expect-error not typed
-  operation,
-  variables: unknown,
-  _cacheConfig: unknown,
-  uploadables?: RelayRuntime.UploadableMap,
-) {
+  operation: RelayRuntime.RequestParameters,
+  variables: RelayRuntime.Variables,
+  _cacheConfig: RelayRuntime.CacheConfig,
+  uploadables?: RelayRuntime.UploadableMap | null,
+  _logRequestInfo?: RelayRuntime.LogRequestInfoFunction | null,
+): Promise<
+  | RelayRuntime.GraphQLResponse
+  | RelayRuntime.Subscribable<RelayRuntime.GraphQLResponse>
+> {
   let body: BodyInit;
   const headers: HeadersInit = {};
 
   if (uploadables && Object.keys(uploadables).length > 0) {
     const formData = new FormData();
-    formData.append("operations", JSON.stringify({
-      query: operation.text,
-      variables,
-    }));
+    formData.append(
+      "operations",
+      JSON.stringify({
+        query: operation.text,
+        variables,
+      }),
+    );
     const map: { [key: string]: string[] } = {};
     Object.entries(uploadables).forEach(([key, file]) => {
       formData.append(key, file);
@@ -91,6 +97,7 @@ async function fetchQuery(
     });
   }
 
+  // #BOOTCAMPTASK: Change this so it returns an observable so we can report upload progress
   const response = await fetch(
     new URL("/graphql", import.meta.url),
     {
@@ -119,8 +126,7 @@ const store = new Store(new RecordSource());
 const environment = new Environment({
   network,
   store,
-  // deno-lint-ignore no-console
-  requiredFieldLogger: console.error,
+  requiredFieldLogger: logger.error,
 });
 
 export default environment;
