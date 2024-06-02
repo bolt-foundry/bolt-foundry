@@ -82,6 +82,13 @@ register(
     ]);
     await runShellCommand([
       "sl",
+      "config",
+      "--user",
+      "github.preferred_submit_command",
+      "pr"
+    ])
+    await runShellCommand([
+      "sl",
       "pull",
     ]);
     await runShellCommand([
