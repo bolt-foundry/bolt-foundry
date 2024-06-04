@@ -16,6 +16,11 @@ the name in the upper left corner, then hit the three dots menu, and select
 Now, give it a name related to your project, ideally prefixed with your name,
 and enter a description to help others know what your fork is intended to do.
 
+## Temporary bug
+
+Right now when you fork, you'll have to update the name after it forks because
+projects is in beta.
+
 ![Example naming dialog](assets/developing-on-replit/bf-base-dropdown.png)
 
 At this point, Replit will automatically redirect you to your repl. You should
