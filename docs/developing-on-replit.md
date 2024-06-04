@@ -7,11 +7,9 @@ love, without knowing very much about how to do things.
 
 ### Fork the base
 
-Go to [BF-base](https://replit.com/t/bolt-foundry/xjbbzx/repls/BF-Base), click
-the name in the upper left corner, then hit the three dots menu, and select
-"Fork".
-
-![Example of the dropdown](assets/developing-on-replit/bf-base-dropdown.png)
+Go to
+[BF-base Project Page](https://replit.com/t/bolt-foundry/xjbbzx/projects/j24RGL9x),
+select "Fork".
 
 Now, give it a name related to your project, ideally prefixed with your name,
 and enter a description to help others know what your fork is intended to do.
@@ -27,6 +25,18 @@ At this point, Replit will automatically redirect you to your repl. You should
 be seeing this document as a result of that. Look in the upper left corner to
 ensure you've moved on from the base.
 
+### Setup SSH Key
+
+Generate an SSH key with 1password or `ssh-keygen`, copy it, add it to your fork
+under the SSH tab.
+
+![Adding SSH Key](assets/developing-on-replit/add_ssh_key_tab.png)
+
+### Add your Bolt Foundry email to your Github
+
+Click your profile icon in the top right, select `Settings`. In Settings, go to
+`Emails`, and add your Bolt Foundry email and verify.
+
 ### Edit your files
 
 This is the simple part, you'll probably find files using `cmd + p` to use the
@@ -40,10 +50,11 @@ ready, it'll open a webview.
 
 To refresh after making a change, hit `cmd + enter` and it'll reload the server.
 
-### Commit changes using Git
+### Commit changes using Sapling
 
-Open the git pane using `cmd + k`. Add your changes, and leave a good commit
-message.
+Open VSCode by typing `bff commit` in your shell in replit. Allow any popups. You should see your changes reflected in the Interactive Smartlog.
+
+Select changes you want to commit, give the commit a name and short description, and hit `Commit and Submit`.
 
 #### Individual commits are "whole changes" bundled into one
 
@@ -63,18 +74,16 @@ with a link to the repl you'd like to review, and ping the `@Code Reviewers`
 role.
 
 We anticipate most of our code reviews happening on Replit with no github
-whatsoever. You can leave comments and have a chat. 
+whatsoever. You can leave comments and have a chat.
 
 ![starting a thread example](assets/developing-on-replit/starting-a-thread.png)
 
 This is still super rough, so we're figuring it out.
 
-
-
 ### Landing (WIP)
 
-It's really easy to land your change. Open the "projects" pane from `cmd+k`
-and then click the big merge changes into bf base button.
+It's really easy to land your change. Open the "projects" pane from `cmd+k` and
+then click the big merge changes into bf base button.
 
 ![starting a thread example](assets/developing-on-replit/merge-changes.png)
 
