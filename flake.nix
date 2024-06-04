@@ -30,13 +30,19 @@
         pkgs = pkgsForSystem system nixpkgs;
         unstablePkgs = pkgsForSystem system nixpkgs-unstable;
 
+        # Add to this to make it everywhere
         sharedPackages = with pkgs; [
           unstablePkgs.deno
         ];
 
+        # Add to this to make it available in VS Code and most places on the system. The larger this is, the larger the deploy, so try to keep it slim.
         defaultPackages = with pkgs; [
+          sapling
+          gh
+          jupyter
         ];
 
+        # These are dev-only packages, used for building etc. They're only available where direnv is available, ie the replit shell.
         devShellPackages = with pkgs; [
           jq
           emscripten
@@ -46,9 +52,6 @@
           gdb
           gnumake
           emscripten
-          gh
-          sapling
-          jupyter
         ];
 
         deployPackages = with pkgs; [
