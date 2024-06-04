@@ -34,7 +34,6 @@ export const routes = new Map([
   ["/projects/:projectId?", { Component: ProjectPage }],
   ["/projects", { Component: ProjectPage }],
   ["/ui", { Component: Demo, allowLoggedOut: true }],
-  ["/george", { Component: Marketing, allowLoggedOut: true }],
 ]);
 
 export function App() {
