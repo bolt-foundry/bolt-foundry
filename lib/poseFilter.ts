@@ -1,3 +1,5 @@
+// #BOOTCAMPTASK move this to packages/client/lib because the frontend needs it or something.
+
 export default class PoseFilter {
   private initialized: boolean;
   private Q: number; // Process noise covariance
