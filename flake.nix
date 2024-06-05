@@ -52,6 +52,7 @@
           gdb
           gnumake
           emscripten
+          watchman
         ];
 
         deployPackages = with pkgs; [
