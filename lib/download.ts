@@ -1,3 +1,5 @@
+// #BOOTCAMPTASK move this to packages/client/lib because the frontend needs it or something.
+
 import { captureEvent } from "packages/events/mod.ts";
 
 export function downloadText(
