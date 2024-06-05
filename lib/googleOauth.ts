@@ -1,9 +1,20 @@
 import { OAuth2Client } from "https://esm.sh/google-auth-library@9.2.0";
+import { BfError } from "lib/BfError.ts";
 const GOOGLE_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_OAUTH_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
 const GOOGLE_OAUTH_CLIENT_ID = Deno.env.get("GOOGLE_OAUTH_CLIENT_ID");
 const GOOGLE_OAUTH_REDIRECT_URL = Deno.env.get("GOOGLE_OAUTH_REDIRECT_URL");
 const GOOGLE_OAUTH_CLIENT_SECRET = Deno.env.get("GOOGLE_OAUTH_CLIENT_SECRET");
+
+if (!GOOGLE_OAUTH_CLIENT_ID) {
+  throw new BfError("Missing GOOGLE_OAUTH_CLIENT_ID");
+}
+if (!GOOGLE_OAUTH_REDIRECT_URL) {
+  throw new BfError("Missing GOOGLE_OAUTH_REDIRECT_URL");
+}
+if (!GOOGLE_OAUTH_CLIENT_SECRET) {
+  throw new BfError("Missing GOOGLE_OAUTH_CLIENT_SECRET");
+}
 
 export function getGoogleOauthUrl() {
   const paramsInit = {
@@ -33,7 +44,7 @@ export async function exchangeCodeForToken(
   const params = new URLSearchParams({
     code,
     client_id: GOOGLE_OAUTH_CLIENT_ID!,
-    client_secret: Deno.env.get("GOOGLE_OAUTH_CLIENT_SECRET")!,
+    client_secret: GOOGLE_OAUTH_CLIENT_SECRET!,
     redirect_uri: GOOGLE_OAUTH_REDIRECT_URL!,
     grant_type: "authorization_code",
   });
