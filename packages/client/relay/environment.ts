@@ -1,6 +1,7 @@
 import { RelayRuntime } from "deps.ts";
 import { GraphqlWs } from "packages/client/deps.ts";
 import { getLogger } from "deps.ts";
+import { BfError } from "lib/BfError.ts";
 
 const logger = getLogger(import.meta);
 const { Environment, Network, RecordSource, Store, Observable } = RelayRuntime;
@@ -49,7 +50,7 @@ const subscribe = (operation, variables) => {
   });
 };
 
-class CustomError extends Error {
+class CustomError extends BfError {
   code?: string;
 
   constructor(message?: string, code?: string) {
@@ -110,10 +111,9 @@ async function fetchQuery(
   const returnResponse = await response.json();
   if (returnResponse.errors) {
     logger.error(returnResponse.errors);
-    const error = new CustomError(
-      `GraphQL Error: ${returnResponse.errors[0].message}`,
+    const error = new BfError(
+      `${returnResponse.errors[0].message}`,
     );
-    error.code = returnResponse.errors[0].extensions?.code;
     throw error;
   }
   return returnResponse as RelayRuntime.GraphQLResponse;
