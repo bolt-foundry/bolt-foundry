@@ -1,9 +1,12 @@
 import { React } from "deps.ts";
-import { ToastContext, ToastContextType } from "packages/bfDs/contexts/BfDsContext.tsx";
+import {
+  BfDsContext,
+  BfDsContextType,
+} from "packages/bfDs/contexts/BfDsContext.tsx";
 const { useContext } = React;
 
-export const useBfDs = (): ToastContextType => {
-  const context = useContext(ToastContext);
+export const useBfDs = (): BfDsContextType => {
+  const context = useContext(BfDsContext);
   if (context === undefined) {
     throw new Error("useBfDs must be used within a BfDsProvider");
   }

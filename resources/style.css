@@ -20,7 +20,8 @@ body {
   color: var(--text);
 }
 
-#tooltip-root {
+#tooltip-root,
+#modal-root {
   position: absolute;
   top: 0;
   left: 0;
@@ -28,6 +29,9 @@ body {
   height: 100%;
   pointer-events: none;
   z-index: 1000;
+}
+#tooltip-root {
+  z-index: 1001;
 }
 .dark {
   color: var(--textOnDark);

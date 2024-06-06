@@ -2,10 +2,13 @@ import { React } from "deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 // import { captureEvent } from "packages/events/mod.ts";
-import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 import useClickOutside from "packages/client/hooks/useClickOutside.ts";
+import { ReactDOMClient } from "packages/client/deps.ts";
+import { classnames } from "lib/classnames.ts";
+
+const { createPortal } = ReactDOMClient;
 const { useEffect, useRef, useState } = React;
-type Props = {
+type ModalOptions = {
   children: React.ReactNode;
   clickOusideToClose?: boolean;
   confirmClose?: boolean;
@@ -86,14 +89,18 @@ export function Modal(
     xstyle,
     contentXstyle,
     kind,
-  }: Props,
+  }: ModalOptions,
 ) {
   // const { currentViewer: { id: personId } } = useAppEnvironment();
   const [show, setShow] = useState(false);
+  const [inDom, setInDom] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
+  let domTimer: number;
 
   useEffect(() => {
-    setShow(true);
+    clearTimeout(domTimer);
+    setInDom(true);
+    setTimeout(() => setShow(true), 0);
     // captureEvent("modal", "loaded", { kind }, personId);
   }, []);
 
@@ -117,46 +124,57 @@ export function Modal(
   const close = () => {
     // captureEvent("modal", "closed", { kind }, personId);
     setShow(false);
-    setTimeout(() => {
+    domTimer = setTimeout(() => {
       onClose?.();
     }, 250);
   };
 
-  return (
-    <div className={`modalBase ${show ? "show" : ""}`} style={styles.modalBase}>
+  const modalClasses = classnames([
+    "modalBase",
+    { show },
+  ]);
+
+  return inDom
+    ? createPortal(
       <div
-        className="modal"
-        ref={modalRef}
-        style={{ ...styles.modal, ...xstyle }}
+        className={modalClasses}
+        style={styles.modalBase}
       >
-        {header != null && (
-          <div style={styles.header}>
-            {header}
+        <div
+          className="modal"
+          ref={modalRef}
+          style={{ ...styles.modal, ...xstyle }}
+        >
+          {header != null && (
+            <div style={styles.header}>
+              {header}
+            </div>
+          )}
+          {onClose != null && (
+            <div style={styles.close}>
+              <Button
+                iconLeft="cross"
+                kind="overlay"
+                onClick={() => {
+                  // captureEvent("modal", "closed from x", { kind }, personId);
+                  handleClose();
+                }}
+                testId="button-close-modal"
+              />
+            </div>
+          )}
+          <div style={{ ...styles.content, ...contentXstyle }}>
+            {children}
           </div>
-        )}
-        {onClose != null && (
-          <div style={styles.close}>
-            <Button
-              iconLeft="cross"
-              kind="overlay"
-              onClick={() => {
-                // captureEvent("modal", "closed from x", { kind }, personId);
-                handleClose();
-              }}
-              testId="button-close-modal"
-            />
-          </div>
-        )}
-        <div style={{ ...styles.content, ...contentXstyle }}>
-          {children}
+          {onSave != null && (
+            <div style={styles.footer}>
+              <Button text="Cancel" kind="outline" onClick={onClose} />
+              <Button text="Save" kind="primary" onClick={onSave} />
+            </div>
+          )}
         </div>
-        {onSave != null && (
-          <div style={styles.footer}>
-            <Button text="Cancel" kind="outline" onClick={onClose} />
-            <Button text="Save" kind="primary" onClick={onSave} />
-          </div>
-        )}
-      </div>
-    </div>
-  );
+      </div>,
+      document.getElementById("modal-root") as Element,
+    )
+    : null;
 }

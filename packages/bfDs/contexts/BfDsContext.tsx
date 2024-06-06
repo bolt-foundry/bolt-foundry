@@ -1,5 +1,7 @@
 import { React } from "deps.ts";
 import { Toast, TRANSITION_DURATION } from "packages/bfDs/Toast.tsx";
+import { Modal } from "packages/bfDs/Modal.tsx";
+
 const { createContext, useState } = React;
 
 type ReactNode = React.ReactNode;
@@ -10,15 +12,32 @@ type UseToastOptions = {
   timeout?: number;
   title?: string;
 };
+type UseModalOptions = {
+  clickOusideToClose?: boolean;
+  confirmClose?: boolean;
+  header?: string;
+  onClose?: () => void;
+  onSave?: (() => void) | null;
+  xstyle?: React.CSSProperties;
+  contentXstyle?: React.CSSProperties;
+  kind?: string;
+};
 
-export type ToastContextType = {
+export type BfDsContextType = {
+  showModal: () => void;
   showToast: (message: ReactNode, options?: UseToastOptions) => void;
+  ModalComponent: ReactNode;
   ToastComponent: ReactNode;
 };
 
-export const ToastContext = createContext<ToastContextType | undefined>(
+export const BfDsContext = createContext<BfDsContextType | undefined>(
   undefined,
 );
+
+type ModalType = {
+  content: ReactNode;
+  options?: UseModalOptions;
+};
 
 type Toast = {
   id: string;
@@ -27,11 +46,18 @@ type Toast = {
 };
 
 export const BfDsProvider = ({ children }: { children: ReactNode }) => {
-  const [toasts, setToasts] = useState<Array<Toast>>([]);
+  const [activeToasts, setActiveToasts] = useState<Array<Toast>>([]);
+  const [activeModal, setActiveModal] = useState<ModalType>();
+
+  function showModal(content: ReactNode, options: UseModalOptions) {
+    setActiveModal({ content, options });
+  }
 
   function showToast(message: ReactNode, options: UseToastOptions = {}) {
     const id = options.id ?? Math.random().toString(36).substring(2, 15);
-    const existingToastIndex = toasts.findIndex((toast) => toast.id === id);
+    const existingToastIndex = activeToasts.findIndex((toast) =>
+      toast.id === id
+    );
     const newToastData = {
       id,
       message,
@@ -39,32 +65,52 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
     };
 
     if (existingToastIndex > -1) {
-      const newToasts = [...toasts];
+      const newToasts = [...activeToasts];
       newToasts[existingToastIndex] = newToastData;
-      setToasts(newToasts);
+      setActiveToasts(newToasts);
       return;
     }
 
-    setToasts([...toasts, newToastData]);
+    setActiveToasts([...activeToasts, newToastData]);
   }
 
   function hideToast(id: string) {
-    setToasts((prevToasts) =>
+    setActiveToasts((prevToasts) =>
       prevToasts.map((toast) =>
         toast.id === id ? { ...toast, shouldShow: false } : toast
       )
     );
     // remove from state after animate off (500ms)
     setTimeout(() => {
-      setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
+      setActiveToasts((prevToasts) =>
+        prevToasts.filter((toast) => toast.id !== id)
+      );
     }, TRANSITION_DURATION);
   }
 
   const value = {
+    showModal,
     showToast,
+    ModalComponent: activeModal && (
+      <Modal
+        clickOusideToClose={activeModal.options?.clickOusideToClose}
+        confirmClose={activeModal.options?.confirmClose}
+        header={activeModal.options?.header}
+        onClose={() => {
+          setActiveModal(undefined);
+          activeModal.options?.onClose?.();
+        }}
+        onSave={activeModal.options?.onSave}
+        xstyle={activeModal.options?.xstyle}
+        contentXstyle={activeModal.options?.contentXstyle}
+        kind={activeModal.options?.kind}
+      >
+        {activeModal.content}
+      </Modal>
+    ),
     ToastComponent: (
       <>
-        {toasts.map((toast) => (
+        {activeToasts.map((toast) => (
           <Toast
             key={toast.id}
             shouldShow={toast.options?.shouldShow}
@@ -83,9 +129,10 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ToastContext.Provider value={value}>
+    <BfDsContext.Provider value={value}>
       {children}
       {value.ToastComponent}
-    </ToastContext.Provider>
+      {value.ModalComponent}
+    </BfDsContext.Provider>
   );
 };
