@@ -1,16 +1,25 @@
 import { getLogger, React, ReactRelay } from "deps.ts";
-// import { graphql, ReactRelay } from "deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import {
   GoogleDriveFilePicker,
   GoogleDriveFilePickerFileType,
 } from "packages/bfDs/GoogleDriveFilePicker.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
+import { graphql } from "packages/client/deps.ts";
+import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 
-const { useLazyLoadQuery } = ReactRelay;
+const { useMutation } = ReactRelay;
 const logger = getLogger(import.meta);
 
-// const mutation = await graphql
+const mutation = await graphql`
+
+  mutation InternalBfPageCreateIngestionJobMutation($googleDriveFileId: String!) {
+    createBfNodeGoogleDriveFile(googleDriveFileId: $googleDriveFileId) {
+      __typename
+      id
+    }
+  }
+`;
 
 const styles = {
   content: {
@@ -33,12 +42,27 @@ const handleProcessFile = () => {
 const { useState } = React;
 
 export function InternalBfPage() {
+  const { showToast} = useBfDs();
   const [originGoogleFile, setOriginGoogleFile] = useState<
     google.picker.DocumentObject
   >();
   const [destinationGoogleFolder, setDestinationGoogleFolder] = useState<
     google.picker.DocumentObject
   >();
+
+  const [commit] = useMutation(mutation);
+
+  const setOriginFile = (file: google.picker.DocumentObject) => {
+    setOriginGoogleFile(file);
+    commit({
+      variables: {
+        googleDriveFileId: file.id,
+      },
+      onCompleted: (thingy) => {
+        showToast("Created ingestion job", {timeout: 5000})
+      }
+    })
+  }
 
   return (
     <MarketingFrame>
@@ -64,7 +88,7 @@ export function InternalBfPage() {
             <div style={{ marginBottom: 16 }}>
               Choose a movie file from Google Drive.
             </div>
-            <GoogleDriveFilePicker onPick={setOriginGoogleFile} />
+            <GoogleDriveFilePicker onPick={setOriginFile} />
           </div>
           <div style={styles.filebox}>
             <div style={{ fontSize: 24, fontWeight: "bold" }}>

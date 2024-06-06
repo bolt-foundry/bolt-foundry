@@ -108,6 +108,11 @@ interface BfNode {
   id: ID!
 }
 
+type BfNodeGoogleDriveFile implements BfMedia & BfNode {
+  """Unique identifier for the resource"""
+  id: ID!
+}
+
 """A collection of people working together"""
 type BfOrganization implements Actor & BfNode {
   """Unique identifier for the resource"""
@@ -142,6 +147,7 @@ scalar File
 
 type Mutation {
   createBfMediaBffsFile(name: String!): BfMediaBffsFile
+  createBfNodeGoogleDriveFile(googleDriveFileId: String!): BfNodeGoogleDriveFile
   createProject(name: String!): BfContainerProject
   linkGoogleAccount(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
