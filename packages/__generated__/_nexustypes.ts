@@ -78,6 +78,7 @@ export interface NexusGenObjects {
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfMediaBffsFile: {};
+  BfNodeGoogleDriveFile: {};
   BfOrganization: { // root type
     name?: string | null; // String
   }
@@ -99,8 +100,8 @@ export interface NexusGenInterfaces {
   Actor: core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   BfContainer: core.Discriminate<'BfContainerProject', 'required'>;
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'>;
-  BfMedia: core.Discriminate<'BfMediaBffsFile', 'required'>;
-  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfContainerProject', 'required'> | core.Discriminate<'BfMediaBffsFile', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
+  BfMedia: core.Discriminate<'BfMediaBffsFile', 'required'> | core.Discriminate<'BfNodeGoogleDriveFile', 'required'>;
+  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfContainerProject', 'required'> | core.Discriminate<'BfMediaBffsFile', 'required'> | core.Discriminate<'BfNodeGoogleDriveFile', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
 }
 
 export interface NexusGenUnions {
@@ -148,6 +149,9 @@ export interface NexusGenFieldTypes {
   BfMediaBffsFile: { // field return type
     id: string; // ID!
   }
+  BfNodeGoogleDriveFile: { // field return type
+    id: string; // ID!
+  }
   BfOrganization: { // field return type
     id: string; // ID!
     name: string | null; // String
@@ -160,6 +164,7 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     createBfMediaBffsFile: NexusGenRootTypes['BfMediaBffsFile'] | null; // BfMediaBffsFile
+    createBfNodeGoogleDriveFile: NexusGenRootTypes['BfNodeGoogleDriveFile'] | null; // BfNodeGoogleDriveFile
     createProject: NexusGenRootTypes['BfContainerProject'] | null; // BfContainerProject
     linkGoogleAccount: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
@@ -236,6 +241,9 @@ export interface NexusGenFieldTypeNames {
   BfMediaBffsFile: { // field return type name
     id: 'ID'
   }
+  BfNodeGoogleDriveFile: { // field return type name
+    id: 'ID'
+  }
   BfOrganization: { // field return type name
     id: 'ID'
     name: 'String'
@@ -248,6 +256,7 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     createBfMediaBffsFile: 'BfMediaBffsFile'
+    createBfNodeGoogleDriveFile: 'BfNodeGoogleDriveFile'
     createProject: 'BfContainerProject'
     linkGoogleAccount: 'BfCurrentViewer'
     loginWithGoogle: 'BfCurrentViewerAccessToken'
@@ -299,6 +308,9 @@ export interface NexusGenArgTypes {
     createBfMediaBffsFile: { // args
       name: string; // String!
     }
+    createBfNodeGoogleDriveFile: { // args
+      googleDriveFileId: string; // String!
+    }
     createProject: { // args
       name: string; // String!
     }
@@ -326,8 +338,8 @@ export interface NexusGenAbstractTypeMembers {
   Actor: "BfOrganization" | "BfPerson"
   BfContainer: "BfContainerProject"
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon"
-  BfMedia: "BfMediaBffsFile"
-  BfNode: "BfAccount" | "BfContainerProject" | "BfMediaBffsFile" | "BfOrganization" | "BfPerson"
+  BfMedia: "BfMediaBffsFile" | "BfNodeGoogleDriveFile"
+  BfNode: "BfAccount" | "BfContainerProject" | "BfMediaBffsFile" | "BfNodeGoogleDriveFile" | "BfOrganization" | "BfPerson"
 }
 
 export interface NexusGenTypeInterfaces {
@@ -336,6 +348,7 @@ export interface NexusGenTypeInterfaces {
   BfCurrentViewerAccessToken: "BfCurrentViewer"
   BfCurrentViewerAnon: "BfCurrentViewer"
   BfMediaBffsFile: "BfMedia" | "BfNode"
+  BfNodeGoogleDriveFile: "BfMedia" | "BfNode"
   BfOrganization: "Actor" | "BfNode"
   BfPerson: "Actor" | "BfNode"
   Actor: "BfNode"
