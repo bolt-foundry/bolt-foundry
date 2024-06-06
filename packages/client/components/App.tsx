@@ -13,6 +13,7 @@ import { Marketing } from "packages/client/pages/MarketingPage.tsx";
 import { ProjectPage } from "packages/client/pages/ProjectPage.tsx";
 import { Demo } from "packages/bfDs/Demo.tsx";
 import { ProjectNew } from "packages/client/pages/ProjectNew.tsx";
+import {CletusPage} from "packages/client/pages/CletusPage.tsx"
 
 export const routes = new Map([
   ["/", { Component: Marketing, allowLoggedOut: true }],
@@ -22,6 +23,7 @@ export const routes = new Map([
   ["/projects/:projectId?", { Component: ProjectPage }],
   ["/projects", { Component: ProjectPage }],
   ["/ui", { Component: Demo, allowLoggedOut: true }],
+  ["/cletus", {Component: CletusPage, allowLoggedOut: true}]
 ]);
 
 export function App() {
