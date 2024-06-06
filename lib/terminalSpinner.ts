@@ -1,3 +1,4 @@
+// backend only, idk how to represent that yet? #BOOTCAMPTASK l1
 const moonFrames = ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘", "🌑"];
 function spinner(isATTY: boolean, frames = moonFrames) {
   let i = 0;

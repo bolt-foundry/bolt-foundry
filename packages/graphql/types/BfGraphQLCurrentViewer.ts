@@ -212,7 +212,13 @@ export const BfGraphQLLinkGoogleAccountMutation = mutationField((t) => {
         bfCurrentViewer.personBfGid,
       );
 
-      await person.linkEnhancedGoogleAccount(code);
+      try {
+        await person.linkEnhancedGoogleAccount(code);
+      } catch {
+        throw new GraphQLError(
+          "Couldn't link Google Account. Try again, or email support@boltfoundry.com",
+        );
+      }
       return bfCurrentViewer;
     },
   });
@@ -231,7 +237,6 @@ export const LogoutMutation = mutationField((t) => {
           "Logout failed... sorry about that. We've logged it and will look into it.",
         );
       }
-      
     },
   });
 });

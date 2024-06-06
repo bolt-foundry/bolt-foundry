@@ -80,7 +80,7 @@ async function clientRendererMain(
 async function redirectIfNotLoggedIn(request: Request, _routeParams: unknown) {
   const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
   const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
-    "boltfoundry-wtf.replit.app";
+    "boltfoundry.wtf";
   const { hostname } = new URL(request.url);
   const loggedInRedirectUrl = deploymentEnvironment === "DEVELOPMENT"
     ? `https://${redirectDomain}/login?hostname=${hostname}`

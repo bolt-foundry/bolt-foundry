@@ -1,10 +1,11 @@
-import { React, ReactRelay } from "deps.ts";
-// import { graphql, ReactRelay } from "packages/bfDs/deps.ts";
+import { getLogger, React, ReactRelay } from "deps.ts";
+import { graphql } from "packages/bfDs/deps.ts";
 import { Button } from "packages/bfDs/Button.tsx";
-// import { GoogleDriveFilePickerQuery } from "packages/__generated__/GoogleDriveFilePickerQuery.graphql.ts";
-// import { GoogleDriveFilePickerLinkGoogleAccountMutation } from "packages/__generated__/GoogleDriveFilePickerLinkGoogleAccountMutation.graphql.ts";
+import { GoogleDriveFilePickerQuery } from "packages/__generated__/GoogleDriveFilePickerQuery.graphql.ts";
+import { GoogleDriveFilePickerLinkGoogleAccountMutation } from "packages/__generated__/GoogleDriveFilePickerLinkGoogleAccountMutation.graphql.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
-
+import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
+const logger = getLogger(import.meta);
 const { useLazyLoadQuery, useMutation } = ReactRelay;
 const { useCallback, useState } = React;
 
@@ -16,21 +17,21 @@ const { useCallback, useState } = React;
 //   }
 // `;
 
-// const accessTokenQuery = await graphql`
-//   query GoogleDriveFilePickerQuery {
-//     currentViewer {
-//       googleAccessToken
-//     }
-//   }
-// `;
+const accessTokenQuery = await graphql`
+  query GoogleDriveFilePickerQuery {
+    currentViewer {
+      googleAccessToken
+    }
+  }
+`;
 
-// const linkGoogleAccountMutation = await graphql`
-//   mutation GoogleDriveFilePickerLinkGoogleAccountMutation($code: String!) {
-//     linkGoogleAccount(code: $code) {
-//       googleAccessToken
-//     }
-//   }
-// `;
+const linkGoogleAccountMutation = await graphql`
+  mutation GoogleDriveFilePickerLinkGoogleAccountMutation($code: String!) {
+    linkGoogleAccount(code: $code) {
+      googleAccessToken
+    }
+  }
+`;
 
 const styles = {
   content: {
@@ -57,20 +58,20 @@ type Props = {
 };
 
 export function GoogleDriveFilePicker({ onPick, pickerType }: Props) {
-  // const data = useLazyLoadQuery<GoogleDriveFilePickerQuery>(
-  //   accessTokenQuery,
-  //   {},
-  // );
-  const data = { currentViewer: { googleAccessToken: "" } };
+  const { showToast } = useBfDs();
+  const data = useLazyLoadQuery<GoogleDriveFilePickerQuery>(
+    accessTokenQuery,
+    {},
+  );
 
   const [pickedFile, setPickedFile] = useState<google.picker.DocumentObject>();
   const [googleAccessToken, setGoogleAccessToken] = useState(
     data?.currentViewer?.googleAccessToken,
   );
 
-  // const [commit] = useMutation<GoogleDriveFilePickerLinkGoogleAccountMutation>(
-  //   linkGoogleAccountMutation,
-  // );
+  const [commit] = useMutation<GoogleDriveFilePickerLinkGoogleAccountMutation>(
+    linkGoogleAccountMutation,
+  );
   const { GOOGLE_OAUTH_CLIENT_ID } = useAppEnvironment();
 
   const handleProcessFile = () => {
@@ -80,15 +81,18 @@ export function GoogleDriveFilePicker({ onPick, pickerType }: Props) {
   const authorize = useCallback(async () => {
     try {
       const code = await authorizeGdrive();
-      // commit({
-      //   variables: { code },
-      //   onCompleted: (res) => {
-      //     setGoogleAccessToken(res?.linkGoogleAccount?.googleAccessToken);
-      //   },
-      // });
+      commit({
+        variables: { code },
+        onCompleted: (res) => {
+          setGoogleAccessToken(res?.linkGoogleAccount?.googleAccessToken);
+        },
+        onError: (err) => {
+          const timeout = 5000;
+          showToast(err.message, { timeout });
+        }
+      });
     } catch (e) {
-      // deno-lint-ignore no-console
-      console.log("Error authorizing", e);
+      logger.error("Error authorizing", e);
     }
   }, [GOOGLE_OAUTH_CLIENT_ID]);
   if (!googleAccessToken) {

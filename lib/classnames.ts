@@ -12,6 +12,9 @@
  * ]);
  */
 
+// #BOOTCAMPTASK move this to packages/client/lib because the frontend needs it or something.
+
+
 export function classnames(
   items: (string | { [key: string]: boolean | null | undefined })[],
 ) {
