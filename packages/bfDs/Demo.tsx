@@ -8,6 +8,7 @@ import { Spinner } from "packages/bfDs/Spinner.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
 import { fonts } from "packages/bfDs/const.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
+import { ContactUs } from "packages/client/components/ContactUs.tsx";
 
 const buttonElements = [
   {
@@ -337,9 +338,10 @@ const uiElementGroups = [
 ];
 
 export function Demo() {
-  const { showToast } = useBfDs();
+  const { showModal, showToast } = useBfDs();
   const [percent, setPercent] = React.useState<string>("65");
   const [toastIncrement, setToastIncrement] = React.useState<number>(0);
+
   return (
     <div className="main" style={styles.main}>
       <div className="element" style={styles.element}>
@@ -370,6 +372,15 @@ export function Demo() {
           />
         </div>
       </div>
+
+      <div className="element" style={styles.element}>
+        <div className="name" style={styles.name}>Modals</div>
+        <div className="group" style={styles.group}>
+          <Button text="Modal 'hi'" onClick={() => showModal(<div>hi</div>)} />
+          <Button text="Modal" onClick={() => showModal(<ContactUs />)} />
+        </div>
+      </div>
+
       <div className="element" style={styles.element}>
         <div style={styles.name}>Color Palette</div>
         <div style={styles.palette}>
