@@ -5,10 +5,9 @@ import { Button } from "packages/bfDs/Button.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
 import { TextArea } from "packages/bfDs/TextArea.tsx";
 
-// import { useFeatureFlag } from "packages/client/hooks/featureFlagHooks.ts";
-// import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.ts";
+const { useMutation } = ReactRelay;
 
-const { useEffect, useRef, useState } = React;
+const { useState } = React;
 
 const styles: Record<string, React.CSSProperties> = {
   mainTitle: {
@@ -44,6 +43,15 @@ type Props = {
   showHeader?: boolean;
 };
 
+const contactUsMutation = await graphql`
+  mutation ContactUsSubmitFormMutation($input: SubmitContactFormInput!) {
+    submitContactForm(input: $input) {
+      success
+      message
+    }
+  }
+`;
+
 export function ContactUs({ showHeader = true }: Props) {
   const [submtting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -56,8 +64,9 @@ export function ContactUs({ showHeader = true }: Props) {
     message: "",
   });
 
-  // @ts-expect-error #techdebt
-  const handleChange = (e) => {
+  const [commit] = useMutation(contactUsMutation);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
@@ -65,65 +74,26 @@ export function ContactUs({ showHeader = true }: Props) {
     }));
   };
 
-  const contactUsMutation = graphql`
-    mutation ContactUsSubmitFormMutation($input: SubmitContactFormInput!) {
-      submitContactForm(input: $input) {
-        success
-        message
-      }
-    }
-  `;
-
-  const submitForm = async () => {
-    try {
-      const response = await fetch("https://sheetdb.io/api/v1/j4zqewe3isc9r", {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: [
-            formData,
-          ],
-        }),
-      });
-
-      if (response.ok) {
-        // Handle successful submission, e.g., show a success message
-        // deno-lint-ignore no-console
-        console.log("Form submitted successfully");
-        setFormData({
-          name: "",
-          phone: "",
-          company: "",
-          email: "",
-          message: "",
-        });
-        setSubmitting(false);
-        setSubmitted(true);
-      } else {
-        // Handle submission error, e.g., show an error message
-        // deno-lint-ignore no-console
-        console.log("Form submission failed");
-        setError(true);
-      }
-    } catch (error) {
-      // Handle network or other errors
-      // deno-lint-ignore no-console
-      console.error("Error:", error);
-      setError(true);
-    }
-  };
-  // @ts-expect-error #techdebt
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const submitForm = () => {
     setSubmitting(true);
+    commit({
+      variables: {
+        input: formData,
+      },
+      onCompleted: () => {
+        setSubmitted(true);
+        setSubmitting(false);
+      },
+      onError: () => {
+        setSubmitting(false);
+        setError(true);
+      },
+    });
+  };
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     submitForm();
   };
-  // const handleSubmittingModal = () => {
-  //   setSubmitting(true);
-  // };
 
   return (
     <>
