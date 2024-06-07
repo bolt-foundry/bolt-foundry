@@ -49,6 +49,7 @@ register(
 
     // who needs a yaml parser when you live on the edge?
     const token = hostsYml.split("oauth_token:")[1].trim().split("\n")[0];
+    // bootcampTASK: some users might not have a display name which will cause an error when committing.
     const name = nameRaw.trim() ?? "unknown Bolt Foundry Replit contributor";
     const email = emailRaw.trim() ?? "unknown@boltfoundry.com";
     const gitFile = `${XDG_CONFIG_HOME}/git/config`;
