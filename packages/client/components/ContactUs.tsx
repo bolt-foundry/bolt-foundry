@@ -1,4 +1,5 @@
-import { React } from "deps.ts";
+import { React, ReactRelay } from "deps.ts";
+import { graphql } from "packages/client/deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
@@ -7,6 +8,14 @@ import { TextArea } from "packages/bfDs/TextArea.tsx";
 // import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.ts";
 
 const { useEffect, useRef, useState } = React;
+
+const mutation = await graphql`
+  mutation ContactUsMutation($input: ContactFormSubmissionInput!) {
+    createContactFormSubmission(input: $input) {
+      email
+    }
+  }
+`
 
 const styles: Record<string, React.CSSProperties> = {
   mainTitle: {
@@ -64,46 +73,6 @@ export function ContactUs({ showHeader = true }: Props) {
   };
 
   const submitForm = async () => {
-    try {
-      const response = await fetch("https://sheetdb.io/api/v1/j4zqewe3isc9r", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          data: [
-            formData
-            ]
-        }
-     )
-      });
-
-      if (response.ok) {
-        // Handle successful submission, e.g., show a success message
-        // deno-lint-ignore no-console
-        console.log("Form submitted successfully");
-        setFormData({
-          name: "",
-          phone: "",
-          company: "",
-          email: "",
-          message: "",
-        });
-        setSubmitting(false);
-        setSubmitted(true);
-      } else {
-        // Handle submission error, e.g., show an error message
-        // deno-lint-ignore no-console
-        console.log("Form submission failed");
-        setError(true);
-      }
-    } catch (error) {
-      // Handle network or other errors
-      // deno-lint-ignore no-console
-      console.error("Error:", error);
-      setError(true);
-    }
   };
   // @ts-expect-error #techdebt
   const handleSubmit = (e) => {
