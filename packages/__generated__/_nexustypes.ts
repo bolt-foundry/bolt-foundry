@@ -37,6 +37,13 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  ContactFormSubmissionInput: { // input type
+    company?: string | null; // String
+    email: string; // String!
+    message: string; // String!
+    name: string; // String!
+    phone?: string | null; // String
+  }
 }
 
 export interface NexusGenEnums {
@@ -84,6 +91,13 @@ export interface NexusGenObjects {
   BfPerson: { // root type
     email?: string | null; // String
     name?: string | null; // String
+  }
+  ContactFormSubmission: { // root type
+    company?: string | null; // String
+    email?: string | null; // String
+    message?: string | null; // String
+    name?: string | null; // String
+    phone?: string | null; // String
   }
   Mutation: {};
   PageInfo: { // root type
@@ -158,8 +172,16 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     name: string | null; // String
   }
+  ContactFormSubmission: { // field return type
+    company: string | null; // String
+    email: string | null; // String
+    message: string | null; // String
+    name: string | null; // String
+    phone: string | null; // String
+  }
   Mutation: { // field return type
     createBfMediaBffsFile: NexusGenRootTypes['BfMediaBffsFile'] | null; // BfMediaBffsFile
+    createContactFormSubmission: NexusGenRootTypes['ContactFormSubmission'] | null; // ContactFormSubmission
     createProject: NexusGenRootTypes['BfContainerProject'] | null; // BfContainerProject
     linkGoogleAccount: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
@@ -246,8 +268,16 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     name: 'String'
   }
+  ContactFormSubmission: { // field return type name
+    company: 'String'
+    email: 'String'
+    message: 'String'
+    name: 'String'
+    phone: 'String'
+  }
   Mutation: { // field return type name
     createBfMediaBffsFile: 'BfMediaBffsFile'
+    createContactFormSubmission: 'ContactFormSubmission'
     createProject: 'BfContainerProject'
     linkGoogleAccount: 'BfCurrentViewer'
     loginWithGoogle: 'BfCurrentViewerAccessToken'
@@ -299,6 +329,9 @@ export interface NexusGenArgTypes {
     createBfMediaBffsFile: { // args
       name: string; // String!
     }
+    createContactFormSubmission: { // args
+      input: NexusGenInputs['ContactFormSubmissionInput']; // ContactFormSubmissionInput!
+    }
     createProject: { // args
       name: string; // String!
     }
@@ -345,7 +378,7 @@ export interface NexusGenTypeInterfaces {
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
 
-export type NexusGenInputNames = never;
+export type NexusGenInputNames = keyof NexusGenInputs;
 
 export type NexusGenEnumNames = keyof NexusGenEnums;
 
