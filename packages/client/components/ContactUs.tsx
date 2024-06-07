@@ -1,8 +1,10 @@
-import { React } from "deps.ts";
+import { React, ReactRelay } from "deps.ts";
+import { graphql } from "packages/client/deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
 import { TextArea } from "packages/bfDs/TextArea.tsx";
+
 // import { useFeatureFlag } from "packages/client/hooks/featureFlagHooks.ts";
 // import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.ts";
 
@@ -63,20 +65,28 @@ export function ContactUs({ showHeader = true }: Props) {
     }));
   };
 
+  const contactUsMutation = graphql`
+    mutation ContactUsSubmitFormMutation($input: SubmitContactFormInput!) {
+      submitContactForm(input: $input) {
+        success
+        message
+      }
+    }
+  `;
+
   const submitForm = async () => {
     try {
       const response = await fetch("https://sheetdb.io/api/v1/j4zqewe3isc9r", {
         method: "POST",
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
+          "Accept": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           data: [
-            formData
-            ]
-        }
-     )
+            formData,
+          ],
+        }),
       });
 
       if (response.ok) {
