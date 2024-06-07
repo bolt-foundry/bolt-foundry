@@ -147,6 +147,7 @@ type Mutation {
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
   readTextFile(file: File!): String
+  submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
 }
 
@@ -178,4 +179,17 @@ type PageInfo {
 type Query {
   containerProject(id: ID!): BfContainerProject
   currentViewer: BfCurrentViewer
+}
+
+input SubmitContactFormInput {
+  company: String
+  email: String!
+  message: String!
+  name: String!
+  phone: String
+}
+
+type SubmitContactFormPayload {
+  message: String
+  success: Boolean!
 }
