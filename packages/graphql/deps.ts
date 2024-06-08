@@ -7,6 +7,5 @@ export * from "npm:graphql-relay@0.10.0";
 export * as GraphQLYoga from "npm:graphql-yoga@5.1.1";
 export { GraphQLError } from "graphql";
 export type { GraphQLErrorOptions } from "graphql";
-export * as DynamoDB from "https://aws-api.deno.dev/v0.2/services/dynamodb.ts";
 export * as cookie from "https://deno.land/std@0.197.0/http/cookie.ts";
 export * from "https://deno.land/x/djwt@v2.9.1/mod.ts";

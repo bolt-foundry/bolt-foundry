@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(collapse-white-space@2.1.0) denonext production */
-var l=/\s+/g,a=/[\t\n\v\f\r ]+/g;function i(r,e){e?typeof e=="string"&&(e={style:e}):e={};let n=e.preserveLineEndings?f:u;return String(r).replace(e.style==="html"?a:l,e.trim?g(n):n)}function f(r){let e=/\r?\n|\r/.exec(r);return e?e[0]:" "}function u(){return" "}function g(r){return e;function e(n,t,c){return t===0||t+n.length===c.length?"":r(n)}}export{i as collapseWhiteSpace};
-//# sourceMappingURL=collapse-white-space.mjs.map

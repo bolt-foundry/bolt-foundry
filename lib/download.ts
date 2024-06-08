@@ -1,6 +1,6 @@
 // #BOOTCAMPTASK move this to packages/client/lib because the frontend needs it or something.
 
-import { captureEvent } from "packages/events/mod.ts";
+// import { captureEvent } from "packages/events/mod.ts";
 
 export function downloadText(
   text: string,
@@ -20,7 +20,7 @@ export function downloadText(
     document.body.removeChild(element);
     cbFinished?.();
   }, 2000);
-  captureEvent("transcript", "downloaded", {
-    format: filename.split(".").pop(),
-  }, personId);
+  // captureEvent("transcript", "downloaded", {
+  //   format: filename.split(".").pop(),
+  // }, personId);
 }
