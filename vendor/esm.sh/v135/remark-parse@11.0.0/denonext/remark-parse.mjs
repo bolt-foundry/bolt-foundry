@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(remark-parse@11.0.0) denonext production */
-import{fromMarkdown as a}from"/v135/mdast-util-from-markdown@2.0.0/denonext/mdast-util-from-markdown.mjs";function t(n){let r=this;r.parser=o;function o(s){return a(s,{...r.data("settings"),...n,extensions:r.data("micromarkExtensions")||[],mdastExtensions:r.data("fromMarkdownExtensions")||[]})}}export{t as default};
-//# sourceMappingURL=remark-parse.mjs.map

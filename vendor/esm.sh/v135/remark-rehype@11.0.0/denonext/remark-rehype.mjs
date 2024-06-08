@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(remark-rehype@11.0.0) denonext production */
-import{defaultFootnoteBackContent as p,defaultFootnoteBackLabel as d,defaultHandlers as k}from"/v135/mdast-util-to-hast@13.0.2/denonext/mdast-util-to-hast.mjs";import{toHast as o}from"/v135/mdast-util-to-hast@13.0.2/denonext/mdast-util-to-hast.mjs";function u(r,e){return r&&"run"in r?async function(t,a){let f=o(t,e);await r.run(f,a)}:function(t){return o(t,e||r)}}export{u as default,p as defaultFootnoteBackContent,d as defaultFootnoteBackLabel,k as defaultHandlers};
-//# sourceMappingURL=remark-rehype.mjs.map
