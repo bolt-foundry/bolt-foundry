@@ -485,6 +485,12 @@
     "https://esm.sh/v135/rxjs@7.8.1/dist/types/internal/testing/TestMessage.d.ts": {},
     "https://esm.sh/v135/rxjs@7.8.1/dist/types/internal/testing/HotObservable.d.ts": {},
     "https://esm.sh/v135/graphql@16.8.1/jsutils/PromiseOrValue.d.ts": {},
-    "https://esm.sh/v135/rxjs@7.8.1/dist/types/internal/testing/SubscriptionLoggable.d.ts": {}
+    "https://esm.sh/v135/rxjs@7.8.1/dist/types/internal/testing/SubscriptionLoggable.d.ts": {},
+    "https://esm.sh/graphql-ws@5.14.0": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/graphql-ws@5.14.0/lib/index.d.ts"
+      }
+    }
   }
 }

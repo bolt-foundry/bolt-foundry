@@ -1,5 +1,5 @@
 export * as ReactDOMClient from "react-dom/client";
-export * as GraphqlWs from "npm:graphql-ws@5.14.0";
+export * as GraphqlWs from "https://esm.sh/graphql-ws@5.14.0";
 import "packages/__generated__/_graphql_imports.ts";
 // @deno-types="https://esm.sh/v135/@types/react-relay@16.0.6/index.d.ts";
 import * as ReactRelay from "react-relay";
