@@ -15,6 +15,7 @@
       "npm:react-dom@18.2.0": "npm:react-dom@18.2.0_react@18.2.0",
       "npm:react-relay@16.1.0": "npm:react-relay@16.1.0_react@18.2.0",
       "npm:react@18.2": "npm:react@18.2.0",
+      "npm:relay-compiler": "npm:relay-compiler@16.2.0",
       "npm:relay-runtime": "npm:relay-runtime@16.1.0",
       "npm:relay-runtime@16.1.0": "npm:relay-runtime@16.1.0"
     },
@@ -1151,6 +1152,10 @@
         "integrity": "sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==",
         "dependencies": {}
       },
+      "relay-compiler@16.2.0": {
+        "integrity": "sha512-KuyzUBKL9PZRNtIZWNlWEOl7OliUxaGJ2d+3mkiWEiGCEuGnNTxqEg4kJyL341aIGZC4gSqEpfvRTcMqnSM4qQ==",
+        "dependencies": {}
+      },
       "relay-runtime@16.1.0": {
         "integrity": "sha512-SM5MP4ETxTtYrXya5ceAEF3XuVzlku48+YyaxZkTnXG/FUvE2QfIxkZ5P2Q/j33Eo9tfrcl4UfZoSkx6IbQ37Q==",
         "dependencies": {
@@ -1521,6 +1526,7 @@
     "https://esm.sh/@replit/extensions@1.8.0": "f2cf85faa633adf90ebc2fb3298641a778858fe7ddeed3391b0ffc457dfa822e",
     "https://esm.sh/chalk@5.3.0": "c6d525e5551f7cfac029db68058a4ae44a49dcbc7a5a792850a04e655e8702f9",
     "https://esm.sh/graphql-relay@0.10.0?deps=graphql@16": "b5e504d4aef324f1872294c9b4db3164e349f8ddbb8221652bf5756c46e57768",
+    "https://esm.sh/graphql-ws@5.14.0": "693b8058aba63cf9d0595726c33be670c9a2f5e376813aedbc91862a32617b23",
     "https://esm.sh/loglevel-plugin-prefix@0.8.4": "373d3cbad531e9aefe611994028b6ec92233725cac9d51d79d494bdb68fa61e5",
     "https://esm.sh/loglevel@1.9.1": "165694862f471056625862b91766f7d84b0fd31b22109952805411917460e55e",
     "https://esm.sh/rxjs@7.8.1": "68e394db3f3b90054f22fe3f20c4d7359c989b282246a66ea0372d652912e244",
@@ -1545,6 +1551,11 @@
     "https://esm.sh/v135/chalk@5.3.0/denonext/chalk.mjs": "3943aef3775b1bb1c19ed547ef6d4ab66cb3f417595fd1dd70366878607cf9bf",
     "https://esm.sh/v135/comlink@4.4.1/denonext/comlink.mjs": "01ee46768fa83c0217e31536a2e2bfc3055e0f82f1f21e106408cf0edf74de47",
     "https://esm.sh/v135/graphql-relay@0.10.0/X-ZC9ncmFwaHFsQDE2LjguMQ/denonext/graphql-relay.mjs": "a119a803c4bbbed720ad9e84cc220538c6bfc0ff4e959d0e752cdb796a27730e",
+    "https://esm.sh/v135/graphql-ws@5.14.0/denonext/graphql-ws.mjs": "ad2035e0c89afa6aafc681e17033960253009530df8f8d775c1171a48b53b818",
+    "https://esm.sh/v135/graphql-ws@5.14.0/denonext/lib/client.js": "f903e3b842d9c44cf9f3890c83fae70c56912fb63856e585597db11b3c378946",
+    "https://esm.sh/v135/graphql-ws@5.14.0/denonext/lib/common.js": "a26df5a6a124467c7143640931a995dd18898c8b7a00f77586ab324b579cd792",
+    "https://esm.sh/v135/graphql-ws@5.14.0/denonext/lib/server.js": "0ec00cb75f268e08d2a867414268591e75b27075552a362fa16e93a2375fc944",
+    "https://esm.sh/v135/graphql-ws@5.14.0/denonext/lib/utils.js": "efc38ea5132cd9cdb6d5ed89bddfd2ba19f6ced371a9cc5833c58cce828d51bf",
     "https://esm.sh/v135/graphql@16.8.1/denonext/graphql.mjs": "585b84022623b931e27a7a8134cd24ec50b33ea12fd18b43254527628a0fddac",
     "https://esm.sh/v135/loglevel-plugin-prefix@0.8.4/denonext/loglevel-plugin-prefix.mjs": "a710f38536a10c0fca20c47f0271d8681156dc43228fbbcb5dae7dc768b5b049",
     "https://esm.sh/v135/loglevel@1.9.1/denonext/loglevel.mjs": "5db09fc1646eb32f40ba8d86ae1073a85d7e61f8f97114c841e0f345fc639825",

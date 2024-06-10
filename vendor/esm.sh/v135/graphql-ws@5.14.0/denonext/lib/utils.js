@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(graphql-ws@5.14.0/lib/utils) denonext production */
+function e(r){return r===null?"null":Array.isArray(r)?"array":typeof r}function n(r){return e(r)==="object"}function o(r){return typeof Object(r)[Symbol.asyncIterator]=="function"}function u(r){return n(r)&&typeof Object(r)[Symbol.asyncIterator]=="function"&&typeof r.return=="function"}function i(r){return Array.isArray(r)&&r.length>0&&r.every(t=>"message"in t)}function c(r,t){return r.length<124?r:t}export{i as areGraphQLErrors,e as extendedTypeof,u as isAsyncGenerator,o as isAsyncIterable,n as isObject,c as limitCloseReason};
+//# sourceMappingURL=utils.js.map
