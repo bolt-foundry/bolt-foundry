@@ -349,11 +349,11 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     };
   }
 
-  async beforeLoad() {}
+  beforeLoad(): Promise<void> | void {}
 
-  async beforeCreate() {}
+  beforeCreate(): Promise<void> | void {}
 
-  async afterCreate() {}
+  afterCreate(): Promise<void> | void {}
 
   async load() {
     await this.beforeLoad();
