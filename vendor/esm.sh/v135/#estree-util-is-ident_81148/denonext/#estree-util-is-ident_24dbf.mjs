@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(estree-util-is-identifier-name@3.0.0) denonext production */
-var r=/[$_\p{ID_Start}]/u,u=/[$_\u{200C}\u{200D}\p{ID_Continue}]/u,i=/[-$_\u{200C}\u{200D}\p{ID_Continue}]/u,c=/^[$_\p{ID_Start}][$_\u{200C}\u{200D}\p{ID_Continue}]*$/u,_=/^[$_\p{ID_Start}][-$_\u{200C}\u{200D}\p{ID_Continue}]*$/u,o={};function p(t){return t?r.test(String.fromCodePoint(t)):!1}function a(t,n){let e=(n||o).jsx?i:u;return t?e.test(String.fromCodePoint(t)):!1}function D(t,n){return((n||o).jsx?_:c).test(t)}export{a as cont,D as name,p as start};
-//# sourceMappingURL=estree-util-is-identifier-name.mjs.map

@@ -37,6 +37,13 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  SubmitContactFormInput: { // input type
+    company?: string | null; // String
+    email: string; // String!
+    message: string; // String!
+    name: string; // String!
+    phone?: string | null; // String
+  }
 }
 
 export interface NexusGenEnums {
@@ -94,6 +101,10 @@ export interface NexusGenObjects {
     startCursor?: string | null; // String
   }
   Query: {};
+  SubmitContactFormPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
 }
 
 export interface NexusGenInterfaces {
@@ -170,6 +181,7 @@ export interface NexusGenFieldTypes {
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
     logout: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     readTextFile: string | null; // String
+    submitContactForm: NexusGenRootTypes['SubmitContactFormPayload'] | null; // SubmitContactFormPayload
     switchAccount: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
   }
   PageInfo: { // field return type
@@ -181,6 +193,10 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     containerProject: NexusGenRootTypes['BfContainerProject'] | null; // BfContainerProject
     currentViewer: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
+  }
+  SubmitContactFormPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
   }
   Actor: { // field return type
     id: string; // ID!
@@ -262,6 +278,7 @@ export interface NexusGenFieldTypeNames {
     loginWithGoogle: 'BfCurrentViewerAccessToken'
     logout: 'BfCurrentViewer'
     readTextFile: 'String'
+    submitContactForm: 'SubmitContactFormPayload'
     switchAccount: 'BfCurrentViewerAccessToken'
   }
   PageInfo: { // field return type name
@@ -273,6 +290,10 @@ export interface NexusGenFieldTypeNames {
   Query: { // field return type name
     containerProject: 'BfContainerProject'
     currentViewer: 'BfCurrentViewer'
+  }
+  SubmitContactFormPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
   }
   Actor: { // field return type name
     id: 'ID'
@@ -323,6 +344,9 @@ export interface NexusGenArgTypes {
     readTextFile: { // args
       file: NexusGenScalars['File']; // File!
     }
+    submitContactForm: { // args
+      input: NexusGenInputs['SubmitContactFormInput']; // SubmitContactFormInput!
+    }
     switchAccount: { // args
       accountId: string; // ID!
     }
@@ -358,7 +382,7 @@ export interface NexusGenTypeInterfaces {
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
 
-export type NexusGenInputNames = never;
+export type NexusGenInputNames = keyof NexusGenInputs;
 
 export type NexusGenEnumNames = keyof NexusGenEnums;
 

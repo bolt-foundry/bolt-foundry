@@ -9,7 +9,7 @@ register("build", "Builds the client.", async (_options) => {
 });
 
 register("build:deploy", "build the client and include building the environment", async (_options) => {
-  await buildNix();
+  await buildNix(".#deploy");
   await buildRelay();
   await build();
   return 0;
