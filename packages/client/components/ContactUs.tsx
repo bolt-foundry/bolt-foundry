@@ -4,7 +4,7 @@ import { fonts } from "packages/bfDs/const.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
 import { TextArea } from "packages/bfDs/TextArea.tsx";
-
+import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 const { useMutation } = ReactRelay;
 
 const { useState } = React;
@@ -14,12 +14,13 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "Ubuntu",
     fontSize: "max(16px, 3vw)",
     textAlign: "center",
-    marginTop: 0,
+    marginTop: 3,
   },
   form: {
     display: "flex",
     flexDirection: "column",
     gap: "1vw",
+    padding: "30px",
   },
   message: {
     height: "100px",
@@ -96,6 +97,7 @@ export function ContactUs({ showHeader = true }: Props) {
   };
 
   return (
+    <MarketingFrame>
     <>
       {!submtting && !submitted && (
         <>
@@ -170,5 +172,6 @@ export function ContactUs({ showHeader = true }: Props) {
         )}
       {error && <div style={styles.mainTitle}>Error</div>}
     </>
+      </MarketingFrame>
   );
 }
