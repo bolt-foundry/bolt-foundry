@@ -86,8 +86,8 @@ register(
       "config",
       "--user",
       "github.preferred_submit_command",
-      "pr"
-    ])
+      "pr",
+    ]);
     await runShellCommand([
       "sl",
       "pull",
@@ -100,11 +100,10 @@ register(
     const localhostUrl = `http://localhost:8283/${
       Deno.env.get("REPLIT_SESSION")
     }/files/open-multiple`;
+    
     const vscodeUrl = `vscode://vscode-remote/ssh-remote+${
       Deno.env.get("REPL_ID")
-    }@ssh.${Deno.env.get("REPLIT_CLUSTER")}.replit.dev:22/${
-      Deno.env.get("HOME")
-    }/${REPL_SLUG}`;
+    }@${Deno.env.get("REPLIT_DEV_DOMAIN")}:22${Deno.env.get("REPL_HOME")}`;
 
     await fetch(localhostUrl, {
       method: "POST",
