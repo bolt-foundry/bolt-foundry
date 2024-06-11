@@ -30,7 +30,7 @@ export function BaseComponent({ children, environment }: Props) {
   return (
     <html lang="en">
       <head>
-        <script type="module" async src="/build/client/Client.js" id="client-script" />
+        <script type="module" async src="/build/packages/client/Client.js" id="client-script" />
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link
