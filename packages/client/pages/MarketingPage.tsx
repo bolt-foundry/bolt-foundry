@@ -8,7 +8,6 @@ import {useFeatureFlag} from "packages/client/hooks/featureFlagHooks.ts";
 import MarketingTestimonial from "packages/client/components/MarketingTestimonial.tsx";
 import {MarketingIGHscroll} from "packages/client/components/MarketingIGHscroll.tsx";
 import {MarketingCallToAction} from "packages/client/components/MarketingCallToAction.tsx";
-
 const {useState} = React;
 
 const styles: Record<string, React.CSSProperties> = {
@@ -319,7 +318,7 @@ export function Marketing(): React.ReactElement {
         <MarketingHero />
         <MarketingIGHscroll />
         <MarketingTestimonial />
-        {/* <MarketingCallToAction /> */}
+        <MarketingCallToAction />
       </div>
     </MarketingFrame>
   );
