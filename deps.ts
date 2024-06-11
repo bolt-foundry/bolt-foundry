@@ -34,7 +34,7 @@ if (!isBrowser()) {
 
   logLevelPrefixPlugin.reg(log);
   logLevelPrefixPlugin.apply(log, {
-    template: "(%n) %l: ",
+    template: "%n - %l: ",
     levelFormatter(level) {
       const LEVEL = level.toUpperCase() as keyof typeof colors;
       return colors[LEVEL](LEVEL);

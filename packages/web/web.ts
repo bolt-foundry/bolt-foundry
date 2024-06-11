@@ -210,11 +210,17 @@ const defaultRoute = () => {
   return new Response("Not found", { status: 404 });
 };
 
-Deno.serve(async (req) => {
+logger.info("Ready to serve")
+Deno.serve(async (req, info) => {
+
+  const tick = performance.now();
   const incomingUrl = new URL(req.url);
   logger.info(
     `Incoming request: ${req.method} ${incomingUrl.pathname}`,
   );
+  info.completed.then(() => {
+    logger.log(`(${performance.now() - tick}ms) Completed: ${req.method} ${incomingUrl.pathname}`);
+  })
   // Attempt to match routes with optional URL params
   const pathWithParams = incomingUrl.pathname.split("?")[0];
   const routeParams: Record<string, string> = {};

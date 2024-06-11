@@ -25,6 +25,7 @@ export function LoginWithGoogleButton() {
     // });
   };
 
+    console.log(GOOGLE_OAUTH_CLIENT_ID)
   useEffect(() => {
     google.accounts.id.initialize({
       client_id: GOOGLE_OAUTH_CLIENT_ID,
