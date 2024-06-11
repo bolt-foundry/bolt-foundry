@@ -1,0 +1,10 @@
+{
+  "src": "./infra",
+  "schema": "./infra/graphql/schema.graphql",
+  "language": "typescript",
+  "artifactDirectory": "infra/__generated__",
+  "eagerEsModules": true,
+  "featureFlags": {
+    "enable_relay_resolver_transform": true
+  }
+}
