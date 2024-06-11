@@ -116,9 +116,9 @@ export async function buildRelay(args: Array<string>) {
     args: [
       "run",
       "-A",
-      `packages/graphql/schema.ts`,
+      `${configLocation}/graphql/schema.ts`,
       "--compile",
-      ...args,
+      configLocation,
     ],
     stdin: "inherit",
     stdout: "inherit",
@@ -137,4 +137,11 @@ export async function buildRelay(args: Array<string>) {
   return code || buildCode;
 }
 
-register("relay", "Builds relay artifacts.", buildRelay);
+register("relay", "Builds all relay artifacts", async (args) => {
+  await Promise.all([buildRelay(["packages", ...args]), buildRelay(["infra", ...args])]);
+  return 0;
+});
+register("relay:packages", "Builds packaes relay artifacts.", buildRelay);
+register("relay:infra", "builds infra relay artifacts", (args) => {
+  return buildRelay(["infra", ...args]);
+});
