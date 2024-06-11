@@ -4,6 +4,8 @@ import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
 import { build } from "packages/graphql/schema.ts";
 
+import { getLogger } from "deps.ts";
+const logger = getLogger(import.meta);
 const staticImportFileLocation =
   new URL(import.meta.resolve("packages/__generated__/_graphql_imports.ts"))
     .pathname;
@@ -35,8 +37,7 @@ export async function buildRelay(args: Array<string> = []) {
   for await (const file of dir) {
     if (file.isFile) {
       if (file.name.startsWith("_")) {
-        // deno-lint-ignore no-console
-        console.log(file.name);
+        logger.log(file.name);
         continue;
       }
       imports.push(`import "packages/__generated__/${file.name}"`);
@@ -118,8 +119,7 @@ export async function buildRelay(args: Array<string> = []) {
     stopSpinner();
   }
   if (code === 0 && buildCode === 0) {
-    // deno-lint-ignore no-console
-    console.log("Relay success.");
+    logger.log("Relay success.");
     return 0;
   }
   return code || buildCode;
