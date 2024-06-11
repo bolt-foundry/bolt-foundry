@@ -77,7 +77,7 @@
 
         # `nix develop` and direnv
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = sharedPackages ++ devShellPackages;
+          nativeBuildInputs = sharedPackages ++ devShellPackages ++ defaultPackages;
         };
       }
     );
