@@ -26,9 +26,10 @@ const extractGraphqlTags = (contents: string) => {
 const replaceTagsWithImports = async (
   contents: string,
   matches: string[],
+  rootDirectory = "packages"
 ) => {
   let updatedContents = contents;
-  const artifactsDirectory = "packages/__generated__";
+  const artifactsDirectory = `${rootDirectory}/__generated__`;
 
   const replacements: Record<string, string> = {};
 
@@ -319,7 +320,10 @@ export const denoPlugin = {
       const graphqlTags = extractGraphqlTags(source);
       let contents = source;
       if (graphqlTags.length > 0) {
-        contents = await replaceTagsWithImports(source, graphqlTags);
+        const relativeLocation = args.path.split(Deno.env.get("BF_PATH") ?? "")[1];
+        const rootDirectory = relativeLocation.split("/")[1];
+        
+        contents = await replaceTagsWithImports(source, graphqlTags, rootDirectory);
       }
       const ext = args.path.match(/[^.]+$/);
       const loader = (ext ? ext[0] : "ts") as esbuild.Loader;
