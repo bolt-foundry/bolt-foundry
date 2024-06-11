@@ -11,6 +11,8 @@ import { LoginPage } from "infra/internalbf.com/client/pages/LoginPage.tsx";
 import { InternalBfPage } from "infra/internalbf.com/client/pages/InternalBfPage.tsx";
 
 export const routes = new Map([
+  ["/", { Component: InternalBfPage }],
+  ["/login", { Component: LoginPage, allowLoggedOut: true }],
 ]);
 
 export function App() {
