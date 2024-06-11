@@ -50,3 +50,4 @@ export function App() {
     </ErrorBoundary>
   );
 }
+
