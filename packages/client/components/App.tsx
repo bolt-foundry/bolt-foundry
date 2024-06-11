@@ -8,7 +8,6 @@ import {
 } from "packages/client/contexts/RouterContext.tsx";
 
 import { LoginPage } from "packages/client/pages/LoginPage.tsx";
-import { InternalBfPage } from "packages/client/pages/InternalBfPage.tsx";
 import { Marketing } from "packages/client/pages/MarketingPage.tsx";
 import { ProjectPage } from "packages/client/pages/ProjectPage.tsx";
 import { Demo } from "packages/bfDs/Demo.tsx";
@@ -18,7 +17,6 @@ import { ContactUs } from "packages/client/components/ContactUs.tsx";
 export const routes = new Map([
   ["/", { Component: Marketing, allowLoggedOut: true }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
-  ["/internalBf", { Component: InternalBfPage }],
   ["/projects/new", { Component: ProjectNew }],
   ["/projects/:projectId?", { Component: ProjectPage }],
   ["/projects", { Component: ProjectPage }],
@@ -50,3 +48,4 @@ export function App() {
     </ErrorBoundary>
   );
 }
+
