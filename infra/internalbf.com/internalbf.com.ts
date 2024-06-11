@@ -182,6 +182,8 @@ routes.set("/google/oauth/end", (req) => {
   });
 });
 
+routes.set("/graphql", graphQlHandler);
+
 const defaultRoute = () => {
   return new Response("Not found", { status: 404 });
 };
