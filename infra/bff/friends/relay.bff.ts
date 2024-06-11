@@ -1,24 +1,32 @@
-// deno run -A npm:relay-compiler@15.0.0
+// deno run -A npm:relay-compiler
 
 import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
 import { build } from "packages/graphql/schema.ts";
 
-const staticImportFileLocation =
-  new URL(import.meta.resolve("packages/__generated__/_graphql_imports.ts"))
-    .pathname;
+import { getLogger } from "deps.ts";
+const logger = getLogger(import.meta);
 
-export async function buildRelay(args: Array<string> = []) {
-  // deno-lint-ignore no-console
-  console.log("compiling relay...");
+export async function buildRelay(args: Array<string>) {
+  const configLocation = args.shift() ?? "packages";
+  const staticImportFileLocation = new URL(
+    import.meta.resolve(
+      `${configLocation}/__generated__/_graphql_imports.ts`,
+    ),
+  )
+    .pathname;
+  const relayConfigLocation =
+    new URL(import.meta.resolve(`${configLocation}/relay.config.json`))
+      .pathname;
+  logger.log("compiling relay...");
   let stopSpinner;
   if (args.indexOf("--watch") === -1) {
     stopSpinner = startSpinner();
   }
-  await build();
+  await build(configLocation);
 
   const cmd = new Deno.Command("deno", {
-    args: ["run", "-A", "npm:relay-compiler", ...args],
+    args: ["run", "-A", "npm:relay-compiler", relayConfigLocation, ...args],
     stdin: "inherit",
     stdout: "inherit",
     stderr: "inherit",
@@ -30,18 +38,17 @@ export async function buildRelay(args: Array<string> = []) {
   // this is so that we can import all the generated files in one go
   // this is needed because the graphql macro doesn't work with dynamic imports
 
-  const dir = Deno.readDir(Deno.cwd() + "/packages/__generated__");
+  const dir = Deno.readDir(Deno.cwd() + `/${configLocation}/__generated__`);
   const imports = [];
   for await (const file of dir) {
     if (file.isFile) {
       if (file.name.startsWith("_")) {
-        // deno-lint-ignore no-console
-        console.log(file.name);
+        logger.log(file.name);
         continue;
       }
-      imports.push(`import "packages/__generated__/${file.name}"`);
+      imports.push(`import "${configLocation}/__generated__/${file.name}"`);
       const fileLocation = new URL(
-        import.meta.resolve(`packages/__generated__/${file.name}`),
+        import.meta.resolve(`${configLocation}/__generated__/${file.name}`),
       ).pathname;
       let fileContents = await Deno.readTextFile(fileLocation);
 
@@ -87,14 +94,14 @@ export async function buildRelay(args: Array<string> = []) {
       // Insert new import statements after the first import
       for (const [moduleName, variableName] of modules) {
         const importStatement =
-          `\nimport * as ${variableName} from "packages/__generated__/${moduleName}.ts";`;
+          `\nimport * as ${variableName} from "${configLocation}/__generated__/${moduleName}.ts";`;
         fileContents = fileContents.slice(0, firstImportEndIndex) +
           importStatement + fileContents.slice(firstImportEndIndex);
       }
 
       fileContents = fileContents.replace(
-        "packages/__generated__/./..",
-        "packages",
+        `${configLocation}/__generated__/./..`,
+        configLocation,
       );
 
       await Deno.writeTextFile(fileLocation, fileContents);
@@ -106,7 +113,13 @@ export async function buildRelay(args: Array<string> = []) {
   );
 
   const buildTypesCmd = new Deno.Command("deno", {
-    args: ["run", "-A", "packages/graphql/schema.ts", "--compile", ...args],
+    args: [
+      "run",
+      "-A",
+      `packages/graphql/schema.ts`,
+      "--compile",
+      ...args,
+    ],
     stdin: "inherit",
     stdout: "inherit",
     stderr: "inherit",
@@ -118,8 +131,7 @@ export async function buildRelay(args: Array<string> = []) {
     stopSpinner();
   }
   if (code === 0 && buildCode === 0) {
-    // deno-lint-ignore no-console
-    console.log("Relay success.");
+    logger.log("Relay success.");
     return 0;
   }
   return code || buildCode;

@@ -16,7 +16,7 @@ export const schema = makeSchema({
   },
 });
 
-export function build() {
+export function build(configLocation: string = "packages") {
   makeSchema({
     types,
     plugins: [connectionPlugin({
@@ -28,15 +28,16 @@ export function build() {
       },
     },
     outputs: {
-      schema: new URL(import.meta.resolve("packages/graphql/schema.graphql"))
+      schema: new URL(import.meta.resolve(`${configLocation}/graphql/schema.graphql`))
         .pathname,
       typegen:
-        new URL(import.meta.resolve("packages/__generated__/_nexustypes.ts"))
+        new URL(import.meta.resolve(`${configLocation}/__generated__/_nexustypes.ts`))
           .pathname,
     },
   });
 }
 
 if (import.meta.main) {
-  build();
+  const configLocation = Deno.args[1] ?? "packages";
+  build(configLocation);
 }
