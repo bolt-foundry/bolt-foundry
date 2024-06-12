@@ -16,9 +16,11 @@ export class BfNodeGoogleDriveFile extends BfNode<BfNodeGoogleDriveFileRequiredP
     this.ingest();
   }
   async ingest() {
+    logger.debug(`ingesting ${this.props.googleDriveFileId}`);
     const currentViewerAccessToken = await BfPerson.findGoogleApiTokenForCurrentViewer(this.currentViewer);
     const accessToken = await currentViewerAccessToken.getCurrentAccessToken();
     const fileResponse = await fetchFile(accessToken, this.props.googleDriveFileId);
+    logger.debug(`access token ${ accessToken }`)
     const fileStream = fileResponse.body;
     if (fileStream) {
       await streamFileToFfmpegForChunking(fileStream);

@@ -3,7 +3,7 @@ import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import {
   GoogleDriveFilePicker,
   GoogleDriveFilePickerFileType,
-} from "packages/bfDs/GoogleDriveFilePicker.tsx";
+} from "infra/internalbf.com/client/components/GoogleDriveFilePicker.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";

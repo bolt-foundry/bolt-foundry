@@ -1,9 +1,9 @@
 import { getLogger, React, ReactRelay } from "deps.ts";
-import { graphql } from "packages/bfDs/deps.ts";
+import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { Button } from "packages/bfDs/Button.tsx";
-import { GoogleDriveFilePickerQuery } from "packages/__generated__/GoogleDriveFilePickerQuery.graphql.ts";
-import { GoogleDriveFilePickerLinkGoogleAccountMutation } from "packages/__generated__/GoogleDriveFilePickerLinkGoogleAccountMutation.graphql.ts";
-import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
+import { GoogleDriveFilePickerQuery } from "infra/__generated__/GoogleDriveFilePickerQuery.graphql.ts";
+import { GoogleDriveFilePickerLinkGoogleAccountMutation } from "infra/__generated__/GoogleDriveFilePickerLinkGoogleAccountMutation.graphql.ts";
+import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 const logger = getLogger(import.meta);
 const { useLazyLoadQuery, useMutation } = ReactRelay;

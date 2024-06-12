@@ -11,7 +11,7 @@ export async function streamFileToFfmpegForChunking(
   fileStream: ReadableStream<Uint8Array>,
 ) {
   // Step 0: recursively create the temp directory
-  Promise.all([
+  await Promise.all([
     Deno.mkdir(BF_TEMP_DIR, { recursive: true }),
     Deno.mkdir(BF_OUT_PATH, { recursive: true }),
   ]);
@@ -69,7 +69,4 @@ export async function streamFileToFfmpegForChunking(
   const ffmpegProcess = cmd.spawn();
   const output = await ffmpegProcess.output();
   logger.info(`ffmpeg status: ${output.success} / ${output.code}`);
-
-  // Step 5: Clean up temp file
-  await Deno.remove(tempFilePath);
 }
