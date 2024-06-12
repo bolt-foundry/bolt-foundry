@@ -2,19 +2,19 @@
 /// <reference path="https://esm.sh/v135/@types/google.picker@0.0.42/index.d.ts" />
 /// <reference path="https://esm.sh/v135/@types/gapi.drive@0.0.9/index.d.ts" />
 /// <reference path="https://esm.sh/v135/@types/gapi@0.0.47/index.d.ts" />
-import { React, ReactRelay } from "deps.ts";
+
+import { React, ReactRelay, getLogger } from "deps.ts";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
-// import { captureEvent } from "packages/events/mod.ts";
 import { LoginPageCVQuery } from "packages/__generated__/LoginPageCVQuery.graphql.ts";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
-// import { useFeatureFlag } from "packages/client/hooks/featureFlagHooks.tsx";
 
-const { useQueryLoader, useMutation, useLazyLoadQuery } = ReactRelay;
+const { useMutation, useLazyLoadQuery } = ReactRelay;
 const { Suspense, useEffect, useRef } = React;
+const logger = getLogger(import.meta);
 
 const loginWithGoogleMutation = await graphql`
   mutation LoginPageLoginWithGoogleMutation($credential: String!) {
