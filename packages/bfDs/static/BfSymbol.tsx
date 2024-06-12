@@ -1,8 +1,11 @@
 import { React } from "deps.ts";
-import { colors } from "packages/bfDs/const.tsx";
 
-export function BfSymbol() {
-  const boltFill = colors.logoBolt;
+type Props = {
+  color?: string;
+};
+
+export function BfSymbol({ color = "var(--logoBolt)" }: Props) {
+  const boltFill = color;
 
   return (
     <svg
@@ -15,6 +18,7 @@ export function BfSymbol() {
       y="0px"
       viewBox="0 0 73 72"
       xmlSpace="preserve"
+      style={{ height: "100%" }}
     >
       <g>
         <path

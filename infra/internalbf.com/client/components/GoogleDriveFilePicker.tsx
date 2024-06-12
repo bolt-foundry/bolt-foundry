@@ -33,20 +33,6 @@ const linkGoogleAccountMutation = await graphql`
   }
 `;
 
-const styles = {
-  content: {
-    margin: "20px auto",
-    maxWidth: "calc(100% - 40px)",
-    width: "60rem",
-  },
-  filebox: {
-    border: "1px solid var(--border)",
-    borderRadius: 8,
-    padding: 20,
-    marginBottom: 20,
-  },
-};
-
 export enum GoogleDriveFilePickerFileType {
   VIDEO = "video",
   FOLDER = "folder",
@@ -89,7 +75,7 @@ export function GoogleDriveFilePicker({ onPick, pickerType }: Props) {
         onError: (err) => {
           const timeout = 5000;
           showToast(err.message, { timeout });
-        }
+        },
       });
     } catch (e) {
       logger.error("Error authorizing", e);
@@ -108,7 +94,7 @@ export function GoogleDriveFilePicker({ onPick, pickerType }: Props) {
     );
   }
   return (
-    <div style={styles.filebox}>
+    <div>
       <Button
         kind="secondary"
         onClick={() =>
