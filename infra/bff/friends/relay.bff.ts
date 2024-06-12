@@ -7,7 +7,7 @@ import { build } from "packages/graphql/schema.ts";
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
 
-export async function buildRelay(args: Array<string>) {
+export async function buildRelay(args: Array<string> = []) {
   const configLocation = args.shift() ?? "packages";
   const staticImportFileLocation = new URL(
     import.meta.resolve(
