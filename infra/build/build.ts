@@ -17,7 +17,8 @@ export async function build(
     bundle: true,
     entryPoints: [
       ...workerList,
-      "packages/client/Client.tsx"
+      "packages/client/Client.tsx",
+      "infra/internalbf.com/client/Client.tsx",
     ],
     write: true,
     outdir: "build",
