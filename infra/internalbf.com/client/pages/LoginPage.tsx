@@ -82,7 +82,7 @@ function GoogleLoginButton() {
           credential,
         },
         onCompleted: () => {
-          navigate("/projects/new");
+          navigate("/");
         },
       });
     }
