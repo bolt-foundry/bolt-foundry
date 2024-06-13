@@ -13,7 +13,8 @@ type BfNodeGoogleDriveFileRequiredProps = {
 export class BfNodeGoogleDriveFile extends BfNode<BfNodeGoogleDriveFileRequiredProps> {
   __typename = "BfNodeGoogleDriveFile" as const;
   afterCreate() {
-    this.ingest();
+    // this.ingest();
+    this.createIngestionJob();
   }
   async ingest() {
     logger.debug(`ingesting ${this.props.googleDriveFileId}`);
@@ -27,6 +28,9 @@ export class BfNodeGoogleDriveFile extends BfNode<BfNodeGoogleDriveFileRequiredP
       logger.info("probably streamed?")
     }
     
+  }
+  async createIngestionJob() {
+    logger.debug(`creating ingestion job for ${this.props.googleDriveFileId}`);
   }
   
 }

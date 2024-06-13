@@ -23,6 +23,7 @@ import {
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import {
+bfFindItems,
   bfGetItem,
   bfGetItemByBfGid,
   bfPutItem,
@@ -186,9 +187,37 @@ abstract class BfBaseModel<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
     const ownerBfGid = currentViewer.actorBfGid;
-    const items = await bfQueryItems<TRequiredProps>(
+    const items = await bfFindItems<TRequiredProps>(
       ownerBfGid,
       toBfSkUnsorted(this.name),
+    );
+
+    return items.map(({ props, metadata }) => {
+      const model = new this(currentViewer, props, {}, metadata, true);
+      return model as
+        & InstanceType<TThis>
+        & BfBaseModelMetadata<TCreationMetadata>;
+    });
+  }
+
+  static async query<
+    TThis extends Constructor<
+      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+    >,
+    TRequiredProps,
+    TOptionalProps,
+    TCreationMetadata extends CreationMetadata,
+  >(
+    this: TThis,
+    currentViewer: BfCurrentViewer,
+    metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
+    propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
+  ): Promise<
+    Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
+  > {
+    const items = await bfQueryItems<TRequiredProps & Partial<TOptionalProps>, BfBaseModelMetadata<TCreationMetadata>>(
+      metadataToQuery,
+      propsToQuery,
     );
 
     return items.map(({ props, metadata }) => {
@@ -277,7 +306,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     this.props = new Proxy(
       currentProps as
         & TRequiredProps
-        & Partial<TOptionalProps & Record<string | number | symbol, unknown>>,
+        & Partial<TOptionalProps & Record<string, unknown>>,
       {
         get: (_, prop) => {
           const props = { ...this.serverProps, ...this.clientProps };
@@ -444,7 +473,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     type RelatedProps = ExtractProps<TAssocModel>;
     type RelatedMetadata = ExtractMetadata<TAssocModel>;
 
-    const relatedDbItems = await bfQueryItems<RelatedProps, RelatedMetadata>(
+    const relatedDbItems = await bfFindItems<RelatedProps, RelatedMetadata>(
       this.pk,
       toBfSkUnsorted(AssocClass.name),
     );
