@@ -71,6 +71,46 @@ a.dark:visited {
   }
 }
 
+/*BfDs Table  */
+
+.grid-table {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  width: 100%;
+  overflow: hidden;
+}
+
+.grid-header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+}
+
+.grid-body {
+  display: contents;
+}
+
+.grid-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+  border-top: 1px solid var(--border);
+  align-items: center;
+}
+
+.grid-cell {
+  padding: 8px;
+  text-align: left;
+}
+
+.grid-cell:last-child {
+  border-right: none;
+}
+
+.header-cell {
+  background-color: var(--secondaryBackground);
+  font-weight: bold;
+}
+
+/* end  */
 .button {
   transition: 100ms transform ease;
   transform: scale(1);
@@ -1430,6 +1470,7 @@ div#toast-root {
 
 .internalPage {
   display: flex;
+  height: 100%;
   background: white;
 }
 
@@ -1449,6 +1490,7 @@ div#toast-root {
 }
 
 .internalMain {
+  overflow-y: auto;
   flex: 1;
 }
 
