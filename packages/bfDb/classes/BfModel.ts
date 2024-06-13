@@ -34,8 +34,8 @@ import {
 } from "packages/bfDb/classes/BfModelError.ts";
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
-const logVerbose = logger.debug;
-const log = logger.info;
+const logVerbose = logger.trace;
+const log = logger.trace;
 
 function metadataToBfPk(metadata: BfBaseModelMetadata): BfPk {
   if (metadata.bfPid) {
