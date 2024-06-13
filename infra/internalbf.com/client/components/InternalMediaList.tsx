@@ -1,93 +1,33 @@
 import { React } from "deps.ts";
 import { Progress } from "packages/bfDs/Progress.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
-const listItems = [
-  {
-    title: "Movie 1",
-    statusText: "processing",
-    statusProgress: 65,
-    organization: "Bolt Foundry",
-  },
-  {
-    title: "Foo Fighter",
-    statusProgress: 25,
-    organization: "Bolt Foundry",
-  },
-  {
-    title: "Movie 3",
-    statusProgress: 97,
-    organization: "Bolt Foundry",
-  },
-  {
-    title: "Movie 4",
-    statusProgress: 6,
-    organization: "Bolt Foundry",
-  },
+import { Table } from "packages/bfDs/Table.tsx";
+import { TableCell } from "packages/bfDs/TableCell.tsx";
+const { useState, useEffect } = React;
+const columns = [
+  { title: "Title", accessor: "title", width: "2fr" },
+  { title: "Organization", accessor: "organization", width: "1fr" },
+  { title: "Files", accessor: "files", width: "80px", align: "center" },
+  { title: "Project", accessor: "project", width: "80px", align: "center" },
+  { width: "60px" },
 ];
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    width: "90%",
-    display: "flex",
-    flexDirection: "column",
-    margin: "auto",
-    padding: "20px",
-  },
-  listHeader: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-};
+const fakeData = [
+  { title: "Movie 1", organization: "Company A", progress: 65 },
+  { title: "Movie 2", organization: "Company B", progress: 0.0 },
+  { title: "Movie 3", organization: "Company C", progress: 100 },
+  { title: "Movie 4", organization: "Company D" },
+];
+const data = [];
+fakeData.map((item) => {
+  data.push([
+    <TableCell text={item.title} progress={item.progress} />,
+    <TableCell text={item.organization} />,
+    <TableCell align="center" element={<Button iconLeft="download" />} />,
+    <TableCell align="center" element={<Button iconLeft="plus" />} />,
+    <TableCell align="center" text="•••" />,
+  ]);
+});
 
 export function InternalMediaList() {
-  function renderListItems() {
-    return listItems.map((item) => (
-      <>
-        <div style={styles.listHeader} key={item.title}>
-          <div style={{ flex: 2, display: "flex", alignItems: "center" }}>
-            <p style={{ flex: 1 }}>{item.title}</p>
-            <Progress size={24} progress={item.statusProgress} />
-          </div>
-          <p style={{ flex: 1, marginLeft: "10px" }}>
-            {item.organization}
-          </p>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              flex: 2,
-            }}
-          >
-            <Button
-              kind="secondary"
-              role="button"
-              iconLeft="downloadSolid"
-            />
-            <Button
-              kind="secondary"
-              role="button"
-              iconLeft="plus"
-            />
-            <Button kind="secondary" iconLeft="settings" />
-          </div>
-        </div>
-        <hr style={{ color: "#E0E0E0", width: "100%" }} />
-      </>
-    ));
-  }
-
-  return (
-    <div style={styles.container}>
-      <div style={styles.listHeader}>
-        <p style={{ flex: 3 }}>Title</p>
-        <p style={{ flex: 1.5 }}>Organization</p>
-        <p style={{ flex: 1.5 }}>Files</p>
-        <p style={{ flex: 1.5 }}>Project</p>
-      </div>
-      <hr style={{ color: "#E0E0E0", width: "100%" }} />
-      {renderListItems()}
-    </div>
-  );
+  return <Table columns={columns} data={data} />;
 }
