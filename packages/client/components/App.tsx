@@ -13,10 +13,12 @@ import { ProjectPage } from "packages/client/pages/ProjectPage.tsx";
 import { Demo } from "packages/bfDs/Demo.tsx";
 import { ProjectNew } from "packages/client/pages/ProjectNew.tsx";
 import { ContactUs } from "packages/client/components/ContactUs.tsx";
+import { Ingest } from "infra/internalbf.com/client/pages/Ingest.tsx";
 
 export const routes = new Map([
   ["/", { Component: Marketing, allowLoggedOut: true }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
+  ["/internal", { Component: Ingest, allowLoggedOut: true }],
   ["/projects/new", { Component: ProjectNew }],
   ["/projects/:projectId?", { Component: ProjectPage }],
   ["/projects", { Component: ProjectPage }],
@@ -48,4 +50,3 @@ export function App() {
     </ErrorBoundary>
   );
 }
-
