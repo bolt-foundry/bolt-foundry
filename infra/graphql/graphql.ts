@@ -30,11 +30,11 @@ export async function handler(request: Request): Promise<Response> {
   const ctx = await getContextFromRequest(request);
 
   const yogaResponse = await yoga(request, ctx);
-  logger.debug("headers", ctx.responseHeaders);
+  logger.trace("headers", ctx.responseHeaders);
   for (const [key, value] of ctx.responseHeaders.entries()) {
     yogaResponse.headers.append(key, value);
   }
 
-  logger.debug("yoga response", yogaResponse);
+  logger.trace("yoga response", yogaResponse);
   return yogaResponse;
 }
