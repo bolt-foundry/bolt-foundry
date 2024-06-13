@@ -14,7 +14,7 @@ import { Ingest } from "infra/internalbf.com/client/pages/Ingest.tsx";
 
 export const routes = new Map([
   ["/", { Component: InternalBfPage }],
-  ["/new", { Component: Ingest }],
+  ["/new", { Component: Ingest, allowLoggedOut: true }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
 ]);
 
