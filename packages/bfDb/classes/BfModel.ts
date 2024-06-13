@@ -23,6 +23,7 @@ import {
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import {
+bfFindItems,
   bfGetItem,
   bfGetItemByBfGid,
   bfPutItem,
@@ -186,9 +187,37 @@ abstract class BfBaseModel<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
     const ownerBfGid = currentViewer.actorBfGid;
-    const items = await bfQueryItems<TRequiredProps>(
+    const items = await bfFindItems<TRequiredProps>(
       ownerBfGid,
       toBfSkUnsorted(this.name),
+    );
+
+    return items.map(({ props, metadata }) => {
+      const model = new this(currentViewer, props, {}, metadata, true);
+      return model as
+        & InstanceType<TThis>
+        & BfBaseModelMetadata<TCreationMetadata>;
+    });
+  }
+
+  static async query<
+    TThis extends Constructor<
+      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+    >,
+    TRequiredProps,
+    TOptionalProps,
+    TCreationMetadata extends CreationMetadata,
+  >(
+    this: TThis,
+    currentViewer: BfCurrentViewer,
+    metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
+    propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
+  ): Promise<
+    Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
+  > {
+    const items = await bfQueryItems<TRequiredProps & Partial<TOptionalProps>, BfBaseModelMetadata<TCreationMetadata>>(
+      metadataToQuery,
+      propsToQuery,
     );
 
     return items.map(({ props, metadata }) => {
@@ -273,19 +302,28 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     if (clientProps) {
       currentProps = { ...currentProps, ...clientProps };
     }
+    
     // proxying props so people can do things like `model.props.prop = "new value"`
     this.props = new Proxy(
       currentProps as
         & TRequiredProps
-        & Partial<TOptionalProps & Record<string | number | symbol, unknown>>,
+        & Partial<TOptionalProps & Record<string, unknown>>,
       {
-        get: (_, prop) => {
+        get: (_target, prop) => {
+          logger.setLevel(logger.levels.TRACE);
+          logger.trace('get')
+          logger.trace(prop)
+          logger.resetLevel()
           const props = { ...this.serverProps, ...this.clientProps };
           return props[
             prop as keyof TRequiredProps & Partial<TOptionalProps>
           ];
         },
-        set: (_, prop, value) => {
+        set: (_target, prop, value) => {
+          logger.setLevel(logger.levels.TRACE);
+          logger.trace('set')
+          logger.trace(value)
+          logger.resetLevel()
           this.clientProps[
             prop as keyof TRequiredProps & Partial<TOptionalProps>
           ] = value;
@@ -293,10 +331,13 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         },
       },
     ) as TRequiredProps & Partial<TOptionalProps>;
+
     // creating a proxy so users can replace props directly and it works.
     // ie `model.props = { new: "value" }`
     return new Proxy(this, {
-      get: (target, prop) => {
+      get: (target, prop, receiver) => {
+          logger.setLevel(logger.levels.TRACE);
+        logger.trace("another get", prop)
         if (prop === "props") {
           return { ...target.serverProps, ...target.clientProps };
         }
@@ -309,6 +350,9 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         return target[prop as keyof this];
       },
       set: (target, prop, value) => {
+        //   logger.setLevel(logger.levels.TRACE);
+        // logger.trace("another set")
+        // logger.trace(prop, value)
         if (prop === "props") {
           target.clientProps = value;
           return true;
@@ -317,6 +361,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
           target[prop as keyof this] = value;
           return true;
         }
+        logger.resetLevel();
         return false;
       },
     });
@@ -327,6 +372,10 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
 
   get isNew(): boolean {
     return this.serverProps === undefined;
+  }
+
+  get isDirty(): boolean {
+    return JSON.stringify(this.clientProps) !== JSON.stringify(this.serverProps);
   }
   /**
    * @description the partionkey key of the object, ie the owner + separator + the parent
@@ -444,7 +493,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     type RelatedProps = ExtractProps<TAssocModel>;
     type RelatedMetadata = ExtractMetadata<TAssocModel>;
 
-    const relatedDbItems = await bfQueryItems<RelatedProps, RelatedMetadata>(
+    const relatedDbItems = await bfFindItems<RelatedProps, RelatedMetadata>(
       this.pk,
       toBfSkUnsorted(AssocClass.name),
     );

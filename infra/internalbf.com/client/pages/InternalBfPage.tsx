@@ -83,7 +83,7 @@ export function InternalBfPage() {
           </div>
           <div style={styles.filebox}>
             <div style={{ fontSize: 24, fontWeight: "bold" }}>
-              Input file
+              Input file ({originGoogleFile?.id})
             </div>
             <div style={{ marginBottom: 16 }}>
               Choose a movie file from Google Drive.
