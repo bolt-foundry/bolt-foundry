@@ -1,4 +1,5 @@
 import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
+
 import { getLogger, React } from "deps.ts";
 const logger = getLogger(import.meta);
 
@@ -9,9 +10,11 @@ import {
 
 import { LoginPage } from "infra/internalbf.com/client/pages/LoginPage.tsx";
 import { InternalBfPage } from "infra/internalbf.com/client/pages/InternalBfPage.tsx";
+import { Ingest } from "infra/internalbf.com/client/pages/Ingest.tsx";
 
 export const routes = new Map([
   ["/", { Component: InternalBfPage }],
+  ["/new", { Component: Ingest }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
 ]);
 
