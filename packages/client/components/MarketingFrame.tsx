@@ -98,7 +98,7 @@ export function MarketingFrame(
         </div>
         {showLoginLink && (
           <div className="nav-links mobile-hide" style={styles.rightSide}>
-            <Button href="/login" iconLeft="checkCircle"/>
+            <Button href="/login" iconLeft="clipping"/>
           </div>
         )}
         <div
