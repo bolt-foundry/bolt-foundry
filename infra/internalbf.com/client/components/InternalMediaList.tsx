@@ -22,8 +22,14 @@ fakeData.map((item) => {
   data.push([
     <TableCell text={item.title} progress={item.progress} />,
     <TableCell text={item.organization} />,
-    <TableCell align="center" element={<Button iconLeft="download" />} />,
-    <TableCell align="center" element={<Button iconLeft="plus" />} />,
+    <TableCell
+      align="center"
+      element={<Button kind="overlay" iconLeft="download" />}
+    />,
+    <TableCell
+      align="center"
+      element={<Button kind="overlay" iconLeft="plus" />}
+    />,
     <TableCell align="center" text="•••" />,
   ]);
 });

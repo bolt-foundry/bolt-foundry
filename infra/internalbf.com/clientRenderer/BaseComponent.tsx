@@ -54,10 +54,7 @@ export function BaseComponent({ children, environment }: Props) {
           rel="stylesheet"
         />
         <link rel="stylesheet" href="/resources/style.css" />
-        <link
-          rel="stylesheet"
-          href="/infra/internalbf.com/resources/style.css"
-        />
+        <link rel="stylesheet" href="/resources/internalStyle.css" />
         <title>Bolt Foundry - Social media clips without the effort</title>
         <meta
           name="description"

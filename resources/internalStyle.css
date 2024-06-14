@@ -1,0 +1,66 @@
+body {
+  font-family: var(--fontFamily);
+  background: white;
+}
+
+/* INTERNAL BF */
+
+.internalPage {
+  display: flex;
+  height: 100%;
+  background: white;
+}
+
+.internalSidebar {
+  width: 200px;
+  border-right: 1px solid var(--border);
+  height: 100vh;
+}
+
+.internalLogo {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 8px 16px;
+}
+
+.internalMain {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.internalMainHeader {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.internalMainContent {
+  box-sizing: border-box;
+  padding: 40px 20px;
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.internalTabs {
+  display: flex;
+  flex-direction: column;
+  margin: 8px;
+  gap: 4px;
+}
+
+.internalTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+  color: var(--text);
+}
+.internalTab.selected {
+  background: var(--secondaryColor015);
+}

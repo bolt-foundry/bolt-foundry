@@ -10,19 +10,28 @@ export function Ingest() {
       <div className="internalSidebar">
         <div className="internalLogo">
           <div style={{ height: 32 }}>
-            <BfSymbol color="var(--textLight)" />
+            <BfSymbol
+              color="var(--backgroundIcon)"
+              color2="var(--textSecondary)"
+            />
           </div>
           <div>InternalBF</div>
         </div>
         <div className="internalTabs">
-          <div style={{ display: "flex", gap: 5 }}>
-            <Icon name="clipping" />Media
+          <div className="internalTab selected">
+            <Icon name="clipping" color="var(--secondaryColor)" />Media
           </div>
-          <div style={{ display: "flex", gap: 5 }}>
-            <Icon name="subtitle" />Organiations
+          <div className="internalTab">
+            <Icon name="subtitle" />Organizations
           </div>
-          <div style={{ display: "flex", gap: 5 }}>
+          <div className="internalTab">
             <Icon name="pencil" />Projects
+          </div>
+          <div className="internalTab">
+            <Icon name="settings" />System
+          </div>
+          <div className="internalTab">
+            <Icon name="computer" />Your stuff
           </div>
         </div>
         <div style={{ position: "absolute", bottom: 0, margin: 20 }}>
