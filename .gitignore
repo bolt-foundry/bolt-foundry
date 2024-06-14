@@ -7,3 +7,5 @@
 .local
 .replit
 .ccls-cache
+.git
+.sl
