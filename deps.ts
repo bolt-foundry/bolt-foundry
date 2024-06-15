@@ -5,7 +5,7 @@ import * as RelayRuntime from "relay-runtime";
 // @deno-types="https://esm.sh/v135/@types/react@18.2.38/index.d.ts";
 import * as React from "react";
 export * as rxjs from "https://esm.sh/rxjs@7.8.1";
-export { RelayRuntime }
+export { RelayRuntime };
 RelayRuntime.RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true;
 
 // log stuff and random exports
@@ -18,7 +18,7 @@ chalk.level = 3;
 
 export { React };
 
-log.setDefaultLevel(log.levels.TRACE);
+log.setDefaultLevel(log.levels.INFO);
 
 const colors = {
   TRACE: chalk.magenta,
@@ -29,9 +29,10 @@ const colors = {
 };
 
 if (!isBrowser()) {
-  console.log("No enabled loggers specified, enabling all loggers");
-  log.enableAll();
-
+  const defaultLogLevelString = Deno.env.get("LOG_LEVEL") ?? "INFO";
+  const defaultLogLevel =
+    log.levels[defaultLogLevelString as keyof typeof log.levels];
+  log.setDefaultLevel(defaultLogLevel);
   logLevelPrefixPlugin.reg(log);
   logLevelPrefixPlugin.apply(log, {
     template: "%n - %l: ",
@@ -62,8 +63,15 @@ export function getLogger(importMeta: ImportMeta | string) {
   }
   // get relative url and remove leading slash
   const relativePathname = url.pathname.split(Deno.cwd())[1];
-  const pathName = relativePathname ? relativePathname.replace(/^\//, "") : url.pathname;
-  return log.getLogger(pathName);
+  const pathName = relativePathname
+    ? relativePathname.replace(/^\//, "")
+    : url.pathname;
+  const logger = log.getLogger(pathName);
+  const defaultLogLevelString = Deno.env.get("LOG_LEVEL") ?? "INFO";
+  const defaultLogLevel =
+    log.levels[defaultLogLevelString as keyof typeof log.levels];
+  logger.setDefaultLevel(defaultLogLevel);
+  return logger;
 }
 
 export type Maybe<T> = T | null | undefined;
