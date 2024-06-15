@@ -17,7 +17,7 @@ import {
   BfModelErrorNotFound,
   BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
-import { bfQueryItems } from "packages/bfDb/bfDb.ts";
+import { bfFindItems } from "packages/bfDb/bfDb.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 
 export type BfAccountRequiredProps = {
@@ -53,7 +53,7 @@ export class BfAccount extends BfModel<BfAccountRequiredProps> {
         "Current viewer does not match requested account",
       );
     }
-    const accounts = await bfQueryItems<BfAccountRequiredProps>(
+    const accounts = await bfFindItems<BfAccountRequiredProps>(
       toBfPk(personBfGid),
       toBfSkUnsorted("BfAccount"),
     );
