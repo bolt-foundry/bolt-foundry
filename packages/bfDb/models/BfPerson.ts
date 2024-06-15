@@ -15,7 +15,7 @@ import {
   BfGoogleApiTokenProps,
 } from "packages/bfDb/models/BfGoogleApiToken.ts";
 import { exchangeCodeForToken } from "lib/googleOauth.ts";
-import { bfQueryItems } from "packages/bfDb/bfDb.ts";
+import { bfFindItems } from "packages/bfDb/bfDb.ts";
 import { BfAssoc } from "packages/bfDb/coreModels/BfAssoc.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.debug;
@@ -71,7 +71,7 @@ export class BfPerson extends BfModel<BfPersonRequiredProps> {
   static async findGoogleApiTokenForCurrentViewer(
     currentViewer: BfCurrentViewerAccessToken,
   ) {
-    const apiTokens = await bfQueryItems<BfGoogleApiTokenProps>(
+    const apiTokens = await bfFindItems<BfGoogleApiTokenProps>(
       toBfOid(currentViewer.personBfGid),
       toBfSkUnsorted("BfGoogleApiToken"),
     );

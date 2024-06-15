@@ -110,3 +110,16 @@ export class BfCurrentViewerServiceAccount extends BfCurrentViewer {
     );
   }
 }
+
+export class BfCurrentViewerJobRunner extends BfCurrentViewerServiceAccount{
+  static create(
+    importMeta: ImportMeta,
+  ) {
+    return new this(
+      "BF_JOB_RUNNER",
+      ACCOUNT_ROLE.SERVICE_INGESTION,
+      "BF_JOB_RUNNER",
+      importMeta.url,
+    );
+  }
+}
