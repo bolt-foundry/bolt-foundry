@@ -17,11 +17,11 @@ import {
   BfModelErrorNotFound,
   BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
-import { bfQueryItems } from "packages/bfDb/bfDb.ts";
+import { bfFindItems } from "packages/bfDb/bfDb.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 
 export type BfAccountRequiredProps = {
-  organizationBfGid: BfGid;
+  organizationBfGid: BfGid; // this is #TECHDEBT... probably should be actorBfGid.
   personBfGid: BfGid;
   role: ACCOUNT_ROLE;
   displayName: string;
@@ -53,7 +53,7 @@ export class BfAccount extends BfModel<BfAccountRequiredProps> {
         "Current viewer does not match requested account",
       );
     }
-    const accounts = await bfQueryItems<BfAccountRequiredProps>(
+    const accounts = await bfFindItems<BfAccountRequiredProps>(
       toBfPk(personBfGid),
       toBfSkUnsorted("BfAccount"),
     );
@@ -139,7 +139,7 @@ export class BfAccount extends BfModel<BfAccountRequiredProps> {
       role: this.props.role,
       actorBfGid: this.props.organizationBfGid,
       personBfGid: this.props.personBfGid,
-      tokenCreatedBy: this.metadata.bfGid,
+      accountBfGid: this.metadata.bfCid,
     };
   }
 }

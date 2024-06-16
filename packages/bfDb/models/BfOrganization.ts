@@ -1,37 +1,32 @@
 import { BfModel } from "packages/bfDb/classes/BfModel.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
-import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { BfCurrentViewer, BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import { BfAccountRequiredProps } from "packages/bfDb/models/BfAccount.ts";
 import {
   ACCOUNT_ROLE,
   toBfOid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { bfQueryItems } from "packages/bfDb/bfDb.ts";
 
 type BfOrganizationRequiredProps = {
   name: string;
+  domainName: string;
 };
 
-export class BfOrganization extends BfModel<BfOrganizationRequiredProps> {
+
+
+export class BfOrganization
+  extends BfModel<BfOrganizationRequiredProps> {
   __typename = "BfOrganization" as const;
   protected static isSelfOwned = true;
 
-  static async createForCurrentViewer(
-    currentViewer: BfCurrentViewerAccessToken,
-  ) {
-    const relatedPerson = await BfPerson.findX(
-      currentViewer,
-      currentViewer.personBfGid,
-    );
-    const orgProps: BfOrganizationRequiredProps = {
-      name: `${relatedPerson?.props.name}'s Organization`,
-    };
-    const newOrg = await this.create(currentViewer, orgProps);
-    await newOrg.addPerson(currentViewer);
-    return newOrg;
+  static async findByDomainName(currentViewer: BfCurrentViewer, hd: string) {
+    const item = await bfQueryItems({class_name: "BfOrganization"}, {domainName: hd});
+    return this.findX(currentViewer, item[0].metadata.bfGid)
   }
 
-  async addPerson(
+  async addCurrentViewer(
     currentViewer: BfCurrentViewerAccessToken,
   ) {
     const props: BfAccountRequiredProps = {

@@ -3,16 +3,20 @@ import {
   BfBaseModelMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
 import {
+  BfCid,
   BfGid,
   BfOid,
   BfPid,
   BfPk,
   BfSk,
   BfSortValue,
+  BfTid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
-import { BfModelErrorNotFound } from "packages/bfDb/classes/BfModelError.ts";
-import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
+import {
+  BfDbError,
+} from "packages/bfDb/classes/BfDbError.ts";
+
 const logger = getLogger(import.meta);
 
 type DbItem<T, TMetadata extends BfBaseModelMetadata> = {
@@ -25,34 +29,7 @@ if (!databaseUrl) {
 }
 const sql = neon(databaseUrl);
 
-export async function checkSchema() {
-  const schemaUrl = new URL(import.meta.resolve("packages/bfDb/schema.sql"));
-  logger.info(`Checking schema at ${schemaUrl.href}`);
-  const sqlText = await Deno.readTextFile(schemaUrl);
-  // Execute table creation separately
-  await sql(sqlText);
-  // Index checks and creation
-  const indexCheckAndCreateStatements = [
-    {
-      check: `SELECT to_regclass('public.idx_bfdb_pk');`,
-      create: `CREATE INDEX IF NOT EXISTS idx_bfdb_pk ON bfdb (PK);`,
-    },
-    {
-      check: `SELECT to_regclass('public.idx_bfdb_sk');`,
-      create: `CREATE INDEX IF NOT EXISTS idx_bfdb_sk ON bfdb (SK);`,
-    },
-  ];
 
-  for (const { check, create } of indexCheckAndCreateStatements) {
-    const rows = await sql(check);
-    if (!rows[0].to_regclass) {
-      logger.info(`Creating index: ${create}`);
-      await sql(create);
-    } else {
-      logger.info(`Index already exists, skipping creation.`);
-    }
-  }
-}
 
 type Props = Record<string, unknown>;
 type Row<
@@ -62,6 +39,10 @@ type Row<
   bf_gid: BfGid;
   bf_pid: BfPid;
   bf_oid: BfOid;
+  bf_tid: BfTid;
+  bf_cid: BfCid;
+  pk: BfPk;
+  sk: BfSk;
   sort_value: BfSortValue;
   class_name: string;
   created_at: string;
@@ -71,7 +52,7 @@ type Row<
 export async function bfGetItem<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
->(pk: BfPk, sk: BfSk): Promise<DbItem<TProps, TMetadata>> {
+>(pk: BfPk, sk: BfSk): Promise<DbItem<TProps, TMetadata> | null> {
   try {
     logger.trace("bfGetItem", pk, sk);
     const rows =
@@ -80,7 +61,7 @@ export async function bfGetItem<
       >[];
 
     if (rows.length === 0) {
-      throw new BfModelErrorNotFound();
+      return null
     }
     const firstRow = rows[0];
     const props: TProps = firstRow.props; // Assuming attributes stores the props
@@ -90,6 +71,8 @@ export async function bfGetItem<
       bfGid: firstRow.bf_gid,
       bfPid: firstRow.bf_pid,
       bfOid: firstRow.bf_oid,
+      bfTid: firstRow.bf_tid,
+      bfCid: firstRow.bf_cid,
       className: firstRow.class_name,
       createdAt: new Date(firstRow.created_at), // Convert timestamp to Date object
       lastUpdated: new Date(firstRow.last_updated), // Convert timestamp to Date object
@@ -106,7 +89,7 @@ export async function bfGetItem<
 export async function bfGetItemByBfGid<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
->(bfGid: string, className?: string): Promise<DbItem<TProps, TMetadata>> {
+>(bfGid: string, className?: string): Promise<DbItem<TProps, TMetadata> | null> {
   try {
     logger.trace("bfGetItemByBfGid", { bfGid, className });
     let queryPromise;
@@ -118,7 +101,7 @@ export async function bfGetItemByBfGid<
     }
     const rows = await queryPromise as Row<TProps>[];
     if (rows.length === 0) {
-      throw new BfModelErrorNotFound();
+      return null
     }
     const firstRow = rows[0];
     const props = firstRow.props;
@@ -149,6 +132,7 @@ export async function bfPutItem<
   itemProps: TProps,
   itemMetadata: TMetadata,
 ): Promise<void> {
+  logger.setLevel(logger.levels.TRACE)
   logger.trace({ pk, sk, itemProps, itemMetadata });
   try {
     let createdAtTimestamp, lastUpdatedTimestamp;
@@ -165,13 +149,14 @@ export async function bfPutItem<
       lastUpdatedTimestamp = new Date(itemMetadata.lastUpdated).toISOString();
     }
 
-    await sql`INSERT INTO bfdb(bf_gid, PK, SK, props, bf_pid, bf_oid, sort_value, class_name, created_at, last_updated)
-                     VALUES(${itemMetadata.bfGid}, ${pk}, ${sk}, ${
+    await sql`INSERT INTO bfdb(bf_gid, bf_cid, PK, SK, props, bf_pid, bf_oid, sort_value, class_name, created_at, last_updated)
+                     VALUES(${itemMetadata.bfGid}, ${itemMetadata.bfCid}, ${pk}, ${sk}, ${
       JSON.stringify(itemProps)
     }, ${itemMetadata.bfPid || null}, ${itemMetadata.bfOid || null}, ${
       itemMetadata.sortValue || null
     }, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp})
                      ON CONFLICT (bf_gid) DO UPDATE SET
+                       bf_cid = EXCLUDED.bf_cid,
                        PK = EXCLUDED.PK,
                        SK = EXCLUDED.SK,
                        props = EXCLUDED.props,
@@ -190,8 +175,6 @@ export async function bfPutItem<
     throw e;
   }
 }
-
-
 
 export async function bfFindItems<
   TProps = Props,
@@ -229,11 +212,11 @@ export async function bfFindItems<
 
 export async function bfQueryItems<
   TProps = Props,
-  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
+  TMetadata extends Row<TProps> = Row<TProps>
 >(
   metadataToQuery: Partial<TMetadata>,
   propsToQuery: Partial<TProps> = {},
-): Promise<Array<DbItem<TProps, TMetadata>>> {
+): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
   logger.trace({ metadataToQuery, propsToQuery });
 
   const metadataConditions: string[] = [];
@@ -247,7 +230,9 @@ export async function bfQueryItems<
     propsConditions.push(`props->>'${key}' = '${value}'`);
   }
 
-  const allConditions = [...metadataConditions, ...propsConditions].join(' AND ');
+  const allConditions = [...metadataConditions, ...propsConditions].join(
+    " AND ",
+  );
   const query = `SELECT * FROM bfdb WHERE ${allConditions}`;
 
   try {
@@ -269,5 +254,5 @@ export async function bfQueryItems<
   } catch (e) {
     logger.error(e);
     throw e;
-  } 
+  }
 }

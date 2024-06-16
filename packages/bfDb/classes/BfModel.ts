@@ -3,12 +3,11 @@ import type {
   Constructor,
   CreationMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import {
-  BfCurrentViewer,
-  BfCurrentViewerServiceAccount,
-} from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import {
   ACCOUNT_ACTIONS,
+  BfAnyid,
+  BfCid,
   BfGid,
   BfPk,
   BfSk,
@@ -109,7 +108,6 @@ abstract class BfBaseModel<
     await newModel.save();
     await newModel.afterCreate();
     logVerbose("created", { newModel });
-    // #bfModelReturn: the BfBaseModelMetadata comes from the proxy in the constructor.
     return newModel as
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
@@ -125,7 +123,7 @@ abstract class BfBaseModel<
   >(
     this: TThis,
     currentViewer: BfCurrentViewer,
-    bfGid: BfGid,
+    bfGid: BfAnyid,
     sortValue?: BfSortValue,
   ) {
     try {
@@ -150,7 +148,7 @@ abstract class BfBaseModel<
   >(
     this: TThis,
     currentViewer: BfCurrentViewer,
-    bfGid: BfGid,
+    bfGid: BfAnyid,
     sortValue?: BfSortValue,
   ): Promise<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
@@ -159,15 +157,8 @@ abstract class BfBaseModel<
       bfGid,
       sortValue,
     });
-    if (currentViewer instanceof BfCurrentViewerServiceAccount) {
-      log(
-        `Loading ${this.name} with bfGid: ${bfGid} using service account ${currentViewer.actorBfGid}`,
-      );
-      await model.load__PRIVACY_UNSAFE();
-    } else {
-      await model.load();
-    }
-    // #bfModelReturn
+    await model.load();
+
     return model as
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
@@ -234,20 +225,21 @@ abstract class BfBaseModel<
   private static generateDefaultMetadata<
     TCreationMetadata extends CreationMetadata = CreationMetadata,
   >(
-    createdBy: BfGid,
+    bfCid: BfCid,
     bfGid = generateUUID(),
     bfOid = toBfOid(bfGid),
     sortValue = this.generateSortValue(),
   ): BfBaseModelMetadata<TCreationMetadata> {
+    // @ts-expect-error #techdebt this isn't correctly typed (and perhaps correctly implemented.)
     return {
-      createdBy,
+      bfCid,
       bfGid: toBfGid(bfGid),
       bfOid: toBfOid(bfOid),
       sortValue,
       className: this.name,
       createdAt: Date.now() as JsUnixtime,
       lastUpdated: Date.now() as JsUnixtime,
-    } as BfBaseModelMetadata<TCreationMetadata>;
+    };
   }
 
   protected static generateSortValue(): BfSortValue | undefined {
@@ -279,8 +271,11 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
    * @param clientProps Props newly created on the client
    * @param metadata Metadata explaining the item's place in the world™
    */
+  get currentViewer(): BfCurrentViewer {
+    return this._currentViewer;
+  }
   protected constructor(
-    readonly currentViewer: BfCurrentViewer,
+    readonly _currentViewer: BfCurrentViewer,
     protected serverProps: TRequiredProps & Partial<TOptionalProps> | undefined,
     protected clientProps: Partial<TRequiredProps> & Partial<TOptionalProps>,
     metadata: Partial<BfBaseModelMetadata<TCreationMetadata>> = {},
@@ -288,10 +283,10 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
   ) {
     const bfOid = (this.constructor as typeof BfBaseModel).isSelfOwned
       ? undefined
-      : metadata.bfOid ?? currentViewer.actorBfGid;
+      : metadata.bfOid ?? _currentViewer.actorBfGid;
     const defaultMetadata = (this.constructor as typeof BfBaseModel)
       .generateDefaultMetadata<TCreationMetadata>(
-        currentViewer.personBfGid,
+        _currentViewer.accountBfGid,
         metadata.bfGid,
         bfOid,
         metadata.sortValue,
@@ -380,6 +375,11 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         TRequiredProps & Partial<TOptionalProps>,
         BfBaseModelMetadata<TCreationMetadata>
       >(this.pk, this.sk);
+      if (response === null) {
+        throw new BfModelErrorNotFound(
+          `Could not load ${this.constructor.name} with bfGid: ${this.metadata.bfGid} using pk: ${this.pk} and sk: ${this.sk}`,
+        );
+      }
       const { props, metadata } = response;
       if (props) {
         this.serverProps = props;
@@ -387,11 +387,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       this.metadata = metadata;
       return this;
     } catch (error) {
-      if (error.name === "ItemNotFoundError") {
-        throw new BfModelErrorNotFound(
-          `Could not find ${this.constructor.name} with bfGid: ${this.metadata.bfGid} using pk: ${this.pk} and sk: ${this.sk}`,
-        );
-      }
       throw error;
     }
   }
@@ -404,6 +399,11 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         TRequiredProps & Partial<TOptionalProps>,
         BfBaseModelMetadata<TCreationMetadata>
       >(this.metadata.bfGid, this.constructor.name as BfSk);
+      if (response === null) {
+        throw new BfModelErrorNotFound(
+          `Could not load ${this.constructor.name} with bfGid: ${this.metadata.bfGid} using pk: ${this.pk} and sk: ${this.sk}`,
+        );
+      }
       const { props, metadata } = response;
       if (props) {
         this.serverProps = props;
@@ -421,15 +421,22 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
   }
 
   async beforeSave() {}
+  async afterSave() {}
 
   async save() {
-    await this.beforeSave(),
-      await Promise.all([
-        this.validatePermissions(ACCOUNT_ACTIONS.WRITE),
-        this.validateSave(),
-      ]);
-    await bfPutItem(this.pk, this.sk, this.props, this.metadata);
+    await this.beforeSave();
+    await Promise.all([
+      this.validatePermissions(ACCOUNT_ACTIONS.WRITE),
+      this.validateSave(),
+    ]);
+    await bfPutItem(
+      this.pk,
+      this.sk,
+      this.props,
+      this.metadata,
+    );
     await this.load();
+    await this.afterSave();
   }
 
   validatePermissions(action: ACCOUNT_ACTIONS): Promise<boolean> | boolean {

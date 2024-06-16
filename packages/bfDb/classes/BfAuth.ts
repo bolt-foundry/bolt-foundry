@@ -11,6 +11,7 @@ type GooglePayload = Payload & {
   picture: string;
   email_verified: boolean;
   sub: string;
+  hd?: string;
 };
 
 const googleJwkUrl = "https://www.googleapis.com/oauth2/v3/certs";
@@ -32,7 +33,7 @@ type BfAccessTokenPayload = {
   actorBfGid: BfGid;
   personBfGid: BfGid;
   role: ACCOUNT_ROLE;
-  tokenCreatedBy: BfGid;
+  accountBfGid: BfGid;
 };
 
 type BfRefreshTokenPayload = BfAccessTokenPayload & {
@@ -109,9 +110,9 @@ export function encodeBfAccessToken(
   importMeta: ImportMeta,
   payload: BfAccessTokenPayload,
 ): Promise<string> {
-  const { actorBfGid, tokenCreatedBy } = payload;
+  const { actorBfGid, accountBfGid } = payload;
   const sub = actorBfGid;
-  const iss = tokenCreatedBy;
+  const iss = accountBfGid;
 
   accessLogger.info(
     `encodeBfAccessToken: sub: ${sub}, iss: ${iss} from ${importMeta.url}`,
@@ -145,9 +146,9 @@ export function encodeBfRefreshToken(
   importMeta: ImportMeta,
   payload: BfRefreshTokenPayload,
 ): Promise<string> {
-  const { actorBfGid, tokenCreatedBy } = payload;
+  const { actorBfGid, accountBfGid } = payload;
   const sub = actorBfGid;
-  const iss = tokenCreatedBy;
+  const iss = accountBfGid;
   const iat = Math.floor(Date.now() / 1000);
   const exp = iat + REFRESH_TOKEN_EXPIRATION_WINDOW_SECONDS;
 
