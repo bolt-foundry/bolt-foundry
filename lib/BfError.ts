@@ -10,6 +10,6 @@ export class BfError extends Error {
       ? messageOrError.message
       : messageOrError;
     super(message);
-    logger.error(message, this);
+    // logger.error(message, this);
   }
 }
