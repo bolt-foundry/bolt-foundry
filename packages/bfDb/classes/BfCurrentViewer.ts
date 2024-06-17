@@ -31,9 +31,9 @@ export abstract class BfCurrentViewer {
     readonly actorBfGid: BfOid, // always an owner, used to determine access control
     readonly role: ACCOUNT_ROLE,
     readonly personBfGid: BfGid, // person for whom the access token was created
+    readonly accountBfGid: BfGid, // the account from which the access token was created. If undefined, the person is acting as themselves
     readonly creator: string, // the import.meta.url of the module that created the current viewer
     readonly jwtPayload: BfJwtPayload | null = null,
-    readonly accountBfGid?: BfGid, // the account from which the access token was created. If undefined, the person is acting as themselves
   ) {
     this.__typename = this.constructor.name;
   }
@@ -46,8 +46,8 @@ export class BfCurrentViewerAnon extends BfCurrentViewer {
       toBfOid("anon"),
       ACCOUNT_ROLE.ANON,
       toBfGid("anon"),
+      toBfGid("anon"),
       creator,
-      null,
     );
   }
 }
@@ -60,15 +60,15 @@ export class BfCurrentViewerAccessToken extends BfCurrentViewer {
     try {
       if (accessToken) {
         const jwtPayload = await decodeAndVerifyBfJwt(accessToken);
-        const { actorBfGid, role, personBfGid, iss } = jwtPayload;
+        const { actorBfGid, role, personBfGid, accountBfGid } = jwtPayload;
         if (role && actorBfGid && personBfGid) {
           return new this(
             toBfOid(actorBfGid),
             role as ACCOUNT_ROLE,
             personBfGid,
+            toBfGid(accountBfGid),
             importMeta.url,
             jwtPayload,
-            toBfGid(iss ?? ""),
           );
         }
       }
@@ -89,6 +89,7 @@ export class BfCurrentViewerAccessToken extends BfCurrentViewer {
     return new this(
       toBfOid(id),
       ACCOUNT_ROLE.OWNER,
+      toBfGid(id),
       toBfGid(id),
       importMeta.url,
     );
