@@ -37,6 +37,9 @@ type Row<
   bf_gid: BfGid;
   bf_pid: BfPid;
   bf_oid: BfOid;
+  bf_tid: BfTid;
+  pk: BfPk;
+  sk: BfSk;
   sort_value: BfSortValue;
   class_name: string;
   created_at: string;
@@ -65,6 +68,7 @@ export async function bfGetItem<
       bfGid: firstRow.bf_gid,
       bfPid: firstRow.bf_pid,
       bfOid: firstRow.bf_oid,
+      bfTid: firstRow.bf_tid,
       className: firstRow.class_name,
       createdAt: new Date(firstRow.created_at), // Convert timestamp to Date object
       lastUpdated: new Date(firstRow.last_updated), // Convert timestamp to Date object
@@ -204,11 +208,11 @@ export async function bfFindItems<
 
 export async function bfQueryItems<
   TProps = Props,
-  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
+  TMetadata extends Row<TProps> = Row<TProps>
 >(
   metadataToQuery: Partial<TMetadata>,
   propsToQuery: Partial<TProps> = {},
-): Promise<Array<DbItem<TProps, TMetadata>>> {
+): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
   logger.trace({ metadataToQuery, propsToQuery });
 
   const metadataConditions: string[] = [];
@@ -222,7 +226,9 @@ export async function bfQueryItems<
     propsConditions.push(`props->>'${key}' = '${value}'`);
   }
 
-  const allConditions = [...metadataConditions, ...propsConditions].join(' AND ');
+  const allConditions = [...metadataConditions, ...propsConditions].join(
+    " AND ",
+  );
   const query = `SELECT * FROM bfdb WHERE ${allConditions}`;
 
   try {
@@ -244,5 +250,5 @@ export async function bfQueryItems<
   } catch (e) {
     logger.error(e);
     throw e;
-  } 
+  }
 }
