@@ -11,6 +11,7 @@ type GooglePayload = Payload & {
   picture: string;
   email_verified: boolean;
   sub: string;
+  hd?: string;
 };
 
 const googleJwkUrl = "https://www.googleapis.com/oauth2/v3/certs";
