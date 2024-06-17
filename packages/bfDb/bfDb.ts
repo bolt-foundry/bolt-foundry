@@ -11,8 +11,10 @@ import {
   BfSortValue,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
-import { BfModelErrorNotFound } from "packages/bfDb/classes/BfModelError.ts";
-import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
+import {
+  BfDbError,
+} from "packages/bfDb/classes/BfDbError.ts";
+
 const logger = getLogger(import.meta);
 
 type DbItem<T, TMetadata extends BfBaseModelMetadata> = {
