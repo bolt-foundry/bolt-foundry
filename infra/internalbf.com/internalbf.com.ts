@@ -195,7 +195,7 @@ Deno.serve(async (req, info) => {
     `Incoming request: ${req.method} ${incomingUrl.pathname}`,
   );
   info.completed.then(() => {
-    logger.log(
+    logger.info(
       `(${
         (performance.now() - tick).toFixed(0)
       }ms) Completed: ${req.method} ${incomingUrl.pathname}`,

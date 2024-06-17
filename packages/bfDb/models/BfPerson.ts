@@ -109,8 +109,6 @@ export class BfPerson extends BfModel<BfPersonRequiredProps> {
     const expiresAtISODate = new Date(
       Date.now() + tokenPayload.expires_in * 1000,
     ).toISOString();
-    logger.setLevel(logger.levels.TRACE)
-    logger.trace(this.currentViewer)
     const token = await BfGoogleApiToken.create(
       this.currentViewer,
       {
