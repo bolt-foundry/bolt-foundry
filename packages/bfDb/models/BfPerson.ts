@@ -5,6 +5,7 @@ import {
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
 import {
+toBfCid,
   toBfOid,
   toBfPid,
   toBfSkUnsorted,
@@ -58,6 +59,7 @@ export class BfPerson extends BfModel<BfPersonRequiredProps> {
       );
     const newPerson = await this.create(currentViewer, { email, name }, {
       bfGid: currentViewer.personBfGid,
+      bfCid: toBfCid(currentViewer.personBfGid),
     });
 
     const _newOrganization = await BfOrganization.createForCurrentViewer(

@@ -1,4 +1,5 @@
 import {
+BfCid,
   BfGid,
   BfOid,
   BfPid,
@@ -19,9 +20,9 @@ export type BfBaseModelMetadata<TCreationMetadata = CreationMetadata> =
   & {
     lastUpdated: Date;
     createdAt: Date;
-    createdBy: BfGid;
     className: string;
     bfOid: BfOid; // not optional because self owned items will now have a defined bfOid, even if it's the same as bfGid
+    bfCid: BfCid;
     bfGid: BfGid; // not optional because all items will have a defined bfGid
     bfTid?: BfTid;
   };

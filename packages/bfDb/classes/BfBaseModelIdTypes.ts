@@ -20,6 +20,10 @@ export type BfOid = Nominal<string, "BfOid"> | BfGid;
  */
 export type BfPid = Nominal<string, "BfPid"> | BfGid;
 /**
+ * BfCid is the creator for a BfModel. BfCid maps to BfGids for accounts only.
+ */
+export type BfCid = Nominal<string, "BfCid"> | BfGid;
+/**
  * BfTid is a target for a BfModel. Most frequently used in assocs. BfTid maps to BfGids.
  */
 export type BfTid = Nominal<string, "BfTid"> | BfGid;
@@ -53,6 +57,10 @@ export function toBfPid(value: string): BfPid {
 
 export function toBfTid(value: string): BfTid {
   return value as BfTid;
+}
+
+export function toBfCid(value: string): BfCid {
+  return value as BfCid;
 }
 
 export function toBfSortValue<T extends string>(value: T): BfSortValue<T> {
