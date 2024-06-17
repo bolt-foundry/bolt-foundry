@@ -15,6 +15,7 @@ import { GraphQLContext } from "packages/graphql/graphql.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import { getLogger } from "deps.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfNodeJob } from "packages/bfDb/models/BfNodeJob.ts";
 
 const logger = getLogger(import.meta);
 
@@ -37,6 +38,22 @@ export abstract class BfCurrentViewer {
     readonly jwtPayload: BfJwtPayload | null = null,
   ) {
     this.__typename = this.constructor.name;
+  }
+}
+
+export class BfCurrentViewerJobRunner extends BfCurrentViewer {
+  static async create(importMeta: ImportMeta, job: BfNodeJob) {
+    const account = await BfAccount.findX(
+      job.currentViewer,
+      job.metadata.bfCid,
+    );
+    return new this(
+      toBfOid(account.props.organizationBfGid),
+      account.props.role,
+      toBfGid(account.props.personBfGid),
+      account.bfGid,
+      importMeta.url,
+    )
   }
 }
 
