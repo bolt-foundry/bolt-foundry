@@ -7,9 +7,10 @@ import {
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 
 export type CreationMetadata<SortValueClass extends string = string> = {
-  bfGid?: BfGid;
+  bfGid?: BfGid; // bfGids don't have to come from our system, they can be significant from other systems.
   bfOid?: BfOid; // optional because items can be self owned.
   bfPid?: BfPid;
+  bfTid?: BfTid;
   sortValue?: BfSortValue<SortValueClass>;
 };
 
