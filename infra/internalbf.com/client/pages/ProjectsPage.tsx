@@ -1,10 +1,12 @@
 import { React } from "deps.ts";
-import { InternalMediaIngestion } from "infra/internalbf.com/client/components/InternalMediaIngestion.tsx";
-import { InternalMediaList } from "infra/internalbf.com/client/components/InternalMediaList.tsx";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { UserProfile } from "packages/client/components/UserProfile.tsx";
 import { Icon } from "packages/bfDs/Icon.tsx";
-export function Ingest() {
+import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
+import { InternalProjectsList } from "infra/internalbf.com/client/components/InternalProjectsList.tsx";
+
+export function ProjectsPage() {
+  const { navigate } = useRouter();
   return (
     <div className="internalPage">
       <div className="internalSidebar">
@@ -18,14 +20,17 @@ export function Ingest() {
           <div>InternalBF</div>
         </div>
         <div className="internalTabs">
-          <div className="internalTab selected">
-            <Icon name="clipping" color="var(--secondaryColor)" />Media
+          <div className="internalTab" onClick={() => navigate("/media")}>
+            <Icon name="clipping" />Media
           </div>
           <div className="internalTab">
             <Icon name="subtitle" />Organizations
           </div>
-          <div className="internalTab">
-            <Icon name="pencil" />Projects
+          <div
+            className="internalTab selected"
+            onClick={() => navigate("/projects")}
+          >
+            <Icon name="pencil" color="var(--secondaryColor)" />Projects
           </div>
           <div className="internalTab">
             <Icon name="settings" />System
@@ -40,10 +45,10 @@ export function Ingest() {
       </div>
       <div className="internalMain">
         <div className="internalMainHeader">
-          <InternalMediaIngestion />
+          Projects
         </div>
         <div className="internalMainContent">
-          <InternalMediaList />
+          <InternalProjectsList />
         </div>
       </div>
     </div>
