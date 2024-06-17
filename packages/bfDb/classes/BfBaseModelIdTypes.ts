@@ -10,19 +10,22 @@ export type Nominal<Type, Identifier> = Type & {
 /**
  * BfGid is a globally unique identifier for a BfModel.
  */
-export type BfGid = Nominal<string, "bfGid">;
+export type BfGid = Nominal<string, "BfGid">;
 /**
  * BfOid is an owner for a BfModel. BfOid maps to BfGids.
  */
-export type BfOid = Nominal<string, "BfOid">;
+export type BfOid = Nominal<string, "BfOid"> | BfGid;
 /**
  * BfPid is a parent for a BfModel. BfPid maps to BfGids.
  */
-export type BfPid = Nominal<string, "BfPid">;
+export type BfPid = Nominal<string, "BfPid"> | BfGid;
 /**
  * BfTid is a target for a BfModel. Most frequently used in assocs. BfTid maps to BfGids.
  */
-export type BfTid = Nominal<string, "BfTid">;
+export type BfTid = Nominal<string, "BfTid"> | BfGid;
+
+export type BfAnyid = BfGid | BfOid | BfPid | BfCid | BfTid;
+
 export type BfAccessToken = Nominal<string, "BfAccessToken">;
 export type BfClassName = Nominal<string, "BfClassName">;
 export type BfSortValue<T extends string = string> = Nominal<T, "BfSortValue">;

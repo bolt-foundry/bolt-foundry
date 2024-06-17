@@ -9,6 +9,7 @@ import {
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import {
   ACCOUNT_ACTIONS,
+  BfAnyid,
   BfGid,
   BfPk,
   BfSk,
@@ -109,7 +110,6 @@ abstract class BfBaseModel<
     await newModel.save();
     await newModel.afterCreate();
     logVerbose("created", { newModel });
-    // #bfModelReturn: the BfBaseModelMetadata comes from the proxy in the constructor.
     return newModel as
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
@@ -125,7 +125,7 @@ abstract class BfBaseModel<
   >(
     this: TThis,
     currentViewer: BfCurrentViewer,
-    bfGid: BfGid,
+    bfGid: BfAnyid,
     sortValue?: BfSortValue,
   ) {
     try {
@@ -150,7 +150,7 @@ abstract class BfBaseModel<
   >(
     this: TThis,
     currentViewer: BfCurrentViewer,
-    bfGid: BfGid,
+    bfGid: BfAnyid,
     sortValue?: BfSortValue,
   ): Promise<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
