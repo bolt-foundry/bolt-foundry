@@ -3,6 +3,7 @@ import {
   BfBaseModelMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
 import {
+  BfCid,
   BfGid,
   BfOid,
   BfPid,
@@ -38,6 +39,7 @@ type Row<
   bf_pid: BfPid;
   bf_oid: BfOid;
   bf_tid: BfTid;
+  bf_cid: BfCid;
   pk: BfPk;
   sk: BfSk;
   sort_value: BfSortValue;
@@ -69,6 +71,7 @@ export async function bfGetItem<
       bfPid: firstRow.bf_pid,
       bfOid: firstRow.bf_oid,
       bfTid: firstRow.bf_tid,
+      bfCid: firstRow.bf_cid,
       className: firstRow.class_name,
       createdAt: new Date(firstRow.created_at), // Convert timestamp to Date object
       lastUpdated: new Date(firstRow.last_updated), // Convert timestamp to Date object
@@ -144,13 +147,14 @@ export async function bfPutItem<
       lastUpdatedTimestamp = new Date(itemMetadata.lastUpdated).toISOString();
     }
 
-    await sql`INSERT INTO bfdb(bf_gid, PK, SK, props, bf_pid, bf_oid, sort_value, class_name, created_at, last_updated)
-                     VALUES(${itemMetadata.bfGid}, ${pk}, ${sk}, ${
+    await sql`INSERT INTO bfdb(bf_gid, bf_cid, PK, SK, props, bf_pid, bf_oid, sort_value, class_name, created_at, last_updated)
+                     VALUES(${itemMetadata.bfGid}, ${itemMetadata.bfCid}, ${pk}, ${sk}, ${
       JSON.stringify(itemProps)
     }, ${itemMetadata.bfPid || null}, ${itemMetadata.bfOid || null}, ${
       itemMetadata.sortValue || null
     }, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp})
                      ON CONFLICT (bf_gid) DO UPDATE SET
+                       bf_cid = EXCLUDED.bf_cid,
                        PK = EXCLUDED.PK,
                        SK = EXCLUDED.SK,
                        props = EXCLUDED.props,

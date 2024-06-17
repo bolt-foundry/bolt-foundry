@@ -10,6 +10,7 @@ import {
 import {
   ACCOUNT_ACTIONS,
   BfAnyid,
+  BfCid,
   BfGid,
   BfPk,
   BfSk,
@@ -234,20 +235,21 @@ abstract class BfBaseModel<
   private static generateDefaultMetadata<
     TCreationMetadata extends CreationMetadata = CreationMetadata,
   >(
-    createdBy: BfGid,
+    bfCid: BfCid,
     bfGid = generateUUID(),
     bfOid = toBfOid(bfGid),
     sortValue = this.generateSortValue(),
   ): BfBaseModelMetadata<TCreationMetadata> {
+    // @ts-expect-error #techdebt this isn't correctly typed (and perhaps correctly implemented.)
     return {
-      createdBy,
+      bfCid,
       bfGid: toBfGid(bfGid),
       bfOid: toBfOid(bfOid),
       sortValue,
       className: this.name,
       createdAt: Date.now() as JsUnixtime,
       lastUpdated: Date.now() as JsUnixtime,
-    } as BfBaseModelMetadata<TCreationMetadata>;
+    };
   }
 
   protected static generateSortValue(): BfSortValue | undefined {
@@ -291,7 +293,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       : metadata.bfOid ?? currentViewer.actorBfGid;
     const defaultMetadata = (this.constructor as typeof BfBaseModel)
       .generateDefaultMetadata<TCreationMetadata>(
-        currentViewer.personBfGid,
+        _currentViewer.accountBfGid,
         metadata.bfGid,
         bfOid,
         metadata.sortValue,
