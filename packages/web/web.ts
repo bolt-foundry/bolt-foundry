@@ -219,7 +219,7 @@ Deno.serve(async (req, info) => {
     `Incoming request: ${req.method} ${incomingUrl.pathname}`,
   );
   info.completed.then(() => {
-    logger.log(`(${performance.now() - tick}ms) Completed: ${req.method} ${incomingUrl.pathname}`);
+    logger.info(`(${performance.now() - tick}ms) Completed: ${req.method} ${incomingUrl.pathname}`);
   })
   // Attempt to match routes with optional URL params
   const pathWithParams = incomingUrl.pathname.split("?")[0];
