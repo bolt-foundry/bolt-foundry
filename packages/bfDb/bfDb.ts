@@ -25,34 +25,7 @@ if (!databaseUrl) {
 }
 const sql = neon(databaseUrl);
 
-export async function checkSchema() {
-  const schemaUrl = new URL(import.meta.resolve("packages/bfDb/schema.sql"));
-  logger.info(`Checking schema at ${schemaUrl.href}`);
-  const sqlText = await Deno.readTextFile(schemaUrl);
-  // Execute table creation separately
-  await sql(sqlText);
-  // Index checks and creation
-  const indexCheckAndCreateStatements = [
-    {
-      check: `SELECT to_regclass('public.idx_bfdb_pk');`,
-      create: `CREATE INDEX IF NOT EXISTS idx_bfdb_pk ON bfdb (PK);`,
-    },
-    {
-      check: `SELECT to_regclass('public.idx_bfdb_sk');`,
-      create: `CREATE INDEX IF NOT EXISTS idx_bfdb_sk ON bfdb (SK);`,
-    },
-  ];
 
-  for (const { check, create } of indexCheckAndCreateStatements) {
-    const rows = await sql(check);
-    if (!rows[0].to_regclass) {
-      logger.info(`Creating index: ${create}`);
-      await sql(create);
-    } else {
-      logger.info(`Index already exists, skipping creation.`);
-    }
-  }
-}
 
 type Props = Record<string, unknown>;
 type Row<
