@@ -14,6 +14,7 @@ import { cookie } from "packages/graphql/deps.ts";
 import { GraphQLContext } from "packages/graphql/graphql.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import { getLogger } from "deps.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
 const logger = getLogger(import.meta);
 
@@ -96,17 +97,13 @@ export class BfCurrentViewerAccessToken extends BfCurrentViewer {
   }
 }
 
-export class BfCurrentViewerServiceAccount extends BfCurrentViewer {
-  static create(
-    importMeta: ImportMeta,
-    serviceAccountType: ACCOUNT_ROLE,
-    bfOid: BfOid,
-    bfGidForCreator: BfGid,
-  ) {
+export class BfCurrentViewerOmni extends BfCurrentViewer {
+  static __DANGEROUS__create(importMeta: ImportMeta) {
     return new this(
-      bfOid,
-      serviceAccountType,
-      bfGidForCreator,
+      toBfOid("omni_person"),
+      ACCOUNT_ROLE.OMNI,
+      toBfGid("omni_person"),
+      toBfGid("omni_person"),
       importMeta.url,
     );
   }

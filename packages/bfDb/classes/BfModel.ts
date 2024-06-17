@@ -3,10 +3,7 @@ import type {
   Constructor,
   CreationMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import {
-  BfCurrentViewer,
-  BfCurrentViewerServiceAccount,
-} from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import {
   ACCOUNT_ACTIONS,
   BfAnyid,
@@ -160,15 +157,8 @@ abstract class BfBaseModel<
       bfGid,
       sortValue,
     });
-    if (currentViewer instanceof BfCurrentViewerServiceAccount) {
-      log(
-        `Loading ${this.name} with bfGid: ${bfGid} using service account ${currentViewer.actorBfGid}`,
-      );
-      await model.load__PRIVACY_UNSAFE();
-    } else {
-      await model.load();
-    }
-    // #bfModelReturn
+    await model.load();
+
     return model as
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
@@ -293,7 +283,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       : metadata.bfOid ?? currentViewer.actorBfGid;
     const defaultMetadata = (this.constructor as typeof BfBaseModel)
       .generateDefaultMetadata<TCreationMetadata>(
-        _currentViewer.accountBfGid,
+        currentViewer.accountBfGid,
         metadata.bfGid,
         bfOid,
         metadata.sortValue,
