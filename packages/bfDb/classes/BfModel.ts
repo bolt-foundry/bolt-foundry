@@ -380,6 +380,11 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         TRequiredProps & Partial<TOptionalProps>,
         BfBaseModelMetadata<TCreationMetadata>
       >(this.pk, this.sk);
+      if (response === null) {
+        throw new BfModelErrorNotFound(
+          `Could not load ${this.constructor.name} with bfGid: ${this.metadata.bfGid} using pk: ${this.pk} and sk: ${this.sk}`,
+        );
+      }
       const { props, metadata } = response;
       if (props) {
         this.serverProps = props;
@@ -387,11 +392,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       this.metadata = metadata;
       return this;
     } catch (error) {
-      if (error.name === "ItemNotFoundError") {
-        throw new BfModelErrorNotFound(
-          `Could not find ${this.constructor.name} with bfGid: ${this.metadata.bfGid} using pk: ${this.pk} and sk: ${this.sk}`,
-        );
-      }
       throw error;
     }
   }
@@ -404,6 +404,11 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         TRequiredProps & Partial<TOptionalProps>,
         BfBaseModelMetadata<TCreationMetadata>
       >(this.metadata.bfGid, this.constructor.name as BfSk);
+      if (response === null) {
+        throw new BfModelErrorNotFound(
+          `Could not load ${this.constructor.name} with bfGid: ${this.metadata.bfGid} using pk: ${this.pk} and sk: ${this.sk}`,
+        );
+      }
       const { props, metadata } = response;
       if (props) {
         this.serverProps = props;
@@ -421,15 +426,22 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
   }
 
   async beforeSave() {}
+  async afterSave() {}
 
   async save() {
-    await this.beforeSave(),
-      await Promise.all([
-        this.validatePermissions(ACCOUNT_ACTIONS.WRITE),
-        this.validateSave(),
-      ]);
-    await bfPutItem(this.pk, this.sk, this.props, this.metadata);
+    await this.beforeSave();
+    await Promise.all([
+      this.validatePermissions(ACCOUNT_ACTIONS.WRITE),
+      this.validateSave(),
+    ]);
+    await bfPutItem(
+      this.pk,
+      this.sk,
+      this.props,
+      this.metadata,
+    );
     await this.load();
+    await this.afterSave();
   }
 
   validatePermissions(action: ACCOUNT_ACTIONS): Promise<boolean> | boolean {

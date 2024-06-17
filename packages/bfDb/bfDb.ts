@@ -46,7 +46,7 @@ type Row<
 export async function bfGetItem<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
->(pk: BfPk, sk: BfSk): Promise<DbItem<TProps, TMetadata>> {
+>(pk: BfPk, sk: BfSk): Promise<DbItem<TProps, TMetadata> | null> {
   try {
     logger.trace("bfGetItem", pk, sk);
     const rows =
@@ -55,7 +55,7 @@ export async function bfGetItem<
       >[];
 
     if (rows.length === 0) {
-      throw new BfModelErrorNotFound();
+      return null
     }
     const firstRow = rows[0];
     const props: TProps = firstRow.props; // Assuming attributes stores the props
@@ -81,7 +81,7 @@ export async function bfGetItem<
 export async function bfGetItemByBfGid<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
->(bfGid: string, className?: string): Promise<DbItem<TProps, TMetadata>> {
+>(bfGid: string, className?: string): Promise<DbItem<TProps, TMetadata> | null> {
   try {
     logger.trace("bfGetItemByBfGid", { bfGid, className });
     let queryPromise;
@@ -93,7 +93,7 @@ export async function bfGetItemByBfGid<
     }
     const rows = await queryPromise as Row<TProps>[];
     if (rows.length === 0) {
-      throw new BfModelErrorNotFound();
+      return null
     }
     const firstRow = rows[0];
     const props = firstRow.props;
