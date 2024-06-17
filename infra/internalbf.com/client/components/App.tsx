@@ -10,11 +10,13 @@ import {
 
 import { LoginPage } from "infra/internalbf.com/client/pages/LoginPage.tsx";
 import { InternalBfPage } from "infra/internalbf.com/client/pages/InternalBfPage.tsx";
-import { Ingest } from "infra/internalbf.com/client/pages/Ingest.tsx";
+import { Media } from "infra/internalbf.com/client/pages/Media.tsx";
+import { Projects } from "infra/internalbf.com/client/pages/Projects.tsx";
 
 export const routes = new Map([
   ["/", { Component: InternalBfPage }],
-  ["/new", { Component: Ingest, allowLoggedOut: true }],
+  ["/media", { Component: Media, allowLoggedOut: true }],
+  ["/projects", { Component: Projects, allowLoggedOut: true }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
 ]);
 

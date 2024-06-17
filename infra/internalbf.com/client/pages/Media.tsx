@@ -4,7 +4,9 @@ import { InternalMediaList } from "infra/internalbf.com/client/components/Intern
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { UserProfile } from "packages/client/components/UserProfile.tsx";
 import { Icon } from "packages/bfDs/Icon.tsx";
-export function Ingest() {
+import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
+export function Media() {
+  const { navigate } = useRouter();
   return (
     <div className="internalPage">
       <div className="internalSidebar">
@@ -24,7 +26,7 @@ export function Ingest() {
           <div className="internalTab">
             <Icon name="subtitle" />Organizations
           </div>
-          <div className="internalTab">
+          <div className="internalTab" onClick={() => navigate("/projects")}>
             <Icon name="pencil" />Projects
           </div>
           <div className="internalTab">

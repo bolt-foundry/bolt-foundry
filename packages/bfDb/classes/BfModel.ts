@@ -23,6 +23,7 @@ import {
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import {
+  bfFindItems,
   bfGetItem,
   bfGetItemByBfGid,
   bfPutItem,
@@ -186,9 +187,40 @@ abstract class BfBaseModel<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
     const ownerBfGid = currentViewer.actorBfGid;
-    const items = await bfQueryItems<TRequiredProps>(
+    const items = await bfFindItems<TRequiredProps>(
       ownerBfGid,
       toBfSkUnsorted(this.name),
+    );
+
+    return items.map(({ props, metadata }) => {
+      const model = new this(currentViewer, props, {}, metadata, true);
+      return model as
+        & InstanceType<TThis>
+        & BfBaseModelMetadata<TCreationMetadata>;
+    });
+  }
+
+  static async query<
+    TThis extends Constructor<
+      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+    >,
+    TRequiredProps,
+    TOptionalProps,
+    TCreationMetadata extends CreationMetadata,
+  >(
+    this: TThis,
+    currentViewer: BfCurrentViewer,
+    metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
+    propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
+  ): Promise<
+    Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
+  > {
+    const items = await bfQueryItems<
+      TRequiredProps & Partial<TOptionalProps>,
+      BfBaseModelMetadata<TCreationMetadata>
+    >(
+      metadataToQuery,
+      propsToQuery,
     );
 
     return items.map(({ props, metadata }) => {
@@ -265,68 +297,17 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         metadata.sortValue,
       );
     this.metadata = { ...defaultMetadata, ...metadata };
-
-    let currentProps = {};
-    if (serverProps) {
-      currentProps = { ...serverProps };
-    }
-    if (clientProps) {
-      currentProps = { ...currentProps, ...clientProps };
-    }
-    // proxying props so people can do things like `model.props.prop = "new value"`
-    this.props = new Proxy(
-      currentProps as
-        & TRequiredProps
-        & Partial<TOptionalProps & Record<string | number | symbol, unknown>>,
-      {
-        get: (_, prop) => {
-          const props = { ...this.serverProps, ...this.clientProps };
-          return props[
-            prop as keyof TRequiredProps & Partial<TOptionalProps>
-          ];
-        },
-        set: (_, prop, value) => {
-          this.clientProps[
-            prop as keyof TRequiredProps & Partial<TOptionalProps>
-          ] = value;
-          return true;
-        },
-      },
-    ) as TRequiredProps & Partial<TOptionalProps>;
-    // creating a proxy so users can replace props directly and it works.
-    // ie `model.props = { new: "value" }`
-    return new Proxy(this, {
-      get: (target, prop) => {
-        if (prop === "props") {
-          return { ...target.serverProps, ...target.clientProps };
-        }
-        if (prop in target) {
-          return target[prop as keyof this];
-        }
-        if (prop in target.metadata) {
-          return target.metadata[prop as keyof BfBaseModelMetadata];
-        }
-        return target[prop as keyof this];
-      },
-      set: (target, prop, value) => {
-        if (prop === "props") {
-          target.clientProps = value;
-          return true;
-        }
-        if (prop in target) {
-          target[prop as keyof this] = value;
-          return true;
-        }
-        return false;
-      },
-    });
   }
 
   metadata: BfBaseModelMetadata<TCreationMetadata>;
-  props: TRequiredProps & Partial<TOptionalProps>;
 
   get isNew(): boolean {
     return this.serverProps === undefined;
+  }
+
+  get isDirty(): boolean {
+    return JSON.stringify(this.clientProps) !==
+      JSON.stringify(this.serverProps);
   }
   /**
    * @description the partionkey key of the object, ie the owner + separator + the parent
@@ -338,6 +319,39 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
   }
   get sk(): BfSk {
     return metadataToBfSk(this.metadata);
+  }
+
+  get props(): TRequiredProps & Partial<TOptionalProps> {
+    if (!this._cachedProps) {
+      this._cachedProps = new Proxy(this.combinedProps, {
+        get: (_target, prop) => {
+          logger.trace(`Getting property: ${prop.toString()}`);
+          return this
+            .combinedProps[prop as keyof TRequiredProps & TOptionalProps];
+        },
+        set: (_target, prop, value) => {
+          logger.trace(`Setting property ${String(prop)} to value ${value}`);
+          this.clientProps[prop as keyof TRequiredProps & TOptionalProps] =
+            value;
+          this._cachedProps = undefined; // Invalidate the cache
+          return true;
+        },
+      });
+    }
+    return this._cachedProps;
+  }
+  set props(newProps: Partial<TRequiredProps> & Partial<TOptionalProps>) {
+    logger.setLevel(logger.levels.TRACE);
+    logger.trace("Setting props:", newProps);
+    this.clientProps = newProps;
+    this._cachedProps = undefined; // Invalidate the cache
+    logger.resetLevel();
+  }
+  private _cachedProps?: TRequiredProps & Partial<TOptionalProps>;
+  private get combinedProps(): TRequiredProps & Partial<TOptionalProps> {
+    return { ...this.serverProps, ...this.clientProps } as
+      & TRequiredProps
+      & Partial<TOptionalProps>;
   }
 
   toGraphql() {
@@ -414,9 +428,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         this.validatePermissions(ACCOUNT_ACTIONS.WRITE),
         this.validateSave(),
       ]);
-    if (this.isNew) {
-      await bfPutItem(this.pk, this.sk, this.props, this.metadata);
-    }
+    await bfPutItem(this.pk, this.sk, this.props, this.metadata);
     await this.load();
   }
 
@@ -444,7 +456,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     type RelatedProps = ExtractProps<TAssocModel>;
     type RelatedMetadata = ExtractMetadata<TAssocModel>;
 
-    const relatedDbItems = await bfQueryItems<RelatedProps, RelatedMetadata>(
+    const relatedDbItems = await bfFindItems<RelatedProps, RelatedMetadata>(
       this.pk,
       toBfSkUnsorted(AssocClass.name),
     );

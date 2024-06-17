@@ -31,11 +31,14 @@ export function InternalMediaIngestion() {
       <div style={styles.box}>
         Choose a movie file from Google Drive...
         <div style={styles.buttonBox}>
-          <GoogleDriveFilePicker
+          {
+            /* THIS IS CURRENTLY CRASHING THE APP
+            <GoogleDriveFilePicker
             onChange={(file) => {
               console.log(file);
             }}
-          />
+          /> */
+          }
         </div>
       </div>
       {/* <hr style={{ width: "100%", height: "1px", color: "black" }} /> */}

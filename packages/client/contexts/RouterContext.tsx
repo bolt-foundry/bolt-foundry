@@ -35,11 +35,11 @@ export function addAllRoutes() {
 export function matchRouteWithParams(path = "", pathTemplate?: string) {
   const defaultParams = { match: false, params: {} };
   const pathsToMatch = pathTemplate ? [pathTemplate] : Array(...dynamicRoutes);
-  logger.info(
+  logger.trace(
     `matchRouteWithParams: path: ${path}, pathsToMatch: ${pathsToMatch}`,
   );
   const match = pathsToMatch.map((pathTemplate) => {
-    logger.debug(`matchRouteWithParams: pathTemplate: ${pathTemplate}`);
+    logger.trace(`matchRouteWithParams: pathTemplate: ${pathTemplate}`);
     const pathTemplateParts = pathTemplate.split("/");
     const currentPathParts = path.split("/");
 
@@ -54,19 +54,19 @@ export function matchRouteWithParams(path = "", pathTemplate?: string) {
       return acc;
     }, {} as Record<string, string | null>);
 
-    logger.debug("params before", params);
+    logger.trace("params before", params);
     // check if the path matches the template
     for (let i = 0; i < pathTemplateParts.length; i++) {
       // Skip if part is a parameter
       if (pathTemplateParts[i].startsWith(":")) {
-        logger.debug(
+        logger.trace(
           "debug",
           "part is a parameter",
           pathTemplateParts[i],
           currentPathParts[i] ?? "undefined",
         );
       } else if (pathTemplateParts[i] !== currentPathParts[i]) {
-        logger.debug(
+        logger.trace(
           "part is not a parameter",
           pathTemplateParts[i],
           currentPathParts[i],
@@ -77,7 +77,7 @@ export function matchRouteWithParams(path = "", pathTemplate?: string) {
 
     return { match: true, params };
   }).find((route) => route.match === true);
-  logger.info("match", match);
+  logger.trace("match", match);
   return match ?? defaultParams;
 }
 type RouterContextType = {
