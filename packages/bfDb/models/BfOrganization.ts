@@ -35,9 +35,7 @@ export class BfOrganization
       role: ACCOUNT_ROLE.OWNER,
       displayName: this.props.name,
     };
-    const newAccount = await BfAccount.create(currentViewer, props, {
-      bfOid: toBfOid(currentViewer.personBfGid),
-    });
+    const newAccount = await BfAccount.create(currentViewer, props);
     return newAccount;
   }
 }
