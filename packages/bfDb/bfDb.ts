@@ -10,6 +10,7 @@ import {
   BfPk,
   BfSk,
   BfSortValue,
+  BfTid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
 import {
@@ -110,6 +111,8 @@ export async function bfGetItemByBfGid<
       bfGid: firstRow.bf_gid,
       bfPid: firstRow.bf_pid,
       bfOid: firstRow.bf_oid,
+      bfCid: firstRow.bf_cid,
+      bfTid: firstRow.bf_tid,
       className: firstRow.class_name,
       createdAt: new Date(firstRow.created_at), // Convert timestamp to Date object
       lastUpdated: new Date(firstRow.last_updated), // Convert timestamp to Date object
@@ -197,6 +200,8 @@ export async function bfFindItems<
         bfGid: row.bf_gid,
         bfPid: row.bf_pid,
         bfOid: row.bf_oid,
+        bfTid: row.bf_tid,
+        bfCid: row.bf_cid,
         className: row.class_name,
         createdAt: new Date(row.created_at), // Convert timestamp to Date object
         lastUpdated: new Date(row.last_updated), // Convert timestamp to Date object
@@ -244,11 +249,13 @@ export async function bfQueryItems<
         bfGid: row.bf_gid,
         bfPid: row.bf_pid,
         bfOid: row.bf_oid,
+        bfTid: row.bf_tid,
+        bfCid: row.bf_cid,
         className: row.class_name,
         createdAt: new Date(row.created_at), // Convert timestamp to Date object
         lastUpdated: new Date(row.last_updated), // Convert timestamp to Date object
         sortValue: row.sort_value,
-      } as TMetadata,
+      },
     }));
     return items;
   } catch (e) {

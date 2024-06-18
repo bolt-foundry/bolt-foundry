@@ -1,7 +1,7 @@
 // Import necessary dependencies
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import {
-BfPid,
+  BfPid,
   BfTid,
   toBfGid,
   toBfPid,
@@ -10,7 +10,12 @@ BfPid,
 import { getLogger } from "deps.ts";
 import { BfError } from "lib/BfError.ts";
 import { CreationMetadata } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import { BfCurrentViewerJobRunner, BfCurrentViewerOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import {
+  BfCurrentViewerFromAccount,
+  BfCurrentViewerJobRunner,
+  BfCurrentViewerOmni,
+} from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 
 const logger = getLogger(import.meta);
 // Define possible job statuses
@@ -26,7 +31,6 @@ type BfNodeJobCreationMetadata = CreationMetadata & {
   bfPid: BfPid;
 };
 
-
 // Define the required properties for a node job
 export type BfNodeJobRequiredProps = {
   status: BfNodeJobType;
@@ -36,7 +40,11 @@ export type BfNodeJobRequiredProps = {
   args: Array<unknown>;
 };
 // Define the BfNodeJob class
-export class BfNodeJob extends BfNode<BfNodeJobRequiredProps, Record<string, never>, BfNodeJobCreationMetadata> {
+export class BfNodeJob extends BfNode<
+  BfNodeJobRequiredProps,
+  Record<string, never>,
+  BfNodeJobCreationMetadata
+> {
   // Use generics to ensure the method and args are correctly typed
   static async createJobForNode<
     T extends BfNode,
@@ -49,13 +57,12 @@ export class BfNodeJob extends BfNode<BfNodeJobRequiredProps, Record<string, nev
     const jobProps: BfNodeJobRequiredProps = {
       status: BfNodeJobType.AVAILABLE,
       className: bfNode.metadata.className,
-      bfTid: toBfTid(bfNode.metadata.bfGid),
+      bfTid: bfNode.metadata.bfGid,
       method: method as string,
       args,
     };
-    // Ensure that the create method returns an instance of BfNodeJob
     const job = await this.create(currentViewer, jobProps, {
-      bfOid: currentViewer.actorBfGid,
+      bfOid: currentViewer.organizationBfGid,
       bfPid: toBfPid(bfNode.metadata.bfGid),
     });
     return job;
@@ -85,7 +92,20 @@ export class BfNodeJob extends BfNode<BfNodeJobRequiredProps, Record<string, nev
       const JobClass: typeof BfNode = module[this.props.className];
 
       if (JobClass) {
-        const runnableCurrentViewer = await BfCurrentViewerJobRunner.create(import.meta, this);
+        const targetWithOmni = await JobClass.findX(
+          this.currentViewer,
+          this.props.bfTid,
+        );
+        logger.info(targetWithOmni)
+
+        const relatedAccount = await BfAccount.findX(
+          this.currentViewer,
+          targetWithOmni.metadata.bfCid,
+        );
+        const runnableCurrentViewer = BfCurrentViewerFromAccount.create(
+          import.meta,
+          relatedAccount,
+        );
         const target = await JobClass.findX(
           runnableCurrentViewer,
           this.props.bfTid,

@@ -30,7 +30,7 @@ const bfCryptoKey = await crypto.subtle.importKey(
 const aud = "bfBff";
 
 type BfAccessTokenPayload = {
-  actorBfGid: BfGid;
+  organizationBfGid: BfGid;
   personBfGid: BfGid;
   role: ACCOUNT_ROLE;
   accountBfGid: BfGid;
@@ -110,8 +110,8 @@ export function encodeBfAccessToken(
   importMeta: ImportMeta,
   payload: BfAccessTokenPayload,
 ): Promise<string> {
-  const { actorBfGid, accountBfGid } = payload;
-  const sub = actorBfGid;
+  const { organizationBfGid, accountBfGid } = payload;
+  const sub = organizationBfGid;
   const iss = accountBfGid;
 
   accessLogger.info(
@@ -146,8 +146,8 @@ export function encodeBfRefreshToken(
   importMeta: ImportMeta,
   payload: BfRefreshTokenPayload,
 ): Promise<string> {
-  const { actorBfGid, accountBfGid } = payload;
-  const sub = actorBfGid;
+  const { organizationBfGid, accountBfGid } = payload;
+  const sub = organizationBfGid;
   const iss = accountBfGid;
   const iat = Math.floor(Date.now() / 1000);
   const exp = iat + REFRESH_TOKEN_EXPIRATION_WINDOW_SECONDS;

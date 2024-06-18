@@ -3,7 +3,10 @@ import type {
   Constructor,
   CreationMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import {
+  BfCurrentViewer,
+  BfCurrentViewerOmni,
+} from "packages/bfDb/classes/BfCurrentViewer.ts";
 import {
   ACCOUNT_ACTIONS,
   BfAnyid,
@@ -96,7 +99,9 @@ abstract class BfBaseModel<
   ): Promise<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
+    logger.setLevel(logger.levels.TRACE)
     logVerbose("create", { currentViewer, newProps, creationMetadata });
+    logger.resetLevel()
     const newModel = new this(
       currentViewer,
       undefined,
@@ -157,7 +162,11 @@ abstract class BfBaseModel<
       bfGid,
       sortValue,
     });
-    await model.load();
+    if (currentViewer instanceof BfCurrentViewerOmni) {
+      await model.load__PRIVACY_UNSAFE();
+    } else {
+      await model.load();
+    }
 
     return model as
       & InstanceType<TThis>
@@ -177,7 +186,7 @@ abstract class BfBaseModel<
   ): Promise<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
-    const ownerBfGid = currentViewer.actorBfGid;
+    const ownerBfGid = currentViewer.organizationBfGid;
     const items = await bfFindItems<TRequiredProps>(
       ownerBfGid,
       toBfSkUnsorted(this.name),
@@ -227,14 +236,14 @@ abstract class BfBaseModel<
   >(
     bfCid: BfCid,
     bfGid = generateUUID(),
-    bfOid = toBfOid(bfGid),
+    bfOid = bfGid,
     sortValue = this.generateSortValue(),
   ): BfBaseModelMetadata<TCreationMetadata> {
     // @ts-expect-error #techdebt this isn't correctly typed (and perhaps correctly implemented.)
     return {
       bfCid,
-      bfGid: toBfGid(bfGid),
-      bfOid: toBfOid(bfOid),
+      bfGid,
+      bfOid,
       sortValue,
       className: this.name,
       createdAt: Date.now() as JsUnixtime,
@@ -280,7 +289,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
   ) {
     const bfOid = (this.constructor as typeof BfBaseModel).isSelfOwned
       ? undefined
-      : metadata.bfOid ?? currentViewer.actorBfGid;
+      : metadata.bfOid ?? currentViewer.organizationBfGid;
     const defaultMetadata = (this.constructor as typeof BfBaseModel)
       .generateDefaultMetadata<TCreationMetadata>(
         currentViewer.accountBfGid,
@@ -365,7 +374,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     await this.beforeLoad();
     await this.validatePermissions(ACCOUNT_ACTIONS.READ);
     if (!this.metadata.bfOid) {
-      this.metadata.bfOid = this.currentViewer.actorBfGid;
+      this.metadata.bfOid = this.currentViewer.organizationBfGid;
     }
     try {
       const response = await bfGetItem<

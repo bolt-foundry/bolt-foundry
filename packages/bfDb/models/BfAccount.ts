@@ -10,6 +10,7 @@ import {
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import {
+BfJwtPayload,
   encodeBfAccessToken,
   encodeBfRefreshToken,
 } from "packages/bfDb/classes/BfAuth.ts";
@@ -21,7 +22,7 @@ import { bfFindItems } from "packages/bfDb/bfDb.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 
 export type BfAccountRequiredProps = {
-  organizationBfGid: BfGid; // this is #TECHDEBT... probably should be actorBfGid.
+  organizationBfGid: BfGid;
   personBfGid: BfGid;
   role: ACCOUNT_ROLE;
   displayName: string;
@@ -97,7 +98,7 @@ export class BfAccount extends BfModel<BfAccountRequiredProps> {
       throw new BfAccountRefreshTokenExpiredError();
     }
     if (
-      toBfGid(currentViewer.actorBfGid) !== currentViewer.personBfGid &&
+      toBfGid(currentViewer.organizationBfGid) !== currentViewer.personBfGid &&
       currentViewer.accountBfGid
     ) {
       const relatedAccount = await this.find(
@@ -134,12 +135,12 @@ export class BfAccount extends BfModel<BfAccountRequiredProps> {
     );
   }
 
-  toJwtPayload() {
+  toJwtPayload(): BfJwtPayload {
     return {
       role: this.props.role,
-      actorBfGid: this.props.organizationBfGid,
+      organizationBfGid: this.props.organizationBfGid,
       personBfGid: this.props.personBfGid,
-      accountBfGid: this.metadata.bfCid,
+      accountBfGid: this.metadata.bfGid,
     };
   }
 }
