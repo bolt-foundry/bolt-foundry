@@ -3,8 +3,8 @@ import startSpinner from "lib/terminalSpinner.ts";
 
 const logger = getLogger(import.meta);
 
-const BF_PATH = Deno.env.get("BF_PATH");
-const BF_TEMP_DIR = `${BF_PATH}/build/tmp`;
+const BF_TEMP_DIR = Deno.env.get("BF_TMP_DIR") ?? "/tmp/bf";
+
 const BF_OUT_PATH = `${BF_TEMP_DIR}/chunks`;
 
 export async function streamFileToFfmpegForChunking(
