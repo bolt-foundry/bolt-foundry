@@ -4,6 +4,8 @@ import { UserProfile } from "packages/client/components/UserProfile.tsx";
 import { Icon } from "packages/bfDs/Icon.tsx";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 import { InternalProjectsList } from "infra/internalbf.com/client/components/InternalProjectsList.tsx";
+import { InternalHeader } from "infra/internalbf.com/client/components/InternalHeader.tsx";
+import { InternalMediaIngestion } from "infra/internalbf.com/client/components/InternalMediaIngestion.tsx";
 
 export function ProjectsPage() {
   const { navigate } = useRouter();
@@ -44,9 +46,10 @@ export function ProjectsPage() {
         </div>
       </div>
       <div className="internalMain">
-        <div className="internalMainHeader">
-          Projects
-        </div>
+        <InternalHeader
+          collapsedButton="Add media"
+          header="Projects"
+        />
         <div className="internalMainContent">
           <InternalProjectsList />
         </div>

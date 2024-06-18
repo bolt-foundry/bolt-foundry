@@ -5,6 +5,7 @@ import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { UserProfile } from "packages/client/components/UserProfile.tsx";
 import { Icon } from "packages/bfDs/Icon.tsx";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
+import { InternalHeader } from "infra/internalbf.com/client/components/InternalHeader.tsx";
 export function MediaPage() {
   const { navigate } = useRouter();
   return (
@@ -41,9 +42,11 @@ export function MediaPage() {
         </div>
       </div>
       <div className="internalMain">
-        <div className="internalMainHeader">
-          <InternalMediaIngestion />
-        </div>
+        <InternalHeader
+          expandedComponent={<InternalMediaIngestion />}
+          collapsedButton="Add media"
+          header="Media"
+        />
         <div className="internalMainContent">
           <InternalMediaList />
         </div>
