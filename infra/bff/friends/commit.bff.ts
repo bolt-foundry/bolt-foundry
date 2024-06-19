@@ -95,11 +95,11 @@ register(
       "sl",
       "pull",
     ]);
-    await runShellCommand([
-      "sl",
-      "goto",
-      "main",
-    ]);
+    // await runShellCommand([
+    //   "sl",
+    //   "goto",
+    //   "main",
+    // ]);
     const localhostUrl = `http://localhost:8283/${
       Deno.env.get("REPLIT_SESSION")
     }/files/open-multiple`;

@@ -53,6 +53,18 @@ body {
   position: sticky;
   transform: translateY(0);
 }
+.internalMainHeaderSticky {
+  position: fixed;
+  top: 0;
+  background: var(--transparentBackground);
+  z-index: 15;
+  transition: 500ms transform ease;
+  transform: translateY(-100%);
+}
+.internalMainHeaderSticky.visible {
+  position: sticky;
+  transform: translateY(0);
+}
 
 .internalMainContent {
   box-sizing: border-box;
