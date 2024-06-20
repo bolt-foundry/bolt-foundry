@@ -9,6 +9,7 @@ const PATH_FOR_INGEST = "01 New Videos";
 const PATH_FOR_ARCHIVE = "Z Processed Videos";
 const MAX_RETRIES = 15;
 const events = Deno.watchFs(FOLDER_PATH, { recursive: true });
+const TMP_DIR = Deno.env.get("BFI_TMP_DIR") || "/tmp";
 console.log(`watching ${FOLDER_PATH}`);
 const seenFiles = new Set();
 notifyDiscord(`BFI watcher running on ${Deno.env.get("HOSTNAME")}`)
@@ -36,31 +37,39 @@ for await (const event of events) {
 
 async function copyAndMove(path) {
     let tmpFile;
+  const fileDirectory = dirname(path);
+  const filename = path.split("/").pop();
+  const archiveDirectory = `${dirname(fileDirectory)}/${PATH_FOR_ARCHIVE}`;
+  const archivePath = `${archiveDirectory}/${filename}`;
+  const end = path.split(FOLDER_PATH)[1].split("/")[1]
+  const humanReadable = `${end} - ${filename}`
   try {
     const stat = await Deno.stat(path);
 
     if (stat.isFile && !seenFiles.has(path) && path.includes(PATH_FOR_INGEST)) {
+      
+      notifyDiscord(`New video detected: **${humanReadable}**`);
       seenFiles.add(path);
-      tmpFile = await Deno.makeTempFile({ prefix: "copy_" });
+      tmpFile = await Deno.makeTempFile({ dir: TMP_DIR, prefix: "copy_" });
       console.log("copying", path, tmpFile);
       const success = await copyFileWithRetry(path, tmpFile);
 
       if (success) {
-        const fileDirectory = dirname(path);
-        const filename = path.split("/").pop();
-        const archiveDirectory = `${dirname(fileDirectory)}/${PATH_FOR_ARCHIVE}`;
-        const archivePath = `${archiveDirectory}/${filename}`;
+        
         await Deno.rename(path, archivePath);
         console.log("processing");
-        notifyDiscord(`Starting to process ${path.split(FOLDER_PATH)[1]}`)
-        await processFile(tmpFile);
+        
+        notifyDiscord(`Starting to process **${humanReadable}**`)
+        await processFile(tmpFile, humanReadable);
         console.log("done");
       } else {
         console.log("failed to copy file after retries", path);
       }
     }
   } catch (e) {
-    console.log("lol", e);
+    notifyDiscord(`Error processing: **${humanReadable}**
+    ${e}
+    `);
   } finally {
     if (tmpFile) {
       await Deno.remove(tmpFile);
