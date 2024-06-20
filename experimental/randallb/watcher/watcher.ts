@@ -52,8 +52,10 @@ async function copyAndMove(path) {
         const archivePath = `${archiveDirectory}/${filename}`;
         await Deno.rename(path, archivePath);
         console.log("processing");
-        notifyDiscord(`Starting to process ${path.split(FOLDER_PATH)[1]}`)
-        await processFile(tmpFile);
+        const end = path.split(FOLDER_PATH)[1].split("/")[1]
+        const humanReadable = `${end} - ${filename}`
+        notifyDiscord(`Starting to process **${humanReadable}**`)
+        await processFile(tmpFile, humanReadable);
         console.log("done");
       } else {
         console.log("failed to copy file after retries", path);
