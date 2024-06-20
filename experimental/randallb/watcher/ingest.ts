@@ -1,26 +1,26 @@
 // https://www.npmjs.com/package/graphql-request
-import { gql, GraphQLClient, rawRequest, request } from "npm:graphql-request";
-import * as cookie from "https://deno.land/std@0.197.0/http/cookie.ts";
-
+import { gql, GraphQLClient, rawRequest } from "npm:graphql-request";
+import { addClipToNotion } from "./addClipToNotion.ts";
 const USERNAME = Deno.env.get("BFI_USERNAME") || "";
 const PASSWORD = Deno.env.get("BFI_PASSWORD") || "";
 const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT") || "";
-const NOTION_ENDPOINT = Deno.env.get("BFI_NOTION_ENDPOINT") || "";
-const NOTION_PARENT = Deno.env.get("BFI_NOTION_PARENT") || "";
 const FFMPEG_ARGS_EXCEPT_INPUT_AND_OUTPUT =
   Deno.env.get("BFI_FFMPEG_ARGS_EXCEPT_INPUT_AND_OUTPUT") ||
   "-vf crop=ih*(16/9):ih,scale=1920:1080 -c:v h264_videotoolbox -b:v 7M -c:a aac -b:a 128k -f segment -segment_time 1800 -reset_timestamps 1";
 const client = new GraphQLClient(GRAPHQL_ENDPOINT);
 
-export async function processFile(filePath: string) {
+export async function processFile(filePath: string, name: string) {
   console.log("processing file", filePath);
   const videoChunks = createVideoChunksForFilePath(filePath);
   const files = [];
   for await (const chunk of videoChunks) {
-    const project = processVideoChunk(chunk);
-    files.push(project);
+    const uploadedLink = await processVideoChunk(chunk);
+    // await notifyDiscord(`Uploaded video to ${uploadedLink}`);
+    const output = await addClipToNotion(uploadedLink, name)
+      .then((res) => res.json());
+    console.log(output)
+    await notifyDiscord(`<@&1210008885193211944> New task: ${output.url}`);
   }
-  console.log(files);
 }
 
 async function* createVideoChunksForFilePath(filePath: string) {
@@ -124,8 +124,8 @@ async function processVideoChunk(chunkPath: string) {
   } catch (err) {
     console.error("Error appending link to /tmp/files_uploaded.txt", err);
   }
-  await notifyDiscord(`Uploaded video to ${uploadedLink}`);
-  // const notionLink = await createTaskInNotion(project);
+  return uploadedLink;
+
   // console.log(`successfully created ${notionLink}`);
 }
 
@@ -202,11 +202,6 @@ export async function createProjectInBf(chunkPath) {
 
   const returned = await client.request(mutation, variables, headers);
   return returned.createProject.node;
-}
-
-function createTaskInNotion(project) {
-  const path = project.url; // or something
-  // magically call notion's api.
 }
 
 async function getHeaders() {
