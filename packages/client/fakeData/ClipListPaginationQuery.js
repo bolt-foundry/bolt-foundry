@@ -1,6 +1,7 @@
-export const project = {
+export const fragment = {
       "data": {
-          "project": {
+          "node": {
+              "__typename": "Project",
               "id": "Project-1719553433820_16980cc96a374b5fb43e67082c6eee86",
               "effectiveSettings": {
                   "additionalJson": "{}",
@@ -25,15 +26,7 @@ export const project = {
                   "watermarkPosition": "under_caption",
                   "largeMovementThresholdPct": 0.1
               },
-              "name": "1-Ryan Hamilton Tonight Show.mp4",
-              "overriddenSettingsKeys": [],
-              "ratio": 1.7777777777777777,
-              "clipsStatus": {
-                  "progress": 1,
-                  "status": "COMPLETED"
-              },
-              "isReadyToView": true,
-              "videoUrl": "https://boltfoundry-mediaingestionbucket66a2684a-ctcw5jgkfigm.s3.dualstack.us-east-1.amazonaws.com/16980cc96a374b5fb43e67082c6eee86.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAVRUVUCXXP5V7ZA45%2F20240619%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240619T210157Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEI3%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQDvU4mfXqrUopUJeyI%2FnmsyUuxuVheZ%2BIH1rk7uH9%2BrkwIhAPiNQHneapImCsLVP7CK1X4Vlf%2BtWp0crotkT6afVHmwKrcDCDYQABoMMzgxNDkyMTM5NTAyIgw%2BqRwJ1OFJagZjFj4qlAPfZnzcCQZqdEG2VRtNwnM9kR2T5%2F1D7jimP1Y1A3w%2B2JacvXmhRVJf822aEectmjevO02rc1c4sZRJTLvy3opp5hfj7h%2F3nuJaEls8jfNuEBUkWRWJQJAnnnezQlR%2FA2HSwM1FfPnNucPCzzdaTonzYQoeOoRt2vJoNHe3rpwQdIXZBNUBnTCNVujuJFA2JrmDeyE0YP3WxyBp%2FyzhFfhipsjneQfPDeylv6%2Bt6GEJXmfadu9n083DKClNBNdTOtJptGbi0viQq7phequpZMRrH3CguCPOpL3l1HYQfbdPZTmIghJs0kkzSzbPv%2FZGWwIXKhNw8DpMxD9WnLHuRGo5bhEvOBEVY7wDExmDEC2QTK4VmmM5zXtQhT%2FyJeT4xgCIP%2F8IPGjnjyLirxGQhYNyp25JUpseJlGfIBDSr4jiNtdDh3pRrDAt64ZY0qOcufPT9V6PugbODc2w70WrpZ6u4UeOFSRlSaskSyMkr5b0rTJ6%2By6d3ep7rPUk1tXISOgsdNnqoTUhCqadd7DdW%2Fn9zdOGYTCjjM2zBjqdAQTYeDlZy352hviwpSin8EnYK0wnr0VUzo%2FR6k7BoNM5MtYaA6iSvrhNU3TU55SM43y3ykdMMgVjLbIiB9Jl0tJMyoFkjLCXkydKzRI5LzTxmyoVOlBytYzWj5vGVy%2BzRywbnIGJ663UWTeaXYgWmnwD%2B5VYiFj1RDaoQieuuwK71F%2B0wk1ovUszwqDy0Zg6%2F%2FRqI2gPVoFWTV92D5s%3D&X-Amz-Signature=153272ef86faf386319d38bc163f97d905e9d43608e206c882c9432b745587e1",
+              "videoUrl": "https://boltfoundry-mediaingestionbucket66a2684a-ctcw5jgkfigm.s3.dualstack.us-east-1.amazonaws.com/16980cc96a374b5fb43e67082c6eee86.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAVRUVUCXXP5V7ZA45%2F20240619%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240619T210158Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEI3%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLWVhc3QtMSJIMEYCIQDvU4mfXqrUopUJeyI%2FnmsyUuxuVheZ%2BIH1rk7uH9%2BrkwIhAPiNQHneapImCsLVP7CK1X4Vlf%2BtWp0crotkT6afVHmwKrcDCDYQABoMMzgxNDkyMTM5NTAyIgw%2BqRwJ1OFJagZjFj4qlAPfZnzcCQZqdEG2VRtNwnM9kR2T5%2F1D7jimP1Y1A3w%2B2JacvXmhRVJf822aEectmjevO02rc1c4sZRJTLvy3opp5hfj7h%2F3nuJaEls8jfNuEBUkWRWJQJAnnnezQlR%2FA2HSwM1FfPnNucPCzzdaTonzYQoeOoRt2vJoNHe3rpwQdIXZBNUBnTCNVujuJFA2JrmDeyE0YP3WxyBp%2FyzhFfhipsjneQfPDeylv6%2Bt6GEJXmfadu9n083DKClNBNdTOtJptGbi0viQq7phequpZMRrH3CguCPOpL3l1HYQfbdPZTmIghJs0kkzSzbPv%2FZGWwIXKhNw8DpMxD9WnLHuRGo5bhEvOBEVY7wDExmDEC2QTK4VmmM5zXtQhT%2FyJeT4xgCIP%2F8IPGjnjyLirxGQhYNyp25JUpseJlGfIBDSr4jiNtdDh3pRrDAt64ZY0qOcufPT9V6PugbODc2w70WrpZ6u4UeOFSRlSaskSyMkr5b0rTJ6%2By6d3ep7rPUk1tXISOgsdNnqoTUhCqadd7DdW%2Fn9zdOGYTCjjM2zBjqdAQTYeDlZy352hviwpSin8EnYK0wnr0VUzo%2FR6k7BoNM5MtYaA6iSvrhNU3TU55SM43y3ykdMMgVjLbIiB9Jl0tJMyoFkjLCXkydKzRI5LzTxmyoVOlBytYzWj5vGVy%2BzRywbnIGJ663UWTeaXYgWmnwD%2B5VYiFj1RDaoQieuuwK71F%2B0wk1ovUszwqDy0Zg6%2F%2FRqI2gPVoFWTV92D5s%3D&X-Amz-Signature=e4b3669befd3944701966f9f61d7abcaa958209da4fe69ea89c5ffe5232803ec",
               "clipsLength": 15,
               "clips": {
                   "edges": [
@@ -245,7 +238,6 @@ export const project = {
                       "startCursor": "Project-1719553433820_16980cc96a374b5fb43e67082c6eee86>Clip-1719154579947_2345da51e557462fbb7056e8a14555a5"
                   }
               },
-              "transcriptLength": null,
               "transcripts": {
                   "edges": [
                       {
