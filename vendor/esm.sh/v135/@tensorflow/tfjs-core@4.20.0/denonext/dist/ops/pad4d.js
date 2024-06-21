@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(@tensorflow/tfjs-core@4.20.0/dist/ops/pad4d) denonext production */
+import{assert as r}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/util.js";import{op as n}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/operation.js";import{pad as h}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/pad.js";function l(e,t,o=0){return r(t.length===4&&t[0].length===2&&t[1].length===2&&t[2].length===2&&t[3].length===2,()=>"Invalid number of paddings. Must be length of 2 each."),h(e,t,o)}var u=n({pad4d_:l});export{u as pad4d};
+//# sourceMappingURL=pad4d.js.map

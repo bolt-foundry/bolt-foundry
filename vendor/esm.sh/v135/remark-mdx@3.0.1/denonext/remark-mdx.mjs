@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(remark-mdx@3.0.1) denonext production */
+import{mdxFromMarkdown as e,mdxToMarkdown as d}from"/v135/mdast-util-mdx@3.0.0/denonext/mdast-util-mdx.mjs";import{mdxjs as x}from"/v135/micromark-extension-mdxjs@3.0.0/denonext/micromark-extension-mdxjs.mjs";var k={};function s(t){let r=this,n=t||k,o=r.data(),m=o.micromarkExtensions||(o.micromarkExtensions=[]),a=o.fromMarkdownExtensions||(o.fromMarkdownExtensions=[]),i=o.toMarkdownExtensions||(o.toMarkdownExtensions=[]);m.push(x(n)),a.push(e()),i.push(d(n))}export{s as default};
+//# sourceMappingURL=remark-mdx.mjs.map

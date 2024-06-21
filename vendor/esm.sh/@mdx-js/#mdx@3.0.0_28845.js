@@ -1,0 +1,20 @@
+/* esm.sh - @mdx-js/mdx@3.0.0 */
+import "/v135/@mdx-js/mdx@3.0.0/denonext/internal-resolve-evaluate-options.js";
+import "/v135/devlop@1.1.0/denonext/devlop.mjs";
+import "/v135/remark-mdx@3.0.1/denonext/remark-mdx.mjs";
+import "/v135/vfile@6.0.1/denonext/vfile.mjs";
+import "/v135/remark-parse@11.0.0/denonext/remark-parse.mjs";
+import "/v135/remark-rehype@11.1.0/denonext/remark-rehype.mjs";
+import "/v135/unified@11.0.4/denonext/unified.mjs";
+import "/v135/markdown-extensions@2.0.0/denonext/markdown-extensions.mjs";
+import "/v135/hast-util-to-estree@3.1.0/denonext/hast-util-to-estree.mjs";
+import "/v135/collapse-white-space@2.1.0/denonext/collapse-white-space.mjs";
+import "/v135/unist-util-visit@5.0.0/denonext/unist-util-visit.mjs";
+import "/v135/estree-util-build-jsx@3.0.1/denonext/estree-util-build-jsx.mjs";
+import "/v135/estree-util-to-js@2.0.0/denonext/estree-util-to-js.mjs";
+import "/v135/estree-util-is-identifier-name@3.0.0/denonext/estree-util-is-identifier-name.mjs";
+import "/v135/estree-walker@3.0.3/denonext/estree-walker.mjs";
+import "/v135/periscopic@3.1.0/denonext/periscopic.mjs";
+import "/v135/unist-util-stringify-position@4.0.0/denonext/unist-util-stringify-position.mjs";
+import "/v135/unist-util-position-from-estree@2.0.0/denonext/unist-util-position-from-estree.mjs";
+export * from "/v135/@mdx-js/mdx@3.0.0/denonext/mdx.mjs";

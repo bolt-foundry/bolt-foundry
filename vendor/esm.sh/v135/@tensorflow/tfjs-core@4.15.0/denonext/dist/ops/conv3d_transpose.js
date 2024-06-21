@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(@tensorflow/tfjs-core@4.15.0/dist/ops/conv3d_transpose) denonext production */
+import{convertToTensor as o}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/tensor_util_env.js";import{conv3DBackpropInput as f}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/conv3d_backprop_input.js";import{op as i}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/operation.js";function m(n,r,t,p,s){let c=o(n,"x","conv3dTranspose"),e=o(r,"filter","conv3dTranspose");return f(t,c,e,p,s)}var d=i({conv3dTranspose_:m});export{d as conv3dTranspose};
+//# sourceMappingURL=conv3d_transpose.js.map

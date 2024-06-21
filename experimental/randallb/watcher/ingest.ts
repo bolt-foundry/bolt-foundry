@@ -204,7 +204,7 @@ export async function createProjectInBf(chunkPath) {
   return returned.createProject.node;
 }
 
-async function getHeaders() {
+export async function getHeaders() {
   // login mutation for graphql
   const loginMutation = gql`
   mutation LoginFormLoginMutation(

@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(mdast-util-mdxjs-esm@2.0.1) denonext production */
+import{ok as n}from"/v135/devlop@1.1.0/denonext/devlop.mjs";function r(){return{enter:{mdxjsEsm:i},exit:{mdxjsEsm:o,mdxjsEsmData:d}}}function a(){return{handlers:{mdxjsEsm:x}}}function i(s){this.enter({type:"mdxjsEsm",value:""},s),this.buffer()}function o(s){let m=this.resume(),t=this.stack[this.stack.length-1];n(t.type==="mdxjsEsm"),this.exit(s);let e=s.estree;t.value=m,e&&(t.data={estree:e})}function d(s){this.config.enter.data.call(this,s),this.config.exit.data.call(this,s)}function x(s){return s.value||""}export{r as mdxjsEsmFromMarkdown,a as mdxjsEsmToMarkdown};
+//# sourceMappingURL=mdast-util-mdxjs-esm.mjs.map
