@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(is-reference@3.0.2) denonext production */
+function r(t,e){if(t.type==="MemberExpression")return!t.computed&&r(t.object,t);if(t.type==="Identifier"){if(!e)return!0;switch(e.type){case"MemberExpression":return e.computed||t===e.object;case"MethodDefinition":return e.computed;case"PropertyDefinition":return e.computed||t===e.value;case"Property":return e.computed||t===e.value;case"ExportSpecifier":case"ImportSpecifier":return t===e.local;case"LabeledStatement":case"BreakStatement":case"ContinueStatement":return!1;default:return!0}}return!1}export{r as default};
+//# sourceMappingURL=is-reference.mjs.map

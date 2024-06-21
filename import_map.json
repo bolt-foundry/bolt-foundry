@@ -6,6 +6,8 @@
     "/experimental/": "./experimental/",
     "infra/": "./infra/",
     "/infra/": "./infra/",
+    "aws/": "./aws/",
+    "/aws/": "./aws/",
     "packages/": "./packages/",
     "/packages/": "./packages/",
     "resources/": "./resources/",

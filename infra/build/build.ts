@@ -19,6 +19,7 @@ export async function build(
       ...workerList,
       "packages/client/Client.tsx",
       "infra/internalbf.com/client/Client.tsx",
+      "aws/client/main.tsx",
     ],
     write: true,
     outdir: "build",

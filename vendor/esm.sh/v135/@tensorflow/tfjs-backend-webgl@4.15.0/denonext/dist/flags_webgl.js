@@ -1,0 +1,23 @@
+/* esm.sh - esbuild bundle(@tensorflow/tfjs-backend-webgl@4.15.0/dist/flags_webgl) denonext production */
+import{device_util as r,env as g}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/tfjs-core.mjs";import{getMaxTexturesInShader as L,getWebGLDisjointQueryTimerVersion as t,getWebGLMaxTextureSize as B,isCapableOfRenderingToFloatTexture as i,isDownloadFloatTextureEnabled as R,isWebGLFenceEnabled as A,isWebGLVersionEnabled as _}from"/v135/@tensorflow/tfjs-backend-webgl@4.15.0/denonext/dist/webgl_util.js";var E=g();E.registerFlag("HAS_WEBGL",()=>E.getNumber("WEBGL_VERSION")>0);E.registerFlag("WEBGL_VERSION",()=>_(2)?2:_(1)?1:0);E.registerFlag("WEBGL_CHECK_NUMERICAL_PROBLEMS",()=>!1);E.registerFlag("WEBGL_BUFFER_SUPPORTED",()=>E.get("WEBGL_VERSION")===2);E.registerFlag("WEBGL_CPU_FORWARD",()=>!0);E.registerFlag("WEBGL_FORCE_F16_TEXTURES",()=>!1);E.registerFlag("WEBGL_PACK",()=>E.getBool("HAS_WEBGL"));E.registerFlag("WEBGL_PACK_NORMALIZATION",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_PACK_CLIP",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_PACK_DEPTHWISECONV",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_PACK_BINARY_OPERATIONS",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_PACK_UNARY_OPERATIONS",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_PACK_ARRAY_OPERATIONS",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_PACK_IMAGE_OPERATIONS",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_PACK_REDUCE",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_LAZILY_UNPACK",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_CONV_IM2COL",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_PACK_CONV2DTRANSPOSE",()=>E.getBool("WEBGL_PACK"));E.registerFlag("WEBGL_MAX_TEXTURE_SIZE",()=>B(E.getNumber("WEBGL_VERSION")));E.registerFlag("WEBGL_MAX_TEXTURES_IN_SHADER",()=>L(E.getNumber("WEBGL_VERSION")));E.registerFlag("WEBGL_DISJOINT_QUERY_TIMER_EXTENSION_VERSION",()=>{let e=E.getNumber("WEBGL_VERSION");return e===0?0:t(e)});E.registerFlag("WEBGL_DISJOINT_QUERY_TIMER_EXTENSION_RELIABLE",()=>E.getNumber("WEBGL_DISJOINT_QUERY_TIMER_EXTENSION_VERSION")>0&&!r.isMobile());E.registerFlag("WEBGL_RENDER_FLOAT32_CAPABLE",()=>i(E.getNumber("WEBGL_VERSION")));E.registerFlag("WEBGL_RENDER_FLOAT32_ENABLED",()=>E.getBool("WEBGL_FORCE_F16_TEXTURES")?!1:E.getBool("WEBGL_RENDER_FLOAT32_CAPABLE"));E.registerFlag("WEBGL_DOWNLOAD_FLOAT_ENABLED",()=>R(E.getNumber("WEBGL_VERSION")));E.registerFlag("WEBGL_FENCE_API_ENABLED",()=>A(E.getNumber("WEBGL_VERSION")));E.registerFlag("WEBGL_SIZE_UPLOAD_UNIFORM",()=>E.getBool("WEBGL_RENDER_FLOAT32_ENABLED")?4:0);E.registerFlag("WEBGL_DELETE_TEXTURE_THRESHOLD",()=>-1,e=>{if(typeof e!="number")throw new Error(`WEBGL_DELETE_TEXTURE_THRESHOLD must be a number but got ${e}.`);if(e<0&&e!==-1)throw new Error(`WEBGL_DELETE_TEXTURE_THRESHOLD must be -1 (indicating never delete) or at least 0, but got ${e}.`)});E.registerFlag("WEBGL_FLUSH_THRESHOLD",()=>r.isMobile()?1:-1,e=>{if(typeof e!="number")throw new Error(`WEBGL_FLUSH_THRESHOLD must be a number but got ${e}.`);if(e<0&&e!==-1)throw new Error(`WEBGL_FLUSH_THRESHOLD must be -1 (indicating never manual flush) or at least 0, but got ${e}.`)});E.registerFlag("CPU_HANDOFF_SIZE_THRESHOLD",()=>128);E.registerFlag("WEBGL_USE_SHAPES_UNIFORMS",()=>!1);E.registerFlag("TOPK_LAST_DIM_CPU_HANDOFF_SIZE_THRESHOLD",()=>1e5);E.registerFlag("TOPK_K_CPU_HANDOFF_THRESHOLD",()=>128);E.registerFlag("WEBGL_EXP_CONV",()=>!1);E.registerFlag("SOFTWARE_WEBGL_ENABLED",()=>E.getBool("IS_TEST"));E.registerFlag("WEBGL_MAX_SIZE_FOR_NARROW_TEXTURE",()=>1/0);E.registerFlag("WEBGL_AUTO_SQUARIFY_NARROW_TEXTURE_SHAPE",()=>!1);E.registerFlag("WEBGL2_ISNAN_CUSTOM",()=>!1);E.registerFlag("ENGINE_COMPILE_ONLY",()=>!1);
+/*! Bundled license information:
+
+@tensorflow/tfjs-backend-webgl/dist/flags_webgl.js:
+  (**
+   * @license
+   * Copyright 2019 Google LLC. All Rights Reserved.
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   * http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   * =============================================================================
+   *)
+*/
+//# sourceMappingURL=flags_webgl.js.map

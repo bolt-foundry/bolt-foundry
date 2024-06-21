@@ -1,0 +1,23 @@
+/* esm.sh - esbuild bundle(@tensorflow/tfjs-core@4.20.0/dist/ops/fused/depthwise_conv2d) denonext production */
+import{ENGINE as b}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/engine.js";import{customGrad as I}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/gradients.js";import{FusedDepthwiseConv2D as T}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/kernel_names.js";import{makeTypesMatch as H}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/tensor_util.js";import{convertToTensor as w}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/tensor_util_env.js";import*as m from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/util.js";import{add as P}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/add.js";import*as S from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/broadcast_util.js";import*as n from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/conv_util.js";import{depthwiseConv2d as V}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/depthwise_conv2d.js";import{depthwiseConv2dNativeBackpropFilter as j}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/depthwise_conv2d_native_backprop_filter.js";import{depthwiseConv2dNativeBackpropInput as q}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/depthwise_conv2d_native_backprop_input.js";import{applyActivation as z,getFusedBiasGradient as J,getFusedDyActivation as L,shouldFuse as Q}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/fused_util.js";import{op as U}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/operation.js";import{reshape as E}from"/v135/@tensorflow/tfjs-core@4.20.0/denonext/dist/ops/reshape.js";function X({x:O,filter:_,strides:p,pad:h,dataFormat:g="NHWC",dilations:e=[1,1],dimRoundingMode:f,bias:d,activation:C="linear",preluActivationWeights:D,leakyreluAlpha:x}){if(Q(b.state.gradientDepth,C)===!1){let a=V(O,_,p,h,g,e,f);return d!=null&&(a=P(a,d)),z(a,C,D,x)}let u=w(O,"x","depthwiseConv2d","float32"),o=w(_,"filter","depthwiseConv2d","float32"),r=u,k=!1;u.rank===3&&(k=!0,r=E(u,[1,u.shape[0],u.shape[1],u.shape[2]])),m.assert(r.rank===4,()=>`Error in fused depthwiseConv2d: input must be rank 4, but got rank ${r.rank}.`),m.assert(o.rank===4,()=>`Error in fused depthwiseConv2d: filter must be rank 4, but got rank ${o.rank}.`),m.assert(r.shape[3]===o.shape[2],()=>`Error in fused depthwiseConv2d: number of input channels (${r.shape[3]}) must match the inChannels dimension in filter ${o.shape[2]}.`),e==null&&(e=[1,1]),m.assert(n.eitherStridesOrDilationsAreOne(p,e),()=>`Error in fused depthwiseConv2d: Either strides or dilations must be 1. Got strides ${p} and dilations '${e}'`),n.checkPadOnDimRoundingMode("fused depthwiseConv2d",h,f);let W=n.computeConv2DInfo(r.shape,o.shape,p,e,h,f,!0),i;d!=null&&(i=w(d,"bias","fused conv2d"),[i]=H(i,u),S.assertAndGetBroadcastShape(W.outShape,i.shape));let B;D!=null&&(B=w(D,"prelu weights","fused depthwiseConv2d"));let F=(a,v)=>{m.assert(n.tupleValuesAreOne(e),()=>`Error in gradient of fused depthwiseConv2d: dilation rates greater than 1 are not yet supported. Got dilations '${e}'`);let[l,c,t,s]=v,$=L(a,t,C),A=q(c.shape,$,l,p,h,e,f),N=j(c,$,l.shape,p,h,e,f);if(s!=null){let K=J(i,$);return[A,N,K]}return[A,N]},G={x:r,filter:o,bias:i,preluActivationWeights:B},y={strides:p,pad:h,dataFormat:g,dilations:e,dimRoundingMode:f,activation:C,leakyreluAlpha:x};return d==null?I((v,l,c)=>{let t=b.runKernel(T,G,y);return c([l,v,t]),k&&(t=E(t,[t.shape[1],t.shape[2],t.shape[3]])),{value:t,gradFunc:F}})(r,o):I((v,l,c,t)=>{let s=b.runKernel(T,G,y);return t([l,v,s,c]),k&&(s=E(s,[s.shape[1],s.shape[2],s.shape[3]])),{value:s,gradFunc:F}})(r,o,i)}var ie=U({fusedDepthwiseConv2d_:X});export{ie as depthwiseConv2d};
+/*! Bundled license information:
+
+@tensorflow/tfjs-core/dist/ops/fused/depthwise_conv2d.js:
+  (**
+   * @license
+   * Copyright 2019 Google LLC. All Rights Reserved.
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   * http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   * =============================================================================
+   *)
+*/
+//# sourceMappingURL=depthwise_conv2d.js.map

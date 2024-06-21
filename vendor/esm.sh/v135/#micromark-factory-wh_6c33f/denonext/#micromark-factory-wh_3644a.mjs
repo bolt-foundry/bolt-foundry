@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(micromark-factory-whitespace@2.0.0) denonext production */
+import{factorySpace as u}from"/v135/micromark-factory-space@2.0.0/denonext/micromark-factory-space.mjs";import{markdownLineEnding as a,markdownSpace as o}from"/v135/micromark-util-character@2.0.1/denonext/micromark-util-character.mjs";function f(r,e){let t;return i;function i(n){return a(n)?(r.enter("lineEnding"),r.consume(n),r.exit("lineEnding"),t=!0,i):o(n)?u(r,i,t?"linePrefix":"lineSuffix")(n):e(n)}}export{f as factoryWhitespace};
+//# sourceMappingURL=micromark-factory-whitespace.mjs.map

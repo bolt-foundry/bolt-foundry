@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(remark-frontmatter@5.0.0) denonext production */
+import{frontmatterFromMarkdown as i,frontmatterToMarkdown as f}from"/v135/mdast-util-frontmatter@2.0.1/denonext/mdast-util-frontmatter.mjs";import{frontmatter as d}from"/v135/micromark-extension-frontmatter@2.0.0/denonext/micromark-extension-frontmatter.mjs";var k="yaml";function n(r){let s=this,t=r||k,o=s.data(),a=o.micromarkExtensions||(o.micromarkExtensions=[]),m=o.fromMarkdownExtensions||(o.fromMarkdownExtensions=[]),e=o.toMarkdownExtensions||(o.toMarkdownExtensions=[]);a.push(d(t)),m.push(i(t)),e.push(f(t))}export{n as default};
+//# sourceMappingURL=remark-frontmatter.mjs.map

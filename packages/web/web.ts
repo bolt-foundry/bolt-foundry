@@ -3,9 +3,13 @@
 import { clientRenderer } from "packages/clientRenderer/clientRenderer.ts";
 import { getLogger } from "deps.ts";
 import { routes as appRoutes } from "packages/client/components/App.tsx";
+import { routes as oldAppRoutes } from "aws/client/components/App.tsx";
+
 import { workerList } from "infra/build/workerList.ts";
 import { handler as graphQlHandler } from "packages/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";
+import { theAwsApp } from "/aws/clientRenderer/main.ts";
+import { getHeaders } from "/experimental/randallb/watcher/ingest.ts";
 
 const logger = getLogger(import.meta);
 export enum DeploymentTypes {
@@ -30,40 +34,70 @@ for (const entry of appRoutes.entries()) {
   routes.set(path, clientRenderer(allowLoggedOut));
 }
 
+for (const entry of oldAppRoutes.entries()) {
+  const [path, { module }] = entry;
+  routes.set(path, theAwsApp);
+}
+
 for (const workerPathWithoutLeadingSlash of workerList) {
   const workerPath = "/" + workerPathWithoutLeadingSlash;
   routes.set(workerPath, async (_request, _routeParams) => {
-    const filePath = workerPath.replace("packages/", "build/").replace(".ts", ".js");
+    const filePath = workerPath.replace("packages/", "build/").replace(
+      ".ts",
+      ".js",
+    );
     try {
-      const fileContent = await Deno.readTextFile(new URL(import.meta.resolve(filePath)));
+      const fileContent = await Deno.readTextFile(
+        new URL(import.meta.resolve(filePath)),
+      );
       return new Response(fileContent, {
         headers: { "content-type": "application/javascript" },
       });
-    } catch (e) { 
+    } catch (e) {
       if (e instanceof Deno.errors.NotFound) {
         return defaultRoute();
       }
       throw e;
-      
     }
+  });
+}
 
-  })
+function getContentType(ext) {
+  switch (ext) {
+    case "css":
+      return "text/css";
+    case "js":
+      return "application/javascript";
+    case "html":
+      return "text/html";
+    case "json":
+      return "application/json";
+    case "xml":
+      return "application/xml";
+    case "png":
+      return "image/png";
+    case "jpg":
+    case "jpeg":
+      return "image/jpeg";
+    case "gif":
+      return "image/gif";
+    case "svg":
+      return "image/svg+xml";
+    // case "ttf":
+    //   return "application/font-sfnt";
+    default:
+      return "text/plain";
+  }
 }
 
 routes.set("/resources/:filename+", async (_req, routeParams) => {
   const { filename } = routeParams;
   try {
-    const fileContent = await Deno.readTextFile(
+    const fileContent = await Deno.readFile(
       new URL(import.meta.resolve(`resources/${filename}`)),
     );
     const ext = filename.split(".").pop();
-    let contentType = "text/plain";
-
-    if (ext === "css") {
-      contentType = "text/css";
-    } else if (ext === "js") {
-      contentType = "application/javascript";
-    }
+    const contentType = getContentType(ext);
 
     return new Response(fileContent, {
       headers: {
@@ -205,22 +239,60 @@ routes.set("/google/oauth/end", (req) => {
 });
 
 routes.set("/graphql", graphQlHandler);
+routes.set("/aws-graphql", async (req) => {
+  const headersFromGraphql = await getHeaders();
+  const {
+    headers,
+    body,
+    cache,
+    credentials,
+    method,
+    mode,
+    integrity,
+    keepalive,
+    redirect,
+    referrer,
+    referrerPolicy,
+    signal,
+  } = req;
+  const combinedHeaders = new Headers(headers);
+  combinedHeaders.set('cookie', headersFromGraphql.get('cookie') ?? '')
+  const proxyUrl = "https://justin.boltfoundry.wtf/graphql";
+  const proxiedRequest = new Request(proxyUrl, {
+    body, // request body
+    cache, // request cache mode
+    credentials, // request credentials
+    headers: combinedHeaders, // request headers
+    integrity, // subresource integrity value
+    keepalive, // keepalive flag
+    method, // HTTP method (GET, POST, etc.)
+    mode, // request mode (e.g., cors, no-cors, same-origin)
+    redirect, // redirect mode
+    referrer, // referrer URL
+    referrerPolicy, // referrer policy
+    signal, // AbortSignal to abort the request
+  });
+  return fetch(proxiedRequest);
+});
 
 const defaultRoute = () => {
   return new Response("Not found", { status: 404 });
 };
 
-logger.info("Ready to serve")
+logger.info("Ready to serve");
 Deno.serve(async (req, info) => {
-
   const tick = performance.now();
   const incomingUrl = new URL(req.url);
   logger.info(
     `Incoming request: ${req.method} ${incomingUrl.pathname}`,
   );
   info.completed.then(() => {
-    logger.info(`(${performance.now() - tick}ms) Completed: ${req.method} ${incomingUrl.pathname}`);
-  })
+    logger.info(
+      `(${
+        performance.now() - tick
+      }ms) Completed: ${req.method} ${incomingUrl.pathname}`,
+    );
+  });
   // Attempt to match routes with optional URL params
   const pathWithParams = incomingUrl.pathname.split("?")[0];
   const routeParams: Record<string, string> = {};

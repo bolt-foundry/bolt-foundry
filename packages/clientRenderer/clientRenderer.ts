@@ -1,7 +1,8 @@
 import { getLogger, React } from "deps.ts";
 import { ReactDOMServer } from "packages/clientRenderer/deps.ts";
 import { BaseComponent } from "packages/clientRenderer/BaseComponent.tsx";
-import { Client } from "packages/client/Client.tsx";
+import { Client } from "packages/client/Client.tsx"; // "new client"
+// import Client from "aws/client/main.tsx"; // "old client"
 import { getEnvironment } from "packages/clientRenderer/relayEnvironment.ts";
 import {
   BfCurrentViewerAccessToken,

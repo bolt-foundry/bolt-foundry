@@ -1,0 +1,23 @@
+/* esm.sh - esbuild bundle(@tensorflow/tfjs-core@4.15.0/dist/optimizers/rmsprop_optimizer) denonext production */
+import{ENGINE as q}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/engine.js";import{dispose as M,tidy as d}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/globals.js";import{add as r}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/add.js";import{div as N}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/div.js";import{mul as n}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/mul.js";import{sqrt as S}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/sqrt.js";import{square as f}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/square.js";import{sub as b}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/sub.js";import{zerosLike as g}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/zeros_like.js";import{Optimizer as R}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/optimizers/optimizer.js";var A=class extends R{static get className(){return"RMSProp"}constructor(e,t=.9,s=0,a=null,i=!1){if(super(),this.learningRate=e,this.decay=t,this.momentum=s,this.epsilon=a,this.accumulatedMeanSquares=[],this.accumulatedMoments=[],this.accumulatedMeanGrads=[],this.centered=i,a==null&&(this.epsilon=q.backend.epsilon()),e==null)throw new Error("learningRate for RMSPropOptimizer must be defined.")}applyGradients(e){(Array.isArray(e)?e.map(s=>s.name):Object.keys(e)).forEach((s,a)=>{let i=q.registeredVariables[s],h=!1;this.accumulatedMeanSquares[a]==null&&(this.accumulatedMeanSquares[a]={originalName:`${s}/rms`,variable:d(()=>g(i).variable(h))}),this.accumulatedMoments[a]==null&&(this.accumulatedMoments[a]={originalName:`${s}/momentum`,variable:d(()=>g(i).variable(h))}),this.accumulatedMeanGrads[a]==null&&this.centered&&(this.accumulatedMeanGrads[a]={originalName:`${s}/mg`,variable:d(()=>g(i).variable(h))});let c=Array.isArray(e)?e[a].tensor:e[s];if(c==null)return;let u=this.accumulatedMeanSquares[a].variable,o=this.accumulatedMoments[a].variable;d(()=>{let y=r(n(u,this.decay),n(f(c),1-this.decay));if(this.centered){let m=this.accumulatedMeanGrads[a].variable,l=r(n(m,this.decay),n(c,1-this.decay)),p=N(n(c,this.learningRate),S(b(y,r(f(l),this.epsilon)))),v=r(n(o,this.momentum),p);u.assign(y),m.assign(l),o.assign(v);let G=b(i,v);i.assign(G)}else{let m=r(n(u,this.decay),n(f(c),1-this.decay)),l=r(n(o,this.momentum),N(n(c,this.learningRate),S(r(m,this.epsilon))));u.assign(m),o.assign(l);let p=b(i,l);i.assign(p)}})}),this.incrementIterations()}dispose(){this.accumulatedMeanSquares!=null&&M(this.accumulatedMeanSquares.map(e=>e.variable)),this.accumulatedMeanGrads!=null&&this.centered&&M(this.accumulatedMeanGrads.map(e=>e.variable)),this.accumulatedMoments!=null&&M(this.accumulatedMoments.map(e=>e.variable))}async getWeights(){let e=[...this.accumulatedMeanSquares,...this.accumulatedMoments];return this.centered&&e.push(...this.accumulatedMeanGrads),[await this.saveIterations()].concat(e.map(t=>({name:t.originalName,tensor:t.variable})))}async setWeights(e){e=await this.extractIterations(e);let t=this.centered?e.length/3:e.length/2,s=!1;this.accumulatedMeanSquares=e.slice(0,t).map(a=>({originalName:a.name,variable:a.tensor.variable(s)})),this.accumulatedMoments=e.slice(t,t*2).map(a=>({originalName:a.name,variable:a.tensor.variable(s)})),this.centered&&(this.accumulatedMeanGrads=e.slice(t*2,t*3).map(a=>({originalName:a.name,variable:a.tensor.variable(s)})))}getConfig(){return{learningRate:this.learningRate,decay:this.decay,momentum:this.momentum,epsilon:this.epsilon,centered:this.centered}}static fromConfig(e,t){return new e(t.learningRate,t.decay,t.momentum,t.epsilon,t.centered)}};export{A as RMSPropOptimizer};
+/*! Bundled license information:
+
+@tensorflow/tfjs-core/dist/optimizers/rmsprop_optimizer.js:
+  (**
+   * @license
+   * Copyright 2018 Google LLC. All Rights Reserved.
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   * http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   * =============================================================================
+   *)
+*/
+//# sourceMappingURL=rmsprop_optimizer.js.map

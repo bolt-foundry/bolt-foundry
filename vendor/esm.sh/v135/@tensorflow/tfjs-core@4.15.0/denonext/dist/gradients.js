@@ -1,0 +1,24 @@
+/* esm.sh - esbuild bundle(@tensorflow/tfjs-core@4.15.0/dist/gradients) denonext production */
+import{ENGINE as u}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/engine.js";import{Tensor as d,Variable as b}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/tensor.js";import{convertToTensor as p,convertToTensorArray as g}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/tensor_util_env.js";import*as a from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/util.js";function v(t){return a.assert(a.isFunction(t),()=>"The f passed in grad(f) must be a function"),(e,s)=>{let n=p(e,"x","tf.grad","string_or_numeric"),r=s!=null?p(s,"dy","tf.grad"):null;return u.tidy(()=>{let{value:o,grads:l}=u.gradients(()=>t(n),[n],r);return r!=null&&a.assertShapesMatch(o.shape,r.shape,"The shape of dy passed in grad(f)(x, dy) must match the shape returned by f(x)"),f(l),l[0]})}}function A(t){return a.assert(a.isFunction(t),()=>"The f passed in grads(f) must be a function"),(e,s)=>{a.assert(Array.isArray(e),()=>"The args passed in grads(f)(args) must be an array of `Tensor`s or `TensorLike`s");let n=g(e,"args","tf.grads","string_or_numeric"),r=s!=null?p(s,"dy","tf.grads"):null;return u.tidy(()=>{let{value:o,grads:l}=u.gradients(()=>t(...n),n,r);return r!=null&&a.assertShapesMatch(o.shape,r.shape,"The shape of dy passed in grads(f)([x1,...], dy) must match the shape returned by f([x1,...])"),f(l),l})}}function x(t){return a.assert(a.isFunction(t),()=>"The f passed in valueAndGrad(f) must be a function"),(e,s)=>{a.assert(e instanceof d,()=>"The x passed in valueAndGrad(f)(x) must be a tensor"),a.assert(s==null||s instanceof d,()=>"The dy passed in valueAndGrad(f)(x, dy) must be a tensor");let{grads:n,value:r}=u.gradients(()=>t(e),[e],s);return f(n),{grad:n[0],value:r}}}function k(t){return a.assert(a.isFunction(t),()=>"The f passed in valueAndGrads(f) must be a function"),(e,s)=>{a.assert(Array.isArray(e)&&e.every(r=>r instanceof d),()=>"The args passed in valueAndGrads(f)(args) must be array of tensors"),a.assert(s==null||s instanceof d,()=>"The dy passed in valueAndGrads(f)(args, dy) must be a tensor");let n=u.gradients(()=>t(...e),e,s);return s!=null&&a.assertShapesMatch(n.value.shape,s.shape,"The shape of dy passed in valueAndGrads(f)([x1,...], dy) must match the shape returned by f([x1,...])"),f(n.grads),n}}function N(t,e){a.assert(a.isFunction(t),()=>"The f passed in variableGrads(f) must be a function"),a.assert(e==null||Array.isArray(e)&&e.every(i=>i instanceof b),()=>"The varList passed in variableGrads(f, varList) must be an array of variables");let s=e!=null;if(!s){e=[];for(let i in u.registeredVariables)e.push(u.registeredVariables[i])}let n=s?e.filter(i=>!i.trainable):null,r=e.length;e=e.filter(i=>i.trainable),a.assert(e.length>0,()=>`variableGrads() expects at least one of the input variables to be trainable, but none of the ${r} variables is trainable.`);let o=!0,{value:l,grads:c}=u.gradients(t,e,null,o);a.assert(c.some(i=>i!=null),()=>"Cannot find a connection between any variable and the result of the loss function y=f(x). Please make sure the operations that use variables are inside the function f passed to minimize()."),a.assert(l.rank===0,()=>`The f passed in variableGrads(f) must return a scalar, but it returned a rank-${l.rank} tensor`);let h={};return e.forEach((i,m)=>{c[m]!=null&&(h[i.name]=c[m])}),n?.forEach(i=>h[i.name]=null),{value:l,grads:h}}function $(t){return u.customGrad(t)}function f(t){if(t.filter(s=>s==null).length>0)throw new Error(`Cannot compute gradient of y=f(x) with respect to x. Make sure that
+    the f you passed encloses all operations that lead from x to y.`)}export{$ as customGrad,v as grad,A as grads,x as valueAndGrad,k as valueAndGrads,N as variableGrads};
+/*! Bundled license information:
+
+@tensorflow/tfjs-core/dist/gradients.js:
+  (**
+   * @license
+   * Copyright 2018 Google LLC. All Rights Reserved.
+   * Licensed under the Apache License, Version 2.0 (the "License");
+   * you may not use this file except in compliance with the License.
+   * You may obtain a copy of the License at
+   *
+   * http://www.apache.org/licenses/LICENSE-2.0
+   *
+   * Unless required by applicable law or agreed to in writing, software
+   * distributed under the License is distributed on an "AS IS" BASIS,
+   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   * See the License for the specific language governing permissions and
+   * limitations under the License.
+   * =============================================================================
+   *)
+*/
+//# sourceMappingURL=gradients.js.map
