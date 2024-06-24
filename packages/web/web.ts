@@ -244,9 +244,9 @@ routes.set("/graphql", graphQlHandler);
 routes.set("/aws-graphql", async (req) => {
   const { bfCurrentViewer } = await getContextFromRequest(req);
   if (!(bfCurrentViewer instanceof BfCurrentViewerAccessToken)) {
-    throw new Error('no thanks.')
+    throw new Error("no thanks.");
   }
-  
+
   const headersFromGraphql = await getHeaders();
   const {
     headers,
@@ -263,7 +263,7 @@ routes.set("/aws-graphql", async (req) => {
     signal,
   } = req;
   const combinedHeaders = new Headers(headers);
-  combinedHeaders.set('cookie', headersFromGraphql.get('cookie') ?? '')
+  combinedHeaders.set("cookie", headersFromGraphql.get("cookie") ?? "");
   const proxyUrl = "https://justin.boltfoundry.wtf/graphql";
   const proxiedRequest = new Request(proxyUrl, {
     body, // request body
@@ -279,6 +279,41 @@ routes.set("/aws-graphql", async (req) => {
     referrerPolicy, // referrer policy
     signal, // AbortSignal to abort the request
   });
+  return fetch(proxiedRequest);
+});
+
+routes.set("/og-graphql", (req) => {
+  const proxyUrl = "https://justin.boltfoundry.wtf/graphql";
+  const {
+    headers,
+    body,
+    cache,
+    credentials,
+    method,
+    mode,
+    integrity,
+    keepalive,
+    redirect,
+    referrer,
+    referrerPolicy,
+    signal,
+  } = req;
+  const combinedHeaders = new Headers(headers);
+  const proxiedRequest = new Request(proxyUrl, {
+    body, // request body
+    cache, // request cache mode
+    credentials, // request credentials
+    headers: combinedHeaders, // request headers
+    integrity, // subresource integrity value
+    keepalive, // keepalive flag
+    method, // HTTP method (GET, POST, etc.)
+    mode, // request mode (e.g., cors, no-cors, same-origin)
+    redirect, // redirect mode
+    referrer, // referrer URL
+    referrerPolicy, // referrer policy
+    signal, // AbortSignal to abort the request
+  });
+
   return fetch(proxiedRequest);
 });
 
