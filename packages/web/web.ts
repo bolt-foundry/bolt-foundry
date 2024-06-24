@@ -10,6 +10,8 @@ import { handler as graphQlHandler } from "packages/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";
 import { redirectIfNotLoggedIn, theAwsApp } from "/aws/clientRenderer/main.ts";
 import { getHeaders } from "/experimental/randallb/watcher/ingest.ts";
+import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
+import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
 
 const logger = getLogger(import.meta);
 export enum DeploymentTypes {
@@ -240,6 +242,11 @@ routes.set("/google/oauth/end", (req) => {
 
 routes.set("/graphql", graphQlHandler);
 routes.set("/aws-graphql", async (req) => {
+  const { bfCurrentViewer } = await getContextFromRequest(req);
+  if (!(bfCurrentViewer instanceof BfCurrentViewerAccessToken)) {
+    throw new Error('no thanks.')
+  }
+  
   const headersFromGraphql = await getHeaders();
   const {
     headers,
