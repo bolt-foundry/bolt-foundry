@@ -112,11 +112,11 @@ async function processVideoChunk(chunkPath: string) {
   console.log(
     "uploaded to s3",
     chunkPath,
-    `https://justin.boltfoundry.wtf${project.url}`,
+    `https://boltfoundry.com${project.url}`,
   );
 
   // append the link to a file in /tmp/files_uploaded.txt
-  const uploadedLink = `https://justin.boltfoundry.wtf${project.url}`;
+  const uploadedLink = `https://boltfoundry.com${project.url}`;
   try {
     await Deno.writeTextFile("/tmp/files_uploaded.txt", `${uploadedLink}\n`, {
       append: true,
