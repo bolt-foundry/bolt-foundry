@@ -40,11 +40,23 @@
         # Add to this to make it available in VS Code and most places on the system. The larger this is, the larger the deploy, so try to keep it slim.
         # Be sure to run `bff nix` to build
         defaultPackages = with pkgs; [
+          watchman
+          sapling
+          gh
+          jupyter
         ];
 
         # These are dev-only packages, used for building etc. They're only available where direnv is available, ie the replit shell.
         # these packages show up with "direnv allow"
         devShellPackages = with pkgs; [
+          jq
+          emscripten
+          pkg-config
+          clang_12
+          ccls
+          gdb
+          gnumake
+          emscripten
         ];
 
         deployPackages = with pkgs; [
