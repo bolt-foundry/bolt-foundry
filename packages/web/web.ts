@@ -8,7 +8,7 @@ import { routes as oldAppRoutes } from "aws/client/components/App.tsx";
 import { workerList } from "infra/build/workerList.ts";
 import { handler as graphQlHandler } from "packages/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";
-import { theAwsApp } from "/aws/clientRenderer/main.ts";
+import { redirectIfNotLoggedIn, theAwsApp } from "/aws/clientRenderer/main.ts";
 import { getHeaders } from "/experimental/randallb/watcher/ingest.ts";
 
 const logger = getLogger(import.meta);
@@ -36,7 +36,7 @@ for (const entry of appRoutes.entries()) {
 
 for (const entry of oldAppRoutes.entries()) {
   const [path, { module }] = entry;
-  routes.set(path, theAwsApp);
+  routes.set(path, redirectIfNotLoggedIn);
 }
 
 for (const workerPathWithoutLeadingSlash of workerList) {

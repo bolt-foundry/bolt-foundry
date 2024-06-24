@@ -12,6 +12,8 @@ import {
   featureFlags as defaultFeatureFlags,
   featureVariants as defaultFeatureVariants,
 } from "aws/features/list.ts";
+import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 
 const log = createLogger("clientRenderer", "info");
 log("starting clientRenderer");
@@ -60,6 +62,35 @@ function timeout(ms: number) {
   return new Promise((_, reject) =>
     setTimeout(() => reject(new Error("Timeout")), ms)
   );
+}
+
+export async function redirectIfNotLoggedIn(request: Request, _routeParams: unknown) {
+  const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
+  const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
+    "boltfoundry.wtf";
+  const { hostname } = new URL(request.url);
+  const loggedInRedirectUrl = deploymentEnvironment === "DEVELOPMENT"
+    ? `https://${redirectDomain}/login?hostname=${hostname}`
+    : "/login";
+
+  const { bfCurrentViewer, responseHeaders } = await getContextFromRequest(
+    request,
+  );
+
+  if (bfCurrentViewer instanceof BfCurrentViewerAccessToken) {
+    const clientRendererResponse = await theAwsApp(request);
+    clientRendererResponse.headers.append(
+      "Set-Cookie",
+      responseHeaders.get("Set-Cookie") ?? "",
+    );
+    return clientRendererResponse;
+  }
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: loggedInRedirectUrl,
+    },
+  });
 }
 
 export const theAwsApp = async (
