@@ -8,6 +8,7 @@ import {
   toBfOid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { bfQueryItems } from "packages/bfDb/bfDb.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
 type BfOrganizationRequiredProps = {
   name: string;
@@ -17,7 +18,7 @@ type BfOrganizationRequiredProps = {
 
 
 export class BfOrganization
-  extends BfModel<BfOrganizationRequiredProps> {
+  extends BfNode<BfOrganizationRequiredProps> {
   __typename = "BfOrganization" as const;
   protected static isSelfOwned = true;
 
