@@ -8,19 +8,11 @@ import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { PageFrame } from "packages/client/components/PageFrame.tsx";
 import { ProjectPageToast } from "packages/client/components/ProjectPageToast.tsx";
 import { graphql } from "packages/client/deps.ts";
-import { ProjectPageContainerProjectQuery } from "packages/__generated__/ProjectPageContainerProjectQuery.graphql.ts";
 const logger = getLogger(import.meta);
 
 const { useEffect, useMemo, useState } = React;
 const { useLazyLoadQuery } = ReactRelay;
 
-const query = await graphql`
-  query ProjectPageContainerProjectQuery($id: ID!) {
-    containerProject(id: $id) {
-      ...ProjectView_containerProject
-    }
-  }
-`;
 // const subscriptionFragment = await graphql`
 //   subscription ProjectPageOldSubscription($id: ID!, $count: Int!, $cursor: String) {
 //     project(id: $id) {

@@ -103,7 +103,7 @@ function GoogleLoginButton() {
         credential: response.credential,
       },
       onCompleted: () => {
-        navigate("/projects/new");
+        navigate("/awsprojects/new/");
       },
     });
   };
