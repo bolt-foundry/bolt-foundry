@@ -15,7 +15,6 @@ import { GraphQLContext } from "packages/graphql/graphql.ts";
 import type { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import { getLogger } from "deps.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { BfNodeJob } from "packages/bfDb/models/BfNodeJob.ts";
 
 const logger = getLogger(import.meta);
 
