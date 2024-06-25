@@ -2,36 +2,11 @@ import { getLogger, React, ReactRelay } from "deps.ts";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { Button } from "packages/bfDs/Button.tsx";
 import { GoogleDriveFilePickerQuery } from "infra/__generated__/GoogleDriveFilePickerQuery.graphql.ts";
-import { GoogleDriveFilePickerLinkGoogleAccountMutation } from "infra/__generated__/GoogleDriveFilePickerLinkGoogleAccountMutation.graphql.ts";
 import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 const logger = getLogger(import.meta);
 const { useLazyLoadQuery, useMutation } = ReactRelay;
 const { useCallback, useState } = React;
-
-// const pickFileMutation = await graphql`
-//   mutation ProjectPageCreateGoogleDriveFileMutation($sourceGoogleFileId: String!, $destinationGoogleFolderId: String!) {
-//     createBfMediaGoogleDrive(sourceGoogleFileId: $sourceGoogleFileId, destinationGoogleFolderId: $destinationGoogleFolderId) {
-//       googleFileId
-//     }
-//   }
-// `;
-
-const accessTokenQuery = await graphql`
-  query GoogleDriveFilePickerQuery {
-    currentViewer {
-      googleAccessToken
-    }
-  }
-`;
-
-const linkGoogleAccountMutation = await graphql`
-  mutation GoogleDriveFilePickerLinkGoogleAccountMutation($code: String!) {
-    linkGoogleAccount(code: $code) {
-      googleAccessToken
-    }
-  }
-`;
 
 export enum GoogleDriveFilePickerFileType {
   VIDEO = "video",

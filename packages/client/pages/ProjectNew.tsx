@@ -1,9 +1,6 @@
 import { getLogger, React } from "deps.ts";
 import { graphql, ReactRelay } from "packages/client/deps.ts";
 import { PageFrame } from "packages/client/components/PageFrame.tsx";
-import { ProjectNewCreateNewProjectMutation } from "packages/__generated__/ProjectNewCreateNewProjectMutation.graphql.ts";
-import { ProjectNewCreateBffsFileMutation } from "packages/__generated__/ProjectNewCreateBffsFileMutation.graphql.ts";
-import { ProjectNewUploadFileMutation } from "packages/__generated__/ProjectNewUploadFileMutation.graphql.ts";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { clearOpfsStorage } from "lib/opfs.ts";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
@@ -15,27 +12,6 @@ const logger = getLogger(import.meta);
 const { useState, useEffect } = React;
 
 const { useMutation } = ReactRelay;
-
-const mutation = await graphql`
-  mutation ProjectNewCreateNewProjectMutation($name: String!) {
-    createProject(name: $name) {
-      id
-    }
-  }
-`;
-
-const createBffsFileMutation = await graphql`
-  mutation ProjectNewCreateBffsFileMutation($name: String!) {
-    createBfMediaBffsFile(name: $name) {
-      id
-    }
-  }
-`;
-
-const uploadFileMutation = await graphql`
-  mutation ProjectNewUploadFileMutation($file: File!) {
-    readTextFile(file: $file)
-  }`;
 
 const styles: Record<string, React.CSSProperties> = {
   container: {

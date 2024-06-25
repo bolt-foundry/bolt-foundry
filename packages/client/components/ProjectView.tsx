@@ -7,7 +7,6 @@ import { classnames } from "lib/classnames.ts";
 import { ProjectTitle } from "packages/client/components/ProjectTitle.tsx";
 import { SettingsProjectSidebar } from "packages/client/components/SettingsProjectSidebar.tsx";
 import { graphql } from "packages/client/deps.ts";
-import { ProjectView_containerProject$key } from "packages/__generated__/ProjectView_containerProject.graphql.ts";
 
 const { useState } = React;
 const { useFragment } = ReactRelay;
@@ -34,14 +33,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: "bold",
   },
 };
-
-const fragment = await graphql`
-  fragment ProjectView_containerProject on BfContainerProject {
-    name
-    opurl
-    ...BfContainerProjectResolverOpurlResolver
-  }
-`
 
 type Props = {
   containerProject$key: ProjectView_containerProject$key;

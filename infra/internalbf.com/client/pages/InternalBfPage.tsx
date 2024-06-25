@@ -11,15 +11,7 @@ import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 const { useMutation } = ReactRelay;
 const logger = getLogger(import.meta);
 
-const mutation = await graphql`
 
-  mutation InternalBfPageCreateIngestionJobMutation($googleDriveFileId: String!) {
-    createBfNodeGoogleDriveFile(googleDriveFileId: $googleDriveFileId) {
-      __typename
-      id
-    }
-  }
-`;
 
 const styles = {
   content: {
