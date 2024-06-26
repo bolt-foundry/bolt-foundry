@@ -11,7 +11,7 @@ export default function getEnvironment(currentViewer = {}) {
     variables: unknown,
   ) {
     const response = (fetch(
-      new URL("/graphql", "https://justin.boltfoundry.wtf"),
+      new URL("/og-graphql", "https://boltfoundry.com"),
       {
         method: "POST",
         
