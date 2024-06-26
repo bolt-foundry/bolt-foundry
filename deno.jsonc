@@ -77,7 +77,8 @@
       "cdk.out",
       "build",
       "vendor",
-      "resources"
+      "resources",
+      "aws"
     ]
   },
   "lock": true,
