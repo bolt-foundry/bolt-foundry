@@ -5,7 +5,7 @@ import {
   extractEncodedAudio,
 } from "aws/client/lib/encodingTools.ts";
 import { DGWord } from "aws/types/transcript.ts";
-import { TensorFlowPoseDetection  } from "aws/client/deps.ts";
+import { TensorFlowPoseDetection } from "aws/client/deps.ts";
 import { captureEvent } from "aws/events/mod.ts";
 import PerfLogger from "aws/perf/mod.ts";
 import { RenderSettings } from "aws/types/settings.ts";
@@ -14,8 +14,11 @@ import {
   getCurrentCropIndex,
   ManualCrop,
 } from "aws/client/components/ManualCropMenu.tsx";
-const logVerbose = createBfLogger(import.meta, "verbose");
-const logError = createBfLogger(import.meta, "error");
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
+const logVerbose = logger.debug;
+const logError = logger.error;
 
 function getAssetUrlCb(assetName: string) {
   return `/resources/gxpkg/${assetName}`;
@@ -198,6 +201,7 @@ export default class BFRenderer {
   public preCropCanvas: HTMLCanvasElement;
   private cropCanvas: HTMLCanvasElement;
   private srcCanvas: HTMLCanvasElement;
+  private audioRenderingElement: HTMLVideoElement;
   public srcVideoElementStream: MediaStream | null = null;
   public streamVideoElement: HTMLVideoElement;
   public transcriptWords: Array<DGWord>;
@@ -227,6 +231,7 @@ export default class BFRenderer {
   constructor(props: ConstructorProps) {
     this.srcVideoElement = document.createElement("video");
     this.streamVideoElement = document.createElement("video");
+    this.audioRenderingElement = document.createElement("video");
     this.featureFlags = props.featureFlags;
     this.settings = props.settings;
     // ------- adjust length of clip to show end cap
@@ -279,6 +284,7 @@ export default class BFRenderer {
     this.dataIsLoaded = this.setupElements();
     this.compositionIsLoaded = this.setupVideoRendering();
     this.audioIsLoaded = this.setupAudioRendering();
+
     this.transcriptWords = props.transcriptWords;
     const largeMovementThresholdPct =
       props.settings.largeMovementThresholdPct ??
@@ -643,7 +649,7 @@ export default class BFRenderer {
     await this.seekVideoElements(this.startTimecode);
   }
 
-  async setupAudioRendering() {
+  async setupAudioRenderingUsingFetch() {
     const response = await fetch(this.videoUrl);
     const blob = await response.blob();
     const file = new File([blob], "bf-clip.mp4");
@@ -705,6 +711,121 @@ export default class BFRenderer {
     }
 
     await audioDecoder.flush();
+  }
+
+  setupAudioRenderingUsingVideoElement() {
+    logger.debug("setupAudioRenderingUsingVideoElement");
+    let lastKnownTimestamp: number | null = null;
+    return new Promise<void>((resolve, reject) => {
+      // Creating video element to render audio
+      this.audioRenderingElement.src = this.videoUrl;
+      this.audioRenderingElement.crossOrigin = "anonymous";
+      this.audioRenderingElement.muted = false; // Audio should play out
+      this.audioRenderingElement.playsInline = true;
+      logger.debug("setupAudioRenderingUsingVideoElement promise");
+
+      logger.debug(
+        "setupAudioRenderingUsingVideoElement video element created",
+      );
+      // Setting up the audio context and audio nodes
+      const audioCtx = new AudioContext({ sampleRate: 44100 });
+      const sourceNode = audioCtx.createMediaElementSource(
+        this.audioRenderingElement,
+      );
+      logger.debug(
+        "setupAudioRenderingUsingVideoElement audio context created",
+      );
+      // Using ScriptProcessorNode for audio data capturing
+      const scriptProcessorNode = audioCtx.createScriptProcessor(4096, 2, 2);
+      logger.debug(
+        "setupAudioRenderingUsingVideoElement script processor node created",
+      );
+      scriptProcessorNode.onaudioprocess = (audioProcessingEvent) => {
+        const audioDataLeft = audioProcessingEvent.inputBuffer.getChannelData(
+          0,
+        );
+        const audioDataRight = audioProcessingEvent.inputBuffer.getChannelData(
+          1,
+        );
+
+        // Combine both channels into a single Float32Array
+        const combinedData = new Float32Array(
+          audioDataLeft.length + audioDataRight.length,
+        );
+        combinedData.set(audioDataLeft, 0);
+        combinedData.set(audioDataRight, audioDataLeft.length);
+
+        if (lastKnownTimestamp === this.audioRenderingElement.currentTime) {
+          // Prevents duplicate frames of audio data
+          return;
+        }
+        // Create AudioData object and push it to this.audioChunks
+        const audioData = new AudioData({
+          timestamp: this.audioRenderingElement.currentTime / 1000, // Assuming timestamp in microseconds
+          numberOfChannels: 2,
+          format: "f32-planar", // Assuming the format is float32 planar
+          sampleRate: this.sampleRate,
+          data: combinedData.buffer, // Use the ArrayBuffer of the combined Float32Array
+          numberOfFrames: audioDataLeft.length, // Specify the number of frames
+        });
+
+        this.audioChunks.push(audioData);
+        lastKnownTimestamp = this.audioRenderingElement.currentTime;
+
+        // Calculate and update the progress if needed
+        const currentTimecode = this.audioRenderingElement.currentTime;
+        this.calculateProgress(
+          "setupAudioRendering",
+          currentTimecode / this.audioRenderingElement.duration,
+        );
+      };
+
+      // Connect the source node to ScriptProcessorNode and the destination (speakers)
+      sourceNode.connect(scriptProcessorNode);
+      scriptProcessorNode.connect(audioCtx.destination);
+
+      this.audioRenderingElement.addEventListener("error", (e) => {
+        logger.error("Error during audio rendering:", e);
+        reject(e); // Reject promise if there's an error
+      });
+
+      this.audioRenderingElement.addEventListener("canplay", () => {
+        this.audioRenderingElement.play();
+        logger.debug("setupAudioRenderingUsingVideoElement audio canplay");
+      });
+
+      this.audioRenderingElement.addEventListener("playing", () => {
+        logger.debug("setupAudioRenderingUsingVideoElement audio playing");
+      });
+
+      this.audioRenderingElement.addEventListener("timeupdate", () => {
+        const currentTimecode = this.audioRenderingElement.currentTime;
+        const adjustedTimestamp = currentTimecode; // convert to microseconds
+
+        // Stop adding chunks after the defined timecode
+        if (adjustedTimestamp >= this.endTimecode) {
+          logger.debug("setupAudioRenderingUsingVideoElement audio timeupdate");
+          this.audioRenderingElement.pause();
+          resolve();
+        }
+      });
+
+      // Append and start video playback
+      logger.debug(
+        "setupAudioRenderingUsingVideoElement appending video element",
+      );
+      document.body.appendChild(this.audioRenderingElement);
+      logger.debug(
+        "setupAudioRenderingUsingVideoElement video element appended",
+      );
+      this.audioRenderingElement.currentTime = this.startTimecode;
+      logger.debug("setupAudioRenderingUsingVideoElement video element played");
+    });
+  }
+
+  async setupAudioRendering() {
+    return await this.setupAudioRenderingUsingVideoElement();
+    // return await this.setupAudioRenderingUsingFetch();
   }
 
   async seekVideoElements(currentTimecode: number) {

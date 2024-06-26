@@ -1,10 +1,13 @@
 import { MP4Box, Mp4Muxer } from "aws/client/deps.ts";
 import PerfLogger from "aws/perf/mod.ts";
 const { Muxer, ArrayBufferTarget } = Mp4Muxer;
+import { getLogger } from "deps.ts"
+
+const logger = getLogger(import.meta);
 // const log = console.log;
 // const warn = console.warn;
-const log = (..._args: Array<unknown>) => {};
-const warn = (..._args: Array<unknown>) => {};
+const log = logger.info;
+const warn = logger.warn;
 type ProgressCallback = (percent: number) => void;
 
 type AudioInputOptions = {
