@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(@tensorflow/tfjs-core@4.15.0/dist/ops/split_util) denonext production */
-import{assert as h}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/util.js";function y(t,e,f=0){let a=[];if(typeof e=="number")h(t.shape[f]%e===0,()=>"Number of splits must evenly divide the axis."),a=new Array(e).fill(t.shape[f]/e);else{let d=e.reduce((o,s)=>(s===-1&&(o+=1),o),0);h(d<=1,()=>"There should be only one negative value in split array.");let r=e.indexOf(-1);if(r!==-1){let o=e.reduce((s,n)=>n>0?s+n:s);e[r]=t.shape[f]-o}h(t.shape[f]===e.reduce((o,s)=>o+s),()=>"The sum of sizes must match the size of the axis dimension."),a=e}return a}export{y as prepareSplitSize};
-//# sourceMappingURL=split_util.js.map

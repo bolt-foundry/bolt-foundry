@@ -26,7 +26,7 @@ export * as ReactRuntime from "https://esm.sh/react@18.2.0/jsx-runtime";
 export { default as remarkFrontmatter } from "https://esm.sh/remark-frontmatter@5.0.0";
 export { default as remarkMdxFrontmatter } from "https://esm.sh/remark-mdx-frontmatter@4.0.0";
 
-// export { ready as tfjsReady } from "https://esm.sh/@tensorflow/tfjs-core@4.15.0";
+export { ready as tfjsReady } from "https://esm.sh/@tensorflow/tfjs-core@4.15.0";
 import "https://esm.sh/@tensorflow/tfjs-backend-webgl@4.15.0";
 
 // @deno-types="https://esm.sh/v135/@tensorflow-models/pose-detection@2.1.3/dist/index.d.ts";

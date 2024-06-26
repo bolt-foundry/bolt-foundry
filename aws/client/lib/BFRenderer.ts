@@ -5,7 +5,7 @@ import {
   extractEncodedAudio,
 } from "aws/client/lib/encodingTools.ts";
 import { DGWord } from "aws/types/transcript.ts";
-import { TensorFlowPoseDetection } from "aws/client/deps.ts";
+import { TensorFlowPoseDetection, tfjsReady } from "aws/client/deps.ts";
 import { captureEvent } from "aws/events/mod.ts";
 import PerfLogger from "aws/perf/mod.ts";
 import { RenderSettings } from "aws/types/settings.ts";
@@ -24,7 +24,7 @@ function getAssetUrlCb(assetName: string) {
   return `/resources/gxpkg/${assetName}`;
 }
 
-const ENABLE_TRACKING = false; // disabled until we figure out what's going on with tensorflow.
+const ENABLE_TRACKING = true; // disabled until we figure out what's going on with tensorflow.
 
 // Kalman Filter parameters
 const PROCESS_NOISE = 0.01; // increase to trust predictions more than measurements
@@ -602,7 +602,7 @@ export default class BFRenderer {
       );
     }
     if (!this.detector && (this.settings.useTracking) && ENABLE_TRACKING) {
-      // await tfjsReady();
+      await tfjsReady();
       const detectorConfig = {
         runtime: "tfjs",
         modelType: TensorFlowPoseDetection.movenet.modelType.SINGLEPOSE_THUNDER,
