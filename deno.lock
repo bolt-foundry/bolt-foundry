@@ -1567,7 +1567,10 @@
     }
   },
   "redirects": {
-    "https://deno.land/std/fs/mod.ts": "https://deno.land/std@0.224.0/fs/mod.ts"
+    "https://deno.land/std/fs/mod.ts": "https://deno.land/std@0.224.0/fs/mod.ts",
+    "https://esm.sh/v128/@types/react@~18.2/jsx-runtime~.d.ts": "https://esm.sh/v128/@types/react@18.2.38/jsx-runtime~.d.ts",
+    "https://unpkg.com/@tensorflow/tfjs-backend-webgl@4.15.0": "https://unpkg.com/@tensorflow/tfjs-backend-webgl@4.15.0/dist/tf-backend-webgl.min.js",
+    "https://unpkg.com/@tensorflow/tfjs-core@4.15.0": "https://unpkg.com/@tensorflow/tfjs-core@4.15.0/dist/tf-core.min.js"
   },
   "remote": {
     "https://deno.land/std@0.192.0/encoding/base64.ts": "144ae6234c1fbe5b68666c711dc15b1e9ee2aef6d42b3b4345bf9a6c91d70d0d",
@@ -2895,6 +2898,8 @@
     "https://esm.sh/v135/vfile@6.0.1/denonext/vfile.mjs": "31065c960cf79824afc0bc6890688c540f09d067eb5415effb7fafac6ef33c13",
     "https://esm.sh/v135/yaml@2.3.4/denonext/yaml.mjs": "e02d2f312d4296e7c6c54a5c9d1c0a82466adb282d8540d4e00cd07574a117fb",
     "https://esm.sh/v135/yaml@2.4.1/denonext/yaml.mjs": "4cca3db3db65962184279ef4d4de18ed1358885831ea5114d6956462ce4377fd",
-    "https://esm.sh/v135/zwitch@2.0.4/denonext/zwitch.mjs": "c0e8c246a1f38b425335ea78cc366a7801d3ef89701229a35f85a51310e6e49f"
+    "https://esm.sh/v135/zwitch@2.0.4/denonext/zwitch.mjs": "c0e8c246a1f38b425335ea78cc366a7801d3ef89701229a35f85a51310e6e49f",
+    "https://unpkg.com/@tensorflow/tfjs-backend-webgl@4.15.0/dist/tf-backend-webgl.min.js": "808838dda04abbd1d45b3e2bdb80af1a5e4beb5130c11b8d5c12abcca7b7e5bc",
+    "https://unpkg.com/@tensorflow/tfjs-core@4.15.0/dist/tf-core.min.js": "fdc8085ba8c1ec91c8988dbd4a5e6fbace180484cead418da4ea6b7d87b99629"
   }
 }
