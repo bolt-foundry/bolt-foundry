@@ -3,6 +3,7 @@ import PoseFilter from "aws/client/lib/poseFilter.ts";
 import {
   createMuxedFile,
   extractEncodedAudio,
+  getSampleRateFromVideoElement,
 } from "aws/client/lib/encodingTools.ts";
 import { DGWord } from "aws/types/transcript.ts";
 import { TensorFlowPoseDetection, tfjsReady } from "aws/client/deps.ts";
@@ -382,6 +383,11 @@ export default class BFRenderer {
     // this.streamVideoElement.currentTime = this.startTimecode;
     document.body.appendChild(this.streamVideoElement);
 
+    this.audioRenderingElement.src = this.videoUrl;
+    this.audioRenderingElement.crossOrigin = "anonymous";
+    this.audioRenderingElement.muted = false; // Audio should play out
+    this.audioRenderingElement.playsInline = true;
+
     if (this.settings.showTrackingDebug) {
       this.preCropCanvas.style.left = "10px";
       this.srcCanvas.style.left = "120px";
@@ -713,22 +719,20 @@ export default class BFRenderer {
     await audioDecoder.flush();
   }
 
-  setupAudioRenderingUsingVideoElement() {
+  async setupAudioRenderingUsingVideoElement() {
     logger.debug("setupAudioRenderingUsingVideoElement");
     let lastKnownTimestamp: number | null = null;
+    const sampleRate = await getSampleRateFromVideoElement(this.audioRenderingElement);
+    this.sampleRate = sampleRate;
     return new Promise<void>((resolve, reject) => {
       // Creating video element to render audio
-      this.audioRenderingElement.src = this.videoUrl;
-      this.audioRenderingElement.crossOrigin = "anonymous";
-      this.audioRenderingElement.muted = false; // Audio should play out
-      this.audioRenderingElement.playsInline = true;
       logger.debug("setupAudioRenderingUsingVideoElement promise");
 
       logger.debug(
         "setupAudioRenderingUsingVideoElement video element created",
       );
       // Setting up the audio context and audio nodes
-      const audioCtx = new AudioContext({ sampleRate: 44100 });
+      const audioCtx = new AudioContext({ sampleRate: this.sampleRate });
       const sourceNode = audioCtx.createMediaElementSource(
         this.audioRenderingElement,
       );

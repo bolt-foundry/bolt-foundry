@@ -1,7 +1,7 @@
 import { MP4Box, Mp4Muxer } from "aws/client/deps.ts";
 import PerfLogger from "aws/perf/mod.ts";
 const { Muxer, ArrayBufferTarget } = Mp4Muxer;
-import { getLogger } from "deps.ts"
+import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
 // const log = console.log;
@@ -362,4 +362,36 @@ export async function test() {
   a.download = "testMuxedDownload.mp4";
   a.click();
   URL.revokeObjectURL(muxedFileUrl);
+}
+
+export async function getSampleRateFromVideoElement(
+  videoElement: HTMLVideoElement,
+): Promise<number> {
+  if (!videoElement.src) {
+    throw new Error("Video element src is not set.");
+  }
+  return await new Promise((resolve, reject) => {
+    videoElement.addEventListener("canplay", () => {
+      try {
+        const audioCtx =
+          new (globalThis.AudioContext || globalThis.webkitAudioContext)();
+        const stream = videoElement.captureStream();
+        const sourceNode = audioCtx.createMediaStreamSource(stream);
+        // Create a script processor node with a buffer size, number of input channels, and number of output channels
+        const scriptProcessorNode = audioCtx.createScriptProcessor(4096, 1, 1);
+        sourceNode.connect(scriptProcessorNode);
+        scriptProcessorNode.connect(audioCtx.destination);
+        scriptProcessorNode.onaudioprocess = function (audioProcessingEvent) {
+          const inputBuffer = audioProcessingEvent.inputBuffer;
+          // Get the sample rate
+          const sampleRate = inputBuffer.sampleRate;
+          audioCtx.close(); // Clean up the AudioContext
+          resolve(sampleRate); // Resolve the sample rate
+        };
+        videoElement.play(); // Play the video to trigger audio processing
+      } catch (error) {
+        reject(error);
+      }
+    }, { once: true });
+  });
 }
