@@ -12,11 +12,20 @@ import { LoginPage } from "infra/internalbf.com/client/pages/LoginPage.tsx";
 import { InternalBfPage } from "infra/internalbf.com/client/pages/InternalBfPage.tsx";
 import { MediaPage } from "infra/internalbf.com/client/pages/MediaPage.tsx";
 import { ProjectsPage } from "infra/internalbf.com/client/pages/ProjectsPage.tsx";
+import { QcPage } from "infra/internalbf.com/client/pages/QcPage.tsx";
+import { ChangesPage } from "infra/internalbf.com/client/pages/ChangesPage.tsx";
+import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
 
 export const routes = new Map([
   ["/", { Component: InternalBfPage }],
   ["/media", { Component: MediaPage, allowLoggedOut: true }],
   ["/projects", { Component: ProjectsPage, allowLoggedOut: true }],
+  ["/qc", { Component: QcPage, allowLoggedOut: true }],
+  ["/changes", { Component: ChangesPage, allowLoggedOut: true }],
+  ["/clip-changes", {
+    Component: ClipChangesPage,
+    allowLoggedOut: true,
+  }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
 ]);
 

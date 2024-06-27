@@ -17,6 +17,15 @@ body {
   height: 100vh;
 }
 
+.internalLinkCopyQC {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid;
+  border-radius: 15px;
+  margin: 20px 10px;
+  text-align: center;
+}
+
 .internalLogo {
   display: flex;
   gap: 8px;
@@ -49,12 +58,38 @@ body {
   transform: translateY(0);
 }
 
+.internalMainFilters {
+  display: flex;
+  gap: 8px;
+  padding: 10px 20px;
+}
+
 .internalMainContent {
   box-sizing: border-box;
-  padding: 40px 20px;
   width: 100%;
   max-width: 60rem;
   margin: 0 auto;
+  overflow-y: auto;
+}
+
+.internalMobileTabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: flex-end;
+  border-top: 1px solid var(--border);
+}
+
+.internalMobileTab {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0;
+}
+.internalMobileTab.selected {
+  background: var(--secondaryColor015);
 }
 
 .internalTabs {
