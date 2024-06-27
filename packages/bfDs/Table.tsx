@@ -5,7 +5,12 @@ const { useState, useEffect } = React;
 // Utility function to create unique keys for React elements
 const createKey = (key, index) => `${key}-${index}`;
 
-export function Table({ columns, data }) {
+type Props = {
+  columns: Array<unknown>,
+  data: Array<unknown>,
+}
+
+export function Table({ columns, data }: Props) {
   const columnWidths = columns.reduce((string, column) => {
     const width = column.width ?? "auto";
     return string + `${column.width} `;
