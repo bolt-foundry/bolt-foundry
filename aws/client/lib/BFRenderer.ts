@@ -722,7 +722,13 @@ export default class BFRenderer {
   async setupAudioRenderingUsingVideoElement() {
     logger.debug("setupAudioRenderingUsingVideoElement");
     let lastKnownTimestamp: number | null = null;
-    const sampleRate = await getSampleRateFromVideoElement(this.audioRenderingElement);
+    // sometimes the src doesn't get set in time :(
+    if (!this.audioRenderingElement.src) {
+      this.audioRenderingElement.src = this.videoUrl;
+    }
+    const sampleRate = await getSampleRateFromVideoElement(
+      this.audioRenderingElement,
+    );
     this.sampleRate = sampleRate;
     return new Promise<void>((resolve, reject) => {
       // Creating video element to render audio
