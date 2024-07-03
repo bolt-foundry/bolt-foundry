@@ -12,6 +12,7 @@ export const fontFamilies = [
   "SuezOne",
   "Teko",
   "Futura",
+  "KC",
 ];
 
 export const fontBoldWeights = {
@@ -28,6 +29,7 @@ export const fontBoldWeights = {
   "SuezOne": "400",
   "Teko": "600",
   "Futura": "700",
+  "KC": "400",
 };
 
 // These widths are best guesses based on the trial and error of fitting captions
@@ -47,6 +49,7 @@ export const fontRelativeCharacterWidths = {
   "SuezOne": 0.83,
   "Teko": 1.17,
   "Futura": 0.83,
+  "KC": 1,
 };
 // Original values from the default.jsx file
 // const charactersPerLineByFont = {
