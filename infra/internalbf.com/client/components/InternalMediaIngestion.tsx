@@ -1,6 +1,5 @@
 import { React } from "deps.ts";
 import { Button } from "packages/bfDs/Button.tsx";
-import { GoogleDriveFilePicker } from "infra/internalbf.com/client/components/GoogleDriveFilePicker.tsx";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { colors, fonts } from "packages/bfDs/const.tsx";
 const styles = {
@@ -31,11 +30,7 @@ export function InternalMediaIngestion() {
       <div style={styles.box}>
         Choose a movie file from Google Drive...
         <div style={styles.buttonBox}>
-          <GoogleDriveFilePicker
-            onChange={(file) => {
-              console.log(file);
-            }}
-          />
+          TBD
         </div>
       </div>
       {/* <hr style={{ width: "100%", height: "1px", color: "black" }} /> */}
@@ -45,6 +40,8 @@ export function InternalMediaIngestion() {
           <DropdownSelector
             placeholder="organization"
             options={{ "Bolt Foundry": "option1", "Tiny Cupboard": "option2" }}
+            value=""
+            onChange={() => {}}
           />
         </div>
       </div>

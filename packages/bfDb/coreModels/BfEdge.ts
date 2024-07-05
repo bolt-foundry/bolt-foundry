@@ -4,25 +4,27 @@ import { BfPid, BfTid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfModelErrorNotImplemented } from "packages/bfDb/classes/BfModelError.ts";
 
-export type BfAssocRequiredProps = {
+export type BfEdgeRequiredProps = {
   action: string;
 };
+
+export type BfEdgeOptionalProps = Record<string, unknown>;
 
 type AssocCreationMetadata = CreationMetadata & {
   bfTid: BfTid;
   bfPid: BfPid;
 };
 
-export class BfAssoc<
-  ChildRequiredProps extends BfAssocRequiredProps = BfAssocRequiredProps,
-  ChildOptionalProps = Record<string, unknown>,
+export class BfEdge<
+  ChildRequiredProps extends BfEdgeRequiredProps = BfEdgeRequiredProps,
+  ChildOptionalProps extends BfEdgeOptionalProps = Record<string, unknown>,
 > extends BfNode<
   ChildRequiredProps,
   ChildOptionalProps,
   AssocCreationMetadata
 > {
   protected static isSorted = true;
-  __typename = "BfAssoc";
+  __typename = "BfEdge";
 
   static findAllForParent(_currentViewer: BfCurrentViewer, _bfPid: BfPid) {
     throw new BfModelErrorNotImplemented("findAllForParent");
