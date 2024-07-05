@@ -56,18 +56,6 @@ type BfAccountEdge {
   node: BfAccount
 }
 
-interface BfContainer implements BfNode {
-  """Unique identifier for the resource"""
-  id: ID!
-}
-
-"""A collection of media and stuff"""
-type BfContainerProject implements BfContainer & BfNode {
-  """Unique identifier for the resource"""
-  id: ID!
-  name: String
-}
-
 """
 The person acting on this request. The actor can be an organiazation or person. The role is the role of the actor in the organization. The person is the person who is acting.
 """
@@ -94,22 +82,7 @@ type BfCurrentViewerAnon implements BfCurrentViewer {
   role: AccountRole
 }
 
-interface BfMedia implements BfNode {
-  """Unique identifier for the resource"""
-  id: ID!
-}
-
-type BfMediaBffsFile implements BfMedia & BfNode {
-  """Unique identifier for the resource"""
-  id: ID!
-}
-
 interface BfNode {
-  """Unique identifier for the resource"""
-  id: ID!
-}
-
-type BfNodeGoogleDriveFile implements BfMedia & BfNode {
   """Unique identifier for the resource"""
   id: ID!
 }
@@ -152,9 +125,6 @@ interface IBfGraphQLNode implements BfNode {
 }
 
 type Mutation {
-  createBfMediaBffsFile(name: String!): BfMediaBffsFile
-  createBfNodeGoogleDriveFile(googleDriveFileId: String!): BfNodeGoogleDriveFile
-  createProject(name: String!): BfContainerProject
   linkGoogleAccount(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
@@ -189,7 +159,6 @@ type PageInfo {
 }
 
 type Query {
-  containerProject(id: ID!): BfContainerProject
   currentViewer: BfCurrentViewer
   node(id: ID!): BfNode
 }
