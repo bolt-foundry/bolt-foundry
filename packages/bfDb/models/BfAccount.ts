@@ -20,6 +20,7 @@ import {
 } from "packages/bfDb/classes/BfModelError.ts";
 import { bfFindItems } from "packages/bfDb/bfDb.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
 export type BfAccountRequiredProps = {
   organizationBfGid: BfGid;
@@ -42,7 +43,7 @@ class BfAccountRefreshTokenExpiredError extends BfAccountErrorRefreshToken {
   }
 }
 
-export class BfAccount extends BfModel<BfAccountRequiredProps> {
+export class BfAccount extends BfNode<BfAccountRequiredProps> {
   __typename = "BfAccount" as const;
 
   static async findAllForPerson(
