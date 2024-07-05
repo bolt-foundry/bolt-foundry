@@ -3,8 +3,7 @@
 import { dirname, join } from "https://deno.land/std@0.212.0/path/mod.ts";
 import { notifyDiscord, processFile } from "./ingest.ts";
 
-const FOLDER_PATH =
-  "/Users/randallb/Library/CloudStorage/GoogleDrive-randall@boltfoundry.com/Shared drives/Customers";
+const FOLDER_PATH = Deno.env.get("BFI_FOLDER_PATH") ??  "/Users/randallb/Library/CloudStorage/GoogleDrive-randall@boltfoundry.com/Shared drives/Customers";
 const PATH_FOR_INGEST = "01 New Videos";
 const PATH_FOR_ARCHIVE = "Z Processed Videos";
 const MAX_RETRIES = 15;
@@ -67,9 +66,10 @@ async function copyAndMove(path) {
       }
     }
   } catch (e) {
-    notifyDiscord(`Error processing: **${humanReadable}**
-    ${e}
-    `);
+   // notifyDiscord(`Error processing: **${humanReadable}**
+   // ${e}
+   // `);
+   console.error(e)
   } finally {
     if (tmpFile) {
       await Deno.remove(tmpFile);

@@ -14,7 +14,7 @@ export async function processFile(filePath: string, name: string) {
   const videoChunks = createVideoChunksForFilePath(filePath);
   const files = [];
   for await (const chunk of videoChunks) {
-    const uploadedLink = await processVideoChunk(chunk);
+    const uploadedLink = await processVideoChunk(chunk, name);
     // await notifyDiscord(`Uploaded video to ${uploadedLink}`);
     const output = await addClipToNotion(uploadedLink, name)
       .then((res) => res.json());
@@ -105,18 +105,19 @@ async function uploadToS3(filePath: string, s3Url: string) {
   }
 }
 
-async function processVideoChunk(chunkPath: string) {
+async function processVideoChunk(chunkPath: string, name = chunkPath) {
   console.log("processing video chunk", chunkPath);
-  const project = await createProjectInBf(chunkPath);
+  const project = await createProjectInBf(chunkPath, name);
   await uploadToS3(chunkPath, project.trackUploadUrl);
+  const bfUrl = `https://boltfoundry.com/aws${project.url.slice(1)}`;
   console.log(
     "uploaded to s3",
     chunkPath,
-    `https://boltfoundry.com${project.url}`,
+    bfUrl,
   );
 
   // append the link to a file in /tmp/files_uploaded.txt
-  const uploadedLink = `https://boltfoundry.com${project.url}`;
+  const uploadedLink = bfUrl ;
   try {
     await Deno.writeTextFile("/tmp/files_uploaded.txt", `${uploadedLink}\n`, {
       append: true,
@@ -160,7 +161,7 @@ export function notifyDiscord(content: string) {
     });
 }
 
-export async function createProjectInBf(chunkPath) {
+export async function createProjectInBf(chunkPath, name = chunkPath) {
   // get current access token
   const headers = await getHeaders();
   // create project on bf
@@ -192,7 +193,7 @@ export async function createProjectInBf(chunkPath) {
   `;
 
   const variables = {
-    name: "test",
+    name,
     height: 1080,
     width: 1920,
     language: "en",
