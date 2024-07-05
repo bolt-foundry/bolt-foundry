@@ -1,6 +1,0 @@
-[submodule "thirdParty/ffmpeg"]
-	path = thirdParty/ffmpeg
-	url = https://git.ffmpeg.org/ffmpeg.git
-[submodule "thirdParty/daily-vcs"]
-	path = thirdParty/daily-vcs
-	url = https://github.com/daily-co/daily-vcs.git
