@@ -186,6 +186,7 @@ type PageInfo {
 type Query {
   containerProject(id: ID!): BfContainerProject
   currentViewer: BfCurrentViewer
+  node(id: ID!): BfNode
 }
 
 input SubmitContactFormInput {

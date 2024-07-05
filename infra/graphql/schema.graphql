@@ -5,6 +5,7 @@
 enum AccountRole {
   ADMIN
   ANON
+  OMNI
   OWNER
   REFRESH_CREDENTIALS_ONLY
   SERVICE_INGESTION
@@ -190,6 +191,7 @@ type PageInfo {
 type Query {
   containerProject(id: ID!): BfContainerProject
   currentViewer: BfCurrentViewer
+  node(id: ID!): BfNode
 }
 
 input SubmitContactFormInput {

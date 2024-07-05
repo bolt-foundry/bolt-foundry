@@ -193,6 +193,7 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     containerProject: NexusGenRootTypes['BfContainerProject'] | null; // BfContainerProject
     currentViewer: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
+    node: NexusGenRootTypes['BfNode'] | null; // BfNode
   }
   SubmitContactFormPayload: { // field return type
     message: string | null; // String
@@ -290,6 +291,7 @@ export interface NexusGenFieldTypeNames {
   Query: { // field return type name
     containerProject: 'BfContainerProject'
     currentViewer: 'BfCurrentViewer'
+    node: 'BfNode'
   }
   SubmitContactFormPayload: { // field return type name
     message: 'String'
@@ -353,6 +355,9 @@ export interface NexusGenArgTypes {
   }
   Query: {
     containerProject: { // args
+      id: string; // ID!
+    }
+    node: { // args
       id: string; // ID!
     }
   }
