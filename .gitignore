@@ -9,3 +9,4 @@
 .ccls-cache
 .git
 .sl
+.env.local

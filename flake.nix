@@ -50,13 +50,6 @@
         # these packages show up with "direnv allow"
         devShellPackages = with pkgs; [
           jq
-          emscripten
-          pkg-config
-          clang_12
-          ccls
-          gdb
-          gnumake
-          emscripten
           yarn
         ];
 
