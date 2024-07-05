@@ -5,6 +5,9 @@ import { generateBluey } from "lib/generateBluey.ts";
 import { denoPlugin } from "infra/build/bffEsbuild.ts";
 import esbuildDenoMdxPlugin from "infra/build/esbuildDenoMdxPlugin.ts";
 import { workerList } from "infra/build/workerList.ts";
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
 
 export async function build(
   buildOptions = {
@@ -13,6 +16,7 @@ export async function build(
     sourceRoot: `${Deno.cwd()}`,
   },
 ) {
+  logger.info("Building...");
   await esbuild.build({
     bundle: true,
     entryPoints: [
@@ -34,6 +38,7 @@ export async function build(
   });
 
   esbuild.stop();
+  logger.info("Building complete.");
 }
 
 const BF_PATH = Deno.env.get("BF_PATH") ?? "/bf/.";
