@@ -11,13 +11,10 @@ toBfCid,
   toBfSkUnsorted,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
-import {
-  BfGoogleApiToken,
-  BfGoogleApiTokenProps,
-} from "packages/bfDb/models/BfGoogleApiToken.ts";
 import { exchangeCodeForToken } from "lib/googleOauth.ts";
 import { bfFindItems } from "packages/bfDb/bfDb.ts";
-import { BfAssoc } from "packages/bfDb/coreModels/BfAssoc.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 
@@ -27,7 +24,7 @@ type BfPersonRequiredProps = {
   lastLogout?: Date;
 };
 
-export class BfPerson extends BfModel<BfPersonRequiredProps> {
+export class BfPerson extends BfNode<BfPersonRequiredProps> {
   __typename = "BfPerson" as const;
   static async clientLoginWithGoogle(
     credential: string,
@@ -119,7 +116,7 @@ export class BfPerson extends BfModel<BfPersonRequiredProps> {
         bfOid: this.metadata.bfOid,
       },
     );
-    const _googleApiTokenAssoc = await BfAssoc.create(this.currentViewer, {
+    const _googleApiTokenAssoc = await BfEdge.create(this.currentViewer, {
       action: "authenticates",
     }, {
       bfPid: toBfPid(this.metadata.bfGid),
