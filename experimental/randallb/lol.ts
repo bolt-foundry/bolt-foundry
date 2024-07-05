@@ -1,0 +1,6 @@
+import { BfPerson } from "packages/bfDb/models/BfPerson.ts"
+import { getJupyterCurrentViewer } from "infra/lib/jupyterUtils.ts"
+
+const cv = await getJupyterCurrentViewer("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiUkVGUkVTSF9DUkVERU5USUFMU19PTkxZIiwib3JnYW5pemF0aW9uQmZHaWQiOiJiZl9pbnRlcm5hbF9vcmciLCJwZXJzb25CZkdpZCI6Imdvb2dsZToxMDg4MTA1MDkwNzc3NDY5OTExMDgiLCJhY2NvdW50QmZHaWQiOiJiNTVkNTAwZDZiNDI0ZGZiYjdhMDM2MjM5OTUxMGI4YSIsInN1YiI6ImJmX2ludGVybmFsX29yZyIsImlhdCI6MTcyMDE5Nzk5MCwiaXNzIjoiYjU1ZDUwMGQ2YjQyNGRmYmI3YTAzNjIzOTk1MTBiOGEiLCJleHAiOjE3MjI3ODk5OTAsImF1ZCI6ImJmQmZmIn0.rBNrOIdKdKP1nNO5YJqf9RnpLemHx3cqR6vltFiNYPA")
+const person = await BfPerson.find(cv, "google:108810509077746991108")
+await person.load__PRIVACY_UNSAFE()

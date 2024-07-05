@@ -35,7 +35,8 @@ import {
   BfModelErrorNotFound,
   BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
-import { getLogger } from "deps.ts";
+import { ConnectionArguments } from "packages/graphql/deps.ts";
+import { getLogger, Maybe } from "deps.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 const log = logger.trace;
@@ -99,9 +100,9 @@ abstract class BfBaseModel<
   ): Promise<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
-    logger.setLevel(logger.levels.TRACE)
+    logger.setLevel(logger.levels.TRACE);
     logVerbose("create", { currentViewer, newProps, creationMetadata });
-    logger.resetLevel()
+    logger.resetLevel();
     const newModel = new this(
       currentViewer,
       undefined,
@@ -116,6 +117,22 @@ abstract class BfBaseModel<
     return newModel as
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
+  }
+
+  public static findFakeData<
+    TThis extends Constructor<
+      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+    >,
+    TRequiredProps,
+    TOptionalProps,
+    TCreationMetadata extends CreationMetadata,
+  >(
+    this: TThis,
+    currentViewer: BfCurrentViewer,
+    fakeProps: TRequiredProps & Partial<TOptionalProps>,
+    creationMetadata: Maybe<TCreationMetadata>,
+  ) {
+    return new this(currentViewer, undefined, fakeProps, creationMetadata);
   }
 
   static async find<
@@ -488,6 +505,56 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     });
 
     return relatedModels;
+  }
+
+  public async getAssociatedConnection<
+    // deno-lint-ignore no-explicit-any
+    TAssocModel extends BfModel<any, any, any>, // generic type for the associated model
+    TAssocClass extends Constructor<TAssocModel>, // generic type for the associated class
+  >(
+    AssocClass: TAssocClass,
+    currentViewer: BfCurrentViewer,
+    connectionArgs: ConnectionArguments,
+    assocFilterFn: (assoc: InstanceType<TAssocClass>) => boolean // filter function for the associations
+    ,
+  ): Promise<{
+    edges: Array<{ cursor: string; node: InstanceType<TAssocClass> }>;
+    pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
+    count: number;
+  }> {
+    console.log("AssocClass", AssocClass)
+    const allAssociations = await this.findRelatedAssocs(AssocClass);
+    console.log("allAssociations", allAssociations);
+    const filteredAssociations = allAssociations.filter((assoc) =>
+      assocFilterFn(assoc as InstanceType<TAssocClass>)
+    );
+    const count = filteredAssociations.length;
+
+    let { after, first } = connectionArgs;
+    first = first ?? 10;
+
+    let startIndex = 0;
+    if (after) {
+      const afterIndex = filteredAssociations.findIndex(
+        (assoc) => assoc.metadata.bfGid === after,
+      );
+      startIndex = afterIndex + 1;
+    }
+    const edges = filteredAssociations
+      .slice(startIndex, startIndex + first)
+      .map((assoc) => ({
+        cursor: assoc.metadata.bfGid,
+        node: assoc as InstanceType<TAssocClass>,
+      }));
+    const pageInfo = {
+      hasNextPage: startIndex + first < filteredAssociations.length,
+      hasPreviousPage: startIndex > 0,
+    };
+    return {
+      edges,
+      pageInfo,
+      count,
+    };
   }
 }
 

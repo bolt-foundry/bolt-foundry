@@ -7,10 +7,14 @@
  */
 
 export * from "packages/graphql/types/BfGraphQLAccount.ts";
+export * from "packages/graphql/types/BfGraphQLClip.ts";
+export * from "packages/graphql/types/BfGraphQLClipReview.ts";
+export * from "packages/graphql/types/BfGraphQLClipReviewComment.ts";
+export * from "packages/graphql/types/BfGraphQLClipReviewDecision.ts";
 export * from "packages/graphql/types/BfGraphQLContainerProject.ts";
 export * from "packages/graphql/types/BfGraphQLContactForm.ts";
 export * from "packages/graphql/types/BfGraphQLCurrentViewer.ts";
-export * from "packages/graphql/types/BfGraphQLMedia.ts"
+export * from "packages/graphql/types/BfGraphQLMedia.ts";
 export * from "packages/graphql/types/BfGraphQLMediaBffsFile.ts";
 export * from "packages/graphql/types/BfGraphQLNode.ts";
 export * from "packages/graphql/types/BfGraphQLNodeGoogleDriveFile.ts";

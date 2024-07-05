@@ -47,7 +47,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  AccountRole: "ADMIN" | "ANON" | "OWNER" | "REFRESH_CREDENTIALS_ONLY" | "SERVICE_INGESTION"
+  AccountRole: "ADMIN" | "ANON" | "OMNI" | "OWNER" | "REFRESH_CREDENTIALS_ONLY" | "SERVICE_INGESTION"
 }
 
 export interface NexusGenScalars {
@@ -74,6 +74,37 @@ export interface NexusGenObjects {
   BfAccountEdge: { // root type
     cursor: string; // String!
     node?: NexusGenRootTypes['BfAccount'] | null; // BfAccount
+  }
+  BfClip: { // root type
+    client: string; // String!
+    id: string; // ID!
+    owner: string; // String!
+    title: string; // String!
+  }
+  BfClipReview: { // root type
+    clipId: string; // ID!
+    id: string; // ID!
+    oldClipId: string; // ID!
+  }
+  BfClipReviewComment: { // root type
+    id: string; // ID!
+    reviewId: string; // ID!
+    text: string; // String!
+    timecode: number; // Int!
+  }
+  BfClipReviewConnection: { // root type
+    edges?: Array<NexusGenRootTypes['BfClipReviewEdge'] | null> | null; // [BfClipReviewEdge]
+    nodes?: Array<NexusGenRootTypes['BfClipReview'] | null> | null; // [BfClipReview]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfClipReviewDecision: { // root type
+    decision: string; // String!
+    id: string; // ID!
+    reviewId: string; // ID!
+  }
+  BfClipReviewEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BfClipReview'] | null; // BfClipReview
   }
   BfContainerProject: { // root type
     name?: string | null; // String
@@ -112,7 +143,7 @@ export interface NexusGenInterfaces {
   BfContainer: core.Discriminate<'BfContainerProject', 'required'>;
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'>;
   BfMedia: core.Discriminate<'BfMediaBffsFile', 'required'> | core.Discriminate<'BfNodeGoogleDriveFile', 'required'>;
-  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfContainerProject', 'required'> | core.Discriminate<'BfMediaBffsFile', 'required'> | core.Discriminate<'BfNodeGoogleDriveFile', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
+  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfContainerProject', 'required'> | core.Discriminate<'BfMediaBffsFile', 'required'> | core.Discriminate<'BfNodeGoogleDriveFile', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   IBfGraphQLNode: any;
 }
 
@@ -141,6 +172,41 @@ export interface NexusGenFieldTypes {
   BfAccountEdge: { // field return type
     cursor: string; // String!
     node: NexusGenRootTypes['BfAccount'] | null; // BfAccount
+  }
+  BfClip: { // field return type
+    client: string; // String!
+    id: string; // ID!
+    oldClipId: string; // ID!
+    owner: string; // String!
+    reviews: NexusGenRootTypes['BfClipReviewConnection'] | null; // BfClipReviewConnection
+    title: string; // String!
+  }
+  BfClipReview: { // field return type
+    clipId: string; // ID!
+    comments: NexusGenRootTypes['BfClipReviewComment'][]; // [BfClipReviewComment!]!
+    decisions: NexusGenRootTypes['BfClipReviewDecision'][]; // [BfClipReviewDecision!]!
+    id: string; // ID!
+    oldClipId: string; // ID!
+  }
+  BfClipReviewComment: { // field return type
+    id: string; // ID!
+    reviewId: string; // ID!
+    text: string; // String!
+    timecode: number; // Int!
+  }
+  BfClipReviewConnection: { // field return type
+    edges: Array<NexusGenRootTypes['BfClipReviewEdge'] | null> | null; // [BfClipReviewEdge]
+    nodes: Array<NexusGenRootTypes['BfClipReview'] | null> | null; // [BfClipReview]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfClipReviewDecision: { // field return type
+    decision: string; // String!
+    id: string; // ID!
+    reviewId: string; // ID!
+  }
+  BfClipReviewEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BfClipReview'] | null; // BfClipReview
   }
   BfContainerProject: { // field return type
     id: string; // ID!
@@ -192,8 +258,13 @@ export interface NexusGenFieldTypes {
     startCursor: string | null; // String
   }
   Query: { // field return type
+    clipsByOldClipIds: Array<NexusGenRootTypes['BfClip'] | null> | null; // [BfClip]
+    commentsByReviewId: NexusGenRootTypes['BfClipReviewComment'][]; // [BfClipReviewComment!]!
     containerProject: NexusGenRootTypes['BfContainerProject'] | null; // BfContainerProject
     currentViewer: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
+    decisionsByReviewId: NexusGenRootTypes['BfClipReviewDecision'][]; // [BfClipReviewDecision!]!
+    node: NexusGenRootTypes['BfNode'] | null; // BfNode
+    reviewsByClipId: NexusGenRootTypes['BfClipReview'][]; // [BfClipReview!]!
   }
   SubmitContactFormPayload: { // field return type
     message: string | null; // String
@@ -241,6 +312,41 @@ export interface NexusGenFieldTypeNames {
   BfAccountEdge: { // field return type name
     cursor: 'String'
     node: 'BfAccount'
+  }
+  BfClip: { // field return type name
+    client: 'String'
+    id: 'ID'
+    oldClipId: 'ID'
+    owner: 'String'
+    reviews: 'BfClipReviewConnection'
+    title: 'String'
+  }
+  BfClipReview: { // field return type name
+    clipId: 'ID'
+    comments: 'BfClipReviewComment'
+    decisions: 'BfClipReviewDecision'
+    id: 'ID'
+    oldClipId: 'ID'
+  }
+  BfClipReviewComment: { // field return type name
+    id: 'ID'
+    reviewId: 'ID'
+    text: 'String'
+    timecode: 'Int'
+  }
+  BfClipReviewConnection: { // field return type name
+    edges: 'BfClipReviewEdge'
+    nodes: 'BfClipReview'
+    pageInfo: 'PageInfo'
+  }
+  BfClipReviewDecision: { // field return type name
+    decision: 'String'
+    id: 'ID'
+    reviewId: 'ID'
+  }
+  BfClipReviewEdge: { // field return type name
+    cursor: 'String'
+    node: 'BfClipReview'
   }
   BfContainerProject: { // field return type name
     id: 'ID'
@@ -292,8 +398,13 @@ export interface NexusGenFieldTypeNames {
     startCursor: 'String'
   }
   Query: { // field return type name
+    clipsByOldClipIds: 'BfClip'
+    commentsByReviewId: 'BfClipReviewComment'
     containerProject: 'BfContainerProject'
     currentViewer: 'BfCurrentViewer'
+    decisionsByReviewId: 'BfClipReviewDecision'
+    node: 'BfNode'
+    reviewsByClipId: 'BfClipReview'
   }
   SubmitContactFormPayload: { // field return type name
     message: 'String'
@@ -324,6 +435,14 @@ export interface NexusGenFieldTypeNames {
 }
 
 export interface NexusGenArgTypes {
+  BfClip: {
+    reviews: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
+  }
   BfPerson: {
     accounts: { // args
       after?: string | null; // String
@@ -359,8 +478,23 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
+    clipsByOldClipIds: { // args
+      oldClipIds?: Array<string | null> | null; // [ID]
+    }
+    commentsByReviewId: { // args
+      reviewId: string; // ID!
+    }
     containerProject: { // args
       id: string; // ID!
+    }
+    decisionsByReviewId: { // args
+      reviewId: string; // ID!
+    }
+    node: { // args
+      id: string; // ID!
+    }
+    reviewsByClipId: { // args
+      clipId: string; // ID!
     }
   }
 }
@@ -370,11 +504,12 @@ export interface NexusGenAbstractTypeMembers {
   BfContainer: "BfContainerProject"
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon"
   BfMedia: "BfMediaBffsFile" | "BfNodeGoogleDriveFile"
-  BfNode: "BfAccount" | "BfContainerProject" | "BfMediaBffsFile" | "BfNodeGoogleDriveFile" | "BfOrganization" | "BfPerson"
+  BfNode: "BfAccount" | "BfClip" | "BfContainerProject" | "BfMediaBffsFile" | "BfNodeGoogleDriveFile" | "BfOrganization" | "BfPerson"
 }
 
 export interface NexusGenTypeInterfaces {
   BfAccount: "BfNode"
+  BfClip: "BfNode"
   BfContainerProject: "BfContainer" | "BfNode"
   BfCurrentViewerAccessToken: "BfCurrentViewer"
   BfCurrentViewerAnon: "BfCurrentViewer"

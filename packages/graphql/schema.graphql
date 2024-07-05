@@ -5,6 +5,7 @@
 enum AccountRole {
   ADMIN
   ANON
+  OMNI
   OWNER
   REFRESH_CREDENTIALS_ONLY
   SERVICE_INGESTION
@@ -53,6 +54,77 @@ type BfAccountEdge {
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
   node: BfAccount
+}
+
+"""A clip resource"""
+type BfClip implements BfNode {
+  client: String!
+  id: ID!
+
+  """The old clip identifier"""
+  oldClipId: ID!
+  owner: String!
+  reviews(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfClipReviewConnection
+  title: String!
+}
+
+"""A review for a clip"""
+type BfClipReview {
+  clipId: ID!
+  comments: [BfClipReviewComment!]!
+  decisions: [BfClipReviewDecision!]!
+  id: ID!
+  oldClipId: ID!
+}
+
+"""A comment on a clip review"""
+type BfClipReviewComment {
+  id: ID!
+  reviewId: ID!
+  text: String!
+  timecode: Int!
+}
+
+type BfClipReviewConnection {
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BfClipReviewEdge]
+
+  """Flattened list of BfClipReview type"""
+  nodes: [BfClipReview]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+"""A decision on a clip review"""
+type BfClipReviewDecision {
+  decision: String!
+  id: ID!
+  reviewId: ID!
+}
+
+type BfClipReviewEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BfClipReview
 }
 
 interface BfContainer implements BfNode {
@@ -183,8 +255,13 @@ type PageInfo {
 }
 
 type Query {
+  clipsByOldClipIds(oldClipIds: [ID]): [BfClip]
+  commentsByReviewId(reviewId: ID!): [BfClipReviewComment!]!
   containerProject(id: ID!): BfContainerProject
   currentViewer: BfCurrentViewer
+  decisionsByReviewId(reviewId: ID!): [BfClipReviewDecision!]!
+  node(id: ID!): BfNode
+  reviewsByClipId(clipId: ID!): [BfClipReview!]!
 }
 
 input SubmitContactFormInput {
