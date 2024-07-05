@@ -155,6 +155,7 @@ abstract class BfBaseModel<
     currentViewer: BfCurrentViewer,
     bfGid: BfAnyid,
     sortValue?: BfSortValue,
+    ignoreClassName = false,
   ): Promise<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
@@ -162,8 +163,8 @@ abstract class BfBaseModel<
       bfGid,
       sortValue,
     });
-    if (currentViewer instanceof BfCurrentViewerOmni) {
-      await model.load__PRIVACY_UNSAFE();
+    if (currentViewer instanceof BfCurrentViewerOmni || ignoreClassName) {
+      await model.load__PRIVACY_UNSAFE(ignoreClassName);
     } else {
       await model.load();
     }
@@ -360,7 +361,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       ...this.props,
       id: this.metadata.bfGid,
       // @ts-expect-error we declare the __typename in children classes as a constant
-      __typename: this.__typename ?? this.constructor.name,
+      __typename: this.metadata.className ?? this.__typename ?? this.constructor.name,
     };
   }
 
@@ -397,14 +398,15 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     }
   }
 
-  async load__PRIVACY_UNSAFE() {
+  async load__PRIVACY_UNSAFE(forceWithoutClassName = false) {
     await this.beforeLoad();
     await this.validatePermissions(ACCOUNT_ACTIONS.READ);
     try {
+      const sk = forceWithoutClassName ? undefined : this.constructor.name as BfSk;
       const response = await bfGetItemByBfGid<
         TRequiredProps & Partial<TOptionalProps>,
         BfBaseModelMetadata<TCreationMetadata>
-      >(this.metadata.bfGid, this.constructor.name as BfSk);
+      >(this.metadata.bfGid, sk);
       if (response === null) {
         throw new BfModelErrorNotFound(
           `Could not load ${this.constructor.name} with bfGid: ${this.metadata.bfGid} using pk: ${this.pk} and sk: ${this.sk}`,
