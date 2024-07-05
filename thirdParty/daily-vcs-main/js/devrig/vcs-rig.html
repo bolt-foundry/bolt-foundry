@@ -1,0 +1,1963 @@
+<html>
+  <head>
+    <title>Daily VCS Simulator</title>
+    <style>
+
+body {
+  --highlight-color: #1BEBB9;
+  --bg-color: #121A24;
+  --bg-color-lighter1: #1F2D3D;
+  --bg-color-lighter2: #2B3F56;
+  --splitter-color: #2B3F56;
+  --control-outline-color: #2B3F56;
+  --grey-text-color: #6B7785;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  background: var(--bg-color);
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+textarea {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 13px;
+  resize: none;
+}
+table {
+  font-size: inherit;
+  border-spacing: 0;
+}
+
+#mainContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+#leftSplit {
+  width: 64%;
+  min-width: 960px;
+  height: 100%;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#rightSplit {
+  height: 100%;
+  flex: 1 0 0;
+  border-left: 1px solid var(--splitter-color);
+  color: #ccc;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+#rightSplit .tabBar {
+  text-align: center;
+  padding-top: 2em;
+  padding-bottom: 0;
+  border-bottom: 1px solid var(--splitter-color);
+}
+#rightSplit .tabBar button {
+  background: transparent;
+  color: #ddd;
+  border: none;
+  cursor: pointer;
+}
+#rightSplit .tabBar button.selected {
+  color: white;
+  font-weight: 600;
+  padding-bottom: 5px;
+  border-bottom: 2px solid var(--highlight-color);
+}
+#rightSplit .tabContent {
+  display: none;
+  padding: 2em;
+}
+#rightSplit .tabContent.visible {
+  display: block;
+}
+
+#rightSplit .tabContent button {
+  margin-right: 1em;
+  font-weight: bold;
+  background: var(--bg-color);
+  color: white;
+  border: 1px solid var(--control-outline-color);
+  padding: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+
+}
+#rightSplit .tabContent button.disabled {
+  background-color: black;
+  color: #888;
+}
+#rightSplit .tabContent button.selected {
+  background-color: var(--highlight-color);
+  color: black;
+}
+
+#rightSplit .tabContent select {
+  display: inline-block;
+  background-color: transparent;
+  border: 1px solid var(--control-outline-color);
+  border-radius: 5px;
+  color: white;
+  padding: 2px;
+  outline: none;
+}
+#rightSplit .tabContent select option {
+  background-color: var(--bg-color);
+}
+
+#apicallOutputType {
+  text-align: center;
+  margin-bottom: 2em;
+}
+
+#apicallControls {
+  text-align: center;
+}
+
+#apicallRecOut {
+  margin-top: 4em;
+  font-size: 12px;
+  line-height: 18px;
+}
+#apicallRecOut pre {
+  font-family: Menlo, monospace;
+}
+#apicallRecOut > div {
+  width: 100%;
+  height: auto;
+  background: none;
+  color: white;
+}
+
+#sceneDescPrintOut {
+  font-size: 12px;
+  font-family: Menlo, monospace;
+}
+#sceneDescPrintOut h4 {
+  margin: 0;
+  margin-top: 1em;
+}
+#sceneDescCopy {
+  margin-top: 1em;
+}
+#sceneDescCopy button {
+  font-size: 0.88em;
+}
+
+#outputWrapper {
+  flex: none;
+  background-color: black;
+  overflow: hidden;
+  width: 640px;
+  height: 360px;
+}
+#deco {
+  flex: none;
+  margin-top: 1px;
+  height: 58px;
+  background: #1F2D3D;
+  display: flex;
+  flex-direction: row;
+}
+#deco > div {
+  margin-top: 5px;
+  padding: 14px;
+}
+#compInfo {
+  flex: 0 0 1;
+  text-shadow: rgba(0, 0, 0, 0.4) 1px 1px;
+  font-size: 1rem;
+}
+#compInfo .name {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  margin-bottom: 0.25em;
+  display: inline-block;
+}
+#compInfo .description {
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  opacity: 0.9;
+  display: inline-block;
+  margin-left: 2em;
+}
+#deco > div#compOutput {
+  text-align: right;
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+#deco > div#playbackControl {
+  flex: 1 0 auto;
+  margin-right: 2em;
+  text-align: right;
+}
+
+#deco button {
+  background: var(--bg-color);
+  color: white;
+  border: none;
+  padding: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
+  border-radius: 5px;
+  margin-left: 5px;
+}
+#deco button.selected {
+  background-color: var(--highlight-color);
+  color: black;
+}
+
+#controls {
+  padding: 1rem;
+  overflow-y: scroll;
+}
+#controls div {
+  box-sizing: border-box;
+}
+#controls button {
+  padding: 1px 6px;
+}
+#controls button.selected {
+  background-color: var(--highlight-color);
+}
+#controls button:focus {
+  outline: none;
+}
+#demoassets {
+  display: none;
+}
+#controls h3 {
+  margin: 0;
+  margin-bottom: 0.5rem;
+  font-size: 14px;
+  font-weight: 590;
+  color: var(--highlight-color);
+}
+#controls h4 {
+  margin-top: 1rem;
+  margin-right: 8px;
+  margin-bottom: 0.5rem;
+  color: var(--grey-text-color);
+  font-weight: 600;
+  border-bottom: 1px solid var(--control-outline-color);
+}
+#controls .testImage {
+  margin-top: 1.5em;
+}
+#controls .standardSource {
+  margin-top: 1.5em;
+}
+#controls .standardSource .unavailableInfo {
+  color: var(--grey-text-color);
+}
+#controls .standardSource button {
+  background: var(--bg-color-lighter2);
+  color: white;
+  border: none;
+  padding: 5px;
+  padding-right: 10px;
+  padding-left: 10px;
+  border-radius: 5px;
+  margin-left: 5px;
+  display: none;
+}
+#controls .compInterface {
+  margin-top: 1.5em;
+}
+#controls .compInterface .paramsJumpMenu {
+  position: sticky;
+  top: -12px;
+  text-align: right;
+  font-size: 11px;
+  z-index: 999;
+}
+#controls .compInterface .paramsJumpMenu select {
+  font-size: 11px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--control-outline-color);
+  border-radius: 5px;
+  color: white;
+  padding: 2px;
+}
+
+#controls .compInterface #paramGroup_ {
+  margin-top: -2.5em;
+}
+
+#controls .compInterface .paramsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 30px;
+}
+#controls .compInterface .params {
+  --label-width: 212px;
+  --label-width-with-margin: 220px;
+}
+#controls .compInterface .params > div {
+  margin-top: 2px;
+  height: 30px;
+  position: relative;
+}
+#controls .compInterface .params > div.tall {
+  height: 60px;
+}
+#controls .compInterface .params > div.status-experimental {
+  font-style: italic;
+}
+#controls .compInterface .params > div.shortHelpText {
+  margin-top: -4px;
+  padding-left: 0px;
+  padding-right: 8px;
+  text-align: left;
+  font-size: 0.9em;
+  color: var(--grey-text-color);
+}
+#controls .compInterface .params > div.shortHelpText:last-child {
+  margin-bottom: 8px;
+}
+#controls .compInterface .params label {
+  width: var(--label-width);
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+  top: 4px;
+  vertical-align: top;
+}
+#controls input {
+  background-color: transparent;
+  border: 1px solid var(--control-outline-color);
+  border-radius: 5px;
+  color: white;
+  padding: 2px;
+  outline: none;
+}
+#controls textarea {
+  background-color: transparent;
+  border: 1px solid var(--control-outline-color);
+  border-radius: 5px;
+  color: white;
+  padding: 2px;
+  outline: none;
+}
+#controls .compInterface .params input[type=text] {
+  display: inline-block;
+  width: calc(100% - var(--label-width-with-margin));
+}
+#controls .compInterface .params textarea {
+  display: inline-block;
+  width: calc(100% - var(--label-width-with-margin));
+  height: 50px;
+}
+#controls .compInterface .params select {
+  display: inline-block;
+  width: calc(100% - var(--label-width-with-margin));
+  background-color: transparent;
+  border: 1px solid var(--control-outline-color);
+  border-radius: 5px;
+  color: white;
+  padding: 2px;
+  outline: none;
+}
+#controls .compInterface .params select option {
+  background-color: var(--bg-color);
+}
+#controls .compInterface .params input[type=checkbox] {
+  margin: 0;
+  appearance: none;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  outline: none;
+}
+#controls .compInterface .params input[type=checkbox]:checked {
+  background-color: var(--highlight-color);
+}
+
+#controls .roomInput {
+  display: flex;
+  flex-direction: row;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+#controls .roomInput .audioParticipantInputContainer {
+  margin-left: 1em;
+}
+#controls .roomInput input {
+  width: 4em;
+  margin-top: -2px;
+}
+
+#controls .mediaInput {
+  display: flex;
+  flex-direction: row;
+}
+#controls .mediaInput .labels {
+  width: 160px;
+}
+#controls .mediaInput .labels > div {
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  padding-top: 8px;
+}
+#controls .mediaInput .buttonContainer {
+  display: flex;
+  flex-direction: row;
+}
+#controls .mediaInput .buttonColumn {
+  width: 32px;
+  flex: 1;
+  background-color: var(--bg-color-lighter2);
+  border-radius: 6px;
+  margin-right: 4px;
+}
+#controls .mediaInput .buttonColumn > button {
+  margin: 3px;
+  padding: 0;
+  height: 26px;
+  width: 26px;
+  border: 0;
+  border-radius: 4px;
+  background-color: var(--bg-color-lighter1);
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: white;
+}
+#controls .mediaInput .buttonColumn > button.selected {
+  background-color: var(--highlight-color);
+  color: black;
+}
+#controls .mediaInput .buttonColumn > button:active {
+  background-color: var(--highlight-color);
+}
+#controls .mediaInput .buttonColumn > button.randomname {
+  background-image: url('ui-assets/randomize.png');
+}
+#controls .mediaInput .buttonColumn .checkboxOff {
+  background-image: url('ui-assets/checkboxOff.png');
+}
+#controls .mediaInput .buttonColumn .checkboxOn {
+  background-image: url('ui-assets/checkboxOn.png');
+}
+
+#controls .videoInputButtons {
+  display: inline-block;
+  height: 6em;
+}
+#controls .videoInputButtons > div {
+  display: inline-block;
+  margin-left: 4px;
+  width: 2.3em;
+  height: 100%;
+}
+#controls .videoInputButtons > div > div {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+#controls .videoInputButtons > div > div button {
+  width: 100%;
+}
+#controls .videoInputButtons > div > div button.dominant {
+  opacity: 85%;
+}
+#controls .videoInputButtons > div > div button.screenshare {
+  opacity: 78%;
+}
+#controls .videoInputButtons > div > div button.randomname {
+  opacity: 70%;
+}
+
+.testImageControls {
+  display: flex;
+  flex-direction: row;
+}
+#imageDropTarget {
+  flex: 1 0 auto;
+  margin-right: 2em;
+  height: 24px;
+  padding: 4px;
+  border: solid 1px var(--control-outline-color);
+  font-size: 0.9em;
+  color: var(--grey-text-color);
+}
+#imageDropAssetName {
+  flex: 0 0 auto;
+}
+
+    </style>
+  </head>
+
+  <body>
+    <div id="mainContainer">
+      <div id="leftSplit">
+        <div id="outputWrapper">
+          <div id="outputContainer"></div>
+        </div>
+        <div id="deco">
+          <div id="compInfo">
+            <div class="name"></div>
+            <div class="description"></div>
+          </div>
+          <div id="playbackControl">
+            <button>Stop</button>
+          </div>
+          <div id="compOutput">
+            <span>Output:</span>
+            <span>
+              <button class="selected" data-outputid="landscape">16:9</button><button data-outputid="square">Square</button><button data-outputid="portrait">9:16</button>
+            </span>
+          </div>
+        </div>
+        <div id="controls">
+          <div class="vc">
+            <h3>Media input</h3>
+            <div class="mediaInput">
+              <div class="labels">
+                <div>Active video inputs</div>
+                <div>Make dominant</div>
+                <div>Paused</div>
+                <div>Toggle screenshare</div>
+                <div>Randomize name</div>
+              </div>
+              <div class="buttonContainer"></div>
+            </div>
+            <div class="roomInput">
+              <div>
+                <div>Audio-only demo participants</div>
+              </div>
+              <div class="audioParticipantInputContainer">
+                <input type="number" value="0" step="1" />
+              </div>
+            </div>
+          </div>
+          <div class="testImage">
+            <h3>Asset images</h3>
+            <div class="testImageControls">
+              <div id="imageDropTarget">Drop an image file here</div>
+              <div id="imageDropAssetName">
+                <label>Asset name for drop:</label>
+                <input type="text" value="overlay.png" />
+              </div>
+            </div>  
+          </div>
+          <div class="standardSource">
+            <h3>Standard sources</h3>
+            <div class="standardSourceControls">
+              <div class="unavailableInfo">This composition doesn't support any standard sources.</div>
+              <button data-sourceid="chatMessages">Send random chat message</button>
+              <button data-sourceid="transcript">Send random transcript line</button>
+            </div>  
+          </div>
+          <div class="compInterface">
+            <h3>Composition interface</h3>
+            <div class="paramsJumpMenu">
+              <label>Jump to:</label>
+              <select>
+              </select>
+            </div>
+            <div class="paramsContainer">
+            </div>
+          </div>
+        </div>  
+      </div>
+      <div id="rightSplit">
+        <div class="tabBar">
+          <button data-id="help" class="selected">Help</button><button data-id="apicall">API Call Builder</button>
+        </div>
+        <div class="tabContent visible" data-id="help">
+          <p>Welcome to the Daily VCS simulator.</p>
+          <p>This page lets you interact with the VCS composition whose name is displayed just below the preview.</p>
+          <p>20 video inputs are available. The first input is your live webcam image.
+            For the rest, public domain comic images are provided as stand-ins.
+          </p>
+          <p>(Tip: Shift+click on a video input to toggle all inputs up to that number.)</p>
+          <p>'Composition interface' contains controls for all the params declared by the composition.
+            Try changing these values to get an understanding of the options that this composition supports.
+          </p>
+          <p>
+            You can make a recording of these param changes and export it as Daily API JavaScript code.
+            Look under 'API Call Builder'.
+          </p>
+          <div id="browserInfo" style="font-weight: bold;"></div>
+        </div>
+        <div class="tabContent" data-id="apicall">
+          <div id="apiCallOutputType">
+            Daily API call:
+            <select id="apiCallOutputTypeSelect">
+              <option>startRecording</option>
+              <option>updateRecording</option>
+              <option>startLiveStreaming</option>
+              <option>updateLiveStreaming</option>
+            </select>
+          </div>
+          <div id="apiCallControls">
+            <button id="btn-apicall-rec">Record</button>
+            <button id="btn-apicall-stop" class="disabled">Stop</button>
+            <button id="btn-apicall-clear">Clear</button>
+            <button id="btn-apicall-capture">Capture all</button>
+            <button id="btn-apicall-screenshot">Screenshot</button>
+          </div>
+          <div id="apicallRecOut"></div>
+          <div id="apicallScreenshot"></div>
+        </div>
+        <div class="tabContent" data-id="debug">
+          <div id="sceneDescPrintOut"></div>
+          <div id="sceneDescCopy">
+            <button id="btn-copy-scene-desc">Copy JSON</button>
+            <button id="btn-copy-scene-desc-fg">Copy JSON (fgdisplaylist only)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="demoassets">
+      <img id="demoperson_missfury" src="example-assets/demoperson_missfury.png" />
+      <img id="demoperson_moongirl" src="example-assets/demoperson_moongirl.png" />
+      <img id="demoperson_yellowkid" src="example-assets/demoperson_yellowkid.png" />
+      <img id="demoperson_missfury_square" src="example-assets/demoperson_missfury_square.png" />
+      <img id="demoperson_moongirl_square" src="example-assets/demoperson_moongirl_square.png" />
+      <img id="screenshare_standin" src="example-assets/screenshare_standin_1600x900.png" />
+      <img id="screenshare_standin2" src="example-assets/screenshare_standin2_1600x1000.png" />
+      <img id="image_test_square" src="example-assets/test_square_320px.png" />
+    </div>
+  </body>
+
+<script>
+
+// the VCS composition bundle will be loaded here
+let g_vcsCompLib;
+
+
+// --- UI state ---
+
+const MAX_VIDEO_INPUTS = 20;
+
+const g_activeVideoInputSlots = [];
+let g_dominantIdx = -1;
+
+let g_audioOnlyDemoPeers = [];
+let g_currentRoomPeers = new Map();
+
+let g_paramValues = {};
+
+let g_running = false;
+
+
+for (let i = 0; i < MAX_VIDEO_INPUTS; i++) {
+  setActiveVideoInput(i, false);
+}
+setActiveVideoInput(0, true);
+
+
+function getVideoInputIdForSlotIndex(idx, isScreenshare) {
+  const suffix = isScreenshare ? '_sshare' : '';
+  if (idx === 0) return 'devlivecam0' + suffix;
+  else return 'devinput' + idx + suffix;
+}
+
+function setActiveVideoInput(idx, active, paused, isScreenshare) {
+  g_activeVideoInputSlots[idx] = {
+    id: getVideoInputIdForSlotIndex(idx, isScreenshare),
+    active: !!active,
+    paused: !!paused,
+    type: isScreenshare ? 'screenshare' : 'camera',
+    displayName: 'Participant ' + (idx+1)
+  };
+
+  // this call will consolidate screenshares together with cameras where possible
+  // to make the room metadata more realistic
+  updateRoomPeers();
+}
+
+
+// --- UI actions ---
+
+g_apiCallName = 'startRecording';
+
+document.getElementById('apiCallOutputTypeSelect').addEventListener('change', function(ev) {
+  const sel = ev.target;
+  const opt = sel.options[sel.selectedIndex];
+  g_apiCallName = opt.value;
+
+  printApicallRec();
+});
+
+const decoEl = document.getElementById("deco");
+let isAtari = false;
+decoEl.addEventListener('click', function(ev) {
+  if (!ev.altKey) return;
+  if (isAtari) {
+    decoEl.style = '';
+  } else {
+    decoEl.style = "background-image: url('example-assets/atari_vcs_woodgrain_texture.png')";
+  }
+  isAtari = !isAtari;
+  ev.preventDefault();
+});
+
+const tabBarEl = document.querySelector(".tabBar");
+let showingDebug = false;
+tabBarEl.addEventListener('click', function(ev) {
+  if (!ev.altKey) return;
+  if (!showingDebug) {
+    const debugBtn = document.createElement('button');
+    debugBtn.setAttribute('data-id', 'debug');
+    debugBtn.innerText = "Debug";
+    debugBtn.addEventListener('click', tabBarButtonClicked);
+    tabBarEl.appendChild(debugBtn);
+    showingDebug = true;
+    //<button data-id="debug">Debug</button>
+  }
+  ev.preventDefault();
+});
+
+function basicRandomId() {
+  // a human-readable random number for display strings
+  return Math.floor(999 + Math.random() * 1000000);
+}
+
+function basicRandomKey() {
+  // a reasonably unique key combining current time + a smallish random number
+  return `${Math.floor(Date.now())}/${basicRandomId()}`;
+}
+
+function setAudioDemoParticipants(ev) {
+  const field = ev.target;
+  let newCount = field.value;
+  if (typeof newCount !== 'number') {
+    newCount = parseInt(newCount, 10);
+  }
+  const oldCount = g_audioOnlyDemoPeers.length;
+  if (newCount === oldCount || newCount < 0 || newCount > 50)
+    return;
+
+  if (newCount < oldCount) {
+    g_audioOnlyDemoPeers = g_audioOnlyDemoPeers.slice(0, newCount);
+  } else {
+    for (let i = oldCount; i < newCount; i++) {
+      const randomId = basicRandomId();
+      g_audioOnlyDemoPeers.push({
+        id: 'demoAudioOnly_'+randomId,
+        displayName: 'Audio-Only Person ' + randomId,
+        video: {},
+        screenshareVideo: {},
+        audio: {
+          id: '',
+          paused: false
+        }
+      });
+    }
+  }
+  updateRoomPeers();
+  sendRoomPeers();
+}
+
+function randomizeParticipantName(ev) {
+  const btn = ev.target;
+  const idx = parseInt(btn.dataset.index, 10);
+
+  let s = 'Random ' + basicRandomId();
+  if (Math.random() > 0.7) {
+    s += " longer user name";
+  }
+  else if (Math.random() > 0.6) {
+    s += " person";
+  }
+
+  g_activeVideoInputSlots[idx].displayName = s;
+
+  updateRoomPeers();
+
+  sendActiveVideoInputSlots();
+}
+
+function participantToggled(ev) {
+  let btn = ev.target;
+  const idx = parseInt(btn.dataset.index, 10);
+
+  const active = g_activeVideoInputSlots[idx].active ? false : true;
+
+  let newCls = 'participant';
+  if (active) newCls += ' selected';
+  const baseCls = 'participant';
+  
+  if (!ev.shiftKey) {
+    btn.className = newCls;
+    g_activeVideoInputSlots[idx].active = active;
+  } else {
+    // if shift pressed, toggle all inputs up to this one
+    for (let i = 1; i <= idx; i++) {
+      btn = videoInputsUI_btnContainer.querySelector(`button.participant[data-index='${i}']`);
+      btn.className = newCls;
+      g_activeVideoInputSlots[i].active = active;
+    }
+  }
+
+  updateRoomPeers();
+
+  sendActiveVideoInputSlots();
+}
+
+function dominantToggled(ev) {
+  const btn = ev.target;
+  const idx = parseInt(btn.dataset.index, 10);
+
+  g_dominantIdx = (idx === g_dominantIdx) ? -1 : idx;
+
+  updateRoomPeers();
+
+  sendActiveVideoInputSlots();
+  
+  createVideoInputsUI();
+}
+
+function pauseToggled(ev) {
+  const btn = ev.target;
+  const idx = parseInt(btn.dataset.index, 10);
+
+  g_activeVideoInputSlots[idx].paused = !g_activeVideoInputSlots[idx].paused;
+
+  updateRoomPeers();
+
+  sendActiveVideoInputSlots();
+
+  createVideoInputsUI();
+}
+
+function makeCurrentImageSources() {
+  let sources = {...g_defaultSources};
+
+  sources.videoSlots = g_defaultSources.videoSlots.slice();
+
+  // for any screenshares, replace the default source with a screenshare input
+  const ssImageEls = [
+    document.getElementById('screenshare_standin'),
+    document.getElementById('screenshare_standin2')
+  ];
+  for (let i = 0; i < MAX_VIDEO_INPUTS; i++) {
+    if (g_activeVideoInputSlots[i].type !== 'screenshare') continue;
+
+    const obj = {
+      id: getVideoInputIdForSlotIndex(i, true),
+      element: ssImageEls[i % 2]
+    };
+    sources.videoSlots.splice(i, 1, obj);
+  }
+
+  return sources;
+}
+
+function screenshareToggled(ev) {
+  const btn = ev.target;
+  const idx = parseInt(btn.dataset.index, 10);
+
+  const s = g_activeVideoInputSlots[idx].type !== 'screenshare';
+
+  setActiveVideoInput(idx, g_activeVideoInputSlots[idx].active, g_activeVideoInputSlots[idx].paused, s);
+
+  sendActiveVideoInputSlots();
+
+  sendUpdateImageSources(makeCurrentImageSources());
+  
+  createVideoInputsUI();
+}
+
+function sendRandomChatMessage() {
+  const key = basicRandomKey();
+  const data = {
+    key,
+    senderDisplayName: 'Person' + basicRandomId(),
+    text: `Chat ipsum ${basicRandomId()} dolor sit amet ${basicRandomId()}`
+  };
+  sendStandardSource('chatMessages', data);
+}
+
+function sendRandomTranscriptLine() {
+  const key = basicRandomKey();
+  let text = `Transcript ipsum ${basicRandomId()}`;
+  if (Math.random() > 0.6) {
+    text += `, dolor sit ${basicRandomId()} amet`;
+  }
+  const data = {
+    key,
+    senderDisplayName: 'Person' + basicRandomId(),
+    text
+  };
+  sendStandardSource('transcript', data);
+}
+
+function createStandardSourcesUI(compInterface) {
+  // these are the sources we support in the simulator
+  const knownSources = ['chatMessages', 'transcript'];
+
+  const enabledSources = [];
+  if (Array.isArray(compInterface.standardSources)) {
+    for (const sourceId of knownSources) {
+      const btn = document.querySelector(`#controls .standardSource button[data-sourceid='${sourceId}']`);
+      let enabled = false;
+      if (compInterface.standardSources.includes(sourceId)) {
+        enabledSources.push(sourceId);
+        enabled = true;
+      }
+      btn.setAttribute('style', 'display: ' + (enabled ? 'inline' : 'none'));
+
+      if (enabled) {
+        btn.addEventListener('click', (ev) => {
+          const sourceId = ev.target.dataset.sourceid;
+          switch (sourceId) {
+            case 'chatMessages':
+              sendRandomChatMessage();
+              break;
+            case 'transcript':
+              sendRandomTranscriptLine();
+              break;
+          }
+        });
+      }
+    }
+  }
+  const unav = document.querySelector("#controls .standardSource .unavailableInfo");
+  unav.setAttribute('style', 'display: ' + (enabledSources.length > 0 ? 'none' : 'block'));
+
+  return enabledSources;
+}
+
+function paramCheckboxToggled(ev) {
+  const btn = ev.target;
+  const paramId = btn.dataset.paramId;
+  if (!paramId || paramId.length < 1) {
+    alert("Missing paramId");
+    return;
+  }
+  const newValue = btn.checked === true;
+
+  sendParam(paramId, newValue);
+}
+
+function paramNumberEdited(ev) {
+  const field = ev.target;
+  const paramId = field.dataset.paramId;
+  if (!paramId || paramId.length < 1) {
+    alert("Missing paramId");
+    return;
+  }
+  let newValue = field.value;
+  if (typeof newValue !== 'number') {
+    newValue = parseFloat(newValue);
+  }
+
+  if (Number.isFinite(newValue)) sendParam(paramId, newValue);
+}
+
+function paramTextEdited(ev) {
+  const field = ev.target;
+  const paramId = field.dataset.paramId;
+  if (!paramId || paramId.length < 1) {
+    alert("Missing paramId");
+    return;
+  }
+  let newValue = field.value || '';
+
+  newValue = newValue.replace(/\\n/g, '\n');
+
+  sendParam(paramId, newValue);
+}
+
+function paramEnumSelected(ev) {
+  const sel = ev.target;
+  const paramId = sel.dataset.paramId;
+  if (!paramId || paramId.length < 1) {
+    alert("Missing paramId");
+    return;
+  }
+  const opt = sel.options[sel.selectedIndex];
+  const newValue = opt.value || '';
+
+  sendParam(paramId, newValue);
+}
+
+function paramGroupJumpSelected(ev) {
+  const sel = ev.target;
+  const opt = sel.options[sel.selectedIndex];
+  const groupName = opt.value;
+
+  sel.blur();
+
+  const groupEl = document.getElementById('paramGroup_'+groupName);
+  if (groupEl) {
+    groupEl.scrollIntoView();
+  }
+}
+
+function createParamGroupJumpMenuUI(groups, sel) {
+  let hasGroups = false;
+
+  for (const group of groups) {
+    if (group.items.length < 1) continue;
+    hasGroups = true;
+
+    const opt = document.createElement('option');
+    opt.setAttribute('value', group.name);
+    opt.innerText = group.name;
+    sel.appendChild(opt);
+  }
+
+  if (hasGroups) {
+    sel.addEventListener('change', paramGroupJumpSelected);
+  } else {
+    const parent = sel.parentElement;
+    parent.parentElement.removeChild(parent);
+  }
+
+}
+
+function createParamsUI(compInterface, groupsContainerEl) {
+  // collect param groups
+  const groups = [];
+  groups.push({
+    name: '',
+    isMain: true,
+    items: []
+  });
+  for (const paramDesc of compInterface.params) {
+    const {id} = paramDesc;
+    let idx;
+    if ((idx = id.indexOf('.')) > 0) {
+      const groupName = id.substr(0, idx);
+      const subid = id.substr(idx + 1);
+      let group = groups.find(g => g.name === groupName);
+      if (!group) {
+        group = { name: groupName, items: []};
+        groups.push(group);
+      }
+      group.items.push(paramDesc);
+    } else {
+      groups[0].items.push(paramDesc);
+    }
+  }
+  for (const group of groups) {
+    if (group.items.length < 1) continue;
+
+    const groupBox = document.createElement('div');
+    groupsContainerEl.appendChild(groupBox);
+
+    groupBox.setAttribute('id', 'paramGroup_'+group.name);
+
+    if (group.isMain && groups.length > 1) {
+      // put main params box above groups
+      groupBox.style = "grid-column: 1/3; width: calc(50% - 10px);";
+    }
+
+    const head = document.createElement('h4');
+    groupBox.appendChild(head);
+    head.innerText = (group.isMain)
+                ? (groups.length > 1 ? 'Main params' : 'Params')
+                : `Param group: ${group.name}`;
+
+    const box = document.createElement('div');
+    groupBox.appendChild(box);
+    box.className = 'params';
+
+    for (const paramDesc of group.items) {
+      const {id, type, defaultValue, shortHelpText, status} = paramDesc;
+      let displayName = id;
+      if (!group.isMain) {
+        const idx = id.indexOf('.');
+        displayName = id.substr(idx + 1);
+      }
+      let el;
+      let posLeft = false;
+      let isTall = false;
+      switch (type) {
+        default:
+          console.warn("** unsupported param type from composition: '%s'", type);
+          break;
+
+        case 'boolean': {
+          el = document.createElement('input');
+          el.setAttribute('type', 'checkbox');
+          if (defaultValue) el.setAttribute('checked', true);
+
+          el.addEventListener('change', paramCheckboxToggled);
+
+          // wrapper to prevent weird margin collapse with checkbox
+          const div = document.createElement('div');
+          div.setAttribute('style', 'display: inline-block; position: absolute;');
+          div.appendChild(el);
+          el.setAttribute('data-param-id', id);
+          el = div;
+          break;
+        }
+
+        case 'number':
+        el = document.createElement('input');
+          el.setAttribute('type', 'number');
+          if (defaultValue || typeof defaultValue == 'number') {
+            el.setAttribute('value', defaultValue);
+          }
+          if (Number.isFinite(paramDesc.step) && paramDesc.step > 0) {
+            el.setAttribute('step', paramDesc.step);
+          }
+          el.addEventListener('change', paramNumberEdited);
+          break;
+
+        case 'text': {
+          const {textSizeHint} = paramDesc;
+          if (textSizeHint === 'long') {
+            el = document.createElement('textarea');
+            el.innerText = defaultValue || '';
+            isTall = true;
+            el.addEventListener('input', paramTextEdited);
+          } else {
+            el = document.createElement('input');
+            el.setAttribute('type', 'text');
+            if (defaultValue || typeof defaultValue == 'number') {
+              el.setAttribute('value', defaultValue);
+            }
+          }
+          el.addEventListener('change', paramTextEdited);
+          break;
+        }
+        case 'enum':
+          el = document.createElement('select');
+          createEnumUI(paramDesc.values || [], id, el);
+
+          if (defaultValue && paramDesc.values) {
+            // select default item
+            const idx = paramDesc.values.indexOf(defaultValue);
+            if (idx >= 0) el.selectedIndex = idx;
+          }
+          
+          el.addEventListener('change', paramEnumSelected);
+          break;
+      }
+
+      if (el) {
+        el.setAttribute('data-param-id', id);
+
+        const div = document.createElement('div');
+        const label = document.createElement('label');
+        label.innerText = displayName || '<No id provided>';
+
+        let className = '';
+
+        if (status && status.length > 0) {
+          className += 'status-'+status+' ';
+        }
+        if (isTall) {
+          className += 'tall ';
+        }
+        div.className = className;
+        
+        if (posLeft) {
+          div.appendChild(el);
+          div.appendChild(label);
+        } else {
+          div.appendChild(label);
+          div.appendChild(el);
+        }
+        box.appendChild(div);
+
+        if (shortHelpText && shortHelpText.length > 0) {
+          const helpDiv = document.createElement('div');
+          helpDiv.innerText = shortHelpText;
+          helpDiv.className = 'shortHelpText';
+          box.appendChild(helpDiv);
+        }
+      }
+    }
+  }
+  return groups;
+}
+
+function createEnumUI(enumValues, paramId, sel) {
+  removeChildren(sel);
+
+  let firstId;
+  for (const val of enumValues) {
+    const opt = document.createElement('option');
+    opt.setAttribute('value', val);
+    opt.innerText = val;
+    sel.appendChild(opt);
+
+    if ( !firstId) firstId = val;
+  }
+  if ( !firstId) {
+    // TODO: add a placeholder item
+  }
+}
+
+function removeChildren(box) {
+  let child;
+  while ((child = box.firstChild)) {
+    box.removeChild(child);
+  }
+}
+
+const videoInputsUI_btnContainer = document.querySelector("#controls .mediaInput .buttonContainer");
+
+function createVideoInputsUI() {
+  const mainBox = videoInputsUI_btnContainer;
+  removeChildren(mainBox);
+
+  const n = MAX_VIDEO_INPUTS;
+  for (let i = 0; i < n; i++) {
+    const active = g_activeVideoInputSlots[i].active;
+    const paused = g_activeVideoInputSlots[i].paused;
+    const screenshare = g_activeVideoInputSlots[i].type === 'screenshare';
+    const dominant = g_dominantIdx === i;
+
+    const box = document.createElement('div');
+    box.className = 'buttonColumn';
+
+    // --
+    const btn = document.createElement('button');
+    btn.setAttribute('data-index', i);
+    btn.innerText = ""+(i + 1);
+    box.appendChild(btn);
+
+    let cls = 'participant';
+    if (active) cls += ' selected';
+    btn.className = cls;
+    
+    btn.addEventListener('click', participantToggled);
+
+    // --
+    const domBtn = document.createElement('button');
+    domBtn.setAttribute('data-index', i);
+    domBtn.setAttribute('data-video-dominant', true);
+    domBtn.innerText = "";
+    box.appendChild(domBtn);
+
+    cls = 'dominant';
+    if (dominant) cls += ' selected checkboxOn';
+    else cls += ' checkboxOff';
+    domBtn.className = cls;
+
+    domBtn.addEventListener('click', dominantToggled);
+
+    // --
+    const pauseBtn = document.createElement('button');
+    pauseBtn.setAttribute('data-index', i);
+    pauseBtn.setAttribute('data-video-screenshare', true);
+    pauseBtn.innerText = "";
+    box.appendChild(pauseBtn);
+
+    cls = 'pause';
+    if (paused) cls += ' selected checkboxOn';
+    else cls += ' checkboxOff';
+    pauseBtn.className = cls;
+
+    pauseBtn.addEventListener('click', pauseToggled);
+
+    // --
+    const sBtn = document.createElement('button');
+    sBtn.setAttribute('data-index', i);
+    sBtn.setAttribute('data-video-screenshare', true);
+    sBtn.innerText = "";
+    box.appendChild(sBtn);
+
+    cls = 'screenshare';
+    if (screenshare) cls += ' selected checkboxOn';
+    else cls += ' checkboxOff';
+    sBtn.className = cls;
+
+    sBtn.addEventListener('click', screenshareToggled);
+
+    // --
+    const nameBtn = document.createElement('button');
+    nameBtn.setAttribute('data-index', i);
+    nameBtn.setAttribute('data-video-randomname', true);
+    nameBtn.innerText = "";
+    nameBtn.className = 'randomname';
+    box.appendChild(nameBtn);
+
+    nameBtn.addEventListener('click', randomizeParticipantName);
+
+    mainBox.appendChild(box);
+  }
+}
+
+createVideoInputsUI();
+
+const audioDemoParticipantsNumberField = document.querySelector("#controls .roomInput .audioParticipantInputContainer input");
+audioDemoParticipantsNumberField.addEventListener('change', setAudioDemoParticipants);
+
+
+// --- setup rendering ---
+
+let g_viewportSize = { w: 1280, h: 720 };
+let g_outputContainer = document.getElementById("outputContainer");
+let g_outputScale = 0.5;
+
+let g_vcsApi;
+
+
+async function setupLiveVideo() {
+  // this video element will be used as a drawable source when rendering to canvas
+  let liveVideoEl;
+
+  try {
+    const mediaStream = await navigator.mediaDevices.getUserMedia(
+      { video: {width: 1280, height: 720},
+        audio: false
+      }
+    );
+    console.log("got mediaStream: ", mediaStream);
+
+    liveVideoEl = document.createElement('video');
+    liveVideoEl.setAttribute('muted', true);
+    liveVideoEl.setAttribute('autoPlay', true);
+    liveVideoEl.srcObject = mediaStream;
+
+    // place element in DOM so it gets updates
+    liveVideoEl.setAttribute('style', "display: none;");
+    g_outputContainer.parentElement.appendChild(liveVideoEl);
+  } catch (e) {
+    console.error("** getUserMedia failed: ", e);
+    alert("Live video not available, getUserMedia failed:\n\n"+e);
+  }
+  return liveVideoEl;
+}
+
+async function loadTestImages() {
+  return {
+    'test_square.png': document.getElementById('image_test_square')
+  };
+}
+
+const demoPeople = [
+  document.getElementById('demoperson_missfury'),
+  document.getElementById('demoperson_moongirl'),
+  document.getElementById('demoperson_yellowkid'),
+  document.getElementById('demoperson_missfury'),
+  document.getElementById('demoperson_moongirl'),
+  document.getElementById('demoperson_yellowkid'),
+  document.getElementById('demoperson_missfury_square'),
+  document.getElementById('demoperson_moongirl_square'),
+];
+
+let g_defaultSources = {}; // initialized in start
+
+async function start() {
+  const liveVideoEl = await setupLiveVideo();
+  const testImages = await loadTestImages();
+
+  // build the video sources map.
+  // live video goes in the first slot, rest are public domain images.
+  const videoInputElements = [];
+  videoInputElements[0] = {
+    id: getVideoInputIdForSlotIndex(0),
+    element: liveVideoEl,
+  };
+  for (let i = 1; i < MAX_VIDEO_INPUTS; i++) {
+    videoInputElements.push({
+      id: getVideoInputIdForSlotIndex(i),
+      element: demoPeople[ (i - 1) % demoPeople.length ]
+    });
+  }
+
+  g_defaultSources = {
+    videoSlots: videoInputElements,
+    assetImages: testImages,
+  };
+
+  console.log("--- awaiting DailyVCS start ---");
+
+  await recreateVCSCanvasOutput();
+
+  console.log("### start done.")
+
+  g_running = true;
+
+  // print composition info
+  const compInterface = g_vcsApi.getCompositionInterface();
+  const {displayMeta} = compInterface;
+
+  console.log("composition metadata: ", displayMeta);
+
+  document.querySelector("#compInfo .name").innerHTML = displayMeta.name;
+  document.querySelector("#compInfo .description").innerHTML = displayMeta.description;
+
+  // create composition UI
+  const groups = createParamsUI(compInterface, document.querySelector("#controls .compInterface .paramsContainer"));
+
+  createParamGroupJumpMenuUI(groups, document.querySelector("#controls .compInterface .paramsJumpMenu select"));
+
+  // create source UI
+  const enabledSources = createStandardSourcesUI(compInterface);
+
+  g_vcsApi.setEnabledStandardSources(enabledSources);
+}
+
+window.addEventListener('load', function(ev) {
+  const compLibName = Object.keys(window).find(s => s.indexOf('VCSComposition') === 0);
+  if (!compLibName) {
+    alert("Couldn't find a Daily VCS composition using the standard naming pattern.");
+    return; // --
+  }
+  g_vcsCompLib = window[compLibName];
+  console.log("Using VCS library: ", compLibName, g_vcsCompLib);
+
+  start();
+});
+
+const imgDropEl = document.getElementById('imageDropTarget');
+const imgDropAssetNameEl = document.querySelector('#imageDropAssetName input[type=text]');
+imgDropEl.addEventListener('dragover', function(ev) {
+  ev.preventDefault();
+});
+imgDropEl.addEventListener('drop', function(ev) {
+  ev.preventDefault();
+  try {
+    const assetName = imgDropAssetNameEl ? imgDropAssetNameEl.value : 'overlay.png';
+
+    const items = ev.dataTransfer.items;
+    if (items && items.length > 0 && items[0].kind === 'file') {
+      const file = items[0].getAsFile();
+      console.log("file drop received: ", file);
+      if (!file.type.match(/image.png/)) {
+        alert("The dropped image must be in PNG format.");
+      } else {
+        const img = document.createElement('img');
+        img.name = assetName;
+        const reader = new FileReader();
+        reader.onload = function(readEv) {
+          img.src = readEv.target.result;
+          updateTestImage(img, assetName);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  } catch (e) {
+    console.error("** Exception handling image drop: ", e);
+  }
+});
+
+function updateTestImage(img, assetName) {
+  const images = g_defaultSources.assetImages;
+  images[assetName] = img;
+  console.log("images updated: ", images);
+
+  recreateVCSCanvasOutput();
+}
+
+let g_recordingApiCalls = false;
+let g_apiRecObj = {};
+
+const apicallRecBtn = document.getElementById('btn-apicall-rec');
+const apicallStopBtn = document.getElementById('btn-apicall-stop');
+const apicallCaptureBtn = document.getElementById('btn-apicall-capture');
+const apicallScreenshotBtn = document.getElementById('btn-apicall-screenshot');
+const apicallRecOut = document.getElementById('apicallRecOut');
+const apicallScreenshot = document.getElementById('apicallScreenshot');
+
+apicallScreenshotBtn.addEventListener('click', function(ev) {
+  if (!g_vcsApi) return;
+
+  // for the screenshot, render the current frame into a temp canvas
+  const canvas = document.createElement('canvas');
+  canvas.width = g_viewportSize.w;
+  canvas.height = g_viewportSize.h;
+
+  g_vcsApi.captureFrameInCanvas(canvas);
+
+  canvas.toBlob(function(blob) { 
+    img = document.createElement('img');
+    img.src = URL.createObjectURL(blob);
+
+    const box = apicallScreenshot;
+    removeChildren(box);
+
+    const screenshotW = Math.round(g_viewportSize.w / 4);
+    img.style = `width: ${screenshotW}px; height: auto; display: block;`;
+    box.appendChild(img);
+
+    const btn = document.createElement('button');
+    btn.innerText = "Copy image";
+    box.appendChild(btn);
+
+    const info = document.createElement('div');
+    box.appendChild(info);
+
+    btn.addEventListener('click', async function(ev) {
+      try {
+        const item = new ClipboardItem({ "image/png": blob });
+        await navigator.clipboard.write([item]);
+        info.innerText = "Copied PNG to clipboard";
+      } catch (e) {
+        console.error("Exception copying PNG to clipboard: ", e);
+        alert("Copy failed:\n"+e);
+      }
+    });
+  });
+});
+
+apicallRecBtn.addEventListener('click', function(ev) {
+  apicallRecBtn.className = 'disabled';
+  apicallStopBtn.className = 'selected';
+  g_recordingApiCalls = true;
+});
+
+apicallStopBtn.addEventListener('click', function(ev) {
+  apicallRecBtn.className = '';
+  apicallStopBtn.className = 'disabled';
+  g_recordingApiCalls = false;
+});
+
+apicallCaptureBtn.addEventListener('click', function(ev) {
+  captureCurrentValuesToApicallRec();
+});
+
+function captureCurrentValuesToApicallRec() {
+  const params = g_apiRecObj.params || {};
+
+  // default values
+  const compInterface = g_vcsApi.getCompositionInterface();
+  for (const paramDesc of compInterface.params) {
+    const {id, type, defaultValue} = paramDesc;
+    if (defaultValue || (type === 'number' && Number.isFinite(defaultValue))) {
+      params[id] = defaultValue;
+    } else if (type === 'boolean') {
+      params[id] = false;
+    }
+  }
+
+  // current values from UI
+  for (const key in g_paramValues) {
+    params[key] = g_paramValues[key];
+  }
+
+  g_apiRecObj.params = params;
+
+  printApicallRec();
+}
+
+function clearApicallRec() {
+  removeChildren(apicallRecOut);
+  g_apiRecObj = {};
+}
+
+function printApicallRec() {
+  const box = apicallRecOut;
+  removeChildren(box);
+
+  let json = JSON.stringify(g_apiRecObj.params, null, 2);
+
+  json = json.replace(/\n/g, '\n    '); // indent correctly for api call
+
+  const apicallStr = "call." + g_apiCallName + "({\n"
+      + "  layout: {\n"
+      + "    preset: \"custom\",\n"
+      + "    composition_params: " + json
+      + "\n"
+      + "  }\n"
+      + "});\n"
+
+  const div = document.createElement('pre');
+  //div.innerHTML = json.replace(/(?:\r\n|\r|\n)/g, '<br>');
+  div.innerText = apicallStr;
+
+  box.appendChild(div);
+
+  const btn = document.createElement('button');
+  btn.innerText = "Copy text";
+  box.appendChild(btn);
+
+  const info = document.createElement('div');
+  box.appendChild(info);
+
+  btn.addEventListener('click', function(ev) {
+    try {
+      navigator.clipboard.writeText(apicallStr).then(() => {
+        info.innerText = "Copied text to clipboard";
+      });
+    } catch (e) {
+      console.error("Exception copying text to clipboard: ", e);
+      alert("Copy failed:\n"+e);
+    }
+  });
+}
+
+document.getElementById('btn-apicall-clear').addEventListener('click', function(ev) {
+  clearApicallRec();
+});
+
+const playbackBtn = document.querySelector("#playbackControl button");
+playbackBtn.addEventListener('click', playbackToggled);
+
+for (const el of document.querySelectorAll("#compOutput button")) {
+  el.addEventListener('click', outputModeChanged);
+}
+
+for (const el of document.querySelectorAll("#rightSplit .tabBar button")) {
+  el.addEventListener('click', tabBarButtonClicked);
+}
+
+function tabBarButtonClicked(ev) {
+  const btn = ev.target;
+  const id = btn.dataset.id;
+
+  const btns = {
+    help:    document.querySelector("#rightSplit .tabBar button[data-id='help']"),
+    apicall: document.querySelector("#rightSplit .tabBar button[data-id='apicall']"),
+    debug:   document.querySelector("#rightSplit .tabBar button[data-id='debug']"),
+  };
+  for (const key in btns) {
+    if (btns[key]) btns[key].className = '';
+  }
+  btns[id].className = 'selected';
+
+  const tabs = {
+    help:    document.querySelector("#rightSplit .tabContent[data-id='help']"),
+    apicall: document.querySelector("#rightSplit .tabContent[data-id='apicall']"),
+    debug:   document.querySelector("#rightSplit .tabContent[data-id='debug']"),
+  };
+  for (const key in tabs) {
+    tabs[key].className = 'tabContent ';
+  }
+  tabs[id].className = 'tabContent visible';
+}
+
+async function playbackToggled(ev) {
+  g_running = !g_running;
+  playbackBtn.innerText = g_running ? "Stop" : "Restart";
+
+  if (g_running) {
+    await recreateVCSCanvasOutput();
+  } else {
+    stopVCS();
+
+    playbackBtn.disabled = true;
+
+    // VCS doesn't actually stop its cached video elements,
+    // it just stops its own rendering loop.
+    // in the simulator we can do it manually, so even if a comp
+    // doesn't bring up a closing slate, videos are paused.
+    setTimeout(() => {
+      for (const video of document.querySelectorAll('video')) {
+        video.pause();
+      }
+      playbackBtn.disabled = false;
+    }, 350);
+  }
+}
+
+function outputModeChanged(ev) {
+  const btn = ev.target;
+  const outputId = btn.dataset.outputid;
+
+  const btns = {
+    landscape: document.querySelector("#compOutput button[data-outputid='landscape']"),
+    square:    document.querySelector("#compOutput button[data-outputid='square']"),
+    portrait:  document.querySelector("#compOutput button[data-outputid='portrait']"),
+  };
+  for (const key in btns) {
+    btns[key].className = '';
+  }
+  btns[outputId].className = 'selected';
+
+  let newViewport;
+  switch (outputId) {
+    case 'landscape':
+      newViewport = {w: 1280, h: 720}; break;
+
+    case 'square':
+      newViewport = {w: 720, h: 720}; break;      
+
+    case 'portrait':
+      newViewport = {w: 720, h: 1280}; break;
+  }
+  g_viewportSize = newViewport;
+
+  // adjust size of the output container's parent which renders the background color.
+  const scale = g_outputScale;
+  const box = g_outputContainer.parentElement;
+  box.style = `width: ${newViewport.w * scale}px; height: ${newViewport.h * scale}px;`;
+
+  recreateVCSCanvasOutput();
+}
+
+function vcsErrorCb(error, info) {
+  alert("A runtime error occurred within the composition. Playback has been stopped."
+        +"\n\nYou can view the detailed error in the browser Dev Tools console.\n"
+        +"Message and component stack:"
+        +"\n'"+error.message+"'"
+        +info.componentStack);
+}
+
+function getAssetUrlCb(name, namespace, type) {
+  // these paths are defined in webpack config for CopyWebpackPlugin
+  if (type === 'font') {
+    return `res/fonts/${name}`;
+  }
+  else if (type === 'image') {
+    if (namespace === 'composition') {
+      return `composition-assets/images/${name}`;
+    } else {
+      return `res/test-assets/${name}`;
+    }
+  }
+  return name;
+}
+
+async function recreateVCSCanvasOutput() {
+  if (!g_vcsCompLib) return;
+
+  let enablePreload = true;
+
+  if (g_vcsApi) {
+    stopVCS();
+
+    enablePreload = false; // don't preload again
+  }
+
+  const fps = 20; // frame rate for React videoTime updates
+
+  g_vcsApi = await g_vcsCompLib.startDOMOutputAsync(
+    g_outputContainer,
+    g_viewportSize.w, g_viewportSize.h,
+    makeCurrentImageSources(),
+    { updateCb: compUpdatedCb,
+      errorCb: vcsErrorCb,
+      getAssetUrlCb,
+      fps,
+      scaleFactor: g_outputScale,
+      enablePreload,
+      enableSceneDescOutput: true, // for debug printout, request this encoding
+    });
+
+  sendActiveVideoInputSlots();
+
+  for (const key in g_paramValues) {
+    sendParam(key, g_paramValues[key]);
+  }
+}
+
+function stopVCS() {
+  console.log("stopping existing VCS renderer");
+
+  g_vcsApi.stop();
+}
+
+
+// --- callback received from composition ---
+
+let g_lastSceneDesc;
+
+function compUpdatedCb(sceneDesc) {
+  if ( !sceneDesc) return;
+
+  g_lastSceneDesc = sceneDesc;
+
+  //console.log("scene desc JSON: ", JSON.stringify(sceneDesc));
+
+  const printoutEl = document.getElementById("sceneDescPrintOut");
+
+  let html = '';
+
+  html += "<h4>videoLayers:</h4><br>";
+  for (const item of sceneDesc.videoLayers) {
+    const json = JSON.stringify(item);
+    html += `${json}<br>`;
+  }
+  
+  html += "<h4>fgDisplayList:</h4><br>";
+  for (const cmd of sceneDesc.fgDisplayList.commands) {
+    const json = JSON.stringify(cmd);
+    html += `${json}<br>`;
+  }
+
+  printoutEl.innerHTML = html;
+}
+
+document.getElementById("btn-copy-scene-desc")
+  .addEventListener('click', function() {
+    copySceneDescToClipboard(false)
+  });
+
+  document.getElementById("btn-copy-scene-desc-fg")
+  .addEventListener('click', function() {
+    copySceneDescToClipboard(true)
+  });
+
+async function copySceneDescToClipboard(fgOnly) {
+  if (!g_lastSceneDesc) return;
+  try {
+    const obj = fgOnly ? g_lastSceneDesc?.fgDisplayList : g_lastSceneDesc;
+    if (!obj) {
+      alert("Not available");
+      return;
+    }
+
+    await navigator.clipboard.writeText(JSON.stringify(obj));
+    alert("Copied JSON");
+  } catch (e) {
+    console.error("Exception copying JSON to clipboard: ", e);
+    alert("Copy failed:\n" + e);
+  }
+}
+
+
+// --- commands sent to composition ---
+
+function sendActiveVideoInputSlots() {
+  if (!g_vcsApi) return;
+
+  const arr = [];
+  for (let i = 0; i < g_activeVideoInputSlots.length; i++) {
+    let obj = g_activeVideoInputSlots[i];
+    if (obj.active) {
+      obj = {...obj};
+      if (i === g_dominantIdx) {
+        obj.dominant = true;
+      }
+      arr.push(obj);
+    } else {
+      arr.push(false);
+    }
+  }
+
+  g_vcsApi.setActiveVideoInputSlots(arr);
+
+  // always send this list too when our video slots were updated
+  sendRoomPeers();
+}
+
+function updateRoomPeers() {
+  // the list of simulated participants in the room is a combination of
+  // our video inputs and any audio-only demo participants.
+  const map = new Map();
+  for (const p of g_audioOnlyDemoPeers) {
+    map.set(p.id, p);
+  }
+  
+  // for screenshares, we want to combine them with regular camera inputs;
+  // this better simulates the real world situation of a video call where
+  // screenshares are generally associated with a participant already present.
+  let screenshareIndexes = [];
+  for (let i = 0; i < g_activeVideoInputSlots.length; i++) {
+    let obj = g_activeVideoInputSlots[i];
+    if (obj.active && obj.type === 'screenshare') {
+      screenshareIndexes.push(i);
+    }
+  }
+
+  const kPeerPrefix = 'p';
+
+  for (let i = 0; i < g_activeVideoInputSlots.length; i++) {
+    let obj = g_activeVideoInputSlots[i];
+    if (obj.active && obj.type !== 'screenshare') {
+      const d = {
+        id: kPeerPrefix + (i + 1),
+        displayName: obj.displayName,
+        video: {
+          id: obj.id,
+          paused: obj.paused
+        },
+        audio: {}
+      };
+      if (screenshareIndexes.length > 0) {
+        const ssobj = g_activeVideoInputSlots[screenshareIndexes[0]];
+        screenshareIndexes.splice(0, 1);
+
+        // attach available screenshare to this participant
+        d.screenshareVideo = {
+          id: ssobj.id,
+          paused: ssobj.paused
+        };
+      }
+      map.set(d.id, d);
+    }
+  }
+
+  // any remaining screenshares get their own screenshare-only participant
+  for (const ssidx of screenshareIndexes) {
+    const ssobj = g_activeVideoInputSlots[ssidx];
+    const id = kPeerPrefix + (ssidx + 1);
+    map.set(id, {
+      id,
+      displayName: 'ScreenshareOnly '+(ssidx + 1),
+      video: {},
+      audio: {},
+      screenshareVideo: {
+        id: ssobj.id,
+        paused: ssobj.paused
+      }
+    });
+  }
+
+  g_currentRoomPeers = map;
+
+  // update our screenshare inputs' displayNames to match the room metadata
+  for (let i = 0; i < g_activeVideoInputSlots.length; i++) {
+    const obj = g_activeVideoInputSlots[i];
+    if (obj.active && obj.type === 'screenshare') {
+      try {
+        const arr = Array.from(g_currentRoomPeers.values());
+        const peer = arr.find((p) => p.screenshareVideo.id === obj.id);
+        if (!peer) {
+          console.warn("Couldn't find room peer for screenshare " + obj.id);
+        } else {
+          obj.displayName = peer.displayName + " screenshare";
+        }
+      } catch (e) {
+        console.warn("Couldn't find room peer for screenshare input %d (%s), peers: ", i, obj.id, g_currentRoomPeers, e);
+      }
+    }
+  }
+}
+
+function sendRoomPeers() {
+  if (!g_vcsApi) return;
+
+  g_vcsApi.setRoomPeerDescriptionsById(g_currentRoomPeers);
+}
+
+function sendParam(paramId, value) {
+  if (!g_vcsApi) return;
+
+  g_vcsApi.setParamValue(paramId, value);
+
+  // retain a copy of param values so we can reset renderer to the same state
+  g_paramValues[paramId] = value;
+
+  if (g_recordingApiCalls) {
+    const params = g_apiRecObj.params || {};
+
+    params[paramId] = value;
+
+    g_apiRecObj.params = params;
+    printApicallRec();
+  }
+}
+
+function sendStandardSource(sourceId, data) {
+  if (!g_vcsApi) return;
+
+  g_vcsApi.addStandardSourceMessage(sourceId, data);
+
+  // TODO: retain copy of source values so we can reset renderer
+}
+
+function sendUpdateImageSources(srcs) {
+  if (!g_vcsApi) return;
+
+  g_vcsApi.updateImageSources(srcs);
+}
+
+</script>
+</html>

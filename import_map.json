@@ -1,5 +1,10 @@
 {
   "imports": {
+    "#vcs-react/components": "./thirdParty/daily-vcs-main/src/react/components/index.js",
+    "#vcs-react/hooks": "./thirdParty/daily-vcs-main/src/react/hooks/index.js",
+    "#vcs-react/contexts": "./thirdParty/daily-vcs-main/src/react/contexts/index.js",
+    "#vcs-stdlib/components": "./thirdParty/daily-vcs-main/src/stdlib/components/index.js",
+    "#vcs-stdlib/layouts": "./thirdParty/daily-vcs-main/src/stdlib/layouts/index.js",
     "build/": "./build/",
     "/build/": "./build/",
     "experimental/": "./experimental/",

@@ -4,6 +4,7 @@ export const fontFamilies = [
   "BebasNeue",
   "Bitter",
   "Exo",
+  "Lovelo",
   "Magra",
   "PermanentMarker",
   "Roboto",
@@ -11,6 +12,7 @@ export const fontFamilies = [
   "SuezOne",
   "Teko",
   "Futura",
+  "KC",
 ];
 
 export const fontBoldWeights = {
@@ -19,6 +21,7 @@ export const fontBoldWeights = {
   "BebasNeue": "700",
   "Bitter": "700",
   "Exo": "700",
+  "Lovelo": "700",
   "Magra": "700",
   "PermanentMarker": "400",
   "Roboto": "700",
@@ -26,6 +29,7 @@ export const fontBoldWeights = {
   "SuezOne": "400",
   "Teko": "600",
   "Futura": "700",
+  "KC": "400",
 };
 
 // These widths are best guesses based on the trial and error of fitting captions
@@ -37,6 +41,7 @@ export const fontRelativeCharacterWidths = {
   "BebasNeue": 1.00,
   "Bitter": 0.83,
   "Exo": 0.83,
+  "Lovelo": 0.83,
   "Magra": 1.00,
   "PermanentMarker": 0.83,
   "Roboto": 1.00,
@@ -44,6 +49,7 @@ export const fontRelativeCharacterWidths = {
   "SuezOne": 0.83,
   "Teko": 1.17,
   "Futura": 0.83,
+  "KC": 1,
 };
 // Original values from the default.jsx file
 // const charactersPerLineByFont = {

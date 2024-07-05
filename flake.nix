@@ -57,6 +57,7 @@
           gdb
           gnumake
           emscripten
+          yarn
         ];
 
         deployPackages = with pkgs; [
