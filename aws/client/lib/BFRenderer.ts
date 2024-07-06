@@ -553,8 +553,12 @@ export default class BFRenderer {
     let w = this.srcWidth;
     let h = this.srcHeight;
 
+    let scaledW = w;
+    let scaledH = h;
+    let offsetX = 0;
+    let offsetY = 0;
+
     if (this.manualCropActive) {
-      // object-view-box: inset(20% 0% 10% 22%);
       const currentCropIndex = getCurrentCropIndex(
         this.manualCrop,
         currentTimecode,
@@ -569,21 +573,25 @@ export default class BFRenderer {
       y = h * insetTop;
       w = w * (1 - insetLeft - insetRight);
       h = h * (1 - insetTop - insetBottom);
+
       const croppedAspectRatio = w / h;
 
       // Adjust the crop dimensions to match the preCropCanvas aspect ratio
       const canvasAspectRatio = this.preCropCanvas.width /
         this.preCropCanvas.height;
+
       if (croppedAspectRatio > canvasAspectRatio) {
-        // Crop width is too wide, adjust width
-        const newWidth = h * canvasAspectRatio;
-        x += (w - newWidth) / 2;
-        w = newWidth;
-      } else if (croppedAspectRatio < canvasAspectRatio) {
-        // Crop height is too tall, adjust height
-        const newHeight = w / canvasAspectRatio;
-        y += (h - newHeight) / 2;
-        h = newHeight;
+        // Crop width is too wide, fit by width and adjust height
+        scaledW = this.preCropCanvas.width;
+        scaledH = scaledW / croppedAspectRatio;
+        offsetX = 0;
+        offsetY = (this.preCropCanvas.height - scaledH) / 2;
+      } else {
+        // Crop height is too tall, fit by height and adjust width
+        scaledH = this.preCropCanvas.height;
+        scaledW = scaledH * croppedAspectRatio;
+        offsetX = (this.preCropCanvas.width - scaledW) / 2;
+        offsetY = 0;
       }
     }
 
@@ -594,10 +602,10 @@ export default class BFRenderer {
       y, // The y-coordinate on the source video (top) where to start cropping
       w, // The width of the rectangle to be cropped from the source video
       h, // The height of the rectangle to be cropped from the source video
-      0, // The x-coordinate on the cropCanvas where the cropped image should be placed
-      0, // The y-coordinate on the cropCanvas where the cropped image should be placed
-      this.preCropCanvas.width, // The width to which the cropped image should be scaled
-      this.preCropCanvas.height, // The height to which the cropped image should be scaled
+      offsetX, // The x-coordinate on the preCropCanvas where the cropped image should be placed
+      offsetY, // The y-coordinate on the preCropCanvas where the cropped image should be placed
+      scaledW, // The width to which the cropped image should be scaled
+      scaledH, // The height to which the cropped image should be scaled
     );
   }
 
