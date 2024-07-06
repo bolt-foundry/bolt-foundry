@@ -10,14 +10,14 @@ import { Input } from "packages/bfDs/Input.tsx";
 import { RatioSelector } from "packages/client/components/RatioSelector.tsx";
 import { Toggle } from "packages/bfDs/Toggle.tsx";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
-import { fontFamilies } from "packages/vcs/client/compositions/params.js";
+import { fontFamilies } from "packages/vcs/params.js";
 import {
   useFeatureFlag,
   useFeatureVariant,
 } from "packages/client/hooks/featureFlagHooks.ts";
 // import { SettingsFormQuery_settings$key } from "packages/__generated__/SettingsFormQuery_settings.graphql.ts";
 import { hexToRgb, rgbToHex } from "lib/color.ts";
-import { imagePreloads } from "packages/vcs/client/compositions/preloads.js";
+import { imagePreloads } from "packages/vcs/preloads.js";
 import { classnames } from "lib/classnames.ts";
 import { Button } from "packages/bfDs/Button.tsx";
 

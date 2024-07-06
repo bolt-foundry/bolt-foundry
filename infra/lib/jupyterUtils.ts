@@ -4,8 +4,11 @@ import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewe
 
 const logger = getLogger(import.meta);
 
-export async function getJupyterCurrentUser() {
-  const refreshToken = Deno.env.get("JUPYTER_USER_REFRESH_TOKEN")
+export async function getJupyterCurrentViewer(refreshToken = Deno.env.get("JUPYTER_USER_REFRESH_TOKEN")) {
+  if (!refreshToken) {
+    logger.error("No refresh token found");
+    return null;
+  }
   const accessToken = await BfAccount.getRefreshedAccessToken(
     import.meta,
     refreshToken,

@@ -37,6 +37,9 @@ const replaceTagsWithImports = async (
 
     const { _operationType, operationName } = match.match(pattern)?.groups ??
       {};
+    if (!operationName) {
+      return contents;
+    }
     const generatedFileName = `${operationName}.graphql.ts`;
     const generatedFilePath = join(artifactsDirectory, generatedFileName);
 
