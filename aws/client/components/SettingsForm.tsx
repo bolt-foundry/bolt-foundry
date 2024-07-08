@@ -159,13 +159,15 @@ export default function SettingsForm(
     const compareInitialSettingsWithPresets = (): string | null => {
       // Iterate over each preset to find a match
       for (const presetKey of Object.keys(settingsPresets)) {
-        const preset = settingsPresets[presetKey];
+        const preset = settingsPresets[presetKey] as Partial<Settings>;
         // Check if all the keys in the preset match the initial settings
         if (
           Object.keys(preset).every((key) => {
             const keyTyped = key as keyof Settings;
-            const areEqual = initialSettings[keyTyped] ===
-              (preset as Partial<Settings>)[keyTyped];
+            let areEqual = initialSettings[keyTyped] === preset[keyTyped];
+            if (draftSettings[keyTyped] != null) {
+              areEqual = draftSettings[keyTyped] === preset[keyTyped];
+            }
             return areEqual;
           })
         ) {
@@ -176,10 +178,8 @@ export default function SettingsForm(
     };
     // Get the key of the matching preset
     const presetKey = compareInitialSettingsWithPresets();
-    if (presetKey) {
-      setCurrentPreset(presetKey); // Set the current preset state if match is found
-    }
-  }, []);
+    setCurrentPreset(presetKey); // Set the current preset state
+  }, [draftSettings]);
 
   const captionColorValue = rgbToHex(
     draftSettings.captionColor ?? initialSettings.captionColor ??
