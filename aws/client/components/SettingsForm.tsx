@@ -131,6 +131,9 @@ export default function SettingsForm(
     setInitialSettings,
   }: Props,
 ) {
+
+  const [currentPreset, setCurrentPreset] = React.useState<string | null>(null);
+
   const settings = useFragment(settingsFragment, settings$key);
   const initialSettings = settings ?? DEFAULT_SETTINGS;
   const enableToggleWatermark = useFeatureFlag("toggle_watermark");
@@ -210,13 +213,14 @@ export default function SettingsForm(
               <DropdownSelector
                 options={settingsPresetsOptions}
                 onChange={(preset) => {
+                  setCurrentPreset(preset);
                   const newSettings = {
                     ...draftSettings,
                     ...settingsPresets[preset],
                   };
                   setDraftSettings(newSettings);
                 }}
-                value=""
+                value={currentPreset ?? ""}
                 placeholder="Load a preset..."
                 testId="presetSelector"
               />
