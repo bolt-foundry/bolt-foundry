@@ -62,7 +62,6 @@ function LoginPageContent() {
   const onLogout = () => {
     logoutCommit({
       variables: {},
-      // @ts-expect-error not typed yet
       onCompleted: (response, errors) => {
         if (errors) {
           const errorMessage = errors.map((e: { message: string }) => e.message)
@@ -72,7 +71,6 @@ function LoginPageContent() {
           window.location.assign("/"); // TODO fix navigate() in RouterContext
         }
       },
-      // @ts-expect-error not typed yet
       onError: (error) => {
         setLogoutError(error.message);
       },

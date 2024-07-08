@@ -12,8 +12,9 @@ import {
 } from "packages/bfDb/classes/BfAuth.ts";
 import { cookie } from "packages/graphql/deps.ts";
 import { GraphQLContext } from "packages/graphql/graphql.ts";
-import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
+import type { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import { getLogger } from "deps.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
 const logger = getLogger(import.meta);
 
@@ -28,12 +29,12 @@ export abstract class BfCurrentViewer {
   __typename: string;
 
   protected constructor(
-    readonly actorBfGid: BfOid, // always an owner, used to determine access control
+    readonly organizationBfGid: BfOid, // always an owner, used to determine access control
     readonly role: ACCOUNT_ROLE,
     readonly personBfGid: BfGid, // person for whom the access token was created
+    readonly accountBfGid: BfGid, // the account from which the access token was created. If undefined, the person is acting as themselves
     readonly creator: string, // the import.meta.url of the module that created the current viewer
     readonly jwtPayload: BfJwtPayload | null = null,
-    readonly accountBfGid?: BfGid, // the account from which the access token was created. If undefined, the person is acting as themselves
   ) {
     this.__typename = this.constructor.name;
   }
@@ -46,8 +47,8 @@ export class BfCurrentViewerAnon extends BfCurrentViewer {
       toBfOid("anon"),
       ACCOUNT_ROLE.ANON,
       toBfGid("anon"),
+      toBfGid("anon"),
       creator,
-      null,
     );
   }
 }
@@ -60,15 +61,15 @@ export class BfCurrentViewerAccessToken extends BfCurrentViewer {
     try {
       if (accessToken) {
         const jwtPayload = await decodeAndVerifyBfJwt(accessToken);
-        const { actorBfGid, role, personBfGid, iss } = jwtPayload;
-        if (role && actorBfGid && personBfGid) {
+        const { organizationBfGid, role, personBfGid, accountBfGid } = jwtPayload;
+        if (role && organizationBfGid && personBfGid) {
           return new this(
-            toBfOid(actorBfGid),
+            toBfOid(organizationBfGid),
             role as ACCOUNT_ROLE,
             personBfGid,
+            toBfGid(accountBfGid),
             importMeta.url,
             jwtPayload,
-            toBfGid(iss ?? ""),
           );
         }
       }
@@ -90,22 +91,31 @@ export class BfCurrentViewerAccessToken extends BfCurrentViewer {
       toBfOid(id),
       ACCOUNT_ROLE.OWNER,
       toBfGid(id),
+      toBfGid(id),
       importMeta.url,
     );
   }
 }
 
-export class BfCurrentViewerServiceAccount extends BfCurrentViewer {
-  static create(
-    importMeta: ImportMeta,
-    serviceAccountType: ACCOUNT_ROLE,
-    bfOid: BfOid,
-    bfGidForCreator: BfGid,
-  ) {
+export class BfCurrentViewerFromAccount extends BfCurrentViewer {
+  static create(importMeta: ImportMeta, account: BfAccount) {
     return new this(
-      bfOid,
-      serviceAccountType,
-      bfGidForCreator,
+      account.props.organizationBfGid,
+      account.props.role,
+      account.props.personBfGid,
+      account.metadata.bfGid,
+      importMeta.url,
+    )
+  }
+}
+
+export class BfCurrentViewerOmni extends BfCurrentViewer {
+  static __DANGEROUS__create(importMeta: ImportMeta) {
+    return new this(
+      toBfOid("omni_person"),
+      ACCOUNT_ROLE.OMNI,
+      toBfGid("omni_person"),
+      toBfGid("omni_person"),
       importMeta.url,
     );
   }

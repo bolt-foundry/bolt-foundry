@@ -49,16 +49,16 @@ export const BfGraphQLCurrentViewer = interfaceType({
       resolve: async (_parent, _args, { bfCurrentViewer }: GraphQLContext) => {
         let actor = null;
         if (
-          toBfGid(bfCurrentViewer.actorBfGid) == bfCurrentViewer.personBfGid
+          toBfGid(bfCurrentViewer.organizationBfGid) == bfCurrentViewer.personBfGid
         ) {
           actor = await BfPerson.find(
             bfCurrentViewer,
-            toBfGid(bfCurrentViewer.actorBfGid),
+            toBfGid(bfCurrentViewer.organizationBfGid),
           );
         } else {
           actor = await BfOrganization.find(
             bfCurrentViewer,
-            toBfGid(bfCurrentViewer.actorBfGid),
+            toBfGid(bfCurrentViewer.organizationBfGid),
           );
         }
         return actor?.toGraphql() ?? null;

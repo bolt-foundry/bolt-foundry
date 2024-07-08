@@ -40,6 +40,7 @@
         # Add to this to make it available in VS Code and most places on the system. The larger this is, the larger the deploy, so try to keep it slim.
         # Be sure to run `bff nix` to build
         defaultPackages = with pkgs; [
+          watchman
           sapling
           gh
           jupyter
@@ -49,14 +50,7 @@
         # these packages show up with "direnv allow"
         devShellPackages = with pkgs; [
           jq
-          emscripten
-          pkg-config
-          clang_12
-          ccls
-          gdb
-          gnumake
-          emscripten
-          watchman
+          yarn
         ];
 
         deployPackages = with pkgs; [

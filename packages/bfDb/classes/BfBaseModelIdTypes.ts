@@ -10,19 +10,26 @@ export type Nominal<Type, Identifier> = Type & {
 /**
  * BfGid is a globally unique identifier for a BfModel.
  */
-export type BfGid = Nominal<string, "bfGid">;
+export type BfGid = Nominal<string, "BfGid">;
 /**
  * BfOid is an owner for a BfModel. BfOid maps to BfGids.
  */
-export type BfOid = Nominal<string, "BfOid">;
+export type BfOid = Nominal<string, "BfOid"> | BfGid;
 /**
  * BfPid is a parent for a BfModel. BfPid maps to BfGids.
  */
-export type BfPid = Nominal<string, "BfPid">;
+export type BfPid = Nominal<string, "BfPid"> | BfGid;
+/**
+ * BfCid is the creator for a BfModel. BfCid maps to BfGids for accounts only.
+ */
+export type BfCid = Nominal<string, "BfCid"> | BfGid;
 /**
  * BfTid is a target for a BfModel. Most frequently used in assocs. BfTid maps to BfGids.
  */
-export type BfTid = Nominal<string, "BfTid">;
+export type BfTid = Nominal<string, "BfTid"> | BfGid;
+
+export type BfAnyid = BfGid | BfOid | BfPid | BfCid | BfTid;
+
 export type BfAccessToken = Nominal<string, "BfAccessToken">;
 export type BfClassName = Nominal<string, "BfClassName">;
 export type BfSortValue<T extends string = string> = Nominal<T, "BfSortValue">;
@@ -50,6 +57,10 @@ export function toBfPid(value: string): BfPid {
 
 export function toBfTid(value: string): BfTid {
   return value as BfTid;
+}
+
+export function toBfCid(value: string): BfCid {
+  return value as BfCid;
 }
 
 export function toBfSortValue<T extends string>(value: T): BfSortValue<T> {
@@ -121,12 +132,15 @@ export enum ACCOUNT_ACTIONS {
   REFRESH_CREDENTIALS = "REFRESH_CREDENTIALS",
   TRANSFER_OWNERSHIP = "TRANSFER_OWNERSHIP",
   INVITE = "INVITE",
+  CREATE_ORGANIZATION = "CREATE_ORGANIZATION",
+  CREATE_USER = "CREATE_USER",
 }
 
 export enum ACCOUNT_ROLE {
   ADMIN = "ADMIN",
   ANON = "ANON",
   OWNER = "OWNER",
+  OMNI = "OMNI",
   REFRESH_CREDENTIALS_ONLY = "REFRESH_CREDENTIALS_ONLY",
   SERVICE_INGESTION = "SERVICE_INGESTION",
 }
@@ -145,6 +159,12 @@ const OWNER_ACTIONS = [
   ACCOUNT_ACTIONS.TRANSFER_OWNERSHIP,
 ];
 
+const OMNI_ACTIONS = [
+  ...OWNER_ACTIONS,
+  ACCOUNT_ACTIONS.CREATE_ORGANIZATION,
+  ACCOUNT_ACTIONS.CREATE_USER,
+];
+
 const roleToActions: Record<ACCOUNT_ROLE, ACCOUNT_ACTIONS[]> = {
   [ACCOUNT_ROLE.ADMIN]: ADMIN_ACTIONS,
   [ACCOUNT_ROLE.OWNER]: OWNER_ACTIONS,
@@ -157,6 +177,7 @@ const roleToActions: Record<ACCOUNT_ROLE, ACCOUNT_ACTIONS[]> = {
     ACCOUNT_ACTIONS.REFRESH_CREDENTIALS,
     ACCOUNT_ACTIONS.READ,
   ],
+  [ACCOUNT_ROLE.OMNI]: OMNI_ACTIONS,
 };
 
 export function getAvailableActionsForRole(

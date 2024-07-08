@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(mdast-util-mdx@3.0.0) denonext production */
+import{mdxExpressionFromMarkdown as r,mdxExpressionToMarkdown as m}from"/v135/mdast-util-mdx-expression@2.0.0/denonext/mdast-util-mdx-expression.mjs";import{mdxJsxFromMarkdown as d,mdxJsxToMarkdown as n}from"/v135/mdast-util-mdx-jsx@3.0.0/denonext/mdast-util-mdx-jsx.mjs";import{mdxjsEsmFromMarkdown as x,mdxjsEsmToMarkdown as s}from"/v135/mdast-util-mdxjs-esm@2.0.1/denonext/mdast-util-mdxjs-esm.mjs";function t(){return[r(),d(),x()]}function a(o){return{extensions:[m(),n(o),s()]}}export{t as mdxFromMarkdown,a as mdxToMarkdown};
+//# sourceMappingURL=mdast-util-mdx.mjs.map

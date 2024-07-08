@@ -5,20 +5,18 @@ import {
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
 import {
+toBfCid,
   toBfOid,
   toBfPid,
   toBfSkUnsorted,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
-import {
-  BfGoogleApiToken,
-  BfGoogleApiTokenProps,
-} from "packages/bfDb/models/BfGoogleApiToken.ts";
 import { exchangeCodeForToken } from "lib/googleOauth.ts";
-import { bfQueryItems } from "packages/bfDb/bfDb.ts";
-import { BfAssoc } from "packages/bfDb/coreModels/BfAssoc.ts";
+import { bfFindItems } from "packages/bfDb/bfDb.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 const logger = getLogger(import.meta);
-const logVerbose = logger.debug;
+const logVerbose = logger.trace;
 
 type BfPersonRequiredProps = {
   name: string;
@@ -26,7 +24,7 @@ type BfPersonRequiredProps = {
   lastLogout?: Date;
 };
 
-export class BfPerson extends BfModel<BfPersonRequiredProps> {
+export class BfPerson extends BfNode<BfPersonRequiredProps> {
   __typename = "BfPerson" as const;
   static async clientLoginWithGoogle(
     credential: string,
@@ -47,7 +45,7 @@ export class BfPerson extends BfModel<BfPersonRequiredProps> {
   }
 
   static async createFromGoogle(credential: string) {
-    const { email, name } = await decodeAndVerifyGoogleToken(
+    const { email, name, hd } = await decodeAndVerifyGoogleToken(
       credential,
     );
 
@@ -58,11 +56,20 @@ export class BfPerson extends BfModel<BfPersonRequiredProps> {
       );
     const newPerson = await this.create(currentViewer, { email, name }, {
       bfGid: currentViewer.personBfGid,
+      bfCid: toBfCid(currentViewer.personBfGid),
     });
 
-    const _newOrganization = await BfOrganization.createForCurrentViewer(
-      currentViewer,
-    );
+    if (hd) {
+      const org = await BfOrganization.findByDomainName(
+        currentViewer,
+        hd,
+      );
+      if (org) {
+        org.addCurrentViewer(currentViewer);
+      }
+    }
+
+    
 
     logVerbose("newPerson", newPerson);
     return newPerson;
@@ -71,7 +78,7 @@ export class BfPerson extends BfModel<BfPersonRequiredProps> {
   static async findGoogleApiTokenForCurrentViewer(
     currentViewer: BfCurrentViewerAccessToken,
   ) {
-    const apiTokens = await bfQueryItems<BfGoogleApiTokenProps>(
+    const apiTokens = await bfFindItems<BfGoogleApiTokenProps>(
       toBfOid(currentViewer.personBfGid),
       toBfSkUnsorted("BfGoogleApiToken"),
     );
@@ -109,7 +116,7 @@ export class BfPerson extends BfModel<BfPersonRequiredProps> {
         bfOid: this.metadata.bfOid,
       },
     );
-    const _googleApiTokenAssoc = await BfAssoc.create(this.currentViewer, {
+    const _googleApiTokenAssoc = await BfEdge.create(this.currentViewer, {
       action: "authenticates",
     }, {
       bfPid: toBfPid(this.metadata.bfGid),

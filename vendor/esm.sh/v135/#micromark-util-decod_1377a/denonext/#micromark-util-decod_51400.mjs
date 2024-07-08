@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(micromark-util-decode-string@2.0.0) denonext production */
+import{decodeNamedCharacterReference as o}from"/v135/decode-named-character-reference@1.0.2/denonext/decode-named-character-reference.mjs";import{decodeNumericCharacterReference as a}from"/v135/micromark-util-decode-numeric-character-reference@2.0.1/denonext/micromark-util-decode-numeric-character-reference.mjs";var n=/\\([!-/:-@[-`{-~])|&(#(?:\d{1,7}|x[\da-f]{1,6})|[\da-z]{1,31});/gi;function m(r){return r.replace(n,f)}function f(r,c,e){if(c)return c;if(e.charCodeAt(0)===35){let t=e.charCodeAt(1),d=t===120||t===88;return a(e.slice(d?2:1),d?16:10)}return o(e)||r}export{m as decodeString};
+//# sourceMappingURL=micromark-util-decode-string.mjs.map

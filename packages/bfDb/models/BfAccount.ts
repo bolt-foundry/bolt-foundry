@@ -10,6 +10,7 @@ import {
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import {
+BfJwtPayload,
   encodeBfAccessToken,
   encodeBfRefreshToken,
 } from "packages/bfDb/classes/BfAuth.ts";
@@ -17,8 +18,9 @@ import {
   BfModelErrorNotFound,
   BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
-import { bfQueryItems } from "packages/bfDb/bfDb.ts";
+import { bfFindItems } from "packages/bfDb/bfDb.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
 export type BfAccountRequiredProps = {
   organizationBfGid: BfGid;
@@ -41,7 +43,7 @@ class BfAccountRefreshTokenExpiredError extends BfAccountErrorRefreshToken {
   }
 }
 
-export class BfAccount extends BfModel<BfAccountRequiredProps> {
+export class BfAccount extends BfNode<BfAccountRequiredProps> {
   __typename = "BfAccount" as const;
 
   static async findAllForPerson(
@@ -53,7 +55,7 @@ export class BfAccount extends BfModel<BfAccountRequiredProps> {
         "Current viewer does not match requested account",
       );
     }
-    const accounts = await bfQueryItems<BfAccountRequiredProps>(
+    const accounts = await bfFindItems<BfAccountRequiredProps>(
       toBfPk(personBfGid),
       toBfSkUnsorted("BfAccount"),
     );
@@ -97,7 +99,7 @@ export class BfAccount extends BfModel<BfAccountRequiredProps> {
       throw new BfAccountRefreshTokenExpiredError();
     }
     if (
-      toBfGid(currentViewer.actorBfGid) !== currentViewer.personBfGid &&
+      toBfGid(currentViewer.organizationBfGid) !== currentViewer.personBfGid &&
       currentViewer.accountBfGid
     ) {
       const relatedAccount = await this.find(
@@ -134,12 +136,12 @@ export class BfAccount extends BfModel<BfAccountRequiredProps> {
     );
   }
 
-  toJwtPayload() {
+  toJwtPayload(): BfJwtPayload {
     return {
       role: this.props.role,
-      actorBfGid: this.props.organizationBfGid,
+      organizationBfGid: this.props.organizationBfGid,
       personBfGid: this.props.personBfGid,
-      tokenCreatedBy: this.metadata.bfGid,
+      accountBfGid: this.metadata.bfGid,
     };
   }
 }

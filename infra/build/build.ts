@@ -5,19 +5,25 @@ import { generateBluey } from "lib/generateBluey.ts";
 import { denoPlugin } from "infra/build/bffEsbuild.ts";
 import esbuildDenoMdxPlugin from "infra/build/esbuildDenoMdxPlugin.ts";
 import { workerList } from "infra/build/workerList.ts";
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
 
 export async function build(
   buildOptions = {
     // minify: true,
-    sourcemap: "inline",
+    sourcemap: "inline" as const,
     sourceRoot: `${Deno.cwd()}`,
   },
 ) {
+  logger.info("Building...");
   await esbuild.build({
     bundle: true,
     entryPoints: [
       ...workerList,
-      "packages/client/Client.tsx"
+      "packages/client/Client.tsx",
+      "infra/internalbf.com/client/Client.tsx",
+      "aws/client/main.tsx",
     ],
     write: true,
     outdir: "build",
@@ -32,6 +38,7 @@ export async function build(
   });
 
   esbuild.stop();
+  logger.info("Building complete.");
 }
 
 const BF_PATH = Deno.env.get("BF_PATH") ?? "/bf/.";

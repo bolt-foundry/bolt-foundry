@@ -15,7 +15,6 @@ const vendorManifestFile = await Deno.readTextFile(vendorManifestFilePath);
 const vendorManifest = JSON.parse(vendorManifestFile);
 
 const cacheLocations = await getCacheLocations();
-
 const extractGraphqlTags = (contents: string) => {
   const matches = Array.from(contents.matchAll(/graphql`([\s\S]+?)`/g)).map(
     (match) => match[1].trim(),
@@ -26,9 +25,10 @@ const extractGraphqlTags = (contents: string) => {
 const replaceTagsWithImports = async (
   contents: string,
   matches: string[],
+  rootDirectory = "packages"
 ) => {
   let updatedContents = contents;
-  const artifactsDirectory = "packages/__generated__";
+  const artifactsDirectory = `${rootDirectory}/__generated__`;
 
   const replacements: Record<string, string> = {};
 
@@ -37,6 +37,9 @@ const replaceTagsWithImports = async (
 
     const { _operationType, operationName } = match.match(pattern)?.groups ??
       {};
+    if (!operationName) {
+      return contents;
+    }
     const generatedFileName = `${operationName}.graphql.ts`;
     const generatedFilePath = join(artifactsDirectory, generatedFileName);
 
@@ -252,7 +255,7 @@ export const denoPlugin = {
           const [specifierWithNoSlash, ...rest] = url.pathname.split("/")
           const specifier = `npm:${specifierWithNoSlash}`;
           const resolvedSpecifier = denoLock.packages.specifiers[specifier];
-          logger.debug(
+          logger.trace(
             `Resolved specifier: ${resolvedSpecifier} for ${specifier} from ${args.path}`,
           );
           const packageSpecifier =
@@ -261,7 +264,7 @@ export const denoPlugin = {
           const packagePath =
             `${cacheLocations.npmModulesCache}/${packageName}/${packageVersion}`;
           const packageJsonPath = join(packagePath, "package.json");
-          logger.debug(`Loading ${packageJsonPath}`);
+          logger.trace(`Loading ${packageJsonPath}`);
           const packageJsonString = await Deno.readTextFile(packageJsonPath);
           const packageJson = JSON.parse(packageJsonString);
           const main = packageJson.main ?? "index.js";
@@ -319,12 +322,15 @@ export const denoPlugin = {
       const graphqlTags = extractGraphqlTags(source);
       let contents = source;
       if (graphqlTags.length > 0) {
-        contents = await replaceTagsWithImports(source, graphqlTags);
+        const relativeLocation = args.path.split(Deno.env.get("BF_PATH") ?? "")[1];
+        const rootDirectory = relativeLocation.split("/")[1];
+        
+        contents = await replaceTagsWithImports(source, graphqlTags, rootDirectory);
       }
       const ext = args.path.match(/[^.]+$/);
       const loader = (ext ? ext[0] : "ts") as esbuild.Loader;
 
-      logger.debug(`Loading local module: ${args.path}`);
+      logger.trace(`Loading local module: ${args.path}`);
       return { contents, loader };
     });
 
@@ -341,7 +347,7 @@ export const denoPlugin = {
       `;
       const loader = "js"; // JavaScript loader for the content
 
-      logger.debug(`Handling 'empty' namespace for module: ${args.path}`);
+      logger.trace(`Handling 'empty' namespace for module: ${args.path}`);
       return { contents, loader };
     });
   },

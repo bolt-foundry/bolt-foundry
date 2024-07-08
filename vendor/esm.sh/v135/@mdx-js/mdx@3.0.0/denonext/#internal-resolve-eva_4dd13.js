@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(@mdx-js/mdx@3.0.0/internal-resolve-evaluate-options) denonext production */
+"";function p(s){let{Fragment:e,baseUrl:a,development:t,jsx:r,jsxDEV:o,jsxs:n,useMDXComponents:i,...u}=s||{};if(!e)throw new Error("Expected `Fragment` given to `evaluate`");if(t){if(!o)throw new Error("Expected `jsxDEV` given to `evaluate`")}else{if(!r)throw new Error("Expected `jsx` given to `evaluate`");if(!n)throw new Error("Expected `jsxs` given to `evaluate`")}return{compiletime:{...u,development:t,outputFormat:"function-body",providerImportSource:i?"#":void 0},runtime:{Fragment:e,baseUrl:a,jsx:r,jsxDEV:o,jsxs:n,useMDXComponents:i}}}export{p as resolveEvaluateOptions};
+//# sourceMappingURL=internal-resolve-evaluate-options.js.map
