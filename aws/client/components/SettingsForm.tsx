@@ -131,7 +131,6 @@ export default function SettingsForm(
     setInitialSettings,
   }: Props,
 ) {
-
   const [currentPreset, setCurrentPreset] = React.useState<string | null>(null);
 
   const settings = useFragment(settingsFragment, settings$key);
@@ -150,6 +149,37 @@ export default function SettingsForm(
       setInitialSettings(initialSettings as Partial<Settings>);
     }
   }, [initialSettings]);
+
+  // Compare initial settings with presets whenever initialSettings change
+  React.useEffect(() => {
+    /**
+     * Compare initial settings with available presets.
+     * @returns {string|null} The key of the matching preset, or null if no match is found.
+     */
+    const compareInitialSettingsWithPresets = (): string | null => {
+      // Iterate over each preset to find a match
+      for (const presetKey of Object.keys(settingsPresets)) {
+        const preset = settingsPresets[presetKey];
+        // Check if all the keys in the preset match the initial settings
+        if (
+          Object.keys(preset).every((key) => {
+            const keyTyped = key as keyof Settings;
+            const areEqual = initialSettings[keyTyped] ===
+              (preset as Partial<Settings>)[keyTyped];
+            return areEqual;
+          })
+        ) {
+          return presetKey; // Return the key of the matching preset
+        }
+      }
+      return null; // Return null if no matching preset is found
+    };
+    // Get the key of the matching preset
+    const presetKey = compareInitialSettingsWithPresets();
+    if (presetKey) {
+      setCurrentPreset(presetKey); // Set the current preset state if match is found
+    }
+  }, []);
 
   const captionColorValue = rgbToHex(
     draftSettings.captionColor ?? initialSettings.captionColor ??
