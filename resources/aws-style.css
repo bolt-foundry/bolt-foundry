@@ -245,10 +245,28 @@ a.dark:visited {
   text-align: center;
   font-weight: bold;
 }
+.cropLine {
+  width: 100%;
+  height: 15px;
+  background-color: var(--fourtharyColor030);
+  top: 8px;
+  position: absolute;
+}
 .isCroppedIcon {
   position: absolute;
-  bottom: calc(100% - 14px);
-  left: -1px;
+  top: -4px;
+  left: -3px;
+  height: 20px;
+  background: var(--fourtharyColor);
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+input.cropRangeInput {
+  position: absolute;
+  top: calc(100% + -5px);
 }
 
 .nav-links {
@@ -587,6 +605,8 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   position: relative;
   cursor: pointer;
   border-bottom: 3px solid transparent;
+  display: inline-block;
+  white-space: pre-wrap;
 }
 
 .clipWordLight {

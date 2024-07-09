@@ -1,10 +1,6 @@
-import {
-  graphql,
-  type Maybe,
-  React,
-  ReactRelay,
-} from "aws/client/deps.ts";
+import { graphql, type Maybe, React, ReactRelay } from "aws/client/deps.ts";
 import Button from "aws/client/ui_components/Button.tsx";
+import DropdownSelector from "aws/client/ui_components/DropdownSelector.tsx";
 import VideoPlayer, {
   type VideoPlayerHandles,
 } from "aws/client/components/VideoPlayer.tsx";
@@ -22,6 +18,7 @@ import {
   DEFAULT_CROP,
   type ManualCrop,
 } from "aws/client/components/ManualCropMenu.tsx";
+import { CropLine } from "aws/client/components/CropLine.tsx";
 import { useAppEnvironment } from "aws/client/contexts/AppEnvironmentContext.tsx";
 import classnames from "aws/client/lib/classnames.ts";
 import useKeyboardInput from "aws/client/hooks/useKeyboardInput.tsx";
@@ -137,7 +134,7 @@ function ClipEdit({
     clip$key,
     transcriptWords,
   );
-
+  const [editMode, setEditMode] = React.useState("text");
   const [selectedWordIndex, setSelectedWordIndex] = React.useState<
     number | null
   >();
@@ -431,11 +428,11 @@ function ClipEdit({
     setIsVideoPlaying(isPlaying);
   };
 
-  function handleChangeManualCrop(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleUpsertManualCrop(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     if (!croppingWord) return;
     const currentCropIndex = state.manualCrop.findIndex((crop) =>
-      crop.start === croppingWord.start
+      crop.start >= croppingWord.start && crop.start < croppingWord.end
     );
     let currentCrop = { ...DEFAULT_CROP };
     if (currentCropIndex > -1) {
@@ -450,6 +447,32 @@ function ClipEdit({
     } else {
       manualCropData.push(currentCrop);
     }
+    updateManualCrop(manualCropData);
+  }
+
+  function handleChangeManualCropStartTime(word: DGWord, newCropStart: number) {
+    const manualCropData = [...state.manualCrop] as Array<ManualCrop>;
+    const currentCropIndex = manualCropData.findIndex((crop) =>
+      crop.start >= word.start && crop.start < word.end
+    );
+    if (currentCropIndex > -1) {
+      manualCropData[currentCropIndex].start = newCropStart;
+    }
+    updateManualCrop(manualCropData);
+  }
+
+  function handleDeleteManualCrop(index: number) {
+    const manualCropData = [...state.manualCrop] as Array<ManualCrop>;
+    manualCropData.splice(index, 1);
+    updateManualCrop(manualCropData);
+  }
+
+  function handleEditCrop(cropWord: DGWord, start: number) {
+    videoPlayerRef.current?.gotoTime(start);
+    setCroppingWord(cropWord);
+  }
+
+  function updateManualCrop(manualCropData: Array<ManualCrop>) {
     manualCropData.sort((a, b) => a.start - b.start);
     dispatch({
       type: ActionType.SET_MANUAL_CROP,
@@ -473,11 +496,11 @@ function ClipEdit({
   const invalidTitle = draftClip.title == null || draftClip.title === "";
 
   const currentCropIndex = getCurrentCropIndex(state.manualCrop, currentTime);
-  const manualCrop = state.manualCrop[currentCropIndex];
-  const cropStyle = state.manualCropActive && manualCrop != null
+  const currentCrop = state.manualCrop[currentCropIndex];
+  const cropStyle = state.manualCropActive && currentCrop != null
     ? {
       objectViewBox:
-        `inset(${manualCrop.top}% ${manualCrop.right}% ${manualCrop.bottom}% ${manualCrop.left}%)`,
+        `inset(${currentCrop.top}% ${currentCrop.right}% ${currentCrop.bottom}% ${currentCrop.left}%)`,
     }
     : {};
 
@@ -565,7 +588,7 @@ function ClipEdit({
                 const menuOpen = selectedWordIndex === i;
                 const nextStart = arr[index + 1]?.item?.start ??
                   arr[arr.length - 1]?.item?.end;
-                const isCurrentWord = currentTime > item.start &&
+                const isCurrentWord = currentTime >= item.start &&
                   currentTime < nextStart;
                 const word = draftWord ?? item;
                 const handleEditWord = () => {
@@ -581,83 +604,93 @@ function ClipEdit({
                   : word.punctuated_word;
                 renderedWord = `${renderedWord} `; // add a space after each word
 
-                const isCropKeyframe = state.manualCrop.some((crop) =>
-                  crop.start === item.start
-                );
-                return (
-                  <span
-                    key={i}
-                    className={classnames([
-                      "clipWord",
-                      { clipWordLight: isExtraText },
-                      { clipHighlight: isHighlighted || menuOpen },
-                      { clipCurrentWord: isCurrentWord },
-                    ])}
-                    onClick={() => handleWordClick(i)}
-                    onDoubleClick={() => {
-                      handleWordClick(i);
-                      handleEditWord();
-                    }}
-                  >
-                    {renderedWord}
-                    {isCropKeyframe && (
-                      <div className="isCroppedIcon">
-                        <Icon
-                          color="var(--fourtharyColor)"
-                          name="crop"
-                          size={8}
-                        />
-                      </div>
-                    )}
-                    {menuOpen && (
-                      <WordMenu
-                        index={i}
-                        startIndex={state.startIndex}
-                        endIndex={state.endIndex}
-                        editingWord={editingWord}
-                        isCropKeyframe={isCropKeyframe}
-                        handleWordClick={() => handleWordClick(null)}
-                        setStartIndex={(i: number) => {
-                          dispatch({
-                            type: ActionType.SET_START_INDEX,
-                            payload: i,
-                          });
-                          setSelectedWordIndex(null);
-                        }}
-                        setEndIndex={(i: number) => {
-                          dispatch({
-                            type: ActionType.SET_END_INDEX,
-                            payload: i,
-                          });
-                          setSelectedWordIndex(null);
-                        }}
-                        setStartHighlightIndex={(i: number | null) =>
-                          dispatch({
-                            type: ActionType.SET_HIGHLIGHT_START_INDEX,
-                            payload: i,
-                          })}
-                        setEndHighlightIndex={(i: number | null) =>
-                          dispatch({
-                            type: ActionType.SET_HIGHLIGHT_END_INDEX,
-                            payload: i,
-                          })}
-                        handleEditWord={() => {
-                          handleEditWord();
-                          setSelectedWordIndex(null);
-                        }}
-                        handleTrimWord={() => {
-                          setTrimmingWord({
-                            currentValue: draftClip.endTimeOverride ??
-                              data.endTimeOverride,
-                            startTime: item.start,
-                            endTime: nextStart,
-                          });
-                        }}
-                        handleCropOnWord={() => setCroppingWord(word)}
+                return editMode === "crop"
+                  ? (
+                    <span
+                      key={i}
+                      className={classnames([
+                        "clipWord",
+                        { clipWordLight: isExtraText },
+                        { clipCurrentWord: isCurrentWord },
+                      ])}
+                      onClick={() =>
+                        videoPlayerRef.current?.gotoTime(word.start)}
+                      onDoubleClick={() => {
+                        handleEditCrop(word, currentCrop?.start ?? word.start);
+                      }}
+                    >
+                      {renderedWord}
+                      <CropLine
+                        handleChangeManualCropStartTime={handleChangeManualCropStartTime}
+                        manualCrop={state.manualCrop}
+                        videoPlayerRef={videoPlayerRef}
+                        word={word}
                       />
-                    )}
-                  </span>
-                );
+                    </span>
+                  )
+                  : (
+                    <span
+                      key={i}
+                      className={classnames([
+                        "clipWord",
+                        { clipWordLight: isExtraText },
+                        { clipHighlight: isHighlighted || menuOpen },
+                        { clipCurrentWord: isCurrentWord },
+                      ])}
+                      onClick={() => handleWordClick(i)}
+                      onDoubleClick={() => {
+                        handleWordClick(i);
+                        handleEditWord();
+                      }}
+                    >
+                      {renderedWord}
+                      {menuOpen && (
+                        <WordMenu
+                          index={i}
+                          startIndex={state.startIndex}
+                          endIndex={state.endIndex}
+                          editingWord={editingWord}
+                          handleWordClick={() => handleWordClick(null)}
+                          setStartIndex={(i: number) => {
+                            dispatch({
+                              type: ActionType.SET_START_INDEX,
+                              payload: i,
+                            });
+                            setSelectedWordIndex(null);
+                          }}
+                          setEndIndex={(i: number) => {
+                            dispatch({
+                              type: ActionType.SET_END_INDEX,
+                              payload: i,
+                            });
+                            setSelectedWordIndex(null);
+                          }}
+                          setStartHighlightIndex={(i: number | null) =>
+                            dispatch({
+                              type: ActionType.SET_HIGHLIGHT_START_INDEX,
+                              payload: i,
+                            })}
+                          setEndHighlightIndex={(i: number | null) =>
+                            dispatch({
+                              type: ActionType.SET_HIGHLIGHT_END_INDEX,
+                              payload: i,
+                            })}
+                          handleEditWord={() => {
+                            handleEditWord();
+                            setSelectedWordIndex(null);
+                          }}
+                          handleTrimWord={() => {
+                            setTrimmingWord({
+                              currentValue: draftClip.endTimeOverride ??
+                                data.endTimeOverride,
+                              startTime: item.start,
+                              endTime: nextStart,
+                            });
+                          }}
+                        />
+                      )}
+                    </span>
+                  );
               })}
             </div>
           </div>
@@ -694,7 +727,8 @@ function ClipEdit({
             croppingWord={croppingWord}
             manualCrop={state.manualCrop}
             manualCropActive={state.manualCropActive}
-            handleChange={handleChangeManualCrop}
+            handleChange={handleUpsertManualCrop}
+            handleDelete={handleDeleteManualCrop}
             handleClose={() => setCroppingWord(null)}
           />
         )}
@@ -714,6 +748,12 @@ function ClipEdit({
             />
           </div>
           <div className="flexRow gap8">
+            <DropdownSelector
+              options={{ "Text": "text", "Crop": "crop" }}
+              value={editMode}
+              onChange={setEditMode}
+              placeholder="Edit mode"
+            />
             <Toggle
               label="Crop Active"
               value={state.manualCropActive}
