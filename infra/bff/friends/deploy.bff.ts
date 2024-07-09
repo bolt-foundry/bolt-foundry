@@ -4,6 +4,15 @@ import {
 } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/mod.ts";
 
+function parseLogInfo(loginfo: string) {
+  const lines = loginfo.trim().split("\n");
+  const commitHash = lines[0].split("   ")[1].trim();
+  const author = lines[1].split("  ")[1].trim();
+  const date = lines[2].split("        ")[1].trim();
+  const summary = lines[3].split("     ")[1].trim();
+  return { commitHash, author, date, summary };
+}
+
 register(
   "deploy",
   "Pulls changes down. WILL OVERWRITE ANY CURRENT CHANGES. WILL ALSO MAKE A GIT COMMIT.",
@@ -27,7 +36,19 @@ register(
       "We will automatically make a git commit in 5 seconds. Please cancel if you don't want this."
     );
     await runShellCommand(["sleep", "5"]);
-    await runShellCommand(["git", "commit", "-a", "-m", "Deploy"]);
+    const logInfoString = await runShellCommandWithOutput(["sl", "log", "-l", "1"]);
+    const logInfo = parseLogInfo(logInfoString);
+    await runShellCommand([
+      "git",
+      "commit",
+      "-a",
+      "--author",
+      logInfo.author,
+      "--date",
+      logInfo.date,
+      "-m",
+      logInfo.summary,
+    ]);
     return 0;
   },
 );
