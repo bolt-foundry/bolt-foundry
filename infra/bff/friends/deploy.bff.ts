@@ -49,6 +49,7 @@ register(
       "-m",
       logInfo.summary,
     ]);
+    await Deno.remove(Deno.env.get("HISTFILE")!);
     return 0;
   },
 );
