@@ -22,6 +22,7 @@
   "fmt": {
     "exclude": [
       "__generated__",
+      "infra/__generated",
       "packages/__generated__",
       "node_modules",
       ".sl",
@@ -58,11 +59,11 @@
   },
   "lint": {
     "rules": {
-      "exclude": ["no-deprecated-deno-api", "no-window"],
+      "exclude": [],
       "include": [
         "camelCase",
         "no-console",
-        // "no-external-import",
+        "no-external-import",
         "no-self-compare",
         "no-sync-fn-in-async-fn"
       ]
@@ -70,6 +71,7 @@
     "exclude": [
       ".config",
       "__generated__",
+      "infra/__generated__",
       "packages/__generated__",
       "node_modules",
       ".sl",
