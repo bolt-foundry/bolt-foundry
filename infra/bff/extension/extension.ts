@@ -17,7 +17,7 @@ routes.set("/bff", () => {
 });
 
 routes.set("/extension.json", async () => {
-  const ext = await Deno.readTextFile('extension.json');
+  const ext = await Deno.readTextFile("extension.json");
   return new Response(ext, {
     headers: {
       "content-type": "application/json",

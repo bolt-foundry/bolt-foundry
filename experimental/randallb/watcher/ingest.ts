@@ -18,7 +18,7 @@ export async function processFile(filePath: string, name: string) {
     // await notifyDiscord(`Uploaded video to ${uploadedLink}`);
     const output = await addClipToNotion(uploadedLink, name)
       .then((res) => res.json());
-    console.log(output)
+    console.log(output);
     await notifyDiscord(`<@&1210008885193211944> New task: ${output.url}`);
   }
 }
@@ -117,7 +117,7 @@ async function processVideoChunk(chunkPath: string, name = chunkPath) {
   );
 
   // append the link to a file in /tmp/files_uploaded.txt
-  const uploadedLink = bfUrl ;
+  const uploadedLink = bfUrl;
   try {
     await Deno.writeTextFile("/tmp/files_uploaded.txt", `${uploadedLink}\n`, {
       append: true,

@@ -1,5 +1,5 @@
 import { MP4Box, Mp4Muxer } from "packages/mediaProcessing/deps.ts";
-import {PerfLogger} from "lib/PerfLogger.ts";
+import { PerfLogger } from "lib/PerfLogger.ts";
 const { Muxer, ArrayBufferTarget } = Mp4Muxer;
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);

@@ -5,7 +5,7 @@ import {
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
 import {
-toBfCid,
+  toBfCid,
   toBfOid,
   toBfPid,
   toBfSkUnsorted,
@@ -68,8 +68,6 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
         org.addCurrentViewer(currentViewer);
       }
     }
-
-    
 
     logVerbose("newPerson", newPerson);
     return newPerson;

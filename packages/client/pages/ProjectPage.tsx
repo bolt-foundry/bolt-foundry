@@ -45,7 +45,6 @@ export function ProjectPage() {
   const data = useLazyLoadQuery<ProjectPageContainerProjectQuery>(query, {
     id: projectId,
   });
-  
 
   // const subscriptionConfig: GQLSubConfigOperationType = useMemo(
   //   () => ({

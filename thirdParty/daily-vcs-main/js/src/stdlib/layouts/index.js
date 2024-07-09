@@ -1,21 +1,21 @@
-import { pad, offset, fit } from './transform.js';
+import { fit, offset, pad } from "./transform.js";
 
 import {
+  splitAcrossLongerDimension,
   splitHorizontal,
   splitVertical,
-  splitAcrossLongerDimension,
-} from './split.js';
+} from "./split.js";
 
-import { column, grid, simpleLineGrid } from './grid.js';
+import { column, grid, simpleLineGrid } from "./grid.js";
 
 export {
-  pad,
-  offset,
+  column,
   fit,
+  grid,
+  offset,
+  pad,
+  simpleLineGrid,
+  splitAcrossLongerDimension,
   splitHorizontal,
   splitVertical,
-  splitAcrossLongerDimension,
-  column,
-  grid,
-  simpleLineGrid,
 };

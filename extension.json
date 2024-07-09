@@ -2,32 +2,28 @@
   "name": "BFF",
   "description": "Bolt Foundry BFF",
   "version": "0",
-  scopes: [
-
+  "scopes": [
     {
-      name: "read",
-      reason: "Read any file in your Repl"
+      "name": "read",
+      "reason": "Read any file in your Repl"
     },
 
     {
-    name: "write-exec",
-    reason: "Write to any file in your Repl and execute any code"
-  },
+      "name": "write-exec",
+      "reason": "Write to any file in your Repl and execute any code"
+    },
 
     {
-    name: "experimental-api",
-    reason: "Use experimental APIs that may be unstable, change in behavior, or be removed entirely"
-  }
-
-  ],
-  longDescription: "It's your best friend to work on bolt foundry",
-  tools: [
-
-    {
-      name: "BFF",
-      icon: "/infra/bff/extension/assets/roblot.jpg",
-      handler: "/bff"
+      "name": "experimental-api",
+      "reason": "Use experimental APIs that may be unstable, change in behavior, or be removed entirely"
     }
-
+  ],
+  "longDescription": "It's your best friend to work on bolt foundry",
+  "tools": [
+    {
+      "name": "BFF",
+      "icon": "/infra/bff/extension/assets/roblot.jpg",
+      "handler": "/bff"
+    }
   ]
 }

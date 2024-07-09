@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { Box, Text, Image } from '#vcs-react/components';
-import { useVideoTime } from '#vcs-react/hooks';
-import * as layoutFuncs from '../layouts.js';
-import { DEFAULT_FONT } from '../constants.js';
+import * as React from "react";
+import { Box, Image, Text } from "#vcs-react/components";
+import { useVideoTime } from "#vcs-react/hooks";
+import * as layoutFuncs from "../layouts.js";
+import { DEFAULT_FONT } from "../constants.js";
 
 // our custom component maintains an instance of this class
 // to track the incoming toast messages
@@ -133,7 +133,7 @@ export default function Toast({
 }
 
 function ToastContent({
-  text = '',
+  text = "",
   opacity = 1,
   showIcon = true,
   iconOverrideAssetName,
@@ -145,9 +145,9 @@ function ToastContent({
     strokeColor = [0, 0, 30, 0.44],
     fillColor = [15, 50, 110, 0.6],
     fontSize_px = 21,
-    textColor = 'white',
+    textColor = "white",
     fontFamily = DEFAULT_FONT,
-    fontWeight = '500',
+    fontWeight = "500",
   } = style;
 
   const bgStyle = {
@@ -172,10 +172,9 @@ function ToastContent({
     maxWidth_pct,
   };
 
-  const iconSrc =
-    iconOverrideAssetName && iconOverrideAssetName.length > 0
-      ? iconOverrideAssetName
-      : 'party-popper_1f389.png';
+  const iconSrc = iconOverrideAssetName && iconOverrideAssetName.length > 0
+    ? iconOverrideAssetName
+    : "party-popper_1f389.png";
 
   const textPadL = 1 + (showIcon ? iconSize_gu : 0);
   const textPadR = showIcon ? 1.5 : 1;
@@ -190,12 +189,14 @@ function ToastContent({
       layout={[layoutFuncs.toast, layoutParams]}
     >
       <Box layout={[layoutFuncs.pad, { pad_gu: 1 }]}>
-        {showIcon ? (
-          <Image
-            src={iconSrc}
-            layout={[layoutFuncs.toastIcon, { size_gu: iconSize_gu }]}
-          />
-        ) : null}
+        {showIcon
+          ? (
+            <Image
+              src={iconSrc}
+              layout={[layoutFuncs.toastIcon, { size_gu: iconSize_gu }]}
+            />
+          )
+          : null}
         <Box
           layout={[
             layoutFuncs.pad,

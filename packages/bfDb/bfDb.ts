@@ -13,9 +13,7 @@ import {
   BfTid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
-import {
-  BfDbError,
-} from "packages/bfDb/classes/BfDbError.ts";
+import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 
 const logger = getLogger(import.meta);
 
@@ -28,8 +26,6 @@ if (!databaseUrl) {
   throw new BfDbError("BFDB_URL is not set");
 }
 const sql = neon(databaseUrl);
-
-
 
 type Props = Record<string, unknown>;
 type Row<
@@ -61,7 +57,7 @@ export async function bfGetItem<
       >[];
 
     if (rows.length === 0) {
-      return null
+      return null;
     }
     const firstRow = rows[0];
     const props: TProps = firstRow.props; // Assuming attributes stores the props
@@ -89,7 +85,10 @@ export async function bfGetItem<
 export async function bfGetItemByBfGid<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
->(bfGid: string, className?: string): Promise<DbItem<TProps, TMetadata> | null> {
+>(
+  bfGid: string,
+  className?: string,
+): Promise<DbItem<TProps, TMetadata> | null> {
   try {
     logger.trace("bfGetItemByBfGid", { bfGid, className });
     let queryPromise;
@@ -101,7 +100,7 @@ export async function bfGetItemByBfGid<
     }
     const rows = await queryPromise as Row<TProps>[];
     if (rows.length === 0) {
-      return null
+      return null;
     }
     const firstRow = rows[0];
     const props = firstRow.props;
@@ -177,8 +176,6 @@ export async function bfPutItem<
   }
 }
 
-
-
 export async function bfFindItems<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
@@ -217,7 +214,7 @@ export async function bfFindItems<
 
 export async function bfQueryItems<
   TProps = Props,
-  TMetadata extends Row<TProps> = Row<TProps>
+  TMetadata extends Row<TProps> = Row<TProps>,
 >(
   metadataToQuery: Partial<TMetadata>,
   propsToQuery: Partial<TProps> = {},

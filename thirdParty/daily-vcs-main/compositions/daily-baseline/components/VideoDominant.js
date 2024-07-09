@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { Box, Video } from '#vcs-react/components';
-import * as layoutFuncs from '../layouts.js';
-import { PositionEdge } from '../constants.js';
-import { ParticipantLabelPipStyle } from './ParticipantLabelPipStyle.js';
-import { PausedPlaceholder } from './PausedPlaceholder.js';
-import VideoSingle from './VideoSingle.js';
-import decorateVideoDominantItem from './overrides/decorateVideoDominantItem.js';
+import * as React from "react";
+import { Box, Video } from "#vcs-react/components";
+import * as layoutFuncs from "../layouts.js";
+import { PositionEdge } from "../constants.js";
+import { ParticipantLabelPipStyle } from "./ParticipantLabelPipStyle.js";
+import { PausedPlaceholder } from "./PausedPlaceholder.js";
+import VideoSingle from "./VideoSingle.js";
+import decorateVideoDominantItem from "./overrides/decorateVideoDominantItem.js";
 
 const DOMINANT_SPLIT_DEFAULT = 0.8;
 const DOMINANT_MAXITEMS_DEFAULT = 5;
@@ -41,10 +41,10 @@ export default function VideoDominant(props) {
   }
 
   const single = participantDescs.length == 1;
-  const dominantFirst =
-    positionEdge === PositionEdge.LEFT || positionEdge === PositionEdge.TOP;
-  const isVerticalSplit =
-    positionEdge === PositionEdge.LEFT || positionEdge === PositionEdge.RIGHT;
+  const dominantFirst = positionEdge === PositionEdge.LEFT ||
+    positionEdge === PositionEdge.TOP;
+  const isVerticalSplit = positionEdge === PositionEdge.LEFT ||
+    positionEdge === PositionEdge.RIGHT;
 
   if (!dominantFirst) {
     splitPos = 1 - splitPos;
@@ -62,10 +62,10 @@ export default function VideoDominant(props) {
   }
 
   function makeDominantItem(itemIdx) {
-    const key = 'videodominant_item' + itemIdx;
+    const key = "videodominant_item" + itemIdx;
 
     const participant = participantDescs.find(
-      (d) => d.videoId != null && d.videoId == dominantVideoId
+      (d) => d.videoId != null && d.videoId == dominantVideoId,
     );
 
     // override point #1 for custom decorations on the dominant item.
@@ -75,7 +75,7 @@ export default function VideoDominant(props) {
       true,
       0,
       participant,
-      props
+      props,
     );
 
     return (
@@ -99,10 +99,10 @@ export default function VideoDominant(props) {
   }
 
   function makeChiclets(itemIdx) {
-    const key = 'videodominant_tiles_' + itemIdx;
+    const key = "videodominant_tiles_" + itemIdx;
 
     let pArr = participantDescs.filter(
-      (d) => d.videoId == null || d.videoId !== dominantVideoId
+      (d) => d.videoId == null || d.videoId !== dominantVideoId,
     );
     if (pArr.length > maxItems) {
       pArr = pArr.slice(0, maxItems);
@@ -112,7 +112,7 @@ export default function VideoDominant(props) {
     for (let i = 0; i < pArr.length; i++) {
       const participant = pArr[i];
       const { videoId, paused, displayName } = participant;
-      const key = 'videochiclet_' + participant.key;
+      const key = "videochiclet_" + participant.key;
 
       const layout = [
         layoutFuncs.column,
@@ -136,44 +136,46 @@ export default function VideoDominant(props) {
       const childItems = [];
 
       childItems.push(
-        paused || videoId == null ? (
-          <PausedPlaceholder
-            key={key + '_video'}
-            layout={customLayoutForVideo}
-            {...{ placeholderStyle }}
-          />
-        ) : (
-          <Video
-            key={key + '_video'}
-            src={videoId}
-            style={videoStyle}
-            scaleMode={scaleMode}
-            layout={customLayoutForVideo}
-          />
-        )
+        paused || videoId == null
+          ? (
+            <PausedPlaceholder
+              key={key + "_video"}
+              layout={customLayoutForVideo}
+              {...{ placeholderStyle }}
+            />
+          )
+          : (
+            <Video
+              key={key + "_video"}
+              src={videoId}
+              style={videoStyle}
+              scaleMode={scaleMode}
+              layout={customLayoutForVideo}
+            />
+          ),
       );
       if (enableDefaultLabels && showLabels) {
         childItems.push(
           <ParticipantLabelPipStyle
-            key={key + '_label'}
+            key={key + "_label"}
             label={displayName}
             labelStyle={videoLabelStyle}
             labelsOffset_px={labelsOffset_px}
-          />
+          />,
         );
       }
       if (customDecoratorComponent) childItems.push(customDecoratorComponent);
 
       const containerStyle = clipItem
         ? {
-            cornerRadius_px: videoStyle.cornerRadius_px,
-          }
+          cornerRadius_px: videoStyle.cornerRadius_px,
+        }
         : null;
 
       items.push(
         <Box key={key} clip={clipItem} layout={layout} style={containerStyle}>
           {childItems}
-        </Box>
+        </Box>,
       );
     } // end of participants loop
 

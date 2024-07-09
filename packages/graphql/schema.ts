@@ -2,8 +2,11 @@
 
 import { connectionPlugin, makeSchema } from "packages/graphql/deps.ts";
 import * as types from "packages/graphql/types/mod.ts";
+import { getLogger } from "deps.ts";
 
-export const schema = makeSchema({
+const logger = getLogger(import.meta);
+
+export const schema = import.meta.main ? null : makeSchema({
   types,
   plugins: [connectionPlugin({
     includeNodesField: true,
@@ -17,6 +20,7 @@ export const schema = makeSchema({
 });
 
 export function build(configLocation: string = "packages") {
+  logger.info(`Building schema for ${configLocation}`);
   makeSchema({
     types,
     plugins: [connectionPlugin({
@@ -27,12 +31,21 @@ export function build(configLocation: string = "packages") {
         __typename: true,
       },
     },
+    formatTypegen: (content, type) => {
+      if (type === "schema") {
+        return `### @generated \n${content}`;
+      } else {
+        return `/* @generated */\n${content}`;
+      }
+    },
     outputs: {
-      schema: new URL(import.meta.resolve(`${configLocation}/graphql/schema.graphql`))
-        .pathname,
-      typegen:
-        new URL(import.meta.resolve(`${configLocation}/__generated__/_nexustypes.ts`))
+      schema:
+        new URL(import.meta.resolve(`${configLocation}/graphql/schema.graphql`))
           .pathname,
+      typegen: new URL(
+        import.meta.resolve(`${configLocation}/__generated__/_nexustypes.ts`),
+      )
+        .pathname,
     },
   });
 }

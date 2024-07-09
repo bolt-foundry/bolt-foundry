@@ -1,14 +1,12 @@
 import { React } from "deps.ts";
 import { Button } from "packages/bfDs/Button.tsx";
 
-
 export function MarketingHero() {
   const lines = [
     { "style": "normal", "text": "New clips every day" },
     {
       "style": "blueWord",
       "text": "without a video editor",
-
     },
   ];
 
@@ -25,7 +23,8 @@ export function MarketingHero() {
         <br />
         Trusted by dozens of clubs and comedians.
       </div>
-      {/* <div className="row-column">
+      {
+        /* <div className="row-column">
         <Button
           link="/contact"
           text={"Get in touch"}
@@ -33,7 +32,8 @@ export function MarketingHero() {
           size="xlarge"
           testId="button-signup-marketing-hero"
         />
-      </div> */}
+      </div> */
+      }
     </div>
-  )
+  );
 }

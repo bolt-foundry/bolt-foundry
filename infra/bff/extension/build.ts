@@ -12,7 +12,9 @@ export async function build(
     sourceRoot: `${Deno.cwd()}`,
   },
 ) {
-  const path = import.meta.resolve("infra/bff/extension/extensionClient/ExtensionClient.tsx");
+  const path = import.meta.resolve(
+    "infra/bff/extension/extensionClient/ExtensionClient.tsx",
+  );
   const url = new URL(path);
   await esbuild.build({
     bundle: true,

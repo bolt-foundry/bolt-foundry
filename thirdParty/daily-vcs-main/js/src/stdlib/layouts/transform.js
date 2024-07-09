@@ -8,11 +8,19 @@ export function pad(parentFrame, params, layoutCtx) {
 
   // padding can be specified as either a value or an object with l/r/t/b
   if (Number.isFinite(params.pad)) {
-    padL = padR = padT = padB = params.pad;
+    padL =
+      padR =
+      padT =
+      padB =
+        params.pad;
   } else if (Number.isFinite(params.pad_gu)) {
     const pxPerGu = layoutCtx.pixelsPerGridUnit;
-    padL = padR = padT = padB = params.pad_gu * pxPerGu;
-  } else if (typeof params.pad_gu === 'object') {
+    padL =
+      padR =
+      padT =
+      padB =
+        params.pad_gu * pxPerGu;
+  } else if (typeof params.pad_gu === "object") {
     const pxPerGu = layoutCtx.pixelsPerGridUnit;
     let { l, r, t, b } = params.pad_gu;
 
@@ -20,7 +28,7 @@ export function pad(parentFrame, params, layoutCtx) {
     if (Number.isFinite(r)) padR = r * pxPerGu;
     if (Number.isFinite(t)) padT = t * pxPerGu;
     if (Number.isFinite(b)) padB = b * pxPerGu;
-  } else if (typeof params.pad_viewportRelative === 'object') {
+  } else if (typeof params.pad_viewportRelative === "object") {
     const { viewport } = layoutCtx;
     let { l, r, t, b } = params.pad_viewportRelative;
 
@@ -55,7 +63,7 @@ export function offset(parentFrame, params) {
   let { x, y, w, h } = parentFrame;
   let offsetX, offsetY;
   // offset can be specified as an offsets object or with x/y params
-  if (typeof params.offsets === 'object') {
+  if (typeof params.offsets === "object") {
     offsetX = params.offsets.x || 0;
     offsetY = params.offsets.y || 0;
   } else {

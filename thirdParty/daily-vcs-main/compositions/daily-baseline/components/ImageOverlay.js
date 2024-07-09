@@ -1,16 +1,16 @@
-import * as React from 'react';
-import { Image } from '#vcs-react/components';
-import * as layoutFuncs from '../layouts.js';
-import { useFade } from './useFade.js';
+import * as React from "react";
+import { Image } from "#vcs-react/components";
+import * as layoutFuncs from "../layouts.js";
+import { useFade } from "./useFade.js";
 
 export default function ImageOverlay({
-  src = 'overlay.png',
+  src = "overlay.png",
   positionCorner,
   aspectRatio,
   height_gu,
   margin_gu,
   fullScreen,
-  fullScreenScaleMode = 'fit',
+  fullScreenScaleMode = "fit",
   opacity = 1,
   enableFade = false,
   show = false,
@@ -19,7 +19,7 @@ export default function ImageOverlay({
   if (!opacity) return null;
 
   let layout;
-  let scaleMode = 'fit';
+  let scaleMode = "fit";
   if (fullScreen) {
     scaleMode = fullScreenScaleMode;
   } else {

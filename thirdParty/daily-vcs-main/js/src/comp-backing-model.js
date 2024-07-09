@@ -1,31 +1,31 @@
-import { v4 as uuidv4 } from 'uuid';
-import deepEqual from 'fast-deep-equal';
+import { v4 as uuidv4 } from "uuid";
+import deepEqual from "fast-deep-equal";
 
-import { CanvasDisplayListEncoder } from '../src/render/canvas-display-list.js';
+import { CanvasDisplayListEncoder } from "../src/render/canvas-display-list.js";
 
 import {
   encodeCanvasDisplayList_fg,
   encodeCanvasDisplayList_fg_vlClip,
   encodeCanvasDisplayList_videoLayersPreview,
-} from '../src/render/canvas.js';
+} from "../src/render/canvas.js";
 
-import { encodeCompVideoSceneDesc } from '../src/render/video-scenedesc.js';
+import { encodeCompVideoSceneDesc } from "../src/render/video-scenedesc.js";
 
-import { makeAttributedStringDesc } from './text/attributed-string.js';
+import { makeAttributedStringDesc } from "./text/attributed-string.js";
 import {
-  performTextLayout,
   measureTextLayoutBlocks,
-} from './text/text-layout.js';
+  performTextLayout,
+} from "./text/text-layout.js";
 
 // these are the intrinsic elements that our React components are ultimately composed of.
 // (think similar to 'div', 'img' etc. in React-DOM)
 export const IntrinsicNodeType = {
-  ROOT: 'root',
-  BOX: 'box',
-  IMAGE: 'image',
-  TEXT: 'label',
-  VIDEO: 'video',
-  WEBFRAME: 'webframe',
+  ROOT: "root",
+  BOX: "box",
+  IMAGE: "image",
+  TEXT: "label",
+  VIDEO: "video",
+  WEBFRAME: "webframe",
 };
 
 function getDefaultGridUnitSizeForViewport(viewportSize) {
@@ -37,19 +37,19 @@ export class Composition {
   constructor(viewportSize, commitFinishedCb, sourceMetadataCb) {
     console.assert(
       viewportSize.w > 0 && viewportSize.h > 0,
-      `** invalid Composition viewportSize arg: ${viewportSize}`
+      `** invalid Composition viewportSize arg: ${viewportSize}`,
     );
     if (commitFinishedCb) {
       console.assert(
-        typeof commitFinishedCb === 'function',
-        `** invalid Composition commitFinishedCb arg: ${commitFinishedCb}`
+        typeof commitFinishedCb === "function",
+        `** invalid Composition commitFinishedCb arg: ${commitFinishedCb}`,
       );
     }
 
     this.viewportSize = viewportSize;
 
     this.pixelsPerGridUnit = getDefaultGridUnitSizeForViewport(
-      this.viewportSize
+      this.viewportSize,
     );
 
     this.nodes = [];
@@ -151,25 +151,25 @@ export class Composition {
     // (but we're not currently doing it because it's fast enough to just recompute...)
     return {
       useIntrinsicSize: function () {
-        deps.add('intrinsicSize');
+        deps.add("intrinsicSize");
         return node.intrinsicSize ? node.intrinsicSize : { w: -1, h: -1 };
       },
       useContentSize: function () {
-        deps.add('contentSize');
+        deps.add("contentSize");
         if (passIndex > 0 && node.flowFrame && node.flowFrame.w > 0) {
           return { w: node.flowFrame.w, h: node.flowFrame.h };
         }
         return { w: 0, h: 0 };
       },
       useChildSizes: function () {
-        deps.add('childSizes');
+        deps.add("childSizes");
         if (passIndex > 0) {
           return node.flowChildFrames;
         }
         return null;
       },
       useChildStacking: function (props) {
-        deps.add('childStacking');
+        deps.add("childStacking");
         node.childStackingProps = props || {};
       },
     };
@@ -201,7 +201,7 @@ export class Composition {
 
         for (const dep of thisNodeDeps) usedDeps.add(dep);
 
-        const usesStacking = thisNodeDeps.has('childStacking');
+        const usesStacking = thisNodeDeps.has("childStacking");
         if (usesStacking) {
           frame.childStacking = node.childStackingProps;
           delete node.childStackingProps;
@@ -210,8 +210,8 @@ export class Composition {
         if (
           frame.containerTransform ||
           usesStacking ||
-          thisNodeDeps.has('contentSize') ||
-          thisNodeDeps.has('childSizes')
+          thisNodeDeps.has("contentSize") ||
+          thisNodeDeps.has("childSizes")
         ) {
           // capture child frames (including nested container offsets) if
           // 1) this layout node wants the content size after the first pass, or
@@ -243,11 +243,11 @@ export class Composition {
         if (passIndex > 0 && frame.childStacking && i > 0) {
           const { direction, interval_px = 0 } = frame.childStacking;
           const prevChildFrame = thisNodeChildFrames.at(-1);
-          if (direction === 'y') {
+          if (direction === "y") {
             offY += prevChildFrame.h;
             offY += interval_px;
             childStartFrame.y += offY;
-          } else if (direction === 'x') {
+          } else if (direction === "x") {
             offX += prevChildFrame.w;
             offX += interval_px;
             childStartFrame.x += offX;
@@ -290,7 +290,7 @@ export class Composition {
         }
         if (frame.childStacking) {
           const { direction, interval_px = 0 } = frame.childStacking;
-          if (direction === 'y') {
+          if (direction === "y") {
             let h = 0;
             for (let i = 0; i < thisNodeChildFrames.length; i++) {
               const cf = thisNodeChildFrames[i];
@@ -298,7 +298,7 @@ export class Composition {
               h += cf.h;
             }
             flowFrame.h = h;
-          } else if (direction === 'x') {
+          } else if (direction === "x") {
             let w = 0;
             for (let i = 0; i < thisNodeChildFrames.length; i++) {
               const cf = thisNodeChildFrames[i];
@@ -311,7 +311,7 @@ export class Composition {
 
         node.flowFrame = flowFrame;
 
-        if (thisNodeDeps.has('childSizes')) {
+        if (thisNodeDeps.has("childSizes")) {
           node.flowChildFrames = thisNodeChildFrames;
         }
       }
@@ -327,7 +327,7 @@ export class Composition {
     recurseLayout(this.rootNode, layoutCtxBase.viewport, null);
 
     // do second pass only if any node uses the content size hooks
-    if (usedDeps.has('contentSize') || usedDeps.has('childSizes')) {
+    if (usedDeps.has("contentSize") || usedDeps.has("childSizes")) {
       passIndex = 1;
       recurseLayout(this.rootNode, layoutCtxBase.viewport, null);
     }
@@ -343,7 +343,7 @@ export class Composition {
         this.nodes.length,
         this.uncommitted
       );*/
-      throw new Error('Composition setup is invalid for scene description');
+      throw new Error("Composition setup is invalid for scene description");
     }
 
     // get video elements
@@ -352,7 +352,7 @@ export class Composition {
     // get foreground graphics as a display list
     const encoder = new CanvasDisplayListEncoder(
       this.viewportSize.w,
-      this.viewportSize.h
+      this.viewportSize.h,
     );
 
     encodeCanvasDisplayList_fg_vlClip(this, encoder, imageSources, videoLayers);
@@ -373,7 +373,7 @@ export class Composition {
       const usedIds = new Set();
       const duplicatedIds = new Set();
       for (const vl of videoLayers) {
-        if (vl.type !== 'video' || !vl.id) continue;
+        if (vl.type !== "video" || !vl.id) continue;
 
         if (usedIds.has(vl.id)) {
           duplicatedIds.add(vl.id);
@@ -386,8 +386,8 @@ export class Composition {
 
       if (duplicatedIds.size > 0) {
         console.error(
-          'Composition#writeSceneDescription: found and removed duplicated video ids: ',
-          duplicatedIds
+          "Composition#writeSceneDescription: found and removed duplicated video ids: ",
+          duplicatedIds,
         );
       }
     }
@@ -398,10 +398,12 @@ export class Composition {
       // deep compare here should be fast enough because videoLayers is
       // a fairly small object, and fgDisplayList is a flat array.
       let obj = {};
-      if (!deepEqual(prev.videoLayers, videoLayers))
+      if (!deepEqual(prev.videoLayers, videoLayers)) {
         obj.videoLayers = videoLayers;
-      if (!deepEqual(prev.fgDisplayList, fgDisplayList))
+      }
+      if (!deepEqual(prev.fgDisplayList, fgDisplayList)) {
         obj.fgDisplayList = fgDisplayList;
+      }
       return obj;
     }
 
@@ -415,7 +417,7 @@ export class Composition {
     // write a display list that can be used to render a preview
     const encoder = new CanvasDisplayListEncoder(
       this.viewportSize.w,
-      this.viewportSize.h
+      this.viewportSize.h,
     );
 
     encodeCanvasDisplayList_videoLayersPreview(this, encoder);
@@ -426,7 +428,7 @@ export class Composition {
   getIntrinsicSizeForImageSrc(src) {
     let ret;
     if (src && this.sourceMetadataCb) {
-      ret = this.sourceMetadataCb(this, 'image', src);
+      ret = this.sourceMetadataCb(this, "image", src);
     }
     // if callback didn't provide a valid size, return zero size
     if (!ret || !isFinite(ret.w) || !isFinite(ret.h)) return { w: 0, h: 0 };
@@ -471,10 +473,10 @@ function compareFlatObj(a, b) {
     // if they weren't ignored, they would trip up the comparison every time
     // because objects created in a React component's render function
     // won't be the same reference between iterations.
-    if (typeof vA === 'object') {
+    if (typeof vA === "object") {
       console.error(
         "warning: VCS Node internal compareFlatObj can't compare objects, will ignore (key '%s')",
-        key
+        key,
       );
       continue;
     }
@@ -551,8 +553,9 @@ function isEqualLayoutFrame(oldFrame, newFrame) {
     oldFrame.y !== newFrame.y ||
     oldFrame.w !== newFrame.w ||
     oldFrame.h !== newFrame.h
-  )
+  ) {
     return false;
+  }
 
   return true;
 }
@@ -574,7 +577,7 @@ class NodeBase {
 
   constructor() {
     this.uuid = uuidv4();
-    this.userGivenId = '';
+    this.userGivenId = "";
 
     this.parent = null;
     this.children = [];
@@ -593,8 +596,8 @@ class NodeBase {
     if (newProps.layout) {
       if (!Array.isArray(newProps.layout)) {
         console.error(
-          'invalid layout prop passed to node, must be an array (got %s)',
-          typeof newProps.layout
+          "invalid layout prop passed to node, must be an array (got %s)",
+          typeof newProps.layout,
         );
       } else {
         newLayout = newProps.layout;
@@ -605,7 +608,7 @@ class NodeBase {
         this.layoutFunc,
         this.layoutParams,
         newLayout[0],
-        newLayout[1] ? cleanLayoutParams(newLayout[1]) : {}
+        newLayout[1] ? cleanLayoutParams(newLayout[1]) : {},
       )
     ) {
       //console.log("layout props will be updated for %s '%s'", this.uuid, newProps.id || '');
@@ -694,7 +697,7 @@ class RootNode extends NodeBase {
 
   constructor() {
     super();
-    this.userGivenId = '__root';
+    this.userGivenId = "__root";
   }
 }
 
@@ -732,20 +735,20 @@ class TextNode extends StyledNodeBase {
   commit(container, oldProps, newProps) {
     super.commit(container, oldProps, newProps);
 
-    this.text = newProps.text || '';
+    this.text = newProps.text || "";
 
     if (this.text.length < 1) {
       this.attrStringDesc = null;
     } else {
       if (!this.container) {
-        console.error('** container missing for text node %s', this.uuid);
+        console.error("** container missing for text node %s", this.uuid);
         return;
       }
       this.attrStringDesc = makeAttributedStringDesc(
         this.text,
         this.style || {},
         this.container.viewportSize,
-        this.container.pixelsPerGridUnit
+        this.container.pixelsPerGridUnit,
       );
 
       try {
@@ -762,14 +765,15 @@ class TextNode extends StyledNodeBase {
           this.flowFrameIsDirty = true;
         }
       } catch (e) {
-        console.error('** exception when measuring text size: ', e);
+        console.error("** exception when measuring text size: ", e);
       }
     }
   }
 
   setLayoutFrame(frame) {
-    if (!this.flowFrameIsDirty && isEqualLayoutFrame(frame, this.layoutFrame))
+    if (!this.flowFrameIsDirty && isEqualLayoutFrame(frame, this.layoutFrame)) {
       return;
+    }
 
     this.layoutFrame = frame;
     this.flowFrameIsDirty = false;
@@ -810,9 +814,9 @@ class TextNode extends StyledNodeBase {
     // wrapped in a function so we can call again if safetymargin is adjusted
     const measure = () => {
       if (safetyMargin > 0) {
-        if (textAlign === 'center') {
+        if (textAlign === "center") {
           marginL = marginR = safetyMargin / 2;
-        } else if (textAlign === 'right') {
+        } else if (textAlign === "right") {
           marginL = safetyMargin;
         } else {
           marginR = safetyMargin;
@@ -891,8 +895,9 @@ class ImageNode extends StyledNodeBase {
 
     if (oldProps.scaleMode !== newProps.scaleMode) return true;
 
-    if (oldProps.liveAssetUpdateKey !== newProps.liveAssetUpdateKey)
+    if (oldProps.liveAssetUpdateKey !== newProps.liveAssetUpdateKey) {
       return true;
+    }
 
     return false;
   }
@@ -921,19 +926,21 @@ class WebFrameNode extends ImageNode {
 
   constructor() {
     super();
-    this.keyPressAction = { name: '', key: '' };
+    this.keyPressAction = { name: "", key: "" };
   }
 
   shouldUpdate(container, oldProps, newProps) {
     if (super.shouldUpdate(container, oldProps, newProps)) return true;
 
-    if (!isEqualViewportSize(oldProps.viewportSize, newProps.viewportSize))
+    if (!isEqualViewportSize(oldProps.viewportSize, newProps.viewportSize)) {
       return true;
+    }
 
     if (
       !isEqualWebFrameAction(oldProps.keyPressAction, newProps.keyPressAction)
-    )
+    ) {
       return true;
+    }
 
     return false;
   }
@@ -947,8 +954,8 @@ class WebFrameNode extends ImageNode {
     // do prop eq checks again so we can record the time when they're actually updated.
     // this is useful for debugging and optimizing rendering.
 
-    const newViewportSize =
-      newProps.viewportSize || this.constructor.defaultViewportSize;
+    const newViewportSize = newProps.viewportSize ||
+      this.constructor.defaultViewportSize;
     if (!isEqualViewportSize(oldProps.viewportSize, newViewportSize)) {
       this.viewportSize = newViewportSize;
 
@@ -956,7 +963,7 @@ class WebFrameNode extends ImageNode {
     }
 
     if (!isEqualWebFrameAction(this.keyPressAction, newProps.keyPressAction)) {
-      this.keyPressAction = newProps.keyPressAction || { name: '', key: '' };
+      this.keyPressAction = newProps.keyPressAction || { name: "", key: "" };
 
       this.keyPressActionLastUpdateTs = Date.now() / 1000;
     }

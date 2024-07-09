@@ -1,1 +1,1 @@
-export const imagePreloads = ['logo.png', 'header.png'];
+export const imagePreloads = ["logo.png", "header.png"];

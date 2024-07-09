@@ -1,10 +1,10 @@
 // 'radius' can be either a number or an object specifying individual
 // corner radii using properties {tl, tr, br, bl}.
 export function roundRect(ctx, x, y, width, height, radius, closePath = true) {
-  if (typeof radius === 'undefined') {
+  if (typeof radius === "undefined") {
     radius = 0;
   }
-  if (typeof radius === 'number') {
+  if (typeof radius === "number") {
     // clamp so radius doesn't exceed 50% in either dimension
     radius = Math.min(radius, 0.5 * Math.min(width, height));
 
@@ -23,7 +23,7 @@ export function roundRect(ctx, x, y, width, height, radius, closePath = true) {
         radius,
         0,
         0,
-        2 * Math.PI
+        2 * Math.PI,
       );
       return;
     }

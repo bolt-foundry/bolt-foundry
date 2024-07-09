@@ -1,4 +1,4 @@
-import { IntrinsicNodeType } from '../comp-backing-model.js';
+import { IntrinsicNodeType } from "../comp-backing-model.js";
 
 export function encodeCompVideoSceneDesc(comp, imageSources, opts) {
   const sceneDesc = [];
@@ -14,7 +14,7 @@ function recurseEncodeNode(sceneDesc, node, comp, imageSources, opts) {
   switch (node.constructor.nodeType) {
     case IntrinsicNodeType.VIDEO: {
       srcDrawable = {
-        vcsSourceType: 'video',
+        vcsSourceType: "video",
         vcsSourceId: node.src,
       };
       break;
@@ -49,7 +49,7 @@ function recurseEncodeNode(sceneDesc, node, comp, imageSources, opts) {
       attrs.cornerRadiusPx = Math.round(node.style.cornerRadius_px);
     }
     if (node.scaleMode) {
-      attrs.scaleMode = '' + node.scaleMode;
+      attrs.scaleMode = "" + node.scaleMode;
     }
 
     sceneDesc.push({

@@ -2,8 +2,6 @@ import { React } from "deps.ts";
 import { Button } from "packages/bfDs/Button.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 
-
-
 export function MarketingCallToAction() {
   const { navigate } = useRouter();
   return (
@@ -21,5 +19,5 @@ export function MarketingCallToAction() {
         testId="button-contact-us"
       />
     </div>
-  )
+  );
 }

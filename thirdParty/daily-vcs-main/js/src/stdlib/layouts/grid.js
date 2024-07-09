@@ -26,13 +26,12 @@ export function column(parentFrame, params, layoutCtx) {
   parentFrame.w -= outerMargins.x * 2;
   parentFrame.h -= outerMargins.y * 2;
 
-  const videoAsp =
-    itemAspectRatio > 0
-      ? itemAspectRatio
-      : numRows === 1
-      ? (parentFrame.w - innerMargins.x * (total - 1)) / total / parentFrame.h
-      : parentFrame.w /
-        ((parentFrame.h - innerMargins.y * (total - 1)) / total);
+  const videoAsp = itemAspectRatio > 0
+    ? itemAspectRatio
+    : numRows === 1
+    ? (parentFrame.w - innerMargins.x * (total - 1)) / total / parentFrame.h
+    : parentFrame.w /
+      ((parentFrame.h - innerMargins.y * (total - 1)) / total);
 
   return computeGridItem({
     parentFrame,
@@ -60,8 +59,15 @@ export function grid(parentFrame, params, layoutCtx) {
     return { ...parentFrame };
   }
 
-  const numCols =
-    total > 16 ? 5 : total > 9 ? 4 : total > 4 ? 3 : total > 1 ? 2 : 1;
+  const numCols = total > 16
+    ? 5
+    : total > 9
+    ? 4
+    : total > 4
+    ? 3
+    : total > 1
+    ? 2
+    : 1;
   const numRows = Math.ceil(total / numCols);
 
   let outerMargins = { x: 0, y: 0 },
