@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { Box, Image, Text } from '#vcs-react/components';
-import { useVideoTime, useViewportSize } from '#vcs-react/hooks';
-import * as layoutFuncs from '../layouts.js';
+import * as React from "react";
+import { Box, Image, Text } from "#vcs-react/components";
+import { useVideoTime, useViewportSize } from "#vcs-react/hooks";
+import * as layoutFuncs from "../layouts.js";
 
 export default function HighlightRowText({
   textRows = [],
@@ -34,7 +34,7 @@ export default function HighlightRowText({
         >
           {label}
         </Text>
-      </Box>
+      </Box>,
     );
   }
 

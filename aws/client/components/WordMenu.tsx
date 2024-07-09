@@ -52,11 +52,9 @@ type Props = {
   startIndex: number;
   endIndex: number;
   editingWord: DGWord | null | undefined;
-  isCropKeyframe: boolean;
   handleEditWord: () => void;
   handleWordClick: () => void;
   handleTrimWord: () => void;
-  handleCropOnWord: () => void;
   setStartIndex: (index: number) => void;
   setEndIndex: (index: number) => void;
   setStartHighlightIndex: (index: number | null) => void;
@@ -69,11 +67,9 @@ export default function WordMenu(
     startIndex,
     endIndex,
     editingWord,
-    isCropKeyframe,
     handleEditWord,
     handleTrimWord,
     handleWordClick,
-    handleCropOnWord,
     setStartIndex,
     setEndIndex,
     setStartHighlightIndex,
@@ -182,27 +178,6 @@ export default function WordMenu(
             <div style={styles.wordMenuText}>Edit word...</div>
           </div>
         )}
-        <div
-          onMouseEnter={() => setHover("crop")}
-          onMouseLeave={() => setHover(null)}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleCropOnWord();
-          }}
-          style={{
-            ...styles.wordMenuItem,
-            ...(hover === "crop" && styles.wordMenuItemHover),
-          }}
-        >
-          <div
-            style={{
-              ...styles.wordMenuText,
-              color: isCropKeyframe ? "var(--fourtharyColor)" : "initial",
-            }}
-          >
-            Crop on word...
-          </div>
-        </div>
         <div style={styles.wordMenuArrow} />
       </div>
     </>

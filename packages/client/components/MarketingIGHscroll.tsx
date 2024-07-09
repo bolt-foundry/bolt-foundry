@@ -196,7 +196,7 @@ function HscrollVideo(
   }, [muted]);
 
   const handleOpenVideo = () => {
-    window.open(`https://instagram.com/p/${video.igHash}`, "_blank");
+    globalThis.open(`https://instagram.com/p/${video.igHash}`, "_blank");
   };
 
   return (

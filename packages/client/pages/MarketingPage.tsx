@@ -3,12 +3,12 @@ import { fonts } from "packages/bfDs/const.tsx";
 import { useIntersectionObserver } from "packages/client/hooks/useIntersectionObserver.ts";
 import { Button } from "packages/bfDs/Button.tsx";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
-import {MarketingHero} from "packages/client/components/MarketingHero.tsx";
-import {useFeatureFlag} from "packages/client/hooks/featureFlagHooks.ts";
+import { MarketingHero } from "packages/client/components/MarketingHero.tsx";
+import { useFeatureFlag } from "packages/client/hooks/featureFlagHooks.ts";
 import MarketingTestimonial from "packages/client/components/MarketingTestimonial.tsx";
-import {MarketingIGHscroll} from "packages/client/components/MarketingIGHscroll.tsx";
-import {MarketingCallToAction} from "packages/client/components/MarketingCallToAction.tsx";
-const {useState} = React;
+import { MarketingIGHscroll } from "packages/client/components/MarketingIGHscroll.tsx";
+import { MarketingCallToAction } from "packages/client/components/MarketingCallToAction.tsx";
+const { useState } = React;
 
 const styles: Record<string, React.CSSProperties> = {
   // content: {
@@ -40,7 +40,7 @@ const styles: Record<string, React.CSSProperties> = {
   //   flexDirection: "row",
   //   gap: 10,
   // },
-  
+
   // demoSection: {
   //   display: "flex",
   //   flexDirection: "column",
@@ -98,7 +98,7 @@ const styles: Record<string, React.CSSProperties> = {
   //   gap: "1vw",
   //   alignItems: "center",
   // },
-  
+
   // useCaseSection: {
   //   display: "flex",
   //   flex: 1,
@@ -198,7 +198,7 @@ const styles: Record<string, React.CSSProperties> = {
   //   textAlign: "center",
   //   padding: "5% 3%",
   // },
-  
+
   // scrollButton: {
   //   position: "absolute",
   //   bottom: "5vh",
@@ -262,7 +262,7 @@ export function Marketing(): React.ReactElement {
 
   const enableSignup = useFeatureFlag("enable_signup");
   const enableGoogleLogin = useFeatureFlag("enable_google_login");
-  
+
   const [currentModal, setCurrentModal] = useState<React.ReactNode | null>(
     null,
   );

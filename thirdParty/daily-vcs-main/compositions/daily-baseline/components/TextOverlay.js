@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { Box, Text } from '#vcs-react/components';
-import * as layoutFuncs from '../layouts.js';
-import { DEFAULT_FONT } from '../constants.js';
-import HighlightRowText from './HighlightRowText.js';
+import * as React from "react";
+import { Box, Text } from "#vcs-react/components";
+import * as layoutFuncs from "../layouts.js";
+import { DEFAULT_FONT } from "../constants.js";
+import HighlightRowText from "./HighlightRowText.js";
 
 export default function TextOverlay({
   content,
@@ -25,10 +25,10 @@ export default function TextOverlay({
   highlightRows,
 }) {
   const textStyle = {
-    textColor: color || 'rgba(255, 250, 200, 0.95)',
+    textColor: color || "rgba(255, 250, 200, 0.95)",
     fontFamily: fontFamily || DEFAULT_FONT,
-    fontWeight: fontWeight || '500',
-    fontStyle: fontStyle || '',
+    fontWeight: fontWeight || "500",
+    fontStyle: fontStyle || "",
     fontSize_gu: fontSize_gu || 2.5,
     strokeColor,
     strokeWidth_px: useStroke ? strokeWidth_px : 0,
@@ -56,7 +56,7 @@ export default function TextOverlay({
 
     const highlightStyle = {
       ...textStyle,
-      textColor: highlightColor || 'yellow',
+      textColor: highlightColor || "yellow",
       fontWeight: highlightFontWeight || 700,
     };
 
@@ -79,7 +79,7 @@ export default function TextOverlay({
         transform={textTrs}
         layout={[layoutFuncs.placeText, layoutParams]}
       >
-        {content || ''}
+        {content || ""}
       </Text>
     );
   }

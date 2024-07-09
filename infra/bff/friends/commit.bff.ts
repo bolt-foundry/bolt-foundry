@@ -51,7 +51,9 @@ register(
     const token = hostsYml.split("oauth_token:")[1].trim().split("\n")[0];
     let name = nameRaw.trim();
     if (name == "") {
-      logger.warn("\n Github user should create a display name on their profile page.\n");
+      logger.warn(
+        "\n Github user should create a display name on their profile page.\n",
+      );
       name = "unknown Bolt Foundry Replit contributor";
     }
     const email = emailRaw.trim() ?? "unknown@boltfoundry.com";

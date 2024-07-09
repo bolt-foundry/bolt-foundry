@@ -1,7 +1,10 @@
 import { getLogger, rxjs } from "deps.ts";
 import { BfWorkerObservable } from "packages/bfWorker/BfWorker.ts";
 import { BfError } from "lib/BfError.ts";
-import { createMuxedFile, extractEncodedAudio } from "packages/mediaProcessing/encodingTools.ts";
+import {
+  createMuxedFile,
+  extractEncodedAudio,
+} from "packages/mediaProcessing/encodingTools.ts";
 
 const { Subject } = rxjs;
 
@@ -96,12 +99,11 @@ export class BfWorkerFileIngestion extends BfWorkerObservable {
 
       await totalFileWritableStream.close();
 
-      subject.next({type: "audio", progress: .001});
-      const fileHandle = await opfsDirectory.getFileHandle(name)
-      const fileForReading = await fileHandle.getFile()
+      subject.next({ type: "audio", progress: .001 });
+      const fileHandle = await opfsDirectory.getFileHandle(name);
+      const fileForReading = await fileHandle.getFile();
       const extractedAudio = await extractEncodedAudio(fileForReading);
-      subject.next({type: "audio", progress: .005});
-      
+      subject.next({ type: "audio", progress: .005 });
 
       const { encodedAudioChunks, sampleRate, numberOfChannels, codec } =
         extractedAudio;
@@ -150,12 +152,11 @@ export class BfWorkerFileIngestion extends BfWorkerObservable {
               // const progress = (progressRatios.writing +
               //   (percent * progressRatios.encoding)) * 100;
               // onProgress(progress);
-              subject.next({type: "audio", progress})
+              subject.next({ type: "audio", progress });
             },
           },
         },
       );
-
 
       const audioFileName = `${name}_audio`;
       const audioFileHandle = await opfsDirectory.getFileHandle(audioFileName, {
@@ -171,13 +172,13 @@ export class BfWorkerFileIngestion extends BfWorkerObservable {
         }
         await audioFileWritableStream.write(value);
         bytesWritten += value.length;
-        logger.info(`percentage: ${bytesWritten / file.size}`)
+        logger.info(`percentage: ${bytesWritten / file.size}`);
       }
-      subject.next({type: "audio", progress: 1})
+      subject.next({ type: "audio", progress: 1 });
 
       await audioFileWritableStream.close();
-      logger.info('probably done', audioFileName);
-    })()
+      logger.info("probably done", audioFileName);
+    })();
 
     // const mappedEncodeProgress = encodeProgress.pipe(
     //   rxjs.map((progressEvent) => {

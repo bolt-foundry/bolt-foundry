@@ -1,13 +1,13 @@
-import * as React from 'react';
-import * as ViewContexts from './react/contexts/index.js';
-import { makeEmptyStandardSources } from './react/contexts/CompositionDataContext.js';
+import * as React from "react";
+import * as ViewContexts from "./react/contexts/index.js";
+import { makeEmptyStandardSources } from "./react/contexts/CompositionDataContext.js";
 
 export function makeVCSRootContainer(
   ContentRoot,
   rootContainerRef,
   displayOpts,
   paramValues,
-  errorCb
+  errorCb,
 ) {
   const {
     viewportSize = { w: 1280, h: 720 },
@@ -56,9 +56,9 @@ export function makeVCSRootContainer(
 
     componentDidCatch(error, info) {
       console.error(
-        '\n** An error occurred in a React component:\n  %s\n',
+        "\n** An error occurred in a React component:\n  %s\n",
         error.message,
-        info.componentStack
+        info.componentStack,
       );
       if (errorCb) {
         errorCb(error, info);
@@ -83,9 +83,11 @@ export function makeVCSRootContainer(
       // visual components can always internally retain more messages
       // (similar to the Toast queue in baseline composition).
       const maxItems = 3;
-      for (const key of Object.keys(
-        this.state.compositionData.standardSources
-      )) {
+      for (
+        const key of Object.keys(
+          this.state.compositionData.standardSources,
+        )
+      ) {
         const arr = this.state.compositionData.standardSources[key].latest;
         if (arr.length > maxItems) {
           if (!newState.compositionData) {
@@ -137,11 +139,11 @@ export function makeVCSRootContainer(
       obj[id] = value;
 
       // if the param is of format "group.subid", make a convenience object for the group
-      const idx = id.indexOf('.');
+      const idx = id.indexOf(".");
       if (idx > 0 && idx < id.length - 1) {
         const group = id.substr(0, idx);
         const subid = id.substr(idx + 1);
-        if (typeof obj[group] !== 'object') {
+        if (typeof obj[group] !== "object") {
           obj[group] = {};
         }
         obj[group][subid] = value;
@@ -228,13 +230,13 @@ export function makeVCSRootContainer(
                 value: this.state.room,
               },
               React.createElement(
-                'root',
+                "root",
                 null,
-                React.createElement(ContentRoot, null)
-              )
-            )
-          )
-        )
+                React.createElement(ContentRoot, null),
+              ),
+            ),
+          ),
+        ),
       );
     }
   }

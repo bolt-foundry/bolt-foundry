@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { Box, Image, Text } from '#vcs-react/components';
-import { useVideoTime, useViewportSize } from '#vcs-react/hooks';
-import * as layouts from '../layouts.js';
+import * as React from "react";
+import { Box, Image, Text } from "#vcs-react/components";
+import { useVideoTime, useViewportSize } from "#vcs-react/hooks";
+import * as layouts from "../layouts.js";
 
 export default function RundownSidebar({
   itemLabels = [],
@@ -26,7 +26,7 @@ export default function RundownSidebar({
   } else {
     headItem = (
       <Text
-        style={{ ...titleStyle, textAlign: 'center' }}
+        style={{ ...titleStyle, textAlign: "center" }}
         layout={[layouts.rundownHeadItem, { pad_gu: 0.3, offsetY_gu: 1 }]}
       >
         {title}
@@ -36,7 +36,7 @@ export default function RundownSidebar({
   items.push(
     <Box key={0} layout={[layouts.stackFixedRows, { index: 0, numItems }]}>
       {headItem}
-    </Box>
+    </Box>,
   );
 
   for (let i = 0; i < itemLabels.length; i++) {
@@ -58,7 +58,7 @@ export default function RundownSidebar({
         >
           {label}
         </Text>
-      </Box>
+      </Box>,
     );
   }
 

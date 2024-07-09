@@ -3,7 +3,7 @@
  MIT license
 */
 
-import {Font, platformConfig} from './font.js';
+import { Font, platformConfig } from "./font.js";
 
 // we have no assumption of standard platform fonts
 // because servers may not have anything set up.
@@ -12,38 +12,38 @@ const kStandardFonts = [];
 
 // need to assume some font is available on every target.
 // in practice we're loading Roboto everywhere.
-const kFallbackFont = 'Roboto';
+const kFallbackFont = "Roboto";
 
 let g_fonts = {};
 
 let hyphenationCallback = (word) => {
   // default: disable hyphenation (just return entire words)
   return [word];
-}
+};
 
-const registerHyphenationCallback = fn => {
+const registerHyphenationCallback = (fn) => {
   hyphenationCallback = fn;
 };
 
 const getHyphenationCallback = () => {
   return hyphenationCallback;
-}
+};
 
 const register = (src, data) => {
-  if (typeof src === 'object') {
+  if (typeof src === "object") {
     data = src;
   } else {
     console.error(
       false,
-      'Font.register will not longer accept the font source as first argument. ' +
-        'Please move it into the data object. ' +
-        'For more info refer to https://react-pdf.org/fonts',
+      "Font.register will not longer accept the font source as first argument. " +
+        "Please move it into the data object. " +
+        "For more info refer to https://react-pdf.org/fonts",
     );
 
     data.src = src;
   }
 
-  const {family} = data;
+  const { family } = data;
 
   if (!g_fonts[family]) {
     g_fonts[family] = Font.create(family);
@@ -52,7 +52,7 @@ const register = (src, data) => {
   // Bulk loading
   if (data.fonts) {
     for (let i = 0; i < data.fonts.length; i++) {
-      g_fonts[family].register({family, ...data.fonts[i]});
+      g_fonts[family].register({ family, ...data.fonts[i] });
     }
   } else {
     g_fonts[family].register(data);
@@ -63,8 +63,8 @@ const getRegisteredFonts = () => g_fonts;
 
 const getRegisteredFontFamilies = () => Object.keys(g_fonts);
 
-const getFont = descriptor => {
-  const {fontFamily} = descriptor;
+const getFont = (descriptor) => {
+  const { fontFamily } = descriptor;
   const isStandard = kStandardFonts.includes(fontFamily);
 
   if (isStandard) return null;
@@ -79,8 +79,8 @@ const getFont = descriptor => {
   return g_fonts[fontFamily].resolve(descriptor);
 };
 
-const load = async function(descriptor, doc) {
-  const {fontFamily} = descriptor;
+const load = async function (descriptor, doc) {
+  const { fontFamily } = descriptor;
   const isStandard = kStandardFonts.includes(fontFamily);
 
   if (isStandard) return;
@@ -93,7 +93,7 @@ const load = async function(descriptor, doc) {
   }
 };
 
-const reset = function() {
+const reset = function () {
   for (const font in g_fonts) {
     if (g_fonts.hasOwnProperty(font)) {
       g_fonts[font].data = null;
@@ -101,7 +101,7 @@ const reset = function() {
   }
 };
 
-const clear = function() {
+const clear = function () {
   g_fonts = {};
 };
 
@@ -116,5 +116,5 @@ export default {
   reset,
   registerHyphenationCallback,
   getHyphenationCallback,
-  fallbackFontFamily: kFallbackFont
+  fallbackFontFamily: kFallbackFont,
 };

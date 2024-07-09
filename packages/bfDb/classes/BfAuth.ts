@@ -18,7 +18,8 @@ const googleJwkUrl = "https://www.googleapis.com/oauth2/v3/certs";
 const { keys: googleJwks } = await fetch(googleJwkUrl).then((r) => r.json());
 
 const ACCESS_TOKEN_EXPIRATION_WINDOW_SECONDS = 300;
-const cryptoKeySecret = Deno.env.get("JWT_SECRET") ?? "this is a super insecure jwt secret. you should be ashamed of yourself if you use it";
+const cryptoKeySecret = Deno.env.get("JWT_SECRET") ??
+  "this is a super insecure jwt secret. you should be ashamed of yourself if you use it";
 
 const bfCryptoKey = await crypto.subtle.importKey(
   "raw",

@@ -1,18 +1,23 @@
-import { arg, mutationField, nonNull, scalarType } from "packages/graphql/deps.ts";
+import {
+  arg,
+  mutationField,
+  nonNull,
+  scalarType,
+} from "packages/graphql/deps.ts";
 import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
 
 export const FileScalar = scalarType({
-  name: 'File',
-  asNexusMethod: 'file',
-  description: 'The `File` scalar type represents a file upload.',
-  sourceType: 'File'
-})
+  name: "File",
+  asNexusMethod: "file",
+  description: "The `File` scalar type represents a file upload.",
+  sourceType: "File",
+});
 
-export const ReadFileMutation = mutationField('readTextFile', {
-  type: 'String',
-  args: { file: nonNull(arg({type: "File"}))},
+export const ReadFileMutation = mutationField("readTextFile", {
+  type: "String",
+  args: { file: nonNull(arg({ type: "File" })) },
   resolve: async (one, two, ctx, four) => {
     const file: File = ctx.params.variables.file;
     let returnable = "not read yet";
@@ -21,5 +26,5 @@ export const ReadFileMutation = mutationField('readTextFile', {
     }
     logger.info("readTextFile: " + returnable);
     return returnable;
-  }
-})
+  },
+});

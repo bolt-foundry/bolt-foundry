@@ -1,4 +1,4 @@
-import { React, ReactRelay} from "deps.ts";
+import { React, ReactRelay } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
@@ -48,7 +48,6 @@ const cvQuery = await graphql`
 
 function LoginPageContent() {
   const cvData = useLazyLoadQuery<LoginPageCVQuery>(cvQuery, {});
-  
 
   const [logoutError, setLogoutError] = React.useState<string | null>(null);
   const [logoutCommit, logoutInFlight] = useMutation(logoutMutation);
@@ -91,9 +90,7 @@ function LoginPageContent() {
           </div>
         )}
         {!loggedInPerson && <LoginForm />}
-        {logoutError && (
-          <div style={styles.error}>{logoutError}</div>
-        )}
+        {logoutError && <div style={styles.error}>{logoutError}</div>}
       </div>
     </div>
   );

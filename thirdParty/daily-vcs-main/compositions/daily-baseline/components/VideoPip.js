@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { Box, Video } from '#vcs-react/components';
-import * as layoutFuncs from '../layouts.js';
-import { PositionCorner } from '../constants.js';
-import { ParticipantLabelPipStyle } from './ParticipantLabelPipStyle.js';
-import { PausedPlaceholder } from './PausedPlaceholder.js';
-import VideoSingle from './VideoSingle.js';
-import decorateVideoPipItem from './overrides/decorateVideoPipItem.js';
+import * as React from "react";
+import { Box, Video } from "#vcs-react/components";
+import * as layoutFuncs from "../layouts.js";
+import { PositionCorner } from "../constants.js";
+import { ParticipantLabelPipStyle } from "./ParticipantLabelPipStyle.js";
+import { PausedPlaceholder } from "./PausedPlaceholder.js";
+import VideoSingle from "./VideoSingle.js";
+import decorateVideoPipItem from "./overrides/decorateVideoPipItem.js";
 
 export default function VideoPip(props) {
   const {
@@ -31,11 +31,11 @@ export default function VideoPip(props) {
 
   if (followDominantFlag && dominantVideoId) {
     const participantWithDomFlag = participantDescs.find(
-      (d) => d.videoId != null && d.videoId == dominantVideoId
+      (d) => d.videoId != null && d.videoId == dominantVideoId,
     );
 
-    const hasDominantScreenshare =
-      preferScreenshare && firstParticipant && firstParticipant.isScreenshare;
+    const hasDominantScreenshare = preferScreenshare && firstParticipant &&
+      firstParticipant.isScreenshare;
 
     if (hasDominantScreenshare && participantWithDomFlag) {
       // if we have a dominant screenshare, it takes precedence,
@@ -48,7 +48,7 @@ export default function VideoPip(props) {
 
   if (!otherParticipants) {
     otherParticipants = participantDescs.filter(
-      (d) => d !== firstParticipant || firstParticipant == null
+      (d) => d !== firstParticipant || firstParticipant == null,
     );
   }
 
@@ -66,7 +66,7 @@ export default function VideoPip(props) {
   const mainDecoration = decorateVideoPipItem(
     0,
     firstParticipant,
-    mainVideoSingleProps
+    mainVideoSingleProps,
   );
 
   let items = [];
@@ -76,14 +76,14 @@ export default function VideoPip(props) {
       key="pipbase"
       overrideDecoration={mainDecoration}
       {...mainVideoSingleProps}
-    />
+    />,
   );
 
   if (otherParticipants.length > 0) {
     // render second video inside PiP window
     const pipParticipant = otherParticipants[0];
-    const { videoId, displayName = '', paused } = pipParticipant;
-    const key = 'pipwindow_' + videoId;
+    const { videoId, displayName = "", paused } = pipParticipant;
+    const key = "pipwindow_" + videoId;
 
     const layoutProps = {
       positionCorner,
@@ -104,55 +104,57 @@ export default function VideoPip(props) {
     const pipItems = [];
 
     pipItems.push(
-      paused || videoId == null ? (
-        <PausedPlaceholder
-          key={key + '_video_paused'}
-          layout={customLayoutForVideo}
-          {...{ placeholderStyle }}
-        />
-      ) : (
-        <Video
-          key={key + '_video'}
-          src={videoId}
-          style={videoStyle}
-          scaleMode="fill"
-          layout={customLayoutForVideo}
-        />
-      )
+      paused || videoId == null
+        ? (
+          <PausedPlaceholder
+            key={key + "_video_paused"}
+            layout={customLayoutForVideo}
+            {...{ placeholderStyle }}
+          />
+        )
+        : (
+          <Video
+            key={key + "_video"}
+            src={videoId}
+            style={videoStyle}
+            scaleMode="fill"
+            layout={customLayoutForVideo}
+          />
+        ),
     );
 
     if (enableDefaultLabels && showLabels) {
       pipItems.push(
         <ParticipantLabelPipStyle
-          key={key + '_label_' + displayName}
+          key={key + "_label_" + displayName}
           label={displayName}
           labelStyle={videoLabelStyle}
           labelsOffset_px={labelsOffset_px}
-        />
+        />,
       );
     }
 
     if (customDecoratorComponent) {
       pipItems.push(
-        <Box key={key + '_pipcustomdeco'}>{customDecoratorComponent}</Box>
+        <Box key={key + "_pipcustomdeco"}>{customDecoratorComponent}</Box>,
       );
     }
 
     const containerStyle = clipItem
       ? {
-          cornerRadius_px: videoStyle.cornerRadius_px,
-        }
+        cornerRadius_px: videoStyle.cornerRadius_px,
+      }
       : null;
 
     items.push(
       <Box
-        key={key + '_pipcontainer'}
+        key={key + "_pipcontainer"}
         clip={clipItem}
         style={containerStyle}
         layout={layout}
       >
         {pipItems}
-      </Box>
+      </Box>,
     );
   }
 

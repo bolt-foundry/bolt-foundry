@@ -1,6 +1,4 @@
 import { React } from "deps.ts";
 
-export function ModalPortal(){
-  
+export function ModalPortal() {
 }
-                            

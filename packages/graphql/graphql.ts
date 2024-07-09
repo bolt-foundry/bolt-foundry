@@ -1,9 +1,7 @@
 import { GraphQLYoga } from "packages/graphql/deps.ts";
 import { schema } from "packages/graphql/schema.ts";
 import { getLogger } from "deps.ts";
-import {
-  BfCurrentViewer,
-} from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 // import { startupBackend } from "packages/events/mod.ts";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 const logger = getLogger(import.meta);
@@ -28,7 +26,7 @@ export const yoga = createYoga<GraphQLServerContext, GraphQLUserContext>({
 
 export async function handler(request: Request): Promise<Response> {
   const ctx = await getContextFromRequest(request);
-  
+
   const yogaResponse = await yoga(request, ctx);
   logger.trace("headers", ctx.responseHeaders);
   for (const [key, value] of ctx.responseHeaders.entries()) {

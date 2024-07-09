@@ -44,6 +44,7 @@ type Props = {
   manualCrop: Array<ManualCrop>;
   manualCropActive: boolean;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDelete: (i: number) => void;
   handleClose: () => void;
 };
 
@@ -79,6 +80,7 @@ export default function ManualCropMenu(
     manualCrop,
     manualCropActive,
     handleChange,
+    handleDelete,
     handleClose,
   }: Props,
 ) {
@@ -89,7 +91,7 @@ export default function ManualCropMenu(
   const manualCropData = manualCrop ?? JSON.parse(data.manualCrop ?? "[]");
   const manualCropActiveData = manualCropActive ?? data.manualCropActive;
   const currentCropIndex = manualCropData.findIndex((crop) =>
-    crop.start === croppingWord.start
+    crop.start >= croppingWord.start && crop.start < croppingWord.end
   );
   const currentCrop = manualCropData[currentCropIndex];
 
@@ -152,6 +154,14 @@ export default function ManualCropMenu(
             />
           </div>
         </div>
+        <Button
+          kind="alert"
+          onClick={() => {
+            handleDelete(currentCropIndex);
+            handleClose();
+          }}
+          text="Delete"
+        />
       </form>
     </div>
   );

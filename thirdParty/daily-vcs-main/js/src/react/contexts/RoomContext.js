@@ -1,9 +1,9 @@
-import * as React from 'react';
+import * as React from "react";
 
 // the shape of the Peer object described as vanilla JS
 export function makeEmptyPeer() {
   return {
-    id: '',
+    id: "",
     displayName: null,
     video: {
       id: null, // if non-null, can be mapped to MediaInputContext.activeVideoInputSlots
@@ -21,10 +21,10 @@ export function makeEmptyPeer() {
 }
 
 export const RenderingEnvironmentType = {
-  UNKNOWN: '',
-  MEDIA_SERVER: 'media-server',
-  PARTICIPANT_CLIENT: 'participant-client',
-  PASSIVE_VIEWER_CLIENT: 'passive-viewer-client',
+  UNKNOWN: "",
+  MEDIA_SERVER: "media-server",
+  PARTICIPANT_CLIENT: "participant-client",
+  PASSIVE_VIEWER_CLIENT: "passive-viewer-client",
 };
 
 export const RoomContext = React.createContext({

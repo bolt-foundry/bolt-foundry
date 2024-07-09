@@ -9,9 +9,13 @@ register("build", "Builds the client.", async (_options) => {
   return 0;
 });
 
-register("build:deploy", "build the client and include building the environment", async (_options) => {
-  await buildRelay();
-  await build();
-  await buildVcs();
-  return 0;
-})
+register(
+  "build:deploy",
+  "build the client and include building the environment",
+  async (_options) => {
+    await buildRelay();
+    await build();
+    await buildVcs();
+    return 0;
+  },
+);

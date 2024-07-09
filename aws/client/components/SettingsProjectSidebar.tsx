@@ -41,7 +41,7 @@ export default function Settings({ project$key }: Props) {
   }
   const data = useFragment(fragment, project$key);
 
-  const [initialSettings, setIntialSettings] = React.useState<
+  const [initialSettings, setInitialSettings] = React.useState<
     Partial<Settings>
   >(data.effectiveSettings as Partial<Settings>);
   const [draftSettings, setDraftSettings] = React.useState({});
@@ -86,7 +86,7 @@ export default function Settings({ project$key }: Props) {
         setDraftSettings={setDraftSettings}
         changedSettings={changedSettings}
         settings$key={data.effectiveSettings}
-        setInitialSettings={setIntialSettings}
+        setInitialSettings={setInitialSettings}
       />
       <div className="submitRow">
         <Button

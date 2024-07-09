@@ -24,7 +24,6 @@ export class BfCurrentViewerCreationError extends Error {
   }
 }
 
-
 export abstract class BfCurrentViewer {
   __typename: string;
 
@@ -61,7 +60,8 @@ export class BfCurrentViewerAccessToken extends BfCurrentViewer {
     try {
       if (accessToken) {
         const jwtPayload = await decodeAndVerifyBfJwt(accessToken);
-        const { organizationBfGid, role, personBfGid, accountBfGid } = jwtPayload;
+        const { organizationBfGid, role, personBfGid, accountBfGid } =
+          jwtPayload;
         if (role && organizationBfGid && personBfGid) {
           return new this(
             toBfOid(organizationBfGid),
@@ -105,7 +105,7 @@ export class BfCurrentViewerFromAccount extends BfCurrentViewer {
       account.props.personBfGid,
       account.metadata.bfGid,
       importMeta.url,
-    )
+    );
   }
 }
 

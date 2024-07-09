@@ -1,5 +1,5 @@
-import { MediaInputPrintout } from './debug/MediaInputPrintout.js';
-import { RoomPrintout } from './debug/RoomPrintout.js';
+import { MediaInputPrintout } from "./debug/MediaInputPrintout.js";
+import { RoomPrintout } from "./debug/RoomPrintout.js";
 
 const debug = {
   MediaInputPrintout,

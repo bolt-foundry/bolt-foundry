@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { Box, Video, Text } from '#vcs-react/components';
-import * as layoutFuncs from '../layouts.js';
-import { PausedPlaceholder } from './PausedPlaceholder.js';
-import decorateVideoGridItem from './overrides/decorateVideoGridItem.js';
-import { DEFAULT_OFFSET_VIDEO_SINGLE_PX } from '../constants.js';
+import * as React from "react";
+import { Box, Text, Video } from "#vcs-react/components";
+import * as layoutFuncs from "../layouts.js";
+import { PausedPlaceholder } from "./PausedPlaceholder.js";
+import decorateVideoGridItem from "./overrides/decorateVideoGridItem.js";
+import { DEFAULT_OFFSET_VIDEO_SINGLE_PX } from "../constants.js";
 
 export default function VideoGrid(gridProps) {
   let {
@@ -34,7 +34,7 @@ export default function VideoGrid(gridProps) {
       highlighted,
       paused,
     } = itemProps;
-    let key = 'videogriditem_' + index;
+    let key = "videogriditem_" + index;
 
     const itemLayout = [
       layoutFuncs.grid,
@@ -62,16 +62,14 @@ export default function VideoGrid(gridProps) {
       // the 10px offsets applied here for single mode are the same as VideoSingle.
       const isGrid = totalNumItems > 1;
       const labelLayout = isGrid ? layoutFuncs.gridLabel : layoutFuncs.offset;
-      const offsets = isGrid
-        ? labelsOffset_px
-        : {
-            x: DEFAULT_OFFSET_VIDEO_SINGLE_PX + labelsOffset_px.x,
-            y: DEFAULT_OFFSET_VIDEO_SINGLE_PX + labelsOffset_px.y,
-          };
+      const offsets = isGrid ? labelsOffset_px : {
+        x: DEFAULT_OFFSET_VIDEO_SINGLE_PX + labelsOffset_px.x,
+        y: DEFAULT_OFFSET_VIDEO_SINGLE_PX + labelsOffset_px.y,
+      };
 
       participantLabel = (
         <Text
-          key={'label_' + displayName}
+          key={"label_" + displayName}
           style={videoLabelStyle}
           layout={[
             labelLayout,
@@ -92,7 +90,7 @@ export default function VideoGrid(gridProps) {
         cornerRadius_px: videoStyle.cornerRadius_px,
       };
 
-      highlight = <Box style={highlightStyle} key={key + '_highlight'} />;
+      highlight = <Box style={highlightStyle} key={key + "_highlight"} />;
     }
 
     let video;
@@ -116,8 +114,8 @@ export default function VideoGrid(gridProps) {
 
     const containerStyle = clipItem
       ? {
-          cornerRadius_px: videoStyle.cornerRadius_px,
-        }
+        cornerRadius_px: videoStyle.cornerRadius_px,
+      }
       : null;
 
     return (

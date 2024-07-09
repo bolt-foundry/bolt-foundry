@@ -1,10 +1,10 @@
-import Reconciler from 'react-reconciler';
+import Reconciler from "react-reconciler";
 import {
+  unstable_cancelCallback as cancelDeferredCallback,
   unstable_now as now,
   unstable_scheduleCallback as scheduleDeferredCallback,
   unstable_shouldYield as shouldYield,
-  unstable_cancelCallback as cancelDeferredCallback,
-} from 'scheduler';
+} from "scheduler";
 
 // -- reconciler singleton --
 //
@@ -74,14 +74,14 @@ export function render(reactNode, composition, cb) {
     composition._reactRoot = reconciler.createContainer(
       composition,
       false,
-      false
+      false,
     );
   }
   return reconciler.updateContainer(
     reactNode,
     composition._reactRoot,
     null,
-    cb
+    cb,
   );
 }
 
@@ -111,7 +111,7 @@ function createInstance(type, props, container) {
 
 function appendChild(parent, child) {
   if (!child) {
-    console.error('** appendChild with null child, parent: ', parent);
+    console.error("** appendChild with null child, parent: ", parent);
     return;
   }
   //console.log("appendChild: %s (%s) -> parent %s (%s)", child.uuid, child.userGivenId, parent.uuid, parent.userGivenId);
@@ -126,7 +126,7 @@ function appendChildToContainer(container, child) {
 
 function removeChild(parent, child) {
   if (!child) {
-    console.error('** removeChild with null child, parent: ', parent);
+    console.error("** removeChild with null child, parent: ", parent);
     return;
   }
   //console.log("removeChild: %s (%s) -> parent %s (%s)", child.uuid, child.userGivenId, parent.uuid, parent.userGivenId);

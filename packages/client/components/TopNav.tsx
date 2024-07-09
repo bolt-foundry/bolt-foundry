@@ -50,7 +50,7 @@ export function TopNav({ setMobileProjectListOpen }: Props) {
   const { navigate } = useRouter();
 
   const onLogout = () => {
-    console.log("logout")
+    console.log("logout");
     // commit({
     //   variables: {},
     //   onCompleted: (response, errors) => {

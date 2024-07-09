@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { Box } from '#vcs-react/components';
-import { RoomContext } from '#vcs-react/contexts';
-import { debug } from '#vcs-stdlib/components';
+import * as React from "react";
+import { Box } from "#vcs-react/components";
+import { RoomContext } from "#vcs-react/contexts";
+import { debug } from "#vcs-stdlib/components";
 
 const textSize_gu = 1;
-const headerTextColor = 'rgba(255, 255, 255, 0.68)';
+const headerTextColor = "rgba(255, 255, 255, 0.68)";
 const headerH_gu = textSize_gu * 10;
 
 export default function RoomDebug({ bgOpacity = 1 }) {

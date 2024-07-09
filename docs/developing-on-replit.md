@@ -52,9 +52,11 @@ To refresh after making a change, hit `cmd + enter` and it'll reload the server.
 
 ### Commit changes using Sapling
 
-Open VSCode by typing `bff commit` in your shell in replit. Allow any popups. You should see your changes reflected in the Interactive Smartlog.
+Open VSCode by typing `bff commit` in your shell in replit. Allow any popups.
+You should see your changes reflected in the Interactive Smartlog.
 
-Select changes you want to commit, give the commit a name and short description, and hit `Commit and Submit`.
+Select changes you want to commit, give the commit a name and short description,
+and hit `Commit and Submit`.
 
 #### Individual commits are "whole changes" bundled into one
 

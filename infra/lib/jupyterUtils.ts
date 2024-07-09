@@ -4,7 +4,9 @@ import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewe
 
 const logger = getLogger(import.meta);
 
-export async function getJupyterCurrentViewer(refreshToken = Deno.env.get("JUPYTER_USER_REFRESH_TOKEN")) {
+export async function getJupyterCurrentViewer(
+  refreshToken = Deno.env.get("JUPYTER_USER_REFRESH_TOKEN"),
+) {
   if (!refreshToken) {
     logger.error("No refresh token found");
     return null;
@@ -13,7 +15,12 @@ export async function getJupyterCurrentViewer(refreshToken = Deno.env.get("JUPYT
     import.meta,
     refreshToken,
   );
-  const currentViewer = await BfCurrentViewerAccessToken.create(import.meta, accessToken);
-  logger.info(`${import.meta.url} - impersonating ${currentViewer.personBfGid}`);
+  const currentViewer = await BfCurrentViewerAccessToken.create(
+    import.meta,
+    accessToken,
+  );
+  logger.info(
+    `${import.meta.url} - impersonating ${currentViewer.personBfGid}`,
+  );
   return currentViewer;
 }

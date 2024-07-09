@@ -109,7 +109,7 @@ export async function buildRelay(args: Array<string> = []) {
   }
   await Deno.writeTextFile(
     staticImportFileLocation,
-    imports.join("\n"),
+    `/* @generated */\n${imports.join("\n")}`,
   );
 
   const buildTypesCmd = new Deno.Command("deno", {
@@ -138,7 +138,10 @@ export async function buildRelay(args: Array<string> = []) {
 }
 
 register("relay", "Builds all relay artifacts", async (args) => {
-  await Promise.all([buildRelay(["packages", ...args]), buildRelay(["infra", ...args])]);
+  await Promise.all([
+    buildRelay(["packages", ...args]),
+    buildRelay(["infra", ...args]),
+  ]);
   return 0;
 });
 register("relay:packages", "Builds packaes relay artifacts.", buildRelay);

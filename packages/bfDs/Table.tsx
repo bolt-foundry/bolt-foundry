@@ -6,9 +6,9 @@ const { useState, useEffect } = React;
 const createKey = (key, index) => `${key}-${index}`;
 
 type Props = {
-  columns: Array<unknown>,
-  data: Array<unknown>,
-}
+  columns: Array<unknown>;
+  data: Array<unknown>;
+};
 
 export function Table({ columns, data }: Props) {
   const columnWidths = columns.reduce((string, column) => {
