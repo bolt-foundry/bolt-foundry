@@ -1,22 +1,22 @@
-import module_layoutEngine from '@react-pdf/textkit/lib/layout/index.js';
-import module_linebreaker from '@react-pdf/textkit/lib/engines/linebreaker/index.js';
-import module_justification from '@react-pdf/textkit/lib/engines/justification/index.js';
-import module_textDecoration from '@react-pdf/textkit/lib/engines/textDecoration/index.js';
-import module_scriptItemizer from '@react-pdf/textkit/lib/engines/scriptItemizer/index.js';
-import module_wordHyphenation from '@react-pdf/textkit/lib/engines/wordHyphenation/index.js';
-import module_AttributedString from '@react-pdf/textkit/lib/attributedString/index.js';
+import module_layoutEngine from "@react-pdf/textkit/lib/layout/index.js";
+import module_linebreaker from "@react-pdf/textkit/lib/engines/linebreaker/index.js";
+import module_justification from "@react-pdf/textkit/lib/engines/justification/index.js";
+import module_textDecoration from "@react-pdf/textkit/lib/engines/textDecoration/index.js";
+import module_scriptItemizer from "@react-pdf/textkit/lib/engines/scriptItemizer/index.js";
+import module_wordHyphenation from "@react-pdf/textkit/lib/engines/wordHyphenation/index.js";
+import module_AttributedString from "@react-pdf/textkit/lib/attributedString/index.js";
 
 const layoutEngineFactory = module_layoutEngine.default || module_layoutEngine;
 const linebreaker = module_linebreaker.default || module_linebreaker;
 const justification = module_justification.default || module_justification;
 const textDecoration = module_textDecoration.default || module_textDecoration;
 const scriptItemizer = module_scriptItemizer.default || module_scriptItemizer;
-const wordHyphenation =
-  module_wordHyphenation.default || module_wordHyphenation;
-const AttributedString =
-  module_AttributedString.default || module_AttributedString;
+const wordHyphenation = module_wordHyphenation.default ||
+  module_wordHyphenation;
+const AttributedString = module_AttributedString.default ||
+  module_AttributedString;
 
-import fontSetup from './font-setup.js';
+import fontSetup from "./font-setup.js";
 
 const fontSubstitution = () => ({ string, runs }) => {
   // no font substitution performed.
@@ -69,8 +69,9 @@ export function measureTextLayoutBlocks(blocks) {
       if (totalBox.x === null) totalBox.x = box.x;
       if (totalBox.y === null) totalBox.y = box.y;
 
-      lastParagraphSpacing =
-        runs.length > 0 ? runs[0].attributes.paragraphSpacing : 0;
+      lastParagraphSpacing = runs.length > 0
+        ? runs[0].attributes.paragraphSpacing
+        : 0;
       numLines++;
     }
   }

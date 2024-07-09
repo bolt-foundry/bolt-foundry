@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { Box, Text, Image } from '#vcs-react/components';
-import * as layoutFuncs from '../layouts.js';
-import { useFade } from './useFade.js';
+import * as React from "react";
+import { Box, Image, Text } from "#vcs-react/components";
+import * as layoutFuncs from "../layouts.js";
+import { useFade } from "./useFade.js";
 
 export default function LowerThird({
   title,
@@ -39,10 +39,9 @@ export default function LowerThird({
   const bgTrs = {};
   if (rotate_deg !== 0) bgTrs.rotate_deg = rotate_deg;
 
-  const iconSrc =
-    iconOverrideAssetName && iconOverrideAssetName.length > 0
-      ? iconOverrideAssetName
-      : 'party-popper_1f389.png';
+  const iconSrc = iconOverrideAssetName && iconOverrideAssetName.length > 0
+    ? iconOverrideAssetName
+    : "party-popper_1f389.png";
 
   const textPad = {
     l: showIcon ? iconSize_gu + 2 : 0,
@@ -70,23 +69,27 @@ export default function LowerThird({
       blend={{ opacity }}
     >
       <Box layout={[layoutFuncs.pad, { pad_gu }]}>
-        {showIcon ? (
-          <Image
-            src={iconSrc}
-            layout={[layoutFuncs.toastIcon, { size_gu: iconSize_gu }]}
-          />
-        ) : null}
+        {showIcon
+          ? (
+            <Image
+              src={iconSrc}
+              layout={[layoutFuncs.toastIcon, { size_gu: iconSize_gu }]}
+            />
+          )
+          : null}
 
         <Box layout={[layoutFuncs.pad, { pad_gu: textPad }]}>
           <Box id="textStack" layout={[layoutFuncs.textStack]}>
             <Text key="title" style={titleStyle}>
               {title}
             </Text>
-            {subtitle.length > 0 ? (
-              <Text key="subtitle" style={subtitleStyle}>
-                {subtitle}
-              </Text>
-            ) : null}
+            {subtitle.length > 0
+              ? (
+                <Text key="subtitle" style={subtitleStyle}>
+                  {subtitle}
+                </Text>
+              )
+              : null}
           </Box>
         </Box>
       </Box>

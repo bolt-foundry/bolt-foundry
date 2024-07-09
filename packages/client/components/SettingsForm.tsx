@@ -3,8 +3,8 @@ import {
   DEFAULT_SETTINGS,
   Settings,
   settingsPresets,
-  type WatermarkPositionType,
   type WatermarkLogoType,
+  type WatermarkPositionType,
 } from "packages/types/settings.ts";
 import { Input } from "packages/bfDs/Input.tsx";
 import { RatioSelector } from "packages/client/components/RatioSelector.tsx";
@@ -670,4 +670,3 @@ export function SettingsForm(
     </div>
   );
 }
-

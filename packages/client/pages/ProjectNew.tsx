@@ -77,7 +77,7 @@ export function ProjectNew() {
               onClick={() => {
                 commitUploadFile({
                   variables: {
-                    file: null
+                    file: null,
                   },
                   uploadables: {
                     file: new File(["foo"], "foo.txt", {

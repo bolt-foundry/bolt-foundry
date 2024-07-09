@@ -1,43 +1,43 @@
-import * as React from 'react';
-import { Box, Image, Text, Video } from '#vcs-react/components';
-import { useParams, useVideoTime, useActiveVideo } from '#vcs-react/hooks';
+import * as React from "react";
+import { Box, Image, Text, Video } from "#vcs-react/components";
+import { useActiveVideo, useParams, useVideoTime } from "#vcs-react/hooks";
 
 // -- the control interface exposed by this composition --
 export const compositionInterface = {
   displayMeta: {
-    name: 'Hello Daily',
-    description: 'An example composition in a single file',
+    name: "Hello Daily",
+    description: "An example composition in a single file",
   },
   params: [
     {
-      id: 'showGraphics',
-      type: 'boolean',
+      id: "showGraphics",
+      type: "boolean",
       defaultValue: true,
     },
     {
-      id: 'graphicsOnSide',
-      type: 'boolean',
+      id: "graphicsOnSide",
+      type: "boolean",
       defaultValue: false,
     },
     {
-      id: 'fitGridToGraphics',
-      type: 'boolean',
+      id: "fitGridToGraphics",
+      type: "boolean",
       defaultValue: false,
     },
     {
-      id: 'showParticipantLabels',
-      type: 'boolean',
+      id: "showParticipantLabels",
+      type: "boolean",
       defaultValue: false,
     },
     {
-      id: 'useRoundedCornersStyle',
-      type: 'boolean',
+      id: "useRoundedCornersStyle",
+      type: "boolean",
       defaultValue: false,
     },
     {
-      id: 'demoText',
-      type: 'text',
-      defaultValue: 'Hello world',
+      id: "demoText",
+      type: "text",
+      defaultValue: "Hello world",
     },
   ],
 };
@@ -71,7 +71,7 @@ export default function HelloDailyVCS() {
       <Box
         id="background"
         style={{
-          fillColor: 'rgba(90, 0, 0, 1)',
+          fillColor: "rgba(90, 0, 0, 1)",
         }}
       />
       <VideoGrid
@@ -79,14 +79,16 @@ export default function HelloDailyVCS() {
         showLabels={params.showParticipantLabels}
         roundedCorners={roundedCorners}
       />
-      {showGraphics ? (
-        <TimedExampleGraphics
-          layout={graphicsLayout}
-          onSide={onSide}
-          demoText={params.demoText}
-          roundedCorners={roundedCorners}
-        />
-      ) : null}
+      {showGraphics
+        ? (
+          <TimedExampleGraphics
+            layout={graphicsLayout}
+            onSide={onSide}
+            demoText={params.demoText}
+            roundedCorners={roundedCorners}
+          />
+        )
+        : null}
     </Box>
   );
 }
@@ -99,9 +101,9 @@ function VideoGrid({ layout, showLabels, roundedCorners }) {
   const { activeIds, displayNamesById } = useActiveVideo();
 
   const labelStyle = {
-    textColor: 'white',
-    fontFamily: 'Roboto',
-    fontWeight: '600',
+    textColor: "white",
+    fontFamily: "Roboto",
+    fontWeight: "600",
     fontSize_px: 16,
   };
   const videoStyle = {
@@ -109,13 +111,13 @@ function VideoGrid({ layout, showLabels, roundedCorners }) {
   };
 
   const items = activeIds.map((videoId, i) => {
-    const key = 'videogrid_item' + i;
+    const key = "videogrid_item" + i;
 
     let participantLabel;
     if (showLabels && activeIds.length > 1) {
       participantLabel = (
         <Text style={labelStyle} layout={[layoutFuncs.offset, { y: -18 }]}>
-          {displayNamesById[videoId] || ''}
+          {displayNamesById[videoId] || ""}
         </Text>
       );
     }
@@ -166,9 +168,9 @@ function TimedExampleGraphics({
   let fontSize_gu = onSide ? 1.8 : 2.5;
 
   const textStyle = {
-    textColor: 'rgba(255, 250, 200, 0.95)',
-    fontFamily: 'Roboto',
-    fontWeight: '300',
+    textColor: "rgba(255, 250, 200, 0.95)",
+    fontFamily: "Roboto",
+    fontWeight: "300",
     fontSize_gu,
     //strokeColor: 'rgba(0, 0, 0, 0.95)',
     //strokeWidth_px: 12,
@@ -176,7 +178,7 @@ function TimedExampleGraphics({
   const textPad_px = 20;
 
   const boxStyle = {
-    fillColor: 'rgba(50, 70, 255, 0.7)',
+    fillColor: "rgba(50, 70, 255, 0.7)",
     //strokeColor: 'rgba(255, 255, 255, 0.8)',
     //strokeWidth_px: 4,
   };
@@ -317,25 +319,23 @@ const layoutFuncs = {
 
     // item size depends on whether our content is wider or narrower than the parent frame
     if (contentAsp >= parentAsp) {
-      itemW =
-        (parentFrame.w - 2 * outerMargin - (numCols - 1) * innerMargin) /
+      itemW = (parentFrame.w - 2 * outerMargin - (numCols - 1) * innerMargin) /
         numCols;
       itemH = itemW / videoAsp;
 
       // center grid vertically
       x += outerMargin;
-      y +=
-        (parentFrame.h - (numRows * itemH + innerMargin * (numRows - 1))) / 2;
+      y += (parentFrame.h - (numRows * itemH + innerMargin * (numRows - 1))) /
+        2;
     } else {
-      itemH =
-        (parentFrame.h - 2 * outerMargin - (numRows - 1) * innerMargin) /
+      itemH = (parentFrame.h - 2 * outerMargin - (numRows - 1) * innerMargin) /
         numRows;
       itemW = itemH * videoAsp;
 
       // center grid horizontally
       y += outerMargin;
-      x +=
-        (parentFrame.w - (numCols * itemW + innerMargin * (numCols - 1))) / 2;
+      x += (parentFrame.w - (numCols * itemW + innerMargin * (numCols - 1))) /
+        2;
     }
 
     const col = index % numCols;

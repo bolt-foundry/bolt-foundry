@@ -11,4 +11,30 @@ export function useFeatureVariant(str: string) {
   return true;
 }
 
-const tempSwears = ["ass", "bitch", "cock", "cunt", "dick", "dickhead", "douche", "fuck", "fucked", "fucker", "fucking", "fucks", "pussy", "shit", "bitching", "motherfucker", "motherfuckers", "goddammit", "fucker", "retarded", "asshole", "shitty", "nigga", "nigger", "shittier"];
+const tempSwears = [
+  "ass",
+  "bitch",
+  "cock",
+  "cunt",
+  "dick",
+  "dickhead",
+  "douche",
+  "fuck",
+  "fucked",
+  "fucker",
+  "fucking",
+  "fucks",
+  "pussy",
+  "shit",
+  "bitching",
+  "motherfucker",
+  "motherfuckers",
+  "goddammit",
+  "fucker",
+  "retarded",
+  "asshole",
+  "shitty",
+  "nigga",
+  "nigger",
+  "shittier",
+];

@@ -1,4 +1,4 @@
-import { IntrinsicNodeType } from '../comp-backing-model.js';
+import { IntrinsicNodeType } from "../comp-backing-model.js";
 
 export function renderCompVideoLayersInDOM(comp, containerEl, imageSources) {
   if (!comp.rootNode) return;
@@ -18,7 +18,7 @@ export function renderCompVideoLayersInDOM(comp, containerEl, imageSources) {
     comp.rootNode,
     comp,
     imageSources,
-    elementState
+    elementState,
   );
 
   // remove layers that went away
@@ -32,12 +32,12 @@ export function renderCompVideoLayersInDOM(comp, containerEl, imageSources) {
   let orderDiffers = false;
   const n = Math.min(
     elementState.initial.displayOrder.length,
-    elementState.final.displayOrder.length
+    elementState.final.displayOrder.length,
   );
   for (let i = 0; i < n; i++) {
     if (
       elementState.initial.displayOrder[i] !==
-      elementState.final.displayOrder[i]
+        elementState.final.displayOrder[i]
     ) {
       orderDiffers = true;
       break;
@@ -67,7 +67,7 @@ function collectVideoLayerChildren(containerEl) {
     if (!layerId) {
       console.error(
         "Child in video container not tagged with layerId, this shouldn't happen: ",
-        child
+        child,
       );
       continue;
     }
@@ -82,7 +82,7 @@ function recurseRenderNode(
   node,
   comp,
   imageSources,
-  elementState
+  elementState,
 ) {
   let srcDOM;
   let srcId;
@@ -91,21 +91,21 @@ function recurseRenderNode(
   switch (node.constructor.nodeType) {
     case IntrinsicNodeType.VIDEO:
       const src = imageSources.videoSlots.find(
-        (s) => s.vcsSourceId === node.src
+        (s) => s.vcsSourceId === node.src,
       );
 
       if (src && src.domElement) {
         srcId = node.src;
 
-        if (src.domElement.nodeName === 'IMG') {
+        if (src.domElement.nodeName === "IMG") {
           srcDOM = src.domElement;
           isImg = true;
-        } else if (src.domElement.nodeName === 'VIDEO') {
+        } else if (src.domElement.nodeName === "VIDEO") {
           srcDOM = src.domElement;
         } else {
           console.error(
-            'Unknown DOM element present in imageSources.videoSlots, not image or video: ',
-            src.domElement
+            "Unknown DOM element present in imageSources.videoSlots, not image or video: ",
+            src.domElement,
           );
         }
       }
@@ -122,26 +122,26 @@ function recurseRenderNode(
     // it's not enough to identify layers by just the node uuid
     // because the video node's source attribute may change;
     // instead reconcile using the uuid + source tuple.
-    const layerId = node.uuid + ':' + srcId;
+    const layerId = node.uuid + ":" + srcId;
 
     let el = elementState.initial.byLayerId[layerId];
     if (!el) {
       if (isImg) {
-        el = document.createElement('img');
+        el = document.createElement("img");
         el.src = srcDOM.src;
       } else {
-        el = document.createElement('video');
+        el = document.createElement("video");
         el.srcObject = srcDOM.srcObject;
-        el.setAttribute('muted', true);
-        el.setAttribute('autoPlay', true);
+        el.setAttribute("muted", true);
+        el.setAttribute("autoPlay", true);
       }
-      el.setAttribute('data-vcs-video-layer-id', layerId);
+      el.setAttribute("data-vcs-video-layer-id", layerId);
 
       containerEl.appendChild(el);
     }
 
-    let style = '';
-    style += 'position: absolute; ';
+    let style = "";
+    style += "position: absolute; ";
     style += `top: ${frame.y}px; left: ${frame.x}px; `;
     style += `width: ${frame.w}px; height: ${frame.h}px; `;
 
@@ -154,7 +154,7 @@ function recurseRenderNode(
     }
 
     if (node.scaleMode) {
-      const cssFit = node.scaleMode === 'fit' ? 'contain' : 'cover';
+      const cssFit = node.scaleMode === "fit" ? "contain" : "cover";
       style += `object-fit: ${cssFit}; `;
     }
 

@@ -9,6 +9,9 @@ export class BfNode<
   ChildRequiredProps extends BfNodeRequiredProps = BfNodeRequiredProps,
   ChildOptionalProps extends BfNodeOptionalProps = BfNodeOptionalProps,
   ChildCreationMetadata extends BfNodeCreationMetadata = BfNodeCreationMetadata,
-> extends BfModel<ChildRequiredProps, ChildOptionalProps, ChildCreationMetadata> {
-  
+> extends BfModel<
+  ChildRequiredProps,
+  ChildOptionalProps,
+  ChildCreationMetadata
+> {
 }

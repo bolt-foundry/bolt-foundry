@@ -20,7 +20,7 @@ export const schema = makeSchema({
 });
 
 export function build(configLocation: string = "packages") {
-  logger.info(`Building schema for ${configLocation}`)
+  logger.info(`Building schema for ${configLocation}`);
   makeSchema({
     types,
     plugins: [connectionPlugin({
@@ -32,11 +32,13 @@ export function build(configLocation: string = "packages") {
       },
     },
     outputs: {
-      schema: new URL(import.meta.resolve(`${configLocation}/graphql/schema.graphql`))
-        .pathname,
-      typegen:
-        new URL(import.meta.resolve(`${configLocation}/__generated__/_nexustypes.ts`))
+      schema:
+        new URL(import.meta.resolve(`${configLocation}/graphql/schema.graphql`))
           .pathname,
+      typegen: new URL(
+        import.meta.resolve(`${configLocation}/__generated__/_nexustypes.ts`),
+      )
+        .pathname,
     },
   });
 }

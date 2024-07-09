@@ -1,16 +1,16 @@
-import * as React from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import * as React from "react";
+import { v4 as uuidv4 } from "uuid";
 
-import { Composition, render } from '../src/index.js';
-import { renderCompInCanvas } from '../src/render/canvas.js';
-import { renderCompVideoLayersInDOM } from '../src/render/video-dom.js';
-import { makeVCSRootContainer } from '../src/loader-base.js';
-import * as ViewContexts from '../src/react/contexts/index.js';
+import { Composition, render } from "../src/index.js";
+import { renderCompInCanvas } from "../src/render/canvas.js";
+import { renderCompVideoLayersInDOM } from "../src/render/video-dom.js";
+import { makeVCSRootContainer } from "../src/loader-base.js";
+import * as ViewContexts from "../src/react/contexts/index.js";
 
-import { loadFontsAsync } from './font-loader.js';
+import { loadFontsAsync } from "./font-loader.js";
 
 // composition path is replaced by our webpack config
-import * as VCSComp from '__VCS_COMP_PATH__';
+import * as VCSComp from "__VCS_COMP_PATH__";
 
 export async function startDOMOutputAsync(rootEl, w, h, imageSources, opts) {
   const {
@@ -25,7 +25,7 @@ export async function startDOMOutputAsync(rootEl, w, h, imageSources, opts) {
 
   console.assert(
     w > 0 && h > 0,
-    `startDOMOutputAsync: Invalid viewport size specified: ${w}, ${h}`
+    `startDOMOutputAsync: Invalid viewport size specified: ${w}, ${h}`,
   );
 
   const vcs = new VCSBrowserOutput(
@@ -35,15 +35,15 @@ export async function startDOMOutputAsync(rootEl, w, h, imageSources, opts) {
     scaleFactor,
     updateCb,
     errorCb,
-    getAssetUrlCb
+    getAssetUrlCb,
   );
 
-  console.log('created renderer %s: viewport size %d * %d', vcs.uuid, w, h);
+  console.log("created renderer %s: viewport size %d * %d", vcs.uuid, w, h);
 
-  if (typeof enablePreload === 'boolean') {
+  if (typeof enablePreload === "boolean") {
     vcs.enableAssetPreload = enablePreload;
   }
-  if (typeof enableSceneDescOutput === 'boolean') {
+  if (typeof enableSceneDescOutput === "boolean") {
     vcs.enableSceneDescOutput = enableSceneDescOutput;
   }
 
@@ -97,19 +97,19 @@ class VCSBrowserOutput {
     // TODO: should be delegated to the owner of this output,
     // so they can decide what to preload and where in the DOM it should go
     if (!this.preloadContainerEl) {
-      this.preloadContainerEl = document.createElement('div');
-      this.preloadContainerEl.className = 'vcs-asset-preload-container';
+      this.preloadContainerEl = document.createElement("div");
+      this.preloadContainerEl.className = "vcs-asset-preload-container";
       this.preloadContainerEl.setAttribute(
-        'style',
-        'opacity: 0;' +
-          'z-index: 1;' +
-          'position: fixed;' +
-          'pointer-events: none;'
+        "style",
+        "opacity: 0;" +
+          "z-index: 1;" +
+          "position: fixed;" +
+          "pointer-events: none;",
       );
       if (document.body.firstElementChild) {
         document.body.insertBefore(
           this.preloadContainerEl,
-          document.body.firstElementChild
+          document.body.firstElementChild,
         );
       } else {
         document.body.appendChild(this.preloadContainerEl);
@@ -121,7 +121,7 @@ class VCSBrowserOutput {
   getAssetUrl(name, namespace, type) {
     // default implementation.
     // owner of the output can replace this behavior by setting getAssetUrlCb
-    if (type === 'font') {
+    if (type === "font") {
       return `res/fonts/${name}`;
     }
     return name;
@@ -142,7 +142,7 @@ class VCSBrowserOutput {
     await loadFontsAsync(
       this.getAssetUrlCb,
       this.appendPreloadedAssetToDOM.bind(this),
-      wantedFamilies
+      wantedFamilies,
     );
   }
 
@@ -154,9 +154,9 @@ class VCSBrowserOutput {
       Array.isArray(this.compositionInterface.imagePreloads)
     ) {
       for (const imgName of this.compositionInterface.imagePreloads) {
-        const url = this.getAssetUrlCb(imgName, 'composition', 'image');
+        const url = this.getAssetUrlCb(imgName, "composition", "image");
         if (!url) {
-          console.warn('** Unable to get URL for image preload: ', imgName);
+          console.warn("** Unable to get URL for image preload: ", imgName);
         } else {
           promises.push(
             new Promise((resolve, reject) => {
@@ -166,12 +166,13 @@ class VCSBrowserOutput {
                 resolve({ name: imgName, image: img });
               };
               img.onerror = () => {
-                const msg = `Image preload failed, composition asset '${imgName}'`;
+                const msg =
+                  `Image preload failed, composition asset '${imgName}'`;
                 console.error(msg);
                 reject(new Error(msg));
               };
               img.src = url;
-            })
+            }),
           );
         }
       }
@@ -188,7 +189,7 @@ class VCSBrowserOutput {
     for (let i = 0; i < imageSources.videoSlots.length; i++) {
       const { id, element } = imageSources.videoSlots[i];
       this.imageSources.videoSlots.push({
-        vcsSourceType: 'video',
+        vcsSourceType: "video",
         vcsSourceId: id !== undefined ? id : i,
         domElement: element,
       });
@@ -199,7 +200,7 @@ class VCSBrowserOutput {
       for (const obj of this.preloadedImages) {
         const { name, image } = obj;
         this.imageSources.assetImages[name] = {
-          vcsSourceType: 'compositionAsset',
+          vcsSourceType: "compositionAsset",
           vcsSourceId: name,
           domElement: image,
         };
@@ -207,22 +208,23 @@ class VCSBrowserOutput {
     }
     for (const key in imageSources.assetImages) {
       this.imageSources.assetImages[key] = {
-        vcsSourceType: 'compositionAsset',
+        vcsSourceType: "compositionAsset",
         vcsSourceId: key,
         domElement: imageSources.assetImages[key],
       };
     }
 
     // add the WebFrame renderer's singleton live asset
-    this.imageSources.assetImages['__webframe'] = {
-      vcsSourceType: 'liveAsset',
-      vcsSourceId: '__webframe',
+    this.imageSources.assetImages["__webframe"] = {
+      vcsSourceType: "liveAsset",
+      vcsSourceId: "__webframe",
     };
   }
 
   resetOutputScalingCSS() {
-    this.videoBox.style = `position: absolute; width: 100%; height: 100%; transform: scale(${this.scaleFactor}); transform-origin: top left;`;
-    this.fgCanvas.style = 'position: absolute; width: 100%; height: auto;';
+    this.videoBox.style =
+      `position: absolute; width: 100%; height: 100%; transform: scale(${this.scaleFactor}); transform-origin: top left;`;
+    this.fgCanvas.style = "position: absolute; width: 100%; height: auto;";
   }
 
   setScaleFactor(v) {
@@ -242,7 +244,7 @@ class VCSBrowserOutput {
         // in production mode, skip params declared experimental
         if (this.isProductionBuild) {
           const { status } = paramDesc;
-          if (status === 'experimental') continue;
+          if (status === "experimental") continue;
         }
         arr.push(paramDesc);
       }
@@ -255,7 +257,7 @@ class VCSBrowserOutput {
     // the interface definition object.
     // initializing fonts and other preloads needs this.
     this.compositionInterface = this.preprocessCompositionInterface(
-      VCSComp.compositionInterface
+      VCSComp.compositionInterface,
     );
 
     // load fonts and images.
@@ -271,17 +273,18 @@ class VCSBrowserOutput {
     }
 
     // create an inner container that will hold the styles
-    const innerRoot = document.createElement('div');
+    const innerRoot = document.createElement("div");
     rootEl.appendChild(innerRoot);
 
-    innerRoot.className = 'vcs-render-inner';
-    innerRoot.setAttribute('id', 'vcsrender_' + this.uuid);
+    innerRoot.className = "vcs-render-inner";
+    innerRoot.setAttribute("id", "vcsrender_" + this.uuid);
 
-    innerRoot.style = `position: relative; aspect-ratio: ${this.viewportSize.w} / ${this.viewportSize.h};`;
+    innerRoot.style =
+      `position: relative; aspect-ratio: ${this.viewportSize.w} / ${this.viewportSize.h};`;
 
     // create elements to contain rendering
-    this.videoBox = document.createElement('div');
-    this.fgCanvas = document.createElement('canvas');
+    this.videoBox = document.createElement("div");
+    this.fgCanvas = document.createElement("canvas");
     this.fgCanvas.width = this.viewportSize.w;
     this.fgCanvas.height = this.viewportSize.h;
     innerRoot.appendChild(this.videoBox);
@@ -298,7 +301,7 @@ class VCSBrowserOutput {
     this.comp = new Composition(
       this.viewportSize,
       this.compUpdated.bind(this),
-      this.compGetSourceMetadata.bind(this)
+      this.compGetSourceMetadata.bind(this),
     );
 
     await textPromise;
@@ -310,7 +313,7 @@ class VCSBrowserOutput {
       if (!id || id.length < 1) continue;
       if (!defaultValue) continue;
 
-      let value = type === 'boolean' ? !!defaultValue : defaultValue;
+      let value = type === "boolean" ? !!defaultValue : defaultValue;
 
       paramValues[id] = value;
     }
@@ -328,9 +331,9 @@ class VCSBrowserOutput {
             ViewContexts.RenderingEnvironmentType.PARTICIPANT_CLIENT,
         },
         paramValues,
-        this.errorCb
+        this.errorCb,
       ),
-      this.comp
+      this.comp,
     );
 
     this.startT = Date.now() / 1000;
@@ -354,7 +357,7 @@ class VCSBrowserOutput {
         try {
           sceneDesc = comp.writeSceneDescription(this.imageSources);
         } catch (e) {
-          console.error('unable to write scenedesc: ', e);
+          console.error("unable to write scenedesc: ", e);
           return;
         }
       }
@@ -362,14 +365,14 @@ class VCSBrowserOutput {
     }
 
     if (opts && opts.newWebFrameProps) {
-      console.log('got webframe props update: ', opts.newWebFrameProps);
+      console.log("got webframe props update: ", opts.newWebFrameProps);
       // TODO: do something with these props -- currently not handled at all in web client
     }
   }
 
   compGetSourceMetadata(comp, type, src) {
     let ret = {};
-    if (type === 'image') {
+    if (type === "image") {
       const desc = this.imageSources.assetImages[src];
       let img;
       if (desc && (img = desc.domElement)) {
@@ -389,16 +392,16 @@ class VCSBrowserOutput {
     const videoT = overriddenVideoTime ?? t - this.startT;
     // console.log('rendering frame at video time %f', videoT);
 
-      const playbackState = this.inPostRoll ? 'postroll' : 'playing'; // type defined in TimeContext.js
+    const playbackState = this.inPostRoll ? "postroll" : "playing"; // type defined in TimeContext.js
 
-      this.rootContainerRef.current.setVideoTime(videoT, playbackState);
+    this.rootContainerRef.current.setVideoTime(videoT, playbackState);
 
-      this.lastT = t;
+    this.lastT = t;
 
-      const t1 = Date.now() / 1000;
-      // console.log("updated react, time spent %f ms", Math.round((t1-t)*1000));
+    const t1 = Date.now() / 1000;
+    // console.log("updated react, time spent %f ms", Math.round((t1-t)*1000));
 
-      renderCompInCanvas(this.comp, this.fgCanvas, this.imageSources, true);
+    renderCompInCanvas(this.comp, this.fgCanvas, this.imageSources, true);
     // requestAnimationFrame(this.renderFrame.bind(this));
   }
 
@@ -415,8 +418,8 @@ class VCSBrowserOutput {
   setActiveVideoInputSlots(arr) {
     if (!Array.isArray(arr)) {
       console.error(
-        '** setActiveVideoInputSlots: invalid object, expected array: ' +
-          typeof arr
+        "** setActiveVideoInputSlots: invalid object, expected array: " +
+          typeof arr,
       );
       return;
     }
@@ -457,7 +460,7 @@ class VCSBrowserOutput {
 
     setTimeout(() => {
       this.stopped = true;
-      console.log('stopped VCS output %s', this.uuid);
+      console.log("stopped VCS output %s", this.uuid);
     }, postrollTime * 1000);
   }
 }

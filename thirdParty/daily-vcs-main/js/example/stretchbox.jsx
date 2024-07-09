@@ -1,28 +1,28 @@
-import * as React from 'react';
-import { Box, Text, Video, Image } from '#vcs-react/components';
-import { useActiveVideo, useParams } from '#vcs-react/hooks';
-import { pad } from '#vcs-stdlib/layouts';
+import * as React from "react";
+import { Box, Image, Text, Video } from "#vcs-react/components";
+import { useActiveVideo, useParams } from "#vcs-react/hooks";
+import { pad } from "#vcs-stdlib/layouts";
 
 export const compositionInterface = {
   displayMeta: {
-    name: 'Stretch Box',
-    description: 'Renders an adaptive text container',
+    name: "Stretch Box",
+    description: "Renders an adaptive text container",
   },
   params: [
     {
-      id: 'textContent',
-      type: 'text',
+      id: "textContent",
+      type: "text",
       defaultValue:
-        'Hello world. Lorem ipsum dolor sit amet. Word 123, second 456, third 789.',
+        "Hello world. Lorem ipsum dolor sit amet. Word 123, second 456, third 789.",
     },
     {
-      id: 'maxBoxWidth_gu',
-      type: 'number',
+      id: "maxBoxWidth_gu",
+      type: "number",
       defaultValue: 24,
     },
     {
-      id: 'iconSize_gu',
-      type: 'number',
+      id: "iconSize_gu",
+      type: "number",
       defaultValue: 5,
     },
   ],
@@ -53,13 +53,13 @@ export default function StretchBoxComposition() {
 
 function AdaptiveTextAndIcon({ content, maxWidth_gu, iconSize_gu }) {
   const bgStyle = {
-    fillColor: 'rgba(50, 60, 160, 0.9',
+    fillColor: "rgba(50, 60, 160, 0.9",
   };
   const textStyle = {
     fontSize_gu: 1.5,
-    textColor: 'white',
+    textColor: "white",
   };
-  const subtitleStyle = { fontSize_gu: 0.9, fontStyle: 'italic' };
+  const subtitleStyle = { fontSize_gu: 0.9, fontStyle: "italic" };
 
   return (
     <Box
@@ -127,7 +127,7 @@ const layoutFuncs = {
     const pxPerGu = layoutCtx.pixelsPerGridUnit;
     const interval_px = pxPerGu;
 
-    layoutCtx.useChildStacking({ direction: 'y', interval_px });
+    layoutCtx.useChildStacking({ direction: "y", interval_px });
 
     return parentFrame;
   },

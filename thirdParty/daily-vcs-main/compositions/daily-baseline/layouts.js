@@ -1,27 +1,27 @@
-import { PositionCorner } from './constants.js';
+import { PositionCorner } from "./constants.js";
 
 import {
-  pad,
-  offset,
+  column,
   fit,
+  grid,
+  offset,
+  pad,
+  splitAcrossLongerDimension,
   splitHorizontal,
   splitVertical,
-  splitAcrossLongerDimension,
-  column,
-  grid,
-} from '#vcs-stdlib/layouts';
+} from "#vcs-stdlib/layouts";
 
 // --- layout functions and utils ---
 
 export {
-  pad,
-  offset,
+  column,
   fit,
+  grid,
+  offset,
+  pad,
+  splitAcrossLongerDimension,
   splitHorizontal,
   splitVertical,
-  splitAcrossLongerDimension,
-  column,
-  grid,
 };
 
 function placeTextImpl(parentFrame, w, h, params, pxPerGu) {
@@ -33,22 +33,22 @@ function placeTextImpl(parentFrame, w, h, params, pxPerGu) {
 
   switch (params.vAlign) {
     default:
-    case 'top':
+    case "top":
       break;
 
-    case 'bottom':
+    case "bottom":
       y += parentFrame.h - h;
       yOff = -yOff; // flip offset direction
       break;
 
-    case 'center':
+    case "center":
       y += (parentFrame.h - h) / 2;
       break;
   }
 
   switch (params.hAlign) {
-    case 'center':
-    case 'right':
+    case "center":
+    case "right":
       w = parentFrame.w; // the text overlay is parent-sized if not default alignment
       break;
   }
@@ -89,7 +89,7 @@ function placeInCorner(
   positionCorner,
   parentFrame,
   marginX,
-  marginY
+  marginY,
 ) {
   if (
     positionCorner === PositionCorner.TOP_LEFT ||
@@ -133,7 +133,7 @@ export function pip(parentFrame, params, layoutCtx) {
     positionCorner,
     parentFrame,
     margin,
-    margin
+    margin,
   ));
 
   return { x, y, w, h };
@@ -298,7 +298,7 @@ export function lowerThird(parentFrame, params, layoutCtx) {
     positionCorner,
     parentFrame,
     marginX,
-    marginY
+    marginY,
   ));
 
   return { x, y, w, h };
@@ -320,7 +320,7 @@ export function textStack(parentFrame, params, layoutCtx) {
   const pxPerGu = layoutCtx.pixelsPerGridUnit;
   const interval_px = pxPerGu;
 
-  layoutCtx.useChildStacking({ direction: 'y', interval_px });
+  layoutCtx.useChildStacking({ direction: "y", interval_px });
 
   return parentFrame;
 }

@@ -30,7 +30,7 @@ async function clientRendererMain(
   });
   const queryParamsObj = new URLSearchParams(request.url);
   const queryParams = Object.fromEntries(queryParamsObj.entries());
-  const {params: routeParams} = matchRouteWithParams(pathname);
+  const { params: routeParams } = matchRouteWithParams(pathname);
 
   const clientEnvironment = {
     initialPath: pathname,
@@ -40,7 +40,7 @@ async function clientRendererMain(
     routeParams,
     queryParams,
   };
-  
+
   const serverRelayEnvironment = getEnvironment();
 
   const serverEnvironment = {
@@ -51,7 +51,7 @@ async function clientRendererMain(
     featureFlags: {} as FeatureFlags,
     featureVariants: {} as FeatureVariants,
     GOOGLE_DEVELOPER_API_KEY: Deno.env.get("GOOGLE_DEVELOPER_API_KEY") ?? "",
-    content: "", 
+    content: "",
     phBootstrap: {},
     IS_SERVER_RENDERING: true,
   };

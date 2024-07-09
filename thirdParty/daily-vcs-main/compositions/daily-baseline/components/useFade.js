@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useVideoTime } from '#vcs-react/hooks';
+import * as React from "react";
+import { useVideoTime } from "#vcs-react/hooks";
 
 export function useFade({
   enableFade,

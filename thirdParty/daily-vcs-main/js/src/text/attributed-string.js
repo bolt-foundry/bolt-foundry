@@ -1,5 +1,5 @@
-import { getNumericFontWeightFromCSSValue } from './font.js';
-import fontSetup from './font-setup.js';
+import { getNumericFontWeightFromCSSValue } from "./font.js";
+import fontSetup from "./font-setup.js";
 
 const kFallbackFont = fontSetup.fallbackFontFamily;
 
@@ -37,10 +37,10 @@ function computeStyleAttributes(styledObj, viewport, pxPerGu) {
     // PostScript name for the font they want, so omit family-based lookup.
     fontFamily = styledObj.fontPSName;
     fontWeight = 400;
-    fontStyle = 'normal';
+    fontStyle = "normal";
   } else {
     fontFamily = styledObj.fontFamily || kFallbackFont;
-    fontStyle = styledObj.fontStyle || 'normal';
+    fontStyle = styledObj.fontStyle || "normal";
 
     fontWeight = parseFloat(styledObj.fontWeight);
     if (!isFinite(fontWeight)) {
@@ -50,7 +50,7 @@ function computeStyleAttributes(styledObj, viewport, pxPerGu) {
     }
   }
 
-  let textAlign = styledObj.textAlign || 'left';
+  let textAlign = styledObj.textAlign || "left";
 
   let color, opacity, shadow;
   color = Array.isArray(styledObj.color) ? styledObj.color : [];
@@ -93,12 +93,12 @@ export function makeAttributedStringDesc(string, styledObj, viewport, pxPerGu) {
       "** couldn't get font '%s' / %s / %s, will default",
       fontFamily,
       fontWeight,
-      fontStyle
+      fontStyle,
     );
     font = fontSetup.getFont({ fontFamily: kFallbackFont, fontWeight: 400 });
     if (!font) {
       console.assert(
-        `Fallback font ${kFallbackFont} is not available, engine is misconfigured`
+        `Fallback font ${kFallbackFont} is not available, engine is misconfigured`,
       );
     }
   }

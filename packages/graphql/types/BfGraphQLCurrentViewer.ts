@@ -49,7 +49,8 @@ export const BfGraphQLCurrentViewer = interfaceType({
       resolve: async (_parent, _args, { bfCurrentViewer }: GraphQLContext) => {
         let actor = null;
         if (
-          toBfGid(bfCurrentViewer.organizationBfGid) == bfCurrentViewer.personBfGid
+          toBfGid(bfCurrentViewer.organizationBfGid) ==
+            bfCurrentViewer.personBfGid
         ) {
           actor = await BfPerson.find(
             bfCurrentViewer,

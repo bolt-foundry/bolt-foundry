@@ -28,11 +28,13 @@ export function build(configLocation: string = "packages") {
       },
     },
     outputs: {
-      schema: new URL(import.meta.resolve(`${configLocation}/graphql/schema.graphql`))
-        .pathname,
-      typegen:
-        new URL(import.meta.resolve(`${configLocation}/__generated__/_nexustypes.ts`))
+      schema:
+        new URL(import.meta.resolve(`${configLocation}/graphql/schema.graphql`))
           .pathname,
+      typegen: new URL(
+        import.meta.resolve(`${configLocation}/__generated__/_nexustypes.ts`),
+      )
+        .pathname,
     },
   });
 }

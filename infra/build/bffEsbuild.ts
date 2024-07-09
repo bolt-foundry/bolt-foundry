@@ -25,7 +25,7 @@ const extractGraphqlTags = (contents: string) => {
 const replaceTagsWithImports = async (
   contents: string,
   matches: string[],
-  rootDirectory = "packages"
+  rootDirectory = "packages",
 ) => {
   let updatedContents = contents;
   const artifactsDirectory = `${rootDirectory}/__generated__`;
@@ -252,7 +252,7 @@ export const denoPlugin = {
         }
 
         case "npm:": {
-          const [specifierWithNoSlash, ...rest] = url.pathname.split("/")
+          const [specifierWithNoSlash, ...rest] = url.pathname.split("/");
           const specifier = `npm:${specifierWithNoSlash}`;
           const resolvedSpecifier = denoLock.packages.specifiers[specifier];
           logger.trace(
@@ -275,7 +275,6 @@ export const denoPlugin = {
             mainPath = join(mainPath, "index.js");
           }
 
-          
           if (rest.length > 2) {
             const restPath = rest.join("/");
             const completeRestPath = join(packagePath, restPath);
@@ -284,7 +283,6 @@ export const denoPlugin = {
               mainPath = completeRestPath;
             }
           }
-
 
           return {
             path: mainPath,
@@ -322,10 +320,15 @@ export const denoPlugin = {
       const graphqlTags = extractGraphqlTags(source);
       let contents = source;
       if (graphqlTags.length > 0) {
-        const relativeLocation = args.path.split(Deno.env.get("BF_PATH") ?? "")[1];
+        const relativeLocation =
+          args.path.split(Deno.env.get("BF_PATH") ?? "")[1];
         const rootDirectory = relativeLocation.split("/")[1];
-        
-        contents = await replaceTagsWithImports(source, graphqlTags, rootDirectory);
+
+        contents = await replaceTagsWithImports(
+          source,
+          graphqlTags,
+          rootDirectory,
+        );
       }
       const ext = args.path.match(/[^.]+$/);
       const loader = (ext ? ext[0] : "ts") as esbuild.Loader;

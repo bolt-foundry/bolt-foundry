@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useActiveVideo, useAudioOnlyPeers } from '#vcs-react/hooks';
+import * as React from "react";
+import { useActiveVideo, useAudioOnlyPeers } from "#vcs-react/hooks";
 
 // a utility hook that builds the list of participants to be displayed.
 // it first includes the video input slots, then any audio-only participants
@@ -37,11 +37,11 @@ export function useActiveVideoAndAudio({
     let items = activeIds.map((videoId, i) => {
       return {
         index: i,
-        key: 'video_' + i,
+        key: "video_" + i,
         isAudioOnly: false,
         isScreenshare: activeScreenshareIds.includes(videoId),
         videoId,
-        displayName: displayNamesById[videoId] || '',
+        displayName: displayNamesById[videoId] || "",
         highlighted: videoId === dominantId,
         paused: pausedById[videoId],
       };
@@ -52,15 +52,15 @@ export function useActiveVideoAndAudio({
         audioOnlyPeers.map((peer, i) => {
           return {
             index: items.length + i,
-            key: 'audioOnly_' + i,
+            key: "audioOnly_" + i,
             isAudioOnly: true,
             isScreenshare: false,
             videoId: null,
-            displayName: peer.displayName || 'Audio participant',
+            displayName: peer.displayName || "Audio participant",
             highlighted: false,
             paused: peer.audio.paused,
           };
-        })
+        }),
       );
     }
 

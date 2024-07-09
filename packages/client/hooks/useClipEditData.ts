@@ -1,8 +1,5 @@
 import { project as fakeData } from "packages/client/fakeData/ProjectPageOldQuery.js";
-import {
-  React,
-  ReactRelay,
-} from "deps.ts";
+import { React, ReactRelay } from "deps.ts";
 // import { useClipEditData_clip$key } from "packages/__generated__/useClipEditData_clip.graphql.ts";
 import { DGWord } from "packages/types/transcript.ts";
 const { useState, useEffect, useMemo, useReducer } = React;

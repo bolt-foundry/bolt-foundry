@@ -1,15 +1,15 @@
-import { IntrinsicNodeType } from '../comp-backing-model.js';
-import { roundRect } from './canvas-utils.js';
-import { encodeCompVideoSceneDesc } from './video-scenedesc.js';
+import { IntrinsicNodeType } from "../comp-backing-model.js";
+import { roundRect } from "./canvas-utils.js";
+import { encodeCompVideoSceneDesc } from "./video-scenedesc.js";
 
 const CanvasRenderMode = {
-  ALL: 'all',
-  GRAPHICS_SUBTREE_ONLY: 'graphics-subtree-only',
-  BG_GRAPHICS_SUBTREE_ONLY: 'bg-graphics-subtree-only',
-  VIDEO_PREVIEW: 'video-preview',
+  ALL: "all",
+  GRAPHICS_SUBTREE_ONLY: "graphics-subtree-only",
+  BG_GRAPHICS_SUBTREE_ONLY: "bg-graphics-subtree-only",
+  VIDEO_PREVIEW: "video-preview",
 };
 
-const kVideoPreviewColors = ['#f22', '#4c4', '#34f', '#ec1', '#2ad', '#92c'];
+const kVideoPreviewColors = ["#f22", "#4c4", "#34f", "#ec1", "#2ad", "#92c"];
 
 export function renderCompInCanvas(comp, canvas, imageSources, renderAll) {
   if (!comp.rootNode) return;
@@ -20,7 +20,7 @@ export function renderCompInCanvas(comp, canvas, imageSources, renderAll) {
   const viewportW = comp.viewportSize.w;
   const viewportH = comp.viewportSize.h;
 
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
 
   ctx.save();
 
@@ -34,7 +34,7 @@ export function renderCompInCanvas(comp, canvas, imageSources, renderAll) {
       CanvasRenderMode.ALL,
       comp.rootNode,
       comp,
-      imageSources
+      imageSources,
     );
   } else {
     // background clipped by video layers
@@ -51,7 +51,7 @@ export function renderCompInCanvas(comp, canvas, imageSources, renderAll) {
       comp.rootNode,
       comp,
       imageSources,
-      { continueAtNode }
+      { continueAtNode },
     );
   }
 
@@ -66,7 +66,7 @@ export function encodeCanvasDisplayList_fg(comp, canvasDL, imageSources) {
     CanvasRenderMode.GRAPHICS_SUBTREE_ONLY,
     comp.rootNode,
     comp,
-    imageSources
+    imageSources,
   );
 }
 
@@ -74,7 +74,7 @@ export function encodeCanvasDisplayList_fg_vlClip(
   comp,
   canvasDL,
   imageSources,
-  videoLayers
+  videoLayers,
 ) {
   const ctx = canvasDL.getContext();
 
@@ -91,7 +91,7 @@ export function encodeCanvasDisplayList_fg_vlClip(
     comp.rootNode,
     comp,
     imageSources,
-    { continueAtNode }
+    { continueAtNode },
   );
 }
 
@@ -113,7 +113,7 @@ function recurseBackground(ctx, comp, imageSources, videoLayers) {
     }
   }
   // use even-odd filling rule to render the holes
-  ctx.clip('evenodd');
+  ctx.clip("evenodd");
 
   function bgDoneCb(recState, node) {
     function recurseToTopLevelParent(n) {
@@ -125,8 +125,9 @@ function recurseBackground(ctx, comp, imageSources, videoLayers) {
       if (
         p.parent?.constructor.nodeType === IntrinsicNodeType.ROOT &&
         p.parent.children.length === 1
-      )
+      ) {
         return n;
+      }
 
       return recurseToTopLevelParent(p);
     }
@@ -164,7 +165,7 @@ function recurseRenderNode(
   node,
   comp,
   imageSources,
-  recState
+  recState,
 ) {
   let writeContent = true;
   let recurseChildren = true;
@@ -191,8 +192,7 @@ function recurseRenderNode(
 
   let frame = node.layoutFrame;
 
-  const hasCornerRadius =
-    node.style &&
+  const hasCornerRadius = node.style &&
     Number.isFinite(node.style.cornerRadius_px) &&
     node.style.cornerRadius_px > 0;
 
@@ -234,7 +234,7 @@ function recurseRenderNode(
         frame.y,
         frame.w,
         frame.h,
-        node.style.cornerRadius_px
+        node.style.cornerRadius_px,
       );
     } else {
       ctx.beginPath();
@@ -257,7 +257,7 @@ function recurseRenderNode(
   if (writeContent) {
     // encode asset references explicitly when writing a display list
     const isVCSDisplayListEncoder =
-      typeof ctx.drawImage_vcsDrawable === 'function';
+      typeof ctx.drawImage_vcsDrawable === "function";
 
     let fillColor;
     let strokeColor;
@@ -280,32 +280,32 @@ function recurseRenderNode(
         break;
       }
       case IntrinsicNodeType.IMAGE: {
-        let placeholderFillColor = 'rgba(0, 150, 60, 0.5)';
+        let placeholderFillColor = "rgba(0, 150, 60, 0.5)";
 
         if (node.src && node.src.length > 0) {
           srcDrawable = images ? images[node.src] : null;
           if (!srcDrawable) {
             warningOutText = `Missing image:\n${node.src}`;
-            placeholderFillColor = 'rgba(0, 50, 200, 0.5)';
+            placeholderFillColor = "rgba(0, 50, 200, 0.5)";
             if (!s_missingAssetsNotified.has(node.src)) {
               console.error(
-                'Unable to find specified source image: ',
+                "Unable to find specified source image: ",
                 node.src,
-                images
+                images,
               );
               // to reduce log spam, only write this error once
               s_missingAssetsNotified.add(node.src);
             }
-          } else if (srcDrawable.vcsSourceType === 'liveAsset') {
+          } else if (srcDrawable.vcsSourceType === "liveAsset") {
             srcDrawable = {
               ...srcDrawable,
               liveAssetUpdateKey: node.liveAssetUpdateKey,
             };
 
             // TODO: render live asset with an actual preview
-            fillColor = 'white';
+            fillColor = "white";
             textContent = `Live asset placeholder: ${srcDrawable.vcsSourceId}`;
-            textStyle = { textColor: 'rgba(0, 0, 0, 0.5)' };
+            textStyle = { textColor: "rgba(0, 0, 0, 0.5)" };
           }
         }
         if (!srcDrawable) fillColor = placeholderFillColor;
@@ -319,8 +319,8 @@ function recurseRenderNode(
           let canDrawWebFrame = true;
 
           if (node.viewportSizeLastUpdateTs > 0) {
-            const tSinceUpdate =
-              Date.now() / 1000 - node.viewportSizeLastUpdateTs;
+            const tSinceUpdate = Date.now() / 1000 -
+              node.viewportSizeLastUpdateTs;
             if (tSinceUpdate < 0.2) {
               // if the viewport size was just changed, don't render.
               // this prevents a flash of mis-shaped content on the server.
@@ -330,11 +330,11 @@ function recurseRenderNode(
 
           if (canDrawWebFrame) {
             // for command encoding, pass the magic identifier for the webframe singleton live asset
-            const WEBFRAME_ASSET_MAGIC_ID = '__webframe';
+            const WEBFRAME_ASSET_MAGIC_ID = "__webframe";
             srcDrawable = images ? images[WEBFRAME_ASSET_MAGIC_ID] : null;
             if (!srcDrawable) {
               console.error(
-                `Can't encode WebFrame component, asset image ${WEBFRAME_ASSET_MAGIC_ID} is missing`
+                `Can't encode WebFrame component, asset image ${WEBFRAME_ASSET_MAGIC_ID} is missing`,
               );
             } else {
               // also pass the live asset update key to ensure our sceneDesc output gets refreshed regularly
@@ -346,19 +346,19 @@ function recurseRenderNode(
           }
         } else {
           // draw a non-live preview of the webframe
-          fillColor = 'white';
-          textContent = 'WebFrame: ' + node.src;
-          textStyle = { textColor: 'rgba(0, 0, 0, 0.5)' };
+          fillColor = "white";
+          textContent = "WebFrame: " + node.src;
+          textStyle = { textColor: "rgba(0, 0, 0, 0.5)" };
 
           if (node.keyPressActionLastUpdateTs > 0) {
-            const tSinceKeypress =
-              Date.now() / 1000 - node.keyPressActionLastUpdateTs;
+            const tSinceKeypress = Date.now() / 1000 -
+              node.keyPressActionLastUpdateTs;
             if (
               tSinceKeypress < 1 &&
               node.keyPressAction.name &&
               node.keyPressAction.name.length > 0
             ) {
-              textContent = 'Key pressed: ' + node.keyPressAction.name;
+              textContent = "Key pressed: " + node.keyPressAction.name;
             }
           }
         }
@@ -370,13 +370,13 @@ function recurseRenderNode(
           // these are visual aids for layout tests.
           const idx = parseInt(node.src, 10) || 0;
           fillColor = kVideoPreviewColors[idx % kVideoPreviewColors.length];
-          textContent = 'Video layer preview / ' + node.src;
+          textContent = "Video layer preview / " + node.src;
         } else {
           srcDrawable = videoSlots
             ? videoSlots.find((v) => v.vcsSourceId === node.src)
             : null;
 
-          if (!srcDrawable) fillColor = 'blue';
+          if (!srcDrawable) fillColor = "blue";
         }
         break;
       }
@@ -402,9 +402,9 @@ function recurseRenderNode(
       }
 
       if (contentW > 0 && contentH > 0) {
-        if (scaleMode === 'fit') {
+        if (scaleMode === "fit") {
           frame = fitToFrame(frame, contentW, contentH);
-        } else if (scaleMode === 'fill') {
+        } else if (scaleMode === "fill") {
           srcDrawableRegion = cropToFill(frame, contentW, contentH);
         }
       }
@@ -425,7 +425,7 @@ function recurseRenderNode(
         frame.y,
         frame.w,
         frame.h,
-        node.style.cornerRadius_px
+        node.style.cornerRadius_px,
       );
       ctx.clip();
     }
@@ -456,7 +456,7 @@ function recurseRenderNode(
             frame.x,
             frame.y,
             frame.w,
-            frame.h
+            frame.h,
           );
         } else {
           drawCmd(drawableForDrawCmd, frame.x, frame.y, frame.w, frame.h);
@@ -471,7 +471,7 @@ function recurseRenderNode(
           node.textLayoutBlocks,
           textStyle,
           frame,
-          comp
+          comp,
         );
       } else {
         drawStyledText(ctx, textContent, textStyle, frame, comp);
@@ -484,7 +484,7 @@ function recurseRenderNode(
       const warningFrame = { ...frame };
       warningFrame.x += 2;
       warningFrame.y += 2;
-      const lines = warningOutText.split('\n');
+      const lines = warningOutText.split("\n");
       for (const line of lines) {
         drawStyledText(ctx, line, warningStyle, warningFrame, comp);
         warningFrame.y += 20;
@@ -506,7 +506,7 @@ function recurseRenderNode(
           frame.y,
           frame.w,
           frame.h,
-          node.style.cornerRadius_px
+          node.style.cornerRadius_px,
         );
         ctx.stroke();
         ctx.restore();
@@ -583,9 +583,9 @@ function drawStyledTextLayoutBlocks(ctx, blocks, style, frame, comp) {
 function drawStyledText(ctx, text, style, frame, comp) {
   // when encoding a display list, prefer more easily parsed format
   const isVCSDisplayListEncoder =
-    typeof ctx.drawImage_vcsDrawable === 'function';
+    typeof ctx.drawImage_vcsDrawable === "function";
 
-  let color = style.textColor || 'white';
+  let color = style.textColor || "white";
   ctx.fillStyle = ensureCssColor(color);
 
   let fontSize_px;
@@ -596,9 +596,9 @@ function drawStyledText(ctx, text, style, frame, comp) {
   } else {
     fontSize_px = Math.round(style.fontSize_px || 24);
   }
-  let fontFamily = style.fontFamily || 'Roboto';
-  let fontStyle = style.fontStyle || '';
-  let fontWeight = style.fontWeight || '';
+  let fontFamily = style.fontFamily || "Roboto";
+  let fontStyle = style.fontStyle || "";
+  let fontWeight = style.fontWeight || "";
 
   if (isVCSDisplayListEncoder) {
     ctx.font = [fontWeight, fontStyle, fontSize_px, fontFamily];
@@ -618,7 +618,7 @@ function drawStyledText(ctx, text, style, frame, comp) {
       ctx.lineWidth = strokeW;
 
       // round join generally looks right for text, but this should perhaps be user-controllable
-      ctx.lineJoin = 'round';
+      ctx.lineJoin = "round";
 
       ctx.strokeText(text, textX, textY);
     }

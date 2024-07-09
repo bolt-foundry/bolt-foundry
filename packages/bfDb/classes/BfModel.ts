@@ -99,9 +99,9 @@ abstract class BfBaseModel<
   ): Promise<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
-    logger.setLevel(logger.levels.TRACE)
+    logger.setLevel(logger.levels.TRACE);
     logVerbose("create", { currentViewer, newProps, creationMetadata });
-    logger.resetLevel()
+    logger.resetLevel();
     const newModel = new this(
       currentViewer,
       undefined,
@@ -361,7 +361,8 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       ...this.props,
       id: this.metadata.bfGid,
       // @ts-expect-error we declare the __typename in children classes as a constant
-      __typename: this.metadata.className ?? this.__typename ?? this.constructor.name,
+      __typename: this.metadata.className ?? this.__typename ??
+        this.constructor.name,
     };
   }
 
@@ -402,7 +403,9 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     await this.beforeLoad();
     await this.validatePermissions(ACCOUNT_ACTIONS.READ);
     try {
-      const sk = forceWithoutClassName ? undefined : this.constructor.name as BfSk;
+      const sk = forceWithoutClassName
+        ? undefined
+        : this.constructor.name as BfSk;
       const response = await bfGetItemByBfGid<
         TRequiredProps & Partial<TOptionalProps>,
         BfBaseModelMetadata<TCreationMetadata>

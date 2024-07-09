@@ -9,7 +9,7 @@ export async function runShellCommand(
   const env = {
     ...Deno.env.toObject(),
     ...additionalEnv,
-  }
+  };
   // deno-lint-ignore no-console
   console.log(`Running command: ${commandArray.join(" ")}`);
   let stopSpinner;
@@ -46,11 +46,12 @@ export async function runShellCommand(
 export async function runShellCommandWithOutput(
   commandArray: Array<string>,
   additionalEnv = {},
-  useSpinner = true,): Promise<string> {
+  useSpinner = true,
+): Promise<string> {
   const env = {
     ...Deno.env.toObject(),
     ...additionalEnv,
-  }
+  };
   // deno-lint-ignore no-console
   console.log(`Running command: ${commandArray.join(" ")}`);
   let stopSpinner;
@@ -71,7 +72,7 @@ export async function runShellCommandWithOutput(
   const { stdout } = await process.output();
   stopSpinner ? stopSpinner() : null;
   return new TextDecoder().decode(stdout);
-  }
+}
 
 export function registerShellCommand(
   name: string,

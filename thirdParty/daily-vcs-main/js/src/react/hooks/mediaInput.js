@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { MediaInputContext } from '../contexts/index.js';
+import * as React from "react";
+import { MediaInputContext } from "../contexts/index.js";
 
 export function useMediaInput() {
   return React.useContext(MediaInputContext);
@@ -42,7 +42,7 @@ export function useActiveVideo(opts) {
       const paused = !!slot.paused;
 
       if (!omitPaused || !paused) {
-        if (slot.type === 'screenshare') {
+        if (slot.type === "screenshare") {
           if (!omitExtraScreenshares || activeScreenshareIds.length < 1) {
             activeIds.push(videoId);
             activeScreenshareIds.push(videoId);

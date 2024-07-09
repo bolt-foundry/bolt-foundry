@@ -10,7 +10,6 @@ export const useIntersectionObserver = (threshold = 0.01) => {
       entries.forEach((entry) => {
         setIsVisible(entry.intersectionRatio >= threshold);
       });
-
     }, { threshold });
 
     const currentDomRef = domRef.current;
