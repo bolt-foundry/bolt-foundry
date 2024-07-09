@@ -109,7 +109,7 @@ export async function buildRelay(args: Array<string> = []) {
   }
   await Deno.writeTextFile(
     staticImportFileLocation,
-    imports.join("\n"),
+    `/* @generated */\n${imports.join("\n")}`,
   );
 
   const buildTypesCmd = new Deno.Command("deno", {
