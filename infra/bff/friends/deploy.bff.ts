@@ -6,7 +6,7 @@ import { register } from "infra/bff/mod.ts";
 
 register(
   "deploy",
-  "Pulls changes down. WILL OVERWRITE ANY CURRENT CHANGES.",
+  "Pulls changes down. WILL OVERWRITE ANY CURRENT CHANGES. WILL ALSO MAKE A GIT COMMIT.",
   async () => {
     const ghToken = await runShellCommandWithOutput([
       "replit-git-askpass",
@@ -23,6 +23,11 @@ register(
     await runShellCommand(["sl", "goto", "main", "--clean"], {
       GH_TOKEN: ghToken,
     });
+    console.log(
+      "We will automatically make a git commit in 5 seconds. Please cancel if you don't want this."
+    );
+    await runShellCommand(["sleep", "5"]);
+    await runShellCommand(["git", "commit", "-a", "-m", "Deploy"]);
     return 0;
   },
 );
