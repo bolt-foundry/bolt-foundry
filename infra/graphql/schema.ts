@@ -6,7 +6,7 @@ import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
 
-export const schema = makeSchema({
+export const schema = import.meta.main ? null : makeSchema({
   types,
   plugins: [connectionPlugin({
     includeNodesField: true,
@@ -30,6 +30,13 @@ export function build(configLocation: string = "packages") {
       abstractTypeStrategies: {
         __typename: true,
       },
+    },
+    formatTypegen: (content, type) => {
+      if (type === "schema") {
+        return `### @generated \n${content}`;
+      } else {
+        return `/* @generated */\n${content}`;
+      }
     },
     outputs: {
       schema:
