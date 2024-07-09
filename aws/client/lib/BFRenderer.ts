@@ -842,8 +842,8 @@ export default class BFRenderer {
   }
 
   async setupAudioRendering() {
-    return await this.setupAudioRenderingUsingVideoElement();
-    // return await this.setupAudioRenderingUsingFetch();
+    // return await this.setupAudioRenderingUsingVideoElement();
+    return await this.setupAudioRenderingUsingFetch();
   }
 
   async seekVideoElements(currentTimecode: number) {
