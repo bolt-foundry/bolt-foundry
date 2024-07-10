@@ -42,6 +42,7 @@ register(
       "-l",
       "1",
     ]);
+    await runShellCommand(["git", "add", "."]);
     const logInfo = parseLogInfo(logInfoString);
     await runShellCommand([
       "git",

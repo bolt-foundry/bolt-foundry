@@ -15,7 +15,7 @@ export class BfClip extends BfNode<BfClipProps> {
   
   async createNewClipReview() {
     const clipReview = await BfClipReview.create(this.currentViewer, {
-      title: this.props.title,
+      title: `review of ${this.props.title}`,
       awsprojectSlug: "not real please fix",
     });
     await BfEdge.create(this.currentViewer, {}, {bfPid: toBfPid(this.metadata.bfGid), bfTid: toBfTid(clipReview.metadata.bfGid)})
