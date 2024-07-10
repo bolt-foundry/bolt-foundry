@@ -99,9 +99,8 @@ abstract class BfBaseModel<
   ): Promise<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
-    logger.setLevel(logger.levels.TRACE);
     logVerbose("create", { currentViewer, newProps, creationMetadata });
-    logger.resetLevel();
+    console.log(creationMetadata)
     const newModel = new this(
       currentViewer,
       undefined,
