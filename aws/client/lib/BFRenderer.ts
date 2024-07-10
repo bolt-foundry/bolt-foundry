@@ -22,7 +22,17 @@ const logVerbose = logger.debug;
 const logError = logger.error;
 
 function getAssetUrlCb(assetName: string) {
-  return `/resources/gxpkg/${assetName}`;
+  const SUPPORTED_ASSET_EXTENSIONS = [
+    "png",
+    "jpg",
+    "jpeg",
+  ]
+  const isValidAsset = SUPPORTED_ASSET_EXTENSIONS.includes(
+    assetName.split(".").pop() ?? ""
+  )
+  if (isValidAsset) {
+    return `/resources/gxpkg/${assetName}`;
+  }
 }
 
 const ENABLE_TRACKING = true; // disabled until we figure out what's going on with tensorflow.
