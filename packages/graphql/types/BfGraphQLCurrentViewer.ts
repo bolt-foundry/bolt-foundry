@@ -39,7 +39,7 @@ export const Actor = interfaceType({
   },
 });
 
-export const BfGraphQLCurrentViewer = interfaceType({
+export const BfGraphQLCurrentViewerType = interfaceType({
   name: "BfCurrentViewer",
   description:
     "The person acting on this request. The actor can be an organiazation or person. The role is the role of the actor in the organization. The person is the person who is acting.",
