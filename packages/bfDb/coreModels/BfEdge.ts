@@ -1,18 +1,18 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { CreationMetadata } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import { BfPid, BfTid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { BfGid, BfPid, BfTid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfModelErrorNotImplemented } from "packages/bfDb/classes/BfModelError.ts";
 
-export type BfEdgeRequiredProps = {
-  action: string;
+export type BfEdgeRequiredProps = Record<string, never>;
+
+export type BfEdgeOptionalProps = {
+  action?: string;
 };
 
-export type BfEdgeOptionalProps = Record<string, unknown>;
-
 type AssocCreationMetadata = CreationMetadata & {
-  bfTid: BfTid;
-  bfPid: BfPid;
+  bfTid: BfTid | BfGid;
+  bfPid: BfPid | BfGid;
 };
 
 export class BfEdge<
