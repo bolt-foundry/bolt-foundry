@@ -149,10 +149,10 @@ export async function bfPutItem<
       lastUpdatedTimestamp = new Date(itemMetadata.lastUpdated).toISOString();
     }
 
-    await sql`INSERT INTO bfdb(bf_gid, bf_cid, PK, SK, props, bf_pid, bf_oid, sort_value, class_name, created_at, last_updated)
+    await sql`INSERT INTO bfdb(bf_gid, bf_cid, PK, SK, props, bf_pid, bf_oid, bf_tid, sort_value, class_name, created_at, last_updated)
                      VALUES(${itemMetadata.bfGid}, ${itemMetadata.bfCid}, ${pk}, ${sk}, ${
       JSON.stringify(itemProps)
-    }, ${itemMetadata.bfPid || null}, ${itemMetadata.bfOid || null}, ${
+    }, ${itemMetadata.bfPid || null}, ${itemMetadata.bfOid || null}, ${itemMetadata.bfTid}, ${
       itemMetadata.sortValue || null
     }, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp})
                      ON CONFLICT (bf_gid) DO UPDATE SET
@@ -162,6 +162,7 @@ export async function bfPutItem<
                        props = EXCLUDED.props,
                        bf_pid = EXCLUDED.bf_pid,
                        bf_oid = EXCLUDED.bf_oid,
+                       bf_tid = EXCLUDED.bf_tid,
                        sort_value = EXCLUDED.sort_value,
                        class_name = EXCLUDED.class_name,
                        created_at = EXCLUDED.created_at,
@@ -214,7 +215,7 @@ export async function bfFindItems<
 
 export async function bfQueryItems<
   TProps = Props,
-  TMetadata extends Row<TProps> = Row<TProps>,
+  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
 >(
   metadataToQuery: Partial<TMetadata>,
   propsToQuery: Partial<TProps> = {},
@@ -224,7 +225,9 @@ export async function bfQueryItems<
   const metadataConditions: string[] = [];
   const propsConditions: string[] = [];
 
-  for (const [key, value] of Object.entries(metadataToQuery)) {
+  for (const [originalKey, value] of Object.entries(metadataToQuery)) {
+    // convert key from camelCase to snake_case
+    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const)
     metadataConditions.push(`${key} = '${value}'`);
   }
 
