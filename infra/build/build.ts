@@ -9,7 +9,7 @@ import { workerList } from "infra/build/workerList.ts";
 export async function build(
   buildOptions = {
     // minify: true,
-    sourcemap: "inline",
+    sourcemap: "inline" as const,
     sourceRoot: `${Deno.cwd()}`,
   },
 ) {

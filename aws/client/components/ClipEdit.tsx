@@ -1,9 +1,4 @@
-import {
-  graphql,
-  type Maybe,
-  React,
-  ReactRelay,
-} from "aws/client/deps.ts";
+import { graphql, type Maybe, React, ReactRelay } from "aws/client/deps.ts";
 import Button from "aws/client/ui_components/Button.tsx";
 import VideoPlayer, {
   type VideoPlayerHandles,
@@ -40,6 +35,7 @@ import ManualCropMenu, {
 } from "aws/client/components/ManualCropMenu.tsx";
 import Toggle from "aws/client/ui_components/Toggle.tsx";
 import Icon from "aws/client/ui_components/Icon.tsx";
+import { AddImageMenu } from "/aws/client/components/AddImageMenu.tsx";
 
 const log = createLogger("Clip", "debug");
 const logError = createLogger("Clip", "error");
@@ -149,6 +145,10 @@ function ClipEdit({
     Partial<TrimmingType> | null
   >();
   const [croppingWord, setCroppingWord] = React.useState<DGWord | null>();
+  const [stickerStartWord, setStickerStartWord] = React.useState<
+    DGWord | null
+  >();
+  const [stickerEndWord, setStickerEndWord] = React.useState<DGWord | null>();
   const [commitUpdate, isUpdatingMutationInFlight] = useMutation(
     updateClipMutation,
   );
@@ -457,6 +457,10 @@ function ClipEdit({
     });
   }
 
+  function handleDispatchAction(action: ActionType, payload: unknown) {
+    dispatch({ type: action, payload });
+  }
+
   let displayRatio = "wide";
   if (settings.ratio === 9 / 16) {
     displayRatio = "tall";
@@ -654,6 +658,28 @@ function ClipEdit({
                           });
                         }}
                         handleCropOnWord={() => setCroppingWord(word)}
+                        handleAddImage={() => {
+                          if (stickerStartWord) {
+                            setStickerEndWord(word);
+                            handleDispatchAction(
+                              ActionType.SET_STICKER_END_TIME,
+                              word.end,
+                            );
+                            console.log("last word set");
+                            console.log(stickerStartWord);
+                            console.log(stickerEndWord);
+                          } else {
+                            setStickerStartWord(word);
+                            handleDispatchAction(
+                              ActionType.SET_STICKER_START_TIME,
+                              word.start,
+                            );
+
+                            console.log("first word set");
+                            console.log(stickerStartWord);
+                            console.log(stickerEndWord);
+                          }
+                        }}
                       />
                     )}
                   </span>
@@ -698,6 +724,17 @@ function ClipEdit({
             handleClose={() => setCroppingWord(null)}
           />
         )}
+        {stickerEndWord && (
+          <AddImageMenu
+            handleClose={() => {
+              setStickerStartWord(null);
+              setStickerEndWord(null);
+            }}
+            handleDispatchAction={handleDispatchAction}
+            startingImageWord={stickerStartWord}
+            endingImageWord={stickerEndWord}
+          />
+        )}
       </div>
 
       <div className="clipFooter">
@@ -738,6 +775,11 @@ function ClipEdit({
                 wordsToUpdate: state.wordsToUpdate,
                 manualCrop: state.manualCrop,
                 manualCropActive: state.manualCropActive,
+                sticker: {
+                  stickerUrl: state.stickerUrl,
+                  stickerStartTime: state.stickerStartTime,
+                  stickerEndTime: state.stickerEndTime,
+                }
               }}
               disabled={invalidTitle}
               downloadTitle={draftClip.title}

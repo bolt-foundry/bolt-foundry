@@ -137,8 +137,10 @@ export default function SettingsForm(
   const enableCaptionFonts = useFeatureFlag("enable_caption_fonts");
   const enableFraming = useFeatureFlag("enable_face_tracking");
   const enableCaptionTemplates = useFeatureFlag("enable_caption_templates");
-  const enableSettingsPresets = useFeatureFlag("enable_settings_presets");
-  const enableWatermarkLogoPicker = useFeatureFlag("enable_watermark_picker");
+  // const enableSettingsPresets = useFeatureFlag("enable_settings_presets");
+  // const enableWatermarkLogoPicker = useFeatureFlag("enable_watermark_picker");
+  const enableSettingsPresets = true;
+  const enableWatermarkLogoPicker = true;
 
   React.useEffect(() => {
     if (setInitialSettings != null) {
@@ -148,11 +150,11 @@ export default function SettingsForm(
 
   const captionColorValue = rgbToHex(
     draftSettings.captionColor ?? initialSettings.captionColor ??
-    "rgb(255, 255, 255)",
+      "rgb(255, 255, 255)",
   );
   const captionHighlightColorValue = rgbToHex(
     draftSettings.captionHighlightColor ??
-    initialSettings.captionHighlightColor ?? "rgb(255, 215, 0)",
+      initialSettings.captionHighlightColor ?? "rgb(255, 215, 0)",
   );
   const showCaptionsValue = draftSettings.showCaptions ??
     initialSettings.showCaptions ?? false;

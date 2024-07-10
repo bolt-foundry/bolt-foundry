@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(@tensorflow/tfjs-core@4.15.0/dist/ops/pad2d) denonext production */
-import{assert as e}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/util.js";import{op as n}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/operation.js";import{pad as m}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/pad.js";function f(o,t,r=0){return e(t.length===2&&t[0].length===2&&t[1].length===2,()=>"Invalid number of paddings. Must be length of 2 each."),m(o,t,r)}var a=n({pad2d_:f});export{a as pad2d};
-//# sourceMappingURL=pad2d.js.map

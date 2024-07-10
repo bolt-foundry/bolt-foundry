@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(@tensorflow/tfjs-core@4.15.0/dist/ops/multi_rnn_cell) denonext production */
-import{convertToTensor as a,convertToTensorArray as c}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/tensor_util_env.js";import{op as f}from"/v135/@tensorflow/tfjs-core@4.15.0/denonext/dist/ops/operation.js";function C(e,s,i,p){let N=a(s,"data","multiRNNCell"),h=c(i,"c","multiRNNCell"),m=c(p,"h","multiRNNCell"),l=N,o=[];for(let t=0;t<e.length;t++){let n=e[t](l,h[t],m[t]);o.push(n[0]),o.push(n[1]),l=n[1]}let r=[],u=[];for(let t=0;t<o.length;t+=2)r.push(o[t]),u.push(o[t+1]);return[r,u]}var w=f({multiRNNCell_:C});export{w as multiRNNCell};
-//# sourceMappingURL=multi_rnn_cell.js.map
