@@ -1,4 +1,4 @@
-/// <reference types="https://esm.sh/v135/@types/dom-webcodecs@0.1.11/index.d.ts" />
+/// <reference types="https://esm.sh/v135/@types/dom-
 import PoseFilter from "aws/client/lib/poseFilter.ts";
 import {
   createMuxedFile,
@@ -16,6 +16,7 @@ import {
   ManualCrop,
 } from "aws/client/components/ManualCropMenu.tsx";
 import { getLogger } from "deps.ts";
+import { StickerType } from "/aws/client/components/DownloadClip.tsx";
 
 const logger = getLogger(import.meta);
 const logVerbose = logger.debug;
@@ -50,6 +51,7 @@ type ConstructorProps = {
   transcriptWords: Array<DGWord>;
   manualCrop: Array<ManualCrop>;
   manualCropActive: boolean;
+  sticker: StickerType;
   title: string;
 };
 
@@ -68,6 +70,32 @@ function convertPoseToMap(pose) {
 // @ts-expect-error #techdebt
 function convertPosesToMap(poses) {
   return poses.map(convertPoseToMap);
+}
+
+function drawSticker(
+  ctx: CanvasRenderingContext2D | null,
+  width: number,
+  height: number,
+  currentTime: number,
+  sticker: StickerType,
+) {
+  if (!ctx) return;
+  // // if (!sticker.stickerStartTime || !sticker.stickerEndTime) {
+
+  // //   return;
+  // // }
+  // if (
+  //   sticker.stickerStartTime >= currentTime &&
+  //   sticker.stickerEndTime <= currentTime
+  // )
+  {
+    const img = new Image();
+    img.src = sticker.stickerUrl;
+    img.onload = () => {
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0, width, height);
+    };
+  }
 }
 
 function drawCropFrameDebug(
@@ -227,6 +255,7 @@ export default class BFRenderer {
   private perfLogger: PerfLogger;
   private manualCrop: Array<ManualCrop>;
   private manualCropActive = false;
+  private sticker: StickerType;
   private title: string;
 
   constructor(props: ConstructorProps) {
@@ -242,6 +271,7 @@ export default class BFRenderer {
     // -------
     this.manualCrop = props.manualCrop;
     this.manualCropActive = props.manualCropActive;
+    this.sticker = props.sticker;
     this.title = props.title ?? "";
     this.videoUrl = props.videoUrl;
     this.outputWidth = props.width;
@@ -483,8 +513,10 @@ export default class BFRenderer {
         // adjust x based on the new width
         x = filteredX - width / 2;
       }
+
       // center face in image
       const ctx = this.cropCanvas.getContext("2d");
+
       ctx?.drawImage(
         this.preCropCanvas,
         x, // The x-coordinate on the source video (left) where to start cropping
@@ -586,7 +618,6 @@ export default class BFRenderer {
         h = newHeight;
       }
     }
-
     const ctx = this.preCropCanvas.getContext("2d");
     ctx?.drawImage(
       this.srcVideoElement,
@@ -722,7 +753,9 @@ export default class BFRenderer {
   async setupAudioRenderingUsingVideoElement() {
     logger.debug("setupAudioRenderingUsingVideoElement");
     let lastKnownTimestamp: number | null = null;
-    const sampleRate = await getSampleRateFromVideoElement(this.audioRenderingElement);
+    const sampleRate = await getSampleRateFromVideoElement(
+      this.audioRenderingElement,
+    );
     this.sampleRate = sampleRate;
     return new Promise<void>((resolve, reject) => {
       // Creating video element to render audio

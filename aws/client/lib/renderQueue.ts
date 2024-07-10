@@ -5,6 +5,7 @@ import { captureEvent } from "aws/events/mod.ts";
 import type { Maybe } from "aws/client/deps.ts";
 import { RenderSettings } from "aws/types/settings.ts";
 import { type ManualCrop } from "aws/client/components/ManualCropMenu.tsx";
+import { StickerType } from "/aws/client/components/DownloadClip.tsx";
 
 type QueueRenderParams = {
   videoUrl: string;
@@ -17,6 +18,7 @@ type QueueRenderParams = {
   personId: string;
   manualCrop: Array<ManualCrop>;
   manualCropActive: boolean;
+  sticker: StickerType;
   title: string;
 };
 type QueueResponse = Promise<File>;
@@ -41,6 +43,7 @@ type QueueItem = {
   personId: string;
   manualCrop: Array<ManualCrop>;
   manualCropActive: boolean;
+  sticker: StickerType;
   title: string;
 };
 
@@ -64,6 +67,7 @@ export function queueRender({
   personId,
   manualCrop,
   manualCropActive,
+  sticker,
   title,
 }: QueueRenderParams): QueueResponse {
   let resolver;
@@ -89,6 +93,7 @@ export function queueRender({
     personId,
     manualCrop,
     manualCropActive,
+    sticker,
     title,
   };
   queue.push(item);
@@ -234,6 +239,7 @@ async function renderItem(item: QueueItem): Promise<File> {
     personId,
     manualCrop,
     manualCropActive,
+    sticker,
     title,
   } = item;
   const rootElement = document.createElement("div");
@@ -260,9 +266,11 @@ async function renderItem(item: QueueItem): Promise<File> {
     settings,
     manualCrop,
     manualCropActive,
+    sticker,
     title,
   };
 
+  console.log("renderQueue", sticker);
   const bfRenderer = new BFRenderer(rendererParams);
   // Add a cancel method to the events for this clipId
   const cancel = () => bfRenderer.cancel();

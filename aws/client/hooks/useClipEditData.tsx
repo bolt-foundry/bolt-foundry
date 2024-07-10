@@ -41,6 +41,9 @@ export enum ActionType {
   SET_TITLE = "SET_TITLE",
   SET_MANUAL_CROP = "SET_MANUAL_CROP",
   SET_MANUAL_CROP_ACTIVE = "SET_MANUAL_CROP_ACTIVE",
+  SET_STICKER_URL = "SET_STICKER_URL",
+  SET_STICKER_START_TIME = "SET_STICKER_START_TIME",
+  SET_STICKER_END_TIME = "SET_STICKER_END_TIME",
 }
 
 type ClipReducerState = {
@@ -56,6 +59,9 @@ type ClipReducerState = {
   title: string;
   manualCrop: Array<ManualCrop>;
   manualCropActive: boolean;
+  stickerUrl: string;
+  stickerStartTime: number;
+  stickerEndTime: number;
 };
 
 type ClipReducerAction =
@@ -70,7 +76,10 @@ type ClipReducerAction =
   | { type: ActionType.SET_WORD_TO_UPDATE; payload: DGWord }
   | { type: ActionType.SET_TITLE; payload: string }
   | { type: ActionType.SET_MANUAL_CROP; payload: Array<ManualCrop> }
-  | { type: ActionType.SET_MANUAL_CROP_ACTIVE; payload: boolean };
+  | { type: ActionType.SET_MANUAL_CROP_ACTIVE; payload: boolean }
+  | { type: ActionType.SET_STICKER_URL; payload: string }
+  | { type: ActionType.SET_STICKER_START_TIME; payload: number }
+  | { type: ActionType.SET_STICKER_END_TIME; payload: number };
 
 const fragment = await graphql`
   fragment useClipEditData_clip on Clip {
@@ -142,6 +151,15 @@ const clipReducer = (
     }
     case ActionType.SET_MANUAL_CROP_ACTIVE: {
       return { ...state, manualCropActive: action.payload };
+    }
+    case ActionType.SET_STICKER_URL: {
+      return { ...state, stickerUrl: action.payload };
+    }
+    case ActionType.SET_STICKER_START_TIME: {
+      return { ...state, stickerStartTime: action.payload };
+    }
+    case ActionType.SET_STICKER_END_TIME: {
+      return { ...state, stickerEndTime: action.payload };
     }
     default:
       return state;

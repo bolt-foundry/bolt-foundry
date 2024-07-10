@@ -1,9 +1,4 @@
-import {
-  graphql,
-  type Maybe,
-  React,
-  ReactRelay,
-} from "aws/client/deps.ts";
+import { graphql, type Maybe, React, ReactRelay } from "aws/client/deps.ts";
 import Button from "aws/client/ui_components/Button.tsx";
 import { DownloadClip_clip$key } from "aws/__generated__/DownloadClip_clip.graphql.ts";
 import { createLogger } from "aws/logs/mod.ts";
@@ -37,6 +32,12 @@ function sanitizeFilename(filename: string) {
     .toLowerCase(); // Convert the entire string to lowercase
 }
 
+export type StickerType = {
+  stickerUrl?: string | null;
+  stickerStartTime?: number | null;
+  stickerEndTime?: number | null;
+};
+
 type ClipEdits = {
   startIndex?: number | null;
   endIndex?: number | null;
@@ -46,6 +47,7 @@ type ClipEdits = {
   wordsToUpdate?: Array<DGWord> | null;
   manualCrop?: Array<ManualCrop>;
   manualCropActive?: boolean;
+  sticker?: StickerType;
 };
 
 type DownloadClipProps = {
@@ -250,6 +252,8 @@ const DownloadClip: React.FC<DownloadClipProps> = (
     const transcriptToRender = filteredTranscriptWordsWithEdits;
 
     try {
+      console.log("clip edits", clipEdits)
+      console.log("download clip", clipEdits?.sticker);
       const renderParams = {
         startTime,
         endTime,
@@ -261,6 +265,7 @@ const DownloadClip: React.FC<DownloadClipProps> = (
         personId: personId!,
         manualCrop,
         manualCropActive,
+        sticker: clipEdits?.sticker ?? {},
         title: data.title ?? "",
       };
       const file = await queueRender(renderParams);
