@@ -22,7 +22,7 @@
   "fmt": {
     "exclude": [
       "__generated__",
-      "infra/__generated",
+      "infra/__generated__",
       "packages/__generated__",
       "node_modules",
       ".sl",
