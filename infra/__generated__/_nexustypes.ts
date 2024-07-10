@@ -12,6 +12,10 @@ declare global {
      * The `File` scalar type represents a file upload.
      */
     file<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "File";
+    /**
+     * a fully qualified URL
+     */
+    url<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "Url";
   }
 }
 declare global {
@@ -20,6 +24,10 @@ declare global {
      * The `File` scalar type represents a file upload.
      */
     file<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "File";
+    /**
+     * a fully qualified URL
+     */
+    url<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "Url";
     /**
      * Adds a Relay-style connection to the type, with numerous options for configuration
      *
@@ -58,6 +66,7 @@ export interface NexusGenScalars {
   Boolean: boolean
   ID: string
   File: File
+  Url: string
 }
 
 export interface NexusGenObjects {
@@ -75,6 +84,25 @@ export interface NexusGenObjects {
   BfAccountEdge: { // root type
     cursor: string; // String!
     node?: NexusGenRootTypes['BfAccount'] | null; // BfAccount
+  }
+  BfClip: { // root type
+    title?: string | null; // String
+  }
+  BfClipReview: { // root type
+    mediaUrl?: NexusGenScalars['Url'] | null; // Url
+    title?: string | null; // String
+  }
+  BfClipReviewConnection: { // root type
+    edges?: Array<NexusGenRootTypes['BfClipReviewEdge'] | null> | null; // [BfClipReviewEdge]
+    nodes?: Array<NexusGenRootTypes['BfClipReview'] | null> | null; // [BfClipReview]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfClipReviewEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BfClipReview'] | null; // BfClipReview
+  }
+  BfContainerProject: { // root type
+    name?: string | null; // String
   }
   BfCurrentViewerAccessToken: { // root type
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
@@ -106,7 +134,8 @@ export interface NexusGenObjects {
 export interface NexusGenInterfaces {
   Actor: core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'>;
-  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
+  BfMedia: core.Discriminate<'BfMediaBffsFile', 'required'> | core.Discriminate<'BfNodeGoogleDriveFile', 'required'>;
+  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfContainerProject', 'required'> | core.Discriminate<'BfMediaBffsFile', 'required'> | core.Discriminate<'BfNodeGoogleDriveFile', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   IBfGraphQLNode: any;
 }
 
@@ -135,6 +164,29 @@ export interface NexusGenFieldTypes {
   BfAccountEdge: { // field return type
     cursor: string; // String!
     node: NexusGenRootTypes['BfAccount'] | null; // BfAccount
+  }
+  BfClip: { // field return type
+    clipReviews: NexusGenRootTypes['BfClipReviewConnection'] | null; // BfClipReviewConnection
+    id: string; // ID!
+    title: string | null; // String
+  }
+  BfClipReview: { // field return type
+    id: string; // ID!
+    mediaUrl: NexusGenScalars['Url'] | null; // Url
+    title: string | null; // String
+  }
+  BfClipReviewConnection: { // field return type
+    edges: Array<NexusGenRootTypes['BfClipReviewEdge'] | null> | null; // [BfClipReviewEdge]
+    nodes: Array<NexusGenRootTypes['BfClipReview'] | null> | null; // [BfClipReview]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfClipReviewEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BfClipReview'] | null; // BfClipReview
+  }
+  BfContainerProject: { // field return type
+    id: string; // ID!
+    name: string | null; // String
   }
   BfCurrentViewerAccessToken: { // field return type
     actor: NexusGenRootTypes['Actor'] | null; // Actor
@@ -165,6 +217,7 @@ export interface NexusGenFieldTypes {
     readTextFile: string | null; // String
     submitContactForm: NexusGenRootTypes['SubmitContactFormPayload'] | null; // SubmitContactFormPayload
     switchAccount: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
+    upsertClip: NexusGenRootTypes['BfClip'] | null; // BfClip
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -217,6 +270,29 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'BfAccount'
   }
+  BfClip: { // field return type name
+    clipReviews: 'BfClipReviewConnection'
+    id: 'ID'
+    title: 'String'
+  }
+  BfClipReview: { // field return type name
+    id: 'ID'
+    mediaUrl: 'Url'
+    title: 'String'
+  }
+  BfClipReviewConnection: { // field return type name
+    edges: 'BfClipReviewEdge'
+    nodes: 'BfClipReview'
+    pageInfo: 'PageInfo'
+  }
+  BfClipReviewEdge: { // field return type name
+    cursor: 'String'
+    node: 'BfClipReview'
+  }
+  BfContainerProject: { // field return type name
+    id: 'ID'
+    name: 'String'
+  }
   BfCurrentViewerAccessToken: { // field return type name
     actor: 'Actor'
     googleAccessToken: 'String'
@@ -246,6 +322,7 @@ export interface NexusGenFieldTypeNames {
     readTextFile: 'String'
     submitContactForm: 'SubmitContactFormPayload'
     switchAccount: 'BfCurrentViewerAccessToken'
+    upsertClip: 'BfClip'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -280,6 +357,14 @@ export interface NexusGenFieldTypeNames {
 }
 
 export interface NexusGenArgTypes {
+  BfClip: {
+    clipReviews: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
+  }
   BfPerson: {
     accounts: { // args
       after?: string | null; // String
@@ -304,6 +389,10 @@ export interface NexusGenArgTypes {
     switchAccount: { // args
       accountId: string; // ID!
     }
+    upsertClip: { // args
+      originalClipId?: string | null; // String
+      title?: string | null; // String
+    }
   }
   Query: {
     node: { // args
@@ -315,11 +404,15 @@ export interface NexusGenArgTypes {
 export interface NexusGenAbstractTypeMembers {
   Actor: "BfOrganization" | "BfPerson"
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon"
-  BfNode: "BfAccount" | "BfOrganization" | "BfPerson"
+  BfMedia: "BfMediaBffsFile" | "BfNodeGoogleDriveFile"
+  BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfContainerProject" | "BfMediaBffsFile" | "BfNodeGoogleDriveFile" | "BfOrganization" | "BfPerson"
 }
 
 export interface NexusGenTypeInterfaces {
   BfAccount: "BfNode"
+  BfClip: "BfNode"
+  BfClipReview: "BfNode"
+  BfContainerProject: "BfContainer" | "BfNode"
   BfCurrentViewerAccessToken: "BfCurrentViewer"
   BfCurrentViewerAnon: "BfCurrentViewer"
   BfOrganization: "Actor" | "BfNode"

@@ -33,10 +33,15 @@ register(
       GH_TOKEN: ghToken,
     });
     console.log(
-      "We will automatically make a git commit in 5 seconds. Please cancel if you don't want this."
+      "We will automatically make a git commit in 5 seconds. Please cancel if you don't want this.",
     );
     await runShellCommand(["sleep", "5"]);
-    const logInfoString = await runShellCommandWithOutput(["sl", "log", "-l", "1"]);
+    const logInfoString = await runShellCommandWithOutput([
+      "sl",
+      "log",
+      "-l",
+      "1",
+    ]);
     const logInfo = parseLogInfo(logInfoString);
     await runShellCommand([
       "git",
