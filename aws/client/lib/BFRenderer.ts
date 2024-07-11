@@ -10,7 +10,6 @@ import { TensorFlowPoseDetection, tfjsReady } from "aws/client/deps.ts";
 import { captureEvent } from "aws/events/mod.ts";
 import PerfLogger from "aws/perf/mod.ts";
 import { RenderSettings } from "aws/types/settings.ts";
-import { createBfLogger } from "aws/logs/mod.ts";
 import {
   getCurrentCropIndex,
   ManualCrop,
@@ -22,17 +21,7 @@ const logVerbose = logger.debug;
 const logError = logger.error;
 
 function getAssetUrlCb(assetName: string) {
-  const SUPPORTED_ASSET_EXTENSIONS = [
-    "png",
-    "jpg",
-    "jpeg",
-  ]
-  const isValidAsset = SUPPORTED_ASSET_EXTENSIONS.includes(
-    assetName.split(".").pop() ?? ""
-  )
-  if (isValidAsset) {
-    return `/resources/gxpkg/${assetName}`;
-  }
+  return `/resources/gxpkg/${assetName}`;
 }
 
 const ENABLE_TRACKING = true; // disabled until we figure out what's going on with tensorflow.
