@@ -11,7 +11,7 @@ type Props = {
   word: DGWord;
 };
 
-export function CropLine(
+export function CropModeWord(
   {
     handleChangeManualCropStartTime,
     manualCrop,

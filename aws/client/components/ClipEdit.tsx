@@ -10,7 +10,6 @@ import { DGWord } from "aws/types/transcript.ts";
 import { createLogger } from "aws/logs/mod.ts";
 import { captureEvent } from "aws/events/mod.ts";
 import {
-  useFeatureFlag,
   useFeatureVariant,
 } from "aws/client/hooks/featureFlagHooks.tsx";
 import DownloadClip from "aws/client/components/DownloadClip.tsx";
@@ -18,7 +17,7 @@ import {
   DEFAULT_CROP,
   type ManualCrop,
 } from "aws/client/components/ManualCropMenu.tsx";
-import { CropLine } from "aws/client/components/CropLine.tsx";
+import { CropModeWord } from "aws/client/components/CropModeWord.tsx";
 import { useAppEnvironment } from "aws/client/contexts/AppEnvironmentContext.tsx";
 import classnames from "aws/client/lib/classnames.ts";
 import useKeyboardInput from "aws/client/hooks/useKeyboardInput.tsx";
@@ -36,7 +35,8 @@ import ManualCropMenu, {
   getCurrentCropIndex,
 } from "aws/client/components/ManualCropMenu.tsx";
 import Toggle from "aws/client/ui_components/Toggle.tsx";
-import Icon from "aws/client/ui_components/Icon.tsx";
+import { StickerMenu } from "/aws/client/components/StickerMenu.tsx";
+import { StickerModeWord } from "/aws/client/components/StickerModeWord.tsx";
 
 const log = createLogger("Clip", "debug");
 const logError = createLogger("Clip", "error");
@@ -146,6 +146,10 @@ function ClipEdit({
     Partial<TrimmingType> | null
   >();
   const [croppingWord, setCroppingWord] = React.useState<DGWord | null>();
+  const [stickerStartWord, setStickerStartWord] = React.useState<
+    DGWord | null
+  >();
+  const [stickerEndWord, setStickerEndWord] = React.useState<DGWord | null>();
   const [commitUpdate, isUpdatingMutationInFlight] = useMutation(
     updateClipMutation,
   );
@@ -461,6 +465,13 @@ function ClipEdit({
     updateManualCrop(manualCropData);
   }
 
+  function handleChangeStickerStartTime(word: DGWord) {
+    setStickerStartWord(word)
+    }
+  function handleChangeStickerEndTime(word: DGWord) {
+    setStickerEndWord(word)
+    }
+
   function handleDeleteManualCrop(index: number) {
     const manualCropData = [...state.manualCrop] as Array<ManualCrop>;
     manualCropData.splice(index, 1);
@@ -604,93 +615,139 @@ function ClipEdit({
                   : word.punctuated_word;
                 renderedWord = `${renderedWord} `; // add a space after each word
 
-                return editMode === "crop"
-                  ? (
-                    <span
-                      key={i}
-                      className={classnames([
-                        "clipWord",
-                        { clipWordLight: isExtraText },
-                        { clipCurrentWord: isCurrentWord },
-                      ])}
-                      onClick={() =>
-                        videoPlayerRef.current?.gotoTime(word.start)}
-                      onDoubleClick={() => {
-                        handleEditCrop(word, currentCrop?.start ?? word.start);
-                      }}
-                    >
-                      {renderedWord}
-                      <CropLine
-                        handleChangeManualCropStartTime={handleChangeManualCropStartTime}
-                        manualCrop={state.manualCrop}
-                        videoPlayerRef={videoPlayerRef}
-                        word={word}
-                      />
-                    </span>
-                  )
-                  : (
-                    <span
-                      key={i}
-                      className={classnames([
-                        "clipWord",
-                        { clipWordLight: isExtraText },
-                        { clipHighlight: isHighlighted || menuOpen },
-                        { clipCurrentWord: isCurrentWord },
-                      ])}
-                      onClick={() => handleWordClick(i)}
-                      onDoubleClick={() => {
-                        handleWordClick(i);
-                        handleEditWord();
-                      }}
-                    >
-                      {renderedWord}
-                      {menuOpen && (
-                        <WordMenu
-                          index={i}
-                          startIndex={state.startIndex}
-                          endIndex={state.endIndex}
-                          editingWord={editingWord}
-                          handleWordClick={() => handleWordClick(null)}
-                          setStartIndex={(i: number) => {
-                            dispatch({
-                              type: ActionType.SET_START_INDEX,
-                              payload: i,
-                            });
-                            setSelectedWordIndex(null);
-                          }}
-                          setEndIndex={(i: number) => {
-                            dispatch({
-                              type: ActionType.SET_END_INDEX,
-                              payload: i,
-                            });
-                            setSelectedWordIndex(null);
-                          }}
-                          setStartHighlightIndex={(i: number | null) =>
-                            dispatch({
-                              type: ActionType.SET_HIGHLIGHT_START_INDEX,
-                              payload: i,
-                            })}
-                          setEndHighlightIndex={(i: number | null) =>
-                            dispatch({
-                              type: ActionType.SET_HIGHLIGHT_END_INDEX,
-                              payload: i,
-                            })}
-                          handleEditWord={() => {
-                            handleEditWord();
-                            setSelectedWordIndex(null);
-                          }}
-                          handleTrimWord={() => {
-                            setTrimmingWord({
-                              currentValue: draftClip.endTimeOverride ??
-                                data.endTimeOverride,
-                              startTime: item.start,
-                              endTime: nextStart,
-                            });
-                          }}
+                switch(editMode) {
+                  case "crop":
+                    return (
+                      <span
+                        key={i}
+                        className={classnames([
+                          "clipWord",
+                          { clipWordLight: isExtraText },
+                          { clipCurrentWord: isCurrentWord },
+                        ])}
+                        onClick={() =>
+                          videoPlayerRef.current?.gotoTime(word.start)}
+                        onDoubleClick={() => {
+                          handleEditCrop(word, currentCrop?.start ?? word.start);
+                        }}
+                      >
+                        {renderedWord}
+                        <CropModeWord
+                          handleChangeManualCropStartTime={handleChangeManualCropStartTime}
+                          manualCrop={state.manualCrop}
+                          videoPlayerRef={videoPlayerRef}
+                          word={word}
                         />
-                      )}
-                    </span>
-                  );
+                      </span>
+                    );
+                  case "sticker":
+                    return(
+                      <span
+                        key={i}
+                        className={classnames([
+                          "clipWord",
+                          { clipWordLight: isExtraText },
+                          { clipCurrentWord: isCurrentWord },
+                        ])}
+                        onClick={() =>
+                          videoPlayerRef.current?.gotoTime(word.start)}
+                        onDoubleClick={() => {
+                          if (stickerStartWord) {
+                            setStickerEndWord(word);
+                            // handleDispatchAction(
+                            //   ActionType.SET_STICKER_END_TIME,
+                            //   word.end,
+                            // );
+                            console.log("last word set");
+                            console.log(stickerStartWord);
+                            console.log(stickerEndWord);
+                          } else {
+                            setStickerStartWord(word);
+                            // handleDispatchAction(
+                            //   ActionType.SET_STICKER_START_TIME,
+                            //   word.start,
+                            // );
+
+                            console.log("first word set");
+                            console.log(stickerStartWord);
+                            console.log(stickerEndWord);
+                          }
+                        }}
+                      >
+                        {renderedWord}
+                        <StickerModeWord
+                          handleChangeStickerStartTime={handleChangeStickerStartTime}
+                          handleChangeStickerEndTime={handleChangeStickerEndTime}
+                          videoPlayerRef={videoPlayerRef}
+                          word={word}
+                        />
+                      </span>
+                    );
+                  default:
+                    return (
+                      <span
+                        key={i}
+                        className={classnames([
+                          "clipWord",
+                          { clipWordLight: isExtraText },
+                          { clipHighlight: isHighlighted || menuOpen },
+                          { clipCurrentWord: isCurrentWord },
+                        ])}
+                        onClick={() => handleWordClick(i)}
+                        onDoubleClick={() => {
+                          handleWordClick(i);
+                          handleEditWord();
+                        }}
+                      >
+                        {renderedWord}
+                        {menuOpen && (
+                          <WordMenu
+                            index={i}
+                            startIndex={state.startIndex}
+                            endIndex={state.endIndex}
+                            editingWord={editingWord}
+                            handleWordClick={() => handleWordClick(null)}
+                            setStartIndex={(i: number) => {
+                              dispatch({
+                                type: ActionType.SET_START_INDEX,
+                                payload: i,
+                              });
+                              setSelectedWordIndex(null);
+                            }}
+                            setEndIndex={(i: number) => {
+                              dispatch({
+                                type: ActionType.SET_END_INDEX,
+                                payload: i,
+                              });
+                              setSelectedWordIndex(null);
+                            }}
+                            setStartHighlightIndex={(i: number | null) =>
+                              dispatch({
+                                type: ActionType.SET_HIGHLIGHT_START_INDEX,
+                                payload: i,
+                              })}
+                            setEndHighlightIndex={(i: number | null) =>
+                              dispatch({
+                                type: ActionType.SET_HIGHLIGHT_END_INDEX,
+                                payload: i,
+                              })}
+                            handleEditWord={() => {
+                              handleEditWord();
+                              setSelectedWordIndex(null);
+                            }}
+                            handleTrimWord={() => {
+                              setTrimmingWord({
+                                currentValue: draftClip.endTimeOverride ??
+                                  data.endTimeOverride,
+                                startTime: item.start,
+                                endTime: nextStart,
+                              });
+                            }}
+                          />
+                        )}
+                      </span>
+                    );
+                  }
               })}
             </div>
           </div>
@@ -732,6 +789,17 @@ function ClipEdit({
             handleClose={() => setCroppingWord(null)}
           />
         )}
+        {stickerEndWord && (
+          <StickerMenu
+            handleClose={() => {
+              setStickerStartWord(null);
+              setStickerEndWord(null);
+            }}
+            /* handleDispatchAction={handleDispatchAction} */
+            startingImageWord={stickerStartWord}
+            endingImageWord={stickerEndWord}
+          />
+        )}
       </div>
 
       <div className="clipFooter">
@@ -749,10 +817,11 @@ function ClipEdit({
           </div>
           <div className="flexRow gap8">
             <DropdownSelector
-              options={{ "Text": "text", "Crop": "crop" }}
+              options={{ "Text": "text", "Crop": "crop", "Sticker": "sticker" }}
               value={editMode}
               onChange={setEditMode}
               placeholder="Edit mode"
+              position="top"
             />
             <Toggle
               label="Crop Active"
