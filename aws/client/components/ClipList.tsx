@@ -25,6 +25,7 @@ import {
 } from "aws/types/settings.ts";
 import useIntersectionObserver from "aws/client/hooks/useIntersectionObserver.tsx";
 import { RenderSettings } from "aws/types/settings.ts";
+import { ClipProvider } from "/aws/client/contexts/ClipContext.tsx";
 
 const { useEffect, useState, useRef, Suspense } = React;
 
@@ -419,27 +420,29 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
             kind="clip editor"
             contentXstyle={styles.contentXstyle}
           >
-            <ClipEdit
-              clip$key={clipItemsToRender[selectedClipIndex]
-                ?.node as useClipEditData_clip$key}
-              clipIndex={selectedClipIndex}
-              isSaved={false}
-              setClipChanged={setClipChanged}
-              setClickOutsideToCloseModal={setClickOutsideToCloseModal}
-              settings={settings}
-              transcriptId={transcriptId}
-              transcriptWords={transcriptWords}
-              videoUrl={data?.opurl ?? data?.videoUrl ?? ""}
-              onEditClip={() => {
-                setClipChanged(false);
-                setSelectedClipIndex(null);
-              }}
-              onSaveClip={(wordsToUpdate) => {
-                updateTranscriptWords(wordsToUpdate);
-                setClipChanged(false);
-                setSelectedClipIndex(null);
-              }}
-            />
+            <ClipProvider>
+              <ClipEdit
+                clip$key={clipItemsToRender[selectedClipIndex]
+                  ?.node as useClipEditData_clip$key}
+                clipIndex={selectedClipIndex}
+                isSaved={false}
+                setClipChanged={setClipChanged}
+                setClickOutsideToCloseModal={setClickOutsideToCloseModal}
+                settings={settings}
+                transcriptId={transcriptId}
+                transcriptWords={transcriptWords}
+                videoUrl={data?.opurl ?? data?.videoUrl ?? ""}
+                onEditClip={() => {
+                  setClipChanged(false);
+                  setSelectedClipIndex(null);
+                }}
+                onSaveClip={(wordsToUpdate) => {
+                  updateTranscriptWords(wordsToUpdate);
+                  setClipChanged(false);
+                  setSelectedClipIndex(null);
+                }}
+              />
+            </ClipProvider>
           </Modal>
         )}
     </>

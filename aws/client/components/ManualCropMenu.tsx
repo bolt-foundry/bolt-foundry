@@ -22,6 +22,14 @@ export function getCurrentCropIndex(
   }
   return manualCrop.findLastIndex((crop) => currentTime >= crop.start);
 }
+export function getCurrentCrop(
+  manualCrop: Array<ManualCrop>,
+  currentTime: number,
+  startTimecode?: number,
+): ManualCrop {
+  const currentCropIndex = getCurrentCropIndex(manualCrop, currentTime, startTimecode);
+  return manualCrop[currentCropIndex];
+}
 export const DEFAULT_CROP = {
   start: 0,
   top: 0,
