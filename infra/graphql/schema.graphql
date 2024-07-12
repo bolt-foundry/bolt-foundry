@@ -137,7 +137,6 @@ The person acting on this request. The actor can be an organiazation or person. 
 """
 interface BfCurrentViewer {
   actor: Actor
-  googleAccessToken: String
   person: BfPerson
   role: AccountRole
 }
@@ -163,7 +162,6 @@ type BfCurrentViewerAccessToken implements BfCurrentViewer {
     """foo"""
     reviewable: Boolean = true
   ): BfClipConnection
-  googleAccessToken: String
   person: BfPerson
   role: AccountRole
 }
@@ -171,7 +169,6 @@ type BfCurrentViewerAccessToken implements BfCurrentViewer {
 """The anonymous person acting on this request."""
 type BfCurrentViewerAnon implements BfCurrentViewer {
   actor: Actor
-  googleAccessToken: String
   person: BfPerson
   role: AccountRole
 }
@@ -219,7 +216,6 @@ interface IBfGraphQLNode implements BfNode {
 }
 
 type Mutation {
-  linkGoogleAccount(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
   readTextFile(file: File!): String

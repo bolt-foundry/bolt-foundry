@@ -12,20 +12,12 @@ import {
   BfAnyid,
   BfCid,
   BfGid,
-  BfPk,
-  BfSk,
   BfSortValue,
   getAvailableActionsForRole,
   JsUnixtime,
-  toBfGid,
-  toBfOid,
-  toBfOwnerWithParentPk,
-  toBfSkSorted,
-  toBfSkUnsorted,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import {
-  bfFindItems,
   bfGetItem,
   bfGetItemByBfGid,
   bfPutItem,
@@ -40,24 +32,6 @@ const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 const log = logger.trace;
 
-function metadataToBfPk(metadata: BfBaseModelMetadata): BfPk {
-  if (metadata.bfPid) {
-    return toBfOwnerWithParentPk(metadata.bfOid, metadata.bfPid);
-  }
-  return metadata.bfOid;
-}
-
-function metadataToBfSk(metadata: BfBaseModelMetadata): BfSk {
-  if (metadata.sortValue) {
-    return toBfSkSorted(
-      metadata.className,
-      metadata.sortValue,
-      metadata.bfGid,
-    );
-  }
-  return toBfSkUnsorted(metadata.className, metadata.bfGid);
-}
-
 export type BfBaseModelGraphQL<TRequiredProps, TOptionalProps> =
   & TRequiredProps
   & TOptionalProps
@@ -65,16 +39,6 @@ export type BfBaseModelGraphQL<TRequiredProps, TOptionalProps> =
     id: BfGid;
     __typename: string;
   };
-
-type ExtractProps<TModel> = TModel extends // deno-lint-ignore no-explicit-any
-BfModel<infer TRequiredProps, infer TOptionalProps, any>
-  ? TRequiredProps & TOptionalProps
-  : never;
-
-type ExtractMetadata<TModel> = TModel extends // deno-lint-ignore no-explicit-any
-BfModel<any, any, infer TCreationMetadata>
-  ? BfBaseModelMetadata<TCreationMetadata>
-  : never;
 
 abstract class BfBaseModel<
   TRequiredProps,
@@ -128,10 +92,9 @@ abstract class BfBaseModel<
     this: TThis,
     currentViewer: BfCurrentViewer,
     bfGid: BfAnyid,
-    sortValue?: BfSortValue,
   ) {
     try {
-      return await this.findX(currentViewer, bfGid, sortValue);
+      return await this.findX(currentViewer, bfGid);
     } catch (error) {
       if (
         error instanceof BfModelErrorPermission ||
@@ -153,17 +116,14 @@ abstract class BfBaseModel<
     this: TThis,
     currentViewer: BfCurrentViewer,
     bfGid: BfAnyid,
-    sortValue?: BfSortValue,
-    ignoreClassName = false,
   ): Promise<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
     const model = new this(currentViewer, undefined, undefined, {
       bfGid,
-      sortValue,
     });
-    if (currentViewer instanceof BfCurrentViewerOmni || ignoreClassName) {
-      await model.load__PRIVACY_UNSAFE(ignoreClassName);
+    if (currentViewer instanceof BfCurrentViewerOmni) {
+      await model.load__PRIVACY_UNSAFE();
     } else {
       await model.load();
     }
@@ -171,33 +131,6 @@ abstract class BfBaseModel<
     return model as
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
-  }
-
-  static async findAllForOwner<
-    TThis extends Constructor<
-      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
-    >,
-    TRequiredProps,
-    TOptionalProps,
-    TCreationMetadata extends CreationMetadata,
-  >(
-    this: TThis,
-    currentViewer: BfCurrentViewer,
-  ): Promise<
-    Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
-  > {
-    const ownerBfGid = currentViewer.organizationBfGid;
-    const items = await bfFindItems<TRequiredProps>(
-      ownerBfGid,
-      toBfSkUnsorted(this.name),
-    );
-
-    return items.map(({ props, metadata }) => {
-      const model = new this(currentViewer, props, {}, metadata, true);
-      return model as
-        & InstanceType<TThis>
-        & BfBaseModelMetadata<TCreationMetadata>;
-    });
   }
 
   static async query<
@@ -310,17 +243,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     return JSON.stringify(this.clientProps) !==
       JSON.stringify(this.serverProps);
   }
-  /**
-   * @description the partionkey key of the object, ie the owner + separator + the parent
-   * @example
-   *  "ownerbfGid>parentbfGid"
-   */
-  get pk(): BfPk {
-    return metadataToBfPk(this.metadata);
-  }
-  get sk(): BfSk {
-    return metadataToBfSk(this.metadata);
-  }
 
   get props(): TRequiredProps & Partial<TOptionalProps> {
     if (!this._cachedProps) {
@@ -381,10 +303,10 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       const response = await bfGetItem<
         TRequiredProps & Partial<TOptionalProps>,
         BfBaseModelMetadata<TCreationMetadata>
-      >(this.pk, this.sk);
+      >(this.metadata.bfOid, this.metadata.bfGid);
       if (response === null) {
         throw new BfModelErrorNotFound(
-          `Could not load ${this.constructor.name} with bfGid: ${this.metadata.bfGid} using pk: ${this.pk} and sk: ${this.sk}`,
+          `Could not load ${this.constructor.name} with bfOid: ${this.metadata.bfOid} bfGid: ${this.metadata.bfGid}`,
         );
       }
       const { props, metadata } = response;
@@ -398,20 +320,18 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     }
   }
 
-  async load__PRIVACY_UNSAFE(forceWithoutClassName = false) {
+  async load__PRIVACY_UNSAFE() {
     await this.beforeLoad();
     await this.validatePermissions(ACCOUNT_ACTIONS.READ);
     try {
-      const sk = forceWithoutClassName
-        ? undefined
-        : this.constructor.name as BfSk;
+      
       const response = await bfGetItemByBfGid<
         TRequiredProps & Partial<TOptionalProps>,
         BfBaseModelMetadata<TCreationMetadata>
-      >(this.metadata.bfGid, sk);
+      >(this.metadata.bfGid);
       if (response === null) {
         throw new BfModelErrorNotFound(
-          `Could not load ${this.constructor.name} with bfGid: ${this.metadata.bfGid} using pk: ${this.pk} and sk: ${this.sk}`,
+          `Could not load ${this.constructor.name} with bfGid: ${this.metadata.bfGid}`,
         );
       }
       const { props, metadata } = response;
@@ -423,7 +343,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     } catch (error) {
       if (error.name === "ItemNotFoundError") {
         throw new BfModelErrorNotFound(
-          `Could not find ${this.constructor.name} with bfGid: ${this.metadata.bfGid} using pk: ${this.pk} and sk: ${this.sk}`,
+          `Could not find ${this.constructor.name} with bfGid: ${this.metadata.bfGid}`,
         );
       }
       throw error;
@@ -440,8 +360,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       this.validateSave(),
     ]);
     await bfPutItem(
-      this.pk,
-      this.sk,
       this.props,
       this.metadata,
     );
@@ -463,33 +381,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
 
   validateSave(): Promise<boolean> {
     return Promise.resolve(true);
-  }
-
-  async findRelatedAssocs<TAssocModel extends BfModel<unknown>>(
-    // deno-lint-ignore no-explicit-any
-    AssocClass: new (...args: any[]) => TAssocModel,
-  ) {
-    // Here we extract the Props and Metadata types based on the klass passed to the method.
-    type RelatedProps = ExtractProps<TAssocModel>;
-    type RelatedMetadata = ExtractMetadata<TAssocModel>;
-
-    const relatedDbItems = await bfFindItems<RelatedProps, RelatedMetadata>(
-      this.pk,
-      toBfSkUnsorted(AssocClass.name),
-    );
-
-    const relatedModels = relatedDbItems.map(({ props, metadata }) => {
-      const model = new AssocClass(
-        this.currentViewer,
-        props,
-        {},
-        metadata,
-        true,
-      );
-      return model as InstanceType<typeof AssocClass> & RelatedMetadata;
-    });
-
-    return relatedModels;
   }
 }
 

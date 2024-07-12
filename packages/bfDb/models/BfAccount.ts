@@ -1,11 +1,8 @@
-import { BfModel } from "packages/bfDb/classes/BfModel.ts";
 import {
   ACCOUNT_ROLE,
   BfGid,
   toBfGid,
   toBfOid,
-  toBfPk,
-  toBfSkUnsorted,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
@@ -16,9 +13,8 @@ import {
 } from "packages/bfDb/classes/BfAuth.ts";
 import {
   BfModelErrorNotFound,
-  BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
-import { bfFindItems } from "packages/bfDb/bfDb.ts";
+import { bfQueryItems } from "packages/bfDb/bfDb.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
@@ -46,18 +42,12 @@ class BfAccountRefreshTokenExpiredError extends BfAccountErrorRefreshToken {
 export class BfAccount extends BfNode<BfAccountRequiredProps> {
   __typename = "BfAccount" as const;
 
-  static async findAllForPerson(
+  static async findAllForCurrentViewer(
     currentViewer: BfCurrentViewerAccessToken,
-    personBfGid: BfGid,
   ) {
-    if (currentViewer.personBfGid !== personBfGid) {
-      throw new BfModelErrorPermission(
-        "Current viewer does not match requested account",
-      );
-    }
-    const accounts = await bfFindItems<BfAccountRequiredProps>(
-      toBfPk(personBfGid),
-      toBfSkUnsorted("BfAccount"),
+    const accounts = await bfQueryItems<BfAccountRequiredProps>(
+      {className: this.name},
+      {personBfGid: currentViewer.personBfGid}
     );
 
     return accounts.map(({ props, metadata }) =>
@@ -68,7 +58,7 @@ export class BfAccount extends BfNode<BfAccountRequiredProps> {
   static async findDefaultForCurrentViewer(
     currentViewer: BfCurrentViewerAccessToken,
   ) {
-    const accounts = await this.findAllForOwner(currentViewer);
+    const accounts = await this.findAllForCurrentViewer(currentViewer);
     const defaultAccount =
       accounts.find((account) => account.props.role === ACCOUNT_ROLE.OWNER) ??
         accounts[0];
@@ -111,11 +101,6 @@ export class BfAccount extends BfNode<BfAccountRequiredProps> {
       }
       throw new BfAccountErrorRefreshToken();
     }
-  }
-
-  async beforeLoad() {
-    // try to load using the person's CV, not the actor CV.
-    this.metadata.bfOid = await toBfOid(this.currentViewer.personBfGid);
   }
 
   async generateAccessToken(importMeta: ImportMeta) {
