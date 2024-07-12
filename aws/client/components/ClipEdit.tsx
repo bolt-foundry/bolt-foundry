@@ -8,9 +8,7 @@ import EditWord from "aws/client/components/EditWord.tsx";
 import { DGWord } from "aws/types/transcript.ts";
 import { createLogger } from "aws/logs/mod.ts";
 import { captureEvent } from "aws/events/mod.ts";
-import {
-  useFeatureVariant,
-} from "aws/client/hooks/featureFlagHooks.tsx";
+import { useFeatureVariant } from "aws/client/hooks/featureFlagHooks.tsx";
 import DownloadClip from "aws/client/components/DownloadClip.tsx";
 import {
   DEFAULT_CROP,
@@ -53,7 +51,7 @@ export type WordData = {
   isExtraText: boolean;
   isHighlighted: boolean;
   nextStart: number;
-}
+};
 
 type ClipType = useClipEditData_clip$key;
 
@@ -147,17 +145,23 @@ function ClipEdit({
   );
   const [editMode, setEditMode] = React.useState("text");
   const {
-    croppingWord, setCroppingWord,
-    editingWord, setEditingWord,
-    selectedWordIndex, setSelectedWordIndex,
-    stickerStartWord, setStickerStartWord,
-    stickerEndWord, setStickerEndWord,
-    trimmingWord, setTrimmingWord
+    croppingWord,
+    setCroppingWord,
+    editingWord,
+    setEditingWord,
+    selectedWordIndex,
+    setSelectedWordIndex,
+    stickerStartWord,
+    setStickerStartWord,
+    stickerEndWord,
+    setStickerEndWord,
+    trimmingWord,
+    setTrimmingWord,
   } = useClipContext();
   const [isEditingTitle, setIsEditingTitle] = React.useState(false);
   const [currentTime, setCurrentTime] = React.useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false);
-  
+
   const [commitUpdate, isUpdatingMutationInFlight] = useMutation(
     updateClipMutation,
   );
@@ -403,9 +407,8 @@ function ClipEdit({
   }
 
   function goto(time: number) {
-    videoPlayerRef.current?.gotoTime(time)
+    videoPlayerRef.current?.gotoTime(time);
   }
-
 
   const handleUpdateWord = (word: DGWord) => {
     dispatch({ type: ActionType.SET_WORD_TO_UPDATE, payload: word });
@@ -566,7 +569,7 @@ function ClipEdit({
                 const isCurrentWord = currentTime >= item.start &&
                   currentTime < nextStart;
                 const word = draftWord ?? item;
-                
+
                 const swearsOptions = {
                   useAsterisks: settings.censorUseAsterisks,
                   showFirstLetter: settings.censorShowFirstLetter,
@@ -584,10 +587,10 @@ function ClipEdit({
                   isCurrentWord,
                   isExtraText,
                   isHighlighted,
-                  nextStart
-                }
+                  nextStart,
+                };
 
-                switch(editMode) {
+                switch (editMode) {
                   case "crop":
                     return (
                       <CropModeWord
@@ -599,7 +602,7 @@ function ClipEdit({
                       />
                     );
                   case "sticker":
-                    return(
+                    return (
                       <StickerModeWord
                         goto={goto}
                         wordData={wordData}

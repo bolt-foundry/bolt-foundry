@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type SettingsQuery_me$data = {
   readonly email: string | null | undefined;
@@ -30,25 +30,25 @@ const node: ReaderFragment = {
     {
       "args": null,
       "kind": "FragmentSpread",
-      "name": "SettingsProjectTabQuery_me"
+      "name": "SettingsProjectTabQuery_me",
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "name",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "email",
-      "storageKey": null
-    }
+      "storageKey": null,
+    },
   ],
   "type": "Person",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "705d451077bef6bf4bd12c929f68a220";

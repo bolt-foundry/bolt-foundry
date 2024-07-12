@@ -80,7 +80,7 @@ async function fetchQuery(
       }),
     },
   );
-  console.log(response)
+  console.log(response);
   const returnResponse = await response.json();
   if (returnResponse.errors) {
     logError(returnResponse.errors);

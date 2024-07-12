@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type useClipEditData_clip$data = {
   readonly description: string | null | undefined;
@@ -24,7 +24,9 @@ export type useClipEditData_clip$data = {
   readonly start_time: number | null | undefined;
   readonly text: string | null | undefined;
   readonly title: string | null | undefined;
-  readonly " $fragmentSpreads": FragmentRefs<"DownloadClip_clip" | "ManualCropMenu_clip" | "StarClipButton_clip">;
+  readonly " $fragmentSpreads": FragmentRefs<
+    "DownloadClip_clip" | "ManualCropMenu_clip" | "StarClipButton_clip"
+  >;
   readonly " $fragmentType": "useClipEditData_clip";
 };
 export type useClipEditData_clip$key = {
@@ -41,112 +43,112 @@ const node: ReaderFragment = {
     {
       "args": null,
       "kind": "FragmentSpread",
-      "name": "StarClipButton_clip"
+      "name": "StarClipButton_clip",
     },
     {
       "args": null,
       "kind": "FragmentSpread",
-      "name": "ManualCropMenu_clip"
+      "name": "ManualCropMenu_clip",
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "id",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "description",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "downloadUrl",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "encodingStatus",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "end_index",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "end_time",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "endTimeOverride",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "start_index",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "start_time",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "text",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "title",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "manualCrop",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "manualCropActive",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "args": null,
       "kind": "FragmentSpread",
-      "name": "DownloadClip_clip"
-    }
+      "name": "DownloadClip_clip",
+    },
   ],
   "type": "Clip",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "660e3a2ebb589473468139bba0f4594e";

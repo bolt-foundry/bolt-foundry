@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import * as _____client_relay_localResolvers_ProjectResolver from "aws/client/relay/localResolvers/ProjectResolver.ts";
 import { FragmentRefs } from "relay-runtime";
 import { opurl as projectOpurlResolverType } from "../client/relay/localResolvers/ProjectResolver.ts";
@@ -33,7 +33,7 @@ const node: ReaderFragment = {
       "args": null,
       "kind": "ScalarField",
       "name": "id",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
@@ -41,16 +41,16 @@ const node: ReaderFragment = {
       "fragment": {
         "args": null,
         "kind": "FragmentSpread",
-        "name": "ProjectResolverOpurlResolver"
+        "name": "ProjectResolverOpurlResolver",
       },
       "kind": "RelayResolver",
       "name": "opurl",
       "resolverModule": _____client_relay_localResolvers_ProjectResolver.opurl,
-      "path": "opurl"
-    }
+      "path": "opurl",
+    },
   ],
   "type": "Project",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "b2663f4967f63e6bfdb661a777660926";

@@ -8,19 +8,27 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type SettingsProjectSidebarQuery_project$data = {
-  readonly effectiveSettings: {
-    readonly " $fragmentSpreads": FragmentRefs<"SettingsFormQuery_settings">;
-  } | null | undefined;
+  readonly effectiveSettings:
+    | {
+      readonly " $fragmentSpreads": FragmentRefs<"SettingsFormQuery_settings">;
+    }
+    | null
+    | undefined;
   readonly id: string | null | undefined;
-  readonly overriddenSettingsKeys: ReadonlyArray<string | null | undefined> | null | undefined;
+  readonly overriddenSettingsKeys:
+    | ReadonlyArray<string | null | undefined>
+    | null
+    | undefined;
   readonly " $fragmentType": "SettingsProjectSidebarQuery_project";
 };
 export type SettingsProjectSidebarQuery_project$key = {
   readonly " $data"?: SettingsProjectSidebarQuery_project$data;
-  readonly " $fragmentSpreads": FragmentRefs<"SettingsProjectSidebarQuery_project">;
+  readonly " $fragmentSpreads": FragmentRefs<
+    "SettingsProjectSidebarQuery_project"
+  >;
 };
 
 const node: ReaderFragment = {
@@ -34,7 +42,7 @@ const node: ReaderFragment = {
       "args": null,
       "kind": "ScalarField",
       "name": "id",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
@@ -47,21 +55,21 @@ const node: ReaderFragment = {
         {
           "args": null,
           "kind": "FragmentSpread",
-          "name": "SettingsFormQuery_settings"
-        }
+          "name": "SettingsFormQuery_settings",
+        },
       ],
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "overriddenSettingsKeys",
-      "storageKey": null
-    }
+      "storageKey": null,
+    },
   ],
   "type": "Project",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "e3411004f4d81e80de6cf94d149c5efa";

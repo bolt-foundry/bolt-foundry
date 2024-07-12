@@ -19,10 +19,7 @@ import { useAppState } from "aws/client/contexts/AppStateContext.tsx";
 import TranscriptView from "aws/client/components/TranscriptView.tsx";
 import ClipEdit from "aws/client/components/ClipEdit.tsx";
 import { FullPageSpinner } from "aws/client/components/Spinner.tsx";
-import {
-  DEFAULT_SETTINGS,
-  WatermarkLogoType,
-} from "aws/types/settings.ts";
+import { DEFAULT_SETTINGS, WatermarkLogoType } from "aws/types/settings.ts";
 import useIntersectionObserver from "aws/client/hooks/useIntersectionObserver.tsx";
 import { RenderSettings } from "aws/types/settings.ts";
 import { ClipProvider } from "/aws/client/contexts/ClipContext.tsx";
@@ -323,8 +320,9 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
 
     return (
       <div
-        className={`clip ${highlightClip && "selected"} ${highlightAfterEdit && "highlight-and-fade"
-          }`}
+        className={`clip ${highlightClip && "selected"} ${
+          highlightAfterEdit && "highlight-and-fade"
+        }`}
         key={clip.id}
         ref={(el) => {
           if (clip?.id) {
@@ -410,41 +408,41 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
       )}
       {selectedClipIndex != null &&
         clipItemsToRender[selectedClipIndex]?.node != null && (
-          <Modal
-            confirmClose={clipChanged}
-            clickOusideToClose={clickOutsideToCloseModal}
-            onClose={() => {
-              setClipChanged(false);
-              setSelectedClipIndex(null);
-            }}
-            kind="clip editor"
-            contentXstyle={styles.contentXstyle}
-          >
-            <ClipProvider>
-              <ClipEdit
-                clip$key={clipItemsToRender[selectedClipIndex]
-                  ?.node as useClipEditData_clip$key}
-                clipIndex={selectedClipIndex}
-                isSaved={false}
-                setClipChanged={setClipChanged}
-                setClickOutsideToCloseModal={setClickOutsideToCloseModal}
-                settings={settings}
-                transcriptId={transcriptId}
-                transcriptWords={transcriptWords}
-                videoUrl={data?.opurl ?? data?.videoUrl ?? ""}
-                onEditClip={() => {
-                  setClipChanged(false);
-                  setSelectedClipIndex(null);
-                }}
-                onSaveClip={(wordsToUpdate) => {
-                  updateTranscriptWords(wordsToUpdate);
-                  setClipChanged(false);
-                  setSelectedClipIndex(null);
-                }}
-              />
-            </ClipProvider>
-          </Modal>
-        )}
+        <Modal
+          confirmClose={clipChanged}
+          clickOusideToClose={clickOutsideToCloseModal}
+          onClose={() => {
+            setClipChanged(false);
+            setSelectedClipIndex(null);
+          }}
+          kind="clip editor"
+          contentXstyle={styles.contentXstyle}
+        >
+          <ClipProvider>
+            <ClipEdit
+              clip$key={clipItemsToRender[selectedClipIndex]
+                ?.node as useClipEditData_clip$key}
+              clipIndex={selectedClipIndex}
+              isSaved={false}
+              setClipChanged={setClipChanged}
+              setClickOutsideToCloseModal={setClickOutsideToCloseModal}
+              settings={settings}
+              transcriptId={transcriptId}
+              transcriptWords={transcriptWords}
+              videoUrl={data?.opurl ?? data?.videoUrl ?? ""}
+              onEditClip={() => {
+                setClipChanged(false);
+                setSelectedClipIndex(null);
+              }}
+              onSaveClip={(wordsToUpdate) => {
+                updateTranscriptWords(wordsToUpdate);
+                setClipChanged(false);
+                setSelectedClipIndex(null);
+              }}
+            />
+          </ClipProvider>
+        </Modal>
+      )}
     </>
   );
 }

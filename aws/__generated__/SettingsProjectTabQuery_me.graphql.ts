@@ -8,13 +8,16 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type SettingsProjectTabQuery_me$data = {
   readonly id: string | null | undefined;
-  readonly settings: {
-    readonly " $fragmentSpreads": FragmentRefs<"SettingsFormQuery_settings">;
-  } | null | undefined;
+  readonly settings:
+    | {
+      readonly " $fragmentSpreads": FragmentRefs<"SettingsFormQuery_settings">;
+    }
+    | null
+    | undefined;
   readonly " $fragmentType": "SettingsProjectTabQuery_me";
 };
 export type SettingsProjectTabQuery_me$key = {
@@ -33,7 +36,7 @@ const node: ReaderFragment = {
       "args": null,
       "kind": "ScalarField",
       "name": "id",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
@@ -46,14 +49,14 @@ const node: ReaderFragment = {
         {
           "args": null,
           "kind": "FragmentSpread",
-          "name": "SettingsFormQuery_settings"
-        }
+          "name": "SettingsFormQuery_settings",
+        },
       ],
-      "storageKey": null
-    }
+      "storageKey": null,
+    },
   ],
   "type": "Person",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "84b9d2fd68eb078eb08bb1db44687fb8";

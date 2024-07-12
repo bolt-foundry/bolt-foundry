@@ -8,14 +8,17 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type WorkflowClipStep_project$data = {
   readonly clipsLength: number | null | undefined;
-  readonly clipsStatus: {
-    readonly progress: number | null | undefined;
-    readonly status: string | null | undefined;
-  } | null | undefined;
+  readonly clipsStatus:
+    | {
+      readonly progress: number | null | undefined;
+      readonly status: string | null | undefined;
+    }
+    | null
+    | undefined;
   readonly id: string | null | undefined;
   readonly transcriptLength: number | null | undefined;
   readonly " $fragmentType": "WorkflowClipStep_project";
@@ -36,14 +39,14 @@ const node: ReaderFragment = {
       "args": null,
       "kind": "ScalarField",
       "name": "id",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "transcriptLength",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
@@ -58,28 +61,28 @@ const node: ReaderFragment = {
           "args": null,
           "kind": "ScalarField",
           "name": "progress",
-          "storageKey": null
+          "storageKey": null,
         },
         {
           "alias": null,
           "args": null,
           "kind": "ScalarField",
           "name": "status",
-          "storageKey": null
-        }
+          "storageKey": null,
+        },
       ],
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "clipsLength",
-      "storageKey": null
-    }
+      "storageKey": null,
+    },
   ],
   "type": "Project",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "be42b50663a8bbf00defa134f8d40a0d";

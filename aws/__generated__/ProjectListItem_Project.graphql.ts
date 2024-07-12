@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type ProjectListItem_Project$data = {
   readonly id: string | null | undefined;
@@ -31,18 +31,18 @@ const node: ReaderFragment = {
       "args": null,
       "kind": "ScalarField",
       "name": "id",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "name",
-      "storageKey": null
-    }
+      "storageKey": null,
+    },
   ],
   "type": "Project",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "8a758c2ffc7e654170a98d6bddd2c8ea";

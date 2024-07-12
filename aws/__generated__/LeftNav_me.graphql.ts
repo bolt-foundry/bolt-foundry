@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type LeftNav_me$data = {
   readonly " $fragmentSpreads": FragmentRefs<"ProjectList_me">;
@@ -28,11 +28,11 @@ const node: ReaderFragment = {
     {
       "args": null,
       "kind": "FragmentSpread",
-      "name": "ProjectList_me"
-    }
+      "name": "ProjectList_me",
+    },
   ],
   "type": "Person",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "a23b00ef61c3cba5bdda928dc9d88b75";

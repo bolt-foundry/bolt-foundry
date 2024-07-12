@@ -1,9 +1,4 @@
-import {
-  graphql,
-  type Maybe,
-  React,
-  ReactRelay,
-} from "aws/client/deps.ts";
+import { graphql, type Maybe, React, ReactRelay } from "aws/client/deps.ts";
 import Button from "aws/client/ui_components/Button.tsx";
 import Input from "aws/client/ui_components/Input.tsx";
 import { DGWord } from "aws/types/transcript.ts";

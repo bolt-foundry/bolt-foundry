@@ -137,7 +137,7 @@ export function Plan({ plan }: PlanProps) {
                 <Icon
                   name="checkCircle"
                   color={"var(--secondaryColor)"}
-                // size={24}
+                  // size={24}
                 />
               </div>
               <div style={styles.featureName}>

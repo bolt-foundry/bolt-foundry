@@ -8,5 +8,5 @@ export const BfGraphQLClipReviewType = objectType({
     t.implements(BfNodeGraphQLType);
     t.string("title");
     t.url("mediaUrl");
-  }
-})
+  },
+});
