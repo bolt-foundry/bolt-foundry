@@ -1,7 +1,7 @@
 import { BfCurrentViewerOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
-import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { toBfGid, toBfOid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
 import { neon } from "@neon/serverless";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
@@ -29,16 +29,17 @@ export async function upsertBfDb() {
     logger.info("Creating omni person");
     await BfPerson.create(omniCv, {
       name: "Omni user",
-    }, { bfGid: toBfGid("omni_person") });
+    }, { bfGid: toBfGid("omni_person"), bfOid: toBfOid("omni_person") });
   }
   logger.info("Checking for internal org");
-  if (!(await BfOrganization.find(omniCv, toBfGid("bf_internal_org")))) {
+  if (!(await BfOrganization.find(omniCv, toBfOid("bf_internal_org")))) {
     logger.info("Creating internal org");
     await BfOrganization.create(omniCv, {
       name: "Bolt Foundry internal",
       domainName: "boltfoundry.com",
     }, {
       bfGid: toBfGid("bf_internal_org"),
+      bfOid: toBfOid("bf_internal_org"),
     });
   }
   logger.info("Schema and orgs upserted");
