@@ -35,10 +35,10 @@ export function StickerModeWord(
   const stickerLineRef = React.useRef<HTMLDivElement>(null);
 
   function handleChangeStickerStartTime(word: DGWord) {
-    setStickerStartWord(word)
+    setStickerStartWord(word);
   }
   function handleChangeStickerEndTime(word: DGWord) {
-    setStickerEndWord(word)
+    setStickerEndWord(word);
   }
 
   const handleRangeCommit = () => {
@@ -57,8 +57,7 @@ export function StickerModeWord(
         { clipWordLight: isExtraText },
         { clipCurrentWord: isCurrentWord },
       ])}
-      onClick={() =>
-        goto(word.start)}
+      onClick={() => goto(word.start)}
       onDoubleClick={() => {
         if (stickerStartWord) {
           setStickerEndWord(word);

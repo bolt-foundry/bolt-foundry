@@ -17,11 +17,11 @@ type ValueType = {
 
 const AppStateContext = React.createContext<ValueType>({
   settingsOpen: false,
-  setSettingsOpen: (settingsOpen: boolean) => { },
+  setSettingsOpen: (settingsOpen: boolean) => {},
   loginOpen: false,
-  setLoginOpen: (loginOpen: boolean) => { },
+  setLoginOpen: (loginOpen: boolean) => {},
   darkMode: false,
-  setDarkMode: (darkMode: boolean) => { },
+  setDarkMode: (darkMode: boolean) => {},
 });
 
 export function useAppState(): ValueType {

@@ -35,7 +35,7 @@
       "vendor",
       "resources",
       ".config",
-      "aws"
+      "aws/__generated__"
     ]
   },
   "test": {

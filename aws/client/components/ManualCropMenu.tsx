@@ -27,7 +27,11 @@ export function getCurrentCrop(
   currentTime: number,
   startTimecode?: number,
 ): ManualCrop {
-  const currentCropIndex = getCurrentCropIndex(manualCrop, currentTime, startTimecode);
+  const currentCropIndex = getCurrentCropIndex(
+    manualCrop,
+    currentTime,
+    startTimecode,
+  );
   return manualCrop[currentCropIndex];
 }
 export const DEFAULT_CROP = {
