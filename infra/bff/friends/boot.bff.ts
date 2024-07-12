@@ -5,7 +5,7 @@ register(
   "boot",
   "initializes the repl with applicable options when the repl boots up",
   async () => {
-    await runShellCommand(['bff']);
+    await runShellCommand(["bff"]);
     return await 0;
   },
 );

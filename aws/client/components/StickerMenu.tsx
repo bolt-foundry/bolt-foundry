@@ -26,7 +26,7 @@ export function StickerMenu(
       const blob = await response.blob();
       const localUrl = URL.createObjectURL(blob);
       setLocalImageUrl(localUrl);
-      handleDispatchAction(ActionType.SET_STICKER_URL, localUrl)
+      handleDispatchAction(ActionType.SET_STICKER_URL, localUrl);
     } catch (error) {
       console.error("Error fetching image:", error);
     }

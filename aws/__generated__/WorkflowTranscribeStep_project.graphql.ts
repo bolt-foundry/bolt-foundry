@@ -8,20 +8,33 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import * as _____client_relay_localResolvers_ProjectResolver from "aws/client/relay/localResolvers/ProjectResolver.ts";
 import { FragmentRefs } from "relay-runtime";
 import { opurl as projectOpurlResolverType } from "../client/relay/localResolvers/ProjectResolver.ts";
 export type WorkflowTranscribeStep_project$data = {
   readonly id: string | null | undefined;
   readonly opurl: string | null | undefined;
-  readonly transcripts: {
-    readonly edges: ReadonlyArray<{
-      readonly node: {
-        readonly transcriptLength: number | null | undefined;
-      } | null | undefined;
-    } | null | undefined> | null | undefined;
-  } | null | undefined;
+  readonly transcripts:
+    | {
+      readonly edges:
+        | ReadonlyArray<
+          | {
+            readonly node:
+              | {
+                readonly transcriptLength: number | null | undefined;
+              }
+              | null
+              | undefined;
+          }
+          | null
+          | undefined
+        >
+        | null
+        | undefined;
+    }
+    | null
+    | undefined;
   readonly videoUrl: string | null | undefined;
   readonly " $fragmentType": "WorkflowTranscribeStep_project";
 };
@@ -41,7 +54,7 @@ const node: ReaderFragment = {
       "args": null,
       "kind": "ScalarField",
       "name": "id",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
@@ -49,8 +62,8 @@ const node: ReaderFragment = {
         {
           "kind": "Literal",
           "name": "first",
-          "value": 1
-        }
+          "value": 1,
+        },
       ],
       "concreteType": "TranscriptConnection",
       "kind": "LinkedField",
@@ -78,23 +91,23 @@ const node: ReaderFragment = {
                   "args": null,
                   "kind": "ScalarField",
                   "name": "transcriptLength",
-                  "storageKey": null
-                }
+                  "storageKey": null,
+                },
               ],
-              "storageKey": null
-            }
+              "storageKey": null,
+            },
           ],
-          "storageKey": null
-        }
+          "storageKey": null,
+        },
       ],
-      "storageKey": "transcripts(first:1)"
+      "storageKey": "transcripts(first:1)",
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "videoUrl",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
@@ -102,16 +115,16 @@ const node: ReaderFragment = {
       "fragment": {
         "args": null,
         "kind": "FragmentSpread",
-        "name": "ProjectResolverOpurlResolver"
+        "name": "ProjectResolverOpurlResolver",
       },
       "kind": "RelayResolver",
       "name": "opurl",
       "resolverModule": _____client_relay_localResolvers_ProjectResolver.opurl,
-      "path": "opurl"
-    }
+      "path": "opurl",
+    },
   ],
   "type": "Project",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "4bc623c418c69897a769b04f287bad07";

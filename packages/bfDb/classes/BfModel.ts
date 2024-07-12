@@ -100,7 +100,7 @@ abstract class BfBaseModel<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
     logVerbose("create", { currentViewer, newProps, creationMetadata });
-    console.log(creationMetadata)
+    console.log(creationMetadata);
     const newModel = new this(
       currentViewer,
       undefined,

@@ -8,17 +8,30 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type ProjectListMobile_me$data = {
-  readonly projects: {
-    readonly edges: ReadonlyArray<{
-      readonly node: {
-        readonly id: string | null | undefined;
-        readonly name: string | null | undefined;
-      } | null | undefined;
-    } | null | undefined> | null | undefined;
-  } | null | undefined;
+  readonly projects:
+    | {
+      readonly edges:
+        | ReadonlyArray<
+          | {
+            readonly node:
+              | {
+                readonly id: string | null | undefined;
+                readonly name: string | null | undefined;
+              }
+              | null
+              | undefined;
+          }
+          | null
+          | undefined
+        >
+        | null
+        | undefined;
+    }
+    | null
+    | undefined;
   readonly " $fragmentType": "ProjectListMobile_me";
 };
 export type ProjectListMobile_me$key = {
@@ -36,10 +49,10 @@ const node: ReaderFragment = {
         "cursor": null,
         "direction": "forward",
         "path": [
-          "projects"
-        ]
-      }
-    ]
+          "projects",
+        ],
+      },
+    ],
   },
   "name": "ProjectListMobile_me",
   "selections": [
@@ -72,34 +85,34 @@ const node: ReaderFragment = {
                   "args": null,
                   "kind": "ScalarField",
                   "name": "id",
-                  "storageKey": null
+                  "storageKey": null,
                 },
                 {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
                   "name": "name",
-                  "storageKey": null
+                  "storageKey": null,
                 },
                 {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
                   "name": "__typename",
-                  "storageKey": null
-                }
+                  "storageKey": null,
+                },
               ],
-              "storageKey": null
+              "storageKey": null,
             },
             {
               "alias": null,
               "args": null,
               "kind": "ScalarField",
               "name": "cursor",
-              "storageKey": null
-            }
+              "storageKey": null,
+            },
           ],
-          "storageKey": null
+          "storageKey": null,
         },
         {
           "alias": null,
@@ -114,24 +127,24 @@ const node: ReaderFragment = {
               "args": null,
               "kind": "ScalarField",
               "name": "endCursor",
-              "storageKey": null
+              "storageKey": null,
             },
             {
               "alias": null,
               "args": null,
               "kind": "ScalarField",
               "name": "hasNextPage",
-              "storageKey": null
-            }
+              "storageKey": null,
+            },
           ],
-          "storageKey": null
-        }
+          "storageKey": null,
+        },
       ],
-      "storageKey": null
-    }
+      "storageKey": null,
+    },
   ],
   "type": "Person",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "ef97a3e7e3e3639f7efb6dba7b73eacd";

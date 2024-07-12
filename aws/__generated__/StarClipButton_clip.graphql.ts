@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type StarClipButton_clip$data = {
   readonly id: string | null | undefined;
@@ -31,18 +31,18 @@ const node: ReaderFragment = {
       "args": null,
       "kind": "ScalarField",
       "name": "id",
-      "storageKey": null
+      "storageKey": null,
     },
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "isStarred",
-      "storageKey": null
-    }
+      "storageKey": null,
+    },
   ],
   "type": "Clip",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "46018f5be814d20021415d7435e04f49";

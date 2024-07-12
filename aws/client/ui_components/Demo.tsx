@@ -123,9 +123,9 @@ const buttonMenuElements = [
         iconLeft="settings"
         kind="outline"
         tooltipMenu={[
-          { label: "Menu Item 1", onClick: () => { } },
-          { label: "Menu Item 2", onClick: () => { } },
-          { label: "Menu Item 3", onClick: () => { } },
+          { label: "Menu Item 1", onClick: () => {} },
+          { label: "Menu Item 2", onClick: () => {} },
+          { label: "Menu Item 3", onClick: () => {} },
         ]}
         tooltipJustification="end"
         tooltipPosition="bottom"
@@ -139,9 +139,9 @@ const buttonMenuElements = [
         text="Button menu"
         kind="outline"
         tooltipMenu={[
-          { label: "Menu Item 1", onClick: () => { } },
-          { label: "Menu Item 2", onClick: () => { } },
-          { label: "Menu Item 3", onClick: () => { } },
+          { label: "Menu Item 1", onClick: () => {} },
+          { label: "Menu Item 2", onClick: () => {} },
+          { label: "Menu Item 3", onClick: () => {} },
         ]}
         tooltipJustification="end"
         tooltipPosition="bottom"
@@ -155,9 +155,9 @@ const buttonMenuElements = [
         iconLeft="settings"
         kind="secondary"
         tooltipMenu={[
-          { label: "Menu Item 1", onClick: () => { } },
-          { label: "Menu Item 2", onClick: () => { } },
-          { label: "Menu Item 3", onClick: () => { } },
+          { label: "Menu Item 1", onClick: () => {} },
+          { label: "Menu Item 2", onClick: () => {} },
+          { label: "Menu Item 3", onClick: () => {} },
         ]}
         tooltipJustification="end"
         tooltipPosition="bottom"
@@ -171,9 +171,9 @@ const buttonMenuElements = [
         text="Button menu"
         kind="secondary"
         tooltipMenu={[
-          { label: "Menu Item 1", onClick: () => { } },
-          { label: "Menu Item 2", onClick: () => { } },
-          { label: "Menu Item 3", onClick: () => { } },
+          { label: "Menu Item 1", onClick: () => {} },
+          { label: "Menu Item 2", onClick: () => {} },
+          { label: "Menu Item 3", onClick: () => {} },
         ]}
         tooltipJustification="end"
         tooltipPosition="bottom"
@@ -186,9 +186,9 @@ const buttonMenuElements = [
       <Button
         iconLeft="settings"
         tooltipMenu={[
-          { label: "Menu Item 1", onClick: () => { } },
-          { label: "Menu Item 2", onClick: () => { } },
-          { label: "Menu Item 3", onClick: () => { } },
+          { label: "Menu Item 1", onClick: () => {} },
+          { label: "Menu Item 2", onClick: () => {} },
+          { label: "Menu Item 3", onClick: () => {} },
         ]}
         tooltipJustification="end"
         tooltipPosition="bottom"
@@ -201,9 +201,9 @@ const buttonMenuElements = [
       <Button
         text="Button menu w/ tooltip"
         tooltipMenu={[
-          { label: "Menu Item 1", onClick: () => { } },
-          { label: "Menu Item 2", onClick: () => { } },
-          { label: "Menu Item 3", onClick: () => { } },
+          { label: "Menu Item 1", onClick: () => {} },
+          { label: "Menu Item 2", onClick: () => {} },
+          { label: "Menu Item 3", onClick: () => {} },
         ]}
         tooltipJustification="end"
         tooltipPosition="bottom"
@@ -368,43 +368,43 @@ export default function UITest() {
       <div className="element" style={styles.element}>
         <div style={styles.name}>Form</div>
         <div className="group" style={styles.group}>
-          <Input label="Label" placeholder="Placeholder" onChange={() => { }} />
+          <Input label="Label" placeholder="Placeholder" onChange={() => {}} />
           <Input
             label="Label"
             placeholder="Placeholder"
             type="number"
-            onChange={() => { }}
+            onChange={() => {}}
           />
           <Input
             label="Label"
             placeholder="Placeholder"
             type="password"
-            onChange={() => { }}
+            onChange={() => {}}
           />
           <Input
             label="Label"
             placeholder="Placeholder"
             disabled
-            onChange={() => { }}
+            onChange={() => {}}
           />
           <Input
             label="Label"
             placeholder="Placeholder"
             required
-            onChange={() => { }}
+            onChange={() => {}}
           />
           <Input label="Label" placeholder="Placeholder" readonly />
           <Input
             label="Label"
             placeholder="Placeholder"
             meta="Meta"
-            onChange={() => { }}
+            onChange={() => {}}
           />
           <Input
             label="Label"
             placeholder="Placeholder"
             showSpinner
-            onChange={() => { }}
+            onChange={() => {}}
           />
         </div>
       </div>

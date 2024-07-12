@@ -8,7 +8,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { Fragment, ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type LocalFileWorkflowUpload_project$data = {
   readonly " $fragmentSpreads": FragmentRefs<"FileUpload_project">;
@@ -28,11 +28,11 @@ const node: ReaderFragment = {
     {
       "args": null,
       "kind": "FragmentSpread",
-      "name": "FileUpload_project"
-    }
+      "name": "FileUpload_project",
+    },
   ],
   "type": "Project",
-  "abstractKey": null
+  "abstractKey": null,
 };
 
 (node as any).hash = "9db201b1568eb30d230ee770a16f6204";
