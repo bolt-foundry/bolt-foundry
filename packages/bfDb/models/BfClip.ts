@@ -12,7 +12,7 @@ export class BfClip extends BfNode<BfClipProps> {
   afterCreate(): void | Promise<void> {
     this.createNewClipReview();
   }
-  
+
   async createNewClipReview() {
     const clipReview = await BfClipReview.create(this.currentViewer, {
       title: `review of ${this.props.title}`,
@@ -20,7 +20,7 @@ export class BfClip extends BfNode<BfClipProps> {
     });
     await BfEdge.create(this.currentViewer, {}, {bfSid: toBfSid(this.metadata.bfGid), bfTid: toBfTid(clipReview.metadata.bfGid)})
   }
-  
+
   async queryClipReviewEdges() {
     const edges = await BfEdge.query(this.currentViewer, {bfSid: toBfSid(this.metadata.bfGid)})
     return edges;
@@ -28,7 +28,9 @@ export class BfClip extends BfNode<BfClipProps> {
 
   static async findReviewableClips(bfCurrentViewer: BfCurrentViewer) {
     // @nocommit this is not real
-    const clips = await this.query(bfCurrentViewer, {bfOid: bfCurrentViewer.organizationBfGid});
-    return clips.map(clip => clip.toGraphql())
+    const clips = await this.query(bfCurrentViewer, {
+      bfOid: bfCurrentViewer.organizationBfGid,
+    });
+    return clips.map((clip) => clip.toGraphql());
   }
 }

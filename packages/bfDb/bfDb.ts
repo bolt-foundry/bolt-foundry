@@ -146,6 +146,7 @@ export async function bfPutItem<
     }, ${itemMetadata.bfTid}, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp}, ${
       JSON.stringify(itemProps)
     })
+
                      ON CONFLICT (bf_gid) DO UPDATE SET
                        bf_oid = EXCLUDED.bf_oid,
                        bf_cid = EXCLUDED.bf_cid,
@@ -185,6 +186,7 @@ export async function bfQueryItems<
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
     // convert key from camelCase to snake_case
     const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
+
     if (VALID_METADATA_COLUMN_NAMES.includes(key.toLowerCase())) {
       variables.push(value);
       const valuePosition = variables.length;

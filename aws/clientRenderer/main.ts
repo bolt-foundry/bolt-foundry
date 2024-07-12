@@ -64,7 +64,10 @@ function timeout(ms: number) {
   );
 }
 
-export async function redirectIfNotLoggedIn(request: Request, _routeParams: unknown) {
+export async function redirectIfNotLoggedIn(
+  request: Request,
+  _routeParams: unknown,
+) {
   const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
   const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
     "boltfoundry.wtf";
@@ -97,7 +100,7 @@ export const theAwsApp = async (
   request: Request,
 ): Promise<Response> => {
   const currentUrl = new URL(request.url);
-  const initialPath = currentUrl.pathname
+  const initialPath = currentUrl.pathname;
   const currentViewer = {};
   const currentViewerProps = { id: "" };
   const { params: routeParams } = matchRouteWithParams(initialPath);
@@ -106,7 +109,7 @@ export const theAwsApp = async (
   let featureVariants = defaultFeatureVariants;
   let featureFlags = defaultFeatureFlags;
   let phBootstrap = {};
-  
+
   // @ts-expect-error #techdebt
   const { contentType, contentSlug } = routeParams;
 
@@ -164,7 +167,6 @@ export const theAwsApp = async (
   return new Response(render(reactRendered, environment), {
     headers: {
       "Content-Type": "text/html",
-    }
-  })
+    },
+  });
 };
-

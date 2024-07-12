@@ -43,7 +43,7 @@ export enum ActionType {
   SET_MANUAL_CROP_ACTIVE = "SET_MANUAL_CROP_ACTIVE",
 }
 
-type ClipReducerState = {
+export type ClipReducerState = {
   startIndex: number;
   endIndex: number;
   endTimeOverride: number | null;
@@ -58,7 +58,7 @@ type ClipReducerState = {
   manualCropActive: boolean;
 };
 
-type ClipReducerAction =
+export type ClipReducerAction =
   | { type: ActionType.SET_START_INDEX; payload: number }
   | { type: ActionType.SET_END_INDEX; payload: number }
   | { type: ActionType.SET_END_TIME_OVERRIDE; payload: number }

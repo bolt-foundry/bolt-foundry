@@ -9,7 +9,7 @@ interface ViewerContextValue {
 
 const ViewerContext = createContext<ViewerContextValue>({
   viewer: null,
-  setViewer: () => { },
+  setViewer: () => {},
 });
 
 type ViewerProviderProps = React.PropsWithChildren;

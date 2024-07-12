@@ -92,7 +92,7 @@ const RouterContext = createContext<RouterContextType>({
   currentPath: "/",
   routeParams: {},
   queryParams: {},
-  navigate: () => { },
+  navigate: () => {},
 });
 
 export const useRouter = () => {
