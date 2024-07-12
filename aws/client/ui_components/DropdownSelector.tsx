@@ -1,5 +1,8 @@
 import { React } from "aws/client/deps.ts";
-import { TooltipMenu, TooltipPosition } from "aws/client/ui_components/Tooltip.tsx";
+import {
+  TooltipMenu,
+  TooltipPosition,
+} from "aws/client/ui_components/Tooltip.tsx";
 import Button from "aws/client/ui_components/Button.tsx";
 const { useEffect, useState } = React;
 
@@ -17,8 +20,16 @@ type Props = {
 };
 
 export default function DropdownSelector(
-  { disabled, options, onChange, value, placeholder, position, showSpinner, testId }:
-    Props,
+  {
+    disabled,
+    options,
+    onChange,
+    value,
+    placeholder,
+    position,
+    showSpinner,
+    testId,
+  }: Props,
 ) {
   const [menu, setMenu] = useState<Array<TooltipMenu>>([]);
 

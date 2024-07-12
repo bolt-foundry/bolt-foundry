@@ -34,8 +34,7 @@
       "build",
       "vendor",
       "resources",
-      ".config",
-      "aws"
+      ".config"
     ]
   },
   "test": {

@@ -12,23 +12,30 @@ export class BfClip extends BfNode<BfClipProps> {
   afterCreate(): void | Promise<void> {
     this.createNewClipReview();
   }
-  
+
   async createNewClipReview() {
     const clipReview = await BfClipReview.create(this.currentViewer, {
       title: `review of ${this.props.title}`,
       awsprojectSlug: "not real please fix",
     });
-    await BfEdge.create(this.currentViewer, {}, {bfPid: toBfPid(this.metadata.bfGid), bfTid: toBfTid(clipReview.metadata.bfGid)})
+    await BfEdge.create(this.currentViewer, {}, {
+      bfPid: toBfPid(this.metadata.bfGid),
+      bfTid: toBfTid(clipReview.metadata.bfGid),
+    });
   }
-  
+
   async queryClipReviewEdges() {
-    const edges = await BfEdge.query(this.currentViewer, {bfPid: toBfPid(this.metadata.bfGid)})
+    const edges = await BfEdge.query(this.currentViewer, {
+      bfPid: toBfPid(this.metadata.bfGid),
+    });
     return edges;
   }
 
   static async findReviewableClips(bfCurrentViewer: BfCurrentViewer) {
     // @nocommit this is not real
-    const clips = await this.query(bfCurrentViewer, {bfOid: bfCurrentViewer.organizationBfGid});
-    return clips.map(clip => clip.toGraphql())
+    const clips = await this.query(bfCurrentViewer, {
+      bfOid: bfCurrentViewer.organizationBfGid,
+    });
+    return clips.map((clip) => clip.toGraphql());
   }
 }

@@ -1,7 +1,5 @@
 import { React } from "aws/client/deps.ts";
-import Button, {
-  ButtonSizeType,
-} from "aws/client/ui_components/Button.tsx";
+import Button, { ButtonSizeType } from "aws/client/ui_components/Button.tsx";
 import Icon, {
   IconSizeType,
   IconType,

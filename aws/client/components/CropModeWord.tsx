@@ -1,7 +1,10 @@
 import { React } from "aws/client/deps.ts";
 import Icon from "/aws/client/ui_components/Icon.tsx";
 import { DGWord } from "/aws/types/transcript.ts";
-import { ManualCrop, getCurrentCrop } from "/aws/client/components/ManualCropMenu.tsx";
+import {
+  getCurrentCrop,
+  ManualCrop,
+} from "/aws/client/components/ManualCropMenu.tsx";
 import { WordData } from "/aws/client/components/ClipEdit.tsx";
 import classnames from "/aws/client/lib/classnames.ts";
 import { useClipContext } from "/aws/client/contexts/ClipContext.tsx";
@@ -11,7 +14,7 @@ type Props = {
   goto: (time: number) => void;
   manualCrop: Array<ManualCrop>;
   updateManualCrop: (manualCrop: Array<ManualCrop>) => void;
-  state: ClipReducerState,
+  state: ClipReducerState;
   wordData: WordData;
 };
 
@@ -43,14 +46,14 @@ export function CropModeWord(
     if (inputValue) {
       goto(inputValue);
     }
-  }, [inputValue])
+  }, [inputValue]);
 
   React.useEffect(() => {
     // Set the width of the range input to match the cropLine element's width
     if (cropLineRef.current) {
       setRangeWidth(cropLineRef.current.getBoundingClientRect().width);
     }
-  }, [cropLineRef])
+  }, [cropLineRef]);
 
   const currentCrop = getCurrentCrop(state.manualCrop, word.start);
   const initialValue = currentCrop?.start;
@@ -86,8 +89,7 @@ export function CropModeWord(
         { clipWordLight: isExtraText },
         { clipCurrentWord: isCurrentWord },
       ])}
-      onClick={() =>
-        goto(word.start)}
+      onClick={() => goto(word.start)}
       onDoubleClick={() => {
         handleEditCrop(word, currentCrop?.start ?? word.start);
       }}
