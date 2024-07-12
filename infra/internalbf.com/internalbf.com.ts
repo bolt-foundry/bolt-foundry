@@ -2,7 +2,7 @@
 import { clientRenderer } from "infra/internalbf.com/clientRenderer/clientRenderer.ts";
 import { getLogger } from "deps.ts";
 import { routes as appRoutes } from "infra/internalbf.com/client/components/App.tsx";
-import { handler as graphQlHandler } from "packages/graphql/graphql.ts";
+import { handler as graphQlHandler } from "infra/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";
 
 const logger = getLogger(import.meta);
