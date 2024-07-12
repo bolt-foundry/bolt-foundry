@@ -24,7 +24,7 @@ export type BfPid = Nominal<string, "BfPid"> | BfGid;
  */
 export type BfCid = Nominal<string, "BfCid"> | BfGid;
 /**
- * BfTid is a target for a BfModel. Most frequently used in assocs. BfTid maps to BfGids.
+ * BfTid is a target for a BfModel. Most frequently used in edges. BfTid maps to BfGids.
  */
 export type BfTid = Nominal<string, "BfTid"> | BfGid;
 
