@@ -7,6 +7,7 @@
       "npm:@mdx-js/mdx@3.0.0": "npm:@mdx-js/mdx@3.0.0",
       "npm:@types/node": "npm:@types/node@18.16.19",
       "npm:@types/pg@8.6.6": "npm:@types/pg@8.6.6",
+      "npm:create-expo-app@latest": "npm:create-expo-app@3.0.0",
       "npm:google-auth-library@9.2.0": "npm:google-auth-library@9.2.0",
       "npm:graphql-relay@0.10.0": "npm:graphql-relay@0.10.0_graphql@16.6.0",
       "npm:graphql-request": "npm:graphql-request@7.0.1_graphql@16.6.0",
@@ -1364,6 +1365,10 @@
       },
       "convert-source-map@2.0.0": {
         "integrity": "sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==",
+        "dependencies": {}
+      },
+      "create-expo-app@3.0.0": {
+        "integrity": "sha512-S4F0Vruh2RwJOdsYnQdCpIO1rjPR42338BepMyBnyr2WaIFTnGf2O8QLD6LFzv+PhdptrNYXsJnBXQ+12QAxVQ==",
         "dependencies": {}
       },
       "cross-fetch@3.1.8": {
