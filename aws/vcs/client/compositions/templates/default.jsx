@@ -4,6 +4,7 @@ import { useParams, useVideoTime } from "#vcs-react/hooks";
 import { fontBoldWeights, fontRelativeCharacterWidths } from "../params.js";
 import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
 import EndCap from "../components/EndCap.jsx";
+import TitleCard from "../components/TitleCard.jsx";
 
 const MAX_CHARACTERS_PER_LINE = 24;
 const FONT_SIZE_VH = 64 / 1920;
@@ -83,6 +84,7 @@ export default function DefaultGraphics() {
           layout={[layoutFuncs.watermark]}
         />
       )}
+      <TitleCard />
       <EndCap />
     </Box>
   );

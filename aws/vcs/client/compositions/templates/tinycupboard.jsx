@@ -5,6 +5,7 @@ import { useParams, useVideoTime } from "#vcs-react/hooks";
 import { fontBoldWeights, fontRelativeCharacterWidths } from "../params.js";
 import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
 import EndCap from "../components/EndCap.jsx";
+import TitleCard from "../components/TitleCard.jsx";
 
 const HIGHLIGHT_COLOR = "rgb(8, 249, 255)";
 const FONT_SIZE_VH = 96 / 1920;
@@ -90,6 +91,7 @@ export default function TinyCupboardGraphics() {
           layout={[layoutFuncs.watermark]}
         />
       )}
+      <TitleCard />
       <EndCap />
     </Box>
   );
