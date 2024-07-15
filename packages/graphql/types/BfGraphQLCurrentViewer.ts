@@ -75,15 +75,8 @@ export const BfGraphQLCurrentViewerType = interfaceType({
         const person = await BfPerson.find(bfCurrentViewer, personId);
         return person?.toGraphql() ?? null;
       },
-    });
-    t.string("googleAccessToken", {
-      resolve: async (_, _args, ctx: GraphQLContext) => {
-        const { bfCurrentViewer } = ctx;
-        const googleApiToken = await BfPerson
-          .findGoogleApiTokenForCurrentViewer(bfCurrentViewer);
-        return googleApiToken?.getCurrentAccessToken() ?? null;
-      },
-    });
+    }); 
+    
   },
 });
 
@@ -193,34 +186,6 @@ export const BfGraphQLSwitchAccountMutation = mutationField((t) => {
       );
 
       return ctx.bfCurrentViewer;
-    },
-  });
-});
-
-export const BfGraphQLLinkGoogleAccountMutation = mutationField((t) => {
-  t.field("linkGoogleAccount", {
-    type: "BfCurrentViewer",
-    args: {
-      code: nonNull(stringArg()),
-    },
-    resolve: async (
-      _root,
-      { code },
-      { bfCurrentViewer }: GraphQLContext,
-    ) => {
-      const person = await BfPerson.findX(
-        bfCurrentViewer,
-        bfCurrentViewer.personBfGid,
-      );
-
-      try {
-        await person.linkEnhancedGoogleAccount(code);
-      } catch {
-        throw new GraphQLError(
-          "Couldn't link Google Account. Try again, or email support@boltfoundry.com",
-        );
-      }
-      return bfCurrentViewer;
     },
   });
 });

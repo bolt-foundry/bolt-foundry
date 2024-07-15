@@ -1,10 +1,6 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { CreationMetadata } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import {
-  BfGid,
-  BfPid,
-  BfTid,
-} from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { BfGid, BfSid, BfTid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfModelErrorNotImplemented } from "packages/bfDb/classes/BfModelError.ts";
 
@@ -16,7 +12,7 @@ export type BfEdgeOptionalProps = {
 
 type AssocCreationMetadata = CreationMetadata & {
   bfTid: BfTid | BfGid;
-  bfPid: BfPid | BfGid;
+  bfSid: BfSid | BfGid;
 };
 
 export class BfEdge<
@@ -30,7 +26,7 @@ export class BfEdge<
   protected static isSorted = true;
   __typename = "BfEdge";
 
-  static findAllForParent(_currentViewer: BfCurrentViewer, _bfPid: BfPid) {
+  static findAllForParent(_currentViewer: BfCurrentViewer, _bfSid: BfSid) {
     throw new BfModelErrorNotImplemented("findAllForParent");
   }
 

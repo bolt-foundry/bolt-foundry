@@ -200,13 +200,11 @@ export interface NexusGenFieldTypes {
   BfCurrentViewerAccessToken: { // field return type
     actor: NexusGenRootTypes['Actor'] | null; // Actor
     clips: NexusGenRootTypes['BfClipConnection'] | null; // BfClipConnection
-    googleAccessToken: string | null; // String
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfCurrentViewerAnon: { // field return type
     actor: NexusGenRootTypes['Actor'] | null; // Actor
-    googleAccessToken: string | null; // String
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
@@ -221,7 +219,6 @@ export interface NexusGenFieldTypes {
     name: string | null; // String
   }
   Mutation: { // field return type
-    linkGoogleAccount: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
     logout: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     readTextFile: string | null; // String
@@ -249,7 +246,6 @@ export interface NexusGenFieldTypes {
   }
   BfCurrentViewer: { // field return type
     actor: NexusGenRootTypes['Actor'] | null; // Actor
-    googleAccessToken: string | null; // String
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
@@ -308,13 +304,11 @@ export interface NexusGenFieldTypeNames {
   BfCurrentViewerAccessToken: { // field return type name
     actor: 'Actor'
     clips: 'BfClipConnection'
-    googleAccessToken: 'String'
     person: 'BfPerson'
     role: 'AccountRole'
   }
   BfCurrentViewerAnon: { // field return type name
     actor: 'Actor'
-    googleAccessToken: 'String'
     person: 'BfPerson'
     role: 'AccountRole'
   }
@@ -329,7 +323,6 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
   }
   Mutation: { // field return type name
-    linkGoogleAccount: 'BfCurrentViewer'
     loginWithGoogle: 'BfCurrentViewerAccessToken'
     logout: 'BfCurrentViewer'
     readTextFile: 'String'
@@ -357,7 +350,6 @@ export interface NexusGenFieldTypeNames {
   }
   BfCurrentViewer: { // field return type name
     actor: 'Actor'
-    googleAccessToken: 'String'
     person: 'BfPerson'
     role: 'AccountRole'
   }
@@ -394,9 +386,6 @@ export interface NexusGenArgTypes {
     }
   }
   Mutation: {
-    linkGoogleAccount: { // args
-      code: string; // String!
-    }
     loginWithGoogle: { // args
       credential: string; // String!
     }

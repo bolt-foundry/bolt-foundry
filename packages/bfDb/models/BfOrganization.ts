@@ -23,7 +23,7 @@ export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
   protected static isSelfOwned = true;
 
   static async findByDomainName(currentViewer: BfCurrentViewer, hd: string) {
-    const item = await bfQueryItems({ class_name: "BfOrganization" }, {
+    const item = await bfQueryItems({ className: "BfOrganization" }, {
       domainName: hd,
     });
     return this.findX(currentViewer, item[0].metadata.bfGid);

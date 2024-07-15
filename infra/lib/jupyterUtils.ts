@@ -1,26 +1,37 @@
 import { getLogger } from "deps.ts";
-import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
-import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import {
+  BfAccount,
+  BfAccountRequiredProps,
+} from "packages/bfDb/models/BfAccount.ts";
+import {
+  BfCurrentViewerFromAccount,
+  BfCurrentViewerOmni,
+} from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { bfGetItemByBfGid } from "packages/bfDb/bfDb.ts";
 
 const logger = getLogger(import.meta);
 
 export async function getJupyterCurrentViewer(
-  refreshToken = Deno.env.get("JUPYTER_USER_REFRESH_TOKEN"),
+  userId = Deno.env.get("JUPYTER_BFACCOUNT_BFGID"),
 ) {
-  if (!refreshToken) {
-    logger.error("No refresh token found");
+  if (!userId) {
+    logger.error("No JUPYTER_BFACCOUNT_BFGID");
     return null;
   }
-  const accessToken = await BfAccount.getRefreshedAccessToken(
-    import.meta,
-    refreshToken,
+  const accountRow = await bfGetItemByBfGid<BfAccountRequiredProps>(
+    userId,
+    BfAccount.name,
   );
-  const currentViewer = await BfCurrentViewerAccessToken.create(
-    import.meta,
-    accessToken,
-  );
+  if (!accountRow) {
+    logger.error("No account row for JUPYTER_BFACCOUNT_BFGID");
+    return null;
+  }
+
+  const omniCv = BfCurrentViewerOmni.__DANGEROUS__create(import.meta);
+  const account = await BfAccount.findX(omniCv, accountRow.metadata.bfGid);
+
   logger.info(
-    `${import.meta.url} - impersonating ${currentViewer.personBfGid}`,
+    `${import.meta.url} - impersonating ${account.props.personBfGid}`,
   );
-  return currentViewer;
+  return BfCurrentViewerFromAccount.create(import.meta, account);
 }

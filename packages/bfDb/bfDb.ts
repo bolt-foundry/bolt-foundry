@@ -3,13 +3,11 @@ import {
   BfBaseModelMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
 import {
+  BfAnyid,
   BfCid,
   BfGid,
   BfOid,
-  BfPid,
-  BfPk,
-  BfSk,
-  BfSortValue,
+  BfSid,
   BfTid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
@@ -33,13 +31,10 @@ type Row<
 > = {
   props: TProps;
   bf_gid: BfGid;
-  bf_pid: BfPid;
+  bf_sid: BfSid;
   bf_oid: BfOid;
   bf_tid: BfTid;
   bf_cid: BfCid;
-  pk: BfPk;
-  sk: BfSk;
-  sort_value: BfSortValue;
   class_name: string;
   created_at: string;
   last_updated: string;
@@ -48,11 +43,11 @@ type Row<
 export async function bfGetItem<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
->(pk: BfPk, sk: BfSk): Promise<DbItem<TProps, TMetadata> | null> {
+>(bfOid: BfOid, bfGid: BfAnyid): Promise<DbItem<TProps, TMetadata> | null> {
   try {
-    logger.trace("bfGetItem", pk, sk);
+    logger.trace("bfGetItem", bfOid, bfGid);
     const rows =
-      await sql`SELECT * FROM bfdb WHERE PK = ${pk} AND SK = ${sk}` as Row<
+      await sql`SELECT * FROM bfdb WHERE bf_oid = ${bfOid} AND bf_gid = ${bfGid}` as Row<
         TProps
       >[];
 
@@ -65,14 +60,13 @@ export async function bfGetItem<
     logger.trace(firstRow);
     const metadata: TMetadata = {
       bfGid: firstRow.bf_gid,
-      bfPid: firstRow.bf_pid,
-      bfOid: firstRow.bf_oid,
+      bfSid: firstRow.bf_sid,
       bfTid: firstRow.bf_tid,
+      bfOid: firstRow.bf_oid,
       bfCid: firstRow.bf_cid,
       className: firstRow.class_name,
       createdAt: new Date(firstRow.created_at), // Convert timestamp to Date object
       lastUpdated: new Date(firstRow.last_updated), // Convert timestamp to Date object
-      sortValue: firstRow.sort_value,
     } as TMetadata;
 
     return { props, metadata };
@@ -108,14 +102,13 @@ export async function bfGetItemByBfGid<
     // Extract metadata from the row, excluding props and parse attributes as needed
     const metadata: TMetadata = {
       bfGid: firstRow.bf_gid,
-      bfPid: firstRow.bf_pid,
+      bfSid: firstRow.bf_sid,
       bfOid: firstRow.bf_oid,
       bfCid: firstRow.bf_cid,
       bfTid: firstRow.bf_tid,
       className: firstRow.class_name,
       createdAt: new Date(firstRow.created_at), // Convert timestamp to Date object
       lastUpdated: new Date(firstRow.last_updated), // Convert timestamp to Date object
-      sortValue: firstRow.sort_value,
     } as TMetadata;
     return { props: props as TProps, metadata };
   } catch (e) {
@@ -128,12 +121,10 @@ export async function bfPutItem<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
 >(
-  pk: BfPk,
-  sk: BfSk,
   itemProps: TProps,
   itemMetadata: TMetadata,
 ): Promise<void> {
-  logger.trace({ pk, sk, itemProps, itemMetadata });
+  logger.trace({ itemProps, itemMetadata });
   try {
     let createdAtTimestamp, lastUpdatedTimestamp;
 
@@ -149,28 +140,25 @@ export async function bfPutItem<
       lastUpdatedTimestamp = new Date(itemMetadata.lastUpdated).toISOString();
     }
 
-    await sql`INSERT INTO bfdb(bf_gid, bf_cid, PK, SK, props, bf_pid, bf_oid, bf_tid, sort_value, class_name, created_at, last_updated)
-                     VALUES(${itemMetadata.bfGid}, ${itemMetadata.bfCid}, ${pk}, ${sk}, ${
+    await sql`INSERT INTO bfdb(bf_gid, bf_oid, bf_cid, bf_sid, bf_tid, class_name, created_at, last_updated, props)
+                     VALUES(${itemMetadata.bfGid}, ${itemMetadata.bfOid}, ${itemMetadata.bfCid}, ${
+      itemMetadata.bfSid || null
+    }, ${itemMetadata.bfTid}, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp}, ${
       JSON.stringify(itemProps)
-    }, ${itemMetadata.bfPid || null}, ${
-      itemMetadata.bfOid || null
-    }, ${itemMetadata.bfTid}, ${
-      itemMetadata.sortValue || null
-    }, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp})
+    })
                      ON CONFLICT (bf_gid) DO UPDATE SET
-                       bf_cid = EXCLUDED.bf_cid,
-                       PK = EXCLUDED.PK,
-                       SK = EXCLUDED.SK,
-                       props = EXCLUDED.props,
-                       bf_pid = EXCLUDED.bf_pid,
                        bf_oid = EXCLUDED.bf_oid,
+                       bf_cid = EXCLUDED.bf_cid,
+                       bf_sid = EXCLUDED.bf_sid,
                        bf_tid = EXCLUDED.bf_tid,
-                       sort_value = EXCLUDED.sort_value,
                        class_name = EXCLUDED.class_name,
                        created_at = EXCLUDED.created_at,
-                       last_updated = CURRENT_TIMESTAMP;`;
+                       last_updated = CURRENT_TIMESTAMP,
+                       props = EXCLUDED.props;`;
     logger.trace(
-      `bfPutItem: Successfully inserted or updated‰ item with pk: ${pk} and sk: ${sk}`,
+      `bfPutItem: Successfully inserted or updated item with ${
+        JSON.stringify(itemMetadata)
+      }`,
     );
   } catch (e) {
     logger.error("Error in bfPutItem:", e);
@@ -179,41 +167,7 @@ export async function bfPutItem<
   }
 }
 
-export async function bfFindItems<
-  TProps = Props,
-  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
->(
-  pk: BfPk,
-  sk: BfSk,
-  limit = 100,
-  exclusiveStartKey?: string, // Assuming exclusiveStartKey is a string representation
-): Promise<Array<DbItem<TProps, TMetadata>>> {
-  logger.trace({ pk, sk, limit, exclusiveStartKey });
-  try {
-    const rows =
-      await sql`SELECT * FROM bfdb WHERE PK = ${pk} AND SK LIKE ${sk} || '%' ORDER BY SK LIMIT ${limit}` as Row<
-        TProps
-      >[];
-    const items = rows.map((row) => ({
-      props: row.props,
-      metadata: {
-        bfGid: row.bf_gid,
-        bfPid: row.bf_pid,
-        bfOid: row.bf_oid,
-        bfTid: row.bf_tid,
-        bfCid: row.bf_cid,
-        className: row.class_name,
-        createdAt: new Date(row.created_at), // Convert timestamp to Date object
-        lastUpdated: new Date(row.last_updated), // Convert timestamp to Date object
-        sortValue: row.sort_value,
-      } as TMetadata,
-    })) as Array<DbItem<TProps, TMetadata>>;
-    return items;
-  } catch (e) {
-    logger.error(e);
-    throw e;
-  }
-}
+const VALID_METADATA_COLUMN_NAMES = ["bf_gid", "bf_oid", "bf_cid", "bf_sid", "bf_tid", "class_name"];
 
 export async function bfQueryItems<
   TProps = Props,
@@ -226,15 +180,24 @@ export async function bfQueryItems<
 
   const metadataConditions: string[] = [];
   const propsConditions: string[] = [];
+  const variables = [];
 
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
     // convert key from camelCase to snake_case
     const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
-    metadataConditions.push(`${key} = '${value}'`);
+    if (VALID_METADATA_COLUMN_NAMES.includes(key.toLowerCase())) {
+      variables.push(value);
+      const valuePosition = variables.length;
+      metadataConditions.push(`${key} = $${valuePosition}`);
+    }
   }
 
   for (const [key, value] of Object.entries(propsToQuery)) {
-    propsConditions.push(`props->>'${key}' = '${value}'`);
+    variables.push(key)
+    const keyPosition = variables.length;
+    variables.push(value);
+    const valuePosition = variables.length;
+    propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
   }
 
   const allConditions = [...metadataConditions, ...propsConditions].join(
@@ -243,13 +206,15 @@ export async function bfQueryItems<
   const query = `SELECT * FROM bfdb WHERE ${allConditions}`;
 
   try {
-    logger.trace("Executing query", query);
-    const rows = await sql(query);
+    logger.setLevel(logger.levels.TRACE);
+    logger.trace("Executing query", query, variables);
+    logger.resetLevel();
+    const rows = await sql(query, variables);
     const items = rows.map((row) => ({
       props: row.props,
       metadata: {
         bfGid: row.bf_gid,
-        bfPid: row.bf_pid,
+        bfSid: row.bf_pid,
         bfOid: row.bf_oid,
         bfTid: row.bf_tid,
         bfCid: row.bf_cid,
