@@ -1,7 +1,7 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfClipReview } from "packages/bfDb/models/BfClipReview.ts";
-import { toBfPid, toBfTid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { toBfSid, toBfTid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 type BfClipProps = {
@@ -18,16 +18,11 @@ export class BfClip extends BfNode<BfClipProps> {
       title: `review of ${this.props.title}`,
       awsprojectSlug: "not real please fix",
     });
-    await BfEdge.create(this.currentViewer, {}, {
-      bfPid: toBfPid(this.metadata.bfGid),
-      bfTid: toBfTid(clipReview.metadata.bfGid),
-    });
+    await BfEdge.create(this.currentViewer, {}, {bfSid: toBfSid(this.metadata.bfGid), bfTid: toBfTid(clipReview.metadata.bfGid)})
   }
 
   async queryClipReviewEdges() {
-    const edges = await BfEdge.query(this.currentViewer, {
-      bfPid: toBfPid(this.metadata.bfGid),
-    });
+    const edges = await BfEdge.query(this.currentViewer, {bfSid: toBfSid(this.metadata.bfGid)})
     return edges;
   }
 
