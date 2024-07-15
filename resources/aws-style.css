@@ -245,12 +245,17 @@ a.dark:visited {
   text-align: center;
   font-weight: bold;
 }
-.cropLine {
+.lineHighlight {
   width: 100%;
   height: 15px;
-  background-color: var(--fourtharyColor030);
   top: 8px;
   position: absolute;
+}
+.cropLine {
+  background-color: var(--fourtharyColor030);
+}
+.stickerLine {
+  background-color: var(--fourtharyColor030);
 }
 .isCroppedIcon {
   position: absolute;

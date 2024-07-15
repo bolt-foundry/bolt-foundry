@@ -21,7 +21,7 @@ export const BfGraphQLPerson = objectType({
         args: ConnectionArguments,
         { bfCurrentViewer }: GraphQLContext,
       ) {
-        const accounts = await BfAccount.findAllForPerson(
+        const accounts = await BfAccount.findAllForCurrentViewer(
           bfCurrentViewer,
           toBfGid(gqlPerson.id),
         );

@@ -65,4 +65,3 @@ const tempSwears = [
   "shittier",
   "shitty",
 ];
-

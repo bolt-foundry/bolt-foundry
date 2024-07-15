@@ -1,19 +1,12 @@
-import { BfModel } from "packages/bfDb/classes/BfModel.ts";
 import { decodeAndVerifyGoogleToken } from "packages/bfDb/classes/BfAuth.ts";
 import {
   BfCurrentViewerAccessToken,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
 import {
-  toBfCid,
   toBfOid,
-  toBfPid,
-  toBfSkUnsorted,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
-import { exchangeCodeForToken } from "lib/googleOauth.ts";
-import { bfFindItems } from "packages/bfDb/bfDb.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
@@ -56,7 +49,7 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
       );
     const newPerson = await this.create(currentViewer, { email, name }, {
       bfGid: currentViewer.personBfGid,
-      bfCid: toBfCid(currentViewer.personBfGid),
+      bfOid: toBfOid(currentViewer.personBfGid),
     });
 
     if (hd) {
@@ -73,52 +66,14 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
     return newPerson;
   }
 
-  static async findGoogleApiTokenForCurrentViewer(
-    currentViewer: BfCurrentViewerAccessToken,
-  ) {
-    const apiTokens = await bfFindItems<BfGoogleApiTokenProps>(
-      toBfOid(currentViewer.personBfGid),
-      toBfSkUnsorted("BfGoogleApiToken"),
-    );
-
-    const token =
-      apiTokens.map(({ props, metadata }) =>
-        new BfGoogleApiToken(currentViewer, props, {}, metadata, true)
-      )[0];
-    return token ?? null;
-  }
-
   async logout() {
     this.props.lastLogout = new Date();
     await this.save();
   }
 
-  async beforeLoad() {
-    // the await is just to return a promise
-    this.metadata.bfOid = await toBfOid(this.currentViewer.personBfGid);
+  beforeLoad() {
+    // people actually own themselves.
+    this.metadata.bfOid = toBfOid(this.currentViewer.personBfGid);
   }
 
-  async linkEnhancedGoogleAccount(code: string) {
-    const tokenPayload = await exchangeCodeForToken(code);
-    logVerbose("tokenPayload", tokenPayload);
-    const expiresAtISODate = new Date(
-      Date.now() + tokenPayload.expires_in * 1000,
-    ).toISOString();
-    const token = await BfGoogleApiToken.create(
-      this.currentViewer,
-      {
-        tokenPayload,
-        expiresAtISODate,
-      },
-      {
-        bfOid: this.metadata.bfOid,
-      },
-    );
-    const _googleApiTokenAssoc = await BfEdge.create(this.currentViewer, {
-      action: "authenticates",
-    }, {
-      bfPid: toBfPid(this.metadata.bfGid),
-      bfTid: token.metadata.bfTid,
-    });
-  }
 }
