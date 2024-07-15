@@ -53,6 +53,7 @@ const DEFAULT_ADDITIONAL_JSON = {
   titleColor: "rgba(255, 215, 0, 1)",
   titleStrokeColor: "rgba(0, 0, 0, 1)",
   titleStrokeWidth: 6,
+  watermarkScale: 0.25,
 };
 
 const DEFAULT_RENDER_SETTINGS: RenderSettings = {

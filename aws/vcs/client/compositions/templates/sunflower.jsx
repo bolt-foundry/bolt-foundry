@@ -6,6 +6,7 @@ import { useParams, useVideoTime } from "#vcs-react/hooks";
 import { fontBoldWeights, fontRelativeCharacterWidths } from "../params.js";
 import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
 import EndCap from "../components/EndCap.jsx";
+import TitleCard from "../components/TitleCard.jsx";
 
 const FONT_SIZE_VH = 120 / 1920; // CHANGED: font size
 const CAPTION_POSITION = 0.60;
@@ -98,6 +99,7 @@ export default function SunflowerGraphics(
           }]}
         />
       )}
+      <TitleCard />
       <EndCap />
     </Box>
   );

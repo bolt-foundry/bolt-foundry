@@ -6,6 +6,7 @@ import { useParams, useVideoTime } from "#vcs-react/hooks";
 import { fontBoldWeights, fontRelativeCharacterWidths } from "../params.js";
 import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
 import EndCap from "../components/EndCap.jsx";
+import TitleCard from "../components/TitleCard.jsx";
 
 // CHANGED: font size
 const FONT_SIZE_VH = 120 / 1920;
@@ -124,6 +125,7 @@ export default function OffCabotGraphics(
           }]}
         />
       )}
+      <TitleCard />
       <EndCap />
     </Box>
   );
