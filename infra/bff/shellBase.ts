@@ -79,8 +79,8 @@ export function registerShellCommand(
   description: string,
   commandArray: Array<string>,
 ) {
-  const shellCommand = () => {
-    return runShellCommand(commandArray);
+  const shellCommand = (args) => {
+    return runShellCommand([...commandArray, ...args]);
   };
   register(
     name,
