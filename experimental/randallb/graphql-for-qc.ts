@@ -36,14 +36,14 @@ query CurrentViewerReviewableClips {
     }
   }
 }
-`
+`;
 
-export const q = () => BfClip.query(cv, {bfOid: cv.organizationBfGid});
+export const q = () => BfClip.query(cv, { bfOid: cv.organizationBfGid });
 
 const mutationParams = {
   "originalClipId": "foooo",
-  "title": "Randall kicks it like bruce lee"
-}
+  "title": "Randall kicks it like bruce lee",
+};
 
 export const fakeClips = [
   {
