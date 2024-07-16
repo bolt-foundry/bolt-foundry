@@ -581,7 +581,7 @@ function ClipEdit({
                 renderedWord = `${renderedWord} `; // add a space after each word
 
                 const wordData = {
-                  index,
+                  index: i,
                   word,
                   renderedWord,
                   isCurrentWord,
