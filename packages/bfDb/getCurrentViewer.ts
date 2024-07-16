@@ -37,12 +37,17 @@ export async function getContextFromRequest(
         import.meta,
         nextAccessToken,
       );
-    } catch {
-      logger.error("couldnt refresh access token");
+    } catch (e) {
+      logger.error("couldnt refresh access token", e);
       responseHeaders.append(
         "Set-Cookie",
         `BF_AT=; HttpOnly; Path=/; Secure; SameSite=Strict`,
       );
+      responseHeaders.append(
+        "Set-Cookie",
+        `BF_RT=; HttpOnly; Path=/; Secure; SameSite=Strict`,
+      );
+      logger.error("Returning headers to delete auth cookies")
     }
   }
   return { bfCurrentViewer, responseHeaders };
