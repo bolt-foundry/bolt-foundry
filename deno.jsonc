@@ -84,8 +84,7 @@
       "vendor",
       "resources",
       "thirdParty",
-      "aws",
-      "mobile"
+      "aws"
     ]
   },
   "lock": true,
