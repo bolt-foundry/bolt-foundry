@@ -1,10 +1,11 @@
 import { React } from "deps.ts";
-import { TooltipMenu } from "packages/bfDs/Tooltip.tsx";
+import { TooltipMenu, TooltipPosition } from "packages/bfDs/Tooltip.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 const { useEffect, useState } = React;
 
 type Props = {
   disabled?: boolean;
+  position?: TooltipPosition;
   // Options are a map of option name to value
   // e.g. { "Option 1": "option1", "Option 2": "option2" }
   options: Record<string, string>;
@@ -16,8 +17,16 @@ type Props = {
 };
 
 export function DropdownSelector(
-  { disabled, options, onChange, value, placeholder, showSpinner, testId }:
-    Props,
+  {
+    disabled,
+    options,
+    onChange,
+    value,
+    placeholder,
+    position = "bottom",
+    showSpinner,
+    testId,
+  }: Props,
 ) {
   const [menu, setMenu] = useState<Array<TooltipMenu>>([]);
 
@@ -48,7 +57,7 @@ export function DropdownSelector(
       kind="outline"
       text={menuLabel}
       tooltipMenuDropdown={menu}
-      tooltipPosition="bottom"
+      tooltipPosition={position}
       tooltipJustification="end"
       showSpinner={showSpinner}
       testId={testIdValue}

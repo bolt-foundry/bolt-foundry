@@ -8,7 +8,7 @@ const { useEffect, useState } = React;
 
 type Props = {
   disabled?: boolean;
-  position: TooltipPosition;
+  position?: TooltipPosition;
   // Options are a map of option name to value
   // e.g. { "Option 1": "option1", "Option 2": "option2" }
   options: Record<string, string>;
@@ -26,7 +26,7 @@ export default function DropdownSelector(
     onChange,
     value,
     placeholder,
-    position,
+    position = "bottom",
     showSpinner,
     testId,
   }: Props,
