@@ -206,9 +206,7 @@ export async function bfQueryItems<
   const query = `SELECT * FROM bfdb WHERE ${allConditions}`;
 
   try {
-    logger.setLevel(logger.levels.TRACE);
     logger.trace("Executing query", query, variables);
-    logger.resetLevel();
     const rows = await sql(query, variables);
     const items = rows.map((row) => ({
       props: row.props,
