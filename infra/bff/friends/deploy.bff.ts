@@ -6,10 +6,10 @@ import { register } from "infra/bff/mod.ts";
 
 function parseLogInfo(loginfo: string) {
   const lines = loginfo.trim().split("\n");
-  const commitHash = lines[0].split("   ")[1].trim();
-  const author = lines[1].split("  ")[1].trim();
-  const date = lines[2].split("        ")[1].trim();
-  const summary = lines[3].split("     ")[1].trim();
+  const commitHash = lines[0].split("changeset: ")[1];
+  const author = lines[1].split("user:")[1].trim();
+  const date = lines[2].split("date:    ")[1].trim();
+  const summary = lines[3].split("summary: ")[1].trim();
   return { commitHash, author, date, summary };
 }
 
