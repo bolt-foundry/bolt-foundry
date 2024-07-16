@@ -1,7 +1,7 @@
 {
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "nixpkgs/nixos-24.05";
+    nixpkgs.url = "nixpkgs/nixos-23.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
   };
 
@@ -51,8 +51,6 @@
         # these packages show up with "direnv allow"
         devShellPackages = with pkgs; [
           jq
-          nodejs_22
-          unstablePkgs.nodePackages_latest.eas-cli
         ];
 
         deployPackages = with pkgs; [
