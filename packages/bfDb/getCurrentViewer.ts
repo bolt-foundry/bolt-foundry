@@ -15,7 +15,8 @@ export async function getContextFromRequest(
   const accessToken = cookies.BF_AT;
   const refreshToken = cookies.BF_RT;
   const responseHeaders = new Headers();
-
+  logger.debug("Cookies: ", cookies);
+  logger.debug({ accessToken, refreshToken });
   let bfCurrentViewer = await BfCurrentViewerAccessToken.create(
     import.meta,
     accessToken,

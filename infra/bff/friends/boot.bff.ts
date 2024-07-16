@@ -1,5 +1,4 @@
 import { register } from "infra/bff/mod.ts";
-import { runShellCommand } from "infra/bff/shellBase.ts";
 
 register(
   "boot",

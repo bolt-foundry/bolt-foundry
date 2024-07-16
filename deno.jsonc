@@ -35,7 +35,7 @@
       "vendor",
       "resources",
       ".config",
-      "aws"
+      "aws/__generated__"
     ]
   },
   "test": {
@@ -84,7 +84,8 @@
       "vendor",
       "resources",
       "thirdParty",
-      "aws"
+      "aws",
+      "mobile"
     ]
   },
   "lock": true,
