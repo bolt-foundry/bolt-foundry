@@ -58,6 +58,7 @@ type ClipType = useClipEditData_clip$key;
 type ClipProps = {
   clip$key: ClipType;
   clipIndex: number;
+  clipNumber: number;
   isSaved: boolean;
   onEditClip: () => void;
   onSaveClip: (wordsToUpdate: Array<DGWord>) => void;
@@ -128,6 +129,7 @@ const encodeClipMutation = await graphql`
 function ClipEdit({
   clip$key,
   clipIndex,
+  clipNumber,
   isSaved,
   onEditClip,
   onSaveClip,
@@ -516,21 +518,24 @@ function ClipEdit({
           <div className="clipHeader">
             <div className="clipHeaderLeft">
               <div className="clipTitle" dir="auto">
-                <Input
-                  value={clipData.title ?? ""}
-                  meta={invalidTitle && (
-                    <span className="metaAlert">Title is required</span>
-                  )}
-                  onFocus={() => setIsEditingTitle(true)}
-                  onBlur={() => setIsEditingTitle(false)}
-                  onChange={(e) => {
-                    e.preventDefault();
-                    dispatch({
-                      type: ActionType.SET_TITLE,
-                      payload: e.target.value,
-                    });
-                  }}
-                />
+                <span style={{ fontWeight: 300 }}>{clipNumber}</span>
+                <div style={{ flex: 1 }}>
+                  <Input
+                    value={clipData.title ?? ""}
+                    meta={invalidTitle && (
+                      <span className="metaAlert">Title is required</span>
+                    )}
+                    onFocus={() => setIsEditingTitle(true)}
+                    onBlur={() => setIsEditingTitle(false)}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      dispatch({
+                        type: ActionType.SET_TITLE,
+                        payload: e.target.value,
+                      });
+                    }}
+                  />
+                </div>
               </div>
               <div className="clipDescription" dir="auto">
                 {clipData.description}
@@ -721,7 +726,7 @@ function ClipEdit({
                 manualCropActive: state.manualCropActive,
               }}
               disabled={invalidTitle}
-              downloadTitle={draftClip.title}
+              downloadTitle={`${clipNumber} ${draftClip.title}`}
               transcriptWords={transcriptWords}
               settings={settings}
               testId="button-download-clip-editing"

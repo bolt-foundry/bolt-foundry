@@ -642,6 +642,10 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 12px;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
 }
 
 @media (max-width: 600px) {
