@@ -19,7 +19,7 @@ export const schema = import.meta.main ? null : makeSchema({
   },
 });
 
-export function build(configLocation: string = "packages") {
+export function build(configLocation: string = "infra") {
   logger.info(`Building schema for ${configLocation}`);
   makeSchema({
     types,
