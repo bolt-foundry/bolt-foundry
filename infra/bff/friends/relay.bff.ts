@@ -2,7 +2,8 @@
 
 import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
-import { build } from "packages/graphql/schema.ts";
+import { build as buildPackages } from "packages/graphql/schema.ts";
+import { build as buildInfra } from "infra/graphql/schema.ts";
 
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
@@ -23,6 +24,8 @@ export async function buildRelay(args: Array<string> = []) {
   if (args.indexOf("--watch") === -1) {
     stopSpinner = startSpinner();
   }
+  const isInfra = configLocation === "infra";
+  const build = isInfra ? buildInfra : buildPackages;
   await build(configLocation);
 
   const cmd = new Deno.Command("deno", {

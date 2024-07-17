@@ -15,12 +15,35 @@ const vendorManifestFile = await Deno.readTextFile(vendorManifestFilePath);
 const vendorManifest = JSON.parse(vendorManifestFile);
 
 const cacheLocations = await getCacheLocations();
-const extractGraphqlTags = (contents: string) => {
-  const matches = Array.from(contents.matchAll(/graphql`([\s\S]+?)`/g)).map(
-    (match) => match[1].trim(),
-  );
+function isInsideComment(contents: string, matchIdx: number): boolean {
+  const beforeMatch = contents.slice(0, matchIdx);
+
+  // Check for single-line comments (//)
+  const singleLineComments = beforeMatch.match(/\/\/.*$/gm) || [];
+  const singleLineCommentFound = singleLineComments.some(comment => beforeMatch.endsWith(comment));
+
+  // Check for multi-line comments (/* ... */)
+  const blockCommentStartIdx = beforeMatch.lastIndexOf('/*');
+  const blockCommentEndIdx = beforeMatch.lastIndexOf('*/');
+  const blockCommentOpen = blockCommentStartIdx > blockCommentEndIdx;
+
+  return singleLineCommentFound || blockCommentOpen;
+}
+
+function extractGraphqlTags(contents: string): string[] {
+  const matches = [];
+  const regex = /graphql`([\s\S]+?)`/g;
+  let match;
+
+  while ((match = regex.exec(contents)) !== null) {
+    const matchIdx = match.index;
+    if (!isInsideComment(contents, matchIdx)) {
+      matches.push(match[1].trim());
+    }
+  }
+
   return matches;
-};
+}
 
 const replaceTagsWithImports = async (
   contents: string,
