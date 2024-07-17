@@ -14,6 +14,7 @@ import { ProjectsPage } from "infra/internalbf.com/client/pages/ProjectsPage.tsx
 import { QcPage } from "infra/internalbf.com/client/pages/QcPage.tsx";
 import { ChangesPage } from "infra/internalbf.com/client/pages/ChangesPage.tsx";
 import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
+import { PlaygroundPage } from "infra/internalbf.com/client/pages/PlaygroundPage.tsx";
 
 export const routes = new Map([
   ["/media", { Component: MediaPage, allowLoggedOut: true }],
@@ -25,6 +26,7 @@ export const routes = new Map([
     allowLoggedOut: true,
   }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
+  ["/colby", { Component: PlaygroundPage, allowLoggedOut: true}],
 ]);
 
 export function App() {
