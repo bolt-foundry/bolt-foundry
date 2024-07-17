@@ -43,7 +43,7 @@ function GoogleLoginButton() {
           credential,
         },
         onCompleted: () => {
-          navigate("/awsprojects/new/");
+          navigate("/?login=success");
         },
       });
     }
@@ -64,7 +64,7 @@ function GoogleLoginButton() {
         credential: response.credential,
       },
       onCompleted: () => {
-        navigate("/awsprojects/new/");
+        navigate("/login");
       },
     });
   };
