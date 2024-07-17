@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Box, Image, Text, Video } from "#vcs-react/components";
+import { Box, Text, Video } from "#vcs-react/components";
 import { useParams, useVideoTime } from "#vcs-react/hooks";
 import { fontBoldWeights, fontRelativeCharacterWidths } from "../../params.js";
 import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
 import EndCap from "../components/EndCap.jsx";
 import TitleCard from "../components/TitleCard.jsx";
+import Watermark from "../components/Watermark.jsx";
 import { getValueFromJson } from "../utils/jsonUtils.js";
 
 const MAX_CHARACTERS_PER_LINE = 24;
@@ -26,12 +27,11 @@ export default function DefaultGraphics() {
   const time = useVideoTime();
   const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
-    additionalJson,
+    additionalJson = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
     showCaptions,
-    showWatermark,
   } = JSON.parse(settings);
   const strokeColor = getValueFromJson(
     additionalJson,
@@ -87,13 +87,11 @@ export default function DefaultGraphics() {
           </Text>
         );
       })}
-      {showWatermark && (
-        <Image
-          src="made_with_bf.png"
-          blend={{ opacity: 0.5 }}
-          layout={[layoutFuncs.watermark]}
-        />
-      )}
+      <Watermark
+        fontSizeVh={FONT_SIZE_VH}
+        captionPosition={CAPTION_POSITION}
+        defaultNumberOfLines={2}
+      />
       <TitleCard />
       <EndCap />
     </Box>
@@ -103,25 +101,6 @@ export default function DefaultGraphics() {
 // --- layout functions and utils ---
 
 const layoutFuncs = {
-  watermark: (parentFrame, params, layoutCtx) => {
-    let { x, y, w, h } = parentFrame;
-    const imgSize = layoutCtx.useIntrinsicSize();
-    const imgAsp = imgSize.h > 0 ? imgSize.w / imgSize.h : 1;
-    const vh = layoutCtx.viewport.h;
-    const fontSize = FONT_SIZE_VH * vh;
-
-    const margin = fontSize * 0.4;
-    y = h * CAPTION_POSITION + (fontSize * 2) + margin;
-
-    h = fontSize * 0.75;
-    w = h * imgAsp;
-    if (w > 0) {
-      // center horizontally
-      x += (parentFrame.w - w) / 2;
-    }
-
-    return { x, y, w, h };
-  },
   plainSubtitles: (parentFrame, params, layoutCtx) => {
     const pxPerGu = layoutCtx.pixelsPerGridUnit;
     const {

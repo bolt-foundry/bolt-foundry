@@ -2,7 +2,6 @@ import * as React from "react";
 import { Box, Text } from "#vcs-react/components";
 import { useParams, useVideoTime } from "#vcs-react/hooks";
 import { easeOut } from "../utils/easing.js";
-import { fontBoldWeights } from "../../params.js";
 
 const FONT_SIZE_VH = 80 / 1920;
 const PAD_X = 40; // px
@@ -16,16 +15,12 @@ export default function EndCap() {
     additionalJson: json = "{}",
     font: fontFamily,
   } = JSON.parse(settings);
-  const { useEndCap, capCta, capName } = JSON.parse(json);
-  if (!useEndCap) return null;
+  const { capCta, capName } = JSON.parse(json);
+  if (!capName) return null;
   const labelStyle = {
     textColor: "black",
     fontFamily,
     fontSize_vh: FONT_SIZE_VH,
-  };
-  const headerLabelStyle = {
-    ...labelStyle,
-    fontWeight: fontBoldWeights[fontFamily],
   };
   return time > endTimecode
     ? (
@@ -40,50 +35,46 @@ export default function EndCap() {
         <Box
           transform={{ rotate_deg: -8, skew_x_deg: 8 }}
         >
-          {capCta && (
-            <Box
-              blend={{
-                opacity: fadeIn(time, endTimecode + 0.25),
-              }}
-              style={{
-                fillColor: "rgba(34, 217, 229, 1)",
-              }}
-              layout={[layoutFuncs.fillBox, {
-                position: "top",
-                time,
-                endTimecode: endTimecode + 0.25,
-              }]}
+          <Box
+            blend={{
+              opacity: fadeIn(time, endTimecode + 0.25),
+            }}
+            style={{
+              fillColor: "rgba(34, 217, 229, 1)",
+            }}
+            layout={[layoutFuncs.fillBox, {
+              position: "top",
+              time,
+              endTimecode: endTimecode + 0.25,
+            }]}
+          >
+            <Text
+              style={labelStyle}
+              layout={[layoutFuncs.text]}
             >
-              <Text
-                style={headerLabelStyle}
-                layout={[layoutFuncs.text]}
-              >
-                {capCta}
-              </Text>
-            </Box>
-          )}
-          {capName && (
-            <Box
-              style={{
-                fillColor: "rgba(200, 200, 200, 1)",
-              }}
-              blend={{
-                opacity: fadeIn(time, endTimecode + 0.25),
-              }}
-              layout={[layoutFuncs.fillBox, {
-                position: "bottom",
-                time,
-                endTimecode: endTimecode + 0.25,
-              }]}
+              {capCta}
+            </Text>
+          </Box>
+          <Box
+            style={{
+              fillColor: "rgba(200, 200, 200, 1)",
+            }}
+            blend={{
+              opacity: fadeIn(time, endTimecode + 0.25),
+            }}
+            layout={[layoutFuncs.fillBox, {
+              position: "bottom",
+              time,
+              endTimecode: endTimecode + 0.25,
+            }]}
+          >
+            <Text
+              style={labelStyle}
+              layout={[layoutFuncs.text]}
             >
-              <Text
-                style={labelStyle}
-                layout={[layoutFuncs.text]}
-              >
-                {capName}
-              </Text>
-            </Box>
-          )}
+              {capName}
+            </Text>
+          </Box>
         </Box>
       </Box>
     )

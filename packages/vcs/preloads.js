@@ -6,4 +6,5 @@ export const imagePreloads = [
   "scc-banner.png",
   "port_city_sm.png",
   "big_laugh.png",
+  "pattern.png",
 ];

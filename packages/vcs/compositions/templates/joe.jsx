@@ -1,12 +1,11 @@
 import * as React from "react";
-
-import { Box, Image, Text, Video } from "#vcs-react/components";
+import { Box, Text, Video } from "#vcs-react/components";
 import { useParams, useVideoTime } from "#vcs-react/hooks";
 import { fontBoldWeights, fontRelativeCharacterWidths } from "../../params.js";
 import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
 import EndCap from "../components/EndCap.jsx";
 import TitleCard from "../components/TitleCard.jsx";
-import { getValueFromJson } from "../utils/jsonUtils.js";
+import Watermark from "../components/Watermark.jsx";
 
 const FONT_SIZE_VH = 96 / 1920;
 const CAPTION_POSITION = 0.60;
@@ -29,22 +28,21 @@ export default function JoeGraphics(
   const time = useVideoTime();
   const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
-    additionalJson,
+    additionalJson: json = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
     showCaptions,
-    showWatermark,
-    watermarkLogo,
-    watermarkOpacity,
-    watermarkPosition,
   } = JSON.parse(settings);
-  const strokeColor = getValueFromJson(
-    additionalJson,
-    "strokeColor",
-    "rgba(0, 0, 0, 0.5)",
-  );
-  const strokeWidth_px = getValueFromJson(additionalJson, "strokeWidth_px", 6);
+  const additionalJson = JSON.parse(json);
+  let strokeColor = "rgba(0, 0, 0, 0.75)";
+  if (additionalJson.strokeColor) {
+    strokeColor = additionalJson.strokeColor;
+  }
+  let strokeWidth_px = 6;
+  if (additionalJson.strokeWidth_px) {
+    strokeWidth_px = additionalJson.strokeWidth_px;
+  }
 
   const labelStyle = {
     textColor: captionColor ?? "white",
@@ -82,10 +80,11 @@ export default function JoeGraphics(
   return (
     <Box id="videoWithGraphics">
       <Video src={"video1"} />
-      {showCaptions && lineState.map((line, index) => {
+      {showCaptions && lineState && lineState.map((line, index) => {
         const fontSize_vh = labelStyle.fontSize_vh;
         return (
           <Text
+            key={index}
             style={line.currentLine ? highlightStyle : labelStyle}
             layout={[layoutFuncs.plainSubtitles, {
               fontSize_vh,
@@ -97,15 +96,11 @@ export default function JoeGraphics(
           </Text>
         );
       })}
-      {showWatermark && (
-        <Image
-          src={watermarkLogo ?? "made_with_bf.png"}
-          blend={{ opacity: watermarkOpacity ?? 0.5 }}
-          layout={[layoutFuncs.watermark, {
-            position: watermarkPosition,
-          }]}
-        />
-      )}
+      <Watermark
+        fontSizeVh={FONT_SIZE_VH}
+        captionPosition={CAPTION_POSITION}
+        defaultNumberOfLines={2}
+      />
       <TitleCard />
       <EndCap />
     </Box>
@@ -115,40 +110,6 @@ export default function JoeGraphics(
 // --- layout functions and utils ---
 
 const layoutFuncs = {
-  watermark: (parentFrame, params, layoutCtx) => {
-    let { x, y, w, h } = parentFrame;
-    const parentH = h;
-    const parentW = w;
-    const imgSize = layoutCtx.useIntrinsicSize();
-    const imgAsp = imgSize.h > 0 ? imgSize.w / imgSize.h : 1;
-    const vh = layoutCtx.viewport.h;
-    const fontSize = FONT_SIZE_VH * vh;
-
-    const margin = fontSize * 0.4;
-    w = parentW * 0.25; // TODO justin: add to params
-    h = w / imgAsp;
-
-    // y position, default under captions
-    y = parentH * CAPTION_POSITION + (fontSize * DEFAULT_NUMBER_OF_LINES) +
-      margin;
-    if (params.position.indexOf("top") > -1) {
-      y = margin;
-    }
-    if (params.position.indexOf("bottom") > -1) {
-      y = parentH - h - margin;
-    }
-
-    // x position, default centered
-    x = (parentW - w) / 2;
-    if (params.position.indexOf("left") > -1) {
-      x = margin;
-    }
-    if (params.position.indexOf("right") > -1) {
-      x = parentW - w - margin;
-    }
-
-    return { x, y, w, h };
-  },
   plainSubtitles: (parentFrame, params, layoutCtx) => {
     const pxPerGu = layoutCtx.pixelsPerGridUnit;
     const {

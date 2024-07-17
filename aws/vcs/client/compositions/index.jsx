@@ -9,6 +9,9 @@ import TinyCupboardGraphics from "./templates/tinycupboard.jsx";
 import OffCabotGraphics from "./templates/offcabot.jsx";
 import SunflowerGraphics from "./templates/sunflower.jsx";
 import ShockCollarGraphics from "./templates/shockcollar.jsx";
+import EndCap from "/aws/vcs/client/compositions/components/EndCap.jsx";
+import TitleCard from "/aws/vcs/client/compositions/components/TitleCard.jsx";
+import Watermark from "/aws/vcs/client/compositions/components/Watermark.jsx";
 
 // -- the control interface exposed by this composition --
 export const compositionInterface = {
@@ -53,6 +56,7 @@ export default function RenderVCS() {
   // this hook lets us get the current param values.
   const { settings } = useParams();
   const { captionLines, captionWordsPerLine, template } = JSON.parse(settings);
+  console.log("INDEX INDEX")
 
   let renderedTemplate;
   switch (template) {
