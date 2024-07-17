@@ -38,7 +38,9 @@ export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
       role: ACCOUNT_ROLE.OWNER,
       displayName: this.props.name,
     };
-    const newAccount = await BfAccount.create(currentViewer, props);
+    const newAccount = await BfAccount.create(currentViewer, props, {
+      bfOid: this.metadata.bfOid,
+    });
     return newAccount;
   }
 }

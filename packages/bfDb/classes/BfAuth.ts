@@ -17,7 +17,8 @@ type GooglePayload = Payload & {
 const googleJwkUrl = "https://www.googleapis.com/oauth2/v3/certs";
 const { keys: googleJwks } = await fetch(googleJwkUrl).then((r) => r.json());
 
-const ACCESS_TOKEN_EXPIRATION_WINDOW_SECONDS = 300;
+const accessTokenExpirationMinutes = parseInt(Deno.env.get("ACCESS_TOKEN_EXPIRATION_MINUTES") ?? "5", 10);
+const ACCESS_TOKEN_EXPIRATION_WINDOW_SECONDS = accessTokenExpirationMinutes * 60;
 const cryptoKeySecret = Deno.env.get("JWT_SECRET") ??
   "this is a super insecure jwt secret. you should be ashamed of yourself if you use it";
 
