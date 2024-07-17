@@ -15,7 +15,7 @@ register(
     const REPL_SLUG = Deno.env.get("REPL_SLUG") ?? "";
     const HOME = Deno.env.get("HOME") ?? "";
 
-    if (REPL_SLUG === "BF-Base") {
+    if (REPL_SLUG === "Bolt-Foundry-Base") {
       throw new Error("Don't log into the base please! Fork instead.");
     }
 
