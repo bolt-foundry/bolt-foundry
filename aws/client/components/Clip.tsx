@@ -21,6 +21,7 @@ type ClipType = useClipData_clip$key;
 type ClipProps = {
   clip$key: ClipType;
   clipIndex: number;
+  clipNumber: number;
   isSaved: boolean;
   onEditClip: () => void;
   onSaveClip: (wordsToUpdate: Array<DGWord>) => void;
@@ -34,6 +35,7 @@ type ClipProps = {
 function Clip({
   clip$key,
   clipIndex,
+  clipNumber,
   isSaved,
   onEditClip,
   onSaveClip,
@@ -103,7 +105,13 @@ function Clip({
       <div className="clipContent">
         <div className="clipHeader">
           <div className="clipHeaderLeft">
-            <div className="clipTitle" dir="auto">{clipData.title}</div>
+            <div className="clipTitle" dir="auto">
+              <span style={{ fontWeight: 300 }}>
+                {clipNumber}
+                {" | "}
+              </span>
+              {clipData.title}
+            </div>
             <div className="clipDescription" dir="auto">
               {clipData.description}
             </div>
@@ -128,7 +136,7 @@ function Clip({
                 manualCrop: JSON.parse(clipData.manualCrop ?? "[]"),
                 manualCropActive: !!clipData.manualCropActive,
               }}
-              downloadTitle={clipData.title}
+              downloadTitle={`${clipNumber} ${clipData.title}`}
               transcriptWords={transcriptWords}
               settings={settings}
               testId="button-download-clip"
