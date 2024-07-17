@@ -29,10 +29,7 @@ export async function buildVcs(_args?: Array<string>) {
   });
   const { code } = await buildCmd.output();
   const source = `${cwd.pathname}/dist/dev_bf.bundle.js`;
-  const destination = `${Deno.env.get("BF_PATH")}/build/vcs/dev_bf.bundle.js`;
-  await Deno.mkdir(`${Deno.env.get("BF_PATH")}/build/vcs`, {
-    recursive: true,
-  });
+  const destination = `${Deno.env.get("BF_PATH")}/resources/dev_bf.bundle.js`;
   await Deno.rename(source, destination);
   stopSpinner();
   return code;
