@@ -611,7 +611,7 @@ export default class BFRenderer {
   private async setupVideoRendering() {
     if (!this.comp) {
       this.comp = await import(
-        "/resources/dev_bf.bundle.js"
+        "resources/dev_bf.bundle.js"
       );
     }
     if (!this.detector && (this.settings.useTracking) && ENABLE_TRACKING) {
