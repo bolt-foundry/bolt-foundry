@@ -218,6 +218,7 @@ interface IBfGraphQLNode implements BfNode {
 type Mutation {
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
+  playgroundMutation(input: String!): PlaygroundMutationPayload
   readTextFile(file: File!): String
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
@@ -247,6 +248,11 @@ type PageInfo {
   The cursor corresponding to the first nodes in edges. Null if the connection is empty.
   """
   startCursor: String
+}
+
+type PlaygroundMutationPayload {
+  message: String
+  success: Boolean!
 }
 
 type Query {

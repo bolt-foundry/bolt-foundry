@@ -130,6 +130,10 @@ export interface NexusGenObjects {
     hasPreviousPage: boolean; // Boolean!
     startCursor?: string | null; // String
   }
+  PlaygroundMutationPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
   Query: {};
   SubmitContactFormPayload: { // root type
     message?: string | null; // String
@@ -222,6 +226,7 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
     logout: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
+    playgroundMutation: NexusGenRootTypes['PlaygroundMutationPayload'] | null; // PlaygroundMutationPayload
     readTextFile: string | null; // String
     submitContactForm: NexusGenRootTypes['SubmitContactFormPayload'] | null; // SubmitContactFormPayload
     switchAccount: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
@@ -232,6 +237,10 @@ export interface NexusGenFieldTypes {
     hasNextPage: boolean; // Boolean!
     hasPreviousPage: boolean; // Boolean!
     startCursor: string | null; // String
+  }
+  PlaygroundMutationPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
   }
   Query: { // field return type
     currentViewer: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
@@ -329,6 +338,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     loginWithGoogle: 'BfCurrentViewerAccessToken'
     logout: 'BfCurrentViewer'
+    playgroundMutation: 'PlaygroundMutationPayload'
     readTextFile: 'String'
     submitContactForm: 'SubmitContactFormPayload'
     switchAccount: 'BfCurrentViewerAccessToken'
@@ -339,6 +349,10 @@ export interface NexusGenFieldTypeNames {
     hasNextPage: 'Boolean'
     hasPreviousPage: 'Boolean'
     startCursor: 'String'
+  }
+  PlaygroundMutationPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
   }
   Query: { // field return type name
     currentViewer: 'BfCurrentViewer'
@@ -395,6 +409,9 @@ export interface NexusGenArgTypes {
   Mutation: {
     loginWithGoogle: { // args
       credential: string; // String!
+    }
+    playgroundMutation: { // args
+      input: string; // String!
     }
     readTextFile: { // args
       file: NexusGenScalars['File']; // File!
