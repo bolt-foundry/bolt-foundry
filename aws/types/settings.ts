@@ -53,6 +53,7 @@ const DEFAULT_ADDITIONAL_JSON = {
   titleColor: "rgba(255, 215, 0, 1)",
   titleStrokeColor: "rgba(0, 0, 0, 1)",
   titleStrokeWidth: 6,
+  watermarkScale: 0.25,
 };
 
 const DEFAULT_RENDER_SETTINGS: RenderSettings = {
@@ -193,6 +194,18 @@ export const settingsPresets: Record<string, Partial<RenderSettings>> = {
     template: "offcabot",
     useTracking: true,
   },
+  "Pattern": {
+    ...DEFAULT_RENDER_SETTINGS,
+    showCaptions: true,
+    showWatermark: true,
+    watermarkLogo: "pattern.png" as WatermarkLogoType,
+    watermarkOpacity: 0.5,
+    watermarkPosition: "top_left",
+    captionColor: "rgb(255, 255, 255)",
+    captionHighlightColor: "rgb(0, 155, 255)", // #009bff
+    template: "joe",
+    useTracking: true,
+  },
   "Port Comedy": {
     ...DEFAULT_RENDER_SETTINGS,
     captionColor: "rgb(255, 255, 255)",
@@ -210,6 +223,7 @@ export const settingsPresets: Record<string, Partial<RenderSettings>> = {
       ...DEFAULT_ADDITIONAL_JSON,
       strokeColor: "rgba(0, 0, 0, 1)",
       strokeWidth_px: 8,
+      watermarkScale: 0.13,
     }),
   },
   "Shock Collar Comedy": {
