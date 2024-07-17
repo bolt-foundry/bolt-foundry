@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Box, Image, Text, Video } from "#vcs-react/components";
 import { useParams, useVideoTime } from "#vcs-react/hooks";
 import { fontBoldWeights, fontRelativeCharacterWidths } from "../../params.js";
@@ -7,6 +6,7 @@ import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscrip
 import { easeInOutCubic } from "../utils/easing.js";
 import EndCap from "../components/EndCap.jsx";
 import TitleCard from "../components/TitleCard.jsx";
+import Watermark from "../components/Watermark.jsx";
 import { getValueFromJson } from "../utils/jsonUtils.js";
 
 const FONT_SIZE_VH = 96 / 1920;
@@ -30,15 +30,11 @@ export default function ShockCollarGraphics(
   const time = useVideoTime();
   const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
-    additionalJson,
+    additionalJson = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
     showCaptions,
-    showWatermark,
-    watermarkLogo,
-    watermarkOpacity,
-    watermarkPosition,
   } = JSON.parse(settings);
   const strokeColor = getValueFromJson(
     additionalJson,
@@ -105,15 +101,11 @@ export default function ShockCollarGraphics(
         src="scc-banner.png"
         layout={[layoutFuncs.banner, { time, startTimecode }]}
       />
-      {showWatermark && (
-        <Image
-          src={watermarkLogo ?? "made_with_bf.png"}
-          blend={{ opacity: watermarkOpacity ?? 0.5 }}
-          layout={[layoutFuncs.watermark, {
-            position: watermarkPosition,
-          }]}
-        />
-      )}
+      <Watermark
+        fontSizeVh={FONT_SIZE_VH}
+        captionPosition={CAPTION_POSITION}
+        defaultNumberOfLines={2}
+      />
       <TitleCard />
       <EndCap />
     </Box>
@@ -160,40 +152,6 @@ const layoutFuncs = {
     const bannerHeight = w * 351 / 1080;
     const endY = bannerHeight * 0.8; // don't move video as much as banner
     y = moveDown(time, startTimecode, 0, endY);
-
-    return { x, y, w, h };
-  },
-  watermark: (parentFrame, params, layoutCtx) => {
-    let { x, y, w, h } = parentFrame;
-    const parentH = h;
-    const parentW = w;
-    const imgSize = layoutCtx.useIntrinsicSize();
-    const imgAsp = imgSize.h > 0 ? imgSize.w / imgSize.h : 1;
-    const vh = layoutCtx.viewport.h;
-    const fontSize = FONT_SIZE_VH * vh;
-
-    const margin = fontSize * 0.4;
-    w = parentW * 0.25; // TODO justin: add to params
-    h = w / imgAsp;
-
-    // y position, default under captions
-    y = parentH * CAPTION_POSITION + (fontSize * DEFAULT_NUMBER_OF_LINES) +
-      margin;
-    if (params.position.indexOf("top") > -1) {
-      y = margin;
-    }
-    if (params.position.indexOf("bottom") > -1) {
-      y = parentH - h - margin;
-    }
-
-    // x position, default centered
-    x = (parentW - w) / 2;
-    if (params.position.indexOf("left") > -1) {
-      x = margin;
-    }
-    if (params.position.indexOf("right") > -1) {
-      x = parentW - w - margin;
-    }
 
     return { x, y, w, h };
   },

@@ -28,12 +28,11 @@ export default function TinyCupboardGraphics() {
   const time = useVideoTime();
   const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
-    additionalJson,
+    additionalJson = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
     showCaptions,
-    showWatermark,
   } = JSON.parse(settings);
   const strokeColor = getValueFromJson(
     additionalJson,
@@ -94,13 +93,11 @@ export default function TinyCupboardGraphics() {
           </Text>
         );
       })}
-      {showWatermark && (
-        <Image
-          src="tinycupboard_logo.png"
-          blend={{ opacity: 0.5 }}
-          layout={[layoutFuncs.watermark]}
-        />
-      )}
+      <Watermark
+        fontSizeVh={FONT_SIZE_VH}
+        captionPosition={CAPTION_POSITION}
+        defaultNumberOfLines={2}
+      />
       <TitleCard />
       <EndCap />
     </Box>
@@ -110,25 +107,6 @@ export default function TinyCupboardGraphics() {
 // --- layout functions and utils ---
 
 const layoutFuncs = {
-  watermark: (parentFrame, params, layoutCtx) => {
-    let { x, y, w, h } = parentFrame;
-    const imgSize = layoutCtx.useIntrinsicSize();
-    const imgAsp = imgSize.h > 0 ? imgSize.w / imgSize.h : 1;
-    const vh = layoutCtx.viewport.h;
-    const fontSize = FONT_SIZE_VH * vh;
-
-    const margin = fontSize * 0.4;
-    y = h * CAPTION_POSITION + (fontSize * NUMBER_OF_LINES) + margin;
-
-    h = fontSize * 1.25;
-    w = h * imgAsp;
-    if (w > 0) {
-      // center horizontally
-      x += (parentFrame.w - w) / 2;
-    }
-
-    return { x, y, w, h };
-  },
   plainSubtitles: (parentFrame, params, layoutCtx) => {
     const pxPerGu = layoutCtx.pixelsPerGridUnit;
     const {
