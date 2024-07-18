@@ -13,20 +13,23 @@ import { MediaPage } from "infra/internalbf.com/client/pages/MediaPage.tsx";
 import { ProjectsPage } from "infra/internalbf.com/client/pages/ProjectsPage.tsx";
 import { QcPage } from "infra/internalbf.com/client/pages/QcPage.tsx";
 import { ChangesPage } from "infra/internalbf.com/client/pages/ChangesPage.tsx";
+import { RandallPlaygroundPage } from "infra/internalbf.com/client/pages/RandallPlaygroundPage.tsx";
 import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
 import { PlaygroundPage } from "infra/internalbf.com/client/pages/PlaygroundPage.tsx";
 
 export const routes = new Map([
-  ["/media", { Component: MediaPage, allowLoggedOut: true }],
-  ["/projects", { Component: ProjectsPage, allowLoggedOut: true }],
-  ["/qc", { Component: QcPage, allowLoggedOut: true }],
-  ["/changes", { Component: ChangesPage, allowLoggedOut: true }],
+  ["/media", { Component: MediaPage}],
+  ["/projects", { Component: ProjectsPage }],
+  ["/qc", { Component: QcPage}],
+  ["/changes", { Component: ChangesPage }],
   ["/clip-changes", {
     Component: ClipChangesPage,
-    allowLoggedOut: true,
   }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
-  ["/colby", { Component: PlaygroundPage, allowLoggedOut: true}],
+  ["/colby", { Component: PlaygroundPage }],
+  ["/", { Component: LoginPage }],
+  ["/randall", { Component: RandallPlaygroundPage }],
+  
 ]);
 
 export function App() {
