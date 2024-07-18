@@ -1,9 +1,28 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { objectStorageClient } from "packages/bfDb/deps.ts";
+import { Readable } from "node:stream";
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
 
 type BfClipReviewProps = {
   title: string;
-  awsprojectSlug: string;
 };
 
-export class BfClipReview extends BfNode<BfClipReviewProps> {
+type BfClipReviewInternalProps = {
+  progress: number;
+  fileSize: number;
+  mimetype: string;
+}
+
+export class BfClipReview extends BfNode<BfClipReviewProps, BfClipReviewInternalProps> {
+  addFile(file: File) {
+    logger.debug("Writing file", file)
+    const stream = file.stream();
+    logger.debug("Opened stream", stream)
+    objectStorageClient.uploadFromStream(this.metadata.bfGid, Readable.from(stream));
+    
+    return;
+  }
+
 }

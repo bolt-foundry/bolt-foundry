@@ -665,7 +665,7 @@ export default class BFRenderer {
   async setupAudioRenderingUsingFetch() {
     const response = await fetch(this.videoUrl);
     const blob = await response.blob();
-    const file = new File([blob], "bf-clip.mp4");
+    const file = new File([blob], this.title);
 
     const {
       encodedAudioChunks,
@@ -1032,6 +1032,7 @@ export default class BFRenderer {
           this.calculateProgress("video", 1);
         },
       },
+      title: this.title,
     });
     this.clearFrames();
     if (this.settings.useTracking || this.manualCropActive) {
