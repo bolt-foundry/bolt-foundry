@@ -68,6 +68,39 @@ const fragment = await graphql`
   }
 `;
 
+async function uploadFileToNewStorage(
+  file: File,
+  title: string,
+  originalClipId: string,
+) {
+  const formData = new FormData();
+  formData.append(
+    "operations",
+    JSON.stringify({
+      "query":
+        `mutation DownloadClipUpsertMutation($file: File!, $title: String!, $originalClipId: String!) {
+        upsertClip(file: $file, title: $title, originalClipId: $originalClipId){
+          title
+        }}`,
+      "variables": { "file": file.name, title, originalClipId },
+    }),
+  );
+  formData.append("map", JSON.stringify({ "file": ["variables.file"] }));
+  formData.append("file", file);
+
+  const response = await fetch("/graphql", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (response.ok) {
+    const result = await response.json();
+    console.log(result);
+  } else {
+    console.error("Failed to upload file");
+  }
+}
+
 const DownloadClip: React.FC<DownloadClipProps> = (
   {
     asButton = false,
@@ -180,7 +213,7 @@ const DownloadClip: React.FC<DownloadClipProps> = (
     const url = URL.createObjectURL(file);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${sanitizeFilename(downloadTitle as string)}.mp4`;
+    a.download = file.name;
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
@@ -256,11 +289,12 @@ const DownloadClip: React.FC<DownloadClipProps> = (
         personId: personId!,
         manualCrop,
         manualCropActive,
-        title: data.title ?? "",
+        title: `${sanitizeFilename(downloadTitle as string)}.mp4`,
       };
       const file = await queueRender(renderParams);
       setDownloadableFile(file);
       downloadFile(file);
+      uploadFileToNewStorage(file, renderParams.title, renderParams.clipId);
     } catch (e) {
       log(e);
     }
