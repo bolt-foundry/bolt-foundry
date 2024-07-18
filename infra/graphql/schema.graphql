@@ -222,7 +222,7 @@ type Mutation {
   readTextFile(file: File!): String
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
-  upsertClip(originalClipId: String, title: String): BfClip
+  upsertClip(file: File!, originalClipId: String!, title: String): BfClip
 }
 
 """

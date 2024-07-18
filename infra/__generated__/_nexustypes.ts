@@ -423,7 +423,8 @@ export interface NexusGenArgTypes {
       accountId: string; // ID!
     }
     upsertClip: { // args
-      originalClipId?: string | null; // String
+      file: NexusGenScalars['File']; // File!
+      originalClipId: string; // String!
       title?: string | null; // String
     }
   }
