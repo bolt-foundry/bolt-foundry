@@ -132,7 +132,7 @@ export const standardFontFamilies = [
     variants: Roboto,
   },
   {
-    family: "RobotoCondensed",
+    family: "Roboto Condensed",
     variants: RobotoCondensed,
   },
   {
