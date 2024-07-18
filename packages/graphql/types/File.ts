@@ -20,9 +20,11 @@ export const ReadFileMutation = mutationField("readTextFile", {
   args: { file: nonNull(arg({ type: "File" })) },
   resolve: async (one, two, ctx, four) => {
     const file: File = ctx.params.variables.file;
-    let returnable = "not read yet";
+    let returnable = "not able to read b/c probably not text.";
     if (file.type === "text/plain") {
       returnable = await file.text();
+    } else {
+      logger.info(file)
     }
     logger.info("readTextFile: " + returnable);
     return returnable;
