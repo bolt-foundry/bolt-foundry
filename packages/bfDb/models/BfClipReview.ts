@@ -1,6 +1,5 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { objectStorageClient } from "packages/bfDb/deps.ts";
-import { Readable } from "node:stream";
+import { objectStorageClient, Readable } from "packages/bfDb/deps.ts";
 import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
@@ -20,7 +19,7 @@ export class BfClipReview extends BfNode<BfClipReviewProps, BfClipReviewInternal
     logger.debug("Writing file", file)
     const stream = file.stream();
     logger.debug("Opened stream", stream)
-    objectStorageClient.uploadFromStream(this.metadata.bfGid, Readable.from(stream));
+    objectStorageClient?.uploadFromStream(this.metadata.bfGid, Readable.from(stream));
     
     return;
   }
