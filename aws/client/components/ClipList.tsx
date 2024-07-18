@@ -247,6 +247,10 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
   const minClipLength = minClipLengthSetting ?? 25;
 
   const clips = data?.clips?.edges ?? [];
+  const clipNumbers = {};
+  clips.forEach((clip, index) => {
+    clipNumbers[clip.node.id] = index + 1;
+  });
   let clipItemsToRender = minClipLength > 0
     // filter out clips that are shorter than the minimum words in settings
     ? clips.filter((clip) => {
@@ -334,6 +338,7 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
           clip$key={clip}
           key={clip.id}
           clipIndex={index}
+          clipNumber={clipNumbers[clip.id]}
           isSaved={false}
           settings={settings}
           transcriptId={transcriptId}
@@ -423,6 +428,10 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
               clip$key={clipItemsToRender[selectedClipIndex]
                 ?.node as useClipEditData_clip$key}
               clipIndex={selectedClipIndex}
+              clipNumber={clipNumbers[
+                clipItemsToRender[selectedClipIndex]
+                  ?.node?.id
+              ]}
               isSaved={false}
               setClipChanged={setClipChanged}
               setClickOutsideToCloseModal={setClickOutsideToCloseModal}
