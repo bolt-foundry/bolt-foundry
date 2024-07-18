@@ -22,7 +22,7 @@ register(
       "Password for 'https://token@github.com': ",
     ]);
     if (ghToken.trim() === "no GitHub token available") {
-      throw new Error("No token, can't proceed.");
+      console.error("No token, proceeding anyway.");
     }
     console.log(
       "This command will overwrite any changes you have made to the current branch. ctrl + c now. You have 5 seconds",
