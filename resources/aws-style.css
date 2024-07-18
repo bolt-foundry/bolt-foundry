@@ -1279,3 +1279,8 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .blog_page a:hover {
   text-decoration: underline;
 }
+
+.fontPreload {
+  position: fixed;
+  right: -1000px;
+}

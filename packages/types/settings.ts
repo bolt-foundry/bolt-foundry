@@ -118,7 +118,7 @@ export const settingsPresets: Record<string, Partial<RenderSettings>> = {
     captionColor: "rgb(255, 255, 255)",
     captionHighlightColor: "rgb(255, 255, 255)",
     captionLines: 2,
-    font: "BebasNeue",
+    font: "Bebas Neue",
     showCaptions: true,
     showWatermark: false,
     template: "offcabot",

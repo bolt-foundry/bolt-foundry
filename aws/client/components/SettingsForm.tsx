@@ -21,6 +21,7 @@ import { imagePreloads } from "packages/vcs/preloads.js";
 import classnames from "aws/client/lib/classnames.ts";
 import Button from "aws/client/ui_components/Button.tsx";
 import TextArea from "aws/client/ui_components/TextArea.tsx";
+import FontPreload from "/aws/client/components/FontPreload.tsx";
 
 const { useFragment } = ReactRelay;
 export type SettingRowProps = {
@@ -233,6 +234,7 @@ export default function SettingsForm(
         }
       />
       <div className="separator" />
+      <FontPreload fontFamily={draftSettings.font ?? initialSettings.font} />
       {enableSettingsPresets && (
         <>
           <RowTemplate
