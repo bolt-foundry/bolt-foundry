@@ -19,8 +19,7 @@ export type GraphQLContext = GraphQLUserContext & GraphQLServerContext;
 
 export const yoga = createYoga<GraphQLServerContext, GraphQLUserContext>({
   graphqlEndpoint: "/graphql",
-  // #BOOTCAMPTASK disable graphiql in production
-  graphiql: true,
+  graphiql: Deno.env.get("BF_ENV") === "DEVELOPMENT",
   schema,
 });
 

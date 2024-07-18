@@ -1,23 +1,22 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfClipReview } from "packages/bfDb/models/BfClipReview.ts";
-import { toBfSid, toBfTid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { BfGid, toBfSid, toBfTid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 type BfClipProps = {
   title: string;
+  originalId: BfGid,
 };
 
 export class BfClip extends BfNode<BfClipProps> {
-  afterCreate(): void | Promise<void> {
-    this.createNewClipReview();
-  }
 
-  async createNewClipReview() {
+  async createNewClipReview(videoFile: File) {
+    const priorReviews = await this.queryClipReviewEdges();
     const clipReview = await BfClipReview.create(this.currentViewer, {
-      title: `review of ${this.props.title}`,
-      awsprojectSlug: "not real please fix",
+      title: `${this.props.title} (V${priorReviews.length + 1})`,
     });
+    clipReview.addFile(videoFile)
     await BfEdge.create(this.currentViewer, {}, {bfSid: toBfSid(this.metadata.bfGid), bfTid: toBfTid(clipReview.metadata.bfGid)})
   }
 
