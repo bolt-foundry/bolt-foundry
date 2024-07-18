@@ -132,7 +132,7 @@ export const standardFontFamilies = [
     variants: Roboto,
   },
   {
-    family: "RobotoCondensed",
+    family: "Roboto Condensed",
     variants: RobotoCondensed,
   },
   {
@@ -144,7 +144,7 @@ export const standardFontFamilies = [
     variants: Bangers,
   },
   {
-    family: "BebasNeue",
+    family: "Bebas Neue",
     variants: BebasNeue,
   },
   {
@@ -160,7 +160,7 @@ export const standardFontFamilies = [
     variants: Futura,
   },
   {
-    family: "KC",
+    family: "KC Ill Hand",
     variants: KC,
   },
   {
@@ -172,11 +172,11 @@ export const standardFontFamilies = [
     variants: Magra,
   },
   {
-    family: "PermanentMarker",
+    family: "Permanent Marker",
     variants: PermanentMarker,
   },
   {
-    family: "SuezOne",
+    family: "Suez One",
     variants: SuezOne,
   },
   {
