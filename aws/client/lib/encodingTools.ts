@@ -41,6 +41,7 @@ type CreateMuxedFileOptions = {
     audio?: Mp4Muxer.AudioConfig;
   };
   events?: Events;
+  title? : string;
 };
 
 export async function createMuxedFile(
@@ -49,6 +50,7 @@ export async function createMuxedFile(
   const duration = (options.input.video?.videoFrames.length ?? Infinity) *
     1000 / 30;
   log(duration);
+  const title = options.title ?? "bolt-foundry-file.mp4";
   const perfLogger = new PerfLogger(duration);
   let audioEncoder: AudioEncoder | null = null;
   let videoEncoder: VideoEncoder | null = null;
@@ -151,7 +153,7 @@ export async function createMuxedFile(
 
   muxer.finalize();
   const { buffer } = muxer.target;
-  const file = new File([buffer], "bolt-foundry-file.mp4");
+  const file = new File([buffer], title);
   const perfReport = perfLogger.report();
   // deno-lint-ignore no-console
   console.table(perfReport);
