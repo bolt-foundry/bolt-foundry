@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.example.watcher</string>
+    <string>com.boltfoundry.watcher</string>
     <key>ProgramArguments</key>
     <array>
         <string>/path/to/watcher.sh</string>
