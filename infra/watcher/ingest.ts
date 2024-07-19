@@ -9,7 +9,7 @@ const PASSWORD = Deno.env.get("BFI_PASSWORD");
 const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT");
 const FFMPEG_ARGS_EXCEPT_INPUT_AND_OUTPUT =
   Deno.env.get("BFI_FFMPEG_ARGS_EXCEPT_INPUT_AND_OUTPUT") ||
-  "-vf crop=ih*(16/9):ih,scale=1920:1080 -c:v h264_videotoolbox -b:v 7M -c:a aac -b:a 128k -f segment -segment_time 1800 -reset_timestamps 1";\
+  "-vf crop=ih*(16/9):ih,scale=1920:1080 -c:v h264_videotoolbox -b:v 7M -c:a aac -b:a 128k -f segment -segment_time 1800 -reset_timestamps 1";
 if (!GRAPHQL_ENDPOINT || !USERNAME || !PASSWORD) {
   throw new Error("BFI_GRAPHQL_ENDPOINT, BFI_USERNAME, BFI_PASSWORD not found");
 }
