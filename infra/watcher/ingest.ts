@@ -1,30 +1,36 @@
 // https://www.npmjs.com/package/graphql-request
-import { gql, GraphQLClient, rawRequest } from "npm:graphql-request";
-import { addClipToNotion } from "./addClipToNotion.ts";
-const USERNAME = Deno.env.get("BFI_USERNAME") || "";
-const PASSWORD = Deno.env.get("BFI_PASSWORD") || "";
-const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT") || "";
+import { gql, GraphQLClient, rawRequest } from "infra/watcher/deps.ts";
+import { addClipToNotion } from "infra/watcher/addClipToNotion.ts";
+import { getLogger } from "deps.ts";
+const logger = getLogger(import.meta);
+
+const USERNAME = Deno.env.get("BFI_USERNAME");
+const PASSWORD = Deno.env.get("BFI_PASSWORD");
+const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT");
 const FFMPEG_ARGS_EXCEPT_INPUT_AND_OUTPUT =
   Deno.env.get("BFI_FFMPEG_ARGS_EXCEPT_INPUT_AND_OUTPUT") ||
-  "-vf crop=ih*(16/9):ih,scale=1920:1080 -c:v h264_videotoolbox -b:v 7M -c:a aac -b:a 128k -f segment -segment_time 1800 -reset_timestamps 1";
+  "-vf crop=ih*(16/9):ih,scale=1920:1080 -c:v h264_videotoolbox -b:v 7M -c:a aac -b:a 128k -f segment -segment_time 1800 -reset_timestamps 1";\
+if (!GRAPHQL_ENDPOINT || !USERNAME || !PASSWORD) {
+  throw new Error("BFI_GRAPHQL_ENDPOINT, BFI_USERNAME, BFI_PASSWORD not found");
+}
+
 const client = new GraphQLClient(GRAPHQL_ENDPOINT);
 
 export async function processFile(filePath: string, name: string) {
-  console.log("processing file", filePath);
+  logger.info("processing file", filePath);
   const videoChunks = createVideoChunksForFilePath(filePath);
-  const files = [];
   for await (const chunk of videoChunks) {
     const uploadedLink = await processVideoChunk(chunk, name);
     // await notifyDiscord(`Uploaded video to ${uploadedLink}`);
     const output = await addClipToNotion(uploadedLink, name)
       .then((res) => res.json());
-    console.log(output);
+    logger.info(output);
     await notifyDiscord(`<@&1210008885193211944> New task: ${output.url}`);
   }
 }
 
 async function* createVideoChunksForFilePath(filePath: string) {
-  console.log(`creating video chunks for file ${filePath}`);
+  logger.info(`creating video chunks for file ${filePath}`);
   const tmpDir = await Deno.makeTempDir();
   const outputFilePath = `${tmpDir}/output_%03d.mp4`;
   const ffmpegArgs = [
@@ -47,7 +53,7 @@ async function* createVideoChunksForFilePath(filePath: string) {
   for await (const chunk of ffmpegProcess.stderr) {
     const outputLine = new TextDecoder().decode(chunk);
     if (outputLine.includes("time=")) {
-      console.log(outputLine);
+      logger.info(outputLine);
     }
     const newFileMatch = outputLine.match(
       /Opening '(.+?\/output_\d+\.mp4)' for writing/,
@@ -57,31 +63,31 @@ async function* createVideoChunksForFilePath(filePath: string) {
       const segmentPath = newFileMatch[1];
 
       if (previousSegmentPath) {
-        console.log(`finished writing ${previousSegmentPath}`);
+        logger.info(`finished writing ${previousSegmentPath}`);
         yield previousSegmentPath; // Yield when the previous segment is complete
       }
 
-      console.log(`new file ${segmentPath}`);
+      logger.info(`new file ${segmentPath}`);
       previousSegmentPath = segmentPath;
     }
   }
 
   // Yield the final segment after the process is complete
   if (previousSegmentPath) {
-    console.log(`finished writing ${previousSegmentPath}`);
+    logger.info(`finished writing ${previousSegmentPath}`);
     yield previousSegmentPath;
   }
 
   const output = await ffmpegProcess.status;
   if (output.success) {
-    console.log("Finished processing", filePath);
+    logger.info("Finished processing", filePath);
   } else {
-    console.error("Failed to process", filePath);
+    logger.error("Failed to process", filePath);
   }
 }
 
 async function uploadToS3(filePath: string, s3Url: string) {
-  console.log(`uploading ${filePath} to ${s3Url}`);
+  logger.info(`uploading ${filePath} to ${s3Url}`);
 
   // Read the file into a buffer
   const fileBuffer = await Deno.readFile(filePath);
@@ -96,21 +102,21 @@ async function uploadToS3(filePath: string, s3Url: string) {
   });
 
   if (response.ok) {
-    console.log("File uploaded successfully:", filePath);
+    logger.info("File uploaded successfully:", filePath);
   } else {
-    console.error("Error uploading file:", response.statusText);
-    console.error("HTTP status code:", response.status);
+    logger.error("Error uploading file:", response.statusText);
+    logger.error("HTTP status code:", response.status);
     const errorBody = await response.text();
-    console.error("Error details:", errorBody);
+    logger.error("Error details:", errorBody);
   }
 }
 
 async function processVideoChunk(chunkPath: string, name = chunkPath) {
-  console.log("processing video chunk", chunkPath);
+  logger.info("processing video chunk", chunkPath);
   const project = await createProjectInBf(chunkPath, name);
   await uploadToS3(chunkPath, project.trackUploadUrl);
   const bfUrl = `https://boltfoundry.com/aws${project.url.slice(1)}`;
-  console.log(
+  logger.info(
     "uploaded to s3",
     chunkPath,
     bfUrl,
@@ -123,18 +129,18 @@ async function processVideoChunk(chunkPath: string, name = chunkPath) {
       append: true,
     });
   } catch (err) {
-    console.error("Error appending link to /tmp/files_uploaded.txt", err);
+    logger.error("Error appending link to /tmp/files_uploaded.txt", err);
   }
   return uploadedLink;
 
-  // console.log(`successfully created ${notionLink}`);
+  // logger.info(`successfully created ${notionLink}`);
 }
 
 export function notifyDiscord(content: string) {
-  console.log("notifying discord");
+  logger.info("notifying discord");
   const discordWebhookUrl = Deno.env.get("BFI_DISCORD_WEBHOOK_URL");
   if (!discordWebhookUrl) {
-    console.error("Discord webhook URL not found");
+    logger.error("Discord webhook URL not found");
     return;
   }
 
@@ -151,17 +157,17 @@ export function notifyDiscord(content: string) {
   })
     .then((response) => {
       if (!response.ok) {
-        console.error("Error sending Discord webhook:", response.statusText);
+        logger.error("Error sending Discord webhook:", response.statusText);
       } else {
-        console.log("Discord webhook sent successfully");
+        logger.info("Discord webhook sent successfully");
       }
     })
     .catch((error) => {
-      console.error("Error sending Discord webhook:", error);
+      logger.error("Error sending Discord webhook:", error);
     });
 }
 
-export async function createProjectInBf(chunkPath, name = chunkPath) {
+export async function createProjectInBf(chunkPath: string, name = chunkPath) {
   // get current access token
   const headers = await getHeaders();
   // create project on bf
@@ -202,6 +208,7 @@ export async function createProjectInBf(chunkPath, name = chunkPath) {
   };
 
   const returned = await client.request(mutation, variables, headers);
+  // @ts-expect-error not typing this lol.
   return returned.createProject.node;
 }
 
@@ -218,6 +225,9 @@ export async function getHeaders() {
   }
 }
 `;
+  if (!GRAPHQL_ENDPOINT) {
+    throw new Error("GRAPHQL_ENDPOINT not found");
+  }
   const { headers } = await rawRequest(GRAPHQL_ENDPOINT, loginMutation, {
     email: USERNAME,
     password: PASSWORD,
@@ -227,9 +237,9 @@ export async function getHeaders() {
   const returnableHeaders = new Headers();
   if (setCookieHeader) {
     const cookies = setCookieHeader.split(",");
-    const cookieEntry = [];
+    const cookieEntry: Array<string> = [];
     cookies.forEach((cookie) => {
-      const [nameValue, ...attributes] = cookie.split(";");
+      const [nameValue] = cookie.split(";");
       const [name, value] = nameValue.split("=");
       cookieEntry.push(`${name}=${value}`);
     });

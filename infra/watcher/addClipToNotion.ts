@@ -1,7 +1,7 @@
 #! /usr/bin/env -S deno run -A
 
-import { notifyDiscord } from "./ingest.ts";
-import { addRowToNotion } from "./notionApi.ts";
+import { notifyDiscord } from "infra/watcher/ingest.ts";
+import { addRowToNotion } from "infra/watcher/notionApi.ts";
 
 if (import.meta.main) {
   const res = await addClipToNotion(
