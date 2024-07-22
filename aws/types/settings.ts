@@ -196,6 +196,7 @@ export const settingsPresets: Record<string, Partial<RenderSettings>> = {
   },
   "Pattern": {
     ...DEFAULT_RENDER_SETTINGS,
+    font: "Bebas Neue",
     showCaptions: true,
     showWatermark: true,
     watermarkLogo: "pattern.png" as WatermarkLogoType,
@@ -205,26 +206,6 @@ export const settingsPresets: Record<string, Partial<RenderSettings>> = {
     captionHighlightColor: "rgb(0, 155, 255)", // #009bff
     template: "joe",
     useTracking: true,
-  },
-  "Port Comedy": {
-    ...DEFAULT_RENDER_SETTINGS,
-    captionColor: "rgb(255, 255, 255)",
-    captionHighlightColor: "rgb(255, 255, 255)",
-    captionLines: 2,
-    font: "Bebas Neue",
-    showCaptions: true,
-    showWatermark: true,
-    watermarkLogo: "port_city_sm.png" as WatermarkLogoType,
-    watermarkOpacity: 0.5,
-    watermarkPosition: "top_left",
-    template: "joe",
-    useTracking: true,
-    additionalJson: JSON.stringify({
-      ...DEFAULT_ADDITIONAL_JSON,
-      strokeColor: "rgba(0, 0, 0, 1)",
-      strokeWidth_px: 8,
-      watermarkScale: 0.13,
-    }),
   },
   "Shock Collar Comedy": {
     ...DEFAULT_RENDER_SETTINGS,
