@@ -5,7 +5,13 @@ type Keybindings = {
   [key: string]: () => void;
 };
 
-const useKeyboardInput = (keybindings: Keybindings, isActive = true) => {
+type UseKeyboardInputParams = {
+  keybindings: Keybindings;
+  keyupBindings?: Keybindings;
+  isActive?: boolean;
+};
+
+const useKeyboardInput = ({keybindings, keyupBindings, isActive = true}: UseKeyboardInputParams) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!isActive) {
@@ -22,13 +28,26 @@ const useKeyboardInput = (keybindings: Keybindings, isActive = true) => {
         event.stopPropagation();
       }
     };
+    
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (!isActive) return;
+      let key = event.key.toLowerCase();
+      const callback = keyupBindings?.[key];
+      if (callback) {
+        callback();
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
 
     globalThis.addEventListener("keydown", handleKeyDown, true); // true uses capture phase instead of bubbling phase
+    globalThis.addEventListener("keyup", handleKeyUp, true);
 
     return () => {
       globalThis.removeEventListener("keydown", handleKeyDown, true);
+      globalThis.removeEventListener("keyup", handleKeyUp, true);
     };
-  }, [keybindings, isActive]);
+  }, [keybindings, keyupBindings, isActive]);
 };
 
 export default useKeyboardInput;
