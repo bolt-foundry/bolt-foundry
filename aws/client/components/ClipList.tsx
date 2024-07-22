@@ -23,6 +23,7 @@ import { DEFAULT_SETTINGS, WatermarkLogoType } from "aws/types/settings.ts";
 import useIntersectionObserver from "aws/client/hooks/useIntersectionObserver.tsx";
 import { RenderSettings } from "aws/types/settings.ts";
 import { ClipProvider } from "/aws/client/contexts/ClipContext.tsx";
+import useKeyboardInput from "packages/client/hooks/useKeyboardInput.tsx";
 
 const { useEffect, useState, useRef, Suspense } = React;
 
@@ -155,11 +156,21 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
   const [clickOutsideToCloseModal, setClickOutsideToCloseModal] = useState<
     boolean
   >(false);
+  const [isShiftPressed, setIsShiftPressed] = useState<boolean>(false);
   const { setSettingsOpen } = useAppState();
   const refContainer = useRef<Record<string, HTMLDivElement | null>>({});
   const previousSelectedClipIndex = useRef<number | null>(null);
   const { isVisible: shouldLoadMoreClips, domRef: infiniteScrollTriggerRef } =
     useIntersectionObserver();
+
+  useKeyboardInput({
+    keybindings: {
+      "shift": () => setIsShiftPressed(true),
+    },
+    keyupBindings: {
+      "shift": () => setIsShiftPressed(false),
+    },
+  });
 
   useEffect(() => {
     if (selectedClipIndex != null) {
@@ -240,6 +251,24 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
       }
     });
     setTranscriptWords(updatedWords);
+  };
+
+  const downloadAllStarredClips = () => {
+    const starredButtons = document.querySelectorAll<HTMLButtonElement>(
+      '[data-bf-icon="starSolid"]',
+    );
+    starredButtons.forEach((starButton) => {
+      // Find the download button within the same parent node
+      const parent = starButton.parentElement;
+      if (parent) {
+        const downloadButton = parent.querySelector<HTMLButtonElement>(
+          '[data-bf-icon="download"]',
+        );
+        if (downloadButton) {
+          downloadButton.click();
+        }
+      }
+    });
   };
 
   const projectSettings = data?.effectiveSettings ?? DEFAULT_SETTINGS;
@@ -356,6 +385,24 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
       <div className="tabs" style={styles.tabs}>
         <div style={{ flex: 1 }}>
           <Tabs tabs={tabs} onTabSelected={setSelectedTabName} />
+          {selectedTabName === "Starred Clips" && (
+            <div>
+              <Button
+                disabled={!hasNext}
+                kind="outline"
+                text={isLoadingNext ? "Loading..." : "Load all clips"}
+                onClick={() => loadNext(10000)}
+                size="small"
+              />{" "}
+              <Button
+                disabled={hasNext}
+                kind="outline"
+                text="Download all starred clips"
+                onClick={downloadAllStarredClips}
+                size="small"
+              />
+            </div>
+          )}
         </div>
       </div>
       {selectedTabName === "Transcript" && (
@@ -382,13 +429,25 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
                 />
               )}
               {hasNext && (
-                <Button
-                  kind="secondary"
-                  onClick={() => loadNext(10)}
-                  showSpinner={isLoadingNext}
-                  text={isLoadingNext ? "Loading..." : "Load more clips..."}
-                  testId="button-load-more-clips"
-                />
+                isShiftPressed
+                  ? (
+                    <Button
+                      kind="secondary"
+                      onClick={() => loadNext(10000)}
+                      showSpinner={isLoadingNext}
+                      text={isLoadingNext ? "Loading..." : "Load ALL clips..."}
+                      testId="button-load-all-clips"
+                    />
+                  )
+                  : (
+                    <Button
+                      kind="secondary"
+                      onClick={() => loadNext(10)}
+                      showSpinner={isLoadingNext}
+                      text={isLoadingNext ? "Loading..." : "Load more clips..."}
+                      testId="button-load-more-clips"
+                    />
+                  )
               )}
               {showFooter && (
                 <div style={styles.footer} ref={infiniteScrollTriggerRef}>

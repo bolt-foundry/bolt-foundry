@@ -17,7 +17,7 @@ import {
 import { CropModeWord } from "aws/client/components/CropModeWord.tsx";
 import { useAppEnvironment } from "aws/client/contexts/AppEnvironmentContext.tsx";
 import classnames from "aws/client/lib/classnames.ts";
-import useKeyboardInput from "aws/client/hooks/useKeyboardInput.tsx";
+import useKeyboardInput from "packages/client/hooks/useKeyboardInput.tsx";
 import {
   ActionType,
   useClipEditData,
@@ -179,161 +179,165 @@ function ClipEdit({
   }, [setClickOutsideToCloseModal, editingWord, selectedWordIndex]);
 
   useKeyboardInput({
-    "escape": () => {
-      if (selectedWordIndex != null) {
-        // close word menu
-        setSelectedWordIndex(null);
-      } else {
-        // close clip editor
-        captureEvent("clip", "editing cancelled", {}, personId);
-        onEditClip();
-      }
-    },
-    "enter": () => {
-      if (selectedWordIndex != null) {
-        // open word editor
-        const word = transcriptWords[selectedWordIndex];
-        const draftWord = state.wordsToUpdate.find((w) =>
-          w.start === transcriptWords[selectedWordIndex].start
+    keybindings: {
+      "escape": () => {
+        if (selectedWordIndex != null) {
+          // close word menu
+          setSelectedWordIndex(null);
+        } else {
+          // close clip editor
+          captureEvent("clip", "editing cancelled", {}, personId);
+          onEditClip();
+        }
+      },
+      "enter": () => {
+        if (selectedWordIndex != null) {
+          // open word editor
+          const word = transcriptWords[selectedWordIndex];
+          const draftWord = state.wordsToUpdate.find((w) =>
+            w.start === transcriptWords[selectedWordIndex].start
+          );
+          setEditingWord(draftWord ?? word);
+        } else {
+          // save clip and close modal
+          updateClip();
+        }
+      },
+      "i": () => {
+        if (editingWord) {
+          return;
+        }
+        if (selectedWordIndex != null) {
+          // set startIndex to selected word
+          dispatch({
+            type: ActionType.SET_START_INDEX,
+            payload: selectedWordIndex,
+          });
+        }
+      },
+      "o": () => {
+        if (editingWord) {
+          return;
+        }
+        if (selectedWordIndex != null) {
+          // set endIndex to selected word
+          dispatch({
+            type: ActionType.SET_END_INDEX,
+            payload: selectedWordIndex,
+          });
+        }
+      },
+      "arrowleft": () => {
+        if (editingWord) {
+          return;
+        }
+        if (selectedWordIndex != null) {
+          // Select the previous word
+          const newIndex = selectedWordIndex - 1;
+          if (!state.editableText) {
+            return;
+          }
+          // If the newIndex is greater than or equal to the first index in the editable text
+          if (newIndex >= state.editableText[0].index) {
+            setSelectedWordIndex(newIndex);
+          }
+          if (newIndex <= state.editableText[1].index) {
+            // If we're almost to the beginning of the editable text, add more words
+            dispatch({
+              type: ActionType.SET_EDITABLE_TEXT_PRE,
+              payload: state.editableTextPre + 10,
+            });
+          }
+        }
+      },
+      "arrowright": () => {
+        if (editingWord) {
+          return;
+        }
+        if (selectedWordIndex != null) {
+          // select next word to the right
+          const newIndex = selectedWordIndex + 1;
+          if (!state.editableText) {
+            return;
+          }
+          // If the newIndex is less than or equal to the last index in the editable text
+          if (
+            newIndex <=
+              state.editableText?.[state.editableText.length - 1].index
+          ) {
+            setSelectedWordIndex(newIndex);
+          }
+          if (
+            newIndex >= state.editableText[state.editableText.length - 2].index
+          ) {
+            // If we're almost to the end of the editable text, add more words
+            dispatch({
+              type: ActionType.SET_EDITABLE_TEXT_POST,
+              payload: state.editableTextPost + 10,
+            });
+          }
+        }
+      },
+      "arrowup": () => {
+        if (editingWord) {
+          return;
+        }
+        // find the word within the start and end index that is closest to the current time
+        const word = state.editableText?.find((x, i, arr) =>
+          x.item.start <= currentTime &&
+          (arr[i + 1]?.item.start ?? Infinity) > currentTime
         );
-        setEditingWord(draftWord ?? word);
-      } else {
-        // save clip and close modal
-        updateClip();
-      }
-    },
-    "i": () => {
-      if (editingWord) {
-        return;
-      }
-      if (selectedWordIndex != null) {
-        // set startIndex to selected word
-        dispatch({
-          type: ActionType.SET_START_INDEX,
-          payload: selectedWordIndex,
-        });
-      }
-    },
-    "o": () => {
-      if (editingWord) {
-        return;
-      }
-      if (selectedWordIndex != null) {
-        // set endIndex to selected word
-        dispatch({
-          type: ActionType.SET_END_INDEX,
-          payload: selectedWordIndex,
-        });
-      }
-    },
-    "arrowleft": () => {
-      if (editingWord) {
-        return;
-      }
-      if (selectedWordIndex != null) {
-        // Select the previous word
-        const newIndex = selectedWordIndex - 1;
-        if (!state.editableText) {
+        if (word) {
+          setSelectedWordIndex(word.index);
+        }
+      },
+      "arrowdown": () => {
+        if (editingWord) {
           return;
         }
-        // If the newIndex is greater than or equal to the first index in the editable text
-        if (newIndex >= state.editableText[0].index) {
-          setSelectedWordIndex(newIndex);
-        }
-        if (newIndex <= state.editableText[1].index) {
-          // If we're almost to the beginning of the editable text, add more words
-          dispatch({
-            type: ActionType.SET_EDITABLE_TEXT_PRE,
-            payload: state.editableTextPre + 10,
-          });
-        }
-      }
-    },
-    "arrowright": () => {
-      if (editingWord) {
-        return;
-      }
-      if (selectedWordIndex != null) {
-        // select next word to the right
-        const newIndex = selectedWordIndex + 1;
-        if (!state.editableText) {
+        setSelectedWordIndex(null);
+      },
+      "space": () => {
+        if (editingWord) {
           return;
         }
-        // If the newIndex is less than or equal to the last index in the editable text
-        if (
-          newIndex <= state.editableText?.[state.editableText.length - 1].index
-        ) {
-          setSelectedWordIndex(newIndex);
-        }
-        if (
-          newIndex >= state.editableText[state.editableText.length - 2].index
-        ) {
-          // If we're almost to the end of the editable text, add more words
-          dispatch({
-            type: ActionType.SET_EDITABLE_TEXT_POST,
-            payload: state.editableTextPost + 10,
-          });
-        }
-      }
-    },
-    "arrowup": () => {
-      if (editingWord) {
-        return;
-      }
-      // find the word within the start and end index that is closest to the current time
-      const word = state.editableText?.find((x, i, arr) =>
-        x.item.start <= currentTime &&
-        (arr[i + 1]?.item.start ?? Infinity) > currentTime
-      );
-      if (word) {
-        setSelectedWordIndex(word.index);
-      }
-    },
-    "arrowdown": () => {
-      if (editingWord) {
-        return;
-      }
-      setSelectedWordIndex(null);
-    },
-    "space": () => {
-      if (editingWord) {
-        return;
-      }
-      if (isVideoPlaying) {
-        videoPlayerRef.current?.pause();
-      } else {
-        videoPlayerRef.current?.playThrough();
-      }
-    },
-    "j": () => {
-      if (editingWord) {
-        return;
-      }
-      videoPlayerRef.current?.reversePlayback();
-    },
-    "k": () => {
-      if (editingWord) {
-        return;
-      }
-      if (isVideoPlaying) {
-        if (videoPlayerRef.current?.playbackRate === 1) {
+        if (isVideoPlaying) {
           videoPlayerRef.current?.pause();
-        } else if (videoPlayerRef.current) {
-          videoPlayerRef.current.playbackRate = 1;
+        } else {
+          videoPlayerRef.current?.playThrough();
         }
-      } else {
-        videoPlayerRef.current?.playThrough();
-      }
+      },
+      "j": () => {
+        if (editingWord) {
+          return;
+        }
+        videoPlayerRef.current?.reversePlayback();
+      },
+      "k": () => {
+        if (editingWord) {
+          return;
+        }
+        if (isVideoPlaying) {
+          if (videoPlayerRef.current?.playbackRate === 1) {
+            videoPlayerRef.current?.pause();
+          } else if (videoPlayerRef.current) {
+            videoPlayerRef.current.playbackRate = 1;
+          }
+        } else {
+          videoPlayerRef.current?.playThrough();
+        }
+      },
+      "l": () => {
+        if (editingWord) {
+          return;
+        }
+        if (isVideoPlaying) {
+          videoPlayerRef.current?.increasePlaybackRate();
+        }
+      },
     },
-    "l": () => {
-      if (editingWord) {
-        return;
-      }
-      if (isVideoPlaying) {
-        videoPlayerRef.current?.increasePlaybackRate();
-      }
-    },
-  }, !editingWord && !isEditingTitle);
+    isActive: !editingWord && !isEditingTitle,
+  });
 
   useEffect(() => {
     if (typeof setClipChanged === "function") {

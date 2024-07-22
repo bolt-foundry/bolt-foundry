@@ -2,7 +2,7 @@ import { graphql, type Maybe, React, ReactRelay } from "aws/client/deps.ts";
 import Button from "aws/client/ui_components/Button.tsx";
 import Input from "aws/client/ui_components/Input.tsx";
 import { DGWord } from "aws/types/transcript.ts";
-import useKeyboardInput from "aws/client/hooks/useKeyboardInput.tsx";
+import useKeyboardInput from "packages/client/hooks/useKeyboardInput.tsx";
 import useClickOutside from "aws/client/hooks/useClickOutside.tsx";
 import type { VideoPlayerHandles } from "aws/client/components/VideoPlayer.tsx";
 const { useMutation } = ReactRelay;
@@ -71,8 +71,10 @@ export default function EditWord(
   });
 
   useKeyboardInput({
-    "escape": onClose,
-    "enter": () => handleSubmitWord(),
+    keybindings: {
+      "escape": onClose,
+      "enter": () => handleSubmitWord(),
+    },
   });
 
   const handleChangeWord = (e: React.ChangeEvent<HTMLInputElement>) => {
