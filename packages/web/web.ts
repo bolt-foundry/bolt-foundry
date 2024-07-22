@@ -4,12 +4,11 @@ import { clientRenderer } from "packages/clientRenderer/clientRenderer.ts";
 import { getLogger } from "deps.ts";
 import { routes as appRoutes } from "packages/client/components/App.tsx";
 import { routes as oldAppRoutes } from "aws/client/components/App.tsx";
-
+import { getHeaders } from "infra/watcher/ingest.ts"
 import { workerList } from "infra/build/workerList.ts";
 import { handler as graphQlHandler } from "packages/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";
-import { redirectIfNotLoggedIn, theAwsApp } from "/aws/clientRenderer/main.ts";
-import { getHeaders } from "/experimental/randallb/watcher/ingest.ts";
+import { redirectIfNotLoggedIn } from "/aws/clientRenderer/main.ts";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
 
@@ -37,7 +36,7 @@ for (const entry of appRoutes.entries()) {
 }
 
 for (const entry of oldAppRoutes.entries()) {
-  const [path, { module }] = entry;
+  const [path] = entry;
   routes.set(path, redirectIfNotLoggedIn);
 }
 
