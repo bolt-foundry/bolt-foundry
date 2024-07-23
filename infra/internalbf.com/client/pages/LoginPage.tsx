@@ -19,11 +19,8 @@ const logger = getLogger(import.meta);
 const loginWithGoogleMutation = await graphql`
   mutation LoginPageLoginWithGoogleMutation($credential: String!) {
     loginWithGoogle(credential: $credential) {
-      actor {
-        id
-        ... on BfPerson {
-          name
-        }
+      person {
+       name 
       }
     }
   }
