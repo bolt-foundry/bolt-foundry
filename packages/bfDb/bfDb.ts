@@ -208,10 +208,11 @@ export async function bfQueryItems<
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
     // convert key from camelCase to snake_case
     const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
-    if (VALID_METADATA_COLUMN_NAMES.includes(key.toLowerCase())) {
+    const lowercaseKey = key.toLowerCase();
+    if (VALID_METADATA_COLUMN_NAMES.includes(lowercaseKey)) {
       variables.push(value);
       const valuePosition = variables.length;
-      metadataConditions.push(`${key} = $${valuePosition}`);
+      metadataConditions.push(`${lowercaseKey} = $${valuePosition}`);
     }
   }
 
@@ -259,7 +260,7 @@ export async function bfQueryItemsForGraphQLConnection<
   metadata: Partial<TMetadata>,
   props: Partial<TProps> = {},
   connectionArgs: ConnectionArguments,
-): Promise<ConnectionInterface<DbItem<TProps, TMetadata>>> {
+): Promise<ConnectionInterface<DbItem<TProps, TMetadata>> & { count: number }> {
   logger.trace({ metadata, props, connectionArgs });
   const { first, after, last, before } = connectionArgs;
   const metadataConditions: string[] = [];
@@ -290,10 +291,11 @@ export async function bfQueryItemsForGraphQLConnection<
   for (const [originalKey, value] of Object.entries(metadata)) {
     // convert key from camelCase to snake_case
     const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
-    if (VALID_METADATA_COLUMN_NAMES.includes(key.toLowerCase())) {
+    const lowerCaseKey = key.toLowerCase();
+    if (VALID_METADATA_COLUMN_NAMES.includes(lowerCaseKey)) {
       variables.push(value);
       const valuePosition = variables.length;
-      metadataConditions.push(`${key} = $${valuePosition}`);
+      metadataConditions.push(`${lowerCaseKey} = $${valuePosition}`);
     }
   }
   for (const [_, value] of Object.entries(props)) {
@@ -314,6 +316,7 @@ export async function bfQueryItemsForGraphQLConnection<
     }
     const edges: EdgeInterface<DbItem<TProps, TMetadata>>[] = rows.map(
       (row) => {
+        logger.trace("row", row);
         const cursor = sortValueToCursor(row.sort_value);
         return {
           cursor,
@@ -346,11 +349,12 @@ export async function bfQueryItemsForGraphQLConnection<
     } else if (last !== undefined && edges.length > last) {
       edges.shift();
     }
-    const totalCount = await sql`SELECT COUNT(*) FROM bfdb WHERE ${queryConditions}`;
+    const countQuery = `SELECT COUNT(*) FROM bfdb WHERE ${queryConditions}`;
+    const totalCount = await sql(countQuery, variables);
     return {
       edges,
       pageInfo,
-      totalCount: parseInt(totalCount[0].count, 10),
+      count: parseInt(totalCount[0].count, 10),
     };
   } catch (e) {
     logger.error(e);
@@ -358,9 +362,22 @@ export async function bfQueryItemsForGraphQLConnection<
   }
 }
 
+// Function to convert sortValue to base64 cursor
 function sortValueToCursor(sortValue: number): string {
-  return Buffer.from(sortValue.toString()).toString("base64");
+  // Convert number to string and then Uint8Array
+  const uint8Array = new TextEncoder().encode(sortValue.toString());
+  // Convert Uint8Array to base64
+  return btoa(String.fromCharCode(...uint8Array));
 }
+
+// Function to convert base64 cursor back to sortValue
 function cursorToSortValue(cursor: string): number {
-  return parseInt(Buffer.from(cursor, "base64").toString("ascii"), 10);
+  // Convert base64 to string
+  const decodedString = atob(cursor);
+  // Convert string to Uint8Array
+  const uint8Array = new Uint8Array(
+    [...decodedString].map((char) => char.charCodeAt(0))
+  );
+  // Decode Uint8Array to original string and convert to number
+  return parseInt(new TextDecoder().decode(uint8Array), 10);
 }

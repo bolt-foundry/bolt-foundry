@@ -9,6 +9,12 @@ const logger = getLogger(import.meta);
 export const schema = import.meta.main ? null : makeSchema({
   types,
   plugins: [connectionPlugin({
+    extendConnection: {
+      count: {
+        type: "Int",
+        requireResolver: false
+      }
+    },
     includeNodesField: true,
   })],
   outputs: false,
@@ -24,6 +30,12 @@ export function build(configLocation: string = "packages") {
   makeSchema({
     types,
     plugins: [connectionPlugin({
+      extendConnection: {
+        count: {
+          type: "Int",
+          requireResolver: false
+        }
+      },
       includeNodesField: true,
     })],
     features: {
