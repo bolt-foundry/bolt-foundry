@@ -208,10 +208,11 @@ export async function bfQueryItems<
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
     // convert key from camelCase to snake_case
     const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
-    if (VALID_METADATA_COLUMN_NAMES.includes(key.toLowerCase())) {
+    const lowercaseKey = key.toLowerCase();
+    if (VALID_METADATA_COLUMN_NAMES.includes(lowercaseKey)) {
       variables.push(value);
       const valuePosition = variables.length;
-      metadataConditions.push(`${key} = $${valuePosition}`);
+      metadataConditions.push(`${lowercaseKey} = $${valuePosition}`);
     }
   }
 
@@ -290,10 +291,11 @@ export async function bfQueryItemsForGraphQLConnection<
   for (const [originalKey, value] of Object.entries(metadata)) {
     // convert key from camelCase to snake_case
     const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
-    if (VALID_METADATA_COLUMN_NAMES.includes(key.toLowerCase())) {
+    const lowerCaseKey = key.toLowerCase();
+    if (VALID_METADATA_COLUMN_NAMES.includes(lowerCaseKey)) {
       variables.push(value);
       const valuePosition = variables.length;
-      metadataConditions.push(`${key} = $${valuePosition}`);
+      metadataConditions.push(`${lowerCaseKey} = $${valuePosition}`);
     }
   }
   for (const [_, value] of Object.entries(props)) {
@@ -314,6 +316,7 @@ export async function bfQueryItemsForGraphQLConnection<
     }
     const edges: EdgeInterface<DbItem<TProps, TMetadata>>[] = rows.map(
       (row) => {
+        logger.trace("row", row);
         const cursor = sortValueToCursor(row.sort_value);
         return {
           cursor,
