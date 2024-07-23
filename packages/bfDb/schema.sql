@@ -10,3 +10,10 @@ CREATE TABLE IF NOT EXISTS bfDb (
   props JSONB NOT NULL,
   sort_value BIGINT NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_sort_value ON bfDb(sort_value);
+CREATE INDEX IF NOT EXISTS idx_bf_oid ON bfDb(bf_oid);
+CREATE INDEX IF NOT EXISTS idx_bf_cid ON bfDb(bf_cid);
+CREATE INDEX IF NOT EXISTS idx_bf_sid ON bfDb(bf_sid);
+CREATE INDEX IF NOT EXISTS idx_bf_tid ON bfDb(bf_tid);
+CREATE INDEX IF NOT EXISTS idx_class_name ON bfDb(class_name);
