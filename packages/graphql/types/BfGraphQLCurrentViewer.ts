@@ -18,7 +18,6 @@ import { GraphQLContext } from "packages/graphql/graphql.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import {
   BfCurrentViewerAccessToken,
-  BfCurrentViewerAnon,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { getLogger } from "deps.ts";
@@ -29,45 +28,24 @@ export const AccountRole = enumType({
   members: ACCOUNT_ROLE,
 });
 
-export const Actor = interfaceType({
-  name: "Actor",
-  description:
-    "The actor acting on this request. The actor can be an organiazation or person.",
-  definition(t) {
-    t.implements("BfNode");
-    t.string("name");
-  },
-});
-
 export const BfGraphQLCurrentViewerType = interfaceType({
   name: "BfCurrentViewer",
   description:
-    "The person acting on this request. The actor can be an organiazation or person. The role is the role of the actor in the organization. The person is the person who is acting.",
+    "The person acting on this request. The person is the person who is acting, the organization is the org on which they're acting",
   definition(t) {
-    t.field("actor", {
-      type: "Actor",
-      resolve: async (_parent, _args, { bfCurrentViewer }: GraphQLContext) => {
-        let actor = null;
-        if (
-          toBfGid(bfCurrentViewer.organizationBfGid) ==
-            bfCurrentViewer.personBfGid
-        ) {
-          actor = await BfPerson.find(
-            bfCurrentViewer,
-            toBfGid(bfCurrentViewer.organizationBfGid),
-          );
-        } else {
-          actor = await BfOrganization.find(
-            bfCurrentViewer,
-            toBfGid(bfCurrentViewer.organizationBfGid),
-          );
-        }
-        return actor?.toGraphql() ?? null;
-      },
-    });
     t.field("role", {
       type: "AccountRole",
     });
+    t.field("organization", {
+      type: "BfOrganization",
+      resolve: async (_parent, _args, { bfCurrentViewer }: GraphQLContext) => {
+        const orgId = bfCurrentViewer.organizationBfGid;
+        if (orgId) {
+          const org = await BfOrganization.find(bfCurrentViewer, orgId);
+          return org?.toGraphql() ?? null;
+        }
+      }
+    })
     t.field("person", {
       type: "BfPerson",
       resolve: async (_parent, _args, { bfCurrentViewer }: GraphQLContext) => {
