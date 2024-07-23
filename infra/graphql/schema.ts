@@ -4,6 +4,7 @@ import { connectionPlugin, makeSchema } from "packages/graphql/deps.ts";
 import * as types from "infra/graphql/types/mod.ts";
 import { getLogger } from "deps.ts";
 
+
 const logger = getLogger(import.meta);
 
 export const schema = import.meta.main ? null : makeSchema({

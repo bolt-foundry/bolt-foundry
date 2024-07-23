@@ -163,6 +163,7 @@ abstract class BfBaseModel<
         & BfBaseModelMetadata<TCreationMetadata>;
     });
   }
+    
 
   private static generateDefaultMetadata<
     TCreationMetadata extends CreationMetadata = CreationMetadata,
