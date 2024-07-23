@@ -1,4 +1,10 @@
 import { neon } from "@neon/serverless";
+import type {
+  ConnectionArguments,
+  ConnectionInterface,
+  EdgeInterface,
+  PageInfoInterface,
+} from "relay-runtime"; // Ensure this is correctly imported
 import {
   BfBaseModelMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
@@ -190,6 +196,7 @@ export async function bfQueryItems<
 >(
   metadataToQuery: Partial<TMetadata>,
   propsToQuery: Partial<TProps> = {},
+  orderDirection: "ASC" | "DESC" = "ASC", // Default to ascending order
   orderBy: keyof Row = "sort_value", // Default to sort by sort_value
 ): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
   logger.trace({ metadataToQuery, propsToQuery, orderBy, orderDirection });
@@ -239,4 +246,120 @@ export async function bfQueryItems<
     logger.error(e);
     throw e;
   }
+}
+
+export async function bfQueryItemsForGraphQLConnection<
+  TProps = Props,
+  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
+>(
+  metadata: Partial<TMetadata>,
+  props: Partial<TProps> = {},
+  connectionArgs: ConnectionArguments,
+): Promise<ConnectionInterface<DbItem<TProps, TMetadata>>> {
+  logger.trace({ metadata, props, connectionArgs });
+  const { first, after, last, before } = connectionArgs;
+  const metadataConditions: string[] = [];
+  const propsConditions: string[] = [];
+  const variables: unknown[] = [];
+  let limitClause = "";
+  let orderClause = "ORDER BY sort_value ASC";
+  let cursorCondition = "";
+  if (first !== undefined || last !== undefined) {
+    // Handle forward pagination
+    if (first !== undefined) {
+      limitClause = `LIMIT ${first + 1}`; // Fetch one extra for next page check
+      if (after) {
+        const afterSortValue = cursorToSortValue(after);
+        cursorCondition = `AND sort_value > ${afterSortValue}`;
+      }
+    } else if (last !== undefined) {
+      // Handle backward pagination
+      limitClause = `LIMIT ${last + 1}`; // Fetch one extra for previous page check
+      orderClause = "ORDER BY sort_value DESC";
+      if (before) {
+        const beforeSortValue = cursorToSortValue(before);
+        cursorCondition = `AND sort_value < ${beforeSortValue}`;
+      }
+    }
+  }
+  for (const [originalKey, value] of Object.entries(metadata)) {
+    // convert key from camelCase to snake_case
+    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
+    if (VALID_METADATA_COLUMN_NAMES.includes(key.toLowerCase())) {
+      variables.push(value);
+      const valuePosition = variables.length;
+      metadataConditions.push(`${key} = $${valuePosition}`);
+    }
+  }
+  for (const [_, value] of Object.entries(props)) {
+    variables.push(value);
+    const valuePosition = variables.length;
+    propsConditions.push(`props->>$${valuePosition} = $${variables.length}`);
+  }
+  const allConditions = [
+    ...metadataConditions,
+    ...propsConditions,
+    cursorCondition,
+  ].join(" AND ");
+  const query =
+    `SELECT * FROM bfdb WHERE ${allConditions} ${orderClause} ${limitClause}`;
+  try {
+    logger.trace("Executing query", query, variables);
+    const rows = await sql(query, variables) as Row<TProps>[];
+    // Reverse rows if performing backward pagination to maintain correct order
+    if (orderClause === "ORDER BY sort_value DESC") {
+      rows.reverse();
+    }
+    const edges: EdgeInterface<DbItem<TProps, TMetadata>>[] = rows.map(
+      (row) => {
+        const cursor = sortValueToCursor(row.sort_value);
+        return {
+          cursor,
+          node: {
+            props: row.props,
+            metadata: {
+              bfGid: row.bf_gid,
+              bfSid: row.bf_sid,
+              bfOid: row.bf_oid,
+              bfTid: row.bf_tid,
+              bfCid: row.bf_cid,
+              className: row.class_name,
+              createdAt: new Date(row.created_at),
+              lastUpdated: new Date(row.last_updated),
+              sortValue: row.sort_value,
+            },
+          },
+        };
+      },
+    );
+    const pageInfo: PageInfoInterface = {
+      startCursor: edges.length > 0 ? edges[0].cursor : null,
+      endCursor: edges.length > 0 ? edges[edges.length - 1].cursor : null,
+      hasNextPage: edges.length > first,
+      hasPreviousPage: !!before && edges.length > last,
+    };
+    // Adjust edges to remove the extra fetched row for pagination.
+    if (first !== undefined && edges.length > first) {
+      edges.pop();
+    } else if (last !== undefined && edges.length > last) {
+      edges.shift();
+    }
+    const totalCount =
+      await sql`SELECT COUNT(*) FROM bfdb WHERE ${allConditions}`;
+
+    return {
+      edges,
+      pageInfo,
+      totalCount: parseInt(totalCount[0].count, 10),
+    };
+  } catch (e) {
+    logger.error(e);
+    throw e;
+  }
+}
+function sortValueToCursor(sortValue: number): string {
+  return Buffer.from(sortValue.toString()).toString("base64");
+}
+function cursorToSortValue(cursor: string): number {
+  return parseInt(Buffer.from(cursor, "base64").toString("ascii"), 10);
 }
