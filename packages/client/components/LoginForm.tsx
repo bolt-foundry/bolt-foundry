@@ -15,11 +15,9 @@ export function LoginForm() {
 const loginWithGoogleMutation = await graphql`
   mutation LoginFormLoginWithGoogleMutation($credential: String!) {
     loginWithGoogle(credential: $credential) {
-      actor {
+      person {
         id
-        ... on BfPerson {
-          name
-        }
+        name
       }
     }
   }

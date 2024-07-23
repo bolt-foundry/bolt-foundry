@@ -80,19 +80,3 @@ export const BfGraphQLClipCreateMutation = mutationField("upsertClip", {
   },
 });
 
-export const BfGraphQLClipCurrentViewerConnection = extendType({
-  type: "BfCurrentViewerAccessToken",
-  definition: (t) => {
-    t.connectionField("clips", {
-      additionalArgs: {
-        reviewable: booleanArg({ default: true, description: "foo" }),
-      },
-      type: "BfClip",
-      description: "Clips available to the current viewer.",
-      resolve: async (parent, args, { bfCurrentViewer }: GraphQLContext) => {
-        const clips = await BfClip.findReviewableClips(bfCurrentViewer);
-        return connectionFromArray(clips, args);
-      },
-    });
-  },
-});
