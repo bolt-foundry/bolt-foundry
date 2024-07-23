@@ -38,6 +38,7 @@ type Row<
   class_name: string;
   created_at: string;
   last_updated: string;
+  sort_value: number;
 };
 
 export async function bfGetItem<
@@ -125,6 +126,9 @@ export async function bfPutItem<
   itemMetadata: TMetadata,
 ): Promise<void> {
   logger.trace({ itemProps, itemMetadata });
+
+  const sortValue = Date.now(); // Set the sort_value as the current timestamp in milliseconds
+
   try {
     let createdAtTimestamp, lastUpdatedTimestamp;
 
@@ -140,21 +144,25 @@ export async function bfPutItem<
       lastUpdatedTimestamp = new Date(itemMetadata.lastUpdated).toISOString();
     }
 
-    await sql`INSERT INTO bfdb(bf_gid, bf_oid, bf_cid, bf_sid, bf_tid, class_name, created_at, last_updated, props)
-                     VALUES(${itemMetadata.bfGid}, ${itemMetadata.bfOid}, ${itemMetadata.bfCid}, ${
+    // Insert or Update with conditional sort_value
+    await sql`
+    INSERT INTO bfdb(bf_gid, bf_oid, bf_cid, bf_sid, bf_tid, class_name, created_at, last_updated, props, sort_value)
+    VALUES(${itemMetadata.bfGid}, ${itemMetadata.bfOid}, ${itemMetadata.bfCid}, ${
       itemMetadata.bfSid || null
     }, ${itemMetadata.bfTid}, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp}, ${
       JSON.stringify(itemProps)
-    })
-                     ON CONFLICT (bf_gid) DO UPDATE SET
-                       bf_oid = EXCLUDED.bf_oid,
-                       bf_cid = EXCLUDED.bf_cid,
-                       bf_sid = EXCLUDED.bf_sid,
-                       bf_tid = EXCLUDED.bf_tid,
-                       class_name = EXCLUDED.class_name,
-                       created_at = EXCLUDED.created_at,
-                       last_updated = CURRENT_TIMESTAMP,
-                       props = EXCLUDED.props;`;
+    }, ${sortValue}) 
+    ON CONFLICT (bf_gid) DO UPDATE SET
+      bf_oid = EXCLUDED.bf_oid,
+      bf_cid = EXCLUDED.bf_cid,
+      bf_sid = EXCLUDED.bf_sid,
+      bf_tid = EXCLUDED.bf_tid,
+      class_name = EXCLUDED.class_name,
+      created_at = EXCLUDED.created_at,
+      last_updated = CURRENT_TIMESTAMP,
+      props = EXCLUDED.props,
+      sort_value = CASE WHEN bfdb.created_at IS NULL THEN EXCLUDED.sort_value ELSE bfdb.sort_value END;`; // Update sort_value only if it's a new record
+
     logger.trace(
       `bfPutItem: Successfully inserted or updated item with ${
         JSON.stringify(itemMetadata)
@@ -167,21 +175,27 @@ export async function bfPutItem<
   }
 }
 
-const VALID_METADATA_COLUMN_NAMES = ["bf_gid", "bf_oid", "bf_cid", "bf_sid", "bf_tid", "class_name"];
-
+const VALID_METADATA_COLUMN_NAMES = [
+  "bf_gid",
+  "bf_oid",
+  "bf_cid",
+  "bf_sid",
+  "bf_tid",
+  "class_name",
+  "sort_value",
+];
 export async function bfQueryItems<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
 >(
   metadataToQuery: Partial<TMetadata>,
   propsToQuery: Partial<TProps> = {},
+  orderBy: keyof Row = "sort_value", // Default to sort by sort_value
 ): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
-  logger.trace({ metadataToQuery, propsToQuery });
-
+  logger.trace({ metadataToQuery, propsToQuery, orderBy, orderDirection });
   const metadataConditions: string[] = [];
   const propsConditions: string[] = [];
   const variables = [];
-
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
     // convert key from camelCase to snake_case
     const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
@@ -191,28 +205,26 @@ export async function bfQueryItems<
       metadataConditions.push(`${key} = $${valuePosition}`);
     }
   }
-
   for (const [key, value] of Object.entries(propsToQuery)) {
-    variables.push(key)
+    variables.push(key);
     const keyPosition = variables.length;
     variables.push(value);
     const valuePosition = variables.length;
     propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
   }
-
   const allConditions = [...metadataConditions, ...propsConditions].join(
     " AND ",
   );
-  const query = `SELECT * FROM bfdb WHERE ${allConditions}`;
-
+  const query =
+    `SELECT * FROM bfdb WHERE ${allConditions} ORDER BY ${orderBy} ${orderDirection}`;
   try {
     logger.trace("Executing query", query, variables);
-    const rows = await sql(query, variables);
+    const rows = await sql(query, variables) as Row<TProps>[];
     const items = rows.map((row) => ({
       props: row.props,
       metadata: {
         bfGid: row.bf_gid,
-        bfSid: row.bf_pid,
+        bfSid: row.bf_sid,
         bfOid: row.bf_oid,
         bfTid: row.bf_tid,
         bfCid: row.bf_cid,

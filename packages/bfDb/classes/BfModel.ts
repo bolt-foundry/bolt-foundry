@@ -12,7 +12,6 @@ import {
   BfAnyid,
   BfCid,
   BfGid,
-  BfSortValue,
   getAvailableActionsForRole,
   JsUnixtime,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
@@ -64,7 +63,6 @@ abstract class BfBaseModel<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
     logVerbose("create", { currentViewer, newProps, creationMetadata });
-    console.log(creationMetadata);
     const newModel = new this(
       currentViewer,
       undefined,
@@ -184,10 +182,8 @@ abstract class BfBaseModel<
     };
   }
 
-  protected static generateSortValue(): BfSortValue | undefined {
-    if (this.isSorted) {
-      return Date.now().toString() as BfSortValue;
-    }
+  protected static generateSortValue(): number {
+    return Date.now();
   }
 
   /*
@@ -228,7 +224,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         currentViewer.accountBfGid,
         metadata.bfGid,
         bfOid,
-        metadata.sortValue,
       );
     this.metadata = { ...defaultMetadata, ...metadata };
   }
@@ -324,7 +319,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     await this.beforeLoad();
     await this.validatePermissions(ACCOUNT_ACTIONS.READ);
     try {
-      
       const response = await bfGetItemByBfGid<
         TRequiredProps & Partial<TOptionalProps>,
         BfBaseModelMetadata<TCreationMetadata>
