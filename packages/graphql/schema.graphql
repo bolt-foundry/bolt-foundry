@@ -12,15 +12,6 @@ enum AccountRole {
   SERVICE_INGESTION
 }
 
-"""
-The actor acting on this request. The actor can be an organiazation or person.
-"""
-interface Actor implements BfNode {
-  """Unique identifier for the resource"""
-  id: ID!
-  name: String
-}
-
 """A person who uses our system on behalf of an orginization"""
 type BfAccount implements BfNode {
   displayName: String
@@ -139,18 +130,16 @@ type BfClipReviewEdge {
 }
 
 """
-The person acting on this request. The actor can be an organiazation or person. The role is the role of the actor in the organization. The person is the person who is acting.
+The person acting on this request. The person is the person who is acting, the organization is the org on which they're acting
 """
 interface BfCurrentViewer {
-  actor: Actor
+  organization: BfOrganization
   person: BfPerson
   role: AccountRole
 }
 
 """The person acting on this request using a Bf access token."""
 type BfCurrentViewerAccessToken implements BfCurrentViewer {
-  actor: Actor
-
   """Clips available to the current viewer."""
   clips(
     """Returns the elements in the list that come after the specified cursor"""
@@ -168,13 +157,14 @@ type BfCurrentViewerAccessToken implements BfCurrentViewer {
     """foo"""
     reviewable: Boolean = true
   ): BfClipConnection
+  organization: BfOrganization
   person: BfPerson
   role: AccountRole
 }
 
 """The anonymous person acting on this request."""
 type BfCurrentViewerAnon implements BfCurrentViewer {
-  actor: Actor
+  organization: BfOrganization
   person: BfPerson
   role: AccountRole
 }
@@ -185,14 +175,13 @@ interface BfNode {
 }
 
 """A collection of people working together"""
-type BfOrganization implements Actor & BfNode {
-  """Unique identifier for the resource"""
+type BfOrganization implements BfNode {
   id: ID!
   name: String
 }
 
 """A real human who uses our system"""
-type BfPerson implements Actor & BfNode {
+type BfPerson implements BfNode {
   accounts(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
