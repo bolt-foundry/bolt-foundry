@@ -35,6 +35,8 @@ type BfAccount implements BfNode {
 }
 
 type BfAccountConnection {
+  count: Int
+
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
@@ -79,6 +81,8 @@ type BfClip implements BfNode {
 }
 
 type BfClipConnection {
+  count: Int
+
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
@@ -110,6 +114,8 @@ type BfClipReview implements BfNode {
 }
 
 type BfClipReviewConnection {
+  count: Int
+
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
