@@ -7,5 +7,6 @@ CREATE TABLE IF NOT EXISTS bfDb (
   class_name VARCHAR(255),
   last_updated TIMESTAMP WITHOUT TIME ZONE,
   created_at TIMESTAMP WITHOUT TIME ZONE,
-  props JSONB NOT NULL
+  props JSONB NOT NULL,
+  sort_value BIGINT NOT NULL
 );
