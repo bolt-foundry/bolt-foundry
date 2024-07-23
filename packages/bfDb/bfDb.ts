@@ -361,9 +361,22 @@ export async function bfQueryItemsForGraphQLConnection<
   }
 }
 
+// Function to convert sortValue to base64 cursor
 function sortValueToCursor(sortValue: number): string {
-  return Buffer.from(sortValue.toString()).toString("base64");
+  // Convert number to string and then Uint8Array
+  const uint8Array = new TextEncoder().encode(sortValue.toString());
+  // Convert Uint8Array to base64
+  return btoa(String.fromCharCode(...uint8Array));
 }
+
+// Function to convert base64 cursor back to sortValue
 function cursorToSortValue(cursor: string): number {
-  return parseInt(Buffer.from(cursor, "base64").toString("ascii"), 10);
+  // Convert base64 to string
+  const decodedString = atob(cursor);
+  // Convert string to Uint8Array
+  const uint8Array = new Uint8Array(
+    [...decodedString].map((char) => char.charCodeAt(0))
+  );
+  // Decode Uint8Array to original string and convert to number
+  return parseInt(new TextDecoder().decode(uint8Array), 10);
 }
