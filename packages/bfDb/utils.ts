@@ -15,14 +15,35 @@ if (!databaseUrl) {
 const sql = neon(databaseUrl);
 
 export async function upsertBfDb() {
-  const schemaUrl = new URL(import.meta.resolve("packages/bfDb/schema.sql"));
-  logger.info(`Checking schema at ${schemaUrl.href}`);
-  const sqlText = await Deno.readTextFile(schemaUrl);
-  await sql(sqlText);
-
-  // #TODO: Add indexes for columns probably when queries are slow
-
+  await sql`
+  CREATE TABLE IF NOT EXISTS bfDb (
+    bf_gid VARCHAR(255) PRIMARY KEY,
+    bf_oid VARCHAR(255) NOT NULL,
+    bf_cid VARCHAR(255) NOT NULL,
+    bf_sid VARCHAR(255),
+    bf_tid VARCHAR(255),
+    class_name VARCHAR(255),
+    last_updated TIMESTAMP WITHOUT TIME ZONE,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    props JSONB NOT NULL,
+    sort_value BIGINT NOT NULL
+  );
+  `;
   logger.info("Schema upserted");
+  const indexes = [
+    "sort_value",
+    "bf_gid",
+    "bf_oid",
+    "bf_cid",
+    "bf_sid",
+    "bf_tid",
+    "class_name",
+  ];
+  for (const index of indexes) {
+    await sql(`CREATE INDEX IF NOT EXISTS idx_${index} ON bfDb(${index})`);
+  }
+  logger.info("Indexes upserted", indexes);
+
   const omniCv = BfCurrentViewerOmni.__DANGEROUS__create(import.meta);
   logger.info("Checking for omni account");
   if (!(await BfPerson.find(omniCv, toBfGid("omni_person")))) {
@@ -42,7 +63,7 @@ export async function upsertBfDb() {
       bfOid: toBfOid("bf_internal_org"),
     });
   }
-  logger.info("Schema and orgs upserted");
+  logger.info("Schema, indexes, and orgs upserted");
 }
 
 const CONFIRMATION_STRING =
