@@ -180,7 +180,7 @@ abstract class BfBaseModel<
   ): Promise<
     ConnectionInterface<
       InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
-    >
+    > & { count: number }
   > {
     const { edges, ...others } = await bfQueryItemsForGraphQLConnection<
       TRequiredProps & Partial<TOptionalProps>,
