@@ -12,7 +12,6 @@ import {
   BfAnyid,
   BfCid,
   BfGid,
-  BfSortValue,
   getAvailableActionsForRole,
   JsUnixtime,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
@@ -163,6 +162,7 @@ abstract class BfBaseModel<
         & BfBaseModelMetadata<TCreationMetadata>;
     });
   }
+    
 
   private static generateDefaultMetadata<
     TCreationMetadata extends CreationMetadata = CreationMetadata,
@@ -184,10 +184,8 @@ abstract class BfBaseModel<
     };
   }
 
-  protected static generateSortValue(): BfSortValue | undefined {
-    if (this.isSorted) {
-      return Date.now().toString() as BfSortValue;
-    }
+  protected static generateSortValue(): number {
+    return Date.now();
   }
 
   /*
@@ -228,7 +226,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         currentViewer.accountBfGid,
         metadata.bfGid,
         bfOid,
-        metadata.sortValue,
       );
     this.metadata = { ...defaultMetadata, ...metadata };
   }
