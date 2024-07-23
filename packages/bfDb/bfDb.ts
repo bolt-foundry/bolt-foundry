@@ -260,7 +260,7 @@ export async function bfQueryItemsForGraphQLConnection<
   metadata: Partial<TMetadata>,
   props: Partial<TProps> = {},
   connectionArgs: ConnectionArguments,
-): Promise<ConnectionInterface<DbItem<TProps, TMetadata>>> {
+): Promise<ConnectionInterface<DbItem<TProps, TMetadata>> & { count: number }> {
   logger.trace({ metadata, props, connectionArgs });
   const { first, after, last, before } = connectionArgs;
   const metadataConditions: string[] = [];
@@ -349,11 +349,12 @@ export async function bfQueryItemsForGraphQLConnection<
     } else if (last !== undefined && edges.length > last) {
       edges.shift();
     }
-    const totalCount = await sql`SELECT COUNT(*) FROM bfdb WHERE ${queryConditions}`;
+    const countQuery = `SELECT COUNT(*) FROM bfdb WHERE ${queryConditions}`;
+    const totalCount = await sql(countQuery, variables);
     return {
       edges,
       pageInfo,
-      totalCount: parseInt(totalCount[0].count, 10),
+      count: parseInt(totalCount[0].count, 10),
     };
   } catch (e) {
     logger.error(e);
