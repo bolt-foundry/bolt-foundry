@@ -35,7 +35,7 @@ declare global {
      */
     connectionField<FieldName extends string>(
       fieldName: FieldName,
-      config: connectionPluginCore.ConnectionFieldConfig<TypeName, FieldName>
+      config: connectionPluginCore.ConnectionFieldConfig<TypeName, FieldName> & { count?: connectionPluginCore.ConnectionFieldResolver<TypeName, FieldName, "count"> }
     ): void
   }
 }
@@ -77,6 +77,7 @@ export interface NexusGenObjects {
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfAccountConnection: { // root type
+    count?: number | null; // Int
     edges?: Array<NexusGenRootTypes['BfAccountEdge'] | null> | null; // [BfAccountEdge]
     nodes?: Array<NexusGenRootTypes['BfAccount'] | null> | null; // [BfAccount]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
@@ -89,6 +90,7 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   BfClipConnection: { // root type
+    count?: number | null; // Int
     edges?: Array<NexusGenRootTypes['BfClipEdge'] | null> | null; // [BfClipEdge]
     nodes?: Array<NexusGenRootTypes['BfClip'] | null> | null; // [BfClip]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
@@ -102,6 +104,7 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   BfClipReviewConnection: { // root type
+    count?: number | null; // Int
     edges?: Array<NexusGenRootTypes['BfClipReviewEdge'] | null> | null; // [BfClipReviewEdge]
     nodes?: Array<NexusGenRootTypes['BfClipReview'] | null> | null; // [BfClipReview]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
@@ -166,6 +169,7 @@ export interface NexusGenFieldTypes {
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfAccountConnection: { // field return type
+    count: number | null; // Int
     edges: Array<NexusGenRootTypes['BfAccountEdge'] | null> | null; // [BfAccountEdge]
     nodes: Array<NexusGenRootTypes['BfAccount'] | null> | null; // [BfAccount]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
@@ -180,6 +184,7 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   BfClipConnection: { // field return type
+    count: number | null; // Int
     edges: Array<NexusGenRootTypes['BfClipEdge'] | null> | null; // [BfClipEdge]
     nodes: Array<NexusGenRootTypes['BfClip'] | null> | null; // [BfClip]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
@@ -194,6 +199,7 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   BfClipReviewConnection: { // field return type
+    count: number | null; // Int
     edges: Array<NexusGenRootTypes['BfClipReviewEdge'] | null> | null; // [BfClipReviewEdge]
     nodes: Array<NexusGenRootTypes['BfClipReview'] | null> | null; // [BfClipReview]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
@@ -278,6 +284,7 @@ export interface NexusGenFieldTypeNames {
     role: 'AccountRole'
   }
   BfAccountConnection: { // field return type name
+    count: 'Int'
     edges: 'BfAccountEdge'
     nodes: 'BfAccount'
     pageInfo: 'PageInfo'
@@ -292,6 +299,7 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   BfClipConnection: { // field return type name
+    count: 'Int'
     edges: 'BfClipEdge'
     nodes: 'BfClip'
     pageInfo: 'PageInfo'
@@ -306,6 +314,7 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   BfClipReviewConnection: { // field return type name
+    count: 'Int'
     edges: 'BfClipReviewEdge'
     nodes: 'BfClipReview'
     pageInfo: 'PageInfo'
