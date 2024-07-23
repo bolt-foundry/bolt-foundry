@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d422924564d867875d9248dea564a723>>
+ * @generated SignedSource<<f39b822fc2eb1c30c4f4bfd1bfb38158>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -97,6 +97,13 @@ return {
             "alias": null,
             "args": null,
             "kind": "ScalarField",
+            "name": "changeRequested",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "manualCrop",
             "storageKey": null
           },
@@ -183,12 +190,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d1718db7858296571aeb00c4dcf188de",
+    "cacheID": "9426b29d2d1187ad67f8c26e343a745b",
     "id": null,
     "metadata": {},
     "name": "useClipEditDataSubscription",
     "operationKind": "subscription",
-    "text": "subscription useClipEditDataSubscription(\n  $id: ID!\n) {\n  clip(id: $id) {\n    ...useClipEditData_clip\n    id\n  }\n}\n\nfragment DownloadClip_clip on Clip {\n  id\n  start_time\n  end_time\n  manualCrop\n  manualCropActive\n  title\n}\n\nfragment ManualCropMenu_clip on Clip {\n  id\n  manualCrop\n  manualCropActive\n}\n\nfragment StarClipButton_clip on Clip {\n  id\n  isStarred\n}\n\nfragment useClipEditData_clip on Clip {\n  ...StarClipButton_clip\n  ...ManualCropMenu_clip\n  id\n  description\n  downloadUrl\n  encodingStatus\n  end_index\n  end_time\n  endTimeOverride\n  start_index\n  start_time\n  text\n  title\n  manualCrop\n  manualCropActive\n  ...DownloadClip_clip\n}\n"
+    "text": "subscription useClipEditDataSubscription(\n  $id: ID!\n) {\n  clip(id: $id) {\n    ...useClipEditData_clip\n    id\n  }\n}\n\nfragment ChangeRequestButton_clip on Clip {\n  id\n  changeRequested\n}\n\nfragment DownloadClip_clip on Clip {\n  id\n  start_time\n  end_time\n  manualCrop\n  manualCropActive\n  title\n}\n\nfragment ManualCropMenu_clip on Clip {\n  id\n  manualCrop\n  manualCropActive\n}\n\nfragment StarClipButton_clip on Clip {\n  id\n  isStarred\n}\n\nfragment useClipEditData_clip on Clip {\n  ...StarClipButton_clip\n  ...ChangeRequestButton_clip\n  ...ManualCropMenu_clip\n  id\n  description\n  downloadUrl\n  encodingStatus\n  end_index\n  end_time\n  endTimeOverride\n  start_index\n  start_time\n  text\n  title\n  manualCrop\n  manualCropActive\n  ...DownloadClip_clip\n}\n"
   }
 };
 })();

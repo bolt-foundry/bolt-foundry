@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a9cbaf81ab2a3f5225c5cf42044df170>>
+ * @generated SignedSource<<204b5b1e8bf1479cc67d20ee1c6002b1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -270,6 +270,13 @@ return {
                         "alias": null,
                         "args": null,
                         "kind": "ScalarField",
+                        "name": "changeRequested",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
                         "name": "manualCrop",
                         "storageKey": null
                       },
@@ -378,7 +385,7 @@ return {
     ]
   },
   "params": {
-    "cacheID": "1bef8e15761ccd8619841e8df31072d0",
+    "cacheID": "c6fbc60a670828154d88ae2cf08aedee",
     "id": null,
     "metadata": {
       "connection": [
@@ -395,7 +402,7 @@ return {
     },
     "name": "ProjectPageOldSubscription",
     "operationKind": "subscription",
-    "text": "subscription ProjectPageOldSubscription(\n  $id: ID!\n  $count: Int!\n  $cursor: String\n) {\n  project(id: $id) {\n    isReadyToView\n    clips(first: $count, after: $cursor) {\n      edges {\n        node {\n          id\n          ...useClipData_clip\n          ...useClipEditData_clip\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n        hasPreviousPage\n        startCursor\n      }\n    }\n    id\n  }\n}\n\nfragment DownloadClip_clip on Clip {\n  id\n  start_time\n  end_time\n  manualCrop\n  manualCropActive\n  title\n}\n\nfragment ManualCropMenu_clip on Clip {\n  id\n  manualCrop\n  manualCropActive\n}\n\nfragment StarClipButton_clip on Clip {\n  id\n  isStarred\n}\n\nfragment useClipData_clip on Clip {\n  ...StarClipButton_clip\n  ...ManualCropMenu_clip\n  id\n  description\n  downloadUrl\n  encodingStatus\n  end_index\n  end_time\n  endTimeOverride\n  start_index\n  start_time\n  text\n  title\n  manualCrop\n  manualCropActive\n  ...DownloadClip_clip\n}\n\nfragment useClipEditData_clip on Clip {\n  ...StarClipButton_clip\n  ...ManualCropMenu_clip\n  id\n  description\n  downloadUrl\n  encodingStatus\n  end_index\n  end_time\n  endTimeOverride\n  start_index\n  start_time\n  text\n  title\n  manualCrop\n  manualCropActive\n  ...DownloadClip_clip\n}\n"
+    "text": "subscription ProjectPageOldSubscription(\n  $id: ID!\n  $count: Int!\n  $cursor: String\n) {\n  project(id: $id) {\n    isReadyToView\n    clips(first: $count, after: $cursor) {\n      edges {\n        node {\n          id\n          ...useClipData_clip\n          ...useClipEditData_clip\n          __typename\n        }\n        cursor\n      }\n      pageInfo {\n        endCursor\n        hasNextPage\n        hasPreviousPage\n        startCursor\n      }\n    }\n    id\n  }\n}\n\nfragment ChangeRequestButton_clip on Clip {\n  id\n  changeRequested\n}\n\nfragment DownloadClip_clip on Clip {\n  id\n  start_time\n  end_time\n  manualCrop\n  manualCropActive\n  title\n}\n\nfragment ManualCropMenu_clip on Clip {\n  id\n  manualCrop\n  manualCropActive\n}\n\nfragment StarClipButton_clip on Clip {\n  id\n  isStarred\n}\n\nfragment useClipData_clip on Clip {\n  ...StarClipButton_clip\n  ...ChangeRequestButton_clip\n  ...ManualCropMenu_clip\n  id\n  description\n  downloadUrl\n  encodingStatus\n  end_index\n  end_time\n  endTimeOverride\n  start_index\n  start_time\n  text\n  title\n  manualCrop\n  manualCropActive\n  ...DownloadClip_clip\n}\n\nfragment useClipEditData_clip on Clip {\n  ...StarClipButton_clip\n  ...ChangeRequestButton_clip\n  ...ManualCropMenu_clip\n  id\n  description\n  downloadUrl\n  encodingStatus\n  end_index\n  end_time\n  endTimeOverride\n  start_index\n  start_time\n  text\n  title\n  manualCrop\n  manualCropActive\n  ...DownloadClip_clip\n}\n"
   }
 };
 })();

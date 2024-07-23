@@ -12,6 +12,7 @@ import classnames from "aws/client/lib/classnames.ts";
 import { useClipData } from "aws/client/hooks/useClipData.tsx";
 import { useClipData_clip$key } from "aws/__generated__/useClipData_clip.graphql.ts";
 import StarClipButton from "aws/client/components/StarClipButton.tsx";
+import ChangeRequestButton from "aws/client/components/ChangeRequestButton.tsx";
 import { RenderSettings } from "aws/types/settings.ts";
 import { swearsFilter } from "aws/client/lib/textUtilities.ts";
 import { getCurrentCropIndex } from "aws/client/components/ManualCropMenu.tsx";
@@ -124,6 +125,7 @@ function Clip({
               testId="button-edit-clip"
             />
             <StarClipButton clip$key={clipData} />
+            <ChangeRequestButton clip$key={clipData} />
             <DownloadClip
               videoUrl={videoUrl}
               clip$key={clipData}

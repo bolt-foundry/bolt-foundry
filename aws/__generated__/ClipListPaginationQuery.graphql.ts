@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ce95a05aea1482b2d2a93ba8263f64da>>
+ * @generated SignedSource<<f70f98a574e8e6fbb7c06c6abc702129>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -316,6 +316,13 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
+                            "name": "changeRequested",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
                             "name": "manualCrop",
                             "storageKey": null
                           },
@@ -554,16 +561,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "7f9defe7803fd66d2f9faf81b5b99d4d",
+    "cacheID": "131bac786442d9c58703e5c57db27642",
     "id": null,
     "metadata": {},
     "name": "ClipListPaginationQuery",
     "operationKind": "query",
-    "text": "query ClipListPaginationQuery(\n  $count: Int\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...ClipList_project\n    id\n  }\n}\n\nfragment ClipList_project on Project {\n  id\n  effectiveSettings {\n    ...SettingsFormQuery_settings\n    additionalJson\n    censorShowFirstLetter\n    censorSwears\n    censorUseAsterisks\n    captionColor\n    captionHighlightColor\n    captionLines\n    captionWordsPerLine\n    ratio\n    minimumWords\n    showCaptions\n    font\n    showWatermark\n    showTrackingDebug\n    template\n    useAutocropping\n    useTracking\n    watermarkLogo\n    watermarkOpacity\n    watermarkPosition\n    largeMovementThresholdPct\n  }\n  clips(first: $count, after: $cursor) {\n    edges {\n      node {\n        ...useClipData_clip\n        ...useClipEditData_clip\n        id\n        downloadUrl\n        end_index\n        start_index\n        text\n        isStarred\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  clipsLength\n  transcripts(first: 1) {\n    edges {\n      node {\n        id\n        transcriptLength\n        words\n      }\n    }\n  }\n  videoUrl\n  ...ProjectResolverOpurlResolver\n}\n\nfragment DownloadClip_clip on Clip {\n  id\n  start_time\n  end_time\n  manualCrop\n  manualCropActive\n  title\n}\n\nfragment ManualCropMenu_clip on Clip {\n  id\n  manualCrop\n  manualCropActive\n}\n\nfragment ProjectResolverOpurlResolver on Project {\n  id\n}\n\nfragment SettingsFormQuery_settings on Settings {\n  additionalJson\n  captionColor\n  captionHighlightColor\n  captionLines\n  captionWordsPerLine\n  censorShowFirstLetter\n  censorSwears\n  censorUseAsterisks\n  font\n  minimumWords\n  ratio\n  showCaptions\n  showTrackingDebug\n  showWatermark\n  template\n  useAutocropping\n  useTracking\n  watermarkLogo\n  watermarkOpacity\n  watermarkPosition\n  largeMovementThresholdPct\n}\n\nfragment StarClipButton_clip on Clip {\n  id\n  isStarred\n}\n\nfragment useClipData_clip on Clip {\n  ...StarClipButton_clip\n  ...ManualCropMenu_clip\n  id\n  description\n  downloadUrl\n  encodingStatus\n  end_index\n  end_time\n  endTimeOverride\n  start_index\n  start_time\n  text\n  title\n  manualCrop\n  manualCropActive\n  ...DownloadClip_clip\n}\n\nfragment useClipEditData_clip on Clip {\n  ...StarClipButton_clip\n  ...ManualCropMenu_clip\n  id\n  description\n  downloadUrl\n  encodingStatus\n  end_index\n  end_time\n  endTimeOverride\n  start_index\n  start_time\n  text\n  title\n  manualCrop\n  manualCropActive\n  ...DownloadClip_clip\n}\n"
+    "text": "query ClipListPaginationQuery(\n  $count: Int\n  $cursor: String\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...ClipList_project\n    id\n  }\n}\n\nfragment ChangeRequestButton_clip on Clip {\n  id\n  changeRequested\n}\n\nfragment ClipList_project on Project {\n  id\n  effectiveSettings {\n    ...SettingsFormQuery_settings\n    additionalJson\n    censorShowFirstLetter\n    censorSwears\n    censorUseAsterisks\n    captionColor\n    captionHighlightColor\n    captionLines\n    captionWordsPerLine\n    ratio\n    minimumWords\n    showCaptions\n    font\n    showWatermark\n    showTrackingDebug\n    template\n    useAutocropping\n    useTracking\n    watermarkLogo\n    watermarkOpacity\n    watermarkPosition\n    largeMovementThresholdPct\n  }\n  clips(first: $count, after: $cursor) {\n    edges {\n      node {\n        ...useClipData_clip\n        ...useClipEditData_clip\n        id\n        downloadUrl\n        end_index\n        start_index\n        text\n        isStarred\n        changeRequested\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  clipsLength\n  transcripts(first: 1) {\n    edges {\n      node {\n        id\n        transcriptLength\n        words\n      }\n    }\n  }\n  videoUrl\n  ...ProjectResolverOpurlResolver\n}\n\nfragment DownloadClip_clip on Clip {\n  id\n  start_time\n  end_time\n  manualCrop\n  manualCropActive\n  title\n}\n\nfragment ManualCropMenu_clip on Clip {\n  id\n  manualCrop\n  manualCropActive\n}\n\nfragment ProjectResolverOpurlResolver on Project {\n  id\n}\n\nfragment SettingsFormQuery_settings on Settings {\n  additionalJson\n  captionColor\n  captionHighlightColor\n  captionLines\n  captionWordsPerLine\n  censorShowFirstLetter\n  censorSwears\n  censorUseAsterisks\n  font\n  minimumWords\n  ratio\n  showCaptions\n  showTrackingDebug\n  showWatermark\n  template\n  useAutocropping\n  useTracking\n  watermarkLogo\n  watermarkOpacity\n  watermarkPosition\n  largeMovementThresholdPct\n}\n\nfragment StarClipButton_clip on Clip {\n  id\n  isStarred\n}\n\nfragment useClipData_clip on Clip {\n  ...StarClipButton_clip\n  ...ChangeRequestButton_clip\n  ...ManualCropMenu_clip\n  id\n  description\n  downloadUrl\n  encodingStatus\n  end_index\n  end_time\n  endTimeOverride\n  start_index\n  start_time\n  text\n  title\n  manualCrop\n  manualCropActive\n  ...DownloadClip_clip\n}\n\nfragment useClipEditData_clip on Clip {\n  ...StarClipButton_clip\n  ...ChangeRequestButton_clip\n  ...ManualCropMenu_clip\n  id\n  description\n  downloadUrl\n  encodingStatus\n  end_index\n  end_time\n  endTimeOverride\n  start_index\n  start_time\n  text\n  title\n  manualCrop\n  manualCropActive\n  ...DownloadClip_clip\n}\n"
   }
 };
 })();
 
-(node as any).hash = "daf43e507152f1e0cf66627d8e723f68";
+(node as any).hash = "1a3708d6ef8633280db2a134bd3a5055";
 
 export default node;
