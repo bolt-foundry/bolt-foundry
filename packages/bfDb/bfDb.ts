@@ -191,6 +191,8 @@ const VALID_METADATA_COLUMN_NAMES = [
   "sort_value",
 ];
 
+const defaultClause = "1=1";
+
 export async function bfQueryItems<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
@@ -224,10 +226,17 @@ export async function bfQueryItems<
     propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
   }
 
+  if (metadataConditions.length == 0) {
+    metadataConditions.push(defaultClause);
+  }
+
+  if (propsConditions.length == 0) {
+    propsConditions.push(defaultClause);
+  }
+
   const allConditions = [...metadataConditions, ...propsConditions].filter(Boolean).join(" AND ");
-  const queryConditions = allConditions ? allConditions : "1=1";
   const query =
-    `SELECT * FROM bfdb WHERE ${queryConditions} ORDER BY ${orderBy} ${orderDirection}`;
+    `SELECT * FROM bfdb WHERE ${allConditions} ORDER BY ${orderBy} ${orderDirection}`;
 
   try {
     logger.trace("Executing query", query, variables);
@@ -266,84 +275,89 @@ export async function bfQueryItemsForGraphQLConnection<
   const metadataConditions: string[] = [];
   const propsConditions: string[] = [];
   const variables: unknown[] = [];
-  let limitClause = "";
-  let orderClause = "ORDER BY sort_value ASC";
-  let cursorCondition = "";
+  let limitClause = '';
+  let orderClause = 'ORDER BY sort_value ASC';
+  let cursorCondition = defaultClause;
 
   if (first !== undefined || last !== undefined) {
-    // Handle forward pagination
     if (first !== undefined) {
       limitClause = `LIMIT ${first + 1}`; // Fetch one extra for next page check
       if (after) {
         const afterSortValue = cursorToSortValue(after);
-        cursorCondition = `AND sort_value > ${afterSortValue}`;
+        cursorCondition = `sort_value > ${afterSortValue}`;
       }
     } else if (last !== undefined) {
-      // Handle backward pagination
       limitClause = `LIMIT ${last + 1}`; // Fetch one extra for previous page check
-      orderClause = "ORDER BY sort_value DESC";
+      orderClause = 'ORDER BY sort_value DESC';
       if (before) {
         const beforeSortValue = cursorToSortValue(before);
-        cursorCondition = `AND sort_value < ${beforeSortValue}`;
+        cursorCondition = `sort_value < ${beforeSortValue}`;
       }
     }
   }
+
   for (const [originalKey, value] of Object.entries(metadata)) {
-    // convert key from camelCase to snake_case
-    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
-    const lowerCaseKey = key.toLowerCase();
-    if (VALID_METADATA_COLUMN_NAMES.includes(lowerCaseKey)) {
+    const key = originalKey.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+    if (VALID_METADATA_COLUMN_NAMES.includes(key)) {
       variables.push(value);
       const valuePosition = variables.length;
-      metadataConditions.push(`${lowerCaseKey} = $${valuePosition}`);
+      metadataConditions.push(`${key} = $${valuePosition}`);
     }
   }
-  for (const [_, value] of Object.entries(props)) {
+  for (const [key, value] of Object.entries(props)) {
+    variables.push(key);
+    const keyPosition = variables.length;
     variables.push(value);
     const valuePosition = variables.length;
-    propsConditions.push(`props->>$${valuePosition} = $${variables.length}`);
+    propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
   }
-  const allConditions = [...metadataConditions, ...propsConditions, cursorCondition].filter(Boolean).join(" AND ");
-  const queryConditions = allConditions ? allConditions : "1=1";
+
+  if (metadataConditions.length == 0) {
+    metadataConditions.push(defaultClause);
+  }
+
+  if (propsConditions.length == 0) {
+  }
+
+  const allConditions = [...metadataConditions, ...propsConditions, cursorCondition].filter(Boolean).join(' AND ');
+  const queryConditions = allConditions ? allConditions : '1=1';
   const query = `SELECT * FROM bfdb WHERE ${queryConditions} ${orderClause} ${limitClause}`;
 
   try {
-    logger.trace("Executing query", query, variables);
+    logger.setLevel(logger.levels.TRACE);
+    logger.trace('Executing query', query, variables);
+    logger.resetLevel();
     const rows = await sql(query, variables) as Row<TProps>[];
-    // Reverse rows if performing backward pagination to maintain correct order
-    if (orderClause === "ORDER BY sort_value DESC") {
+    if (orderClause === 'ORDER BY sort_value DESC') {
       rows.reverse();
     }
-    const edges: EdgeInterface<DbItem<TProps, TMetadata>>[] = rows.map(
-      (row) => {
-        logger.trace("row", row);
-        const cursor = sortValueToCursor(row.sort_value);
-        return {
-          cursor,
-          node: {
-            props: row.props,
-            metadata: {
-              bfGid: row.bf_gid,
-              bfSid: row.bf_sid,
-              bfOid: row.bf_oid,
-              bfTid: row.bf_tid,
-              bfCid: row.bf_cid,
-              className: row.class_name,
-              createdAt: new Date(row.created_at),
-              lastUpdated: new Date(row.last_updated),
-              sortValue: row.sort_value,
-            },
+    const edges: EdgeInterface<DbItem<TProps, TMetadata>>[] = rows.map((row) => {
+      logger.trace('row', row);
+      const cursor = sortValueToCursor(row.sort_value);
+      return {
+        cursor,
+        node: {
+          props: row.props,
+          metadata: {
+            bfGid: row.bf_gid,
+            bfSid: row.bf_sid,
+            bfOid: row.bf_oid,
+            bfTid: row.bf_tid,
+            bfCid: row.bf_cid,
+            className: row.class_name,
+            createdAt: new Date(row.created_at),
+            lastUpdated: new Date(row.last_updated),
+            sortValue: row.sort_value,
           },
-        };
-      },
-    );
+        },
+      };
+    });
     const pageInfo: PageInfoInterface = {
       startCursor: edges.length > 0 ? edges[0].cursor : null,
       endCursor: edges.length > 0 ? edges[edges.length - 1].cursor : null,
       hasNextPage: edges.length > first,
       hasPreviousPage: !!before && edges.length > last,
     };
-    // Adjust edges to remove the extra fetched row for pagination.
     if (first !== undefined && edges.length > first) {
       edges.pop();
     } else if (last !== undefined && edges.length > last) {
