@@ -120,6 +120,7 @@ export interface NexusGenObjects {
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfOrganization: { // root type
+    id: string; // ID!
     name?: string | null; // String
   }
   BfPerson: { // root type
@@ -145,7 +146,6 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  Actor: core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'>;
   BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   IBfGraphQLNode: any;
@@ -209,13 +209,13 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['BfClipReview'] | null; // BfClipReview
   }
   BfCurrentViewerAccessToken: { // field return type
-    actor: NexusGenRootTypes['Actor'] | null; // Actor
     clips: NexusGenRootTypes['BfClipConnection'] | null; // BfClipConnection
+    organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfCurrentViewerAnon: { // field return type
-    actor: NexusGenRootTypes['Actor'] | null; // Actor
+    organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
@@ -256,12 +256,8 @@ export interface NexusGenFieldTypes {
     message: string | null; // String
     success: boolean; // Boolean!
   }
-  Actor: { // field return type
-    id: string; // ID!
-    name: string | null; // String
-  }
   BfCurrentViewer: { // field return type
-    actor: NexusGenRootTypes['Actor'] | null; // Actor
+    organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
@@ -324,13 +320,13 @@ export interface NexusGenFieldTypeNames {
     node: 'BfClipReview'
   }
   BfCurrentViewerAccessToken: { // field return type name
-    actor: 'Actor'
     clips: 'BfClipConnection'
+    organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
   }
   BfCurrentViewerAnon: { // field return type name
-    actor: 'Actor'
+    organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
   }
@@ -371,12 +367,8 @@ export interface NexusGenFieldTypeNames {
     message: 'String'
     success: 'Boolean'
   }
-  Actor: { // field return type name
-    id: 'ID'
-    name: 'String'
-  }
   BfCurrentViewer: { // field return type name
-    actor: 'Actor'
+    organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
   }
@@ -445,7 +437,6 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  Actor: "BfOrganization" | "BfPerson"
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon"
   BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfOrganization" | "BfPerson"
 }
@@ -456,9 +447,8 @@ export interface NexusGenTypeInterfaces {
   BfClipReview: "BfNode"
   BfCurrentViewerAccessToken: "BfCurrentViewer"
   BfCurrentViewerAnon: "BfCurrentViewer"
-  BfOrganization: "Actor" | "BfNode"
-  BfPerson: "Actor" | "BfNode"
-  Actor: "BfNode"
+  BfOrganization: "BfNode"
+  BfPerson: "BfNode"
   IBfGraphQLNode: "BfNode"
 }
 

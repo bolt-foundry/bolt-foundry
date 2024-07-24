@@ -11,7 +11,7 @@ export const BfGraphQLPerson = objectType({
   name: "BfPerson",
   description: "A real human who uses our system",
   definition(t) {
-    t.implements("Actor");
+    t.implements("BfNode");
     t.string("name");
     t.string("email");
     t.connectionField("accounts", {
