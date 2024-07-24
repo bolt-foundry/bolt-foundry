@@ -11,6 +11,7 @@ import {
 } from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { GraphQLContext } from "packages/graphql/graphql.ts";
+import { callAPI } from "infra/aiPlayground/langchainAPI.ts";
 
 
 
@@ -30,9 +31,10 @@ export const playgroundMutation = mutationField("playgroundMutation", {
   },
   resolve: async (_root, { input }, { bfCurrentViewer }: GraphQLContext) => {
     try {
+      const message =  await callAPI(input);
       return {
         success: true,
-        message: input,
+        message: message,
       };
     } catch (error) {
       console.error("Form submission error:", error);

@@ -17,7 +17,7 @@ export function PlaygroundPage() {
 
   let [aiResponse, setAiResponse] = React.useState("");
 
-  const handleSubmit = (value) => {
+  const handleSubmit = async (value: string) => {
     commit({
       variables: {
         input: value,
@@ -36,26 +36,33 @@ export function PlaygroundPage() {
     }
   };
 
-  
+  const backgroundImage = new URL("../resources/playground_background.jpeg", import.meta.url).href;
+
+
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '20px', }}>
       <div
         style={mainDivStyle}>
         <textarea 
           onKeyDown={handleKeyDown}
-          style={{width: "80%",
-                  marginTop: "20px",
-                 }} 
+          style={mainChildStyle} 
           ></textarea>
       </div>
-      <div style={mainDivStyle}><p>{aiResponse}</p></div>
+      <div style={mainDivStyle}><p style={mainChildStyle}>{aiResponse}</p></div>
     </div>
   );
 }
 
 
 const mainDivStyle = 
-  { display: "flex",
+  { 
+    display: "flex",
     justifyContent: "center",
     width: "100%",
-   };
+  };
+
+const mainChildStyle = 
+  {
+    width: "80%",
+    marginTop: "20px",
+  };
