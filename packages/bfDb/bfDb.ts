@@ -190,6 +190,7 @@ const VALID_METADATA_COLUMN_NAMES = [
   "class_name",
   "sort_value",
 ];
+
 export async function bfQueryItems<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
@@ -203,6 +204,7 @@ export async function bfQueryItems<
   const metadataConditions: string[] = [];
   const propsConditions: string[] = [];
   const variables = [];
+
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
     // convert key from camelCase to snake_case
     const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
@@ -212,6 +214,7 @@ export async function bfQueryItems<
       metadataConditions.push(`${key} = $${valuePosition}`);
     }
   }
+
   for (const [key, value] of Object.entries(propsToQuery)) {
     variables.push(key);
     const keyPosition = variables.length;
@@ -219,11 +222,12 @@ export async function bfQueryItems<
     const valuePosition = variables.length;
     propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
   }
-  const allConditions = [...metadataConditions, ...propsConditions].join(
-    " AND ",
-  );
+
+  const allConditions = [...metadataConditions, ...propsConditions].filter(Boolean).join(" AND ");
+  const queryConditions = allConditions ? allConditions : "1=1";
   const query =
-    `SELECT * FROM bfdb WHERE ${allConditions} ORDER BY ${orderBy} ${orderDirection}`;
+    `SELECT * FROM bfdb WHERE ${queryConditions} ORDER BY ${orderBy} ${orderDirection}`;
+
   try {
     logger.trace("Executing query", query, variables);
     const rows = await sql(query, variables) as Row<TProps>[];
@@ -264,6 +268,7 @@ export async function bfQueryItemsForGraphQLConnection<
   let limitClause = "";
   let orderClause = "ORDER BY sort_value ASC";
   let cursorCondition = "";
+
   if (first !== undefined || last !== undefined) {
     // Handle forward pagination
     if (first !== undefined) {
@@ -296,13 +301,10 @@ export async function bfQueryItemsForGraphQLConnection<
     const valuePosition = variables.length;
     propsConditions.push(`props->>$${valuePosition} = $${variables.length}`);
   }
-  const allConditions = [
-    ...metadataConditions,
-    ...propsConditions,
-    cursorCondition,
-  ].join(" AND ");
-  const query =
-    `SELECT * FROM bfdb WHERE ${allConditions} ${orderClause} ${limitClause}`;
+  const allConditions = [...metadataConditions, ...propsConditions, cursorCondition].filter(Boolean).join(" AND ");
+  const queryConditions = allConditions ? allConditions : "1=1";
+  const query = `SELECT * FROM bfdb WHERE ${queryConditions} ${orderClause} ${limitClause}`;
+
   try {
     logger.trace("Executing query", query, variables);
     const rows = await sql(query, variables) as Row<TProps>[];
@@ -344,9 +346,7 @@ export async function bfQueryItemsForGraphQLConnection<
     } else if (last !== undefined && edges.length > last) {
       edges.shift();
     }
-    const totalCount =
-      await sql`SELECT COUNT(*) FROM bfdb WHERE ${allConditions}`;
-
+    const totalCount = await sql`SELECT COUNT(*) FROM bfdb WHERE ${queryConditions}`;
     return {
       edges,
       pageInfo,
@@ -357,6 +357,7 @@ export async function bfQueryItemsForGraphQLConnection<
     throw e;
   }
 }
+
 function sortValueToCursor(sortValue: number): string {
   return Buffer.from(sortValue.toString()).toString("base64");
 }
