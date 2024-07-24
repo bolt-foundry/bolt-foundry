@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4a8309a1e511b4f0cfd3bfccdf764137>>
+ * @generated SignedSource<<846a4fc8f388546208610c1f4317b364>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,9 +14,8 @@ export type LoginPageLoginWithGoogleMutation$variables = {
 };
 export type LoginPageLoginWithGoogleMutation$data = {
   readonly loginWithGoogle: {
-    readonly actor: {
-      readonly id: string;
-      readonly name?: string | null | undefined;
+    readonly person: {
+      readonly name: string | null | undefined;
     } | null | undefined;
   } | null | undefined;
 };
@@ -44,22 +43,8 @@ v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "id",
+  "name": "name",
   "storageKey": null
-},
-v3 = {
-  "kind": "InlineFragment",
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "name",
-      "storageKey": null
-    }
-  ],
-  "type": "BfPerson",
-  "abstractKey": null
 };
 return {
   "fragment": {
@@ -79,13 +64,12 @@ return {
           {
             "alias": null,
             "args": null,
-            "concreteType": null,
+            "concreteType": "BfPerson",
             "kind": "LinkedField",
-            "name": "actor",
+            "name": "person",
             "plural": false,
             "selections": [
-              (v2/*: any*/),
-              (v3/*: any*/)
+              (v2/*: any*/)
             ],
             "storageKey": null
           }
@@ -113,20 +97,19 @@ return {
           {
             "alias": null,
             "args": null,
-            "concreteType": null,
+            "concreteType": "BfPerson",
             "kind": "LinkedField",
-            "name": "actor",
+            "name": "person",
             "plural": false,
             "selections": [
+              (v2/*: any*/),
               {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "__typename",
+                "name": "id",
                 "storageKey": null
-              },
-              (v2/*: any*/),
-              (v3/*: any*/)
+              }
             ],
             "storageKey": null
           }
@@ -136,16 +119,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "768c5d3e1cda273978a95863c379aeb8",
+    "cacheID": "92796fd4b1e411736587eff45ba4692d",
     "id": null,
     "metadata": {},
     "name": "LoginPageLoginWithGoogleMutation",
     "operationKind": "mutation",
-    "text": "mutation LoginPageLoginWithGoogleMutation(\n  $credential: String!\n) {\n  loginWithGoogle(credential: $credential) {\n    actor {\n      __typename\n      id\n      ... on BfPerson {\n        name\n      }\n    }\n  }\n}\n"
+    "text": "mutation LoginPageLoginWithGoogleMutation(\n  $credential: String!\n) {\n  loginWithGoogle(credential: $credential) {\n    person {\n      name\n      id\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "34d03411756e29acffde74720737ce45";
+(node as any).hash = "e86f25843fea13e1e36be35c0de762f3";
 
 export default node;

@@ -180,13 +180,18 @@ abstract class BfBaseModel<
   ): Promise<
     ConnectionInterface<
       InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
-    >
+    > & { count: number }
   > {
+    const combinedMetadata = {
+      ...metadataToQuery,
+      bfOid: currentViewer.organizationBfGid,
+      className: this.name,
+    }
     const { edges, ...others } = await bfQueryItemsForGraphQLConnection<
       TRequiredProps & Partial<TOptionalProps>,
       BfBaseModelMetadata<TCreationMetadata>
     >(
-      metadataToQuery,
+      combinedMetadata,
       propsToQuery,
       connectionArgs,
     );
