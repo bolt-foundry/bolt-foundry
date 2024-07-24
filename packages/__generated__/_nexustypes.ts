@@ -164,7 +164,6 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['BfAccount'] | null; // BfAccount
   }
   BfClip: { // field return type
-    clipReviews: NexusGenRootTypes['BfClipReviewConnection'] | null; // BfClipReviewConnection
     id: string; // ID!
     title: string | null; // String
   }
@@ -257,7 +256,6 @@ export interface NexusGenFieldTypeNames {
     node: 'BfAccount'
   }
   BfClip: { // field return type name
-    clipReviews: 'BfClipReviewConnection'
     id: 'ID'
     title: 'String'
   }
@@ -330,15 +328,6 @@ export interface NexusGenFieldTypeNames {
 }
 
 export interface NexusGenArgTypes {
-  BfClip: {
-    clipReviews: { // args
-      after?: string | null; // String
-      before?: string | null; // String
-      first?: number | null; // Int
-      last?: number | null; // Int
-      reviewable: boolean | null; // Boolean
-    }
-  }
   BfOrganization: {
     reviewableClips: { // args
       after?: string | null; // String
