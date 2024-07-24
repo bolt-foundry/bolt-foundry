@@ -108,6 +108,7 @@ const fragment = await graphql`
           start_index
           text
           isStarred
+          changeRequested
         }
       }
       pageInfo {
@@ -253,9 +254,9 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
     setTranscriptWords(updatedWords);
   };
 
-  const downloadAllStarredClips = () => {
+  const downloadAllClips = (icon) => {
     const starredButtons = document.querySelectorAll<HTMLButtonElement>(
-      '[data-bf-icon="starSolid"]',
+      `[data-bf-icon="${icon}"]`,
     );
     starredButtons.forEach((starButton) => {
       // Find the download button within the same parent node
@@ -287,9 +288,14 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
         minClipLength;
     })
     : clips;
-  if (selectedTabName === "Starred Clips") {
+  if (selectedTabName === "Starred clips") {
     clipItemsToRender = clips.filter((clip) => {
       return clip?.node?.isStarred ?? false;
+    });
+  }
+  if (selectedTabName === "Changes requested") {
+    clipItemsToRender = clips.filter((clip) => {
+      return clip?.node?.changeRequested ?? false;
     });
   }
 
@@ -301,7 +307,10 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
       count: data?.clipsLength ?? 0,
     },
     {
-      name: "Starred Clips",
+      name: "Starred clips",
+    },
+    {
+      name: "Changes requested",
     },
     {
       name: "Transcript",
@@ -385,24 +394,35 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
       <div className="tabs" style={styles.tabs}>
         <div style={{ flex: 1 }}>
           <Tabs tabs={tabs} onTabSelected={setSelectedTabName} />
-          {selectedTabName === "Starred Clips" && (
-            <div>
-              <Button
-                disabled={!hasNext}
-                kind="outline"
-                text={isLoadingNext ? "Loading..." : "Load all clips"}
-                onClick={() => loadNext(10000)}
-                size="small"
-              />{" "}
-              <Button
-                disabled={hasNext}
-                kind="outline"
-                text="Download all starred clips"
-                onClick={downloadAllStarredClips}
-                size="small"
-              />
-            </div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "row", gap: 8 }}>
+          {selectedTabName === "Starred clips" && (
+            <Button
+              disabled={hasNext}
+              iconLeft="download"
+              kind="outline"
+              text="Starred"
+              onClick={() => downloadAllClips("starSolid")}
+              size="medium"
+            />
           )}
+          {selectedTabName === "Changes requested" && (
+            <Button
+              disabled={hasNext}
+              iconLeft="download"
+              kind="outline"
+              text="Changes"
+              onClick={() => downloadAllClips("commentSolid")}
+              size="medium"
+            />
+          )}
+          <Button
+            disabled={!hasNext}
+            kind="outline"
+            text={isLoadingNext ? "Loading..." : "Load all clips"}
+            onClick={() => loadNext(10000)}
+            size="medium"
+          />
         </div>
       </div>
       {selectedTabName === "Transcript" && (
@@ -420,10 +440,10 @@ export default function ClipList({ project$key, gotoClip, videoSrc }: Props) {
             <div className="clips">
               {clipItems.length > 0 ? clipItems : (
                 <ClipListNull
-                  text={selectedTabName === "Starred Clips"
+                  text={selectedTabName === "Starred clips"
                     ? "There aren't any starred clips"
                     : undefined}
-                  subtext={selectedTabName === "Starred Clips"
+                  subtext={selectedTabName === "Starred clips"
                     ? "Click the star icon on a clip to star it"
                     : undefined}
                 />

@@ -75,6 +75,7 @@ export type ClipReducerAction =
 const fragment = await graphql`
   fragment useClipEditData_clip on Clip {
     ...StarClipButton_clip
+    ...ChangeRequestButton_clip
     ...ManualCropMenu_clip
     id
     description

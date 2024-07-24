@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b4ec838055b6dad9599488c692d6ee6d>>
+ * @generated SignedSource<<5e0dabb5c700858055b4cacaed571f74>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,9 +14,9 @@ export type LoginFormLoginWithGoogleMutation$variables = {
 };
 export type LoginFormLoginWithGoogleMutation$data = {
   readonly loginWithGoogle: {
-    readonly actor: {
+    readonly person: {
       readonly id: string;
-      readonly name?: string | null | undefined;
+      readonly name: string | null | undefined;
     } | null | undefined;
   } | null | undefined;
 };
@@ -35,64 +35,55 @@ var v0 = [
 ],
 v1 = [
   {
-    "kind": "Variable",
-    "name": "credential",
-    "variableName": "credential"
-  }
-],
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
-v3 = {
-  "kind": "InlineFragment",
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "name",
-      "storageKey": null
-    }
-  ],
-  "type": "BfPerson",
-  "abstractKey": null
-};
-return {
-  "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
-    "kind": "Fragment",
-    "metadata": null,
-    "name": "LoginFormLoginWithGoogleMutation",
+    "alias": null,
+    "args": [
+      {
+        "kind": "Variable",
+        "name": "credential",
+        "variableName": "credential"
+      }
+    ],
+    "concreteType": "BfCurrentViewerAccessToken",
+    "kind": "LinkedField",
+    "name": "loginWithGoogle",
+    "plural": false,
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
-        "concreteType": "BfCurrentViewerAccessToken",
+        "args": null,
+        "concreteType": "BfPerson",
         "kind": "LinkedField",
-        "name": "loginWithGoogle",
+        "name": "person",
         "plural": false,
         "selections": [
           {
             "alias": null,
             "args": null,
-            "concreteType": null,
-            "kind": "LinkedField",
-            "name": "actor",
-            "plural": false,
-            "selections": [
-              (v2/*: any*/),
-              (v3/*: any*/)
-            ],
+            "kind": "ScalarField",
+            "name": "id",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "name",
             "storageKey": null
           }
         ],
         "storageKey": null
       }
     ],
+    "storageKey": null
+  }
+];
+return {
+  "fragment": {
+    "argumentDefinitions": (v0/*: any*/),
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "LoginFormLoginWithGoogleMutation",
+    "selections": (v1/*: any*/),
     "type": "Mutation",
     "abstractKey": null
   },
@@ -101,51 +92,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "LoginFormLoginWithGoogleMutation",
-    "selections": [
-      {
-        "alias": null,
-        "args": (v1/*: any*/),
-        "concreteType": "BfCurrentViewerAccessToken",
-        "kind": "LinkedField",
-        "name": "loginWithGoogle",
-        "plural": false,
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": null,
-            "kind": "LinkedField",
-            "name": "actor",
-            "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "__typename",
-                "storageKey": null
-              },
-              (v2/*: any*/),
-              (v3/*: any*/)
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ]
+    "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "77ca2a8834597ba4469926226c2c30b9",
+    "cacheID": "b2d3af35a767d9b7d237ce623ecd19c5",
     "id": null,
     "metadata": {},
     "name": "LoginFormLoginWithGoogleMutation",
     "operationKind": "mutation",
-    "text": "mutation LoginFormLoginWithGoogleMutation(\n  $credential: String!\n) {\n  loginWithGoogle(credential: $credential) {\n    actor {\n      __typename\n      id\n      ... on BfPerson {\n        name\n      }\n    }\n  }\n}\n"
+    "text": "mutation LoginFormLoginWithGoogleMutation(\n  $credential: String!\n) {\n  loginWithGoogle(credential: $credential) {\n    person {\n      id\n      name\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "86e881b4514c4d4fae033297d6d3b59c";
+(node as any).hash = "cb92f652f4f517f96918b95f68833af3";
 
 export default node;

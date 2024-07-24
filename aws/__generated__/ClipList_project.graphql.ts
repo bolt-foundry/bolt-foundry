@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1997ab7179b8de549ee1da71644711e7>>
+ * @generated SignedSource<<7e7c1fc7e9bb21c3dc0d580e66ce253a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,6 +18,7 @@ export type ClipList_project$data = {
   readonly clips: {
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly changeRequested: boolean | null | undefined;
         readonly downloadUrl: string | null | undefined;
         readonly end_index: number | null | undefined;
         readonly id: string | null | undefined;
@@ -369,6 +370,13 @@ return {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
+                  "name": "changeRequested",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
                   "name": "__typename",
                   "storageKey": null
                 }
@@ -514,6 +522,6 @@ return {
 };
 })();
 
-(node as any).hash = "daf43e507152f1e0cf66627d8e723f68";
+(node as any).hash = "1a3708d6ef8633280db2a134bd3a5055";
 
 export default node;

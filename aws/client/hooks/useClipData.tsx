@@ -11,6 +11,7 @@ const { useFragment } = ReactRelay;
 const fragment = await graphql`
   fragment useClipData_clip on Clip {
     ...StarClipButton_clip
+    ...ChangeRequestButton_clip
     ...ManualCropMenu_clip
     id
     description

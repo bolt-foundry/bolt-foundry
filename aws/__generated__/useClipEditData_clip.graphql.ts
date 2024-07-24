@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3fb865db77b6b089f95e0863c52df9e8>>
+ * @generated SignedSource<<2d9a6f99affc27823282eb6fe35a9097>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -24,7 +24,7 @@ export type useClipEditData_clip$data = {
   readonly start_time: number | null | undefined;
   readonly text: string | null | undefined;
   readonly title: string | null | undefined;
-  readonly " $fragmentSpreads": FragmentRefs<"DownloadClip_clip" | "ManualCropMenu_clip" | "StarClipButton_clip">;
+  readonly " $fragmentSpreads": FragmentRefs<"ChangeRequestButton_clip" | "DownloadClip_clip" | "ManualCropMenu_clip" | "StarClipButton_clip">;
   readonly " $fragmentType": "useClipEditData_clip";
 };
 export type useClipEditData_clip$key = {
@@ -42,6 +42,11 @@ const node: ReaderFragment = {
       "args": null,
       "kind": "FragmentSpread",
       "name": "StarClipButton_clip"
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "ChangeRequestButton_clip"
     },
     {
       "args": null,
@@ -149,6 +154,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "660e3a2ebb589473468139bba0f4594e";
+(node as any).hash = "f6316a86e82f805ef625f5e39aa68765";
 
 export default node;

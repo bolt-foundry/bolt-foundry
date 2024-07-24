@@ -12,16 +12,17 @@ import {
   BfAnyid,
   BfCid,
   BfGid,
-  BfSortValue,
   getAvailableActionsForRole,
   JsUnixtime,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import type { ConnectionArguments, ConnectionInterface } from "relay-runtime";
 import { generateUUID } from "lib/generateUUID.ts";
 import {
   bfGetItem,
   bfGetItemByBfGid,
   bfPutItem,
   bfQueryItems,
+  bfQueryItemsForGraphQLConnection,
 } from "packages/bfDb/bfDb.ts";
 import {
   BfModelErrorNotFound,
@@ -64,7 +65,6 @@ abstract class BfBaseModel<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
     logVerbose("create", { currentViewer, newProps, creationMetadata });
-    console.log(creationMetadata);
     const newModel = new this(
       currentViewer,
       undefined,
@@ -164,6 +164,54 @@ abstract class BfBaseModel<
     });
   }
 
+  static async queryConnectionForGraphQL<
+    TThis extends Constructor<
+      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+    >,
+    TRequiredProps,
+    TOptionalProps,
+    TCreationMetadata extends CreationMetadata,
+  >(
+    this: TThis,
+    currentViewer: BfCurrentViewer,
+    metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
+    propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
+    connectionArgs: ConnectionArguments,
+  ): Promise<
+    ConnectionInterface<
+      InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
+    > & { count: number }
+  > {
+    const combinedMetadata = {
+      ...metadataToQuery,
+      bfOid: currentViewer.organizationBfGid,
+      className: this.name,
+    }
+    const { edges, ...others } = await bfQueryItemsForGraphQLConnection<
+      TRequiredProps & Partial<TOptionalProps>,
+      BfBaseModelMetadata<TCreationMetadata>
+    >(
+      combinedMetadata,
+      propsToQuery,
+      connectionArgs,
+    );
+
+    return {
+      ...others,
+      // @ts-expect-error edge is anytyped but it shouldn't be... it should be a rowitem.
+      edges: edges.map((edge) => ({
+        cursor: edge.cursor,
+        node: new this(
+          currentViewer,
+          edge.node.props,
+          {},
+          edge.node.metadata,
+          true,
+        ).toGraphql(),
+      })),
+    };
+  }
+
   private static generateDefaultMetadata<
     TCreationMetadata extends CreationMetadata = CreationMetadata,
   >(
@@ -184,10 +232,8 @@ abstract class BfBaseModel<
     };
   }
 
-  protected static generateSortValue(): BfSortValue | undefined {
-    if (this.isSorted) {
-      return Date.now().toString() as BfSortValue;
-    }
+  protected static generateSortValue(): number {
+    return Date.now();
   }
 
   /*
@@ -228,7 +274,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         currentViewer.accountBfGid,
         metadata.bfGid,
         bfOid,
-        metadata.sortValue,
       );
     this.metadata = { ...defaultMetadata, ...metadata };
   }
@@ -324,7 +369,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     await this.beforeLoad();
     await this.validatePermissions(ACCOUNT_ACTIONS.READ);
     try {
-      
       const response = await bfGetItemByBfGid<
         TRequiredProps & Partial<TOptionalProps>,
         BfBaseModelMetadata<TCreationMetadata>

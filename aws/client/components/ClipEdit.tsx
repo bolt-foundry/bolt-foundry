@@ -24,6 +24,7 @@ import {
 } from "aws/client/hooks/useClipEditData.tsx";
 import { useClipEditData_clip$key } from "aws/__generated__/useClipEditData_clip.graphql.ts";
 import StarClipButton from "aws/client/components/StarClipButton.tsx";
+import ChangeRequestButton from "aws/client/components/ChangeRequestButton.tsx";
 import { RenderSettings } from "aws/types/settings.ts";
 import Input from "aws/client/ui_components/Input.tsx";
 import Trim from "aws/client/components/Trim.tsx";
@@ -715,6 +716,7 @@ function ClipEdit({
               }}
             />
             <StarClipButton clip$key={data} size="medium" />
+            <ChangeRequestButton clip$key={data} size="medium" />
             <DownloadClip
               asButton={true}
               videoUrl={videoUrl}

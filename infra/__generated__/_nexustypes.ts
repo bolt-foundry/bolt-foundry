@@ -35,7 +35,7 @@ declare global {
      */
     connectionField<FieldName extends string>(
       fieldName: FieldName,
-      config: connectionPluginCore.ConnectionFieldConfig<TypeName, FieldName>
+      config: connectionPluginCore.ConnectionFieldConfig<TypeName, FieldName> & { count?: connectionPluginCore.ConnectionFieldResolver<TypeName, FieldName, "count"> }
     ): void
   }
 }
@@ -77,6 +77,7 @@ export interface NexusGenObjects {
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfAccountConnection: { // root type
+    count?: number | null; // Int
     edges?: Array<NexusGenRootTypes['BfAccountEdge'] | null> | null; // [BfAccountEdge]
     nodes?: Array<NexusGenRootTypes['BfAccount'] | null> | null; // [BfAccount]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
@@ -88,20 +89,12 @@ export interface NexusGenObjects {
   BfClip: { // root type
     title?: string | null; // String
   }
-  BfClipConnection: { // root type
-    edges?: Array<NexusGenRootTypes['BfClipEdge'] | null> | null; // [BfClipEdge]
-    nodes?: Array<NexusGenRootTypes['BfClip'] | null> | null; // [BfClip]
-    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
-  }
-  BfClipEdge: { // root type
-    cursor: string; // String!
-    node?: NexusGenRootTypes['BfClip'] | null; // BfClip
-  }
   BfClipReview: { // root type
     mediaUrl?: NexusGenScalars['Url'] | null; // Url
     title?: string | null; // String
   }
   BfClipReviewConnection: { // root type
+    count?: number | null; // Int
     edges?: Array<NexusGenRootTypes['BfClipReviewEdge'] | null> | null; // [BfClipReviewEdge]
     nodes?: Array<NexusGenRootTypes['BfClipReview'] | null> | null; // [BfClipReview]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
@@ -117,6 +110,7 @@ export interface NexusGenObjects {
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfOrganization: { // root type
+    id: string; // ID!
     name?: string | null; // String
   }
   BfPerson: { // root type
@@ -142,7 +136,6 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  Actor: core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'>;
   BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   IBfGraphQLNode: any;
@@ -166,6 +159,7 @@ export interface NexusGenFieldTypes {
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfAccountConnection: { // field return type
+    count: number | null; // Int
     edges: Array<NexusGenRootTypes['BfAccountEdge'] | null> | null; // [BfAccountEdge]
     nodes: Array<NexusGenRootTypes['BfAccount'] | null> | null; // [BfAccount]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
@@ -175,18 +169,8 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['BfAccount'] | null; // BfAccount
   }
   BfClip: { // field return type
-    clipReviews: NexusGenRootTypes['BfClipReviewConnection'] | null; // BfClipReviewConnection
     id: string; // ID!
     title: string | null; // String
-  }
-  BfClipConnection: { // field return type
-    edges: Array<NexusGenRootTypes['BfClipEdge'] | null> | null; // [BfClipEdge]
-    nodes: Array<NexusGenRootTypes['BfClip'] | null> | null; // [BfClip]
-    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
-  }
-  BfClipEdge: { // field return type
-    cursor: string; // String!
-    node: NexusGenRootTypes['BfClip'] | null; // BfClip
   }
   BfClipReview: { // field return type
     id: string; // ID!
@@ -194,6 +178,7 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   BfClipReviewConnection: { // field return type
+    count: number | null; // Int
     edges: Array<NexusGenRootTypes['BfClipReviewEdge'] | null> | null; // [BfClipReviewEdge]
     nodes: Array<NexusGenRootTypes['BfClipReview'] | null> | null; // [BfClipReview]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
@@ -203,19 +188,19 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['BfClipReview'] | null; // BfClipReview
   }
   BfCurrentViewerAccessToken: { // field return type
-    actor: NexusGenRootTypes['Actor'] | null; // Actor
-    clips: NexusGenRootTypes['BfClipConnection'] | null; // BfClipConnection
+    organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfCurrentViewerAnon: { // field return type
-    actor: NexusGenRootTypes['Actor'] | null; // Actor
+    organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfOrganization: { // field return type
     id: string; // ID!
     name: string | null; // String
+    reviewableClips: NexusGenRootTypes['BfClipReviewConnection'] | null; // BfClipReviewConnection
   }
   BfPerson: { // field return type
     accounts: NexusGenRootTypes['BfAccountConnection'] | null; // BfAccountConnection
@@ -250,12 +235,8 @@ export interface NexusGenFieldTypes {
     message: string | null; // String
     success: boolean; // Boolean!
   }
-  Actor: { // field return type
-    id: string; // ID!
-    name: string | null; // String
-  }
   BfCurrentViewer: { // field return type
-    actor: NexusGenRootTypes['Actor'] | null; // Actor
+    organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
@@ -278,6 +259,7 @@ export interface NexusGenFieldTypeNames {
     role: 'AccountRole'
   }
   BfAccountConnection: { // field return type name
+    count: 'Int'
     edges: 'BfAccountEdge'
     nodes: 'BfAccount'
     pageInfo: 'PageInfo'
@@ -287,18 +269,8 @@ export interface NexusGenFieldTypeNames {
     node: 'BfAccount'
   }
   BfClip: { // field return type name
-    clipReviews: 'BfClipReviewConnection'
     id: 'ID'
     title: 'String'
-  }
-  BfClipConnection: { // field return type name
-    edges: 'BfClipEdge'
-    nodes: 'BfClip'
-    pageInfo: 'PageInfo'
-  }
-  BfClipEdge: { // field return type name
-    cursor: 'String'
-    node: 'BfClip'
   }
   BfClipReview: { // field return type name
     id: 'ID'
@@ -306,6 +278,7 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   BfClipReviewConnection: { // field return type name
+    count: 'Int'
     edges: 'BfClipReviewEdge'
     nodes: 'BfClipReview'
     pageInfo: 'PageInfo'
@@ -315,19 +288,19 @@ export interface NexusGenFieldTypeNames {
     node: 'BfClipReview'
   }
   BfCurrentViewerAccessToken: { // field return type name
-    actor: 'Actor'
-    clips: 'BfClipConnection'
+    organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
   }
   BfCurrentViewerAnon: { // field return type name
-    actor: 'Actor'
+    organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
   }
   BfOrganization: { // field return type name
     id: 'ID'
     name: 'String'
+    reviewableClips: 'BfClipReviewConnection'
   }
   BfPerson: { // field return type name
     accounts: 'BfAccountConnection'
@@ -362,12 +335,8 @@ export interface NexusGenFieldTypeNames {
     message: 'String'
     success: 'Boolean'
   }
-  Actor: { // field return type name
-    id: 'ID'
-    name: 'String'
-  }
   BfCurrentViewer: { // field return type name
-    actor: 'Actor'
+    organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
   }
@@ -380,22 +349,12 @@ export interface NexusGenFieldTypeNames {
 }
 
 export interface NexusGenArgTypes {
-  BfClip: {
-    clipReviews: { // args
+  BfOrganization: {
+    reviewableClips: { // args
       after?: string | null; // String
       before?: string | null; // String
       first?: number | null; // Int
       last?: number | null; // Int
-      reviewable: boolean | null; // Boolean
-    }
-  }
-  BfCurrentViewerAccessToken: {
-    clips: { // args
-      after?: string | null; // String
-      before?: string | null; // String
-      first?: number | null; // Int
-      last?: number | null; // Int
-      reviewable: boolean | null; // Boolean
     }
   }
   BfPerson: {
@@ -436,7 +395,6 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  Actor: "BfOrganization" | "BfPerson"
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon"
   BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfOrganization" | "BfPerson"
 }
@@ -447,9 +405,8 @@ export interface NexusGenTypeInterfaces {
   BfClipReview: "BfNode"
   BfCurrentViewerAccessToken: "BfCurrentViewer"
   BfCurrentViewerAnon: "BfCurrentViewer"
-  BfOrganization: "Actor" | "BfNode"
-  BfPerson: "Actor" | "BfNode"
-  Actor: "BfNode"
+  BfOrganization: "BfNode"
+  BfPerson: "BfNode"
   IBfGraphQLNode: "BfNode"
 }
 

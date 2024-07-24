@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(openai@4.53.0/resources/fine-tuning/fine-tuning) denonext production */
+import{APIResource as b}from"/v135/openai@4.53.0/denonext/resource.js";import*as s from"/v135/openai@4.53.0/denonext/resources/fine-tuning/jobs/jobs.js";var e=class extends b{constructor(){super(...arguments),this.jobs=new s.Jobs(this._client)}};(function(o){o.Jobs=s.Jobs,o.FineTuningJobsPage=s.FineTuningJobsPage,o.FineTuningJobEventsPage=s.FineTuningJobEventsPage})(e||(e={}));export{e as FineTuning};
+//# sourceMappingURL=fine-tuning.js.map
