@@ -207,7 +207,7 @@ abstract class BfBaseModel<
           {},
           edge.node.metadata,
           true,
-        ),
+        ).toGraphql(),
       })),
     };
   }
