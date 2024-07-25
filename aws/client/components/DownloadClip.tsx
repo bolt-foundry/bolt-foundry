@@ -82,7 +82,7 @@ async function uploadFileToNewStorage(
         upsertClip(file: $file, title: $title, originalClipId: $originalClipId){
           title
         }}`,
-      "variables": { "file": file.name, title, originalClipId },
+      "variables": { "file": file.name, "title": file.name, originalClipId },
     }),
   );
   formData.append("map", JSON.stringify({ "file": ["variables.file"] }));
@@ -213,7 +213,7 @@ const DownloadClip: React.FC<DownloadClipProps> = (
     const url = URL.createObjectURL(file);
     const a = document.createElement("a");
     a.href = url;
-    a.download = file.name;
+    a.download = `${sanitizeFilename(downloadTitle as string)}.mp4`;
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
@@ -289,7 +289,7 @@ const DownloadClip: React.FC<DownloadClipProps> = (
         personId: personId!,
         manualCrop,
         manualCropActive,
-        title: `${sanitizeFilename(downloadTitle as string)}.mp4`,
+        title: data.title ?? "",
       };
       const file = await queueRender(renderParams);
       setDownloadableFile(file);
