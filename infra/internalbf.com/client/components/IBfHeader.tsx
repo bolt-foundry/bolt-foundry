@@ -8,10 +8,10 @@ const { useState, useEffect } = React;
 type Props = {
   expandedComponent?: React.ReactElement;
   collapsedButton?: string;
-  header?: string;
+  header?: React.ReactNode;
 };
 
-export function InternalHeader(
+export function IbfHeader(
   { expandedComponent, collapsedButton, header }: Props,
 ) {
   const { isVisible, domRef } = useIntersectionObserver();
