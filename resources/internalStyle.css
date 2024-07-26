@@ -58,6 +58,26 @@ body {
   transform: translateY(0);
 }
 
+.internalMainHeaderContent {
+  width: 100%;
+  max-width: 60rem;
+  padding: 0 20px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.internalMainHeader h2 {
+  flex: 1;
+}
+
+.internalHeaderAction {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
 .internalMainFilters {
   display: flex;
   gap: 8px;

@@ -35,7 +35,7 @@ export function InternalMediaIngestion() {
       </div>
       {/* <hr style={{ width: "100%", height: "1px", color: "black" }} /> */}
       <div style={styles.box}>
-        Choose and organization
+        Choose an organization
         <div style={styles.buttonBox}>
           <DropdownSelector
             placeholder="organization"
