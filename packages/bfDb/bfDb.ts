@@ -316,17 +316,12 @@ export async function bfQueryItemsForGraphQLConnection<
     metadataConditions.push(defaultClause);
   }
 
-  if (propsConditions.length == 0) {
-  }
-
   const allConditions = [...metadataConditions, ...propsConditions, cursorCondition].filter(Boolean).join(' AND ');
   const queryConditions = allConditions ? allConditions : '1=1';
   const query = `SELECT * FROM bfdb WHERE ${queryConditions} ${orderClause} ${limitClause}`;
 
   try {
-    logger.setLevel(logger.levels.TRACE);
     logger.trace('Executing query', query, variables);
-    logger.resetLevel();
     const rows = await sql(query, variables) as Row<TProps>[];
     if (orderClause === 'ORDER BY sort_value DESC') {
       rows.reverse();

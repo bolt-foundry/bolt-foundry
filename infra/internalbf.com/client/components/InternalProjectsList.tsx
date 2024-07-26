@@ -1,29 +1,49 @@
 import { React } from "deps.ts";
 import { Progress } from "packages/bfDs/Progress.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
-import { Table } from "packages/bfDs/Table.tsx";
+import { Column, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
 const { useState, useEffect } = React;
-const columns = [
-  { title: "Project Title", accessor: "title", width: "2fr" },
+
+type DataType = {
+  title: string;
+  clips: number;
+}
+
+const columns: Array<Column<DataType>> = [
+  {
+    title: "Project Title",
+    width: "2fr",
+    renderer: (data) => <TableCell text={data.title} />,
+  },
   {
     title: "Number of Clips",
-    accessor: "clips",
     width: "1fr",
+    renderer: (data) => <TableCell text={data.clips} />,
   },
   {
     title: "Download Media",
-    accessor: "files",
     width: "80px",
     align: "center",
+    renderer: () => (
+      <TableCell
+        align="center"
+        element={<Button kind="overlay" iconLeft="download" />}
+      />
+    ),
   },
   {
     title: "Project Link",
-    accessor: "project",
     width: "80px",
     align: "center",
+    renderer: () => (
+      <TableCell
+        align="center"
+        element={<Button kind="overlay" text="Open" />}
+      />
+    ),
   },
-  { width: "60px" },
+  { width: "60px", renderer: () => <TableCell align="center" text="•••" /> },
 ];
 const fakeData = [
   { title: "Project 1", clips: 12 },
@@ -31,23 +51,7 @@ const fakeData = [
   { title: "Project 3", clips: 30 },
   { title: "Project 4", clips: 0 },
 ];
-const data = [];
-fakeData.map((item) => {
-  data.push([
-    <TableCell text={item.title} />,
-    <TableCell text={item.clips} />,
-    <TableCell
-      align="center"
-      element={<Button kind="overlay" iconLeft="download" />}
-    />,
-    <TableCell
-      align="center"
-      element={<Button kind="overlay" text={"Open"} />}
-    />,
-    <TableCell align="center" text="•••" />,
-  ]);
-});
 
 export function InternalProjectsList() {
-  return <Table columns={columns} data={data} />;
+  return <Table columns={columns} data={fakeData} />;
 }

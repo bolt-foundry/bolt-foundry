@@ -7,8 +7,8 @@ import { IbfHeader } from "infra/internalbf.com/client/components/IBfHeader.tsx"
 type Tab = {route: string, name: string, icon: IconType}
 const tabs: Array<Tab> = [
   { route: "/", name: "Dashboard", icon: "home" },
-  { route: "/media", name: "Media", icon: "clipping" },
   { route: "/organizations", name: "Organizations", icon: "subtitle" },
+  { route: "/media", name: "Media", icon: "clipping" },
 ];
 
 type IbfDashboardTabProps = {
@@ -46,8 +46,7 @@ type IBfFrameProps = React.PropsWithChildren<{
   header: React.ReactNode;
 }>;
 
-export function IBfFrame({children}: IBfFrameProps) {
-  const name = "Randall";
+export function IBfFrame({children, header}: IBfFrameProps) {
 
   return (
     <div className="internalPage">
@@ -65,7 +64,7 @@ export function IBfFrame({children}: IBfFrameProps) {
       </div>
       <div className="internalMain">
         <IbfHeader
-          header={`Welcome ${name}!`}
+          header={header}
         />
         <div className="internalMainContent">
           {children}
