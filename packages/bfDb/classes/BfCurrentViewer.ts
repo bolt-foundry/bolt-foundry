@@ -10,11 +10,9 @@ import {
   decodeAndVerifyBfJwt,
   decodeAndVerifyGoogleToken,
 } from "packages/bfDb/classes/BfAuth.ts";
-import { cookie } from "packages/graphql/deps.ts";
-import { GraphQLContext } from "packages/graphql/graphql.ts";
 import type { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import { getLogger } from "deps.ts";
-import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BF_INTERNAL_ORG_NAME } from "packages/bfDb/utils.ts";
 
 const logger = getLogger(import.meta);
 
@@ -109,7 +107,36 @@ export class BfCurrentViewerFromAccount extends BfCurrentViewer {
   }
 }
 
-export class BfCurrentViewerOmni extends BfCurrentViewer {
+export class BfCurrentViewerAccessTokenInternalAdmin extends BfCurrentViewerAccessToken {
+  static async create(
+    importMeta: ImportMeta,
+    accessToken?: string,
+  ) {
+    try {
+      if (accessToken) {
+        const jwtPayload = await decodeAndVerifyBfJwt(accessToken);
+        const { organizationBfGid, role, personBfGid, accountBfGid } =
+          jwtPayload;
+        if (role && personBfGid && organizationBfGid === BF_INTERNAL_ORG_NAME) {
+          return new this(
+            toBfOid(organizationBfGid),
+            role as ACCOUNT_ROLE,
+            personBfGid,
+            toBfGid(accountBfGid),
+            importMeta.url,
+            jwtPayload,
+          );
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    return BfCurrentViewerAnon.create(importMeta);
+  }
+}
+
+export class BfCurrentViewerOmni extends BfCurrentViewerAccessTokenInternalAdmin {
   static __DANGEROUS__create(importMeta: ImportMeta) {
     return new this(
       toBfOid("omni_person"),

@@ -1,10 +1,35 @@
 import { React } from "deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
-import { Table } from "packages/bfDs/Table.tsx";
+import { Column, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
 import { Icon } from "packages/bfDs/Icon.tsx";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
-const columns = [{ width: "1fr" }, { width: "30px" }, { width: "30px" }];
+
+type DataType = {
+  title: string;
+  numberOfChanges: number;
+};
+
+const columns: Array<Column<DataType>> = [
+  { width: "1fr", renderer: (data) => <TableCell text={data.title} /> },
+  {
+    width: "30px",
+    renderer: (data) => <TableCell
+      align="center"
+      text={data.numberOfChanges}
+    />,
+  },
+  {
+    width: "30px",
+    renderer: (data) => (
+      <TableCell
+        align="center"
+        element={<Icon name="down-arrow" />}
+        /* this icon is wrong and needs to open the ClipChangesPage for said clip */
+      />
+    ),
+  },
+];
 const fakeData = [
   { title: "Reflecting on being from Idaho", numberOfChanges: 5 },
   { title: "Exploring the mountains of Colorado", numberOfChanges: 3 },
@@ -14,20 +39,6 @@ const fakeData = [
   { title: "Street food adventures in Thailand", numberOfChanges: 12 },
 ];
 
-const data = [];
-fakeData.map((item) => {
-  if (item.numberOfChanges > 0) {
-    data.push([
-      <TableCell text={item.title} />,
-      <TableCell align="center" text={item.numberOfChanges} />,
-      <TableCell
-        align="center"
-        element={<Icon name="down-arrow" />}
-        /* this icon is wrong and needs to open the ClipChangesPage for said clip */
-      />,
-    ]);
-  }
-});
 export function ChangesPage() {
   const { navigate } = useRouter();
   return (
@@ -44,7 +55,7 @@ export function ChangesPage() {
         </div>
       </div>
       <div className="internalMainContent" style={{ flex: "auto" }}>
-        <Table columns={columns} data={data} />
+        <Table columns={columns} data={fakeData} />
       </div>
       <div className="internalMobileTabs">
         <div className="internalMobileTab" onClick={() => navigate("/qc")}>

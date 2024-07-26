@@ -1,3 +1,4 @@
+
 import { React } from "deps.ts";
 import { Button } from "packages/bfDs/Button.tsx";
 import { useIntersectionObserver } from "packages/client/hooks/useIntersectionObserver.ts";
@@ -8,11 +9,12 @@ const { useState, useEffect } = React;
 type Props = {
   expandedComponent?: React.ReactElement;
   collapsedButton?: string;
-  header?: string;
+  header?: React.ReactNode;
+  headerAction?: React.ReactNode;
 };
 
-export function InternalHeader(
-  { expandedComponent, collapsedButton, header }: Props,
+export function IBfExpandableHeader(
+  { expandedComponent, collapsedButton, header, headerAction }: Props,
 ) {
   const { isVisible, domRef } = useIntersectionObserver();
   const [animateOn, setAnimateOn] = useState(false);

@@ -9,27 +9,32 @@ import {
 } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 
 import { LoginPage } from "infra/internalbf.com/client/pages/LoginPage.tsx";
-import { MediaPage } from "infra/internalbf.com/client/pages/MediaPage.tsx";
-import { ProjectsPage } from "infra/internalbf.com/client/pages/ProjectsPage.tsx";
 import { QcPage } from "infra/internalbf.com/client/pages/QcPage.tsx";
 import { ChangesPage } from "infra/internalbf.com/client/pages/ChangesPage.tsx";
 import { RandallPlaygroundPage } from "infra/internalbf.com/client/pages/RandallPlaygroundPage.tsx";
 import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
 import { PlaygroundPage } from "infra/internalbf.com/client/pages/PlaygroundPage.tsx";
+import { IBfDashboardPage } from "infra/internalbf.com/client/pages/IBfDashboardPage.tsx";
+import { IBfOrganizationsPage } from "infra/internalbf.com/client/pages/IBfOrganizationsPage.tsx";
+import { InternalBfDotComPage } from "packages/client/pages/InternalBfDotComPage.tsx";
 
 export const routes = new Map([
-  ["/media", { Component: MediaPage}],
-  ["/projects", { Component: ProjectsPage }],
-  ["/qc", { Component: QcPage}],
+  ["/login", { Component: LoginPage, allowLoggedOut: true }],
+  ["/", { Component: IBfDashboardPage }],
+  ["/media", { Component: IBfDashboardPage }],
+  ["/organizations", { Component: IBfOrganizationsPage }],
+
+  // class bf pages
+  ["/qc", { Component: QcPage }],
   ["/changes", { Component: ChangesPage }],
   ["/clip-changes", {
     Component: ClipChangesPage,
   }],
-  ["/login", { Component: LoginPage, allowLoggedOut: true }],
+
+  // playgrounds
   ["/colby", { Component: PlaygroundPage }],
-  ["/", { Component: LoginPage }],
   ["/randall", { Component: RandallPlaygroundPage }],
-  
+  ["/justin", { Component: InternalBfDotComPage }],
 ]);
 
 export function App() {

@@ -113,6 +113,16 @@ export interface NexusGenObjects {
     id: string; // ID!
     name?: string | null; // String
   }
+  BfOrganizationConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['BfOrganizationEdge'] | null> | null; // [BfOrganizationEdge]
+    nodes?: Array<NexusGenRootTypes['BfOrganization'] | null> | null; // [BfOrganization]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfOrganizationEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
+  }
   BfPerson: { // root type
     email?: string | null; // String
     name?: string | null; // String
@@ -202,6 +212,16 @@ export interface NexusGenFieldTypes {
     name: string | null; // String
     reviewableClips: NexusGenRootTypes['BfClipReviewConnection'] | null; // BfClipReviewConnection
   }
+  BfOrganizationConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['BfOrganizationEdge'] | null> | null; // [BfOrganizationEdge]
+    nodes: Array<NexusGenRootTypes['BfOrganization'] | null> | null; // [BfOrganization]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfOrganizationEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
+  }
   BfPerson: { // field return type
     accounts: NexusGenRootTypes['BfAccountConnection'] | null; // BfAccountConnection
     email: string | null; // String
@@ -230,6 +250,7 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     currentViewer: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     node: NexusGenRootTypes['BfNode'] | null; // BfNode
+    organizations: NexusGenRootTypes['BfOrganizationConnection'] | null; // BfOrganizationConnection
   }
   SubmitContactFormPayload: { // field return type
     message: string | null; // String
@@ -302,6 +323,16 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
     reviewableClips: 'BfClipReviewConnection'
   }
+  BfOrganizationConnection: { // field return type name
+    count: 'Int'
+    edges: 'BfOrganizationEdge'
+    nodes: 'BfOrganization'
+    pageInfo: 'PageInfo'
+  }
+  BfOrganizationEdge: { // field return type name
+    cursor: 'String'
+    node: 'BfOrganization'
+  }
   BfPerson: { // field return type name
     accounts: 'BfAccountConnection'
     email: 'String'
@@ -330,6 +361,7 @@ export interface NexusGenFieldTypeNames {
   Query: { // field return type name
     currentViewer: 'BfCurrentViewer'
     node: 'BfNode'
+    organizations: 'BfOrganizationConnection'
   }
   SubmitContactFormPayload: { // field return type name
     message: 'String'
@@ -390,6 +422,12 @@ export interface NexusGenArgTypes {
   Query: {
     node: { // args
       id: string; // ID!
+    }
+    organizations: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
     }
   }
 }
