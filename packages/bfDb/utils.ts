@@ -8,6 +8,8 @@ import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 
 const logger = getLogger(import.meta);
 
+export const BF_INTERNAL_ORG_NAME = "bf_internal_org";
+
 const databaseUrl = Deno.env.get("BFDB_URL");
 if (!databaseUrl) {
   throw new BfDbError("BFDB_URL is not set");
@@ -53,14 +55,14 @@ export async function upsertBfDb() {
     }, { bfGid: toBfGid("omni_person"), bfOid: toBfOid("omni_person") });
   }
   logger.info("Checking for internal org");
-  if (!(await BfOrganization.find(omniCv, toBfOid("bf_internal_org")))) {
+  if (!(await BfOrganization.find(omniCv, toBfOid(BF_INTERNAL_ORG_NAME)))) {
     logger.info("Creating internal org");
     await BfOrganization.create(omniCv, {
       name: "Bolt Foundry internal",
       domainName: "boltfoundry.com",
     }, {
-      bfGid: toBfGid("bf_internal_org"),
-      bfOid: toBfOid("bf_internal_org"),
+      bfGid: toBfGid(BF_INTERNAL_ORG_NAME),
+      bfOid: toBfOid(BF_INTERNAL_ORG_NAME),
     });
   }
   logger.info("Schema, indexes, and orgs upserted");

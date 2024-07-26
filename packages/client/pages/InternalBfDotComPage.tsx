@@ -1,9 +1,8 @@
 import { React } from "deps.ts";
-import { InternalBfPageFrame } from "packages/client/components/InternalBfPageFrame.tsx";
-import { InternalMediaIngestion } from "packages/client/components/InternalMediaIngestion.tsx";
-import { InternalMediaList } from "packages/client/components/InternalMediaList.tsx";
+import { InternalMediaIngestion } from "infra/internalbf.com/client/components/InternalMediaIngestion.tsx";
+import { InternalMediaList } from "infra/internalbf.com/client/components/InternalMediaList.tsx";
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   container: {
     display: "flex",
     width: "90vw",
@@ -15,12 +14,10 @@ const styles = {
 
 export function InternalBfDotComPage() {
   return (
-    <InternalBfPageFrame>
-      <div style={styles.container}>
-        <h1>Media</h1>
-        <InternalMediaIngestion />
-        <InternalMediaList />
-      </div>
-    </InternalBfPageFrame>
+    <div style={styles.container}>
+      <h1>Media</h1>
+      <InternalMediaIngestion />
+      <InternalMediaList />
+    </div>
   );
 }

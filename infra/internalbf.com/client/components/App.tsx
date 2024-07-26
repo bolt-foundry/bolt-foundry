@@ -15,24 +15,26 @@ import { RandallPlaygroundPage } from "infra/internalbf.com/client/pages/Randall
 import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
 import { PlaygroundPage } from "infra/internalbf.com/client/pages/PlaygroundPage.tsx";
 import { IBfDashboardPage } from "infra/internalbf.com/client/pages/IBfDashboardPage.tsx";
+import { IBfOrganizationsPage } from "infra/internalbf.com/client/pages/IBfOrganizationsPage.tsx";
+import { InternalBfDotComPage } from "packages/client/pages/InternalBfDotComPage.tsx";
 
 export const routes = new Map([
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
   ["/", { Component: IBfDashboardPage }],
   ["/media", { Component: IBfDashboardPage }],
-  ["/organizations", { Component: IBfDashboardPage }],
-  
+  ["/organizations", { Component: IBfOrganizationsPage }],
+
   // class bf pages
-  ["/qc", { Component: QcPage}],
+  ["/qc", { Component: QcPage }],
   ["/changes", { Component: ChangesPage }],
   ["/clip-changes", {
     Component: ClipChangesPage,
   }],
-  
+
   // playgrounds
   ["/colby", { Component: PlaygroundPage }],
   ["/randall", { Component: RandallPlaygroundPage }],
-  
+  ["/justin", { Component: InternalBfDotComPage }],
 ]);
 
 export function App() {
