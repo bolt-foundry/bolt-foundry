@@ -5,7 +5,7 @@ type Props = {
   align?: "left" | "center" | "right";
   element?: React.ReactElement;
   progress?: number;
-  text?: string;
+  text?: string | number;
 };
 
 export function TableCell({ align = "left", element, progress, text }: Props) {
