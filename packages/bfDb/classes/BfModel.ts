@@ -5,6 +5,7 @@ import type {
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
 import {
   BfCurrentViewer,
+  BfCurrentViewerAccessTokenInternalAdmin,
   BfCurrentViewerOmni,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import {
@@ -148,11 +149,19 @@ abstract class BfBaseModel<
   ): Promise<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
+    const currentViewerIsAdmin = currentViewer instanceof BfCurrentViewerAccessTokenInternalAdmin;
+
+    const queryableMetadata = {
+      ...metadataToQuery,
+      // restrict queries to same org unless internal admin
+      bfOid: currentViewerIsAdmin ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid : currentViewer.organizationBfGid,
+
+    }
     const items = await bfQueryItems<
       TRequiredProps & Partial<TOptionalProps>,
       BfBaseModelMetadata<TCreationMetadata>
     >(
-      metadataToQuery,
+      queryableMetadata,
       propsToQuery,
     );
 
@@ -182,9 +191,11 @@ abstract class BfBaseModel<
       InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
     > & { count: number }
   > {
+    const currentViewerIsAdmin = currentViewer instanceof BfCurrentViewerAccessTokenInternalAdmin;
     const combinedMetadata = {
       ...metadataToQuery,
-      bfOid: currentViewer.organizationBfGid,
+      // allow internal admins to query all models regardless of owner
+      bfOid: currentViewerIsAdmin ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid : currentViewer.organizationBfGid,
       className: this.name,
     }
     const { edges, ...others } = await bfQueryItemsForGraphQLConnection<

@@ -10,6 +10,7 @@ const logger = getLogger(import.meta);
 
 export async function getContextFromRequest(
   request: Request,
+  CurrentViewerCreationClass: typeof BfCurrentViewerAccessToken = BfCurrentViewerAccessToken,
 ): Promise<GraphQLContext> {
   const cookies = cookie.getCookies(request.headers);
   const accessToken = cookies.BF_AT;
@@ -17,7 +18,7 @@ export async function getContextFromRequest(
   const responseHeaders = new Headers();
   logger.debug("Cookies: ", cookies);
   logger.debug({ accessToken, refreshToken });
-  let bfCurrentViewer = await BfCurrentViewerAccessToken.create(
+  let bfCurrentViewer = await CurrentViewerCreationClass.create(
     import.meta,
     accessToken,
   );

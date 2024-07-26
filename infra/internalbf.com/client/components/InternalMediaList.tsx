@@ -1,15 +1,49 @@
 import { React } from "deps.ts";
 import { Progress } from "packages/bfDs/Progress.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
-import { Table } from "packages/bfDs/Table.tsx";
+import { Column, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
 const { useState, useEffect } = React;
-const columns = [
-  { title: "Title", accessor: "title", width: "2fr" },
-  { title: "Organization", accessor: "organization", width: "1fr" },
-  { title: "Files", accessor: "files", width: "80px", align: "center" },
-  { title: "Project", accessor: "project", width: "80px", align: "center" },
-  { width: "60px" },
+
+type DataType = {
+  title: string;
+  organization: string;
+};
+
+const columns: Array<Column<DataType>> = [
+  {
+    title: "Title",
+    width: "2fr",
+    renderer: (data) => <TableCell text={data.title} />,
+  },
+  {
+    title: "Organization",
+    width: "1fr",
+    renderer: (data) => <TableCell text={data.organization} />,
+  },
+  {
+    title: "Files",
+    width: "80px",
+    align: "center",
+    renderer: () => (
+      <TableCell
+        align="center"
+        element={<Button kind="overlay" iconLeft="download" />}
+      />
+    ),
+  },
+  {
+    title: "Project",
+    width: "80px",
+    align: "center",
+    renderer: () => (
+      <TableCell
+        align="center"
+        element={<Button kind="overlay" iconLeft="plus" />}
+      />
+    ),
+  },
+  { width: "60px", renderer: () => <TableCell align="center" text="•••" /> },
 ];
 const fakeData = [
   { title: "Movie 1", organization: "Company A", progress: 65 },
@@ -17,23 +51,7 @@ const fakeData = [
   { title: "Movie 3", organization: "Company C", progress: 100 },
   { title: "Movie 4", organization: "Company D" },
 ];
-const data = [];
-fakeData.map((item) => {
-  data.push([
-    <TableCell text={item.title} progress={item.progress} />,
-    <TableCell text={item.organization} />,
-    <TableCell
-      align="center"
-      element={<Button kind="overlay" iconLeft="download" />}
-    />,
-    <TableCell
-      align="center"
-      element={<Button kind="overlay" iconLeft="plus" />}
-    />,
-    <TableCell align="center" text="•••" />,
-  ]);
-});
 
 export function InternalMediaList() {
-  return <Table columns={columns} data={data} />;
+  return <Table columns={columns} data={fakeData} />;
 }
