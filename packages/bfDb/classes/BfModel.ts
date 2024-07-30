@@ -5,9 +5,8 @@ import type {
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
 import {
   BfCurrentViewer,
-  BfCurrentViewerAccessTokenInternalAdmin,
-  BfCurrentViewerOmni,
-} from "packages/bfDb/classes/BfCurrentViewer.ts";
+  IBfCurrentViewerInternalAdmin,
+  BfCurrentVIBfCurrentViewerInternalAdminOmnipackages/bfDb/classes/BfCurrentViewer.ts";
 import {
   ACCOUNT_ACTIONS,
   BfAnyid,
@@ -123,8 +122,7 @@ abstract class BfBaseModel<
     const model = new this(currentViewer, undefined, undefined, {
       bfGid,
     });
-    if (currentViewer instanceof BfCurrentViewerOmni) {
-      await model.load__PRIVACY_UNSAFE();
+    if (currentViewer instanceof BfCurrentVIBfCurrentViewerInternalAdminOmniawait model.load__PRIVACY_UNSAFE();
     } else {
       await model.load();
     }
@@ -149,7 +147,7 @@ abstract class BfBaseModel<
   ): Promise<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
-    const currentViewerIsAdmin = currentViewer instanceof BfCurrentViewerAccessTokenInternalAdmin;
+    const currentViewerIsAdmin = currentViewer instanceof IBfCurrentViewerInternalAdmin;
 
     const queryableMetadata = {
       ...metadataToQuery,
@@ -191,7 +189,7 @@ abstract class BfBaseModel<
       InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
     > & { count: number }
   > {
-    const currentViewerIsAdmin = currentViewer instanceof BfCurrentViewerAccessTokenInternalAdmin;
+    const currentViewerIsAdmin = currentViewer instanceof IBfCurrentViewerInternalAdmin;
     const combinedMetadata = {
       ...metadataToQuery,
       // allow internal admins to query all models regardless of owner
