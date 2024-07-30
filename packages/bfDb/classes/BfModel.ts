@@ -6,7 +6,7 @@ import type {
 import {
   BfCurrentViewer,
   IBfCurrentViewerInternalAdmin,
-  BfCurrentVIBfCurrentViewerInternalAdminOmnipackages/bfDb/classes/BfCurrentViewer.ts";
+  IBfCurrentViewerInternalAdminOmni} from "packages/bfDb/classes/BfCurrentViewer.ts";
 import {
   ACCOUNT_ACTIONS,
   BfAnyid,
@@ -122,7 +122,8 @@ abstract class BfBaseModel<
     const model = new this(currentViewer, undefined, undefined, {
       bfGid,
     });
-    if (currentViewer instanceof BfCurrentVIBfCurrentViewerInternalAdminOmniawait model.load__PRIVACY_UNSAFE();
+    if (currentViewer instanceof IBfCurrentViewerInternalAdminOmni) {
+      await model.load__PRIVACY_UNSAFE();
     } else {
       await model.load();
     }
