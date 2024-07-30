@@ -24,7 +24,7 @@ type UseModalOptions = {
 };
 
 export type BfDsContextType = {
-  showModal: () => void;
+  showModal: (content: ReactNode, options?: UseModalOptions) => () => void;
   showToast: (message: ReactNode, options?: UseToastOptions) => void;
   ModalComponent: ReactNode;
   ToastComponent: ReactNode;
@@ -51,6 +51,9 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
 
   function showModal(content: ReactNode, options: UseModalOptions) {
     setActiveModal({ content, options });
+    return () => {
+      setActiveModal(undefined);
+    } 
   }
 
   function showToast(message: ReactNode, options: UseToastOptions = {}) {
