@@ -127,6 +127,9 @@ export interface NexusGenObjects {
     email?: string | null; // String
     name?: string | null; // String
   }
+  IBfCurrentViewerInternalAdmin: { // root type
+    role?: NexusGenEnums['AccountRole'] | null; // AccountRole
+  }
   Mutation: {};
   PageInfo: { // root type
     endCursor?: string | null; // String
@@ -146,7 +149,7 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'>;
+  BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'> | core.Discriminate<'IBfCurrentViewerInternalAdmin', 'required'>;
   BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   IBfGraphQLNode: any;
 }
@@ -227,6 +230,11 @@ export interface NexusGenFieldTypes {
     email: string | null; // String
     id: string; // ID!
     name: string | null; // String
+  }
+  IBfCurrentViewerInternalAdmin: { // field return type
+    organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
+    person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
+    role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   Mutation: { // field return type
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
@@ -339,6 +347,11 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     name: 'String'
   }
+  IBfCurrentViewerInternalAdmin: { // field return type name
+    organization: 'BfOrganization'
+    person: 'BfPerson'
+    role: 'AccountRole'
+  }
   Mutation: { // field return type name
     loginWithGoogle: 'BfCurrentViewerAccessToken'
     logout: 'BfCurrentViewer'
@@ -433,7 +446,7 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon"
+  BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon" | "IBfCurrentViewerInternalAdmin"
   BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfOrganization" | "BfPerson"
 }
 
@@ -445,6 +458,7 @@ export interface NexusGenTypeInterfaces {
   BfCurrentViewerAnon: "BfCurrentViewer"
   BfOrganization: "BfNode"
   BfPerson: "BfNode"
+  IBfCurrentViewerInternalAdmin: "BfCurrentViewer"
   IBfGraphQLNode: "BfNode"
 }
 

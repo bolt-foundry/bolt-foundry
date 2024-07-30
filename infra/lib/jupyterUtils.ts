@@ -5,7 +5,7 @@ import {
 } from "packages/bfDb/models/BfAccount.ts";
 import {
   BfCurrentViewerFromAccount,
-  BfCurrentViewerOmni,
+  IBfCurrentViewerInternalAdminOmni,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { bfGetItemByBfGid } from "packages/bfDb/bfDb.ts";
 
@@ -27,7 +27,7 @@ export async function getJupyterCurrentViewer(
     return null;
   }
 
-  const omniCv = BfCurrentViewerOmni.__DANGEROUS__create(import.meta);
+  const omniCv = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(import.meta);
   const account = await BfAccount.findX(omniCv, accountRow.metadata.bfGid);
 
   logger.info(
