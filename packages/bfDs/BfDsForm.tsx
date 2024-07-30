@@ -1,6 +1,8 @@
 import * as React from "react";
 import { getLogger } from "deps.ts";
-
+import { Input } from "packages/bfDs/Input.tsx";
+import { Button } from "packages/bfDs/Button.tsx";
+import { Toggle } from "packages/bfDs/Toggle.tsx";
 const { useState, createContext, useContext } = React;
 
 type FormError = {
@@ -81,8 +83,8 @@ function BfDsTextInput({ id, title }: BfDsFormElementProps) {
   const { data, onChange } = useBfDsFormContext();
   return (
     <div>
-      <label htmlFor={id}>{title}</label>
-      <input
+      <Input
+        label={title}
         type="text"
         id={id}
         name={id}
@@ -97,8 +99,8 @@ function BfDsNumberInput({ id, title }: { id: string; title: string }) {
   const { data, onChange } = useBfDsFormContext();
   return (
     <div>
-      <label htmlFor={id}>{title}</label>
-      <input
+      <Input
+        label={title}
         type="number"
         id={id}
         name={id}
@@ -113,8 +115,8 @@ function BfDsCheckboxInput({ id, title }: { id: string; title: string }) {
   const { data, onChange } = useBfDsFormContext();
   return (
     <div>
-      <label htmlFor={id}>{title}</label>
-      <input
+      <Toggle
+        label={title}
         type="checkbox"
         id={id}
         name={id}
@@ -126,7 +128,7 @@ function BfDsCheckboxInput({ id, title }: { id: string; title: string }) {
 }
 
 function BfDsSubmitButton({ text }: { text: string }) {
-  return <button type="submit">{text}</button>;
+  return <Button kind="primary" text={text}></Button>;
 }
 
 const logger = getLogger(import.meta);
