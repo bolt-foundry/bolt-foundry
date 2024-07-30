@@ -107,7 +107,7 @@ export class BfCurrentViewerFromAccount extends BfCurrentViewer {
   }
 }
 
-export class BfCurrentViewerAccessTokenInternalAdmin extends BfCurrentViewerAccessToken {
+export class IBfCurrentViewerInternalAdmin extends BfCurrentViewerAccessToken {
   static async create(
     importMeta: ImportMeta,
     accessToken?: string,
@@ -136,7 +136,7 @@ export class BfCurrentViewerAccessTokenInternalAdmin extends BfCurrentViewerAcce
   }
 }
 
-export class BfCurrentViewerOmni extends BfCurrentViewerAccessTokenInternalAdmin {
+export class IBfCurrentViewerInternalAdminOmni extends IBfCurrentViewerInternalAdmin {
   static __DANGEROUS__create(importMeta: ImportMeta) {
     return new this(
       toBfOid("omni_person"),
