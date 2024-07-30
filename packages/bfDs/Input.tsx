@@ -138,7 +138,7 @@ export function Input(
 
   if (label) {
     return (
-      <label style={styles.label}>
+      <label htmlFor={name} style={styles.label}>
         {label}
         {required && " *"}
         <div style={styles.inputContainer}>
