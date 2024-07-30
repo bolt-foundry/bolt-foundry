@@ -110,7 +110,7 @@ export async function createMuxedFile(
       codec: "avc1.42E028",
       width: options.input.video.width,
       height: options.input.video.height,
-      bitrate: 2_000_000, // 2 Mbps
+      bitrate: 7_000_000, // 7 Mbps
       framerate: 30,
       hardwareAcceleration: "prefer-hardware",
       avc: { format: "avc" },
