@@ -70,6 +70,21 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  BFClipReviewComment: { // root type
+    author?: string | null; // String
+    message?: string | null; // String
+    timecode?: number | null; // Int
+  }
+  BFClipReviewCommentConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['BFClipReviewCommentEdge'] | null> | null; // [BFClipReviewCommentEdge]
+    nodes?: Array<NexusGenRootTypes['BFClipReviewComment'] | null> | null; // [BFClipReviewComment]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BFClipReviewCommentEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BFClipReviewComment'] | null; // BFClipReviewComment
+  }
   BfAccount: { // root type
     displayName?: string | null; // String
     organizationBfGid?: string | null; // ID
@@ -147,7 +162,7 @@ export interface NexusGenObjects {
 
 export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'>;
-  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
+  BfNode: core.Discriminate<'BFClipReviewComment', 'required'> | core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   IBfGraphQLNode: any;
 }
 
@@ -159,6 +174,22 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
+  BFClipReviewComment: { // field return type
+    author: string | null; // String
+    id: string; // ID!
+    message: string | null; // String
+    timecode: number | null; // Int
+  }
+  BFClipReviewCommentConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['BFClipReviewCommentEdge'] | null> | null; // [BFClipReviewCommentEdge]
+    nodes: Array<NexusGenRootTypes['BFClipReviewComment'] | null> | null; // [BFClipReviewComment]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BFClipReviewCommentEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BFClipReviewComment'] | null; // BFClipReviewComment
+  }
   BfAccount: { // field return type
     displayName: string | null; // String
     id: string; // ID!
@@ -183,6 +214,7 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   BfClipReview: { // field return type
+    comments: NexusGenRootTypes['BFClipReviewCommentConnection'] | null; // BFClipReviewCommentConnection
     id: string; // ID!
     mediaUrl: NexusGenScalars['Url'] | null; // Url
     title: string | null; // String
@@ -270,6 +302,22 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  BFClipReviewComment: { // field return type name
+    author: 'String'
+    id: 'ID'
+    message: 'String'
+    timecode: 'Int'
+  }
+  BFClipReviewCommentConnection: { // field return type name
+    count: 'Int'
+    edges: 'BFClipReviewCommentEdge'
+    nodes: 'BFClipReviewComment'
+    pageInfo: 'PageInfo'
+  }
+  BFClipReviewCommentEdge: { // field return type name
+    cursor: 'String'
+    node: 'BFClipReviewComment'
+  }
   BfAccount: { // field return type name
     displayName: 'String'
     id: 'ID'
@@ -294,6 +342,7 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   BfClipReview: { // field return type name
+    comments: 'BFClipReviewCommentConnection'
     id: 'ID'
     mediaUrl: 'Url'
     title: 'String'
@@ -381,6 +430,14 @@ export interface NexusGenFieldTypeNames {
 }
 
 export interface NexusGenArgTypes {
+  BfClipReview: {
+    comments: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
+  }
   BfOrganization: {
     reviewableClips: { // args
       after?: string | null; // String
@@ -434,10 +491,11 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon"
-  BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfOrganization" | "BfPerson"
+  BfNode: "BFClipReviewComment" | "BfAccount" | "BfClip" | "BfClipReview" | "BfOrganization" | "BfPerson"
 }
 
 export interface NexusGenTypeInterfaces {
+  BFClipReviewComment: "BfNode"
   BfAccount: "BfNode"
   BfClip: "BfNode"
   BfClipReview: "BfNode"
