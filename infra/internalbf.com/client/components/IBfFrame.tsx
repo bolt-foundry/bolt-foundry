@@ -2,9 +2,9 @@ import { React } from "deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { Icon, IconType } from "packages/bfDs/Icon.tsx";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
-import { IbfHeader } from "infra/internalbf.com/client/components/IBfHeader.tsx";
+import { IBfHeader } from "infra/internalbf.com/client/components/IBfHeader.tsx";
 
-type Tab = {route: string, name: string, icon: IconType}
+type Tab = { route: string; name: string; icon: IconType };
 const tabs: Array<Tab> = [
   { route: "/", name: "Dashboard", icon: "home" },
   { route: "/organizations", name: "Organizations", icon: "subtitle" },
@@ -15,15 +15,13 @@ type IbfDashboardTabProps = {
   route: string;
   name: string;
   icon: IconType;
-}
+};
 
 function IBfDashboardTab({ route, name, icon }: IbfDashboardTabProps) {
   const { navigate, currentPath } = useRouter();
   return (
     <div
-      className={`internalTab ${
-        route === currentPath ? "selected" : ""
-      }`}
+      className={`internalTab ${route === currentPath ? "selected" : ""}`}
       onClick={() => navigate(route)}
     >
       <Icon name={icon} />
@@ -35,19 +33,17 @@ function IBfDashboardTab({ route, name, icon }: IbfDashboardTabProps) {
 function IBfDashboardTabs() {
   return (
     <div className="internalTabs">
-      {tabs.map((tab) => (
-        <IBfDashboardTab key={tab.route} {...tab} />
-      ))}
+      {tabs.map((tab) => <IBfDashboardTab key={tab.route} {...tab} />)}
     </div>
   );
 }
 
 type IBfFrameProps = React.PropsWithChildren<{
   header: React.ReactNode;
+  headerAction?: React.ReactNode;
 }>;
 
-export function IBfFrame({children, header}: IBfFrameProps) {
-
+export function IBfFrame({ children, header, headerAction }: IBfFrameProps) {
   return (
     <div className="internalPage">
       <div className="internalSidebar">
@@ -63,8 +59,9 @@ export function IBfFrame({children, header}: IBfFrameProps) {
         <IBfDashboardTabs />
       </div>
       <div className="internalMain">
-        <IbfHeader
+        <IBfHeader
           header={header}
+          headerAction={headerAction}
         />
         <div className="internalMainContent">
           {children}

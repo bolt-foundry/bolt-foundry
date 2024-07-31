@@ -1,4 +1,4 @@
-import { BfCurrentViewerOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { toBfGid, toBfOid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
@@ -46,7 +46,7 @@ export async function upsertBfDb() {
   }
   logger.info("Indexes upserted", indexes);
 
-  const omniCv = BfCurrentViewerOmni.__DANGEROUS__create(import.meta);
+  const omniCv = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(import.meta);
   logger.info("Checking for omni account");
   if (!(await BfPerson.find(omniCv, toBfGid("omni_person")))) {
     logger.info("Creating omni person");

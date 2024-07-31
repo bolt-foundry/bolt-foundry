@@ -1,4 +1,4 @@
-import { BfCurrentViewerOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfNodeJob } from "packages/bfDb/models/BfNodeJob.ts";
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
@@ -17,7 +17,7 @@ logger.info(
 );
 
 let shouldCheckForWork = true;
-const currentViewer = BfCurrentViewerOmni.__DANGEROUS__create(import.meta);
+const currentViewer = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(import.meta);
 export async function checkForWork() {
   logger.info("Checking for work");
   const jobs = await BfNodeJob.findAvailableJobs(currentViewer);

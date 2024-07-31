@@ -104,7 +104,15 @@ export function Modal(
     // captureEvent("modal", "loaded", { kind }, personId);
   }, []);
 
-  useClickOutside(modalRef, () => close(), {
+  const close = () => {
+    // captureEvent("modal", "closed", { kind }, personId);
+    setShow(false);
+    domTimer = setTimeout(() => {
+      onClose?.();
+    }, 250);
+  };
+
+  useClickOutside(modalRef, close, {
     isActive: clickOusideToClose,
     showConfirmation: confirmClose,
     excludeElementIds: ["tooltip-root"],
@@ -119,14 +127,6 @@ export function Modal(
     } else {
       close();
     }
-  };
-
-  const close = () => {
-    // captureEvent("modal", "closed", { kind }, personId);
-    setShow(false);
-    domTimer = setTimeout(() => {
-      onClose?.();
-    }, 250);
   };
 
   const modalClasses = classnames([
