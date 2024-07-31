@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<db274378db3c0070d47ebe1b1788efc4>>
+ * @generated SignedSource<<08a92fc2298fbb5833399ca12a1c00d3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,6 +11,7 @@
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type PlaygroundPageMutation$variables = {
   input: string;
+  suggestedModel?: string | null | undefined;
 };
 export type PlaygroundPageMutation$data = {
   readonly playgroundMutation: {
@@ -29,6 +30,11 @@ var v0 = [
     "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "suggestedModel"
   }
 ],
 v1 = [
@@ -39,6 +45,11 @@ v1 = [
         "kind": "Variable",
         "name": "input",
         "variableName": "input"
+      },
+      {
+        "kind": "Variable",
+        "name": "suggestedModel",
+        "variableName": "suggestedModel"
       }
     ],
     "concreteType": "PlaygroundMutationPayload",
@@ -82,16 +93,16 @@ return {
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "376383a7c62854850480f79f4665f236",
+    "cacheID": "db61ade9e790df8994e7e65a073e0e91",
     "id": null,
     "metadata": {},
     "name": "PlaygroundPageMutation",
     "operationKind": "mutation",
-    "text": "mutation PlaygroundPageMutation(\n  $input: String!\n) {\n  playgroundMutation(input: $input) {\n    success\n    message\n  }\n}\n"
+    "text": "mutation PlaygroundPageMutation(\n  $input: String!\n  $suggestedModel: String\n) {\n  playgroundMutation(input: $input, suggestedModel: $suggestedModel) {\n    success\n    message\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "44171af1e6b2cb05217f4fb6ce227d95";
+(node as any).hash = "9bffeb16094c65e990daf17f5e128778";
 
 export default node;

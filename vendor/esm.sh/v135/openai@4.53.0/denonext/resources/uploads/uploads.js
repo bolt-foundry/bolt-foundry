@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(openai@4.53.0/resources/uploads/uploads) denonext production */
+import{APIResource as a}from"/v135/openai@4.53.0/denonext/resource.js";import*as e from"/v135/openai@4.53.0/denonext/resources/uploads/parts.js";var r=class extends a{constructor(){super(...arguments),this.parts=new e.Parts(this._client)}create(t,s){return this._client.post("/uploads",{body:t,...s})}cancel(t,s){return this._client.post(`/uploads/${t}/cancel`,s)}complete(t,s,o){return this._client.post(`/uploads/${t}/complete`,{body:s,...o})}};(function(c){c.Parts=e.Parts})(r||(r={}));export{r as Uploads};
+//# sourceMappingURL=uploads.js.map

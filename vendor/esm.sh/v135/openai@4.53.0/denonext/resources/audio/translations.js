@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(openai@4.53.0/resources/audio/translations) denonext production */
+import{APIResource as i}from"/v135/openai@4.53.0/denonext/resource.js";import*as o from"/v135/openai@4.53.0/denonext/core.js";var t=class extends i{create(e,s){return this._client.post("/audio/translations",o.multipartFormRequestOptions({body:e,...s}))}};t||(t={});export{t as Translations};
+//# sourceMappingURL=translations.js.map
