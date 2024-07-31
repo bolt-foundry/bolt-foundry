@@ -11,6 +11,7 @@ import {
 } from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { GraphQLContext } from "packages/graphql/graphql.ts";
+import { callAPI, aiSettings } from "infra/aiPlayground/langchainAPI.ts";
 
 
 
@@ -27,12 +28,17 @@ export const playgroundMutation = mutationField("playgroundMutation", {
   type: playgroundMutationPayload,
   args: {
     input: nonNull(stringArg()),
+    suggestedModel: stringArg(),
   },
-  resolve: async (_root, { input }, { bfCurrentViewer }: GraphQLContext) => {
+  resolve: async (_root, { input, suggestedModel }, { bfCurrentViewer }: GraphQLContext) => {
     try {
+      if (suggestedModel === undefined) {
+        suggestedModel = undefined;
+      }
+      const message =  await callAPI(input, undefined, suggestedModel);
       return {
         success: true,
-        message: input,
+        message: message,
       };
     } catch (error) {
       console.error("Form submission error:", error);
