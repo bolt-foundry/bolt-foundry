@@ -4,8 +4,8 @@ import { graphql, ReactRelay } from "infra/internalbf.com/client/deps.ts";
 const { useLazyLoadQuery, useMutation } = ReactRelay;
 
 const testMutation = await graphql`
-  mutation PlaygroundPageMutation($input: String!) {
-    playgroundMutation(input: $input) {
+  mutation PlaygroundPageMutation($input: String!, $suggestedModel: String) {
+    playgroundMutation(input: $input, suggestedModel: $suggestedModel) {
       success
       message
     }
@@ -13,14 +13,15 @@ const testMutation = await graphql`
 `;
 
 export function PlaygroundPage() {
-  const [commit, isInFlight] = useMutation(testMutation);
 
+  const [commit, isInFlight] = useMutation(testMutation);
   let [aiResponse, setAiResponse] = React.useState("");
 
-  const handleSubmit = (value) => {
+  const handleSubmit = async (value: string) => {
     commit({
       variables: {
         input: value,
+        suggestedModel: "gpt-3.5-turbo",
       },
       onCompleted: (response) => {
         setAiResponse(response.playgroundMutation.message);
@@ -36,26 +37,33 @@ export function PlaygroundPage() {
     }
   };
 
-  
+  const backgroundImage = new URL("../resources/playground_background.jpeg", import.meta.url).href;
+
+
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '20px', }}>
       <div
         style={mainDivStyle}>
         <textarea 
           onKeyDown={handleKeyDown}
-          style={{width: "80%",
-                  marginTop: "20px",
-                 }} 
+          style={mainChildStyle} 
           ></textarea>
       </div>
-      <div style={mainDivStyle}><p>{aiResponse}</p></div>
+      <div style={mainDivStyle}><p style={mainChildStyle}>{aiResponse}</p></div>
     </div>
   );
 }
 
 
 const mainDivStyle = 
-  { display: "flex",
+  { 
+    display: "flex",
     justifyContent: "center",
     width: "100%",
-   };
+  };
+
+const mainChildStyle = 
+  {
+    width: "80%",
+    marginTop: "20px",
+  };

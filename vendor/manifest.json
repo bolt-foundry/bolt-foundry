@@ -1071,6 +1071,49 @@
     "https://esm.sh/v135/@tensorflow/tfjs-backend-cpu@4.20.0/denonext/dist/kernels/Identity.js": {},
     "https://esm.sh/v135/@tensorflow/tfjs-backend-cpu@4.20.0/denonext/dist/kernels/Real.js": {},
     "https://esm.sh/v135/@tensorflow/tfjs-backend-cpu@4.20.0/denonext/dist/kernels/Complex.js": {},
-    "https://esm.sh/v135/@tensorflow/tfjs-backend-cpu@4.20.0/denonext/dist/kernels/Transpose.js": {}
+    "https://esm.sh/v135/@tensorflow/tfjs-backend-cpu@4.20.0/denonext/dist/kernels/Transpose.js": {},
+    "https://esm.sh/@langchain/core/output_parsers": {
+      "headers": {
+        "location": "https://esm.sh/@langchain/core@0.2.18/output_parsers"
+      }
+    },
+    "https://esm.sh/@langchain/core/prompts": {
+      "headers": {
+        "location": "https://esm.sh/@langchain/core@0.2.18/prompts"
+      }
+    },
+    "https://esm.sh/@langchain/openai": {
+      "headers": {
+        "location": "https://esm.sh/@langchain/openai@0.2.5"
+      }
+    },
+    "https://esm.sh/@langchain/core@0.2.18/prompts": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/@langchain/core@0.2.18/prompts.d.ts"
+      }
+    },
+    "https://esm.sh/@langchain/core@0.2.18/output_parsers": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/@langchain/core@0.2.18/output_parsers.d.ts"
+      }
+    },
+    "https://esm.sh/@langchain/openai@0.2.5": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/@langchain/openai@0.2.5/index.d.ts"
+      }
+    },
+    "https://esm.sh/v135/openai@4.53.0/denonext/lib/AssistantStream.js": {},
+    "https://esm.sh/v135/openai@4.53.0/denonext/lib/ChatCompletionStream.js": {},
+    "https://esm.sh/v135/openai@4.53.0/denonext/lib/ChatCompletionRunner.js": {},
+    "https://esm.sh/v135/openai@4.53.0/denonext/_shims/MultipartBody.js": {},
+    "https://esm.sh/v135/openai@4.53.0/denonext/lib/ChatCompletionStreamingRunner.js": {},
+    "https://esm.sh/v135/openai@4.53.0/denonext/lib/AbstractAssistantStreamRunner.js": {},
+    "https://esm.sh/v135/openai@4.53.0/denonext/lib/RunnableFunction.js": {},
+    "https://esm.sh/v135/openai@4.53.0/denonext/lib/Util.js": {},
+    "https://esm.sh/v135/openai@4.53.0/denonext/lib/chatCompletionUtils.js": {},
+    "https://esm.sh/v135/openai@4.53.0/denonext/lib/AbstractChatCompletionRunner.js": {}
   }
 }

@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(openai@4.53.0/resources/images) denonext production */
+import{APIResource as o}from"/v135/openai@4.53.0/denonext/resource.js";import*as i from"/v135/openai@4.53.0/denonext/core.js";var r=class extends o{createVariation(t,e){return this._client.post("/images/variations",i.multipartFormRequestOptions({body:t,...e}))}edit(t,e){return this._client.post("/images/edits",i.multipartFormRequestOptions({body:t,...e}))}generate(t,e){return this._client.post("/images/generations",{body:t,...e})}};r||(r={});export{r as Images};
+//# sourceMappingURL=images.js.map
