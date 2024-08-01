@@ -1,11 +1,16 @@
 import { React } from "deps.ts";
-import { TooltipMenu, TooltipPosition } from "packages/bfDs/Tooltip.tsx";
+import {
+  TooltipJustification,
+  TooltipMenu,
+  TooltipPosition,
+} from "packages/bfDs/Tooltip.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 const { useEffect, useState } = React;
 
 type Props = {
   disabled?: boolean;
   position?: TooltipPosition;
+  justification?: TooltipJustification;
   // Options are a map of option name to value
   // e.g. { "Option 1": "option1", "Option 2": "option2" }
   options: Record<string, string>;
@@ -24,6 +29,7 @@ export function DropdownSelector(
     value,
     placeholder,
     position = "bottom",
+    justification = "end",
     showSpinner,
     testId,
   }: Props,
@@ -58,7 +64,7 @@ export function DropdownSelector(
       text={menuLabel}
       tooltipMenuDropdown={menu}
       tooltipPosition={position}
-      tooltipJustification="end"
+      tooltipJustification={justification}
       showSpinner={showSpinner}
       testId={testIdValue}
     />
