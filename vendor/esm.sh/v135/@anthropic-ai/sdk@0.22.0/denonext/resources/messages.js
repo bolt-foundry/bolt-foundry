@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(@anthropic-ai/sdk@0.22.0/resources/messages) denonext production */
+import{APIResource as a}from"/v135/@anthropic-ai/sdk@0.22.0/denonext/resource.js";import{MessageStream as m}from"/v135/@anthropic-ai/sdk@0.22.0/denonext/lib/MessageStream.js";import{MessageStream as f}from"/v135/@anthropic-ai/sdk@0.22.0/denonext/lib/MessageStream.js";var t=class extends a{create(e,s){return this._client.post("/v1/messages",{body:e,timeout:6e5,...s,stream:e.stream??!1})}stream(e,s){return m.createMessage(this,e,s)}};t||(t={});export{f as MessageStream,t as Messages};
+//# sourceMappingURL=messages.js.map

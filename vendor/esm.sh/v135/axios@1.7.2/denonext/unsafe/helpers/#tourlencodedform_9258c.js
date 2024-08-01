@@ -1,0 +1,4 @@
+/* esm.sh - esbuild bundle(axios@1.7.2/unsafe/helpers/toURLEncodedForm) denonext production */
+import a from"/v135/axios@1.7.2/denonext/unsafe/utils.js";import n from"/v135/axios@1.7.2/denonext/unsafe/helpers/toFormData.js";import r from"/v135/axios@1.7.2/denonext/unsafe/platform.js";function f(o,i){return n(o,new r.classes.URLSearchParams,Object.assign({visitor:function(t,s,m,e){return r.isNode&&a.isBuffer(t)?(this.append(s,t.toString("base64")),!1):e.defaultVisitor.apply(this,arguments)}},i))}export{f as default};
+
+import "https://deno.land/x/xhr@0.3.0/mod.ts";//# sourceMappingURL=toURLEncodedForm.js.map

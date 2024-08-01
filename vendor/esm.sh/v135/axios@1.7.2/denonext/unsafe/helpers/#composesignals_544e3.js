@@ -1,0 +1,4 @@
+/* esm.sh - esbuild bundle(axios@1.7.2/unsafe/helpers/composeSignals) denonext production */
+import m from"/v135/axios@1.7.2/denonext/unsafe/cancel/CanceledError.js";import s from"/v135/axios@1.7.2/denonext/unsafe/core/AxiosError.js";var E=(t,c)=>{let u=new AbortController,i,n=function(e){if(!i){i=!0,b();let o=e instanceof Error?e:this.reason;u.abort(o instanceof s?o:new m(o instanceof Error?o.message:o))}},r=c&&setTimeout(()=>{n(new s(`timeout ${c} of ms exceeded`,s.ETIMEDOUT))},c),b=()=>{t&&(r&&clearTimeout(r),r=null,t.forEach(e=>{e&&(e.removeEventListener?e.removeEventListener("abort",n):e.unsubscribe(n))}),t=null)};t.forEach(e=>e&&e.addEventListener&&e.addEventListener("abort",n));let{signal:f}=u;return f.unsubscribe=b,[f,()=>{r&&clearTimeout(r),r=null}]},d=E;export{d as default};
+
+import "https://deno.land/x/xhr@0.3.0/mod.ts";//# sourceMappingURL=composeSignals.js.map

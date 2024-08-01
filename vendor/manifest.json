@@ -1114,6 +1114,133 @@
     "https://esm.sh/v135/openai@4.53.0/denonext/lib/RunnableFunction.js": {},
     "https://esm.sh/v135/openai@4.53.0/denonext/lib/Util.js": {},
     "https://esm.sh/v135/openai@4.53.0/denonext/lib/chatCompletionUtils.js": {},
-    "https://esm.sh/v135/openai@4.53.0/denonext/lib/AbstractChatCompletionRunner.js": {}
+    "https://esm.sh/v135/openai@4.53.0/denonext/lib/AbstractChatCompletionRunner.js": {},
+    "https://esm.sh/langchain@0.0.92/callbacks": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/langchain@0.0.92/callbacks.d.ts"
+      }
+    },
+    "https://esm.sh/langchain@0.0.92/text_splitter": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/langchain@0.0.92/text_splitter.d.ts"
+      }
+    },
+    "https://esm.sh/langchain@0.0.92/prompts": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/langchain@0.0.92/prompts.d.ts"
+      }
+    },
+    "https://esm.sh/langchain@0.0.92/output_parsers": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/langchain@0.0.92/output_parsers.d.ts"
+      }
+    },
+    "https://esm.sh/langchain@0.0.92": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/langchain@0.0.92/index.d.ts"
+      }
+    },
+    "https://esm.sh/langchain@0.0.92/llms/openai": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/langchain@0.0.92/llms/openai.d.ts"
+      }
+    },
+    "https://esm.sh/langchain@0.0.92/chains": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/langchain@0.0.92/chains.d.ts"
+      }
+    },
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/formDataToJSON.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/cancel/CancelToken.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/toFormData.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/isAxiosError.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/HttpStatusCode.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/cancel/CanceledError.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/core/Axios.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/cancel/isCancel.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/core/AxiosHeaders.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/core/AxiosError.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/core/mergeConfig.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/core/InterceptorManager.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/core/buildFullPath.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/buildURL.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/core/dispatchRequest.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/toURLEncodedForm.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/platform/node/classes/FormData.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/parseHeaders.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/core/transformData.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/combineURLs.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/isAbsoluteURL.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/isAxiosError.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/formDataToStream.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/AxiosURLSearchParams.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/ZlibHeaderTransformStream.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/progressEventReducer.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/AxiosTransformStream.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/resolveConfig.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/readBlob.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/composeSignals.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/trackStream.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/cancel/CancelToken.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/cancel/isCancel.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/core/Axios.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/cancel/CanceledError.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/core/AxiosError.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/core/mergeConfig.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/HttpStatusCode.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/formDataToJSON.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/toFormData.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/core/AxiosHeaders.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/parseProtocol.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/fromDataURI.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/core/InterceptorManager.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/toURLEncodedForm.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/core/dispatchRequest.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/core/buildFullPath.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/platform/node/classes/URLSearchParams.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/buildURL.js": {},
+    "https://esm.sh/v135/axios@1.7.2/denonext/unsafe/helpers/isURLSameOrigin.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/platform/node/classes/FormData.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/parseHeaders.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/core/transformData.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/combineURLs.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/AxiosURLSearchParams.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/isAbsoluteURL.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/parseProtocol.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/formDataToStream.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/AxiosTransformStream.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/ZlibHeaderTransformStream.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/fromDataURI.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/isURLSameOrigin.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/helpers/readBlob.js": {},
+    "https://esm.sh/v135/axios@1.6.2/denonext/unsafe/platform/node/classes/URLSearchParams.js": {},
+    "https://esm.sh/@langchain/anthropic": {
+      "headers": {
+        "location": "https://esm.sh/@langchain/anthropic@0.2.11"
+      }
+    },
+    "https://esm.sh/@langchain/anthropic@0.2.11": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/@langchain/anthropic@0.2.11/index.d.ts"
+      }
+    },
+    "https://esm.sh/v135/@anthropic-ai/sdk@0.22.0/denonext/lib/MessageStream.js": {},
+    "https://esm.sh/v135/@anthropic-ai/sdk@0.22.0/denonext/_shims/MultipartBody.js": {},
+    "https://esm.sh/v135/@anthropic-ai/sdk@0.22.0/_shims/MultipartBody.d.ts": {},
+    "https://esm.sh/v135/@anthropic-ai/sdk@0.22.0/lib/MessageStream.d.ts": {},
+    "https://esm.sh/v135/zod@3.23.8/lib/helpers/typeAliases.d.ts": {},
+    "https://esm.sh/v135/zod@3.23.8/lib/helpers/parseUtil.d.ts": {},
+    "https://esm.sh/v135/zod@3.23.8/lib/ZodError.d.ts": {},
+    "https://esm.sh/v135/zod@3.23.8/lib/helpers/partialUtil.d.ts": {},
+    "https://esm.sh/v135/zod@3.23.8/lib/helpers/enumUtil.d.ts": {},
+    "https://esm.sh/v135/zod@3.23.8/lib/helpers/errorUtil.d.ts": {}
   }
 }

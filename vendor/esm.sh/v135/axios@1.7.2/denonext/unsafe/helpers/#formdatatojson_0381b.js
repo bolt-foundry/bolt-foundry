@@ -1,0 +1,4 @@
+/* esm.sh - esbuild bundle(axios@1.7.2/unsafe/helpers/formDataToJSON) denonext production */
+import u from"/v135/axios@1.7.2/denonext/unsafe/utils.js";function f(e){return u.matchAll(/\w+|\[(\w*)]/g,e).map(o=>o[0]==="[]"?"":o[1]||o[0])}function y(e){let o={},r=Object.keys(e),i,n=r.length,t;for(i=0;i<n;i++)t=r[i],o[t]=e[t];return o}function b(e){function o(r,i,n,t){let s=r[t++];if(s==="__proto__")return!0;let c=Number.isFinite(+s),l=t>=r.length;return s=!s&&u.isArray(n)?n.length:s,l?(u.hasOwnProp(n,s)?n[s]=[n[s],i]:n[s]=i,!c):((!n[s]||!u.isObject(n[s]))&&(n[s]=[]),o(r,i,n[s],t)&&u.isArray(n[s])&&(n[s]=y(n[s])),!c)}if(u.isFormData(e)&&u.isFunction(e.entries)){let r={};return u.forEachEntry(e,(i,n)=>{o(f(i),n,r,0)}),r}return null}var p=b;export{p as default};
+
+import "https://deno.land/x/xhr@0.3.0/mod.ts";//# sourceMappingURL=formDataToJSON.js.map

@@ -1,0 +1,5 @@
+/* esm.sh - esbuild bundle(axios@1.6.2/unsafe/helpers/fromDataURI) denonext production */
+import { Buffer as __Buffer$ } from "node:buffer";
+import o from"/v135/axios@1.6.2/denonext/unsafe/core/AxiosError.js";import i from"/v135/axios@1.6.2/denonext/unsafe/helpers/parseProtocol.js";import l from"/v135/axios@1.6.2/denonext/unsafe/platform.js";var a=/^(?:([^;]+);)?(?:[^;]+;)?(base64|),([\s\S]*)$/;function d(t,n,f){let s=f&&f.Blob||l.classes.Blob,e=i(t);if(n===void 0&&s&&(n=!0),e==="data"){t=e.length?t.slice(e.length+1):t;let r=a.exec(t);if(!r)throw new o("Invalid URL",o.ERR_INVALID_URL);let R=r[1],m=r[2],p=r[3],c=__Buffer$.from(decodeURIComponent(p),m?"base64":"utf8");if(n){if(!s)throw new o("Blob is not supported",o.ERR_NOT_SUPPORT);return new s([c],{type:R})}return c}throw new o("Unsupported protocol "+e,o.ERR_NOT_SUPPORT)}export{d as default};
+
+import "https://deno.land/x/xhr@0.3.0/mod.ts";//# sourceMappingURL=fromDataURI.js.map

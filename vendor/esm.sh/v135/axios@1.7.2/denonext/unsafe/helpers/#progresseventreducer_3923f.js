@@ -1,0 +1,4 @@
+/* esm.sh - esbuild bundle(axios@1.7.2/unsafe/helpers/progressEventReducer) denonext production */
+import m from"/v135/axios@1.7.2/denonext/unsafe/helpers/speedometer.js";import f from"/v135/axios@1.7.2/denonext/unsafe/helpers/throttle.js";var b=(a,l,u=3)=>{let d=0,i=m(50,250);return f(o=>{let t=o.loaded,e=o.lengthComputable?o.total:void 0,r=t-d,n=i(r),p=t<=e;d=t;let s={loaded:t,total:e,progress:e?t/e:void 0,bytes:r,rate:n||void 0,estimated:n&&e&&p?(e-t)/n:void 0,event:o,lengthComputable:e!=null};s[l?"download":"upload"]=!0,a(s)},u)};export{b as default};
+
+import "https://deno.land/x/xhr@0.3.0/mod.ts";//# sourceMappingURL=progressEventReducer.js.map

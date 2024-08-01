@@ -1,0 +1,4 @@
+/* esm.sh - esbuild bundle(axios@1.7.2/unsafe/helpers/trackStream) denonext production */
+var u=function*(t,r){let n=t.byteLength;if(!r||n<r){yield t;return}let e=0,a;for(;e<n;)a=e+r,yield t.slice(e,a),e=a},f=async function*(t,r,n){for await(let e of t)yield*u(ArrayBuffer.isView(e)?e:await n(String(e)),r)},d=(t,r,n,e,a)=>{let i=f(t,r,a),y=0;return new ReadableStream({type:"bytes",async pull(l){let{done:o,value:s}=await i.next();if(o){l.close(),e();return}let c=s.byteLength;n&&n(y+=c),l.enqueue(new Uint8Array(s))},cancel(l){return e(l),i.return()}},{highWaterMark:2})};export{f as readBytes,u as streamChunk,d as trackStream};
+
+import "https://deno.land/x/xhr@0.3.0/mod.ts";//# sourceMappingURL=trackStream.js.map
