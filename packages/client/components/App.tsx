@@ -8,12 +8,12 @@ import {
 } from "packages/client/contexts/RouterContext.tsx";
 
 import { LoginPage } from "packages/client/pages/LoginPage.tsx";
-import { Marketing } from "packages/client/pages/MarketingPage.tsx";
 import { Demo } from "packages/bfDs/Demo.tsx";
 import { ContactUs } from "packages/client/components/ContactUs.tsx";
+import { ComingSoonPage } from "packages/client/pages/ComingSoonPage.tsx";
 
 export const routes = new Map([
-  ["/", { Component: Marketing, allowLoggedOut: true }],
+  ["/", { Component: ComingSoonPage, allowLoggedOut: true }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
   ["/ui", { Component: Demo, allowLoggedOut: true }],
   ["/contact-us", { Component: ContactUs, allowLoggedOut: true }],
