@@ -1,13 +1,13 @@
-import * as React from "react";
-import * as ViewContexts from "./react/contexts/index.js";
-import { makeEmptyStandardSources } from "./react/contexts/CompositionDataContext.js";
+import * as React from 'react';
+import * as ViewContexts from './react/contexts/index.js';
+import { makeEmptyStandardSources } from './react/contexts/CompositionDataContext.js';
 
 export function makeVCSRootContainer(
   ContentRoot,
   rootContainerRef,
   displayOpts,
   paramValues,
-  errorCb,
+  errorCb
 ) {
   const {
     viewportSize = { w: 1280, h: 720 },
@@ -48,17 +48,37 @@ export function makeVCSRootContainer(
       };
 
       this.pendingState = null;
+
+      // keys are message keys;
+      // values are an object with sourceId + videoTime when message was received.
+      // see note in addStandardSourceMessage() for details of how this is used.
+      this.standardSourceMsgTimeAdded = new Map();
+
+      // ensure we don't flood too many error messages
+      this.errorMsgCount = 0;
+      this.maxErrorMsgsToPrint = 100;
     }
 
-    static getDerivedStateFromError(error) {
+    logError(msg) {
+      this.errorMsgCount++;
+      if (this.errorMsgCount > this.maxErrorMsgsToPrint) return;
+
+      if (this.errorMsgCount === this.maxErrorMsgsToPrint) {
+        msg =
+          '** Reached limit of error messages allowed from VCS RootContainer, no more will be printed from this instance after this.\n' +
+          msg;
+      }
+
+      console.error(msg);
+    }
+
+    static getDerivedStateFromError(_error) {
       return { hasError: true };
     }
 
     componentDidCatch(error, info) {
-      console.error(
-        "\n** An error occurred in a React component:\n  %s\n",
-        error.message,
-        info.componentStack,
+      this.logError(
+        `\n** An error occurred in a React component:\n  ${error.message}${info.componentStack}`
       );
       if (errorCb) {
         errorCb(error, info);
@@ -66,6 +86,9 @@ export function makeVCSRootContainer(
     }
 
     setVideoTime(t, playbackState) {
+      // this call can modify this.pendingState so it must come first
+      this.pruneStandardSourcesAtTime(t);
+
       const newT = {
         ...this.state.time,
         currentTime: t,
@@ -76,27 +99,6 @@ export function makeVCSRootContainer(
       this.pendingState = null;
 
       newState.time = newT;
-
-      // trim the standard sources arrays of latest messages.
-      // we look at 'this.state' here instead of 'newState' because
-      // trimming should be after a delay when components have consumed the data.
-      // visual components can always internally retain more messages
-      // (similar to the Toast queue in baseline composition).
-      const maxItems = 3;
-      for (
-        const key of Object.keys(
-          this.state.compositionData.standardSources,
-        )
-      ) {
-        const arr = this.state.compositionData.standardSources[key].latest;
-        if (arr.length > maxItems) {
-          if (!newState.compositionData) {
-            newState.compositionData = { ...this.state.compositionData };
-          }
-          const newArr = arr.slice(arr.length - maxItems);
-          newState.compositionData.standardSources[key].latest = newArr;
-        }
-      }
 
       this.setState(newState);
     }
@@ -139,11 +141,11 @@ export function makeVCSRootContainer(
       obj[id] = value;
 
       // if the param is of format "group.subid", make a convenience object for the group
-      const idx = id.indexOf(".");
+      const idx = id.indexOf('.');
       if (idx > 0 && idx < id.length - 1) {
         const group = id.substr(0, idx);
         const subid = id.substr(idx + 1);
-        if (typeof obj[group] !== "object") {
+        if (typeof obj[group] !== 'object') {
           obj[group] = {};
         }
         obj[group][subid] = value;
@@ -184,6 +186,13 @@ export function makeVCSRootContainer(
     }
 
     addStandardSourceMessage(id, data) {
+      if (!data?.key) {
+        this.logError(
+          `** Standard source message must contain 'key' (source id ${id})`
+        );
+        return;
+      }
+
       if (!this.pendingState) this.pendingState = {};
 
       const compositionData = {
@@ -194,12 +203,76 @@ export function makeVCSRootContainer(
 
       const srcObj = compositionData.standardSources[id];
       if (!srcObj) {
-        console.error("** Unknown id '%s' for addStandardSourceMessage", id);
+        this.logError(`** Unknown id '${id}' for addStandardSourceMessage`);
         return;
       }
-      srcObj.latest.push(data);
+
+      srcObj.latest = [...srcObj.latest, data];
 
       this.pendingState.compositionData = compositionData;
+
+      // we need to track the ages of the messages in the 'latest' arrays for each standard source.
+      // these arrays are small FIFO queues, and the consumers on the composition side are expected
+      // to pick up changes within a reasonable time - which varies depending on the source type.
+      // e.g. for emoji reactions, we don't keep them past a second because there's no point
+      // in rendering emoji reactions that are older than that.
+      this.standardSourceMsgTimeAdded.set(data.key, {
+        sourceId: id,
+        t: this.state.time.currentTime,
+      });
+    }
+
+    pruneStandardSourcesAtTime(currentT) {
+      let compositionData;
+
+      for (const [msgKey, { sourceId, t }] of this.standardSourceMsgTimeAdded) {
+        const age = currentT - t;
+
+        // emoji reactions are very short-lived, so they should be kept in the queue
+        // for only a second. we can keep other message types around for longer.
+        // the expectation is that the rendering component on the composition side
+        // will maintain its own state based on data it read from these 'latest' arrays.
+        const isEmojiReaction = sourceId === 'emojiReactions';
+        const maxAge = isEmojiReaction ? 1 : 60;
+
+        if (age > maxAge) {
+          if (!this.pendingState) {
+            this.pendingState = {};
+          }
+          if (!compositionData) {
+            compositionData = {
+              ...(this.pendingState.compositionData
+                ? this.pendingState.compositionData
+                : this.state.compositionData),
+            };
+          }
+
+          const srcObj = compositionData.standardSources[sourceId];
+          if (!srcObj?.latest) {
+            this.logError(
+              `** Unknown id '${sourceId}' for addStandardSourceMessage`
+            );
+            continue;
+          }
+
+          // for the other arrays like 'chatMessages', we want to leave some of the latest messages
+          // always available, so check if we're actually going to prune this
+          const minCountToKeep = isEmojiReaction ? 0 : 20;
+
+          if (srcObj.latest.length > minCountToKeep) {
+            this.standardSourceMsgTimeAdded.delete(msgKey);
+
+            const idx = srcObj.latest.findIndex((it) => it.key === msgKey);
+            if (idx < 0) {
+              this.logError(
+                `** No item with key '${msgKey}' in standard source ${sourceId}`
+              );
+              continue;
+            }
+            srcObj.latest.splice(idx, 1);
+          }
+        }
+      }
     }
 
     render() {
@@ -230,13 +303,13 @@ export function makeVCSRootContainer(
                 value: this.state.room,
               },
               React.createElement(
-                "root",
+                'root',
                 null,
-                React.createElement(ContentRoot, null),
-              ),
-            ),
-          ),
-        ),
+                React.createElement(ContentRoot, null)
+              )
+            )
+          )
+        )
       );
     }
   }

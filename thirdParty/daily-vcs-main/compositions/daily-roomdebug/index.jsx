@@ -1,15 +1,15 @@
-import * as React from "react";
-import { Box } from "#vcs-react/components";
-import { RoomContext } from "#vcs-react/contexts";
-import { debug } from "#vcs-stdlib/components";
+import * as React from 'react';
+import { Box } from '#vcs-react/components';
+import { RoomContext } from '#vcs-react/contexts';
+import { debug } from '#vcs-stdlib/components';
 
-import { body, header } from "./layouts.js";
-import { headerTextColor, textSize_gu } from "./constants.js";
+import { header, body } from './layouts.js';
+import { headerTextColor, textSize_gu } from './constants.js';
 
 export const compositionInterface = {
   displayMeta: {
-    name: "Room Debug",
-    description: "Prints out room metadata",
+    name: 'Room Debug',
+    description: 'Prints out room metadata',
   },
   params: [],
 };

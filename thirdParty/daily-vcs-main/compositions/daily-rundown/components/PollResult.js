@@ -1,7 +1,7 @@
-import * as React from "react";
-import { Box, Image, Text } from "#vcs-react/components";
-import { useVideoTime, useViewportSize } from "#vcs-react/hooks";
-import * as layouts from "../layouts.js";
+import * as React from 'react';
+import { Box, Image, Text } from '#vcs-react/components';
+import { useVideoTime, useViewportSize } from '#vcs-react/hooks';
+import * as layouts from '../layouts.js';
 
 export default function PollResult({
   question,
@@ -11,24 +11,24 @@ export default function PollResult({
   titleStyle = {},
 }) {
   const bgStyle = {
-    fillColor: "rgb(120, 0, 0)",
+    fillColor: 'rgb(120, 0, 0)',
   };
   const yesStyle = {
-    fillColor: "rgb(50, 150, 70)",
+    fillColor: 'rgb(50, 150, 70)',
   };
   const questionStyle = {
     ...titleStyle,
-    textColor: "white",
-    textAlign: "center",
+    textColor: 'white',
+    textAlign: 'center',
     fontSize_gu: titleStyle.fontSize_gu ? titleStyle.fontSize_gu * 0.75 : 1.3,
   };
   const voteInfoStyle = {
     ...titleStyle,
-    textColor: "white",
-    textAlign: "center",
+    textColor: 'white',
+    textAlign: 'center',
     fontSize_gu: 1.7,
     strokeWidth_px: 2,
-    strokeColor: "rgba(0, 0, 0, 0.6)",
+    strokeColor: 'rgba(0, 0, 0, 0.6)',
   };
 
   let resultGraphic;

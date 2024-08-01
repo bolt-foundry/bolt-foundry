@@ -1,11 +1,11 @@
-import * as React from "react";
-import { Box, Video } from "#vcs-react/components";
-import * as layouts from "../layouts.js";
-import ParticipantLabel from "./ParticipantLabel.js";
+import * as React from 'react';
+import { Box, Video } from '#vcs-react/components';
+import * as layouts from '../layouts.js';
+import ParticipantLabel from './ParticipantLabel.js';
 
 export default function HostGuestVideo({
   activeIds = [],
-  guestNameOverride = "",
+  guestNameOverride = '',
   participantLabelStyle,
 }) {
   if (activeIds.length < 1) {
@@ -66,8 +66,7 @@ export default function HostGuestVideo({
         src={hostId}
         key="host"
         layout={[layouts.splitHorizontal, { index: 0, pos: hostSplitPos }]}
-      >
-      </Video>
+      ></Video>
       <Box
         key="guests"
         layout={[layouts.splitHorizontal, { index: 1, pos: hostSplitPos }]}

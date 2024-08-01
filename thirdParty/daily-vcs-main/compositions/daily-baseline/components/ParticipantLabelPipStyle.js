@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Box, Text } from "#vcs-react/components";
-import * as layoutFuncs from "../layouts.js";
+import * as React from 'react';
+import { Box, Text } from '#vcs-react/components';
+import * as layoutFuncs from '../layouts.js';
 
 export function ParticipantLabelPipStyle({
   label: labelStr,
@@ -23,8 +23,14 @@ export function ParticipantLabelPipStyle({
   };
 
   const label = (
-    <Text style={labelStyle} layout={[layoutFuncs.offset, offsets]}>
-      {labelStr || ""}
+    <Text
+      style={labelStyle}
+      layout={[
+        layoutFuncs.pipStyleLabel,
+        { offsets, textH: labelStyle.fontSize_px },
+      ]}
+    >
+      {labelStr || ''}
     </Text>
   );
 

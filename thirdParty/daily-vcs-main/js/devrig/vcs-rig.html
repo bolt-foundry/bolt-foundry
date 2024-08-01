@@ -1,7 +1,8 @@
-<html>
-  <head>
-    <title>Daily VCS Simulator</title>
-    <style>
+<!DOCTYPE html>
+<html><head>
+  <meta charset="utf-8">
+  <title>Daily VCS Simulator</title>
+  <style>
 
 body {
   --highlight-color: #1BEBB9;
@@ -31,7 +32,8 @@ table {
 
 #mainContainer {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: row;
 }
@@ -39,10 +41,11 @@ table {
 #leftSplit {
   width: 64%;
   min-width: 960px;
-  height: 100%;
+  height: 100vh;
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 #rightSplit {
@@ -154,12 +157,23 @@ table {
 }
 
 #outputWrapper {
-  flex: none;
   background-color: black;
   overflow: hidden;
-  width: 640px;
+  width: 100%;
   height: 360px;
+  flex: 0 0 auto;
+  position: relative;
 }
+#outputContainer {
+  position: relative;
+  width: 640px;
+}
+#controlsWrapper {
+  flex: 1 0 0;
+  overflow-y: scroll;
+  position: relative;
+}
+
 #deco {
   flex: none;
   margin-top: 1px;
@@ -261,7 +275,7 @@ table {
 #controls .standardSource .unavailableInfo {
   color: var(--grey-text-color);
 }
-#controls .standardSource button {
+#controls button.action {
   background: var(--bg-color-lighter2);
   color: white;
   border: none;
@@ -273,16 +287,18 @@ table {
   display: none;
 }
 #controls .compInterface {
-  margin-top: 1.5em;
+  margin-top: 2.0em;
 }
-#controls .compInterface .paramsJumpMenu {
-  position: sticky;
-  top: -12px;
+.paramsJumpMenu {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
   text-align: right;
   font-size: 11px;
   z-index: 999;
+  height: 20px;
 }
-#controls .compInterface .paramsJumpMenu select {
+.paramsJumpMenu select {
   font-size: 11px;
   background-color: var(--bg-color);
   border: 1px solid var(--control-outline-color);
@@ -292,7 +308,7 @@ table {
 }
 
 #controls .compInterface #paramGroup_ {
-  margin-top: -2.5em;
+  margin-top: -0.5em;
 }
 
 #controls .compInterface .paramsContainer {
@@ -310,7 +326,7 @@ table {
   position: relative;
 }
 #controls .compInterface .params > div.tall {
-  height: 60px;
+  height: 78px;
 }
 #controls .compInterface .params > div.status-experimental {
   font-style: italic;
@@ -357,7 +373,7 @@ table {
 #controls .compInterface .params textarea {
   display: inline-block;
   width: calc(100% - var(--label-width-with-margin));
-  height: 50px;
+  height: 70px;
 }
 #controls .compInterface .params select {
   display: inline-block;
@@ -392,6 +408,20 @@ table {
 }
 #controls .roomInput .audioParticipantInputContainer {
   margin-left: 1em;
+}
+#controls .roomInput .audioParticipantControls {
+  position: relative;
+  top: -3px;
+  padding-left: 8px;
+  font-size: 0.85em;
+  height: 20px;
+}
+#controls .roomInput .audioParticipantControls button {
+  font-size: 1em;
+}
+#controls .roomInput .audioParticipantControls .audioParticipantInfo {
+  margin-left: 1em;
+  display: inline-block;
 }
 #controls .roomInput input {
   width: 4em;
@@ -505,70 +535,83 @@ table {
       <div id="leftSplit">
         <div id="outputWrapper">
           <div id="outputContainer"></div>
-        </div>
-        <div id="deco">
-          <div id="compInfo">
-            <div class="name"></div>
-            <div class="description"></div>
-          </div>
-          <div id="playbackControl">
-            <button>Stop</button>
-          </div>
-          <div id="compOutput">
-            <span>Output:</span>
-            <span>
-              <button class="selected" data-outputid="landscape">16:9</button><button data-outputid="square">Square</button><button data-outputid="portrait">9:16</button>
-            </span>
+          <div class="paramsJumpMenu">
+            <label>Jump to:</label>
+            <select>
+            </select>
           </div>
         </div>
-        <div id="controls">
-          <div class="vc">
-            <h3>Media input</h3>
-            <div class="mediaInput">
-              <div class="labels">
-                <div>Active video inputs</div>
-                <div>Make dominant</div>
-                <div>Paused</div>
-                <div>Toggle screenshare</div>
-                <div>Randomize name</div>
+        <div id="controlsWrapper">
+          <div>
+            <div id="deco">
+              <div id="compInfo">
+                <div class="name"></div>
+                <div class="description"></div>
               </div>
-              <div class="buttonContainer"></div>
-            </div>
-            <div class="roomInput">
-              <div>
-                <div>Audio-only demo participants</div>
+              <div id="playbackControl">
+                <button>Stop</button>
               </div>
-              <div class="audioParticipantInputContainer">
-                <input type="number" value="0" step="1" />
+              <div id="compOutput">
+                <span>Output:</span>
+                <span>
+                  <button class="selected" data-outputid="landscape">16:9</button><button data-outputid="square">Square</button><button data-outputid="portrait">9:16</button>
+                </span>
               </div>
             </div>
-          </div>
-          <div class="testImage">
-            <h3>Asset images</h3>
-            <div class="testImageControls">
-              <div id="imageDropTarget">Drop an image file here</div>
-              <div id="imageDropAssetName">
-                <label>Asset name for drop:</label>
-                <input type="text" value="overlay.png" />
+            <div id="controls">
+
+              <div class="vc">
+                <h3>Media input</h3>
+                <div class="mediaInput">
+                  <div class="labels">
+                    <div>Active video inputs</div>
+                    <div>Make dominant</div>
+                    <div>Paused</div>
+                    <div>Toggle screenshare</div>
+                    <div>Randomize name</div>
+                  </div>
+                  <div class="buttonContainer"></div>
+                </div>
+                <div class="roomInput">
+                  <div>
+                    <div>Audio-only demo participants</div>
+                  </div>
+                  <div class="audioParticipantInputContainer">
+                    <input type="number" value="0" step="1" />
+                  </div>
+                  <div class="audioParticipantControls">
+                    <button class="action" id="attachScreenshareToAudioOnlyBtn">Attach to screenshare</button>
+                    <button class="action" id="randomizeAudioOnlyDominantBtn">Randomize dominant</button>
+                    <button class="action" id="clearAudioOnlyDominantBtn">Clear</button>
+                    <div class="audioParticipantInfo">
+                    </div>  
+                  </div>
+                </div>
               </div>
-            </div>  
-          </div>
-          <div class="standardSource">
-            <h3>Standard sources</h3>
-            <div class="standardSourceControls">
-              <div class="unavailableInfo">This composition doesn't support any standard sources.</div>
-              <button data-sourceid="chatMessages">Send random chat message</button>
-              <button data-sourceid="transcript">Send random transcript line</button>
-            </div>  
-          </div>
-          <div class="compInterface">
-            <h3>Composition interface</h3>
-            <div class="paramsJumpMenu">
-              <label>Jump to:</label>
-              <select>
-              </select>
-            </div>
-            <div class="paramsContainer">
+              <div class="testImage">
+                <h3>Asset images</h3>
+                <div class="testImageControls">
+                  <div id="imageDropTarget">Drop an image file here</div>
+                  <div id="imageDropAssetName">
+                    <label>Asset name for drop:</label>
+                    <input type="text" value="overlay.png" />
+                  </div>
+                </div>  
+              </div>
+              <div class="standardSource">
+                <h3>Standard sources</h3>
+                <div class="standardSourceControls">
+                  <div class="unavailableInfo">This composition doesn't support any standard sources.</div>
+                  <button class="action" data-sourceid="chatMessages">Send random chat message</button>
+                  <button class="action" data-sourceid="transcript">Send random transcript line</button>
+                  <button class="action" data-sourceid="emojiReactions">Send random emoji reaction</button>
+                </div>  
+              </div>
+              <div class="compInterface">
+                <h3>Composition interface</h3>
+                <div class="paramsContainer">
+                </div>
+              </div>
             </div>
           </div>
         </div>  
@@ -650,10 +693,13 @@ let g_dominantIdx = -1;
 
 let g_audioOnlyDemoPeers = [];
 let g_currentRoomPeers = new Map();
-
-let g_paramValues = {};
+let g_attachScreenshareToAudioOnlyPeer = null;
 
 let g_running = false;
+
+// this state is retained so we can reset the renderer
+let g_paramValues = {};
+let g_standardSources = {};
 
 
 for (let i = 0; i < MAX_VIDEO_INPUTS; i++) {
@@ -761,8 +807,125 @@ function setAudioDemoParticipants(ev) {
       });
     }
   }
+
+  const randomizeAudioOnlyDominantBtn = document.getElementById('randomizeAudioOnlyDominantBtn');
+  const clearAudioOnlyDominantBtn = document.getElementById('clearAudioOnlyDominantBtn');
+  const attachScreenshareToAudioOnlyBtn = document.getElementById('attachScreenshareToAudioOnlyBtn');
+  const audioOnlyBtns = [randomizeAudioOnlyDominantBtn, clearAudioOnlyDominantBtn, attachScreenshareToAudioOnlyBtn];
+  if (newCount > 0) {
+    for (const btn of audioOnlyBtns) {
+      btn.style = 'display: inline;';
+    }
+
+    // an audio peer might previously have had the dominant flag set;
+    // if there's nobody left with the flag, ensure we update the UI
+    const hasDominant = g_audioOnlyDemoPeers.find((p) => p.audio?.dominant) != null;
+    if (!hasDominant) {
+      clearAudioDemoParticipantAsDominant(false);
+    }
+
+    if (!g_audioOnlyDemoPeers.includes(g_attachScreenshareToAudioOnlyPeer)) {
+      clearAudioDemoParticipantScreenshareAttachment();
+    }
+  } else {
+    for (const btn of audioOnlyBtns) {
+      btn.style = 'display: none;';
+    }
+    clearAudioDemoParticipantAsDominant(false);
+    clearAudioDemoParticipantScreenshareAttachment();
+  }
+
   updateRoomPeers();
   sendRoomPeers();
+}
+
+function randomizeAudioDemoParticipantAsDominant() {
+  const n = g_audioOnlyDemoPeers.length;
+  if (n < 1) return;
+
+  const idx = Math.floor(n * Math.random());
+  g_audioOnlyDemoPeers = g_audioOnlyDemoPeers.map((p, i) => {
+    p = {...p};
+    p.audio.dominant = idx === i;
+    return p;
+  });
+
+  console.log("audio peer %d is dominant", idx);
+
+  const info = document.querySelector("#controls .roomInput .audioParticipantControls .audioParticipantInfo");
+  info.innerText = `Dominant audio-only participant: ${idx + 1}`;
+
+  const clearAudioOnlyDominantBtn = document.getElementById('clearAudioOnlyDominantBtn');
+  clearAudioOnlyDominantBtn.style = 'display: inline;';
+
+  if (g_dominantIdx >= 0) {
+    // clear out the dominant flag for video inputs
+    g_dominantIdx = -1;
+    sendActiveVideoInputSlots();
+    createVideoInputsUI();
+  }
+
+  updateRoomPeers();
+  sendRoomPeers();
+}
+
+function clearAudioDemoParticipantAsDominant(doUpdate = true) {
+  g_audioOnlyDemoPeers = g_audioOnlyDemoPeers.map((p, i) => {
+    p = {...p};
+    p.audio.dominant = false;
+    return p;
+  });
+
+  const info = document.querySelector("#controls .roomInput .audioParticipantControls .audioParticipantInfo");
+  info.innerText = "";
+
+  const clearAudioOnlyDominantBtn = document.getElementById('clearAudioOnlyDominantBtn');
+  clearAudioOnlyDominantBtn.style = 'display: none;';
+
+  if (doUpdate) {
+    updateRoomPeers();
+    sendRoomPeers();
+  }
+}
+
+function attachScreenshareToAudioDemoParticipant() {
+  if (g_attachScreenshareToAudioOnlyPeer) {
+    // perform clear action
+    clearAudioDemoParticipantScreenshareAttachment(true);
+    return; // --
+  }
+
+  if (g_audioOnlyDemoPeers.length < 1) return;
+  const peer = g_audioOnlyDemoPeers[0];
+
+  // find a screenshare to associate with the audio-only peer
+  let ssobj = g_activeVideoInputSlots.find((slot) => slot.active && slot.type === 'screenshare');
+  if (!ssobj) {
+    alert("For this function, there needs to be a screenshare present.\n\nMake one of the video inputs a screenshare and try again.")
+    return;
+  }
+
+  g_attachScreenshareToAudioOnlyPeer = peer;
+
+  const attachScreenshareToAudioOnlyBtn = document.getElementById('attachScreenshareToAudioOnlyBtn');
+  attachScreenshareToAudioOnlyBtn.innerText = 'Detach screenshare';
+
+  updateRoomPeers();
+  sendActiveVideoInputSlots();
+}
+
+function clearAudioDemoParticipantScreenshareAttachment(doUpdate = true) {
+  if (g_attachScreenshareToAudioOnlyPeer) {
+    g_attachScreenshareToAudioOnlyPeer.screenshareVideo = {};
+    g_attachScreenshareToAudioOnlyPeer = null;
+  }
+  const attachScreenshareToAudioOnlyBtn = document.getElementById('attachScreenshareToAudioOnlyBtn');
+  attachScreenshareToAudioOnlyBtn.innerText = 'Attach to screenshare';
+
+  if (doUpdate) {
+    updateRoomPeers();
+    sendActiveVideoInputSlots();
+  }
 }
 
 function randomizeParticipantName(ev) {
@@ -817,6 +980,8 @@ function dominantToggled(ev) {
 
   g_dominantIdx = (idx === g_dominantIdx) ? -1 : idx;
 
+  clearAudioDemoParticipantAsDominant(false);
+
   updateRoomPeers();
 
   sendActiveVideoInputSlots();
@@ -844,15 +1009,19 @@ function makeCurrentImageSources() {
 
   // for any screenshares, replace the default source with a screenshare input
   const ssImageEls = [
-    document.getElementById('screenshare_standin'),
-    document.getElementById('screenshare_standin2')
+    { element: document.getElementById('screenshare_standin'),
+      frameSize: {w: 1600, h: 900}
+    },
+    { element: document.getElementById('screenshare_standin2'),
+      frameSize: {w: 1600, h: 1000}
+    },
   ];
   for (let i = 0; i < MAX_VIDEO_INPUTS; i++) {
     if (g_activeVideoInputSlots[i].type !== 'screenshare') continue;
 
     const obj = {
       id: getVideoInputIdForSlotIndex(i, true),
-      element: ssImageEls[i % 2]
+      ...ssImageEls[i % 2],
     };
     sources.videoSlots.splice(i, 1, obj);
   }
@@ -868,6 +1037,10 @@ function screenshareToggled(ev) {
 
   setActiveVideoInput(idx, g_activeVideoInputSlots[idx].active, g_activeVideoInputSlots[idx].paused, s);
 
+  if (g_attachScreenshareToAudioOnlyPeer) {
+    updateRoomPeers();
+  }
+
   sendActiveVideoInputSlots();
 
   sendUpdateImageSources(makeCurrentImageSources());
@@ -877,10 +1050,25 @@ function screenshareToggled(ev) {
 
 function sendRandomChatMessage() {
   const key = basicRandomKey();
+
+  const strings = [
+    "Lorem ipsum dolor sit amet",
+    "Consectetuer adipiscing elit",
+    "Sed posuere interdum sem",
+    "Quisque ligula eros ullamcorper quis",
+    "Lacinia quis facilisis sed sapien",
+    "Example chat",
+    "Example",
+  ];
+  function lowercaseExample() {
+    const s = strings[Math.floor(Math.random() * strings.length)];
+    return s.toLowerCase();
+  }
+
   const data = {
     key,
     senderDisplayName: 'Person' + basicRandomId(),
-    text: `Chat ipsum ${basicRandomId()} dolor sit amet ${basicRandomId()}`
+    text: `${strings[Math.floor(Math.random() * strings.length)]} ${basicRandomId()} ${lowercaseExample()}.`
   };
   sendStandardSource('chatMessages', data);
 }
@@ -899,9 +1087,22 @@ function sendRandomTranscriptLine() {
   sendStandardSource('transcript', data);
 }
 
+function sendRandomEmojiReaction() {
+  const key = basicRandomKey();
+  const emojis = ['😍', '🤠', '🔥', '🎈', '💖', '👍'];
+  const emo = emojis[Math.floor(Math.random() * emojis.length)];
+
+  const data = {
+    key,
+    senderDisplayName: 'Person' + basicRandomId(),
+    text: emo
+  };
+  sendStandardSource('emojiReactions', data);
+}
+
 function createStandardSourcesUI(compInterface) {
   // these are the sources we support in the simulator
-  const knownSources = ['chatMessages', 'transcript'];
+  const knownSources = ['chatMessages', 'transcript', 'emojiReactions'];
 
   const enabledSources = [];
   if (Array.isArray(compInterface.standardSources)) {
@@ -923,6 +1124,9 @@ function createStandardSourcesUI(compInterface) {
               break;
             case 'transcript':
               sendRandomTranscriptLine();
+              break;
+            case 'emojiReactions':
+              sendRandomEmojiReaction();
               break;
           }
         });
@@ -996,7 +1200,9 @@ function paramGroupJumpSelected(ev) {
 
   sel.blur();
 
-  const groupEl = document.getElementById('paramGroup_'+groupName);
+  const groupEl = (groupName === '_top') ? 
+                    document.getElementById('deco') :
+                    document.getElementById('paramGroup_'+groupName);
   if (groupEl) {
     groupEl.scrollIntoView();
   }
@@ -1004,14 +1210,23 @@ function paramGroupJumpSelected(ev) {
 
 function createParamGroupJumpMenuUI(groups, sel) {
   let hasGroups = false;
+  let hasTopItem = false;
 
   for (const group of groups) {
     if (group.items.length < 1) continue;
     hasGroups = true;
 
-    const opt = document.createElement('option');
+    let opt;
+    if (!hasTopItem) {
+      hasTopItem = true;
+      opt = document.createElement('option');
+      opt.setAttribute('value', '_top');
+      opt.innerText = '(top)';
+      sel.appendChild(opt);
+    }
+    opt = document.createElement('option');
     opt.setAttribute('value', group.name);
-    opt.innerText = group.name;
+    opt.innerText = group.name ? group.name : 'Main params';
     sel.appendChild(opt);
   }
 
@@ -1118,7 +1333,7 @@ function createParamsUI(compInterface, groupsContainerEl) {
           const {textSizeHint} = paramDesc;
           if (textSizeHint === 'long') {
             el = document.createElement('textarea');
-            el.innerText = defaultValue || '';
+            el.textContent = defaultValue || '';
             isTall = true;
             el.addEventListener('input', paramTextEdited);
           } else {
@@ -1296,6 +1511,14 @@ createVideoInputsUI();
 const audioDemoParticipantsNumberField = document.querySelector("#controls .roomInput .audioParticipantInputContainer input");
 audioDemoParticipantsNumberField.addEventListener('change', setAudioDemoParticipants);
 
+const randomizeAudioOnlyDominantBtn = document.getElementById('randomizeAudioOnlyDominantBtn');
+randomizeAudioOnlyDominantBtn.addEventListener('click', randomizeAudioDemoParticipantAsDominant);
+
+const clearAudioOnlyDominantBtn = document.getElementById('clearAudioOnlyDominantBtn');
+clearAudioOnlyDominantBtn.addEventListener('click', clearAudioDemoParticipantAsDominant);
+
+const attachScreenshareToAudioOnlyBtn = document.getElementById('attachScreenshareToAudioOnlyBtn');
+attachScreenshareToAudioOnlyBtn.addEventListener('click', attachScreenshareToAudioDemoParticipant);
 
 // --- setup rendering ---
 
@@ -1395,7 +1618,7 @@ async function start() {
   // create composition UI
   const groups = createParamsUI(compInterface, document.querySelector("#controls .compInterface .paramsContainer"));
 
-  createParamGroupJumpMenuUI(groups, document.querySelector("#controls .compInterface .paramsJumpMenu select"));
+  createParamGroupJumpMenuUI(groups, document.querySelector(".paramsJumpMenu select"));
 
   // create source UI
   const enabledSources = createStandardSourcesUI(compInterface);
@@ -1686,7 +1909,8 @@ function outputModeChanged(ev) {
   // adjust size of the output container's parent which renders the background color.
   const scale = g_outputScale;
   const box = g_outputContainer.parentElement;
-  box.style = `width: ${newViewport.w * scale}px; height: ${newViewport.h * scale}px;`;
+  box.style = `height: ${newViewport.h * scale}px;`;
+  g_outputContainer.style = `width: ${newViewport.w * scale}px;`;
 
   recreateVCSCanvasOutput();
 }
@@ -1714,6 +1938,43 @@ function getAssetUrlCb(name, namespace, type) {
   return name;
 }
 
+let g_webFrameEl = null;
+
+function webFrameCb(id, webFrameOpts, containerEl) {
+  const {inScene} = webFrameOpts;
+  const baseStyle = '';
+
+  if (inScene && !g_webFrameEl) {
+    // webframe has been added.
+    // the callback provides us with a container element where we can add
+    // whatever DOM element to represent the webframe content.
+    const el = document.createElement('iframe');
+    g_webFrameEl = el;
+    containerEl.appendChild(g_webFrameEl);
+  } else if (!inScene && g_webFrameEl) {
+    // webframe has been removed
+    containerEl.removeChild(g_webFrameEl);
+    g_webFrameEl = null;
+  }
+
+  if (g_webFrameEl && webFrameOpts.frame) {
+    const {frame, opacity} = webFrameOpts;
+    // the container is set up so that we can use absolute positioning
+    // with the layout frame coordinates to position the webframe correctly.
+    // refresh the style when we get an update.
+    let style = baseStyle;
+    style += 'position: absolute; ';
+    style += `top: ${frame.y}px; left: ${frame.x}px; `;
+    style += `width: ${frame.w}px; height: ${frame.h}px; `;
+    style += `opacity: ${opacity}; `;
+    g_webFrameEl.style = style;
+  }
+  
+  if (g_webFrameEl && webFrameOpts.src !== g_webFrameEl.src) {
+    g_webFrameEl.src = webFrameOpts.src;
+  }
+}
+
 async function recreateVCSCanvasOutput() {
   if (!g_vcsCompLib) return;
 
@@ -1725,7 +1986,7 @@ async function recreateVCSCanvasOutput() {
     enablePreload = false; // don't preload again
   }
 
-  const fps = 20; // frame rate for React videoTime updates
+  const fps = 30; // frame rate for React videoTime updates
 
   g_vcsApi = await g_vcsCompLib.startDOMOutputAsync(
     g_outputContainer,
@@ -1734,6 +1995,7 @@ async function recreateVCSCanvasOutput() {
     { updateCb: compUpdatedCb,
       errorCb: vcsErrorCb,
       getAssetUrlCb,
+      webFrameCb,
       fps,
       scaleFactor: g_outputScale,
       enablePreload,
@@ -1745,12 +2007,20 @@ async function recreateVCSCanvasOutput() {
   for (const key in g_paramValues) {
     sendParam(key, g_paramValues[key]);
   }
+  for (const key in g_standardSources) {
+    const arr = g_standardSources[key];
+    for (const msg of arr) {
+      g_vcsApi.addStandardSourceMessage(key, msg);
+    }
+  }
 }
 
 function stopVCS() {
   console.log("stopping existing VCS renderer");
 
   g_vcsApi.stop();
+
+  g_webFrameEl = null;
 }
 
 
@@ -1817,6 +2087,8 @@ async function copySceneDescToClipboard(fgOnly) {
 function sendActiveVideoInputSlots() {
   if (!g_vcsApi) return;
 
+  const defaultVideoSlots = makeCurrentImageSources().videoSlots;
+
   const arr = [];
   for (let i = 0; i < g_activeVideoInputSlots.length; i++) {
     let obj = g_activeVideoInputSlots[i];
@@ -1829,6 +2101,22 @@ function sendActiveVideoInputSlots() {
     } else {
       arr.push(false);
     }
+
+    obj.frameSize = defaultVideoSlots[i]?.frameSize;
+    if (!obj.frameSize) {
+      const el = defaultVideoSlots[i]?.element;
+      if (el?.videoWidth) {
+        obj.frameSize = {
+          w: el.videoWidth,
+          h: el.videoHeight
+        };
+      } else if (el?.width) {
+        obj.frameSize = {
+          w: el.width,
+          h: el.height
+        };
+      }
+    }
   }
 
   g_vcsApi.setActiveVideoInputSlots(arr);
@@ -1837,14 +2125,7 @@ function sendActiveVideoInputSlots() {
   sendRoomPeers();
 }
 
-function updateRoomPeers() {
-  // the list of simulated participants in the room is a combination of
-  // our video inputs and any audio-only demo participants.
-  const map = new Map();
-  for (const p of g_audioOnlyDemoPeers) {
-    map.set(p.id, p);
-  }
-  
+function updateRoomPeers() {  
   // for screenshares, we want to combine them with regular camera inputs;
   // this better simulates the real world situation of a video call where
   // screenshares are generally associated with a participant already present.
@@ -1854,6 +2135,30 @@ function updateRoomPeers() {
     if (obj.active && obj.type === 'screenshare') {
       screenshareIndexes.push(i);
     }
+  }
+
+  if (g_attachScreenshareToAudioOnlyPeer) {
+    if (screenshareIndexes.length > 0) {
+      // the first screenshare will be attached to an audio-only peer
+      const ssobj = g_activeVideoInputSlots[screenshareIndexes[0]];
+      screenshareIndexes.splice(0, 1);
+
+      g_attachScreenshareToAudioOnlyPeer.screenshareVideo = {
+        id: ssobj.id,
+        paused: ssobj.paused
+      };
+    } else {
+      // with no screenshares, clear out
+      g_attachScreenshareToAudioOnlyPeer.screenshareVideo = {};
+    }
+  }
+
+    // the list of simulated participants in the room is a combination of
+  // our video inputs and any audio-only demo participants.
+  const map = new Map();
+
+  for (const p of g_audioOnlyDemoPeers) {
+    map.set(p.id, p);
   }
 
   const kPeerPrefix = 'p';
@@ -1906,6 +2211,11 @@ function updateRoomPeers() {
   for (let i = 0; i < g_activeVideoInputSlots.length; i++) {
     const obj = g_activeVideoInputSlots[i];
     if (obj.active && obj.type === 'screenshare') {
+      if (obj.id === g_attachScreenshareToAudioOnlyPeer?.screenshareVideo?.id) {
+        obj.displayName = "Screenshare for audio-only participant";
+        continue;
+      }
+
       try {
         const arr = Array.from(g_currentRoomPeers.values());
         const peer = arr.find((p) => p.screenshareVideo.id === obj.id);
@@ -1950,7 +2260,15 @@ function sendStandardSource(sourceId, data) {
 
   g_vcsApi.addStandardSourceMessage(sourceId, data);
 
-  // TODO: retain copy of source values so we can reset renderer
+  // retain copy of source values so we can reset renderer
+  let msgs = g_standardSources[sourceId] || [];
+
+  msgs.push(data);
+  if (msgs.length > 20) {
+    msgs.splice(0, msgs.length - 20);
+  }
+
+  g_standardSources[sourceId] = msgs;
 }
 
 function sendUpdateImageSources(srcs) {

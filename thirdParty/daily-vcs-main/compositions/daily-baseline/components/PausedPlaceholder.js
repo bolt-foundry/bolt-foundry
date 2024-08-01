@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Box, Image } from "#vcs-react/components";
-import * as layoutFuncs from "../layouts.js";
+import * as React from 'react';
+import { Box, Image } from '#vcs-react/components';
+import * as layoutFuncs from '../layouts.js';
 
 export function PausedPlaceholder({ placeholderStyle = {}, layout }) {
   return (

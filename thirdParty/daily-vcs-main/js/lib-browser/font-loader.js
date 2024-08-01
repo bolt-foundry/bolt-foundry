@@ -1,13 +1,17 @@
-import fontSetup from "../src/text/font-setup.js";
-import { standardFontFamilies } from "../src/text/standard-fonts.js";
+import fontSetup from '../src/text/font-setup.js';
+import {
+  standardFontFamilies,
+  emojiFontFamilyName,
+  defaultFontFamilyName,
+} from '../src/text/standard-fonts.js';
 
 // callback for font loading
 fontSetup.platformConfig.loadFontSourceAsync = async function (
   fontSrc,
   fetchFont,
-  fontkit,
+  fontkit
 ) {
-  const { headers, body, method = "GET" } = fontSrc.options;
+  const { headers, body, method = 'GET' } = fontSrc.options;
   const data = await fetchFont(fontSrc.src, { method, body, headers });
   //console.log("cb got font data, len %d, '%s'", data.length, fontSrc.src);
   return fontkit.create(data);
@@ -17,20 +21,26 @@ fontSetup.platformConfig.loadFontSourceAsync = async function (
 export async function loadFontsAsync(
   getAssetUrlCb,
   appendPreloadToDOMFunc,
-  wantedFamilies,
+  wantedFamilies
 ) {
   const knownFamilies = standardFontFamilies;
 
   if (!Array.isArray(wantedFamilies)) {
     // add default font if nothing else was specified
-    wantedFamilies = ["Roboto"];
+    wantedFamilies = [defaultFontFamilyName];
   }
+
+  // in `lib-node/font-loader.js`, we load the emoji font explicitly with:
+  ///  wantedFamilies = wantedFamilies.concat(emojiFontFamilyName);
+  // let's not do that in the browser because it's quite large (~20 MB).
+  // the browser text system will use the system emoji font
+  // when we render in `canvas.js`.
 
   for (const { family, variants } of knownFamilies) {
     if (!wantedFamilies.includes(family)) continue;
 
     for (const { fileName, fontWeight, fontStyle } of variants) {
-      const src = getAssetUrlCb(fileName, "default", "font");
+      const src = getAssetUrlCb(fileName, 'default', 'font');
       if (!src || src.length < 1) {
         console.error("** couldn't get asset URL for font '%s'", fileName);
         continue;
@@ -71,33 +81,33 @@ export async function loadFontsAsync(
 // and a hidden text element using the font.
 function appendCssForFontDesc(fontDesc, appendPreloadToDOMFunc) {
   var weight = fontDesc.fontWeight || 400;
-  var style = fontDesc.fontStyle || "normal";
+  var style = fontDesc.fontStyle || 'normal';
 
-  var newStyle = document.createElement("style");
+  var newStyle = document.createElement('style');
   newStyle.appendChild(
     document.createTextNode(`
 @font-face {
-src: local('${fontDesc.family}'), url('${fontDesc.src}');
+src: url('${fontDesc.src}');
 font-family: "${fontDesc.family}";
 font-weight: ${weight};
 font-style: ${style};
 }
-  `),
+  `)
   );
   document.head.appendChild(newStyle);
 
   if (appendPreloadToDOMFunc) {
-    var hiddenDivWithFont = document.createElement("div");
-    hiddenDivWithFont.className = "font-preload";
-    hiddenDivWithFont.appendChild(document.createTextNode("font preload"));
+    var hiddenDivWithFont = document.createElement('div');
+    hiddenDivWithFont.className = 'font-preload';
+    hiddenDivWithFont.appendChild(document.createTextNode('font preload'));
     hiddenDivWithFont.setAttribute(
-      "style",
+      'style',
       `
       font-family: "${fontDesc.family}";
       font-weight: ${weight};
       font-style: ${style};
       position: relative;
-    `,
+    `
     );
     appendPreloadToDOMFunc(hiddenDivWithFont);
   }

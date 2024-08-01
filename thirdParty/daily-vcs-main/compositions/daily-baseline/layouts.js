@@ -1,27 +1,27 @@
-import { PositionCorner } from "./constants.js";
+import { PositionCorner } from './constants.js';
 
 import {
-  column,
-  fit,
-  grid,
-  offset,
   pad,
-  splitAcrossLongerDimension,
+  offset,
+  fit,
   splitHorizontal,
   splitVertical,
-} from "#vcs-stdlib/layouts";
+  splitAcrossLongerDimension,
+  column,
+  grid,
+} from '#vcs-stdlib/layouts';
 
 // --- layout functions and utils ---
 
 export {
-  column,
-  fit,
-  grid,
-  offset,
   pad,
-  splitAcrossLongerDimension,
+  offset,
+  fit,
   splitHorizontal,
   splitVertical,
+  splitAcrossLongerDimension,
+  column,
+  grid,
 };
 
 function placeTextImpl(parentFrame, w, h, params, pxPerGu) {
@@ -33,22 +33,22 @@ function placeTextImpl(parentFrame, w, h, params, pxPerGu) {
 
   switch (params.vAlign) {
     default:
-    case "top":
+    case 'top':
       break;
 
-    case "bottom":
+    case 'bottom':
       y += parentFrame.h - h;
       yOff = -yOff; // flip offset direction
       break;
 
-    case "center":
+    case 'center':
       y += (parentFrame.h - h) / 2;
       break;
   }
 
   switch (params.hAlign) {
-    case "center":
-    case "right":
+    case 'center':
+    case 'right':
       w = parentFrame.w; // the text overlay is parent-sized if not default alignment
       break;
   }
@@ -70,13 +70,21 @@ export function placeText(parentFrame, params, layoutCtx) {
 }
 
 export function gridLabel(parentFrame, params) {
-  const { textH = 0, offsets = {} } = params;
-  let { x, y, w, h } = parentFrame;
+  const { textH = 20, offsets = {} } = params;
+  let { x, y, w, h } = offset(parentFrame, offsets);
 
-  y += h + Math.round(textH * 0.1);
+  y += parentFrame.h + Math.round(textH * 0.1);
 
-  if (Number.isFinite(offsets.x)) x += offsets.x;
-  if (Number.isFinite(offsets.y)) y += offsets.y;
+  h = Math.ceil(textH * 1.6); // enough room for one line of text
+
+  return { x, y, w, h };
+}
+
+export function pipStyleLabel(parentFrame, params) {
+  const { textH = 20, offsets = {} } = params;
+  let { x, y, w, h } = offset(parentFrame, offsets);
+
+  h = Math.ceil(textH * 1.6);
 
   return { x, y, w, h };
 }
@@ -89,7 +97,7 @@ function placeInCorner(
   positionCorner,
   parentFrame,
   marginX,
-  marginY,
+  marginY
 ) {
   if (
     positionCorner === PositionCorner.TOP_LEFT ||
@@ -133,7 +141,7 @@ export function pip(parentFrame, params, layoutCtx) {
     positionCorner,
     parentFrame,
     margin,
-    margin,
+    margin
   ));
 
   return { x, y, w, h };
@@ -259,7 +267,7 @@ export function placeHighlightRowText(parentFrame, params, layoutCtx) {
   return placeTextImpl(parentFrame, w, h, params, pxPerGu);
 }
 
-export function lowerThird(parentFrame, params, layoutCtx) {
+export function banner(parentFrame, params, layoutCtx) {
   const {
     positionCorner = PositionCorner.TOP_LEFT,
     marginX_gu = 0,
@@ -298,20 +306,8 @@ export function lowerThird(parentFrame, params, layoutCtx) {
     positionCorner,
     parentFrame,
     marginX,
-    marginY,
+    marginY
   ));
-
-  return { x, y, w, h };
-}
-
-export function lowerThirdSubtitle(parentFrame, params, layoutCtx) {
-  const pxPerGu = layoutCtx.pixelsPerGridUnit;
-  const { titleFontSize_gu = 2 } = params;
-  const margin_t = (titleFontSize_gu + 2.0) * pxPerGu;
-  let { x, y, w, h } = parentFrame;
-
-  y += margin_t;
-  h -= margin_t;
 
   return { x, y, w, h };
 }
@@ -320,7 +316,35 @@ export function textStack(parentFrame, params, layoutCtx) {
   const pxPerGu = layoutCtx.pixelsPerGridUnit;
   const interval_px = pxPerGu;
 
-  layoutCtx.useChildStacking({ direction: "y", interval_px });
+  layoutCtx.useChildStacking({ direction: 'y', interval_px });
 
   return parentFrame;
+}
+
+export function sidebar(parentFrame, params, layoutCtx) {
+  let { x, y, w, h } = parentFrame;
+  const { isHorizontal, size_gu } = params;
+  const pxPerGu = layoutCtx.pixelsPerGridUnit;
+  const size_px = Math.ceil(size_gu * pxPerGu);
+
+  if (isHorizontal) {
+    w = size_px;
+    x += parentFrame.w - w;
+  } else {
+    h = size_px;
+    y += parentFrame.h - h;
+  }
+
+  return { x, y, w, h };
+}
+
+export function sidebarPlaceText(parentFrame, params, layoutCtx) {
+  let { x, y, w, h } = parentFrame;
+
+  const contentSize = layoutCtx.useContentSize();
+  if (contentSize.h > parentFrame.h) {
+    y -= contentSize.h - parentFrame.h;
+  }
+
+  return { x, y, w, h };
 }

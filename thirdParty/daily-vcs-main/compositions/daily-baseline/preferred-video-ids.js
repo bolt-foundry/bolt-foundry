@@ -1,10 +1,10 @@
-import * as React from "react";
-import { RoomContext } from "#vcs-react/contexts";
+import * as React from 'react';
+import { RoomContext } from '#vcs-react/contexts';
 
 export function usePreferredParticipantIdsParam(
   params,
   dominantVideoId, // these unused args are provided as a convenience for overriding this file
-  hasScreenShare,
+  hasScreenShare
 ) {
   const { availablePeers } = React.useContext(RoomContext);
 
@@ -13,8 +13,8 @@ export function usePreferredParticipantIdsParam(
   // the caller is responsible for actually sorting its video inputs list
   // according to the array we return.
   const preferredParticipantIdsStr =
-    params["videoSettings.preferredParticipantIds"];
-  const preferScreenshare = params["videoSettings.preferScreenshare"];
+    params['videoSettings.preferredParticipantIds'];
+  const preferScreenshare = params['videoSettings.preferScreenshare'];
 
   const preferredVideoIds = React.useMemo(() => {
     const wantedIds = parseCommaSeparatedList(preferredParticipantIdsStr);
@@ -27,7 +27,7 @@ export function usePreferredParticipantIdsParam(
       arr.push(
         preferScreenshare && p.screenshareVideo && p.screenshareVideo.id
           ? p.screenshareVideo.id
-          : p.video.id,
+          : p.video.id
       );
     }
     return arr;
@@ -42,5 +42,5 @@ export function usePreferredParticipantIdsParam(
 function parseCommaSeparatedList(str) {
   if (!str || str.length < 1) return [];
 
-  return str.split(",").map((s) => s.trim());
+  return str.split(',').map((s) => s.trim());
 }

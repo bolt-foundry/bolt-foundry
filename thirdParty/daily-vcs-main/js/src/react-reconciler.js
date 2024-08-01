@@ -1,10 +1,10 @@
-import Reconciler from "react-reconciler";
+import Reconciler from 'react-reconciler';
 import {
-  unstable_cancelCallback as cancelDeferredCallback,
   unstable_now as now,
   unstable_scheduleCallback as scheduleDeferredCallback,
   unstable_shouldYield as shouldYield,
-} from "scheduler";
+  unstable_cancelCallback as cancelDeferredCallback,
+} from 'scheduler';
 
 // -- reconciler singleton --
 //
@@ -74,14 +74,14 @@ export function render(reactNode, composition, cb) {
     composition._reactRoot = reconciler.createContainer(
       composition,
       false,
-      false,
+      false
     );
   }
   return reconciler.updateContainer(
     reactNode,
     composition._reactRoot,
     null,
-    cb,
+    cb
   );
 }
 
@@ -111,10 +111,18 @@ function createInstance(type, props, container) {
 
 function appendChild(parent, child) {
   if (!child) {
-    console.error("** appendChild with null child, parent: ", parent);
+    console.error('** appendChild with null child, parent: ', parent);
     return;
   }
-  //console.log("appendChild: %s (%s) -> parent %s (%s)", child.uuid, child.userGivenId, parent.uuid, parent.userGivenId);
+  /*console.log(
+    'appendChild: %s (%s, %s) -> parent %s (%s, %s)',
+    child.uuid,
+    child.constructor.nodeType,
+    child.userGivenId,
+    parent.uuid,
+    parent.constructor.nodeType,
+    parent.userGivenId
+  );*/
   parent.children.push(child);
   child.parent = parent;
 }
@@ -126,10 +134,18 @@ function appendChildToContainer(container, child) {
 
 function removeChild(parent, child) {
   if (!child) {
-    console.error("** removeChild with null child, parent: ", parent);
+    console.error('** removeChild with null child, parent: ', parent);
     return;
   }
-  //console.log("removeChild: %s (%s) -> parent %s (%s)", child.uuid, child.userGivenId, parent.uuid, parent.userGivenId);
+  /*console.log(
+    'removeChild: %s (%s, %s) -> parent %s (%s, %s)',
+    child.uuid,
+    child.constructor.nodeType,
+    child.userGivenId,
+    parent.uuid,
+    parent.constructor.nodeType,
+    parent.userGivenId
+  );*/
   const idx = parent.children.indexOf(child);
   parent.children.splice(idx, 1);
 
@@ -146,8 +162,27 @@ function clearContainer(container) {
 }
 
 function insertBefore(parent, child, before) {
-  //console.log("insertBefore: %s (%s) -> parent %s (%s), before %s", child.uuid, child.userGivenId, parent.uuid, parent.userGivenId, before.uuid);
-  appendChild(parent, child);
+  /*console.log(
+    'insertBefore: %s (%s, %s) -> parent %s (%s, %s), before %s',
+    child.uuid,
+    child.constructor.nodeType,
+    child.userGivenId,
+    parent.uuid,
+    parent.constructor.nodeType,
+    parent.userGivenId,
+    before.uuid
+  );*/
+
+  const idx = parent.children.indexOf(before);
+  if (idx < 0) {
+    console.error(
+      "** insertBefore can't find node that should be already in children: ",
+      before
+    );
+    return;
+  }
+  parent.children.splice(idx, 0, child);
+  child.parent = parent;
 }
 
 function prepareUpdate(node, type, oldProps, newProps, container) {

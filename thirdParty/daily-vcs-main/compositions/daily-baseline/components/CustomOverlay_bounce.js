@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Image } from "#vcs-react/components";
-import { useVideoTime } from "#vcs-react/hooks";
+import * as React from 'react';
+import { Image } from '#vcs-react/components';
+import { useVideoTime } from '#vcs-react/hooks';
 
 /*
   An example component that can be used to test session assets.
@@ -11,7 +11,7 @@ import { useVideoTime } from "#vcs-react/hooks";
   for 1990s set-top player vibes.
 */
 
-const IMG_NAME = "test_square"; // default testing image, always available
+const IMG_NAME = 'test_square'; // default testing image, always available
 // 'overlay.png';
 // 'dvdlogo.png';  // this image is expected to be provided in session assets
 

@@ -1,13 +1,13 @@
-export { useParams, useStandardSources } from "./compositionData.js";
+export { useParams, useStandardSources } from './compositionData.js';
 export {
-  PlaybackStateType,
-  useVideoPlaybackState,
   useVideoTime,
-} from "./time.js";
+  useVideoPlaybackState,
+  PlaybackStateType,
+} from './time.js';
 export {
-  useActiveVideo,
-  useGrid,
   useMediaInput,
   useViewportSize,
-} from "./mediaInput.js";
-export { useAudioOnlyPeers } from "./room.js";
+  useGrid,
+  useActiveVideo,
+} from './mediaInput.js';
+export { useAudioOnlyPeers, useUnpausedPeers } from './room.js';

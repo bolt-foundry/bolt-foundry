@@ -1,0 +1,42 @@
+{
+  "width": 1280,
+  "height": 720,
+  "commands": [
+    ["save"],
+    ["beginPath"],
+    ["rect", [0, 0, 1280, 720]],
+    ["roundRect", [58, 25, 564, 317, 50, 50, 50, 50]],
+    ["roundRect", [658, 25, 564, 317, 50, 50, 50, 50]],
+    ["roundRect", [358, 378, 564, 317, 50, 50, 50, 50]],
+    ["clip", ["evenodd"]],
+    ["save"],
+    ["save"],
+    ["save"],
+    ["save"],
+    ["save"],
+    ["globalAlpha", 1],
+    [
+      "drawImage",
+      [
+        {
+          "type": "defaultAsset",
+          "id": "landscape-j3CjZYckM88-unsplash.png"
+        },
+        0,
+        0,
+        1600,
+        1200,
+        0,
+        0,
+        1280,
+        720
+      ]
+    ],
+    ["restore"],
+    ["restore"],
+    ["restore"],
+    ["restore"],
+    ["restore"],
+    ["restore"]
+  ]
+}

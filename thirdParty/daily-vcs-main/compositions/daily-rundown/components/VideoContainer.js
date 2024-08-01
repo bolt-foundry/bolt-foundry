@@ -1,5 +1,5 @@
-import * as React from "react";
-import HostGuestVideo from "./HostGuestVideo.js";
+import * as React from 'react';
+import HostGuestVideo from './HostGuestVideo.js';
 
 /*
   This container component is provided as an override point.

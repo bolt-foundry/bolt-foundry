@@ -1,8 +1,8 @@
-import * as React from "react";
-import { Box, Image, Text } from "#vcs-react/components";
-import { useVideoTime } from "#vcs-react/hooks";
-import * as layoutFuncs from "../layouts.js";
-import { DEFAULT_FONT } from "../constants.js";
+import * as React from 'react';
+import { Box, Emoji, Text, Image } from '#vcs-react/components';
+import { useVideoTime } from '#vcs-react/hooks';
+import * as layoutFuncs from '../layouts.js';
+import { DEFAULT_FONT } from '../constants.js';
 
 // our custom component maintains an instance of this class
 // to track the incoming toast messages
@@ -122,6 +122,7 @@ export default function Toast({
         opacity={item.opacity}
         showIcon={item.showIcon}
         iconOverrideAssetName={item.iconOverrideAssetName}
+        iconOverrideEmoji={item.iconOverrideEmoji}
         iconSize_gu={iconSize_gu}
         style={style}
         maxWidth_pct={maxWidth_pct}
@@ -133,10 +134,11 @@ export default function Toast({
 }
 
 function ToastContent({
-  text = "",
+  text = '',
   opacity = 1,
   showIcon = true,
   iconOverrideAssetName,
+  iconOverrideEmoji,
   iconSize_gu = 3,
   style = {},
   maxWidth_pct = {},
@@ -145,9 +147,9 @@ function ToastContent({
     strokeColor = [0, 0, 30, 0.44],
     fillColor = [15, 50, 110, 0.6],
     fontSize_px = 21,
-    textColor = "white",
+    textColor = 'white',
     fontFamily = DEFAULT_FONT,
-    fontWeight = "500",
+    fontWeight = '500',
   } = style;
 
   const bgStyle = {
@@ -172,9 +174,10 @@ function ToastContent({
     maxWidth_pct,
   };
 
-  const iconSrc = iconOverrideAssetName && iconOverrideAssetName.length > 0
-    ? iconOverrideAssetName
-    : "party-popper_1f389.png";
+  // if emoji is set, it will take priority
+  const iconEmoji = iconOverrideEmoji?.trim() || '';
+  const iconSrc = iconOverrideAssetName?.trim() || '';
+  const iconLayout = [layoutFuncs.toastIcon, { size_gu: iconSize_gu }];
 
   const textPadL = 1 + (showIcon ? iconSize_gu : 0);
   const textPadR = showIcon ? 1.5 : 1;
@@ -189,14 +192,13 @@ function ToastContent({
       layout={[layoutFuncs.toast, layoutParams]}
     >
       <Box layout={[layoutFuncs.pad, { pad_gu: 1 }]}>
-        {showIcon
-          ? (
-            <Image
-              src={iconSrc}
-              layout={[layoutFuncs.toastIcon, { size_gu: iconSize_gu }]}
-            />
+        {showIcon ? (
+          iconEmoji?.length > 0 || iconSrc.length < 1 ? (
+            <Emoji value={iconEmoji} layout={iconLayout} />
+          ) : (
+            <Image src={iconSrc} layout={iconLayout} />
           )
-          : null}
+        ) : null}
         <Box
           layout={[
             layoutFuncs.pad,

@@ -1,16 +1,17 @@
-import * as React from "react";
-import { Image } from "#vcs-react/components";
-import * as layoutFuncs from "../layouts.js";
-import { useFade } from "./useFade.js";
+import * as React from 'react';
+import { Emoji, Image } from '#vcs-react/components';
+import * as layoutFuncs from '../layouts.js';
+import { useFade } from './useFade.js';
 
 export default function ImageOverlay({
-  src = "overlay.png",
+  src = 'overlay.png',
+  emoji = '',
   positionCorner,
   aspectRatio,
   height_gu,
   margin_gu,
   fullScreen,
-  fullScreenScaleMode = "fit",
+  fullScreenScaleMode = 'fit',
   opacity = 1,
   enableFade = false,
   show = false,
@@ -19,7 +20,7 @@ export default function ImageOverlay({
   if (!opacity) return null;
 
   let layout;
-  let scaleMode = "fit";
+  let scaleMode = 'fit';
   if (fullScreen) {
     scaleMode = fullScreenScaleMode;
   } else {
@@ -32,7 +33,11 @@ export default function ImageOverlay({
     layout = [layoutFuncs.pip, layoutProps];
   }
 
-  return (
+  emoji = emoji?.trim() || '';
+
+  return emoji?.length > 0 ? (
+    <Emoji value={emoji} layout={layout} blend={{ opacity }} />
+  ) : (
     <Image
       src={src}
       layout={layout}

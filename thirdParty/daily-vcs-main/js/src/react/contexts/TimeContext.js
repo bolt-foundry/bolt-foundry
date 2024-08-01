@@ -1,8 +1,8 @@
-import * as React from "react";
+import * as React from 'react';
 
 export const PlaybackStateType = {
-  PLAYING: "playing",
-  POSTROLL: "postroll",
+  PLAYING: 'playing',
+  POSTROLL: 'postroll',
 };
 
 export const TimeContext = React.createContext({

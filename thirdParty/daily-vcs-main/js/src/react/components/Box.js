@@ -1,9 +1,9 @@
-import * as React from "react";
+import * as React from 'react';
 
 export function Box(props) {
   // can't use JSX in VCS core because it needs to run on Node without transpiling
   return React.createElement(
-    "box",
+    'box',
     {
       id: props.id,
       layout: props.layout,
@@ -12,6 +12,6 @@ export function Box(props) {
       clip: props.clip || false,
       blend: props.blend || {},
     },
-    props.children,
+    props.children
   );
 }

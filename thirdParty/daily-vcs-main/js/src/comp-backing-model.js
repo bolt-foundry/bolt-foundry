@@ -1,31 +1,32 @@
-import { v4 as uuidv4 } from "uuid";
-import deepEqual from "fast-deep-equal";
+import { v4 as uuidv4 } from 'uuid';
+import deepEqual from 'fast-deep-equal';
 
-import { CanvasDisplayListEncoder } from "../src/render/canvas-display-list.js";
+import { CanvasDisplayListEncoder } from '../src/render/canvas-display-list.js';
 
 import {
-  encodeCanvasDisplayList_fg,
   encodeCanvasDisplayList_fg_vlClip,
   encodeCanvasDisplayList_videoLayersPreview,
-} from "../src/render/canvas.js";
+} from '../src/render/canvas.js';
 
-import { encodeCompVideoSceneDesc } from "../src/render/video-scenedesc.js";
+import { encodeCompVideoSceneDesc } from '../src/render/video-scenedesc.js';
 
-import { makeAttributedStringDesc } from "./text/attributed-string.js";
+import { makeAttributedStringDesc } from './text/attributed-string.js';
 import {
-  measureTextLayoutBlocks,
   performTextLayout,
-} from "./text/text-layout.js";
+  measureTextLayoutBlocks,
+} from './text/text-layout.js';
+import { getFirstEmoji } from './text/emoji.js';
 
 // these are the intrinsic elements that our React components are ultimately composed of.
 // (think similar to 'div', 'img' etc. in React-DOM)
 export const IntrinsicNodeType = {
-  ROOT: "root",
-  BOX: "box",
-  IMAGE: "image",
-  TEXT: "label",
-  VIDEO: "video",
-  WEBFRAME: "webframe",
+  ROOT: 'root',
+  BOX: 'box',
+  EMOJI: 'emoji',
+  IMAGE: 'image',
+  TEXT: 'label',
+  VIDEO: 'video',
+  WEBFRAME: 'webframe',
 };
 
 function getDefaultGridUnitSizeForViewport(viewportSize) {
@@ -37,19 +38,19 @@ export class Composition {
   constructor(viewportSize, commitFinishedCb, sourceMetadataCb) {
     console.assert(
       viewportSize.w > 0 && viewportSize.h > 0,
-      `** invalid Composition viewportSize arg: ${viewportSize}`,
+      `** invalid Composition viewportSize arg: ${viewportSize}`
     );
     if (commitFinishedCb) {
       console.assert(
-        typeof commitFinishedCb === "function",
-        `** invalid Composition commitFinishedCb arg: ${commitFinishedCb}`,
+        typeof commitFinishedCb === 'function',
+        `** invalid Composition commitFinishedCb arg: ${commitFinishedCb}`
       );
     }
 
     this.viewportSize = viewportSize;
 
     this.pixelsPerGridUnit = getDefaultGridUnitSizeForViewport(
-      this.viewportSize,
+      this.viewportSize
     );
 
     this.nodes = [];
@@ -60,8 +61,13 @@ export class Composition {
 
     this.sourceMetadataCb = sourceMetadataCb;
 
-    this.currentWebframeProps = {};
+    this.currentWebFrameProps = {};
+    this.currentWebFrameNode = null;
+    this.lastWebFrameLayoutFrame = null;
+    this.lastWebFrameOpacity = 0;
+    this.lastWebFrameInBg = false;
     this.webFramePropsDidChange = false;
+    this.webFrameOrderingDidChange = false;
   }
 
   createNode(type, props) {
@@ -72,6 +78,9 @@ export class Composition {
         break;
       case IntrinsicNodeType.BOX:
         node = new BoxNode();
+        break;
+      case IntrinsicNodeType.EMOJI:
+        node = new EmojiNode();
         break;
       case IntrinsicNodeType.IMAGE:
         node = new ImageNode();
@@ -84,6 +93,8 @@ export class Composition {
         break;
       case IntrinsicNodeType.WEBFRAME:
         node = new WebFrameNode();
+        this.currentWebFrameNode = node;
+        this.webFrameOrderingDidChange = true;
         break;
     }
 
@@ -103,6 +114,11 @@ export class Composition {
     this.nodes.splice(idx, 1);
 
     //console.log("deleted node at %d in array", idx)
+
+    if (node === this.currentWebFrameNode) {
+      this.currentWebFrameNode = null;
+      this.webFrameOrderingDidChange = true;
+    }
   }
 
   attachRootNode(rootNode) {
@@ -118,15 +134,15 @@ export class Composition {
     this.uncommitted = false;
   }
 
-  didUpdateWebframePropsInCommit(newProps) {
-    const oldProps = this.currentWebframeProps || {};
+  didUpdateWebFramePropsInCommit(newProps) {
+    const oldProps = this.currentWebFrameProps || {};
     if (
       oldProps.src !== newProps.src ||
       !isEqualViewportSize(oldProps.viewportSize, newProps.viewportSize) ||
       !isEqualWebFrameAction(oldProps.keyPressAction, newProps.keyPressAction)
     ) {
       this.webFramePropsDidChange = true;
-      this.currentWebframeProps = newProps;
+      this.currentWebFrameProps = newProps;
     }
   }
 
@@ -135,14 +151,88 @@ export class Composition {
 
     const opts = {};
 
-    if (this.webFramePropsDidChange) {
-      opts.newWebFrameProps = { ...this.currentWebframeProps };
+    // the webframe node is a singleton, so we can watch for its layout updates here
+    let webFrameLayoutUpdated = false;
+    if (this.currentWebFrameNode) {
+      const newFrame = this.currentWebFrameNode.layoutFrame;
+      if (!isEqualLayoutFrame(this.lastWebFrameLayoutFrame, newFrame)) {
+        this.lastWebFrameLayoutFrame = newFrame;
+        webFrameLayoutUpdated = true;
+      }
+      const newOpacity = this.currentWebFrameNode.blend?.opacity;
+      if (this.lastWebFrameOpacity !== newOpacity) {
+        this.lastWebFrameOpacity = newOpacity;
+        webFrameLayoutUpdated = true;
+      }
+    }
+
+    if (
+      this.webFramePropsDidChange ||
+      this.webFrameOrderingDidChange ||
+      webFrameLayoutUpdated
+    ) {
+      /*console.log(
+        'wf props did change %s, ordering did change %s, layout updated %s, node: ',
+        this.webFramePropsDidChange,
+        webFrameLayoutUpdated,
+        this.currentWebFrameNode
+      );*/
+      let inScene = false;
+      let inBackground = false;
+      let frame = null;
+      let opacity = 1;
+      if (this.currentWebFrameNode) {
+        if (this.webFrameOrderingDidChange) {
+          // detect if the webframe is behind or in front of video layers
+          let wfSeen = false;
+          let videoSeen = false;
+          this._recurseWithVisitor((node) => {
+            if (node.constructor.nodeType === IntrinsicNodeType.VIDEO) {
+              videoSeen = true;
+              return false;
+            }
+            if (node === this.currentWebFrameNode) {
+              wfSeen = true;
+            }
+            return true;
+          });
+          this.lastWebFrameInBg = wfSeen && videoSeen; // in background only if there's actually video layers too
+        }
+
+        inScene = true;
+        inBackground = this.lastWebFrameInBg;
+        frame = this.lastWebFrameLayoutFrame;
+        opacity = this.lastWebFrameOpacity;
+      }
+
+      opts.newWebFrameProps = {
+        ...this.currentWebFrameProps,
+        inScene,
+        inBackground,
+        frame,
+        opacity,
+      };
       this.webFramePropsDidChange = false;
+      this.webFrameOrderingDidChange = false;
     }
 
     if (this.commitFinishedCb) {
       this.commitFinishedCb(this, opts);
     }
+  }
+
+  _recurseWithVisitor(visitFn, node) {
+    if (!node) {
+      node = this.rootNode;
+    } else {
+      if (!visitFn(node)) return false; // --
+    }
+    for (const c of node.children) {
+      if (!this._recurseWithVisitor(visitFn, c)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   _makeLayoutCtxHooks(node, deps, passIndex) {
@@ -151,25 +241,25 @@ export class Composition {
     // (but we're not currently doing it because it's fast enough to just recompute...)
     return {
       useIntrinsicSize: function () {
-        deps.add("intrinsicSize");
+        deps.add('intrinsicSize');
         return node.intrinsicSize ? node.intrinsicSize : { w: -1, h: -1 };
       },
       useContentSize: function () {
-        deps.add("contentSize");
+        deps.add('contentSize');
         if (passIndex > 0 && node.flowFrame && node.flowFrame.w > 0) {
           return { w: node.flowFrame.w, h: node.flowFrame.h };
         }
         return { w: 0, h: 0 };
       },
       useChildSizes: function () {
-        deps.add("childSizes");
+        deps.add('childSizes');
         if (passIndex > 0) {
           return node.flowChildFrames;
         }
         return null;
       },
       useChildStacking: function (props) {
-        deps.add("childStacking");
+        deps.add('childStacking');
         node.childStackingProps = props || {};
       },
     };
@@ -201,7 +291,7 @@ export class Composition {
 
         for (const dep of thisNodeDeps) usedDeps.add(dep);
 
-        const usesStacking = thisNodeDeps.has("childStacking");
+        const usesStacking = thisNodeDeps.has('childStacking');
         if (usesStacking) {
           frame.childStacking = node.childStackingProps;
           delete node.childStackingProps;
@@ -210,8 +300,8 @@ export class Composition {
         if (
           frame.containerTransform ||
           usesStacking ||
-          thisNodeDeps.has("contentSize") ||
-          thisNodeDeps.has("childSizes")
+          thisNodeDeps.has('contentSize') ||
+          thisNodeDeps.has('childSizes')
         ) {
           // capture child frames (including nested container offsets) if
           // 1) this layout node wants the content size after the first pass, or
@@ -243,11 +333,11 @@ export class Composition {
         if (passIndex > 0 && frame.childStacking && i > 0) {
           const { direction, interval_px = 0 } = frame.childStacking;
           const prevChildFrame = thisNodeChildFrames.at(-1);
-          if (direction === "y") {
+          if (direction === 'y') {
             offY += prevChildFrame.h;
             offY += interval_px;
             childStartFrame.y += offY;
-          } else if (direction === "x") {
+          } else if (direction === 'x') {
             offX += prevChildFrame.w;
             offX += interval_px;
             childStartFrame.x += offX;
@@ -290,7 +380,7 @@ export class Composition {
         }
         if (frame.childStacking) {
           const { direction, interval_px = 0 } = frame.childStacking;
-          if (direction === "y") {
+          if (direction === 'y') {
             let h = 0;
             for (let i = 0; i < thisNodeChildFrames.length; i++) {
               const cf = thisNodeChildFrames[i];
@@ -298,7 +388,7 @@ export class Composition {
               h += cf.h;
             }
             flowFrame.h = h;
-          } else if (direction === "x") {
+          } else if (direction === 'x') {
             let w = 0;
             for (let i = 0; i < thisNodeChildFrames.length; i++) {
               const cf = thisNodeChildFrames[i];
@@ -311,7 +401,7 @@ export class Composition {
 
         node.flowFrame = flowFrame;
 
-        if (thisNodeDeps.has("childSizes")) {
+        if (thisNodeDeps.has('childSizes')) {
           node.flowChildFrames = thisNodeChildFrames;
         }
       }
@@ -327,7 +417,11 @@ export class Composition {
     recurseLayout(this.rootNode, layoutCtxBase.viewport, null);
 
     // do second pass only if any node uses the content size hooks
-    if (usedDeps.has("contentSize") || usedDeps.has("childSizes")) {
+    if (
+      usedDeps.has('contentSize') ||
+      usedDeps.has('childSizes') ||
+      usedDeps.has('childStacking')
+    ) {
       passIndex = 1;
       recurseLayout(this.rootNode, layoutCtxBase.viewport, null);
     }
@@ -343,7 +437,7 @@ export class Composition {
         this.nodes.length,
         this.uncommitted
       );*/
-      throw new Error("Composition setup is invalid for scene description");
+      throw new Error('Composition setup is invalid for scene description');
     }
 
     // get video elements
@@ -352,19 +446,39 @@ export class Composition {
     // get foreground graphics as a display list
     const encoder = new CanvasDisplayListEncoder(
       this.viewportSize.w,
-      this.viewportSize.h,
+      this.viewportSize.h
     );
 
     encodeCanvasDisplayList_fg_vlClip(this, encoder, imageSources, videoLayers);
 
     const fgDisplayList = encoder.finalize();
 
-    if (
-      videoLayers &&
-      videoLayers.length > 0 &&
-      opts &&
-      opts.disallowMultipleVideoLayersPerInputId
-    ) {
+    if (videoLayers && videoLayers.length > 0) {
+      videoLayers = this.validateVideoLayersOutput(videoLayers, opts);
+    }
+
+    if (prev) {
+      // if the caller provides their previous cached sceneDesc,
+      // only return those keys that have changed.
+      // deep compare here should be fast enough because videoLayers is
+      // a fairly small object, and fgDisplayList is a flat array.
+      let obj = {};
+      if (!deepEqual(prev.videoLayers, videoLayers))
+        obj.videoLayers = videoLayers;
+      if (!deepEqual(prev.fgDisplayList, fgDisplayList))
+        obj.fgDisplayList = fgDisplayList;
+      return obj;
+    }
+
+    return {
+      videoLayers,
+      fgDisplayList,
+    };
+  }
+
+  validateVideoLayersOutput(videoLayers, opts) {
+    // check for target-specific limitations
+    if (opts?.disallowMultipleVideoLayersPerInputId) {
       // VCS elements can be composed to render the same input many times,
       // but compositing targets may not support this (if they have a fixed set
       // of output layers where each input is represented once).
@@ -373,7 +487,7 @@ export class Composition {
       const usedIds = new Set();
       const duplicatedIds = new Set();
       for (const vl of videoLayers) {
-        if (vl.type !== "video" || !vl.id) continue;
+        if (vl.type !== 'video' || !vl.id) continue;
 
         if (usedIds.has(vl.id)) {
           duplicatedIds.add(vl.id);
@@ -386,38 +500,57 @@ export class Composition {
 
       if (duplicatedIds.size > 0) {
         console.error(
-          "Composition#writeSceneDescription: found and removed duplicated video ids: ",
-          duplicatedIds,
+          'Composition#validateVideoLayersOutput: found and removed duplicated video ids: ',
+          duplicatedIds
         );
       }
     }
 
-    if (prev) {
-      // if the caller provides their previous cached sceneDesc,
-      // only return those keys that have changed.
-      // deep compare here should be fast enough because videoLayers is
-      // a fairly small object, and fgDisplayList is a flat array.
-      let obj = {};
-      if (!deepEqual(prev.videoLayers, videoLayers)) {
-        obj.videoLayers = videoLayers;
+    // check for overlap where a layer is completely hidden by another, which is probably a bug
+    let overlapWarningMsg = '';
+    let pfix = '';
+    if (videoLayers.length > 1) {
+      const n = videoLayers.length;
+      for (let i = 0; i < n - 1; i++) {
+        const { frame, id } = videoLayers[i];
+        const xMin = frame.x;
+        const xMax = frame.x + frame.w;
+        const yMin = frame.y;
+        const yMax = frame.y + frame.h;
+
+        for (let j = i + 1; j < n; j++) {
+          const { frame: topFrame, id: topId } = videoLayers[j];
+          const xMin2 = topFrame.x;
+          const xMax2 = topFrame.x + topFrame.w;
+          const yMin2 = topFrame.y;
+          const yMax2 = topFrame.y + topFrame.h;
+
+          if (
+            xMin >= xMin2 &&
+            xMax <= xMax2 &&
+            yMin >= yMin2 &&
+            yMax <= yMax2
+          ) {
+            overlapWarningMsg += `${pfix}Layer ${topId} (z-index ${j}) covers ${id} (z-index ${i}) entirely`;
+            pfix = ' ';
+          }
+        }
       }
-      if (!deepEqual(prev.fgDisplayList, fgDisplayList)) {
-        obj.fgDisplayList = fgDisplayList;
+      if (overlapWarningMsg.length > 0) {
+        console.error(
+          `Composition#validateVideoLayersOutput: ${overlapWarningMsg}`
+        );
       }
-      return obj;
     }
 
-    return {
-      videoLayers,
-      fgDisplayList,
-    };
+    return videoLayers;
   }
 
   writeVideoLayersPreview() {
     // write a display list that can be used to render a preview
     const encoder = new CanvasDisplayListEncoder(
       this.viewportSize.w,
-      this.viewportSize.h,
+      this.viewportSize.h
     );
 
     encodeCanvasDisplayList_videoLayersPreview(this, encoder);
@@ -428,7 +561,7 @@ export class Composition {
   getIntrinsicSizeForImageSrc(src) {
     let ret;
     if (src && this.sourceMetadataCb) {
-      ret = this.sourceMetadataCb(this, "image", src);
+      ret = this.sourceMetadataCb(this, 'image', src);
     }
     // if callback didn't provide a valid size, return zero size
     if (!ret || !isFinite(ret.w) || !isFinite(ret.h)) return { w: 0, h: 0 };
@@ -473,10 +606,10 @@ function compareFlatObj(a, b) {
     // if they weren't ignored, they would trip up the comparison every time
     // because objects created in a React component's render function
     // won't be the same reference between iterations.
-    if (typeof vA === "object") {
+    if (typeof vA === 'object') {
       console.error(
         "warning: VCS Node internal compareFlatObj can't compare objects, will ignore (key '%s')",
-        key,
+        key
       );
       continue;
     }
@@ -553,9 +686,8 @@ function isEqualLayoutFrame(oldFrame, newFrame) {
     oldFrame.y !== newFrame.y ||
     oldFrame.w !== newFrame.w ||
     oldFrame.h !== newFrame.h
-  ) {
+  )
     return false;
-  }
 
   return true;
 }
@@ -577,7 +709,7 @@ class NodeBase {
 
   constructor() {
     this.uuid = uuidv4();
-    this.userGivenId = "";
+    this.userGivenId = '';
 
     this.parent = null;
     this.children = [];
@@ -596,8 +728,8 @@ class NodeBase {
     if (newProps.layout) {
       if (!Array.isArray(newProps.layout)) {
         console.error(
-          "invalid layout prop passed to node, must be an array (got %s)",
-          typeof newProps.layout,
+          'invalid layout prop passed to node, must be an array (got %s)',
+          typeof newProps.layout
         );
       } else {
         newLayout = newProps.layout;
@@ -608,7 +740,7 @@ class NodeBase {
         this.layoutFunc,
         this.layoutParams,
         newLayout[0],
-        newLayout[1] ? cleanLayoutParams(newLayout[1]) : {},
+        newLayout[1] ? cleanLayoutParams(newLayout[1]) : {}
       )
     ) {
       //console.log("layout props will be updated for %s '%s'", this.uuid, newProps.id || '');
@@ -697,7 +829,7 @@ class RootNode extends NodeBase {
 
   constructor() {
     super();
-    this.userGivenId = "__root";
+    this.userGivenId = '__root';
   }
 }
 
@@ -735,20 +867,20 @@ class TextNode extends StyledNodeBase {
   commit(container, oldProps, newProps) {
     super.commit(container, oldProps, newProps);
 
-    this.text = newProps.text || "";
+    this.text = newProps.text || '';
 
     if (this.text.length < 1) {
       this.attrStringDesc = null;
     } else {
       if (!this.container) {
-        console.error("** container missing for text node %s", this.uuid);
+        console.error('** container missing for text node %s', this.uuid);
         return;
       }
       this.attrStringDesc = makeAttributedStringDesc(
         this.text,
         this.style || {},
         this.container.viewportSize,
-        this.container.pixelsPerGridUnit,
+        this.container.pixelsPerGridUnit
       );
 
       try {
@@ -765,15 +897,14 @@ class TextNode extends StyledNodeBase {
           this.flowFrameIsDirty = true;
         }
       } catch (e) {
-        console.error("** exception when measuring text size: ", e);
+        console.error('** exception when measuring text size: ', e);
       }
     }
   }
 
   setLayoutFrame(frame) {
-    if (!this.flowFrameIsDirty && isEqualLayoutFrame(frame, this.layoutFrame)) {
+    if (!this.flowFrameIsDirty && isEqualLayoutFrame(frame, this.layoutFrame))
       return;
-    }
 
     this.layoutFrame = frame;
     this.flowFrameIsDirty = false;
@@ -814,9 +945,9 @@ class TextNode extends StyledNodeBase {
     // wrapped in a function so we can call again if safetymargin is adjusted
     const measure = () => {
       if (safetyMargin > 0) {
-        if (textAlign === "center") {
+        if (textAlign === 'center') {
           marginL = marginR = safetyMargin / 2;
-        } else if (textAlign === "right") {
+        } else if (textAlign === 'right') {
           marginL = safetyMargin;
         } else {
           marginR = safetyMargin;
@@ -885,6 +1016,41 @@ class TextNode extends StyledNodeBase {
   }
 }
 
+class EmojiNode extends StyledNodeBase {
+  static nodeType = IntrinsicNodeType.EMOJI;
+
+  shouldUpdate(container, oldProps, newProps) {
+    if (super.shouldUpdate(container, oldProps, newProps)) return true;
+
+    if (oldProps.value !== newProps.value) return true;
+
+    return false;
+  }
+
+  commit(container, oldProps, newProps) {
+    super.commit(container, oldProps, newProps);
+
+    const emoji = getFirstEmoji(newProps.value);
+    if (emoji.length < 1) {
+      if (newProps.value.length > 0) {
+        console.warn(
+          'Emoji built-in component initialized with non-emoji string: "%s", "%s", ',
+          newProps.value,
+          emoji,
+          emoji.length
+        );
+      }
+      this.emoji = null;
+    } else {
+      this.emoji = emoji;
+    }
+
+    const pxPerGu = this.container.pixelsPerGridUnit || 20;
+
+    this.intrinsicSize = { w: pxPerGu, h: pxPerGu }; // a reasonable intrinsic size
+  }
+}
+
 class ImageNode extends StyledNodeBase {
   static nodeType = IntrinsicNodeType.IMAGE;
 
@@ -895,9 +1061,8 @@ class ImageNode extends StyledNodeBase {
 
     if (oldProps.scaleMode !== newProps.scaleMode) return true;
 
-    if (oldProps.liveAssetUpdateKey !== newProps.liveAssetUpdateKey) {
+    if (oldProps.liveAssetUpdateKey !== newProps.liveAssetUpdateKey)
       return true;
-    }
 
     return false;
   }
@@ -916,6 +1081,20 @@ class ImageNode extends StyledNodeBase {
 class VideoNode extends ImageNode {
   // inherits 'src', etc.
   static nodeType = IntrinsicNodeType.VIDEO;
+
+  shouldUpdate(container, oldProps, newProps) {
+    if (super.shouldUpdate(container, oldProps, newProps)) return true;
+
+    if (oldProps.zoom !== newProps.zoom) return true;
+
+    return false;
+  }
+
+  commit(container, oldProps, newProps) {
+    super.commit(container, oldProps, newProps);
+
+    this.zoom = newProps.zoom;
+  }
 }
 
 class WebFrameNode extends ImageNode {
@@ -926,21 +1105,19 @@ class WebFrameNode extends ImageNode {
 
   constructor() {
     super();
-    this.keyPressAction = { name: "", key: "" };
+    this.keyPressAction = { name: '', key: '' };
   }
 
   shouldUpdate(container, oldProps, newProps) {
     if (super.shouldUpdate(container, oldProps, newProps)) return true;
 
-    if (!isEqualViewportSize(oldProps.viewportSize, newProps.viewportSize)) {
+    if (!isEqualViewportSize(oldProps.viewportSize, newProps.viewportSize))
       return true;
-    }
 
     if (
       !isEqualWebFrameAction(oldProps.keyPressAction, newProps.keyPressAction)
-    ) {
+    )
       return true;
-    }
 
     return false;
   }
@@ -948,14 +1125,14 @@ class WebFrameNode extends ImageNode {
   commit(container, oldProps, newProps) {
     super.commit(container, oldProps, newProps);
 
-    // webframe's intrinsic size is simply the size given by the user
+    // webFrame's intrinsic size is simply the size given by the user
     this.intrinsicSize = this.viewportSize;
 
     // do prop eq checks again so we can record the time when they're actually updated.
     // this is useful for debugging and optimizing rendering.
 
-    const newViewportSize = newProps.viewportSize ||
-      this.constructor.defaultViewportSize;
+    const newViewportSize =
+      newProps.viewportSize || this.constructor.defaultViewportSize;
     if (!isEqualViewportSize(oldProps.viewportSize, newViewportSize)) {
       this.viewportSize = newViewportSize;
 
@@ -963,12 +1140,12 @@ class WebFrameNode extends ImageNode {
     }
 
     if (!isEqualWebFrameAction(this.keyPressAction, newProps.keyPressAction)) {
-      this.keyPressAction = newProps.keyPressAction || { name: "", key: "" };
+      this.keyPressAction = newProps.keyPressAction || { name: '', key: '' };
 
       this.keyPressActionLastUpdateTs = Date.now() / 1000;
     }
 
-    container.didUpdateWebframePropsInCommit({
+    container.didUpdateWebFramePropsInCommit({
       src: this.src,
       viewportSize: this.viewportSize,
       keyPressAction: this.keyPressAction,

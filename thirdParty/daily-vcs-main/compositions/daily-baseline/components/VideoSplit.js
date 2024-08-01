@@ -1,11 +1,16 @@
-import * as React from "react";
-import { Box } from "#vcs-react/components";
-import * as layoutFuncs from "../layouts.js";
-import VideoSingle from "./VideoSingle.js";
-import decorateVideoSplitItem from "./overrides/decorateVideoSplitItem.js";
+import * as React from 'react';
+import { Box } from '#vcs-react/components';
+import * as layoutFuncs from '../layouts.js';
+import VideoSingle from './VideoSingle.js';
+import decorateVideoSplitItem from './overrides/decorateVideoSplitItem.js';
 
 export default function VideoSplit(props) {
-  const { participantDescs = [], margin_gu = 0, splitDirection } = props;
+  const {
+    participantDescs = [],
+    margin_gu = 0,
+    splitDirection,
+    zoomFactors,
+  } = props;
   // Make sure we have exactly one or two boxes
   const totalItems = Math.max(1, Math.min(participantDescs.length, 2));
 
@@ -14,16 +19,16 @@ export default function VideoSplit(props) {
     default:
       layoutFn = layoutFuncs.splitAcrossLongerDimension;
       break;
-    case "horizontal":
+    case 'horizontal':
       layoutFn = layoutFuncs.splitHorizontal;
       break;
-    case "vertical":
+    case 'vertical':
       layoutFn = layoutFuncs.splitVertical;
       break;
   }
 
   function makeItem(itemIdx) {
-    const key = "videosplit_item" + itemIdx;
+    const key = 'videosplit_item' + itemIdx;
     const participant = participantDescs[itemIdx];
 
     // override point for custom decorations on split videos.
@@ -32,8 +37,11 @@ export default function VideoSplit(props) {
     const overrideDecoration = decorateVideoSplitItem(
       itemIdx,
       participant,
-      props,
+      props
     );
+
+    const zoom =
+      zoomFactors[itemIdx] != null ? parseFloat(zoomFactors[itemIdx]) : 1;
 
     return (
       <Box
@@ -45,6 +53,7 @@ export default function VideoSplit(props) {
           enableParticipantOverride={true}
           overrideParticipant={participant}
           overrideDecoration={overrideDecoration}
+          zoomFactor={zoom}
           {...props}
         />
       </Box>

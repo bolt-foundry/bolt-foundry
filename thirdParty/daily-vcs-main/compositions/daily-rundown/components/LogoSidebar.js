@@ -1,8 +1,8 @@
-import * as React from "react";
-import { Box, Image, Text } from "#vcs-react/components";
-import { useVideoTime, useViewportSize } from "#vcs-react/hooks";
-import * as layouts from "../layouts.js";
-import PollResult from "./PollResult.js";
+import * as React from 'react';
+import { Box, Image, Text } from '#vcs-react/components';
+import { useVideoTime, useViewportSize } from '#vcs-react/hooks';
+import * as layouts from '../layouts.js';
+import PollResult from './PollResult.js';
 
 export default function LogoSidebar({
   logoAssetName,
@@ -17,15 +17,15 @@ export default function LogoSidebar({
   if (!useTitle) {
     logo = (
       <Image
-        src={logoAssetName && logoAssetName.length > 0
-          ? logoAssetName
-          : "logo.png"}
+        src={
+          logoAssetName && logoAssetName.length > 0 ? logoAssetName : 'logo.png'
+        }
       />
     );
   } else {
     logo = (
       <Text
-        style={{ ...titleStyle, textAlign: "center" }}
+        style={{ ...titleStyle, textAlign: 'center' }}
         layout={[layouts.centerText]}
       >
         {title}

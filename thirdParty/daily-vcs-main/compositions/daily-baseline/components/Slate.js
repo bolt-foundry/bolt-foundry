@@ -1,7 +1,7 @@
-import * as React from "react";
-import { Box, Image, Text } from "#vcs-react/components";
-import { useVideoTime } from "#vcs-react/hooks";
-import * as layoutFuncs from "../layouts.js";
+import * as React from 'react';
+import { Box, Image, Text } from '#vcs-react/components';
+import { useVideoTime } from '#vcs-react/hooks';
+import * as layoutFuncs from '../layouts.js';
 
 const FADE_DUR = 0.25;
 
@@ -12,10 +12,10 @@ export default function Slate({
   show = false,
   isOpeningSlate = false,
   openingWaitTime = 4,
-  bgColor = "black",
-  textColor = "white",
-  title = "",
-  subtitle = "",
+  bgColor = 'black',
+  textColor = 'white',
+  title = '',
+  subtitle = '',
   titleStyle = {},
   subtitleStyle = {},
 }) {
@@ -91,11 +91,11 @@ export default function Slate({
     contents.push(
       <Text
         key={++ci}
-        style={{ ...titleStyle, textAlign: "center" }}
-        layout={[layoutFuncs.placeText, { vAlign: "center", hAlign: "center" }]}
+        style={{ ...titleStyle, textAlign: 'center' }}
+        layout={[layoutFuncs.placeText, { vAlign: 'center', hAlign: 'center' }]}
       >
         {title}
-      </Text>,
+      </Text>
     );
   }
   if (subtitle && subtitle.length > 0) {
@@ -105,15 +105,15 @@ export default function Slate({
         layout={[layoutFuncs.splitHorizontal, { index: 1, pos: 0.4 }]}
       >
         <Text
-          style={{ ...subtitleStyle, textAlign: "center" }}
+          style={{ ...subtitleStyle, textAlign: 'center' }}
           layout={[
             layoutFuncs.placeText,
-            { vAlign: "center", hAlign: "center" },
+            { vAlign: 'center', hAlign: 'center' },
           ]}
         >
           {subtitle}
         </Text>
-      </Box>,
+      </Box>
     );
   }
 

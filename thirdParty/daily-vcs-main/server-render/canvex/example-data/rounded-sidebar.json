@@ -1,0 +1,65 @@
+{
+  "width": 1280,
+  "height": 720,
+  "commands": [
+    ["save"],
+    ["save"],
+    ["save"],
+    ["save"],
+    ["save"],
+    ["beginPath"],
+    ["moveTo", [1037, 20]],
+    ["lineTo", [1235, 20]],
+    ["arcTo", [1260, 20, 1260, 45, 25]],
+    ["lineTo", [1260, 675]],
+    ["arcTo", [1260, 700, 1235, 700, 25]],
+    ["lineTo", [1037, 700]],
+    ["arcTo", [1012, 700, 1012, 675, 25]],
+    ["lineTo", [1012, 45]],
+    ["arcTo", [1012, 20, 1037, 20, 25]],
+    ["closePath"],
+    ["clip"],
+    ["fillStyle", "rgba(50, 70, 255, 0.7)"],
+    ["fillRect", [1012, 20, 248, 680]],
+    ["globalAlpha", 1],
+    ["save"],
+    ["fillStyle", "rgba(255, 255, 255, 0.95)"],
+    ["font", ["300", "italic", 24, "Bitter"]],
+    ["strokeStyle", "rgba(0, 0, 0, 0.4)"],
+    ["lineWidth", 4],
+    ["lineJoin", "round"],
+    ["strokeText", ["Hello sidebar", 1032, 69]],
+    ["fillText", ["Hello sidebar", 1032, 69]],
+    ["restore"],
+    ["restore"],
+    ["save"],
+    [
+      "drawImage",
+      [
+        { "type": "defaultAsset", "id": "test_square_320px.png" },
+        1152,
+        106,
+        72,
+        72
+      ]
+    ],
+    [
+      "drawImage",
+      [
+        {
+          "type": "defaultAsset",
+          "id": "daily-logo-small-lightground.png"
+        },
+        28.8,
+        625.2,
+        150,
+        60
+      ]
+    ],
+    ["restore"],
+    ["restore"],
+    ["restore"],
+    ["restore"],
+    ["restore"]
+  ]
+}

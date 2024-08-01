@@ -1,9 +1,9 @@
-import * as React from "react";
-import { Box, Text, Video } from "#vcs-react/components";
-import * as layoutFuncs from "../layouts.js";
-import { PausedPlaceholder } from "./PausedPlaceholder.js";
-import decorateVideoSingleItem from "./overrides/decorateVideoSingleItem.js";
-import { DEFAULT_OFFSET_VIDEO_SINGLE_PX } from "../constants.js";
+import * as React from 'react';
+import { Box, Video, Text } from '#vcs-react/components';
+import * as layoutFuncs from '../layouts.js';
+import { PausedPlaceholder } from './PausedPlaceholder.js';
+import decorateVideoSingleItem from './overrides/decorateVideoSingleItem.js';
+import { DEFAULT_OFFSET_VIDEO_SINGLE_PX } from '../constants.js';
 
 export default function VideoSingle(props) {
   let {
@@ -19,6 +19,7 @@ export default function VideoSingle(props) {
     overrideParticipant,
     disableRoundedCorners = false,
     overrideDecoration,
+    zoomFactor = 1,
   } = props;
 
   if (
@@ -40,7 +41,7 @@ export default function VideoSingle(props) {
     : participantDescs.length > 0
     ? participantDescs[0]
     : null;
-  const { videoId, paused, isScreenshare, displayName = "" } = d || {};
+  const { videoId, paused, isScreenshare, displayName = '' } = d || {};
 
   if (disableRoundedCorners) {
     if (videoStyle && videoStyle.cornerRadius_px > 0) {
@@ -77,7 +78,7 @@ export default function VideoSingle(props) {
   if (enableDefaultLabels && showLabels && displayName.length > 0) {
     participantLabel = (
       <Text
-        key={"label_" + displayName}
+        key={'label_' + displayName}
         style={videoLabelStyle}
         layout={[layoutFuncs.offset, offsets]}
       >
@@ -97,31 +98,50 @@ export default function VideoSingle(props) {
       />
     );
   } else {
+    const videoScaleMode = isScreenshare ? scaleModeForScreenshare : scaleMode;
     content = (
       <Video
         key="video"
         src={videoId}
         style={videoStyle}
-        scaleMode={isScreenshare ? scaleModeForScreenshare : scaleMode}
+        scaleMode={videoScaleMode}
         layout={customLayoutForVideo}
+        zoom={zoomFactor}
       />
     );
+
+    if (
+      !customLayoutForVideo &&
+      videoScaleMode === 'fit' &&
+      d?.frameSize?.h > 0
+    ) {
+      // if we're fitting the video inside the layout frame,
+      // use the content's aspect ratio to adjust the layout frame to fit snugly.
+      // this avoids black bars (i.e. letterboxing / pillarboxing) around the content
+      // which could occur if we let the underlying compositor do the fitting.
+      const contentAspectRatio = d.frameSize.w / d.frameSize.h;
+      content = (
+        <Box key="videofit" layout={[layoutFuncs.fit, { contentAspectRatio }]}>
+          {content}
+        </Box>
+      );
+    }
   }
 
   const arr = [content];
   if (participantLabel) arr.push(participantLabel);
   if (customDecoratorComponent) arr.push(customDecoratorComponent);
 
-  return clipItem
-    ? (
-      <Box
-        clip
-        style={{
-          cornerRadius_px: videoStyle.cornerRadius_px,
-        }}
-      >
-        {arr}
-      </Box>
-    )
-    : arr;
+  return clipItem ? (
+    <Box
+      clip
+      style={{
+        cornerRadius_px: videoStyle.cornerRadius_px,
+      }}
+    >
+      {arr}
+    </Box>
+  ) : (
+    arr
+  );
 }

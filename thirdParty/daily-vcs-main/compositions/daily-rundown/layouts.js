@@ -1,4 +1,4 @@
-import { pad, splitHorizontal, splitVertical } from "#vcs-stdlib/layouts";
+import { pad, splitHorizontal, splitVertical } from '#vcs-stdlib/layouts';
 
 export { pad, splitHorizontal, splitVertical };
 
@@ -38,7 +38,7 @@ export function rundownPortraitSplitThreeWay(parentFrame, params, layoutCtx) {
   const topSplitFrame = splitHorizontal(
     parentFrame,
     { index: index === 1 ? 0 : 1 },
-    layoutCtx,
+    layoutCtx
   );
   if (index === 1) {
     return topSplitFrame;
@@ -47,7 +47,7 @@ export function rundownPortraitSplitThreeWay(parentFrame, params, layoutCtx) {
   const bottomSplitFrame = splitVertical(
     topSplitFrame,
     { index: index > 1 ? 1 : 0 },
-    layoutCtx,
+    layoutCtx
   );
   return bottomSplitFrame;
 }

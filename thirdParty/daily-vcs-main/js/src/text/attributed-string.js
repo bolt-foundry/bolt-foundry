@@ -1,5 +1,6 @@
-import { getNumericFontWeightFromCSSValue } from "./font.js";
-import fontSetup from "./font-setup.js";
+import { getNumericFontWeightFromCSSValue } from './font.js';
+import fontSetup from './font-setup.js';
+import { embedEmojis } from './emoji.js';
 
 const kFallbackFont = fontSetup.fallbackFontFamily;
 
@@ -37,10 +38,10 @@ function computeStyleAttributes(styledObj, viewport, pxPerGu) {
     // PostScript name for the font they want, so omit family-based lookup.
     fontFamily = styledObj.fontPSName;
     fontWeight = 400;
-    fontStyle = "normal";
+    fontStyle = 'normal';
   } else {
     fontFamily = styledObj.fontFamily || kFallbackFont;
-    fontStyle = styledObj.fontStyle || "normal";
+    fontStyle = styledObj.fontStyle || 'normal';
 
     fontWeight = parseFloat(styledObj.fontWeight);
     if (!isFinite(fontWeight)) {
@@ -50,7 +51,7 @@ function computeStyleAttributes(styledObj, viewport, pxPerGu) {
     }
   }
 
-  let textAlign = styledObj.textAlign || "left";
+  let textAlign = styledObj.textAlign || 'left';
 
   let color, opacity, shadow;
   color = Array.isArray(styledObj.color) ? styledObj.color : [];
@@ -93,12 +94,12 @@ export function makeAttributedStringDesc(string, styledObj, viewport, pxPerGu) {
       "** couldn't get font '%s' / %s / %s, will default",
       fontFamily,
       fontWeight,
-      fontStyle,
+      fontStyle
     );
     font = fontSetup.getFont({ fontFamily: kFallbackFont, fontWeight: 400 });
     if (!font) {
       console.assert(
-        `Fallback font ${kFallbackFont} is not available, engine is misconfigured`,
+        `Fallback font ${kFallbackFont} is not available, engine is misconfigured`
       );
     }
   }
@@ -119,12 +120,44 @@ export function makeAttributedStringDesc(string, styledObj, viewport, pxPerGu) {
     attributes,
   });
 
-  // TODO: emoji replacement should be handled here
+  fragments = embedEmojis(fragments);
 
   return {
     fragments,
     font,
     textAlign,
     fontSize_px: size_px,
+    fontMetrics: calculateBaseline(font.data, size_px),
+  };
+}
+
+function calculateBaseline(font, fontSize) {
+  if (!font) {
+    console.warn('** calculateBaseline: no font data provided');
+    return {
+      baseline: fontSize * 0.85, // return a guess
+    };
+  }
+  const os2Table = font['OS/2'];
+  const hheaTable = font.hhea;
+  if (!os2Table || !hheaTable) {
+    // these tables shouldn't be missing from any real-world TTF/OTF font,
+    // but just in case, take a guess if we don't have the values
+    return {
+      baseline: fontSize * 0.8,
+    };
+  }
+
+  const upm = font.head.unitsPerEm;
+  const ascender = hheaTable.ascent; // this value seems more correct than 'os2Table.typoAscender'
+  //const descender = os2Table.typoDescender;
+  const capHeight = os2Table.capHeight;
+  const lineGap = hheaTable.lineGap || 0;
+
+  const scale = fontSize / upm;
+  let baseline = (upm - ascender + capHeight + lineGap) * scale;
+
+  return {
+    baseline,
   };
 }

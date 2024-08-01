@@ -3,8 +3,8 @@
  MIT license.
 */
 
-import Fontkit from "@react-pdf/fontkit";
-import fetch from "cross-fetch";
+import Fontkit from '@react-pdf/fontkit';
+import fetch from 'cross-fetch';
 
 const fontkit = Fontkit.default || Fontkit;
 
@@ -28,14 +28,14 @@ const kFontWeights = {
 
 export function getNumericFontWeightFromCSSValue(value) {
   if (!value) return kFontWeights.normal;
-  if (typeof value === "number") return value;
+  if (typeof value === 'number') return value;
   return kFontWeights[value.toLowerCase()];
 }
 
 export const platformConfig = {
   loadFontSourceAsync: async function (fontSrc) {
     console.error(
-      "** loadFontSourceAsync missing (must be overridden in font platformConfig)",
+      '** loadFontSourceAsync missing (must be overridden in font platformConfig)'
     );
   },
 };
@@ -43,17 +43,18 @@ export const platformConfig = {
 const fetchFont = async (src, options) => {
   const response = await fetch(src, options);
 
-  const buffer =
-    await (response.buffer ? response.buffer() : response.arrayBuffer());
+  const buffer = await (response.buffer
+    ? response.buffer()
+    : response.arrayBuffer());
 
-  return buffer.constructor.name === "Buffer" ? buffer : Buffer.from(buffer);
+  return buffer.constructor.name === 'Buffer' ? buffer : Buffer.from(buffer);
 };
 
 class FontSource {
   constructor(src, fontFamily, fontStyle, fontWeight, options) {
     this.src = src;
     this.fontFamily = fontFamily;
-    this.fontStyle = fontStyle || "normal";
+    this.fontStyle = fontStyle || 'normal';
     this.fontWeight = getNumericFontWeightFromCSSValue(fontWeight) || 400;
 
     this.data = null;
@@ -67,7 +68,7 @@ class FontSource {
     this.data = await platformConfig.loadFontSourceAsync(
       this,
       fetchFont,
-      fontkit,
+      fontkit
     );
 
     this.loading = false;
@@ -86,12 +87,12 @@ export class Font {
 
   register({ src, fontWeight, fontStyle, ...options }) {
     this.sources.push(
-      new FontSource(src, this.family, fontStyle, fontWeight, options),
+      new FontSource(src, this.family, fontStyle, fontWeight, options)
     );
   }
 
   resolve(descriptor) {
-    const { fontWeight = 400, fontStyle = "normal" } = descriptor;
+    const { fontWeight = 400, fontStyle = 'normal' } = descriptor;
     const styleSources = this.sources.filter((s) => s.fontStyle === fontStyle);
 
     // Weight resolution. https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight#Fallback_weights
@@ -105,7 +106,7 @@ export class Font {
       const leftOffset = styleSources.filter((s) => s.fontWeight <= fontWeight);
       const rightOffset = styleSources.filter((s) => s.fontWeight > 500);
       const fit = styleSources.filter(
-        (s) => s.fontWeight >= fontWeight && s.fontWeight < 500,
+        (s) => s.fontWeight >= fontWeight && s.fontWeight < 500
       );
 
       res = fit[0] || leftOffset[leftOffset.length - 1] || rightOffset[0];
@@ -124,7 +125,7 @@ export class Font {
 
     if (!res) {
       throw new Error(
-        `Could not resolve font for ${this.fontFamily}, fontWeight ${fontWeight}`,
+        `Could not resolve font for ${this.fontFamily}, fontWeight ${fontWeight}`
       );
     }
 

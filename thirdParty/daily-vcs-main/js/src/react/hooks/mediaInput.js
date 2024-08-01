@@ -1,5 +1,5 @@
-import * as React from "react";
-import { MediaInputContext } from "../contexts/index.js";
+import * as React from 'react';
+import { MediaInputContext } from '../contexts/index.js';
 
 export function useMediaInput() {
   return React.useContext(MediaInputContext);
@@ -32,6 +32,7 @@ export function useActiveVideo(opts) {
     let dominantId = null;
     let displayNamesById = {};
     let pausedById = {};
+    let frameSizesById = {};
     let maxSimultaneousVideoInputs = activeVideoInputSlots.length;
 
     for (let i = 0; i < maxSimultaneousVideoInputs; i++) {
@@ -42,7 +43,7 @@ export function useActiveVideo(opts) {
       const paused = !!slot.paused;
 
       if (!omitPaused || !paused) {
-        if (slot.type === "screenshare") {
+        if (slot.type === 'screenshare') {
           if (!omitExtraScreenshares || activeScreenshareIds.length < 1) {
             activeIds.push(videoId);
             activeScreenshareIds.push(videoId);
@@ -66,6 +67,7 @@ export function useActiveVideo(opts) {
       }
       displayNamesById[videoId] = slot.displayName;
       pausedById[videoId] = paused;
+      frameSizesById[videoId] = slot.frameSize || { w: 0, h: 0 };
     }
 
     if (preferScreenshare && activeScreenshareIds.length > 0) {
@@ -80,6 +82,7 @@ export function useActiveVideo(opts) {
       dominantId,
       displayNamesById,
       pausedById,
+      frameSizesById,
       maxSimultaneousVideoInputs,
     };
   }, [

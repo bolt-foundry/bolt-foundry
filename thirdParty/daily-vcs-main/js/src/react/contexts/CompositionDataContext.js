@@ -1,11 +1,12 @@
-import * as React from "react";
+import * as React from 'react';
 
 // the shape of a standard message object described as vanilla JS
 export function makeEmptyMessage() {
   return {
-    key: "", // a unique id
-    senderDisplayName: "",
-    text: "",
+    key: '', // a unique id
+    senderDisplayName: '',
+    text: '',
+    date: null, // a Date object
   };
 }
 

@@ -1,8 +1,8 @@
-import * as React from "react";
+import * as React from 'react';
 import {
-  PlaybackStateType as PlaybackStateType_,
   TimeContext,
-} from "../contexts/index.js";
+  PlaybackStateType as PlaybackStateType_,
+} from '../contexts/index.js';
 
 export function useVideoTime() {
   const ctx = React.useContext(TimeContext);
