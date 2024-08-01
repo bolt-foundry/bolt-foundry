@@ -32,9 +32,6 @@ export const playgroundMutation = mutationField("playgroundMutation", {
   },
   resolve: async (_root, { input, suggestedModel }, { bfCurrentViewer }: GraphQLContext) => {
     try {
-      if (suggestedModel === undefined) {
-        suggestedModel = undefined;
-      }
       const message =  await callAPI(input, undefined, suggestedModel);
       return {
         success: true,
