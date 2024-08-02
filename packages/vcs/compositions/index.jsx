@@ -9,6 +9,10 @@ import TinyCupboardGraphics from "./templates/tinycupboard.jsx";
 import OffCabotGraphics from "./templates/offcabot.jsx";
 import SunflowerGraphics from "./templates/sunflower.jsx";
 import ShockCollarGraphics from "./templates/shockcollar.jsx";
+import {
+  DEFAULT_RENDER_SETTINGS,
+  DEFAULT_TRANSCRIPT_SETTINGS,
+} from "./paramDefaults.js";
 
 // -- the control interface exposed by this composition --
 export const compositionInterface = {
@@ -22,27 +26,27 @@ export const compositionInterface = {
     {
       id: "settings",
       type: "text", // json
-      defaultValue: "{}",
+      defaultValue: JSON.stringify(DEFAULT_RENDER_SETTINGS),
     },
     {
       id: "transcriptWords",
       type: "text", // json
-      defaultValue: "[]",
+      defaultValue: JSON.stringify(DEFAULT_TRANSCRIPT_SETTINGS.transcript),
     },
     {
       id: "startTimecode",
       type: "number",
-      defaultValue: 0,
+      defaultValue: DEFAULT_TRANSCRIPT_SETTINGS.start_time,
     },
     {
       id: "endTimecode",
       type: "number",
-      defaultValue: 0,
+      defaultValue: DEFAULT_TRANSCRIPT_SETTINGS.end_time,
     },
     {
       id: "title",
       type: "text",
-      defaultValue: "",
+      defaultValue: "Default title",
     },
   ],
 };

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Box, Text, Video } from "#vcs-react/components";
-import { useParams, useVideoTime } from "#vcs-react/hooks";
+import { useParams, useVideoTime, useActiveVideo } from "#vcs-react/hooks";
 import { fontBoldWeights, fontRelativeCharacterWidths } from "../../params.js";
 import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
 import EndCap from "../components/EndCap.jsx";
@@ -10,7 +10,7 @@ import { getValueFromJson } from "../utils/jsonUtils.js";
 
 const MAX_CHARACTERS_PER_LINE = 24;
 const FONT_SIZE_VH = 64 / 1920;
-const CAPTION_POSITION = 0.60;
+const CAPTION_POSITION = 0.6;
 const EMPTY_LINE_STATE = {
   firstWordIndex: -1,
   actualWordsPerLine: 0,
@@ -25,7 +25,19 @@ export default function DefaultGraphics() {
     { ...EMPTY_LINE_STATE },
   ]);
   const time = useVideoTime();
-  const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
+
+  const { activeIds } = useActiveVideo();
+  let video;
+  if (activeIds.length > 0) {
+    video = <Video src={activeIds[0]} />;
+  }
+
+  const {
+    endTimecode = 0,
+    startTimecode = 0,
+    settings,
+    transcriptWords,
+  } = useParams();
   const {
     additionalJson = "{}",
     captionColor,
@@ -36,7 +48,7 @@ export default function DefaultGraphics() {
   const strokeColor = getValueFromJson(
     additionalJson,
     "strokeColor",
-    "rgba(0, 0, 0, 0.75)",
+    "rgba(0, 0, 0, 0.75)"
   );
   const strokeWidth_px = getValueFromJson(additionalJson, "strokeWidth_px", 6);
 
@@ -49,8 +61,8 @@ export default function DefaultGraphics() {
     strokeWidth_px,
   };
 
-  const charactersPerLineByFont = MAX_CHARACTERS_PER_LINE *
-    fontRelativeCharacterWidths[fontFamily];
+  const charactersPerLineByFont =
+    MAX_CHARACTERS_PER_LINE * fontRelativeCharacterWidths[fontFamily];
 
   const options = {
     maxCharactersPerLine: charactersPerLineByFont,
@@ -62,31 +74,31 @@ export default function DefaultGraphics() {
   };
 
   const lineState = showCaptions
-    ? getLinesOfWordsFromTranscript(
-      initialLineState,
-      time,
-      options,
-    )
+    ? getLinesOfWordsFromTranscript(initialLineState, time, options)
     : null;
 
   return (
     <Box id="videoWithGraphics">
-      <Video src={"video1"} />
-      {showCaptions && lineState.map((line, index) => {
-        const fontSize_vh = labelStyle.fontSize_vh;
-        return (
-          <Text
-            style={labelStyle}
-            layout={[layoutFuncs.plainSubtitles, {
-              pad_gu: 0.5,
-              fontSize_vh,
-              index,
-            }]}
-          >
-            {line.lineText.join(" ")}
-          </Text>
-        );
-      })}
+      {video}
+      {showCaptions &&
+        lineState.map((line, index) => {
+          const fontSize_vh = labelStyle.fontSize_vh;
+          return (
+            <Text
+              style={labelStyle}
+              layout={[
+                layoutFuncs.plainSubtitles,
+                {
+                  pad_gu: 0.5,
+                  fontSize_vh,
+                  index,
+                },
+              ]}
+            >
+              {line.lineText.join(" ")}
+            </Text>
+          );
+        })}
       <Watermark
         fontSizeVh={FONT_SIZE_VH}
         captionPosition={CAPTION_POSITION}
@@ -115,12 +127,12 @@ const layoutFuncs = {
     const textSize = layoutCtx.useIntrinsicSize();
 
     const vh = layoutCtx.viewport.h;
-    const lineOffset = (fontSize_vh * vh) * index;
+    const lineOffset = fontSize_vh * vh * index;
 
-    const pad = (pad_gu * pxPerGu) * index;
+    const pad = pad_gu * pxPerGu * index;
 
     // x = w * 0.15;
-    y = (h * CAPTION_POSITION) + lineOffset + pad;
+    y = h * CAPTION_POSITION + lineOffset + pad;
 
     // const minH = minH_gu * pxPerGu;
     const minW = minW_gu * pxPerGu;
