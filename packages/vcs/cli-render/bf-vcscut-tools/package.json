@@ -1,0 +1,14 @@
+{
+  "name": "bf-vcscut-tools",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "render": "npx zx bf-vcsrender.zx.mjs"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "zx": "^8.1.4"
+  }
+}
