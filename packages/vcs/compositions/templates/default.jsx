@@ -1,12 +1,12 @@
-import * as React from "react";
-import { Box, Text, Video } from "#vcs-react/components";
-import { useParams, useVideoTime, useActiveVideo } from "#vcs-react/hooks";
-import { fontBoldWeights, fontRelativeCharacterWidths } from "../../params.js";
-import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
-import EndCap from "../components/EndCap.jsx";
-import TitleCard from "../components/TitleCard.jsx";
-import Watermark from "../components/Watermark.jsx";
-import { getValueFromJson } from "../utils/jsonUtils.js";
+import * as React from 'react';
+import { Box, Text, Video } from '#vcs-react/components';
+import { useParams, useVideoTime, useActiveVideo } from '#vcs-react/hooks';
+import { fontBoldWeights, fontRelativeCharacterWidths } from '../../params.js';
+import getLinesOfWordsFromTranscript from '../utils/getLinesOfWordsFromTranscript.js';
+import EndCap from '../components/EndCap.jsx';
+import TitleCard from '../components/TitleCard.jsx';
+import Watermark from '../components/Watermark.jsx';
+import { getValueFromJson } from '../utils/jsonUtils.js';
 
 const MAX_CHARACTERS_PER_LINE = 24;
 const FONT_SIZE_VH = 64 / 1920;
@@ -39,7 +39,7 @@ export default function DefaultGraphics() {
     transcriptWords,
   } = useParams();
   const {
-    additionalJson = "{}",
+    additionalJson = '{}',
     captionColor,
     captionHighlightColor,
     font: fontFamily,
@@ -47,13 +47,13 @@ export default function DefaultGraphics() {
   } = JSON.parse(settings);
   const strokeColor = getValueFromJson(
     additionalJson,
-    "strokeColor",
-    "rgba(0, 0, 0, 0.75)"
+    'strokeColor',
+    'rgba(0, 0, 0, 0.75)'
   );
-  const strokeWidth_px = getValueFromJson(additionalJson, "strokeWidth_px", 6);
+  const strokeWidth_px = getValueFromJson(additionalJson, 'strokeWidth_px', 6);
 
   const labelStyle = {
-    textColor: captionColor ?? "white",
+    textColor: captionColor ?? 'white',
     fontFamily,
     fontWeight: fontBoldWeights[fontFamily],
     fontSize_vh: FONT_SIZE_VH,
@@ -95,7 +95,18 @@ export default function DefaultGraphics() {
                 },
               ]}
             >
-              {line.lineText.join(" ")}
+              {line.lineText.map((word, wordIndex) => {
+                const isHighlighted =
+                  wordIndex === line.highlightedWordIndexWithinLine;
+                return [
+                  word + (wordIndex < line.lineText.length - 1 ? ' ' : ''),
+                  {
+                    textColor: isHighlighted ? 'yellow' : labelStyle.textColor, // you can do word-specific style override here
+                    fontSize_vh:
+                      labelStyle.fontSize_vh * (isHighlighted ? 1.3 : 1),
+                  },
+                ];
+              })}
             </Text>
           );
         })}

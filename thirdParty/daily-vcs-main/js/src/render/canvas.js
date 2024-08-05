@@ -262,7 +262,7 @@ function recurseRenderNode(
     let strokeW_px;
     let srcDrawable;
     let scaleMode = node.scaleMode;
-    let textContent = node.text;
+    let textContent = node.text || node.joinedSpansText;
     let textStyle = node.style;
 
     let warningOutText;
@@ -571,10 +571,20 @@ function drawStyledTextLayoutBlocks(
           h: box.height,
         };
 
+        const runStyle = {
+          ...style,
+        };
+        const attrs = run.attributes;
+        if (attrs.color) runStyle.textColor = attrs.color;
+        if (attrs.fontSize) {
+          runStyle.fontSize_gu = null;
+          runStyle.fontSize_vh = null;
+          runStyle.fontSize_px = attrs.fontSize;
+        }
+
         // unicode object substitution indicates emojis.
         // we assume it's at position 0 because embedEmojis() creates such runs
         if (chunk.indexOf(String.fromCharCode(0xfffc)) === 0) {
-          const attrs = run.attributes;
           const emoji = attrs?.attachment?.emoji;
           if (!emoji) {
             console.warn(
@@ -593,7 +603,7 @@ function drawStyledTextLayoutBlocks(
             );
           }
         } else {
-          drawStyledText(ctx, chunk, fontMetrics, style, textFrame, comp);
+          drawStyledText(ctx, chunk, fontMetrics, runStyle, textFrame, comp);
         }
 
         //console.log('run %s - ', chunk, run);
