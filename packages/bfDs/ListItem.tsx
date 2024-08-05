@@ -1,21 +1,33 @@
 import { React } from "deps.ts";
-import { Icon } from "packages/bfDs/Icon.tsx";
+import { Icon, IconType } from "packages/bfDs/Icon.tsx";
+import { classnames } from "lib/classnames.ts";
 
 type Props = {
   content: string | React.ReactNode;
+  iconRight?: IconType;
+  isHighlighted?: boolean;
   footer?: string | React.ReactNode;
   onClick?: () => void;
 };
 
-export function ListItem({ content, footer, onClick }: Props) {
+export function ListItem(
+  { content, iconRight, isHighlighted, footer, onClick }: Props,
+) {
   function handleClick() {
     if (onClick) {
       onClick();
     }
   }
+  const clickable = typeof onClick === "function" && !isHighlighted;
+
+  const listItemClasses = classnames([
+    "list-item",
+    { isHighlighted },
+    { clickable },
+  ]);
 
   return (
-    <div className="list-item" onClick={handleClick}>
+    <div className={listItemClasses} onClick={handleClick}>
       <div className="list-item-main">
         <div className="list-item-text">{content}</div>
         {footer && (
@@ -24,9 +36,9 @@ export function ListItem({ content, footer, onClick }: Props) {
           </div>
         )}
       </div>
-      {onClick && (
+      {iconRight && (
         <div className="list-item-right">
-          <Icon name="arrowRight" color="var(--textSecondary)" />
+          <Icon name={iconRight} color="var(--textSecondary)" />
         </div>
       )}
     </div>

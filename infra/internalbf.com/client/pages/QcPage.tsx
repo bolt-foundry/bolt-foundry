@@ -366,7 +366,7 @@ export function QcPage() {
           </Tooltip>
         </div>
         <div className="internalMainContent" style={{ flex: "auto" }}>
-          <List>
+          <List separator={true}>
             {filteredData.map((item) => {
               let statusColor = "var(--textLight)";
               switch (item.status) {

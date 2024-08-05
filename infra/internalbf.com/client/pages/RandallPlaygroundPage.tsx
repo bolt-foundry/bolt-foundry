@@ -75,7 +75,8 @@ export function RandallPlaygroundPage() {
   const [clientFilter, setClientFilter] = useState<string | null>(null);
   const [currentClipId, setCurrentClipId] = useState<string | null>(null);
 
-  const filteredData = data?.currentViewer?.organization?.reviewableClips?.nodes ?? [];
+  const filteredData =
+    data?.currentViewer?.organization?.reviewableClips?.nodes ?? [];
 
   // const currentClip = filteredData.find((item) => item.id === currentClipId);
   const currentClip = {};
@@ -91,7 +92,10 @@ export function RandallPlaygroundPage() {
                 color2="var(--textSecondary)"
               />
             </div>
-            <div>{tabs[currentTab].header} - {data?.currentViewer?.person?.name ?? "Not set up"}</div>
+            <div>
+              {tabs[currentTab].header} -{" "}
+              {data?.currentViewer?.person?.name ?? "Not set up"}
+            </div>
           </div>
         </div>
         <div className="internalMainFilters">
@@ -121,7 +125,7 @@ export function RandallPlaygroundPage() {
           </Tooltip>
         </div>
         <div className="internalMainContent" style={{ flex: "auto" }}>
-          <List>
+          <List separator={true}>
             {filteredData.map((item) => {
               let statusColor = "var(--textLight)";
               switch (item.status) {

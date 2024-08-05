@@ -19,7 +19,7 @@ export function ClipChangesPage({ currentClip, onClose }) {
         </div>
       </div>
       <div className="internalMainContent" style={{ flex: "auto" }}>
-        <List>
+        <List separator={true}>
           {currentClip.comments.length > 0 && (
             currentClip.comments.map((comment) => {
               const content = (
