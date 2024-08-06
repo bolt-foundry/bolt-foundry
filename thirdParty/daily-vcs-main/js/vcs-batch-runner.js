@@ -96,6 +96,9 @@ if (!srcCompPath?.length) {
   process.exit(1);
 }
 
+const videoTimeOffset = eventsJson?.videoTimeOffset || 0;
+logToHostInfo('video time offset: ', videoTimeOffset);
+
 let fps;
 if (
   argmap['framesPerSecond'] != null &&
@@ -188,7 +191,7 @@ if (
   viewportSize = eventsJson.outputSize;
 }
 
-const batchState = new BatchState(fps, { webVttCues });
+const batchState = new BatchState(fps, { webVttCues, videoTimeOffset });
 
 main();
 

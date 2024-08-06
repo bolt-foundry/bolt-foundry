@@ -1,6 +1,6 @@
-import * as fs from "node:fs";
-import { parseArgs } from "node:util";
-import * as Path from "node:path";
+import * as fs from 'node:fs';
+import { parseArgs } from 'node:util';
+import * as Path from 'node:path';
 
 /*
   Takes a Bolt Foundry format transcript.
@@ -13,27 +13,27 @@ import * as Path from "node:path";
 const args = parseArgs({
   options: {
     transcript_json: {
-      type: "string",
-      short: "t",
+      type: 'string',
+      short: 't',
     },
     input_video: {
-      type: "string",
-      short: "v",
+      type: 'string',
+      short: 'v',
     },
     output_json: {
-      type: "string",
-      short: "o",
+      type: 'string',
+      short: 'o',
     },
   },
 });
 
 const transcriptJsonPath = args.values.transcript_json;
 if (!transcriptJsonPath || transcriptJsonPath.length < 1) {
-  console.error("transcript input is required");
+  console.error('transcript input is required');
   process.exit(1);
 }
 const transcriptObj = JSON.parse(
-  fs.readFileSync(transcriptJsonPath, { encoding: "utf-8" })
+  fs.readFileSync(transcriptJsonPath, { encoding: 'utf-8' })
 );
 if (
   !Number.isFinite(transcriptObj.start_time) ||
@@ -46,7 +46,7 @@ if (
 
 const inputVideoPath = args.values.input_video;
 if (!inputVideoPath) {
-  console.error("input video path is required");
+  console.error('input video path is required');
   process.exit(1);
 }
 
@@ -54,18 +54,20 @@ const outputJsonPath = args.values.output_json;
 
 // --- main ---
 
-const reelId = "bftest";
+const compositionId = 'dev:bf';
 
-const sourceId = "video1"; // a default id for the single input video
+const reelId = 'bftest';
 
-const timelineId = "tl1"; // a default id for this timeline
+const sourceId = 'video1'; // a default id for the single input video
+
+const timelineId = 'tl1'; // a default id for this timeline
 
 const extractStartT = transcriptObj.start_time;
 const extractEndT = transcriptObj.end_time;
 const extractDuration = extractEndT - extractStartT;
 if (extractDuration <= 0) {
   console.error(
-    "extract duration is invalid: ",
+    'extract duration is invalid: ',
     extractDuration,
     extractStartT,
     extractEndT
@@ -76,7 +78,8 @@ if (extractDuration <= 0) {
 // this is the output JSON.
 // it could contain multiple sources, clips and cut events, but we don't need that here
 const edl = {
-  reelId: reelId,
+  reelId,
+  compositionId,
   meta: {
     description: `Generated from Bolt Foundry data`,
   },
@@ -89,6 +92,7 @@ const edl = {
   ],
   clips: [],
   cut: {
+    videoTimeOffset: extractStartT,
     duration: extractDuration,
     events: [],
     audio: [],
@@ -101,7 +105,7 @@ const clipId = `c_${sourceId}_0`;
 edl.clips.push({
   start: extractStartT,
   duration: extractDuration,
-  description: "",
+  description: '',
   id: clipId,
   source: sourceId,
 });
@@ -112,14 +116,25 @@ edl.cut.audio.push({
 });
 
 // write a single VCS event at the start
-const params = {
-  showTextOverlay: true,
-  "text.content": getRawWordsForExtract(
-    transcriptObj.transcript,
-    extractStartT,
-    extractEndT
-  ),
-};
+let params;
+if (compositionId === 'daily:baseline') {
+  // for testing, use the default composition to render an overlay
+  params = {
+    showTextOverlay: true,
+    'text.content': getRawWordsForExtract(
+      transcriptObj.transcript,
+      extractStartT,
+      extractEndT
+    ),
+  };
+} else {
+  // set params for the BF composition
+  params = {
+    startTimecode: extractStartT,
+    endTimecode: extractEndT,
+    transcriptWords: JSON.stringify(transcriptObj.transcript),
+  };
+}
 
 const cutVideoEv = {
   t: 0,
@@ -132,7 +147,7 @@ edl.cut.events.push(cutVideoEv);
 const outputJson = JSON.stringify(edl, null, 2);
 
 if (outputJsonPath?.length > 0) {
-  fs.writeFileSync(outputJsonPath, outputJson, { encoding: "utf-8" });
+  fs.writeFileSync(outputJsonPath, outputJson, { encoding: 'utf-8' });
 } else {
   console.log(outputJson);
 }
@@ -150,5 +165,5 @@ function getRawWordsForExtract(transcript, startT, endT) {
 
     words.push(word);
   }
-  return words.join(" ");
+  return words.join(' ');
 }

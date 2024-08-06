@@ -1,5 +1,5 @@
 export function getValueFromJson(json, value, defaultValue) {
-  if (!additionalJson) return defaultValue;
+  if (!json) return defaultValue;
   const additionalJson = JSON.parse(json);
   let returnValue = defaultValue;
   if (additionalJson[value]) {

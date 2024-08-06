@@ -1,7 +1,7 @@
-import * as React from "react";
-import { Box, Text } from "#vcs-react/components";
-import { useParams, useVideoTime } from "#vcs-react/hooks";
-import { fontBoldWeights } from "../../params.js";
+import * as React from 'react';
+import { Box, Text } from '#vcs-react/components';
+import { useParams, useVideoTime } from '#vcs-react/hooks';
+import { fontBoldWeights } from '../fonts.js';
 
 const FONT_SIZE_VH = 160 / 1920;
 const ANIMATION_DURATION = 0.5;
@@ -10,20 +10,18 @@ const DURATION = 2; // 2 seconds
 export default function TitleCard() {
   const time = useVideoTime();
   const { startTimecode, settings, title } = useParams();
-  const {
-    additionalJson: json = "{}",
-    font: fontFamily,
-  } = JSON.parse(settings);
-  const { useTitle, titleColor, titleStrokeColor, titleStrokeWidth } = JSON
-    .parse(json);
+  const { additionalJson: json = '{}', font: fontFamily } =
+    JSON.parse(settings);
+  const { useTitle, titleColor, titleStrokeColor, titleStrokeWidth } =
+    JSON.parse(json);
   if (!useTitle) return null;
   const labelStyle = {
-    textColor: titleColor ?? "rgba(255, 215, 0, 1)",
+    textColor: titleColor ?? 'rgba(255, 215, 0, 1)',
     fontFamily,
     fontWeight: fontBoldWeights[fontFamily],
     fontSize_vh: FONT_SIZE_VH,
-    textAlign: "center",
-    strokeColor: titleStrokeColor ?? "rgba(255,255,255,1)",
+    textAlign: 'center',
+    strokeColor: titleStrokeColor ?? 'rgba(255,255,255,1)',
     strokeWidth_px: titleStrokeWidth ?? 8,
   };
   const startFade = startTimecode + DURATION;
@@ -59,7 +57,7 @@ const layoutFuncs = {
     h = textSize.h > 0 ? textSize.h : parentFrame.h;
     x += (parentFrame.w - w) / 2;
     // y = ((parentFrame.h / 2) - h) / 2; // center in the top half
-    y = (parentFrame.h / 2) - h; // bottom aligned to top half
+    y = parentFrame.h / 2 - h; // bottom aligned to top half
     if (y < 50) {
       y = 50;
     }

@@ -1,8 +1,8 @@
-import * as React from "react";
-import { Box, Text } from "#vcs-react/components";
-import { useParams, useVideoTime } from "#vcs-react/hooks";
-import { easeOut } from "../utils/easing.js";
-import { fontBoldWeights } from "../../params.js";
+import * as React from 'react';
+import { Box, Text } from '#vcs-react/components';
+import { useParams, useVideoTime } from '#vcs-react/hooks';
+import { easeOut } from '../utils/easing.js';
+import { fontBoldWeights } from '../fonts.js';
 
 const FONT_SIZE_VH = 80 / 1920;
 const PAD_X = 40; // px
@@ -12,14 +12,12 @@ const ANIMATION_DURATION = 0.5;
 export default function EndCap() {
   const time = useVideoTime();
   const { endTimecode, settings } = useParams();
-  const {
-    additionalJson: json = "{}",
-    font: fontFamily,
-  } = JSON.parse(settings);
+  const { additionalJson: json = '{}', font: fontFamily } =
+    JSON.parse(settings);
   const { useEndCap, capCta, capName } = JSON.parse(json);
   if (!useEndCap) return null;
   const labelStyle = {
-    textColor: "black",
+    textColor: 'black',
     fontFamily,
     fontSize_vh: FONT_SIZE_VH,
   };
@@ -27,67 +25,63 @@ export default function EndCap() {
     ...labelStyle,
     fontWeight: fontBoldWeights[fontFamily],
   };
-  return time > endTimecode
-    ? (
-      <Box id="endCap">
-        <Box
-          id="background"
-          blend={{ opacity: fadeIn(time, endTimecode) }}
-          style={{
-            fillColor: "rgba(33, 33, 33, 1)",
-          }}
-        />
-        <Box
-          transform={{ rotate_deg: -8, skew_x_deg: 8 }}
-        >
-          {capCta && (
-            <Box
-              blend={{
-                opacity: fadeIn(time, endTimecode + 0.25),
-              }}
-              style={{
-                fillColor: "rgba(34, 217, 229, 1)",
-              }}
-              layout={[layoutFuncs.fillBox, {
-                position: "top",
+  return time > endTimecode ? (
+    <Box id="endCap">
+      <Box
+        id="background"
+        blend={{ opacity: fadeIn(time, endTimecode) }}
+        style={{
+          fillColor: 'rgba(33, 33, 33, 1)',
+        }}
+      />
+      <Box transform={{ rotate_deg: -8, skew_x_deg: 8 }}>
+        {capCta && (
+          <Box
+            blend={{
+              opacity: fadeIn(time, endTimecode + 0.25),
+            }}
+            style={{
+              fillColor: 'rgba(34, 217, 229, 1)',
+            }}
+            layout={[
+              layoutFuncs.fillBox,
+              {
+                position: 'top',
                 time,
                 endTimecode: endTimecode + 0.25,
-              }]}
-            >
-              <Text
-                style={headerLabelStyle}
-                layout={[layoutFuncs.text]}
-              >
-                {capCta}
-              </Text>
-            </Box>
-          )}
-          {capName && (
-            <Box
-              style={{
-                fillColor: "rgba(200, 200, 200, 1)",
-              }}
-              blend={{
-                opacity: fadeIn(time, endTimecode + 0.25),
-              }}
-              layout={[layoutFuncs.fillBox, {
-                position: "bottom",
+              },
+            ]}
+          >
+            <Text style={headerLabelStyle} layout={[layoutFuncs.text]}>
+              {capCta}
+            </Text>
+          </Box>
+        )}
+        {capName && (
+          <Box
+            style={{
+              fillColor: 'rgba(200, 200, 200, 1)',
+            }}
+            blend={{
+              opacity: fadeIn(time, endTimecode + 0.25),
+            }}
+            layout={[
+              layoutFuncs.fillBox,
+              {
+                position: 'bottom',
                 time,
                 endTimecode: endTimecode + 0.25,
-              }]}
-            >
-              <Text
-                style={labelStyle}
-                layout={[layoutFuncs.text]}
-              >
-                {capName}
-              </Text>
-            </Box>
-          )}
-        </Box>
+              },
+            ]}
+          >
+            <Text style={labelStyle} layout={[layoutFuncs.text]}>
+              {capName}
+            </Text>
+          </Box>
+        )}
       </Box>
-    )
-    : null;
+    </Box>
+  ) : null;
 }
 
 function slideIn(time, animationStartTime, startPos, endPos) {
@@ -135,21 +129,21 @@ const layoutFuncs = {
     // if (contentSize.h > 0) {
     //   h = contentSize.h + (2 * PAD_Y);
     // }
-    h = (FONT_SIZE_VH * vh) + (2 * PAD_Y);
+    h = FONT_SIZE_VH * vh + 2 * PAD_Y;
 
     let endX = 0;
     if (contentSize.w > 0) {
       // center horizontally
-      w = contentSize.w + (2 * PAD_X);
+      w = contentSize.w + 2 * PAD_X;
       endX = (parentFrame.w - w) / 2;
     }
     let yOffset = FONT_SIZE_VH * vh;
     let startX = endX + 100;
-    if (position === "top") {
+    if (position === 'top') {
       yOffset = -(FONT_SIZE_VH * vh);
       startX = endX - 100;
     }
-    y = (parentFrame.h / 2) + yOffset;
+    y = parentFrame.h / 2 + yOffset;
     x = slideIn(time, endTimecode, startX, endX);
 
     return { x, y, w, h };

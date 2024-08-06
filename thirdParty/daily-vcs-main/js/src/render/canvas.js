@@ -475,7 +475,7 @@ function recurseRenderNode(
       warningFrame.y += 2;
       const lines = warningOutText.split('\n');
       for (const line of lines) {
-        drawStyledText(ctx, line, warningStyle, warningFrame, comp);
+        drawStyledText(ctx, line, {}, warningStyle, warningFrame, comp);
         warningFrame.y += 20;
       }
     }
@@ -692,7 +692,6 @@ function drawStyledText(ctx, text, fontMetrics, style, frame, comp) {
       ctx.strokeText(text, textX, textY);
     }
   }
-
   ctx.fillText(text, textX, textY);
 }
 

@@ -1,16 +1,16 @@
+// adapted from joe.jsx
 import * as React from 'react';
 import { Box, Text, Video } from '#vcs-react/components';
-import { useParams, useVideoTime, useActiveVideo } from '#vcs-react/hooks';
-import { fontBoldWeights, fontRelativeCharacterWidths } from '../../params.js';
+import { useParams, useVideoTime } from '#vcs-react/hooks';
+import { fontBoldWeights, fontRelativeCharacterWidths } from '../fonts.js';
 import getLinesOfWordsFromTranscript from '../utils/getLinesOfWordsFromTranscript.js';
-import EndCap from '../components/EndCap.jsx';
-import TitleCard from '../components/TitleCard.jsx';
-import Watermark from '../components/Watermark.jsx';
+import EndCap from '../components/EndCap.js';
+import TitleCard from '../components/TitleCard.js';
 import { getValueFromJson } from '../utils/jsonUtils.js';
-
-const MAX_CHARACTERS_PER_LINE = 24;
-const FONT_SIZE_VH = 64 / 1920;
+const FONT_SIZE_VH = 120 / 1920; // CHANGED: font size
 const CAPTION_POSITION = 0.6;
+const MAX_CHARACTERS_PER_LINE = 16;
+const DEFAULT_NUMBER_OF_LINES = 3;
 const EMPTY_LINE_STATE = {
   firstWordIndex: -1,
   actualWordsPerLine: 0,
@@ -18,26 +18,16 @@ const EMPTY_LINE_STATE = {
   currentLine: false,
 };
 
-export default function DefaultGraphics() {
-  // 2 lines of captions
-  const initialLineState = React.useRef([
-    { ...EMPTY_LINE_STATE },
-    { ...EMPTY_LINE_STATE },
-  ]);
+export default function SunflowerGraphics({
+  captionLines = DEFAULT_NUMBER_OF_LINES,
+  captionWordsPerLine = 5,
+}) {
+  // 3 lines of captions
+  const initialLineState = React.useRef(
+    Array(captionLines).fill({ ...EMPTY_LINE_STATE })
+  );
   const time = useVideoTime();
-
-  const { activeIds } = useActiveVideo();
-  let video;
-  if (activeIds.length > 0) {
-    video = <Video src={activeIds[0]} />;
-  }
-
-  const {
-    endTimecode = 0,
-    startTimecode = 0,
-    settings,
-    transcriptWords,
-  } = useParams();
+  const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
     additionalJson = '{}',
     captionColor,
@@ -48,9 +38,9 @@ export default function DefaultGraphics() {
   const strokeColor = getValueFromJson(
     additionalJson,
     'strokeColor',
-    'rgba(0, 0, 0, 0.75)'
+    'rgba(0, 0, 0, 1)'
   );
-  const strokeWidth_px = getValueFromJson(additionalJson, 'strokeWidth_px', 6);
+  const strokeWidth_px = getValueFromJson(additionalJson, 'strokeWidth_px', 12);
 
   const labelStyle = {
     textColor: captionColor ?? 'white',
@@ -60,13 +50,17 @@ export default function DefaultGraphics() {
     strokeColor,
     strokeWidth_px,
   };
+  const highlightStyle = {
+    ...labelStyle,
+    textColor: captionHighlightColor ?? 'rgb(255, 215, 0)',
+  };
 
   const charactersPerLineByFont =
     MAX_CHARACTERS_PER_LINE * fontRelativeCharacterWidths[fontFamily];
 
   const options = {
     maxCharactersPerLine: charactersPerLineByFont,
-    maxWordsPerLine: 8,
+    maxWordsPerLine: captionWordsPerLine,
     maxPauseForBreak: 0.5,
     endTimecode: endTimecode,
     startTimecode: startTimecode,
@@ -79,34 +73,23 @@ export default function DefaultGraphics() {
 
   return (
     <Box id="videoWithGraphics">
-      {video}
+      <Video src={'video1'} />
       {showCaptions &&
         lineState.map((line, index) => {
           const fontSize_vh = labelStyle.fontSize_vh;
           return (
             <Text
-              style={labelStyle}
+              style={line.currentLine ? highlightStyle : labelStyle}
               layout={[
                 layoutFuncs.plainSubtitles,
                 {
-                  pad_gu: 0.5,
                   fontSize_vh,
                   index,
+                  pad_gu: 0.5,
                 },
               ]}
             >
-              {line.lineText.map((word, wordIndex) => {
-                const isHighlighted =
-                  wordIndex === line.highlightedWordIndexWithinLine;
-                return [
-                  word + (wordIndex < line.lineText.length - 1 ? ' ' : ''),
-                  {
-                    textColor: isHighlighted ? 'yellow' : labelStyle.textColor, // you can do word-specific style override here
-                    fontSize_vh:
-                      labelStyle.fontSize_vh * (isHighlighted ? 1.3 : 1),
-                  },
-                ];
-              })}
+              {line.lineText.join(' ')}
             </Text>
           );
         })}
@@ -126,13 +109,7 @@ export default function DefaultGraphics() {
 const layoutFuncs = {
   plainSubtitles: (parentFrame, params, layoutCtx) => {
     const pxPerGu = layoutCtx.pixelsPerGridUnit;
-    const {
-      minH_gu = 1,
-      minW_gu = 1,
-      pad_gu = 0,
-      fontSize_vh = FONT_SIZE_VH,
-      index = 0,
-    } = params;
+    const { fontSize_vh = FONT_SIZE_VH, index = 0, pad_gu = 0 } = params;
     let { x, y, w, h } = parentFrame;
 
     const textSize = layoutCtx.useIntrinsicSize();
@@ -144,9 +121,6 @@ const layoutFuncs = {
 
     // x = w * 0.15;
     y = h * CAPTION_POSITION + lineOffset + pad;
-
-    // const minH = minH_gu * pxPerGu;
-    const minW = minW_gu * pxPerGu;
 
     if (textSize.w > 0) {
       // center horizontally

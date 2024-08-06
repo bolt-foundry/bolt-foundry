@@ -197,6 +197,7 @@ async function processCompDir(compDir, buildDir, assetDir) {
   recurseJobsForDir(compDir, buildDir);
 
   function recurseJobsForDir(dir, dstDir) {
+    console.log('job dir: ', dir, dstDir);
     for (const dirent of fs.readdirSync(dir, { withFileTypes: true })) {
       const path = Path.resolve(dir, dirent.name);
       if (dirent.isDirectory()) {
