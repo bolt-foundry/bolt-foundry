@@ -166,6 +166,33 @@ a.dark:visited {
   gap: 4px;
 }
 
+/* BfDs Pill */
+
+.ds-pill {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: var(--fourtharyColor015);
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.ds-pillLabel {
+  padding: 0 4px 0 8px;
+  color: var(--fourtharyColor);
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.7em;
+}
+
+.ds-pillContent {
+  border: 1px solid var(--fourtharyColor015);
+  background: var(--background);
+  color: var(--text);
+  padding: 0 8px;
+  border-radius: 8px;
+}
+
 .ellipsis {
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -622,7 +649,6 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   color: var(--textSecondary);
   font-size: 14px;
   display: flex;
-  flex-direction: row;
   gap: 20px;
 }
 

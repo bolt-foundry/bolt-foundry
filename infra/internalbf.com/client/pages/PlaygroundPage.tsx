@@ -2,6 +2,7 @@ import { React } from "deps.ts";
 import { graphql, ReactRelay } from "infra/internalbf.com/client/deps.ts";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
+import { Button } from "packages/bfDs/Button.tsx";
 
 const { useLazyLoadQuery, useMutation } = ReactRelay;
 
@@ -16,13 +17,13 @@ const testMutation = await graphql`
 
 export function PlaygroundPage() {
   const [commit, isInFlight] = useMutation(testMutation);
-  const [aiResponse, setAiResponse] = React.useState("");
+  const [aiResponse, setAiResponse] = React.useState<string>();
   const [aiModel, setAiModel] = React.useState("gpt-4o-mini");
   const [prompt, setPrompt] = React.useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setAiResponse("");
+    setAiResponse("[]");
     commit({
       variables: {
         input: prompt,
@@ -38,9 +39,18 @@ export function PlaygroundPage() {
   const backgroundImage =
     new URL("../resources/playground_background.jpeg", import.meta.url).href;
 
+
+  let parsedResponse = [];
+  if (typeof aiResponse === "string") {
+    parsedResponse = JSON.parse(aiResponse);
+  } else {
+    console.log("NOT A STRING");
+  }
+
+
   return (
     <div
-      style={{ padding: "20px" }}
+      style={{ padding: "20px", height: "100vh", overflowY: "auto" }}
     >
       <div
         style={{
@@ -84,8 +94,31 @@ export function PlaygroundPage() {
           </form>
         </div>
       </div>
-      <div style={mainDivStyle}>
-        <p style={mainChildStyle}>{aiResponse}</p>
+      <div
+        style={{
+          ...mainDivStyle,
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          padding: "10px",
+        }}
+      >
+        {parsedResponse.map((item, index) => (
+          <div
+            key={index}
+          >
+            <h2>{item.title}</h2>
+            <p>Description: {item.description}</p>
+            <p>Filename: {item.filename}</p>
+            <p>Text: {item.text}</p>
+            <p>Topics: {item.topics}</p>
+            <p>Rational: {item.rationale}</p>
+            <p>Confidence: {item.confidence}</p>
+          </div>
+        ))}
+      </div>
+      <div className="pageFooter">
+      <Button text="Create list"/>
       </div>
     </div>
   );
