@@ -82,6 +82,16 @@ abstract class BfBaseModel<
       & BfBaseModelMetadata<TCreationMetadata>;
   }
 
+  public async update(newProps: Partial<TRequiredProps & TOptionalProps>) {
+    // Update the properties
+    this.clientProps = newProps;
+    this._cachedProps = undefined; // Invalidate the cache
+    // Save the changes
+    await this.save();
+    log(`Updated ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`);
+    return this;
+  }
+
   public async delete() {
     await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
     try {

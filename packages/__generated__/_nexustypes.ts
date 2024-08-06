@@ -118,6 +118,7 @@ export interface NexusGenObjects {
     name?: string | null; // String
   }
   BfTranscript: { // root type
+    filename?: string | null; // String
     transcript?: string | null; // String
   }
   Mutation: {};
@@ -207,6 +208,7 @@ export interface NexusGenFieldTypes {
     name: string | null; // String
   }
   BfTranscript: { // field return type
+    filename: string | null; // String
     id: string; // ID!
     transcript: string | null; // String
   }
@@ -218,6 +220,7 @@ export interface NexusGenFieldTypes {
     readTextFile: string | null; // String
     submitContactForm: NexusGenRootTypes['SubmitContactFormPayload'] | null; // SubmitContactFormPayload
     switchAccount: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
+    updateTranscript: NexusGenRootTypes['BfTranscript'] | null; // BfTranscript
     upsertClip: NexusGenRootTypes['BfClip'] | null; // BfClip
   }
   PageInfo: { // field return type
@@ -306,6 +309,7 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
   }
   BfTranscript: { // field return type name
+    filename: 'String'
     id: 'ID'
     transcript: 'String'
   }
@@ -317,6 +321,7 @@ export interface NexusGenFieldTypeNames {
     readTextFile: 'String'
     submitContactForm: 'SubmitContactFormPayload'
     switchAccount: 'BfCurrentViewerAccessToken'
+    updateTranscript: 'BfTranscript'
     upsertClip: 'BfClip'
   }
   PageInfo: { // field return type name
@@ -363,6 +368,7 @@ export interface NexusGenArgTypes {
   }
   Mutation: {
     createTranscript: { // args
+      filename: string; // String!
       transcript: string; // String!
     }
     deleteTranscript: { // args
@@ -379,6 +385,11 @@ export interface NexusGenArgTypes {
     }
     switchAccount: { // args
       accountId: string; // ID!
+    }
+    updateTranscript: { // args
+      filename?: string | null; // String
+      id: string; // String!
+      transcript?: string | null; // String
     }
     upsertClip: { // args
       file: NexusGenScalars['File']; // File!
