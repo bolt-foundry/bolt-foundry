@@ -166,9 +166,14 @@ function calculateBaseline(font, fontSize) {
   }
 
   const upm = font.head.unitsPerEm;
+
   const ascender = hheaTable.ascent; // this value seems more correct than 'os2Table.typoAscender'
   //const descender = os2Table.typoDescender;
-  const capHeight = os2Table.capHeight;
+
+  const capHeight = Number.isFinite(os2Table.capHeight)
+    ? os2Table.capHeight
+    : ascender * 0.8; // some old fonts may not have this value, so take a guess if we must
+
   const lineGap = hheaTable.lineGap || 0;
 
   const scale = fontSize / upm;

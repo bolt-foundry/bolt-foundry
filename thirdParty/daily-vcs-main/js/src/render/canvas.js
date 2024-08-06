@@ -554,6 +554,10 @@ function drawStyledTextLayoutBlocks(
 ) {
   let { x, y } = frame;
 
+  let emojiOffset = Number.isFinite(fontMetrics?.baseline)
+    ? fontMetrics.baseline
+    : 0;
+
   for (const paragraphLinesArr of blocks) {
     for (const lineDesc of paragraphLinesArr) {
       const { box, string, runs } = lineDesc;
@@ -597,7 +601,7 @@ function drawStyledTextLayoutBlocks(
               ctx,
               emoji,
               Math.round(textFrame.x),
-              Math.round(textFrame.y + yOffset + (fontMetrics?.baseline || 0)),
+              Math.round(textFrame.y + yOffset + emojiOffset),
               width,
               height
             );
@@ -673,7 +677,7 @@ function drawStyledText(ctx, text, fontMetrics, style, frame, comp) {
   }
 
   let fontBaseline = fontMetrics?.baseline;
-  if (fontBaseline == null) {
+  if (!Number.isFinite(fontBaseline)) {
     fontBaseline = fontSize_px * 0.8;
   }
 
