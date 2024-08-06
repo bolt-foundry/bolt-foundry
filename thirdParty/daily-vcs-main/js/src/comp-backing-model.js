@@ -885,7 +885,7 @@ class TextNode extends StyledNodeBase {
       }
 
       this.attrStringDesc = makeAttributedStringDesc(
-        this.spans || [[this.text]],
+        this.spans || [{ string: this.text }],
         this.style || {},
         this.container.viewportSize,
         this.container.pixelsPerGridUnit
