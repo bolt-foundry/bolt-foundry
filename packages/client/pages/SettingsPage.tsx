@@ -7,6 +7,7 @@ import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
 import { Columns, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
+import { Sidebar } from "packages/client/components/Sidebar.tsx";
 const { useLazyLoadQuery } = ReactRelay;
 
 type Data = {
@@ -79,38 +80,32 @@ export function SettingsPage() {
   const data = useLazyLoadQuery<SettingsPageQuery>(query, {});
   return (
     <div className="cs-page">
-      <div className="cs-sidebar">
-        <div className="cs-sidebar-title">
-          <div className="icon">
-            <BfSymbol />
-          </div>{" "}
-          Settings
-        </div>
-        <div className="cs-sidebar-content">
+      <Sidebar
+        contents={
           <List>
             <ListItem
               isHighlighted={true}
               content="Watch folders"
               onClick={() => console.log("click")}
-            >
-            </ListItem>
+            />
             <ListItem
               content="Other settings"
               onClick={() => console.log("click")}
-            >
-            </ListItem>
+            />
             <ListItem
               content="Coming soon..."
               onClick={() => console.log("click")}
-            >
-            </ListItem>
+            />
           </List>
-        </div>
-        <div className="cs-sidebar-footer">
-          <div>Welcome, {data?.currentViewer?.person?.name}</div>
-          <div>{data?.currentViewer?.organization?.name}</div>
-        </div>
-      </div>
+        }
+        footer={
+          <>
+            <div>Welcome, {data?.currentViewer?.person?.name}</div>
+            <div>{data?.currentViewer?.organization?.name}</div>
+          </>
+        }
+        header="Settings"
+      />
       <Content />
     </div>
   );
