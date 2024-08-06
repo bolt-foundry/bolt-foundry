@@ -135,9 +135,6 @@ export const callAPI = async (
   const chain = prompt.pipe(llmInterface).pipe(outputParser);
   const response = await chain.invoke({ input: userMessage });
 
-  console.log("type", typeof response);
-  console.log("response", response);
-
   let output = JSON.stringify(response);
   if (typeof response === "string") {
     if (!response.startsWith("[")) {
