@@ -1,0 +1,4 @@
+/* esm.sh - esbuild bundle(axios@1.6.2/unsafe/helpers/buildURL) denonext production */
+import f from"/v135/axios@1.6.2/denonext/unsafe/utils.js";import d from"/v135/axios@1.6.2/denonext/unsafe/helpers/AxiosURLSearchParams.js";function l(e){return encodeURIComponent(e).replace(/%3A/gi,":").replace(/%24/g,"$").replace(/%2C/gi,",").replace(/%20/g,"+").replace(/%5B/gi,"[").replace(/%5D/gi,"]")}function o(e,c,i){if(!c)return e;let a=i&&i.encode||l,n=i&&i.serialize,r;if(n?r=n(c,i):r=f.isURLSearchParams(c)?c.toString():new d(c,i).toString(a),r){let t=e.indexOf("#");t!==-1&&(e=e.slice(0,t)),e+=(e.indexOf("?")===-1?"?":"&")+r}return e}export{o as default};
+
+import "https://deno.land/x/xhr@0.3.0/mod.ts";//# sourceMappingURL=buildURL.js.map

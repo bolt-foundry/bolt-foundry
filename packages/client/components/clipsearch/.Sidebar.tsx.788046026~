@@ -1,0 +1,9 @@
+import { React } from "deps.ts";
+
+export function Sidebar(){
+  return (
+    <div className="clipSearchSidebar">
+      <h1>Sidebar</h1>
+    </div>
+  )
+}

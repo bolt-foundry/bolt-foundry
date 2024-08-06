@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(openai@4.53.0/resources/audio/audio) denonext production */
+import{APIResource as e}from"/v135/openai@4.53.0/denonext/resource.js";import*as r from"/v135/openai@4.53.0/denonext/resources/audio/speech.js";import*as t from"/v135/openai@4.53.0/denonext/resources/audio/transcriptions.js";import*as i from"/v135/openai@4.53.0/denonext/resources/audio/translations.js";var n=class extends e{constructor(){super(...arguments),this.transcriptions=new t.Transcriptions(this._client),this.translations=new i.Translations(this._client),this.speech=new r.Speech(this._client)}};(function(s){s.Transcriptions=t.Transcriptions,s.Translations=i.Translations,s.Speech=r.Speech})(n||(n={}));export{n as Audio};
+//# sourceMappingURL=audio.js.map

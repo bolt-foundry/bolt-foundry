@@ -1,0 +1,4 @@
+/* esm.sh - esbuild bundle(axios@1.6.2/unsafe/helpers/isURLSameOrigin) denonext production */
+import h from"/v135/axios@1.6.2/denonext/unsafe/utils.js";import c from"/v135/axios@1.6.2/denonext/unsafe/platform.js";var l=c.hasStandardBrowserEnv?function(){let o=/(msie|trident)/i.test(navigator.userAgent),t=document.createElement("a"),e;function n(a){let r=a;return o&&(t.setAttribute("href",r),r=t.href),t.setAttribute("href",r),{href:t.href,protocol:t.protocol?t.protocol.replace(/:$/,""):"",host:t.host,search:t.search?t.search.replace(/^\?/,""):"",hash:t.hash?t.hash.replace(/^#/,""):"",hostname:t.hostname,port:t.port,pathname:t.pathname.charAt(0)==="/"?t.pathname:"/"+t.pathname}}return e=n(window.location.href),function(r){let s=h.isString(r)?n(r):r;return s.protocol===e.protocol&&s.host===e.host}}():function(){return function(){return!0}}();export{l as default};
+
+import "https://deno.land/x/xhr@0.3.0/mod.ts";//# sourceMappingURL=isURLSameOrigin.js.map

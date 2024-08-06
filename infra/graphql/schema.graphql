@@ -203,7 +203,7 @@ interface IBfGraphQLNode implements BfNode {
 type Mutation {
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
-  playgroundMutation(input: String!): PlaygroundMutationPayload
+  playgroundMutation(input: String!, suggestedModel: String): PlaygroundMutationPayload
   readTextFile(file: File!): String
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken

@@ -1,0 +1,3 @@
+/* esm.sh - esbuild bundle(openai@4.53.0/lib/Util) denonext production */
+var l=async o=>{let r=await Promise.allSettled(o),t=r.filter(e=>e.status==="rejected");if(t.length){for(let e of t)console.error(e.reason);throw new Error(`${t.length} promise(s) failed - see the above errors`)}let s=[];for(let e of r)e.status==="fulfilled"&&s.push(e.value);return s};export{l as allSettledWithThrow};
+//# sourceMappingURL=Util.js.map

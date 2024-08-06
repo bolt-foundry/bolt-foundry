@@ -34,7 +34,7 @@ type BfDsFormProps<T = Record<string, string | number | boolean | null>> =
     initialData: T;
   };
 
-function BfDsForm<T>(
+export function BfDsForm<T>(
   { initialData, bfDsFormCallbacks = {}, children }: BfDsFormProps<T>,
 ) {
   const [data, setData] = useState<T>(initialData);

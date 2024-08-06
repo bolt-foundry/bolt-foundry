@@ -1,0 +1,4 @@
+/* esm.sh - esbuild bundle(axios@1.7.2/unsafe/helpers/cookies) denonext production */
+import r from"/v135/axios@1.7.2/denonext/unsafe/utils.js";import m from"/v135/axios@1.7.2/denonext/unsafe/platform.js";var p=m.hasStandardBrowserEnv?{write(e,t,n,i,s,u){let o=[e+"="+encodeURIComponent(t)];r.isNumber(n)&&o.push("expires="+new Date(n).toGMTString()),r.isString(i)&&o.push("path="+i),r.isString(s)&&o.push("domain="+s),u===!0&&o.push("secure"),document.cookie=o.join("; ")},read(e){let t=document.cookie.match(new RegExp("(^|;\\s*)("+e+")=([^;]*)"));return t?decodeURIComponent(t[3]):null},remove(e){this.write(e,"",Date.now()-864e5)}}:{write(){},read(){return null},remove(){}};export{p as default};
+
+import "https://deno.land/x/xhr@0.3.0/mod.ts";//# sourceMappingURL=cookies.js.map

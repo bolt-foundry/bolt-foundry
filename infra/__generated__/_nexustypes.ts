@@ -416,6 +416,7 @@ export interface NexusGenArgTypes {
     }
     playgroundMutation: { // args
       input: string; // String!
+      suggestedModel?: string | null; // String
     }
     readTextFile: { // args
       file: NexusGenScalars['File']; // File!
