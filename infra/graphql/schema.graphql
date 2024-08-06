@@ -216,6 +216,7 @@ type Mutation {
   logout: BfCurrentViewer
   playgroundMutation(input: String!, suggestedModel: String): PlaygroundMutationPayload
   readTextFile(file: File!): String
+  searchMutation(documents: String, input: String!, suggestedModel: String): SearchMutationPayload
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
   updateTranscript(filename: String, id: String!, transcript: String): BfTranscript
@@ -269,6 +270,11 @@ type Query {
     last: Int
   ): BfOrganizationConnection
   transcripts: [BfTranscript]!
+}
+
+type SearchMutationPayload {
+  message: String
+  success: Boolean!
 }
 
 input SubmitContactFormInput {

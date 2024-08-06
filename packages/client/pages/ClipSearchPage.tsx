@@ -6,6 +6,7 @@ import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
 
 export function ClipSearchPage() {
+  const [clips, setClips] = React.useState<string>();
   const sidebarContents = (
     <>
       <List collapsible={true} header="Lists">
@@ -53,8 +54,8 @@ export function ClipSearchPage() {
         header="Clip search"
       />
       <div className="cs-main">
-        <Search />
-        <ClipsView />
+        <Search setClips={setClips} />
+        <ClipsView clips={clips} />
       </div>
     </div>
   );
