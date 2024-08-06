@@ -85,6 +85,7 @@ export default function DefaultGraphics() {
           const fontSize_vh = labelStyle.fontSize_vh;
           return (
             <Text
+              key={index}
               style={labelStyle}
               layout={[
                 layoutFuncs.plainSubtitles,
