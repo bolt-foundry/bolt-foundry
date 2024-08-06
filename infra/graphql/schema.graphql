@@ -185,6 +185,13 @@ type BfPerson implements BfNode {
   name: String
 }
 
+"""A transcript of a clip."""
+type BfTranscript implements BfNode {
+  """Unique identifier for the resource"""
+  id: ID!
+  transcript: String
+}
+
 """The `File` scalar type represents a file upload."""
 scalar File
 
@@ -201,6 +208,8 @@ interface IBfGraphQLNode implements BfNode {
 }
 
 type Mutation {
+  createTranscript(transcript: String!): BfTranscript
+  deleteTranscript(id: String!): BfTranscript
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
   playgroundMutation(input: String!, suggestedModel: String): PlaygroundMutationPayload
@@ -256,6 +265,7 @@ type Query {
     """Returns the last n elements from the list."""
     last: Int
   ): BfOrganizationConnection
+  transcripts: [BfTranscript]!
 }
 
 input SubmitContactFormInput {
