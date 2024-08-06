@@ -272,14 +272,19 @@ function compGetSourceMetadataCb(comp, type, src) {
   return ret;
 }
 
-function compErrorCb(error, info) {
-  const { componentStack } = info;
+let compHasError = false;
 
-  console.error(
-    '** VCS composition error during React render: %s - ',
-    error,
-    componentStack
-  );
+function compErrorCb(error, info) {
+  if (info) {
+    console.error(
+      '** VCS composition error during React render: %s - ',
+      error,
+      info.componentStack
+    );
+  } else {
+    console.error('** VCS composition error during React render: ', error);
+  }
+  compHasError = true;
 }
 
 let cachedOutputJson = {
@@ -288,6 +293,10 @@ let cachedOutputJson = {
 };
 
 function compUpdatedCb(comp) {
+  if (compHasError) {
+    console.error("** Can't continue after React error");
+    process.exit(9);
+  }
   if (!batchState.initialStateApplied) return;
 
   logToHostInfo(
