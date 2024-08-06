@@ -262,6 +262,37 @@ export async function bfQueryItems<
   }
 }
 
+export async function bfUpdateItem<
+  TProps = Record<string, unknown>,
+  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
+>(
+  bfOid: BfOid,
+  bfGid: BfGid,
+  newProps: Partial<TProps>,
+): Promise<void> {
+  try {
+    logger.trace("bfUpdateItem", { bfOid, bfGid, newProps });
+    // Prepare the updated props
+    const updatePropsQuery = Object.entries(newProps).map(([key, value]) => {
+      return `${key} = ${JSON.stringify(value)}`;
+    }).join(', ');
+    // Execute the update query
+    const result = await sql`
+      UPDATE bfdb
+      SET props = props || ${sql.unsafe(updatePropsQuery)},
+          last_updated = CURRENT_TIMESTAMP
+      WHERE bf_oid = ${bfOid} AND bf_gid = ${bfGid}
+    `;
+    if (result.rowCount === 0) {
+      throw new BfDbError(`No item found with bfOid: ${bfOid} and bfGid: ${bfGid}`);
+    }
+    logger.trace(`Updated item with bfOid: ${bfOid} and bfGid: ${bfGid}`);
+  } catch (e) {
+    logger.error(e);
+    throw new BfDbError("Failed to update item in the database");
+  }
+}
+
 export async function bfDeleteItem(bfOid: BfOid, bfGid: BfGid): Promise<void> {
   try {
     logger.trace("bfDeleteItem", { bfOid, bfGid });
