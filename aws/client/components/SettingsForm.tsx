@@ -9,7 +9,7 @@ import Input from "aws/client/ui_components/Input.tsx";
 import RatioSelector from "aws/client/components/RatioSelector.tsx";
 import Toggle from "aws/client/ui_components/Toggle.tsx";
 import DropdownSelector from "aws/client/ui_components/DropdownSelector.tsx";
-import { fontFamilies } from "packages/vcs/params.js";
+// import { fontFamilies } from "packages/vcs/compositions/params.js";
 import {
   useFeatureFlag,
   useFeatureVariant,
@@ -17,7 +17,7 @@ import {
 import { SettingsFormQuery_settings$key } from "aws/__generated__/SettingsFormQuery_settings.graphql.ts";
 import { WatermarkLogoType } from "aws/types/settings.ts";
 import { hexToRgb, rgbToHex } from "aws/client/lib/color.ts";
-import { imagePreloads } from "packages/vcs/preloads.js";
+import { imagePreloads } from "packages/vcs/compositions/preloads.js";
 import classnames from "aws/client/lib/classnames.ts";
 import Button from "aws/client/ui_components/Button.tsx";
 import TextArea from "aws/client/ui_components/TextArea.tsx";
@@ -365,7 +365,7 @@ export default function SettingsForm(
             />
           }
         />
-        {enableCaptionFonts && (
+        {/* {enableCaptionFonts && (
           <RowTemplate
             changed={changedSettings != null &&
               changedSettings.indexOf("font") > -1}
@@ -390,7 +390,7 @@ export default function SettingsForm(
               />
             }
           />
-        )}
+        )} */}
         {enableCaptionTemplates && (
           <>
             <RowTemplate
