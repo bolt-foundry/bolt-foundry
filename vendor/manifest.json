@@ -1241,6 +1241,18 @@
     "https://esm.sh/v135/zod@3.23.8/lib/ZodError.d.ts": {},
     "https://esm.sh/v135/zod@3.23.8/lib/helpers/partialUtil.d.ts": {},
     "https://esm.sh/v135/zod@3.23.8/lib/helpers/enumUtil.d.ts": {},
-    "https://esm.sh/v135/zod@3.23.8/lib/helpers/errorUtil.d.ts": {}
+    "https://esm.sh/v135/zod@3.23.8/lib/helpers/errorUtil.d.ts": {},
+    "https://esm.sh/@langchain/core@0.2.21/prompts": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/@langchain/core@0.2.21/prompts.d.ts"
+      }
+    },
+    "https://esm.sh/@langchain/core@0.2.21/output_parsers": {
+      "headers": {
+        "content-type": "application/javascript; charset=utf-8",
+        "x-typescript-types": "https://esm.sh/v135/@langchain/core@0.2.21/output_parsers.d.ts"
+      }
+    }
   }
 }

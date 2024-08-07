@@ -1,4 +1,5 @@
-import { React, ReactRelay } from "deps.ts";
+import * as React from "react";
+import * as ReactRelay from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { Input } from "packages/bfDs/Input.tsx";
 import { SearchQuery } from "packages/__generated__/SearchQuery.graphql.ts";
@@ -6,16 +7,21 @@ import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 const { useState } = React;
 const { useLazyLoadQuery, useMutation } = ReactRelay;
 
+export enum AiModel {
+  OPENAI_4O = "gpt-4o-mini",
+  OPENAI_35 = "gpt-3.5-turbo",
+  CLAUDE_OPUS = "claude-3-opus-20240229",
+  CLAUDE_SONNET = "claude-3-5-sonnet-20240620",
+}
+
 const mutation = await graphql`
   mutation SearchMutation(
     $input: String!,
     $suggestedModel: String,
-    $documents: String,
   ) {
     searchMutation(
       input: $input,
       suggestedModel: $suggestedModel,
-      documents: $documents,
     ) {
       success
       message
@@ -25,10 +31,12 @@ const mutation = await graphql`
 
 const query = await graphql`
   query SearchQuery {
-    transcripts {
-      id
-      filename
-      transcript
+    currentViewer {
+      organization {
+        transcripts(first: 10) {
+          count
+        }
+      }
     }
   }
 `;
@@ -42,23 +50,20 @@ export function Search({ setClips }: Props) {
   const data = useLazyLoadQuery<SearchQuery>(query, {});
   const [prompt, setPrompt] = useState("");
   const [clipsFound, setClipsFound] = useState<number | null>(null);
-  const [aiModel, setAiModel] = useState("gpt-4o-mini");
+  const [aiModel, setAiModel] = useState(AiModel.OPENAI_4O);
+
+  const transcriptsCount =
+    data?.currentViewer?.organization?.transcripts?.count ?? 0;
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setClipsFound(null);
-    console.log("Searching for", prompt);
-    console.log("Transcripts: ", data.transcripts.length);
     commit({
       variables: {
         input: prompt,
-        // suggestedModel: "claude-3-opus-20240229",
-        // suggestedModel: "gpt-4o-mini",
         suggestedModel: aiModel,
-        documents: JSON.stringify(data.transcripts),
       },
       onCompleted: (response) => {
-        // console.log(response.searchMutation.message);
         setClips(response.searchMutation.message);
         const parsedClips = JSON.parse(response.searchMutation.message);
         setClipsFound(parsedClips.length);
@@ -67,12 +72,12 @@ export function Search({ setClips }: Props) {
     setPrompt("");
   }
 
-  let metaText = `${data.transcripts.length} videos loaded`;
+  let metaText = `${transcriptsCount} videos loaded`;
   if (isInFlight) {
-    metaText = `Searching ${data.transcripts.length} videos...`;
+    metaText = `Searching ${transcriptsCount} videos...`;
   }
   if (clipsFound !== null) {
-    metaText = `${clipsFound} clips found in ${data.transcripts.length} videos`;
+    metaText = `${clipsFound} clips found in ${transcriptsCount} videos`;
   }
   return (
     <div className="cs-search">
@@ -93,10 +98,10 @@ export function Search({ setClips }: Props) {
           value={aiModel}
           onChange={(value) => setAiModel(value)}
           options={{
-            "GPT 3.5 turbo": "gpt-3.5-turbo",
-            "GPT 4o mini": "gpt-4o-mini",
-            "Claude 3 opus": "claude-3-opus-20240229",
-            "Claude 3.5 sonnet": "claude-3-5-sonnet-20240620",
+            "GPT 3.5 turbo": AiModel.OPENAI_35,
+            "GPT 4o mini": AiModel.OPENAI_4O,
+            "Claude 3 opus": AiModel.CLAUDE_OPUS,
+            "Claude 3.5 sonnet": AiModel.CLAUDE_SONNET,
           }}
           justification="end"
         />

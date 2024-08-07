@@ -82,23 +82,13 @@ abstract class BfBaseModel<
       & BfBaseModelMetadata<TCreationMetadata>;
   }
 
-  public async update(newProps: Partial<TRequiredProps & TOptionalProps>) {
-    // Update the properties
-    this.clientProps = newProps;
-    this._cachedProps = undefined; // Invalidate the cache
-    // Save the changes
-    await this.save();
-    log(`Updated ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`);
-    return this;
-  }
-
   public async delete() {
     await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
     try {
       await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
-      log(`Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`);
+      logger.trace(`Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`);
     } catch (error) {
-      log(`Failed to delete ${this.constructor.name}:`, error);
+      logger.trace(`Failed to delete ${this.constructor.name}:`, error);
       throw error;
     }
   }

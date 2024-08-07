@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<71a8ecb505852f57ce6e2cc20a7eae79>>
+ * @generated SignedSource<<fa7d639b18c1b0bc2cc68ce384aa0427>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,11 +11,13 @@
 import { ConcreteRequest, Query } from 'relay-runtime';
 export type SearchQuery$variables = Record<PropertyKey, never>;
 export type SearchQuery$data = {
-  readonly transcripts: ReadonlyArray<{
-    readonly filename: string | null | undefined;
-    readonly id: string;
-    readonly transcript: string | null | undefined;
-  } | null | undefined>;
+  readonly currentViewer: {
+    readonly organization: {
+      readonly transcripts: {
+        readonly count: number | null | undefined;
+      } | null | undefined;
+    } | null | undefined;
+  } | null | undefined;
 };
 export type SearchQuery = {
   response: SearchQuery$data;
@@ -23,47 +25,61 @@ export type SearchQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "alias": null,
-    "args": null,
-    "concreteType": "BfTranscript",
-    "kind": "LinkedField",
-    "name": "transcripts",
-    "plural": true,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "id",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "filename",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "transcript",
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
-  }
-];
+var v0 = {
+  "alias": null,
+  "args": [
+    {
+      "kind": "Literal",
+      "name": "first",
+      "value": 10
+    }
+  ],
+  "concreteType": "BfTranscriptConnection",
+  "kind": "LinkedField",
+  "name": "transcripts",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "count",
+      "storageKey": null
+    }
+  ],
+  "storageKey": "transcripts(first:10)"
+};
 return {
   "fragment": {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
     "name": "SearchQuery",
-    "selections": (v0/*: any*/),
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": null,
+        "kind": "LinkedField",
+        "name": "currentViewer",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "BfOrganization",
+            "kind": "LinkedField",
+            "name": "organization",
+            "plural": false,
+            "selections": [
+              (v0/*: any*/)
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ],
     "type": "Query",
     "abstractKey": null
   },
@@ -72,19 +88,57 @@ return {
     "argumentDefinitions": [],
     "kind": "Operation",
     "name": "SearchQuery",
-    "selections": (v0/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": null,
+        "kind": "LinkedField",
+        "name": "currentViewer",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "__typename",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "BfOrganization",
+            "kind": "LinkedField",
+            "name": "organization",
+            "plural": false,
+            "selections": [
+              (v0/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "id",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
-    "cacheID": "35229ec06e0a2a4cfcc7d1ba2457ac19",
+    "cacheID": "916958b0be33757246dcbde0d9d9309e",
     "id": null,
     "metadata": {},
     "name": "SearchQuery",
     "operationKind": "query",
-    "text": "query SearchQuery {\n  transcripts {\n    id\n    filename\n    transcript\n  }\n}\n"
+    "text": "query SearchQuery {\n  currentViewer {\n    __typename\n    organization {\n      transcripts(first: 10) {\n        count\n      }\n      id\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b1a06ad18773214a8e07f7137cb455a1";
+(node as any).hash = "db2d51857e36fe3f85ac6105b2bce990";
 
 export default node;

@@ -4,7 +4,8 @@
 
 const imagePreloads = {};
 
-export type WatermarkLogoType = keyof typeof imagePreloads;
+// export type WatermarkLogoType = keyof typeof imagePreloads;
+export type WatermarkLogoType = string;
 export type WatermarkPositionType =
   | "under_caption"
   | "top_right"
