@@ -10,7 +10,9 @@ import { classnames } from "lib/classnames.ts";
 import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
 import { RandallPlaygroundPageQuery } from "infra/__generated__/RandallPlaygroundPageQuery.graphql.ts";
 import { RandallPlaygroundPageAddToGoogleMutation } from "infra/__generated__/RandallPlaygroundPageAddToGoogleMutation.graphql.ts";
+import { RandallPlaygroundPagePickFolderMutation } from "infra/__generated__/RandallPlaygroundPagePickFolderMutation.graphql.ts";
 import { Button } from "packages/bfDs/Button.tsx";
+import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
 const { useState } = React;
 
 export enum GoogleDriveFilePickerFileType {
@@ -99,6 +101,7 @@ const query = await graphql`
     currentViewer {
     person {
     name
+    googleAuthAccessToken
     }
     organization {
       reviewableClips(first: 10) {
@@ -118,9 +121,17 @@ const mutationToAuthorizeGoogle = await graphql`
     linkAdvancedGoogleAuth(code: $code) {
       ... on BfCurrentViewer {
         person {
-          id
+          googleAuthAccessToken
         }
       }
+    }
+  }
+`;
+
+const mutationToPickFolder = await graphql`
+  mutation RandallPlaygroundPagePickFolderMutation($folderId: String!) {
+    pickGoogleDriveFolder(folderId: $folderId) {
+      __typename
     }
   }
 `;
@@ -164,14 +175,21 @@ export function RandallPlaygroundPage() {
   const [ownerFilter, setOwnerFilter] = useState<string | null>(null);
   const [clientFilter, setClientFilter] = useState<string | null>(null);
   const [currentClipId, setCurrentClipId] = useState<string | null>(null);
-  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+  const { GOOGLE_OAUTH_CLIENT_ID } = useAppEnvironment();
+  const [googleAccessToken, setGoogleAccessToken] = useState<string | null>(
+    data?.currentViewer?.person?.googleAuthAccessToken ?? null,
+  );
+  const [commitFolder, inFlightFolder] = useMutation<RandallPlaygroundPagePickFolderMutation>(
+    mutationToPickFolder,
+  )
   async function authorizer() {
     try {
       const code = await authorizeGdrive();
       commit({
         variables: { code },
         onCompleted: (data) => {
-          setIsAuthorized(true);
+          console.log(data);
+          setGoogleAccessToken(data.linkAdvancedGoogleAuth?.person?.googleAuthAccessToken);
         },
         onError: (error) => {
           console.error(error);
@@ -182,7 +200,14 @@ export function RandallPlaygroundPage() {
     }
   }
   async function pickFile() {
-    console.log("you'd like that wouldnt you");
+    const folder = await openPicker(googleAccessToken!, GOOGLE_OAUTH_CLIENT_ID!, GoogleDriveFilePickerFileType.FOLDER)
+    commitFolder({
+      variables: { folderId: folder.docs[0].id, name: folder.docs[0].name },
+      onCompleted: (data) => {
+        console.log('o shit we did it')
+      }
+    });
+    
   }
 
   const filteredData =
@@ -204,10 +229,11 @@ export function RandallPlaygroundPage() {
             </div>
             <div>
               <Button
-                text={isAuthorized ? "Authorized!!" : "Authorize Google"}
+                text={googleAccessToken ? "Authorized!!" : "Authorize Google"}
                 onClick={authorizer}
+                disabled={googleAccessToken != null}
               />
-              <Button text={"Open file picker"} onClick={pickFile} />
+              <Button text={"Open file picker"} onClick={pickFile} disabled={!googleAccessToken} />
               {tabs[currentTab].header} -{" "}
               {data?.currentViewer?.person?.name ?? "Not set up"}
             </div>

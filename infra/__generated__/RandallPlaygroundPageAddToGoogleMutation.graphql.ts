@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1d31635b229e1f4e4db64c217ff0de14>>
+ * @generated SignedSource<<38b7307bc5c4df22269a3e58485d20c1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,7 +15,7 @@ export type RandallPlaygroundPageAddToGoogleMutation$variables = {
 export type RandallPlaygroundPageAddToGoogleMutation$data = {
   readonly linkAdvancedGoogleAuth: {
     readonly person: {
-      readonly id: string;
+      readonly googleAuthAccessToken: string | null | undefined;
     } | null | undefined;
   } | null | undefined;
 };
@@ -42,19 +42,8 @@ v1 = [
 v2 = {
   "alias": null,
   "args": null,
-  "concreteType": "BfPerson",
-  "kind": "LinkedField",
-  "name": "person",
-  "plural": false,
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "id",
-      "storageKey": null
-    }
-  ],
+  "kind": "ScalarField",
+  "name": "googleAuthAccessToken",
   "storageKey": null
 };
 return {
@@ -72,7 +61,18 @@ return {
         "name": "linkAdvancedGoogleAuth",
         "plural": false,
         "selections": [
-          (v2/*: any*/)
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "BfPerson",
+            "kind": "LinkedField",
+            "name": "person",
+            "plural": false,
+            "selections": [
+              (v2/*: any*/)
+            ],
+            "storageKey": null
+          }
         ],
         "storageKey": null
       }
@@ -105,23 +105,41 @@ return {
             "kind": "TypeDiscriminator",
             "abstractKey": "__isBfCurrentViewer"
           },
-          (v2/*: any*/)
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "BfPerson",
+            "kind": "LinkedField",
+            "name": "person",
+            "plural": false,
+            "selections": [
+              (v2/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "id",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "2f2e578c26efc1553c145dfa56fa63c5",
+    "cacheID": "5e1cdf1d1521f8e4986090b1189f1814",
     "id": null,
     "metadata": {},
     "name": "RandallPlaygroundPageAddToGoogleMutation",
     "operationKind": "mutation",
-    "text": "mutation RandallPlaygroundPageAddToGoogleMutation(\n  $code: String!\n) {\n  linkAdvancedGoogleAuth(code: $code) {\n    __typename\n    __isBfCurrentViewer: __typename\n    person {\n      id\n    }\n  }\n}\n"
+    "text": "mutation RandallPlaygroundPageAddToGoogleMutation(\n  $code: String!\n) {\n  linkAdvancedGoogleAuth(code: $code) {\n    __typename\n    __isBfCurrentViewer: __typename\n    person {\n      googleAuthAccessToken\n      id\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "74aa7802e444fb0559d33b9858dd9945";
+(node as any).hash = "34eff8db39623b64ba4379a67263bfa1";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1958e19a0338cf6379fedb49a3c4c671>>
+ * @generated SignedSource<<7ed047203a14685f967f6b0e4c69251d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,6 +22,7 @@ export type RandallPlaygroundPageQuery$data = {
       } | null | undefined;
     } | null | undefined;
     readonly person: {
+      readonly googleAuthAccessToken: string | null | undefined;
       readonly name: string | null | undefined;
     } | null | undefined;
   } | null | undefined;
@@ -43,10 +44,17 @@ v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "id",
+  "name": "googleAuthAccessToken",
   "storageKey": null
 },
 v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v3 = {
   "alias": null,
   "args": [
     {
@@ -68,7 +76,7 @@ v2 = {
       "name": "nodes",
       "plural": true,
       "selections": [
-        (v1/*: any*/),
+        (v2/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -112,7 +120,8 @@ return {
             "name": "person",
             "plural": false,
             "selections": [
-              (v0/*: any*/)
+              (v0/*: any*/),
+              (v1/*: any*/)
             ],
             "storageKey": null
           },
@@ -124,7 +133,7 @@ return {
             "name": "organization",
             "plural": false,
             "selections": [
-              (v2/*: any*/)
+              (v3/*: any*/)
             ],
             "storageKey": null
           }
@@ -165,7 +174,8 @@ return {
             "plural": false,
             "selections": [
               (v0/*: any*/),
-              (v1/*: any*/)
+              (v1/*: any*/),
+              (v2/*: any*/)
             ],
             "storageKey": null
           },
@@ -177,8 +187,8 @@ return {
             "name": "organization",
             "plural": false,
             "selections": [
-              (v2/*: any*/),
-              (v1/*: any*/)
+              (v3/*: any*/),
+              (v2/*: any*/)
             ],
             "storageKey": null
           }
@@ -188,16 +198,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "5ee3bb22f532bc771f35baff9bed2bba",
+    "cacheID": "7d1fab4dc55dbeaf9e76d8841b07f8d9",
     "id": null,
     "metadata": {},
     "name": "RandallPlaygroundPageQuery",
     "operationKind": "query",
-    "text": "query RandallPlaygroundPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      reviewableClips(first: 10) {\n        nodes {\n          id\n          title\n          mediaUrl\n        }\n      }\n      id\n    }\n  }\n}\n"
+    "text": "query RandallPlaygroundPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      googleAuthAccessToken\n      id\n    }\n    organization {\n      reviewableClips(first: 10) {\n        nodes {\n          id\n          title\n          mediaUrl\n        }\n      }\n      id\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "c5884d15663e9548a2c13f10994ec7f6";
+(node as any).hash = "1f59a293cef5bf1dcca89b6c2b7fbf14";
 
 export default node;
