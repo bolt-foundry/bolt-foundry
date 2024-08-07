@@ -66,6 +66,14 @@
   padding: 20px;
   postion: sticky;
 }
+.cs-searchMeta {
+  color: var(--textSecondary);
+  font-size: 0.8em;
+  padding: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 
 
 .cs-clip {
