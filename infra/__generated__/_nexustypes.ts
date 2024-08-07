@@ -130,6 +130,20 @@ export interface NexusGenObjects {
     email?: string | null; // String
     name?: string | null; // String
   }
+  BfTranscript: { // root type
+    filename?: string | null; // String
+    transcript?: string | null; // String
+  }
+  BfTranscriptConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['BfTranscriptEdge'] | null> | null; // [BfTranscriptEdge]
+    nodes?: Array<NexusGenRootTypes['BfTranscript'] | null> | null; // [BfTranscript]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfTranscriptEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BfTranscript'] | null; // BfTranscript
+  }
   IBfCurrentViewerInternalAdmin: { // root type
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
@@ -145,6 +159,10 @@ export interface NexusGenObjects {
     success: boolean; // Boolean!
   }
   Query: {};
+  SearchMutationPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
   SubmitContactFormPayload: { // root type
     message?: string | null; // String
     success: boolean; // Boolean!
@@ -153,7 +171,7 @@ export interface NexusGenObjects {
 
 export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'> | core.Discriminate<'IBfCurrentViewerInternalAdmin', 'required'>;
-  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveFolder', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
+  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveFolder', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfTranscript', 'required'>;
   IBfGraphQLNode: any;
 }
 
@@ -221,6 +239,7 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     name: string | null; // String
     reviewableClips: NexusGenRootTypes['BfClipReviewConnection'] | null; // BfClipReviewConnection
+    transcripts: NexusGenRootTypes['BfTranscriptConnection'] | null; // BfTranscriptConnection
   }
   BfOrganizationConnection: { // field return type
     count: number | null; // Int
@@ -239,20 +258,39 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     name: string | null; // String
   }
+  BfTranscript: { // field return type
+    filename: string | null; // String
+    id: string; // ID!
+    transcript: string | null; // String
+  }
+  BfTranscriptConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['BfTranscriptEdge'] | null> | null; // [BfTranscriptEdge]
+    nodes: Array<NexusGenRootTypes['BfTranscript'] | null> | null; // [BfTranscript]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfTranscriptEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BfTranscript'] | null; // BfTranscript
+  }
   IBfCurrentViewerInternalAdmin: { // field return type
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   Mutation: { // field return type
+    createTranscript: NexusGenRootTypes['BfTranscript'] | null; // BfTranscript
+    deleteTranscript: NexusGenRootTypes['BfTranscript'] | null; // BfTranscript
     linkAdvancedGoogleAuth: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
     logout: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     pickGoogleDriveFolder: NexusGenRootTypes['BfGoogleDriveFolder'] | null; // BfGoogleDriveFolder
     playgroundMutation: NexusGenRootTypes['PlaygroundMutationPayload'] | null; // PlaygroundMutationPayload
     readTextFile: string | null; // String
+    searchMutation: NexusGenRootTypes['SearchMutationPayload'] | null; // SearchMutationPayload
     submitContactForm: NexusGenRootTypes['SubmitContactFormPayload'] | null; // SubmitContactFormPayload
     switchAccount: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
+    updateTranscript: NexusGenRootTypes['BfTranscript'] | null; // BfTranscript
     upsertClip: NexusGenRootTypes['BfClip'] | null; // BfClip
   }
   PageInfo: { // field return type
@@ -269,6 +307,10 @@ export interface NexusGenFieldTypes {
     currentViewer: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     node: NexusGenRootTypes['BfNode'] | null; // BfNode
     organizations: NexusGenRootTypes['BfOrganizationConnection'] | null; // BfOrganizationConnection
+  }
+  SearchMutationPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
   }
   SubmitContactFormPayload: { // field return type
     message: string | null; // String
@@ -344,6 +386,7 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     name: 'String'
     reviewableClips: 'BfClipReviewConnection'
+    transcripts: 'BfTranscriptConnection'
   }
   BfOrganizationConnection: { // field return type name
     count: 'Int'
@@ -362,20 +405,39 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     name: 'String'
   }
+  BfTranscript: { // field return type name
+    filename: 'String'
+    id: 'ID'
+    transcript: 'String'
+  }
+  BfTranscriptConnection: { // field return type name
+    count: 'Int'
+    edges: 'BfTranscriptEdge'
+    nodes: 'BfTranscript'
+    pageInfo: 'PageInfo'
+  }
+  BfTranscriptEdge: { // field return type name
+    cursor: 'String'
+    node: 'BfTranscript'
+  }
   IBfCurrentViewerInternalAdmin: { // field return type name
     organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
   }
   Mutation: { // field return type name
+    createTranscript: 'BfTranscript'
+    deleteTranscript: 'BfTranscript'
     linkAdvancedGoogleAuth: 'BfCurrentViewer'
     loginWithGoogle: 'BfCurrentViewerAccessToken'
     logout: 'BfCurrentViewer'
     pickGoogleDriveFolder: 'BfGoogleDriveFolder'
     playgroundMutation: 'PlaygroundMutationPayload'
     readTextFile: 'String'
+    searchMutation: 'SearchMutationPayload'
     submitContactForm: 'SubmitContactFormPayload'
     switchAccount: 'BfCurrentViewerAccessToken'
+    updateTranscript: 'BfTranscript'
     upsertClip: 'BfClip'
   }
   PageInfo: { // field return type name
@@ -392,6 +454,10 @@ export interface NexusGenFieldTypeNames {
     currentViewer: 'BfCurrentViewer'
     node: 'BfNode'
     organizations: 'BfOrganizationConnection'
+  }
+  SearchMutationPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
   }
   SubmitContactFormPayload: { // field return type name
     message: 'String'
@@ -418,6 +484,12 @@ export interface NexusGenArgTypes {
       first?: number | null; // Int
       last?: number | null; // Int
     }
+    transcripts: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
   }
   BfPerson: {
     accounts: { // args
@@ -428,6 +500,13 @@ export interface NexusGenArgTypes {
     }
   }
   Mutation: {
+    createTranscript: { // args
+      filename: string; // String!
+      transcript: string; // String!
+    }
+    deleteTranscript: { // args
+      id: string; // String!
+    }
     linkAdvancedGoogleAuth: { // args
       code: string; // String!
     }
@@ -445,11 +524,20 @@ export interface NexusGenArgTypes {
     readTextFile: { // args
       file: NexusGenScalars['File']; // File!
     }
+    searchMutation: { // args
+      input: string; // String!
+      suggestedModel?: string | null; // String
+    }
     submitContactForm: { // args
       input: NexusGenInputs['SubmitContactFormInput']; // SubmitContactFormInput!
     }
     switchAccount: { // args
       accountId: string; // ID!
+    }
+    updateTranscript: { // args
+      filename?: string | null; // String
+      id: string; // String!
+      transcript?: string | null; // String
     }
     upsertClip: { // args
       file: NexusGenScalars['File']; // File!
@@ -472,7 +560,7 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon" | "IBfCurrentViewerInternalAdmin"
-  BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveFolder" | "BfOrganization" | "BfPerson"
+  BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveFolder" | "BfOrganization" | "BfPerson" | "BfTranscript"
 }
 
 export interface NexusGenTypeInterfaces {
@@ -484,6 +572,7 @@ export interface NexusGenTypeInterfaces {
   BfGoogleDriveFolder: "BfNode"
   BfOrganization: "BfNode"
   BfPerson: "BfNode"
+  BfTranscript: "BfNode"
   IBfCurrentViewerInternalAdmin: "BfCurrentViewer"
   IBfGraphQLNode: "BfNode"
 }
