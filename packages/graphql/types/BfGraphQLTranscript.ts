@@ -18,6 +18,7 @@ export const BfGraphQLTranscriptType = objectType({
   definition: (t) => {
     t.implements(BfNodeGraphQLType);
     t.string("transcript");
+    t.string("filename");
   },
 });
 
@@ -40,17 +41,44 @@ export const BfGraphQLTranscriptCreateMutation = mutationField("createTranscript
   type: BfGraphQLTranscriptType,
   args: {
     transcript: nonNull(stringArg()),
+    filename: nonNull(stringArg()),
   },
-  resolve: async (_, { transcript }, { bfCurrentViewer }) => {
-    logger.debug("createTranscript", { transcript });
+  resolve: async (_, { transcript, filename }, { bfCurrentViewer }) => {
+    logger.debug("createTranscript", { transcript, filename });
     const newTranscript = await BfTranscript.create(bfCurrentViewer, {
       transcript,
+      filename,
     });
     logger.debug("Created new transcript successfully", newTranscript);
     return newTranscript.toGraphql();
   },
 });
 
+export const BfGraphQLTranscriptUpdateMutation = mutationField("updateTranscript", {
+  type: BfGraphQLTranscriptType,
+  args: {
+    id: nonNull(stringArg()),
+    transcript: stringArg(),
+    filename: stringArg(),
+  },
+  resolve: async (_, args, { bfCurrentViewer }) => {
+    logger.debug("updateTranscript", args);
+    const transcriptToUpdate = await BfTranscript.find(bfCurrentViewer, args.id);
+    if (!transcriptToUpdate) {
+      throw new Error("Transcript not found");
+    }
+    const updatedProperties = Object.entries(args)
+      .reduce((acc, [key, value]) => {
+      if (value !== undefined && key !== "id") { // Exclude 'id' from properties to update
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as Partial<{ transcript: string; filename: string }>);
+    const updatedTranscript = await transcriptToUpdate.update(updatedProperties);
+    logger.debug("Updated transcript successfully", updatedTranscript);
+    return updatedTranscript.toGraphql();
+  },
+});
 
 export const BfGraphQLTranscriptDeleteMutation = mutationField("deleteTranscript", {
   type: BfGraphQLTranscriptType,
