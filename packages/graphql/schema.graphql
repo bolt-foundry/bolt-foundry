@@ -154,6 +154,7 @@ type BfPerson implements BfNode {
     last: Int
   ): BfAccountConnection
   email: String
+  googleAuthAccessToken: String
 
   """Unique identifier for the resource"""
   id: ID!
@@ -164,6 +165,7 @@ type BfPerson implements BfNode {
 scalar File
 
 type Mutation {
+  linkAdvancedGoogleAuth(code: String): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
   readTextFile(file: File!): String

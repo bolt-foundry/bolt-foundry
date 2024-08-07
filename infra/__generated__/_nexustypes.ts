@@ -228,6 +228,7 @@ export interface NexusGenFieldTypes {
   BfPerson: { // field return type
     accounts: NexusGenRootTypes['BfAccountConnection'] | null; // BfAccountConnection
     email: string | null; // String
+    googleAuthAccessToken: string | null; // String
     id: string; // ID!
     name: string | null; // String
   }
@@ -237,6 +238,7 @@ export interface NexusGenFieldTypes {
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   Mutation: { // field return type
+    linkAdvancedGoogleAuth: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
     logout: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     playgroundMutation: NexusGenRootTypes['PlaygroundMutationPayload'] | null; // PlaygroundMutationPayload
@@ -344,6 +346,7 @@ export interface NexusGenFieldTypeNames {
   BfPerson: { // field return type name
     accounts: 'BfAccountConnection'
     email: 'String'
+    googleAuthAccessToken: 'String'
     id: 'ID'
     name: 'String'
   }
@@ -353,6 +356,7 @@ export interface NexusGenFieldTypeNames {
     role: 'AccountRole'
   }
   Mutation: { // field return type name
+    linkAdvancedGoogleAuth: 'BfCurrentViewer'
     loginWithGoogle: 'BfCurrentViewerAccessToken'
     logout: 'BfCurrentViewer'
     playgroundMutation: 'PlaygroundMutationPayload'
@@ -411,6 +415,9 @@ export interface NexusGenArgTypes {
     }
   }
   Mutation: {
+    linkAdvancedGoogleAuth: { // args
+      code?: string | null; // String
+    }
     loginWithGoogle: { // args
       credential: string; // String!
     }

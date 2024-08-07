@@ -1,5 +1,6 @@
 import { decodeAndVerifyGoogleToken } from "packages/bfDb/classes/BfAuth.ts";
 import {
+BfCurrentViewer,
   BfCurrentViewerAccessToken,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
@@ -8,6 +9,7 @@ import {
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { exchangeRefreshTokenForAccessToken } from "lib/googleOauth.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 
@@ -64,6 +66,10 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
 
     logVerbose("newPerson", newPerson);
     return newPerson;
+  }
+
+  static findCurrentViewer(bfCurrentViewer: BfCurrentViewer) {
+    return this.find(bfCurrentViewer, bfCurrentViewer.personBfGid);
   }
 
   async logout() {

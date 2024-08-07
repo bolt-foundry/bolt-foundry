@@ -1,3 +1,7 @@
+/// <reference path="https://esm.sh/v135/@types/google.accounts@0.0.14/index.d.ts" />
+/// <reference path="https://esm.sh/v135/@types/google.picker@0.0.42/index.d.ts" />
+/// <reference path="https://esm.sh/v135/@types/gapi.drive@0.0.9/index.d.ts" />
+/// <reference path="https://esm.sh/v135/@types/gapi@0.0.47/index.d.ts" />
 export * as ReactDOMClient from "react-dom/client";
 export * as GraphqlWs from "https://esm.sh/graphql-ws@5.14.0";
 import "infra/__generated__/_graphql_imports.ts";

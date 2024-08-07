@@ -9,8 +9,11 @@ export type BfEdgeOptionalProps = {
 };
 
 type EdgeCreationMetadata = CreationMetadata & {
+  bfTClassName: string;
   bfTid: BfTid | BfGid;
+  bfSClassName: string;
   bfSid: BfSid | BfGid;
+  
 };
 
 
