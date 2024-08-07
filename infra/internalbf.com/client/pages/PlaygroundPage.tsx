@@ -39,14 +39,12 @@ export function PlaygroundPage() {
   const backgroundImage =
     new URL("../resources/playground_background.jpeg", import.meta.url).href;
 
-
   let parsedResponse = [];
   if (typeof aiResponse === "string") {
     parsedResponse = JSON.parse(aiResponse);
   } else {
     console.log("NOT A STRING");
   }
-
 
   return (
     <div
@@ -118,7 +116,7 @@ export function PlaygroundPage() {
         ))}
       </div>
       <div className="pageFooter">
-      <Button text="Create list"/>
+        <Button text="Create list" />
       </div>
     </div>
   );

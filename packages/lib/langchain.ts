@@ -1,107 +1,31 @@
-import { ChatOpenAI } from "https://esm.sh/@langchain/openai";
-import { ChatAnthropic } from "https://esm.sh/@langchain/anthropic";
-import { ChatPromptTemplate } from "https://esm.sh/@langchain/core/prompts";
 import {
+  ChatAnthropic,
+  ChatOpenAI,
+  ChatPromptTemplate,
   JsonOutputParser,
   StringOutputParser,
-} from "https://esm.sh/@langchain/core/output_parsers";
-
-const samples = [
-  {
-    name: "sample1",
-    content: await import(
-      "infra/aiPlayground/test_database/words/1da49b0955384e7aa51e110dbd25b736_words.json",
-      {
-        assert: { type: "json" },
-      }
-    ),
-  },
-  {
-    name: "sample2",
-    content: await import(
-      "infra/aiPlayground/test_database/words/5c57973d4b2a43948a49b6d254906385_words.json",
-      {
-        assert: { type: "json" },
-      }
-    ),
-  },
-  {
-    name: "sample3",
-    content: await import(
-      "infra/aiPlayground/test_database/words/50d21ed829774d1fb244bb22684b0ad5_words.json",
-      {
-        assert: { type: "json" },
-      }
-    ),
-  },
-  {
-    name: "sample4",
-    content: await import(
-      "infra/aiPlayground/test_database/words/169dd504edff4bd7b4ebae59f0202885_words.json",
-      {
-        assert: { type: "json" },
-      }
-    ),
-  },
-  {
-    name: "sample5",
-    content: await import(
-      "infra/aiPlayground/test_database/words/617e231f1c014e2785bf7627eb361c96_words.json",
-      {
-        assert: { type: "json" },
-      }
-    ),
-  },
-  {
-    name: "sample6",
-    content: await import(
-      "infra/aiPlayground/test_database/words/17772c835ed14802aaac61bb79c2e5ed_words.json",
-      {
-        assert: { type: "json" },
-      }
-    ),
-  },
-  {
-    name: "sample7",
-    content: await import(
-      "infra/aiPlayground/test_database/words/ca44d58db1ae47ba9c47f47ee11c11cf_words.json",
-      {
-        assert: { type: "json" },
-      }
-    ),
-  },
-  {
-    name: "sample8",
-    content: await import(
-      "infra/aiPlayground/test_database/words/e9d658eb116f4d898d547ab8b276d9c1_words.json",
-      {
-        assert: { type: "json" },
-      }
-    ),
-  },
-  {
-    name: "sample9",
-    content: await import(
-      "infra/aiPlayground/test_database/words/f4c8a47adbe64a32a9216a43ed6e3bfa_words.json",
-      {
-        assert: { type: "json" },
-      }
-    ),
-  },
-];
+} from "packages/deps.ts";
+import { DGWord } from "packages/types/transcript.ts";
+import { AiModel } from "packages/client/components/clipsearch/Search.tsx";
 
 const openAIApiKey = Deno.env.get("OPENAI_API_KEY") ?? "";
 const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
 
+type Document = {
+  filename: string;
+  transcript: string;
+};
+
 export const callAPI = async (
   userMessage: string,
-  systemMessage?: string,
+  documents: Array<Document>,
   suggestedModel?: string | null | undefined,
+  systemMessage?: string,
 ) => {
   let llmInterface;
   switch (suggestedModel) {
-    case "claude-3-opus-20240229":
-    case "claude-3-5-sonnet-20240620": {
+    case AiModel.CLAUDE_OPUS:
+    case AiModel.CLAUDE_SONNET: {
       llmInterface = new ChatAnthropic({
         model: suggestedModel,
         apiKey: anthropicApiKey,
@@ -121,13 +45,13 @@ export const callAPI = async (
   }
 
   const prompt = ChatPromptTemplate.fromMessages([
-    ["system", `${createSystemMessage()}`],
+    ["system", `${createSystemMessage(documents)}`],
     ["user", "{input}"],
   ]);
   let outputParser = new JsonOutputParser();
   if (
-    suggestedModel === "claude-3-5-sonnet-20240620" ||
-    suggestedModel === "claude-3-opus-20240229"
+    suggestedModel === AiModel.CLAUDE_OPUS ||
+    suggestedModel === AiModel.CLAUDE_SONNET
   ) {
     outputParser = new StringOutputParser();
   }
@@ -143,19 +67,18 @@ export const callAPI = async (
       if (firstBracketIndex !== -1 && lastBracketIndex !== -1) {
         output = response.substring(firstBracketIndex, lastBracketIndex + 1);
       } else {
-        output = response;
+        output = "[]";
       }
     }
   }
   return output;
 };
 
-const createSystemMessage = () => {
-  // make a string of all the samples that looks like this:
-  // Filename: "sample1\nContent: "content of sample1"
-  const formattedData = samples.map((sample) => {
-    const content = sample.content.default.map((word) => word.word).join(" ");
-    return `Filename: ${sample.name}\nContent: ${content}`;
+const createSystemMessage = (documents: Array<Document>) => {
+  const formattedData = documents.map((document) => {
+    const transcript = JSON.parse(document.transcript) as Array<DGWord>;
+    const content = transcript.map((word) => word.word).join(" ");
+    return `Filename: ${document.filename}\nContent: ${content}`;
   }).join("\n\n");
 
   return `
