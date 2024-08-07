@@ -1,7 +1,7 @@
 {
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "nixpkgs/nixos-23.11";
+    nixpkgs.url = "nixpkgs/nixos-24.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
   };
 
@@ -51,7 +51,21 @@
         # these packages show up with "direnv allow"
         devShellPackages = with pkgs; [
           jq
-        ];
+          nodejs_22
+          rustc
+          zlib
+          libpng
+          pkg-config
+          freetype
+          meson
+          argp-standalone
+          ninja
+        ] ++ (if pkgs.stdenv.isDarwin then
+          with pkgs.darwin.apple_sdk.frameworks; [
+            CoreGraphics
+            CoreText
+          ]
+        else []);
 
         deployPackages = with pkgs; [
         ];

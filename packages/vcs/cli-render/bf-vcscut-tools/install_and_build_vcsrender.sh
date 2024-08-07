@@ -5,7 +5,7 @@ echo "This script will install dependencies needed by vcsrender and build the to
 if [[ "$OSTYPE" == "darwin"* ]]; then
   echo "Installing Mac dependencies..."
   # install package if not already available
-  brew install argp-standalone meson 2>/dev/null && true
+  brew install webp jpeg-turbo argp-standalone meson 2>/dev/null && true
 fi
 
 set -e
