@@ -112,6 +112,12 @@ type BfCurrentViewerAnon implements BfCurrentViewer {
   role: AccountRole
 }
 
+type BfGoogleDriveFolder implements BfNode {
+  """Unique identifier for the resource"""
+  id: ID!
+  name: String
+}
+
 interface BfNode {
   """Unique identifier for the resource"""
   id: ID!
@@ -202,9 +208,10 @@ interface IBfGraphQLNode implements BfNode {
 }
 
 type Mutation {
-  linkAdvancedGoogleAuth(code: String): BfCurrentViewer
+  linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
+  pickGoogleDriveFolder(folderId: String, name: String): BfGoogleDriveFolder
   playgroundMutation(input: String!, suggestedModel: String): PlaygroundMutationPayload
   readTextFile(file: File!): String
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload

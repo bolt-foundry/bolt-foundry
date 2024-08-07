@@ -109,6 +109,9 @@ export interface NexusGenObjects {
   BfCurrentViewerAnon: { // root type
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
+  BfGoogleDriveFolder: { // root type
+    name?: string | null; // String
+  }
   BfOrganization: { // root type
     id: string; // ID!
     name?: string | null; // String
@@ -133,7 +136,7 @@ export interface NexusGenObjects {
 
 export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'>;
-  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
+  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveFolder', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
 }
 
 export interface NexusGenUnions {
@@ -192,6 +195,10 @@ export interface NexusGenFieldTypes {
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
+  BfGoogleDriveFolder: { // field return type
+    id: string; // ID!
+    name: string | null; // String
+  }
   BfOrganization: { // field return type
     id: string; // ID!
     name: string | null; // String
@@ -208,6 +215,7 @@ export interface NexusGenFieldTypes {
     linkAdvancedGoogleAuth: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
     logout: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
+    pickGoogleDriveFolder: NexusGenRootTypes['BfGoogleDriveFolder'] | null; // BfGoogleDriveFolder
     readTextFile: string | null; // String
     submitContactForm: NexusGenRootTypes['SubmitContactFormPayload'] | null; // SubmitContactFormPayload
     switchAccount: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
@@ -286,6 +294,10 @@ export interface NexusGenFieldTypeNames {
     person: 'BfPerson'
     role: 'AccountRole'
   }
+  BfGoogleDriveFolder: { // field return type name
+    id: 'ID'
+    name: 'String'
+  }
   BfOrganization: { // field return type name
     id: 'ID'
     name: 'String'
@@ -302,6 +314,7 @@ export interface NexusGenFieldTypeNames {
     linkAdvancedGoogleAuth: 'BfCurrentViewer'
     loginWithGoogle: 'BfCurrentViewerAccessToken'
     logout: 'BfCurrentViewer'
+    pickGoogleDriveFolder: 'BfGoogleDriveFolder'
     readTextFile: 'String'
     submitContactForm: 'SubmitContactFormPayload'
     switchAccount: 'BfCurrentViewerAccessToken'
@@ -350,10 +363,14 @@ export interface NexusGenArgTypes {
   }
   Mutation: {
     linkAdvancedGoogleAuth: { // args
-      code?: string | null; // String
+      code: string; // String!
     }
     loginWithGoogle: { // args
       credential: string; // String!
+    }
+    pickGoogleDriveFolder: { // args
+      folderId?: string | null; // String
+      name?: string | null; // String
     }
     readTextFile: { // args
       file: NexusGenScalars['File']; // File!
@@ -379,7 +396,7 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon"
-  BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfOrganization" | "BfPerson"
+  BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveFolder" | "BfOrganization" | "BfPerson"
 }
 
 export interface NexusGenTypeInterfaces {
@@ -388,6 +405,7 @@ export interface NexusGenTypeInterfaces {
   BfClipReview: "BfNode"
   BfCurrentViewerAccessToken: "BfCurrentViewer"
   BfCurrentViewerAnon: "BfCurrentViewer"
+  BfGoogleDriveFolder: "BfNode"
   BfOrganization: "BfNode"
   BfPerson: "BfNode"
 }

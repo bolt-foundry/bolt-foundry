@@ -1,4 +1,4 @@
-import { mutationField, extendType } from "nexus";
+import { extendType, mutationField, nonNull, stringArg } from "nexus";
 import { GraphQLContext } from "packages/graphql/graphql.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { exchangeCodeForToken } from "lib/googleOauth.ts";
@@ -13,7 +13,7 @@ export const LinkGoogleAccountMutation = mutationField(
   {
     type: "BfCurrentViewer",
     args: {
-      code: "String",
+      code: nonNull(stringArg())
     },
     resolve: async (_root, { code }, { bfCurrentViewer }: GraphQLContext) => {
       const person = await BfPerson.findCurrentViewer(bfCurrentViewer);
@@ -36,17 +36,16 @@ export const LinkGoogleAccountMutation = mutationField(
 export const BfGraphQLGoogleAuthType = extendType({
   type: "BfPerson",
   definition: (t) => {
-    t.string("googleAuthAccessToken", {resolve: async (gqlPerson, _args, {bfCurrentViewer}) => {
-      const edges = await BfEdge.query(bfCurrentViewer, {bfSid: gqlPerson.id, bfTClassName: "BfGoogleAuth"});
-      const edge = edges[0];
-      const bfTid = edge?.metadata.bfTid;
-      if (!bfTid) {
-        logger.debug(`edges`, edges)
-        return null;
-      }
-      const bfGoogleAuth = await BfGoogleAuth.find(bfCurrentViewer, bfTid);
-      return bfGoogleAuth?.getAccessToken();
-    }})
-  }
-})
-
+    t.nullable.string("googleAuthAccessToken", {
+      resolve: async (parent, _args, { bfCurrentViewer }) => {
+        const currentViewerPerson = await BfPerson.find(
+          bfCurrentViewer,
+          // @ts-expect-error typing is bad on BfNode b/c it doesn't include the id type for some reason.
+          parent.id,
+        );
+        const bfGoogleAuth = await currentViewerPerson?.getGoogleAuth();
+        return bfGoogleAuth?.getAccessToken() ?? null;
+      },
+    });
+  },
+});
