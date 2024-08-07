@@ -10,6 +10,8 @@ import {
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { exchangeRefreshTokenForAccessToken } from "lib/googleOauth.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
+import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 
@@ -80,6 +82,18 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
   beforeLoad() {
     // people actually own themselves.
     this.metadata.bfOid = toBfOid(this.currentViewer.personBfGid);
+  }
+
+  async getGoogleAuth() {
+    const edges = await BfEdge.query(this.currentViewer, {bfSid: this.metadata.bfGid, bfTClassName: "BfGoogleAuth"});
+    const edge = edges[0];
+    const bfTid = edge?.metadata.bfTid;
+    if (!bfTid) {
+      logger.debug(`edges`, edges)
+      return null;
+    }
+    const bfGoogleAuth = await BfGoogleAuth.find(this.currentViewer, bfTid);
+    return bfGoogleAuth;
   }
 
 }
