@@ -142,6 +142,19 @@ type BfOrganization implements BfNode {
     """Returns the last n elements from the list."""
     last: Int
   ): BfClipReviewConnection
+  transcripts(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfTranscriptConnection
 }
 
 """A real human who uses our system"""
@@ -176,18 +189,43 @@ type BfTranscript implements BfNode {
   transcript: String
 }
 
+type BfTranscriptConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BfTranscriptEdge]
+
+  """Flattened list of BfTranscript type"""
+  nodes: [BfTranscript]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type BfTranscriptEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BfTranscript
+}
+
 """The `File` scalar type represents a file upload."""
 scalar File
 
 type Mutation {
   createTranscript(filename: String!, transcript: String!): BfTranscript
   deleteTranscript(id: String!): BfTranscript
-  linkAdvancedGoogleAuth(code: String): BfCurrentViewer
+  linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
   pickGoogleDriveFolder(folderId: String, name: String): BfGoogleDriveFolder
   readTextFile(file: File!): String
-  searchMutation(documents: String, input: String!, suggestedModel: String): SearchMutationPayload
+  searchMutation(input: String!, suggestedModel: String): SearchMutationPayload
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
   updateTranscript(filename: String, id: String!, transcript: String): BfTranscript
@@ -222,7 +260,6 @@ type PageInfo {
 type Query {
   currentViewer: BfCurrentViewer
   node(id: ID!): BfNode
-  transcripts: [BfTranscript]!
 }
 
 type SearchMutationPayload {

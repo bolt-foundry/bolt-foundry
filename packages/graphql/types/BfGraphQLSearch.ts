@@ -5,7 +5,12 @@ import {
   stringArg,
 } from "packages/graphql/deps.ts";
 import { GraphQLContext } from "packages/graphql/graphql.ts";
-import { callAPI } from "infra/aiPlayground/langchainAPI.ts";
+import {
+  BfTranscript,
+  BfTranscriptProps,
+} from "packages/bfDb/models/BfTranscript.ts";
+
+import { callAPI } from "packages/lib/langchain.ts";
 
 // Define the output type for the mutation response
 const searchMutationPayload = objectType({
@@ -21,19 +26,25 @@ export const searchMutation = mutationField("searchMutation", {
   args: {
     input: nonNull(stringArg()),
     suggestedModel: stringArg(),
-    documents: stringArg(),
   },
   resolve: async (
     _root,
-    { documents, input, suggestedModel },
-    {}: GraphQLContext,
+    { input, suggestedModel },
+    { bfCurrentViewer }: GraphQLContext,
   ) => {
+    const rawDocuments = await BfTranscript.findTranscriptsByViewer(
+      bfCurrentViewer,
+    );
+    const documents = rawDocuments.map((doc) => {
+      const { filename, transcript } = doc.props as BfTranscriptProps;
+      return { filename, transcript };
+    });
     try {
       const message = await callAPI(
         input,
-        undefined,
-        suggestedModel,
         documents,
+        suggestedModel,
+        undefined,
       );
       return {
         success: true,

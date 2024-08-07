@@ -6,6 +6,99 @@ import { Button } from "packages/bfDs/Button.tsx";
 
 const { useLazyLoadQuery, useMutation } = ReactRelay;
 
+const samples = [
+  {
+    name: "sample1",
+    content: await import(
+      "infra/aiPlayground/test_database/words/1da49b0955384e7aa51e110dbd25b736_words.json",
+      {
+        assert: { type: "json" },
+      }
+    ),
+  },
+  {
+    name: "sample2",
+    content: await import(
+      "infra/aiPlayground/test_database/words/5c57973d4b2a43948a49b6d254906385_words.json",
+      {
+        assert: { type: "json" },
+      }
+    ),
+  },
+  {
+    name: "sample3",
+    content: await import(
+      "infra/aiPlayground/test_database/words/50d21ed829774d1fb244bb22684b0ad5_words.json",
+      {
+        assert: { type: "json" },
+      }
+    ),
+  },
+  {
+    name: "sample4",
+    content: await import(
+      "infra/aiPlayground/test_database/words/169dd504edff4bd7b4ebae59f0202885_words.json",
+      {
+        assert: { type: "json" },
+      }
+    ),
+  },
+  {
+    name: "sample5",
+    content: await import(
+      "infra/aiPlayground/test_database/words/617e231f1c014e2785bf7627eb361c96_words.json",
+      {
+        assert: { type: "json" },
+      }
+    ),
+  },
+  {
+    name: "sample6",
+    content: await import(
+      "infra/aiPlayground/test_database/words/17772c835ed14802aaac61bb79c2e5ed_words.json",
+      {
+        assert: { type: "json" },
+      }
+    ),
+  },
+  {
+    name: "sample7",
+    content: await import(
+      "infra/aiPlayground/test_database/words/ca44d58db1ae47ba9c47f47ee11c11cf_words.json",
+      {
+        assert: { type: "json" },
+      }
+    ),
+  },
+  {
+    name: "sample8",
+    content: await import(
+      "infra/aiPlayground/test_database/words/e9d658eb116f4d898d547ab8b276d9c1_words.json",
+      {
+        assert: { type: "json" },
+      }
+    ),
+  },
+  {
+    name: "sample9",
+    content: await import(
+      "infra/aiPlayground/test_database/words/f4c8a47adbe64a32a9216a43ed6e3bfa_words.json",
+      {
+        assert: { type: "json" },
+      }
+    ),
+  },
+];
+const demoDocuments = samples.map((sample) => {
+  const content = JSON.stringify(
+    sample.content.default.map((word) => word.word),
+  );
+  return {
+    transcript: content,
+    filename: sample.name,
+  };
+});
+
 const testMutation = await graphql`
   mutation PlaygroundPageMutation($input: String!, $suggestedModel: String) {
     playgroundMutation(input: $input, suggestedModel: $suggestedModel) {
@@ -39,14 +132,12 @@ export function PlaygroundPage() {
   const backgroundImage =
     new URL("../resources/playground_background.jpeg", import.meta.url).href;
 
-
   let parsedResponse = [];
   if (typeof aiResponse === "string") {
     parsedResponse = JSON.parse(aiResponse);
   } else {
     console.log("NOT A STRING");
   }
-
 
   return (
     <div
@@ -118,7 +209,7 @@ export function PlaygroundPage() {
         ))}
       </div>
       <div className="pageFooter">
-      <Button text="Create list"/>
+        <Button text="Create list" />
       </div>
     </div>
   );

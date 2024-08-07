@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<6af5535606955c9069c82a471c7a727e>>
+ * @generated SignedSource<<d574e7de2f47fd3cca2a6d95c1872df6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,6 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type SearchMutation$variables = {
-  documents?: string | null | undefined;
   input: string;
   suggestedModel?: string | null | undefined;
 };
@@ -26,30 +25,22 @@ export type SearchMutation = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
-  "name": "documents"
-},
-v1 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
-  "name": "input"
-},
-v2 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
-  "name": "suggestedModel"
-},
-v3 = [
+var v0 = [
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "input"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "suggestedModel"
+  }
+],
+v1 = [
   {
     "alias": null,
     "args": [
-      {
-        "kind": "Variable",
-        "name": "documents",
-        "variableName": "documents"
-      },
       {
         "kind": "Variable",
         "name": "input",
@@ -86,40 +77,32 @@ v3 = [
 ];
 return {
   "fragment": {
-    "argumentDefinitions": [
-      (v0/*: any*/),
-      (v1/*: any*/),
-      (v2/*: any*/)
-    ],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "SearchMutation",
-    "selections": (v3/*: any*/),
+    "selections": (v1/*: any*/),
     "type": "Mutation",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": [
-      (v1/*: any*/),
-      (v2/*: any*/),
-      (v0/*: any*/)
-    ],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "SearchMutation",
-    "selections": (v3/*: any*/)
+    "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "86ffec417ec2eb79ab314fe5b52ea788",
+    "cacheID": "246c5805a690abdf17cf860a22973e7d",
     "id": null,
     "metadata": {},
     "name": "SearchMutation",
     "operationKind": "mutation",
-    "text": "mutation SearchMutation(\n  $input: String!\n  $suggestedModel: String\n  $documents: String\n) {\n  searchMutation(input: $input, suggestedModel: $suggestedModel, documents: $documents) {\n    success\n    message\n  }\n}\n"
+    "text": "mutation SearchMutation(\n  $input: String!\n  $suggestedModel: String\n) {\n  searchMutation(input: $input, suggestedModel: $suggestedModel) {\n    success\n    message\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e5eff07c521486400c1e354d73e1557f";
+(node as any).hash = "508a0f5c97376a6651b96c2153d16f3a";
 
 export default node;
