@@ -132,7 +132,7 @@ export interface NexusGenObjects {
   }
   BfTranscript: { // root type
     filename?: string | null; // String
-    transcript?: string | null; // String
+    words?: string | null; // String
   }
   BfTranscriptConnection: { // root type
     count?: number | null; // Int
@@ -261,7 +261,7 @@ export interface NexusGenFieldTypes {
   BfTranscript: { // field return type
     filename: string | null; // String
     id: string; // ID!
-    transcript: string | null; // String
+    words: string | null; // String
   }
   BfTranscriptConnection: { // field return type
     count: number | null; // Int
@@ -408,7 +408,7 @@ export interface NexusGenFieldTypeNames {
   BfTranscript: { // field return type name
     filename: 'String'
     id: 'ID'
-    transcript: 'String'
+    words: 'String'
   }
   BfTranscriptConnection: { // field return type name
     count: 'Int'
@@ -502,7 +502,7 @@ export interface NexusGenArgTypes {
   Mutation: {
     createTranscript: { // args
       filename: string; // String!
-      transcript: string; // String!
+      words: string; // String!
     }
     deleteTranscript: { // args
       id: string; // String!
@@ -537,7 +537,7 @@ export interface NexusGenArgTypes {
     updateTranscript: { // args
       filename?: string | null; // String
       id: string; // String!
-      transcript?: string | null; // String
+      words?: string | null; // String
     }
     upsertClip: { // args
       file: NexusGenScalars['File']; // File!

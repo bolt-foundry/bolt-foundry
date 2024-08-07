@@ -1,5 +1,4 @@
 import {
-  arg,
   extendType,
   mutationField,
   nonNull,
@@ -17,7 +16,7 @@ export const BfGraphQLTranscriptType = objectType({
   description: "A transcript of a clip.",
   definition: (t) => {
     t.implements(BfNodeGraphQLType);
-    t.string("transcript");
+    t.string("words");
     t.string("filename");
   },
 });
@@ -47,13 +46,13 @@ export const BfGraphQLTranscriptCreateMutation = mutationField(
   {
     type: BfGraphQLTranscriptType,
     args: {
-      transcript: nonNull(stringArg()),
+      words: nonNull(stringArg()),
       filename: nonNull(stringArg()),
     },
-    resolve: async (_, { transcript, filename }, { bfCurrentViewer }) => {
+    resolve: async (_, { words, filename }, { bfCurrentViewer }) => {
       logger.debug("createTranscript");
       const newTranscript = await BfTranscript.create(bfCurrentViewer, {
-        transcript,
+        words,
         filename,
       });
       logger.debug("Created new transcript successfully");
@@ -68,7 +67,7 @@ export const BfGraphQLTranscriptUpdateMutation = mutationField(
     type: BfGraphQLTranscriptType,
     args: {
       id: nonNull(stringArg()),
-      transcript: stringArg(),
+      words: stringArg(),
       filename: stringArg(),
     },
     resolve: async (_, args, { bfCurrentViewer }) => {
@@ -87,7 +86,7 @@ export const BfGraphQLTranscriptUpdateMutation = mutationField(
             acc[key] = value;
           }
           return acc;
-        }, {} as Partial<{ transcript: string; filename: string }>);
+        }, {} as Partial<{ words: string; filename: string }>);
       transcriptToUpdate.props = updatedProperties;
       transcriptToUpdate.save();
       logger.debug("Updated transcript successfully");

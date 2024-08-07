@@ -35,8 +35,8 @@ export const searchMutation = mutationField("searchMutation", {
       bfCurrentViewer,
     );
     const documents = rawDocuments.map((doc) => {
-      const { filename, transcript } = doc.props as BfTranscriptProps;
-      return { filename, transcript };
+      const { filename, words } = doc.props as BfTranscriptProps;
+      return { filename, words };
     });
     try {
       const message = await callAPI(

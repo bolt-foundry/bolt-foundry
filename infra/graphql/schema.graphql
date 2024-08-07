@@ -211,7 +211,7 @@ type BfTranscript implements BfNode {
 
   """Unique identifier for the resource"""
   id: ID!
-  transcript: String
+  words: String
 }
 
 type BfTranscriptConnection {
@@ -255,7 +255,7 @@ interface IBfGraphQLNode implements BfNode {
 }
 
 type Mutation {
-  createTranscript(filename: String!, transcript: String!): BfTranscript
+  createTranscript(filename: String!, words: String!): BfTranscript
   deleteTranscript(id: String!): BfTranscript
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
@@ -266,7 +266,7 @@ type Mutation {
   searchMutation(input: String!, suggestedModel: String): SearchMutationPayload
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
-  updateTranscript(filename: String, id: String!, transcript: String): BfTranscript
+  updateTranscript(filename: String, id: String!, words: String): BfTranscript
   upsertClip(file: File!, originalClipId: String!, title: String): BfClip
 }
 
