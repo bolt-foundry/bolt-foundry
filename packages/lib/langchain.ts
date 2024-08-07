@@ -13,7 +13,7 @@ const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
 
 type Document = {
   filename: string;
-  transcript: string;
+  words: string;
 };
 
 export const callAPI = async (
@@ -76,7 +76,7 @@ export const callAPI = async (
 
 const createSystemMessage = (documents: Array<Document>) => {
   const formattedData = documents.map((document) => {
-    const transcript = JSON.parse(document.transcript) as Array<DGWord>;
+    const transcript = JSON.parse(document.words) as Array<DGWord>;
     const content = transcript.map((word) => word.word).join(" ");
     return `Filename: ${document.filename}\nContent: ${content}`;
   }).join("\n\n");
