@@ -132,6 +132,10 @@ export interface NexusGenObjects {
     startCursor?: string | null; // String
   }
   Query: {};
+  SearchMutationPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
   SubmitContactFormPayload: { // root type
     message?: string | null; // String
     success: boolean; // Boolean!
@@ -228,6 +232,7 @@ export interface NexusGenFieldTypes {
     logout: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     pickGoogleDriveFolder: NexusGenRootTypes['BfGoogleDriveFolder'] | null; // BfGoogleDriveFolder
     readTextFile: string | null; // String
+    searchMutation: NexusGenRootTypes['SearchMutationPayload'] | null; // SearchMutationPayload
     submitContactForm: NexusGenRootTypes['SubmitContactFormPayload'] | null; // SubmitContactFormPayload
     switchAccount: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
     updateTranscript: NexusGenRootTypes['BfTranscript'] | null; // BfTranscript
@@ -243,6 +248,10 @@ export interface NexusGenFieldTypes {
     currentViewer: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     node: NexusGenRootTypes['BfNode'] | null; // BfNode
     transcripts: Array<NexusGenRootTypes['BfTranscript'] | null>; // [BfTranscript]!
+  }
+  SearchMutationPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
   }
   SubmitContactFormPayload: { // field return type
     message: string | null; // String
@@ -336,6 +345,7 @@ export interface NexusGenFieldTypeNames {
     logout: 'BfCurrentViewer'
     pickGoogleDriveFolder: 'BfGoogleDriveFolder'
     readTextFile: 'String'
+    searchMutation: 'SearchMutationPayload'
     submitContactForm: 'SubmitContactFormPayload'
     switchAccount: 'BfCurrentViewerAccessToken'
     updateTranscript: 'BfTranscript'
@@ -351,6 +361,10 @@ export interface NexusGenFieldTypeNames {
     currentViewer: 'BfCurrentViewer'
     node: 'BfNode'
     transcripts: 'BfTranscript'
+  }
+  SearchMutationPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
   }
   SubmitContactFormPayload: { // field return type name
     message: 'String'
@@ -403,6 +417,11 @@ export interface NexusGenArgTypes {
     }
     readTextFile: { // args
       file: NexusGenScalars['File']; // File!
+    }
+    searchMutation: { // args
+      documents?: string | null; // String
+      input: string; // String!
+      suggestedModel?: string | null; // String
     }
     submitContactForm: { // args
       input: NexusGenInputs['SubmitContactFormInput']; // SubmitContactFormInput!

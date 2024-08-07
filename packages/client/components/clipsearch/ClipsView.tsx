@@ -8,14 +8,20 @@ const fakeData = await import(
   }
 );
 
-export function ClipsView() {
-  if (fakeData.default.length === 0) {
+type Props = {
+  clips: string | undefined | null;
+};
+
+export function ClipsView({ clips }: Props) {
+  if (!clips) {
     return <Nux />;
   }
 
+  const parsedClips = JSON.parse(clips);
+
   return (
     <div className="cs-clipsView">
-      {fakeData.default.map((clip) => (
+      {parsedClips.map((clip) => (
         <Clip
           title={clip.title}
           text={clip.text}
@@ -25,7 +31,7 @@ export function ClipsView() {
           topics={clip.topics}
           confidence={clip.confidence}
         />
-      ))};
+      ))}
     </div>
   );
 }

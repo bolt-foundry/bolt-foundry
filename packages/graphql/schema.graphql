@@ -187,6 +187,7 @@ type Mutation {
   logout: BfCurrentViewer
   pickGoogleDriveFolder(folderId: String, name: String): BfGoogleDriveFolder
   readTextFile(file: File!): String
+  searchMutation(documents: String, input: String!, suggestedModel: String): SearchMutationPayload
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
   updateTranscript(filename: String, id: String!, transcript: String): BfTranscript
@@ -222,6 +223,11 @@ type Query {
   currentViewer: BfCurrentViewer
   node(id: ID!): BfNode
   transcripts: [BfTranscript]!
+}
+
+type SearchMutationPayload {
+  message: String
+  success: Boolean!
 }
 
 input SubmitContactFormInput {
