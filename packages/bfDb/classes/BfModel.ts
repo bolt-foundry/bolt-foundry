@@ -18,6 +18,7 @@ import {
 import type { ConnectionArguments, ConnectionInterface } from "relay-runtime";
 import { generateUUID } from "lib/generateUUID.ts";
 import {
+  bfDeleteItem,
   bfGetItem,
   bfGetItemByBfGid,
   bfPutItem,
@@ -79,6 +80,17 @@ abstract class BfBaseModel<
     return newModel as
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
+  }
+
+  public async delete() {
+    await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
+    try {
+      await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
+      log(`Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`);
+    } catch (error) {
+      log(`Failed to delete ${this.constructor.name}:`, error);
+      throw error;
+    }
   }
 
   static async find<
