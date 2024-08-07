@@ -1,4 +1,4 @@
-import { OAuth2Client } from "npm:google-auth-library@9.2.0";
+import { OAuth2Client } from "google-auth-library";
 import { BfError } from "lib/BfError.ts";
 const GOOGLE_OAUTH_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_OAUTH_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token";
