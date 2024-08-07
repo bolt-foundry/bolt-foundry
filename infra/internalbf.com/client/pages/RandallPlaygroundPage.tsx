@@ -1,5 +1,6 @@
 import { React } from "deps.ts";
-import { graphql, ReactRelay } from "infra/internalbf.com/client/deps.ts";
+import {useMutation, useLazyLoadQuery} from "react-relay";
+import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { Tooltip } from "packages/bfDs/Tooltip.tsx";
 import { Icon, IconType } from "packages/bfDs/Icon.tsx";
@@ -8,9 +9,83 @@ import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { classnames } from "lib/classnames.ts";
 import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
 import { RandallPlaygroundPageQuery } from "infra/__generated__/RandallPlaygroundPageQuery.graphql.ts";
+import { RandallPlaygroundPageAddToGoogleMutation } from "infra/__generated__/RandallPlaygroundPageAddToGoogleMutation.graphql.ts";
+import { Button } from "packages/bfDs/Button.tsx";
 const { useState } = React;
-const { useMutation, useLazyLoadQuery } = ReactRelay;
 
+export enum GoogleDriveFilePickerFileType {
+  VIDEO = "video",
+  FOLDER = "folder",
+}
+
+function openPicker(
+  oauthToken: string,
+  appId: string,
+  type: GoogleDriveFilePickerFileType = GoogleDriveFilePickerFileType.VIDEO,
+): Promise<google.picker.ResponseObject> {
+  return new Promise((resolve, reject) => {
+    const gapiload = new Promise<void>((gapiResolve) => {
+      gapi.load("picker", () => {
+        gapiResolve();
+      });
+    });
+
+    const showPicker = async () => {
+      await gapiload;
+      const sharedDrive = new google.picker.DocsView(google.picker.ViewId.DOCS);
+      sharedDrive.setEnableDrives(true).setIncludeFolders(true);
+
+      switch (type) {
+        case GoogleDriveFilePickerFileType.FOLDER: {
+          sharedDrive.setSelectFolderEnabled(true).setMimeTypes(
+            "application/vnd.google-apps.folder",
+          );
+        }
+      }
+
+      const picker = new google.picker.PickerBuilder()
+        .addView(sharedDrive)
+        .setOAuthToken(
+          oauthToken,
+        )
+        .setAppId(appId)
+        .setCallback((pickerResponse) => {
+          switch (pickerResponse.action) {
+            case google.picker.Action.PICKED:
+              resolve(pickerResponse);
+              break;
+            case google.picker.Action.CANCEL:
+              reject(new Error("User cancelled"));
+              break;
+          }
+        })
+        .build();
+
+      picker.setVisible(true);
+    };
+    return showPicker();
+  });
+}
+
+function authorizeGdrive(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const url = `/google/oauth/start`;
+    // center the popup on the screen
+    const width = 600;
+    const height = 800;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
+    const features =
+      `scrollbars=yes, width=${width}, height=${height}, top=${top}, left=${left}`;
+    const popup = window.open(url, "Google Authorization", features);
+    globalThis.addEventListener("message", (event) => {
+      if (event.data.code) {
+        resolve(event.data.code);
+        popup?.postMessage("close", "*");
+      }
+    });
+  });
+}
 const mutation = await graphql`
   mutation RandallPlaygroundPageMutation($file: File!, $title: String!, $originalClipId: String!) {
     upsertClip(file: $file, title: $title, originalClipId: $originalClipId) {
@@ -37,6 +112,19 @@ const query = await graphql`
   }
 }
 `;
+
+const mutationToAuthorizeGoogle = await graphql`
+  mutation RandallPlaygroundPageAddToGoogleMutation($code: String!) {
+    linkAdvancedGoogleAuth(code: $code) {
+      ... on BfCurrentViewer {
+        person {
+          id
+        }
+      }
+    }
+  }
+`;
+
 type Tab = {
   header: string;
   icon: IconType;
@@ -67,13 +155,35 @@ const tabs: Tabs = {
 };
 export function RandallPlaygroundPage() {
   const data = useLazyLoadQuery<RandallPlaygroundPageQuery>(query, {});
-  const [commit, inFlight] = useMutation(mutation);
+  const [commit, inFlight] = useMutation<
+    RandallPlaygroundPageAddToGoogleMutation
+  >(mutationToAuthorizeGoogle);
   const [file, setFile] = React.useState<File>();
   const [text, setText] = React.useState<string>("nothing uploaded");
   const [currentTab, setCurrentTab] = useState("qc");
   const [ownerFilter, setOwnerFilter] = useState<string | null>(null);
   const [clientFilter, setClientFilter] = useState<string | null>(null);
   const [currentClipId, setCurrentClipId] = useState<string | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+  async function authorizer() {
+    try {
+      const code = await authorizeGdrive();
+      commit({
+        variables: { code },
+        onCompleted: (data) => {
+          setIsAuthorized(true);
+        },
+        onError: (error) => {
+          console.error(error);
+        }
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async function pickFile() {
+    console.log("you'd like that wouldnt you");
+  }
 
   const filteredData =
     data?.currentViewer?.organization?.reviewableClips?.nodes ?? [];
@@ -93,6 +203,11 @@ export function RandallPlaygroundPage() {
               />
             </div>
             <div>
+              <Button
+                text={isAuthorized ? "Authorized!!" : "Authorize Google"}
+                onClick={authorizer}
+              />
+              <Button text={"Open file picker"} onClick={pickFile} />
               {tabs[currentTab].header} -{" "}
               {data?.currentViewer?.person?.name ?? "Not set up"}
             </div>
