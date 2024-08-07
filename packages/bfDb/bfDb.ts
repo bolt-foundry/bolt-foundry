@@ -152,12 +152,12 @@ export async function bfPutItem<
 
     // Insert or Update with conditional sort_value
     await sql`
-    INSERT INTO bfdb(bf_gid, bf_oid, bf_cid, bf_sid, bf_tid, class_name, created_at, last_updated, props, sort_value)
-    VALUES(${itemMetadata.bfGid}, ${itemMetadata.bfOid}, ${itemMetadata.bfCid}, ${
-      itemMetadata.bfSid || null
-    }, ${itemMetadata.bfTid}, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp}, ${
-      JSON.stringify(itemProps)
-    }, ${sortValue}) 
+    INSERT INTO bfdb(
+      bf_gid, bf_oid, bf_cid, bf_sid, bf_tid, class_name, created_at, last_updated, props, sort_value, bf_t_class_name, bf_s_class_name
+    )
+    VALUES(
+      ${itemMetadata.bfGid}, ${itemMetadata.bfOid}, ${itemMetadata.bfCid}, ${itemMetadata.bfSid || null}, ${itemMetadata.bfTid}, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp}, ${JSON.stringify(itemProps)}, ${sortValue}, ${itemMetadata.bfTClassName || null}, ${itemMetadata.bfSClassName || null}
+    ) 
     ON CONFLICT (bf_gid) DO UPDATE SET
       bf_oid = EXCLUDED.bf_oid,
       bf_cid = EXCLUDED.bf_cid,
@@ -167,8 +167,9 @@ export async function bfPutItem<
       created_at = EXCLUDED.created_at,
       last_updated = CURRENT_TIMESTAMP,
       props = EXCLUDED.props,
-      sort_value = CASE WHEN bfdb.created_at IS NULL THEN EXCLUDED.sort_value ELSE bfdb.sort_value END;`; // Update sort_value only if it's a new record
-
+      sort_value = CASE WHEN bfdb.created_at IS NULL THEN EXCLUDED.sort_value ELSE bfdb.sort_value END,
+      bf_t_class_name = EXCLUDED.bf_t_class_name,
+      bf_s_class_name = EXCLUDED.bf_s_class_name;`; // Update sort_value, bf_t_class_name, bf_s_class_name only if it's a new record
     logger.trace(
       `bfPutItem: Successfully inserted or updated item with ${
         JSON.stringify(itemMetadata)
