@@ -5,9 +5,13 @@ import {
   stringArg,
 } from "packages/graphql/deps.ts";
 import { GraphQLContext } from "packages/graphql/graphql.ts";
-import { callAPI } from "infra/aiPlayground/langchainAPI.ts";
+import {
+  BfTranscript,
+  BfTranscriptProps,
+} from "packages/bfDb/models/BfTranscript.ts";
 
-// Define the output type for the mutation response
+import { callAPI } from "packages/lib/langchain.ts";
+
 const searchMutationPayload = objectType({
   name: "SearchMutationPayload",
   definition(t) {
@@ -21,29 +25,34 @@ export const searchMutation = mutationField("searchMutation", {
   args: {
     input: nonNull(stringArg()),
     suggestedModel: stringArg(),
-    documents: stringArg(),
   },
   resolve: async (
     _root,
-    { documents, input, suggestedModel },
-    {}: GraphQLContext,
+    { input, suggestedModel },
+    { bfCurrentViewer }: GraphQLContext,
   ) => {
+    const rawDocuments = await BfTranscript.findTranscriptsByViewer(
+      bfCurrentViewer,
+    );
+    const documents = rawDocuments.map((doc) => {
+      const { filename, transcript } = doc.props as BfTranscriptProps;
+      return { filename, transcript };
+    });
     try {
       const message = await callAPI(
         input,
-        undefined,
-        suggestedModel,
         documents,
+        suggestedModel,
+        undefined,
       );
       return {
         success: true,
         message,
       };
     } catch (error) {
-      console.error("Form submission error:", error);
       return {
         success: false,
-        message: "Form submission failed.",
+        message: `Form submission failed. ${error}`,
       };
     }
   },
