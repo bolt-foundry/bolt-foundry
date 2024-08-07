@@ -263,6 +263,23 @@ export async function bfQueryItems<
   }
 }
 
+export async function bfDeleteItem(bfOid: BfOid, bfGid: BfGid): Promise<void> {
+  try {
+    logger.trace("bfDeleteItem", { bfOid, bfGid });
+    const result = await sql`
+      DELETE FROM bfdb
+      WHERE bf_oid = ${bfOid} AND bf_gid = ${bfGid}
+    `;
+    if (result.rowCount === 0) {
+      throw new BfDbError(`No item found with bfOid: ${bfOid} and bfGid: ${bfGid}`);
+    }
+    logger.trace(`Deleted item with bfOid: ${bfOid} and bfGid: ${bfGid}`);
+  } catch (e) {
+    logger.error(e);
+    throw new BfDbError("Failed to delete item from the database");
+  }
+}
+
 export async function bfQueryItemsForGraphQLConnection<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,

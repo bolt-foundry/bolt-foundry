@@ -96,20 +96,10 @@ export const callAPI = async (
   userMessage: string,
   systemMessage?: string,
   suggestedModel?: string | null | undefined,
+  documents?: string | null | undefined,
 ) => {
   let llmInterface;
   switch (suggestedModel) {
-    case "gpt-3.5-turbo":
-    case "gpt-4o-mini": {
-      llmInterface = new ChatOpenAI({
-        model: suggestedModel,
-        apiKey: openAIApiKey,
-        temperature: 0,
-        presencePenalty: 0,
-        frequencyPenalty: 0,
-      });
-      break;
-    }
     case "claude-3-opus-20240229":
     case "claude-3-5-sonnet-20240620": {
       llmInterface = new ChatAnthropic({
@@ -117,11 +107,21 @@ export const callAPI = async (
         apiKey: anthropicApiKey,
         temperature: 0,
       });
+      break;
+    }
+    default: {
+      llmInterface = new ChatOpenAI({
+        model: suggestedModel,
+        apiKey: openAIApiKey,
+        temperature: 0,
+        presencePenalty: 0,
+        frequencyPenalty: 0,
+      });
     }
   }
 
   const prompt = ChatPromptTemplate.fromMessages([
-    ["system", `${createSystemMessage()}`],
+    ["system", `${createSystemMessage(documents)}`],
     ["user", "{input}"],
   ]);
   let outputParser = new JsonOutputParser();
@@ -150,13 +150,23 @@ export const callAPI = async (
   return output;
 };
 
-const createSystemMessage = () => {
+const createSystemMessage = (documents) => {
   // make a string of all the samples that looks like this:
   // Filename: "sample1\nContent: "content of sample1"
-  const formattedData = samples.map((sample) => {
-    const content = sample.content.default.map((word) => word.word).join(" ");
-    return `Filename: ${sample.name}\nContent: ${content}`;
-  }).join("\n\n");
+  let formattedData;
+  if (!documents) {
+    formattedData = samples.map((sample) => {
+      const content = sample.content.default.map((word) => word.word).join(" ");
+      return `Filename: ${sample.name}\nContent: ${content}`;
+    }).join("\n\n");
+  } else {
+    const parsedDocuments = JSON.parse(documents);
+    formattedData = parsedDocuments.map((document) => {
+      const transcript = JSON.parse(document.transcript);
+      const content = transcript.map((word) => word.word).join(" ");
+      return `Filename: ${document.filename}\nContent: ${content}`;
+    }).join("\n\n");
+  }
 
   return `
 You have access to a comprehensive database of video transcripts. Your task is to extract all anecdotes from these transcripts based on a user-provided prompt. This task is to be performed using the provided transcript data sections listed below. 
