@@ -136,10 +136,11 @@ export class IBfCurrentViewerInternalAdmin extends BfCurrentViewerAccessToken {
   }
 }
 
-export class IBfCurrentViewerInternalAdminOmni extends IBfCurrentViewerInternalAdmin {
-  static __DANGEROUS__create(importMeta: ImportMeta) {
+export class IBfCurrentViewerInternalAdminOmni
+  extends IBfCurrentViewerInternalAdmin {
+  static __DANGEROUS__create(importMeta: ImportMeta, orgId = "omni_person") {
     return new this(
-      toBfOid("omni_person"),
+      toBfOid(orgId),
       ACCOUNT_ROLE.OMNI,
       toBfGid("omni_person"),
       toBfGid("omni_person"),
