@@ -35,6 +35,7 @@
 .cs-page-content {
   padding: 40px 20px;
   width: 100%;
+  overflow-y: auto;
 }
 .cs-page-section {
   background: var(--background);
