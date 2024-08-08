@@ -8,6 +8,7 @@ import { Button } from "packages/bfDs/Button.tsx";
 import { Columns, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";
+import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFilePicker.tsx";
 const { useLazyLoadQuery } = ReactRelay;
 
 type Data = {
@@ -62,11 +63,7 @@ function Content() {
   return (
     <div className="cs-page-content">
       <div className="cs-page-section">
-        <p>
-          Text about needing to authenticate with Google again to choose a
-          folder...
-        </p>
-        <Button text="Authenticate with Google" />
+       <GoogleFilePicker />
       </div>
       <div className="cs-page-section">
         <div className="cs-page-section-title">Watch folders</div>
