@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fa7d639b18c1b0bc2cc68ce384aa0427>>
+ * @generated SignedSource<<2b3a40a6256978dd9cf7072c4bae52c2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,7 @@ export type SearchQuery$variables = Record<PropertyKey, never>;
 export type SearchQuery$data = {
   readonly currentViewer: {
     readonly organization: {
-      readonly transcripts: {
+      readonly media: {
         readonly count: number | null | undefined;
       } | null | undefined;
     } | null | undefined;
@@ -31,12 +31,12 @@ var v0 = {
     {
       "kind": "Literal",
       "name": "first",
-      "value": 10
+      "value": 100
     }
   ],
-  "concreteType": "BfTranscriptConnection",
+  "concreteType": "BfMediaConnection",
   "kind": "LinkedField",
-  "name": "transcripts",
+  "name": "media",
   "plural": false,
   "selections": [
     {
@@ -47,7 +47,7 @@ var v0 = {
       "storageKey": null
     }
   ],
-  "storageKey": "transcripts(first:10)"
+  "storageKey": "media(first:100)"
 };
 return {
   "fragment": {
@@ -129,16 +129,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "916958b0be33757246dcbde0d9d9309e",
+    "cacheID": "02417d0ed4d6ba8bcd4a50f450094c67",
     "id": null,
     "metadata": {},
     "name": "SearchQuery",
     "operationKind": "query",
-    "text": "query SearchQuery {\n  currentViewer {\n    __typename\n    organization {\n      transcripts(first: 10) {\n        count\n      }\n      id\n    }\n  }\n}\n"
+    "text": "query SearchQuery {\n  currentViewer {\n    __typename\n    organization {\n      media(first: 100) {\n        count\n      }\n      id\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "db2d51857e36fe3f85ac6105b2bce990";
+(node as any).hash = "94e70cc781a7bea354ff723270622156";
 
 export default node;

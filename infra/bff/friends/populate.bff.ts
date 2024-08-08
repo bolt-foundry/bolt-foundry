@@ -2,8 +2,10 @@ import { gql, GraphQLClient } from "infra/watcher/deps.ts";
 import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
 import { getHeaders } from "infra/watcher/ingest.ts";
-import { BfTranscript } from "packages/bfDb/models/BfTranscript.ts";
+import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT");
 
 const client = new GraphQLClient(GRAPHQL_ENDPOINT);
@@ -110,10 +112,8 @@ async function populate() {
     if (filename.includes("justicart - Copy of ")) {
       filename = filename.replace("justicart - Copy of ", "");
     }
-    const words = JSON.stringify(
-      // @ts-expect-error not typing this
-      returned.project.transcripts.edges[0].node.words,
-    );
+    // @ts-expect-error not typing this
+    const words = returned.project.transcripts.edges[0].node.words;
     transcripts.push({ filename, words });
   }
 
@@ -122,9 +122,19 @@ async function populate() {
       import.meta,
       "bf_internal_org",
     );
-    const newTranscript = await BfTranscript.create(currentViewer, {
+    const newMedia = await BfMedia.create(currentViewer, {
+      filename: transcript.filename,
+    });
+    const newTranscript = await BfMediaTranscript.create(currentViewer, {
       words: transcript.words,
       filename: transcript.filename,
+    });
+    await BfEdge.create(currentViewer, {}, {
+      // @ts-expect-error idk why the metadata types are messed up for bf edges.
+      bfTClassName: "BfMediaTranscript",
+      bfTid: newTranscript.metadata.bfGid,
+      bfSClassName: "BfMedia",
+      bfSid: newMedia.metadata.bfGid,
     });
     // deno-lint-ignore no-console
     console.log(newTranscript.metadata.bfGid);
