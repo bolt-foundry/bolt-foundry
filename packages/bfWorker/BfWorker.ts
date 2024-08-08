@@ -1,7 +1,6 @@
 import { getLogger, rxjs } from "deps.ts";
 
 const logger = getLogger(import.meta);
-logger.setLevel("info");
 
 function isTransferrable(value: unknown): boolean {
   const knownTransferrables = [
