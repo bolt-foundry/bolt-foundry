@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<894bc98a3d2936f116c17a2d126aaf98>>
+ * @generated SignedSource<<2b3a40a6256978dd9cf7072c4bae52c2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,13 +14,7 @@ export type SearchQuery$data = {
   readonly currentViewer: {
     readonly organization: {
       readonly media: {
-        readonly edges: ReadonlyArray<{
-          readonly node: {
-            readonly transcripts: {
-              readonly count: number | null | undefined;
-            } | null | undefined;
-          } | null | undefined;
-        } | null | undefined> | null | undefined;
+        readonly count: number | null | undefined;
       } | null | undefined;
     } | null | undefined;
   } | null | undefined;
@@ -31,25 +25,18 @@ export type SearchQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "kind": "Literal",
-    "name": "first",
-    "value": 10
-  }
-],
-v1 = {
+var v0 = {
   "alias": null,
   "args": [
     {
       "kind": "Literal",
       "name": "first",
-      "value": 1
+      "value": 100
     }
   ],
-  "concreteType": "BfMediaTranscriptConnection",
+  "concreteType": "BfMediaConnection",
   "kind": "LinkedField",
-  "name": "transcripts",
+  "name": "media",
   "plural": false,
   "selections": [
     {
@@ -60,14 +47,7 @@ v1 = {
       "storageKey": null
     }
   ],
-  "storageKey": "transcripts(first:1)"
-},
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
+  "storageKey": "media(first:100)"
 };
 return {
   "fragment": {
@@ -92,40 +72,7 @@ return {
             "name": "organization",
             "plural": false,
             "selections": [
-              {
-                "alias": null,
-                "args": (v0/*: any*/),
-                "concreteType": "BfMediaConnection",
-                "kind": "LinkedField",
-                "name": "media",
-                "plural": false,
-                "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "BfMediaEdge",
-                    "kind": "LinkedField",
-                    "name": "edges",
-                    "plural": true,
-                    "selections": [
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "BfMedia",
-                        "kind": "LinkedField",
-                        "name": "node",
-                        "plural": false,
-                        "selections": [
-                          (v1/*: any*/)
-                        ],
-                        "storageKey": null
-                      }
-                    ],
-                    "storageKey": null
-                  }
-                ],
-                "storageKey": "media(first:10)"
-              }
+              (v0/*: any*/)
             ],
             "storageKey": null
           }
@@ -165,42 +112,14 @@ return {
             "name": "organization",
             "plural": false,
             "selections": [
+              (v0/*: any*/),
               {
                 "alias": null,
-                "args": (v0/*: any*/),
-                "concreteType": "BfMediaConnection",
-                "kind": "LinkedField",
-                "name": "media",
-                "plural": false,
-                "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "BfMediaEdge",
-                    "kind": "LinkedField",
-                    "name": "edges",
-                    "plural": true,
-                    "selections": [
-                      {
-                        "alias": null,
-                        "args": null,
-                        "concreteType": "BfMedia",
-                        "kind": "LinkedField",
-                        "name": "node",
-                        "plural": false,
-                        "selections": [
-                          (v1/*: any*/),
-                          (v2/*: any*/)
-                        ],
-                        "storageKey": null
-                      }
-                    ],
-                    "storageKey": null
-                  }
-                ],
-                "storageKey": "media(first:10)"
-              },
-              (v2/*: any*/)
+                "args": null,
+                "kind": "ScalarField",
+                "name": "id",
+                "storageKey": null
+              }
             ],
             "storageKey": null
           }
@@ -210,16 +129,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "6c1ab1e5c9a1cbcb2a861f28d28dfbf5",
+    "cacheID": "02417d0ed4d6ba8bcd4a50f450094c67",
     "id": null,
     "metadata": {},
     "name": "SearchQuery",
     "operationKind": "query",
-    "text": "query SearchQuery {\n  currentViewer {\n    __typename\n    organization {\n      media(first: 10) {\n        edges {\n          node {\n            transcripts(first: 1) {\n              count\n            }\n            id\n          }\n        }\n      }\n      id\n    }\n  }\n}\n"
+    "text": "query SearchQuery {\n  currentViewer {\n    __typename\n    organization {\n      media(first: 100) {\n        count\n      }\n      id\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "84bb79f6f2de3a8e3f24b0183cbc95f6";
+(node as any).hash = "94e70cc781a7bea354ff723270622156";
 
 export default node;

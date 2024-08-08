@@ -112,10 +112,8 @@ async function populate() {
     if (filename.includes("justicart - Copy of ")) {
       filename = filename.replace("justicart - Copy of ", "");
     }
-    const words = JSON.stringify(
-      // @ts-expect-error not typing this
-      returned.project.transcripts.edges[0].node.words,
-    );
+    // @ts-expect-error not typing this
+    const words = returned.project.transcripts.edges[0].node.words;
     transcripts.push({ filename, words });
   }
 
@@ -126,7 +124,7 @@ async function populate() {
     );
     const newMedia = await BfMedia.create(currentViewer, {
       filename: transcript.filename,
-    })
+    });
     const newTranscript = await BfMediaTranscript.create(currentViewer, {
       words: transcript.words,
       filename: transcript.filename,
