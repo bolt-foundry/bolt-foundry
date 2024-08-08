@@ -33,8 +33,14 @@ const query = await graphql`
   query SearchQuery {
     currentViewer {
       organization {
-        transcripts(first: 10) {
-          count
+        media(first: 10) {
+          edges {
+            node {
+              transcripts(first: 1) {
+                count
+              }
+            }
+          }
         }
       }
     }

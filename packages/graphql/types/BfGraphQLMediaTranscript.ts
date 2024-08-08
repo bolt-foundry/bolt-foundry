@@ -22,7 +22,7 @@ export const BfGraphQLMediaTranscriptType = objectType({
 });
 
 export const BfGraphQLMediaTranscriptsQuery = extendType({
-  type: "BfOrganization",
+  type: "BfMedia",
   definition(t) {
     t.connectionField("transcripts", {
       type: "BfMediaTranscript",
