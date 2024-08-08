@@ -6,13 +6,13 @@ import {
   stringArg,
 } from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
-import { BfTranscript } from "packages/bfDb/models/BfTranscript.ts";
+import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
 
-export const BfGraphQLTranscriptType = objectType({
-  name: "BfTranscript",
+export const BfGraphQLMediaTranscriptType = objectType({
+  name: "BfMediaTranscript",
   description: "A transcript of a clip.",
   definition: (t) => {
     t.implements(BfNodeGraphQLType);
@@ -21,14 +21,14 @@ export const BfGraphQLTranscriptType = objectType({
   },
 });
 
-export const BfGraphQLTranscriptsQuery = extendType({
+export const BfGraphQLMediaTranscriptsQuery = extendType({
   type: "BfOrganization",
   definition(t) {
     t.connectionField("transcripts", {
-      type: "BfTranscript",
+      type: "BfMediaTranscript",
       resolve: (_, args, { bfCurrentViewer }) => {
         logger.debug("Fetching all transcripts");
-        const transcripts = BfTranscript.queryConnectionForGraphQL(
+        const transcripts = BfMediaTranscript.queryConnectionForGraphQL(
           bfCurrentViewer,
           { bfOid: bfCurrentViewer.bfOid },
           {},
@@ -41,17 +41,17 @@ export const BfGraphQLTranscriptsQuery = extendType({
   },
 });
 
-export const BfGraphQLTranscriptCreateMutation = mutationField(
+export const BfGraphQLMediaTranscriptCreateMutation = mutationField(
   "createTranscript",
   {
-    type: BfGraphQLTranscriptType,
+    type: BfGraphQLMediaTranscriptType,
     args: {
       words: nonNull(stringArg()),
       filename: nonNull(stringArg()),
     },
     resolve: async (_, { words, filename }, { bfCurrentViewer }) => {
       logger.debug("createTranscript");
-      const newTranscript = await BfTranscript.create(bfCurrentViewer, {
+      const newTranscript = await BfMediaTranscript.create(bfCurrentViewer, {
         words,
         filename,
       });
@@ -61,10 +61,10 @@ export const BfGraphQLTranscriptCreateMutation = mutationField(
   },
 );
 
-export const BfGraphQLTranscriptUpdateMutation = mutationField(
+export const BfGraphQLMediaTranscriptUpdateMutation = mutationField(
   "updateTranscript",
   {
-    type: BfGraphQLTranscriptType,
+    type: BfGraphQLMediaTranscriptType,
     args: {
       id: nonNull(stringArg()),
       words: stringArg(),
@@ -72,7 +72,7 @@ export const BfGraphQLTranscriptUpdateMutation = mutationField(
     },
     resolve: async (_, args, { bfCurrentViewer }) => {
       logger.debug("updateTranscript", args);
-      const transcriptToUpdate = await BfTranscript.find(
+      const transcriptToUpdate = await BfMediaTranscript.find(
         bfCurrentViewer,
         args.id,
       );
@@ -95,15 +95,15 @@ export const BfGraphQLTranscriptUpdateMutation = mutationField(
   },
 );
 
-export const BfGraphQLTranscriptDeleteMutation = mutationField(
+export const BfGraphQLMediaTranscriptDeleteMutation = mutationField(
   "deleteTranscript",
   {
-    type: BfGraphQLTranscriptType,
+    type: BfGraphQLMediaTranscriptType,
     args: {
       id: nonNull(stringArg()),
     },
     resolve: async (_, { id }, { bfCurrentViewer }) => {
-      const transcript = await BfTranscript.find(bfCurrentViewer, id);
+      const transcript = await BfMediaTranscript.find(bfCurrentViewer, id);
       if (!transcript) {
         throw new Error("Transcript not found");
       }

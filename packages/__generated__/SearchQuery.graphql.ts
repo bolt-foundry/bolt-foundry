@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fa7d639b18c1b0bc2cc68ce384aa0427>>
+ * @generated SignedSource<<32223fabbb73d796c6e0e2fab2449359>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -34,7 +34,7 @@ var v0 = {
       "value": 10
     }
   ],
-  "concreteType": "BfTranscriptConnection",
+  "concreteType": "BfMediaTranscriptConnection",
   "kind": "LinkedField",
   "name": "transcripts",
   "plural": false,

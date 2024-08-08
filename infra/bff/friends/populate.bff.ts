@@ -2,7 +2,7 @@ import { gql, GraphQLClient } from "infra/watcher/deps.ts";
 import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
 import { getHeaders } from "infra/watcher/ingest.ts";
-import { BfTranscript } from "packages/bfDb/models/BfTranscript.ts";
+import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT");
 
@@ -122,7 +122,7 @@ async function populate() {
       import.meta,
       "bf_internal_org",
     );
-    const newTranscript = await BfTranscript.create(currentViewer, {
+    const newTranscript = await BfMediaTranscript.create(currentViewer, {
       words: transcript.words,
       filename: transcript.filename,
     });

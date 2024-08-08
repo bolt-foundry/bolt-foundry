@@ -6,9 +6,9 @@ import {
 } from "packages/graphql/deps.ts";
 import { GraphQLContext } from "packages/graphql/graphql.ts";
 import {
-  BfTranscript,
-  BfTranscriptProps,
-} from "packages/bfDb/models/BfTranscript.ts";
+  BfMediaTranscript,
+  BfMediaTranscriptProps,
+} from "packages/bfDb/models/BfMediaTranscript.ts";
 
 import { callAPI } from "packages/lib/langchain.ts";
 
@@ -31,11 +31,11 @@ export const searchMutation = mutationField("searchMutation", {
     { input, suggestedModel },
     { bfCurrentViewer }: GraphQLContext,
   ) => {
-    const rawDocuments = await BfTranscript.findTranscriptsByViewer(
+    const rawDocuments = await BfMediaTranscript.findTranscriptsByViewer(
       bfCurrentViewer,
     );
     const documents = rawDocuments.map((doc) => {
-      const { filename, words } = doc.props as BfTranscriptProps;
+      const { filename, words } = doc.props as BfMediaTranscriptProps;
       return { filename, words };
     });
     try {
