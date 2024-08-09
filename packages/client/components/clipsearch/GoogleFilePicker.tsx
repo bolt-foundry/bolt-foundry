@@ -1,8 +1,11 @@
 import * as React from "react";
-import {useMutation, useLazyLoadQuery} from "react-relay";
+import { useLazyLoadQuery, useMutation } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { Button } from "packages/bfDs/Button.tsx";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
+import { GoogleFilePickerAddToGoogleMutation } from "packages/__generated__/GoogleFilePickerAddToGoogleMutation.graphql.ts";
+import { GoogleFilePickerPickFolderMutation } from "packages/__generated__/GoogleFilePickerPickFolderMutation.graphql.ts";
+import { GoogleFilePickerQuery } from "packages/__generated__/GoogleFilePickerQuery.graphql.ts";
 const { useState } = React;
 
 export enum GoogleDriveFilePickerFileType {
@@ -69,7 +72,7 @@ function authorizeGdrive(): Promise<string> {
     const top = window.screen.height / 2 - height / 2;
     const features =
       `scrollbars=yes, width=${width}, height=${height}, top=${top}, left=${left}`;
-    const popup = window.open(url, "Google Authorization", features);
+    const popup = globalThis.open(url, "Google Authorization", features);
     globalThis.addEventListener("message", (event) => {
       if (event.data.code) {
         resolve(event.data.code);
@@ -112,14 +115,16 @@ const mutationToAuthorizeGoogle = await graphql`
 `;
 
 const mutationToPickFolder = await graphql`
-  mutation GoogleFilePickerPickFolderMutation($folderId: String!) {
-    pickGoogleDriveFolder(folderId: $folderId) {
+  mutation GoogleFilePickerPickFolderMutation($folderId: String!, $name: String!) {
+    pickGoogleDriveFolder(folderId: $folderId, name: $name) {
       __typename
+      id
+      name
     }
   }
 `;
 
-export function GoogleFilePicker(){
+export function GoogleFilePicker() {
   const data = useLazyLoadQuery<GoogleFilePickerQuery>(query, {});
   const [commit, inFlight] = useMutation<
     GoogleFilePickerAddToGoogleMutation
@@ -128,9 +133,11 @@ export function GoogleFilePicker(){
   const [googleAccessToken, setGoogleAccessToken] = useState<string | null>(
     data?.currentViewer?.person?.googleAuthAccessToken ?? null,
   );
-  const [commitFolder, inFlightFolder] = useMutation<GoogleFilePickerPickFolderMutation>(
+  const [commitFolder, inFlightFolder] = useMutation<
+    GoogleFilePickerPickFolderMutation
+  >(
     mutationToPickFolder,
-  )
+  );
   async function authorizer() {
     try {
       const code = await authorizeGdrive();
@@ -138,27 +145,39 @@ export function GoogleFilePicker(){
         variables: { code },
         onCompleted: (data) => {
           console.log(data);
-          setGoogleAccessToken(data.linkAdvancedGoogleAuth?.person?.googleAuthAccessToken);
+          setGoogleAccessToken(
+            data.linkAdvancedGoogleAuth?.person?.googleAuthAccessToken,
+          );
         },
         onError: (error) => {
           console.error(error);
-        }
+        },
       });
     } catch (e) {
       console.error(e);
     }
   }
   async function pickFile() {
-    const folder = await openPicker(googleAccessToken!, GOOGLE_OAUTH_CLIENT_ID!, GoogleDriveFilePickerFileType.FOLDER)
+    const folder = await openPicker(
+      googleAccessToken!,
+      GOOGLE_OAUTH_CLIENT_ID!,
+      GoogleDriveFilePickerFileType.FOLDER,
+    );
     commitFolder({
       variables: { folderId: folder.docs[0].id, name: folder.docs[0].name },
       onCompleted: (data) => {
-        console.log('o shit we did it')
-      }
+        console.log("file successfully posted", data);
+      },
+      optimisticResponse: {
+        pickGoogleDriveFolder: {
+          __typename: "BfGoogleDriveFolder",
+          id: folder.docs[0].id,
+          name: folder.docs[0].name,
+        },
+      },
     });
-
   }
-  
+
   return (
     <div>
       <Button
@@ -166,8 +185,12 @@ export function GoogleFilePicker(){
         onClick={authorizer}
         disabled={googleAccessToken != null}
       />
-      <Button text={"Open file picker"} onClick={pickFile} disabled={!googleAccessToken} />
+      <Button
+        text={"Open file picker"}
+        onClick={pickFile}
+        disabled={!googleAccessToken}
+      />
       {data?.currentViewer?.person?.name ?? "Not set up"}
     </div>
-  )
+  );
 }

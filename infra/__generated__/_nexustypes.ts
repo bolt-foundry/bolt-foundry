@@ -112,6 +112,16 @@ export interface NexusGenObjects {
   BfGoogleDriveFolder: { // root type
     name?: string | null; // String
   }
+  BfGoogleDriveFolderConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['BfGoogleDriveFolderEdge'] | null> | null; // [BfGoogleDriveFolderEdge]
+    nodes?: Array<NexusGenRootTypes['BfGoogleDriveFolder'] | null> | null; // [BfGoogleDriveFolder]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfGoogleDriveFolderEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BfGoogleDriveFolder'] | null; // BfGoogleDriveFolder
+  }
   BfMedia: { // root type
     filename?: string | null; // String
   }
@@ -248,6 +258,16 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     name: string | null; // String
   }
+  BfGoogleDriveFolderConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['BfGoogleDriveFolderEdge'] | null> | null; // [BfGoogleDriveFolderEdge]
+    nodes: Array<NexusGenRootTypes['BfGoogleDriveFolder'] | null> | null; // [BfGoogleDriveFolder]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfGoogleDriveFolderEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BfGoogleDriveFolder'] | null; // BfGoogleDriveFolder
+  }
   BfMedia: { // field return type
     filename: string | null; // String
     id: string; // ID!
@@ -279,6 +299,7 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
   }
   BfOrganization: { // field return type
+    googleDriveFolders: NexusGenRootTypes['BfGoogleDriveFolderConnection'] | null; // BfGoogleDriveFolderConnection
     id: string; // ID!
     media: NexusGenRootTypes['BfMediaConnection'] | null; // BfMediaConnection
     name: string | null; // String
@@ -410,6 +431,16 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     name: 'String'
   }
+  BfGoogleDriveFolderConnection: { // field return type name
+    count: 'Int'
+    edges: 'BfGoogleDriveFolderEdge'
+    nodes: 'BfGoogleDriveFolder'
+    pageInfo: 'PageInfo'
+  }
+  BfGoogleDriveFolderEdge: { // field return type name
+    cursor: 'String'
+    node: 'BfGoogleDriveFolder'
+  }
   BfMedia: { // field return type name
     filename: 'String'
     id: 'ID'
@@ -441,6 +472,7 @@ export interface NexusGenFieldTypeNames {
     node: 'BfMediaTranscript'
   }
   BfOrganization: { // field return type name
+    googleDriveFolders: 'BfGoogleDriveFolderConnection'
     id: 'ID'
     media: 'BfMediaConnection'
     name: 'String'
@@ -529,6 +561,12 @@ export interface NexusGenArgTypes {
     }
   }
   BfOrganization: {
+    googleDriveFolders: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
     media: { // args
       after?: string | null; // String
       before?: string | null; // String

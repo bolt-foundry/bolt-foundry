@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<460beb97f2f4d017f686bd0962e19fbf>>
+ * @generated SignedSource<<a6f5c2e927ee2e6028f3be3e94de068b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,10 +11,13 @@
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type GoogleFilePickerPickFolderMutation$variables = {
   folderId: string;
+  name: string;
 };
 export type GoogleFilePickerPickFolderMutation$data = {
   readonly pickGoogleDriveFolder: {
     readonly __typename: "BfGoogleDriveFolder";
+    readonly id: string;
+    readonly name: string | null | undefined;
   } | null | undefined;
 };
 export type GoogleFilePickerPickFolderMutation = {
@@ -28,42 +31,65 @@ var v0 = [
     "defaultValue": null,
     "kind": "LocalArgument",
     "name": "folderId"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "name"
   }
 ],
 v1 = [
   {
-    "kind": "Variable",
-    "name": "folderId",
-    "variableName": "folderId"
+    "alias": null,
+    "args": [
+      {
+        "kind": "Variable",
+        "name": "folderId",
+        "variableName": "folderId"
+      },
+      {
+        "kind": "Variable",
+        "name": "name",
+        "variableName": "name"
+      }
+    ],
+    "concreteType": "BfGoogleDriveFolder",
+    "kind": "LinkedField",
+    "name": "pickGoogleDriveFolder",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "__typename",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "id",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "name",
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
   }
-],
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "__typename",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "GoogleFilePickerPickFolderMutation",
-    "selections": [
-      {
-        "alias": null,
-        "args": (v1/*: any*/),
-        "concreteType": "BfGoogleDriveFolder",
-        "kind": "LinkedField",
-        "name": "pickGoogleDriveFolder",
-        "plural": false,
-        "selections": [
-          (v2/*: any*/)
-        ],
-        "storageKey": null
-      }
-    ],
+    "selections": (v1/*: any*/),
     "type": "Mutation",
     "abstractKey": null
   },
@@ -72,39 +98,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "GoogleFilePickerPickFolderMutation",
-    "selections": [
-      {
-        "alias": null,
-        "args": (v1/*: any*/),
-        "concreteType": "BfGoogleDriveFolder",
-        "kind": "LinkedField",
-        "name": "pickGoogleDriveFolder",
-        "plural": false,
-        "selections": [
-          (v2/*: any*/),
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "id",
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ]
+    "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "db422253bc0802fc4dfa63dacfb8a4c1",
+    "cacheID": "d9e5fcbd77562d0001d1edf62ce9538c",
     "id": null,
     "metadata": {},
     "name": "GoogleFilePickerPickFolderMutation",
     "operationKind": "mutation",
-    "text": "mutation GoogleFilePickerPickFolderMutation(\n  $folderId: String!\n) {\n  pickGoogleDriveFolder(folderId: $folderId) {\n    __typename\n    id\n  }\n}\n"
+    "text": "mutation GoogleFilePickerPickFolderMutation(\n  $folderId: String!\n  $name: String!\n) {\n  pickGoogleDriveFolder(folderId: $folderId, name: $name) {\n    __typename\n    id\n    name\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f955ea65cbe06461e5e6b4ab58307f0a";
+(node as any).hash = "d56965aa3857e29ba3bee5a1efc990ee";
 
 export default node;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<cfbd9f22ad4ecaecb72b7f6f3cd13024>>
+ * @generated SignedSource<<c529dc503a8baa1de530884fc2d7094e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,12 +9,14 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
+import { FragmentRefs } from "relay-runtime";
 export type SettingsPageQuery$variables = Record<PropertyKey, never>;
 export type SettingsPageQuery$data = {
   readonly currentViewer: {
     readonly organization: {
       readonly id: string;
       readonly name: string | null | undefined;
+      readonly " $fragmentSpreads": FragmentRefs<"WatchFolderList_bfOrganization">;
     } | null | undefined;
     readonly person: {
       readonly name: string | null | undefined;
@@ -41,19 +43,10 @@ v1 = {
   "name": "id",
   "storageKey": null
 },
-v2 = {
-  "alias": null,
-  "args": null,
-  "concreteType": "BfOrganization",
-  "kind": "LinkedField",
-  "name": "organization",
-  "plural": false,
-  "selections": [
-    (v1/*: any*/),
-    (v0/*: any*/)
-  ],
-  "storageKey": null
-};
+v2 = [
+  (v0/*: any*/),
+  (v1/*: any*/)
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -81,7 +74,24 @@ return {
             ],
             "storageKey": null
           },
-          (v2/*: any*/)
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "BfOrganization",
+            "kind": "LinkedField",
+            "name": "organization",
+            "plural": false,
+            "selections": [
+              {
+                "args": null,
+                "kind": "FragmentSpread",
+                "name": "WatchFolderList_bfOrganization"
+              },
+              (v1/*: any*/),
+              (v0/*: any*/)
+            ],
+            "storageKey": null
+          }
         ],
         "storageKey": null
       }
@@ -117,29 +127,83 @@ return {
             "kind": "LinkedField",
             "name": "person",
             "plural": false,
-            "selections": [
-              (v0/*: any*/),
-              (v1/*: any*/)
-            ],
+            "selections": (v2/*: any*/),
             "storageKey": null
           },
-          (v2/*: any*/)
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "BfOrganization",
+            "kind": "LinkedField",
+            "name": "organization",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": [
+                  {
+                    "kind": "Literal",
+                    "name": "first",
+                    "value": 20
+                  }
+                ],
+                "concreteType": "BfGoogleDriveFolderConnection",
+                "kind": "LinkedField",
+                "name": "googleDriveFolders",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "count",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "BfGoogleDriveFolderEdge",
+                    "kind": "LinkedField",
+                    "name": "edges",
+                    "plural": true,
+                    "selections": [
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "BfGoogleDriveFolder",
+                        "kind": "LinkedField",
+                        "name": "node",
+                        "plural": false,
+                        "selections": (v2/*: any*/),
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": "googleDriveFolders(first:20)"
+              },
+              (v1/*: any*/),
+              (v0/*: any*/)
+            ],
+            "storageKey": null
+          }
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "6bbb071b5373f5b32f7862e1f376077e",
+    "cacheID": "0d3403be290d988cddbe64d80527d13e",
     "id": null,
     "metadata": {},
     "name": "SettingsPageQuery",
     "operationKind": "query",
-    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      id\n      name\n    }\n  }\n}\n"
+    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  googleDriveFolders(first: 20) {\n    count\n    edges {\n      node {\n        name\n        id\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "fdb4a7e6932b167b2e0cd565d06f8897";
+(node as any).hash = "8d6e37071f122d7bb81997cda78d5942";
 
 export default node;
