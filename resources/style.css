@@ -57,6 +57,14 @@ a.dark:visited {
   color: #fff;
 }
 
+.full-spinner {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .spinner {
   animation: spin 1s linear infinite;
 }
