@@ -60,7 +60,6 @@ export class BfEdge<
       InstanceType<TThis> & EdgeCreationMetadata
     > & { count: number }
   > {
-    logger.setLevel(logger.levels.DEBUG);
     logger.debug("queryTargetsConnectionForGraphQL", TargetClass, sourceBfGid);
     // @ts-expect-error done is better than good™
     const connection = await this.queryConnectionForGraphQL(
