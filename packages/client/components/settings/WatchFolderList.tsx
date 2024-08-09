@@ -4,6 +4,7 @@ import { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery
 import { Columns, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
 import { graphql } from "packages/client/deps.ts";
+import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
 
 const fragment = await graphql`
 fragment WatchFolderList_bfOrganization on BfOrganization {
@@ -32,7 +33,7 @@ type Data = {
 
 export function WatchFolderList({ settings$key }: Props) {
   if (!settings$key) {
-    return <div>Loading...</div>;
+    return <FullPageSpinner />;
   }
   const data = useFragment(fragment, settings$key);
   console.log(data);
@@ -43,7 +44,7 @@ export function WatchFolderList({ settings$key }: Props) {
       active: false,
       status: "INGESTING",
     };
-  })
+  });
 
   const columns: Columns<Data> = [
     {
@@ -67,7 +68,7 @@ export function WatchFolderList({ settings$key }: Props) {
       renderer: (data) => <TableCell text={data.status} />,
     },
   ];
-  
+
   return (
     <div className="cs-page-section">
       <div className="cs-page-section-title">Watch folders</div>
