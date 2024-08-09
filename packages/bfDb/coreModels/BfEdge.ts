@@ -50,7 +50,6 @@ export class BfEdge<
   >(
     this: TThis,
     currentViewer: BfCurrentViewer,
-    // metadataToQuery: Partial<EdgeCreationMetadata>,
     TargetClass: typeof BfNode,
     sourceBfGid: BfGid | BfSid,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
