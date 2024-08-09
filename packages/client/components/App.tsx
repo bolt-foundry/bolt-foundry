@@ -13,13 +13,11 @@ import { ContactUs } from "packages/client/components/ContactUs.tsx";
 import { ComingSoonPage } from "packages/client/pages/ComingSoonPage.tsx";
 import { SettingsPage } from "packages/client/pages/SettingsPage.tsx";
 import { ClipSearchPage } from "packages/client/pages/ClipSearchPage.tsx";
-import { SettingsMedia } from "packages/client/pages/SettingsMedia.tsx";
 export const routes = new Map([
   ["/", { Component: ComingSoonPage, allowLoggedOut: true }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
   ["/ui", { Component: Demo, allowLoggedOut: true }],
   ["/contact-us", { Component: ContactUs, allowLoggedOut: true }],
-  ["/settings/media", { Component: SettingsMedia, allowLoggedOut: false }],
   ["/settings", { Component: SettingsPage, allowLoggedOut: false }],
   ["/clip-search", { Component: ClipSearchPage, allowLoggedOut: true }],
 ]);
