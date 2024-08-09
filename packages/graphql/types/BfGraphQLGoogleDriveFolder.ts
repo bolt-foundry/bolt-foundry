@@ -1,4 +1,4 @@
-import { mutationField, objectType } from "nexus";
+import { extendType, mutationField, objectType } from "nexus";
 import { BfGoogleDriveFolder } from "packages/bfDb/models/BfGoogleDriveFolder.ts";
 
 export const BfGraphQLGoogleDriveFolderType = objectType({
@@ -8,6 +8,24 @@ export const BfGraphQLGoogleDriveFolderType = objectType({
     t.string("name");
   }
 })
+
+export const BfGraphQLPickGoogleDriveFolderQuery = extendType({
+  type: "BfOrganization",
+  definition(t) {
+    t.connectionField("googleDriveFolders", {
+      type: "BfGoogleDriveFolder",
+      resolve: (_, args, { bfCurrentViewer }) => {
+        const folders = BfGoogleDriveFolder.queryConnectionForGraphQL(
+          bfCurrentViewer,
+          { bfOid: bfCurrentViewer.bfOid },
+          {},
+          args,
+        );
+        return folders;
+      },
+    });
+  },
+});
 
 export const BfGraphQLPickGoogleDriveFolderMutation = mutationField("pickGoogleDriveFolder", {
   type: "BfGoogleDriveFolder",

@@ -1,22 +1,11 @@
 import { React, ReactRelay } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 import { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
-import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
-import { Columns, Table } from "packages/bfDs/Table.tsx";
-import { TableCell } from "packages/bfDs/TableCell.tsx";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";
-import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFilePicker.tsx";
+import { WatchFolder } from "packages/client/components/settings/WatchFolder.tsx";
 const { useLazyLoadQuery } = ReactRelay;
-
-type Data = {
-  folder: string;
-  videos: number;
-  active: boolean;
-  status: "INGESTING" | "TRANSCRIBING" | "COMPLETED";
-};
 
 const query = await graphql`
 query SettingsPageQuery {
@@ -25,6 +14,7 @@ query SettingsPageQuery {
       name
     }
     organization {
+      ...WatchFolderList_bfOrganization
       id
       name
     }
@@ -32,49 +22,11 @@ query SettingsPageQuery {
 }
 `;
 
-function Content() {
-  const columns: Columns<Data> = [
-    {
-      title: "Folder name",
-      width: "2fr",
-      renderer: (data) => <TableCell text={data.folder} />,
-    },
-    {
-      title: "Videos",
-      width: "0.5fr",
-      renderer: (data) => <TableCell text={data.videos} />,
-    },
-    {
-      title: "Active",
-      width: "0.5fr",
-      renderer: (data) => <TableCell text={data.active ? "Yes" : "No"} />,
-    },
-    {
-      title: "Status",
-      width: "1fr",
-      renderer: (data) => <TableCell text={data.status} />,
-    },
-  ];
-  const data = [
-    { folder: "Video clips", videos: 28, active: false, status: "INGESTING" },
-    { folder: "Broll", videos: 34, active: false, status: "TRANSCRIBING" },
-    { folder: "Podcasts", videos: 45, active: true, status: "COMPLETED" },
-  ];
-  return (
-    <div className="cs-page-content">
-      <div className="cs-page-section">
-       <GoogleFilePicker />
-      </div>
-      <div className="cs-page-section">
-        <div className="cs-page-section-title">Watch folders</div>
-        <Table columns={columns} data={data} />
-      </div>
-    </div>
-  );
-}
-
 export function SettingsPage() {
   const data = useLazyLoadQuery<SettingsPageQuery>(query, {});
+
+  const organizationFragmentRef = data?.currentViewer?.organization ?? null;
+  
   return (
     <div className="cs-page">
       <Sidebar
@@ -103,7 +55,7 @@ export function SettingsPage() {
         }
         header="Settings"
       />
-      <Content />
+      <WatchFolder settings$key={organizationFragmentRef} />
     </div>
   );
 }
