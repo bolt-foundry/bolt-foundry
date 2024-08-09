@@ -124,6 +124,43 @@ export async function bfGetItemByBfGid<
   }
 }
 
+export async function bfGetItemsByBfGid<
+  TProps = Props,
+  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
+>(
+  bfGids: Array<string>,
+  className?: string,
+): Promise<Array<DbItem<TProps, TMetadata>>> {
+  try {
+    logger.trace("bfGetItemsByBfGid", { bfGids, className });
+    let queryPromise;
+    if (className) {
+      queryPromise =
+        sql`SELECT * FROM bfdb WHERE bf_gid = ANY(${bfGids}) AND class_name = ${className}`;
+    } else {
+      queryPromise = sql`SELECT * FROM bfdb WHERE bf_gid = ANY(${bfGids})`;
+    }
+    const rows = await queryPromise as Row<TProps>[];
+    return rows.map(row => {
+      const props = row.props;
+      const metadata: TMetadata = {
+        bfGid: row.bf_gid,
+        bfSid: row.bf_sid,
+        bfOid: row.bf_oid,
+        bfCid: row.bf_cid,
+        bfTid: row.bf_tid,
+        className: row.class_name,
+        createdAt: new Date(row.created_at), // Convert timestamp to Date object
+        lastUpdated: new Date(row.last_updated), // Convert timestamp to Date object
+      } as TMetadata;
+      return { props: props as TProps, metadata };
+    });
+  } catch (e) {
+    logger.error(e);
+    throw e;
+  }
+}
+
 export async function bfPutItem<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
@@ -287,6 +324,7 @@ export async function bfQueryItemsForGraphQLConnection<
   metadata: Partial<TMetadata>,
   props: Partial<TProps> = {},
   connectionArgs: ConnectionArguments,
+  bfGids: Array<string>,
 ): Promise<ConnectionInterface<DbItem<TProps, TMetadata>> & { count: number }> {
   logger.trace({ metadata, props, connectionArgs });
   const { first, after, last, before } = connectionArgs;
@@ -322,6 +360,12 @@ export async function bfQueryItemsForGraphQLConnection<
       metadataConditions.push(`${key} = $${valuePosition}`);
     }
   }
+
+  for (const bfGid of bfGids) {
+    variables.push(bfGid);
+    metadataConditions.push(`bf_gid = $${variables.length}`);
+  }
+  
   for (const [key, value] of Object.entries(props)) {
     variables.push(key);
     const keyPosition = variables.length;

@@ -6,7 +6,7 @@ export type BfMediaProps = {
 };
 
 export class BfMedia extends BfNode<BfMediaProps> {
-  static async findTranscriptsByViewer(bfCurrentViewer: BfCurrentViewer) {
+  static async findMediaByViewer(bfCurrentViewer: BfCurrentViewer) {
     const media = await this.query(bfCurrentViewer, {
       bfOid: bfCurrentViewer.organizationBfGid,
       // TODO @randallb update query so you don't need to specify className

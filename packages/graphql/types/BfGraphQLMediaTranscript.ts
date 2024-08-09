@@ -8,6 +8,7 @@ import {
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 import { getLogger } from "deps.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);
 
@@ -26,11 +27,12 @@ export const BfGraphQLMediaTranscriptsQuery = extendType({
   definition(t) {
     t.connectionField("transcripts", {
       type: "BfMediaTranscript",
-      resolve: (_, args, { bfCurrentViewer }) => {
+      resolve: (parent, args, { bfCurrentViewer }) => {
         logger.debug("Fetching all transcripts");
-        const transcripts = BfMediaTranscript.queryConnectionForGraphQL(
+        const transcripts = BfEdge.queryTargetsConnectionForGraphQL(
           bfCurrentViewer,
-          { bfOid: bfCurrentViewer.bfOid },
+          BfMediaTranscript,
+          parent.id,
           {},
           args,
         );

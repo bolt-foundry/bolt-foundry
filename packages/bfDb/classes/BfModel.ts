@@ -42,7 +42,7 @@ export type BfBaseModelGraphQL<TRequiredProps, TOptionalProps> =
     __typename: string;
   };
 
-abstract class BfBaseModel<
+export abstract class BfBaseModel<
   TRequiredProps,
   TOptionalProps = Record<string | symbol, unknown>,
   TCreationMetadata extends CreationMetadata = CreationMetadata,
@@ -166,6 +166,7 @@ abstract class BfBaseModel<
       ...metadataToQuery,
       // restrict queries to same org unless internal admin
       bfOid: currentViewerIsAdmin ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid : currentViewer.organizationBfGid,
+      className: this.name,
 
     }
     const items = await bfQueryItems<
@@ -197,6 +198,7 @@ abstract class BfBaseModel<
     metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
     connectionArgs: ConnectionArguments,
+    bfGids = [],
   ): Promise<
     ConnectionInterface<
       InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
@@ -216,6 +218,7 @@ abstract class BfBaseModel<
       combinedMetadata,
       propsToQuery,
       connectionArgs,
+      bfGids,
     );
 
     return {
