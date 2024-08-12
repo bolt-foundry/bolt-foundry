@@ -38,3 +38,14 @@ export const BfGraphQLPickGoogleDriveFolderMutation = mutationField("pickGoogleD
     return folder;
   }
 })
+
+export const BfGraphQLDeleteGoogleDriveFolderMutation = mutationField("deleteGoogleDriveFolder", {
+  type: "BfGoogleDriveFolder",
+  args: {
+    folderId: "String",
+  },
+  resolve: async (_root, { folderId }, { bfCurrentViewer }) => {
+    const folder = await BfGoogleDriveFolder.delete(bfCurrentViewer, folderId);
+    return folder;
+  }
+})

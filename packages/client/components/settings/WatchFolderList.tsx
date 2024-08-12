@@ -1,23 +1,37 @@
 import { React, ReactRelay } from "deps.ts";
-import { useFragment } from "react-relay";
+import { useFragment, useMutation, usePaginationFragment } from "react-relay";
 import { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery.graphql.ts";
 import { Columns, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
 import { graphql } from "packages/client/deps.ts";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
+import { Button } from "packages/bfDs/Button.tsx";
+
+const useEffect = React.useEffect;
 
 const fragment = await graphql`
-fragment WatchFolderList_bfOrganization on BfOrganization {
-  googleDriveFolders(first: 20) {
-    count
-    edges {
-      node {
-        name
-        id
+  fragment WatchFolderList_bfOrganization on BfOrganization
+  @refetchable(queryName: "WatchFolderListPaginationQuery")
+  @argumentDefinitions(
+    after: { type: "String" }
+    first: { type: "Int", defaultValue: 5 }
+  ) {
+    googleDriveFolders(first: $first, after: $after) @connection(key: "WatchFolderList_googleDriveFolders") {
+      count
+      edges {
+        node {
+          name
+          id
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+        hasPreviousPage
+        startCursor
       }
     }
   }
-}
 `;
 
 type Props = {
@@ -35,8 +49,12 @@ export function WatchFolderList({ settings$key }: Props) {
   if (!settings$key) {
     return <FullPageSpinner />;
   }
-  const data = useFragment(fragment, settings$key);
-  console.log(data);
+
+  const { data, loadNext, hasNext, isLoadingNext } = usePaginationFragment(
+    fragment,
+    settings$key,
+  );
+
   const tableData = data?.googleDriveFolders?.edges?.map((edge) => {
     return {
       folder: edge.node.name ?? "Untitled",
@@ -73,6 +91,13 @@ export function WatchFolderList({ settings$key }: Props) {
     <div className="cs-page-section">
       <div className="cs-page-section-title">Watch folders</div>
       <Table columns={columns} data={tableData} />
+      <Button
+        disabled={!hasNext}
+        kind="outline"
+        text={isLoadingNext ? "Loading..." : "Load more"}
+        onClick={() => loadNext(10)}
+        size="medium"
+      />
     </div>
   );
 }
