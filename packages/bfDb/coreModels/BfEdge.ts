@@ -23,7 +23,7 @@ export type BfEdgeOptionalProps = {
   action?: string;
 };
 
-type EdgeCreationMetadata = CreationMetadata & {
+export type EdgeCreationMetadata = CreationMetadata & {
   bfTClassName: string;
   bfTid: BfTid | BfGid;
   bfSClassName: string;
