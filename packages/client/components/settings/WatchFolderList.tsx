@@ -1,13 +1,11 @@
 import { React, ReactRelay } from "deps.ts";
-import { useFragment, useMutation, usePaginationFragment } from "react-relay";
+import { usePaginationFragment } from "react-relay";
 import { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery.graphql.ts";
 import { Columns, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
 import { graphql } from "packages/client/deps.ts";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
-
-const useEffect = React.useEffect;
 
 const fragment = await graphql`
   fragment WatchFolderList_bfOrganization on BfOrganization
@@ -88,16 +86,23 @@ export function WatchFolderList({ settings$key }: Props) {
   ];
 
   return (
-    <div className="cs-page-section">
-      <div className="cs-page-section-title">Watch folders</div>
-      <Table columns={columns} data={tableData} />
-      <Button
-        disabled={!hasNext}
-        kind="outline"
-        text={isLoadingNext ? "Loading..." : "Load more"}
-        onClick={() => loadNext(10)}
-        size="medium"
-      />
+    <div>
+      {data?.googleDriveFolders?.edges?.length === 0 &&
+        (
+          <div className="cs-page-section">
+            Authenticate with Google, then choose a folder.
+          </div>
+        )}
+      <div className="cs-page-section">
+        <Table columns={columns} data={tableData} />
+        <Button
+          disabled={!hasNext}
+          kind="outline"
+          text={isLoadingNext ? "Loading..." : "Load more"}
+          onClick={() => loadNext(10)}
+          size="medium"
+        />
+      </div>
     </div>
   );
 }

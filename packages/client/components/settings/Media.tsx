@@ -69,10 +69,12 @@ export function Media({ settings$key }: Props) {
   ];
 
   return (
-    <div className="cs-page-content">
-      <div className="cs-page-section">
-        <div className="cs-page-section-title">Media</div>
-        <Table columns={columns} data={tableData} />
+    <div className="cs-main">
+      <div className="cs-page-content">
+        <div className="cs-page-section">
+          <div className="cs-page-section-title">Media</div>
+          <Table columns={columns} data={tableData} />
+        </div>
       </div>
     </div>
   );
