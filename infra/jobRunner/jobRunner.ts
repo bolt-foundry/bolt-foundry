@@ -1,5 +1,5 @@
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { BfNodeJob } from "packages/bfDb/models/BfNodeJob.ts";
+import { BfJob } from "packages/bfDb/models/BfJob.ts";
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
 
@@ -18,9 +18,9 @@ logger.info(
 
 let shouldCheckForWork = true;
 const currentViewer = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(import.meta);
-export async function checkForWork() {
+export async function checkForWork(shouldClose = true) {
   logger.info("Checking for work");
-  const jobs = await BfNodeJob.findAvailableJobs(currentViewer);
+  const jobs = await BfJob.findAvailableJobs(currentViewer);
   logger.info(`Found ${jobs.length} jobs`);
   if (jobs.length > 0) {
     const job = jobs[0];
@@ -34,10 +34,17 @@ export async function checkForWork() {
     return;
   }
   logger.info("No work to do, timeout hit.");
-  globalThis.close();
+  if (shouldClose) {
+    globalThis.close();
+  }
+  
 }
-function disableCheckForWork() {
+export function disableCheckForWork() {
   shouldCheckForWork = false;
+}
+export function close() {
+  logger.info("Closing");
+  globalThis.close();
 }
 if (import.meta.main) {
   logger.info("Worker is main, starting to check for work");
