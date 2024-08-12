@@ -97,18 +97,16 @@ register(
       "sl",
       "pull",
     ]);
-    // await runShellCommand([
-    //   "sl",
-    //   "goto",
-    //   "main",
-    // ]);
+    const output = await runShellCommandWithOutput([
+      "sl",
+      "web",
+      "--json",
+    ]);
+    const json = JSON.parse(output);
+    console.log(json.url);
     const localhostUrl = `http://localhost:8283/${
       Deno.env.get("REPLIT_SESSION")
     }/files/open-multiple`;
-
-    const vscodeUrl = `vscode://vscode-remote/ssh-remote+${
-      Deno.env.get("REPL_ID")
-    }@${Deno.env.get("REPLIT_DEV_DOMAIN")}:22${Deno.env.get("REPL_HOME")}`;
 
     await fetch(localhostUrl, {
       method: "POST",
@@ -116,7 +114,7 @@ register(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        urls: [vscodeUrl],
+        urls: [json.url],
       }),
     });
     return 0;
