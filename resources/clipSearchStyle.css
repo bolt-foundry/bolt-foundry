@@ -3,9 +3,20 @@
   width: 100%;
   height: 100vh;
 }
+
+.cs-main {
+  padding: 20px 20px 40px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100vh;
+}
+
 .cs-sidebar {
   width: 300px;
-  padding: 16px;
+  padding: 20px 16px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -33,9 +44,17 @@
 
 }
 .cs-page-content {
-  padding: 40px 20px;
   width: 100%;
   overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.cs-page-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 .cs-page-section {
   background: var(--background);
@@ -50,13 +69,6 @@
 .cs-page-section-title {
   font-size: 24px;
   font-weight: 700;
-  margin-bottom: 20px;
-}
-
-.cs-main {
-  flex: 1;
-  height: 100vh;
-  overflow-y: auto;
 }
 
 .cs-logo {
