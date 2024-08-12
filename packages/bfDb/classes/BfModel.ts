@@ -6,7 +6,8 @@ import type {
 import {
   BfCurrentViewer,
   IBfCurrentViewerInternalAdmin,
-  IBfCurrentViewerInternalAdminOmni} from "packages/bfDb/classes/BfCurrentViewer.ts";
+  IBfCurrentViewerInternalAdminOmni,
+} from "packages/bfDb/classes/BfCurrentViewer.ts";
 import {
   ACCOUNT_ACTIONS,
   BfAnyid,
@@ -86,7 +87,9 @@ export abstract class BfBaseModel<
     await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
     try {
       await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
-      logger.trace(`Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`);
+      logger.trace(
+        `Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`,
+      );
     } catch (error) {
       logger.trace(`Failed to delete ${this.constructor.name}:`, error);
       throw error;
@@ -160,14 +163,19 @@ export abstract class BfBaseModel<
   ): Promise<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
-    const currentViewerIsAdmin = currentViewer instanceof IBfCurrentViewerInternalAdmin;
+    const currentViewerIsAdmin = currentViewer instanceof
+      IBfCurrentViewerInternalAdmin;
 
     const queryableMetadata = {
       ...metadataToQuery,
-      // restrict queries to same org unless internal admin
-      bfOid: currentViewerIsAdmin ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid : currentViewer.organizationBfGid,
       className: this.name,
-
+    };
+    if (currentViewerIsAdmin) {
+      if (metadataToQuery.bfOid != null) {
+        queryableMetadata.bfOid = metadataToQuery.bfOid;
+      }
+    } else {
+      queryableMetadata.bfOid = currentViewer.organizationBfGid;
     }
     const items = await bfQueryItems<
       TRequiredProps & Partial<TOptionalProps>,
@@ -204,13 +212,16 @@ export abstract class BfBaseModel<
       InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
     > & { count: number }
   > {
-    const currentViewerIsAdmin = currentViewer instanceof IBfCurrentViewerInternalAdmin;
+    const currentViewerIsAdmin = currentViewer instanceof
+      IBfCurrentViewerInternalAdmin;
     const combinedMetadata = {
       ...metadataToQuery,
       // allow internal admins to query all models regardless of owner
-      bfOid: currentViewerIsAdmin ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid : currentViewer.organizationBfGid,
+      bfOid: currentViewerIsAdmin
+        ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid
+        : currentViewer.organizationBfGid,
       className: this.name,
-    }
+    };
     const { edges, ...others } = await bfQueryItemsForGraphQLConnection<
       TRequiredProps & Partial<TOptionalProps>,
       BfBaseModelMetadata<TCreationMetadata>
