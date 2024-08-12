@@ -196,6 +196,7 @@ export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'> | core.Discriminate<'IBfCurrentViewerInternalAdmin', 'required'>;
   BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveFolder', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
   IBfGraphQLNode: any;
+  Node: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveFolder', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
 }
 
 export interface NexusGenUnions {
@@ -329,6 +330,7 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     createTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
+    deleteGoogleDriveFolder: NexusGenRootTypes['BfGoogleDriveFolder'] | null; // BfGoogleDriveFolder
     deleteTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
     linkAdvancedGoogleAuth: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
@@ -374,6 +376,9 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
   }
   IBfGraphQLNode: { // field return type
+    id: string; // ID!
+  }
+  Node: { // field return type
     id: string; // ID!
   }
 }
@@ -502,6 +507,7 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     createTranscript: 'BfMediaTranscript'
+    deleteGoogleDriveFolder: 'BfGoogleDriveFolder'
     deleteTranscript: 'BfMediaTranscript'
     linkAdvancedGoogleAuth: 'BfCurrentViewer'
     loginWithGoogle: 'BfCurrentViewerAccessToken'
@@ -549,6 +555,9 @@ export interface NexusGenFieldTypeNames {
   IBfGraphQLNode: { // field return type name
     id: 'ID'
   }
+  Node: { // field return type name
+    id: 'ID'
+  }
 }
 
 export interface NexusGenArgTypes {
@@ -592,6 +601,9 @@ export interface NexusGenArgTypes {
     createTranscript: { // args
       filename: string; // String!
       words: string; // String!
+    }
+    deleteGoogleDriveFolder: { // args
+      folderId?: string | null; // String
     }
     deleteTranscript: { // args
       id: string; // String!
@@ -650,21 +662,23 @@ export interface NexusGenArgTypes {
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon" | "IBfCurrentViewerInternalAdmin"
   BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveFolder" | "BfMedia" | "BfMediaTranscript" | "BfOrganization" | "BfPerson"
+  Node: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveFolder" | "BfMedia" | "BfMediaTranscript" | "BfOrganization" | "BfPerson"
 }
 
 export interface NexusGenTypeInterfaces {
-  BfAccount: "BfNode"
-  BfClip: "BfNode"
-  BfClipReview: "BfNode"
+  BfAccount: "BfNode" | "Node"
+  BfClip: "BfNode" | "Node"
+  BfClipReview: "BfNode" | "Node"
   BfCurrentViewerAccessToken: "BfCurrentViewer"
   BfCurrentViewerAnon: "BfCurrentViewer"
-  BfGoogleDriveFolder: "BfNode"
-  BfMedia: "BfNode"
-  BfMediaTranscript: "BfNode"
-  BfOrganization: "BfNode"
-  BfPerson: "BfNode"
+  BfGoogleDriveFolder: "BfNode" | "Node"
+  BfMedia: "BfNode" | "Node"
+  BfMediaTranscript: "BfNode" | "Node"
+  BfOrganization: "BfNode" | "Node"
+  BfPerson: "BfNode" | "Node"
   IBfCurrentViewerInternalAdmin: "BfCurrentViewer"
-  IBfGraphQLNode: "BfNode"
+  BfNode: "Node"
+  IBfGraphQLNode: "BfNode" | "Node"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;

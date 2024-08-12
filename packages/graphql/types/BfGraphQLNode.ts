@@ -9,9 +9,19 @@ import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
 
+export const NodeGraphQLType = interfaceType({
+  name: "Node",
+  definition(t) {
+    t.nonNull.id("id", {
+      description: "Unique identifier for the resource",
+      resolve: (obj) => obj.id ?? obj.bfGid ?? obj.metadata?.bfGid,
+    });
+  },
+});
 export const BfNodeGraphQLType = interfaceType({
   name: "BfNode",
   definition(t) {
+    t.implements(NodeGraphQLType);
     t.nonNull.id("id", {
       description: "Unique identifier for the resource",
       resolve: (obj) => obj.id ?? obj.bfGid ?? obj.metadata?.bfGid,

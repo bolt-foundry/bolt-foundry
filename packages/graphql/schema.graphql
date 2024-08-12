@@ -13,7 +13,7 @@ enum AccountRole {
 }
 
 """A person who uses our system on behalf of an orginization"""
-type BfAccount implements BfNode {
+type BfAccount implements BfNode & Node {
   displayName: String
 
   """Unique identifier for the resource"""
@@ -50,14 +50,14 @@ type BfAccountEdge {
   node: BfAccount
 }
 
-type BfClip implements BfNode {
+type BfClip implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   title: String
 }
 
 """A review of a clip."""
-type BfClipReview implements BfNode {
+type BfClipReview implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   mediaUrl: Url
@@ -112,7 +112,7 @@ type BfCurrentViewerAnon implements BfCurrentViewer {
   role: AccountRole
 }
 
-type BfGoogleDriveFolder implements BfNode {
+type BfGoogleDriveFolder implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   name: String
@@ -144,7 +144,7 @@ type BfGoogleDriveFolderEdge {
 }
 
 """A media object"""
-type BfMedia implements BfNode {
+type BfMedia implements BfNode & Node {
   filename: String
 
   """Unique identifier for the resource"""
@@ -190,7 +190,7 @@ type BfMediaEdge {
 }
 
 """A transcript of a clip."""
-type BfMediaTranscript implements BfNode {
+type BfMediaTranscript implements BfNode & Node {
   filename: String
 
   """Unique identifier for the resource"""
@@ -223,13 +223,13 @@ type BfMediaTranscriptEdge {
   node: BfMediaTranscript
 }
 
-interface BfNode {
+interface BfNode implements Node {
   """Unique identifier for the resource"""
   id: ID!
 }
 
 """A collection of people working together"""
-type BfOrganization implements BfNode {
+type BfOrganization implements BfNode & Node {
   googleDriveFolders(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -276,7 +276,7 @@ type BfOrganization implements BfNode {
 }
 
 """A real human who uses our system"""
-type BfPerson implements BfNode {
+type BfPerson implements BfNode & Node {
   accounts(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -303,6 +303,7 @@ scalar File
 
 type Mutation {
   createTranscript(filename: String!, words: String!): BfMediaTranscript
+  deleteGoogleDriveFolder(folderId: String): BfGoogleDriveFolder
   deleteTranscript(id: String!): BfMediaTranscript
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
@@ -314,6 +315,11 @@ type Mutation {
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
   updateTranscript(filename: String, id: String!, words: String): BfMediaTranscript
   upsertClip(file: File!, originalClipId: String!, title: String): BfClip
+}
+
+interface Node {
+  """Unique identifier for the resource"""
+  id: ID!
 }
 
 """
