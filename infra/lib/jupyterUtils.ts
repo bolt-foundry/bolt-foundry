@@ -23,7 +23,7 @@ export async function getJupyterCurrentViewer(
     BfAccount.name,
   );
   if (!accountRow) {
-    logger.error("No account row for JUPYTER_BFACCOUNT_BFGID");
+    logger.error("No account row for JUPYTER_BFACCOUNT_BFGID", userId);
     return null;
   }
 
