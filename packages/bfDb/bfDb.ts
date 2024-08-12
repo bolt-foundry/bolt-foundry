@@ -41,6 +41,8 @@ type Row<
   bf_oid: BfOid;
   bf_tid: BfTid;
   bf_cid: BfCid;
+  bf_t_class_name: string;
+  bf_s_class_name: string;
   class_name: string;
   created_at: string;
   last_updated: string;
@@ -71,6 +73,8 @@ export async function bfGetItem<
       bfTid: firstRow.bf_tid,
       bfOid: firstRow.bf_oid,
       bfCid: firstRow.bf_cid,
+      bfTClassName: firstRow.bf_t_class_name,
+      bfSClassName: firstRow.bf_s_class_name,
       className: firstRow.class_name,
       createdAt: new Date(firstRow.created_at), // Convert timestamp to Date object
       lastUpdated: new Date(firstRow.last_updated), // Convert timestamp to Date object
@@ -113,6 +117,8 @@ export async function bfGetItemByBfGid<
       bfOid: firstRow.bf_oid,
       bfCid: firstRow.bf_cid,
       bfTid: firstRow.bf_tid,
+      bfTClassName: firstRow.bf_t_class_name,
+      bfSClassName: firstRow.bf_s_class_name,
       className: firstRow.class_name,
       createdAt: new Date(firstRow.created_at), // Convert timestamp to Date object
       lastUpdated: new Date(firstRow.last_updated), // Convert timestamp to Date object
@@ -149,6 +155,8 @@ export async function bfGetItemsByBfGid<
         bfOid: row.bf_oid,
         bfCid: row.bf_cid,
         bfTid: row.bf_tid,
+        bfTClassName: row.bf_t_class_name,
+        bfSClassName: row.bf_s_class_name,
         className: row.class_name,
         createdAt: new Date(row.created_at), // Convert timestamp to Date object
         lastUpdated: new Date(row.last_updated), // Convert timestamp to Date object
@@ -225,6 +233,8 @@ const VALID_METADATA_COLUMN_NAMES = [
   "bf_cid",
   "bf_sid",
   "bf_tid",
+  "bf_t_class_name",
+  "bf_s_class_name",
   "class_name",
   "sort_value",
 ];
@@ -287,6 +297,8 @@ export async function bfQueryItems<
         bfOid: row.bf_oid,
         bfTid: row.bf_tid,
         bfCid: row.bf_cid,
+        bfTClassName: row.bf_t_class_name,
+        bfSClassName: row.bf_s_class_name,
         className: row.class_name,
         createdAt: new Date(row.created_at), // Convert timestamp to Date object
         lastUpdated: new Date(row.last_updated), // Convert timestamp to Date object
@@ -401,6 +413,8 @@ export async function bfQueryItemsForGraphQLConnection<
             bfOid: row.bf_oid,
             bfTid: row.bf_tid,
             bfCid: row.bf_cid,
+            bfTClassName: row.bf_t_class_name,
+            bfSClassName: row.bf_s_class_name,
             className: row.class_name,
             createdAt: new Date(row.created_at),
             lastUpdated: new Date(row.last_updated),
