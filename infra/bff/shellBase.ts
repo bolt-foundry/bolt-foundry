@@ -78,9 +78,10 @@ export function registerShellCommand(
   name: string,
   description: string,
   commandArray: Array<string>,
+  useSpinner = true,
 ) {
   const shellCommand = (args) => {
-    return runShellCommand([...commandArray, ...args]);
+    return runShellCommand([...commandArray, ...args], {}, useSpinner);
   };
   register(
     name,
