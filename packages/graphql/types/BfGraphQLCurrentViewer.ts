@@ -44,6 +44,7 @@ export const BfGraphQLCurrentViewerType = interfaceType({
           const org = await BfOrganization.find(bfCurrentViewer, orgId);
           return org?.toGraphql() ?? null;
         }
+        return null;
       }
     })
     t.field("person", {
