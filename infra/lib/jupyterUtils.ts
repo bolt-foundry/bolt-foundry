@@ -23,8 +23,7 @@ export async function getJupyterCurrentViewer(
     BfAccount.name,
   );
   if (!accountRow) {
-    logger.error("No account row for JUPYTER_BFACCOUNT_BFGID", userId);
-    return null;
+    throw new Error("No account row for JUPYTER_BFACCOUNT_BFGID");
   }
 
   const omniCv = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(import.meta);
