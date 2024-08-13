@@ -93,6 +93,7 @@ type BfClipReviewEdge {
 The person acting on this request. The person is the person who is acting, the organization is the org on which they're acting
 """
 interface BfCurrentViewer {
+  blog: Blog
   organization: BfOrganization
   person: BfPerson
   role: AccountRole
@@ -100,6 +101,7 @@ interface BfCurrentViewer {
 
 """The person acting on this request using a Bf access token."""
 type BfCurrentViewerAccessToken implements BfCurrentViewer {
+  blog: Blog
   organization: BfOrganization
   person: BfPerson
   role: AccountRole
@@ -107,6 +109,7 @@ type BfCurrentViewerAccessToken implements BfCurrentViewer {
 
 """The anonymous person acting on this request."""
 type BfCurrentViewerAnon implements BfCurrentViewer {
+  blog: Blog
   organization: BfOrganization
   person: BfPerson
   role: AccountRole
@@ -296,6 +299,55 @@ type BfPerson implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   name: String
+}
+
+type Blog {
+  posts(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+    slug: String
+  ): BlogPostConnection
+  title: String
+}
+
+type BlogPost {
+  content: String
+  slug: String
+  title: String
+}
+
+type BlogPostConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BlogPostEdge]
+
+  """Flattened list of BlogPost type"""
+  nodes: [BlogPost]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type BlogPostEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BlogPost
 }
 
 """The `File` scalar type represents a file upload."""
