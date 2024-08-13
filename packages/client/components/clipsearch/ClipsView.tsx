@@ -2,12 +2,6 @@ import { React } from "deps.ts";
 import { Clip } from "packages/client/components/clipsearch/Clip.tsx";
 import { Nux } from "packages/client/components/clipsearch/Nux.tsx";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
-const fakeData = await import(
-  "packages/client/components/clipsearch/fakeData/aiResponse.json",
-  {
-    assert: { type: "json" },
-  }
-);
 
 type Props = {
   clips: string | undefined | null;
@@ -21,15 +15,15 @@ export function ClipsView({ clips }: Props) {
     return <FullPageSpinner />;
   }
 
-  const parsedClips = JSON.parse(clips);
+  const parsedClips = JSON.parse(clips ?? "{anecdotes: []}");
 
   return (
     <div className="cs-clipsView">
-      {parsedClips.map((clip) => (
+      {parsedClips.anecdotes.map((clip) => (
         <Clip
-          title={clip.title}
+          titleText={clip.titleText}
           text={clip.text}
-          description={clip.description}
+          descriptionText={clip.descriptionText}
           rationale={clip.rationale}
           filename={clip.filename}
           topics={clip.topics}
