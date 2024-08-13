@@ -29,6 +29,16 @@ export async function processFile(filePath: string, name: string) {
   }
 }
 
+export async function chunkGoogleFile(filePath: string, name: string) {
+  logger.info("processing file", filePath);
+  const videoChunks = createVideoChunksForFilePath(filePath);
+  for await (const chunk of videoChunks) {
+    const uploadedLink = await processVideoChunk(chunk, name);
+  }
+  //find a way to check sucess
+  return true;
+}
+
 async function* createVideoChunksForFilePath(filePath: string) {
   logger.info(`creating video chunks for file ${filePath}`);
   const tmpDir = await Deno.makeTempDir();

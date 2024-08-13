@@ -4,6 +4,7 @@ import { getLogger } from "deps.ts";
 import { routes as appRoutes } from "infra/internalbf.com/client/components/App.tsx";
 import { handler as graphQlHandler } from "infra/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";
+import { addToGoogleProcessQueue } from "infra/watcher/googleDriveWatcher.ts"
 
 const logger = getLogger(import.meta);
 export enum DeploymentTypes {
@@ -99,6 +100,19 @@ routes.set("/logout", () => {
     status: 302,
     headers,
   });
+});
+
+
+routes.set("/google/drive/webhook", async (req) => {
+  console.log("happened");
+  if (req.method === "POST") {
+    const googleJSON = await req.json();
+    //todo check validity of body
+    //todo switch actions depending on the type of change.
+    addToGoogleProcessQueue(googleJSON);
+    return new Response("Request received", { status: 200 });
+  }
+  return new Response("Not Found", { status: 404 }); 
 });
 
 routes.set("/google/oauth/start", (req) => {

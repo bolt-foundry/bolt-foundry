@@ -160,16 +160,19 @@ export abstract class BfBaseModel<
     currentViewer: BfCurrentViewer,
     metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
+    bfGids: Array<BfAnyid> = [],
   ): Promise<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
     const currentViewerIsAdmin = currentViewer instanceof
       IBfCurrentViewerInternalAdmin;
+    logger.debug("Current viewer is admin:", currentViewerIsAdmin)
 
     const queryableMetadata = {
       ...metadataToQuery,
       className: this.name,
     };
+    
     if (currentViewerIsAdmin) {
       if (metadataToQuery.bfOid != null) {
         queryableMetadata.bfOid = metadataToQuery.bfOid;
@@ -177,13 +180,16 @@ export abstract class BfBaseModel<
     } else {
       queryableMetadata.bfOid = currentViewer.organizationBfGid;
     }
+    logger.debug("Queryable metadata:", queryableMetadata);
     const items = await bfQueryItems<
       TRequiredProps & Partial<TOptionalProps>,
       BfBaseModelMetadata<TCreationMetadata>
     >(
       queryableMetadata,
       propsToQuery,
+      bfGids,
     );
+    logger.debug("Items:", items);
 
     return items.map(({ props, metadata }) => {
       const model = new this(currentViewer, props, {}, metadata, true);
@@ -206,7 +212,7 @@ export abstract class BfBaseModel<
     metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
     connectionArgs: ConnectionArguments,
-    bfGids = [],
+    bfGids: Array<BfAnyid> = [],
   ): Promise<
     ConnectionInterface<
       InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
