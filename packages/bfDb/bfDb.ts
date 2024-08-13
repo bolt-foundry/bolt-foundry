@@ -247,22 +247,25 @@ export async function bfQueryItems<
 >(
   metadataToQuery: Partial<TMetadata>,
   propsToQuery: Partial<TProps> = {},
+  bfGids: Array<string> = [],
   orderDirection: "ASC" | "DESC" = "ASC", // Default to ascending order
   orderBy: keyof Row = "sort_value", // Default to sort by sort_value
 ): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
-  logger.trace({ metadataToQuery, propsToQuery, orderBy, orderDirection });
+  logger.debug({ metadataToQuery, propsToQuery, bfGids, orderDirection, orderBy });
   const metadataConditions: string[] = [];
   const propsConditions: string[] = [];
   const variables = [];
 
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
-    // convert key from camelCase to snake_case
-    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
+    // convert key from camelCase to snake_case, ensure consecutive capital letters are underscored
+    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(/([A-Z])(?=[A-Z])/g, "$1_");
     const lowercaseKey = key.toLowerCase();
     if (VALID_METADATA_COLUMN_NAMES.includes(lowercaseKey)) {
       variables.push(value);
       const valuePosition = variables.length;
       metadataConditions.push(`${lowercaseKey} = $${valuePosition}`);
+    } else {
+      logger.warn(`Invalid metadata column name`, originalKey, key, lowercaseKey)
     }
   }
 
@@ -272,6 +275,11 @@ export async function bfQueryItems<
     variables.push(value);
     const valuePosition = variables.length;
     propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
+  }
+
+  for (const bfGid of bfGids) {
+    variables.push(bfGid);
+    metadataConditions.push(`bf_gid = $${variables.length}`);
   }
 
   if (metadataConditions.length == 0) {
@@ -285,9 +293,8 @@ export async function bfQueryItems<
   const allConditions = [...metadataConditions, ...propsConditions].filter(Boolean).join(" AND ");
   const query =
     `SELECT * FROM bfdb WHERE ${allConditions} ORDER BY ${orderBy} ${orderDirection}`;
-
   try {
-    logger.trace("Executing query", query, variables);
+    logger.debug("Executing query", query, variables);
     const rows = await sql(query, variables) as Row<TProps>[];
     const items = rows.map((row) => ({
       props: row.props,
@@ -365,11 +372,13 @@ export async function bfQueryItemsForGraphQLConnection<
   }
 
   for (const [originalKey, value] of Object.entries(metadata)) {
-    const key = originalKey.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(/([A-Z])(?=[A-Z])/g, "$1_").toLowerCase();
     if (VALID_METADATA_COLUMN_NAMES.includes(key)) {
       variables.push(value);
       const valuePosition = variables.length;
       metadataConditions.push(`${key} = $${valuePosition}`);
+    } else {
+      logger.warn(`Invalid metadata column name`, originalKey, key);
     }
   }
 
