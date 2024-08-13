@@ -13,6 +13,8 @@ import { ContactUs } from "packages/client/components/ContactUs.tsx";
 import { ComingSoonPage } from "packages/client/pages/ComingSoonPage.tsx";
 import { SettingsPage } from "packages/client/pages/SettingsPage.tsx";
 import { ClipSearchPage } from "packages/client/pages/ClipSearchPage.tsx";
+import { BlogPage } from "packages/client/pages/BlogPage.tsx";
+
 export const routes = new Map([
   ["/", { Component: ComingSoonPage, allowLoggedOut: true }],
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
@@ -20,6 +22,8 @@ export const routes = new Map([
   ["/contact-us", { Component: ContactUs, allowLoggedOut: true }],
   ["/settings", { Component: SettingsPage, allowLoggedOut: false }],
   ["/clip-search", { Component: ClipSearchPage, allowLoggedOut: true }],
+  ["/blog", { Component: BlogPage, allowLoggedOut: true }],
+  ["/blog/:slug", { Component: BlogPage, allowLoggedOut: true }],
 ]);
 
 export function App() {

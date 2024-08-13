@@ -345,11 +345,9 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     return this._cachedProps;
   }
   set props(newProps: Partial<TRequiredProps> & Partial<TOptionalProps>) {
-    logger.setLevel(logger.levels.TRACE);
     logger.trace("Setting props:", newProps);
     this.clientProps = newProps;
     this._cachedProps = undefined; // Invalidate the cache
-    logger.resetLevel();
   }
   private _cachedProps?: TRequiredProps & Partial<TOptionalProps>;
   private get combinedProps(): TRequiredProps & Partial<TOptionalProps> {
