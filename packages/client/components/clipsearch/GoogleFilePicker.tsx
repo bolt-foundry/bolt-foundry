@@ -180,17 +180,22 @@ export function GoogleFilePicker() {
 
   return (
     <div>
-      <Button
-        text={googleAccessToken ? "Authorized!!" : "Authorize Google"}
-        onClick={authorizer}
-        disabled={googleAccessToken != null}
-      />
-      <Button
-        text={"Open file picker"}
-        onClick={pickFile}
-        disabled={!googleAccessToken}
-      />
-      {data?.currentViewer?.person?.name ?? "Not set up"}
+      {googleAccessToken
+        ? (
+          <Button
+            iconLeft="plus"
+            text={"Choose Folder"}
+            onClick={pickFile}
+            disabled={!googleAccessToken}
+          />
+        )
+        : (
+          <Button
+            text={googleAccessToken ? "Authorized!!" : "Authorize Google"}
+            onClick={authorizer}
+            disabled={googleAccessToken != null}
+          />
+        )}
     </div>
   );
 }

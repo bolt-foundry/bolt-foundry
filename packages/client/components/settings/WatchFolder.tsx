@@ -13,11 +13,14 @@ export function WatchFolder({ settings$key }: Props) {
     return <FullPageSpinner />;
   }
   return (
-    <div className="cs-page-content">
-      <div className="cs-page-section">
+    <div className="cs-main">
+      <div className="cs-page-header">
+        <div className="cs-page-section-title">Watch folders</div>
         <GoogleFilePicker />
       </div>
-      <WatchFolderList settings$key={settings$key} />
+      <div className="cs-page-content">
+        <WatchFolderList settings$key={settings$key} />
+      </div>
     </div>
   );
 }

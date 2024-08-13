@@ -6,7 +6,8 @@ import type {
 import {
   BfCurrentViewer,
   IBfCurrentViewerInternalAdmin,
-  IBfCurrentViewerInternalAdminOmni} from "packages/bfDb/classes/BfCurrentViewer.ts";
+  IBfCurrentViewerInternalAdminOmni,
+} from "packages/bfDb/classes/BfCurrentViewer.ts";
 import {
   ACCOUNT_ACTIONS,
   BfAnyid,
@@ -86,7 +87,9 @@ export abstract class BfBaseModel<
     await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
     try {
       await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
-      logger.trace(`Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`);
+      logger.trace(
+        `Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`,
+      );
     } catch (error) {
       logger.trace(`Failed to delete ${this.constructor.name}:`, error);
       throw error;
@@ -157,25 +160,36 @@ export abstract class BfBaseModel<
     currentViewer: BfCurrentViewer,
     metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
+    bfGids: Array<BfAnyid> = [],
   ): Promise<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
-    const currentViewerIsAdmin = currentViewer instanceof IBfCurrentViewerInternalAdmin;
+    const currentViewerIsAdmin = currentViewer instanceof
+      IBfCurrentViewerInternalAdmin;
+    logger.debug("Current viewer is admin:", currentViewerIsAdmin)
 
     const queryableMetadata = {
       ...metadataToQuery,
-      // restrict queries to same org unless internal admin
-      bfOid: currentViewerIsAdmin ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid : currentViewer.organizationBfGid,
       className: this.name,
-
+    };
+    
+    if (currentViewerIsAdmin) {
+      if (metadataToQuery.bfOid != null) {
+        queryableMetadata.bfOid = metadataToQuery.bfOid;
+      }
+    } else {
+      queryableMetadata.bfOid = currentViewer.organizationBfGid;
     }
+    logger.debug("Queryable metadata:", queryableMetadata);
     const items = await bfQueryItems<
       TRequiredProps & Partial<TOptionalProps>,
       BfBaseModelMetadata<TCreationMetadata>
     >(
       queryableMetadata,
       propsToQuery,
+      bfGids,
     );
+    logger.debug("Items:", items);
 
     return items.map(({ props, metadata }) => {
       const model = new this(currentViewer, props, {}, metadata, true);
@@ -198,19 +212,22 @@ export abstract class BfBaseModel<
     metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
     connectionArgs: ConnectionArguments,
-    bfGids = [],
+    bfGids: Array<BfAnyid> = [],
   ): Promise<
     ConnectionInterface<
       InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
     > & { count: number }
   > {
-    const currentViewerIsAdmin = currentViewer instanceof IBfCurrentViewerInternalAdmin;
+    const currentViewerIsAdmin = currentViewer instanceof
+      IBfCurrentViewerInternalAdmin;
     const combinedMetadata = {
       ...metadataToQuery,
       // allow internal admins to query all models regardless of owner
-      bfOid: currentViewerIsAdmin ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid : currentViewer.organizationBfGid,
+      bfOid: currentViewerIsAdmin
+        ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid
+        : currentViewer.organizationBfGid,
       className: this.name,
-    }
+    };
     const { edges, ...others } = await bfQueryItemsForGraphQLConnection<
       TRequiredProps & Partial<TOptionalProps>,
       BfBaseModelMetadata<TCreationMetadata>
@@ -334,11 +351,9 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     return this._cachedProps;
   }
   set props(newProps: Partial<TRequiredProps> & Partial<TOptionalProps>) {
-    logger.setLevel(logger.levels.TRACE);
     logger.trace("Setting props:", newProps);
     this.clientProps = newProps;
     this._cachedProps = undefined; // Invalidate the cache
-    logger.resetLevel();
   }
   private _cachedProps?: TRequiredProps & Partial<TOptionalProps>;
   private get combinedProps(): TRequiredProps & Partial<TOptionalProps> {

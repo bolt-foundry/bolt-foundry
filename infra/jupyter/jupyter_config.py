@@ -12,7 +12,7 @@ c.ServerApp.tornado_settings = {
         'Content-Security-Policy': "frame-ancestors 'self' https://replit.com"
     }
 }
-path = f"experimental/{os.environ.get('REPL_OWNER', 'bolt_foundry_anon')}"
+path = "experimental/"
 if not os.path.exists(path):
     os.makedirs(path)
 c.ServerApp.root_dir = path
