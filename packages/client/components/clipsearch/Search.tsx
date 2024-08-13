@@ -42,7 +42,7 @@ const query = await graphql`
 `;
 
 type Props = {
-  setClips: (clips: string) => void;
+  setClips: (clips: string | null) => void;
 };
 
 export function Search({ setClips }: Props) {
@@ -56,6 +56,7 @@ export function Search({ setClips }: Props) {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setClips(null)
     setClipsFound(null);
     commit({
       variables: {
