@@ -73,19 +73,46 @@ export class BfEdge<
     ) => edge.node.id);
     logger.debug("targetEdgeIds", targetEdgeIds);
     const targetEdges = await bfGetItemsByBfGid(targetEdgeIds);
-    const targetIds = targetEdges.map((edge) => edge.metadata.bfTid);
+    const targetIds = targetEdges.map((edge) => edge.metadata.bfTid).filter(Boolean);
     logger.debug("targetIds", targetIds);
     const targetConnection = await TargetClass.queryConnectionForGraphQL(
       currentViewer,
       {},
       {},
       connectionArgs,
+      // @ts-expect-error typescript is mistakenly keeping undefineds.
       targetIds,
     );
     logger.debug("targetConnection", targetConnection);
     return targetConnection;
   }
 
-  static async querySourcesConnectionForGraphQL() {
+  static async querySources<
+    TThis extends Constructor<
+      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+    >,
+    TRequiredProps,
+    TOptionalProps,
+    TCreationMetadata extends CreationMetadata,
+  >(
+    this: TThis,
+    currentViewer: BfCurrentViewer,
+    SourceClass: typeof BfNode,
+    targetBfGid: BfGid | BfTid,
+    propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
+  ) {
+    
+    logger.debug("querySources", SourceClass, targetBfGid);
+    // @ts-expect-error done is better than good™
+    const sourceEdges = await this.query(
+      currentViewer,
+      { bfTid: targetBfGid, bfSClassName: SourceClass.name },
+    );
+    logger.debug("sourceEdges", sourceEdges);
+    const sourceEdgeIds = sourceEdges.map((edge: BfNode) => edge.metadata.bfSid);
+    logger.debug("sourceEdgeIds", sourceEdgeIds);
+    const sources = await SourceClass.query(currentViewer, {}, propsToQuery, sourceEdgeIds);
+    logger.debug("sources", sources);
+    return sources;
   }
 }
