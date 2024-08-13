@@ -56,7 +56,7 @@ export function Search({ setClips }: Props) {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setClips(null)
+    setClips(null);
     setClipsFound(null);
     commit({
       variables: {

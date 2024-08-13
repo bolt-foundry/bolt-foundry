@@ -16,13 +16,60 @@ type Document = {
   words: string;
 };
 
+function formatDocs(documents: Array<Document>) {
+  return documents.map((document) => {
+    const transcript = JSON.parse(document.words) as Array<DGWord>;
+    const content = transcript.map((word) => word.word).join(" ");
+    return `Filename: ${document.filename}\nContent: ${content}`;
+  }).join("\n\n");
+}
+
 export const callAPI = async (
   userMessage: string,
   documents: Array<Document>,
   suggestedModel?: string | null | undefined,
   systemMessage?: string,
 ) => {
+  const properties = {
+    anecdotes: {
+      type: "array",
+      items: {
+        titleText: {
+          type: "string",
+          description: "The title of the anecdote.",
+        },
+        text: {
+          type: "string",
+          description: "The verbatim transcript of the anecdote",
+        },
+        descriptionText: {
+          type: "string",
+          description: "A summary of the anecdote.",
+        },
+        filename: {
+          type: "string",
+          description: "The name of the file containing the anecdote.",
+        },
+        topics: {
+          type: "string",
+          description:
+            "A comma-separated list of topics related to the anecdote.",
+        },
+        rationale: {
+          type: "string",
+          description: "A rationale for the confidence rating.",
+        },
+        confidence: {
+          type: "number",
+          description:
+            "A floating point confidence rating from 0 to 1, where 0 doesn't relate to the prompt and 1 relates best.",
+        },
+      },
+    },
+  };
+
   let llmInterface;
+  let structuredLlm;
   switch (suggestedModel) {
     case AiModel.CLAUDE_OPUS:
     case AiModel.CLAUDE_SONNET: {
@@ -30,6 +77,14 @@ export const callAPI = async (
         model: suggestedModel,
         apiKey: anthropicApiKey,
         temperature: 0,
+      });
+      structuredLlm = llmInterface.withStructuredOutput({
+        name: "anecdote",
+        description: "an anecdote from the text relating to the user prompt.",
+        input_schema: {
+          type: "object",
+          properties,
+        },
       });
       break;
     }
@@ -41,6 +96,15 @@ export const callAPI = async (
         presencePenalty: 0,
         frequencyPenalty: 0,
       });
+      structuredLlm = llmInterface.withStructuredOutput({
+        name: "anecdote",
+        description: "an anecdote from the text relating to the user prompt.",
+        parameters: {
+          title: "Anecdote",
+          type: "object",
+          properties,
+        },
+      });
     }
   }
 
@@ -48,38 +112,15 @@ export const callAPI = async (
     ["system", `${createSystemMessage(documents)}`],
     ["user", "{input}"],
   ]);
-  let outputParser = new JsonOutputParser();
-  if (
-    suggestedModel === AiModel.CLAUDE_OPUS ||
-    suggestedModel === AiModel.CLAUDE_SONNET
-  ) {
-    outputParser = new StringOutputParser();
-  }
 
-  const chain = prompt.pipe(llmInterface).pipe(outputParser);
+  const chain = prompt.pipe(structuredLlm);
   const response = await chain.invoke({ input: userMessage });
 
-  let output = JSON.stringify(response);
-  if (typeof response === "string") {
-    if (!response.startsWith("[")) {
-      const firstBracketIndex = response.indexOf("[");
-      const lastBracketIndex = response.lastIndexOf("]");
-      if (firstBracketIndex !== -1 && lastBracketIndex !== -1) {
-        output = response.substring(firstBracketIndex, lastBracketIndex + 1);
-      } else {
-        output = "[]";
-      }
-    }
-  }
-  return output;
+  return JSON.stringify(response);
 };
 
 const createSystemMessage = (documents: Array<Document>) => {
-  const formattedData = documents.map((document) => {
-    const transcript = JSON.parse(document.words) as Array<DGWord>;
-    const content = transcript.map((word) => word.word).join(" ");
-    return `Filename: ${document.filename}\nContent: ${content}`;
-  }).join("\n\n");
+  const formattedData = formatDocs(documents);
 
   return `
 You have access to a comprehensive database of video transcripts. Your task is to extract all anecdotes from these transcripts based on a user-provided prompt. This task is to be performed using the provided transcript data sections listed below. 
@@ -95,23 +136,21 @@ Each JSON formatted object must:
 - Be verbatim from the transcript.
 - Have no whitespace other than spaces.
 - Contain the following keys:
+  - "titleText": A brief title describing the content of the anecdote.
+  - "descriptionText": A summary of the anecdote.
   - "text": The verbatim transcript of the anecdote.
-  - "description": A summary of the anecdote.
-  - "title": A brief title describing the content of the anecdote.
   - "filename": The name of the file containing the anecdote.
   - "topics": A comma-separated list of topics related to the anecdote.
   - "rationale": A rationale for the confidence rating.
-  - "confidence": A floating point confidence rating from 0 to 1, where 0 doesn't relate to the prompt and 1 relates best. If the rationale is not clear, the confidence should be 0.
+  - "confidence": A floating point confidence rating from 0 to 1, where 0 doesn't relate to the prompt and 1 relates best. If the rationale is not clear, the confidence should be 0. This should reflect how well the anecdote fits into the prompt based on the rationale.
 
-The output must be a single JSON formatted array, where each object in the array represents a unique anecdote.
+The output must be a single JSON object with an "anecdotes" key as the array, where each object in the array represents a unique anecdote.
 
 It is crucial that the language of the output matches the language of the input.
 
 Ensure that the anecdotes are directly related to the user-provided word or concept. Avoid metaphors, analogies, or abstract interpretations. Focus strictly on direct mentions and explicit contexts related to the user-provided word or concept. 
 
-The output **must be a single JSON formatted array**, where each object in the array represents a unique anecdote, **and contain nothing else**. Ensure that there are no explanatory texts or additional messages apart from JSON output.
-
-It is ok if you don't find anything strongly related to the user-provided word or concept. Just return an empty array. This is not a reflection on you. You are good enough, and smart enough and doggonit, people like you.
+The output **must be a single JSON formatted object containing an "anecdotes" array**, where each object in the array represents a unique anecdote, **and contain nothing else**. Ensure that there are no explanatory texts or additional messages apart from the JSON output.
 
 Here is the large database of video transcripts to reference:
 ${formattedData}
