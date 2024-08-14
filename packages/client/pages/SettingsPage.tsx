@@ -1,22 +1,14 @@
-import { React, ReactRelay } from "deps.ts";
+import * as React from "react";
+import { Suspense, useState } from "react";
+import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
-import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
-import { Columns, Table } from "packages/bfDs/Table.tsx";
-import { TableCell } from "packages/bfDs/TableCell.tsx";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";
-import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFilePicker.tsx";
-const { useLazyLoadQuery } = ReactRelay;
-
-type Data = {
-  folder: string;
-  videos: number;
-  active: boolean;
-  status: "INGESTING" | "TRANSCRIBING" | "COMPLETED";
-};
+import { WatchFolder } from "packages/client/components/settings/WatchFolder.tsx";
+import { Media } from "packages/client/components/settings/Media.tsx";
+import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
 
 const query = await graphql`
 query SettingsPageQuery {
@@ -25,6 +17,8 @@ query SettingsPageQuery {
       name
     }
     organization {
+      ...WatchFolderList_bfOrganization
+      ...Media_bfOrganization
       id
       name
     }
@@ -32,66 +26,42 @@ query SettingsPageQuery {
 }
 `;
 
-function Content() {
-  const columns: Columns<Data> = [
-    {
-      title: "Folder name",
-      width: "2fr",
-      renderer: (data) => <TableCell text={data.folder} />,
-    },
-    {
-      title: "Videos",
-      width: "0.5fr",
-      renderer: (data) => <TableCell text={data.videos} />,
-    },
-    {
-      title: "Active",
-      width: "0.5fr",
-      renderer: (data) => <TableCell text={data.active ? "Yes" : "No"} />,
-    },
-    {
-      title: "Status",
-      width: "1fr",
-      renderer: (data) => <TableCell text={data.status} />,
-    },
-  ];
-  const data = [
-    { folder: "Video clips", videos: 28, active: false, status: "INGESTING" },
-    { folder: "Broll", videos: 34, active: false, status: "TRANSCRIBING" },
-    { folder: "Podcasts", videos: 45, active: true, status: "COMPLETED" },
-  ];
-  return (
-    <div className="cs-page-content">
-      <div className="cs-page-section">
-       <GoogleFilePicker />
-      </div>
-      <div className="cs-page-section">
-        <div className="cs-page-section-title">Watch folders</div>
-        <Table columns={columns} data={data} />
-      </div>
-    </div>
-  );
+enum Tabs {
+  WATCH_FOLDERS = "watchFolders",
+  MEDIA = "media",
 }
 
 export function SettingsPage() {
+  const [selected, setSelected] = useState<Tabs>(Tabs.WATCH_FOLDERS);
   const data = useLazyLoadQuery<SettingsPageQuery>(query, {});
+
+  const organizationFragmentRef = data?.currentViewer?.organization ?? null;
+
+  let content: JSX.Element;
+  switch (selected) {
+    case Tabs.MEDIA:
+      content = <Media settings$key={organizationFragmentRef} />;
+      break;
+    case Tabs.WATCH_FOLDERS:
+    default: {
+      content = <WatchFolder settings$key={organizationFragmentRef} />;
+    }
+  }
+
   return (
     <div className="cs-page">
       <Sidebar
         contents={
           <List>
             <ListItem
-              isHighlighted={true}
+              isHighlighted={selected === Tabs.WATCH_FOLDERS}
               content="Watch folders"
-              onClick={() => console.log("click")}
+              onClick={() => setSelected(Tabs.WATCH_FOLDERS)}
             />
             <ListItem
-              content="Other settings"
-              onClick={() => console.log("click")}
-            />
-            <ListItem
-              content="Coming soon..."
-              onClick={() => console.log("click")}
+              isHighlighted={selected === Tabs.MEDIA}
+              content="Media"
+              onClick={() => setSelected(Tabs.MEDIA)}
             />
           </List>
         }
@@ -103,7 +73,9 @@ export function SettingsPage() {
         }
         header="Settings"
       />
-      <Content />
+      <Suspense fallback={<FullPageSpinner />}>
+        {content}
+      </Suspense>
     </div>
   );
 }

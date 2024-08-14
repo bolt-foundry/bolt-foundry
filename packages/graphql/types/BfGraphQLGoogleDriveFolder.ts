@@ -1,4 +1,4 @@
-import { mutationField, objectType } from "nexus";
+import { extendType, mutationField, objectType } from "nexus";
 import { BfGoogleDriveFolder } from "packages/bfDb/models/BfGoogleDriveFolder.ts";
 
 export const BfGraphQLGoogleDriveFolderType = objectType({
@@ -9,6 +9,24 @@ export const BfGraphQLGoogleDriveFolderType = objectType({
   }
 })
 
+export const BfGraphQLPickGoogleDriveFolderQuery = extendType({
+  type: "BfOrganization",
+  definition(t) {
+    t.connectionField("googleDriveFolders", {
+      type: "BfGoogleDriveFolder",
+      resolve: (_, args, { bfCurrentViewer }) => {
+        const folders = BfGoogleDriveFolder.queryConnectionForGraphQL(
+          bfCurrentViewer,
+          { bfOid: bfCurrentViewer.bfOid },
+          {},
+          args,
+        );
+        return folders;
+      },
+    });
+  },
+});
+
 export const BfGraphQLPickGoogleDriveFolderMutation = mutationField("pickGoogleDriveFolder", {
   type: "BfGoogleDriveFolder",
   args: {
@@ -17,6 +35,17 @@ export const BfGraphQLPickGoogleDriveFolderMutation = mutationField("pickGoogleD
   },
   resolve: async (_root, { folderId, name }, { bfCurrentViewer }) => {
     const folder = await BfGoogleDriveFolder.create(bfCurrentViewer, {folderId, name});
+    return folder;
+  }
+})
+
+export const BfGraphQLDeleteGoogleDriveFolderMutation = mutationField("deleteGoogleDriveFolder", {
+  type: "BfGoogleDriveFolder",
+  args: {
+    folderId: "String",
+  },
+  resolve: async (_root, { folderId }, { bfCurrentViewer }) => {
+    const folder = await BfGoogleDriveFolder.delete(bfCurrentViewer, folderId);
     return folder;
   }
 })

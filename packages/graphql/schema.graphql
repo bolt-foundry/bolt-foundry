@@ -13,7 +13,7 @@ enum AccountRole {
 }
 
 """A person who uses our system on behalf of an orginization"""
-type BfAccount implements BfNode {
+type BfAccount implements BfNode & Node {
   displayName: String
 
   """Unique identifier for the resource"""
@@ -50,14 +50,14 @@ type BfAccountEdge {
   node: BfAccount
 }
 
-type BfClip implements BfNode {
+type BfClip implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   title: String
 }
 
 """A review of a clip."""
-type BfClipReview implements BfNode {
+type BfClipReview implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   mediaUrl: Url
@@ -93,6 +93,7 @@ type BfClipReviewEdge {
 The person acting on this request. The person is the person who is acting, the organization is the org on which they're acting
 """
 interface BfCurrentViewer {
+  blog: Blog
   organization: BfOrganization
   person: BfPerson
   role: AccountRole
@@ -100,6 +101,7 @@ interface BfCurrentViewer {
 
 """The person acting on this request using a Bf access token."""
 type BfCurrentViewerAccessToken implements BfCurrentViewer {
+  blog: Blog
   organization: BfOrganization
   person: BfPerson
   role: AccountRole
@@ -107,25 +109,157 @@ type BfCurrentViewerAccessToken implements BfCurrentViewer {
 
 """The anonymous person acting on this request."""
 type BfCurrentViewerAnon implements BfCurrentViewer {
+  blog: Blog
   organization: BfOrganization
   person: BfPerson
   role: AccountRole
 }
 
-type BfGoogleDriveFolder implements BfNode {
+type BfGoogleDriveFolder implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   name: String
 }
 
-interface BfNode {
+type BfGoogleDriveFolderConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BfGoogleDriveFolderEdge]
+
+  """Flattened list of BfGoogleDriveFolder type"""
+  nodes: [BfGoogleDriveFolder]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type BfGoogleDriveFolderEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BfGoogleDriveFolder
+}
+
+"""A media object"""
+type BfMedia implements BfNode & Node {
+  filename: String
+
+  """Unique identifier for the resource"""
+  id: ID!
+  transcripts(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfMediaTranscriptConnection
+}
+
+type BfMediaConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BfMediaEdge]
+
+  """Flattened list of BfMedia type"""
+  nodes: [BfMedia]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type BfMediaEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BfMedia
+}
+
+"""A transcript of a clip."""
+type BfMediaTranscript implements BfNode & Node {
+  filename: String
+
+  """Unique identifier for the resource"""
+  id: ID!
+  words: String
+}
+
+type BfMediaTranscriptConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BfMediaTranscriptEdge]
+
+  """Flattened list of BfMediaTranscript type"""
+  nodes: [BfMediaTranscript]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type BfMediaTranscriptEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BfMediaTranscript
+}
+
+interface BfNode implements Node {
   """Unique identifier for the resource"""
   id: ID!
 }
 
 """A collection of people working together"""
-type BfOrganization implements BfNode {
+type BfOrganization implements BfNode & Node {
+  googleDriveFolders(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfGoogleDriveFolderConnection
   id: ID!
+  media(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfMediaConnection
   name: String
 
   """Clips available."""
@@ -142,23 +276,10 @@ type BfOrganization implements BfNode {
     """Returns the last n elements from the list."""
     last: Int
   ): BfClipReviewConnection
-  transcripts(
-    """Returns the elements in the list that come after the specified cursor"""
-    after: String
-
-    """Returns the elements in the list that come before the specified cursor"""
-    before: String
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the last n elements from the list."""
-    last: Int
-  ): BfTranscriptConnection
 }
 
 """A real human who uses our system"""
-type BfPerson implements BfNode {
+type BfPerson implements BfNode & Node {
   accounts(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -180,25 +301,40 @@ type BfPerson implements BfNode {
   name: String
 }
 
-"""A transcript of a clip."""
-type BfTranscript implements BfNode {
-  filename: String
+type Blog {
+  posts(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
 
-  """Unique identifier for the resource"""
-  id: ID!
-  words: String
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+    slug: String
+  ): BlogPostConnection
+  title: String
 }
 
-type BfTranscriptConnection {
+type BlogPost {
+  content: String
+  slug: String
+  title: String
+}
+
+type BlogPostConnection {
   count: Int
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
-  edges: [BfTranscriptEdge]
+  edges: [BlogPostEdge]
 
-  """Flattened list of BfTranscript type"""
-  nodes: [BfTranscript]
+  """Flattened list of BlogPost type"""
+  nodes: [BlogPost]
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -206,20 +342,21 @@ type BfTranscriptConnection {
   pageInfo: PageInfo!
 }
 
-type BfTranscriptEdge {
+type BlogPostEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: BfTranscript
+  node: BlogPost
 }
 
 """The `File` scalar type represents a file upload."""
 scalar File
 
 type Mutation {
-  createTranscript(filename: String!, words: String!): BfTranscript
-  deleteTranscript(id: String!): BfTranscript
+  createTranscript(filename: String!, words: String!): BfMediaTranscript
+  deleteGoogleDriveFolder(folderId: String): BfGoogleDriveFolder
+  deleteTranscript(id: String!): BfMediaTranscript
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
@@ -228,8 +365,13 @@ type Mutation {
   searchMutation(input: String!, suggestedModel: String): SearchMutationPayload
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
-  updateTranscript(filename: String, id: String!, words: String): BfTranscript
+  updateTranscript(filename: String, id: String!, words: String): BfMediaTranscript
   upsertClip(file: File!, originalClipId: String!, title: String): BfClip
+}
+
+interface Node {
+  """Unique identifier for the resource"""
+  id: ID!
 }
 
 """

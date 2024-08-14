@@ -7,19 +7,20 @@ import ChangeRequestButton from "aws/client/components/ChangeRequestButton.tsx";
 import DownloadClip from "aws/client/components/DownloadClip.tsx";
 import VideoPlayer from "aws/client/components/VideoPlayer.tsx";
 type Props = {
-  title: string;
+  titleText: string;
   text: string;
-  description: string;
+  descriptionText: string;
   rationale: string;
   filename: string;
   topics: string;
   confidence: number;
 };
 export function Clip(
-  { title, text, description, rationale, filename, topics, confidence }: Props,
+  { titleText, text, descriptionText, rationale, filename, topics, confidence }:
+    Props,
 ) {
-  const topicPills = topics.split(",").map((topic) => (
-    <Pill text={topic.trim()} />
+  const topicPills = topics?.split(",").map((topic) => (
+    <Pill text={topic?.trim()} />
   ));
   return (
     <div className="clip">
@@ -35,8 +36,10 @@ export function Clip(
         <div className="clipContent">
           <div className="clipHeader">
             <div className="clipHeaderLeft">
-              <div className="clipTitle" dir="auto">{title}</div>
-              <div className="clipDescription" dir="auto">{description}</div>
+              <div className="clipTitle" dir="auto">{titleText}</div>
+              <div className="clipDescription" dir="auto">
+                {descriptionText}
+              </div>
             </div>
             <div className="clipActions row-column">
               <Button

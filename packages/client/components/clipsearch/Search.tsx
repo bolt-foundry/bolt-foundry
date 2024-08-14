@@ -33,7 +33,7 @@ const query = await graphql`
   query SearchQuery {
     currentViewer {
       organization {
-        transcripts(first: 10) {
+        media(first: 100) {
           count
         }
       }
@@ -42,7 +42,7 @@ const query = await graphql`
 `;
 
 type Props = {
-  setClips: (clips: string) => void;
+  setClips: (clips: string | null) => void;
 };
 
 export function Search({ setClips }: Props) {
@@ -52,11 +52,11 @@ export function Search({ setClips }: Props) {
   const [clipsFound, setClipsFound] = useState<number | null>(null);
   const [aiModel, setAiModel] = useState(AiModel.OPENAI_4O);
 
-  const transcriptsCount =
-    data?.currentViewer?.organization?.transcripts?.count ?? 0;
+  const transcriptsCount = data?.currentViewer?.organization?.media?.count ?? 0;
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setClips(null);
     setClipsFound(null);
     commit({
       variables: {

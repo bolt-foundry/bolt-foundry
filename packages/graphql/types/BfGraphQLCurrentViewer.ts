@@ -44,6 +44,7 @@ export const BfGraphQLCurrentViewerType = interfaceType({
           const org = await BfOrganization.find(bfCurrentViewer, orgId);
           return org?.toGraphql() ?? null;
         }
+        return null;
       }
     })
     t.field("person", {
@@ -53,7 +54,14 @@ export const BfGraphQLCurrentViewerType = interfaceType({
         const person = await BfPerson.find(bfCurrentViewer, personId);
         return person?.toGraphql() ?? null;
       },
-    }); 
+    });
+    t.field("blog", {
+      type: "Blog",
+      resolve: async (_, args, ctx) => {
+        const { slug } = args;
+        return { title: "Bolt foundry af" };
+      },
+    });
     
   },
 });

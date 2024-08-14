@@ -41,6 +41,8 @@ type Row<
   bf_oid: BfOid;
   bf_tid: BfTid;
   bf_cid: BfCid;
+  bf_t_class_name: string;
+  bf_s_class_name: string;
   class_name: string;
   created_at: string;
   last_updated: string;
@@ -71,6 +73,8 @@ export async function bfGetItem<
       bfTid: firstRow.bf_tid,
       bfOid: firstRow.bf_oid,
       bfCid: firstRow.bf_cid,
+      bfTClassName: firstRow.bf_t_class_name,
+      bfSClassName: firstRow.bf_s_class_name,
       className: firstRow.class_name,
       createdAt: new Date(firstRow.created_at), // Convert timestamp to Date object
       lastUpdated: new Date(firstRow.last_updated), // Convert timestamp to Date object
@@ -113,11 +117,52 @@ export async function bfGetItemByBfGid<
       bfOid: firstRow.bf_oid,
       bfCid: firstRow.bf_cid,
       bfTid: firstRow.bf_tid,
+      bfTClassName: firstRow.bf_t_class_name,
+      bfSClassName: firstRow.bf_s_class_name,
       className: firstRow.class_name,
       createdAt: new Date(firstRow.created_at), // Convert timestamp to Date object
       lastUpdated: new Date(firstRow.last_updated), // Convert timestamp to Date object
     } as TMetadata;
     return { props: props as TProps, metadata };
+  } catch (e) {
+    logger.error(e);
+    throw e;
+  }
+}
+
+export async function bfGetItemsByBfGid<
+  TProps = Props,
+  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
+>(
+  bfGids: Array<string>,
+  className?: string,
+): Promise<Array<DbItem<TProps, TMetadata>>> {
+  try {
+    logger.trace("bfGetItemsByBfGid", { bfGids, className });
+    let queryPromise;
+    if (className) {
+      queryPromise =
+        sql`SELECT * FROM bfdb WHERE bf_gid = ANY(${bfGids}) AND class_name = ${className}`;
+    } else {
+      queryPromise = sql`SELECT * FROM bfdb WHERE bf_gid = ANY(${bfGids})`;
+    }
+    const rows = await queryPromise as Row<TProps>[];
+    return rows.map(row => {
+      const props = row.props;
+      const metadata: TMetadata = {
+        bfGid: row.bf_gid,
+        bfSid: row.bf_sid,
+        bfOid: row.bf_oid,
+        bfCid: row.bf_cid,
+        bfTid: row.bf_tid,
+        bfTClassName: row.bf_t_class_name,
+        bfSClassName: row.bf_s_class_name,
+        className: row.class_name,
+        createdAt: new Date(row.created_at), // Convert timestamp to Date object
+        lastUpdated: new Date(row.last_updated), // Convert timestamp to Date object
+      } as TMetadata;
+      return { props: props as TProps, metadata };
+    });
   } catch (e) {
     logger.error(e);
     throw e;
@@ -188,6 +233,8 @@ const VALID_METADATA_COLUMN_NAMES = [
   "bf_cid",
   "bf_sid",
   "bf_tid",
+  "bf_t_class_name",
+  "bf_s_class_name",
   "class_name",
   "sort_value",
 ];
@@ -200,22 +247,25 @@ export async function bfQueryItems<
 >(
   metadataToQuery: Partial<TMetadata>,
   propsToQuery: Partial<TProps> = {},
+  bfGids: Array<string> = [],
   orderDirection: "ASC" | "DESC" = "ASC", // Default to ascending order
   orderBy: keyof Row = "sort_value", // Default to sort by sort_value
 ): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
-  logger.trace({ metadataToQuery, propsToQuery, orderBy, orderDirection });
+  logger.debug({ metadataToQuery, propsToQuery, bfGids, orderDirection, orderBy });
   const metadataConditions: string[] = [];
   const propsConditions: string[] = [];
   const variables = [];
 
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
-    // convert key from camelCase to snake_case
-    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2" as const);
+    // convert key from camelCase to snake_case, ensure consecutive capital letters are underscored
+    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(/([A-Z])(?=[A-Z])/g, "$1_");
     const lowercaseKey = key.toLowerCase();
     if (VALID_METADATA_COLUMN_NAMES.includes(lowercaseKey)) {
       variables.push(value);
       const valuePosition = variables.length;
       metadataConditions.push(`${lowercaseKey} = $${valuePosition}`);
+    } else {
+      logger.warn(`Invalid metadata column name`, originalKey, key, lowercaseKey)
     }
   }
 
@@ -225,6 +275,11 @@ export async function bfQueryItems<
     variables.push(value);
     const valuePosition = variables.length;
     propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
+  }
+
+  for (const bfGid of bfGids) {
+    variables.push(bfGid);
+    metadataConditions.push(`bf_gid = $${variables.length}`);
   }
 
   if (metadataConditions.length == 0) {
@@ -238,9 +293,8 @@ export async function bfQueryItems<
   const allConditions = [...metadataConditions, ...propsConditions].filter(Boolean).join(" AND ");
   const query =
     `SELECT * FROM bfdb WHERE ${allConditions} ORDER BY ${orderBy} ${orderDirection}`;
-
   try {
-    logger.trace("Executing query", query, variables);
+    logger.debug("Executing query", query, variables);
     const rows = await sql(query, variables) as Row<TProps>[];
     const items = rows.map((row) => ({
       props: row.props,
@@ -250,6 +304,8 @@ export async function bfQueryItems<
         bfOid: row.bf_oid,
         bfTid: row.bf_tid,
         bfCid: row.bf_cid,
+        bfTClassName: row.bf_t_class_name,
+        bfSClassName: row.bf_s_class_name,
         className: row.class_name,
         createdAt: new Date(row.created_at), // Convert timestamp to Date object
         lastUpdated: new Date(row.last_updated), // Convert timestamp to Date object
@@ -287,6 +343,7 @@ export async function bfQueryItemsForGraphQLConnection<
   metadata: Partial<TMetadata>,
   props: Partial<TProps> = {},
   connectionArgs: ConnectionArguments,
+  bfGids: Array<string>,
 ): Promise<ConnectionInterface<DbItem<TProps, TMetadata>> & { count: number }> {
   logger.trace({ metadata, props, connectionArgs });
   const { first, after, last, before } = connectionArgs;
@@ -315,13 +372,21 @@ export async function bfQueryItemsForGraphQLConnection<
   }
 
   for (const [originalKey, value] of Object.entries(metadata)) {
-    const key = originalKey.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(/([A-Z])(?=[A-Z])/g, "$1_").toLowerCase();
     if (VALID_METADATA_COLUMN_NAMES.includes(key)) {
       variables.push(value);
       const valuePosition = variables.length;
       metadataConditions.push(`${key} = $${valuePosition}`);
+    } else {
+      logger.warn(`Invalid metadata column name`, originalKey, key);
     }
   }
+
+  for (const bfGid of bfGids) {
+    variables.push(bfGid);
+    metadataConditions.push(`bf_gid = $${variables.length}`);
+  }
+  
   for (const [key, value] of Object.entries(props)) {
     variables.push(key);
     const keyPosition = variables.length;
@@ -357,6 +422,8 @@ export async function bfQueryItemsForGraphQLConnection<
             bfOid: row.bf_oid,
             bfTid: row.bf_tid,
             bfCid: row.bf_cid,
+            bfTClassName: row.bf_t_class_name,
+            bfSClassName: row.bf_s_class_name,
             className: row.class_name,
             createdAt: new Date(row.created_at),
             lastUpdated: new Date(row.last_updated),
