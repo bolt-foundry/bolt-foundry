@@ -1,3 +1,6 @@
 [submodule "thirdParty/isograph"]
 	path = thirdParty/isograph
 	url = https://github.com/isographlabs/isograph
+[submodule "thirdParty/daily-vcs"]
+	path = thirdParty/daily-vcs
+	url = https://github.com/daily-co/daily-vcs.git
