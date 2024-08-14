@@ -175,6 +175,9 @@ export interface NexusGenObjects {
     cursor: string; // String!
     node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  DownloadMutationPayload: { // root type
+    success: boolean; // Boolean!
+  }
   Mutation: {};
   PageInfo: { // root type
     endCursor?: string | null; // String
@@ -334,10 +337,14 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  DownloadMutationPayload: { // field return type
+    success: boolean; // Boolean!
+  }
   Mutation: { // field return type
     createTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
     deleteGoogleDriveFolder: NexusGenRootTypes['BfGoogleDriveFolder'] | null; // BfGoogleDriveFolder
     deleteTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
+    downloadClip: NexusGenRootTypes['DownloadMutationPayload'] | null; // DownloadMutationPayload
     linkAdvancedGoogleAuth: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
     logout: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
@@ -509,10 +516,14 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'BlogPost'
   }
+  DownloadMutationPayload: { // field return type name
+    success: 'Boolean'
+  }
   Mutation: { // field return type name
     createTranscript: 'BfMediaTranscript'
     deleteGoogleDriveFolder: 'BfGoogleDriveFolder'
     deleteTranscript: 'BfMediaTranscript'
+    downloadClip: 'DownloadMutationPayload'
     linkAdvancedGoogleAuth: 'BfCurrentViewer'
     loginWithGoogle: 'BfCurrentViewerAccessToken'
     logout: 'BfCurrentViewer'
@@ -612,6 +623,11 @@ export interface NexusGenArgTypes {
     }
     deleteTranscript: { // args
       id: string; // String!
+    }
+    downloadClip: { // args
+      endTime: number; // Float!
+      startTime: number; // Float!
+      transcriptId: string; // String!
     }
     linkAdvancedGoogleAuth: { // args
       code: string; // String!
