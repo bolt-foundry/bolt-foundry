@@ -350,6 +350,10 @@ type BlogPostEdge {
   node: BlogPost
 }
 
+type DownloadMutationPayload {
+  success: Boolean!
+}
+
 """The `File` scalar type represents a file upload."""
 scalar File
 
@@ -357,6 +361,7 @@ type Mutation {
   createTranscript(filename: String!, words: String!): BfMediaTranscript
   deleteGoogleDriveFolder(folderId: String): BfGoogleDriveFolder
   deleteTranscript(id: String!): BfMediaTranscript
+  downloadClip(endTime: Float!, startTime: Float!, transcriptId: String!): DownloadMutationPayload
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer

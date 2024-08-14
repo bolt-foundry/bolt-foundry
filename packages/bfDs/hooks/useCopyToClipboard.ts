@@ -4,10 +4,16 @@ const { useState } = React;
 
 type CopiedValue = string | null;
 type CopyFn = (text: string) => Promise<boolean>; // Return success
-
+const useEffect = React.useEffect;
 export function useCopyToClipboard(): [CopiedValue, CopyFn] {
   const [copiedText, setCopiedText] = useState<CopiedValue>(null);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setCopiedText(null);
+    }, 2000);
+  }, [copiedText]);
+  
   const copy: CopyFn = async (text) => {
     if (!navigator?.clipboard) {
       // deno-lint-ignore no-console
