@@ -11,6 +11,7 @@ import { getGoogleOauthUrl } from "lib/googleOauth.ts";
 import { redirectIfNotLoggedIn } from "/aws/clientRenderer/main.ts";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { addToGoogleProcessQueue } from "packages/ingest/googleDriveNotificationHandler.ts";
 
 const logger = getLogger(import.meta);
 export enum DeploymentTypes {
@@ -237,6 +238,21 @@ routes.set("/google/oauth/end", (req) => {
   return new Response(body, {
     headers,
   });
+});
+
+routes.set("/google/drive/webhook", async (req) => {
+  console.log("received request: ", req);
+  
+  //todo check validity of body
+  if (true) {
+    addToGoogleProcessQueue(req);
+
+    // todo check that the add to queue function was successful.
+    if (true) {
+      return new Response("Request received", { status: 200 });
+    }
+  }
+  return new Response("Not Found", { status: 404 }); 
 });
 
 routes.set("/graphql", graphQlHandler);
