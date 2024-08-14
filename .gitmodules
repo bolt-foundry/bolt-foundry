@@ -1,6 +1,3 @@
-[submodule "thirdParty/daily-vcs"]
-	path = thirdParty/daily-vcs
-	url = https://github.com/bolt-foundry/bolt-foundry.git
 [submodule "thirdParty/isograph"]
 	path = thirdParty/isograph
 	url = https://github.com/isographlabs/isograph
