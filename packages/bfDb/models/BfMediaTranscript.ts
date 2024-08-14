@@ -2,6 +2,7 @@ import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 
 export type BfMediaTranscriptProps = {
+  id: string;
   words: string;
   filename: string;
 };
