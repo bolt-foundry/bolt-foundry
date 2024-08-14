@@ -36,14 +36,14 @@ export const searchMutation = mutationField("searchMutation", {
     );
     const documents = rawDocuments.map((doc) => {
       const { filename, words } = doc.props as BfMediaTranscriptProps;
-      return { filename, words };
+      const { bfGid: id } = doc.metadata;
+      return { id, filename, words };
     });
     try {
       const message = await callAPI(
         input,
         documents,
         suggestedModel,
-        undefined,
       );
       return {
         success: true,
