@@ -15,7 +15,8 @@ type Props = {
   filename: string;
   topics: string;
   confidence: number;
-  fileId: string;
+  mediaId: string;
+  transcriptId: string;
   startTime: number;
   endTime: number;
   startIndex: number;
@@ -30,7 +31,8 @@ export function Clip(
     filename,
     topics,
     confidence,
-    fileId,
+    mediaId,
+    transcriptId,
     startTime,
     endTime,
     startIndex,
@@ -68,7 +70,8 @@ export function Clip(
               <DownloadClipButton
                 startTime={startTime}
                 endTime={endTime}
-                transcriptId={fileId}
+                mediaId={mediaId}
+                transcriptId={transcriptId}
               />
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
               {
@@ -81,7 +84,7 @@ export function Clip(
 
           <div className="clipMeta flexColumn" style={{ gap: "10px" }}>
             <div className="flexRow" style={{ gap: "5px" }}>
-              <Tooltip canCopy text={fileId} position="right">
+              <Tooltip canCopy text={mediaId} position="right">
                 <Pill label="Source" text={filename} />
               </Tooltip>
               <Tooltip text={rationale} position="right">

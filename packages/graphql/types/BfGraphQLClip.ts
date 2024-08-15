@@ -16,6 +16,8 @@ import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { floatArg } from "infra/graphql/deps.ts";
+import { BfJob } from "packages/bfDb/models/BfJob.ts";
+import { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 
 const logger = getLogger(import.meta);
 
@@ -69,45 +71,35 @@ const downloadMutationPayload = objectType({
 export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
   type: downloadMutationPayload,
   args: {
+    mediaId: nonNull(stringArg()),
     transcriptId: nonNull(stringArg()),
     startTime: nonNull(floatArg()),
     endTime: nonNull(floatArg()),
   },
   resolve: async (
     _,
-    { transcriptId, startTime, endTime },
+    { mediaId, transcriptId, startTime, endTime },
     { bfCurrentViewer },
   ) => {
-    logger.debug("downloadClip", { transcriptId, startTime, endTime });
-    const transcript = await BfMediaTranscript.find(
+    logger.setLevel(logger.levels.DEBUG);
+    logger.debug("downloadClip", { mediaId, transcriptId, startTime, endTime });
+    const mediaPromise = BfMedia.find(bfCurrentViewer, mediaId as BfAnyid);
+    const transcriptPromise = BfMediaTranscript.find(
       bfCurrentViewer,
-      transcriptId,
+      transcriptId as BfAnyid,
     );
+    const [media, transcript] = await Promise.all([
+      mediaPromise,
+      transcriptPromise,
+    ]);
 
-    // This doesn't work... it returns the first media, not from the edge
-    // logger.debug("Transcript", transcript);
-    // if (!transcript) {
-    //   logger.error("Couldn't find transcript", transcriptId);
-    //   return null;
-    // }
-    // const sourceEdges = await BfEdge.querySources(
-    //   bfCurrentViewer,
-    //   BfMedia as unknown as typeof BfNode,
-    //   transcript.bfGid,
-    // );
-
-    // if (sourceEdges.length === 0) {
-    //   throw new Error("No source edges found");
-    // }
-    // const MediaBfGid = sourceEdges[0].metadata.bfGid;
-    // if (!MediaBfGid) {
-    //   throw new Error("No bfSid found in source edge metadata");
-    // }
-    // const media = await BfMedia.find(bfCurrentViewer, MediaBfGid);
-
-    const dataToReturn = {
+    // TODO symlink file to a folder
+    // create "transcript" to the same folder with the same name.
+    // bfgid.mp4
+    // bfgid.json
+    const payload = {
       file: {
-        url: transcript?.props.filename,
+        url: media?.props.filename,
       },
       transcript: {
         start_time: startTime,
@@ -115,7 +107,9 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
         transcript: transcript?.props.words,
       },
     };
-    logger.debug(dataToReturn);
+
+    // @ts-expect-error typing is wrong and we know it
+    await BfJob.createJobForNode(media, "example", [payload], true)
 
     return { success: true };
   },

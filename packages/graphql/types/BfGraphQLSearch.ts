@@ -11,6 +11,9 @@ import {
 } from "packages/bfDb/models/BfMediaTranscript.ts";
 
 import { callAPI } from "packages/lib/langchain.ts";
+import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
 const searchMutationPayload = objectType({
   name: "SearchMutationPayload",
@@ -31,18 +34,29 @@ export const searchMutation = mutationField("searchMutation", {
     { input, suggestedModel },
     { bfCurrentViewer }: GraphQLContext,
   ) => {
-    const rawDocuments = await BfMediaTranscript.findTranscriptsByViewer(
-      bfCurrentViewer,
+    const allMedia = await BfMedia.findMediaByViewer(bfCurrentViewer);
+    const transcripts = await Promise.all(
+      allMedia.map(async (media) => {
+        const mediaId = media.metadata.bfGid;
+        // get the transcript
+        const transcriptsOnMedia = await BfEdge.queryTargets(
+          bfCurrentViewer,
+          BfMediaTranscript as typeof BfNode,
+          media.metadata.bfGid,
+        );
+        const transcript = transcriptsOnMedia[0]; // assuming there's only one transcript
+        const transcriptId = transcript?.metadata.bfGid;
+
+        const { filename, words } = (transcript?.props ??
+          { filename: "no file", words: "[]" }) as BfMediaTranscriptProps;
+        return { mediaId, transcriptId, filename, words };
+      }),
     );
-    const documents = rawDocuments.map((doc) => {
-      const { filename, words } = doc.props as BfMediaTranscriptProps;
-      const { bfGid: id } = doc.metadata;
-      return { id, filename, words };
-    });
+
     try {
       const message = await callAPI(
         input,
-        documents,
+        transcripts,
         suggestedModel,
       );
       return {
