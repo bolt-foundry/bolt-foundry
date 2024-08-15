@@ -4,7 +4,7 @@ import { clientRenderer } from "packages/clientRenderer/clientRenderer.ts";
 import { getLogger } from "deps.ts";
 import { routes as appRoutes } from "packages/client/components/App.tsx";
 import { routes as oldAppRoutes } from "aws/client/components/App.tsx";
-import { getHeaders } from "infra/watcher/ingest.ts"
+import { getHeaders } from "infra/watcher/ingest.ts";
 import { workerList } from "infra/build/workerList.ts";
 import { handler as graphQlHandler } from "packages/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";
@@ -140,7 +140,8 @@ routes.set("/login", (...args) => {
   const [req] = args;
   const url = new URL(req.url);
   const credential = url.searchParams.get("credential");
-  const dontRedirect = credential || Deno.env.get("BF_ENV") !== "DEVELOPMENT";
+  const dontRedirect = credential || Deno.env.get("BF_ENV") !== "DEVELOPMENT" ||
+    Deno.env.get("DONT_REDIRECT_TO_LOGIN_SERVER");
   if (dontRedirect) {
     return clientRenderer(true)(...args);
   }
@@ -161,7 +162,7 @@ routes.set("/logout", () => {
 
 routes.set("/google/oauth/start", (req) => {
   const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
-  const shouldRedirect = deploymentEnvironment === DeploymentEnvs.DEVELOPMENT;
+  const shouldRedirect = deploymentEnvironment === DeploymentEnvs.DEVELOPMENT && !Deno.env.get("DONT_REDIRECT_TO_LOGIN_SERVER");
   if (shouldRedirect) {
     const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
       "boltfoundry.wtf";
@@ -242,7 +243,7 @@ routes.set("/google/oauth/end", (req) => {
 
 routes.set("/google/drive/webhook", async (req) => {
   console.log("received request: ", req);
-  
+
   //todo check validity of body
   if (true) {
     addToGoogleProcessQueue(req);
@@ -252,7 +253,7 @@ routes.set("/google/drive/webhook", async (req) => {
       return new Response("Request received", { status: 200 });
     }
   }
-  return new Response("Not Found", { status: 404 }); 
+  return new Response("Not Found", { status: 404 });
 });
 
 routes.set("/graphql", graphQlHandler);
