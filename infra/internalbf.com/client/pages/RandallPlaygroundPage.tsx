@@ -129,8 +129,8 @@ const mutationToAuthorizeGoogle = await graphql`
 `;
 
 const mutationToPickFolder = await graphql`
-  mutation RandallPlaygroundPagePickFolderMutation($folderId: String!) {
-    pickGoogleDriveFolder(folderId: $folderId) {
+  mutation RandallPlaygroundPagePickFolderMutation($resourceId: String!) {
+    pickGoogleDriveFolder(resourceId: $resourceId) {
       __typename
     }
   }
@@ -202,7 +202,7 @@ export function RandallPlaygroundPage() {
   async function pickFile() {
     const folder = await openPicker(googleAccessToken!, GOOGLE_OAUTH_CLIENT_ID!, GoogleDriveFilePickerFileType.FOLDER)
     commitFolder({
-      variables: { folderId: folder.docs[0].id, name: folder.docs[0].name },
+      variables: { resourceId: folder.docs[0].id, name: folder.docs[0].name },
       onCompleted: (data) => {
         console.log('o shit we did it')
       }

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e6e46a8eb6878f84b39c5c47bddc680d>>
+ * @generated SignedSource<<2c95dddf944feb71ada2a26e094545ce>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,11 +10,11 @@
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type RandallPlaygroundPagePickFolderMutation$variables = {
-  folderId: string;
+  resourceId: string;
 };
 export type RandallPlaygroundPagePickFolderMutation$data = {
   readonly pickGoogleDriveFolder: {
-    readonly __typename: "BfGoogleDriveFolder";
+    readonly __typename: "BfGoogleDriveResource";
   } | null | undefined;
 };
 export type RandallPlaygroundPagePickFolderMutation = {
@@ -27,14 +27,14 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "folderId"
+    "name": "resourceId"
   }
 ],
 v1 = [
   {
     "kind": "Variable",
-    "name": "folderId",
-    "variableName": "folderId"
+    "name": "resourceId",
+    "variableName": "resourceId"
   }
 ],
 v2 = {
@@ -54,7 +54,7 @@ return {
       {
         "alias": null,
         "args": (v1/*: any*/),
-        "concreteType": "BfGoogleDriveFolder",
+        "concreteType": "BfGoogleDriveResource",
         "kind": "LinkedField",
         "name": "pickGoogleDriveFolder",
         "plural": false,
@@ -76,7 +76,7 @@ return {
       {
         "alias": null,
         "args": (v1/*: any*/),
-        "concreteType": "BfGoogleDriveFolder",
+        "concreteType": "BfGoogleDriveResource",
         "kind": "LinkedField",
         "name": "pickGoogleDriveFolder",
         "plural": false,
@@ -95,16 +95,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "44c5b63c014ae5caafe1d370a479550c",
+    "cacheID": "d90606537ea85119ba38b8022940232f",
     "id": null,
     "metadata": {},
     "name": "RandallPlaygroundPagePickFolderMutation",
     "operationKind": "mutation",
-    "text": "mutation RandallPlaygroundPagePickFolderMutation(\n  $folderId: String!\n) {\n  pickGoogleDriveFolder(folderId: $folderId) {\n    __typename\n    id\n  }\n}\n"
+    "text": "mutation RandallPlaygroundPagePickFolderMutation(\n  $resourceId: String!\n) {\n  pickGoogleDriveFolder(resourceId: $resourceId) {\n    __typename\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "53929d8e2861e2e01407ae8feffbcec5";
+(node as any).hash = "94cf853ed910c88bd30956d1d31b867b";
 
 export default node;

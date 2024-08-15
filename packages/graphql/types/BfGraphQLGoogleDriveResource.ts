@@ -1,8 +1,8 @@
 import { extendType, mutationField, objectType } from "nexus";
-import { BfGoogleDriveFolder } from "packages/bfDb/models/BfGoogleDriveFolder.ts";
+import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 
 export const BfGraphQLGoogleDriveFolderType = objectType({
-  name: "BfGoogleDriveFolder",
+  name: "BfGoogleDriveResource",
   definition(t) {
     t.implements("BfNode");
     t.string("name");
@@ -13,9 +13,9 @@ export const BfGraphQLPickGoogleDriveFolderQuery = extendType({
   type: "BfOrganization",
   definition(t) {
     t.connectionField("googleDriveFolders", {
-      type: "BfGoogleDriveFolder",
+      type: "BfGoogleDriveResource",
       resolve: (_, args, { bfCurrentViewer }) => {
-        const folders = BfGoogleDriveFolder.queryConnectionForGraphQL(
+        const folders = BfGoogleDriveResource.queryConnectionForGraphQL(
           bfCurrentViewer,
           { bfOid: bfCurrentViewer.bfOid },
           {},
@@ -28,24 +28,24 @@ export const BfGraphQLPickGoogleDriveFolderQuery = extendType({
 });
 
 export const BfGraphQLPickGoogleDriveFolderMutation = mutationField("pickGoogleDriveFolder", {
-  type: "BfGoogleDriveFolder",
+  type: "BfGoogleDriveResource",
   args: {
-    folderId: "String",
+    resourceId: "String",
     name: "String",
   },
-  resolve: async (_root, { folderId, name }, { bfCurrentViewer }) => {
-    const folder = await BfGoogleDriveFolder.create(bfCurrentViewer, {folderId, name});
+  resolve: async (_root, { resourceId, name }, { bfCurrentViewer }) => {
+    const folder = await BfGoogleDriveResource.create(bfCurrentViewer, {resourceId, name});
     return folder;
   }
 })
 
 export const BfGraphQLDeleteGoogleDriveFolderMutation = mutationField("deleteGoogleDriveFolder", {
-  type: "BfGoogleDriveFolder",
+  type: "BfGoogleDriveResource",
   args: {
-    folderId: "String",
+    resourceId: "String",
   },
-  resolve: async (_root, { folderId }, { bfCurrentViewer }) => {
-    const folder = await BfGoogleDriveFolder.delete(bfCurrentViewer, folderId);
+  resolve: async (_root, { resourceId }, { bfCurrentViewer }) => {
+    const folder = await BfGoogleDriveResource.delete(bfCurrentViewer, resourceId);
     return folder;
   }
 })

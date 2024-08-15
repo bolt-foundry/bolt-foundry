@@ -1,9 +1,6 @@
 import os
 from jupyter_server.auth import passwd
 
-if not os.path.exists('notebooks'):
-    os.makedirs('notebooks')
-
 c.ServerApp.ip = '0.0.0.0'
 c.ServerApp.allow_origin = '*'
 c.ServerApp.open_browser = False

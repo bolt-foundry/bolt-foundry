@@ -7,12 +7,12 @@ import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
 logger.setDefaultLevel(logger.levels.DEBUG)
 
-type BfGoogleDriveFolderRequiredProps = {
-  folderId: string;
+type BfGoogleDriveResourceRequiredProps = {
+  resourceId: string;
   name: string;
 };
-export class BfGoogleDriveFolder
-  extends BfNode<BfGoogleDriveFolderRequiredProps> {
+export class BfGoogleDriveResource
+  extends BfNode<BfGoogleDriveResourceRequiredProps> {
   async afterCreate() {
     const currentViewerPerson = await BfPerson.findCurrentViewer(
       this.currentViewer,
@@ -39,7 +39,7 @@ export class BfGoogleDriveFolder
   }
 
   async getAccessToken() {
-    logger.debug("getting access token for folder", this.props.folderId, this.metadata.bfGid);
+    logger.debug("getting access token for folder", this.props.resourceId, this.metadata.bfGid);
     const bfGoogleAuths = await BfEdge.querySources(this.currentViewer, BfGoogleAuth, this.metadata.bfGid);
     logger.debug("got bfGoogleAuths", bfGoogleAuths);
     const googleAuth = bfGoogleAuths[0];
