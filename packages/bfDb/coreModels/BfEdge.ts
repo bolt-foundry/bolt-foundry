@@ -115,4 +115,34 @@ export class BfEdge<
     logger.debug("sources", sources);
     return sources;
   }
+
+  
+static async queryTargets<
+    TThis extends Constructor<
+      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+    >,
+    TRequiredProps,
+    TOptionalProps,
+    TCreationMetadata extends CreationMetadata,
+  >(
+    this: TThis,
+    currentViewer: BfCurrentViewer,
+    TargetClass: typeof BfNode,
+    sourceBfGid: BfGid | BfSid,
+    propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
+  ) {
+    logger.debug("queryTargets", TargetClass, sourceBfGid);
+    // @ts-expect-error done is better than good™
+    const targetEdges = await this.query(
+      currentViewer,
+      { bfSid: sourceBfGid, bfTClassName: TargetClass.name },
+      propsToQuery,
+    );
+    logger.debug("targetEdges", targetEdges);
+    const targetEdgeIds = targetEdges.map((edge: BfNode) => edge.metadata.bfTid).filter(Boolean);
+    logger.debug("targetEdgeIds", targetEdgeIds);
+    const targets = await TargetClass.query(currentViewer, {}, propsToQuery, targetEdgeIds);
+    logger.debug("targets", targets);
+    return targets;
+  }
 }

@@ -160,7 +160,7 @@ export abstract class BfBaseModel<
     currentViewer: BfCurrentViewer,
     metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
-    bfGids: Array<BfAnyid> = [],
+    bfGids?: Array<BfAnyid>,
   ): Promise<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
