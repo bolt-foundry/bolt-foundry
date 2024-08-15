@@ -626,6 +626,7 @@ export interface NexusGenArgTypes {
     }
     downloadClip: { // args
       endTime: number; // Float!
+      mediaId: string; // String!
       startTime: number; // Float!
       transcriptId: string; // String!
     }

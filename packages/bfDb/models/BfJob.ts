@@ -8,10 +8,12 @@ import {
   IBfCurrentViewerInternalAdminOmni,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
-import { BfEdge, EdgeCreationMetadata } from "packages/bfDb/coreModels/BfEdge.ts";
+import {
+  BfEdge,
+  EdgeCreationMetadata,
+} from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);
-logger.setLevel(logger.levels.DEBUG)
 
 export enum BfJobType {
   NOT_READY = "NOT_READY",
@@ -54,10 +56,13 @@ export class BfJob extends BfEdge<BfJobRequiredProps, Record<string, never>> {
       bfOid: bfNode.metadata.bfOid,
       bfTid: bfNode.metadata.bfGid,
       bfTClassName: bfNode.constructor.name,
-    }
+    };
     logger.info(jobMetadata);
     const job = await this.create(currentViewer, jobProps, jobMetadata);
     if (runInForeground) {
+      logger.error(
+        "Job running in foreground. If this is in production, please run in background.",
+      );
       await job.executeJob();
     }
     return job;

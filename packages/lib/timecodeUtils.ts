@@ -1,13 +1,18 @@
-import { DGWord } from "packages/types/transcript.ts";
+import { getLogger } from "deps.ts";
+const logger = getLogger(import.meta);
 
 export function getTimecodesForClips(response, documents) {
+  logger.setLevel(logger.levels.DEBUG);
   if (!response || !Array.isArray(response.anecdotes)) {
-    console.error("No response");
+    logger.error("No response");
     return [];
   }
   const anecdotes: Array<unknown> = [];
   response.anecdotes.forEach((clip) => {
-    const currentDocument = documents.find((doc) => doc.id === clip.fileId);
+    logger.debug("CLIP", clip);
+    const currentDocument = documents.find((doc) =>
+      doc.transcriptId === clip.transcriptId
+    );
     const wordsWithTimecode = currentDocument?.words;
     const text = clip.text;
     const timecode = getStartAndEnd(wordsWithTimecode, text);
@@ -26,6 +31,7 @@ function getStartAndEnd(wordsWithTimecode: string, text: string) {
     .toLocaleLowerCase();
   const startIndexPosition = transcript?.indexOf(text.toLocaleLowerCase());
   if (startIndexPosition === -1) {
+    logger.debug("No start index");
     return {
       startIndex: 0,
       endIndex: 0,
@@ -33,6 +39,7 @@ function getStartAndEnd(wordsWithTimecode: string, text: string) {
       endTime: 0,
     };
   }
+  logger.debug("START INDEX POSITION", startIndexPosition);
 
   // copy the transcript but delete everything after startIndexCharacter
   const transcriptBeforeStartIndex = transcript.slice(0, startIndexPosition);
@@ -47,6 +54,13 @@ function getStartAndEnd(wordsWithTimecode: string, text: string) {
 
   const firstWordStartTime = Number(firstWord.start);
   const lastWordEndTime = Number(lastWord.end);
+
+  logger.debug("Timecode", {
+    startIndex: firstWordIndex,
+    endIndex: lastWordIndex,
+    startTime: firstWordStartTime,
+    endTime: lastWordEndTime,
+  });
 
   return {
     startIndex: firstWordIndex,

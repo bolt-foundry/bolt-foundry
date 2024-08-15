@@ -11,16 +11,22 @@ const openAIApiKey = Deno.env.get("OPENAI_API_KEY") ?? "";
 const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
 
 type Document = {
-  id: string;
+  mediaId: string;
+  transcriptId: string;
   filename: string;
   words: string;
 };
 
 function formatDocs(documents: Array<Document>) {
   return documents.map((document) => {
-    const transcript = JSON.parse(document.words) as Array<DGWord>;
+    const transcript = JSON.parse(document?.words ?? "[]") as Array<DGWord>;
     const content = transcript.map((word) => word.word).join(" ");
-    return `Filename: ${document.filename}\nFile ID: ${document.id}\nContent: ${content}`;
+    return `
+Filename: ${document.filename}
+Media ID: ${document.mediaId}
+Transcript ID: ${document.transcriptId}
+Content: ${content}
+`;
   }).join("\n\n");
 }
 
@@ -49,9 +55,13 @@ export const callAPI = async (
           type: "string",
           description: "The name of the file containing the anecdote.",
         },
-        fileId: {
+        mediaId: {
           type: "string",
-          description: "The File ID of the file containing the anecdote.",
+          description: "The Media ID of the file containing the anecdote.",
+        },
+        transcriptId: {
+          type: "string",
+          description: "The Transcript ID of the file containing the anecdote.",
         },
         topics: {
           type: "string",
@@ -144,7 +154,8 @@ Each JSON formatted object must:
   - "descriptionText": A summary of the anecdote.
   - "text": The verbatim transcript of the anecdote.
   - "filename": The name of the file containing the anecdote.
-  - "fileId": The File ID of the file containing the anecdote.
+  - "mediaId": The Media ID of the file containing the anecdote.
+  - "transcriptId": The Transcript ID of the file containing the anecdote.
   - "topics": A comma-separated list of topics related to the anecdote.
   - "rationale": A rationale for the confidence rating.
   - "confidence": A floating point confidence rating from 0 to 1, where 0 doesn't relate to the prompt and 1 relates best. If the rationale is not clear, the confidence should be 0. This should reflect how well the anecdote fits into the prompt based on the rationale.
