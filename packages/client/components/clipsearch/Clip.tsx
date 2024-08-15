@@ -6,20 +6,39 @@ import StarClipButton from "aws/client/components/StarClipButton.tsx";
 import ChangeRequestButton from "aws/client/components/ChangeRequestButton.tsx";
 import DownloadClip from "aws/client/components/DownloadClip.tsx";
 import VideoPlayer from "aws/client/components/VideoPlayer.tsx";
+import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
 type Props = {
-  title: string;
+  titleText: string;
   text: string;
-  description: string;
+  descriptionText: string;
   rationale: string;
   filename: string;
   topics: string;
   confidence: number;
+  fileId: string;
+  startTime: number;
+  endTime: number;
+  startIndex: number;
+  endIndex: number;
 };
 export function Clip(
-  { title, text, description, rationale, filename, topics, confidence }: Props,
+  {
+    titleText,
+    text,
+    descriptionText,
+    rationale,
+    filename,
+    topics,
+    confidence,
+    fileId,
+    startTime,
+    endTime,
+    startIndex,
+    endIndex,
+  }: Props,
 ) {
-  const topicPills = topics.split(",").map((topic) => (
-    <Pill text={topic.trim()} />
+  const topicPills = topics?.split(",").map((topic) => (
+    <Pill text={topic?.trim()} />
   ));
   return (
     <div className="clip">
@@ -35,8 +54,10 @@ export function Clip(
         <div className="clipContent">
           <div className="clipHeader">
             <div className="clipHeaderLeft">
-              <div className="clipTitle" dir="auto">{title}</div>
-              <div className="clipDescription" dir="auto">{description}</div>
+              <div className="clipTitle" dir="auto">{titleText}</div>
+              <div className="clipDescription" dir="auto">
+                {descriptionText}
+              </div>
             </div>
             <div className="clipActions row-column">
               <Button
@@ -44,10 +65,14 @@ export function Clip(
                 iconLeft="pencil"
                 testId="button-edit-clip"
               />
+              <DownloadClipButton
+                startTime={startTime}
+                endTime={endTime}
+                transcriptId={fileId}
+              />
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
               {
-                /* <ChangeRequestButton />
-            <DownloadClip/> */
+                /* <ChangeRequestButton /> */
               }
             </div>
           </div>
@@ -56,7 +81,9 @@ export function Clip(
 
           <div className="clipMeta flexColumn" style={{ gap: "10px" }}>
             <div className="flexRow" style={{ gap: "5px" }}>
-              <Pill label="Source" text={filename} />
+              <Tooltip canCopy text={fileId} position="right">
+                <Pill label="Source" text={filename} />
+              </Tooltip>
               <Tooltip text={rationale} position="right">
                 <Pill label="Rating" text={confidence} />
               </Tooltip>

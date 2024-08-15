@@ -3,6 +3,7 @@ import { ReactDOMClient } from "packages/client/deps.ts";
 import { Icon, IconType } from "packages/bfDs/Icon.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
+import { useCopyToClipboard } from "packages/bfDs/hooks/useCopyToClipboard.ts";
 // import type FeatureMenu from "packages/bfDs/FeatureMenu.tsx";
 
 const { createPortal } = ReactDOMClient;
@@ -28,6 +29,7 @@ type Props = {
   position?: TooltipPosition; // default: "top"
   justification?: TooltipJustification; // default: "center"
   delay?: number; // default: 1000
+  canCopy?: boolean;
 };
 
 const OFFSET = 6; // number of pixels between the tooltip and the element it's attached to
@@ -41,7 +43,7 @@ const getStyles = (): Record<string, React.CSSProperties> => ({
     borderRadius: 5,
     fontSize: 12,
     textAlign: "center",
-    maxWidth: 200,
+    maxWidth: 250,
     width: "max-content",
   },
   baseMenuTooltip: {
@@ -53,7 +55,7 @@ const getStyles = (): Record<string, React.CSSProperties> => ({
     fontSize: 12,
     textAlign: "center",
     boxShadow: "rgba(0, 0, 0, 0.25) 0px 4px 12px",
-    maxWidth: 200,
+    maxWidth: 250,
     width: "max-content",
     pointerEvents: "all",
   },
@@ -334,8 +336,10 @@ export function Tooltip(
     justification = "center",
     delay = 1000,
     children,
+    canCopy,
   }: React.PropsWithChildren<Props>,
 ) {
+  const [copiedText, copy] = useCopyToClipboard();
   const [shouldShowTooltip, setShouldShowTooltip] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -439,7 +443,11 @@ export function Tooltip(
       style={styles.tooltipContainer}
       onMouseEnter={() => setShouldShowTooltip(true)}
       onMouseLeave={() => setShouldShowTooltip(false)}
-      onClick={menu != null ? handleShowMenu : undefined}
+      onClick={menu != null
+        ? handleShowMenu
+        : canCopy && text
+        ? () => copy(text.toString())
+        : undefined}
     >
       {children}
       {showTooltip && text != null && createPortal(
@@ -454,7 +462,18 @@ export function Tooltip(
           }}
         >
           <div className="tooltip" style={tooltipStyle}>
-            <div className="tooltip-text">{text}</div>
+            <div className="tooltip-text">
+              {canCopy && (
+                <span style={{ display: "inline", marginRight: 8 }}>
+                  <Icon
+                    color={copiedText ? "var(--success)" : "white"}
+                    name={copiedText ? "check" : "clipboard"}
+                    size={12}
+                  />
+                </span>
+              )}
+              {text}
+            </div>
             <div
               className="tooltip-arrow"
               style={tooltipArrowStyle}

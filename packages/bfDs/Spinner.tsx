@@ -93,6 +93,7 @@ export function FullPageSpinner() {
         justifyContent: "center",
         alignItems: "center",
         padding: 20,
+        boxSizing: "border-box",
       }}
     >
       <Spinner backgroundColor={"var(--pageBackground)"} waitIcon={true} />

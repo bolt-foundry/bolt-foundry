@@ -24,7 +24,8 @@ const googleProcessQueue: {googleResourceID: string, resourceURI: string }[] = [
 //   });
 // }
 
-export const addToGoogleProcessQueue = (googleJSON) => {
+export const addToGoogleProcessQueue = (req: Request) => {
+  //todo switch actions depending on the type of change.
   return;
 }
 

@@ -4,6 +4,7 @@ import { graphql } from "packages/client/deps.ts";
 import { Input } from "packages/bfDs/Input.tsx";
 import { SearchQuery } from "packages/__generated__/SearchQuery.graphql.ts";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
+import { isValidJSON } from "packages/lib/jsonUtils.ts";
 const { useState } = React;
 const { useLazyLoadQuery, useMutation } = ReactRelay;
 
@@ -42,7 +43,7 @@ const query = await graphql`
 `;
 
 type Props = {
-  setClips: (clips: string) => void;
+  setClips: (clips: string | null) => void;
 };
 
 export function Search({ setClips }: Props) {
@@ -56,6 +57,7 @@ export function Search({ setClips }: Props) {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setClips(null);
     setClipsFound(null);
     commit({
       variables: {
@@ -64,8 +66,11 @@ export function Search({ setClips }: Props) {
       },
       onCompleted: (response) => {
         setClips(response.searchMutation.message);
-        const parsedClips = JSON.parse(response.searchMutation.message);
-        setClipsFound(parsedClips.length);
+        const parsedClips = isValidJSON(response.searchMutation.message)
+          ? JSON.parse(response.searchMutation.message)
+          : { anecdotes: [] };
+        const numberOfClips = parsedClips?.anecdotes?.length ?? 0;
+        setClipsFound(numberOfClips);
       },
     });
     setPrompt("");
