@@ -11,7 +11,6 @@ import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import { BfEdge, EdgeCreationMetadata } from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);
-logger.setLevel(logger.levels.DEBUG)
 
 export enum BfJobType {
   NOT_READY = "NOT_READY",

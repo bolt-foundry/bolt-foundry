@@ -6,7 +6,6 @@ import { getLogger } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 
 const logger = getLogger(import.meta);
-logger.setLevel(logger.levels.DEBUG);
 
 const postsQuery = await graphql`
   query BlogPageQuery {
