@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9463a74577093444510fe10800a25c83>>
+ * @generated SignedSource<<b2c40c1aabe1a476aa6a234179009be9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -93,7 +93,7 @@ return {
     {
       "alias": "googleDriveFolders",
       "args": null,
-      "concreteType": "BfGoogleDriveFolderConnection",
+      "concreteType": "BfGoogleDriveResourceConnection",
       "kind": "LinkedField",
       "name": "__WatchFolderList_googleDriveFolders_connection",
       "plural": false,
@@ -108,7 +108,7 @@ return {
         {
           "alias": null,
           "args": null,
-          "concreteType": "BfGoogleDriveFolderEdge",
+          "concreteType": "BfGoogleDriveResourceEdge",
           "kind": "LinkedField",
           "name": "edges",
           "plural": true,
@@ -116,7 +116,7 @@ return {
             {
               "alias": null,
               "args": null,
-              "concreteType": "BfGoogleDriveFolder",
+              "concreteType": "BfGoogleDriveResource",
               "kind": "LinkedField",
               "name": "node",
               "plural": false,
