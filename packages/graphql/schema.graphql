@@ -361,7 +361,7 @@ type Mutation {
   createTranscript(filename: String!, words: String!): BfMediaTranscript
   deleteGoogleDriveFolder(resourceId: String): BfGoogleDriveResource
   deleteTranscript(id: String!): BfMediaTranscript
-  downloadClip(endTime: Float!, startTime: Float!, transcriptId: String!): DownloadMutationPayload
+  downloadClip(endTime: Float!, mediaId: String!, startTime: Float!, transcriptId: String!): DownloadMutationPayload
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer

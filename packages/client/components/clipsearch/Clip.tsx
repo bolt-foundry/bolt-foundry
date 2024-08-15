@@ -2,9 +2,6 @@ import { React } from "deps.ts";
 import { Tooltip } from "packages/bfDs/Tooltip.tsx";
 import { Pill } from "packages/bfDs/Pill.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
-import StarClipButton from "aws/client/components/StarClipButton.tsx";
-import ChangeRequestButton from "aws/client/components/ChangeRequestButton.tsx";
-import DownloadClip from "aws/client/components/DownloadClip.tsx";
 import VideoPlayer from "aws/client/components/VideoPlayer.tsx";
 import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
 type Props = {
@@ -15,7 +12,8 @@ type Props = {
   filename: string;
   topics: string;
   confidence: number;
-  fileId: string;
+  mediaId: string;
+  transcriptId: string;
   startTime: number;
   endTime: number;
   startIndex: number;
@@ -30,7 +28,8 @@ export function Clip(
     filename,
     topics,
     confidence,
-    fileId,
+    mediaId,
+    transcriptId,
     startTime,
     endTime,
     startIndex,
@@ -68,7 +67,8 @@ export function Clip(
               <DownloadClipButton
                 startTime={startTime}
                 endTime={endTime}
-                transcriptId={fileId}
+                mediaId={mediaId}
+                transcriptId={transcriptId}
               />
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
               {
@@ -81,7 +81,7 @@ export function Clip(
 
           <div className="clipMeta flexColumn" style={{ gap: "10px" }}>
             <div className="flexRow" style={{ gap: "5px" }}>
-              <Tooltip canCopy text={fileId} position="right">
+              <Tooltip canCopy text={mediaId} position="right">
                 <Pill label="Source" text={filename} />
               </Tooltip>
               <Tooltip text={rationale} position="right">
