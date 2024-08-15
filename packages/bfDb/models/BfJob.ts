@@ -39,6 +39,7 @@ export class BfJob extends BfEdge<BfJobRequiredProps, Record<string, never>> {
     bfNode: T,
     method: keyof T,
     args: Array<ValidJSONValues> = [],
+    runInForeground = false,
   ): Promise<BfJob> {
     const currentViewer = bfNode.currentViewer;
     const jobProps: BfJobRequiredProps = {
@@ -56,6 +57,9 @@ export class BfJob extends BfEdge<BfJobRequiredProps, Record<string, never>> {
     }
     logger.info(jobMetadata);
     const job = await this.create(currentViewer, jobProps, jobMetadata);
+    if (runInForeground) {
+      await job.executeJob();
+    }
     return job;
   }
 
