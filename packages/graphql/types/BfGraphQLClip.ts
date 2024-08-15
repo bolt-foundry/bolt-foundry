@@ -69,16 +69,17 @@ const downloadMutationPayload = objectType({
 export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
   type: downloadMutationPayload,
   args: {
+    mediaId: nonNull(stringArg()),
     transcriptId: nonNull(stringArg()),
     startTime: nonNull(floatArg()),
     endTime: nonNull(floatArg()),
   },
   resolve: async (
     _,
-    { transcriptId, startTime, endTime },
+    { mediaId, transcriptId, startTime, endTime },
     { bfCurrentViewer },
   ) => {
-    logger.debug("downloadClip", { transcriptId, startTime, endTime });
+    logger.debug("downloadClip", { mediaId, transcriptId, startTime, endTime });
     const transcript = await BfMediaTranscript.find(
       bfCurrentViewer,
       transcriptId,

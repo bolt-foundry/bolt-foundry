@@ -11,6 +11,9 @@ import {
 } from "packages/bfDb/models/BfMediaTranscript.ts";
 
 import { callAPI } from "packages/lib/langchain.ts";
+import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
 const searchMutationPayload = objectType({
   name: "SearchMutationPayload",
@@ -31,29 +34,44 @@ export const searchMutation = mutationField("searchMutation", {
     { input, suggestedModel },
     { bfCurrentViewer }: GraphQLContext,
   ) => {
-    const rawDocuments = await BfMediaTranscript.findTranscriptsByViewer(
+    const allMedia = await BfMedia.query(
       bfCurrentViewer,
+      { bfOid: bfCurrentViewer.organizationBfGid },
     );
-    const documents = rawDocuments.map((doc) => {
-      const { filename, words } = doc.props as BfMediaTranscriptProps;
-      const { bfGid: id } = doc.metadata;
-      return { id, filename, words };
-    });
-    try {
-      const message = await callAPI(
-        input,
-        documents,
-        suggestedModel,
+    const documents = allMedia.map((media) => {
+      // get the transcript
+      const transcriptEdge = BfEdge.queryTargetsConnectionForGraphQL(
+        bfCurrentViewer,
+        BfMediaTranscript as unknown as typeof BfNode,
+        media.metadata.bfGid,
+        {},
+        {},
       );
-      return {
-        success: true,
-        message,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: `Form submission failed. ${error}`,
-      };
-    }
+      console.log(transcriptEdge);
+
+      // const { filename, words } = doc.props as BfMediaTranscriptProps;
+      // const { bfGid: id } = doc.metadata;
+      // return { id, filename, words };
+    });
+    return {
+      success: true,
+      message: "Success",
+    };
+    // try {
+    //   const message = await callAPI(
+    //     input,
+    //     documents,
+    //     suggestedModel,
+    //   );
+    //   return {
+    //     success: true,
+    //     message,
+    //   };
+    // } catch (error) {
+    //   return {
+    //     success: false,
+    //     message: `Form submission failed. ${error}`,
+    //   };
+    // }
   },
 });
