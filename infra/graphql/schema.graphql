@@ -115,22 +115,22 @@ type BfCurrentViewerAnon implements BfCurrentViewer {
   role: AccountRole
 }
 
-type BfGoogleDriveFolder implements BfNode & Node {
+type BfGoogleDriveResource implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   name: String
 }
 
-type BfGoogleDriveFolderConnection {
+type BfGoogleDriveResourceConnection {
   count: Int
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
-  edges: [BfGoogleDriveFolderEdge]
+  edges: [BfGoogleDriveResourceEdge]
 
-  """Flattened list of BfGoogleDriveFolder type"""
-  nodes: [BfGoogleDriveFolder]
+  """Flattened list of BfGoogleDriveResource type"""
+  nodes: [BfGoogleDriveResource]
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -138,12 +138,12 @@ type BfGoogleDriveFolderConnection {
   pageInfo: PageInfo!
 }
 
-type BfGoogleDriveFolderEdge {
+type BfGoogleDriveResourceEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: BfGoogleDriveFolder
+  node: BfGoogleDriveResource
 }
 
 """A media object"""
@@ -245,7 +245,7 @@ type BfOrganization implements BfNode & Node {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): BfGoogleDriveFolderConnection
+  ): BfGoogleDriveResourceConnection
   id: ID!
   media(
     """Returns the elements in the list that come after the specified cursor"""
@@ -397,13 +397,13 @@ interface IBfGraphQLNode implements BfNode & Node {
 
 type Mutation {
   createTranscript(filename: String!, words: String!): BfMediaTranscript
-  deleteGoogleDriveFolder(folderId: String): BfGoogleDriveFolder
+  deleteGoogleDriveFolder(resourceId: String): BfGoogleDriveResource
   deleteTranscript(id: String!): BfMediaTranscript
   downloadClip(endTime: Float!, startTime: Float!, transcriptId: String!): DownloadMutationPayload
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
-  pickGoogleDriveFolder(folderId: String, name: String): BfGoogleDriveFolder
+  pickGoogleDriveFolder(name: String, resourceId: String): BfGoogleDriveResource
   playgroundMutation(input: String!, suggestedModel: String): PlaygroundMutationPayload
   readTextFile(file: File!): String
   searchMutation(input: String!, suggestedModel: String): SearchMutationPayload
