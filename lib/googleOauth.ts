@@ -16,13 +16,13 @@ if (!GOOGLE_OAUTH_CLIENT_SECRET) {
   throw new BfError("Missing GOOGLE_OAUTH_CLIENT_SECRET");
 }
 
-export function getGoogleOauthUrl() {
+export function getGoogleOauthUrl(prompt = "consent", includeGrantedScopes = true) {
   const paramsInit = {
-    scope: "https://www.googleapis.com/auth/drive.file",
+    scope: "https://www.googleapis.com/auth/drive.readonly",
     access_type: "offline",
-    include_granted_scopes: "true",
+    include_granted_scopes: includeGrantedScopes.toString(),
     response_type: "code",
-    prompt: "consent",
+    prompt,
     redirect_uri: GOOGLE_OAUTH_REDIRECT_URL!,
     client_id: GOOGLE_OAUTH_CLIENT_ID!,
   };
