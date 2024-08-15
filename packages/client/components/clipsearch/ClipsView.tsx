@@ -31,7 +31,8 @@ export function ClipsView({ clips }: Props) {
           filename={clip.filename}
           topics={clip.topics}
           confidence={clip.confidence}
-          fileId={clip.fileId}
+          mediaId={clip.mediaId}
+          transcriptId={clip.transcriptId}
           startIndex={clip.startIndex}
           endIndex={clip.endIndex}
           startTime={clip.startTime}

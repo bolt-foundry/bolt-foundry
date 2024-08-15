@@ -7,11 +7,13 @@ const mutation = await graphql`
   mutation DownloadClipButtonDownloadMutation (
     $startTime: Float!,
     $endTime: Float!,
+    $mediaId: String!,
     $transcriptId: String!
   ) {
     downloadClip (
       startTime: $startTime, 
       endTime: $endTime, 
+      mediaId: $mediaId,
       transcriptId: $transcriptId
     ) {
       success
@@ -22,11 +24,12 @@ const mutation = await graphql`
 type Props = {
   startTime: number;
   endTime: number;
+  mediaId: string;
   transcriptId: string;
 };
 
 export function DownloadClipButton(
-  { startTime = 0, endTime = 0, transcriptId }: Props,
+  { startTime = 0, endTime = 0, mediaId, transcriptId }: Props,
 ) {
   const [commit, isInFlight] = useMutation(mutation);
 
@@ -35,6 +38,7 @@ export function DownloadClipButton(
       variables: {
         startTime,
         endTime,
+        mediaId,
         transcriptId,
       },
     });
