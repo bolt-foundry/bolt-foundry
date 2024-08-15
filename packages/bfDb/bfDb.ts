@@ -147,7 +147,7 @@ export async function bfGetItemsByBfGid<
       queryPromise = sql`SELECT * FROM bfdb WHERE bf_gid = ANY(${bfGids})`;
     }
     const rows = await queryPromise as Row<TProps>[];
-    return rows.map(row => {
+    return rows.map((row) => {
       const props = row.props;
       const metadata: TMetadata = {
         bfGid: row.bf_gid,
@@ -201,7 +201,13 @@ export async function bfPutItem<
       bf_gid, bf_oid, bf_cid, bf_sid, bf_tid, class_name, created_at, last_updated, props, sort_value, bf_t_class_name, bf_s_class_name
     )
     VALUES(
-      ${itemMetadata.bfGid}, ${itemMetadata.bfOid}, ${itemMetadata.bfCid}, ${itemMetadata.bfSid || null}, ${itemMetadata.bfTid}, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp}, ${JSON.stringify(itemProps)}, ${sortValue}, ${itemMetadata.bfTClassName || null}, ${itemMetadata.bfSClassName || null}
+      ${itemMetadata.bfGid}, ${itemMetadata.bfOid}, ${itemMetadata.bfCid}, ${
+      itemMetadata.bfSid || null
+    }, ${itemMetadata.bfTid}, ${itemMetadata.className}, ${createdAtTimestamp}, ${lastUpdatedTimestamp}, ${
+      JSON.stringify(itemProps)
+    }, ${sortValue}, ${itemMetadata.bfTClassName || null}, ${
+      itemMetadata.bfSClassName || null
+    }
     ) 
     ON CONFLICT (bf_gid) DO UPDATE SET
       bf_oid = EXCLUDED.bf_oid,
@@ -247,25 +253,39 @@ export async function bfQueryItems<
 >(
   metadataToQuery: Partial<TMetadata>,
   propsToQuery: Partial<TProps> = {},
-  bfGids: Array<string> = [],
+  bfGids?: Array<string>,
   orderDirection: "ASC" | "DESC" = "ASC", // Default to ascending order
   orderBy: keyof Row = "sort_value", // Default to sort by sort_value
 ): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
-  logger.debug({ metadataToQuery, propsToQuery, bfGids, orderDirection, orderBy });
+  logger.debug({
+    metadataToQuery,
+    propsToQuery,
+    bfGids,
+    orderDirection,
+    orderBy,
+  });
   const metadataConditions: string[] = [];
   const propsConditions: string[] = [];
   const variables = [];
 
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
     // convert key from camelCase to snake_case, ensure consecutive capital letters are underscored
-    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(/([A-Z])(?=[A-Z])/g, "$1_");
+    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(
+      /([A-Z])(?=[A-Z])/g,
+      "$1_",
+    );
     const lowercaseKey = key.toLowerCase();
     if (VALID_METADATA_COLUMN_NAMES.includes(lowercaseKey)) {
       variables.push(value);
       const valuePosition = variables.length;
       metadataConditions.push(`${lowercaseKey} = $${valuePosition}`);
     } else {
-      logger.warn(`Invalid metadata column name`, originalKey, key, lowercaseKey)
+      logger.warn(
+        `Invalid metadata column name`,
+        originalKey,
+        key,
+        lowercaseKey,
+      );
     }
   }
 
@@ -277,9 +297,16 @@ export async function bfQueryItems<
     propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
   }
 
-  for (const bfGid of bfGids) {
-    variables.push(bfGid);
-    metadataConditions.push(`bf_gid = $${variables.length}`);
+  if (bfGids) {
+    if (bfGids.length === 0) {
+      logger.debug("Skipping query because bfGids is empty");
+      return [];
+    } else {
+      for (const bfGid of bfGids) {
+        variables.push(bfGid);
+        metadataConditions.push(`bf_gid = $${variables.length}`);
+      }
+    }
   }
 
   if (metadataConditions.length == 0) {
@@ -290,7 +317,9 @@ export async function bfQueryItems<
     propsConditions.push(defaultClause);
   }
 
-  const allConditions = [...metadataConditions, ...propsConditions].filter(Boolean).join(" AND ");
+  const allConditions = [...metadataConditions, ...propsConditions].filter(
+    Boolean,
+  ).join(" AND ");
   const query =
     `SELECT * FROM bfdb WHERE ${allConditions} ORDER BY ${orderBy} ${orderDirection}`;
   try {
@@ -327,7 +356,9 @@ export async function bfDeleteItem(bfOid: BfOid, bfGid: BfGid): Promise<void> {
       WHERE bf_oid = ${bfOid} AND bf_gid = ${bfGid}
     `;
     if (result.rowCount === 0) {
-      throw new BfDbError(`No item found with bfOid: ${bfOid} and bfGid: ${bfGid}`);
+      throw new BfDbError(
+        `No item found with bfOid: ${bfOid} and bfGid: ${bfGid}`,
+      );
     }
     logger.trace(`Deleted item with bfOid: ${bfOid} and bfGid: ${bfGid}`);
   } catch (e) {
@@ -350,8 +381,8 @@ export async function bfQueryItemsForGraphQLConnection<
   const metadataConditions: string[] = [];
   const propsConditions: string[] = [];
   const variables: unknown[] = [];
-  let limitClause = '';
-  let orderClause = 'ORDER BY sort_value ASC';
+  let limitClause = "";
+  let orderClause = "ORDER BY sort_value ASC";
   let cursorCondition = defaultClause;
 
   if (first !== undefined || last !== undefined) {
@@ -363,7 +394,7 @@ export async function bfQueryItemsForGraphQLConnection<
       }
     } else if (last !== undefined) {
       limitClause = `LIMIT ${last + 1}`; // Fetch one extra for previous page check
-      orderClause = 'ORDER BY sort_value DESC';
+      orderClause = "ORDER BY sort_value DESC";
       if (before) {
         const beforeSortValue = cursorToSortValue(before);
         cursorCondition = `sort_value < ${beforeSortValue}`;
@@ -372,7 +403,10 @@ export async function bfQueryItemsForGraphQLConnection<
   }
 
   for (const [originalKey, value] of Object.entries(metadata)) {
-    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(/([A-Z])(?=[A-Z])/g, "$1_").toLowerCase();
+    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(
+      /([A-Z])(?=[A-Z])/g,
+      "$1_",
+    ).toLowerCase();
     if (VALID_METADATA_COLUMN_NAMES.includes(key)) {
       variables.push(value);
       const valuePosition = variables.length;
@@ -386,7 +420,7 @@ export async function bfQueryItemsForGraphQLConnection<
     variables.push(bfGid);
     metadataConditions.push(`bf_gid = $${variables.length}`);
   }
-  
+
   for (const [key, value] of Object.entries(props)) {
     variables.push(key);
     const keyPosition = variables.length;
@@ -399,39 +433,46 @@ export async function bfQueryItemsForGraphQLConnection<
     metadataConditions.push(defaultClause);
   }
 
-  const allConditions = [...metadataConditions, ...propsConditions, cursorCondition].filter(Boolean).join(' AND ');
-  const queryConditions = allConditions ? allConditions : '1=1';
-  const query = `SELECT * FROM bfdb WHERE ${queryConditions} ${orderClause} ${limitClause}`;
+  const allConditions = [
+    ...metadataConditions,
+    ...propsConditions,
+    cursorCondition,
+  ].filter(Boolean).join(" AND ");
+  const queryConditions = allConditions ? allConditions : "1=1";
+  const query =
+    `SELECT * FROM bfdb WHERE ${queryConditions} ${orderClause} ${limitClause}`;
 
   try {
-    logger.trace('Executing query', query, variables);
+    logger.trace("Executing query", query, variables);
     const rows = await sql(query, variables) as Row<TProps>[];
-    if (orderClause === 'ORDER BY sort_value DESC') {
+    if (orderClause === "ORDER BY sort_value DESC") {
       rows.reverse();
     }
-    const edges: EdgeInterface<DbItem<TProps, TMetadata>>[] = rows.map((row) => {
-      logger.trace('row', row);
-      const cursor = sortValueToCursor(row.sort_value);
-      return {
-        cursor,
-        node: {
-          props: row.props,
-          metadata: {
-            bfGid: row.bf_gid,
-            bfSid: row.bf_sid,
-            bfOid: row.bf_oid,
-            bfTid: row.bf_tid,
-            bfCid: row.bf_cid,
-            bfTClassName: row.bf_t_class_name,
-            bfSClassName: row.bf_s_class_name,
-            className: row.class_name,
-            createdAt: new Date(row.created_at),
-            lastUpdated: new Date(row.last_updated),
-            sortValue: row.sort_value,
+    const edges: EdgeInterface<DbItem<TProps, TMetadata>>[] = rows.map(
+      (row) => {
+        logger.trace("row", row);
+        const cursor = sortValueToCursor(row.sort_value);
+        return {
+          cursor,
+          node: {
+            props: row.props,
+            metadata: {
+              bfGid: row.bf_gid,
+              bfSid: row.bf_sid,
+              bfOid: row.bf_oid,
+              bfTid: row.bf_tid,
+              bfCid: row.bf_cid,
+              bfTClassName: row.bf_t_class_name,
+              bfSClassName: row.bf_s_class_name,
+              className: row.class_name,
+              createdAt: new Date(row.created_at),
+              lastUpdated: new Date(row.last_updated),
+              sortValue: row.sort_value,
+            },
           },
-        },
-      };
-    });
+        };
+      },
+    );
     const pageInfo: PageInfoInterface = {
       startCursor: edges.length > 0 ? edges[0].cursor : null,
       endCursor: edges.length > 0 ? edges[edges.length - 1].cursor : null,
@@ -470,7 +511,7 @@ function cursorToSortValue(cursor: string): number {
   const decodedString = atob(cursor);
   // Convert string to Uint8Array
   const uint8Array = new Uint8Array(
-    [...decodedString].map((char) => char.charCodeAt(0))
+    [...decodedString].map((char) => char.charCodeAt(0)),
   );
   // Decode Uint8Array to original string and convert to number
   return parseInt(new TextDecoder().decode(uint8Array), 10);
