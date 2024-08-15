@@ -115,8 +115,8 @@ const mutationToAuthorizeGoogle = await graphql`
 `;
 
 const mutationToPickFolder = await graphql`
-  mutation GoogleFilePickerPickFolderMutation($folderId: String!, $name: String!) {
-    pickGoogleDriveFolder(folderId: $folderId, name: $name) {
+  mutation GoogleFilePickerPickFolderMutation($resourceId: String!, $name: String!) {
+    pickGoogleDriveFolder(resourceId: $resourceId, name: $name) {
       __typename
       id
       name
@@ -164,13 +164,13 @@ export function GoogleFilePicker() {
       GoogleDriveFilePickerFileType.FOLDER,
     );
     commitFolder({
-      variables: { folderId: folder.docs[0].id, name: folder.docs[0].name },
+      variables: { resourceId: folder.docs[0].id, name: folder.docs[0].name },
       onCompleted: (data) => {
         console.log("file successfully posted", data);
       },
       optimisticResponse: {
         pickGoogleDriveFolder: {
-          __typename: "BfGoogleDriveFolder",
+          __typename: "BfGoogleDriveResource",
           id: folder.docs[0].id,
           name: folder.docs[0].name,
         },

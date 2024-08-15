@@ -20,7 +20,7 @@ export class BfNotificationSubscription extends BfNode<BfNotificationSubscriptio
   }
 
   async subscribeToGoogle() {
-    const url = `https://www.googleapis.com/drive/v3/files/${this.folderId}/watch`;
+    const url = `https://www.googleapis.com/drive/v3/files/${this.resourceId}/watch`;
     const payload = {
       id: 'unique-channel-id-333333',  // Your unique channel ID
       type: 'web_hook',

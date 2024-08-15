@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ddfc7c33f67fdb7bfec34d891a8c069f>>
+ * @generated SignedSource<<a397a6f054b9b0557ff3beee20c00d56>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -125,7 +125,7 @@ return {
               {
                 "alias": null,
                 "args": (v2/*: any*/),
-                "concreteType": "BfGoogleDriveFolderConnection",
+                "concreteType": "BfGoogleDriveResourceConnection",
                 "kind": "LinkedField",
                 "name": "googleDriveFolders",
                 "plural": false,
@@ -140,7 +140,7 @@ return {
                   {
                     "alias": null,
                     "args": null,
-                    "concreteType": "BfGoogleDriveFolderEdge",
+                    "concreteType": "BfGoogleDriveResourceEdge",
                     "kind": "LinkedField",
                     "name": "edges",
                     "plural": true,
@@ -148,7 +148,7 @@ return {
                       {
                         "alias": null,
                         "args": null,
-                        "concreteType": "BfGoogleDriveFolder",
+                        "concreteType": "BfGoogleDriveResource",
                         "kind": "LinkedField",
                         "name": "node",
                         "plural": false,
