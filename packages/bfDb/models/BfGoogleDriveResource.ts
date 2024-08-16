@@ -6,20 +6,26 @@ import { getLogger } from "deps.ts";
 import { fetchFolderContents } from "lib/googleDriveApi.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfError } from "lib/BfError.ts";
-import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { BfAnyid, toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 
 const logger = getLogger(import.meta);
-
 
 type BfGoogleDriveResourceRequiredProps = {
   resourceId: string;
   name: string;
 };
-export class BfGoogleDriveResource
-  extends BfNode<BfGoogleDriveResourceRequiredProps> {
 
+type BfGoogleDriveResourceOptionalProps = {
+  isDeleted: boolean;
+};
+
+export class BfGoogleDriveResource extends BfNode<
+  BfGoogleDriveResourceRequiredProps,
+  BfGoogleDriveResourceOptionalProps
+> {
   async beforeCreate() {
-    const resources = await (this.constructor as typeof BfGoogleDriveResource).query(this.currentViewer, {}, { resourceId: this.props.resourceId });
+    const resources = await (this.constructor as typeof BfGoogleDriveResource)
+      .query(this.currentViewer, {}, { resourceId: this.props.resourceId });
     if (resources.length > 0) {
       throw new BfError("Resource already exists");
     }
@@ -51,13 +57,36 @@ export class BfGoogleDriveResource
     await Promise.all([orgEdgePromise, googleAuthEdgePromise]);
   }
 
+  static async shouldDelete(
+    bfCurrentViewer: BfCurrentViewer,
+    resourceId: string,
+  ) {
+    const resource = await BfGoogleDriveResource.find(
+      bfCurrentViewer,
+      resourceId as BfAnyid,
+    );
+    if (!resource) {
+      throw new BfError("Resource not found");
+    }
+    // TODO delete resource however we are doing it
+    logger.warn("Deleting resource", resource.props.resourceId);
+  }
+
   async getAccessToken() {
-    logger.debug("getting access token for folder", this.props.resourceId, this.metadata.bfGid);
-    const bfGoogleAuths = await BfEdge.querySources(this.currentViewer, BfGoogleAuth, this.metadata.bfGid);
+    logger.debug(
+      "getting access token for folder",
+      this.props.resourceId,
+      this.metadata.bfGid,
+    );
+    const bfGoogleAuths = await BfEdge.querySources(
+      this.currentViewer,
+      BfGoogleAuth,
+      this.metadata.bfGid,
+    );
     logger.debug("got bfGoogleAuths", bfGoogleAuths);
     const googleAuth = bfGoogleAuths[0];
     logger.debug("got googleAuth", googleAuth);
     const token = await googleAuth?.getAccessToken();
-    return token
+    return token;
   }
 }

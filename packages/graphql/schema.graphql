@@ -359,7 +359,7 @@ scalar File
 
 type Mutation {
   createTranscript(filename: String!, words: String!): BfMediaTranscript
-  deleteGoogleDriveFolder(resourceId: String): BfGoogleDriveResource
+  deleteGoogleDriveResource(resourceId: String): BfGoogleDriveResource
   deleteTranscript(id: String!): BfMediaTranscript
   downloadClip(endTime: Float!, mediaId: String!, startTime: Float!, transcriptId: String!): DownloadMutationPayload
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
