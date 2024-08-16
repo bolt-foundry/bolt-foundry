@@ -92,10 +92,6 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
       transcriptPromise,
     ]);
 
-    // TODO symlink file to a folder
-    // create "transcript" to the same folder with the same name.
-    // bfgid.mp4
-    // bfgid.json
     const payload = {
       file: {
         url: media?.props.filename,
@@ -103,12 +99,12 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
       transcript: {
         start_time: startTime,
         end_time: endTime,
-        transcript: transcript?.props.words,
+        transcript: JSON.parse(transcript?.props.words ?? "[]"),
       },
     };
 
     // @ts-expect-error typing is wrong and we know it
-    await BfJob.createJobForNode(media, "example", [payload], true);
+    await BfJob.createJobForNode(media, "downloadClip", [payload], true);
 
     return { success: true };
   },

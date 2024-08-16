@@ -36,7 +36,7 @@ const BF_PATH = process.env['BF_PATH'] || '../../../..';
 
 const vcsCutTranscriptToolDir = path.resolve(
   BF_PATH,
-  'thirdParty/daily-vcs-main/cut-transcript-tools'
+  'thirdParty/daily-vcs/cut-transcript-tools'
 );
 if (
   !fs.existsSync(vcsCutTranscriptToolDir) ||

@@ -8,7 +8,7 @@ export async function buildVcs(_args?: Array<string>) {
   const stopSpinner = startSpinner();
 
   const cwd = new URL(
-    import.meta.resolve("thirdParty/daily-vcs-main/js"),
+    import.meta.resolve("thirdParty/daily-vcs/js"),
   );
   // yarn install
   const installCmd = new Deno.Command("yarn", {
