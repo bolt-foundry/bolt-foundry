@@ -6,6 +6,7 @@ import { TableCell } from "packages/bfDs/TableCell.tsx";
 import { graphql } from "packages/client/deps.ts";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
 import { Button } from "packages/bfDs/Button.tsx";
+import { WatchFolderListMenu } from "packages/client/components/settings/WatchFolderListMenu.tsx";
 
 const fragment = await graphql`
   fragment WatchFolderList_bfOrganization on BfOrganization
@@ -37,6 +38,7 @@ type Props = {
 };
 
 type Data = {
+  id: string;
   folder: string;
   videos: number;
   active: boolean;
@@ -47,20 +49,28 @@ export function WatchFolderList({ settings$key }: Props) {
   if (!settings$key) {
     return <FullPageSpinner />;
   }
-
   const { data, loadNext, hasNext, isLoadingNext } = usePaginationFragment(
     fragment,
     settings$key,
   );
+  const [removedItems, setRemovedItems] = React.useState<Array<string>>([]);
+  const removeItem = (resourceId: string) => {
+    setRemovedItems(removedItems.concat(resourceId));
+  };
 
   const tableData = data?.googleDriveFolders?.edges?.map((edge) => {
+    const shouldShow = removedItems.indexOf(edge.node.id) === -1;
+    if (!shouldShow) {
+      return null;
+    }
     return {
+      id: edge.node.id,
       folder: edge.node.name ?? "Untitled",
       videos: 0,
       active: false,
       status: "INGESTING",
     };
-  });
+  }).filter(Boolean);
 
   const columns: Columns<Data> = [
     {
@@ -82,6 +92,12 @@ export function WatchFolderList({ settings$key }: Props) {
       title: "Status",
       width: "1fr",
       renderer: (data) => <TableCell text={data.status} />,
+    },
+    {
+      width: "0.5fr",
+      renderer: (data) => (
+        <WatchFolderListMenu removeItem={removeItem} resourceId={data.id} />
+      ),
     },
   ];
 

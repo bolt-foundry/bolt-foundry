@@ -11,6 +11,7 @@ const { useEffect, useMemo, useRef, useState } = React;
 
 export type TooltipMenu = {
   button?: React.ReactElement<typeof Button>;
+  closeOnClick?: boolean;
   disabled?: boolean;
   icon?: IconType;
   kind?: string;
@@ -266,9 +267,13 @@ function MenuItem({ menuItem, hovering }: MenuItemProps) {
     ...(disabled === true && styles.disabledStyle),
     ...(menuItem.xstyle ?? {}),
   };
+  const closeOnClick = menuItem.closeOnClick ?? true;
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (closeOnClick === false) {
+      e.stopPropagation();
+    }
     if (disabled || !menuItem.onClick) return;
     menuItem.onClick();
   };
