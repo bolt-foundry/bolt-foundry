@@ -4,8 +4,35 @@ import {
 } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/mod.ts";
 import { getLogger } from "deps.ts";
+import { generateBluey } from "lib/generateBluey.ts";
 
 const logger = getLogger(import.meta);
+
+async function openSapling() {
+  const output = await runShellCommandWithOutput([
+    "sl",
+    "web",
+    "--json",
+  ]);
+  const json = JSON.parse(output);
+  const url = new URL(json.url);
+
+  const localhostUrl = `http://localhost:8283/${
+    Deno.env.get("REPLIT_SESSION")
+  }/files/open-multiple`;
+
+  await fetch(localhostUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      urls: [url],
+    }),
+  });
+
+  logger.info(generateBluey(`Click this: ${url.protocol}//${url.host} \n \n and then paste this \n \n ${url.search} \n \n to get to sapling`))
+}
 
 register(
   "commit",
@@ -18,6 +45,14 @@ register(
     if (REPL_SLUG === "Bolt-Foundry-Base") {
       throw new Error("Don't log into the base please! Fork instead.");
     }
+
+    const saplingConfig = await runShellCommandWithOutput(["sl", "config"]);
+    if (saplingConfig.includes("ui.username=")) {
+      logger.info("You are already logged in to sapling, opening isl now");
+      await openSapling();
+      return 0;
+    }
+    
 
     const cmd = ["gh", "auth", "login", "-p", "https", "-w", "-s", "user"];
     await runShellCommand(cmd, undefined, false);
@@ -97,26 +132,9 @@ register(
       "sl",
       "pull",
     ]);
-    const output = await runShellCommandWithOutput([
-      "sl",
-      "web",
-      "--json",
-    ]);
-    const json = JSON.parse(output);
-    console.log(json.url);
-    const localhostUrl = `http://localhost:8283/${
-      Deno.env.get("REPLIT_SESSION")
-    }/files/open-multiple`;
 
-    await fetch(localhostUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        urls: [json.url],
-      }),
-    });
+    await openSapling();
+    
     return 0;
   },
 );
