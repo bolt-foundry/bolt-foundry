@@ -74,7 +74,7 @@ export abstract class BfBaseModel<
       creationMetadata,
     );
     log(`Creating ${this.name}, bfGid: ${newModel.metadata.bfGid}`);
-    await newModel.beforeCreate();
+    await newModel.beforeCreate(currentViewer, newProps, creationMetadata);
     await newModel.save();
     await newModel.afterCreate();
     logVerbose("created", { newModel });
@@ -160,19 +160,19 @@ export abstract class BfBaseModel<
     currentViewer: BfCurrentViewer,
     metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
-    bfGids: Array<BfAnyid> = [],
+    bfGids?: Array<BfAnyid>,
   ): Promise<
     Array<InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>>
   > {
     const currentViewerIsAdmin = currentViewer instanceof
       IBfCurrentViewerInternalAdmin;
-    logger.debug("Current viewer is admin:", currentViewerIsAdmin)
+    logger.debug("Current viewer is admin:", currentViewerIsAdmin);
 
     const queryableMetadata = {
       ...metadataToQuery,
       className: this.name,
     };
-    
+
     if (currentViewerIsAdmin) {
       if (metadataToQuery.bfOid != null) {
         queryableMetadata.bfOid = metadataToQuery.bfOid;
