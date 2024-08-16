@@ -241,19 +241,15 @@ routes.set("/google/oauth/end", (req) => {
 });
 
 routes.set("/google/drive/webhook", async (req) => {
-  console.log("received request: ", req);
-  
-  //todo check validity of body
-  if (true) {
-    addToGoogleProcessQueue(req);
-
-    // todo check that the add to queue function was successful.
-    if (true) {
+    //todo check validity of request
+    let validRequest = true;
+    if (validRequest) {
+      // todo check that the add to queue function was successful.
+      // handle request
       return new Response("Request received", { status: 200 });
     }
-  }
-  return new Response("Not Found", { status: 404 }); 
-});
+    return new Response("Not Found", { status: 404 }); 
+  });
 
 routes.set("/graphql", graphQlHandler);
 routes.set("/aws-graphql", async (req) => {
