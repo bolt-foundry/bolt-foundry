@@ -11,7 +11,7 @@ fi
 set -e
 BFROOT="${BF_PATH:-../../../..}"  # default is four levels down if BF_PATH not set
 echo "BFROOT: $BFROOT"
-VCSROOT=$BFROOT/thirdParty/daily-vcs-main
+VCSROOT=$BFROOT/thirdParty/daily-vcs
 VCSRENDERPATH=$VCSROOT/server-render/vcsrender
 
 # install VCS JS tools

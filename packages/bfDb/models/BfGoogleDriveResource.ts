@@ -3,9 +3,13 @@ import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
 import { getLogger } from "deps.ts";
+import { fetchFolderContents } from "lib/googleDriveApi.ts";
+import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { BfError } from "lib/BfError.ts";
+import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 
 const logger = getLogger(import.meta);
-logger.setDefaultLevel(logger.levels.DEBUG)
+
 
 type BfGoogleDriveResourceRequiredProps = {
   resourceId: string;
@@ -13,6 +17,15 @@ type BfGoogleDriveResourceRequiredProps = {
 };
 export class BfGoogleDriveResource
   extends BfNode<BfGoogleDriveResourceRequiredProps> {
+
+  async beforeCreate() {
+    const resources = await (this.constructor as typeof BfGoogleDriveResource).query(this.currentViewer, {}, { resourceId: this.props.resourceId });
+    if (resources.length > 0) {
+      throw new BfError("Resource already exists");
+    }
+    this.metadata.bfGid = toBfGid(this.props.resourceId);
+  }
+
   async afterCreate() {
     const currentViewerPerson = await BfPerson.findCurrentViewer(
       this.currentViewer,
