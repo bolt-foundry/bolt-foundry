@@ -351,11 +351,11 @@ export async function bfQueryItems<
 export async function bfDeleteItem(bfOid: BfOid, bfGid: BfGid): Promise<void> {
   try {
     logger.trace("bfDeleteItem", { bfOid, bfGid });
-    const result = await sql`
+    const rows = await sql`
       DELETE FROM bfdb
       WHERE bf_oid = ${bfOid} AND bf_gid = ${bfGid}
     `;
-    if (result.rowCount === 0) {
+    if (rows.length === 0) {
       throw new BfDbError(
         `No item found with bfOid: ${bfOid} and bfGid: ${bfGid}`,
       );
@@ -364,6 +364,17 @@ export async function bfDeleteItem(bfOid: BfOid, bfGid: BfGid): Promise<void> {
   } catch (e) {
     logger.error(e);
     throw new BfDbError("Failed to delete item from the database");
+  }
+}
+
+export async function bfDeleteEdges(bfOid: BfOid, bfGid: BfGid) {
+  try {
+    await sql`
+    DELETE FROM bfdb WHERE class_name = 'BfEdge' AND bf_oid = ${bfOid} (bf_s_id = ${bfGid} OR bf_t_id = ${bfGid})
+    `;
+  } catch (e) {
+    logger.error(e);
+    throw new BfDbError("Failed to delete edges from the database");
   }
 }
 
@@ -495,6 +506,18 @@ export async function bfQueryItemsForGraphQLConnection<
     logger.error(e);
     throw e;
   }
+}
+
+export async function transactionStart() {
+  await sql`BEGIN`;
+}
+
+export async function transactionCommit() {
+  await sql`COMMIT`;
+}
+
+export async function transactionRollback() {
+  await sql`ROLLBACK`;
 }
 
 // Function to convert sortValue to base64 cursor

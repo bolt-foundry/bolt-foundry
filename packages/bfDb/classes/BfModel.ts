@@ -19,18 +19,23 @@ import {
 import type { ConnectionArguments, ConnectionInterface } from "relay-runtime";
 import { generateUUID } from "lib/generateUUID.ts";
 import {
+bfDeleteEdges,
   bfDeleteItem,
   bfGetItem,
   bfGetItemByBfGid,
   bfPutItem,
   bfQueryItems,
   bfQueryItemsForGraphQLConnection,
+  transactionStart,
+  transactionCommit,
+  transactionRollback,
 } from "packages/bfDb/bfDb.ts";
 import {
   BfModelErrorNotFound,
   BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
 import { getLogger } from "deps.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 const log = logger.trace;
@@ -74,7 +79,7 @@ export abstract class BfBaseModel<
       creationMetadata,
     );
     log(`Creating ${this.name}, bfGid: ${newModel.metadata.bfGid}`);
-    await newModel.beforeCreate(currentViewer, newProps, creationMetadata);
+    await newModel.beforeCreate();
     await newModel.save();
     await newModel.afterCreate();
     logVerbose("created", { newModel });
@@ -86,13 +91,32 @@ export abstract class BfBaseModel<
   public async delete() {
     await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
     try {
+      await transactionStart();
+      await this.beforeDelete();
       await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
       logger.trace(
         `Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`,
       );
+      await this.deleteEdges();
+      await this.afterDelete();
+      await transactionCommit();
     } catch (error) {
+      await transactionRollback();
       logger.trace(`Failed to delete ${this.constructor.name}:`, error);
       throw error;
+    }
+  }
+
+  protected beforeDelete(): Promise<void> | void {}
+  protected afterDelete(): Promise<void> | void {}
+
+  private async deleteEdges() {
+    await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
+    try {
+      await bfDeleteEdges(this.metadata.bfOid, this.metadata.bfGid);
+    } catch (e) {
+      logger.trace(`Failed to delete edges for ${this.constructor.name}:`, e);
+      throw e;
     }
   }
 
