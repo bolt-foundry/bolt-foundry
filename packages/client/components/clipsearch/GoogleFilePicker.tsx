@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useLazyLoadQuery, useMutation } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfButton } from "packages/bfDs/BfButton.tsx";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 import { GoogleFilePickerAddToGoogleMutation } from "packages/__generated__/GoogleFilePickerAddToGoogleMutation.graphql.ts";
 import { GoogleFilePickerPickFolderMutation } from "packages/__generated__/GoogleFilePickerPickFolderMutation.graphql.ts";
@@ -182,7 +182,7 @@ export function GoogleFilePicker() {
     <div>
       {googleAccessToken
         ? (
-          <Button
+          <BfButton
             iconLeft="plus"
             text={"Choose Folder"}
             onClick={pickFile}
@@ -190,7 +190,7 @@ export function GoogleFilePicker() {
           />
         )
         : (
-          <Button
+          <BfButton
             text={googleAccessToken ? "Authorized!!" : "Authorize Google"}
             onClick={authorizer}
             disabled={googleAccessToken != null}
