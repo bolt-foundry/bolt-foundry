@@ -83,19 +83,6 @@ export abstract class BfBaseModel<
       & BfBaseModelMetadata<TCreationMetadata>;
   }
 
-  public async delete() {
-    await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
-    try {
-      await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
-      logger.trace(
-        `Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`,
-      );
-    } catch (error) {
-      logger.trace(`Failed to delete ${this.constructor.name}:`, error);
-      throw error;
-    }
-  }
-
   static async find<
     TThis extends
       & typeof BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
@@ -465,6 +452,21 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
 
   validateSave(): Promise<boolean> {
     return Promise.resolve(true);
+  }
+
+  public async delete() {
+    await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
+    try {
+      await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
+      logger.trace(
+        `Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`,
+      );
+    } catch (error) {
+      logger.trace(`Failed to delete ${this.constructor.name}:`, error);
+      throw error;
+    }
+  }
+
   }
 }
 
