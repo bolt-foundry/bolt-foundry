@@ -85,6 +85,8 @@ function getContentType(ext) {
       return "image/gif";
     case "svg":
       return "image/svg+xml";
+    case "mp4":
+      return "video/mp4";
     // case "ttf":
     //   return "application/font-sfnt";
     default:
@@ -92,15 +94,18 @@ function getContentType(ext) {
   }
 }
 
-routes.set("/resources/:filename+", async (_req, routeParams) => {
+async function handleFileServing(
+  pathPrefix: string,
+  routeParams: Record<string, string>,
+) {
   const { filename } = routeParams;
   try {
+    const filePath = `${pathPrefix}/${filename}`;
     const fileContent = await Deno.readFile(
-      new URL(import.meta.resolve(`resources/${filename}`)),
+      new URL(import.meta.resolve(filePath)),
     );
     const ext = filename.split(".").pop();
     const contentType = getContentType(ext);
-
     return new Response(fileContent, {
       headers: {
         "content-type": contentType,
@@ -109,31 +114,13 @@ routes.set("/resources/:filename+", async (_req, routeParams) => {
   } catch (e) {
     return new Response("File not found", { status: 404 });
   }
+}
+
+routes.set("/resources/:filename+", (_req, routeParams) => {
+  return handleFileServing("resources", routeParams);
 });
-
-routes.set("/build/:filename+", async (_req, routeParams) => {
-  const { filename } = routeParams;
-  try {
-    const fileContent = await Deno.readTextFile(
-      new URL(import.meta.resolve(`build/${filename}`)),
-    );
-    const ext = filename.split(".").pop();
-    let contentType = "text/plain";
-
-    if (ext === "css") {
-      contentType = "text/css";
-    } else if (ext === "js") {
-      contentType = "application/javascript";
-    }
-
-    return new Response(fileContent, {
-      headers: {
-        "content-type": contentType,
-      },
-    });
-  } catch (e) {
-    return new Response("File not found", { status: 404 });
-  }
+routes.set("/build/:filename+", (_req, routeParams) => {
+  return handleFileServing("build", routeParams);
 });
 
 routes.set("/login", (...args) => {
@@ -162,7 +149,8 @@ routes.set("/logout", () => {
 
 routes.set("/google/oauth/start", (req) => {
   const deploymentEnvironment = Deno.env.get("BF_ENV") ?? "DEVELOPMENT";
-  const shouldRedirect = deploymentEnvironment === DeploymentEnvs.DEVELOPMENT && !Deno.env.get("DONT_REDIRECT_TO_LOGIN_SERVER");
+  const shouldRedirect = deploymentEnvironment === DeploymentEnvs.DEVELOPMENT &&
+    !Deno.env.get("DONT_REDIRECT_TO_LOGIN_SERVER");
   if (shouldRedirect) {
     const redirectDomain = Deno.env.get("BF_AUTH_REDIRECT_DOMAIN") ??
       "boltfoundry.wtf";
