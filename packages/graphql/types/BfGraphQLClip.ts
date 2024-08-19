@@ -72,16 +72,23 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
   type: downloadMutationPayload,
   args: {
     mediaId: nonNull(stringArg()),
+    title: nonNull(stringArg()),
     transcriptId: nonNull(stringArg()),
     startTime: nonNull(floatArg()),
     endTime: nonNull(floatArg()),
   },
   resolve: async (
     _,
-    { mediaId, transcriptId, startTime, endTime },
+    { mediaId, title, transcriptId, startTime, endTime },
     { bfCurrentViewer },
   ) => {
-    logger.debug("downloadClip", { mediaId, transcriptId, startTime, endTime });
+    logger.debug("downloadClip", {
+      mediaId,
+      title,
+      transcriptId,
+      startTime,
+      endTime,
+    });
     const mediaPromise = BfMedia.find(bfCurrentViewer, mediaId as BfAnyid);
     const transcriptPromise = BfMediaTranscript.find(
       bfCurrentViewer,
@@ -96,6 +103,7 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
       file: {
         url: media?.props.filename,
       },
+      title: title,
       transcript: {
         start_time: startTime,
         end_time: endTime,

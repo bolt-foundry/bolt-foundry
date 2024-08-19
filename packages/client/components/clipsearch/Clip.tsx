@@ -68,6 +68,7 @@ export function Clip(
                 startTime={startTime}
                 endTime={endTime}
                 mediaId={mediaId}
+                title={titleText}
                 transcriptId={transcriptId}
               />
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
