@@ -6,8 +6,8 @@ export const BfGraphQLGoogleDriveFolderType = objectType({
   definition(t) {
     t.implements("BfNode");
     t.string("name");
-  }
-})
+  },
+});
 
 export const BfGraphQLPickGoogleDriveFolderQuery = extendType({
   type: "BfOrganization",
@@ -27,25 +27,41 @@ export const BfGraphQLPickGoogleDriveFolderQuery = extendType({
   },
 });
 
-export const BfGraphQLPickGoogleDriveFolderMutation = mutationField("pickGoogleDriveFolder", {
-  type: "BfGoogleDriveResource",
-  args: {
-    resourceId: "String",
-    name: "String",
+export const BfGraphQLPickGoogleDriveFolderMutation = mutationField(
+  "pickGoogleDriveFolder",
+  {
+    type: "BfGoogleDriveResource",
+    args: {
+      resourceId: "String",
+      name: "String",
+    },
+    resolve: async (_root, { resourceId, name }, { bfCurrentViewer }) => {
+      const folder = await BfGoogleDriveResource.create(bfCurrentViewer, {
+        resourceId,
+        name,
+      });
+      return folder;
+    },
   },
-  resolve: async (_root, { resourceId, name }, { bfCurrentViewer }) => {
-    const folder = await BfGoogleDriveResource.create(bfCurrentViewer, {resourceId, name});
-    return folder;
-  }
-})
+);
 
-export const BfGraphQLDeleteGoogleDriveFolderMutation = mutationField("deleteGoogleDriveFolder", {
-  type: "BfGoogleDriveResource",
-  args: {
-    resourceId: "String",
+const deleteMutationPayload = objectType({
+  name: "DeleteMutationPayload",
+  definition(t) {
+    t.nonNull.boolean("success");
   },
-  resolve: async (_root, { resourceId }, { bfCurrentViewer }) => {
-    const folder = await BfGoogleDriveResource.delete(bfCurrentViewer, resourceId);
-    return folder;
-  }
-})
+});
+
+export const BfGraphQLDeleteGoogleDriveResourceMutation = mutationField(
+  "deleteGoogleDriveResource",
+  {
+    type: deleteMutationPayload,
+    args: {
+      resourceId: "String",
+    },
+    resolve: async (_root, { resourceId }, { bfCurrentViewer }) => {
+      // TODO
+      return { success: true };
+    },
+  },
+);

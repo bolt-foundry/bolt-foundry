@@ -175,6 +175,9 @@ export interface NexusGenObjects {
     cursor: string; // String!
     node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  DeleteMutationPayload: { // root type
+    success: boolean; // Boolean!
+  }
   DownloadMutationPayload: { // root type
     success: boolean; // Boolean!
   }
@@ -337,12 +340,15 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  DeleteMutationPayload: { // field return type
+    success: boolean; // Boolean!
+  }
   DownloadMutationPayload: { // field return type
     success: boolean; // Boolean!
   }
   Mutation: { // field return type
     createTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
-    deleteGoogleDriveFolder: NexusGenRootTypes['BfGoogleDriveResource'] | null; // BfGoogleDriveResource
+    deleteGoogleDriveResource: NexusGenRootTypes['DeleteMutationPayload'] | null; // DeleteMutationPayload
     deleteTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
     downloadClip: NexusGenRootTypes['DownloadMutationPayload'] | null; // DownloadMutationPayload
     linkAdvancedGoogleAuth: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
@@ -516,12 +522,15 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'BlogPost'
   }
+  DeleteMutationPayload: { // field return type name
+    success: 'Boolean'
+  }
   DownloadMutationPayload: { // field return type name
     success: 'Boolean'
   }
   Mutation: { // field return type name
     createTranscript: 'BfMediaTranscript'
-    deleteGoogleDriveFolder: 'BfGoogleDriveResource'
+    deleteGoogleDriveResource: 'DeleteMutationPayload'
     deleteTranscript: 'BfMediaTranscript'
     downloadClip: 'DownloadMutationPayload'
     linkAdvancedGoogleAuth: 'BfCurrentViewer'
@@ -618,7 +627,7 @@ export interface NexusGenArgTypes {
       filename: string; // String!
       words: string; // String!
     }
-    deleteGoogleDriveFolder: { // args
+    deleteGoogleDriveResource: { // args
       resourceId?: string | null; // String
     }
     deleteTranscript: { // args

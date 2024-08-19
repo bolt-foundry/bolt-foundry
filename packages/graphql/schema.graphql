@@ -350,6 +350,10 @@ type BlogPostEdge {
   node: BlogPost
 }
 
+type DeleteMutationPayload {
+  success: Boolean!
+}
+
 type DownloadMutationPayload {
   success: Boolean!
 }
@@ -359,7 +363,7 @@ scalar File
 
 type Mutation {
   createTranscript(filename: String!, words: String!): BfMediaTranscript
-  deleteGoogleDriveFolder(resourceId: String): BfGoogleDriveResource
+  deleteGoogleDriveResource(resourceId: String): DeleteMutationPayload
   deleteTranscript(id: String!): BfMediaTranscript
   downloadClip(endTime: Float!, mediaId: String!, startTime: Float!, transcriptId: String!): DownloadMutationPayload
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
