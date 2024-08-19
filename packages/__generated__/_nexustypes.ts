@@ -637,6 +637,7 @@ export interface NexusGenArgTypes {
       endTime: number; // Float!
       mediaId: string; // String!
       startTime: number; // Float!
+      title: string; // String!
       transcriptId: string; // String!
     }
     linkAdvancedGoogleAuth: { // args
