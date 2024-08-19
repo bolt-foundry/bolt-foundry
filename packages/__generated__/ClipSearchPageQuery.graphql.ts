@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2b3a40a6256978dd9cf7072c4bae52c2>>
+ * @generated SignedSource<<99f40f63940478eb923719bfbc68cdc3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,52 +9,77 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type SearchQuery$variables = Record<PropertyKey, never>;
-export type SearchQuery$data = {
+import { FragmentRefs } from "relay-runtime";
+export type ClipSearchPageQuery$variables = Record<PropertyKey, never>;
+export type ClipSearchPageQuery$data = {
   readonly currentViewer: {
     readonly organization: {
+      readonly id: string;
       readonly media: {
         readonly count: number | null | undefined;
       } | null | undefined;
     } | null | undefined;
+    readonly person: {
+      readonly id: string;
+      readonly " $fragmentSpreads": FragmentRefs<"ClipsView_bfPerson">;
+    } | null | undefined;
   } | null | undefined;
 };
-export type SearchQuery = {
-  response: SearchQuery$data;
-  variables: SearchQuery$variables;
+export type ClipSearchPageQuery = {
+  response: ClipSearchPageQuery$data;
+  variables: ClipSearchPageQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
 var v0 = {
   "alias": null,
-  "args": [
-    {
-      "kind": "Literal",
-      "name": "first",
-      "value": 100
-    }
-  ],
-  "concreteType": "BfMediaConnection",
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "BfOrganization",
   "kind": "LinkedField",
-  "name": "media",
+  "name": "organization",
   "plural": false,
   "selections": [
+    (v0/*: any*/),
     {
       "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "count",
-      "storageKey": null
+      "args": [
+        {
+          "kind": "Literal",
+          "name": "first",
+          "value": 100
+        }
+      ],
+      "concreteType": "BfMediaConnection",
+      "kind": "LinkedField",
+      "name": "media",
+      "plural": false,
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "count",
+          "storageKey": null
+        }
+      ],
+      "storageKey": "media(first:100)"
     }
   ],
-  "storageKey": "media(first:100)"
+  "storageKey": null
 };
 return {
   "fragment": {
     "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "SearchQuery",
+    "name": "ClipSearchPageQuery",
     "selections": [
       {
         "alias": null,
@@ -67,15 +92,21 @@ return {
           {
             "alias": null,
             "args": null,
-            "concreteType": "BfOrganization",
+            "concreteType": "BfPerson",
             "kind": "LinkedField",
-            "name": "organization",
+            "name": "person",
             "plural": false,
             "selections": [
-              (v0/*: any*/)
+              (v0/*: any*/),
+              {
+                "args": null,
+                "kind": "FragmentSpread",
+                "name": "ClipsView_bfPerson"
+              }
             ],
             "storageKey": null
-          }
+          },
+          (v1/*: any*/)
         ],
         "storageKey": null
       }
@@ -87,7 +118,7 @@ return {
   "operation": {
     "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "SearchQuery",
+    "name": "ClipSearchPageQuery",
     "selections": [
       {
         "alias": null,
@@ -107,9 +138,9 @@ return {
           {
             "alias": null,
             "args": null,
-            "concreteType": "BfOrganization",
+            "concreteType": "BfPerson",
             "kind": "LinkedField",
-            "name": "organization",
+            "name": "person",
             "plural": false,
             "selections": [
               (v0/*: any*/),
@@ -117,28 +148,29 @@ return {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "id",
+                "name": "googleAuthAccessToken",
                 "storageKey": null
               }
             ],
             "storageKey": null
-          }
+          },
+          (v1/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "02417d0ed4d6ba8bcd4a50f450094c67",
+    "cacheID": "43bf5c1dce8c9ccfdae54549b0addd77",
     "id": null,
     "metadata": {},
-    "name": "SearchQuery",
+    "name": "ClipSearchPageQuery",
     "operationKind": "query",
-    "text": "query SearchQuery {\n  currentViewer {\n    __typename\n    organization {\n      media(first: 100) {\n        count\n      }\n      id\n    }\n  }\n}\n"
+    "text": "query ClipSearchPageQuery {\n  currentViewer {\n    __typename\n    person {\n      id\n      ...ClipsView_bfPerson\n    }\n    organization {\n      id\n      media(first: 100) {\n        count\n      }\n    }\n  }\n}\n\nfragment ClipsView_bfPerson on BfPerson {\n  googleAuthAccessToken\n}\n"
   }
 };
 })();
 
-(node as any).hash = "94e70cc781a7bea354ff723270622156";
+(node as any).hash = "ec26f9dcc0e0f543d97da3ecc937f9f9";
 
 export default node;

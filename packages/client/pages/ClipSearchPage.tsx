@@ -1,11 +1,31 @@
-import { React } from "deps.ts";
+import * as React from "react";
+import { useLazyLoadQuery } from "react-relay";
+import { graphql } from "packages/client/deps.ts";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";
 import { Search } from "packages/client/components/clipsearch/Search.tsx";
 import { ClipsView } from "packages/client/components/clipsearch/ClipsView.tsx";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
 
+const query = await graphql`
+  query ClipSearchPageQuery {
+    currentViewer {
+      person {
+        id
+        ...ClipsView_bfPerson
+      }
+      organization {
+        id
+        media (first: 1) {
+          count
+        }
+      }
+    }
+  }
+`; 
+
 export function ClipSearchPage() {
+  const data = useLazyLoadQuery(query, {});
   const [clips, setClips] = React.useState<string>();
   const sidebarContents = (
     <>
@@ -54,8 +74,8 @@ export function ClipSearchPage() {
         header="Clip search"
       />
       <div className="cs-main">
-        <Search setClips={setClips} />
-        <ClipsView clips={clips} />
+        <Search setClips={setClips} count={data?.currentViewer?.organization?.media?.count ?? 0} />
+        <ClipsView clips={clips} clips$key={data?.currentViewer?.person} />
       </div>
     </div>
   );

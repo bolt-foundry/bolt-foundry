@@ -1,12 +1,10 @@
 import * as React from "react";
-import * as ReactRelay from "react-relay";
+import { useFragment, useMutation } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { Input } from "packages/bfDs/Input.tsx";
-import { SearchQuery } from "packages/__generated__/SearchQuery.graphql.ts";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { isValidJSON } from "packages/lib/jsonUtils.ts";
 const { useState } = React;
-const { useLazyLoadQuery, useMutation } = ReactRelay;
 
 export enum AiModel {
   OPENAI_4O = "gpt-4o-mini",
@@ -30,30 +28,19 @@ const mutation = await graphql`
   }
 `;
 
-const query = await graphql`
-  query SearchQuery {
-    currentViewer {
-      organization {
-        media(first: 100) {
-          count
-        }
-      }
-    }
-  }
-`;
 
 type Props = {
+  count: number;
   setClips: (clips: string | null) => void;
 };
 
-export function Search({ setClips }: Props) {
+export function Search({ count, setClips }: Props) {
   const [commit, isInFlight] = useMutation(mutation);
-  const data = useLazyLoadQuery<SearchQuery>(query, {});
   const [prompt, setPrompt] = useState("");
   const [clipsFound, setClipsFound] = useState<number | null>(null);
   const [aiModel, setAiModel] = useState(AiModel.OPENAI_4O);
 
-  const transcriptsCount = data?.currentViewer?.organization?.media?.count ?? 0;
+  const transcriptsCount = count;
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
