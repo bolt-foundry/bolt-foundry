@@ -25,6 +25,9 @@ import {
   bfPutItem,
   bfQueryItems,
   bfQueryItemsForGraphQLConnection,
+  transactionStart,
+  transactionCommit,
+  transactionRollback,
 } from "packages/bfDb/bfDb.ts";
 import {
   BfModelErrorNotFound,
@@ -74,7 +77,7 @@ export abstract class BfBaseModel<
       creationMetadata,
     );
     log(`Creating ${this.name}, bfGid: ${newModel.metadata.bfGid}`);
-    await newModel.beforeCreate(currentViewer, newProps, creationMetadata);
+    await newModel.beforeCreate();
     await newModel.save();
     await newModel.afterCreate();
     logVerbose("created", { newModel });
@@ -107,6 +110,7 @@ export abstract class BfBaseModel<
       throw error;
     }
   }
+
   static async findX<
     TThis extends Constructor<
       BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
@@ -467,6 +471,18 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     }
   }
 
+  public async transactionStart() {
+    await transactionStart()
+  }
+  public async transactionCommit() {
+    await transactionCommit()
+  }
+  public async transactionRollback() {
+    await transactionRollback()
+  }
+
+  toString() {
+    return `${this.constructor.name}#${this.metadata.bfGid}`;
   }
 }
 
