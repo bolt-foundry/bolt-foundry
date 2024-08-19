@@ -41,7 +41,7 @@ export class BfJob extends BfEdge<BfJobRequiredProps, Record<string, never>> {
     bfNode: T,
     method: keyof T,
     args: Array<ValidJSONValues> = [],
-    runInForeground = false,
+    runInForeground = Deno.env.get("BF_ENV") === "DEVELOPMENT",
   ): Promise<BfJob> {
     const currentViewer = bfNode.currentViewer;
     const jobProps: BfJobRequiredProps = {
@@ -60,7 +60,7 @@ export class BfJob extends BfEdge<BfJobRequiredProps, Record<string, never>> {
     logger.info(jobMetadata);
     const job = await this.create(currentViewer, jobProps, jobMetadata);
     if (runInForeground) {
-      logger.error(
+      logger.warn(
         "Job running in foreground. If this is in production, please run in background.",
       );
       await job.executeJob();
