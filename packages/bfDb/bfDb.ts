@@ -350,12 +350,12 @@ export async function bfQueryItems<
 
 export async function bfDeleteItem(bfOid: BfOid, bfGid: BfGid): Promise<void> {
   try {
-    logger.trace("bfDeleteItem", { bfOid, bfGid });
+    logger.debug("bfDeleteItem", { bfOid, bfGid });
     const result = await sql`
       DELETE FROM bfdb
       WHERE bf_oid = ${bfOid} AND bf_gid = ${bfGid}
     `;
-    if (result.rowCount === 0) {
+    if (result.length === 0) {
       throw new BfDbError(
         `No item found with bfOid: ${bfOid} and bfGid: ${bfGid}`,
       );
