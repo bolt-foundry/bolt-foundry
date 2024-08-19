@@ -18,6 +18,7 @@ type Props = {
   endTime: number;
   startIndex: number;
   endIndex: number;
+  notAuthed: boolean;
 };
 export function Clip(
   {
@@ -34,6 +35,7 @@ export function Clip(
     endTime,
     startIndex,
     endIndex,
+    notAuthed
   }: Props,
 ) {
   const topicPills = topics?.split(",").map((topic) => (
@@ -70,6 +72,7 @@ export function Clip(
                 mediaId={mediaId}
                 title={titleText}
                 transcriptId={transcriptId}
+                disabled={notAuthed}
               />
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
               {
