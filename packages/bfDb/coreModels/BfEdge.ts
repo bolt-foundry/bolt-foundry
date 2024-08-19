@@ -57,7 +57,7 @@ export class BfEdge<
     currentViewer: BfCurrentViewer,
     sourceNode: BfNode,
     targetNode: BfNode,
-  ) {
+  ): Promise<BfEdge> {
     const metadata = {
       bfTClassName: targetNode.constructor.name,
       bfTid: targetNode.metadata.bfGid,
@@ -69,6 +69,21 @@ export class BfEdge<
     return newEdge;
   }
 
+  
+  /**
+   * Queries all edge connections from a source node to target nodes.
+   * The method retrieves the connections between a source node and all its target nodes.
+   *
+   * @param {BfCurrentViewer} currentViewer - The current viewer context.
+   * @param {typeof BfNode} TargetClass - The class of the target nodes.
+   * @param {BfGid | BfSid} sourceBfGid - The global or session ID of the source node.
+   * @param {Partial<TRequiredProps & TOptionalProps>} [propsToQuery={}] - The properties to query.
+   * @param {ConnectionArguments} connectionArgs - The GraphQL connection arguments.
+   * @returns {Promise<ConnectionInterface<InstanceType<TThis> & EdgeCreationMetadata> & { count: number }>} A promise that resolves to the connection object and count.
+   *
+   * @example
+   * const connection = await BfEdge.queryTargetsConnectionForGraphQL(currentViewer, TargetNode, sourceNodeGid, {}, connectionArgs);
+   */
   static async queryTargetsConnectionForGraphQL<
     TThis extends Constructor<
       BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
@@ -195,4 +210,5 @@ export class BfEdge<
     logger.debug("targets", targets);
     return targets;
   }
+
 }
