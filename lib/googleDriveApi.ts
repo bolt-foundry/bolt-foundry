@@ -13,9 +13,14 @@ type GoogleDriveMetadata = {
 export async function fetchMetadata(
   accessToken: string,
   fileId: string,
+  fields = ["id", "name", "mimeType", "parents", "webViewLink"],
 ): Promise<GoogleDriveMetadata> {
-  const url =
-    `https://www.googleapis.com/drive/v3/files/${fileId}?supportsAllDrives=true`;
+  const endpointUrl = `https://www.googleapis.com/drive/v3/files/${fileId}`;
+  const searchParams = new URLSearchParams();
+  searchParams.set("fields", fields.join(","))
+  searchParams.set("supportsAllDrives", "true");
+  const url = new URL(endpointUrl);
+  url.search = searchParams.toString();
   const response = await fetch(url, {
     method: "GET",
     headers: new Headers({
@@ -43,11 +48,12 @@ export async function fetchFile(
   return response;
 }
 
+
 export async function fetchFolderContents(
   accessToken: string,
   folderId: string,
   fields: string =
-    "nextPageToken, files(id, name, mimeType, parents, webViewLink)",
+    `nextPageToken, files(id)`,
 ): Promise<GoogleDriveMetadata[]> {
   const searchParams = new URLSearchParams();
   searchParams.set("supportsAllDrives", "true");
