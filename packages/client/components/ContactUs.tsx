@@ -1,7 +1,7 @@
 import { React, ReactRelay } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
 import { TextArea } from "packages/bfDs/TextArea.tsx";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
@@ -164,7 +164,7 @@ export function ContactUs({ showHeader = true }: Props) {
                   value={formData.message}
                   onChange={handleChange}
                 />
-                <Button type="submit" text="Submit" size="xlarge" />
+                <BfDsButton type="submit" text="Submit" size="xlarge" />
               </form>
             </>
           )}

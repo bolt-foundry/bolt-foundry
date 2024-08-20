@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 const styles: Record<string, React.CSSProperties> = {
   buttonGroup: {

@@ -6,7 +6,7 @@
 import { getLogger, React, ReactRelay } from "deps.ts";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
 import { LoginPageCVQuery } from "packages/__generated__/LoginPageCVQuery.graphql.ts";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
@@ -165,7 +165,7 @@ function LoginPageContent() {
         {loggedInPerson && (
           <div>
             Logged in as {loggedInPerson.name}. Not you?{" "}
-            <Button
+            <BfDsButton
               showSpinner={logoutInFlight}
               text="Logout"
               onClick={onLogout}

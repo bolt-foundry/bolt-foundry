@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 // import { captureEvent } from "packages/events/mod.ts";
 import useClickOutside from "packages/client/hooks/useClickOutside.ts";
 import { ReactDOMClient } from "packages/client/deps.ts";
@@ -152,7 +152,7 @@ export function Modal(
           )}
           {onClose != null && (
             <div style={styles.close}>
-              <Button
+              <BfDsButton
                 iconLeft="cross"
                 kind="overlay"
                 onClick={() => {
@@ -168,8 +168,8 @@ export function Modal(
           </div>
           {onSave != null && (
             <div style={styles.footer}>
-              <Button text="Cancel" kind="outline" onClick={onClose} />
-              <Button text="Save" kind="primary" onClick={onSave} />
+              <BfDsButton text="Cancel" kind="outline" onClick={onClose} />
+              <BfDsButton text="Save" kind="primary" onClick={onSave} />
             </div>
           )}
         </div>

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useMutation } from "react-relay";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { graphql } from "packages/client/deps.ts";
 import { getLogger } from "deps.ts";
 import { sanitizeFilename } from "packages/lib/textUtils.ts";
@@ -62,7 +62,7 @@ export function DownloadClipButton(
     });
   };
   return (
-    <Button
+    <BfDsButton
       iconLeft="download"
       showSpinner={isInFlight}
       onClick={handleDownload}

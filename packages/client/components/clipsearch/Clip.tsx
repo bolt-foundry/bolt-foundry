@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
 import { Tooltip } from "packages/bfDs/Tooltip.tsx";
 import { Pill } from "packages/bfDs/Pill.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import VideoPlayer from "aws/client/components/VideoPlayer.tsx";
 import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
 type Props = {
@@ -61,7 +61,7 @@ export function Clip(
               </div>
             </div>
             <div className="clipActions row-column">
-              <Button
+              <BfDsButton
                 kind="secondary"
                 iconLeft="pencil"
                 testId="button-edit-clip"

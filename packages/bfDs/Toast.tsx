@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
 import { ReactDOMClient } from "packages/client/deps.ts";
 import { classnames } from "lib/classnames.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 const { createPortal } = ReactDOMClient;
 const { useState, useEffect } = React;
@@ -88,7 +88,7 @@ export function Toast({
           </div>
         )}
         <div className="close-toast">
-          <Button
+          <BfDsButton
             iconLeft="cross"
             kind="overlayDark"
             size="small"

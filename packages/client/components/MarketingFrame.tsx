@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
 import { BfLogo } from "packages/bfDs/static/BfLogo.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { Link } from "packages/client/components/Link.tsx";
 // import MarketingLoginAction from "packages/client/components/MarketingLoginAction.tsx";
 
@@ -98,14 +98,14 @@ export function MarketingFrame(
         </div>
         {showLoginLink && (
           <div className="nav-links mobile-hide" style={styles.rightSide}>
-            <Button href="/login" iconLeft="pencil" />
+            <BfDsButton href="/login" iconLeft="pencil" />
           </div>
         )}
         <div
           className="mobile-show"
           style={{ ...styles.rightSide, flexDirection: "column" }}
         >
-          <Button
+          <BfDsButton
             kind="overlay"
             iconLeft="burgerMenu"
             onClick={() => {
@@ -130,14 +130,14 @@ export function MarketingFrame(
 
       {showFooter && (
         <div className="footer" style={styles.footer}>
-          <Button
+          <BfDsButton
             kind="overlay"
             text="Terms and Privacy"
             href="/terms"
             hrefTarget="blank"
             testId="button-terms-footer"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-tiktok"
             kind="outline"
             href="https://www.tiktok.com/@bolt.foundry"
@@ -147,7 +147,7 @@ export function MarketingFrame(
             role="TikTok social media link"
             testId="button-tiktok-footer"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-instagram"
             kind="outline"
             href="https://www.instagram.com/boltfoundry/"
@@ -157,7 +157,7 @@ export function MarketingFrame(
             role="Instagram social media link"
             testId="button-instagram-footer"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-threads"
             kind="outline"
             href="https://www.threads.net/@boltfoundry"
@@ -167,7 +167,7 @@ export function MarketingFrame(
             role="Threads social media link"
             testId="button-threads-footer"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="outline"
             href="https://discord.gg/ZTVJkfxHkC"
