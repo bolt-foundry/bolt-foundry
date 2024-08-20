@@ -1,9 +1,18 @@
 import { React } from "deps.ts";
+import { graphql } from "packages/client/deps.ts";
+import { useFragment } from "react-relay";
 import { Tooltip } from "packages/bfDs/Tooltip.tsx";
 import { Pill } from "packages/bfDs/Pill.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import VideoPlayer from "aws/client/components/VideoPlayer.tsx";
 import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
+
+const fragment = await graphql`
+    fragment Clip_bfPerson on BfPerson {
+    googleAuthAccessToken
+  }
+`;
+  
 type Props = {
   titleText: string;
   text: string;
@@ -18,7 +27,7 @@ type Props = {
   endTime: number;
   startIndex: number;
   endIndex: number;
-  notAuthed: boolean;
+  clips$key: unknown;
 };
 export function Clip(
   {
@@ -35,9 +44,10 @@ export function Clip(
     endTime,
     startIndex,
     endIndex,
-    notAuthed
+    clips$key,
   }: Props,
 ) {
+  const data = useFragment(fragment, clips$key);
   const topicPills = topics?.split(",").map((topic) => (
     <Pill text={topic?.trim()} />
   ));
@@ -72,7 +82,7 @@ export function Clip(
                 mediaId={mediaId}
                 title={titleText}
                 transcriptId={transcriptId}
-                disabled={notAuthed}
+                disabled={!data.googleAuthAccessToken}
               />
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
               {

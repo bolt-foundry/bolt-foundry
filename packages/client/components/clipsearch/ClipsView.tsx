@@ -18,30 +18,32 @@ const fragment = await graphql`
   }
 `;
 
+function GoogleAuthSection() {
+  return (
+    <div
+      className="cs-page-section flexRow"
+      style={{ justifyContent: "space-between", alignItems: "center" }}
+    >
+      <div className="flexColumn">
+        <div className="cs-page-section-title">
+          Google Authorization
+        </div>
+        <div>
+          In order to download videos, you must authorize Google Drive access.
+        </div>
+      </div>
+      <GoogleFilePicker />
+    </div>
+  );
+}
+
 export function ClipsView({ clips$key, clips }: Props) {
   let data = useFragment(fragment, clips$key);
-  console.log("data", data);
   if (clips === undefined) {
     return (
       <>
         {!data.googleAuthAccessToken &&
-          (
-            <div
-              className="cs-page-section flexRow"
-              style={{ justifyContent: "space-between", alignItems: "center" }}
-            >
-              <div className="flexColumn">
-                <div className="cs-page-section-title">
-                  Google Authorization
-                </div>
-                <div>
-                  In order to download videos, you must authorize Google Drive
-                  access.
-                </div>
-              </div>
-              <GoogleFilePicker />
-            </div>
-          )}
+          <GoogleAuthSection />}
         <Nux />
       </>
     );
@@ -57,23 +59,7 @@ export function ClipsView({ clips$key, clips }: Props) {
   return (
     <div className="cs-clipsView">
       {!data.googleAuthAccessToken &&
-        (
-          <div
-            className="cs-page-section flexRow"
-            style={{ justifyContent: "space-between", alignItems: "center" }}
-          >
-            <div className="flexColumn">
-              <div className="cs-page-section-title">
-                Google Authorization
-              </div>
-              <div>
-                In order to download videos, you must authorize Google Drive
-                access.
-              </div>
-            </div>
-            <GoogleFilePicker />
-          </div>
-        )}
+        <GoogleAuthSection />}
       {parsedClips?.anecdotes?.map((clip) => (
         <Clip
           titleText={clip.titleText}
@@ -90,6 +76,7 @@ export function ClipsView({ clips$key, clips }: Props) {
           startTime={clip.startTime}
           endTime={clip.endTime}
           notAuthed={data.googleAuthAccessToken}
+          clips$key={clips$key}
         />
       ))}
     </div>
