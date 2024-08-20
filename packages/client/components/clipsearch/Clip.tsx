@@ -51,6 +51,7 @@ export function Clip(
   const topicPills = topics?.split(",").map((topic) => (
     <Pill text={topic?.trim()} />
   ));
+  const length = `${(endTime - startTime).toFixed(2)}s`;
   return (
     <div className="clip">
       <div className="clipInner clipContainer">
@@ -100,6 +101,9 @@ export function Clip(
               </Tooltip>
               <Tooltip text={rationale} position="right">
                 <Pill label="Rating" text={confidence} />
+              </Tooltip>
+              <Tooltip text={`Start: ${startTime} End: ${endTime}`} position="right">
+                <Pill label="Length" text={length} />
               </Tooltip>
             </div>
 
