@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { ButtonGroup } from "packages/bfDs/ButtonGroup.tsx";
-import { IconDemo } from "packages/bfDs/Icon.tsx";
+import { BfDsIconDemo } from "packages/bfDs/BfDsIcon.tsx";
 import TVStatic from "packages/client/images/TVStatic.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
 // import WorkflowStatusIndicator from "packages/client/components/WorkflowStatusIndicator.tsx";
@@ -453,7 +453,7 @@ export function Demo() {
       <div className="element" style={styles.element}>
         <div style={styles.name}>Icons</div>
         <div className="group" style={styles.group}>
-          <IconDemo />
+          <BfDsIconDemo />
         </div>
       </div>
       <div style={styles.element}>

@@ -3,7 +3,7 @@ import {useMutation, useLazyLoadQuery} from "react-relay";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { Tooltip } from "packages/bfDs/Tooltip.tsx";
-import { Icon, IconType } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon, IconType } from "packages/bfDs/BfDsIcon.tsx";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { classnames } from "lib/classnames.ts";
@@ -249,7 +249,7 @@ export function RandallPlaygroundPage() {
           >
             <div className="pill">
               {ownerFilter ?? "All people"}
-              <Icon name="arrowDown" size={12} />
+              <BfDsIcon name="arrowDown" size={12} />
             </div>
           </Tooltip>
           <Tooltip
@@ -261,7 +261,7 @@ export function RandallPlaygroundPage() {
           >
             <div className="pill">
               {clientFilter ?? "All clients"}
-              <Icon name="arrowDown" size={12} />
+              <BfDFsIcon name="arrowDown" size={12} />
             </div>
           </Tooltip>
         </div>
@@ -310,7 +310,7 @@ export function RandallPlaygroundPage() {
                   <div className="pill">{item.client}</div>
                   {item.comments?.length > 0 && (
                     <div className="pill">
-                      <Icon name="comment" size={12} />
+                      <BfDsIcon name="comment" size={12} />
                       {item.comments?.length}
                     </div>
                   )}
@@ -340,7 +340,7 @@ export function RandallPlaygroundPage() {
                 className={classes}
                 onClick={() => setCurrentTab(key)}
               >
-                <Icon name={tab.icon as IconType} color={color} />
+                <BfDsIcon name={tab.icon as BfDsIconType} color={color} />
                 <div>{tab.label}</div>
               </div>
             );
