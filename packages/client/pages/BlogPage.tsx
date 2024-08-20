@@ -41,7 +41,6 @@ query BlogPagePostQuery($slug: String!) {
         posts(slug: $slug, first: 1) {
           nodes {
           title
-          content
           }
         }
       }
