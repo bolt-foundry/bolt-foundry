@@ -1,10 +1,10 @@
 import { React } from "deps.ts";
-import { Icon, IconType } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { classnames } from "lib/classnames.ts";
 
 type Props = {
   content: string | React.ReactNode;
-  iconRight?: IconType;
+  iconRight?: BfDsIconType;
   isHighlighted?: boolean;
   footer?: string | React.ReactNode;
   onClick?: () => void;
@@ -38,7 +38,7 @@ export function ListItem(
       </div>
       {iconRight && (
         <div className="list-item-right">
-          <Icon name={iconRight} color="var(--textSecondary)" />
+          <BfDsIcon name={iconRight} color="var(--textSecondary)" />
         </div>
       )}
     </div>

@@ -2,7 +2,7 @@ import { React } from "deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { Column, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
-import { Icon } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 
 type DataType = {
@@ -24,7 +24,7 @@ const columns: Array<Column<DataType>> = [
     renderer: (data) => (
       <TableCell
         align="center"
-        element={<Icon name="down-arrow" />}
+        element={<BfDsIcon name="down-arrow" />}
         /* this icon is wrong and needs to open the ClipChangesPage for said clip */
       />
     ),
@@ -59,19 +59,19 @@ export function ChangesPage() {
       </div>
       <div className="internalMobileTabs">
         <div className="internalMobileTab" onClick={() => navigate("/qc")}>
-          <Icon name="starSolid" />
+          <BfDsIcon name="starSolid" />
           QC
         </div>
         <div className="internalMobileTab selected">
-          <Icon name="back" color="var(--secondaryColor)" />
+          <BfDsIcon name="back" color="var(--secondaryColor)" />
           Changes
         </div>
         <div className="internalMobileTab">
-          <Icon name="check" />
+          <BfDsIcon name="check" />
           Approved
         </div>
         <div className="internalMobileTab">
-          <Icon name="cross" />
+          <BfDsIcon name="cross" />
           Rejected
         </div>
       </div>
