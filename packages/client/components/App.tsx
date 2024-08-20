@@ -21,7 +21,7 @@ export const routes = new Map([
   ["/ui", { Component: Demo, allowLoggedOut: true }],
   ["/contact-us", { Component: ContactUs, allowLoggedOut: true }],
   ["/settings", { Component: SettingsPage, allowLoggedOut: false }],
-  ["/search", { Component: ClipSearchPage, allowLoggedOut: true }],
+  ["/search", { Component: ClipSearchPage, allowLoggedOut: false }],
   ["/blog", { Component: BlogPage, allowLoggedOut: true }],
   ["/blog/:slug", { Component: BlogPage, allowLoggedOut: true }],
 ]);
