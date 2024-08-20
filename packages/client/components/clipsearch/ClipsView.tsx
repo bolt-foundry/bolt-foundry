@@ -39,10 +39,11 @@ function GoogleAuthSection() {
 
 export function ClipsView({ clips$key, clips }: Props) {
   let data = useFragment(fragment, clips$key);
+  console.log(data)
   if (clips === undefined) {
     return (
       <>
-        {!data.googleAuthAccessToken &&
+        {data?.googleAuthAccessToken === null &&
           <GoogleAuthSection />}
         <Nux />
       </>
@@ -58,7 +59,7 @@ export function ClipsView({ clips$key, clips }: Props) {
 
   return (
     <div className="cs-clipsView">
-      {!data.googleAuthAccessToken &&
+      {data?.googleAuthAccessToken === null &&
         <GoogleAuthSection />}
       {parsedClips?.anecdotes?.map((clip) => (
         <Clip
