@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<99f40f63940478eb923719bfbc68cdc3>>
+ * @generated SignedSource<<1f8b7aa91f35a5b92c018d658e10080f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -21,7 +21,7 @@ export type ClipSearchPageQuery$data = {
     } | null | undefined;
     readonly person: {
       readonly id: string;
-      readonly " $fragmentSpreads": FragmentRefs<"ClipsView_bfPerson">;
+      readonly " $fragmentSpreads": FragmentRefs<"Clip_bfPerson" | "ClipsView_bfPerson">;
     } | null | undefined;
   } | null | undefined;
 };
@@ -53,7 +53,7 @@ v1 = {
         {
           "kind": "Literal",
           "name": "first",
-          "value": 100
+          "value": 1
         }
       ],
       "concreteType": "BfMediaConnection",
@@ -69,7 +69,7 @@ v1 = {
           "storageKey": null
         }
       ],
-      "storageKey": "media(first:100)"
+      "storageKey": "media(first:1)"
     }
   ],
   "storageKey": null
@@ -102,6 +102,11 @@ return {
                 "args": null,
                 "kind": "FragmentSpread",
                 "name": "ClipsView_bfPerson"
+              },
+              {
+                "args": null,
+                "kind": "FragmentSpread",
+                "name": "Clip_bfPerson"
               }
             ],
             "storageKey": null
@@ -161,16 +166,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "43bf5c1dce8c9ccfdae54549b0addd77",
+    "cacheID": "7fac385f31038d8d62c6cb20a6f6bfd8",
     "id": null,
     "metadata": {},
     "name": "ClipSearchPageQuery",
     "operationKind": "query",
-    "text": "query ClipSearchPageQuery {\n  currentViewer {\n    __typename\n    person {\n      id\n      ...ClipsView_bfPerson\n    }\n    organization {\n      id\n      media(first: 100) {\n        count\n      }\n    }\n  }\n}\n\nfragment ClipsView_bfPerson on BfPerson {\n  googleAuthAccessToken\n}\n"
+    "text": "query ClipSearchPageQuery {\n  currentViewer {\n    __typename\n    person {\n      id\n      ...ClipsView_bfPerson\n      ...Clip_bfPerson\n    }\n    organization {\n      id\n      media(first: 1) {\n        count\n      }\n    }\n  }\n}\n\nfragment Clip_bfPerson on BfPerson {\n  googleAuthAccessToken\n}\n\nfragment ClipsView_bfPerson on BfPerson {\n  googleAuthAccessToken\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ec26f9dcc0e0f543d97da3ecc937f9f9";
+(node as any).hash = "ebac45a0b6dd7da9ef6ce9e6bd32a282";
 
 export default node;
