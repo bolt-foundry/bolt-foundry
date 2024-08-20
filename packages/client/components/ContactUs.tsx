@@ -5,6 +5,7 @@ import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
 import { TextArea } from "packages/bfDs/TextArea.tsx";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
+import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 const { useMutation } = ReactRelay;
 
 const { useState } = React;
@@ -60,6 +61,7 @@ const contactUsMutation = await graphql`
 `;
 
 export function ContactUs({ showHeader = true }: Props) {
+  const { navigate } = useRouter();
   const [submtting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
@@ -92,6 +94,9 @@ export function ContactUs({ showHeader = true }: Props) {
       onCompleted: () => {
         setSubmitted(true);
         setSubmitting(false);
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       },
       onError: () => {
         setSubmitting(false);
