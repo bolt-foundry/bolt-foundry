@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
-import { Icon, IconType } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon, IconType } from "packages/bfDs/BfDsIcon.tsx";
 import { Link } from "packages/client/components/Link.tsx";
 import {
   Tooltip,
@@ -446,7 +446,7 @@ export function BfDsButton({
                 {percent}%
               </div>
             ) : (
-              <Icon name={iconLeft} color={iconColor} size={iconSize[size]} />
+              <BfDsIcon name={iconLeft} color={iconColor} size={iconSize[size]} />
             )}
           </div>
         )
@@ -459,7 +459,7 @@ export function BfDsButton({
       )}
       {iconRight && (
         <div style={styles.iconStyle}>
-          <Icon name={iconRight} color={iconColor} size={iconSize[size]} />
+          <BfDsIcon name={iconRight} color={iconColor} size={iconSize[size]} />
         </div>
       )}
       {tooltipMenuDropdown && (
@@ -473,7 +473,7 @@ export function BfDsButton({
               : buttonStyle[kind].backgroundColor,
           }}
         >
-          <Icon name="down-arrow" color={iconColor} size={12} />
+          <BfDsIcon name="down-arrow" color={iconColor} size={12} />
         </div>
       )}
     </button>

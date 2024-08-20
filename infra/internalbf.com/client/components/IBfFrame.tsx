@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
-import { Icon, IconType } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon, IconType } from "packages/bfDs/BfDsIcon.tsx";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 import { IBfHeader } from "infra/internalbf.com/client/components/IBfHeader.tsx";
 
@@ -24,7 +24,7 @@ function IBfDashboardTab({ route, name, icon }: IbfDashboardTabProps) {
       className={`internalTab ${route === currentPath ? "selected" : ""}`}
       onClick={() => navigate(route)}
     >
-      <Icon name={icon} />
+      <BfDsIcon name={icon} />
       {name}
     </div>
   );

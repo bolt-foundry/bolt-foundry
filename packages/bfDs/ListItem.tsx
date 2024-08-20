@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import { Icon, IconType } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon, IconType } from "packages/bfDs/BfDsIcon.tsx";
 import { classnames } from "lib/classnames.ts";
 
 type Props = {
@@ -38,7 +38,7 @@ export function ListItem(
       </div>
       {iconRight && (
         <div className="list-item-right">
-          <Icon name={iconRight} color="var(--textSecondary)" />
+          <BfDsIcon name={iconRight} color="var(--textSecondary)" />
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import { Icon } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 const { useEffect, useState, useRef } = React;
@@ -219,7 +219,7 @@ function HscrollVideo(
       >
         <div className="hscroll-reels">Reels</div>
         <div className="hscroll-ig">
-          <Icon name="brand-instagram" color="white" />
+          <BfDsIcon name="brand-instagram" color="white" />
         </div>
         <div className="hscroll-camera"></div>
         <div className="hscroll-post">
@@ -256,14 +256,14 @@ function HscrollVideo(
       >
         <div className="hscroll-video-controls-play" onClick={handlePlay}>
           {shouldPlay
-            ? <Icon name="pause" color="white" size={24} />
-            : <Icon name="play" color="white" size={24} />}
+            ? <BfDsIcon name="pause" color="white" size={24} />
+            : <BfDsIcon name="play" color="white" size={24} />}
         </div>
 
         <div className="hscroll-video-controls-mute" onClick={handleMute}>
           {muted
-            ? <Icon name="muted" color="white" />
-            : <Icon name="unmuted" color="white" />}
+            ? <BfDsIcon name="muted" color="white" />
+            : <BfDsIcon name="unmuted" color="white" />}
         </div>
         <div className="hscroll-video-controls-open">
           <BfDsButton

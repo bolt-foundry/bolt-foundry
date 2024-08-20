@@ -299,7 +299,7 @@ type Props = {
   color?: string;
 };
 
-export function Icon(
+export function BfDsIcon(
   { name, size = 16, color = "var(--text)" }: Props,
 ) {
   return (
@@ -335,12 +335,12 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-export function IconDemo() {
+export function BfDsIconDemo() {
   return (
     <div style={styles.row}>
       {Object.keys(icons).map((icon) => (
         <div key={icon} style={styles.icon}>
-          <Icon name={icon as IconType} size={32} />
+          <BfDsIcon name={icon as IconType} size={32} />
           <div style={styles.text}>{icon}</div>
         </div>
       ))}
