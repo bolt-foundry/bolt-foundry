@@ -33,10 +33,12 @@ type Props = {
   mediaId: string;
   title: string;
   transcriptId: string;
+  title: string;
+  disabled: boolean;
 };
 
 export function DownloadClipButton(
-  { startTime = 0, endTime = 0, mediaId, title, transcriptId }: Props,
+  { startTime = 0, endTime = 0, mediaId, title, transcriptId, disabled }: Props,
 ) {
   const [commit, isInFlight] = useMutation(mutation);
 
@@ -66,6 +68,7 @@ export function DownloadClipButton(
       iconLeft="download"
       showSpinner={isInFlight}
       onClick={handleDownload}
+      disabled={disabled}
     />
   );
 }
