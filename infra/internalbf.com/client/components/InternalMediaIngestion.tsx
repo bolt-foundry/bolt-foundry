@@ -48,7 +48,7 @@ export function InternalMediaIngestion() {
       <div style={{ ...styles.box, borderRight: "none" }}>
         Submit the file for ingestion
         <div style={styles.buttonBox}>
-          <Button text="Ingest file..." />
+          <BfDsButton text="Ingest file..." />
         </div>
       </div>
     </div>

@@ -228,12 +228,12 @@ export function RandallPlaygroundPage() {
               />
             </div>
             <div>
-              <Button
+              <BfDsButton
                 text={googleAccessToken ? "Authorized!!" : "Authorize Google"}
                 onClick={authorizer}
                 disabled={googleAccessToken != null}
               />
-              <Button text={"Open file picker"} onClick={pickFile} disabled={!googleAccessToken} />
+              <BfDsButton text={"Open file picker"} onClick={pickFile} disabled={!googleAccessToken} />
               {tabs[currentTab].header} -{" "}
               {data?.currentViewer?.person?.name ?? "Not set up"}
             </div>

@@ -28,7 +28,7 @@ const columns: Array<Column<DataType>> = [
     renderer: () => (
       <TableCell
         align="center"
-        element={<Button kind="overlay" iconLeft="download" />}
+        element={<BfDsButton kind="overlay" iconLeft="download" />}
       />
     ),
   },
@@ -39,7 +39,7 @@ const columns: Array<Column<DataType>> = [
     renderer: () => (
       <TableCell
         align="center"
-        element={<Button kind="overlay" text="Open" />}
+        element={<BfDsButton kind="overlay" text="Open" />}
       />
     ),
   },

@@ -13,7 +13,7 @@ export function ClipChangesPage({ currentClip, onClose }) {
       <div className="internalMainHeader">
         <div className="internalLogo">
           <div style={{ height: 32 }}>
-            <Button iconLeft="back" onClick={onClose} />
+            <BfDsButton iconLeft="back" onClick={onClose} />
           </div>
           <div>Reflecting on being from Idaho</div>
         </div>

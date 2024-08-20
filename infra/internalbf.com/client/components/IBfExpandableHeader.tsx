@@ -51,7 +51,7 @@ export function IBfExpandableHeader(
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h2 className="stickyHeaderH2">{header}</h2>
           {collapsedButton
-            ? <Button text={collapsedButton} onClick={handleClick} />
+            ? <BfDsButton text={collapsedButton} onClick={handleClick} />
             : null}
         </div>
         {showExpandedComponent && expandedComponent}

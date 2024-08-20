@@ -57,7 +57,7 @@ export function IBfOrganizationsPage() {
     <IBfFrame
       header="Organizations"
       headerAction={
-        <Button
+        <BfDsButton
           text="Add organization"
           kind="secondary"
           onClick={() => showModal(<CreateOrgModal />)}

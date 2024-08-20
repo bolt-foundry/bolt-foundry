@@ -116,7 +116,7 @@ export function PlaygroundPage() {
         ))}
       </div>
       <div className="pageFooter">
-        <Button text="Create list" />
+        <BfDsButton text="Create list" />
       </div>
     </div>
   );

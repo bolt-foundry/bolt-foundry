@@ -165,7 +165,7 @@ function LoginPageContent() {
         {loggedInPerson && (
           <div>
             Logged in as {loggedInPerson.name}. Not you?{" "}
-            <Button
+            <BfDsButton
               showSpinner={logoutInFlight}
               text="Logout"
               onClick={onLogout}
