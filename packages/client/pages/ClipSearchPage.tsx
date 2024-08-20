@@ -6,6 +6,7 @@ import { Search } from "packages/client/components/clipsearch/Search.tsx";
 import { ClipsView } from "packages/client/components/clipsearch/ClipsView.tsx";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
+import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 
 const query = await graphql`
   query ClipSearchPageQuery {
@@ -27,6 +28,7 @@ const query = await graphql`
 
 export function ClipSearchPage() {
   const data = useLazyLoadQuery(query, {});
+  const { navigate } = useRouter();
   const [clips, setClips] = React.useState<string>();
   const sidebarContents = (
     <>
@@ -68,7 +70,7 @@ export function ClipSearchPage() {
           <List>
             <ListItem
               content="Settings"
-              onClick={() => console.log("click")}
+              onClick={() => navigate("/settings")}
             />
           </List>
         }
