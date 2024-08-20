@@ -1,7 +1,7 @@
 import * as React from "react";
 import { getLogger } from "deps.ts";
 import { Input } from "packages/bfDs/Input.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { Toggle } from "packages/bfDs/Toggle.tsx";
 const { useState, createContext, useContext } = React;
 
@@ -128,7 +128,7 @@ function BfDsCheckboxInput({ id, title }: { id: string; title: string }) {
 }
 
 function BfDsSubmitButton({ text }: { text: string }) {
-  return <Button kind="primary" text={text}></Button>;
+  return <BfDsButton kind="primary" text={text} />;
 }
 
 const logger = getLogger(import.meta);

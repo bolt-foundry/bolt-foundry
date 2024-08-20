@@ -2,7 +2,7 @@ import { React } from "deps.ts";
 import { ReactDOMClient } from "packages/client/deps.ts";
 import { Icon, IconType } from "packages/bfDs/Icon.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useCopyToClipboard } from "packages/bfDs/hooks/useCopyToClipboard.ts";
 // import type FeatureMenu from "packages/bfDs/FeatureMenu.tsx";
 

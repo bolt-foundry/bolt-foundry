@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useMutation } from "react-relay";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { graphql } from "packages/client/deps.ts";
 
 const mutation = await graphql`
@@ -44,7 +44,7 @@ export function DownloadClipButton(
     });
   };
   return (
-    <Button
+    <BfDsButton
       iconLeft="download"
       showSpinner={isInFlight}
       onClick={handleDownload}

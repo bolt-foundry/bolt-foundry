@@ -5,7 +5,7 @@ import { Columns, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
 import { graphql } from "packages/client/deps.ts";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { WatchFolderListMenu } from "packages/client/components/settings/WatchFolderListMenu.tsx";
 
 const fragment = await graphql`
@@ -111,7 +111,7 @@ export function WatchFolderList({ settings$key }: Props) {
         )}
       <div className="cs-page-section">
         <Table columns={columns} data={tableData} />
-        <Button
+        <BfDsButton
           disabled={!hasNext}
           kind="outline"
           text={isLoadingNext ? "Loading..." : "Load more"}

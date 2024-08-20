@@ -1,6 +1,6 @@
 
 import { React } from "deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useIntersectionObserver } from "packages/client/hooks/useIntersectionObserver.ts";
 import { classnames } from "lib/classnames.ts";
 
@@ -51,7 +51,7 @@ export function IBfExpandableHeader(
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <h2 className="stickyHeaderH2">{header}</h2>
           {collapsedButton
-            ? <Button text={collapsedButton} onClick={handleClick} />
+            ? <BfDsButton text={collapsedButton} onClick={handleClick} />
             : null}
         </div>
         {showExpandedComponent && expandedComponent}

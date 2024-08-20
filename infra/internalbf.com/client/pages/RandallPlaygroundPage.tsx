@@ -11,7 +11,7 @@ import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPa
 import { RandallPlaygroundPageQuery } from "infra/__generated__/RandallPlaygroundPageQuery.graphql.ts";
 import { RandallPlaygroundPageAddToGoogleMutation } from "infra/__generated__/RandallPlaygroundPageAddToGoogleMutation.graphql.ts";
 import { RandallPlaygroundPagePickFolderMutation } from "infra/__generated__/RandallPlaygroundPagePickFolderMutation.graphql.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
 const { useState } = React;
 
@@ -228,12 +228,12 @@ export function RandallPlaygroundPage() {
               />
             </div>
             <div>
-              <Button
+              <BfDsButton
                 text={googleAccessToken ? "Authorized!!" : "Authorize Google"}
                 onClick={authorizer}
                 disabled={googleAccessToken != null}
               />
-              <Button text={"Open file picker"} onClick={pickFile} disabled={!googleAccessToken} />
+              <BfDsButton text={"Open file picker"} onClick={pickFile} disabled={!googleAccessToken} />
               {tabs[currentTab].header} -{" "}
               {data?.currentViewer?.person?.name ?? "Not set up"}
             </div>

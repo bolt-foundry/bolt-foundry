@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useMutation } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 type Props = {
   removeItem: (resourceId: string) => void;
@@ -47,7 +47,7 @@ export function WatchFolderListMenu({ removeItem, resourceId }: Props) {
     };
 
   return (
-    <Button
+    <BfDsButton
       iconLeft="kebabMenu"
       kind="overlay"
       tooltipMenu={[

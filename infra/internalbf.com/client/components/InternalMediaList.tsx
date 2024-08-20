@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { Progress } from "packages/bfDs/Progress.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { Column, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
 const { useState, useEffect } = React;
@@ -28,7 +28,7 @@ const columns: Array<Column<DataType>> = [
     renderer: () => (
       <TableCell
         align="center"
-        element={<Button kind="overlay" iconLeft="download" />}
+        element={<BfDsButton kind="overlay" iconLeft="download" />}
       />
     ),
   },
@@ -39,7 +39,7 @@ const columns: Array<Column<DataType>> = [
     renderer: () => (
       <TableCell
         align="center"
-        element={<Button kind="overlay" iconLeft="plus" />}
+        element={<BfDsButton kind="overlay" iconLeft="plus" />}
       />
     ),
   },

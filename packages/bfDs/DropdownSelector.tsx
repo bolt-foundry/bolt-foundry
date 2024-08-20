@@ -4,7 +4,7 @@ import {
   TooltipMenu,
   TooltipPosition,
 } from "packages/bfDs/Tooltip.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 const { useEffect, useState } = React;
 
 type Props = {
@@ -58,7 +58,7 @@ export function DropdownSelector(
   const testIdValue = testId ? `${testId}-${!value}` : undefined;
 
   return (
-    <Button
+    <BfDsButton
       disabled={disabled}
       kind="outline"
       text={menuLabel}

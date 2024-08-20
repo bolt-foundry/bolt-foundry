@@ -2,7 +2,7 @@ import { React } from "deps.ts";
 import { graphql, ReactRelay } from "infra/internalbf.com/client/deps.ts";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 const { useLazyLoadQuery, useMutation } = ReactRelay;
 
@@ -116,7 +116,7 @@ export function PlaygroundPage() {
         ))}
       </div>
       <div className="pageFooter">
-        <Button text="Create list" />
+        <BfDsButton text="Create list" />
       </div>
     </div>
   );
