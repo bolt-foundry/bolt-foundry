@@ -2,8 +2,8 @@ import * as React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
-import { Columns, Table } from "packages/bfDs/Table.tsx";
-import { TableCell } from "packages/bfDs/TableCell.tsx";
+import { BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
+import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
 
 const fragment = await graphql`
@@ -54,17 +54,17 @@ export function Media({ settings$key }: Props) {
     {
       title: "File name",
       width: "2fr",
-      renderer: (data) => <TableCell text={data.filename} />,
+      renderer: (data) => <BfDsTableCell text={data.filename} />,
     },
     {
       title: "Transcript words",
       width: "0.5fr",
-      renderer: (data) => <TableCell text={data.words} />,
+      renderer: (data) => <BfDsTableCell text={data.words} />,
     },
     {
       title: "Tokens",
       width: "0.5fr",
-      renderer: (data) => <TableCell text={data.tokens} />,
+      renderer: (data) => <BfDsTableCell text={data.tokens} />,
     },
   ];
 
@@ -73,7 +73,7 @@ export function Media({ settings$key }: Props) {
       <div className="cs-page-content">
         <div className="cs-page-section">
           <div className="cs-page-section-title">Media</div>
-          <Table columns={columns} data={tableData} />
+          <BfDsTable columns={columns} data={tableData} />
         </div>
       </div>
     </div>
