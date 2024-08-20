@@ -82,7 +82,7 @@ export function Clip(
                 mediaId={mediaId}
                 title={titleText}
                 transcriptId={transcriptId}
-                disabled={!data.googleAuthAccessToken}
+                disabled={!data?.googleAuthAccessToken}
               />
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
               {

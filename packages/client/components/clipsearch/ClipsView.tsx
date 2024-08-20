@@ -42,7 +42,7 @@ export function ClipsView({ clips$key, clips }: Props) {
   if (clips === undefined) {
     return (
       <>
-        {!data.googleAuthAccessToken &&
+        {!data?.googleAuthAccessToken &&
           <GoogleAuthSection />}
         <Nux />
       </>
@@ -58,7 +58,7 @@ export function ClipsView({ clips$key, clips }: Props) {
 
   return (
     <div className="cs-clipsView">
-      {!data.googleAuthAccessToken &&
+      {!data?.googleAuthAccessToken &&
         <GoogleAuthSection />}
       {parsedClips?.anecdotes?.map((clip) => (
         <Clip
