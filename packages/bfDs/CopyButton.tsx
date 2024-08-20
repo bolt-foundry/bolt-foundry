@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useCopyToClipboard } from "packages/bfDs/hooks/useCopyToClipboard.ts";
 type Props = {
   textToCopy: string;
@@ -17,5 +17,5 @@ export function CopyButton({ textToCopy, buttonText = "Copy" }: Props) {
 
   const text = copied ? "Copied!" : buttonText;
 
-  return <Button kind="overlay" text={text} onClick={handleCopy} />;
+  return <BfDsButton kind="overlay" text={text} onClick={handleCopy} />;
 }

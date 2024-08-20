@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { colors, fonts } from "packages/bfDs/const.tsx";
 const styles = {

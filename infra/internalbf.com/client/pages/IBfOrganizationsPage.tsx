@@ -6,7 +6,7 @@ import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { IBfOrganizationsPage_BfOrganization$key } from "infra/__generated__/IBfOrganizationsPage_BfOrganization.graphql.ts";
 
 import { IBfOrganizationsPageQuery } from "infra/__generated__/IBfOrganizationsPageQuery.graphql.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { Example } from "packages/bfDs/BfDsForm.tsx";
 

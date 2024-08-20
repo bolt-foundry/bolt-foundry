@@ -1,5 +1,5 @@
 import { React, ReactRelay } from "deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import type { TooltipMenu } from "packages/bfDs/Tooltip.tsx";
 // import { captureEvent } from "packages/events/mod.ts";
 // import {
@@ -153,7 +153,7 @@ export function UserProfile() {
   ] as TooltipMenu[];
 
   return (
-    <Button
+    <BfDsButton
       kind="secondary"
       iconLeft={"friend"}
       size="medium"
