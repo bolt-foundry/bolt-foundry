@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { Icon } from "packages/bfDs/Icon.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 const { useEffect, useState, useRef } = React;
 
@@ -266,7 +266,7 @@ function HscrollVideo(
             : <Icon name="unmuted" color="white" />}
         </div>
         <div className="hscroll-video-controls-open">
-          <Button
+          <BfDsButton
             kind="outline"
             onClick={() => handleOpenVideo()}
             size="small"

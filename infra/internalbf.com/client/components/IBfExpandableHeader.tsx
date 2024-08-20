@@ -1,6 +1,6 @@
 
 import { React } from "deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useIntersectionObserver } from "packages/client/hooks/useIntersectionObserver.ts";
 import { classnames } from "lib/classnames.ts";
 

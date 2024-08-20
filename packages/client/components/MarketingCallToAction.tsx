@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 
 export function MarketingCallToAction() {
@@ -10,7 +10,7 @@ export function MarketingCallToAction() {
       <div className="marketing-text">
         Contact us for pricing or to learn more about Bolt Foundry.
       </div>
-      <Button
+      <BfDsButton
         text="Contact us!"
         type="submit"
         size="xlarge"

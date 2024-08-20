@@ -66,7 +66,7 @@ export function ButtonConfirmation({
   }
   return (
     <div className="confirmationBase" style={styles.confirmationBase}>
-      <Button
+      <BfDsButton
         iconLeft={icon}
         kind="alert"
         onClick={() => setShowConfirmation(true)}
@@ -75,14 +75,14 @@ export function ButtonConfirmation({
       />
       {showConfirmation && (
         <div style={styles.confirmation}>
-          <Button
+          <BfDsButton
             iconLeft="back"
             kind="success"
             onClick={() => setShowConfirmation(false)}
             size={size}
             testId={`${testId}-cancel`}
           />
-          <Button
+          <BfDsButton
             iconLeft="check"
             kind="alert"
             onClick={onConfirm}
