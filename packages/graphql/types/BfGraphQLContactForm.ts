@@ -1,5 +1,6 @@
 // packages/graphql/types/BfGraphQLContactForm.ts
 
+import { responsePathAsArray } from "https://esm.sh/v135/graphql@16.8.1/index.d.ts";
 import {
   inputObjectType,
   mutationField,
@@ -29,33 +30,79 @@ export const SubmitContactFormPayload = objectType({
     t.string("message");
   },
 });
+const NOTION_API_KEY = Deno.env.get("NOTION_API_KEY");
 
+const headers = {
+  "Authorization": `Bearer ${NOTION_API_KEY}`,
+  "Content-Type": "application/json",
+  "Notion-Version": "2022-06-28",
+};
 // Define the mutation field
 export const submitContactFormMutation = mutationField("submitContactForm", {
   type: SubmitContactFormPayload,
   args: {
     input: nonNull(SubmitContactFormInput),
   },
+
   resolve: async (_root, { input }, { bfCurrentViewer }: GraphQLContext) => {
     try {
-      await fetch("https://sheetdb.io/api/v1/j4zqewe3isc9r", {
-        method: "POST",
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://api.notion.com/v1/pages",
+        {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            "parent": {
+              "database_id": `7f2854339d854895bc967959c09c3f69`,
+            },
+            "properties": {
+              "name": {
+                "title": [
+                  {
+                    "text": {
+                      "content": input.name,
+                    },
+                  },
+                ],
+              },
+              "phone": {
+                "rich_text": [
+                  {
+                    "text": {
+                      "content": input.phone,
+                    }
+                  }
+                ]
+              },
+              "company": {
+                "rich_text": [
+                  {
+                    "text": {
+                      "content": input.company,
+                    },
+                  },
+                ],
+              },
+              "email": {
+                "email": input.email,
+              },
+              "message": {
+                "rich_text": [
+                  {
+                    "text": {
+                      "content": input.message,
+                    },
+                  },
+                ],
+              },
+            },
+          }),
         },
-        body: JSON.stringify({
-          data: [
-            input,
-          ],
-        }),
-      });
-      // Here, you would add logic to process the form submission
-      // For demonstration purposes, we'll simulate a successful submission
-      // Replace this with your actual implementation
+      );
+      const data = await response.json();
       return {
         success: true,
-        message: "Form submitted successfully.",
+        message: data.message,
       };
     } catch (error) {
       console.error("Form submission error:", error);
