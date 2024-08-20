@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { ReactDOMClient } from "packages/client/deps.ts";
-import { Icon, IconType } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useCopyToClipboard } from "packages/bfDs/hooks/useCopyToClipboard.ts";
@@ -13,7 +13,7 @@ export type TooltipMenu = {
   button?: React.ReactElement<typeof Button>;
   closeOnClick?: boolean;
   disabled?: boolean;
-  icon?: IconType;
+  icon?: BfDsIconType;
   kind?: string;
   label?: string;
   onClick?: () => void;
@@ -289,7 +289,7 @@ function MenuItem({ menuItem, hovering }: MenuItemProps) {
     >
       {menuItem.icon && !menuItem.showSpinner && (
         <div className="tooltip-menu-item-icon">
-          <Icon name={menuItem.icon} size={12} />
+          <BfDsIcon name={menuItem.icon} size={12} />
         </div>
       )}
       {menuItem.showSpinner && (
@@ -299,7 +299,7 @@ function MenuItem({ menuItem, hovering }: MenuItemProps) {
       )}
       <div style={styles.menuItemRow}>
         {menuItem.selected
-          ? <Icon color={"var(--success)"} name="check" size={12} />
+          ? <BfDsIcon color={"var(--success)"} name="check" size={12} />
           : <div style={styles.checkPlaceholder} />}
         <div className="tooltip-menu-item-label" style={styles.menuItemText}>
           {menuItem.label}
@@ -470,7 +470,7 @@ export function Tooltip(
             <div className="tooltip-text">
               {canCopy && (
                 <span style={{ display: "inline", marginRight: 8 }}>
-                  <Icon
+                  <BfDsIcon
                     color={copiedText ? "var(--success)" : "white"}
                     name={copiedText ? "check" : "clipboard"}
                     size={12}
