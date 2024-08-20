@@ -13,6 +13,7 @@ const query = await graphql`
       person {
         id
         ...ClipsView_bfPerson
+        ...Clip_bfPerson
       }
       organization {
         id
