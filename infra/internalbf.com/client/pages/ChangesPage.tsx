@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
-import { Column, Table } from "packages/bfDs/Table.tsx";
-import { TableCell } from "packages/bfDs/TableCell.tsx";
+import { BfDsColumn, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
+import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 
@@ -10,11 +10,11 @@ type DataType = {
   numberOfChanges: number;
 };
 
-const columns: Array<Column<DataType>> = [
-  { width: "1fr", renderer: (data) => <TableCell text={data.title} /> },
+const columns: Array<BfDsColumn<DataType>> = [
+  { width: "1fr", renderer: (data) => <BfDsTableCell text={data.title} /> },
   {
     width: "30px",
-    renderer: (data) => <TableCell
+    renderer: (data) => <BfDsTableCell
       align="center"
       text={data.numberOfChanges}
     />,
@@ -22,7 +22,7 @@ const columns: Array<Column<DataType>> = [
   {
     width: "30px",
     renderer: (data) => (
-      <TableCell
+      <BfDsTableCell
         align="center"
         element={<BfDsIcon name="down-arrow" />}
         /* this icon is wrong and needs to open the ClipChangesPage for said clip */
@@ -55,7 +55,7 @@ export function ChangesPage() {
         </div>
       </div>
       <div className="internalMainContent" style={{ flex: "auto" }}>
-        <Table columns={columns} data={fakeData} />
+        <BfDsTable columns={columns} data={fakeData} />
       </div>
       <div className="internalMobileTabs">
         <div className="internalMobileTab" onClick={() => navigate("/qc")}>
