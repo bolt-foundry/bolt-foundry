@@ -1,8 +1,8 @@
 import { React } from "deps.ts";
 import { Progress } from "packages/bfDs/Progress.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { Column, Table } from "packages/bfDs/Table.tsx";
-import { TableCell } from "packages/bfDs/TableCell.tsx";
+import { BfDsColumn, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
+import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 const { useState, useEffect } = React;
 
 type DataType = {
@@ -10,23 +10,23 @@ type DataType = {
   clips: number;
 }
 
-const columns: Array<Column<DataType>> = [
+const columns: Array<BfDsColumn<DataType>> = [
   {
     title: "Project Title",
     width: "2fr",
-    renderer: (data) => <TableCell text={data.title} />,
+    renderer: (data) => <BfDsTableCell text={data.title} />,
   },
   {
     title: "Number of Clips",
     width: "1fr",
-    renderer: (data) => <TableCell text={data.clips} />,
+    renderer: (data) => <BfDsTableCell text={data.clips} />,
   },
   {
     title: "Download Media",
     width: "80px",
     align: "center",
     renderer: () => (
-      <TableCell
+      <BfDsTableCell
         align="center"
         element={<BfDsButton kind="overlay" iconLeft="download" />}
       />
@@ -37,13 +37,13 @@ const columns: Array<Column<DataType>> = [
     width: "80px",
     align: "center",
     renderer: () => (
-      <TableCell
+      <BfDsTableCell
         align="center"
         element={<BfDsButton kind="overlay" text="Open" />}
       />
     ),
   },
-  { width: "60px", renderer: () => <TableCell align="center" text="•••" /> },
+  { width: "60px", renderer: () => <BfDsTableCell align="center" text="•••" /> },
 ];
 const fakeData = [
   { title: "Project 1", clips: 12 },
@@ -53,5 +53,5 @@ const fakeData = [
 ];
 
 export function InternalProjectsList() {
-  return <Table columns={columns} data={fakeData} />;
+  return <BfDsTable columns={columns} data={fakeData} />;
 }
