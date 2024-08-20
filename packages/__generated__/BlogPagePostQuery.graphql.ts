@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<55a7d9ff19bac71291bc81f1683ff3f7>>
+ * @generated SignedSource<<bb7dacc38bb9f3f9ab14f7431ff3ad3b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,7 +17,6 @@ export type BlogPagePostQuery$data = {
     readonly blog: {
       readonly posts: {
         readonly nodes: ReadonlyArray<{
-          readonly content: string | null | undefined;
           readonly title: string | null | undefined;
         } | null | undefined> | null | undefined;
       } | null | undefined;
@@ -77,13 +76,6 @@ v1 = {
               "args": null,
               "kind": "ScalarField",
               "name": "title",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "content",
               "storageKey": null
             }
           ],
@@ -146,16 +138,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "47f05f72c02533ee5296159a3bb5c0cb",
+    "cacheID": "ea5d140fc6a74d607394e73e80132382",
     "id": null,
     "metadata": {},
     "name": "BlogPagePostQuery",
     "operationKind": "query",
-    "text": "query BlogPagePostQuery(\n  $slug: String!\n) {\n  currentViewer {\n    __typename\n    blog {\n      posts(slug: $slug, first: 1) {\n        nodes {\n          title\n          content\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query BlogPagePostQuery(\n  $slug: String!\n) {\n  currentViewer {\n    __typename\n    blog {\n      posts(slug: $slug, first: 1) {\n        nodes {\n          title\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "17f7004f5008e3bc9f485b9b5e15c54a";
+(node as any).hash = "8685ad0b8ba83e5a477ae70fa33f037e";
 
 export default node;

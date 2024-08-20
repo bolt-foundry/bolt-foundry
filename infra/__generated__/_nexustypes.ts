@@ -171,7 +171,7 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   BlogPost: { // root type
-    content?: string | null; // String
+    id?: string | null; // String
     slug?: string | null; // String
     title?: string | null; // String
   }
@@ -180,6 +180,20 @@ export interface NexusGenObjects {
     edges?: Array<NexusGenRootTypes['BlogPostEdge'] | null> | null; // [BlogPostEdge]
     nodes?: Array<NexusGenRootTypes['BlogPost'] | null> | null; // [BlogPost]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BlogPostContentBlock: { // root type
+    id?: string | null; // String
+    type?: string | null; // String
+  }
+  BlogPostContentBlockConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['BlogPostContentBlockEdge'] | null> | null; // [BlogPostContentBlockEdge]
+    nodes?: Array<NexusGenRootTypes['BlogPostContentBlock'] | null> | null; // [BlogPostContentBlock]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BlogPostContentBlockEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BlogPostContentBlock'] | null; // BlogPostContentBlock
   }
   BlogPostEdge: { // root type
     cursor: string; // String!
@@ -354,7 +368,8 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   BlogPost: { // field return type
-    content: string | null; // String
+    content: NexusGenRootTypes['BlogPostContentBlockConnection'] | null; // BlogPostContentBlockConnection
+    id: string | null; // String
     slug: string | null; // String
     title: string | null; // String
   }
@@ -363,6 +378,20 @@ export interface NexusGenFieldTypes {
     edges: Array<NexusGenRootTypes['BlogPostEdge'] | null> | null; // [BlogPostEdge]
     nodes: Array<NexusGenRootTypes['BlogPost'] | null> | null; // [BlogPost]
     pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BlogPostContentBlock: { // field return type
+    id: string | null; // String
+    type: string | null; // String
+  }
+  BlogPostContentBlockConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['BlogPostContentBlockEdge'] | null> | null; // [BlogPostContentBlockEdge]
+    nodes: Array<NexusGenRootTypes['BlogPostContentBlock'] | null> | null; // [BlogPostContentBlock]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BlogPostContentBlockEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BlogPostContentBlock'] | null; // BlogPostContentBlock
   }
   BlogPostEdge: { // field return type
     cursor: string; // String!
@@ -561,7 +590,8 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   BlogPost: { // field return type name
-    content: 'String'
+    content: 'BlogPostContentBlockConnection'
+    id: 'String'
     slug: 'String'
     title: 'String'
   }
@@ -570,6 +600,20 @@ export interface NexusGenFieldTypeNames {
     edges: 'BlogPostEdge'
     nodes: 'BlogPost'
     pageInfo: 'PageInfo'
+  }
+  BlogPostContentBlock: { // field return type name
+    id: 'String'
+    type: 'String'
+  }
+  BlogPostContentBlockConnection: { // field return type name
+    count: 'Int'
+    edges: 'BlogPostContentBlockEdge'
+    nodes: 'BlogPostContentBlock'
+    pageInfo: 'PageInfo'
+  }
+  BlogPostContentBlockEdge: { // field return type name
+    cursor: 'String'
+    node: 'BlogPostContentBlock'
   }
   BlogPostEdge: { // field return type name
     cursor: 'String'
@@ -688,6 +732,14 @@ export interface NexusGenArgTypes {
       first?: number | null; // Int
       last?: number | null; // Int
       slug?: string | null; // String
+    }
+  }
+  BlogPost: {
+    content: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
     }
   }
   Mutation: {
