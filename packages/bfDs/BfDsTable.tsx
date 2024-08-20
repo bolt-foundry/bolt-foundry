@@ -1,13 +1,13 @@
 import { React } from "deps.ts";
-import { TableCell } from "packages/bfDs/TableCell.tsx";
+import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 
 // Utility function to create unique keys for React elements
 const createKey = (key: unknown, index: unknown) => `${key}-${index}`;
 
 type Data = string | number | undefined;
 type RowData = Record<string, Data> | Data;
-export type Columns<T = RowData> = Array<Column<T>>;
-export type Column<T = RowData> = {
+export type BfDsColumns<T = RowData> = Array<BfDsColumn<T>>;
+export type BfDsColumn<T = RowData> = {
   title?: string;
   width?: string;
   align?: "left" | "center" | "right";
@@ -19,7 +19,7 @@ type Props<T = RowData> = {
   data: Array<T>;
 };
 
-export function Table<T = RowData>({ columns, data }: Props<T>) {
+export function BfDsTable<T = RowData>({ columns, data }: Props<T>) {
   const columnWidths = columns.reduce((string, column) => {
     const width = column.width ?? "auto";
     return string + `${width} `;
@@ -55,7 +55,7 @@ export function Table<T = RowData>({ columns, data }: Props<T>) {
               >
                 {column.renderer
                   ? column.renderer(row)
-                  : <TableCell text={row as Data} />}
+                  : <BfDsTableCell text={row as Data} />}
               </div>
             ))}
           </div>
@@ -75,15 +75,15 @@ type ExampleData = {
 export function Example () {
   const columns: Columns<ExampleData> = [{
    title: "Name",
-   renderer: (data) => <TableCell text={data.name} />,
+   renderer: (data) => <BfDsTableCell text={data.name} />,
   },
   {
    title: "Age",
-   renderer: (data) => <TableCell text={data.age} />,
+   renderer: (data) => <BfDsTableCell text={data.age} />,
   },
   {
    title: "Email",
-   renderer: (data) => <TableCell text={data.email} />,
+   renderer: (data) => <BfDsTableCell text={data.email} />,
   }];
   const data = [
     { name: "John Doe", age: 28, email: "john.doe@example.com" },
@@ -94,7 +94,7 @@ export function Example () {
   return (
     <div>
       <h1>Dynamic Table Example</h1>
-      <Table columns={columns} data={data} />
+      <BfDsTable columns={columns} data={data} />
     </div>
   );
 };

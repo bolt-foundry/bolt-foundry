@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
-import { Table } from "packages/bfDs/Table.tsx";
-import { TableCell } from "packages/bfDs/TableCell.tsx";
+import { Table } from "packages/bfDs/BfDsTable.tsx";
+import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 import { CopyButton } from "packages/bfDs/CopyButton.tsx";
