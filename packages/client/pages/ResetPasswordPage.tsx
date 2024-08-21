@@ -1,7 +1,7 @@
 import { React, ReactRelay } from "deps.ts";
 import { Link } from "packages/client/components/Link.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { Input } from "packages/bfDs/Input.tsx";
+import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { Password } from "packages/bfDs/Password.tsx";
 
@@ -127,7 +127,7 @@ export const PasswordResetForm = () => {
         Please enter your email address to reset your password.
       </div>
       <form onSubmit={handleForgotPassword}>
-        <Input
+        <BfDsInput
           label="Email"
           type="email"
           value={email}
@@ -167,7 +167,7 @@ export const PasswordResetForm = () => {
             your new password.
           </div>
           <form onSubmit={handleConfirmForgotPassword}>
-            <Input
+            <BfDs
               meta="Click 'Resend code' above if you didn't receive it."
               label="Verification code"
               type="text"
