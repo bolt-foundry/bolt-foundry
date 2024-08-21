@@ -4,7 +4,7 @@ import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { classnames } from "lib/classnames.ts";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
-import { Tooltip } from "packages/bfDs/Tooltip.tsx";
+import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
 const { useState } = React;
 
@@ -326,7 +326,7 @@ export function QcPage() {
           </div>
         </div>
         <div className="internalMainFilters">
-          <Tooltip
+          <BfDsTooltip
             menu={[
               { label: "All people", onClick: () => setOwnerFilter(null) },
             ].concat(
@@ -344,8 +344,8 @@ export function QcPage() {
               {ownerFilter ?? "All people"}
               <BfDsIcon name="arrowDown" size={12} />
             </div>
-          </Tooltip>
-          <Tooltip
+          </BfDsTooltip>
+          <BfDsTooltip
             menu={[
               { label: "All clients", onClick: () => setClientFilter(null) },
             ].concat(
@@ -363,7 +363,7 @@ export function QcPage() {
               {clientFilter ?? "All clients"}
               <BfDsIcon name="arrowDown" size={12} />
             </div>
-          </Tooltip>
+          </BfDsTooltip>
         </div>
         <div className="internalMainContent" style={{ flex: "auto" }}>
           <List separator={true}>
