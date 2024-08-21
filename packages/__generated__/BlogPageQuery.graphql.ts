@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4c3e2dcd8d995f3dd4a6ad16a882c64f>>
+ * @generated SignedSource<<4ae21b0720b368cbb76fe2f6ce053ebb>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,10 @@ export type BlogPageQuery$data = {
   readonly currentViewer: {
     readonly blog: {
       readonly posts: {
-        readonly count: number | null | undefined;
+        readonly nodes: ReadonlyArray<{
+          readonly slug: string | null | undefined;
+          readonly title: string | null | undefined;
+        } | null | undefined> | null | undefined;
       } | null | undefined;
     } | null | undefined;
   } | null | undefined;
@@ -50,8 +53,26 @@ var v0 = {
         {
           "alias": null,
           "args": null,
-          "kind": "ScalarField",
-          "name": "count",
+          "concreteType": "BlogPost",
+          "kind": "LinkedField",
+          "name": "nodes",
+          "plural": true,
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "title",
+              "storageKey": null
+            },
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "slug",
+              "storageKey": null
+            }
+          ],
           "storageKey": null
         }
       ],
@@ -111,16 +132,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "84a1e06ef721cdd2f48b4214aaf42994",
+    "cacheID": "308140a7271af5a5f71519b511639ced",
     "id": null,
     "metadata": {},
     "name": "BlogPageQuery",
     "operationKind": "query",
-    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10) {\n        count\n      }\n    }\n  }\n}\n"
+    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10) {\n        nodes {\n          title\n          slug\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b844422ff45bb736a256771b0f97d368";
+(node as any).hash = "28e7bee42bcdbaff9bf97fc1270e7635";
 
 export default node;
