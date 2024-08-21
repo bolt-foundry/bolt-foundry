@@ -7,6 +7,7 @@ import { ClipsView } from "packages/client/components/clipsearch/ClipsView.tsx";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
+import { ClipsViewNullState } from "packages/client/components/clipsearch/ClipsViewNullState.tsx";
 
 const query = await graphql`
   query ClipSearchPageQuery {
@@ -17,6 +18,7 @@ const query = await graphql`
         ...Clip_bfPerson
       }
       organization {
+        ...WatchFolderList_bfOrganization
         id
         media (first: 1) {
           count
@@ -30,6 +32,7 @@ export function ClipSearchPage() {
   const { navigate } = useRouter();
   const data = useLazyLoadQuery(query, {});
   const [clips, setClips] = React.useState<string>();
+  const count = data?.currentViewer?.organization?.media?.count ?? 0;
   const sidebarContents = (
     <>
       <List collapsible={true} header="Lists">
@@ -77,11 +80,15 @@ export function ClipSearchPage() {
         header="Clip search"
       />
       <div className="cs-main">
-        <Search
-          setClips={setClips}
-          count={data?.currentViewer?.organization?.media?.count ?? 0}
-        />
-        <ClipsView clips={clips} clips$key={data?.currentViewer?.person} />
+        <Search setClips={setClips} />
+        {clips
+          ? <ClipsView clips={clips} clips$key={data?.currentViewer?.person} />
+          : (
+            <ClipsViewNullState
+              count={count}
+              settings$key={data?.currentViewer?.organization}
+            />
+          )}
       </div>
     </div>
   );

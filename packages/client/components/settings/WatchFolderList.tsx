@@ -34,7 +34,7 @@ const fragment = await graphql`
 `;
 
 type Props = {
-  settings$key: SettingsPageQuery$data | null;
+  settings$key: SettingsPageQuery$data | ClipSearchPageQuery$data | null;
 };
 
 type Data = {
