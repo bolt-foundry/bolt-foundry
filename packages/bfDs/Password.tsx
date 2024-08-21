@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
-import { Tooltip } from "packages/bfDs/Tooltip.tsx";
-import { Input } from "packages/bfDs/Input.tsx";
+import { BfDsTooltip } from "packages/bfDs/Tooltip.tsx";
+import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 
 const { useEffect } = React;
 
@@ -113,7 +113,7 @@ export function Password(
     </>
   );
   return (
-    <Input
+    <BfDsInput
       label={label}
       meta={passwordMeta}
       type="password"
