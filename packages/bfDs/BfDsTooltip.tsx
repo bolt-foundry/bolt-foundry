@@ -9,7 +9,7 @@ import { useCopyToClipboard } from "packages/bfDs/hooks/useCopyToClipboard.ts";
 const { createPortal } = ReactDOMClient;
 const { useEffect, useMemo, useRef, useState } = React;
 
-export type TooltipMenu = {
+export type BfDsTooltipMenu = {
   button?: React.ReactElement<typeof Button>;
   closeOnClick?: boolean;
   disabled?: boolean;
@@ -22,11 +22,11 @@ export type TooltipMenu = {
   xstyle?: React.CSSProperties;
   testId?: string; // used to identify the menu item in posthog
 };
-export type TooltipPosition = "top" | "bottom" | "left" | "right";
-export type TooltipJustification = "center" | "end" | "start";
+export type BfDsTooltipPosition = "top" | "bottom" | "left" | "right";
+export type BfDsTooltipJustification = "center" | "end" | "start";
 type Props = {
   text?: string | React.ReactNode;
-  menu?: unknown; //TooltipMenu[] | React.ReactElement<typeof FeatureMenu>;
+  menu?: unknown; //BfDsTooltipMenu[] | React.ReactElement<typeof FeatureMenu>;
   position?: TooltipPosition; // default: "top"
   justification?: TooltipJustification; // default: "center"
   delay?: number; // default: 1000
@@ -253,7 +253,7 @@ function createTooltipStyle(
 }
 
 type MenuItemProps = {
-  menuItem: TooltipMenu;
+  menuItem: BfDsTooltipMenu;
   hovering: boolean;
 };
 function MenuItem({ menuItem, hovering }: MenuItemProps) {
@@ -310,7 +310,7 @@ function MenuItem({ menuItem, hovering }: MenuItemProps) {
 }
 
 type MenuProps = {
-  menu: unknown; //TooltipMenu[] | React.ReactElement<typeof FeatureMenu> | undefined;
+  menu: unknown; //BfDsTooltipMenu[] | React.ReactElement<typeof FeatureMenu> | undefined;
 };
 function Menu({ menu }: MenuProps) {
   const [hovering, setHovering] = useState<number | null>(null);
@@ -333,7 +333,7 @@ function Menu({ menu }: MenuProps) {
   return <div className="tooltip-menu">{menu}</div>;
 }
 
-export function Tooltip(
+export function BfDsTooltip(
   {
     text,
     menu,

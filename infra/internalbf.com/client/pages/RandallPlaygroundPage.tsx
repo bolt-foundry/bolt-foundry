@@ -2,7 +2,7 @@ import { React } from "deps.ts";
 import {useMutation, useLazyLoadQuery} from "react-relay";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
-import { Tooltip } from "packages/bfDs/Tooltip.tsx";
+import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
@@ -240,7 +240,7 @@ export function RandallPlaygroundPage() {
           </div>
         </div>
         <div className="internalMainFilters">
-          <Tooltip
+          <BfDsTooltip
             menu={[
               { label: "All people", onClick: () => setOwnerFilter(null) },
             ]}
@@ -251,8 +251,8 @@ export function RandallPlaygroundPage() {
               {ownerFilter ?? "All people"}
               <BfDsIcon name="arrowDown" size={12} />
             </div>
-          </Tooltip>
-          <Tooltip
+          </BfDsTooltip>
+          <BfDsTooltip
             menu={[
               { label: "All clients", onClick: () => setClientFilter(null) },
             ]}
@@ -263,7 +263,7 @@ export function RandallPlaygroundPage() {
               {clientFilter ?? "All clients"}
               <BfDFsIcon name="arrowDown" size={12} />
             </div>
-          </Tooltip>
+          </BfDsTooltip>
         </div>
         <div className="internalMainContent" style={{ flex: "auto" }}>
           <List separator={true}>

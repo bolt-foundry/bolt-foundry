@@ -3,11 +3,11 @@ import { fonts } from "packages/bfDs/const.tsx";
 import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { Link } from "packages/client/components/Link.tsx";
 import {
-  Tooltip,
-  TooltipJustification,
-  TooltipMenu,
-  TooltipPosition,
-} from "packages/bfDs/Tooltip.tsx";
+  BfDsTooltip,
+  BfDsTooltipJustification,
+  BfDsTooltipMenu,
+  BfDsTooltipPosition,
+} from "packages/bfDs/BfDsTooltip.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
 import { Progress } from "packages/bfDs/Progress.tsx";
 // import FeatureMenu from "packages/client/components/FeatureMenu.tsx";
@@ -56,10 +56,10 @@ type ButtonType = {
   testId?: string; // used to identify the button in posthog
   text?: string | null;
   tooltip?: string | React.ReactNode;
-  tooltipMenu?: TooltipMenu[]; // | React.ReactElement<typeof FeatureMenu>;
-  tooltipMenuDropdown?: TooltipMenu[];
-  tooltipPosition?: TooltipPosition;
-  tooltipJustification?: TooltipJustification;
+  tooltipMenu?: BfDsTooltipMenu[]; // | React.ReactElement<typeof FeatureMenu>;
+  tooltipMenuDropdown?: BfDsTooltipMenu[];
+  tooltipPosition?: BfDsTooltipPosition;
+  tooltipJustification?: BfDsTooltipJustification;
   type?: "button" | "submit" | "reset";
   kind?: ButtonKind;
   role?: string;
@@ -497,14 +497,14 @@ export function BfDsButton({
   }
 
   return tooltip || tooltipMenu || tooltipMenuDropdown ? (
-    <Tooltip
+    <BfDsTooltip
       menu={tooltipMenu ?? tooltipMenuDropdown}
       justification={tooltipJustification}
       position={tooltipPosition}
       text={tooltip}
     >
       {buttonToRender}
-    </Tooltip>
+    </BfDsTooltip>
   ) : (
     buttonToRender
   );
