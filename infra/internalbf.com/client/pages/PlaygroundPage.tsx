@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
 import { graphql, ReactRelay } from "infra/internalbf.com/client/deps.ts";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
-import { Input } from "packages/bfDs/Input.tsx";
+import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 const { useLazyLoadQuery, useMutation } = ReactRelay;
@@ -72,7 +72,7 @@ export function PlaygroundPage() {
           justification="start"
         />
         {aiModel === "custom" && (
-          <input
+          <BfDsInput
             type="text"
             style={{ ...mainChildStyle, marginTop: "10px", padding: "10px" }}
             placeholder="Enter custom model"
@@ -81,7 +81,7 @@ export function PlaygroundPage() {
         )}
         <div style={{ flex: 1 }}>
           <form onSubmit={handleSubmit}>
-            <Input
+            <BfDsInput
               placeholder="Search for clips"
               value={prompt}
               showSpinner={isInFlight}
