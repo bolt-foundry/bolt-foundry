@@ -1,6 +1,5 @@
 import { React } from "deps.ts";
 import { Clip } from "packages/client/components/clipsearch/Clip.tsx";
-import { Nux } from "packages/client/components/clipsearch/Nux.tsx";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
 import { isValidJSON } from "packages/lib/jsonUtils.ts";
 import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFilePicker.tsx";
@@ -44,7 +43,6 @@ export function ClipsView({ clips$key, clips }: Props) {
       <>
         {data?.googleAuthAccessToken == null &&
           <GoogleAuthSection />}
-        <Nux />
       </>
     );
   }
@@ -75,7 +73,6 @@ export function ClipsView({ clips$key, clips }: Props) {
           endIndex={clip.endIndex}
           startTime={clip.startTime}
           endTime={clip.endTime}
-          notAuthed={data.googleAuthAccessToken}
           clips$key={clips$key}
         />
       ))}
