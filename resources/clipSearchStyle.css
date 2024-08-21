@@ -71,6 +71,16 @@
   font-weight: 700;
 }
 
+.cs-page-section-title-highlight {
+  color: var(--secondaryColor);
+  cursor: pointer;
+}
+
+.cs-page-section-title-highlight:hover {
+  text-decoration: underline;
+  color: var(--fourtharyColor);
+}
+
 .cs-logo {
   width: 100%;
 }

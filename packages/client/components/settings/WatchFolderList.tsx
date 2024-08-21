@@ -1,6 +1,7 @@
 import { React, ReactRelay } from "deps.ts";
 import { usePaginationFragment } from "react-relay";
 import { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery.graphql.ts";
+import { ClipSearchPageQuery$data } from "packages/__generated__/ClipSearchPageQuery.graphql.ts";
 import { Columns, Table } from "packages/bfDs/Table.tsx";
 import { TableCell } from "packages/bfDs/TableCell.tsx";
 import { graphql } from "packages/client/deps.ts";
@@ -34,7 +35,7 @@ const fragment = await graphql`
 `;
 
 type Props = {
-  settings$key: SettingsPageQuery$data | null;
+  settings$key: SettingsPageQuery$data | ClipSearchPageQuery$data | null;
 };
 
 type Data = {
