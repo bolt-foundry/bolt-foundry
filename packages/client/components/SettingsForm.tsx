@@ -19,7 +19,7 @@ import {
 import { hexToRgb, rgbToHex } from "lib/color.ts";
 import { imagePreloads } from "packages/vcs/preloads.js";
 import { classnames } from "lib/classnames.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 const { useFragment } = ReactRelay;
 export type SettingRowProps = {
@@ -93,7 +93,7 @@ const Section = (
         {title && <div className={titleClasses}>{title}</div>}
         {isCollapsible && (collapsed
           ? (
-            <Button
+            <BfDsButton
               iconLeft="down-arrow"
               kind="outline"
               onClick={() => setCollapsed(false)}
@@ -101,7 +101,7 @@ const Section = (
             />
           )
           : (
-            <Button
+            <BfDsButton
               iconLeft="down-arrow"
               kind="filledSuccess"
               onClick={() => setCollapsed(true)}

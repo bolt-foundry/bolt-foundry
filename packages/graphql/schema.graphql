@@ -408,7 +408,7 @@ type Mutation {
   createTranscript(filename: String!, words: String!): BfMediaTranscript
   deleteGoogleDriveResource(resourceId: String): DeleteMutationPayload
   deleteTranscript(id: String!): BfMediaTranscript
-  downloadClip(endTime: Float!, mediaId: String!, startTime: Float!, transcriptId: String!): DownloadMutationPayload
+  downloadClip(endTime: Float!, mediaId: String!, startTime: Float!, title: String!, transcriptId: String!): DownloadMutationPayload
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer

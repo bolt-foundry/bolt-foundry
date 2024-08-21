@@ -1,9 +1,18 @@
 import { React } from "deps.ts";
-import { Tooltip } from "packages/bfDs/Tooltip.tsx";
+import { graphql } from "packages/client/deps.ts";
+import { useFragment } from "react-relay";
+import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { Pill } from "packages/bfDs/Pill.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import VideoPlayer from "aws/client/components/VideoPlayer.tsx";
 import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
+
+const fragment = await graphql`
+    fragment Clip_bfPerson on BfPerson {
+    googleAuthAccessToken
+  }
+`;
+  
 type Props = {
   titleText: string;
   text: string;
@@ -18,6 +27,7 @@ type Props = {
   endTime: number;
   startIndex: number;
   endIndex: number;
+  clips$key: unknown;
 };
 export function Clip(
   {
@@ -34,8 +44,10 @@ export function Clip(
     endTime,
     startIndex,
     endIndex,
+    clips$key,
   }: Props,
 ) {
+  const data = useFragment(fragment, clips$key);
   const topicPills = topics?.split(",").map((topic) => (
     <Pill text={topic?.trim()} />
   ));
@@ -59,7 +71,7 @@ export function Clip(
               </div>
             </div>
             <div className="clipActions row-column">
-              <Button
+              <BfDsButton
                 kind="secondary"
                 iconLeft="pencil"
                 testId="button-edit-clip"
@@ -68,7 +80,9 @@ export function Clip(
                 startTime={startTime}
                 endTime={endTime}
                 mediaId={mediaId}
+                title={titleText}
                 transcriptId={transcriptId}
+                disabled={!data.googleAuthAccessToken}
               />
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
               {
@@ -81,12 +95,12 @@ export function Clip(
 
           <div className="clipMeta flexColumn" style={{ gap: "10px" }}>
             <div className="flexRow" style={{ gap: "5px" }}>
-              <Tooltip canCopy text={mediaId} position="right">
+              <BfDsTooltip canCopy text={mediaId} position="right">
                 <Pill label="Source" text={filename} />
-              </Tooltip>
-              <Tooltip text={rationale} position="right">
+              </BfDsTooltip>
+              <BfDsTooltip text={rationale} position="right">
                 <Pill label="Rating" text={confidence} />
-              </Tooltip>
+              </BfDsTooltip>
             </div>
 
             <div className="flexRow" style={{ gap: "5px" }}>

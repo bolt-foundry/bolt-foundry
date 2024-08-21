@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<91d54a98f0a7b647b0a023130dc4077e>>
+ * @generated SignedSource<<81431102e3cf4ee94e2441f14f5a52d8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,6 +13,7 @@ export type DownloadClipButtonDownloadMutation$variables = {
   endTime: number;
   mediaId: string;
   startTime: number;
+  title: string;
   transcriptId: string;
 };
 export type DownloadClipButtonDownloadMutation$data = {
@@ -44,9 +45,14 @@ v2 = {
 v3 = {
   "defaultValue": null,
   "kind": "LocalArgument",
+  "name": "title"
+},
+v4 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
   "name": "transcriptId"
 },
-v4 = [
+v5 = [
   {
     "alias": null,
     "args": [
@@ -64,6 +70,11 @@ v4 = [
         "kind": "Variable",
         "name": "startTime",
         "variableName": "startTime"
+      },
+      {
+        "kind": "Variable",
+        "name": "title",
+        "variableName": "title"
       },
       {
         "kind": "Variable",
@@ -93,12 +104,13 @@ return {
       (v0/*: any*/),
       (v1/*: any*/),
       (v2/*: any*/),
-      (v3/*: any*/)
+      (v3/*: any*/),
+      (v4/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "DownloadClipButtonDownloadMutation",
-    "selections": (v4/*: any*/),
+    "selections": (v5/*: any*/),
     "type": "Mutation",
     "abstractKey": null
   },
@@ -108,23 +120,24 @@ return {
       (v2/*: any*/),
       (v0/*: any*/),
       (v1/*: any*/),
-      (v3/*: any*/)
+      (v3/*: any*/),
+      (v4/*: any*/)
     ],
     "kind": "Operation",
     "name": "DownloadClipButtonDownloadMutation",
-    "selections": (v4/*: any*/)
+    "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "33f11e38002e31623637200d1c3cc280",
+    "cacheID": "750096a411987748567dff6cafb2f4ed",
     "id": null,
     "metadata": {},
     "name": "DownloadClipButtonDownloadMutation",
     "operationKind": "mutation",
-    "text": "mutation DownloadClipButtonDownloadMutation(\n  $startTime: Float!\n  $endTime: Float!\n  $mediaId: String!\n  $transcriptId: String!\n) {\n  downloadClip(startTime: $startTime, endTime: $endTime, mediaId: $mediaId, transcriptId: $transcriptId) {\n    success\n  }\n}\n"
+    "text": "mutation DownloadClipButtonDownloadMutation(\n  $startTime: Float!\n  $endTime: Float!\n  $mediaId: String!\n  $title: String!\n  $transcriptId: String!\n) {\n  downloadClip(startTime: $startTime, endTime: $endTime, mediaId: $mediaId, title: $title, transcriptId: $transcriptId) {\n    success\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "51dcf4c41b390dc46681dffcf8c887e3";
+(node as any).hash = "f9f9075bcb9416cd5af96f5bed8a70df";
 
 export default node;

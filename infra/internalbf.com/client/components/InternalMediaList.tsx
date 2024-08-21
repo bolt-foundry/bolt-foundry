@@ -1,8 +1,8 @@
 import { React } from "deps.ts";
 import { Progress } from "packages/bfDs/Progress.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
-import { Column, Table } from "packages/bfDs/Table.tsx";
-import { TableCell } from "packages/bfDs/TableCell.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
+import { BfDsColumn, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
+import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 const { useState, useEffect } = React;
 
 type DataType = {
@@ -10,25 +10,25 @@ type DataType = {
   organization: string;
 };
 
-const columns: Array<Column<DataType>> = [
+const columns: Array<BfDsColumn<DataType>> = [
   {
     title: "Title",
     width: "2fr",
-    renderer: (data) => <TableCell text={data.title} />,
+    renderer: (data) => <BfDsTableCell text={data.title} />,
   },
   {
     title: "Organization",
     width: "1fr",
-    renderer: (data) => <TableCell text={data.organization} />,
+    renderer: (data) => <BfDsTableCell text={data.organization} />,
   },
   {
     title: "Files",
     width: "80px",
     align: "center",
     renderer: () => (
-      <TableCell
+      <BfDsTableCell
         align="center"
-        element={<Button kind="overlay" iconLeft="download" />}
+        element={<BfDsButton kind="overlay" iconLeft="download" />}
       />
     ),
   },
@@ -37,13 +37,13 @@ const columns: Array<Column<DataType>> = [
     width: "80px",
     align: "center",
     renderer: () => (
-      <TableCell
+      <BfDsTableCell
         align="center"
-        element={<Button kind="overlay" iconLeft="plus" />}
+        element={<BfDsButton kind="overlay" iconLeft="plus" />}
       />
     ),
   },
-  { width: "60px", renderer: () => <TableCell align="center" text="•••" /> },
+  { width: "60px", renderer: () => <BfDsTableCell align="center" text="•••" /> },
 ];
 const fakeData = [
   { title: "Movie 1", organization: "Company A", progress: 65 },
@@ -53,5 +53,5 @@ const fakeData = [
 ];
 
 export function InternalMediaList() {
-  return <Table columns={columns} data={fakeData} />;
+  return <BfDsTable columns={columns} data={fakeData} />;
 }

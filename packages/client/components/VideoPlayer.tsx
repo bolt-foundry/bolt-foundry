@@ -1,5 +1,5 @@
 import { getLogger, Maybe, React } from "deps.ts";
-import { Icon } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { useIntersectionObserver } from "packages/client/hooks/useIntersectionObserver.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 import { throttle } from "lib/throttle.ts";
@@ -451,7 +451,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandles, VideoPlayerProps>(({
           onMouseLeave={() => setHoverControl(null)}
           data-bf-testid="video-rewind"
         >
-          <Icon name="rewind" color="white" size={8} />
+          <BfDsIcon name="rewind" color="white" size={8} />
         </div>
         {!playing
           ? (
@@ -466,7 +466,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandles, VideoPlayerProps>(({
               onMouseLeave={() => setHoverControl(null)}
               data-bf-testid="video-play"
             >
-              <Icon name="play" color="white" size={12} />
+              <BfDsIcon name="play" color="white" size={12} />
             </div>
           )
           : (
@@ -481,7 +481,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandles, VideoPlayerProps>(({
               onMouseLeave={() => setHoverControl(null)}
               data-bf-testid="video-pause"
             >
-              <Icon name="pause" color="white" size={12} />
+              <BfDsIcon name="pause" color="white" size={12} />
             </div>
           )}
         <input

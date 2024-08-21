@@ -1,12 +1,10 @@
 import * as React from "react";
-import * as ReactRelay from "react-relay";
+import { useFragment, useMutation } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { Input } from "packages/bfDs/Input.tsx";
-import { SearchQuery } from "packages/__generated__/SearchQuery.graphql.ts";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { isValidJSON } from "packages/lib/jsonUtils.ts";
 const { useState } = React;
-const { useLazyLoadQuery, useMutation } = ReactRelay;
 
 export enum AiModel {
   OPENAI_4O = "gpt-4o-mini",
@@ -30,17 +28,6 @@ const mutation = await graphql`
   }
 `;
 
-const query = await graphql`
-  query SearchQuery {
-    currentViewer {
-      organization {
-        media(first: 100) {
-          count
-        }
-      }
-    }
-  }
-`;
 
 type Props = {
   setClips: (clips: string | null) => void;
@@ -48,12 +35,9 @@ type Props = {
 
 export function Search({ setClips }: Props) {
   const [commit, isInFlight] = useMutation(mutation);
-  const data = useLazyLoadQuery<SearchQuery>(query, {});
   const [prompt, setPrompt] = useState("");
   const [clipsFound, setClipsFound] = useState<number | null>(null);
   const [aiModel, setAiModel] = useState(AiModel.OPENAI_4O);
-
-  const transcriptsCount = data?.currentViewer?.organization?.media?.count ?? 0;
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -76,13 +60,6 @@ export function Search({ setClips }: Props) {
     setPrompt("");
   }
 
-  let metaText = `${transcriptsCount} videos loaded`;
-  if (isInFlight) {
-    metaText = `Searching ${transcriptsCount} videos...`;
-  }
-  if (clipsFound !== null) {
-    metaText = `${clipsFound} clips found in ${transcriptsCount} videos`;
-  }
   return (
     <div className="cs-search">
       <form onSubmit={onSubmit}>
@@ -96,7 +73,6 @@ export function Search({ setClips }: Props) {
         />
       </form>
       <div className="cs-searchMeta">
-        <div style={{ flex: 1 }}>{metaText}</div>
         <DropdownSelector
           placeholder="Select AI Model"
           value={aiModel}

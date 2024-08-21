@@ -1,16 +1,16 @@
 import { React } from "deps.ts";
 import {
-  TooltipJustification,
-  TooltipMenu,
-  TooltipPosition,
-} from "packages/bfDs/Tooltip.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+  BfDsTooltipJustification,
+  BfDsTooltipMenu,
+  BfDsTooltipPosition,
+} from "packages/bfDs/BfDsTooltip.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 const { useEffect, useState } = React;
 
 type Props = {
   disabled?: boolean;
-  position?: TooltipPosition;
-  justification?: TooltipJustification;
+  position?: BfDsTooltipPosition;
+  justification?: BfDsTooltipJustification;
   // Options are a map of option name to value
   // e.g. { "Option 1": "option1", "Option 2": "option2" }
   options: Record<string, string>;
@@ -34,7 +34,7 @@ export function DropdownSelector(
     testId,
   }: Props,
 ) {
-  const [menu, setMenu] = useState<Array<TooltipMenu>>([]);
+  const [menu, setMenu] = useState<Array<BfDsTooltipMenu>>([]);
 
   useEffect(() => {
     const newMenu = Object.entries(options).map(([option, optionValue]) => {
@@ -58,7 +58,7 @@ export function DropdownSelector(
   const testIdValue = testId ? `${testId}-${!value}` : undefined;
 
   return (
-    <Button
+    <BfDsButton
       disabled={disabled}
       kind="outline"
       text={menuLabel}

@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { classnames } from "lib/classnames.ts";
-import { Icon } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 
 type Props = {
   collapsible?: boolean;
@@ -38,7 +38,7 @@ export function List(
               onClick={() => setCollapsed(!collapsed)}
             >
               <div className={expandClasses}>
-                <Icon name="arrowDown" />
+                <BfDsIcon name="arrowDown" />
               </div>
             </div>
           )}

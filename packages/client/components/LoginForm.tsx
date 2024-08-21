@@ -41,7 +41,7 @@ function GoogleLoginButton() {
           credential,
         },
         onCompleted: () => {
-          navigate("/?login=success");
+          navigate("/search");
         },
       });
     }
