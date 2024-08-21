@@ -345,7 +345,8 @@ type Blog {
 }
 
 type BlogPost {
-  content: String
+  content: [BlogPostContentBlock]
+  id: String!
   slug: String
   title: String
 }
@@ -365,6 +366,11 @@ type BlogPostConnection {
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
   """
   pageInfo: PageInfo!
+}
+
+interface BlogPostContentBlock {
+  id: String
+  type: String
 }
 
 type BlogPostEdge {
@@ -397,6 +403,12 @@ type IBfCurrentViewerInternalAdmin implements BfCurrentViewer {
 interface IBfGraphQLNode implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
+}
+
+type ImageBlock implements BlogPostContentBlock {
+  id: String
+  imgUrl: String
+  type: String
 }
 
 type Mutation {
@@ -445,6 +457,12 @@ type PageInfo {
   The cursor corresponding to the first nodes in edges. Null if the connection is empty.
   """
   startCursor: String
+}
+
+type ParagraphBlock implements BlogPostContentBlock {
+  id: String
+  rawText: String
+  type: String
 }
 
 type PlaygroundMutationPayload {

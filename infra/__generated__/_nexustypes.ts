@@ -171,7 +171,7 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   BlogPost: { // root type
-    content?: string | null; // String
+    id: string; // String!
     slug?: string | null; // String
     title?: string | null; // String
   }
@@ -194,12 +194,22 @@ export interface NexusGenObjects {
   IBfCurrentViewerInternalAdmin: { // root type
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
+  ImageBlock: { // root type
+    id?: string | null; // String
+    imgUrl?: string | null; // String
+    type?: string | null; // String
+  }
   Mutation: {};
   PageInfo: { // root type
     endCursor?: string | null; // String
     hasNextPage: boolean; // Boolean!
     hasPreviousPage: boolean; // Boolean!
     startCursor?: string | null; // String
+  }
+  ParagraphBlock: { // root type
+    id?: string | null; // String
+    rawText?: string | null; // String
+    type?: string | null; // String
   }
   PlaygroundMutationPayload: { // root type
     message?: string | null; // String
@@ -219,6 +229,7 @@ export interface NexusGenObjects {
 export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'> | core.Discriminate<'IBfCurrentViewerInternalAdmin', 'required'>;
   BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
+  BlogPostContentBlock: core.Discriminate<'ImageBlock', 'optional'> | core.Discriminate<'ParagraphBlock', 'optional'>;
   IBfGraphQLNode: any;
   Node: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
 }
@@ -354,7 +365,8 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   BlogPost: { // field return type
-    content: string | null; // String
+    content: Array<NexusGenRootTypes['BlogPostContentBlock'] | null> | null; // [BlogPostContentBlock]
+    id: string; // String!
     slug: string | null; // String
     title: string | null; // String
   }
@@ -380,6 +392,11 @@ export interface NexusGenFieldTypes {
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
+  ImageBlock: { // field return type
+    id: string | null; // String
+    imgUrl: string | null; // String
+    type: string | null; // String
+  }
   Mutation: { // field return type
     createTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
     deleteGoogleDriveResource: NexusGenRootTypes['DeleteMutationPayload'] | null; // DeleteMutationPayload
@@ -402,6 +419,11 @@ export interface NexusGenFieldTypes {
     hasNextPage: boolean; // Boolean!
     hasPreviousPage: boolean; // Boolean!
     startCursor: string | null; // String
+  }
+  ParagraphBlock: { // field return type
+    id: string | null; // String
+    rawText: string | null; // String
+    type: string | null; // String
   }
   PlaygroundMutationPayload: { // field return type
     message: string | null; // String
@@ -428,6 +450,10 @@ export interface NexusGenFieldTypes {
   }
   BfNode: { // field return type
     id: string; // ID!
+  }
+  BlogPostContentBlock: { // field return type
+    id: string | null; // String
+    type: string | null; // String
   }
   IBfGraphQLNode: { // field return type
     id: string; // ID!
@@ -561,7 +587,8 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   BlogPost: { // field return type name
-    content: 'String'
+    content: 'BlogPostContentBlock'
+    id: 'String'
     slug: 'String'
     title: 'String'
   }
@@ -587,6 +614,11 @@ export interface NexusGenFieldTypeNames {
     person: 'BfPerson'
     role: 'AccountRole'
   }
+  ImageBlock: { // field return type name
+    id: 'String'
+    imgUrl: 'String'
+    type: 'String'
+  }
   Mutation: { // field return type name
     createTranscript: 'BfMediaTranscript'
     deleteGoogleDriveResource: 'DeleteMutationPayload'
@@ -609,6 +641,11 @@ export interface NexusGenFieldTypeNames {
     hasNextPage: 'Boolean'
     hasPreviousPage: 'Boolean'
     startCursor: 'String'
+  }
+  ParagraphBlock: { // field return type name
+    id: 'String'
+    rawText: 'String'
+    type: 'String'
   }
   PlaygroundMutationPayload: { // field return type name
     message: 'String'
@@ -635,6 +672,10 @@ export interface NexusGenFieldTypeNames {
   }
   BfNode: { // field return type name
     id: 'ID'
+  }
+  BlogPostContentBlock: { // field return type name
+    id: 'String'
+    type: 'String'
   }
   IBfGraphQLNode: { // field return type name
     id: 'ID'
@@ -762,6 +803,7 @@ export interface NexusGenArgTypes {
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon" | "IBfCurrentViewerInternalAdmin"
   BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaTranscript" | "BfOrganization" | "BfPerson"
+  BlogPostContentBlock: "ImageBlock" | "ParagraphBlock"
   Node: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaTranscript" | "BfOrganization" | "BfPerson"
 }
 
@@ -777,6 +819,8 @@ export interface NexusGenTypeInterfaces {
   BfOrganization: "BfNode" | "Node"
   BfPerson: "BfNode" | "Node"
   IBfCurrentViewerInternalAdmin: "BfCurrentViewer"
+  ImageBlock: "BlogPostContentBlock"
+  ParagraphBlock: "BlogPostContentBlock"
   BfNode: "Node"
   IBfGraphQLNode: "BfNode" | "Node"
 }
@@ -795,7 +839,7 @@ export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = never;
+export type NexusGenAbstractsUsingStrategyResolveType = "BlogPostContentBlock";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
