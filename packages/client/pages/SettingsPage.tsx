@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
@@ -33,8 +33,18 @@ enum Tabs {
 }
 
 export function SettingsPage() {
+  const [darkMode, setDarkMode] = useState(false);
   const [selected, setSelected] = useState<Tabs>(Tabs.WATCH_FOLDERS);
   const data = useLazyLoadQuery<SettingsPageQuery>(query, {});
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+  }, [darkMode]);
+
   const { navigate } = useRouter();
   const organizationFragmentRef = data?.currentViewer?.organization ?? null;
 
@@ -72,6 +82,11 @@ export function SettingsPage() {
               <ListItem
                 content="Clip search"
                 onClick={() => navigate("/search")}
+              />
+              <ListItem
+                content="Dark mode"
+                toggle={setDarkMode}
+                toggled={darkMode}
               />
             </List>
             <div>Welcome, {data?.currentViewer?.person?.name}</div>
