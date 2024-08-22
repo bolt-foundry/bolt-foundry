@@ -6,7 +6,7 @@ import { getLogger } from "deps.ts";
 import {
   fetchFolderContents,
   fetchMetadata,
-  GoogleDriveMetadata,
+  GoogleDriveFileMetadata,
 } from "lib/googleDriveApi.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfError } from "lib/BfError.ts";
@@ -19,7 +19,7 @@ logger.setLevel(logger.levels.TRACE);
 type BfGoogleDriveResourceRequiredProps = {
   resourceId: string;
   name: string;
-  googleDriveMetadata: GoogleDriveMetadata;
+  googleDriveMetadata: GoogleDriveFileMetadata;
 };
 export class BfGoogleDriveResource
   extends BfNode<BfGoogleDriveResourceRequiredProps> {
@@ -107,9 +107,9 @@ export class BfGoogleDriveResource
     const token = await this.getAccessToken();
     const response = await fetchFolderContents(token, this.props.resourceId);
     logger.debug("folder contents", response);
-    const childrenProps: Array<BfGid> = response.files.map((resource) => {
-      return { resourceId: resource.id, name: resource.name };
-    });
+    const childrenProps: Array<BfGoogleDriveResourceRequiredProps> = response.files?.map((resource) => {
+      return { resourceId: resource.id, name: resource.name, googleDriveMetadata: resource };
+    }) ?? [];
     for (const childProps of childrenProps) {
       await BfJob.createJobForNode(this, "__JOB_ONLY__createChild", [
         childProps,

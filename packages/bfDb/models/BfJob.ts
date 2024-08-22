@@ -25,25 +25,28 @@ export enum BfJobType {
 
 type ValidJSONValuesRaw = string | number | boolean | null | undefined;
 
-type ValidJSONValues = ValidJSONValuesRaw | Array<ValidJSONValuesRaw>;
+type ValidJSONValues =
+  | ValidJSONValuesRaw
+  | Array<ValidJSONValuesRaw>
+  | Record<string, ValidJSONValuesRaw>;
 
-export type BfJobRequiredProps = {
+export type BfJobRequiredProps<T extends ValidJSONValues = ValidJSONValues> = {
   status: BfJobType;
   accountBfGid: BfGid;
   method: string;
-  args: Array<ValidJSONValues>;
+  args: T;
 } & BfEdgeRequiredProps;
 
 export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
   static async createJobForNode<
     T extends BfNode,
+    K extends keyof T & (string | symbol),
   >(
     bfNode: T,
-    method: keyof T,
-    args: Array<ValidJSONValues> = [],
+    method: K,
+    args: unknown,
     runImmediately = Deno.env.get("BF_ENV") === "DEVELOPMENT",
     runInForeground = false,
-    
   ): Promise<BfJob> {
     const currentViewer = bfNode.currentViewer;
     const jobProps = {
@@ -53,16 +56,20 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
       args,
     };
     const job = await this.create(currentViewer, jobProps);
-    const _jobEdge = await BfEdge.createEdgeBetweenNodes(currentViewer, bfNode, job)
+    const _jobEdge = await BfEdge.createEdgeBetweenNodes(
+      currentViewer,
+      bfNode,
+      job,
+    );
     if (runInForeground) {
       logger.warn(
         "Job running in foreground. It's not super reflective of actual behavior running a job in the foreground, probably only best to do for debugging sake.",
       );
       await job.executeJob();
-    } else if (runImmediately){
+    } else if (runImmediately) {
       logger.warn(
         "Job executing immediately in background. Production runs should execute as an asynchronous job.",
-      )
+      );
       job.executeJob();
     }
     return job;
@@ -88,7 +95,9 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
     await this.save();
     const edges = await BfEdge.queryAllSourceEdgesForNode(this);
     if (edges.length !== 1) {
-      throw new BfError(`Job has either too many or not enough source edges: ${edges.length}`);
+      throw new BfError(
+        `Job has either too many or not enough source edges: ${edges.length}`,
+      );
     }
     const edge = edges[0];
     try {

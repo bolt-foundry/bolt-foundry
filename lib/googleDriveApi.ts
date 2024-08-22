@@ -2,19 +2,20 @@ import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
 
-export type GoogleDriveMetadata = {
+export type GoogleDriveFileMetadata = {
   id: string;
   name: string;
   mimeType: string;
   parents: string[];
   webViewLink: string;
+  files?: Array<GoogleDriveFileMetadata>;
 };
 
 export async function fetchMetadata(
   accessToken: string,
   fileId: string,
   fields = ["id", "name", "mimeType", "parents", "webViewLink"],
-): Promise<GoogleDriveMetadata> {
+): Promise<GoogleDriveFileMetadata> {
   const endpointUrl = `https://www.googleapis.com/drive/v3/files/${fileId}`;
   const searchParams = new URLSearchParams();
   searchParams.set("fields", fields.join(","))
@@ -54,7 +55,7 @@ export async function fetchFolderContents(
   folderId: string,
   fields: string =
     `nextPageToken, files(id)`,
-): Promise<GoogleDriveMetadata[]> {
+): Promise<GoogleDriveFileMetadata> {
   const searchParams = new URLSearchParams();
   searchParams.set("supportsAllDrives", "true");
   searchParams.set("includeItemsFromAllDrives", "true");
@@ -81,7 +82,7 @@ export async function createFolder(
   accessToken: string,
   parentFolderResourceId: string,
   newFolderName: string,
-): Promise<GoogleDriveMetadata> {
+): Promise<GoogleDriveFileMetadata> {
   const url =
     `https://www.googleapis.com/drive/v3/files?supportsAllDrives=true`;
   const response = await fetch(url, {
