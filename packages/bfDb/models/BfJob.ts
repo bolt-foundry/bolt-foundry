@@ -45,7 +45,9 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
     bfNode: T,
     method: K,
     args: unknown,
-    runImmediately = Deno.env.get("BF_ENV") === "DEVELOPMENT",
+    // #bf-nocommit
+    // runImmediately = Deno.env.get("BF_ENV") === "DEVELOPMENT",
+    runImmediately = false,
     runInForeground = false,
   ): Promise<BfJob> {
     const currentViewer = bfNode.currentViewer;

@@ -1,5 +1,6 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 
 export type BfMediaTranscriptProps = {
   id: string;
@@ -14,4 +15,5 @@ export class BfMediaTranscript extends BfNode<BfMediaTranscriptProps> {
     });
     return transcripts;
   }
+
 }

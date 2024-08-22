@@ -4,7 +4,7 @@ import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
 import { getLogger } from "deps.ts";
 import {
-fetchFile,
+  fetchFile,
   fetchFolderContents,
   fetchMetadata,
   GoogleDriveFileMetadata,
@@ -12,9 +12,13 @@ fetchFile,
 import { BfError } from "lib/BfError.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
+import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
+import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
+
+const GOOGLE_DRIVE_CACHE_DIRECTORY =
+  Deno.env.get("GOOGLE_DRIVE_CACHE_DIRECTORY") ?? "/tmp/google-drive-cache";
 
 const logger = getLogger(import.meta);
-logger.setLevel(logger.levels.TRACE);
 
 type BfGoogleDriveResourceRequiredProps = {
   resourceId: string;
@@ -68,6 +72,12 @@ export class BfGoogleDriveResource
       [],
     );
 
+    const ingestPromise = BfJob.createJobForNode(
+      this,
+      "__JOB_ONLY__ingest",
+      [],
+    )
+
     await Promise.all([
       googleAuthEdgePromise,
       googleDriveMetadataPromise,
@@ -102,11 +112,7 @@ export class BfGoogleDriveResource
     return this.crawlChildren();
   }
   private async crawlChildren() {
-    logger.debug(
-      "getting folder contents for folder",
-      this.props.resourceId,
-      this.metadata.bfGid,
-    );
+    logger.debug(`getting folder contents for folder ${this}`);
     const token = await this.getAccessToken();
     const response = await fetchFolderContents(token, this.props.resourceId);
     logger.debug("folder contents", response);
@@ -145,30 +151,45 @@ export class BfGoogleDriveResource
       logger.debug("created child and edge", child, edge);
       await this.transactionCommit();
       logger.debug("committed transaction");
-      if (this.props.mimeType.startsWith("video")) {
-        await this.download();
-      }
-      await this.reportProgress(1);
     } catch (e) {
       logger.debug("failed to create child and edge", e);
       await this.transactionRollback();
       logger.debug("rolled back transaction");
-      throw e
+      throw e;
     }
-
   }
 
-  async download() {
-    await BfJob.createJobForNode(this, "__JOB_ONLY__download", []);
+  __JOB_ONLY__ingest() {
+    return this.ingest();
   }
-  async __JOB_ONLY__download(targetPath?: string) {
-    const path = targetPath ?? await Deno.makeTempFile();
+
+  private async ingest() {
+    if (this.props.mimeType.startsWith("video")) {
+      await BfMedia.createFromGoogleDriveResource(this);
+    }
+    return this;
+  }
+
+  getFilePath() {
+    return `${GOOGLE_DRIVE_CACHE_DIRECTORY}/${this.metadata.bfGid}`;
+  }
+
+  async getFileHandle() {
+    const existsOnDisk = await Deno.stat(this.getFilePath()).then(() => true)
+      .catch((e) => false);
+    return existsOnDisk ? Deno.open(this.getFilePath()) : this.download();
+  }
+
+  private async download(targetPath = this.getFilePath()) {
+    const path = targetPath;
     const token = await this.getAccessToken();
     const response = await fetchFile(token, this.props.resourceId);
     logger.debug("downloading", this.props.resourceId, path);
     const file = await Deno.create(path);
     if (response.body) {
-      const contentLength = parseInt(response.headers.get("content-length") ?? "0");
+      const contentLength = parseInt(
+        response.headers.get("content-length") ?? "0",
+      );
       let totalWritten = 0;
       let lastReported = 0;
       for await (const chunk of response.body) {
@@ -183,12 +204,15 @@ export class BfGoogleDriveResource
         }
       }
       logger.debug("downloaded", this.props.resourceId, path);
-      this.reportProgress(1);
     }
+    return file;
   }
 
   private async reportProgress(progress: number) {
     logger.debug("reporting progress", progress, this.metadata.bfGid);
+    if (this.props == undefined) {
+      logger.debug("props is undefined", this.metadata.bfGid, this);
+    }
     this.props.ingestionProgress = progress;
     await this.save();
     return this;

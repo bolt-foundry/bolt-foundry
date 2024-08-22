@@ -6,6 +6,7 @@ import { render } from "infra/bff/friends/render.bff.ts";
 import { fetchFile } from "lib/googleDriveApi.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { sanitizeFilename } from "packages/lib/textUtils.ts";
+import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 
 const logger = getLogger(import.meta);
 
@@ -32,6 +33,27 @@ export class BfMedia extends BfNode<BfMediaProps> {
     });
     return media;
   }
+
+  static async createFromGoogleDriveResource(
+    driveResource: BfGoogleDriveResource) {
+    // create BfMedia with empty shell.
+    // call bfMedia.addGoogleDriveResource(driveResource)
+    //   -- create edge between the media and the drive resource
+    //   -- get file handle from drive resource
+    // BfMediaAudio.createFromFileHandle(fileHandle)
+    // Create an edge between bfMediaAudio and bfMedia.
+    // meanwhile the audio is extracting.
+    // get the file handle from the drive resource
+    // extract the audio using ffmpeg
+    // After extracting audio, BfMediaTranscript.createFromAudioFile
+    // BfTranscript.createFromAudioFile then takes the audio file and creates a transcript
+    //   -- then creates an edge between the transcript and the drive resource
+    //   -- then creates an edge between the transcript and the bfMediaAudio
+    //   -- then sends the audio to assemblyAI for processing and includes a webhook
+    // on receipt of the webhook BfMediaTranscript.receiveWebhook(id)
+    //   -- then updates the BfMediaTranscript with the transcript text
+
+    }
 
   example(args: unknown) {
     logger.info("this is an example job", this.currentViewer, args);
