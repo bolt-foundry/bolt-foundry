@@ -3,6 +3,8 @@ import {
   runShellCommandWithOutput,
 } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/mod.ts";
+import { getLogger } from "deps.ts";
+const logger = getLogger(import.meta);
 
 function parseLogInfo(loginfo: string) {
   const lines = loginfo.trim().split("\n");
@@ -14,14 +16,8 @@ function parseLogInfo(loginfo: string) {
 }
 
 async function land() {
-  const ghToken = await runShellCommandWithOutput([
-    "replit-git-askpass",
-    "Password for 'https://token@github.com': ",
-  ]);
-  if (ghToken.trim() === "no GitHub token available") {
-    console.error("No token, proceeding anyway.");
-  }
-  console.log(
+  const ghToken = Deno.env.get("GITHUB_TOKEN") ?? "";
+  logger.info(
     "This command will overwrite any changes you have made to the current branch. ctrl + c now. You have 5 seconds",
   );
   await runShellCommand(["sleep", "5"]);
@@ -29,7 +25,7 @@ async function land() {
   await runShellCommand(["sl", "goto", "main", "--clean"], {
     GH_TOKEN: ghToken,
   });
-  console.log(
+  logger.info(
     "We will automatically make a git commit in 5 seconds. Please cancel if you don't want this.",
   );
   await runShellCommand(["sleep", "5"]);
