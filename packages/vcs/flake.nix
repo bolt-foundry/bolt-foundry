@@ -36,6 +36,7 @@
           unstablePkgs.deno
           ffmpeg
           yarn
+          nodejs_22
         ];
 
         # Add to this to make it available in VS Code and most places on the system. The larger this is, the larger the deploy, so try to keep it slim.
@@ -51,7 +52,6 @@
         # these packages show up with "direnv allow"
         devShellPackages = with pkgs; [
           jq
-          nodejs_22
           rustc
           zlib
           libpng
