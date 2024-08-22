@@ -320,7 +320,8 @@ type Blog {
 }
 
 type BlogPost {
-  content: String
+  content: [BlogPostContentBlock]
+  id: String!
   slug: String
   title: String
 }
@@ -342,6 +343,11 @@ type BlogPostConnection {
   pageInfo: PageInfo!
 }
 
+interface BlogPostContentBlock {
+  id: String
+  type: String
+}
+
 type BlogPostEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
@@ -360,6 +366,12 @@ type DownloadMutationPayload {
 
 """The `File` scalar type represents a file upload."""
 scalar File
+
+type ImageBlock implements BlogPostContentBlock {
+  id: String
+  imgUrl: String
+  type: String
+}
 
 type Mutation {
   createTranscript(filename: String!, words: String!): BfMediaTranscript
@@ -406,6 +418,12 @@ type PageInfo {
   The cursor corresponding to the first nodes in edges. Null if the connection is empty.
   """
   startCursor: String
+}
+
+type ParagraphBlock implements BlogPostContentBlock {
+  id: String
+  rawText: String
+  type: String
 }
 
 type Query {

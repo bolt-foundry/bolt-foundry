@@ -1,5 +1,5 @@
 // Import necessary dependencies
-import type { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
 import { BfError } from "lib/BfError.ts";
@@ -10,7 +10,7 @@ import {
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import {
   BfEdge,
-  EdgeCreationMetadata,
+  BfEdgeRequiredProps,
 } from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);
@@ -25,45 +25,52 @@ export enum BfJobType {
 
 type ValidJSONValuesRaw = string | number | boolean | null | undefined;
 
-type ValidJSONValues = ValidJSONValuesRaw | Array<ValidJSONValuesRaw>;
+type ValidJSONValues =
+  | ValidJSONValuesRaw
+  | Array<ValidJSONValuesRaw>
+  | Record<string, ValidJSONValuesRaw>;
 
-export type BfJobRequiredProps = {
+export type BfJobRequiredProps<T extends ValidJSONValues = ValidJSONValues> = {
   status: BfJobType;
   accountBfGid: BfGid;
   method: string;
-  args: Array<ValidJSONValues>;
-};
+  args: T;
+} & BfEdgeRequiredProps;
 
-export class BfJob extends BfEdge<BfJobRequiredProps, Record<string, never>> {
+export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
   static async createJobForNode<
     T extends BfNode,
+    K extends keyof T & (string | symbol),
   >(
     bfNode: T,
-    method: keyof T,
-    args: Array<ValidJSONValues> = [],
+    method: K,
+    args: unknown,
+    runImmediately = Deno.env.get("BF_ENV") === "DEVELOPMENT",
     runInForeground = false,
   ): Promise<BfJob> {
     const currentViewer = bfNode.currentViewer;
-    const jobProps: BfJobRequiredProps = {
+    const jobProps = {
       status: BfJobType.AVAILABLE,
       accountBfGid: currentViewer.accountBfGid,
       method: method as string,
       args,
     };
-    const jobMetadata: EdgeCreationMetadata = {
-      bfSid: bfNode.metadata.bfGid,
-      bfSClassName: bfNode.constructor.name,
-      bfOid: bfNode.metadata.bfOid,
-      bfTid: bfNode.metadata.bfGid,
-      bfTClassName: bfNode.constructor.name,
-    };
-    logger.info(jobMetadata);
-    const job = await this.create(currentViewer, jobProps, jobMetadata);
+    const job = await this.create(currentViewer, jobProps);
+    const _jobEdge = await BfEdge.createEdgeBetweenNodes(
+      currentViewer,
+      bfNode,
+      job,
+    );
     if (runInForeground) {
-      logger.error(
-        "Job running in foreground. If this is in production, please run in background.",
+      logger.warn(
+        "Job running in foreground. It's not super reflective of actual behavior running a job in the foreground, probably only best to do for debugging sake.",
       );
       await job.executeJob();
+    } else if (runImmediately) {
+      logger.warn(
+        "Job executing immediately in background. Production runs should execute as an asynchronous job.",
+      );
+      job.executeJob();
     }
     return job;
   }
@@ -86,11 +93,18 @@ export class BfJob extends BfEdge<BfJobRequiredProps, Record<string, never>> {
     logger.debug("Executing job");
     this.props.status = BfJobType.RUNNING;
     await this.save();
+    const edges = await BfEdge.queryAllSourceEdgesForNode(this);
+    if (edges.length !== 1) {
+      throw new BfError(
+        `Job has either too many or not enough source edges: ${edges.length}`,
+      );
+    }
+    const edge = edges[0];
     try {
       const module = await import(
-        `packages/bfDb/models/${this.metadata.bfTClassName}.ts`
+        `packages/bfDb/models/${edge.metadata.bfSClassName}.ts`
       );
-      const JobClass: typeof BfNode = module[this.metadata.bfTClassName];
+      const JobClass: typeof BfNode = module[edge.metadata.bfSClassName];
 
       if (JobClass) {
         const account = await BfAccount.findX(
@@ -99,7 +113,7 @@ export class BfJob extends BfEdge<BfJobRequiredProps, Record<string, never>> {
         );
 
         logger.info(
-          `running job as ${account.metadata.bfGid}`,
+          `running ${this} as ${account}`,
         );
         const currentViewer = BfCurrentViewerFromAccount.create(
           import.meta,
@@ -107,7 +121,7 @@ export class BfJob extends BfEdge<BfJobRequiredProps, Record<string, never>> {
         );
         const target = await JobClass.findX(
           currentViewer,
-          this.metadata.bfTid,
+          edge.metadata.bfSid,
         );
         logger.debug("found", target, this.props.method, this.props.args);
         // @ts-expect-error dynamic typing naughtiness

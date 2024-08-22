@@ -25,6 +25,9 @@ import {
   bfPutItem,
   bfQueryItems,
   bfQueryItemsForGraphQLConnection,
+  transactionCommit,
+  transactionRollback,
+  transactionStart,
 } from "packages/bfDb/bfDb.ts";
 import {
   BfModelErrorNotFound,
@@ -74,26 +77,13 @@ export abstract class BfBaseModel<
       creationMetadata,
     );
     log(`Creating ${this.name}, bfGid: ${newModel.metadata.bfGid}`);
-    await newModel.beforeCreate(currentViewer, newProps, creationMetadata);
+    await newModel.beforeCreate();
     await newModel.save();
     await newModel.afterCreate();
     logVerbose("created", { newModel });
     return newModel as
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
-  }
-
-  public async delete() {
-    await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
-    try {
-      await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
-      logger.trace(
-        `Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`,
-      );
-    } catch (error) {
-      logger.trace(`Failed to delete ${this.constructor.name}:`, error);
-      throw error;
-    }
   }
 
   static async find<
@@ -120,6 +110,7 @@ export abstract class BfBaseModel<
       throw error;
     }
   }
+
   static async findX<
     TThis extends Constructor<
       BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
@@ -341,6 +332,9 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         },
         set: (_target, prop, value) => {
           logger.trace(`Setting property ${String(prop)} to value ${value}`);
+          if (this.clientProps == null) {
+            this.clientProps = {};
+          }
           this.clientProps[prop as keyof TRequiredProps & TOptionalProps] =
             value;
           this._cachedProps = undefined; // Invalidate the cache
@@ -465,6 +459,33 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
 
   validateSave(): Promise<boolean> {
     return Promise.resolve(true);
+  }
+
+  public async delete() {
+    await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
+    try {
+      await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
+      logger.trace(
+        `Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`,
+      );
+    } catch (error) {
+      logger.trace(`Failed to delete ${this.constructor.name}:`, error);
+      throw error;
+    }
+  }
+
+  public async transactionStart() {
+    await transactionStart();
+  }
+  public async transactionCommit() {
+    await transactionCommit();
+  }
+  public async transactionRollback() {
+    await transactionRollback();
+  }
+
+  toString() {
+    return `${this.constructor.name}#${this.metadata.bfGid}`;
   }
 }
 

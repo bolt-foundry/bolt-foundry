@@ -10,26 +10,38 @@ const logger = getLogger(import.meta);
 const postsQuery = await graphql`
   query BlogPageQuery {
     currentViewer {
-      blog {
-        posts(first: 10) {
-          count
+    blog {
+      posts(first: 10) {
+        nodes {
+          title
+          slug
         }
       }
     }
+  }
   }
 `;
 
 export function BlogPage() {
   const { currentPath, routeParams } = useRouter();
+  const { currentViewer } = useLazyLoadQuery<BlogPageQuery>(postsQuery);
+  const posts = currentViewer?.blog?.posts?.nodes || [];
   logger.debug("path", currentPath, routeParams);
-
   if (routeParams.slug) {
     return <BlogPost />;
   }
 
   return (
     <ContentFrame>
-      lol blog {routeParams.slug}
+      {posts.map((post) => (
+        <h1
+          key={post.title}
+          slug={post.slug}
+          onClick={() => window.location.href = `/blog/${post.slug}`}
+        >
+          {post.title}
+        </h1>
+      ))}
     </ContentFrame>
   );
 }
@@ -37,25 +49,53 @@ export function BlogPage() {
 const query = await graphql`
 query BlogPagePostQuery($slug: String!) {
   currentViewer {
-      blog {
-        posts(slug: $slug, first: 1) {
-          nodes {
+    blog {
+      posts(slug: $slug, first: 10) {
+        nodes {
+          slug
           title
-          content
+          content {
+            type
+            ... on ImageBlock {
+              id
+              imgUrl
+              type
+            }
+            ... on ParagraphBlock {
+              id
+              rawText
+              type
+            }
           }
         }
       }
     }
+  }
 }
 
 `;
 function BlogPost() {
   const { slug } = useRouter().routeParams;
-  const { title } = useLazyLoadQuery<BlogPagePostQuery>(query, { slug });
-
+  const { currentViewer } = useLazyLoadQuery<BlogPagePostQuery>(query, {
+    slug,
+  });
+  const posts = currentViewer?.blog?.posts?.nodes || [];
   return (
     <ContentFrame>
-      lol blog post {title}
+      {posts.map((post) => (
+        <div key={post.slug}>
+          <h1>{post.title}</h1>
+          {post.content.map((block) => {
+            if (block.type === "image") {
+              return <img key={block.id} src={block.imgUrl} alt={block.type} />;
+            } else if (block.type === "paragraph") {
+              return <p key={block.id}>{block.rawText}</p>;
+            } else {
+              return null;
+            }
+          })}
+        </div>
+      ))}
     </ContentFrame>
   );
 }

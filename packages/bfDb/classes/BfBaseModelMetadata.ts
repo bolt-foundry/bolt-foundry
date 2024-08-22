@@ -7,7 +7,6 @@ import {
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 
 export type CreationMetadata = {
-  bfOid: BfOid; // bfOids also don't have to come from our system, but it would be kind of weird.
   bfGid?: BfGid; // bfGids don't have to come from our system, they can be significant from other systems.
 };
 
