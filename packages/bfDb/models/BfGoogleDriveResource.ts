@@ -155,12 +155,12 @@ export class BfGoogleDriveResource
       logger.debug("rolled back transaction");
       throw e
     }
-
   }
 
   async download() {
     await BfJob.createJobForNode(this, "__JOB_ONLY__download", []);
   }
+
   async __JOB_ONLY__download(targetPath?: string) {
     const path = targetPath ?? await Deno.makeTempFile();
     const token = await this.getAccessToken();
