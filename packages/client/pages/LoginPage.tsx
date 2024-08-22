@@ -2,7 +2,7 @@ import { React, ReactRelay } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { Spinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { LoginForm } from "packages/client/components/LoginForm.tsx";
 // import { captureEvent } from "packages/events/mod.ts";
 import { LoginPageCVQuery } from "packages/__generated__/LoginPageCVQuery.graphql.ts";
@@ -100,7 +100,7 @@ export function LoginPage() {
   const spinner = (
     <div style={styles.container}>
       <div style={styles.content}>
-        <Spinner backgroundColor={"var(--background)"} />
+        <BfDsSpinner backgroundColor={"var(--background)"} />
       </div>
     </div>
   );

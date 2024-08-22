@@ -8,7 +8,7 @@ import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";
 import { WatchFolder } from "packages/client/components/settings/WatchFolder.tsx";
 import { Media } from "packages/client/components/settings/Media.tsx";
-import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 
 const query = await graphql`
@@ -80,7 +80,7 @@ export function SettingsPage() {
         }
         header="Settings"
       />
-      <Suspense fallback={<FullPageSpinner />}>
+      <Suspense fallback={<BfDsFullPageSpinner />}>
         {content}
       </Suspense>
     </div>

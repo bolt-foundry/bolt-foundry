@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { Clip } from "packages/client/components/clipsearch/Clip.tsx";
-import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { isValidJSON } from "packages/lib/jsonUtils.ts";
 import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFilePicker.tsx";
 import { useFragment } from "react-relay";
@@ -47,7 +47,7 @@ export function ClipsView({ clips$key, clips }: Props) {
     );
   }
   if (clips === null) {
-    return <FullPageSpinner />;
+    return <BfDsFullPageSpinner />;
   }
 
   const parsedClips = isValidJSON(clips)
