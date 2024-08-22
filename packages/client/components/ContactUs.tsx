@@ -3,7 +3,7 @@ import { graphql } from "packages/client/deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
-import { TextArea } from "packages/bfDs/TextArea.tsx";
+import { BfDsTextArea } from "packages/bfDs/BfDsTextArea.tsx";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 const { useMutation } = ReactRelay;
@@ -160,7 +160,7 @@ export function ContactUs({ showHeader = true }: Props) {
                   value={formData.email}
                   onChange={handleChange}
                 />
-                <TextArea
+                <BfDsTextArea
                   label="Message"
                   placeholder="Write a message..."
                   xstyle={styles.message}

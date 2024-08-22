@@ -34,13 +34,13 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-export function TextArea(
+export function BfDsTextArea(
   {
     label,
     value,
     onChange,
     placeholder,
-    className,
+    className,  
     name,
     required,
     rows,
