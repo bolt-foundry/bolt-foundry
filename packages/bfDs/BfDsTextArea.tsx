@@ -34,7 +34,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-export function TextArea(
+export function BfDsTextArea(
   {
     label,
     value,
