@@ -1,8 +1,9 @@
 import { React } from "deps.ts";
 import { Toast, TRANSITION_DURATION } from "packages/bfDs/Toast.tsx";
 import { Modal } from "packages/bfDs/Modal.tsx";
+import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
 
-const { createContext, useState } = React;
+const { createContext, useEffect, useState } = React;
 
 type ReactNode = React.ReactNode;
 type UseToastOptions = {
@@ -28,6 +29,8 @@ export type BfDsContextType = {
   showToast: (message: ReactNode, options?: UseToastOptions) => void;
   ModalComponent: ReactNode;
   ToastComponent: ReactNode;
+  darkMode: boolean;
+  setDarkMode: (darkMode: boolean) => void;
 };
 
 export const BfDsContext = createContext<BfDsContextType | undefined>(
@@ -48,12 +51,23 @@ type Toast = {
 export const BfDsProvider = ({ children }: { children: ReactNode }) => {
   const [activeToasts, setActiveToasts] = useState<Array<Toast>>([]);
   const [activeModal, setActiveModal] = useState<ModalType>();
+  const [darkMode, setDarkMode] = useLocalStorage("darkMode", false);
+
+  useEffect(() => {
+    // TODO add setting to follow system theme
+    // const isDark = window.matchMedia("(prefers-color-scheme:dark)").matches;
+    if (darkMode) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+  }, [darkMode]);
 
   function showModal(content: ReactNode, options: UseModalOptions) {
     setActiveModal({ content, options });
     return () => {
       setActiveModal(undefined);
-    } 
+    };
   }
 
   function showToast(message: ReactNode, options: UseToastOptions = {}) {
@@ -92,6 +106,8 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const value = {
+    darkMode,
+    setDarkMode,
     showModal,
     showToast,
     ModalComponent: activeModal && (

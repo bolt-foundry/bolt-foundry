@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
@@ -10,6 +10,7 @@ import { WatchFolder } from "packages/client/components/settings/WatchFolder.tsx
 import { Media } from "packages/client/components/settings/Media.tsx";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
+import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 
 const query = await graphql`
 query SettingsPageQuery {
@@ -33,8 +34,10 @@ enum Tabs {
 }
 
 export function SettingsPage() {
+  const { darkMode, setDarkMode } = useBfDs();
   const [selected, setSelected] = useState<Tabs>(Tabs.WATCH_FOLDERS);
   const data = useLazyLoadQuery<SettingsPageQuery>(query, {});
+
   const { navigate } = useRouter();
   const organizationFragmentRef = data?.currentViewer?.organization ?? null;
 
@@ -72,6 +75,11 @@ export function SettingsPage() {
               <ListItem
                 content="Clip search"
                 onClick={() => navigate("/search")}
+              />
+              <ListItem
+                content="Dark mode"
+                toggle={() => setDarkMode(!darkMode)}
+                toggled={darkMode}
               />
             </List>
             <div>Welcome, {data?.currentViewer?.person?.name}</div>
