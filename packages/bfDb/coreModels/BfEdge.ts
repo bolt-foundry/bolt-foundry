@@ -143,7 +143,7 @@ export class BfEdge<
   >(
     this: TThis,
     currentViewer: BfCurrentViewer,
-    SourceClass: typeof BfNode,
+    SourceClass: Constructor<BfNode>,
     targetBfGid: BfGid | BfTid,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
   ) {
