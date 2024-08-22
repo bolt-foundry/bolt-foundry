@@ -19,14 +19,10 @@ export const BfGraphQLPickGoogleDriveFolderQuery = extendType({
   definition(t) {
     t.connectionField("googleDriveFolders", {
       type: "BfGoogleDriveResource",
-      resolve: (_, args, { bfCurrentViewer }) => {
-        const folders = BfGoogleDriveResource.queryConnectionForGraphQL(
-          bfCurrentViewer,
-          { bfOid: bfCurrentViewer.bfOid },
-          {},
-          args,
-        );
-        return folders;
+    resolve: async (_, args, { bfCurrentViewer }: GraphQLContext) => {
+        // @ts-expect-error types are bad apparently
+        const connection = await BfEdge.queryTargetsConnectionForGraphQL(bfCurrentViewer, BfGoogleDriveResource, bfCurrentViewer.organizationBfGid, {}, args);
+        return connection;
       },
     });
   },
