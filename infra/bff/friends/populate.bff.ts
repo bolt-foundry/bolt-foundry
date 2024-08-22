@@ -10,13 +10,10 @@ const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT");
 
 const client = new GraphQLClient(GRAPHQL_ENDPOINT);
 
-async function populate() {
+async function populate(projectIds = accounting) {
   // deno-lint-ignore no-console
   console.log("running populate");
   const stopSpinner = startSpinner();
-
-  // const projectIds = accounting; // Rubio's accounting videos
-  const projectIds = kmdigital; // Dan's demo
 
   const headers = await getHeaders();
 
@@ -42,6 +39,9 @@ async function populate() {
     let filename = returned.project.name;
     if (filename.includes("justicart - Copy of ")) {
       filename = filename.replace("justicart - Copy of ", "");
+    }
+    if (filename.includes("justicart - ")) {
+      filename = filename.replace("justicart - ", "");
     }
     // @ts-expect-error not typing this
     const words = returned.project.transcripts.edges[0].node.words;
@@ -83,9 +83,14 @@ register(
   "Populates db with demo transcripts",
   async () => await populate(),
 );
+register(
+  "populate:demo",
+  "Populates db with specific client transcripts",
+  async () => await populate(demo),
+);
 
 // Dan's demo
-const kmdigital = [
+const demo = [
   "Project-1724521896558_ba4392251fe94facbf7d09b75c4e534a",
   "Project-1724558334145_87b046dbd6344b2aab779610d109f1af",
   "Project-1724268554986_02d0d2c24abc43c78be316e42985e8d8",

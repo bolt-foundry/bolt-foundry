@@ -38,11 +38,17 @@ export class BfMedia extends BfNode<BfMediaProps> {
   }
 
   async downloadClip(args: DownloadClipArgs) {
-    const { transcript, title } = args;
+    const { file: { url }, transcript, title } = args;
     const fileroot = await Deno.makeTempFile();
     const transcriptFilename = `${fileroot}.json`;
     const testVideoFilename = `${fileroot}.mp4`;
-    const fileContent = JSON.stringify(transcript, null, 2);
+    // HACK FOR DEMO, LIMIT TO 20 SECONDS
+    // because replit runs out of disk space
+    const transcriptOverride = {
+      ...transcript,
+      end_time: transcript.start_time + 20,
+    };
+    const fileContent = JSON.stringify(transcriptOverride, null, 2);
     try {
       await Deno.writeTextFile(transcriptFilename, fileContent);
       logger.info(`Transcript file created at ${transcriptFilename}`);
@@ -54,7 +60,17 @@ export class BfMedia extends BfNode<BfMediaProps> {
     }
 
     // Download and save the file from Google Drive
-    const testVideoId = "1JOvVaUjfMOzhvzkztbFyII6Oe7Qu9Hrh"; // "short video.mp4"
+    logger.info("File url", url);
+    // Hack for demo
+    // kmdigital test for Dan's demo
+    const testVideoId = "1ko5BmYBouDay2nbpw9ujoiYNxlbKalfE";
+
+    // P1019004.MP4 for "work life balance"
+    // const testVideoId = "1sl5QyXEtZar8S2PHbZyd2J6u1FmedLtA";
+
+    // "short video.mp4"
+    // const testVideoId = "1JOvVaUjfMOzhvzkztbFyII6Oe7Qu9Hrh";
+
     try {
       const currentViewerPerson = await BfPerson.findCurrentViewer(
         this.currentViewer,
@@ -88,6 +104,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
       `_render.${extension}`,
     );
 
+    // Hack for demo
     // Copy file from renderedFilename to {BF_ROOT}/build/downloads
     const formattedTitle = title
       ? `${sanitizeFilename(title)}.mp4`
