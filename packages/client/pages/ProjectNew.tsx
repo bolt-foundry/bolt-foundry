@@ -4,7 +4,7 @@ import { PageFrame } from "packages/client/components/PageFrame.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { clearOpfsStorage } from "lib/opfs.ts";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { BfWorkerFileIngestion } from "packages/mediaProcessing/BfWorkerFileIngestion.ts";
 
 const logger = getLogger(import.meta);
@@ -73,7 +73,7 @@ export function ProjectNew() {
             <div>
               <h1>Upload a video</h1>
             </div>
-            <Button
+            <BfDsButton
               onClick={() => {
                 commitUploadFile({
                   variables: {
@@ -175,13 +175,13 @@ function ProjectUploader({ onUpload, onSelect }: ProjectUploaderProps) {
         type="file"
         onChange={(e) => setFile((e?.target?.files ?? [])[0])}
       />
-      <Button
+      <BfDsButton
         onClick={() => {
           onUpload(file);
         }}
         text="Create project"
       />
-      <Button
+      <BfDsButton
         onClick={() => {
           clearOpfsStorage();
         }}

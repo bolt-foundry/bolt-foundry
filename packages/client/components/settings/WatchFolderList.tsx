@@ -1,11 +1,11 @@
 import { React, ReactRelay } from "deps.ts";
 import { usePaginationFragment } from "react-relay";
 import { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery.graphql.ts";
-import { Columns, Table } from "packages/bfDs/Table.tsx";
-import { TableCell } from "packages/bfDs/TableCell.tsx";
+import { BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
+import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { graphql } from "packages/client/deps.ts";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { WatchFolderListMenu } from "packages/client/components/settings/WatchFolderListMenu.tsx";
 
 const fragment = await graphql`
@@ -34,7 +34,7 @@ const fragment = await graphql`
 `;
 
 type Props = {
-  settings$key: SettingsPageQuery$data | null;
+  settings$key: SettingsPageQuery$data | ClipSearchPageQuery$data | null;
 };
 
 type Data = {
@@ -72,26 +72,26 @@ export function WatchFolderList({ settings$key }: Props) {
     };
   }).filter(Boolean);
 
-  const columns: Columns<Data> = [
+  const columns: BfDsColumns<Data> = [
     {
       title: "Folder name",
       width: "2fr",
-      renderer: (data) => <TableCell text={data.folder} />,
+      renderer: (data) => <BfDsTableCell text={data.folder} />,
     },
     {
       title: "Videos",
       width: "0.5fr",
-      renderer: (data) => <TableCell text={data.videos} />,
+      renderer: (data) => <BfDsTableCell text={data.videos} />,
     },
     {
       title: "Active",
       width: "0.5fr",
-      renderer: (data) => <TableCell text={data.active ? "Yes" : "No"} />,
+      renderer: (data) => <BfDsTableCell text={data.active ? "Yes" : "No"} />,
     },
     {
       title: "Status",
       width: "1fr",
-      renderer: (data) => <TableCell text={data.status} />,
+      renderer: (data) => <BfDsTableCell text={data.status} />,
     },
     {
       width: "0.5fr",
@@ -110,8 +110,8 @@ export function WatchFolderList({ settings$key }: Props) {
           </div>
         )}
       <div className="cs-page-section">
-        <Table columns={columns} data={tableData} />
-        <Button
+        <BfDsTable columns={columns} data={tableData} />
+        <BfDsButton
           disabled={!hasNext}
           kind="outline"
           text={isLoadingNext ? "Loading..." : "Load more"}

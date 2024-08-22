@@ -2,8 +2,8 @@ import { React } from "deps.ts";
 import {useMutation, useLazyLoadQuery} from "react-relay";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
-import { Tooltip } from "packages/bfDs/Tooltip.tsx";
-import { Icon, IconType } from "packages/bfDs/Icon.tsx";
+import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
+import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { classnames } from "lib/classnames.ts";
@@ -11,7 +11,7 @@ import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPa
 import { RandallPlaygroundPageQuery } from "infra/__generated__/RandallPlaygroundPageQuery.graphql.ts";
 import { RandallPlaygroundPageAddToGoogleMutation } from "infra/__generated__/RandallPlaygroundPageAddToGoogleMutation.graphql.ts";
 import { RandallPlaygroundPagePickFolderMutation } from "infra/__generated__/RandallPlaygroundPagePickFolderMutation.graphql.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
 const { useState } = React;
 
@@ -228,19 +228,19 @@ export function RandallPlaygroundPage() {
               />
             </div>
             <div>
-              <Button
+              <BfDsButton
                 text={googleAccessToken ? "Authorized!!" : "Authorize Google"}
                 onClick={authorizer}
                 disabled={googleAccessToken != null}
               />
-              <Button text={"Open file picker"} onClick={pickFile} disabled={!googleAccessToken} />
+              <BfDsButton text={"Open file picker"} onClick={pickFile} disabled={!googleAccessToken} />
               {tabs[currentTab].header} -{" "}
               {data?.currentViewer?.person?.name ?? "Not set up"}
             </div>
           </div>
         </div>
         <div className="internalMainFilters">
-          <Tooltip
+          <BfDsTooltip
             menu={[
               { label: "All people", onClick: () => setOwnerFilter(null) },
             ]}
@@ -249,10 +249,10 @@ export function RandallPlaygroundPage() {
           >
             <div className="pill">
               {ownerFilter ?? "All people"}
-              <Icon name="arrowDown" size={12} />
+              <BfDsIcon name="arrowDown" size={12} />
             </div>
-          </Tooltip>
-          <Tooltip
+          </BfDsTooltip>
+          <BfDsTooltip
             menu={[
               { label: "All clients", onClick: () => setClientFilter(null) },
             ]}
@@ -261,9 +261,9 @@ export function RandallPlaygroundPage() {
           >
             <div className="pill">
               {clientFilter ?? "All clients"}
-              <Icon name="arrowDown" size={12} />
+              <BfDFsIcon name="arrowDown" size={12} />
             </div>
-          </Tooltip>
+          </BfDsTooltip>
         </div>
         <div className="internalMainContent" style={{ flex: "auto" }}>
           <List separator={true}>
@@ -310,7 +310,7 @@ export function RandallPlaygroundPage() {
                   <div className="pill">{item.client}</div>
                   {item.comments?.length > 0 && (
                     <div className="pill">
-                      <Icon name="comment" size={12} />
+                      <BfDsIcon name="comment" size={12} />
                       {item.comments?.length}
                     </div>
                   )}
@@ -340,7 +340,7 @@ export function RandallPlaygroundPage() {
                 className={classes}
                 onClick={() => setCurrentTab(key)}
               >
-                <Icon name={tab.icon as IconType} color={color} />
+                <BfDsIcon name={tab.icon as BfDsIconType} color={color} />
                 <div>{tab.label}</div>
               </div>
             );

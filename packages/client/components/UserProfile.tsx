@@ -1,6 +1,6 @@
 import { React, ReactRelay } from "deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
-import type { TooltipMenu } from "packages/bfDs/Tooltip.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
+import type { BfDsTooltipMenu } from "packages/bfDs/BfDsTooltip.tsx";
 // import { captureEvent } from "packages/events/mod.ts";
 // import {
 //   UserProfileQuery,
@@ -139,7 +139,7 @@ export function UserProfile() {
         testId: `menu-item-switch-account-${account.id}`,
       };
     },
-  ).filter(Boolean) as TooltipMenu[];
+  ).filter(Boolean) as BfDsTooltipMenu[];
 
   const tooltipMenu = [
     ...accountsMenu,
@@ -150,10 +150,10 @@ export function UserProfile() {
       showSpinner: inFlight,
       testId: "menu-item-logout",
     },
-  ] as TooltipMenu[];
+  ] as BfDsTooltipMenu[];
 
   return (
-    <Button
+    <BfDsButton
       kind="secondary"
       iconLeft={"friend"}
       size="medium"

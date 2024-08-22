@@ -5,6 +5,7 @@ import { DGWord } from "packages/types/transcript.ts";
 import { render } from "infra/bff/friends/render.bff.ts";
 import { fetchFile } from "lib/googleDriveApi.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
+import { sanitizeFilename } from "packages/lib/textUtils.ts";
 
 const logger = getLogger(import.meta);
 
@@ -16,6 +17,7 @@ type DownloadClipArgs = {
   file: {
     url: string;
   };
+  title: string;
   transcript: {
     start_time: number;
     end_time: number;
@@ -36,7 +38,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
   }
 
   async downloadClip(args: DownloadClipArgs) {
-    const { transcript } = args;
+    const { transcript, title } = args;
     const fileroot = await Deno.makeTempFile();
     const transcriptFilename = `${fileroot}.json`;
     const testVideoFilename = `${fileroot}.mp4`;
@@ -85,6 +87,20 @@ export class BfMedia extends BfNode<BfMediaProps> {
       new RegExp(`\.${extension}$`),
       `_render.${extension}`,
     );
+
+    // Copy file from renderedFilename to {BF_ROOT}/build/downloads
+    const formattedTitle = title
+      ? `${sanitizeFilename(title)}.mp4`
+      : renderedFilename.split("/").pop();
+    const BFF_ROOT = Deno.env.get("BFF_ROOT") ?? Deno.cwd();
+    const destinationPath = `${BFF_ROOT}/build/downloads/${formattedTitle}`;
+    try {
+      await Deno.copyFile(renderedFilename, destinationPath);
+      logger.info(`File copied to ${destinationPath}`);
+    } catch (error) {
+      logger.error(`Failed to copy file to ${destinationPath}: ${error}`);
+      throw error;
+    }
 
     if (renderCode !== 0) {
       logger.error(`Error rendering ${renderedFilename}`);

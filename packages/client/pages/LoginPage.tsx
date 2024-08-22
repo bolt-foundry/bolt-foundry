@@ -1,7 +1,7 @@
 import { React, ReactRelay } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
 import { LoginForm } from "packages/client/components/LoginForm.tsx";
 // import { captureEvent } from "packages/events/mod.ts";
@@ -82,7 +82,7 @@ function LoginPageContent() {
         {loggedInPerson && (
           <div>
             Logged in as {loggedInPerson.name}. Not you?{" "}
-            <Button
+            <BfDsButton
               showSpinner={logoutInFlight}
               text="Logout"
               onClick={onLogout}

@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import { Tooltip } from "packages/bfDs/Tooltip.tsx";
+import { BfDsTooltip } from "packages/bfDs/BfDsooltip.tsx";
 import { Input } from "packages/bfDs/Input.tsx";
 
 const { useEffect } = React;
@@ -100,7 +100,7 @@ export function Password(
       >
         uppercase letter
       </span>, and{" "}
-      <Tooltip text={specialCharsTooltip} delay={0}>
+      <BfDsTooltip text={specialCharsTooltip} delay={0}>
         <span
           style={{
             ...(passwordRequirements.hasSymbol !== true && styles.reqNotMet),
@@ -108,7 +108,7 @@ export function Password(
         >
           symbol
         </span>
-      </Tooltip>
+      </BfDsTooltip>
       .
     </>
   );

@@ -1,16 +1,50 @@
 import { React } from "deps.ts";
 import { Clip } from "packages/client/components/clipsearch/Clip.tsx";
-import { Nux } from "packages/client/components/clipsearch/Nux.tsx";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
 import { isValidJSON } from "packages/lib/jsonUtils.ts";
+import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFilePicker.tsx";
+import { useFragment } from "react-relay";
+import { graphql } from "packages/client/deps.ts";
 
 type Props = {
+  clips$key: unknown;
   clips: string | undefined | null;
 };
 
-export function ClipsView({ clips }: Props) {
+const fragment = await graphql`
+  fragment ClipsView_bfPerson on BfPerson {
+    googleAuthAccessToken
+  }
+`;
+
+function GoogleAuthSection() {
+  return (
+    <div
+      className="cs-page-section flexRow"
+      style={{ justifyContent: "space-between", alignItems: "center" }}
+    >
+      <div className="flexColumn">
+        <div className="cs-page-section-title">
+          Google Authorization
+        </div>
+        <div>
+          In order to download videos, you must authorize Google Drive access.
+        </div>
+      </div>
+      <GoogleFilePicker />
+    </div>
+  );
+}
+
+export function ClipsView({ clips$key, clips }: Props) {
+  let data = useFragment(fragment, clips$key);
   if (clips === undefined) {
-    return <Nux />;
+    return (
+      <>
+        {data?.googleAuthAccessToken == null &&
+          <GoogleAuthSection />}
+      </>
+    );
   }
   if (clips === null) {
     return <FullPageSpinner />;
@@ -22,6 +56,8 @@ export function ClipsView({ clips }: Props) {
 
   return (
     <div className="cs-clipsView">
+      {data?.googleAuthAccessToken == null &&
+        <GoogleAuthSection />}
       {parsedClips?.anecdotes?.map((clip) => (
         <Clip
           titleText={clip.titleText}
@@ -37,6 +73,7 @@ export function ClipsView({ clips }: Props) {
           endIndex={clip.endIndex}
           startTime={clip.startTime}
           endTime={clip.endTime}
+          clips$key={clips$key}
         />
       ))}
     </div>

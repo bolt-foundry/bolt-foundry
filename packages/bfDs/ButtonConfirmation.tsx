@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { Button, ButtonSizeType } from "packages/bfDs/Button.tsx";
-import { Icon, IconSizeType, IconType } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon, IconSizeType, BfDsIconType } from "packages/bfDs/Icon.tsx";
 
 const styles: Record<string, React.CSSProperties> = {
   confirmation: {
@@ -24,8 +24,8 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 type Props = {
-  icon: IconType;
-  iconSelected?: IconType;
+  icon: BfDsIconType;
+  iconSelected?: BfDsIconType;
   onConfirm: () => void;
   onCancel?: () => void;
   showSpinner?: boolean;
@@ -66,7 +66,7 @@ export function ButtonConfirmation({
   }
   return (
     <div className="confirmationBase" style={styles.confirmationBase}>
-      <Button
+      <BfDsButton
         iconLeft={icon}
         kind="alert"
         onClick={() => setShowConfirmation(true)}
@@ -75,14 +75,14 @@ export function ButtonConfirmation({
       />
       {showConfirmation && (
         <div style={styles.confirmation}>
-          <Button
+          <BfDsButton
             iconLeft="back"
             kind="success"
             onClick={() => setShowConfirmation(false)}
             size={size}
             testId={`${testId}-cancel`}
           />
-          <Button
+          <BfDsButton
             iconLeft="check"
             kind="alert"
             onClick={onConfirm}
@@ -99,7 +99,7 @@ export function ButtonConfirmation({
             onClick={() => setShowConfirmation(false)}
             data-bf-testid={`${testId}-cancel-icon`}
           >
-            <Icon
+            <BfDsIcon
               name={iconSelected}
               color={"var(--overlayDark)"}
               size={iconSize}

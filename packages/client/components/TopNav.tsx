@@ -1,8 +1,8 @@
 import { React, ReactRelay } from "deps.ts";
 import { BfLogo } from "packages/bfDs/static/BfLogo.tsx";
 import { colors } from "packages/bfDs/const.tsx";
-import { Icon } from "packages/bfDs/Icon.tsx";
-import { Tooltip } from "packages/bfDs/Tooltip.tsx";
+import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
+import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { useAppState } from "packages/client/contexts/AppStateContext.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { Link } from "packages/bfDs/Link.tsx";
@@ -105,15 +105,15 @@ export function TopNav({ setMobileProjectListOpen }: Props) {
         </div>
       </div>
       <div className="top-nav-right">
-        <Tooltip
+        <BfDsTooltip
           menu={menu}
           justification="end"
           position="bottom"
         >
           <div className="iconButton" style={styles.iconButton}>
-            <Icon name="menu" size={24} color={colors.background} />
+            <BfDsIcon name="menu" size={24} color={colors.background} />
           </div>
-        </Tooltip>
+        </BfDsTooltip>
       </div>
     </div>
   );

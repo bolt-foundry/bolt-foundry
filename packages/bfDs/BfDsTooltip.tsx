@@ -1,19 +1,19 @@
 import { React } from "deps.ts";
 import { ReactDOMClient } from "packages/client/deps.ts";
-import { Icon, IconType } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useCopyToClipboard } from "packages/bfDs/hooks/useCopyToClipboard.ts";
 // import type FeatureMenu from "packages/bfDs/FeatureMenu.tsx";
 
 const { createPortal } = ReactDOMClient;
 const { useEffect, useMemo, useRef, useState } = React;
 
-export type TooltipMenu = {
+export type BfDsTooltipMenu = {
   button?: React.ReactElement<typeof Button>;
   closeOnClick?: boolean;
   disabled?: boolean;
-  icon?: IconType;
+  icon?: BfDsIconType;
   kind?: string;
   label?: string;
   onClick?: () => void;
@@ -22,11 +22,11 @@ export type TooltipMenu = {
   xstyle?: React.CSSProperties;
   testId?: string; // used to identify the menu item in posthog
 };
-export type TooltipPosition = "top" | "bottom" | "left" | "right";
-export type TooltipJustification = "center" | "end" | "start";
+export type BfDsTooltipPosition = "top" | "bottom" | "left" | "right";
+export type BfDsTooltipJustification = "center" | "end" | "start";
 type Props = {
   text?: string | React.ReactNode;
-  menu?: unknown; //TooltipMenu[] | React.ReactElement<typeof FeatureMenu>;
+  menu?: unknown; //BfDsTooltipMenu[] | React.ReactElement<typeof FeatureMenu>;
   position?: TooltipPosition; // default: "top"
   justification?: TooltipJustification; // default: "center"
   delay?: number; // default: 1000
@@ -253,7 +253,7 @@ function createTooltipStyle(
 }
 
 type MenuItemProps = {
-  menuItem: TooltipMenu;
+  menuItem: BfDsTooltipMenu;
   hovering: boolean;
 };
 function MenuItem({ menuItem, hovering }: MenuItemProps) {
@@ -289,7 +289,7 @@ function MenuItem({ menuItem, hovering }: MenuItemProps) {
     >
       {menuItem.icon && !menuItem.showSpinner && (
         <div className="tooltip-menu-item-icon">
-          <Icon name={menuItem.icon} size={12} />
+          <BfDsIcon name={menuItem.icon} size={12} />
         </div>
       )}
       {menuItem.showSpinner && (
@@ -299,7 +299,7 @@ function MenuItem({ menuItem, hovering }: MenuItemProps) {
       )}
       <div style={styles.menuItemRow}>
         {menuItem.selected
-          ? <Icon color={"var(--success)"} name="check" size={12} />
+          ? <BfDsIcon color={"var(--success)"} name="check" size={12} />
           : <div style={styles.checkPlaceholder} />}
         <div className="tooltip-menu-item-label" style={styles.menuItemText}>
           {menuItem.label}
@@ -310,7 +310,7 @@ function MenuItem({ menuItem, hovering }: MenuItemProps) {
 }
 
 type MenuProps = {
-  menu: unknown; //TooltipMenu[] | React.ReactElement<typeof FeatureMenu> | undefined;
+  menu: unknown; //BfDsTooltipMenu[] | React.ReactElement<typeof FeatureMenu> | undefined;
 };
 function Menu({ menu }: MenuProps) {
   const [hovering, setHovering] = useState<number | null>(null);
@@ -333,7 +333,7 @@ function Menu({ menu }: MenuProps) {
   return <div className="tooltip-menu">{menu}</div>;
 }
 
-export function Tooltip(
+export function BfDsTooltip(
   {
     text,
     menu,
@@ -470,7 +470,7 @@ export function Tooltip(
             <div className="tooltip-text">
               {canCopy && (
                 <span style={{ display: "inline", marginRight: 8 }}>
-                  <Icon
+                  <BfDsIcon
                     color={copiedText ? "var(--success)" : "white"}
                     name={copiedText ? "check" : "clipboard"}
                     size={12}

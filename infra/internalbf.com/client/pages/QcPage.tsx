@@ -1,10 +1,10 @@
 import { React } from "deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
-import { Icon, IconType } from "packages/bfDs/Icon.tsx";
+import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { classnames } from "lib/classnames.ts";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
-import { Tooltip } from "packages/bfDs/Tooltip.tsx";
+import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
 const { useState } = React;
 
@@ -259,7 +259,7 @@ const fakeData: Array<ClipReview> = [
 
 type Tab = {
   header: string;
-  icon: IconType;
+  icon: BfDsIconType;
   label: string;
 };
 type Tabs = Record<string, Tab>;
@@ -326,7 +326,7 @@ export function QcPage() {
           </div>
         </div>
         <div className="internalMainFilters">
-          <Tooltip
+          <BfDsTooltip
             menu={[
               { label: "All people", onClick: () => setOwnerFilter(null) },
             ].concat(
@@ -342,10 +342,10 @@ export function QcPage() {
           >
             <div className="pill">
               {ownerFilter ?? "All people"}
-              <Icon name="arrowDown" size={12} />
+              <BfDsIcon name="arrowDown" size={12} />
             </div>
-          </Tooltip>
-          <Tooltip
+          </BfDsTooltip>
+          <BfDsTooltip
             menu={[
               { label: "All clients", onClick: () => setClientFilter(null) },
             ].concat(
@@ -361,9 +361,9 @@ export function QcPage() {
           >
             <div className="pill">
               {clientFilter ?? "All clients"}
-              <Icon name="arrowDown" size={12} />
+              <BfDsIcon name="arrowDown" size={12} />
             </div>
-          </Tooltip>
+          </BfDsTooltip>
         </div>
         <div className="internalMainContent" style={{ flex: "auto" }}>
           <List separator={true}>
@@ -410,7 +410,7 @@ export function QcPage() {
                   <div className="pill">{item.client}</div>
                   {item.comments?.length > 0 && (
                     <div className="pill">
-                      <Icon name="comment" size={12} />
+                      <BfDsIcon name="comment" size={12} />
                       {item.comments?.length}
                     </div>
                   )}
@@ -440,7 +440,7 @@ export function QcPage() {
                 className={classes}
                 onClick={() => setCurrentTab(key)}
               >
-                <Icon name={tab.icon as IconType} color={color} />
+                <BfDsIcon name={tab.icon as BfDsIconType} color={color} />
                 <div>{tab.label}</div>
               </div>
             );

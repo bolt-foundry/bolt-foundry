@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
-import { Button } from "packages/bfDs/Button.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { ButtonGroup } from "packages/bfDs/ButtonGroup.tsx";
-import { IconDemo } from "packages/bfDs/Icon.tsx";
+import { BfDsIconDemo } from "packages/bfDs/BfDsIcon.tsx";
 import TVStatic from "packages/client/images/TVStatic.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
 // import WorkflowStatusIndicator from "packages/client/components/WorkflowStatusIndicator.tsx";
@@ -13,47 +13,47 @@ import { ContactUs } from "packages/client/components/ContactUs.tsx";
 const buttonElements = [
   {
     name: "Button (primary/large)",
-    component: <Button text="Primary" kind="primary" size="large" />,
+    component: <BfDsButton text="Primary" kind="primary" size="large" />,
   },
   {
     name: "Button (secondary/medium)",
-    component: <Button text="Secondary" kind="secondary" size="medium" />,
+    component: <BfDsButton text="Secondary" kind="secondary" size="medium" />,
   },
   {
     name: "Button (accent/small)",
-    component: <Button text="Accent" kind="accent" size="small" />,
+    component: <BfDsButton text="Accent" kind="accent" size="small" />,
   },
   {
     name: "Button (outline)",
-    component: <Button text="Outline" kind="outline" />,
+    component: <BfDsButton text="Outline" kind="outline" />,
   },
   {
     name: "Button (overlay)",
-    component: <Button text="Overlay" kind="overlay" />,
+    component: <BfDsButton text="Overlay" kind="overlay" />,
   },
-  { name: "Button (alert)", component: <Button text="Alert" kind="alert" /> },
+  { name: "Button (alert)", component: <BfDsButton text="Alert" kind="alert" /> },
   {
     name: "Button (success)",
-    component: <Button text="Success" kind="success" />,
+    component: <BfDsButton text="Success" kind="success" />,
   },
   {
     name: "Button (success + spinner)",
-    component: <Button text="Success" kind="success" showSpinner={true} />,
+    component: <BfDsButton text="Success" kind="success" showSpinner={true} />,
   },
   {
     name: "Button (primary + spinner)",
-    component: <Button text="Primary" iconLeft="pencil" showSpinner={true} />,
+    component: <BfDsButton text="Primary" iconLeft="pencil" showSpinner={true} />,
   },
 ];
 const buttonElementsWithIcons = [
   {
     name: "Button (icon + text)",
-    component: <Button text="Text" iconLeft="pencil" />,
+    component: <BfDsButton text="Text" iconLeft="pencil" />,
   },
   {
     name: "Button (icon + text + icon/large)",
     component: (
-      <Button
+      <BfDsButton
         text="Text"
         subtext="More text"
         iconLeft="pencil"
@@ -64,7 +64,7 @@ const buttonElementsWithIcons = [
   {
     name: "Button (icon + text + icon/medium)",
     component: (
-      <Button
+      <BfDsButton
         text="Text"
         subtext="More text"
         iconLeft="pencil"
@@ -76,7 +76,7 @@ const buttonElementsWithIcons = [
   {
     name: "Button (icon + text + icon/small)",
     component: (
-      <Button
+      <BfDsButton
         text="Text"
         subtext="More text"
         iconLeft="pencil"
@@ -87,41 +87,41 @@ const buttonElementsWithIcons = [
   },
 ];
 const buttonElementsWithIconsOnly = [
-  { name: "Button (icon)", component: <Button iconLeft="plus" size="large" /> },
+  { name: "Button (icon)", component: <BfDsButton iconLeft="plus" size="large" /> },
   {
     name: "Button (icon)",
-    component: <Button iconLeft="pencil" kind="secondary" size="medium" />,
+    component: <BfDsButton iconLeft="pencil" kind="secondary" size="medium" />,
   },
   {
     name: "Button (icon/alert)",
-    component: <Button iconLeft="cross" kind="alert" size="small" />,
+    component: <BfDsButton iconLeft="cross" kind="alert" size="small" />,
   },
   {
     name: "Button (icon/success)",
-    component: <Button iconLeft="check" kind="success" />,
+    component: <BfDsButton iconLeft="check" kind="success" />,
   },
   {
     name: "Button (icon/outline)",
-    component: <Button iconLeft="settings" kind="outline" />,
+    component: <BfDsButton iconLeft="settings" kind="outline" />,
   },
   {
     name: "Button (icon/overlay)",
-    component: <Button iconLeft="download" kind="overlay" />,
+    component: <BfDsButton iconLeft="download" kind="overlay" />,
   },
   {
     name: "Button (icon/spinner)",
-    component: <Button iconLeft="check" kind="success" showSpinner />,
+    component: <BfDsButton iconLeft="check" kind="success" showSpinner />,
   },
   {
     name: "Button (icon/spinner/accent)",
-    component: <Button iconLeft="download" kind="accent" showSpinner />,
+    component: <BfDsButton iconLeft="download" kind="accent" showSpinner />,
   },
 ];
 const buttonMenuElements = [
   {
     name: "Icon Button Dropdown menu",
     component: (
-      <Button
+      <BfDsButton
         iconLeft="settings"
         kind="outline"
         tooltipMenu={[
@@ -137,7 +137,7 @@ const buttonMenuElements = [
   {
     name: "Button Dropdown menu",
     component: (
-      <Button
+      <BfDsButton
         text="Button menu"
         kind="outline"
         tooltipMenu={[
@@ -153,7 +153,7 @@ const buttonMenuElements = [
   {
     name: "Icon Button Dropdown menu",
     component: (
-      <Button
+      <BfDsButton
         iconLeft="settings"
         kind="secondary"
         tooltipMenu={[
@@ -169,7 +169,7 @@ const buttonMenuElements = [
   {
     name: "Button Dropdown menu",
     component: (
-      <Button
+      <BfDsButton
         text="Button menu"
         kind="secondary"
         tooltipMenu={[
@@ -185,7 +185,7 @@ const buttonMenuElements = [
   {
     name: "Icon Button Dropdown menu",
     component: (
-      <Button
+      <BfDsButton
         iconLeft="settings"
         tooltipMenu={[
           { label: "Menu Item 1", onClick: () => {} },
@@ -200,7 +200,7 @@ const buttonMenuElements = [
   {
     name: "Button Dropdown menu",
     component: (
-      <Button
+      <BfDsButton
         text="Button menu w/ tooltip"
         tooltipMenu={[
           { label: "Menu Item 1", onClick: () => {} },
@@ -220,8 +220,8 @@ const buttonGroupElements = [
     component: (
       <ButtonGroup
         buttons={[
-          <Button text="Button" kind="secondary" />,
-          <Button text="Button" />,
+          <BfDsButton text="Button" kind="secondary" />,
+          <BfDsButton text="Button" />,
         ]}
       />
     ),
@@ -230,22 +230,22 @@ const buttonGroupElements = [
 const darkElements = [
   {
     name: "Button (overlayDark)",
-    component: <Button text="Overlay Dark" kind="overlayDark" />,
+    component: <BfDsButton text="Overlay Dark" kind="overlayDark" />,
   },
   {
     name: "Link",
-    component: <Button text="Link" kind="overlayDark" link="/" />,
+    component: <BfDsButton text="Link" kind="overlayDark" link="/" />,
   },
   {
     name: "Href",
     component: (
-      <Button text="Href" kind="overlayDark" href="https://facebook.com" />
+      <BfDsButton text="Href" kind="overlayDark" href="https://facebook.com" />
     ),
   },
   {
     name: "Icon (overlayDark)",
     component: (
-      <Button
+      <BfDsButton
         iconLeft="brand-tiktok"
         kind="overlayDark"
         href="https://www.tiktok.com"
@@ -348,15 +348,15 @@ export function Demo() {
         <div className="name" style={styles.name}>Toasts</div>
         <div className="group" style={styles.group}>
           {/* Plain toast */}
-          <Button text="Toast 1" onClick={() => showToast("Toasty")} />
+          <BfDsButton text="Toast 1" onClick={() => showToast("Toasty")} />
           {/* Self closing toast */}
-          <Button
+          <BfDsButton
             text="Toast 2"
             subtext="Self closing"
             onClick={() => showToast("Toasty 2", { timeout: 4000 })}
           />
           {/* TODO Toast with clickable progress */}
-          <Button
+          <BfDsButton
             text="Toast 3"
             subtext="Click x20"
             onClick={() => {
@@ -376,8 +376,8 @@ export function Demo() {
       <div className="element" style={styles.element}>
         <div className="name" style={styles.name}>Modals</div>
         <div className="group" style={styles.group}>
-          <Button text="Modal 'hi'" onClick={() => showModal(<div>hi</div>)} />
-          <Button text="Modal" onClick={() => showModal(<ContactUs />)} />
+          <BfDsButton text="Modal 'hi'" onClick={() => showModal(<div>hi</div>)} />
+          <BfDsButton text="Modal" onClick={() => showModal(<ContactUs />)} />
         </div>
       </div>
 
@@ -453,27 +453,27 @@ export function Demo() {
       <div className="element" style={styles.element}>
         <div style={styles.name}>Icons</div>
         <div className="group" style={styles.group}>
-          <IconDemo />
+          <BfDsIconDemo />
         </div>
       </div>
       <div style={styles.element}>
         <div style={styles.name}>Tooltips</div>
         <div style={styles.group}>
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="right start"
             tooltipPosition="right"
             tooltipJustification="start"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="right center"
             tooltipPosition="right"
             tooltipJustification="center"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="right end"
@@ -481,21 +481,21 @@ export function Demo() {
             tooltipJustification="end"
           />
 
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="top start"
             tooltipPosition="top"
             tooltipJustification="start"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="top center"
             tooltipPosition="top"
             tooltipJustification="center"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="top end"
@@ -503,21 +503,21 @@ export function Demo() {
             tooltipJustification="end"
           />
 
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="left start"
             tooltipPosition="left"
             tooltipJustification="start"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="left center"
             tooltipPosition="left"
             tooltipJustification="center"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="left end"
@@ -525,21 +525,21 @@ export function Demo() {
             tooltipJustification="end"
           />
 
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="bottom start"
             tooltipPosition="bottom"
             tooltipJustification="start"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="bottom center"
             tooltipPosition="bottom"
             tooltipJustification="center"
           />
-          <Button
+          <BfDsButton
             iconLeft="brand-discord"
             kind="overlayDark"
             tooltip="bottom end"
@@ -554,12 +554,12 @@ export function Demo() {
           <Spinner waitIcon={true} />
           {/* <WorkflowStatusIndicator percent={Number(percent)} /> */}
           <div>
-            <Button
+            <BfDsButton
               text="Progress button"
               kind="primary"
               progress={Number(percent)}
             />
-            <Button
+            <BfDsButton
               iconLeft="download"
               kind="primary"
               progress={Number(percent)}
