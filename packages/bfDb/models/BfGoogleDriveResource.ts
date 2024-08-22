@@ -4,13 +4,13 @@ import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
 import { getLogger } from "deps.ts";
 import {
+fetchFile,
   fetchFolderContents,
   fetchMetadata,
   GoogleDriveFileMetadata,
 } from "lib/googleDriveApi.ts";
-import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfError } from "lib/BfError.ts";
-import { BfGid, toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
 
 const logger = getLogger(import.meta);
@@ -19,7 +19,9 @@ logger.setLevel(logger.levels.TRACE);
 type BfGoogleDriveResourceRequiredProps = {
   resourceId: string;
   name: string;
+  mimeType: string;
   googleDriveMetadata: GoogleDriveFileMetadata;
+  ingestionProgress: number;
 };
 export class BfGoogleDriveResource
   extends BfNode<BfGoogleDriveResourceRequiredProps> {
@@ -40,6 +42,7 @@ export class BfGoogleDriveResource
       this.props.resourceId,
     ).then(async (metadata) => {
       this.props.googleDriveMetadata = metadata;
+      this.props.mimeType = metadata.mimeType;
       await this.save();
     });
 
@@ -107,9 +110,16 @@ export class BfGoogleDriveResource
     const token = await this.getAccessToken();
     const response = await fetchFolderContents(token, this.props.resourceId);
     logger.debug("folder contents", response);
-    const childrenProps: Array<BfGoogleDriveResourceRequiredProps> = response.files?.map((resource) => {
-      return { resourceId: resource.id, name: resource.name, googleDriveMetadata: resource };
-    }) ?? [];
+    const childrenProps: Array<BfGoogleDriveResourceRequiredProps> =
+      response.files?.map((resource) => {
+        return {
+          resourceId: resource.id,
+          name: resource.name,
+        googleDriveMetadata: resource,
+          mimeType: resource.mimeType,
+          ingestionProgress: 0,
+        };
+      }) ?? [];
     for (const childProps of childrenProps) {
       await BfJob.createJobForNode(this, "__JOB_ONLY__createChild", [
         childProps,
@@ -125,8 +135,13 @@ export class BfGoogleDriveResource
     logger.debug("creating child", childProps, this.metadata.bfGid);
     try {
       await this.transactionStart();
-      const child = await (this.constructor as typeof BfGoogleDriveResource).create(this.currentViewer, childProps);
-      const edge = await BfEdge.createEdgeBetweenNodes(this.currentViewer, this, child);
+      const child = await (this.constructor as typeof BfGoogleDriveResource)
+        .create(this.currentViewer, childProps);
+      const edge = await BfEdge.createEdgeBetweenNodes(
+        this.currentViewer,
+        this,
+        child,
+      );
       logger.debug("created child and edge", child, edge);
       await this.transactionCommit();
       logger.debug("committed transaction");
