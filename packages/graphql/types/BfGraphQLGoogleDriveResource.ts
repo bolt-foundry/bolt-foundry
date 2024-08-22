@@ -1,5 +1,10 @@
 import { extendType, mutationField, objectType } from "nexus";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
+import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
+import { GraphQLContext } from "packages/graphql/graphql.ts";
+import { GraphQLError } from "packages/graphql/deps.ts";
+import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 
 export const BfGraphQLGoogleDriveFolderType = objectType({
   name: "BfGoogleDriveResource",
@@ -35,12 +40,25 @@ export const BfGraphQLPickGoogleDriveFolderMutation = mutationField(
       resourceId: "String",
       name: "String",
     },
-    resolve: async (_root, { resourceId, name }, { bfCurrentViewer }) => {
+    resolve: async (
+      _root,
+      { resourceId, name },
+      { bfCurrentViewer }: GraphQLContext,
+    ) => {
       const folder = await BfGoogleDriveResource.create(bfCurrentViewer, {
         resourceId,
         name,
       });
-      return folder;
+      const organization = await BfOrganization.findX(
+        bfCurrentViewer,
+        bfCurrentViewer.organizationBfGid,
+      );
+      const _edge = await BfEdge.createEdgeBetweenNodes(
+        bfCurrentViewer,
+        organization,
+        folder,
+      );
+      return folder.toGraphql();
     },
   },
 );
@@ -60,7 +78,14 @@ export const BfGraphQLDeleteGoogleDriveResourceMutation = mutationField(
       resourceId: "String",
     },
     resolve: async (_root, { resourceId }, { bfCurrentViewer }) => {
-      // TODO
+      if (resourceId == null) {
+        throw new GraphQLError("resourceId is required");
+      }
+      const folder = await BfGoogleDriveResource.findX(
+        bfCurrentViewer,
+        toBfGid(resourceId),
+      );
+      await folder.delete();
       return { success: true };
     },
   },
