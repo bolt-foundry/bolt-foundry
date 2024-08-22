@@ -1,6 +1,6 @@
 import * as React from "react";
 import { getLogger } from "deps.ts";
-import { Input } from "packages/bfDs/Input.tsx";
+import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { Toggle } from "packages/bfDs/Toggle.tsx";
 const { useState, createContext, useContext } = React;
@@ -83,7 +83,7 @@ function BfDsTextInput({ id, title }: BfDsFormElementProps) {
   const { data, onChange } = useBfDsFormContext();
   return (
     <div>
-      <Input
+      <BfDsInput
         label={title}
         type="text"
         id={id}
@@ -99,7 +99,7 @@ function BfDsNumberInput({ id, title }: { id: string; title: string }) {
   const { data, onChange } = useBfDsFormContext();
   return (
     <div>
-      <Input
+      <BfDsInput
         label={title}
         type="number"
         id={id}

@@ -78,7 +78,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-export function Input(
+export function BfDsInput(
   {
     autoFocus,
     autoSelect,

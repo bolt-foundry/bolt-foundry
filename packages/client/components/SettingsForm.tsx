@@ -6,7 +6,7 @@ import {
   type WatermarkLogoType,
   type WatermarkPositionType,
 } from "packages/types/settings.ts";
-import { Input } from "packages/bfDs/Input.tsx";
+import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { RatioSelector } from "packages/client/components/RatioSelector.tsx";
 import { Toggle } from "packages/bfDs/Toggle.tsx";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
@@ -181,7 +181,7 @@ export function SettingsForm(
         description="Only show clips with at least this many words"
         name="Minimum words"
         settingElement={
-          <Input
+          <BfDsInput
             type="number"
             name="minimumWords"
             onChange={(e) =>
@@ -385,7 +385,7 @@ export function SettingsForm(
               disabled={!showCaptionsValue}
               name="Caption color"
               settingElement={
-                <Input
+                <BfDsInput
                   disabled={!showCaptionsValue}
                   type="color"
                   name="captionColor"
@@ -410,7 +410,7 @@ export function SettingsForm(
               disabled={!showCaptionsValue}
               name="Highlight color"
               settingElement={
-                <Input
+                <BfDsInput
                   disabled={!showCaptionsValue}
                   type="color"
                   name="captionHighlightColor"
@@ -435,7 +435,7 @@ export function SettingsForm(
               disabled={!showCaptionsValue}
               name="Caption lines"
               settingElement={
-                <Input
+                <BfDsInput
                   type="number"
                   name="captionLines"
                   numberAttributes={{ min: 1, max: 3 }}
@@ -458,7 +458,7 @@ export function SettingsForm(
               disabled={!showCaptionsValue}
               name="Words per line"
               settingElement={
-                <Input
+                <BfDsInput
                   type="number"
                   name="captionWordsPerLine"
                   numberAttributes={{ min: 1, max: 10 }}
@@ -535,7 +535,7 @@ export function SettingsForm(
             disabled={!showWatermarkValue}
             name="Watermark opacity"
             settingElement={
-              <Input
+              <BfDsInput
                 type="number"
                 name="watermarkOpacity"
                 numberAttributes={{ min: 0, max: 1, step: 0.1 }}
@@ -615,7 +615,7 @@ export function SettingsForm(
             disabled={!trackingToggleValue}
             name="Large movement threshold"
             settingElement={
-              <Input
+              <BfDsInput
                 type="number"
                 name="largeMovementThresholdPct"
                 numberAttributes={{ min: 0, max: 1, step: 0.01 }}
