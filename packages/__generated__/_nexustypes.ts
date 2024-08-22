@@ -123,6 +123,7 @@ export interface NexusGenObjects {
     node?: NexusGenRootTypes['BfGoogleDriveResource'] | null; // BfGoogleDriveResource
   }
   BfMedia: { // root type
+    fileId?: string | null; // String
     filename?: string | null; // String
   }
   BfMediaConnection: { // root type
@@ -289,6 +290,7 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['BfGoogleDriveResource'] | null; // BfGoogleDriveResource
   }
   BfMedia: { // field return type
+    fileId: string | null; // String
     filename: string | null; // String
     id: string; // ID!
     transcripts: NexusGenRootTypes['BfMediaTranscriptConnection'] | null; // BfMediaTranscriptConnection
@@ -486,6 +488,7 @@ export interface NexusGenFieldTypeNames {
     node: 'BfGoogleDriveResource'
   }
   BfMedia: { // field return type name
+    fileId: 'String'
     filename: 'String'
     id: 'ID'
     transcripts: 'BfMediaTranscriptConnection'
