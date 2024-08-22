@@ -2,7 +2,7 @@ import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
 
-type GoogleDriveMetadata = {
+export type GoogleDriveMetadata = {
   id: string;
   name: string;
   mimeType: string;
