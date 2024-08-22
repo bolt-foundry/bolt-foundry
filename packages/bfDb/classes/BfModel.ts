@@ -332,6 +332,9 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         },
         set: (_target, prop, value) => {
           logger.trace(`Setting property ${String(prop)} to value ${value}`);
+          if (this.clientProps == null) {
+            this.clientProps = {};
+          }
           this.clientProps[prop as keyof TRequiredProps & TOptionalProps] =
             value;
           this._cachedProps = undefined; // Invalidate the cache
