@@ -33,20 +33,18 @@ export async function fetchMetadata(
   return await response.json();
 }
 
-export async function fetchFile(
+export function fetchFile(
   accessToken: string,
   fileId: string,
 ): Promise<Response> {
   const url =
     `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&supportsAllDrives=true`;
-  const response = await fetch(url, {
+  return fetch(url, {
     method: "GET",
     headers: new Headers({
       "Authorization": `Bearer ${accessToken}`,
     }),
   });
-
-  return response;
 }
 
 
