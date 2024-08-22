@@ -2,7 +2,7 @@ import { React, ReactRelay } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { Input } from "packages/bfDs/Input.tsx";
+import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { BfDsTextArea } from "packages/bfDs/BfDsTextArea.tsx";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
@@ -124,7 +124,7 @@ export function ContactUs({ showHeader = true }: Props) {
                 style={styles.form}
                 onSubmit={handleSubmit}
               >
-                <Input
+                <BfDsInput
                   label="Name"
                   type="text"
                   placeholder="Your name"
@@ -133,7 +133,7 @@ export function ContactUs({ showHeader = true }: Props) {
                   value={formData.name}
                   onChange={handleChange}
                 />
-                <Input
+                <BfDsInput
                   label="Phone number"
                   type="phone"
                   placeholder="(123) 456-7890"
@@ -142,7 +142,7 @@ export function ContactUs({ showHeader = true }: Props) {
                   value={formData.phone}
                   onChange={handleChange}
                 />
-                <Input
+                <BfDsInput
                   label="Company name"
                   type="text"
                   placeholder="Company Name"
@@ -151,7 +151,7 @@ export function ContactUs({ showHeader = true }: Props) {
                   value={formData.company}
                   onChange={handleChange}
                 />
-                <Input
+                <BfDsInput
                   label="Email"
                   type="email"
                   placeholder="your@email.com"

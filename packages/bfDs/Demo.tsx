@@ -5,7 +5,7 @@ import { BfDsIconDemo } from "packages/bfDs/BfDsIcon.tsx";
 import TVStatic from "packages/client/images/TVStatic.tsx";
 import { Spinner } from "packages/bfDs/Spinner.tsx";
 // import WorkflowStatusIndicator from "packages/client/components/WorkflowStatusIndicator.tsx";
-import { Input } from "packages/bfDs/Input.tsx";
+import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { fonts } from "packages/bfDs/const.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { ContactUs } from "packages/client/components/ContactUs.tsx";
@@ -410,39 +410,39 @@ export function Demo() {
       <div className="element" style={styles.element}>
         <div style={styles.name}>Form</div>
         <div className="group" style={styles.group}>
-          <Input label="Label" placeholder="Placeholder" onChange={() => {}} />
-          <Input
+          <BfDsInput label="Label" placeholder="Placeholder" onChange={() => {}} />
+          <BfDsInput
             label="Label"
             placeholder="Placeholder"
             type="number"
             onChange={() => {}}
           />
-          <Input
+          <BfDsInput
             label="Label"
             placeholder="Placeholder"
             type="password"
             onChange={() => {}}
           />
-          <Input
+          <BfDsInput
             label="Label"
             placeholder="Placeholder"
             disabled
             onChange={() => {}}
           />
-          <Input
+          <BfDsInput
             label="Label"
             placeholder="Placeholder"
             required
             onChange={() => {}}
           />
-          <Input label="Label" placeholder="Placeholder" readonly />
-          <Input
+          <BfDsInput label="Label" placeholder="Placeholder" readonly />
+          <BfDsInput
             label="Label"
             placeholder="Placeholder"
             meta="Meta"
             onChange={() => {}}
           />
-          <Input
+          <BfDsInput
             label="Label"
             placeholder="Placeholder"
             showSpinner
@@ -565,7 +565,7 @@ export function Demo() {
               progress={Number(percent)}
             />
           </div>
-          <Input
+          <BfDsInput
             label="Percent"
             value={percent}
             type="number"
