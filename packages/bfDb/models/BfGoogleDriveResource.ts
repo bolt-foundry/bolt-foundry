@@ -151,5 +151,41 @@ export class BfGoogleDriveResource
       logger.debug("rolled back transaction");
       throw new BfError("Error creating child", e);
     }
+    
+  }
+  async download(targetPath?: string) {
+    const path = targetPath ?? await Deno.makeTempFile();
+    const token = await this.getAccessToken();
+    const response = await fetchFile(token, this.props.resourceId);
+    logger.debug("downloading", this.props.resourceId, path);
+    const file = await Deno.create(path);
+    if (response.body) {
+      const contentLength = parseInt(response.headers.get("content-length") ?? "0");
+      let totalWritten = 0;
+      let lastReported = 0;
+      for await (const chunk of response.body) {
+        await file.write(chunk);
+        totalWritten += chunk.length;
+        if (contentLength != 0) {
+          const progress = Math.round((totalWritten / contentLength) * 100);
+          if (progress > lastReported) {
+            lastReported = progress;
+            this.reportProgress(totalWritten / contentLength);
+          }
+        }
+      }
+      logger.debug("downloaded", this.props.resourceId, path);
+      await this.reportProgress(1);
+    }
+  }
+
+  private async reportProgress(progress: number) {
+    logger.debug("reporting progress", progress, this.metadata.bfGid);
+    if (this.props == undefined) {
+      logger.debug("props is undefined", this.metadata.bfGid, this);
+    }
+    this.props.ingestionProgress = progress;
+    await this.save();
+    return this;
   }
 }
