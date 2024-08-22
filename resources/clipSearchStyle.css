@@ -56,6 +56,16 @@
   align-items: center;
   margin-bottom: 20px;
 }
+.cs-page-callout {
+  text-align: center;
+  font-weight: 300;
+  font-size: 30px;
+  margin-bottom: 24px;
+}
+.cs-page-section-outside-header {
+  margin-bottom: 8px;
+  padding: 0 12px;
+}
 .cs-page-section {
   background: var(--background);
   border-width: 1px;
@@ -76,18 +86,10 @@
 }
 
 .cs-search {
-  padding: 20px;
-  postion: sticky;
-}
-.cs-searchMeta {
-  color: var(--textSecondary);
-  font-size: 0.8em;
-  padding: 8px;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  gap: 8px;
 }
-
 
 .cs-clip {
   background: var(--background);
@@ -105,7 +107,6 @@
 .cs-clipsView {
   display: flex;
   flex-direction: column;
-  padding: 20px;
   box-sizing: border-box;
 }
 

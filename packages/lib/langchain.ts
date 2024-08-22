@@ -4,7 +4,7 @@ import {
   ChatPromptTemplate,
 } from "packages/deps.ts";
 import { DGWord } from "packages/types/transcript.ts";
-import { AiModel } from "packages/client/components/clipsearch/Search.tsx";
+import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
 import { getTimecodesForClips } from "packages/lib/timecodeUtils.ts";
 
 const openAIApiKey = Deno.env.get("OPENAI_API_KEY") ?? "";
