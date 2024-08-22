@@ -25,6 +25,9 @@ import {
   bfPutItem,
   bfQueryItems,
   bfQueryItemsForGraphQLConnection,
+  transactionStart,
+  transactionCommit,
+  transactionRollback,
 } from "packages/bfDb/bfDb.ts";
 import {
   BfModelErrorNotFound,
@@ -467,6 +470,14 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     }
   }
 
+  public async transactionStart() {
+    await transactionStart()
+  }
+  public async transactionCommit() {
+    await transactionCommit()
+  }
+  public async transactionRollback() {
+    await transactionRollback()
   }
 }
 
