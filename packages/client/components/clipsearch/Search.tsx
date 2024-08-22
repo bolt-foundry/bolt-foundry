@@ -1,91 +1,43 @@
 import * as React from "react";
-import { useFragment, useMutation } from "react-relay";
-import { graphql } from "packages/client/deps.ts";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
-import { isValidJSON } from "packages/lib/jsonUtils.ts";
-const { useState } = React;
+import { useClipSearchState } from "packages/client/contexts/ClipSearchContext.tsx";
+import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
-export enum AiModel {
-  OPENAI_4O = "gpt-4o-mini",
-  OPENAI_35 = "gpt-3.5-turbo",
-  CLAUDE_OPUS = "claude-3-opus-20240229",
-  CLAUDE_SONNET = "claude-3-5-sonnet-20240620",
-}
-
-const mutation = await graphql`
-  mutation SearchMutation(
-    $input: String!,
-    $suggestedModel: String,
-  ) {
-    searchMutation(
-      input: $input,
-      suggestedModel: $suggestedModel,
-    ) {
-      success
-      message
-    }
-  }
-`;
-
-
-type Props = {
-  setClips: (clips: string | null) => void;
-};
-
-export function Search({ setClips }: Props) {
-  const [commit, isInFlight] = useMutation(mutation);
-  const [prompt, setPrompt] = useState("");
-  const [clipsFound, setClipsFound] = useState<number | null>(null);
-  const [aiModel, setAiModel] = useState(AiModel.OPENAI_4O);
+export function Search() {
+  const { aiModel, setAiModel, commitSearch, isInFlight, prompt, setPrompt } =
+    useClipSearchState();
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setClips(null);
-    setClipsFound(null);
-    commit({
-      variables: {
-        input: prompt,
-        suggestedModel: aiModel,
-      },
-      onCompleted: (response) => {
-        setClips(response.searchMutation.message);
-        const parsedClips = isValidJSON(response.searchMutation.message)
-          ? JSON.parse(response.searchMutation.message)
-          : { anecdotes: [] };
-        const numberOfClips = parsedClips?.anecdotes?.length ?? 0;
-        setClipsFound(numberOfClips);
-      },
-    });
-    setPrompt("");
+    commitSearch();
   }
 
   return (
-    <div className="cs-search">
-      <form onSubmit={onSubmit}>
-        <BfDsInput
-          placeholder="Search"
-          showSpinner={isInFlight}
-          value={prompt}
-          onChange={(e) => {
-            setPrompt(e.target.value);
-          }}
-        />
-      </form>
-      <div className="cs-searchMeta">
-        <DropdownSelector
-          placeholder="Select AI Model"
-          value={aiModel}
-          onChange={(value) => setAiModel(value)}
-          options={{
-            "GPT 3.5 turbo": AiModel.OPENAI_35,
-            "GPT 4o mini": AiModel.OPENAI_4O,
-            "Claude 3 opus": AiModel.CLAUDE_OPUS,
-            "Claude 3.5 sonnet": AiModel.CLAUDE_SONNET,
-          }}
-          justification="end"
-        />
-      </div>
-    </div>
+    <form onSubmit={onSubmit} className="cs-search">
+      <BfDsInput
+        placeholder="Search"
+        showSpinner={isInFlight}
+        value={prompt}
+        onChange={(e) => {
+          setPrompt(e.target.value);
+        }}
+        style={{ flex: 1 }}
+      />
+      <DropdownSelector
+        placeholder="Select AI Model"
+        value={aiModel}
+        onChange={(value) => setAiModel(value as AiModel)}
+        options={{
+          "GPT 3.5 turbo": AiModel.OPENAI_35,
+          "GPT 4o mini": AiModel.OPENAI_4O,
+          "Claude 3 opus": AiModel.CLAUDE_OPUS,
+          "Claude 3.5 sonnet": AiModel.CLAUDE_SONNET,
+        }}
+        justification="end"
+      />
+      <BfDsButton type="submit" text="Search" />
+    </form>
   );
 }
