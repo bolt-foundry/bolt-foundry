@@ -480,6 +480,10 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
   public async transactionRollback() {
     await transactionRollback()
   }
+
+  toString() {
+    return `${this.constructor.name}#${this.metadata.bfGid}`;
+  }
 }
 
 /**
