@@ -7,7 +7,7 @@ import { getLogger, React, ReactRelay } from "deps.ts";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { Spinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { LoginPageCVQuery } from "packages/__generated__/LoginPageCVQuery.graphql.ts";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
@@ -183,7 +183,7 @@ export function LoginPage() {
   const spinner = (
     <div style={styles.container}>
       <div style={styles.content}>
-        <Spinner backgroundColor={"var(--background)"} />
+        <BfDsSpinner backgroundColor={"var(--background)"} />
       </div>
     </div>
   );
