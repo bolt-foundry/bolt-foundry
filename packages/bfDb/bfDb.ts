@@ -497,6 +497,18 @@ export async function bfQueryItemsForGraphQLConnection<
   }
 }
 
+export async function transactionStart(): Promise<void> {
+  await sql`BEGIN`;
+}
+
+export async function transactionCommit(): Promise<void> {
+  await sql`COMMIT`;
+}
+
+export async function transactionRollback(): Promise<void> {
+  await sql`ROLLBACK`;
+}
+
 // Function to convert sortValue to base64 cursor
 function sortValueToCursor(sortValue: number): string {
   // Convert number to string and then Uint8Array
