@@ -12,7 +12,7 @@ const topTo = "25,20 75,20 50.04,58.47"; // hourglass
 const bottomFrom = "77.27,41.37 42.72,99.89 42.72,41.37"; // bolt
 const bottomTo = "75,77 25,77 49.96,38.56"; // hourglass
 
-export function Spinner(
+export function BfDsSpinner(
   {
     size = 48,
     spinnerColor = "var(--success)",
@@ -83,7 +83,7 @@ export function Spinner(
   );
 }
 
-export function FullPageSpinner() {
+export function BfDsFullPageSpinner() {
   return (
     <div
       style={{
@@ -96,7 +96,7 @@ export function FullPageSpinner() {
         boxSizing: "border-box",
       }}
     >
-      <Spinner backgroundColor={"var(--pageBackground)"} waitIcon={true} />
+      <BfDsSpinner backgroundColor={"var(--pageBackground)"} waitIcon={true} />
     </div>
   );
 }

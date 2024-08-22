@@ -1,14 +1,17 @@
 import { React } from "deps.ts";
 import { Clip } from "packages/client/components/clipsearch/Clip.tsx";
-import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { isValidJSON } from "packages/lib/jsonUtils.ts";
 import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFilePicker.tsx";
 import { useFragment } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
+import { useClipSearchState } from "packages/client/contexts/ClipSearchContext.tsx";
+import { Link } from "packages/client/components/Link.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 type Props = {
+  count: number;
   clips$key: unknown;
-  clips: string | undefined | null;
 };
 
 const fragment = await graphql`
@@ -36,7 +39,15 @@ function GoogleAuthSection() {
   );
 }
 
-export function ClipsView({ clips$key, clips }: Props) {
+export function ClipsView({ count, clips$key }: Props) {
+  const {
+    clips,
+    clipsCount,
+    clearSearch,
+    commitSearch,
+    prompt,
+    previousPrompt,
+  } = useClipSearchState();
   let data = useFragment(fragment, clips$key);
   if (clips === undefined) {
     return (
@@ -46,20 +57,66 @@ export function ClipsView({ clips$key, clips }: Props) {
       </>
     );
   }
+  const italicPrompt = (text: string = previousPrompt) => {
+    return (
+      <span style={{ fontStyle: "italic" }}>
+        {text}
+      </span>
+    );
+  };
   if (clips === null) {
-    return <FullPageSpinner />;
+    return (
+      <div className="flexColumn" style={{ gap: "20px" }}>
+        <div className="cs-page-callout">
+          Searching {count} videos for "{italicPrompt(prompt)}".
+        </div>
+        <BfDsFullPageSpinner />
+      </div>
+    );
+
   }
 
   const parsedClips = isValidJSON(clips)
     ? JSON.parse(clips)
     : { anecdotes: [] };
 
+  if (parsedClips.anecdotes.length === 0) {
+    return (
+      <div className="flexColumn" style={{ gap: "20px" }}>
+        <div className="cs-page-callout">
+          No clips found for "{italicPrompt()}".{" "}
+          <a onClick={() => commitSearch(previousPrompt)}>Retry</a>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="cs-clipsView">
       {data?.googleAuthAccessToken == null &&
         <GoogleAuthSection />}
-      {parsedClips?.anecdotes?.map((clip) => (
+      <div
+        className="cs-page-section-outside-header flexRow"
+        style={{ alignItems: "center", gap: 8 }}
+      >
+        <div className="cs-page-section-title" style={{ flex: 1 }}>
+          Search results for "{italicPrompt()}"
+        </div>
+        <div>
+          {clipsCount} clips found in {count} videos
+        </div>
+        <div>
+          <BfDsButton
+            kind="secondary"
+            iconLeft="cross"
+            onClick={clearSearch}
+            tooltip="Clear search"
+          />
+        </div>
+      </div>
+      {parsedClips?.anecdotes?.map((clip, index: number) => (
         <Clip
+          key={index}
           titleText={clip.titleText}
           text={clip.text}
           descriptionText={clip.descriptionText}

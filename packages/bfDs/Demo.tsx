@@ -3,7 +3,7 @@ import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { ButtonGroup } from "packages/bfDs/ButtonGroup.tsx";
 import { BfDsIconDemo } from "packages/bfDs/BfDsIcon.tsx";
 import TVStatic from "packages/client/images/TVStatic.tsx";
-import { Spinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 // import WorkflowStatusIndicator from "packages/client/components/WorkflowStatusIndicator.tsx";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { fonts } from "packages/bfDs/const.tsx";
@@ -551,7 +551,7 @@ export function Demo() {
       <div style={styles.element}>
         <div style={styles.name}>Random</div>
         <div style={styles.group}>
-          <Spinner waitIcon={true} />
+          <BfDsSpinner waitIcon={true} />
           {/* <WorkflowStatusIndicator percent={Number(percent)} /> */}
           <div>
             <BfDsButton

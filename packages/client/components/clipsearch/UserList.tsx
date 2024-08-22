@@ -26,10 +26,12 @@ const columns: BfDsColumns<Data> = [
 export function UserList() {
   return (
     <>
-      <div className="cs-page-section-title">
-        User List
+      <div className="cs-page-section-outside-header">
+        <div className="cs-page-section-title">
+          User List
+        </div>
+        Invite Co-workers to collaborate....
       </div>
-      Invite Co-workers to collaborate....
       <div
         className="cs-page-section"
         style={{ boxShadow: "none" }}

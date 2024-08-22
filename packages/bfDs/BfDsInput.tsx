@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
-import { Spinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 
 type BaseProps = {
   autoFocus?: boolean;
@@ -145,7 +145,7 @@ export function BfDsInput(
           {input}
           {showSpinner && (
             <div style={styles.spinner}>
-              <Spinner size={16} />
+              <BfDsSpinner size={16} />
             </div>
           )}
         </div>
@@ -159,7 +159,7 @@ export function BfDsInput(
         {input}
         {showSpinner && (
           <div style={styles.spinner}>
-            <Spinner size={16} />
+            <BfDsSpinner size={16} />
           </div>
         )}
       </div>
