@@ -50,7 +50,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
       logger.error(
         `Failed to create transcript file at ${transcriptFilename}: ${error}`,
       );
-      throw error;
+      throw new Error(error);
     }
 
     // Download and save the file from Google Drive
@@ -77,7 +77,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
       );
     } catch (error) {
       logger.error(`Failed to download file from Google Drive: ${error}`);
-      throw error;
+      throw new Error(error);
     }
 
     const renderCode = await render(["-i", testVideoFilename]);
@@ -99,7 +99,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
       logger.info(`File copied to ${destinationPath}`);
     } catch (error) {
       logger.error(`Failed to copy file to ${destinationPath}: ${error}`);
-      throw error;
+      throw new Error(error);
     }
 
     if (renderCode !== 0) {

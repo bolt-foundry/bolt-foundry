@@ -61,6 +61,10 @@ export function DownloadClipButton(
           link.click();
         }
       },
+      onError: (error) => {
+        logger.error(error);
+        throw new Error(error);
+      },
     });
   };
   return (
