@@ -112,8 +112,12 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
     };
 
     // @ts-expect-error typing is wrong and we know it
-    await BfJob.createJobForNode(media, "downloadClip", [payload], true);
-
+    try{
+      await BfJob.createJobForNode(media, "downloadClip", [payload], true);
+       } catch (error) {
+      logger.error(error);
+      return { success: false };
+    }
     return { success: true };
   },
 });
