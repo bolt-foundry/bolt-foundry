@@ -8,6 +8,9 @@ import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { ClipsViewNullState } from "packages/client/components/clipsearch/ClipsViewNullState.tsx";
+import ClipSearchProvider, {
+  useClipSearchState,
+} from "packages/client/contexts/ClipSearchContext.tsx";
 
 const query = await graphql`
   query ClipSearchPageQuery {
@@ -28,11 +31,11 @@ const query = await graphql`
   }
 `;
 
-export function ClipSearchPage() {
+export function ClipSearchPageContent() {
   const { navigate } = useRouter();
+  const { clips, isInFlight } = useClipSearchState();
   const data = useLazyLoadQuery(query, {});
-  const [clips, setClips] = React.useState<string>();
-  const count = data?.currentViewer?.organization?.media?.count ?? 0;
+  const count = data?.currentViewer?.organization?.media?.count;
   const sidebarContents = (
     <>
       <List collapsible={true} header="Lists">
@@ -80,9 +83,9 @@ export function ClipSearchPage() {
         header="Clip search"
       />
       <div className="cs-main">
-        <Search setClips={setClips} />
-        {clips
-          ? <ClipsView clips={clips} clips$key={data?.currentViewer?.person} />
+        <Search />
+        {clips || isInFlight
+          ? <ClipsView count={count} clips$key={data?.currentViewer?.person} />
           : (
             <ClipsViewNullState
               count={count}
@@ -91,5 +94,13 @@ export function ClipSearchPage() {
           )}
       </div>
     </div>
+  );
+}
+
+export function ClipSearchPage() {
+  return (
+    <ClipSearchProvider>
+      <ClipSearchPageContent />
+    </ClipSearchProvider>
   );
 }
