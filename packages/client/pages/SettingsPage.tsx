@@ -9,6 +9,7 @@ import { Sidebar } from "packages/client/components/Sidebar.tsx";
 import { WatchFolder } from "packages/client/components/settings/WatchFolder.tsx";
 import { Media } from "packages/client/components/settings/Media.tsx";
 import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
+import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 
 const query = await graphql`
 query SettingsPageQuery {
@@ -34,7 +35,7 @@ enum Tabs {
 export function SettingsPage() {
   const [selected, setSelected] = useState<Tabs>(Tabs.WATCH_FOLDERS);
   const data = useLazyLoadQuery<SettingsPageQuery>(query, {});
-
+  const { navigate } = useRouter();
   const organizationFragmentRef = data?.currentViewer?.organization ?? null;
 
   let content: JSX.Element;
@@ -67,6 +68,12 @@ export function SettingsPage() {
         }
         footer={
           <>
+            <List>
+              <ListItem
+                content="Clip search"
+                onClick={() => navigate("/search")}
+              />
+            </List>
             <div>Welcome, {data?.currentViewer?.person?.name}</div>
             <div>{data?.currentViewer?.organization?.name}</div>
           </>

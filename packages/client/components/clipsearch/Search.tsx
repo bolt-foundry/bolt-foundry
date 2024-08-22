@@ -30,17 +30,14 @@ const mutation = await graphql`
 
 
 type Props = {
-  count: number;
   setClips: (clips: string | null) => void;
 };
 
-export function Search({ count, setClips }: Props) {
+export function Search({ setClips }: Props) {
   const [commit, isInFlight] = useMutation(mutation);
   const [prompt, setPrompt] = useState("");
   const [clipsFound, setClipsFound] = useState<number | null>(null);
   const [aiModel, setAiModel] = useState(AiModel.OPENAI_4O);
-
-  const transcriptsCount = count;
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,13 +60,6 @@ export function Search({ count, setClips }: Props) {
     setPrompt("");
   }
 
-  let metaText = `${transcriptsCount} videos loaded`;
-  if (isInFlight) {
-    metaText = `Searching ${transcriptsCount} videos...`;
-  }
-  if (clipsFound !== null) {
-    metaText = `${clipsFound} clips found in ${transcriptsCount} videos`;
-  }
   return (
     <div className="cs-search">
       <form onSubmit={onSubmit}>
@@ -83,7 +73,6 @@ export function Search({ count, setClips }: Props) {
         />
       </form>
       <div className="cs-searchMeta">
-        <div style={{ flex: 1 }}>{metaText}</div>
         <DropdownSelector
           placeholder="Select AI Model"
           value={aiModel}
