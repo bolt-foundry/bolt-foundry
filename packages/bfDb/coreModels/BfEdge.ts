@@ -10,8 +10,7 @@ import {
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { ConnectionArguments } from "packages/graphql/deps.ts";
 import { BfModel } from "packages/bfDb/classes/BfModel.ts";
-import type { BfBaseModel } from "packages/bfDb/classes/BfModel.ts";
-import { bfGetItemsByBfGid, bfQueryItems } from "packages/bfDb/bfDb.ts";
+import { bfGetItemsByBfGid } from "packages/bfDb/bfDb.ts";
 import type { ConnectionInterface } from "react-relay";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
@@ -23,12 +22,12 @@ export type BfEdgeOptionalProps = {
   action?: string;
 };
 
-export type EdgeCreationMetadata = CreationMetadata & {
+export type EdgeCreationMetadata = {
   bfTClassName: string;
   bfTid: BfTid | BfGid;
   bfSClassName: string;
   bfSid: BfSid | BfGid;
-};
+} & CreationMetadata;
 
 export class BfEdge<
   ChildRequiredProps extends BfEdgeRequiredProps = BfEdgeRequiredProps,
@@ -39,6 +38,36 @@ export class BfEdge<
   EdgeCreationMetadata
 > {
   __typename = "BfEdge";
+
+  /**
+   * Creates a new edge between two nodes.
+   * The method establishes a connection between a source node and a target node.
+   *
+   * @param {BfCurrentViewer} currentViewer - The current viewer context.
+   * @param {BfNode} sourceNode - The source node from which the edge originates.
+   * @param {BfNode} targetNode - The target node to which the edge points.
+   * @returns {Promise<BfEdge>} A promise that resolves to the newly created edge.
+   *
+   * @example
+   * const sourceNode = await BfNode.create(currentViewer, {name: "Source Node"});
+   * const targetNode = await BfNode.create(currentViewer, {name: "Target Node"});
+   * const edge = await BfEdge.createEdgeBetweenNodes(currentViewer, sourceNode, targetNode);
+   */
+  static async createEdgeBetweenNodes(
+    currentViewer: BfCurrentViewer,
+    sourceNode: BfNode,
+    targetNode: BfNode,
+  ) {
+    const metadata = {
+      bfTClassName: targetNode.constructor.name,
+      bfTid: targetNode.metadata.bfGid,
+      bfSClassName: sourceNode.constructor.name,
+      bfSid: sourceNode.metadata.bfGid,
+    } as EdgeCreationMetadata;
+
+    const newEdge = await BfEdge.create(currentViewer, {}, metadata);
+    return newEdge;
+  }
 
   static async queryTargetsConnectionForGraphQL<
     TThis extends Constructor<
@@ -73,7 +102,9 @@ export class BfEdge<
     ) => edge.node.id);
     logger.debug("targetEdgeIds", targetEdgeIds);
     const targetEdges = await bfGetItemsByBfGid(targetEdgeIds);
-    const targetIds = targetEdges.map((edge) => edge.metadata.bfTid).filter(Boolean);
+    const targetIds = targetEdges.map((edge) => edge.metadata.bfTid).filter(
+      Boolean,
+    );
     logger.debug("targetIds", targetIds);
     const targetConnection = await TargetClass.queryConnectionForGraphQL(
       currentViewer,
@@ -101,23 +132,36 @@ export class BfEdge<
     targetBfGid: BfGid | BfTid,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
   ) {
-    
     logger.debug("querySources", SourceClass, targetBfGid);
-    // @ts-expect-error done is better than good™
-    const sourceEdges = await this.query(
+    const sourceEdges = await (this as unknown as typeof BfNode).query(
       currentViewer,
       { bfTid: targetBfGid, bfSClassName: SourceClass.name },
     );
     logger.debug("sourceEdges", sourceEdges);
-    const sourceEdgeIds = sourceEdges.map((edge: BfNode) => edge.metadata.bfSid);
+    const sourceEdgeIds = sourceEdges.map((edge: BfNode) => edge.metadata.bfSid)
+      .filter(Boolean) as Array<BfSid>;
     logger.debug("sourceEdgeIds", sourceEdgeIds);
-    const sources = await SourceClass.query(currentViewer, {}, propsToQuery, sourceEdgeIds);
+    const sources = await SourceClass.query(
+      currentViewer,
+      {},
+      propsToQuery,
+      sourceEdgeIds,
+    );
     logger.debug("sources", sources);
     return sources;
   }
 
-  
-static async queryTargets<
+  static async queryAllSourceEdgesForNode(bfNode: BfNode) {
+    logger.debug("queryAllSources");
+    const sources = await (this as typeof BfEdge).query(
+      bfNode.currentViewer,
+      { bfTClassName: bfNode.constructor.name, bfTid: bfNode.metadata.bfGid },
+    );
+    logger.debug("sources", sources);
+    return sources;
+  }
+
+  static async queryTargets<
     TThis extends Constructor<
       BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
     >,
@@ -139,9 +183,15 @@ static async queryTargets<
       propsToQuery,
     );
     logger.debug("targetEdges", targetEdges);
-    const targetEdgeIds = targetEdges.map((edge: BfNode) => edge.metadata.bfTid).filter(Boolean);
+    const targetEdgeIds = targetEdges.map((edge: BfNode) => edge.metadata.bfTid)
+      .filter(Boolean);
     logger.debug("targetEdgeIds", targetEdgeIds);
-    const targets = await TargetClass.query(currentViewer, {}, propsToQuery, targetEdgeIds);
+    const targets = await TargetClass.query(
+      currentViewer,
+      {},
+      propsToQuery,
+      targetEdgeIds,
+    );
     logger.debug("targets", targets);
     return targets;
   }
