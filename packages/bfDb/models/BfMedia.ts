@@ -11,11 +11,13 @@ const logger = getLogger(import.meta);
 
 export type BfMediaProps = {
   filename: string;
+  fileId: string | null;
 };
 
 type DownloadClipArgs = {
   file: {
     url: string;
+    fileId?: string;
   };
   title: string;
   transcript: {
@@ -38,7 +40,15 @@ export class BfMedia extends BfNode<BfMediaProps> {
   }
 
   async downloadClip(args: DownloadClipArgs) {
-    const { file: { url }, transcript, title } = args;
+    const {
+      file: {
+        url,
+        // "short video.mp4"
+        fileId = "1JOvVaUjfMOzhvzkztbFyII6Oe7Qu9Hrh",
+      },
+      transcript,
+      title,
+    } = args;
     const fileroot = await Deno.makeTempFile();
     const transcriptFilename = `${fileroot}.json`;
     const testVideoFilename = `${fileroot}.mp4`;
@@ -61,15 +71,6 @@ export class BfMedia extends BfNode<BfMediaProps> {
 
     // Download and save the file from Google Drive
     logger.info("File url", url);
-    // Hack for demo
-    // kmdigital test for Dan's demo
-    const testVideoId = "1ko5BmYBouDay2nbpw9ujoiYNxlbKalfE";
-
-    // P1019004.MP4 for "work life balance"
-    // const testVideoId = "1sl5QyXEtZar8S2PHbZyd2J6u1FmedLtA";
-
-    // "short video.mp4"
-    // const testVideoId = "1JOvVaUjfMOzhvzkztbFyII6Oe7Qu9Hrh";
 
     try {
       const currentViewerPerson = await BfPerson.findCurrentViewer(
@@ -80,7 +81,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
         throw new Error("no google auth");
       }
       const accessToken = await googleAuth.getAccessToken();
-      const response = await fetchFile(accessToken, testVideoId);
+      const response = await fetchFile(accessToken, fileId);
       if (!response.ok) {
         throw new Error(
           `Failed to fetch file from Google Drive: ${response.statusText}`,
