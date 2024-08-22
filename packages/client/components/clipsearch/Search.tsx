@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useFragment, useMutation } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
-import { Input } from "packages/bfDs/Input.tsx";
+import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { isValidJSON } from "packages/lib/jsonUtils.ts";
 const { useState } = React;
@@ -63,7 +63,7 @@ export function Search({ setClips }: Props) {
   return (
     <div className="cs-search">
       <form onSubmit={onSubmit}>
-        <Input
+        <BfDsInput
           placeholder="Search"
           showSpinner={isInFlight}
           value={prompt}
