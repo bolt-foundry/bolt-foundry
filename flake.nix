@@ -56,6 +56,7 @@
         
 
         deployPackages = with pkgs; [
+          direnv
         ];
       in
       rec {
@@ -68,13 +69,14 @@
 
         packages.deploy = pkgs.buildEnv {
           name = "deploy";
-          paths = sharedPackages ++ deployPackages;
+          paths = deployPackages ++ sharedPackages;
         };
 
         # `nix develop` and direnv
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = sharedPackages ++ devShellPackages ++ defaultPackages;
         };
-      }
+      } 
     );
+  
 }
