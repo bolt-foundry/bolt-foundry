@@ -17,7 +17,7 @@ const varsDarkString = Object.entries({ ...colorsDark }).reduce(
 );
 
 const cssVarsString = `:root {\n${varsString}}\n`;
-const cssVarsDarkString = `:root[data-theme="dark"] {\n${varsDarkString}}\n`;
+const cssVarsDarkString = `:root[data-theme=dark] {\n${varsDarkString}}\n`;
 
 type Props = React.PropsWithChildren<{
   environment: Record<string, unknown>;
@@ -65,8 +65,7 @@ export function BaseComponent({ children, environment }: Props) {
           content="clip, editing, video, bolt, short-form-content"
         />
         <style>
-          {cssVarsString}
-          {cssVarsDarkString}
+          {cssVarsString}{cssVarsDarkString}
         </style>
         <meta
           name="facebook-domain-verification"
