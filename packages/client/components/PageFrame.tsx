@@ -4,7 +4,7 @@ import { Modal } from "packages/bfDs/Modal.tsx";
 import { LeftNav } from "packages/client/components/LeftNav.tsx";
 import { Settings } from "packages/client/components/Settings.tsx";
 import { LoginForm } from "packages/client/components/LoginForm.tsx";
-import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { TopNav } from "packages/client/components/TopNav.tsx";
 import { ProjectListMobile } from "packages/client/components/ProjectListMobile.tsx";
 
@@ -63,7 +63,7 @@ function RenderPageFrame({ children, xstyle }: React.PropsWithChildren<Props>) {
       </div>
       <div style={xstyle}>
         <Suspense
-          fallback={<FullPageSpinner />}
+          fallback={<BfDsFullPageSpinner />}
         >
           {children}
         </Suspense>
