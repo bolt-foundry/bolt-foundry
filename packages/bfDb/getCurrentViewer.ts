@@ -10,7 +10,8 @@ const logger = getLogger(import.meta);
 
 export async function getContextFromRequest(
   request: Request,
-  CurrentViewerCreationClass: typeof BfCurrentViewerAccessToken = BfCurrentViewerAccessToken,
+  CurrentViewerCreationClass: typeof BfCurrentViewerAccessToken =
+    BfCurrentViewerAccessToken,
 ): Promise<GraphQLContext> {
   const cookies = cookie.getCookies(request.headers);
   const accessToken = cookies.BF_AT;
@@ -48,7 +49,7 @@ export async function getContextFromRequest(
         "Set-Cookie",
         `BF_RT=; HttpOnly; Path=/; Secure; SameSite=Strict`,
       );
-      logger.error("Returning headers to delete auth cookies")
+      logger.error("Returning headers to delete auth cookies");
     }
   }
   return { bfCurrentViewer, responseHeaders };

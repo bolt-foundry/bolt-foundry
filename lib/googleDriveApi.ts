@@ -18,7 +18,7 @@ export async function fetchMetadata(
 ): Promise<GoogleDriveFileMetadata> {
   const endpointUrl = `https://www.googleapis.com/drive/v3/files/${fileId}`;
   const searchParams = new URLSearchParams();
-  searchParams.set("fields", fields.join(","))
+  searchParams.set("fields", fields.join(","));
   searchParams.set("supportsAllDrives", "true");
   const url = new URL(endpointUrl);
   url.search = searchParams.toString();
@@ -47,12 +47,10 @@ export function fetchFile(
   });
 }
 
-
 export async function fetchFolderContents(
   accessToken: string,
   folderId: string,
-  fields: string =
-    `nextPageToken, files(id)`,
+  fields: string = `nextPageToken, files(id)`,
 ): Promise<GoogleDriveFileMetadata> {
   const searchParams = new URLSearchParams();
   searchParams.set("supportsAllDrives", "true");

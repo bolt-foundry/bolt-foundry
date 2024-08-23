@@ -45,8 +45,8 @@ export const BfGraphQLCurrentViewerType = interfaceType({
           return org?.toGraphql() ?? null;
         }
         return null;
-      }
-    })
+      },
+    });
     t.field("person", {
       type: "BfPerson",
       resolve: async (_parent, _args, { bfCurrentViewer }: GraphQLContext) => {
@@ -62,7 +62,6 @@ export const BfGraphQLCurrentViewerType = interfaceType({
         return { title: "Bolt foundry af" };
       },
     });
-    
   },
 });
 

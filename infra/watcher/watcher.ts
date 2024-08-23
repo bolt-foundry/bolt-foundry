@@ -39,11 +39,10 @@ for await (const event of events) {
 }
 
 async function copyAndMove(path: string) {
-
   if (!FOLDER_PATH) {
     throw new Error("BFI_FOLDER_PATH not found");
   }
-  
+
   let tmpFile;
   const fileDirectory = dirname(path);
   const filename = path.split("/").pop();

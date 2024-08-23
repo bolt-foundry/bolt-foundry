@@ -17,7 +17,7 @@ export async function render(args: Array<string>) {
 
   logger.info("Rendering");
   const stopSpinner = startSpinner();
-  const cwd = new URL(import.meta.resolve("infra/rendering")).pathname
+  const cwd = new URL(import.meta.resolve("infra/rendering")).pathname;
   logger.info("cwd", cwd);
   const renderCmd = new Deno.Command("./render.sh", {
     args: [inputVideo],
