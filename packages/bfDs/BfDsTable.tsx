@@ -71,25 +71,23 @@ type ExampleData = {
   name: string;
   age: number;
   email: string;
-}
-export function Example () {
+};
+export function Example() {
   const columns: Columns<ExampleData> = [{
-   title: "Name",
-   renderer: (data) => <BfDsTableCell text={data.name} />,
-  },
-  {
-   title: "Age",
-   renderer: (data) => <BfDsTableCell text={data.age} />,
-  },
-  {
-   title: "Email",
-   renderer: (data) => <BfDsTableCell text={data.email} />,
+    title: "Name",
+    renderer: (data) => <BfDsTableCell text={data.name} />,
+  }, {
+    title: "Age",
+    renderer: (data) => <BfDsTableCell text={data.age} />,
+  }, {
+    title: "Email",
+    renderer: (data) => <BfDsTableCell text={data.email} />,
   }];
   const data = [
     { name: "John Doe", age: 28, email: "john.doe@example.com" },
     { name: "Jane Smith", age: 34, email: "jane.smith@example.com" },
-    { name: "Sam Johnson", age: 45, email: "sam.johnson@example.com" }
-  ]
+    { name: "Sam Johnson", age: 45, email: "sam.johnson@example.com" },
+  ];
 
   return (
     <div>
@@ -97,4 +95,4 @@ export function Example () {
       <BfDsTable columns={columns} data={data} />
     </div>
   );
-};
+}

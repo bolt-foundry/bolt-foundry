@@ -14,10 +14,12 @@ const columns: Array<BfDsColumn<DataType>> = [
   { width: "1fr", renderer: (data) => <BfDsTableCell text={data.title} /> },
   {
     width: "30px",
-    renderer: (data) => <BfDsTableCell
-      align="center"
-      text={data.numberOfChanges}
-    />,
+    renderer: (data) => (
+      <BfDsTableCell
+        align="center"
+        text={data.numberOfChanges}
+      />
+    ),
   },
   {
     width: "30px",

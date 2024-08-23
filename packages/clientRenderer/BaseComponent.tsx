@@ -65,7 +65,8 @@ export function BaseComponent({ children, environment }: Props) {
           content="clip, editing, video, bolt, short-form-content"
         />
         <style>
-          {cssVarsString}{cssVarsDarkString}
+          {cssVarsString}
+          {cssVarsDarkString}
         </style>
         <meta
           name="facebook-domain-verification"

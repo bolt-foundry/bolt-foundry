@@ -18,7 +18,9 @@ export class BfGoogleAuth extends BfNode<BfGoogleAuthProps> {
   }
 
   async getAccessToken() {
-    const payload = await exchangeRefreshTokenForAccessToken(this.props.refreshToken);
+    const payload = await exchangeRefreshTokenForAccessToken(
+      this.props.refreshToken,
+    );
     return payload.access_token;
   }
 }

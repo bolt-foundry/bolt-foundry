@@ -25,9 +25,10 @@
       "infra/__generated__",
       "packages/__generated__",
       "node_modules",
+      ".local",
       ".sl",
       ".deno",
-      "third-party",
+      "thirdParty",
       "packages/third-party",
       "packages/client/static",
       "cdk.out",
@@ -35,18 +36,22 @@
       "vendor",
       "resources",
       ".config",
-      "aws/__generated__"
+      "aws",
+      "**/*.json",
+      "**/*.ipynb"
     ]
   },
   "test": {
     "exclude": [
       ".config",
+
       "__generated__",
       "packages/__generated__",
       "node_modules",
+      ".local",
       ".sl",
       ".deno",
-      "third-party",
+      "thirdParty",
       "packages/third-party",
       "packages/client/static",
       "cdk.out",
@@ -76,7 +81,8 @@
       "node_modules",
       ".sl",
       ".deno",
-      "third-party",
+      ".local",
+      "thirdParty",
       "packages/third-party",
       "packages/client/static",
       "cdk.out",
@@ -84,7 +90,8 @@
       "vendor",
       "resources",
       "thirdParty",
-      "aws"
+      "aws",
+      "packages/vcs"
     ]
   },
   "lock": true,
