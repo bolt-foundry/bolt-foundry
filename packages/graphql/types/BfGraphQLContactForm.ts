@@ -70,9 +70,9 @@ export const submitContactFormMutation = mutationField("submitContactForm", {
                   {
                     "text": {
                       "content": input.phone,
-                    }
-                  }
-                ]
+                    },
+                  },
+                ],
               },
               "company": {
                 "rich_text": [

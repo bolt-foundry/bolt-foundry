@@ -4,7 +4,7 @@ import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
 import { getLogger } from "deps.ts";
 import {
-fetchFile,
+  fetchFile,
   fetchFolderContents,
   fetchMetadata,
   GoogleDriveFileMetadata,
@@ -151,7 +151,6 @@ export class BfGoogleDriveResource
       logger.debug("rolled back transaction");
       throw new BfError("Error creating child", e);
     }
-    
   }
   async download(targetPath?: string) {
     const path = targetPath ?? await Deno.makeTempFile();
@@ -160,7 +159,9 @@ export class BfGoogleDriveResource
     logger.debug("downloading", this.props.resourceId, path);
     const file = await Deno.create(path);
     if (response.body) {
-      const contentLength = parseInt(response.headers.get("content-length") ?? "0");
+      const contentLength = parseInt(
+        response.headers.get("content-length") ?? "0",
+      );
       let totalWritten = 0;
       let lastReported = 0;
       for await (const chunk of response.body) {

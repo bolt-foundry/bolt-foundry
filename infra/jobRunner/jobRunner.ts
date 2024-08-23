@@ -17,7 +17,9 @@ logger.info(
 );
 
 let shouldCheckForWork = true;
-const currentViewer = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(import.meta);
+const currentViewer = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(
+  import.meta,
+);
 export async function checkForWork(shouldClose = true) {
   logger.info("Checking for work");
   const jobs = await BfJob.findAvailableJobs(currentViewer);
@@ -37,7 +39,6 @@ export async function checkForWork(shouldClose = true) {
   if (shouldClose) {
     globalThis.close();
   }
-  
 }
 export function disableCheckForWork() {
   shouldCheckForWork = false;

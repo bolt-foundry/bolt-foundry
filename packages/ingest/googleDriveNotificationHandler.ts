@@ -14,8 +14,8 @@ import { chunkGoogleFile } from "infra/watcher/ingest.ts";
 // X-Goog-Changed: content,properties
 // X-Goog-Message-Number: 10
 
-
-const googleProcessQueue: {googleResourceID: string, resourceURI: string }[] = [];
+const googleProcessQueue: { googleResourceID: string; resourceURI: string }[] =
+  [];
 
 // export const  addToGoogleProcessQueue = (googleJSON) => {
 //   googleProcessQueue.push({
@@ -27,15 +27,13 @@ const googleProcessQueue: {googleResourceID: string, resourceURI: string }[] = [
 export const addToGoogleProcessQueue = (req: Request) => {
   //todo switch actions depending on the type of change.
   return;
-}
-
+};
 
 //create a queue or system around the existing queue to process files as they are added. Handler function below:
 
-
 const googleQueueHandler = async () => {
   while (googleProcessQueue.length > 0) {
-    const fileToProcess = {...googleProcessQueue[0]};
+    const fileToProcess = { ...googleProcessQueue[0] };
     const filename = fileToProcess.resourceURI.split("/").pop();
 
     const tempDir = await Deno.makeTempDir();
@@ -54,26 +52,26 @@ const googleQueueHandler = async () => {
     await chunkGoogleFile(tempFilePath, humanReadable);
 
     //if all went well...
-    const index = googleProcessQueue.findIndex(file => file.googleResourceID === fileToProcess.googleResourceID);
-    const queueWithoutItem = googleProcessQueue.filter(file => file.googleResourceID === fileToProcess.googleResourceID);
+    const index = googleProcessQueue.findIndex((file) =>
+      file.googleResourceID === fileToProcess.googleResourceID
+    );
+    const queueWithoutItem = googleProcessQueue.filter((file) =>
+      file.googleResourceID === fileToProcess.googleResourceID
+    );
     //make sure we found an ID and also make sure it's the only ocurance of that ID in the queue. Mostly to ensure queue behaves predictably despite any weird things happening.
-    if (index !== -1 && (googleProcessQueue.length === queueWithoutItem.length + 1)) {
+    if (
+      index !== -1 &&
+      (googleProcessQueue.length === queueWithoutItem.length + 1)
+    ) {
       googleProcessQueue.splice(index, 1);
     } else {
       //add error
     }
-
   }
   // COLBY I LOVE YOU LOL
   // can we talk in ~15 min or so?
   // this is your consciousness, you're not a robot.
-
-}
+};
 //note can probably get rid of the queue and just monitor the temporary directory for files. Will have to add error handling to make sure the files get to the temp dir. Either option is susceptible to missing files during server failures until we can periodically check the drive against our database to look for missed items.
 
-
-
-
 //you are now leaving the shit code region.
-
-

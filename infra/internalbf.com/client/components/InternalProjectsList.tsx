@@ -8,7 +8,7 @@ const { useState, useEffect } = React;
 type DataType = {
   title: string;
   clips: number;
-}
+};
 
 const columns: Array<BfDsColumn<DataType>> = [
   {
@@ -43,7 +43,10 @@ const columns: Array<BfDsColumn<DataType>> = [
       />
     ),
   },
-  { width: "60px", renderer: () => <BfDsTableCell align="center" text="•••" /> },
+  {
+    width: "60px",
+    renderer: () => <BfDsTableCell align="center" text="•••" />,
+  },
 ];
 const fakeData = [
   { title: "Project 1", clips: 12 },

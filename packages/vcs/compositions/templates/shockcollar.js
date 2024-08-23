@@ -1,13 +1,13 @@
-import * as React from 'react';
-import { Box, Image, Text, Video } from '#vcs-react/components';
-import { useParams, useVideoTime } from '#vcs-react/hooks';
-import { fontBoldWeights, fontRelativeCharacterWidths } from '../fonts.js';
-import getLinesOfWordsFromTranscript from '../utils/getLinesOfWordsFromTranscript.js';
-import { easeInOutCubic } from '../utils/easing.js';
-import EndCap from '../components/EndCap.js';
-import TitleCard from '../components/TitleCard.js';
-import Watermark from '../components/Watermark.js';
-import { getValueFromJson } from '../utils/jsonUtils.js';
+import * as React from "react";
+import { Box, Image, Text, Video } from "#vcs-react/components";
+import { useParams, useVideoTime } from "#vcs-react/hooks";
+import { fontBoldWeights, fontRelativeCharacterWidths } from "../fonts.js";
+import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
+import { easeInOutCubic } from "../utils/easing.js";
+import EndCap from "../components/EndCap.js";
+import TitleCard from "../components/TitleCard.js";
+import Watermark from "../components/Watermark.js";
+import { getValueFromJson } from "../utils/jsonUtils.js";
 
 const FONT_SIZE_VH = 96 / 1920;
 const CAPTION_POSITION = 0.6;
@@ -26,12 +26,12 @@ export default function ShockCollarGraphics({
 }) {
   // 3 lines of captions
   const initialLineState = React.useRef(
-    Array(captionLines).fill({ ...EMPTY_LINE_STATE })
+    Array(captionLines).fill({ ...EMPTY_LINE_STATE }),
   );
   const time = useVideoTime();
   const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
-    additionalJson = '{}',
+    additionalJson = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
@@ -39,13 +39,13 @@ export default function ShockCollarGraphics({
   } = JSON.parse(settings);
   const strokeColor = getValueFromJson(
     additionalJson,
-    'strokeColor',
-    'rgba(0, 0, 0, 0.75)'
+    "strokeColor",
+    "rgba(0, 0, 0, 0.75)",
   );
-  const strokeWidth_px = getValueFromJson(additionalJson, 'strokeWidth_px', 6);
+  const strokeWidth_px = getValueFromJson(additionalJson, "strokeWidth_px", 6);
 
   const labelStyle = {
-    textColor: captionColor ?? 'white',
+    textColor: captionColor ?? "white",
     fontFamily,
     fontWeight: fontBoldWeights[fontFamily],
     fontSize_vh: FONT_SIZE_VH,
@@ -54,11 +54,11 @@ export default function ShockCollarGraphics({
   };
   const highlightStyle = {
     ...labelStyle,
-    textColor: captionHighlightColor ?? 'rgb(255, 215, 0)',
+    textColor: captionHighlightColor ?? "rgb(255, 215, 0)",
   };
 
-  const charactersPerLineByFont =
-    MAX_CHARACTERS_PER_LINE * fontRelativeCharacterWidths[fontFamily];
+  const charactersPerLineByFont = MAX_CHARACTERS_PER_LINE *
+    fontRelativeCharacterWidths[fontFamily];
 
   const options = {
     maxCharactersPerLine: charactersPerLineByFont,
@@ -76,7 +76,7 @@ export default function ShockCollarGraphics({
   return (
     <Box id="videoWithGraphics">
       <Video
-        src={'video1'}
+        src={"video1"}
         layout={[layoutFuncs.video, { time, startTimecode }]}
       />
       {showCaptions &&
@@ -94,7 +94,7 @@ export default function ShockCollarGraphics({
                 },
               ]}
             >
-              {line.lineText.join(' ')}
+              {line.lineText.join(" ")}
             </Text>
           );
         })}
