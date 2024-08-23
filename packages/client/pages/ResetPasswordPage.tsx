@@ -3,7 +3,7 @@ import { Link } from "packages/client/components/Link.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
-import { Password } from "packages/bfDs/Password.tsx";
+import { BfDsPassword } from "packages/bfDs/BfDsPassword.tsx";
 
 const { useMutation } = ReactRelay;
 
