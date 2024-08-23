@@ -31,7 +31,10 @@ const buttonElements = [
     name: "Button (overlay)",
     component: <BfDsButton text="Overlay" kind="overlay" />,
   },
-  { name: "Button (alert)", component: <BfDsButton text="Alert" kind="alert" /> },
+  {
+    name: "Button (alert)",
+    component: <BfDsButton text="Alert" kind="alert" />,
+  },
   {
     name: "Button (success)",
     component: <BfDsButton text="Success" kind="success" />,
@@ -42,7 +45,9 @@ const buttonElements = [
   },
   {
     name: "Button (primary + spinner)",
-    component: <BfDsButton text="Primary" iconLeft="pencil" showSpinner={true} />,
+    component: (
+      <BfDsButton text="Primary" iconLeft="pencil" showSpinner={true} />
+    ),
   },
 ];
 const buttonElementsWithIcons = [
@@ -87,7 +92,10 @@ const buttonElementsWithIcons = [
   },
 ];
 const buttonElementsWithIconsOnly = [
-  { name: "Button (icon)", component: <BfDsButton iconLeft="plus" size="large" /> },
+  {
+    name: "Button (icon)",
+    component: <BfDsButton iconLeft="plus" size="large" />,
+  },
   {
     name: "Button (icon)",
     component: <BfDsButton iconLeft="pencil" kind="secondary" size="medium" />,
@@ -376,7 +384,10 @@ export function Demo() {
       <div className="element" style={styles.element}>
         <div className="name" style={styles.name}>Modals</div>
         <div className="group" style={styles.group}>
-          <BfDsButton text="Modal 'hi'" onClick={() => showModal(<div>hi</div>)} />
+          <BfDsButton
+            text="Modal 'hi'"
+            onClick={() => showModal(<div>hi</div>)}
+          />
           <BfDsButton text="Modal" onClick={() => showModal(<ContactUs />)} />
         </div>
       </div>
@@ -410,7 +421,11 @@ export function Demo() {
       <div className="element" style={styles.element}>
         <div style={styles.name}>Form</div>
         <div className="group" style={styles.group}>
-          <BfDsInput label="Label" placeholder="Placeholder" onChange={() => {}} />
+          <BfDsInput
+            label="Label"
+            placeholder="Placeholder"
+            onChange={() => {}}
+          />
           <BfDsInput
             label="Label"
             placeholder="Placeholder"

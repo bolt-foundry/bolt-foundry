@@ -8,7 +8,9 @@ type Props = {
   text?: string | number;
 };
 
-export function BfDsTableCell({ align = "left", element, progress, text }: Props) {
+export function BfDsTableCell(
+  { align = "left", element, progress, text }: Props,
+) {
   const showProgress = progress != null && progress > 0 && progress < 100;
   return (
     <div className="table-cell">

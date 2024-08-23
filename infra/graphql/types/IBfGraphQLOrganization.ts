@@ -7,9 +7,14 @@ export const IBfGraphQLOrganizationQuery = queryField((t) => {
     type: "BfOrganization",
     resolve: async (_, args, { bfCurrentViewer }) => {
       if (bfCurrentViewer instanceof IBfCurrentViewerInternalAdmin) {
-        return await BfOrganization.queryConnectionForGraphQL(bfCurrentViewer, {
-          bfOid: undefined,
-        }, {}, args);
+        return await BfOrganization.queryConnectionForGraphQL(
+          bfCurrentViewer,
+          {
+            bfOid: undefined,
+          },
+          {},
+          args,
+        );
       }
       throw new Error("Not implemented");
     },

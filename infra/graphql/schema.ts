@@ -12,8 +12,8 @@ export const schema = import.meta.main ? null : makeSchema({
     extendConnection: {
       count: {
         type: "Int",
-        requireResolver: false
-      }
+        requireResolver: false,
+      },
     },
     includeNodesField: true,
   })],
@@ -33,8 +33,8 @@ export function build(configLocation: string = "packages") {
       extendConnection: {
         count: {
           type: "Int",
-          requireResolver: false
-        }
+          requireResolver: false,
+        },
       },
       includeNodesField: true,
     })],

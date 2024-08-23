@@ -2,13 +2,13 @@ const MINIMUM_PAUSE_AFTER_LAST_WORD = 2; // if the pause is more than this many 
 const TIME_AFTER_LAST_WORD = 1; // clear the screen after this many seconds
 
 function estimateCharacterCount(textArray) {
-  const text = textArray.join(' ');
-  const smallCharacters = 'iljtf,.:;|()[]{}!\'"';
-  const wideCharacters = 'mwMW';
+  const text = textArray.join(" ");
+  const smallCharacters = "iljtf,.:;|()[]{}!'\"";
+  const wideCharacters = "mwMW";
 
   let smallCharacterCount = 0;
   let wideCharacterCount = 0;
-  const spaceCount = text.split(' ').length - 1;
+  const spaceCount = text.split(" ").length - 1;
 
   for (let i = 0; i < text.length; i++) {
     if (smallCharacters.includes(text[i])) {
@@ -18,10 +18,9 @@ function estimateCharacterCount(textArray) {
     }
   }
 
-  const regularCharacterCount =
-    text.length - smallCharacterCount - wideCharacterCount - spaceCount;
-  const estimatedCharacterCount =
-    regularCharacterCount * 1 +
+  const regularCharacterCount = text.length - smallCharacterCount -
+    wideCharacterCount - spaceCount;
+  const estimatedCharacterCount = regularCharacterCount * 1 +
     smallCharacterCount * 0.5 +
     wideCharacterCount * 1.5 +
     spaceCount * 0.5;
@@ -45,7 +44,7 @@ let lastKnownWordIndex = -1;
 export default function getLinesOfWordsFromTranscript(
   lineState,
   time,
-  options
+  options,
 ) {
   const {
     maxCharactersPerLine,
@@ -107,7 +106,7 @@ export default function getLinesOfWordsFromTranscript(
       // make sure to wait for last word
       if (
         currentWordIndex >
-        lineState.current[0].firstWordIndex + actualWordsPerScreen - 1
+          lineState.current[0].firstWordIndex + actualWordsPerScreen - 1
       ) {
         lineState.current.forEach((line) => {
           line.firstWordIndex = -1;
@@ -182,7 +181,7 @@ export default function getLinesOfWordsFromTranscript(
           }
           const wordText = words[firstWordIndex + i].punctuated_word;
           // if the word is not empty, add it to the line
-          if (wordText !== '') {
+          if (wordText !== "") {
             lineText.push(wordText);
           }
           // even though we skip the word, we still want to count the words
@@ -194,7 +193,7 @@ export default function getLinesOfWordsFromTranscript(
             words[firstWordIndex + i + 1] != null &&
             words[firstWordIndex + i + 1].end <= endTimecode &&
             words[firstWordIndex + i + 1].start -
-              words[firstWordIndex + i].end >
+                  words[firstWordIndex + i].end >
               maxPauseForBreak
           ) {
             break;
@@ -204,8 +203,8 @@ export default function getLinesOfWordsFromTranscript(
     }
 
     actualWordsPerScreen += actualWordsPerLine;
-    currentLine =
-      firstWordIndex <= currentWordIndex && currentWordIndex <= lastWordIndex;
+    currentLine = firstWordIndex <= currentWordIndex &&
+      currentWordIndex <= lastWordIndex;
 
     lineState.current[index] = {
       firstWordIndex,

@@ -53,7 +53,7 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
     setActiveModal({ content, options });
     return () => {
       setActiveModal(undefined);
-    } 
+    };
   }
 
   function showToast(message: ReactNode, options: UseToastOptions = {}) {
