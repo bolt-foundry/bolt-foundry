@@ -10,15 +10,16 @@ const logger = getLogger(import.meta);
 const postsQuery = await graphql`
   query BlogPageQuery {
     currentViewer {
-    blog {
-      posts(first: 10) {
-        nodes {
-          title
-          slug
+      blog {
+        posts(first: 10, status: "Ready for publish") {
+          nodes {
+            id
+            title
+            slug
+          }
         }
       }
     }
-  }
   }
 `;
 
@@ -50,21 +51,51 @@ const query = await graphql`
 query BlogPagePostQuery($slug: String!) {
   currentViewer {
     blog {
-      posts(slug: $slug, first: 10) {
+      posts(first: 1, slug: $slug) {
         nodes {
-          slug
           title
+          slug
+          status
           content {
             type
+            id
             ... on ImageBlock {
               id
-              imgUrl
               type
+              imgUrl
+              caption {
+                text {
+                  content
+                  link
+                }
+                annotations {
+                  bold
+                  code
+                  color
+                  italic
+                  strikethrough
+                  underlined
+                }
+              }
             }
             ... on ParagraphBlock {
               id
-              rawText
               type
+              color
+              RichText {
+                text {
+                  content
+                  link
+                }
+                annotations {
+                  bold
+                  code
+                  color
+                  italic
+                  strikethrough
+                  underlined
+                }
+              }
             }
           }
         }
@@ -72,8 +103,8 @@ query BlogPagePostQuery($slug: String!) {
     }
   }
 }
-
 `;
+
 function BlogPost() {
   const { slug } = useRouter().routeParams;
   const { currentViewer } = useLazyLoadQuery<BlogPagePostQuery>(query, {
@@ -82,20 +113,7 @@ function BlogPost() {
   const posts = currentViewer?.blog?.posts?.nodes || [];
   return (
     <ContentFrame>
-      {posts.map((post) => (
-        <div key={post.slug}>
-          <h1>{post.title}</h1>
-          {post.content.map((block) => {
-            if (block.type === "image") {
-              return <img key={block.id} src={block.imgUrl} alt={block.type} />;
-            } else if (block.type === "paragraph") {
-              return <p key={block.id}>{block.rawText}</p>;
-            } else {
-              return null;
-            }
-          })}
-        </div>
-      ))}
+      
     </ContentFrame>
   );
 }
