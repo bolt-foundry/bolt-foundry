@@ -43,7 +43,10 @@ const columns: Array<BfDsColumn<DataType>> = [
       />
     ),
   },
-  { width: "60px", renderer: () => <BfDsTableCell align="center" text="•••" /> },
+  {
+    width: "60px",
+    renderer: () => <BfDsTableCell align="center" text="•••" />,
+  },
 ];
 const fakeData = [
   { title: "Movie 1", organization: "Company A", progress: 65 },

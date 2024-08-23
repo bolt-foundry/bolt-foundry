@@ -13,7 +13,7 @@ export function useCopyToClipboard(): [CopiedValue, CopyFn] {
       setCopiedText(null);
     }, 2000);
   }, [copiedText]);
-  
+
   const copy: CopyFn = async (text) => {
     if (!navigator?.clipboard) {
       // deno-lint-ignore no-console

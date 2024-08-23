@@ -50,14 +50,14 @@ async function land() {
   ]);
   await Deno.remove(Deno.env.get("HISTFILE")!);
   return 0;
-};
+}
 register(
   "deploy",
   "Deprecated, use land instead",
-  land
+  land,
 );
 register(
   "land",
   "Pulls changes down. WILL OVERWRITE ANY CURRENT CHANGES. WILL ALSO MAKE A GIT COMMIT.",
-  land
+  land,
 );

@@ -11,9 +11,7 @@ import {
   encodeBfAccessToken,
   encodeBfRefreshToken,
 } from "packages/bfDb/classes/BfAuth.ts";
-import {
-  BfModelErrorNotFound,
-} from "packages/bfDb/classes/BfModelError.ts";
+import { BfModelErrorNotFound } from "packages/bfDb/classes/BfModelError.ts";
 import { bfQueryItems } from "packages/bfDb/bfDb.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
@@ -46,8 +44,8 @@ export class BfAccount extends BfNode<BfAccountRequiredProps> {
     currentViewer: BfCurrentViewerAccessToken,
   ) {
     const accounts = await bfQueryItems<BfAccountRequiredProps>(
-      {className: this.name},
-      {personBfGid: currentViewer.personBfGid}
+      { className: this.name },
+      { personBfGid: currentViewer.personBfGid },
     );
 
     return accounts.map(({ props, metadata }) =>

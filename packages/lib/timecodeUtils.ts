@@ -19,7 +19,7 @@ export function getTimecodesForClips(response, documents) {
     const clipWithTimecode = {
       ...clip,
       ...timecode,
-    }
+    };
     logger.debug("CLIP WITH TIMECODE", clipWithTimecode);
     anecdotes.push(clipWithTimecode);
   });

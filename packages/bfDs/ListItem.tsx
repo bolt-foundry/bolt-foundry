@@ -14,7 +14,8 @@ type Props = {
 };
 
 export function ListItem(
-  { content, iconRight, isHighlighted, footer, onClick, toggle, toggled }: Props,
+  { content, iconRight, isHighlighted, footer, onClick, toggle, toggled }:
+    Props,
 ) {
   function handleClick() {
     if (onClick) {
@@ -45,10 +46,11 @@ export function ListItem(
         </div>
       )}
       {toggle &&
-        <div className="list-item-toggle">
-          <Toggle value={!!toggled} onChange={toggle} />
-        </div>
-      }
+        (
+          <div className="list-item-toggle">
+            <Toggle value={!!toggled} onChange={toggle} />
+          </div>
+        )}
     </div>
   );
 }

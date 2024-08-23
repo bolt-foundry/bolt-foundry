@@ -13,7 +13,7 @@ export const LinkGoogleAccountMutation = mutationField(
   {
     type: "BfCurrentViewer",
     args: {
-      code: nonNull(stringArg())
+      code: nonNull(stringArg()),
     },
     resolve: async (_root, { code }, { bfCurrentViewer }: GraphQLContext) => {
       const person = await BfPerson.findCurrentViewer(bfCurrentViewer);

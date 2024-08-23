@@ -24,7 +24,7 @@ export const ReadFileMutation = mutationField("readTextFile", {
     if (file.type === "text/plain") {
       returnable = await file.text();
     } else {
-      logger.info(file)
+      logger.info(file);
     }
     logger.info("readTextFile: " + returnable);
     return returnable;

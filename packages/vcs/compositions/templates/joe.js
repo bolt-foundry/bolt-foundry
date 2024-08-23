@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { Box, Text, Video } from '#vcs-react/components';
-import { useParams, useVideoTime } from '#vcs-react/hooks';
-import { fontBoldWeights, fontRelativeCharacterWidths } from '../fonts.js';
-import getLinesOfWordsFromTranscript from '../utils/getLinesOfWordsFromTranscript.js';
-import EndCap from '../components/EndCap.js';
-import TitleCard from '../components/TitleCard.js';
-import Watermark from '../components/Watermark.js';
+import * as React from "react";
+import { Box, Text, Video } from "#vcs-react/components";
+import { useParams, useVideoTime } from "#vcs-react/hooks";
+import { fontBoldWeights, fontRelativeCharacterWidths } from "../fonts.js";
+import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
+import EndCap from "../components/EndCap.js";
+import TitleCard from "../components/TitleCard.js";
+import Watermark from "../components/Watermark.js";
 
 const FONT_SIZE_VH = 96 / 1920;
 const CAPTION_POSITION = 0.6;
@@ -24,19 +24,19 @@ export default function JoeGraphics({
 }) {
   // 3 lines of captions
   const initialLineState = React.useRef(
-    Array(captionLines).fill({ ...EMPTY_LINE_STATE })
+    Array(captionLines).fill({ ...EMPTY_LINE_STATE }),
   );
   const time = useVideoTime();
   const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
-    additionalJson: json = '{}',
+    additionalJson: json = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
     showCaptions,
   } = JSON.parse(settings);
   const additionalJson = JSON.parse(json);
-  let strokeColor = 'rgba(0, 0, 0, 0.75)';
+  let strokeColor = "rgba(0, 0, 0, 0.75)";
   if (additionalJson.strokeColor) {
     strokeColor = additionalJson.strokeColor;
   }
@@ -46,7 +46,7 @@ export default function JoeGraphics({
   }
 
   const labelStyle = {
-    textColor: captionColor ?? 'white',
+    textColor: captionColor ?? "white",
     fontFamily,
     fontWeight: fontBoldWeights[fontFamily],
     fontSize_vh: FONT_SIZE_VH,
@@ -55,11 +55,11 @@ export default function JoeGraphics({
   };
   const highlightStyle = {
     ...labelStyle,
-    textColor: captionHighlightColor ?? 'rgb(255, 215, 0)',
+    textColor: captionHighlightColor ?? "rgb(255, 215, 0)",
   };
 
-  const charactersPerLineByFont =
-    MAX_CHARACTERS_PER_LINE * fontRelativeCharacterWidths[fontFamily];
+  const charactersPerLineByFont = MAX_CHARACTERS_PER_LINE *
+    fontRelativeCharacterWidths[fontFamily];
 
   const options = {
     maxCharactersPerLine: charactersPerLineByFont,
@@ -76,7 +76,7 @@ export default function JoeGraphics({
 
   return (
     <Box id="videoWithGraphics">
-      <Video src={'video1'} />
+      <Video src={"video1"} />
       {showCaptions &&
         lineState &&
         lineState.map((line, index) => {
@@ -94,7 +94,7 @@ export default function JoeGraphics({
                 },
               ]}
             >
-              {line.lineText.join(' ')}
+              {line.lineText.join(" ")}
             </Text>
           );
         })}
