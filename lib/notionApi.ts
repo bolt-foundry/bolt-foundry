@@ -10,13 +10,12 @@ export interface NotionPostsResponse {
   properties: NotionPostsResponseDataProperties;
 }
 
-export interface BlogPostData {
-  title: string;
-  slug: string;
-  id: string;
-}
-
 interface NotionPostsResponseDataProperties {
+  Status: {
+    status: {
+      name: string;
+    }
+  }
   Name: {
     title: [{
       text: {
@@ -26,19 +25,44 @@ interface NotionPostsResponseDataProperties {
   };
 }
 
-export interface NotionBlogPostResponse {
+export interface BlogPostData {
+  title: string;
+  slug: string;
+  id: string;
+  
+}
+
+export interface NotionBlogPostContentObject {
   type: string;
   id: string;
   image: {
+    caption: RichText[]
     file: {
       url: string;
     };
   };
   paragraph: {
-    rich_text: [{
-      plain_text: string;
-    }];
+    rich_text: RichText[];
+    color: string;
   };
+}
+
+export interface RichText {
+  type: string;
+  text: {
+    content: string;
+    link: string;
+  },
+  annotations: {
+    bold: boolean;
+    italic: boolean;
+    strikethrough: boolean;
+    underlined: boolean;
+    code: boolean;
+    color: string;
+  },
+  plain_text: string;
+  href: string;
 }
 
 export interface NotionBlogPostContent {
@@ -46,6 +70,7 @@ export interface NotionBlogPostContent {
   id: string;
 }
 
+// Returns an array of all blog posts from the Notion database
 export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
   const response = await fetch(
     "https://api.notion.com/v1/databases/1d6117a9a86441f1b339e96346bbf0e1/query",
@@ -68,12 +93,14 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
         title: properties.Name.title[0].text.content,
         slug: slug,
         id: id,
+        status: properties.Status.status.name,
       };
     },
   );
   return filteredData;
 }
 
+// Returns an array of all of the ContentBlocks for a given blog post.
 export async function getListOfContentForAPost(
   id: string,
 ): Promise<[NotionBlogPostContent]> {
@@ -90,14 +117,15 @@ export async function getListOfContentForAPost(
   );
   const data = await response.json();
   const filteredData = data.results.map(
-    (contentBlock: NotionBlogPostResponse) => {
+    (contentBlock: NotionBlogPostContentObject) => {
       //todo refactor so that common items such as id and type are deconstructed from a common object.
       switch (contentBlock.type) {
         case "image":
           return {
             id: contentBlock.id,
             type: contentBlock.type,
-            imgUrl: contentBlock.image.file.url,
+            imageUrl: contentBlock.image.file.url,
+            caption: contentBlock.image.caption,
           };
         case "paragraph": {
           let textString = "";
@@ -107,8 +135,13 @@ export async function getListOfContentForAPost(
           return {
             id: contentBlock.id,
             type: contentBlock.type,
-            rawText: textString,
+            RichText: contentBlock.paragraph.rich_text,
+            color: contentBlock.paragraph.color,
           };
+        }
+        default: {
+          //todo add logging for unknown content type.
+          return;
         }
       }
     },
@@ -130,8 +163,7 @@ export async function getRawPostData(slug: string) {
       },
     },
   );
-  const data = await response.json();
-  return data;
+  return await response.json();
 }
 
 export async function getRawDataForAllPosts(): Promise<[BlogPostData]> {
