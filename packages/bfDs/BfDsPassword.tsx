@@ -30,7 +30,7 @@ type Props = {
   placeholder?: string;
 };
 
-export function Password(
+export function BfDsPassword(
   {
     value,
     onChange,
