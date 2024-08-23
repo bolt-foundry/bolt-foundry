@@ -15,7 +15,7 @@ export type BfBaseModelMetadata<TCreationMetadata = CreationMetadata> =
     lastUpdated: Date;
     createdAt: Date;
     className: string;
-    bfOid: BfOid; 
+    bfOid: BfOid;
     bfCid: BfCid; // gets defined from current viewer.
     bfGid: BfGid; // no longer optional because all items will have a defined bfGid
     bfSClassName?: string;
@@ -23,7 +23,7 @@ export type BfBaseModelMetadata<TCreationMetadata = CreationMetadata> =
     bfTClassName?: string;
     bfTid?: BfTid;
   }
-  & TCreationMetadata
+  & TCreationMetadata;
 
 // this is actually a valid usecase for any
 // deno-lint-ignore no-explicit-any

@@ -15,11 +15,13 @@ const logger = getLogger(import.meta);
 
 export type BfMediaProps = {
   filename: string;
+  fileId: string | null;
 };
 
 type DownloadClipArgs = {
   file: {
     url: string;
+    fileId?: string;
   };
   title: string;
   transcript: {
@@ -59,11 +61,25 @@ export class BfMedia extends BfNode<BfMediaProps> {
   }
 
   async downloadClip(args: DownloadClipArgs) {
-    const { transcript, title } = args;
+    const {
+      file: {
+        url,
+        // "short video.mp4"
+        fileId = "1JOvVaUjfMOzhvzkztbFyII6Oe7Qu9Hrh",
+      },
+      transcript,
+      title,
+    } = args;
     const fileroot = await Deno.makeTempFile();
     const transcriptFilename = `${fileroot}.json`;
     const testVideoFilename = `${fileroot}.mp4`;
-    const fileContent = JSON.stringify(transcript, null, 2);
+    // HACK FOR DEMO, LIMIT TO 20 SECONDS
+    // because replit runs out of disk space
+    const transcriptOverride = {
+      ...transcript,
+      end_time: transcript.start_time + 20,
+    };
+    const fileContent = JSON.stringify(transcriptOverride, null, 2);
     try {
       await Deno.writeTextFile(transcriptFilename, fileContent);
       logger.info(`Transcript file created at ${transcriptFilename}`);
@@ -75,7 +91,8 @@ export class BfMedia extends BfNode<BfMediaProps> {
     }
 
     // Download and save the file from Google Drive
-    const testVideoId = "1JOvVaUjfMOzhvzkztbFyII6Oe7Qu9Hrh"; // "short video.mp4"
+    logger.info("File url", url);
+
     try {
       const currentViewerPerson = await BfPerson.findCurrentViewer(
         this.currentViewer,
@@ -85,7 +102,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
         throw new Error("no google auth");
       }
       const accessToken = await googleAuth.getAccessToken();
-      const response = await fetchFile(accessToken, testVideoId);
+      const response = await fetchFile(accessToken, fileId);
       if (!response.ok) {
         throw new Error(
           `Failed to fetch file from Google Drive: ${response.statusText}`,
@@ -109,6 +126,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
       `_render.${extension}`,
     );
 
+    // Hack for demo
     // Copy file from renderedFilename to {BF_ROOT}/build/downloads
     const formattedTitle = title
       ? `${sanitizeFilename(title)}.mp4`

@@ -1,12 +1,12 @@
 // adapted from joe.jsx
-import * as React from 'react';
-import { Box, Text, Video } from '#vcs-react/components';
-import { useParams, useVideoTime } from '#vcs-react/hooks';
-import { fontBoldWeights, fontRelativeCharacterWidths } from '../fonts.js';
-import getLinesOfWordsFromTranscript from '../utils/getLinesOfWordsFromTranscript.js';
-import EndCap from '../components/EndCap.js';
-import TitleCard from '../components/TitleCard.js';
-import { getValueFromJson } from '../utils/jsonUtils.js';
+import * as React from "react";
+import { Box, Text, Video } from "#vcs-react/components";
+import { useParams, useVideoTime } from "#vcs-react/hooks";
+import { fontBoldWeights, fontRelativeCharacterWidths } from "../fonts.js";
+import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
+import EndCap from "../components/EndCap.js";
+import TitleCard from "../components/TitleCard.js";
+import { getValueFromJson } from "../utils/jsonUtils.js";
 const FONT_SIZE_VH = 120 / 1920; // CHANGED: font size
 const CAPTION_POSITION = 0.6;
 const MAX_CHARACTERS_PER_LINE = 16;
@@ -24,12 +24,12 @@ export default function SunflowerGraphics({
 }) {
   // 3 lines of captions
   const initialLineState = React.useRef(
-    Array(captionLines).fill({ ...EMPTY_LINE_STATE })
+    Array(captionLines).fill({ ...EMPTY_LINE_STATE }),
   );
   const time = useVideoTime();
   const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
-    additionalJson = '{}',
+    additionalJson = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
@@ -37,13 +37,13 @@ export default function SunflowerGraphics({
   } = JSON.parse(settings);
   const strokeColor = getValueFromJson(
     additionalJson,
-    'strokeColor',
-    'rgba(0, 0, 0, 1)'
+    "strokeColor",
+    "rgba(0, 0, 0, 1)",
   );
-  const strokeWidth_px = getValueFromJson(additionalJson, 'strokeWidth_px', 12);
+  const strokeWidth_px = getValueFromJson(additionalJson, "strokeWidth_px", 12);
 
   const labelStyle = {
-    textColor: captionColor ?? 'white',
+    textColor: captionColor ?? "white",
     fontFamily,
     fontWeight: fontBoldWeights[fontFamily],
     fontSize_vh: FONT_SIZE_VH,
@@ -52,11 +52,11 @@ export default function SunflowerGraphics({
   };
   const highlightStyle = {
     ...labelStyle,
-    textColor: captionHighlightColor ?? 'rgb(255, 215, 0)',
+    textColor: captionHighlightColor ?? "rgb(255, 215, 0)",
   };
 
-  const charactersPerLineByFont =
-    MAX_CHARACTERS_PER_LINE * fontRelativeCharacterWidths[fontFamily];
+  const charactersPerLineByFont = MAX_CHARACTERS_PER_LINE *
+    fontRelativeCharacterWidths[fontFamily];
 
   const options = {
     maxCharactersPerLine: charactersPerLineByFont,
@@ -73,7 +73,7 @@ export default function SunflowerGraphics({
 
   return (
     <Box id="videoWithGraphics">
-      <Video src={'video1'} />
+      <Video src={"video1"} />
       {showCaptions &&
         lineState.map((line, index) => {
           const fontSize_vh = labelStyle.fontSize_vh;
@@ -89,7 +89,7 @@ export default function SunflowerGraphics({
                 },
               ]}
             >
-              {line.lineText.join(' ')}
+              {line.lineText.join(" ")}
             </Text>
           );
         })}

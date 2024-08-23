@@ -20,11 +20,13 @@ function isInsideComment(contents: string, matchIdx: number): boolean {
 
   // Check for single-line comments (//)
   const singleLineComments = beforeMatch.match(/\/\/.*$/gm) || [];
-  const singleLineCommentFound = singleLineComments.some(comment => beforeMatch.endsWith(comment));
+  const singleLineCommentFound = singleLineComments.some((comment) =>
+    beforeMatch.endsWith(comment)
+  );
 
   // Check for multi-line comments (/* ... */)
-  const blockCommentStartIdx = beforeMatch.lastIndexOf('/*');
-  const blockCommentEndIdx = beforeMatch.lastIndexOf('*/');
+  const blockCommentStartIdx = beforeMatch.lastIndexOf("/*");
+  const blockCommentEndIdx = beforeMatch.lastIndexOf("*/");
   const blockCommentOpen = blockCommentStartIdx > blockCommentEndIdx;
 
   return singleLineCommentFound || blockCommentOpen;

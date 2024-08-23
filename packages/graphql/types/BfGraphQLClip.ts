@@ -102,6 +102,7 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
     const payload = {
       file: {
         url: media?.props.filename,
+        fileId: media?.props.fileId,
       },
       title: title,
       transcript: {
@@ -112,9 +113,9 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
     };
 
     // @ts-expect-error typing is wrong and we know it
-    try{
+    try {
       await BfJob.createJobForNode(media, "downloadClip", [payload], true);
-       } catch (error) {
+    } catch (error) {
       logger.error(error);
       return { success: false };
     }

@@ -12,7 +12,7 @@ const fragment = await graphql`
     googleAuthAccessToken
   }
 `;
-  
+
 type Props = {
   titleText: string;
   text: string;
@@ -51,6 +51,7 @@ export function Clip(
   const topicPills = topics?.split(",").map((topic) => (
     <Pill text={topic?.trim()} />
   ));
+  const length = `${(endTime - startTime).toFixed(2)}s`;
   return (
     <div className="clip">
       <div className="clipInner clipContainer">
@@ -100,6 +101,12 @@ export function Clip(
               </BfDsTooltip>
               <BfDsTooltip text={rationale} position="right">
                 <Pill label="Rating" text={confidence} />
+              </BfDsTooltip>
+              <BfDsTooltip
+                text={`Start: ${startTime} End: ${endTime}`}
+                position="right"
+              >
+                <Pill label="Length" text={length} />
               </BfDsTooltip>
             </div>
 

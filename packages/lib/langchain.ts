@@ -4,7 +4,7 @@ import {
   ChatPromptTemplate,
 } from "packages/deps.ts";
 import { DGWord } from "packages/types/transcript.ts";
-import { AiModel } from "packages/client/components/clipsearch/Search.tsx";
+import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
 import { getTimecodesForClips } from "packages/lib/timecodeUtils.ts";
 
 const openAIApiKey = Deno.env.get("OPENAI_API_KEY") ?? "";
@@ -147,12 +147,12 @@ Each anecdote should:
 Output each anecdote as a JSON formatted object within an array. Iterate through all available data to ensure no relevant anecdotes are missed. 
 
 Each JSON formatted object must:
-- Be verbatim from the transcript.
+- Be verbatim from the transcript. *THIS IS VERY IMPORTANT, IT MUST EXACTLY MATCH THE ORIGINAL TRANSCRIPT*
 - Have no whitespace other than spaces.
 - Contain the following keys:
   - "titleText": A brief title describing the content of the anecdote.
   - "descriptionText": A summary of the anecdote.
-  - "text": The verbatim transcript of the anecdote.
+  - "text": The verbatim transcript of the anecdote. *THIS IS VERY IMPORTANT, IT MUST EXACTLY MATCH THE ORIGINAL TRANSCRIPT*
   - "filename": The name of the file containing the anecdote.
   - "mediaId": The Media ID of the file containing the anecdote.
   - "transcriptId": The Transcript ID of the file containing the anecdote.

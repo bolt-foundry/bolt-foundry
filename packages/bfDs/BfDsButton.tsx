@@ -378,8 +378,7 @@ export function BfDsButton({
     : buttonStyle[kind].color;
 
   const disableButton = disabled;
-  const shouldShowSpinner =
-    (showSpinner || progress != null) &&
+  const shouldShowSpinner = (showSpinner || progress != null) &&
     kind !== "overlay" &&
     kind !== "overlayDark" &&
     kind !== "outline";
@@ -394,9 +393,9 @@ export function BfDsButton({
         ...(disableButton ? styles.disabledStyle : {}),
         ...(shadow && styles.shadow),
       }}
-      onClick={
-        disableButton || link != null || href != null ? () => null : onClick
-      }
+      onClick={disableButton || link != null || href != null
+        ? () => null
+        : onClick}
       onMouseOver={disableButton ? () => null : onHover}
       onMouseOut={disableButton ? () => null : onLeave}
       data-bf-icon={iconLeft}
@@ -405,52 +404,64 @@ export function BfDsButton({
     >
       {shouldShowSpinner && isIconButton && (
         <div style={styles.iconSpinner}>
-          {progress != null && progress > 0 ? (
-            <Progress
-              size={iconButtonSize[size].width}
-              progress={progress}
-              backgroundColor={iconButtonStyle[kind].backgroundColor}
-              spinnerColor={iconButtonStyle[kind].color}
-            />
-          ) : (
-            <Spinner
-              size={iconButtonSize[size].width}
-              backgroundColor={iconButtonStyle[kind].backgroundColor}
-              spinnerColor={iconButtonStyle[kind].color}
-            />
-          )}
+          {progress != null && progress > 0
+            ? (
+              <Progress
+                size={iconButtonSize[size].width}
+                progress={progress}
+                backgroundColor={iconButtonStyle[kind].backgroundColor}
+                spinnerColor={iconButtonStyle[kind].color}
+              />
+            )
+            : (
+              <Spinner
+                size={iconButtonSize[size].width}
+                backgroundColor={iconButtonStyle[kind].backgroundColor}
+                spinnerColor={iconButtonStyle[kind].color}
+              />
+            )}
         </div>
       )}
-      {shouldShowSpinner && !isIconButton ? (
-        <div style={styles.iconStyle}>
-          {progress != null && progress > 0 ? (
-            <Progress
-              size={iconSize[size]}
-              progress={progress}
-              backgroundColor={buttonStyle[kind].backgroundColor}
-              spinnerColor={buttonStyle[kind].color}
-            />
-          ) : (
-            <Spinner
-              size={iconSize[size]}
-              backgroundColor={buttonStyle[kind].backgroundColor}
-              spinnerColor={buttonStyle[kind].color}
-            />
-          )}
-        </div>
-      ) : (
-        iconLeft && (
+      {shouldShowSpinner && !isIconButton
+        ? (
           <div style={styles.iconStyle}>
-            {progress && progress > 0 ? (
-              <div className="mono" style={{ fontSize: 12 }}>
-                {percent}%
-              </div>
-            ) : (
-              <BfDsIcon name={iconLeft} color={iconColor} size={iconSize[size]} />
-            )}
+            {progress != null && progress > 0
+              ? (
+                <Progress
+                  size={iconSize[size]}
+                  progress={progress}
+                  backgroundColor={buttonStyle[kind].backgroundColor}
+                  spinnerColor={buttonStyle[kind].color}
+                />
+              )
+              : (
+                <Spinner
+                  size={iconSize[size]}
+                  backgroundColor={buttonStyle[kind].backgroundColor}
+                  spinnerColor={buttonStyle[kind].color}
+                />
+              )}
           </div>
         )
-      )}
+        : (
+          iconLeft && (
+            <div style={styles.iconStyle}>
+              {progress && progress > 0
+                ? (
+                  <div className="mono" style={{ fontSize: 12 }}>
+                    {percent}%
+                  </div>
+                )
+                : (
+                  <BfDsIcon
+                    name={iconLeft}
+                    color={iconColor}
+                    size={iconSize[size]}
+                  />
+                )}
+            </div>
+          )
+        )}
       {!isIconButton && (
         <div style={styles.textStyle}>
           <div>{text}</div>
@@ -496,16 +507,16 @@ export function BfDsButton({
     );
   }
 
-  return tooltip || tooltipMenu || tooltipMenuDropdown ? (
-    <BfDsTooltip
-      menu={tooltipMenu ?? tooltipMenuDropdown}
-      justification={tooltipJustification}
-      position={tooltipPosition}
-      text={tooltip}
-    >
-      {buttonToRender}
-    </BfDsTooltip>
-  ) : (
-    buttonToRender
-  );
+  return tooltip || tooltipMenu || tooltipMenuDropdown
+    ? (
+      <BfDsTooltip
+        menu={tooltipMenu ?? tooltipMenuDropdown}
+        justification={tooltipJustification}
+        position={tooltipPosition}
+        text={tooltip}
+      >
+        {buttonToRender}
+      </BfDsTooltip>
+    )
+    : buttonToRender;
 }

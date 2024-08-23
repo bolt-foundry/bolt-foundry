@@ -9,29 +9,30 @@ type Props = {
 };
 
 export function ClipsViewNullState({ count, settings$key }: Props) {
-  count = count ?? 0;
   return (
-    <div className="flexColumn" style={{ gap: "20px" }}>
-      <div
-        className="cs-page-section-title"
-        style={{ textAlign: "center" }}
-      >
-        Search your library of {count} videos for a topic above.<br />{" "}
+    <div className="flexColumn">
+      <div className="cs-page-callout">
+        Search <span style={{ fontWeight: 700 }}>{count ?? ""}</span>{" "}
+        videos in your library for a topic above.<br />{" "}
         You can manage which videos are active in{" "}
         <Link to="/settings">
           Settings
         </Link>
       </div>
-      <div className="cs-page-section-title">
-        Recent clips
+      <div className="cs-page-section-outside-header">
+        <div className="cs-page-section-title">
+          Recent clips
+        </div>
       </div>
       <div className="cs-page-section">
         Clips coming soon.....
       </div>
-      <div className="cs-page-section-title">
-        Watched folder
+      <div className="cs-page-section-outside-header">
+        <div className="cs-page-section-title">
+          Watched folder
+        </div>
+        Set up Google Drive watch folders to use this software.
       </div>
-      Set up Google Drive watch folders to use this software.
       {/* <GoogleFilePicker /> */}
       <WatchFolderList settings$key={settings$key} />
       <UserList />

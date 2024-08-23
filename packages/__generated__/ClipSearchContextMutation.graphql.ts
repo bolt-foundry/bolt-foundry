@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d574e7de2f47fd3cca2a6d95c1872df6>>
+ * @generated SignedSource<<cdaa1b1fe7323125e0ad2aed09bfce9f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,19 +9,19 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Mutation } from 'relay-runtime';
-export type SearchMutation$variables = {
+export type ClipSearchContextMutation$variables = {
   input: string;
   suggestedModel?: string | null | undefined;
 };
-export type SearchMutation$data = {
+export type ClipSearchContextMutation$data = {
   readonly searchMutation: {
     readonly message: string | null | undefined;
     readonly success: boolean;
   } | null | undefined;
 };
-export type SearchMutation = {
-  response: SearchMutation$data;
-  variables: SearchMutation$variables;
+export type ClipSearchContextMutation = {
+  response: ClipSearchContextMutation$data;
+  variables: ClipSearchContextMutation$variables;
 };
 
 const node: ConcreteRequest = (function(){
@@ -80,7 +80,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "SearchMutation",
+    "name": "ClipSearchContextMutation",
     "selections": (v1/*: any*/),
     "type": "Mutation",
     "abstractKey": null
@@ -89,20 +89,20 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "SearchMutation",
+    "name": "ClipSearchContextMutation",
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "246c5805a690abdf17cf860a22973e7d",
+    "cacheID": "0fdebd2cc30db7a2501b03f3c50c3cf4",
     "id": null,
     "metadata": {},
-    "name": "SearchMutation",
+    "name": "ClipSearchContextMutation",
     "operationKind": "mutation",
-    "text": "mutation SearchMutation(\n  $input: String!\n  $suggestedModel: String\n) {\n  searchMutation(input: $input, suggestedModel: $suggestedModel) {\n    success\n    message\n  }\n}\n"
+    "text": "mutation ClipSearchContextMutation(\n  $input: String!\n  $suggestedModel: String\n) {\n  searchMutation(input: $input, suggestedModel: $suggestedModel) {\n    success\n    message\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "508a0f5c97376a6651b96c2153d16f3a";
+(node as any).hash = "178ddd41d6cff738a67f4bb68db7407c";
 
 export default node;

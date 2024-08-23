@@ -16,10 +16,12 @@ export function getTimecodesForClips(response, documents) {
     const text = clip.text;
     const timecode = getStartAndEnd(wordsWithTimecode, text);
 
-    anecdotes.push({
+    const clipWithTimecode = {
       ...clip,
       ...timecode,
-    });
+    };
+    logger.debug("CLIP WITH TIMECODE", clipWithTimecode);
+    anecdotes.push(clipWithTimecode);
   });
   return { anecdotes };
 }

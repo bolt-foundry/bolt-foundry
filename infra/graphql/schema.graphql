@@ -148,6 +148,7 @@ type BfGoogleDriveResourceEdge {
 
 """A media object"""
 type BfMedia implements BfNode & Node {
+  fileId: String
   filename: String
 
   """Unique identifier for the resource"""

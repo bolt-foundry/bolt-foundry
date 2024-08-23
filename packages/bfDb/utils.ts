@@ -50,7 +50,9 @@ export async function upsertBfDb() {
   }
   logger.info("Indexes upserted", indexes);
 
-  const omniCv = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(import.meta);
+  const omniCv = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(
+    import.meta,
+  );
   logger.info("Checking for omni account");
   if (!(await BfPerson.find(omniCv, toBfGid("omni_person")))) {
     logger.info("Creating omni person");
