@@ -6,6 +6,10 @@ import { render } from "infra/bff/friends/render.bff.ts";
 import { fetchFile } from "lib/googleDriveApi.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { sanitizeFilename } from "packages/lib/textUtils.ts";
+import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
+import { BfMediaAudio } from "packages/bfDb/models/BfMediaAudio.ts";
+import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 
 const logger = getLogger(import.meta);
 
@@ -33,8 +37,25 @@ export class BfMedia extends BfNode<BfMediaProps> {
     return media;
   }
 
-  example(args: unknown) {
-    logger.info("this is an example job", this.currentViewer, args);
+  static async createFromGoogleDriveResource(
+    driveResource: BfGoogleDriveResource,
+  ) {
+    const bfMediaAudioPromise = BfMediaAudio.createFromGoogleDriveResource(
+      driveResource,
+    );
+    const bfMedia = await this.create(driveResource.currentViewer, {});
+    await BfEdge.createEdgeBetweenNodes(
+      bfMedia.currentViewer,
+      bfMedia,
+      driveResource,
+    );
+
+    const bfMediaAudio = await bfMediaAudioPromise;
+    await BfEdge.createEdgeBetweenNodes(bfMedia.currentViewer, bfMedia, bfMediaAudio);
+    const bfMediaTranscript = await BfMediaTranscript.createFromBfMediaAudio(bfMediaAudio);
+    await BfEdge.createEdgeBetweenNodes(bfMedia.currentViewer, bfMedia, bfMediaTranscript);
+
+    return bfMedia;
   }
 
   async downloadClip(args: DownloadClipArgs) {
