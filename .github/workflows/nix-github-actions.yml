@@ -1,0 +1,32 @@
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v22
+      - id: set-matrix
+        run: |
+          MATRIX=$(nix eval --json .#githubActions.matrix)
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+  build:
+    needs: matrix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix: ${{fromJson(needs.matrix.outputs.matrix)}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v22
+      - name: Build package
+        run: |
+          nix build .#${{ matrix.attr }}
+      - name: Print package sets
+        run: |
+          echo "Shared Packages:"
+          nix eval --json .#packageSets.${{ matrix.system }}.sharedPackages | jq
+          echo "Default Packages:"
+          nix eval --json .#packageSets.${{ matrix.system }}.defaultPackages | jq
+          echo "Dev Shell Packages:"
+          nix eval --json .#packageSets.${{ matrix.system }}.devShellPackages | jq
