@@ -8,7 +8,7 @@ import {
   BfDsTooltipMenu,
   BfDsTooltipPosition,
 } from "packages/bfDs/BfDsTooltip.tsx";
-import { Spinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { Progress } from "packages/bfDs/Progress.tsx";
 // import FeatureMenu from "packages/client/components/FeatureMenu.tsx";
 
@@ -413,7 +413,7 @@ export function BfDsButton({
               spinnerColor={iconButtonStyle[kind].color}
             />
           ) : (
-            <Spinner
+            <BfDsSpinner
               size={iconButtonSize[size].width}
               backgroundColor={iconButtonStyle[kind].backgroundColor}
               spinnerColor={iconButtonStyle[kind].color}
@@ -431,7 +431,7 @@ export function BfDsButton({
               spinnerColor={buttonStyle[kind].color}
             />
           ) : (
-            <Spinner
+            <BfDsSpinner
               size={iconSize[size]}
               backgroundColor={buttonStyle[kind].backgroundColor}
               spinnerColor={buttonStyle[kind].color}

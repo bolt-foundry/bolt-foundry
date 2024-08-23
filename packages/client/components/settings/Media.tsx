@@ -4,7 +4,7 @@ import { graphql } from "packages/client/deps.ts";
 import { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
 import { BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
-import { FullPageSpinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 
 const fragment = await graphql`
 fragment Media_bfOrganization on BfOrganization {
@@ -37,7 +37,7 @@ type Data = {
 
 export function Media({ settings$key }: Props) {
   if (!settings$key) {
-    return <FullPageSpinner />;
+    return <BfDsFullPageSpinner />;
   }
   const data = useFragment(fragment, settings$key);
   const tableData = data?.media?.edges?.map((d, i) => {
