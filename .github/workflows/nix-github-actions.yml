@@ -1,0 +1,22 @@
+name: Nix Flake actions
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  install-nix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v4
+      - name: Run the Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@v2
+      - name: Build server and client
+        run: |
+          nix build .#deploy -L
+      - name: Run CI
+        run: |
+          direnv allow .
+          direnv exec . bff ci
