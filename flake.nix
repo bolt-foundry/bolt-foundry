@@ -5,7 +5,7 @@
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
   };
 
-  outputs = { self, nixpkgs, flake-utils, nixpkgs-unstable }:
+  outputs = { self, nixpkgs, flake-utils, nixpkgs-unstable, nix-github-actions }:
     let
 
       pkgsForSystem = system: nixpkgsSource:
@@ -56,6 +56,7 @@
         
 
         deployPackages = with pkgs; [
+          direnv
         ];
       in
       rec {
@@ -68,13 +69,14 @@
 
         packages.deploy = pkgs.buildEnv {
           name = "deploy";
-          paths = sharedPackages ++ deployPackages;
+          paths = deployPackages ++ sharedPackages;
         };
 
         # `nix develop` and direnv
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = sharedPackages ++ devShellPackages ++ defaultPackages;
         };
-      }
+      } 
     );
+  
 }
