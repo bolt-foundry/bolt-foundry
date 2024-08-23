@@ -15,7 +15,7 @@ type ToastProps = {
   title?: string;
 };
 
-export function Toast({
+export function BfDsToast({
   children,
   closeCallback,
   shouldShow = true,

@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import { Toast, TRANSITION_DURATION } from "packages/bfDs/Toast.tsx";
+import { BfDsToast, TRANSITION_DURATION } from "packages/bfDs/BfDsToast.tsx";
 import { Modal } from "packages/bfDs/Modal.tsx";
 
 const { createContext, useState } = React;
@@ -39,7 +39,7 @@ type ModalType = {
   options?: UseModalOptions;
 };
 
-type Toast = {
+type BfDsToast = {
   id: string;
   message: string | ReactNode;
   options: UseToastOptions | undefined;
@@ -114,7 +114,7 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
     ToastComponent: (
       <>
         {activeToasts.map((toast) => (
-          <Toast
+          <BfDsToast
             key={toast.id}
             shouldShow={toast.options?.shouldShow}
             title={toast.options?.title}
@@ -125,7 +125,7 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
             }}
           >
             {toast.message}
-          </Toast>
+          </BfDsToast>
         ))}
       </>
     ),
