@@ -1,6 +1,5 @@
 /build/
-.deno/*
-!.deno/npm
+/.deno
 .direnv/*
 .cache
 .config
