@@ -17,6 +17,7 @@ function isTransferrable(value: unknown): boolean {
     "RTCDataChannel",
   ];
   return knownTransferrables.some((transferable) => {
+    // deno-lint-ignore no-explicit-any
     const globalValue = (globalThis as any)[transferable];
     const typeofValue = typeof value;
     return typeofValue === "object" && globalValue === value;

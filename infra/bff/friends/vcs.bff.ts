@@ -2,7 +2,7 @@ import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
 import { getLogger } from "deps.ts";
 
-const logger = getLogger(import.meta);
+const _logger = getLogger(import.meta);
 
 export async function buildVcs(_args?: Array<string>) {
   const stopSpinner = startSpinner();

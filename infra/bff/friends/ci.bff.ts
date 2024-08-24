@@ -11,14 +11,9 @@ register(
   async () => {
     const commands = [
       ["deno", "test", "--cached-only", "-A"],
-      [
-        "deno",
-        "fmt",
-      ],
-      // [
-      //   "deno",
-      //   "lint",
-      // ],
+      ["deno", "fmt"],
+      ["deno", "lint"],
+      ["bff", "build"],
     ];
     for (const command of commands) {
       const code = await runShellCommand(command);

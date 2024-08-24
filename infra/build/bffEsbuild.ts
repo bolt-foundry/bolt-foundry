@@ -96,6 +96,7 @@ const replaceTagsWithImports = async (
 
 async function getCacheLocations() {
   logger.debug("Fetching cache locations...");
+  // deno-lint-ignore no-deprecated-deno-api
   const p = Deno.run({
     cmd: [
       "deno",

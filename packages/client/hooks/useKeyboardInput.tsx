@@ -33,7 +33,7 @@ const useKeyboardInput = (
 
     const handleKeyUp = (event: KeyboardEvent) => {
       if (!isActive) return;
-      let key = event.key.toLowerCase();
+      const key = event.key.toLowerCase();
       const callback = keyupBindings?.[key];
       if (callback) {
         callback();
