@@ -1,0 +1,7 @@
+export declare enum AttributeNames {
+    EVENT_TYPE = "event_type",
+    TARGET_ELEMENT = "target_element",
+    TARGET_XPATH = "target_xpath",
+    HTTP_URL = "http.url"
+}
+//# sourceMappingURL=AttributeNames.d.ts.map

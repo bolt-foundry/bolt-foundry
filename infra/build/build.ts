@@ -4,8 +4,30 @@ import { esbuild } from "infra/build/deps.ts";
 import { generateBluey } from "lib/generateBluey.ts";
 import { denoPlugin } from "infra/build/bffEsbuild.ts";
 import { getLogger } from "deps.ts";
+import { generateBluey } from "lib/generateBluey.ts";
 
 const logger = getLogger(import.meta);
+
+const denoFileResolver = {
+  name: "deno-file-resolver",
+  setup(build: esbuild.PluginBuild) {
+    build.onResolve({ filter: /\.(ts|js|tsx|jsx)$/ }, async (args) => {
+      if (args.kind === "entry-point") {
+        return;
+      }
+      const path = import.meta.resolve(args.path).split("file://")[1];
+      const fileExists = await Deno.lstat(path).then(() => true).catch(() =>
+        false
+      );
+      if (fileExists) {
+        return {
+          path,
+        };
+      }
+      return null;
+    });
+  },
+};
 
 export async function build(
   buildOptions = {
@@ -20,12 +42,12 @@ export async function build(
     entryPoints: [
       "packages/client/Client.tsx",
       "infra/internalbf.com/client/Client.tsx",
-      "aws/client/main.tsx",
     ],
     write: true,
-    outdir: "build",
+    outdir: "build/infra/internalbf.com/client",
     plugins: [
-      denoPlugin,
+      // denoPlugin,
+      denoFileResolver,
     ],
     format: "esm",
     external: ["npm:posthog-node@3.2.0", "/build/vcs/dev_bf.bundle.js"],

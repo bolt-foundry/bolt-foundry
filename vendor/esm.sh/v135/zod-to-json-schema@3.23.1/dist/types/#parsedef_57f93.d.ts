@@ -1,0 +1,37 @@
+import { ZodTypeDef } from "https://esm.sh/v135/zod@3.23.8/index.d.ts";
+import { JsonSchema7AnyType } from "./parsers/any.d.ts";
+import { JsonSchema7ArrayType } from "./parsers/array.d.ts";
+import { JsonSchema7BigintType } from "./parsers/bigint.d.ts";
+import { JsonSchema7BooleanType } from "./parsers/boolean.d.ts";
+import { JsonSchema7DateType } from "./parsers/date.d.ts";
+import { JsonSchema7EnumType } from "./parsers/enum.d.ts";
+import { JsonSchema7AllOfType } from "./parsers/intersection.d.ts";
+import { JsonSchema7LiteralType } from "./parsers/literal.d.ts";
+import { JsonSchema7MapType } from "./parsers/map.d.ts";
+import { JsonSchema7NativeEnumType } from "./parsers/nativeEnum.d.ts";
+import { JsonSchema7NeverType } from "./parsers/never.d.ts";
+import { JsonSchema7NullType } from "./parsers/null.d.ts";
+import { JsonSchema7NullableType } from "./parsers/nullable.d.ts";
+import { JsonSchema7NumberType } from "./parsers/number.d.ts";
+import { JsonSchema7ObjectType } from "./parsers/object.d.ts";
+import { JsonSchema7RecordType } from "./parsers/record.d.ts";
+import { JsonSchema7SetType } from "./parsers/set.d.ts";
+import { JsonSchema7StringType } from "./parsers/string.d.ts";
+import { JsonSchema7TupleType } from "./parsers/tuple.d.ts";
+import { JsonSchema7UndefinedType } from "./parsers/undefined.d.ts";
+import { JsonSchema7UnionType } from "./parsers/union.d.ts";
+import { JsonSchema7UnknownType } from "./parsers/unknown.d.ts";
+import { Refs } from "./Refs.d.ts";
+type JsonSchema7RefType = {
+    $ref: string;
+};
+type JsonSchema7Meta = {
+    title?: string;
+    default?: any;
+    description?: string;
+    markdownDescription?: string;
+};
+export type JsonSchema7TypeUnion = JsonSchema7StringType | JsonSchema7ArrayType | JsonSchema7NumberType | JsonSchema7BigintType | JsonSchema7BooleanType | JsonSchema7DateType | JsonSchema7EnumType | JsonSchema7LiteralType | JsonSchema7NativeEnumType | JsonSchema7NullType | JsonSchema7NumberType | JsonSchema7ObjectType | JsonSchema7RecordType | JsonSchema7TupleType | JsonSchema7UnionType | JsonSchema7UndefinedType | JsonSchema7RefType | JsonSchema7NeverType | JsonSchema7MapType | JsonSchema7AnyType | JsonSchema7NullableType | JsonSchema7AllOfType | JsonSchema7UnknownType | JsonSchema7SetType;
+export type JsonSchema7Type = JsonSchema7TypeUnion & JsonSchema7Meta;
+export declare function parseDef(def: ZodTypeDef, refs: Refs, forceResolution?: boolean): JsonSchema7Type | undefined;
+export {};
