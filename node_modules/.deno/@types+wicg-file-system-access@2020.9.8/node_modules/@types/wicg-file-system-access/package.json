@@ -1,0 +1,32 @@
+{
+    "name": "@types/wicg-file-system-access",
+    "version": "2020.9.8",
+    "description": "TypeScript definitions for File System Access API",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/wicg-file-system-access",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Ingvar Stepanyan",
+            "url": "https://github.com/RReverser",
+            "githubUsername": "RReverser"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "typesVersions": {
+        "<=5.0": {
+            "*": [
+                "ts5.0/*"
+            ]
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/wicg-file-system-access"
+    },
+    "scripts": {},
+    "dependencies": {},
+    "typesPublisherContentHash": "dbea9a70212a108e6db9e0d8744c7d2370aa47c62d381576a5b0d8c49081c630",
+    "typeScriptVersion": "4.6"
+}
