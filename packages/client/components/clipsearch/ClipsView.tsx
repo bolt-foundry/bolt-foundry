@@ -48,7 +48,7 @@ export function ClipsView({ count, clips$key }: Props) {
     prompt,
     previousPrompt,
   } = useClipSearchState();
-  let data = useFragment(fragment, clips$key);
+  const data = useFragment(fragment, clips$key);
   if (clips === undefined) {
     return (
       <>
@@ -73,8 +73,6 @@ export function ClipsView({ count, clips$key }: Props) {
         <BfDsFullPageSpinner />
       </div>
     );
-
-    return <BfDsFullPageSpinner />;
   }
 
   const parsedClips = isValidJSON(clips)

@@ -1,17 +1,10 @@
 import {
-  arg,
-  booleanArg,
-  connectionFromArray,
-  extendType,
-  idArg,
   mutationField,
   nonNull,
   objectType,
   stringArg,
 } from "packages/graphql/deps.ts";
-import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
-import { GraphQLContext } from "packages/graphql/graphql.ts";
-import { aiSettings, callAPI } from "infra/aiPlayground/langchainAPI.ts";
+import { callAPI } from "infra/aiPlayground/langchainAPI.ts";
 
 // Define the output type for the mutation response
 const playgroundMutationPayload = objectType({
@@ -31,7 +24,6 @@ export const playgroundMutation = mutationField("playgroundMutation", {
   resolve: async (
     _root,
     { input, suggestedModel },
-    { bfCurrentViewer }: GraphQLContext,
   ) => {
     try {
       const message = await callAPI(input, undefined, suggestedModel);
@@ -40,6 +32,7 @@ export const playgroundMutation = mutationField("playgroundMutation", {
         message: message,
       };
     } catch (error) {
+      // deno-lint-ignore no-console
       console.error("Form submission error:", error);
       return {
         success: false,

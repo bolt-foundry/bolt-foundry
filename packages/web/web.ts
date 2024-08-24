@@ -11,7 +11,6 @@ import { getGoogleOauthUrl } from "lib/googleOauth.ts";
 import { redirectIfNotLoggedIn } from "/aws/clientRenderer/main.ts";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { addToGoogleProcessQueue } from "packages/ingest/googleDriveNotificationHandler.ts";
 
 const logger = getLogger(import.meta);
 export enum DeploymentTypes {
@@ -111,7 +110,7 @@ async function handleFileServing(
         "content-type": contentType,
       },
     });
-  } catch (e) {
+  } catch {
     return new Response("File not found", { status: 404 });
   }
 }
@@ -156,6 +155,7 @@ routes.set("/google/oauth/start", (req) => {
       "boltfoundry.wtf";
     const url = new URL(req.url);
     const hostname = url.hostname;
+    // deno-lint-ignore no-console
     console.log(
       `Redirecting to https://${redirectDomain}/google/oauth/start?hostname=${hostname}`,
     );
@@ -195,6 +195,7 @@ routes.set("/google/oauth/end", (req) => {
   if (bfAuthRedirectDomain) {
     requestUrl.hostname = bfAuthRedirectDomain;
     requestUrl.protocol = "https:";
+    // deno-lint-ignore no-console
     console.log(`Redirecting to ${requestUrl.toString()}`);
     return new Response(null, {
       status: 302,
@@ -227,21 +228,6 @@ routes.set("/google/oauth/end", (req) => {
   return new Response(body, {
     headers,
   });
-});
-
-routes.set("/google/drive/webhook", async (req) => {
-  console.log("received request: ", req);
-
-  //todo check validity of body
-  if (true) {
-    addToGoogleProcessQueue(req);
-
-    // todo check that the add to queue function was successful.
-    if (true) {
-      return new Response("Request received", { status: 200 });
-    }
-  }
-  return new Response("Not Found", { status: 404 });
 });
 
 routes.set("/graphql", graphQlHandler);

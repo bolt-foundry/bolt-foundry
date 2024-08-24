@@ -41,28 +41,34 @@ export function ClipSearchPageContent() {
       <List collapsible={true} header="Lists">
         <ListItem
           content="work-life balance"
+          // deno-lint-ignore no-console
           onClick={() => console.log("click")}
         />
         <ListItem
           content="taxes"
+          // deno-lint-ignore no-console
           onClick={() => console.log("click")}
         />
       </List>
       <List collapsible={true} header="Searches">
         <ListItem
           content="work-life balance"
+          // deno-lint-ignore no-console
           onClick={() => console.log("click")}
         />
         <ListItem
           content="taxes"
+          // deno-lint-ignore no-console
           onClick={() => console.log("click")}
         />
         <ListItem
           content="duck"
+          // deno-lint-ignore no-console
           onClick={() => console.log("click")}
         />
         <ListItem
           content="clouds"
+          // deno-lint-ignore no-console
           onClick={() => console.log("click")}
         />
       </List>

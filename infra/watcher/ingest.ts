@@ -33,7 +33,7 @@ export async function chunkGoogleFile(filePath: string, name: string) {
   logger.info("processing file", filePath);
   const videoChunks = createVideoChunksForFilePath(filePath);
   for await (const chunk of videoChunks) {
-    const uploadedLink = await processVideoChunk(chunk, name);
+    const _uploadedLink = await processVideoChunk(chunk, name);
   }
   //find a way to check sucess
   return true;

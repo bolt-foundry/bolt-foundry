@@ -1,6 +1,10 @@
+// deno-lint-ignore no-external-import
 import { ChatOpenAI } from "https://esm.sh/@langchain/openai";
+// deno-lint-ignore no-external-import
 import { ChatAnthropic } from "https://esm.sh/@langchain/anthropic";
+// deno-lint-ignore no-external-import
 import { ChatPromptTemplate } from "https://esm.sh/@langchain/core/prompts";
+// deno-lint-ignore no-external-import
 import {
   JsonOutputParser,
   StringOutputParser,
@@ -12,7 +16,7 @@ const samples = [
     content: await import(
       "infra/aiPlayground/test_database/words/1da49b0955384e7aa51e110dbd25b736_words.json",
       {
-        assert: { type: "json" },
+        with: { type: "json" },
       }
     ),
   },
@@ -21,7 +25,7 @@ const samples = [
     content: await import(
       "infra/aiPlayground/test_database/words/5c57973d4b2a43948a49b6d254906385_words.json",
       {
-        assert: { type: "json" },
+        with: { type: "json" },
       }
     ),
   },
@@ -30,7 +34,7 @@ const samples = [
     content: await import(
       "infra/aiPlayground/test_database/words/50d21ed829774d1fb244bb22684b0ad5_words.json",
       {
-        assert: { type: "json" },
+        with: { type: "json" },
       }
     ),
   },
@@ -39,7 +43,7 @@ const samples = [
     content: await import(
       "infra/aiPlayground/test_database/words/169dd504edff4bd7b4ebae59f0202885_words.json",
       {
-        assert: { type: "json" },
+        with: { type: "json" },
       }
     ),
   },
@@ -48,7 +52,7 @@ const samples = [
     content: await import(
       "infra/aiPlayground/test_database/words/617e231f1c014e2785bf7627eb361c96_words.json",
       {
-        assert: { type: "json" },
+        with: { type: "json" },
       }
     ),
   },
@@ -57,7 +61,7 @@ const samples = [
     content: await import(
       "infra/aiPlayground/test_database/words/17772c835ed14802aaac61bb79c2e5ed_words.json",
       {
-        assert: { type: "json" },
+        with: { type: "json" },
       }
     ),
   },
@@ -66,7 +70,7 @@ const samples = [
     content: await import(
       "infra/aiPlayground/test_database/words/ca44d58db1ae47ba9c47f47ee11c11cf_words.json",
       {
-        assert: { type: "json" },
+        with: { type: "json" },
       }
     ),
   },
@@ -75,7 +79,7 @@ const samples = [
     content: await import(
       "infra/aiPlayground/test_database/words/e9d658eb116f4d898d547ab8b276d9c1_words.json",
       {
-        assert: { type: "json" },
+        with: { type: "json" },
       }
     ),
   },
@@ -84,7 +88,7 @@ const samples = [
     content: await import(
       "infra/aiPlayground/test_database/words/f4c8a47adbe64a32a9216a43ed6e3bfa_words.json",
       {
-        assert: { type: "json" },
+        with: { type: "json" },
       }
     ),
   },
@@ -95,7 +99,7 @@ const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
 
 export const callAPI = async (
   userMessage: string,
-  systemMessage?: string,
+  _systemMessage?: string,
   suggestedModel?: string | null | undefined,
 ) => {
   let llmInterface;

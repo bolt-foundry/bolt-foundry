@@ -7,7 +7,6 @@ export function downloadText(
   filename: string,
   cbStarted?: () => void,
   cbFinished?: () => void,
-  personId?: string,
 ) {
   const element = document.createElement("a");
   const file = new Blob([text], { type: "text/plain" });

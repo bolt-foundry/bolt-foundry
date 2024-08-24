@@ -10,7 +10,7 @@ const { map } = rxjs;
 export function streamFileIngestion(
   file: File,
   fileName: string,
-): rxjs.Observable<{ type: string; data: any }> {
+): rxjs.Observable<{ type: string; data: unknown }> {
   const fileObservable = streamFileToOpfs(file, fileName);
   const audioObservable = extractAudioToStream(fileObservable);
   const uploadObservable = uploadFileFromStream(audioObservable);
@@ -23,6 +23,7 @@ export function streamFileIngestion(
       map((event) => ({ type: "uploadEvent", data: event })),
     ),
   );
+  // @ts-expect-error #techdeb
   return combinedObservable;
 }
 
@@ -41,6 +42,7 @@ function uploadFileFromStream(
   let totalBytesToUpload = 0;
 
   audioObservable.subscribe({
+    // deno-lint-ignore require-await
     next: async (audioChunkEvent) => {
       if (audioChunkEvent.type !== "encodedAudioChunk") {
         return;
