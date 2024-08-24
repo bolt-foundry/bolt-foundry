@@ -4,7 +4,6 @@ import { useFragment } from "react-relay";
 import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { Pill } from "packages/bfDs/Pill.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import VideoPlayer from "aws/client/components/VideoPlayer.tsx";
 import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
 
 const fragment = await graphql`
@@ -56,12 +55,7 @@ export function Clip(
     <div className="clip">
       <div className="clipInner clipContainer">
         <div className="videoPlayer tall">
-          <VideoPlayer
-            controls="below"
-            src=""
-            xstyle={{ borderRadius: 8 }}
-            showScrubber={false}
-          />
+          (video player)
         </div>
         <div className="clipContent">
           <div className="clipHeader">
