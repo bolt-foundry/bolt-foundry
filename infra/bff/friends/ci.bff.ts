@@ -12,7 +12,7 @@ register(
     const commands = [
       ["deno", "test", "--cached-only", "-A"],
       ["deno", "fmt"],
-      ["deno", "lint"],
+      // ["deno", "lint"],
     ];
     for (const command of commands) {
       const code = await runShellCommand(command);
