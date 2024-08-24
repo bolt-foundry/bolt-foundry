@@ -1,7 +1,7 @@
-export function useFeatureFlag(str: string) {
+export function useFeatureFlag(_str: string) {
   return true;
 }
-export function useFeatureTier(str: string) {
+export function useFeatureTier(_str: string) {
   return true;
 }
 export function useFeatureVariant(str: string) {

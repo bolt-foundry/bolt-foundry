@@ -48,7 +48,7 @@ routes.set("/resources/:filename+", async (_req, routeParams) => {
         "content-type": contentType,
       },
     });
-  } catch (e) {
+  } catch {
     return new Response("File not found", { status: 404 });
   }
 });
@@ -73,7 +73,7 @@ routes.set("/build/:filename+", async (_req, routeParams) => {
         "content-type": contentType,
       },
     });
-  } catch (e) {
+  } catch {
     return new Response("File not found", { status: 404 });
   }
 });

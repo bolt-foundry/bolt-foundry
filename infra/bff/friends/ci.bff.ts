@@ -15,10 +15,14 @@ register(
         "deno",
         "fmt",
       ],
-      // [
-      //   "deno",
-      //   "lint",
-      // ],
+      [
+        "deno",
+        "lint",
+      ],
+      [
+        "bff",
+        "build",
+      ],
     ];
     for (const command of commands) {
       const code = await runShellCommand(command);
