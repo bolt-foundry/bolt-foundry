@@ -20,7 +20,7 @@ import { InternalBfDotComPage } from "packages/client/pages/InternalBfDotComPage
 
 export const routes = new Map([
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
-  ["/", { Component: IBfDashboardPage }],
+  ["/", { Component: IBfDashboardPage, allowLoggedOut: true }],
   ["/media", { Component: IBfDashboardPage }],
   ["/organizations", { Component: IBfOrganizationsPage }],
 
