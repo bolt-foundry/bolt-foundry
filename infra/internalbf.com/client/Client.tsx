@@ -1,12 +1,12 @@
-import { getLogger, React } from "deps.ts";
-import { ReactDOMClient } from "packages/client/deps.ts";
-import { App } from "infra/internalbf.com/client/components/App.tsx";
-import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
+import * as React from "react";
+import ReactDOMClient from "react-dom/client";
 import type { ServerProps } from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
+import { getLogger } from "deps.ts";
+import { BfDsProvider } from "packages/bfDs/contexts/BfDsContext.tsx";
+import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
 import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import AppEnvironmentProvider from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
-import { BfDsProvider } from "packages/bfDs/contexts/BfDsContext.tsx";
-// import { ensurePosthogClientIsSetUp } from "packages/events/mod.ts";
+import { App } from "infra/internalbf.com/client/components/App.tsx";
 
 const logger = getLogger(import.meta);
 

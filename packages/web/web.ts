@@ -5,7 +5,6 @@ import { getLogger } from "deps.ts";
 import { routes as appRoutes } from "packages/client/components/App.tsx";
 import { routes as oldAppRoutes } from "aws/client/components/App.tsx";
 import { getHeaders } from "infra/watcher/ingest.ts";
-import { workerList } from "infra/build/workerList.ts";
 import { handler as graphQlHandler } from "packages/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";
 import { redirectIfNotLoggedIn } from "/aws/clientRenderer/main.ts";
@@ -38,29 +37,6 @@ for (const entry of appRoutes.entries()) {
 for (const entry of oldAppRoutes.entries()) {
   const [path] = entry;
   routes.set(path, redirectIfNotLoggedIn);
-}
-
-for (const workerPathWithoutLeadingSlash of workerList) {
-  const workerPath = "/" + workerPathWithoutLeadingSlash;
-  routes.set(workerPath, async (_request, _routeParams) => {
-    const filePath = workerPath.replace("packages/", "build/").replace(
-      ".ts",
-      ".js",
-    );
-    try {
-      const fileContent = await Deno.readTextFile(
-        new URL(import.meta.resolve(filePath)),
-      );
-      return new Response(fileContent, {
-        headers: { "content-type": "application/javascript" },
-      });
-    } catch (e) {
-      if (e instanceof Deno.errors.NotFound) {
-        return defaultRoute();
-      }
-      throw e;
-    }
-  });
 }
 
 function getContentType(ext) {

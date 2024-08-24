@@ -1,0 +1,13 @@
+export { createProcessor } from "./lib/core.d.ts";
+export { nodeTypes } from "./lib/node-types.d.ts";
+export type Fragment = import('./lib/util/resolve-evaluate-options.d.ts').Fragment;
+export type Jsx = import('./lib/util/resolve-evaluate-options.d.ts').Jsx;
+export type JsxDev = import('./lib/util/resolve-evaluate-options.d.ts').JsxDev;
+export type UseMdxComponents = import('./lib/util/resolve-evaluate-options.d.ts').UseMdxComponents;
+export type CompileOptions = import('./lib/compile.d.ts').CompileOptions;
+export type ProcessorOptions = import('./lib/core.d.ts').ProcessorOptions;
+export type EvaluateOptions = import('./lib/evaluate.d.ts').EvaluateOptions;
+export type RunOptions = import('./lib/run.d.ts').RunOptions;
+export { compile, compileSync } from "./lib/compile.d.ts";
+export { evaluate, evaluateSync } from "./lib/evaluate.d.ts";
+export { run, runSync } from "./lib/run.d.ts";

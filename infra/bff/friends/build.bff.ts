@@ -1,10 +1,12 @@
 import { build } from "infra/build/build.ts";
+import { build as classicBuild } from "infra/build/classicBuild.ts";
 import { register } from "infra/bff/mod.ts";
 import { buildRelay } from "infra/bff/friends/relay.bff.ts";
 import { buildVcs } from "infra/bff/friends/vcs.bff.ts";
 
 register("build", "Builds the client.", async (_options) => {
   await build();
+  await classicBuild();
   return 0;
 });
 
