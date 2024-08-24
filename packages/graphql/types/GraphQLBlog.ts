@@ -1,4 +1,4 @@
-import { interfaceType, list, objectType, stringArg } from "nexus";
+import { interfaceType, objectType, stringArg } from "nexus";
 import { connectionFromArray } from "packages/graphql/deps.ts";
 import {
   BlogPostData,
@@ -16,7 +16,7 @@ export const Blog = objectType({
       additionalArgs: {
         slug: stringArg(),
       },
-      resolve: async (_, args, ctx) => {
+      resolve: async (_, args) => {
         let posts: BlogPostData[] = await getBlogPostsFromNotion();
         if (args.slug) {
           posts = posts.filter((post) => post.slug === args.slug);
@@ -35,7 +35,7 @@ export const BlogPost = objectType({
     t.string("slug");
     t.list.field("content", {
       type: "BlogPostContentBlock",
-      resolve: async (parent, args, ctx) => {
+      resolve: async (parent) => {
         const content: NotionBlogPostContent[] = await getListOfContentForAPost(
           parent.id,
         );

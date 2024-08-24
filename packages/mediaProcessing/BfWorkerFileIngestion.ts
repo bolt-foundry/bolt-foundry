@@ -111,7 +111,7 @@ export class BfWorkerFileIngestion extends BfWorkerObservable {
       const audioDecoder = new AudioDecoder({
         output: (audioData) => {
           audioChunks.push(audioData);
-          const timecode = audioData.timestamp / audioData.sampleRate / 1000;
+          // const timecode = audioData.timestamp / audioData.sampleRate / 1000;
         },
         error: (e) => {
           throw e;

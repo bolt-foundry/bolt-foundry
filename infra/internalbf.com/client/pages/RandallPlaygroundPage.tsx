@@ -189,17 +189,21 @@ export function RandallPlaygroundPage() {
       const code = await authorizeGdrive();
       commit({
         variables: { code },
+        // @ts-expect-error #techdebt
         onCompleted: (data) => {
+          // deno-lint-ignore no-console
           console.log(data);
           setGoogleAccessToken(
             data.linkAdvancedGoogleAuth?.person?.googleAuthAccessToken,
           );
         },
-        onError: (error) => {
+        onError: (error: unknown) => {
+          // deno-lint-ignore no-console
           console.error(error);
         },
       });
     } catch (e) {
+      // deno-lint-ignore no-console
       console.error(e);
     }
   }
@@ -212,6 +216,7 @@ export function RandallPlaygroundPage() {
     commitFolder({
       variables: { resourceId: folder.docs[0].id, name: folder.docs[0].name },
       onCompleted: (data) => {
+        // deno-lint-ignore no-console
         console.log("o shit we did it");
       },
     });
