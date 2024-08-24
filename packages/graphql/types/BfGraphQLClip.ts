@@ -1,8 +1,5 @@
 import {
   arg,
-  booleanArg,
-  connectionFromArray,
-  extendType,
   mutationField,
   nonNull,
   objectType,
@@ -12,12 +9,10 @@ import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { BfClip } from "packages/bfDb/models/BfClip.ts";
 import { getLogger } from "deps.ts";
 import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
-import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { floatArg } from "infra/graphql/deps.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
-import { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { BfAnyid, toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 
 const logger = getLogger(import.meta);
 
@@ -48,7 +43,7 @@ export const BfGraphQLClipCreateMutation = mutationField("upsertClip", {
       clip = await BfClip.create(bfCurrentViewer, {
         title,
       }, {
-        bfGid: originalClipId,
+        bfGid: toBfGid(originalClipId),
       });
     }
     if (clip) {
@@ -58,6 +53,7 @@ export const BfGraphQLClipCreateMutation = mutationField("upsertClip", {
       logger.debug("Uploaded file successfully", file);
       return clip.toGraphql();
     }
+    return null;
   },
 });
 

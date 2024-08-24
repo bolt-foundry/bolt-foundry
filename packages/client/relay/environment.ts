@@ -50,15 +50,6 @@ const subscribe = (operation, variables) => {
   });
 };
 
-class CustomError extends BfError {
-  code?: string;
-
-  constructor(message?: string, code?: string) {
-    super(message); // Pass the message to the Error constructor.
-    this.code = code;
-  }
-}
-
 // Define a function that fetches the results of an operation (query/mutation/etc)
 // and returns its results as a Promise:
 async function fetchQuery(

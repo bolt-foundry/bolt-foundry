@@ -18,7 +18,7 @@ export const FileScalar = scalarType({
 export const ReadFileMutation = mutationField("readTextFile", {
   type: "String",
   args: { file: nonNull(arg({ type: "File" })) },
-  resolve: async (one, two, ctx, four) => {
+  resolve: async (_parent, _args, ctx) => {
     const file: File = ctx.params.variables.file;
     let returnable = "not able to read b/c probably not text.";
     if (file.type === "text/plain") {

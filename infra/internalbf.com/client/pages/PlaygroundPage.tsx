@@ -43,6 +43,7 @@ export function PlaygroundPage() {
   if (typeof aiResponse === "string") {
     parsedResponse = JSON.parse(aiResponse);
   } else {
+    // deno-lint-ignore no-console
     console.log("NOT A STRING");
   }
 

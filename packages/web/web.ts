@@ -111,7 +111,7 @@ async function handleFileServing(
         "content-type": contentType,
       },
     });
-  } catch (e) {
+  } catch {
     return new Response("File not found", { status: 404 });
   }
 }
@@ -156,6 +156,7 @@ routes.set("/google/oauth/start", (req) => {
       "boltfoundry.wtf";
     const url = new URL(req.url);
     const hostname = url.hostname;
+    // deno-lint-ignore no-console
     console.log(
       `Redirecting to https://${redirectDomain}/google/oauth/start?hostname=${hostname}`,
     );
@@ -195,6 +196,7 @@ routes.set("/google/oauth/end", (req) => {
   if (bfAuthRedirectDomain) {
     requestUrl.hostname = bfAuthRedirectDomain;
     requestUrl.protocol = "https:";
+    // deno-lint-ignore no-console
     console.log(`Redirecting to ${requestUrl.toString()}`);
     return new Response(null, {
       status: 302,
@@ -229,14 +231,18 @@ routes.set("/google/oauth/end", (req) => {
   });
 });
 
+// deno-lint-ignore require-await
 routes.set("/google/drive/webhook", async (req) => {
+  // deno-lint-ignore no-console
   console.log("received request: ", req);
 
   //todo check validity of body
+  // deno-lint-ignore no-constant-condition
   if (true) {
     addToGoogleProcessQueue(req);
 
     // todo check that the add to queue function was successful.
+    // deno-lint-ignore no-constant-condition
     if (true) {
       return new Response("Request received", { status: 200 });
     }
