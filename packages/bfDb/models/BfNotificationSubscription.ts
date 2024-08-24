@@ -46,8 +46,10 @@ export class BfNotificationSubscription
       }
 
       const data = await response.json();
+      // deno-lint-ignore no-console
       console.log("Folder subscription successful:", data);
     } catch (error) {
+      // deno-lint-ignore no-console
       console.error("Error subscribing to folder notifications:", error);
     }
   }

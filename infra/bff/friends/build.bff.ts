@@ -1,6 +1,5 @@
 import { build } from "infra/build/build.ts";
 import { register } from "infra/bff/mod.ts";
-import { buildNix } from "infra/bff/friends/nix.bff.ts";
 import { buildRelay } from "infra/bff/friends/relay.bff.ts";
 import { buildVcs } from "infra/bff/friends/vcs.bff.ts";
 

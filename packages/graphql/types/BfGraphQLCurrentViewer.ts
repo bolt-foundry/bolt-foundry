@@ -57,8 +57,7 @@ export const BfGraphQLCurrentViewerType = interfaceType({
     });
     t.field("blog", {
       type: "Blog",
-      resolve: async (_, args, ctx) => {
-        const { slug } = args;
+      resolve: () => {
         return { title: "Bolt foundry af" };
       },
     });
@@ -183,11 +182,12 @@ export const LogoutMutation = mutationField((t) => {
         const headers: Headers = context.responseHeaders;
         headers.append("Set-Cookie", "BF_AT=; Path=/; Max-Age=0");
         headers.append("Set-Cookie", "BF_RT=; Path=/; Max-Age=0");
-      } catch (e) {
+      } catch {
         throw new GraphQLError(
           "Logout failed... sorry about that. We've logged it and will look into it.",
         );
       }
+      return context.bfCurrentViewer;
     },
   });
 });

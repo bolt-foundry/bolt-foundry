@@ -11,7 +11,7 @@ import { FeatureFlags, FeatureVariants } from "packages/features/list.ts";
 import { matchRouteWithParams } from "packages/client/contexts/RouterContext.tsx";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 
-const logger = getLogger(import.meta);
+const _logger = getLogger(import.meta);
 
 const importableEnvironmentVariables = [
   "GOOGLE_OAUTH_CLIENT_ID",
