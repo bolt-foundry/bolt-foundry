@@ -1,0 +1,25 @@
+{
+  "name": "@dprint/linux-x64-musl",
+  "version": "0.45.1",
+  "description": "linux-x64-musl distribution of the dprint code formatter",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dprint/dprint.git"
+  },
+  "preferUnplugged": true,
+  "author": "David Sherret",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dprint/dprint/issues"
+  },
+  "homepage": "https://github.com/dprint/dprint#readme",
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "libc": [
+    "musl"
+  ]
+}
