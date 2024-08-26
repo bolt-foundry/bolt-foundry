@@ -12,9 +12,12 @@ import {
 import { BfError } from "lib/BfError.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
+import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
+
+const GOOGLE_DRIVE_CACHE_DIRECTORY =
+  Deno.env.get("GOOGLE_DRIVE_CACHE_DIRECTORY") ?? "/tmp/google-drive-cache";
 
 const logger = getLogger(import.meta);
-logger.setLevel(logger.levels.TRACE);
 
 type BfGoogleDriveResourceRequiredProps = {
   resourceId: string;
@@ -68,6 +71,12 @@ export class BfGoogleDriveResource
       [],
     );
 
+    const ingestPromise = BfJob.createJobForNode(
+      this,
+      "__JOB_ONLY__ingest",
+      [],
+    );
+
     await Promise.all([
       googleAuthEdgePromise,
       googleDriveMetadataPromise,
@@ -102,11 +111,7 @@ export class BfGoogleDriveResource
     return this.crawlChildren();
   }
   private async crawlChildren() {
-    logger.debug(
-      "getting folder contents for folder",
-      this.props.resourceId,
-      this.metadata.bfGid,
-    );
+    logger.debug(`getting folder contents for folder ${this}`);
     const token = await this.getAccessToken();
     const response = await fetchFolderContents(token, this.props.resourceId);
     logger.debug("folder contents", response);
@@ -145,10 +150,6 @@ export class BfGoogleDriveResource
       logger.debug("created child and edge", child, edge);
       await this.transactionCommit();
       logger.debug("committed transaction");
-      if (this.props.mimeType.startsWith("video")) {
-        await this.download();
-      }
-      await this.reportProgress(1);
     } catch (e) {
       logger.debug("failed to create child and edge", e);
       await this.transactionRollback();
@@ -157,11 +158,43 @@ export class BfGoogleDriveResource
     }
   }
 
-  async download() {
-    await BfJob.createJobForNode(this, "__JOB_ONLY__download", []);
+  __JOB_ONLY__ingest() {
+    return this.ingest();
   }
-  async __JOB_ONLY__download(targetPath?: string) {
-    const path = targetPath ?? await Deno.makeTempFile();
+
+  private async ingest() {
+    if (this.props.mimeType.startsWith("video")) {
+      await BfMedia.createFromGoogleDriveResource(this);
+    }
+    return this;
+  }
+
+  getFilePath() {
+    return `${GOOGLE_DRIVE_CACHE_DIRECTORY}/${this.metadata.bfGid}`;
+  }
+
+  /**
+   * Retrieves a file handle for the resource.
+   *
+   * We recommend the {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using using} keyword ensures that system resources are disposed of correctly.
+   * Otherwise you'll need to dispose of the file handle yourself.
+   *
+   * @example
+   * const fileHandle = await bfGoogleDriveResource.getFileHandle();
+   *
+   * @example
+   * const fileHandle = await bfGoogleDriveResource.getFileHandle();
+   * fileHandle.close();
+   */
+  async getFileHandle(): Promise<Deno.FsFile> {
+    const existsOnDisk = await Deno.stat(this.getFilePath()).then(() => true)
+      .catch(() => false);
+    return existsOnDisk ? Deno.open(this.getFilePath()) : this.download();
+  }
+
+  private async download(targetPath = this.getFilePath()) {
+    await Deno.mkdir(GOOGLE_DRIVE_CACHE_DIRECTORY, { recursive: true });
+    const path = targetPath;
     const token = await this.getAccessToken();
     const response = await fetchFile(token, this.props.resourceId);
     logger.debug("downloading", this.props.resourceId, path);
@@ -186,6 +219,7 @@ export class BfGoogleDriveResource
       logger.debug("downloaded", this.props.resourceId, path);
       this.reportProgress(1);
     }
+    return file;
   }
 
   private async reportProgress(progress: number) {
