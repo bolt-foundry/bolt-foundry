@@ -82,7 +82,7 @@ export const ImageBlock = objectType({
   definition(t) {
     t.implements("BlogPostContentBlock");
     t.string("imgUrl");
-    t.list.field("caption", {type: "RichText" });
+    t.list.field("caption", { type: "RichText" });
   },
 });
 
@@ -113,7 +113,7 @@ export const RichText = objectType({
     t.field("text", {
       type: "Text",
     });
-    t.field('annotations', {
+    t.field("annotations", {
       type: "Annotations",
     });
   },

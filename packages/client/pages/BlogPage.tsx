@@ -118,7 +118,6 @@ function BlogPost() {
   const posts = currentViewer?.blog?.posts?.nodes || [];
   return (
     <ContentFrame>
-      
     </ContentFrame>
   );
 }
