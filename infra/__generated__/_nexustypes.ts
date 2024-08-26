@@ -70,6 +70,14 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  Annotations: { // root type
+    bold?: boolean | null; // Boolean
+    code?: boolean | null; // Boolean
+    color?: string | null; // String
+    italic?: boolean | null; // Boolean
+    strikethrough?: boolean | null; // Boolean
+    underlined?: boolean | null; // Boolean
+  }
   BfAccount: { // root type
     displayName?: string | null; // String
     organizationBfGid?: string | null; // ID
@@ -174,6 +182,7 @@ export interface NexusGenObjects {
   BlogPost: { // root type
     id: string; // String!
     slug?: string | null; // String
+    status?: string | null; // String
     title?: string | null; // String
   }
   BlogPostConnection: { // root type
@@ -196,6 +205,7 @@ export interface NexusGenObjects {
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   ImageBlock: { // root type
+    caption?: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
     id?: string | null; // String
     imgUrl?: string | null; // String
     type?: string | null; // String
@@ -208,8 +218,9 @@ export interface NexusGenObjects {
     startCursor?: string | null; // String
   }
   ParagraphBlock: { // root type
+    RichText?: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    color?: string | null; // String
     id?: string | null; // String
-    rawText?: string | null; // String
     type?: string | null; // String
   }
   PlaygroundMutationPayload: { // root type
@@ -217,6 +228,11 @@ export interface NexusGenObjects {
     success: boolean; // Boolean!
   }
   Query: {};
+  RichText: { // root type
+    annotations?: NexusGenRootTypes['Annotations'] | null; // Annotations
+    text?: NexusGenRootTypes['Text'] | null; // Text
+    type?: string | null; // String
+  }
   SearchMutationPayload: { // root type
     message?: string | null; // String
     success: boolean; // Boolean!
@@ -224,6 +240,10 @@ export interface NexusGenObjects {
   SubmitContactFormPayload: { // root type
     message?: string | null; // String
     success: boolean; // Boolean!
+  }
+  Text: { // root type
+    content?: string | null; // String
+    link?: string | null; // String
   }
 }
 
@@ -243,6 +263,14 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
+  Annotations: { // field return type
+    bold: boolean | null; // Boolean
+    code: boolean | null; // Boolean
+    color: string | null; // String
+    italic: boolean | null; // Boolean
+    strikethrough: boolean | null; // Boolean
+    underlined: boolean | null; // Boolean
+  }
   BfAccount: { // field return type
     displayName: string | null; // String
     id: string; // ID!
@@ -370,6 +398,7 @@ export interface NexusGenFieldTypes {
     content: Array<NexusGenRootTypes['BlogPostContentBlock'] | null> | null; // [BlogPostContentBlock]
     id: string; // String!
     slug: string | null; // String
+    status: string | null; // String
     title: string | null; // String
   }
   BlogPostConnection: { // field return type
@@ -395,6 +424,7 @@ export interface NexusGenFieldTypes {
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   ImageBlock: { // field return type
+    caption: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
     id: string | null; // String
     imgUrl: string | null; // String
     type: string | null; // String
@@ -423,8 +453,9 @@ export interface NexusGenFieldTypes {
     startCursor: string | null; // String
   }
   ParagraphBlock: { // field return type
+    RichText: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    color: string | null; // String
     id: string | null; // String
-    rawText: string | null; // String
     type: string | null; // String
   }
   PlaygroundMutationPayload: { // field return type
@@ -436,6 +467,11 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['BfNode'] | null; // BfNode
     organizations: NexusGenRootTypes['BfOrganizationConnection'] | null; // BfOrganizationConnection
   }
+  RichText: { // field return type
+    annotations: NexusGenRootTypes['Annotations'] | null; // Annotations
+    text: NexusGenRootTypes['Text'] | null; // Text
+    type: string | null; // String
+  }
   SearchMutationPayload: { // field return type
     message: string | null; // String
     success: boolean; // Boolean!
@@ -443,6 +479,10 @@ export interface NexusGenFieldTypes {
   SubmitContactFormPayload: { // field return type
     message: string | null; // String
     success: boolean; // Boolean!
+  }
+  Text: { // field return type
+    content: string | null; // String
+    link: string | null; // String
   }
   BfCurrentViewer: { // field return type
     blog: NexusGenRootTypes['Blog'] | null; // Blog
@@ -466,6 +506,14 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  Annotations: { // field return type name
+    bold: 'Boolean'
+    code: 'Boolean'
+    color: 'String'
+    italic: 'Boolean'
+    strikethrough: 'Boolean'
+    underlined: 'Boolean'
+  }
   BfAccount: { // field return type name
     displayName: 'String'
     id: 'ID'
@@ -593,6 +641,7 @@ export interface NexusGenFieldTypeNames {
     content: 'BlogPostContentBlock'
     id: 'String'
     slug: 'String'
+    status: 'String'
     title: 'String'
   }
   BlogPostConnection: { // field return type name
@@ -618,6 +667,7 @@ export interface NexusGenFieldTypeNames {
     role: 'AccountRole'
   }
   ImageBlock: { // field return type name
+    caption: 'RichText'
     id: 'String'
     imgUrl: 'String'
     type: 'String'
@@ -646,8 +696,9 @@ export interface NexusGenFieldTypeNames {
     startCursor: 'String'
   }
   ParagraphBlock: { // field return type name
+    RichText: 'RichText'
+    color: 'String'
     id: 'String'
-    rawText: 'String'
     type: 'String'
   }
   PlaygroundMutationPayload: { // field return type name
@@ -659,6 +710,11 @@ export interface NexusGenFieldTypeNames {
     node: 'BfNode'
     organizations: 'BfOrganizationConnection'
   }
+  RichText: { // field return type name
+    annotations: 'Annotations'
+    text: 'Text'
+    type: 'String'
+  }
   SearchMutationPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
@@ -666,6 +722,10 @@ export interface NexusGenFieldTypeNames {
   SubmitContactFormPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
+  }
+  Text: { // field return type name
+    content: 'String'
+    link: 'String'
   }
   BfCurrentViewer: { // field return type name
     blog: 'Blog'
@@ -732,6 +792,7 @@ export interface NexusGenArgTypes {
       first?: number | null; // Int
       last?: number | null; // Int
       slug?: string | null; // String
+      status?: string | null; // String
     }
   }
   Mutation: {

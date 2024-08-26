@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4ae21b0720b368cbb76fe2f6ce053ebb>>
+ * @generated SignedSource<<c6e41e2bba5f1527112e2d4e5d0a4b83>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,6 +15,7 @@ export type BlogPageQuery$data = {
     readonly blog: {
       readonly posts: {
         readonly nodes: ReadonlyArray<{
+          readonly id: string;
           readonly slug: string | null | undefined;
           readonly title: string | null | undefined;
         } | null | undefined> | null | undefined;
@@ -43,6 +44,11 @@ var v0 = {
           "kind": "Literal",
           "name": "first",
           "value": 10
+        },
+        {
+          "kind": "Literal",
+          "name": "status",
+          "value": "Ready for publish"
         }
       ],
       "concreteType": "BlogPostConnection",
@@ -62,6 +68,13 @@ var v0 = {
               "alias": null,
               "args": null,
               "kind": "ScalarField",
+              "name": "id",
+              "storageKey": null
+            },
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
               "name": "title",
               "storageKey": null
             },
@@ -76,7 +89,7 @@ var v0 = {
           "storageKey": null
         }
       ],
-      "storageKey": "posts(first:10)"
+      "storageKey": "posts(first:10,status:\"Ready for publish\")"
     }
   ],
   "storageKey": null
@@ -132,16 +145,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "308140a7271af5a5f71519b511639ced",
+    "cacheID": "e44394fdb957e869917f7d88b053add9",
     "id": null,
     "metadata": {},
     "name": "BlogPageQuery",
     "operationKind": "query",
-    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10) {\n        nodes {\n          title\n          slug\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10, status: \"Ready for publish\") {\n        nodes {\n          id\n          title\n          slug\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "28e7bee42bcdbaff9bf97fc1270e7635";
+(node as any).hash = "68f3f9214820f920352930485934ae07";
 
 export default node;
