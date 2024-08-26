@@ -78,7 +78,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-export function Modal(
+export function BfDsModal(
   {
     children,
     clickOusideToClose = true,
