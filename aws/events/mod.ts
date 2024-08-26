@@ -29,7 +29,7 @@ export async function startupBackend() {
   const POSTHOG_API_KEY = getConfigurationVariable("POSTHOG_API_KEY");
   const POSTHOG_HOST = getConfigurationVariable("POSTHOG_HOST") ??
     "https://app.posthog.com";
-  const { PostHog } = await import("npm:posthog-node");
+  const { PostHog } = await import("npm:posthog-node").catch();
   backendClient = new PostHog(POSTHOG_API_KEY, {
     host: POSTHOG_HOST,
     // @ts-expect-error #techdebt

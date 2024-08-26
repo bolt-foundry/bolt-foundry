@@ -21,6 +21,7 @@
   },
   "fmt": {
     "exclude": [
+      ".cache",
       "__generated__",
       "infra/__generated__",
       "packages/__generated__",
