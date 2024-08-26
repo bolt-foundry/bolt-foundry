@@ -414,7 +414,7 @@ export function BfDsButton({
               />
             )
             : (
-              <Spinner
+              <BfDsSpinner
                 size={iconButtonSize[size].width}
                 backgroundColor={iconButtonStyle[kind].backgroundColor}
                 spinnerColor={iconButtonStyle[kind].color}
@@ -435,7 +435,7 @@ export function BfDsButton({
                 />
               )
               : (
-                <Spinner
+                <BfDsSpinner
                   size={iconSize[size]}
                   backgroundColor={buttonStyle[kind].backgroundColor}
                   spinnerColor={buttonStyle[kind].color}
