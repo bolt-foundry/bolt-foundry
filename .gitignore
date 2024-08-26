@@ -1,5 +1,6 @@
 /build/
-/.deno
+.deno
+!.deno/npm
 .direnv/*
 .cache
 .config
@@ -12,3 +13,4 @@
 .DS_Store
 .direnv
 *.ipynb_checkpoints
+node_modules
