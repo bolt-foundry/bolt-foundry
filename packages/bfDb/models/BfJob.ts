@@ -63,12 +63,12 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
     );
     if (runInForeground) {
       logger.warn(
-        "Job running in foreground. It's not super reflective of actual behavior running a job in the foreground, probably only best to do for debugging sake.",
+        `${job} running in foreground (likely of current web request.) It's not reflective of actual behavior, best only to do for debugging sake.`,
       );
       await job.executeJob();
     } else if (runImmediately) {
       logger.warn(
-        "Job executing immediately in background. Production runs should execute as an asynchronous job.",
+        `${job} executing in next tick in background. Production runs should execute as an asynchronous job.`,
       );
       job.executeJob();
     }
@@ -90,7 +90,7 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
   }
 
   async executeJob() {
-    logger.debug("Executing job");
+    logger.debug(`Executing job ${this}`);
     this.props.status = BfJobType.RUNNING;
     await this.save();
     const edges = await BfEdge.queryAllSourceEdgesForNode(this);
