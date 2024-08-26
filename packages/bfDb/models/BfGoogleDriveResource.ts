@@ -80,6 +80,7 @@ export class BfGoogleDriveResource
     await Promise.all([
       googleAuthEdgePromise,
       googleDriveMetadataPromise,
+      ingestPromise,
       jobPromise,
     ]);
   }
