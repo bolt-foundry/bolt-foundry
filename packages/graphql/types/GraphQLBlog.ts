@@ -15,11 +15,14 @@ export const Blog = objectType({
       type: "BlogPost",
       additionalArgs: {
         slug: stringArg(),
+        status: stringArg(),
       },
       resolve: async (_, args) => {
         let posts: BlogPostData[] = await getBlogPostsFromNotion();
         if (args.slug) {
           posts = posts.filter((post) => post.slug === args.slug);
+        } else if (args.status) {
+          posts = posts.filter((post) => post.status === args.status);
         }
         return connectionFromArray(posts, args);
       },
@@ -42,25 +45,7 @@ export const BlogPost = objectType({
         return content; // Directly return the list
       },
     });
-  },
-});
-
-export const ParagraphBlock = objectType({
-  name: "ParagraphBlock",
-  definition(t) {
-    t.implements("BlogPostContentBlock");
-    t.string("id");
-    t.string("type");
-    t.string("rawText");
-  },
-});
-export const ImageBlock = objectType({
-  name: "ImageBlock",
-  definition(t) {
-    t.implements("BlogPostContentBlock");
-    t.string("id");
-    t.string("type");
-    t.string("imgUrl");
+    t.string("status");
   },
 });
 
@@ -80,5 +65,56 @@ export const BlogPostContentBlock = interfaceType({
         //todo add error logging
         return null;
     }
+  },
+});
+
+export const ParagraphBlock = objectType({
+  name: "ParagraphBlock",
+  definition(t) {
+    t.implements("BlogPostContentBlock");
+    t.list.field("RichText", { type: "RichText" });
+    t.string("color", { default: "default" });
+  },
+});
+
+export const ImageBlock = objectType({
+  name: "ImageBlock",
+  definition(t) {
+    t.implements("BlogPostContentBlock");
+    t.string("imgUrl");
+    t.list.field("caption", {type: "RichText" });
+  },
+});
+
+export const Annotations = objectType({
+  name: "Annotations",
+  definition(t) {
+    t.boolean("bold");
+    t.boolean("italic");
+    t.boolean("strikethrough");
+    t.boolean("underlined");
+    t.boolean("code");
+    t.string("color");
+  },
+});
+
+export const TextObject = objectType({
+  name: "Text",
+  definition(t) {
+    t.string("content");
+    t.string("link");
+  },
+});
+
+export const RichText = objectType({
+  name: "RichText",
+  definition(t) {
+    t.string("type");
+    t.field("text", {
+      type: "Text",
+    });
+    t.field('annotations', {
+      type: "Annotations",
+    });
   },
 });

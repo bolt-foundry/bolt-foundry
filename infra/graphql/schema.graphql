@@ -12,6 +12,15 @@ enum AccountRole {
   SERVICE_INGESTION
 }
 
+type Annotations {
+  bold: Boolean
+  code: Boolean
+  color: String
+  italic: Boolean
+  strikethrough: Boolean
+  underlined: Boolean
+}
+
 """A person who uses our system on behalf of an orginization"""
 type BfAccount implements BfNode & Node {
   displayName: String
@@ -341,6 +350,7 @@ type Blog {
     """Returns the last n elements from the list."""
     last: Int
     slug: String
+    status: String
   ): BlogPostConnection
   title: String
 }
@@ -349,6 +359,7 @@ type BlogPost {
   content: [BlogPostContentBlock]
   id: String!
   slug: String
+  status: String
   title: String
 }
 
@@ -407,6 +418,7 @@ interface IBfGraphQLNode implements BfNode & Node {
 }
 
 type ImageBlock implements BlogPostContentBlock {
+  caption: [RichText]
   id: String
   imgUrl: String
   type: String
@@ -461,8 +473,9 @@ type PageInfo {
 }
 
 type ParagraphBlock implements BlogPostContentBlock {
+  RichText: [RichText]
+  color: String
   id: String
-  rawText: String
   type: String
 }
 
@@ -489,6 +502,12 @@ type Query {
   ): BfOrganizationConnection
 }
 
+type RichText {
+  annotations: Annotations
+  text: Text
+  type: String
+}
+
 type SearchMutationPayload {
   message: String
   success: Boolean!
@@ -505,6 +524,11 @@ input SubmitContactFormInput {
 type SubmitContactFormPayload {
   message: String
   success: Boolean!
+}
+
+type Text {
+  content: String
+  link: String
 }
 
 """a fully qualified URL"""
