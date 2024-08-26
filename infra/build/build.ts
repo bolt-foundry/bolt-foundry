@@ -21,7 +21,6 @@ export async function build(
     entryPoints: [
       ...workerList,
       "packages/client/Client.tsx",
-      "infra/internalbf.com/client/Client.tsx",
       "aws/client/main.tsx",
     ],
     write: true,
