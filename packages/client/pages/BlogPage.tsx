@@ -22,6 +22,13 @@ const postsQuery = await graphql`
   }
 `;
 
+type Props = React.PropsWithChildren;
+
+
+function ContentFrame({children}: Props) {
+  return children
+}
+
 export function BlogPage() {
   const { currentPath, routeParams } = useRouter();
   const { currentViewer } = useLazyLoadQuery<BlogPageQuery>(postsQuery);
