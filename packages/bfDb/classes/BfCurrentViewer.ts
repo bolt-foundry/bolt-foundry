@@ -35,6 +35,10 @@ export abstract class BfCurrentViewer {
   ) {
     this.__typename = this.constructor.name;
   }
+
+  toString() {
+    return `${this.constructor.name}(BfAccount#${this.accountBfGid}, role: ${this.role})`;
+  }
 }
 
 export class BfCurrentViewerAnon extends BfCurrentViewer {
