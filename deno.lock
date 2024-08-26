@@ -3,6 +3,7 @@
   "packages": {
     "specifiers": {
       "jsr:@neon/serverless@0.9.2": "jsr:@neon/serverless@0.9.2",
+      "jsr:@std/cli": "jsr:@std/cli@1.0.4",
       "npm:@replit/object-storage@1.0.0": "npm:@replit/object-storage@1.0.0",
       "npm:esbuild@0.23.1": "npm:esbuild@0.23.1",
       "npm:google-auth-library@9.2.0": "npm:google-auth-library@9.2.0",
@@ -23,6 +24,9 @@
     "jsr": {
       "@neon/serverless@0.9.2": {
         "integrity": "87568997fd4feeb3cd7d986e3d3f9f272f52b80d12d17ba07720c7d8f8cde486"
+      },
+      "@std/cli@1.0.4": {
+        "integrity": "79ca75add572a99a8ba93ae37ccbd8d43fb4e2b635a8a7ebebb4f2d092048764"
       }
     },
     "npm": {
@@ -1822,6 +1826,7 @@
     "https://esm.sh/v135/zod-to-json-schema@3.23.1/denonext/zod-to-json-schema.mjs": "210b3e5dcb2bd331e593d5041b7e4a38fbb8f5cfd13417e76abeb899431918c0",
     "https://esm.sh/v135/zod-to-json-schema@3.23.2/denonext/zod-to-json-schema.mjs": "567cc08684da504a40415849045afac147341b110a597a72d85cb4fbfa1e32e9",
     "https://esm.sh/v135/zod@3.23.8/denonext/zod.mjs": "b3707b03ddc01aab11b740436ab23c0fcc8d15fed072be20085c1fd611016b61",
-    "https://esm.sh/v135/zwitch@2.0.4/denonext/zwitch.mjs": "c0e8c246a1f38b425335ea78cc366a7801d3ef89701229a35f85a51310e6e49f"
+    "https://esm.sh/v135/zwitch@2.0.4/denonext/zwitch.mjs": "c0e8c246a1f38b425335ea78cc366a7801d3ef89701229a35f85a51310e6e49f",
+    "https://www.unpkg.com/assemblyai@4.4.3/dist/browser.mjs": "6bf2a08c83536e152cc3addd53904fc6b91912c8c44db3d6c7d446e90fb61970"
   }
 }

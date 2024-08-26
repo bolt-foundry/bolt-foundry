@@ -1,88 +1,91 @@
 import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
-import { parseArgs } from "infra/bff/deps.ts";
-import { AssemblyAI } from "infra/bff/deps.ts";
+import { transcribeAudio } from "packages/transcribing/transcribeAudio.ts";
+import { getLogger } from "deps.ts";
+import { parseArgs } from "@std/cli";
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { AssemblyAI } from "assemblyai";
 import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 
-import { getLogger } from "deps.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
+import { BfError } from "lib/BfError.ts";
+
 const logger = getLogger(import.meta);
 
 async function transcribe(args: Array<string>) {
-  // deno-lint-ignore no-console
-  console.log("running transcribe");
+  const ASSEMBLY_AI_KEY = Deno.env.get("ASSEMBLY_AI_KEY");
+  if (!ASSEMBLY_AI_KEY) throw new BfError("No ASSEMBLY_AI_KEY defined");
+  logger.info("running transcribe");
   const stopSpinner = startSpinner();
   const flags = parseArgs(args, {
     string: ["inputAudio", "mediaId"],
   });
   logger.info("flags", flags);
-
   let inputAudio = flags.inputAudio;
-  if (!flags.i) {
+  if (!flags.inputAudio) {
     // RH test audio
     inputAudio =
       "https://bf-static-assets.s3.amazonaws.com/test-files/rh-tonigh-show+6min+audio.m4a";
   }
   logger.info("Input audio", inputAudio);
 
-  const ASSEMBLY_AI_KEY = Deno.env.get("ASSEMBLY_AI_KEY");
+  await transcribeAudio(flags.mediaId ?? "", inputAudio);
 
-  const assemblyai = new AssemblyAI({
-    apiKey: ASSEMBLY_AI_KEY,
-  });
-  if (!assemblyai) {
-    logger.error("Failed to create AssemblyAI instance");
-    return 1;
-  }
+  stopSpinner();
+  return 0;
+}
 
-  // send audio to assembly ai for transcribing
-  const response = await assemblyai.transcripts.transcribe({
-    audio_url: inputAudio,
-    speaker_labels: true,
-  }, {});
-
+export async function createTranscript(
+  transcriptId: string,
+  mediaId?: string | null,
+  inputAudio?: string | null,
+) {
   const currentViewer = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(
     import.meta,
     "bf_internal_org",
   );
 
+  const ASSEMBLY_AI_KEY = Deno.env.get("ASSEMBLY_AI_KEY");
+  if (!ASSEMBLY_AI_KEY) throw new BfError("No ASSEMBLY_AI_KEY defined");
+  const assemblyai = new AssemblyAI({
+    apiKey: ASSEMBLY_AI_KEY,
+  });
+  if (!assemblyai) {
+    throw new BfError("Failed to create AssemblyAI instance");
+  }
+  const transcript = await assemblyai.transcripts.get(transcriptId);
+
   // create transcript
   logger.info("Creating Transcript");
-  const transcript = await BfMediaTranscript.create(currentViewer, {
-    words: JSON.stringify(response.words),
+  const bfTranscript = await BfMediaTranscript.create(currentViewer, {
+    words: JSON.stringify(transcript.words),
     filename: inputAudio,
   });
-  logger.info("Transcript created", transcript.metadata.bfGid);
+  logger.info("Transcript created", bfTranscript.metadata.bfGid);
 
   // create media
   logger.info("Creating Media or connecting to existing Media");
-  let media;
-  if (flags.mediaId) {
-    media = await BfMedia.findX(currentViewer, flags.mediaId as BfAnyid);
+  let bfMedia;
+  if (mediaId && mediaId !== "") {
+    bfMedia = await BfMedia.findX(currentViewer, mediaId as BfAnyid);
     logger.info("Media found");
   } else {
-    media = await BfMedia.create(currentViewer, {
-      filename: "Transcript only",
+    bfMedia = await BfMedia.create(currentViewer, {
+      filename: "This should work 🤞",
     });
-    logger.info("Media created", media.metadata.bfGid);
+    logger.info("Media created", bfMedia.metadata.bfGid);
   }
 
   // create edge
   logger.info("Connecting Media to Transcript");
-  const edge = await BfEdge.create(currentViewer, {}, {
-    // @ts-expect-error idk why the metadata types are messed up for bf edges.
-    bfTClassName: "BfMediaTranscript",
-    bfTid: transcript.metadata.bfGid,
-    bfSClassName: "BfMedia",
-    bfSid: media.metadata.bfGid,
-  });
-  logger.info("Edge created", edge.metadata.bfGid);
-
-  stopSpinner();
-  return 0;
+  const bfEdge = await BfEdge.createEdgeBetweenNodes(
+    currentViewer,
+    bfMedia,
+    bfTranscript,
+  );
+  logger.info("Edge created", bfEdge.metadata.bfGid);
 }
 
 register(
