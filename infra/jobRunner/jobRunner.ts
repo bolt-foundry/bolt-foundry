@@ -21,34 +21,40 @@ const currentViewer = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(
   import.meta,
 );
 export async function checkForWork(shouldClose = true) {
-  logger.info("Checking for work");
+  logger.debug("Checking for work");
   const jobs = await BfJob.findAvailableJobs(currentViewer);
-  logger.info(`Found ${jobs.length} jobs`);
+  logger.debug(`Found ${jobs.length} jobs`);
   if (jobs.length > 0) {
     const job = jobs[0];
-    logger.info(`Peeling off ${job?.metadata.bfGid}`);
+    logger.info(`Peeling off ${job}`);
     await job.executeJob();
   }
 
   if (shouldCheckForWork) {
-    logger.info(`Setting up next work check in ${WORKER_INTERVAL}ms`);
+    logger.debug(`Setting up next work check in ${WORKER_INTERVAL}ms`);
     setTimeout(checkForWork, WORKER_INTERVAL);
     return;
   }
   logger.info("No work to do, timeout hit.");
   if (shouldClose) {
-    globalThis.close();
+    close();
   }
 }
 export function disableCheckForWork() {
   shouldCheckForWork = false;
 }
 export function close() {
+  disableCheckForWork();
   logger.info("Closing");
   globalThis.close();
 }
 if (import.meta.main) {
   logger.info("Worker is main, starting to check for work");
   checkForWork();
-  setTimeout(disableCheckForWork, WORKER_TIMEOUT);
+  if (WORKER_TIMEOUT > 0) {
+    logger.info(`Worker timeout set to ${WORKER_TIMEOUT}ms`);
+    setTimeout(disableCheckForWork, WORKER_TIMEOUT);
+  } else {
+    logger.info("Worker timeout not set, no timeout");
+  }
 }
