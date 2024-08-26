@@ -1,6 +1,6 @@
 import { React, ReactRelay } from "deps.ts";
 import { useAppState } from "packages/client/contexts/AppStateContext.tsx";
-import { Modal } from "packages/bfDs/Modal.tsx";
+import { BfDsModal } from "packages/bfDs/BfDsModal.tsx";
 import { LeftNav } from "packages/client/components/LeftNav.tsx";
 import { Settings } from "packages/client/components/Settings.tsx";
 import { LoginForm } from "packages/client/components/LoginForm.tsx";
@@ -69,7 +69,7 @@ function RenderPageFrame({ children, xstyle }: React.PropsWithChildren<Props>) {
         </Suspense>
       </div>
       {mobileProjectListOpen && (
-        <Modal
+        <BfDsModal
           onClose={() => setMobileProjectListOpen(false)}
           xstyle={{ minHeight: "50vh" }}
         >
@@ -77,20 +77,20 @@ function RenderPageFrame({ children, xstyle }: React.PropsWithChildren<Props>) {
             person$key={data.me}
             setMobileProjectListOpen={setMobileProjectListOpen}
           />
-        </Modal>
+        </BfDsModal>
       )}
       {settingsOpen && (
-        <Modal
+        <BfDsModal
           onClose={() => setSettingsOpen(false)}
           xstyle={{ minHeight: "50vh" }}
         >
           <Settings person$key={data.me} />
-        </Modal>
+        </BfDsModal>
       )}
       {loginOpen && (
-        <Modal header="You've been logged out, please log back in">
+        <BfDsModal header="You've been logged out, please log back in">
           <LoginForm />
-        </Modal>
+        </BfDsModal>
       )}
     </div>
   );
