@@ -49,7 +49,7 @@ async function land() {
     logInfo.summary,
   ]);
   await Deno.remove(Deno.env.get("HISTFILE")!);
-  await Deno.remove(`${Deno.env.get("BF_DIR")!}/node_modules`, {
+  await Deno.remove(`${Deno.env.get("BF_PATH")!}/node_modules`, {
     recursive: true,
   });
   return 0;
