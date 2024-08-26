@@ -145,14 +145,22 @@ export class BfGoogleDriveResource
       logger.debug("created child and edge", child, edge);
       await this.transactionCommit();
       logger.debug("committed transaction");
+      if (this.props.mimeType.startsWith("video")) {
+        await this.download();
+      }
+      await this.reportProgress(1);
     } catch (e) {
       logger.debug("failed to create child and edge", e);
       await this.transactionRollback();
       logger.debug("rolled back transaction");
-      throw new BfError("Error creating child", e);
+      throw e
     }
   }
-  async download(targetPath?: string) {
+
+  async download() {
+    await BfJob.createJobForNode(this, "__JOB_ONLY__download", []);
+  }
+  async __JOB_ONLY__download(targetPath?: string) {
     const path = targetPath ?? await Deno.makeTempFile();
     const token = await this.getAccessToken();
     const response = await fetchFile(token, this.props.resourceId);
@@ -176,15 +184,12 @@ export class BfGoogleDriveResource
         }
       }
       logger.debug("downloaded", this.props.resourceId, path);
-      await this.reportProgress(1);
+      this.reportProgress(1);
     }
   }
 
   private async reportProgress(progress: number) {
     logger.debug("reporting progress", progress, this.metadata.bfGid);
-    if (this.props == undefined) {
-      logger.debug("props is undefined", this.metadata.bfGid, this);
-    }
     this.props.ingestionProgress = progress;
     await this.save();
     return this;
