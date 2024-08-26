@@ -71,6 +71,7 @@ export async function build(
     entryPoints: [
       "infra/internalbf.com/client/Client.tsx",
       "packages/client/Client.tsx",
+      "aws/client/main.tsx",
     ],
     write: true,
     outdir: "build",
