@@ -13,8 +13,8 @@ interface NotionPostsResponseDataProperties {
   Status: {
     status: {
       name: string;
-    }
-  }
+    };
+  };
   Name: {
     title: [{
       text: {
@@ -28,14 +28,13 @@ export interface BlogPostData {
   title: string;
   slug: string;
   id: string;
-  
 }
 
 export interface NotionBlogPostContentObject {
   type: string;
   id: string;
   image: {
-    caption: RichText[]
+    caption: RichText[];
     file: {
       url: string;
     };
@@ -51,7 +50,7 @@ export interface RichText {
   text: {
     content: string;
     link: string;
-  },
+  };
   annotations: {
     bold: boolean;
     italic: boolean;
@@ -59,7 +58,7 @@ export interface RichText {
     underlined: boolean;
     code: boolean;
     color: string;
-  },
+  };
   plain_text: string;
   href: string;
 }
