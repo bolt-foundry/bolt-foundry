@@ -20,7 +20,6 @@ export async function build(
     bundle: true,
     entryPoints: [
       ...workerList,
-      "packages/client/Client.tsx",
       "aws/client/main.tsx",
     ],
     write: true,
