@@ -95,6 +95,6 @@
     ]
   },
   "lock": true,
-  "nodeModulesDir": false,
+  "nodeModulesDir": true,
   "vendor": true
 }
