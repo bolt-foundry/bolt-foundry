@@ -11,7 +11,7 @@ register(
   async () => {
     const commands = [
       ["deno", "test", "--cached-only", "-A"],
-      ["deno", "fmt"],
+      ["deno", "fmt", "--check"],
       ["deno", "lint"],
     ];
     for (const command of commands) {

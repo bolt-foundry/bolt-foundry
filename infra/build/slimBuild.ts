@@ -3,7 +3,10 @@
 import * as esbuild from "esbuild";
 import { getLogger } from "deps.ts";
 import { generateBluey } from "lib/generateBluey.ts";
-import { extractGraphqlTags, replaceTagsWithImports } from "infra/build/slimRelay.ts";
+import {
+  extractGraphqlTags,
+  replaceTagsWithImports,
+} from "infra/build/slimRelay.ts";
 
 const logger = getLogger(import.meta);
 

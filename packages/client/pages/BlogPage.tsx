@@ -23,9 +23,8 @@ const postsQuery = await graphql`
 
 type Props = React.PropsWithChildren;
 
-
-function ContentFrame({children}: Props) {
-  return children
+function ContentFrame({ children }: Props) {
+  return children;
 }
 
 export function BlogPage() {
