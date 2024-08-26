@@ -26,11 +26,6 @@ jobs:
 
           echo $BF_INFRA_BIN_PATH >> $GITHUB_PATH
           
-      - name: Modify deno.jsonc
-        run: |
-          cat $BF_PATH/deno.jsonc
-          sed -i 's/"nodeModulesDir": true/"nodeModulesDir": false/g' "$BF_PATH/deno.jsonc"
-          cat "$BF_PATH/deno.jsonc"
       - name: Build
         run: |
           ./result/bin/direnv allow .
