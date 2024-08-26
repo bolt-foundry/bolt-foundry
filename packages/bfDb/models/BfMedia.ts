@@ -7,9 +7,6 @@ import { fetchFile } from "lib/googleDriveApi.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { sanitizeFilename } from "packages/lib/textUtils.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
-import { BfMediaAudio } from "packages/bfDb/models/BfMediaAudio.ts";
-import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 
 const logger = getLogger(import.meta);
 
@@ -40,34 +37,55 @@ export class BfMedia extends BfNode<BfMediaProps> {
   }
 
   static async createFromGoogleDriveResource(
-    driveResource: BfGoogleDriveResource,
+    _driveResource: BfGoogleDriveResource,
   ) {
-    const bfMediaAudioPromise = BfMediaAudio.createFromGoogleDriveResource(
-      driveResource,
-    );
-    const bfMedia = await this.create(driveResource.currentViewer, {});
-    await BfEdge.createEdgeBetweenNodes(
-      bfMedia.currentViewer,
-      bfMedia,
-      driveResource,
-    );
+    /**
+     * Check if google drive resource is a file.
+     * If it is, create a new this.
+     * Then, create a BfMediaGoogleDriveFile with role: original.
+     * Then, if it's a video, do video things to it.
+     * If it's not a video, ignore it for now.
+     *
+     * Video things:
+     * 1. generate a transcription (BfMediaTranscript, role: primary) without storing the original audio
+     * 2. create a preview quality version (BfMediaVideo, role: preview?)
+     * 3. create a render quality version (BfMediaVideo, role: renderable?) and upload it to object storage
+     * 4. create a poster frame (BfMediaImage, role: poster?) and upload it to object storage
+     * 5. Gather people tracking data (BfMediaPeopleTracking)
+     * 6. Gather audio understanding data (BfMediaAudioUnderstanding)
+     * 7. Gather thematic data (BfMediaThematicInfo)
+     * 8. Gather emotion data (BfMediaEmotion)
+     * 9. Gather sentiment data (BfMediaSentiment)
+     * 10. Gather language data (BfMediaLanguage)
+     * 11. Gather people who appear in the video (BMediaFaceRecognition)
+     */
 
-    const bfMediaAudio = await bfMediaAudioPromise;
-    await BfEdge.createEdgeBetweenNodes(
-      bfMedia.currentViewer,
-      bfMedia,
-      bfMediaAudio,
-    );
-    const bfMediaTranscript = await BfMediaTranscript.createFromBfMediaAudio(
-      bfMediaAudio,
-    );
-    await BfEdge.createEdgeBetweenNodes(
-      bfMedia.currentViewer,
-      bfMedia,
-      bfMediaTranscript,
-    );
+    // const bfMediaAudioPromise = BfMediaAudio.createFromGoogleDriveResource(
+    //   driveResource,
+    // );
+    // const bfMedia = await this.create(driveResource.currentViewer, {});
+    // await BfEdge.createEdgeBetweenNodes(
+    //   bfMedia.currentViewer,
+    //   bfMedia,
+    //   driveResource,
+    // );
 
-    return bfMedia;
+    // const bfMediaAudio = await bfMediaAudioPromise;
+    // await BfEdge.createEdgeBetweenNodes(
+    //   bfMedia.currentViewer,
+    //   bfMedia,
+    //   bfMediaAudio,
+    // );
+    // const bfMediaTranscript = await BfMediaTranscript.createFromBfMediaAudio(
+    //   bfMediaAudio,
+    // );
+    // await BfEdge.createEdgeBetweenNodes(
+    //   bfMedia.currentViewer,
+    //   bfMedia,
+    //   bfMediaTranscript,
+    // );
+
+    // return bfMedia;
   }
 
   async downloadClip(args: DownloadClipArgs) {
