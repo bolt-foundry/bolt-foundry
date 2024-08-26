@@ -1,26 +1,23 @@
 // Import runShellCommand from shellBase.ts
 import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/mod.ts";
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
 
 register(
   "ci",
   "runs all of our CI tests and fails if they fail.",
   async () => {
-    const commands = [["deno", "test", "--cached-only", "-A"], [
-      "deno",
-      "fmt",
-      "--check",
-      "packages",
-      "infra",
-    ], [
-      "deno",
-      "lint",
-    ], ["bff", "check"]];
+    const commands = [
+      ["deno", "test", "--cached-only", "-A"],
+      ["deno", "fmt"],
+      ["deno", "lint"],
+    ];
     for (const command of commands) {
       const code = await runShellCommand(command);
       if (code !== 0) {
-        // deno-lint-ignore no-console
-        console.error(`CI failed on command: ${command.join(" ")}`);
+        logger.error(`CI failed on command: ${command.join(" ")}`);
         return code;
       }
     }

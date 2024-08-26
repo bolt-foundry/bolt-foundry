@@ -31,7 +31,11 @@ async function openSapling() {
     }),
   });
 
-  logger.info(generateBluey(`Click this: ${url.protocol}//${url.host} \n \n and then paste this \n \n ${url.search} \n \n to get to sapling`))
+  logger.info(
+    generateBluey(
+      `Click this: ${url.protocol}//${url.host} \n \n and then paste this \n \n ${url.search} \n \n to get to sapling`,
+    ),
+  );
 }
 
 register(
@@ -52,7 +56,6 @@ register(
       await openSapling();
       return 0;
     }
-    
 
     const cmd = ["gh", "auth", "login", "-p", "https", "-w", "-s", "user"];
     await runShellCommand(cmd, undefined, false);
@@ -134,7 +137,7 @@ register(
     ]);
 
     await openSapling();
-    
+
     return 0;
   },
 );

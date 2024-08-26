@@ -14,7 +14,7 @@ import type { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import { getLogger } from "deps.ts";
 import { BF_INTERNAL_ORG_NAME } from "packages/bfDb/utils.ts";
 
-const logger = getLogger(import.meta);
+const _logger = getLogger(import.meta);
 
 export class BfCurrentViewerCreationError extends Error {
   constructor(reason: string) {

@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import {useMutation, useLazyLoadQuery} from "react-relay";
+import { useLazyLoadQuery, useMutation } from "react-relay";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
@@ -79,7 +79,7 @@ function authorizeGdrive(): Promise<string> {
     const top = window.screen.height / 2 - height / 2;
     const features =
       `scrollbars=yes, width=${width}, height=${height}, top=${top}, left=${left}`;
-    const popup = window.open(url, "Google Authorization", features);
+    const popup = globalThis.open(url, "Google Authorization", features);
     globalThis.addEventListener("message", (event) => {
       if (event.data.code) {
         resolve(event.data.code);
@@ -179,35 +179,47 @@ export function RandallPlaygroundPage() {
   const [googleAccessToken, setGoogleAccessToken] = useState<string | null>(
     data?.currentViewer?.person?.googleAuthAccessToken ?? null,
   );
-  const [commitFolder, inFlightFolder] = useMutation<RandallPlaygroundPagePickFolderMutation>(
+  const [commitFolder, inFlightFolder] = useMutation<
+    RandallPlaygroundPagePickFolderMutation
+  >(
     mutationToPickFolder,
-  )
+  );
   async function authorizer() {
     try {
       const code = await authorizeGdrive();
       commit({
         variables: { code },
+        // @ts-expect-error #techdebt
         onCompleted: (data) => {
+          // deno-lint-ignore no-console
           console.log(data);
-          setGoogleAccessToken(data.linkAdvancedGoogleAuth?.person?.googleAuthAccessToken);
+          setGoogleAccessToken(
+            data.linkAdvancedGoogleAuth?.person?.googleAuthAccessToken,
+          );
         },
-        onError: (error) => {
+        onError: (error: unknown) => {
+          // deno-lint-ignore no-console
           console.error(error);
-        }
+        },
       });
     } catch (e) {
+      // deno-lint-ignore no-console
       console.error(e);
     }
   }
   async function pickFile() {
-    const folder = await openPicker(googleAccessToken!, GOOGLE_OAUTH_CLIENT_ID!, GoogleDriveFilePickerFileType.FOLDER)
+    const folder = await openPicker(
+      googleAccessToken!,
+      GOOGLE_OAUTH_CLIENT_ID!,
+      GoogleDriveFilePickerFileType.FOLDER,
+    );
     commitFolder({
       variables: { resourceId: folder.docs[0].id, name: folder.docs[0].name },
       onCompleted: (data) => {
-        console.log('o shit we did it')
-      }
+        // deno-lint-ignore no-console
+        console.log("o shit we did it");
+      },
     });
-    
   }
 
   const filteredData =
@@ -233,7 +245,11 @@ export function RandallPlaygroundPage() {
                 onClick={authorizer}
                 disabled={googleAccessToken != null}
               />
-              <BfDsButton text={"Open file picker"} onClick={pickFile} disabled={!googleAccessToken} />
+              <BfDsButton
+                text={"Open file picker"}
+                onClick={pickFile}
+                disabled={!googleAccessToken}
+              />
               {tabs[currentTab].header} -{" "}
               {data?.currentViewer?.person?.name ?? "Not set up"}
             </div>

@@ -17,7 +17,7 @@ const varsDarkString = Object.entries({ ...colorsDark }).reduce(
 );
 
 const cssVarsString = `:root {\n${varsString}}\n`;
-const cssVarsDarkString = `:root[data-theme="dark"] {\n${varsDarkString}}\n`;
+const cssVarsDarkString = `:root[data-theme=dark] {\n${varsDarkString}}\n`;
 
 type Props = React.PropsWithChildren<{
   environment: Record<string, unknown>;

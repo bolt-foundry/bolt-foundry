@@ -3,18 +3,18 @@ import { GraphQLContext } from "packages/graphql/graphql.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { exchangeCodeForToken } from "lib/googleOauth.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { getLogger } from "deps.ts";
 
-const logger = getLogger(import.meta);
+const _logger = getLogger(import.meta);
 
 export const LinkGoogleAccountMutation = mutationField(
   "linkAdvancedGoogleAuth",
   {
     type: "BfCurrentViewer",
     args: {
-      code: nonNull(stringArg())
+      code: nonNull(stringArg()),
     },
+    // @ts-expect-error #techdebt
     resolve: async (_root, { code }, { bfCurrentViewer }: GraphQLContext) => {
       const person = await BfPerson.findCurrentViewer(bfCurrentViewer);
       const tokenResponse = await exchangeCodeForToken(code);

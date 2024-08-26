@@ -1,6 +1,7 @@
 import { React } from "deps.ts";
 import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { classnames } from "lib/classnames.ts";
+import { Toggle } from "packages/bfDs/Toggle.tsx";
 
 type Props = {
   content: string | React.ReactNode;
@@ -8,10 +9,13 @@ type Props = {
   isHighlighted?: boolean;
   footer?: string | React.ReactNode;
   onClick?: () => void;
+  toggle?: () => void;
+  toggled?: boolean;
 };
 
 export function ListItem(
-  { content, iconRight, isHighlighted, footer, onClick }: Props,
+  { content, iconRight, isHighlighted, footer, onClick, toggle, toggled }:
+    Props,
 ) {
   function handleClick() {
     if (onClick) {
@@ -41,6 +45,12 @@ export function ListItem(
           <BfDsIcon name={iconRight} color="var(--textSecondary)" />
         </div>
       )}
+      {toggle &&
+        (
+          <div className="list-item-toggle">
+            <Toggle value={!!toggled} onChange={toggle} />
+          </div>
+        )}
     </div>
   );
 }

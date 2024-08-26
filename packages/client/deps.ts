@@ -3,8 +3,6 @@ export * as GraphqlWs from "https://esm.sh/graphql-ws@5.14.0";
 import "packages/__generated__/_graphql_imports.ts";
 // @deno-types="https://esm.sh/v135/@types/react-relay@16.0.6/index.d.ts";
 import * as ReactRelay from "react-relay";
-// @deno-types="https://esm.sh/v135/@types/relay-runtime@14.1.22/index.d.ts";
-import * as RelayRuntime from "relay-runtime";
 
 export async function graphql(
   strings: TemplateStringsArray,

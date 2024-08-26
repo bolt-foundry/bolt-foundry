@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
 import { ReactDOMClient } from "packages/client/deps.ts";
 import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
-import { Spinner } from "packages/bfDs/Spinner.tsx";
+import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useCopyToClipboard } from "packages/bfDs/hooks/useCopyToClipboard.ts";
 // import type FeatureMenu from "packages/bfDs/FeatureMenu.tsx";
@@ -294,7 +294,7 @@ function MenuItem({ menuItem, hovering }: MenuItemProps) {
       )}
       {menuItem.showSpinner && (
         <div className="tooltip-menu-item-spinner">
-          <Spinner size={12} />
+          <BfDsSpinner size={12} />
         </div>
       )}
       <div style={styles.menuItemRow}>

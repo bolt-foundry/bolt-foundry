@@ -11,7 +11,9 @@ type UseKeyboardInputParams = {
   isActive?: boolean;
 };
 
-const useKeyboardInput = ({keybindings, keyupBindings, isActive = true}: UseKeyboardInputParams) => {
+const useKeyboardInput = (
+  { keybindings, keyupBindings, isActive = true }: UseKeyboardInputParams,
+) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!isActive) {
@@ -28,10 +30,10 @@ const useKeyboardInput = ({keybindings, keyupBindings, isActive = true}: UseKeyb
         event.stopPropagation();
       }
     };
-    
+
     const handleKeyUp = (event: KeyboardEvent) => {
       if (!isActive) return;
-      let key = event.key.toLowerCase();
+      const key = event.key.toLowerCase();
       const callback = keyupBindings?.[key];
       if (callback) {
         callback();

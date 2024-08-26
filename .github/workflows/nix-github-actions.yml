@@ -1,0 +1,40 @@
+name: Nix Flake actions
+
+on:
+  pull_request:
+
+jobs:
+  bff-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v4
+      - name: Run the Magic Nix Cache
+        uses: DeterminateSystems/magic-nix-cache-action@v2
+      - name: Get direnv
+        run: |
+          nix build .#deploy -L
+          echo "$GITHUB_WORKSPACE/result/bin" >> $GITHUB_PATH
+ 
+          export BF_PATH=$GITHUB_WORKSPACE
+          export BF_INFRA_BIN_PATH=$BF_PATH/infra/bin
+
+          echo "BF_PATH=$BF_PATH" >> $GITHUB_ENV
+          echo "DENO_DIR=$BF_PATH/.deno" >> $GITHUB_ENV
+          echo "BF_INFRA_BIN_PATH=$BF_INFRA_BIN_PATH" >> $GITHUB_ENV
+
+          echo $BF_INFRA_BIN_PATH >> $GITHUB_PATH
+          
+      - name: Modify deno.jsonc
+        run: |
+          cat $BF_PATH/deno.jsonc
+          sed -i 's/"nodeModulesDir": true/"nodeModulesDir": false/g' "$BF_PATH/deno.jsonc"
+          cat "$BF_PATH/deno.jsonc"
+      - name: Build
+        run: |
+          ./result/bin/direnv allow .
+          eval "$(./result/bin/direnv export bash)"
+          ./infra/bin/bff ci
+          
+          

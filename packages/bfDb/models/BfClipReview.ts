@@ -12,16 +12,19 @@ type BfClipReviewInternalProps = {
   progress: number;
   fileSize: number;
   mimetype: string;
-}
+};
 
-export class BfClipReview extends BfNode<BfClipReviewProps, BfClipReviewInternalProps> {
+export class BfClipReview
+  extends BfNode<BfClipReviewProps, BfClipReviewInternalProps> {
   addFile(file: File) {
-    logger.debug("Writing file", file)
+    logger.debug("Writing file", file);
     const stream = file.stream();
-    logger.debug("Opened stream", stream)
-    objectStorageClient?.uploadFromStream(this.metadata.bfGid, Readable.from(stream));
-    
+    logger.debug("Opened stream", stream);
+    objectStorageClient?.uploadFromStream(
+      this.metadata.bfGid,
+      Readable.from(stream),
+    );
+
     return;
   }
-
 }

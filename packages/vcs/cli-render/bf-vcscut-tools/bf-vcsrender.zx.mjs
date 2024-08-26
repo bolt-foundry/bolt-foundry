@@ -1,5 +1,5 @@
 #!/usr/bin/env zx
-import 'zx/globals';
+import "zx/globals";
 
 const inputVideoPath = argv._[0];
 if (!inputVideoPath) {
@@ -10,10 +10,10 @@ if (!inputVideoPath) {
 const baseDir = path.dirname(inputVideoPath);
 const baseFileName = path.basename(
   inputVideoPath,
-  path.extname(inputVideoPath)
+  path.extname(inputVideoPath),
 );
 
-const inputJsonPath = path.resolve(baseDir, baseFileName + '.json');
+const inputJsonPath = path.resolve(baseDir, baseFileName + ".json");
 if (!fs.existsSync(inputJsonPath)) {
   echo`Error: BoltFoundry transcript JSON file expected next to media file (at path: ${inputJsonPath})`;
   process.exit(1);
@@ -21,7 +21,7 @@ if (!fs.existsSync(inputJsonPath)) {
 
 const vcsCutFilePath = path.resolve(
   baseDir,
-  baseFileName + '_render.vcscut.json'
+  baseFileName + "_render.vcscut.json",
 );
 
 // -- generate the VCSCut file --
@@ -29,18 +29,18 @@ await $`node gen-cut-from-bf.js -t ${inputJsonPath} -v ${inputVideoPath} -o ${vc
 
 // -- call VCSRender with the cut file --
 
-const w = argv['w'] || 1080;
-const h = argv['h'] || 1920;
+const w = argv["w"] || 1080;
+const h = argv["h"] || 1920;
 
-const BF_PATH = process.env['BF_PATH'] || '../../../..';
+const BF_PATH = process.env["BF_PATH"] || "../../../..";
 
 const vcsCutTranscriptToolDir = path.resolve(
   BF_PATH,
-  'thirdParty/daily-vcs/cut-transcript-tools'
+  "thirdParty/daily-vcs/cut-transcript-tools",
 );
 if (
   !fs.existsSync(vcsCutTranscriptToolDir) ||
-  !fs.existsSync(path.resolve(vcsCutTranscriptToolDir, 'vcscut-render.zx.mjs'))
+  !fs.existsSync(path.resolve(vcsCutTranscriptToolDir, "vcscut-render.zx.mjs"))
 ) {
   echo`Error: VCS cut-transcript-tools must be at sibling path: ${vcsCutTranscriptToolDir}`;
   process.exit(2);

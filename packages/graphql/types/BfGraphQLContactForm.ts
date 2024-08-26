@@ -1,14 +1,9 @@
-// packages/graphql/types/BfGraphQLContactForm.ts
-
-import { responsePathAsArray } from "https://esm.sh/v135/graphql@16.8.1/index.d.ts";
 import {
   inputObjectType,
   mutationField,
   nonNull,
   objectType,
-  stringArg,
 } from "packages/graphql/deps.ts";
-import { GraphQLContext } from "packages/graphql/graphql.ts";
 
 // Define the input type for the contact form
 export const SubmitContactFormInput = inputObjectType({
@@ -44,7 +39,7 @@ export const submitContactFormMutation = mutationField("submitContactForm", {
     input: nonNull(SubmitContactFormInput),
   },
 
-  resolve: async (_root, { input }, { bfCurrentViewer }: GraphQLContext) => {
+  resolve: async (_root, { input }) => {
     try {
       const response = await fetch(
         "https://api.notion.com/v1/pages",
@@ -70,9 +65,9 @@ export const submitContactFormMutation = mutationField("submitContactForm", {
                   {
                     "text": {
                       "content": input.phone,
-                    }
-                  }
-                ]
+                    },
+                  },
+                ],
               },
               "company": {
                 "rich_text": [
@@ -105,6 +100,7 @@ export const submitContactFormMutation = mutationField("submitContactForm", {
         message: data.message,
       };
     } catch (error) {
+      // deno-lint-ignore no-console
       console.error("Form submission error:", error);
       return {
         success: false,

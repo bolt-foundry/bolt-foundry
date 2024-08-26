@@ -3,7 +3,6 @@
 import { esbuild } from "infra/build/deps.ts";
 import { generateBluey } from "lib/generateBluey.ts";
 import { denoPlugin } from "infra/build/bffEsbuild.ts";
-import esbuildDenoMdxPlugin from "infra/build/esbuildDenoMdxPlugin.ts";
 import { workerList } from "infra/build/workerList.ts";
 import { getLogger } from "deps.ts";
 
@@ -21,15 +20,12 @@ export async function build(
     bundle: true,
     entryPoints: [
       ...workerList,
-      "packages/client/Client.tsx",
-      "infra/internalbf.com/client/Client.tsx",
       "aws/client/main.tsx",
     ],
     write: true,
     outdir: "build",
     plugins: [
       denoPlugin,
-      esbuildDenoMdxPlugin,
     ],
     format: "esm",
     external: ["npm:posthog-node@3.2.0", "/build/vcs/dev_bf.bundle.js"],

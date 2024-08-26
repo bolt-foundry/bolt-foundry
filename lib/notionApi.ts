@@ -1,6 +1,5 @@
 // cms: https://www.notion.so/boltfoundry/1d6117a9a86441f1b339e96346bbf0e1?v=887423b5acf24d93b501bd3975b0c11e
 const NOTION_API_KEY = Deno.env.get("NOTION_API_KEY");
-const NOTION_BLOG_ID = "1d6117a9a86441f1b339e96346bbf0e1";
 
 export interface NotionPostsResponse {
   id: string;

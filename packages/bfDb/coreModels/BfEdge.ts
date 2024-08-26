@@ -69,7 +69,6 @@ export class BfEdge<
     return newEdge;
   }
 
-  
   /**
    * Queries all edge connections from a source node to target nodes.
    * The method retrieves the connections between a source node and all its target nodes.
@@ -210,5 +209,4 @@ export class BfEdge<
     logger.debug("targets", targets);
     return targets;
   }
-
 }

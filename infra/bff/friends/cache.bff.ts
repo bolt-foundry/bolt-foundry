@@ -1,5 +1,5 @@
 import { register } from "infra/bff/mod.ts";
-import { walk } from "https://deno.land/std/fs/mod.ts";
+import { walk } from "std/fs/mod.ts";
 
 const BFF_ROOT = Deno.env.get("BFF_ROOT") ?? Deno.cwd();
 
