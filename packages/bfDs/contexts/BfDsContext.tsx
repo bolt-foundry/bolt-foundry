@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { BfDsToast, TRANSITION_DURATION } from "packages/bfDs/BfDsToast.tsx";
-import { Modal } from "packages/bfDs/Modal.tsx";
+import { BfDsModal } from "packages/bfDs/BfDsModal.tsx";
 import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
 
 const { createContext, useEffect, useState } = React;
@@ -111,7 +111,7 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
     showModal,
     showToast,
     ModalComponent: activeModal && (
-      <Modal
+      <BfDsModal
         clickOusideToClose={activeModal.options?.clickOusideToClose}
         confirmClose={activeModal.options?.confirmClose}
         header={activeModal.options?.header}
@@ -125,7 +125,7 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
         kind={activeModal.options?.kind}
       >
         {activeModal.content}
-      </Modal>
+      </BfDsModal>
     ),
     ToastComponent: (
       <>
