@@ -34,6 +34,8 @@ import {
   BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
 import { getLogger } from "deps.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 const log = logger.trace;
@@ -85,6 +87,39 @@ export abstract class BfBaseModel<
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
   }
+
+  // public static async createWithEdge<
+  //   TThis extends Constructor<
+  //     BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+  //   >,
+  //   TRequiredProps,
+  //   TOptionalProps,
+  //   TCreationMetadata extends CreationMetadata,
+  // >(
+  //   this: TThis,
+  //   currentViewer: BfCurrentViewer,
+  //   targetType: typeof BfNode,
+  //   targetProps: TRequiredProps & Partial<TOptionalProps>,
+  // ): Promise<
+  //   InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
+  // > {
+  //   logVerbose("createWithEdge", { currentViewer, targetType, targetProps });
+  //   const targetModel = await targetType.create(currentViewer, targetProps);
+  //   const edgeModel = await BfEdge.create(currentViewer, {}, {
+  //     // @ts-expect-error idk why the metadata types are messed up for bf edges.
+  //     bfTClassName: targetType,
+  //     bfTid: targetModel.metadata.bfGid,
+  //     bfSClassName: this.name,
+  //     bfSid: this.metadata.bfGid,
+  //   });
+  //   logVerbose("created edge", {
+  //     sourceId: this.name,
+  //     targetId: targetModel.metadata.bfGid,
+  //   });
+  //   return targetModel as
+  //     & InstanceType<TThis>
+  //     & BfBaseModelMetadata<TCreationMetadata>;
+  // }
 
   static async find<
     TThis extends
