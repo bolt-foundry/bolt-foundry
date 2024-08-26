@@ -11,6 +11,7 @@ import { getGoogleOauthUrl } from "lib/googleOauth.ts";
 import { redirectIfNotLoggedIn } from "/aws/clientRenderer/main.ts";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { createTranscript } from "infra/bff/friends/transcribe.bff.ts";
 
 const logger = getLogger(import.meta);
 export enum DeploymentTypes {
@@ -62,6 +63,35 @@ for (const workerPathWithoutLeadingSlash of workerList) {
     }
   });
 }
+
+routes.set("/webhooks/assemblyai", async (req, _routeParams) => {
+  if (req.method === "POST") {
+    try {
+      const url = new URL(req.url);
+      const mediaId = url.searchParams.get("mediaId");
+      const inputAudio = url.searchParams.get("inputAudio");
+
+      const body = await req.json();
+      const { transcript_id, status } = body;
+
+      if (status === "completed") {
+        logger.info("Received completed transcript", {
+          transcript_id,
+          mediaId,
+          inputAudio,
+        });
+        await createTranscript(transcript_id, mediaId, inputAudio);
+      }
+
+      return new Response("Webhook received", { status: 200 });
+    } catch (e) {
+      logger.error("Error processing webhook", e);
+      return new Response("Error processing webhook", { status: 400 });
+    }
+  } else {
+    return new Response("Method not allowed", { status: 405 });
+  }
+});
 
 function getContentType(ext) {
   switch (ext) {

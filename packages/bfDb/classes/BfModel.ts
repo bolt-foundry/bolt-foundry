@@ -34,6 +34,8 @@ import {
   BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
 import { getLogger } from "deps.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 const log = logger.trace;
