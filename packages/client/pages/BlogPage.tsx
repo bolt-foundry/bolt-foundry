@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useLazyLoadQuery } from "react-relay";
-import ContentFrame from "/aws/client/components/ContentFrame.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { getLogger } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
@@ -21,6 +20,13 @@ const postsQuery = await graphql`
   }
   }
 `;
+
+type Props = React.PropsWithChildren;
+
+
+function ContentFrame({children}: Props) {
+  return children
+}
 
 export function BlogPage() {
   const { currentPath, routeParams } = useRouter();
