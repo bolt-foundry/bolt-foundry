@@ -55,7 +55,10 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
       method: method as string,
       args,
     };
-    const job = await this.create(currentViewer, jobProps);
+    const job = await this.__DANGEROUS__createUnattached(
+      currentViewer,
+      jobProps,
+    );
     const _jobEdge = await BfEdge.createEdgeBetweenNodes(
       currentViewer,
       bfNode,
