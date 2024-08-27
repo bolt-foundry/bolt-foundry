@@ -48,10 +48,13 @@ async function land() {
     "-m",
     logInfo.summary,
   ]);
-  await Deno.remove(Deno.env.get("HISTFILE")!);
-  await Deno.remove(`${Deno.env.get("BF_PATH")!}/node_modules`, {
-    recursive: true,
-  });
+
+  await Promise.allSettled([
+    Deno.remove(Deno.env.get("HISTFILE")!),
+    Deno.remove(`${Deno.env.get("BF_PATH")!}/node_modules`, {
+      recursive: true,
+    }),
+  ]);
   return 0;
 }
 register(
