@@ -54,15 +54,18 @@ async function populate(projects = accounting) {
       import.meta,
       "bf_internal_org",
     );
-    const newMedia = await BfMedia.create(currentViewer, {
-      filename: transcript.filename,
-      fileId: transcript.fileId,
-    });
+    const newMedia = await BfMedia.__DANGEROUS__createUnattached(
+      currentViewer,
+      {
+        filename: transcript.filename,
+        fileId: transcript.fileId,
+      },
+    );
     const newTranscript = await BfMediaTranscript.create(currentViewer, {
       words: transcript.words,
       filename: transcript.filename,
     });
-    await BfEdge.create(currentViewer, {}, {
+    await BfEdge.__DANGEROUS__createUnattached(currentViewer, {}, {
       // @ts-expect-error idk why the metadata types are messed up for bf edges.
       bfTClassName: "BfMediaTranscript",
       bfTid: newTranscript.metadata.bfGid,

@@ -47,10 +47,13 @@ export const BfGraphQLPickGoogleDriveFolderMutation = mutationField(
       { resourceId, name },
       { bfCurrentViewer }: GraphQLContext,
     ) => {
-      const folder = await BfGoogleDriveResource.create(bfCurrentViewer, {
-        resourceId,
-        name,
-      });
+      const folder = await BfGoogleDriveResource.__DANGEROUS__createUnattached(
+        bfCurrentViewer,
+        {
+          resourceId,
+          name,
+        },
+      );
       const organization = await BfOrganization.findX(
         bfCurrentViewer,
         bfCurrentViewer.organizationBfGid,

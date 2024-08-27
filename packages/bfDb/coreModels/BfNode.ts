@@ -40,11 +40,12 @@ export class BfNode<
       targetCreationMetadata,
     });
 
-    const targetModel = await (TargetClass as unknown as typeof BfNode).create(
-      this.currentViewer,
-      targetProps,
-      targetCreationMetadata,
-    );
+    const targetModel = await (TargetClass as unknown as typeof BfNode)
+      .__DANGEROUS__createUnattached(
+        this.currentViewer,
+        targetProps,
+        targetCreationMetadata,
+      );
     await BfEdge.createEdgeBetweenNodes(
       this.currentViewer,
       this,

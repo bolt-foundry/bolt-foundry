@@ -54,7 +54,15 @@ export abstract class BfBaseModel<
   protected static isSorted = false;
   protected static isSelfOwned = false;
 
-  public static async create<
+  /**
+   * Dangerous, because using this create function lets you create a node not
+   * attached to anything by default. That's pretty dangerous, because it could
+   * result in something never getting deleted.
+   *
+   * Usually, you'll want to use BfNode's createTargetNode function, which would
+   * necessarily tie a node from a source to a target.
+   */
+  public static async __DANGEROUS__createUnattached<
     TThis extends Constructor<
       BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
     >,
