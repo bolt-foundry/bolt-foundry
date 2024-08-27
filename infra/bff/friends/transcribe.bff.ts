@@ -63,7 +63,7 @@ export async function createTranscript(
     bfMedia = await BfMedia.find(currentViewer, mediaId as BfAnyid);
     logger.info("Media found");
   } else {
-    bfMedia = await BfMedia.create(currentViewer, {
+    bfMedia = await BfMedia.__DANGEROUS__createUnattached(currentViewer, {
       filename: "New media",
     });
     logger.info("Media created", bfMedia.metadata.bfGid);

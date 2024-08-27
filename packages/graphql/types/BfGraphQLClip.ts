@@ -40,7 +40,7 @@ export const BfGraphQLClipCreateMutation = mutationField("upsertClip", {
     let clip = await BfClip.find(bfCurrentViewer, originalClipId);
     if (!clip) {
       logger.debug("Couldn't find clip, creating");
-      clip = await BfClip.create(bfCurrentViewer, {
+      clip = await BfClip.__DANGEROUS__createUnattached(bfCurrentViewer, {
         title,
       }, {
         bfGid: toBfGid(originalClipId),

@@ -40,7 +40,7 @@ export class BfNode<
       targetCreationMetadata,
     });
 
-    const targetModel = await (TargetClass as unknown as typeof BfNode).create(
+    const targetModel = await (TargetClass as unknown as typeof BfNode).__DANGEROUS__createUnattached(
       this.currentViewer,
       targetProps,
       targetCreationMetadata,

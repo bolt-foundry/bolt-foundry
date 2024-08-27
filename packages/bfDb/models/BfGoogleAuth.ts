@@ -8,7 +8,7 @@ type BfGoogleAuthProps = {
 
 export class BfGoogleAuth extends BfNode<BfGoogleAuthProps> {
   async afterCreate() {
-    await BfEdge.create(this.currentViewer, {}, {
+    await BfEdge.__DANGEROUS__createUnattached(this.currentViewer, {}, {
       // @ts-expect-error idk why the metadata types are messed up for bf edges.
       bfTClassName: this.metadata.className,
       bfTid: this.metadata.bfGid,

@@ -57,13 +57,17 @@ export class BfGoogleDriveResource
       throw new Error("no google auth");
     }
 
-    const googleAuthEdgePromise = BfEdge.create(this.currentViewer, {}, {
-      // @ts-expect-error typing is bad on bfEdge
-      bfSid: googleAuth.metadata.bfGid,
-      bfSClassName: "BfGoogleAuth",
-      bfTid: this.metadata.bfGid,
-      bfTClassName: this.constructor.name,
-    });
+    const googleAuthEdgePromise = BfEdge.__DANGEROUS__createUnattached(
+      this.currentViewer,
+      {},
+      {
+        // @ts-expect-error typing is bad on bfEdge
+        bfSid: googleAuth.metadata.bfGid,
+        bfSClassName: "BfGoogleAuth",
+        bfTid: this.metadata.bfGid,
+        bfTClassName: this.constructor.name,
+      },
+    );
 
     const jobPromise = BfJob.createJobForNode(
       this,
@@ -142,7 +146,7 @@ export class BfGoogleDriveResource
     try {
       await this.transactionStart();
       const child = await (this.constructor as typeof BfGoogleDriveResource)
-        .create(this.currentViewer, childProps);
+        .__DANGEROUS__createUnattached(this.currentViewer, childProps);
       const edge = await BfEdge.createEdgeBetweenNodes(
         this.currentViewer,
         this,

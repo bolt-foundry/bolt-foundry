@@ -48,7 +48,7 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
         import.meta,
         credential,
       );
-    const newPerson = await this.create(currentViewer, { email, name }, {
+    const newPerson = await this.__DANGEROUS__createUnattached(currentViewer, { email, name }, {
       bfGid: currentViewer.personBfGid,
       bfOid: toBfOid(currentViewer.personBfGid),
     });

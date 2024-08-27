@@ -16,11 +16,11 @@ type BfClipProps = {
 export class BfClip extends BfNode<BfClipProps> {
   async createNewClipReview(videoFile: File) {
     const priorReviews = await this.queryClipReviewEdges();
-    const clipReview = await BfClipReview.create(this.currentViewer, {
+    const clipReview = await BfClipReview.__DANGEROUS__createUnattached(this.currentViewer, {
       title: `${this.props.title} (V${priorReviews.length + 1})`,
     });
     clipReview.addFile(videoFile);
-    await BfEdge.create(this.currentViewer, {}, {
+    await BfEdge.__DANGEROUS__createUnattached(this.currentViewer, {}, {
       bfSid: toBfSid(this.metadata.bfGid),
       bfTid: toBfTid(clipReview.metadata.bfGid),
     });
