@@ -66,7 +66,7 @@ export class BfEdge<
       bfSid: sourceNode.metadata.bfGid,
     } as EdgeCreationMetadata;
 
-    const newEdge = await BfEdge.create(currentViewer, { role }, metadata);
+    const newEdge = await BfEdge.__DANGEROUS__createUnattached(currentViewer, { role }, metadata);
     return newEdge;
   }
 

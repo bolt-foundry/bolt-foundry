@@ -56,14 +56,14 @@ export async function upsertBfDb() {
   logger.info("Checking for omni account");
   if (!(await BfPerson.find(omniCv, toBfGid("omni_person")))) {
     logger.info("Creating omni person");
-    await BfPerson.create(omniCv, {
+    await BfPerson.__DANGEROUS__createUnattached(omniCv, {
       name: "Omni user",
     }, { bfGid: toBfGid("omni_person"), bfOid: toBfOid("omni_person") });
   }
   logger.info("Checking for internal org");
   if (!(await BfOrganization.find(omniCv, toBfOid(BF_INTERNAL_ORG_NAME)))) {
     logger.info("Creating internal org");
-    await BfOrganization.create(omniCv, {
+    await BfOrganization.__DANGEROUS__createUnattached(omniCv, {
       name: "Bolt Foundry internal",
       domainName: "boltfoundry.com",
     }, {
