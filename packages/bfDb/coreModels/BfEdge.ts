@@ -1,4 +1,4 @@
-import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import type { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import {
   Constructor,
   CreationMetadata,
@@ -32,7 +32,7 @@ export type EdgeCreationMetadata = {
 export class BfEdge<
   ChildRequiredProps extends BfEdgeRequiredProps = BfEdgeRequiredProps,
   ChildOptionalProps extends BfEdgeOptionalProps = Record<string, unknown>,
-> extends BfNode<
+> extends BfModel<
   ChildRequiredProps,
   ChildOptionalProps,
   EdgeCreationMetadata
