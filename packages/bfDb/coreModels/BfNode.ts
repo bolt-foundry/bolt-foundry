@@ -4,7 +4,6 @@ import {
   Constructor,
   CreationMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
@@ -23,43 +22,42 @@ export class BfNode<
   ChildCreationMetadata
 > {
   public async createTargetNode<
-    TThis extends Constructor<
-      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+    TTargetClass extends Constructor<
+      BfModel<TProps, Record<string, unknown>, TCreationMetadata>
     >,
-    TRequiredProps,
-    TOptionalProps,
-    TCreationMetadata extends CreationMetadata,
+    TProps extends Record<string, unknown>,
+    TCreationMetadata extends BfBaseModelMetadata<CreationMetadata> =
+      BfBaseModelMetadata<CreationMetadata>,
   >(
-    this: BfNode,
-    currentViewer: BfCurrentViewer,
-    TargetClass: typeof BfNode,
-    targetProps: TRequiredProps & Partial<TOptionalProps>,
-    targetCreationMetadata: TCreationMetadata,
-  ): Promise<
-    InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
-  > {
+    TargetClass: TTargetClass,
+    targetProps: TProps,
+    role?: string,
+    targetCreationMetadata?: TCreationMetadata,
+  ) {
     logger.debug("createTargetNode", {
-      currentViewer,
       TargetClass,
       targetProps,
       targetCreationMetadata,
     });
-    const targetModel = await TargetClass.create(
-      currentViewer,
+
+    const targetModel = await (TargetClass as unknown as typeof BfNode).create(
+      this.currentViewer,
       targetProps,
       targetCreationMetadata,
     );
     await BfEdge.createEdgeBetweenNodes(
-      currentViewer,
+      this.currentViewer,
       this,
       targetModel,
+      role,
     );
     logger.debug("created edge", {
       sourceId: this.metadata.bfGid,
+      sourceClass: this.constructor.name,
       targetId: targetModel.metadata.bfGid,
+      targetClass: targetModel.constructor.name,
+      role,
     });
-    return targetModel as unknown as
-      & InstanceType<TThis>
-      & BfBaseModelMetadata<TCreationMetadata>;
+    return targetModel as InstanceType<TTargetClass>;
   }
 }

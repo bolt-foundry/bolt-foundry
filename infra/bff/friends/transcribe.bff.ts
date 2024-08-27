@@ -10,7 +10,6 @@ import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfError } from "lib/BfError.ts";
-import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
 const logger = getLogger(import.meta);
 
@@ -77,8 +76,7 @@ export async function createTranscript(
   // create transcript
   logger.info("Creating Transcript");
   const bfTranscript = await bfMedia.createTargetNode(
-    currentViewer,
-    BfMediaTranscript as typeof BfNode,
+    BfMediaTranscript,
     {
       words: JSON.stringify(transcript.words),
       filename: inputAudio,
