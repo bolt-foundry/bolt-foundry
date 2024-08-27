@@ -39,7 +39,8 @@
       ".config",
       "aws",
       "**/*.json",
-      "**/*.ipynb"
+      "**/*.ipynb",
+      "**/.ipynb_checkpoints"
     ]
   },
   "test": {
