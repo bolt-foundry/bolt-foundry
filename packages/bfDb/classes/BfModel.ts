@@ -34,6 +34,8 @@ import {
   BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
 import { getLogger } from "deps.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 const log = logger.trace;
@@ -82,6 +84,47 @@ export abstract class BfBaseModel<
     await newModel.afterCreate();
     logVerbose("created", { newModel });
     return newModel as
+      & InstanceType<TThis>
+      & BfBaseModelMetadata<TCreationMetadata>;
+  }
+
+  public async createTargetNode<
+    TThis extends Constructor<
+      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+    >,
+    TRequiredProps,
+    TOptionalProps,
+    TCreationMetadata extends CreationMetadata,
+  >(
+    this: InstanceType<typeof BfNode>,
+    currentViewer: BfCurrentViewer,
+    targetClass: typeof BfNode,
+    targetProps: TRequiredProps & Partial<TOptionalProps>,
+    targetCreationMetadata: TCreationMetadata,
+  ): Promise<
+    InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
+  > {
+    logVerbose("createTargetNode", {
+      currentViewer,
+      targetClass,
+      targetProps,
+      targetCreationMetadata,
+    });
+    const targetModel = await targetClass.create(
+      currentViewer,
+      targetProps,
+      targetCreationMetadata,
+    );
+    await BfEdge.createEdgeBetweenNodes(
+      currentViewer,
+      this,
+      targetModel,
+    );
+    logVerbose("created edge", {
+      sourceId: this.metadata.bfGid,
+      targetId: targetModel.metadata.bfGid,
+    });
+    return targetModel as
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
   }

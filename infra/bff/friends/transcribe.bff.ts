@@ -9,8 +9,8 @@ import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfError } from "lib/BfError.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
 const logger = getLogger(import.meta);
 
@@ -57,35 +57,35 @@ export async function createTranscript(
   }
   const transcript = await assemblyai.transcripts.get(transcriptId);
 
-  // create transcript
-  logger.info("Creating Transcript");
-  const bfTranscript = await BfMediaTranscript.create(currentViewer, {
-    words: JSON.stringify(transcript.words),
-    filename: inputAudio,
-  });
-  logger.info("Transcript created", bfTranscript.metadata.bfGid);
-
-  // create media
+  // create or find media
   logger.info("Creating Media or connecting to existing Media");
   let bfMedia;
   if (mediaId && mediaId !== "") {
-    bfMedia = await BfMedia.findX(currentViewer, mediaId as BfAnyid);
+    bfMedia = await BfMedia.find(currentViewer, mediaId as BfAnyid);
     logger.info("Media found");
   } else {
     bfMedia = await BfMedia.create(currentViewer, {
-      filename: "New media",
+      filename: "createTargetNode 🤞",
     });
     logger.info("Media created", bfMedia.metadata.bfGid);
   }
 
-  // create edge
-  logger.info("Connecting Media to Transcript");
-  const bfEdge = await BfEdge.createEdgeBetweenNodes(
+  if (!(bfMedia instanceof BfMedia)) {
+    throw new BfError("bfMedia is not an instance of BfMedia");
+  }
+
+  // create transcript
+  logger.info("Creating Transcript");
+  const bfTranscript = await bfMedia.createTargetNode(
     currentViewer,
-    bfMedia,
-    bfTranscript,
+    BfMediaTranscript as typeof BfNode,
+    {
+      words: JSON.stringify(transcript.words),
+      filename: inputAudio,
+    },
+    {},
   );
-  logger.info("Edge created", bfEdge.metadata.bfGid);
+  logger.info("Transcript created", bfTranscript.metadata.bfGid);
 }
 
 register(
