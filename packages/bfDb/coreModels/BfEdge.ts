@@ -19,7 +19,7 @@ const logger = getLogger(import.meta);
 export type BfEdgeRequiredProps = Record<string, never>;
 
 export type BfEdgeOptionalProps = {
-  action?: string;
+  role?: string;
 };
 
 export type EdgeCreationMetadata = {
@@ -57,6 +57,7 @@ export class BfEdge<
     currentViewer: BfCurrentViewer,
     sourceNode: BfNode,
     targetNode: BfNode,
+    role?: string,
   ): Promise<BfEdge> {
     const metadata = {
       bfTClassName: targetNode.constructor.name,
@@ -65,7 +66,7 @@ export class BfEdge<
       bfSid: sourceNode.metadata.bfGid,
     } as EdgeCreationMetadata;
 
-    const newEdge = await BfEdge.create(currentViewer, {}, metadata);
+    const newEdge = await BfEdge.create(currentViewer, { role }, metadata);
     return newEdge;
   }
 
@@ -155,7 +156,7 @@ export class BfEdge<
     const sourceEdgeIds = sourceEdges.map((edge: BfNode) => edge.metadata.bfSid)
       .filter(Boolean) as Array<BfSid>;
     logger.debug("sourceEdgeIds", sourceEdgeIds);
-    const sources = await SourceClass.query(
+    const sources = await (SourceClass as typeof BfNode).query(
       currentViewer,
       {},
       propsToQuery,
