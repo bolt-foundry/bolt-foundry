@@ -11,6 +11,8 @@ import {
 import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { Progress } from "packages/bfDs/Progress.tsx";
 // import FeatureMenu from "packages/client/components/FeatureMenu.tsx";
+// field testing posthog stuff
+// import { posthog } from "posthog-js";
 
 export type ButtonSizeType = "xlarge" | "large" | "medium" | "small";
 
@@ -383,7 +385,6 @@ export function BfDsButton({
     kind !== "overlayDark" &&
     kind !== "outline";
   const percent = progress != null ? Math.round(progress) : 0;
-
   const button = (
     <button
       disabled={disableButton}
@@ -433,7 +434,7 @@ export function BfDsButton({
                   backgroundColor={buttonStyle[kind].backgroundColor}
                   spinnerColor={buttonStyle[kind].color}
                 />
-              )
+              )  
               : (
                 <BfDsSpinner
                   size={iconSize[size]}

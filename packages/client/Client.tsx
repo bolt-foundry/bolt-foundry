@@ -6,7 +6,6 @@ import type { ServerProps } from "packages/client/contexts/AppEnvironmentContext
 import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import AppEnvironmentProvider from "packages/client/contexts/AppEnvironmentContext.tsx";
 import { BfDsProvider } from "packages/bfDs/contexts/BfDsContext.tsx";
-// import { ensurePosthogClientIsSetUp } from "packages/events/mod.ts";
 
 const logger = getLogger(import.meta);
 
