@@ -10,6 +10,9 @@ import {
 import { FeatureFlags, FeatureVariants } from "packages/features/list.ts";
 import { matchRouteWithParams } from "packages/client/contexts/RouterContext.tsx";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
+import { ensurePostHogSetup } from "packages/events/mod.ts";
+
+ensurePostHogSetup();
 
 const _logger = getLogger(import.meta);
 
