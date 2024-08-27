@@ -356,6 +356,33 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       & Partial<TOptionalProps>;
   }
 
+  protected async beforeCreate() {}
+  protected async afterCreate() {}
+  protected async beforeLoad() {}
+  protected async beforeSave() {}
+  protected async afterSave() {}
+
+  protected toString() {
+    return `${this.constructor.name}#${this.metadata.bfGid}`;
+  }
+
+  protected validateSave(): Promise<boolean> | boolean {
+    return true;
+  }
+  protected validatePermissions(
+    action: ACCOUNT_ACTIONS,
+  ): Promise<boolean> | boolean {
+    const availableActions = getAvailableActionsForRole(
+      this.currentViewer.role,
+    );
+    if (availableActions.includes(action)) {
+      return true;
+    }
+    throw new BfModelErrorPermission(
+      `Your role (${this.currentViewer.role}) does not have permission to ${action} on ${this.constructor.name}.`,
+    );
+  }
+
   toGraphql() {
     return {
       ...this.props,
@@ -365,12 +392,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         this.constructor.name,
     };
   }
-
-  beforeLoad(): Promise<void> | void {}
-
-  beforeCreate(): Promise<void> | void {}
-
-  afterCreate(): Promise<void> | void {}
 
   async load() {
     await this.beforeLoad();
@@ -428,9 +449,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     }
   }
 
-  async beforeSave() {}
-  async afterSave() {}
-
   async save() {
     await this.beforeSave();
     await Promise.all([
@@ -445,23 +463,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     await this.afterSave();
   }
 
-  validatePermissions(action: ACCOUNT_ACTIONS): Promise<boolean> | boolean {
-    const availableActions = getAvailableActionsForRole(
-      this.currentViewer.role,
-    );
-    if (availableActions.includes(action)) {
-      return true;
-    }
-    throw new BfModelErrorPermission(
-      `Your role (${this.currentViewer.role}) does not have permission to ${action} on ${this.constructor.name}.`,
-    );
-  }
-
-  validateSave(): Promise<boolean> {
-    return Promise.resolve(true);
-  }
-
-  public async delete() {
+  async delete() {
     await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
     try {
       await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
@@ -482,10 +484,6 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
   }
   public async transactionRollback() {
     await transactionRollback();
-  }
-
-  toString() {
-    return `${this.constructor.name}#${this.metadata.bfGid}`;
   }
 }
 
