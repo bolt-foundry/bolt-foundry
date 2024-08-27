@@ -383,7 +383,6 @@ export function BfDsButton({
     kind !== "overlayDark" &&
     kind !== "outline";
   const percent = progress != null ? Math.round(progress) : 0;
-
   const button = (
     <button
       disabled={disableButton}
@@ -399,7 +398,6 @@ export function BfDsButton({
       onMouseOver={disableButton ? () => null : onHover}
       onMouseOut={disableButton ? () => null : onLeave}
       data-bf-icon={iconLeft}
-      data-bf-testid={testId}
       role={role ?? text ?? "button"}
     >
       {shouldShowSpinner && isIconButton && (
