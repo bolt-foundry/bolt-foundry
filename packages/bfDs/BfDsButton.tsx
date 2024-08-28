@@ -1,12 +1,12 @@
 import { React } from "deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
-import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
+import { BfDsIcon, type BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { Link } from "packages/client/components/Link.tsx";
 import {
   BfDsTooltip,
-  BfDsTooltipJustification,
-  BfDsTooltipMenu,
-  BfDsTooltipPosition,
+  type BfDsTooltipJustification,
+  type BfDsTooltipMenu,
+  type BfDsTooltipPosition,
 } from "packages/bfDs/BfDsTooltip.tsx";
 import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { Progress } from "packages/bfDs/Progress.tsx";

@@ -1,7 +1,7 @@
 import { rxjs } from "deps.ts";
 import { streamFileToOpfs } from "lib/opfs.ts";
 import {
-  AudioStreamOutput,
+  type AudioStreamOutput,
   extractAudioToStream,
 } from "packages/lib/extractAudio.ts";
 

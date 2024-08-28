@@ -4,17 +4,17 @@ import type {
   CreationMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
 import {
-  BfCurrentViewer,
+  type BfCurrentViewer,
   IBfCurrentViewerInternalAdmin,
   IBfCurrentViewerInternalAdminOmni,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import {
   ACCOUNT_ACTIONS,
-  BfAnyid,
-  BfCid,
-  BfGid,
+  type BfAnyid,
+  type BfCid,
+  type BfGid,
   getAvailableActionsForRole,
-  JsUnixtime,
+  type JsUnixtime,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import type { ConnectionArguments, ConnectionInterface } from "relay-runtime";
 import { generateUUID } from "lib/generateUUID.ts";

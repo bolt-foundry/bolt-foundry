@@ -1,5 +1,5 @@
 import { getLogger, React } from "deps.ts";
-import { graphql, ReactRelay } from "packages/client/deps.ts";
+import { type graphql, ReactRelay } from "packages/client/deps.ts";
 import { PageFrame } from "packages/client/components/PageFrame.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { clearOpfsStorage } from "lib/opfs.ts";

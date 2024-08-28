@@ -6,7 +6,7 @@ import { getEnvironment } from "packages/clientRenderer/relayEnvironment.ts";
 import {
   BfCurrentViewerAccessToken,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { FeatureFlags, FeatureVariants } from "packages/features/list.ts";
+import type { FeatureFlags, FeatureVariants } from "packages/features/list.ts";
 import { matchRouteWithParams } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 

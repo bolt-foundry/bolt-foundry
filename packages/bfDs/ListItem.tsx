@@ -1,5 +1,5 @@
-import { React } from "deps.ts";
-import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
+import type { React } from "deps.ts";
+import { BfDsIcon, type BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { classnames } from "lib/classnames.ts";
 import { Toggle } from "packages/bfDs/Toggle.tsx";
 

@@ -1,5 +1,5 @@
 import { React } from "deps.ts";
-import {
+import type {
   BfDsTooltipJustification,
   BfDsTooltipMenu,
   BfDsTooltipPosition,
