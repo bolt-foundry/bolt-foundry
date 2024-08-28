@@ -40,72 +40,66 @@ export const submitContactFormMutation = mutationField("submitContactForm", {
   },
 
   resolve: async (_root, { input }) => {
-    try {
-      const response = await fetch(
-        "https://api.notion.com/v1/pages",
-        {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify({
-            "parent": {
-              "database_id": `7f2854339d854895bc967959c09c3f69`,
+    const response = await fetch(
+      "https://api.notion.com/v1/pages",
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          "parent": {
+            "database_id": `7f2854339d854895bc967959c09c3f69`,
+          },
+          "properties": {
+            "name": {
+              "title": [
+                {
+                  "text": {
+                    "content": input.name,
+                  },
+                },
+              ],
             },
-            "properties": {
-              "name": {
-                "title": [
-                  {
-                    "text": {
-                      "content": input.name,
-                    },
+            "phone": {
+              "rich_text": [
+                {
+                  "text": {
+                    "content": input.phone,
                   },
-                ],
-              },
-              "phone": {
-                "rich_text": [
-                  {
-                    "text": {
-                      "content": input.phone,
-                    },
-                  },
-                ],
-              },
-              "company": {
-                "rich_text": [
-                  {
-                    "text": {
-                      "content": input.company,
-                    },
-                  },
-                ],
-              },
-              "email": {
-                "email": input.email,
-              },
-              "message": {
-                "rich_text": [
-                  {
-                    "text": {
-                      "content": input.message,
-                    },
-                  },
-                ],
-              },
+                },
+              ],
             },
-          }),
-        },
-      );
-      const data = await response.json();
-      return {
-        success: true,
-        message: data.message,
-      };
-    } catch (error) {
-      // deno-lint-ignore no-console
-      console.error("Form submission error:", error);
-      return {
-        success: false,
-        message: "Form submission failed.",
-      };
+            "company": {
+              "rich_text": [
+                {
+                  "text": {
+                    "content": input.company,
+                  },
+                },
+              ],
+            },
+            "email": {
+              "email": input.email,
+            },
+            "message": {
+              "rich_text": [
+                {
+                  "text": {
+                    "content": input.message,
+                  },
+                },
+              ],
+            },
+          },
+        }),
+      },
+    );
+    const data = await response.json();
+    if (data.message !== undefined) {
+      throw new Error(data.message);
     }
+    return {
+      success: true,
+      message: data.message,
+    };
   },
 });
