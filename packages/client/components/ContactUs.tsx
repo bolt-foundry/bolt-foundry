@@ -17,6 +17,13 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: "center",
     marginTop: 3,
   },
+  error: {
+    background: "var(--backgroundAlert)",
+    padding: 12,
+    borderRadius: 8,
+    border: "1px solid var(--alert)",
+    color: "var(--textOnDark)",
+  },
   formContainer: {
     width: "100%",
     maxWidth: "60rem",
@@ -64,7 +71,7 @@ export function ContactUs({ showHeader = true }: Props) {
   const { navigate } = useRouter();
   const [submtting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -98,9 +105,9 @@ export function ContactUs({ showHeader = true }: Props) {
           navigate("/");
         }, 2000);
       },
-      onError: () => {
+      onError: (e) => {
         setSubmitting(false);
-        setError(true);
+        setError(e.message);
       },
     });
   };
@@ -169,6 +176,7 @@ export function ContactUs({ showHeader = true }: Props) {
                   value={formData.message}
                   onChange={handleChange}
                 />
+                {error && <div style={styles.error}>{error}</div>}
                 <BfDsButton type="submit" text="Submit" size="xlarge" />
               </form>
             </>
@@ -184,7 +192,6 @@ export function ContactUs({ showHeader = true }: Props) {
                 Submitted!
               </h1>
             )}
-          {error && <div style={styles.mainTitle}>Error</div>}
         </>
       </div>
     </MarketingFrame>
