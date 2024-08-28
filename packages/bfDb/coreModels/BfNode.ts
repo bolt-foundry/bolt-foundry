@@ -1,5 +1,5 @@
 import { BfModel } from "packages/bfDb/classes/BfModel.ts";
-import {
+import type {
   BfBaseModelMetadata,
   Constructor,
   CreationMetadata,

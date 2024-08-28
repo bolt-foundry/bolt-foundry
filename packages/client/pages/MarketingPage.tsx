@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
-import { fonts } from "packages/bfDs/const.tsx";
+import type { fonts } from "packages/bfDs/const.tsx";
 import { useIntersectionObserver } from "packages/client/hooks/useIntersectionObserver.ts";
-import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
+import type { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { MarketingHero } from "packages/client/components/MarketingHero.tsx";
 import { useFeatureFlag } from "packages/client/hooks/featureFlagHooks.ts";

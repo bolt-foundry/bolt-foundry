@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { useLazyLoadQuery } from "react-relay";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { getLogger } from "deps.ts";

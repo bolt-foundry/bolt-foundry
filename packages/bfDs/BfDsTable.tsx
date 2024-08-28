@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 
 // Utility function to create unique keys for React elements

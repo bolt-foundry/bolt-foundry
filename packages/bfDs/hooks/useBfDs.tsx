@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
 import {
   BfDsContext,
-  BfDsContextType,
+  type BfDsContextType,
 } from "packages/bfDs/contexts/BfDsContext.tsx";
 const { useContext } = React;
 

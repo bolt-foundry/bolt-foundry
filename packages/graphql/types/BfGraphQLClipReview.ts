@@ -1,6 +1,6 @@
 import { extendType, objectType } from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/mod.ts";
-import { GraphQLContext } from "infra/graphql/graphql.ts";
+import type { GraphQLContext } from "infra/graphql/graphql.ts";
 import { BfClipReview } from "packages/bfDb/models/BfClipReview.ts";
 import { toBfOid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 

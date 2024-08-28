@@ -1,12 +1,12 @@
 import {
   ACCOUNT_ROLE,
-  BfGid,
+  type BfGid,
   toBfGid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import {
-  BfJwtPayload,
+  type BfJwtPayload,
   encodeBfAccessToken,
   encodeBfRefreshToken,
 } from "packages/bfDb/classes/BfAuth.ts";

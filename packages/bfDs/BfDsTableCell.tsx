@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { Progress } from "packages/bfDs/Progress.tsx";
 
 type Props = {

@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { WatchFolderList } from "packages/client/components/settings/WatchFolderList.tsx";
 import { UserList } from "packages/client/components/clipsearch/UserList.tsx";
 import { Link } from "packages/client/components/Link.tsx";

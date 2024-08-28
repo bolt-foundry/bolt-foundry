@@ -1,18 +1,18 @@
 import type { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import {
+import type {
   Constructor,
   CreationMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import {
+import type {
   BfGid,
   BfSid,
   BfTid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { ConnectionArguments } from "packages/graphql/deps.ts";
+import type { ConnectionArguments } from "packages/graphql/deps.ts";
 import { BfModel } from "packages/bfDb/classes/BfModel.ts";
 import { bfGetItemsByBfGid } from "packages/bfDb/bfDb.ts";
 import type { ConnectionInterface } from "react-relay";
-import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);

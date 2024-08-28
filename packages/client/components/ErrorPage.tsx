@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 
 const styles: Record<string, React.CSSProperties> = {
   error: {

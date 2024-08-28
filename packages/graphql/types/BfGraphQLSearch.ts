@@ -4,16 +4,16 @@ import {
   objectType,
   stringArg,
 } from "packages/graphql/deps.ts";
-import { GraphQLContext } from "packages/graphql/graphql.ts";
+import type { GraphQLContext } from "packages/graphql/graphql.ts";
 import {
   BfMediaTranscript,
-  BfMediaTranscriptProps,
+  type BfMediaTranscriptProps,
 } from "packages/bfDb/models/BfMediaTranscript.ts";
 
 import { callAPI } from "packages/lib/langchain.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
-import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import type { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
 const searchMutationPayload = objectType({
   name: "SearchMutationPayload",

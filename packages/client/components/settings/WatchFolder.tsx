@@ -1,6 +1,6 @@
-import * as React from "react";
+import type * as React from "react";
 import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFilePicker.tsx";
-import { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery.graphql.ts";
+import type { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery.graphql.ts";
 import { WatchFolderList } from "packages/client/components/settings/WatchFolderList.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 

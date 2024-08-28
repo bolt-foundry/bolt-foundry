@@ -10,7 +10,7 @@ import {
 import { createLogger } from "aws/logs/mod.ts";
 
 import Project from "packages/graphql/models/Project.ts";
-import { DGTranscript } from "packages/types/transcript.ts";
+import type { DGTranscript } from "packages/types/transcript.ts";
 import { getTranscriptWords } from "packages/client/lib/transcriptRectifier.ts";
 import { captureEvent } from "packages/events/mod.ts";
 import getBfGraphId from "packages/lib/getBfGraphId.ts";

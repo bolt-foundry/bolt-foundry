@@ -1,11 +1,11 @@
 import {
-  ConnectionArguments,
+  type ConnectionArguments,
   connectionFromArray,
   objectType,
 } from "packages/graphql/deps.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { GraphQLContext } from "packages/graphql/graphql.ts";
+import type { GraphQLContext } from "packages/graphql/graphql.ts";
 
 export const BfGraphQLPerson = objectType({
   name: "BfPerson",

@@ -5,10 +5,10 @@ import type {
   EdgeInterface,
   PageInfoInterface,
 } from "relay-runtime"; // Ensure this is correctly imported
-import {
+import type {
   BfBaseModelMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import {
+import type {
   BfAnyid,
   BfCid,
   BfGid,

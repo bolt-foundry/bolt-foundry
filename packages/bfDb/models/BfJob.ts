@@ -1,6 +1,6 @@
 // Import necessary dependencies
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { BfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import type { BfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
 import { BfError } from "lib/BfError.ts";
 import {
@@ -10,7 +10,7 @@ import {
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import {
   BfEdge,
-  BfEdgeRequiredProps,
+  type BfEdgeRequiredProps,
 } from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);

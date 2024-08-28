@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { useMutation } from "react-relay";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { graphql } from "packages/client/deps.ts";

@@ -1,5 +1,5 @@
-import { create, decode, Payload, verify } from "packages/bfDb/deps.ts";
-import { BfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { create, decode, type Payload, verify } from "packages/bfDb/deps.ts";
+import type { BfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
 import { ACCOUNT_ROLE } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 const accessLogger = getLogger(import.meta);

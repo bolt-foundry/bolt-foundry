@@ -1,5 +1,5 @@
 import { extendType, mutationField, nonNull, stringArg } from "nexus";
-import { GraphQLContext } from "packages/graphql/graphql.ts";
+import type { GraphQLContext } from "packages/graphql/graphql.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { exchangeCodeForToken } from "lib/googleOauth.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";

@@ -4,7 +4,7 @@
  */
 
 import { React } from "deps.ts";
-import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
+import type { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
 
 const { useEffect, useState } = React;
 

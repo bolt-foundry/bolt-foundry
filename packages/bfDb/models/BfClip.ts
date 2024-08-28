@@ -1,8 +1,8 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfClipReview } from "packages/bfDb/models/BfClipReview.ts";
 import {
-  BfGid,
+  type BfGid,
   toBfSid,
   toBfTid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
