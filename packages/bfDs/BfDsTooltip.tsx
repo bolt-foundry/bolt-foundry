@@ -1,8 +1,8 @@
 import { React } from "deps.ts";
 import { ReactDOMClient } from "packages/client/deps.ts";
-import { BfDsIcon, BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
+import { BfDsIcon, type BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
-import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
+import type { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useCopyToClipboard } from "packages/bfDs/hooks/useCopyToClipboard.ts";
 // import type FeatureMenu from "packages/bfDs/FeatureMenu.tsx";
 

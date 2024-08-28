@@ -1,5 +1,5 @@
-import * as React from "react";
-import { BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
+import type * as React from "react";
+import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 
 type Data = {

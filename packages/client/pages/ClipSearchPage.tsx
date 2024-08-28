@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";

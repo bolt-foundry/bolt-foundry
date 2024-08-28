@@ -1,11 +1,11 @@
-import { React, ReactRelay } from "deps.ts";
+import { type React, ReactRelay } from "deps.ts";
 import { IBfFrame } from "infra/internalbf.com/client/components/IBfFrame.tsx";
-import { BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
+import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
-import { IBfOrganizationsPage_BfOrganization$key } from "infra/__generated__/IBfOrganizationsPage_BfOrganization.graphql.ts";
+import type { IBfOrganizationsPage_BfOrganization$key } from "infra/__generated__/IBfOrganizationsPage_BfOrganization.graphql.ts";
 
-import { IBfOrganizationsPageQuery } from "infra/__generated__/IBfOrganizationsPageQuery.graphql.ts";
+import type { IBfOrganizationsPageQuery } from "infra/__generated__/IBfOrganizationsPageQuery.graphql.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { Example } from "packages/bfDs/BfDsForm.tsx";

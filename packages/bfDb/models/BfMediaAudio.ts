@@ -1,5 +1,5 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
+import type { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { getLogger } from "deps.ts";
 
 const BF_MEDIA_AUDIO_CACHE_LOCATION = "/tmp/bfMediaAudioCache";

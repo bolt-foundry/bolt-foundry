@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
-import { Button, ButtonSizeType } from "packages/bfDs/Button.tsx";
-import { BfDsIcon, BfDsIconType, IconSizeType } from "packages/bfDs/Icon.tsx";
+import type { Button, ButtonSizeType } from "packages/bfDs/Button.tsx";
+import { BfDsIcon, type BfDsIconType, type IconSizeType } from "packages/bfDs/Icon.tsx";
 
 const styles: Record<string, React.CSSProperties> = {
   confirmation: {

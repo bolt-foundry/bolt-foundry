@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { ComingSoonHero } from "packages/client/components/ComingSoonHero.tsx";
 import { MarketingCallToAction } from "packages/client/components/MarketingCallToAction.tsx";

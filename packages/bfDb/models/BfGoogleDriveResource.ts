@@ -7,7 +7,7 @@ import {
   fetchFile,
   fetchFolderContents,
   fetchMetadata,
-  GoogleDriveFileMetadata,
+  type GoogleDriveFileMetadata,
 } from "lib/googleDriveApi.ts";
 import { BfError } from "lib/BfError.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";

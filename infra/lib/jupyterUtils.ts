@@ -1,7 +1,7 @@
 import { getLogger } from "deps.ts";
 import {
   BfAccount,
-  BfAccountRequiredProps,
+  type BfAccountRequiredProps,
 } from "packages/bfDb/models/BfAccount.ts";
 import {
   BfCurrentViewerFromAccount,

@@ -14,7 +14,7 @@ import {
   toBfGid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
-import { GraphQLContext } from "packages/graphql/graphql.ts";
+import type { GraphQLContext } from "packages/graphql/graphql.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import {
   BfCurrentViewerAccessToken,

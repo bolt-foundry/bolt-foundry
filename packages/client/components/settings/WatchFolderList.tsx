@@ -1,7 +1,7 @@
-import { React, ReactRelay } from "deps.ts";
+import { React, type ReactRelay } from "deps.ts";
 import { usePaginationFragment } from "react-relay";
-import { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery.graphql.ts";
-import { BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
+import type { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery.graphql.ts";
+import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { graphql } from "packages/client/deps.ts";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";

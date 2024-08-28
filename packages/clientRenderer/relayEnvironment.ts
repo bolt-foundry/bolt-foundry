@@ -1,4 +1,4 @@
-import { Maybe, RelayRuntime } from "deps.ts";
+import { type Maybe, RelayRuntime } from "deps.ts";
 import { yoga } from "packages/graphql/graphql.ts";
 
 const { Environment, Network, RecordSource, Store } = RelayRuntime;

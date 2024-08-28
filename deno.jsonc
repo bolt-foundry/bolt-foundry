@@ -72,7 +72,9 @@
         "no-console",
         "no-external-import",
         "no-self-compare",
-        "no-sync-fn-in-async-fn"
+        "no-sync-fn-in-async-fn",
+        "verbatim-module-syntax",
+        "no-eval"
       ]
     },
     "exclude": [

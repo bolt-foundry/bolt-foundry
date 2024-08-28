@@ -1,12 +1,12 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
-import { DGWord } from "packages/types/transcript.ts";
+import type { DGWord } from "packages/types/transcript.ts";
 import { render } from "infra/bff/friends/render.bff.ts";
 import { fetchFile } from "lib/googleDriveApi.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { sanitizeFilename } from "packages/lib/textUtils.ts";
-import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
+import type { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 
 const logger = getLogger(import.meta);
 
