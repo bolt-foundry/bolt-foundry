@@ -1,6 +1,6 @@
 import { decodeAndVerifyGoogleToken } from "packages/bfDb/classes/BfAuth.ts";
 import {
-  BfCurrentViewer,
+  type BfCurrentViewer,
   BfCurrentViewerAccessToken,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";

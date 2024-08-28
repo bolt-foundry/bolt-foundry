@@ -1,4 +1,4 @@
-import { GraphQLContext } from "packages/graphql/graphql.ts";
+import type { GraphQLContext } from "packages/graphql/graphql.ts";
 import { cookie } from "packages/graphql/deps.ts";
 import {
   BfCurrentViewerAccessToken,

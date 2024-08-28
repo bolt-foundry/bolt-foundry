@@ -5,7 +5,7 @@ import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { LoginForm } from "packages/client/components/LoginForm.tsx";
 // import { captureEvent } from "packages/events/mod.ts";
-import { LoginPageCVQuery } from "packages/__generated__/LoginPageCVQuery.graphql.ts";
+import type { LoginPageCVQuery } from "packages/__generated__/LoginPageCVQuery.graphql.ts";
 // import { useFeatureFlag } from "packages/client/hooks/featureFlagHooks.tsx";
 
 const { useQueryLoader, useMutation, useLazyLoadQuery } = ReactRelay;

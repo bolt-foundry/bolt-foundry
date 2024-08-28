@@ -1,6 +1,6 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { BfMediaAudio } from "packages/bfDb/models/BfMediaAudio.ts";
+import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import type { BfMediaAudio } from "packages/bfDb/models/BfMediaAudio.ts";
 import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);

@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { InternalMediaIngestion } from "infra/internalbf.com/client/components/InternalMediaIngestion.tsx";
 import { InternalMediaList } from "infra/internalbf.com/client/components/InternalMediaList.tsx";
 

@@ -1,7 +1,7 @@
 import { React } from "deps.ts";
-import { Progress } from "packages/bfDs/Progress.tsx";
+import type { Progress } from "packages/bfDs/Progress.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { BfDsColumn, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
+import { type BfDsColumn, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 const { useState, useEffect } = React;
 

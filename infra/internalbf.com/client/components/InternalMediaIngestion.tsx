@@ -1,7 +1,7 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
-import { colors, fonts } from "packages/bfDs/const.tsx";
+import type { colors, fonts } from "packages/bfDs/const.tsx";
 const styles = {
   container: {
     borderRadius: "15px",

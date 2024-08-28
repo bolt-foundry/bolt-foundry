@@ -3,9 +3,9 @@ import { useLazyLoadQuery, useMutation } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
-import { GoogleFilePickerAddToGoogleMutation } from "packages/__generated__/GoogleFilePickerAddToGoogleMutation.graphql.ts";
-import { GoogleFilePickerPickFolderMutation } from "packages/__generated__/GoogleFilePickerPickFolderMutation.graphql.ts";
-import { GoogleFilePickerQuery } from "packages/__generated__/GoogleFilePickerQuery.graphql.ts";
+import type { GoogleFilePickerAddToGoogleMutation } from "packages/__generated__/GoogleFilePickerAddToGoogleMutation.graphql.ts";
+import type { GoogleFilePickerPickFolderMutation } from "packages/__generated__/GoogleFilePickerPickFolderMutation.graphql.ts";
+import type { GoogleFilePickerQuery } from "packages/__generated__/GoogleFilePickerQuery.graphql.ts";
 const { useState } = React;
 
 export enum GoogleDriveFilePickerFileType {

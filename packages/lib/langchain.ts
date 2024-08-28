@@ -3,7 +3,7 @@ import {
   ChatOpenAI,
   ChatPromptTemplate,
 } from "packages/deps.ts";
-import { DGWord } from "packages/types/transcript.ts";
+import type { DGWord } from "packages/types/transcript.ts";
 import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
 import { getTimecodesForClips } from "packages/lib/timecodeUtils.ts";
 

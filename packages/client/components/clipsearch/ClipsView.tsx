@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { Clip } from "packages/client/components/clipsearch/Clip.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { isValidJSON } from "packages/lib/jsonUtils.ts";
@@ -6,7 +6,7 @@ import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFi
 import { useFragment } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { useClipSearchState } from "packages/client/contexts/ClipSearchContext.tsx";
-import { Link } from "packages/client/components/Link.tsx";
+import type { Link } from "packages/client/components/Link.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 type Props = {

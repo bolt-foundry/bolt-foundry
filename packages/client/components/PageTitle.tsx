@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { BfLogo } from "packages/bfDs/static/BfLogo.tsx";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { Link } from "packages/bfDs/Link.tsx";

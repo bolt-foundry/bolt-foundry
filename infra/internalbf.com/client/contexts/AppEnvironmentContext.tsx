@@ -1,9 +1,9 @@
-import { getLogger, React, ReactRelay, RelayRuntime } from "deps.ts";
+import { getLogger, React, ReactRelay, type RelayRuntime } from "deps.ts";
 // import { identifyPerson } from "packages/events/mod.ts";
 // import { Path } from "lib/types/Path.ts";
 import {
   RouterProvider,
-  RouterProviderProps,
+  type RouterProviderProps,
 } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 import clientEnvironment from "packages/client/relay/environment.ts";
 import AppStateProvider from "infra/internalbf.com/client/contexts/AppStateContext.tsx";

@@ -1,8 +1,8 @@
-import * as React from "react";
+import type * as React from "react";
 import { Suspense, useState } from "react";
 import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
-import { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
+import type { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";

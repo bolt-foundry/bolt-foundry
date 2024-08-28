@@ -1,10 +1,10 @@
 import { interfaceType, objectType, stringArg } from "nexus";
 import { connectionFromArray } from "packages/graphql/deps.ts";
 import {
-  BlogPostData,
+  type BlogPostData,
   getBlogPostsFromNotion,
   getListOfContentForAPost,
-  NotionBlogPostContent,
+  type NotionBlogPostContent,
 } from "lib/notionApi.ts";
 
 export const Blog = objectType({

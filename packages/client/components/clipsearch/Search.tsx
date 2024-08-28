@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { useClipSearchState } from "packages/client/contexts/ClipSearchContext.tsx";

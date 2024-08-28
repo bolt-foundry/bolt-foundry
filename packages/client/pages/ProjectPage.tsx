@@ -7,7 +7,7 @@ import { ProjectView } from "packages/client/components/ProjectView.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { PageFrame } from "packages/client/components/PageFrame.tsx";
 import { ProjectPageToast } from "packages/client/components/ProjectPageToast.tsx";
-import { graphql } from "packages/client/deps.ts";
+import type { graphql } from "packages/client/deps.ts";
 const logger = getLogger(import.meta);
 
 const { useEffect, useMemo, useState } = React;

@@ -8,7 +8,7 @@ import { AssemblyAI } from "assemblyai";
 import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
-import { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import type { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfError } from "lib/BfError.ts";
 
 const logger = getLogger(import.meta);

@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 // import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 
 type LinkProps = {

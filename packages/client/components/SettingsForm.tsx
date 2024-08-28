@@ -1,7 +1,7 @@
 import { React, ReactRelay } from "deps.ts";
 import {
   DEFAULT_SETTINGS,
-  Settings,
+  type Settings,
   settingsPresets,
   type WatermarkLogoType,
   type WatermarkPositionType,
@@ -13,7 +13,7 @@ import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { fontFamilies } from "packages/vcs/params.js";
 import {
   useFeatureFlag,
-  useFeatureVariant,
+  type useFeatureVariant,
 } from "packages/client/hooks/featureFlagHooks.ts";
 // import { SettingsFormQuery_settings$key } from "packages/__generated__/SettingsFormQuery_settings.graphql.ts";
 import { hexToRgb, rgbToHex } from "lib/color.ts";

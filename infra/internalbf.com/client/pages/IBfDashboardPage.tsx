@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { IBfFrame } from "infra/internalbf.com/client/components/IBfFrame.tsx";
 
 export function IBfDashboardPage() {

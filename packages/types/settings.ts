@@ -2,7 +2,7 @@
  * This is used on multiple models to store project settings
  */
 
-import { imagePreloads } from "packages/vcs/preloads.js";
+import type { imagePreloads } from "packages/vcs/preloads.js";
 
 export type WatermarkLogoType = keyof typeof imagePreloads;
 

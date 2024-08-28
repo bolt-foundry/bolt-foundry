@@ -2,7 +2,7 @@ import { GraphQLYoga } from "packages/graphql/deps.ts";
 import { schema } from "infra/graphql/schema.ts";
 import { getLogger } from "deps.ts";
 import {
-  BfCurrentViewer,
+  type BfCurrentViewer,
   IBfCurrentViewerInternalAdmin,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 // import { startupBackend } from "packages/events/mod.ts";

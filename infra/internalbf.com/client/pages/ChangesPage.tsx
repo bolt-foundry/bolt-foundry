@@ -1,6 +1,6 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
-import { BfDsColumn, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
+import { type BfDsColumn, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";

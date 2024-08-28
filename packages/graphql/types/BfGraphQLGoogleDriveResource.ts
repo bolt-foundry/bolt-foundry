@@ -2,7 +2,7 @@ import { extendType, mutationField, objectType } from "nexus";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
-import { GraphQLContext } from "packages/graphql/graphql.ts";
+import type { GraphQLContext } from "packages/graphql/graphql.ts";
 import { GraphQLError } from "packages/graphql/deps.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 

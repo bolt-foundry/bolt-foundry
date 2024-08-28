@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 import { useFragment } from "react-relay";
 import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";

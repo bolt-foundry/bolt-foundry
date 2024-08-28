@@ -1,9 +1,9 @@
-import {
+import type {
   BfCurrentViewer,
   BfCurrentViewerAccessToken,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
-import { BfAccountRequiredProps } from "packages/bfDb/models/BfAccount.ts";
+import type { BfAccountRequiredProps } from "packages/bfDb/models/BfAccount.ts";
 import { ACCOUNT_ROLE } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { bfQueryItems } from "packages/bfDb/bfDb.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
