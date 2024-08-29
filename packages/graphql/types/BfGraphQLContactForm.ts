@@ -4,7 +4,7 @@ import {
   nonNull,
   objectType,
 } from "packages/graphql/deps.ts";
-
+import { notifyDiscord } from "packages/lib/notifyDiscord.ts";
 // Define the input type for the contact form
 export const SubmitContactFormInput = inputObjectType({
   name: "SubmitContactFormInput",
@@ -97,6 +97,12 @@ export const submitContactFormMutation = mutationField("submitContactForm", {
     if (data.message !== undefined) {
       throw new Error(data.message);
     }
+    const unix = Math.round(+new Date() / 1000);
+    await notifyDiscord(
+      `Contact form: ${input.name} <${input.email}> <t:${unix}:d>
+${data.url}
+    `,
+    );
     return {
       success: true,
       message: data.message,
