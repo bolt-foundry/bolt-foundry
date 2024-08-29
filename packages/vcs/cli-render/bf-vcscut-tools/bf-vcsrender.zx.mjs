@@ -49,5 +49,5 @@ if (
 await within(async () => {
   cd(vcsCutTranscriptToolDir);
 
-  await $`npx zx vcscut-render.zx.mjs -i ${vcsCutFilePath} -w ${w} -h ${h}`;
+  await $`npx zx vcscut-render.zx.mjs -i ${vcsCutFilePath} -w ${w} -h ${h} -fps 24`;
 });

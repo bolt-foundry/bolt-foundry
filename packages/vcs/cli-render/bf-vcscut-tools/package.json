@@ -4,7 +4,7 @@
   "description": "",
   "type": "module",
   "scripts": {
-    "render": "npx zx bf-vcsrender.zx.mjs"
+    "render": "npx zx bf-vcsrender.zx.mjs --fps 24"
   },
   "author": "",
   "license": "UNLICENSED",
