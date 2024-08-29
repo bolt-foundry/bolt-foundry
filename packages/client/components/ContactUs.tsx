@@ -176,7 +176,7 @@ export function ContactUs({ showHeader = true }: Props) {
                   value={formData.message}
                   onChange={handleChange}
                 />
-                {error && <div style={styles.error}>{error}</div>}
+                {error && <div style={styles.error}>{error}<br/> You can reach out to <a href="mailto:support@boltfoundry.com"/> </div>}
                 <BfDsButton type="submit" text="Submit" size="xlarge" />
               </form>
             </>
