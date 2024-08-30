@@ -2,7 +2,8 @@
   "unstable": ["temporal"],
   "importMap": "import_map.json",
   "compilerOptions": {
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
     "jsxFactory": "React.createElement",
     "jsxFragmentFactory": "React.Fragment",
     "lib": [
