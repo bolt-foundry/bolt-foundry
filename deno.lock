@@ -4,13 +4,16 @@
     "specifiers": {
       "jsr:@neon/serverless@0.9.2": "jsr:@neon/serverless@0.9.2",
       "jsr:@std/cli": "jsr:@std/cli@1.0.4",
+      "npm:@replit/object-storage": "npm:@replit/object-storage@1.0.0",
       "npm:@replit/object-storage@1.0.0": "npm:@replit/object-storage@1.0.0",
+      "npm:@types/node": "npm:@types/node@18.16.19",
       "npm:esbuild@0.23.1": "npm:esbuild@0.23.1",
       "npm:google-auth-library@9.2.0": "npm:google-auth-library@9.2.0",
       "npm:graphql-relay@0.10.0": "npm:graphql-relay@0.10.0_graphql@16.6.0",
       "npm:graphql-request": "npm:graphql-request@7.1.0_graphql@16.6.0",
       "npm:graphql-yoga@5.1.1": "npm:graphql-yoga@5.1.1_graphql@16.6.0",
       "npm:graphql@16.6.0": "npm:graphql@16.6.0",
+      "npm:mp4-muxer": "npm:mp4-muxer@5.0.1",
       "npm:nexus@1.3.0": "npm:nexus@1.3.0_graphql@16.6.0",
       "npm:posthog-node": "npm:posthog-node@4.1.1",
       "npm:react-dom@18.2.0": "npm:react-dom@18.2.0_react@18.2.0",
@@ -291,6 +294,10 @@
         "integrity": "sha512-hWtVTC2q7hc7xZ/RLbxapMvDMgUnDvKvMOpKal4DrMyfGBUfB1oKaZlIRr6mJL+If3bAP6sV/QneGzF6tJjZDg==",
         "dependencies": {}
       },
+      "@types/dom-webcodecs@0.1.11": {
+        "integrity": "sha512-yPEZ3z7EohrmOxbk/QTAa0yonMFkNkjnVXqbGb7D4rMr+F1dGQ8ZUFxXkyLLJuiICPejZ0AZE9Rrk9wUCczx4A==",
+        "dependencies": {}
+      },
       "@types/node@18.16.19": {
         "integrity": "sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==",
         "dependencies": {}
@@ -306,6 +313,10 @@
       },
       "@types/tough-cookie@4.0.5": {
         "integrity": "sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==",
+        "dependencies": {}
+      },
+      "@types/wicg-file-system-access@2020.9.8": {
+        "integrity": "sha512-ggMz8nOygG7d/stpH40WVaNvBwuyYLnrg5Mbyf6bmsj/8+gb6Ei4ZZ9/4PNpcPNTT8th9Q8sM8wYmWGjMWLX/A==",
         "dependencies": {}
       },
       "@whatwg-node/events@0.1.2": {
@@ -744,6 +755,13 @@
       "mime@3.0.0": {
         "integrity": "sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==",
         "dependencies": {}
+      },
+      "mp4-muxer@5.0.1": {
+        "integrity": "sha512-EeDneFlvi8vI6qSjINb14dR1k3jwh9wGujm2YhX2Q9xdeYXihbwSpBUrv23YHtgX4D+yf6IqQ0YSpQ2KPp9opQ==",
+        "dependencies": {
+          "@types/dom-webcodecs": "@types/dom-webcodecs@0.1.11",
+          "@types/wicg-file-system-access": "@types/wicg-file-system-access@2020.9.8"
+        }
       },
       "ms@2.1.2": {
         "integrity": "sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==",

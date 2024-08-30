@@ -60,6 +60,7 @@ const slimRelay = {
 
 export async function build(
   buildOptions = {
+    jsx: "automatic",
     minify: true,
     sourcemap: "inline" as const,
     sourceRoot: `${Deno.cwd()}`,
