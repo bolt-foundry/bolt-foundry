@@ -9,6 +9,7 @@ import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { fonts } from "packages/bfDs/const.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { ContactUs } from "packages/client/components/ContactUs.tsx";
+import { BfDsCallout } from "packages/bfDs/BfDsCallout.tsx";
 
 const buttonElements = [
   {
@@ -561,6 +562,15 @@ export function Demo() {
             tooltipPosition="bottom"
             tooltipJustification="end"
           />
+        </div>
+      </div>
+      <div style={styles.element}>
+        <div style={styles.name}>Callouts</div>
+        <div style={styles.group}>
+          <BfDsCallout kind="info" header="Info" body="Info callout" />
+          <BfDsCallout kind="warning" header="Warning" body="Warning callout" />
+          <BfDsCallout kind="error" header="Error" body="Error callout" />
+          <BfDsCallout kind="success" header="Success" body="Success callout" />
         </div>
       </div>
       <div style={styles.element}>
