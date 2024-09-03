@@ -22,7 +22,7 @@ function formatDocs(documents: Array<Document>) {
     const transcript = JSON.parse(document?.words ?? "[]") as Array<DGWord>;
     const content = transcript.map((word) => word.word).join(" ");
     return `
-Filename: ${document.filename}
+Filename: ${document.filename ?? "Untitled"}
 Media ID: ${document.mediaId}
 Transcript ID: ${document.transcriptId}
 Content: ${content}
