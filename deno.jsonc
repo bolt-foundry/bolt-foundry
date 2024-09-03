@@ -1,11 +1,9 @@
 {
-  "unstable": ["temporal"],
+  "unstable": ["temporal", "byonm"],
   "importMap": "import_map.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "react"
-    "jsxFactory": "React.createElement",
-    "jsxFragmentFactory": "React.Fragment",
+    "jsxImportSource": "react",
     "lib": [
       "dom",
       "dom.iterable",
@@ -22,47 +20,35 @@
   },
   "fmt": {
     "exclude": [
-      ".cache",
       "__generated__",
       "infra/__generated__",
       "packages/__generated__",
-      "node_modules",
-      ".local",
-      ".sl",
-      ".deno",
-      "thirdParty",
       "packages/third-party",
       "packages/client/static",
-      "cdk.out",
-      "build",
-      "vendor",
-      "resources",
       ".config",
-      "aws",
       "**/*.json",
       "**/*.ipynb",
       "**/.ipynb_checkpoints"
+    ],
+    "include": [
+      "experimental",
+      "infra",
+      "lib",
+      "packages",
     ]
   },
   "test": {
     "exclude": [
-      ".config",
-
       "__generated__",
       "packages/__generated__",
-      "node_modules",
-      ".local",
-      ".sl",
-      ".deno",
-      "thirdParty",
       "packages/third-party",
       "packages/client/static",
-      "cdk.out",
-      "build",
-      "vendor",
-      "resources",
-      "aws",
-      "thirdParty"
+    ],
+    "include": [
+      "experimental",
+      "infra",
+      "lib",
+      "packages",
     ]
   },
   "lint": {
@@ -79,24 +65,18 @@
       ]
     },
     "exclude": [
-      ".config",
       "__generated__",
       "infra/__generated__",
       "packages/__generated__",
-      "node_modules",
-      ".sl",
-      ".deno",
-      ".local",
-      "thirdParty",
       "packages/third-party",
       "packages/client/static",
-      "cdk.out",
-      "build",
-      "vendor",
-      "resources",
-      "thirdParty",
-      "aws",
       "packages/vcs"
+    ],
+    "include": [
+      "experimental",
+      "infra",
+      "lib",
+      "packages",
     ]
   },
   "lock": true,
