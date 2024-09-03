@@ -4,7 +4,6 @@ import {
   objectType,
 } from "packages/graphql/deps.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
-import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import type { GraphQLContext } from "packages/graphql/graphql.ts";
 
 export const BfGraphQLPerson = objectType({
@@ -17,13 +16,12 @@ export const BfGraphQLPerson = objectType({
     t.connectionField("accounts", {
       type: "BfAccount",
       async resolve(
-        gqlPerson: { id: string },
+        _,
         args: ConnectionArguments,
         { bfCurrentViewer }: GraphQLContext,
       ) {
         const accounts = await BfAccount.findAllForCurrentViewer(
           bfCurrentViewer,
-          toBfGid(gqlPerson.id),
         );
         const accountsForGraphQL = accounts.map((account) =>
           account.toGraphql()
