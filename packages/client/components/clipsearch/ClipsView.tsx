@@ -71,7 +71,7 @@ export function ClipsView({ count, clips$key }: Props) {
     ? JSON.parse(clips)
     : { anecdotes: [] };
 
-  if (parsedClips.anecdotes.length === 0) {
+  if (parsedClips.anecdotes == null || parsedClips.anecdotes.length === 0) {
     return (
       <div className="flexColumn" style={{ gap: "20px" }}>
         <div className="cs-page-hero-callout">
