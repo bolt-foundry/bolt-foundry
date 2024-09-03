@@ -1,5 +1,5 @@
 {
-  "unstable": ["temporal"],
+  "unstable": ["temporal", "byonm"],
   "importMap": "import_map.json",
   "compilerOptions": {
     "jsx": "react-jsx",
