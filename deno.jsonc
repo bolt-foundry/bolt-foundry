@@ -1,11 +1,9 @@
 {
-  "unstable": ["temporal"],
+  "unstable": ["temporal", "byonm"],
   "importMap": "import_map.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react"
-    "jsxFactory": "React.createElement",
-    "jsxFragmentFactory": "React.Fragment",
     "lib": [
       "dom",
       "dom.iterable",
