@@ -56,7 +56,7 @@
   align-items: center;
   margin-bottom: 20px;
 }
-.cs-page-callout {
+.cs-page-hero-callout {
   text-align: center;
   font-weight: 300;
   font-size: 30px;
@@ -75,6 +75,35 @@
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
+}
+.cs-page-callout {
+  background: var(--background);
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.cs-page-callout-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+.cs-page-callout.info {
+  background: var(--text015);
+  border-color: var(--text)
+}
+.cs-page-callout.warning {
+  background: var(--primaryColor015);
+  border-color: var(--primaryColor)
+}
+.cs-page-callout.error {
+  background: var(--alert015);
+  border-color: var(--alert)
+}
+.cs-page-callout.success {
+  background: var(--secondaryColor015);
+  border-color: var(--secondaryColor)
 }
 .cs-page-section-title {
   font-size: 24px;
