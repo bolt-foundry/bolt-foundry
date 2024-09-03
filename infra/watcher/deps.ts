@@ -1,1 +1,1 @@
-export * from "npm:graphql-request";
+export * from "graphql-request";
