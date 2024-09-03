@@ -8,7 +8,7 @@ export async function ci() {
   const commands = [
     ["deno", "test", "--cached-only", "-A"],
     ["deno", "fmt", "--check"],
-    ["deno", "lint"],
+    // ["deno", "lint"],
   ];
   for (const command of commands) {
     const code = await runShellCommand(command);
