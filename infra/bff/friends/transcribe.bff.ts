@@ -41,7 +41,7 @@ export async function createTranscript(
   mediaId?: string | null,
   inputAudio?: string | null,
 ) {
-  const currentViewer = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(
+  let currentViewer = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(
     import.meta,
     "bf_internal_org",
   );
@@ -61,10 +61,13 @@ export async function createTranscript(
   let bfMedia;
   if (mediaId && mediaId !== "") {
     bfMedia = await BfMedia.find(currentViewer, mediaId as BfAnyid);
+    if (bfMedia) {
+      currentViewer = bfMedia.currentViewer;
+    }
     logger.info("Media found");
   } else {
     bfMedia = await BfMedia.__DANGEROUS__createUnattached(currentViewer, {
-      filename: "New media",
+      filename: "New unattached media",
     });
     logger.info("Media created", bfMedia.metadata.bfGid);
   }
@@ -81,7 +84,6 @@ export async function createTranscript(
       words: JSON.stringify(transcript.words),
       filename: inputAudio,
     },
-    {},
   );
   logger.info("Transcript created", bfTranscript.metadata.bfGid);
 }
