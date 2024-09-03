@@ -4,8 +4,6 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react"
-    "jsxFactory": "React.createElement",
-    "jsxFragmentFactory": "React.Fragment",
     "lib": [
       "dom",
       "dom.iterable",
