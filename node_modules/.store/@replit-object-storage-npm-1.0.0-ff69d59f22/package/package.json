@@ -1,0 +1,66 @@
+{
+  "name": "@replit/object-storage",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "replit",
+    "object storage"
+  ],
+  "license": "MIT",
+  "author": "harry@repl.it",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": {
+        "default": "./dist/index.mjs"
+      },
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/*"
+  ],
+  "scripts": {
+    "test": "vitest run src/*",
+    "test:watch": "vitest src/*",
+    "test:build": "vitest run buildtests/*",
+    "lint": "eslint src/*",
+    "lint:fix": "eslint src/* --fix",
+    "format": "prettier src/* --check",
+    "format:fix": "prettier src/* --write",
+    "fix": "npm run format:fix && npm run lint:fix",
+    "typecheck": "tsc --noEmit",
+    "allstatic": "npm run typecheck && npm run lint && npm run format",
+    "clean": "rm -rf dist docs",
+    "build": "tsup src/index.ts  --sourcemap --dts --platform node --format esm,cjs",
+    "build:docs": "typedoc --plugin typedoc-plugin-markdown --excludeExternals --out docs",
+    "prepublishOnly": "npm run allstatic && npm run test && npm run build && npm run test:build"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.1",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "eslint": "^8.48.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "tsup": "^7.2.0",
+    "typedoc": "^0.25.12",
+    "typedoc-plugin-markdown": "^3.17.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
+  }
+}
