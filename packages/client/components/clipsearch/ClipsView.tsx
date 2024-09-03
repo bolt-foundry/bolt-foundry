@@ -23,11 +23,7 @@ const fragment = await graphql`
 function GoogleAuthSection() {
   return (
     <div
-      className="cs-page-section flexRow"
-      style={{ justifyContent: "space-between", alignItems: "center" }}
     >
-      <div className="flexColumn">
-        <div className="cs-page-section-title">
           Google Authorization
         </div>
         <div>
@@ -67,7 +63,7 @@ export function ClipsView({ count, clips$key }: Props) {
   if (clips === null) {
     return (
       <div className="flexColumn" style={{ gap: "20px" }}>
-        <div className="cs-page-callout">
+        <div className="cs-page-hero-callout">
           Searching {count} videos for "{italicPrompt(prompt)}".
         </div>
         <BfDsFullPageSpinner />
@@ -82,7 +78,7 @@ export function ClipsView({ count, clips$key }: Props) {
   if (parsedClips.anecdotes.length === 0) {
     return (
       <div className="flexColumn" style={{ gap: "20px" }}>
-        <div className="cs-page-callout">
+        <div className="cs-page-hero-callout">
           No clips found for "{italicPrompt()}".{" "}
           <a onClick={() => commitSearch(previousPrompt)}>Retry</a>
         </div>
