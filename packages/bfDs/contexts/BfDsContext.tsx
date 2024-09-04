@@ -1,6 +1,6 @@
 import { React } from "deps.ts";
 import { BfDsToast, TRANSITION_DURATION } from "packages/bfDs/BfDsToast.tsx";
-import { BfDsModal } from "packages/bfDs/BfDsModal.tsx";
+import { BfDsModal, type ModalHandles } from "packages/bfDs/BfDsModal.tsx";
 import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
 
 const { createContext, useEffect, useState } = React;
@@ -25,7 +25,11 @@ type UseModalOptions = {
 };
 
 export type BfDsContextType = {
-  showModal: (content: ReactNode, options?: UseModalOptions) => () => void;
+  showModal: (
+    content: ReactNode,
+    ref: React.RefObject<ModalHandles>,
+    options?: UseModalOptions,
+  ) => () => void;
   showToast: (message: ReactNode, options?: UseToastOptions) => void;
   ModalComponent: ReactNode;
   ToastComponent: ReactNode;
@@ -39,6 +43,7 @@ export const BfDsContext = createContext<BfDsContextType | undefined>(
 
 type ModalType = {
   content: ReactNode;
+  ref: React.RefObject<ModalHandles>;
   options?: UseModalOptions;
 };
 
@@ -49,8 +54,8 @@ type BfDsToast = {
 };
 
 export const BfDsProvider = ({ children }: { children: ReactNode }) => {
-  const [activeToasts, setActiveToasts] = useState<Array<Toast>>([]);
-  const [activeModal, setActiveModal] = useState<ModalType>();
+  const [activeToasts, setActiveToasts] = useState<Array<BfDsToast>>([]);
+  const [activeModal, setActiveModal] = useState<ModalType | undefined>();
   const [darkMode, setDarkMode] = useLocalStorage("darkMode", false);
 
   useEffect(() => {
@@ -63,8 +68,12 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [darkMode]);
 
-  function showModal(content: ReactNode, options: UseModalOptions) {
-    setActiveModal({ content, options });
+  function showModal(
+    content: ReactNode,
+    ref: React.RefObject<ModalHandles>,
+    options: UseModalOptions,
+  ) {
+    setActiveModal({ content, ref, options });
     return () => {
       setActiveModal(undefined);
     };
@@ -112,6 +121,7 @@ export const BfDsProvider = ({ children }: { children: ReactNode }) => {
     showToast,
     ModalComponent: activeModal && (
       <BfDsModal
+        ref={activeModal.ref}
         clickOusideToClose={activeModal.options?.clickOusideToClose}
         confirmClose={activeModal.options?.confirmClose}
         header={activeModal.options?.header}

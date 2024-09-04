@@ -104,9 +104,9 @@ export function BaseComponent({ children, environment }: Props) {
         <div id="root">
           {children}
         </div>
-        <div id="modal-root"></div>
-        <div id="tooltip-root"></div>
-        <div id="toast-root"></div>
+        <div id="modal-root" className="portalRoot"></div>
+        <div id="tooltip-root" className="portalRoot"></div>
+        <div id="toast-root" className="portalRoot"></div>
         <script
           type="module"
           defer={true}
