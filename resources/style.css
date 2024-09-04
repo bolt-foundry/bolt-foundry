@@ -1157,6 +1157,13 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   }
 }
 
+/* Landing Page */
+.landing-page-footer {
+  flex: 1;
+  min-width: max(300px, 40vw);
+  background-color: var(--tertiaryColor);
+}
+
 /* Transcript View */
 .transcript {
   background: var(--background);
