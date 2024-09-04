@@ -51,9 +51,6 @@ async function land() {
 
   await Promise.allSettled([
     Deno.remove(Deno.env.get("HISTFILE")!),
-    Deno.remove(`${Deno.env.get("BF_PATH")!}/node_modules`, {
-      recursive: true,
-    }),
   ]);
   return 0;
 }
