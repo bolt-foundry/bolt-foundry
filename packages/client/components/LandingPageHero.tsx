@@ -32,13 +32,10 @@ export function LandingPageHero() {
         Let's work together to get the word out.
       </div>
       <div style={{ width: "50%" }}>
-        <BfDsButton
-          text="Let's talk"
-          type="submit"
-          size="xlarge"
-          role="Book a meeting"
-          onClick={() => console.log("Book a meeting")}
-          testId="button-contact-us"
+        <BfDsButton href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
+          hrefTarget="blank"
+          text="Book a meeting"
+          size="large"
         />
       </div>
     </div>

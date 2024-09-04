@@ -9,13 +9,10 @@ export function LandingPageMission() {
       <div className="marketing-text">
         Highlight key features and info.
       </div>
-      <BfDsButton
+      <BfDsButton href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
+        hrefTarget="blank"
         text="Book a meeting"
-        type="submit"
-        size="xlarge"
-        role="Book a meeting"
-        onClick={() => console.log("Book a meeting")}
-        testId="button-contact-us"
+        size="large"
       />
     </div>
   );
