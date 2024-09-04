@@ -13,10 +13,6 @@ register(
   "build:deploy",
   "build the client and include building the environment",
   async (_options) => {
-    await Deno.remove(`${Deno.env.get("BF_PATH")}/node_modules`, {
-      recursive: true,
-    });
-
     const mappedSlimBuild = async () => {
       try {
         await slimBuild();
