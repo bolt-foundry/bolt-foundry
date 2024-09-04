@@ -5,15 +5,25 @@ import { getHeaders } from "infra/watcher/ingest.ts";
 import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
-const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT");
+import { getLogger } from "deps.ts";
+import { BfError } from "lib/BfError.ts";
+const logger = getLogger(import.meta);
 
-const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+type Projects = Array<{
+  projectId: string;
+  fileId: string | null;
+}>;
 
-async function populate(projects = accounting) {
-  // deno-lint-ignore no-console
-  console.log("running populate");
+async function populate(projects: Projects = accounting) {
+  logger.info("running populate");
   const stopSpinner = startSpinner();
+
+  const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT");
+  if (!GRAPHQL_ENDPOINT) {
+    throw new BfError("No BFI_GRAPHQL_ENDPOINT defined");
+  }
+
+  const client = new GraphQLClient(GRAPHQL_ENDPOINT);
 
   const headers = await getHeaders();
 
@@ -58,26 +68,16 @@ async function populate(projects = accounting) {
       currentViewer,
       {
         filename: transcript.filename,
-        fileId: transcript.fileId,
       },
     );
-    const newTranscript = await BfMediaTranscript.create(currentViewer, {
+    const newTranscript = await newMedia.createTargetNode(BfMediaTranscript, {
       words: transcript.words,
       filename: transcript.filename,
     });
-    await BfEdge.__DANGEROUS__createUnattached(currentViewer, {}, {
-      // @ts-expect-error idk why the metadata types are messed up for bf edges.
-      bfTClassName: "BfMediaTranscript",
-      bfTid: newTranscript.metadata.bfGid,
-      bfSClassName: "BfMedia",
-      bfSid: newMedia.metadata.bfGid,
-    });
-    // deno-lint-ignore no-console
-    console.log(newTranscript.metadata.bfGid);
+    logger.info(newTranscript.metadata.bfGid);
   }
 
-  // deno-lint-ignore no-console
-  console.log(`Populated ${transcripts.length} transcripts`);
+  logger.info(`Populated ${transcripts.length} transcripts`);
 
   stopSpinner();
   return 0;

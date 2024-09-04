@@ -1,4 +1,4 @@
-import { register } from "infra/bff/mod.ts";
+  import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
 import { transcribeAudio } from "packages/transcribing/transcribeAudio.ts";
 import { getLogger } from "deps.ts";
