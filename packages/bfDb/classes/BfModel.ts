@@ -130,13 +130,21 @@ export abstract class BfBaseModel<
     this: TThis,
     currentViewer: BfCurrentViewer,
     bfGid: BfAnyid,
+    dangerousOptions = {
+      I_WANT_TO_LOAD_THIS_DANGEROUSLY_AND_I_KNOW_ITS_PRIVACY_UNSAFE: false,
+    },
   ): Promise<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
     const model = new this(currentViewer, undefined, undefined, {
       bfGid,
     });
-    if (currentViewer instanceof IBfCurrentViewerInternalAdminOmni) {
+    if (
+      currentViewer instanceof IBfCurrentViewerInternalAdminOmni ||
+      dangerousOptions
+          .I_WANT_TO_LOAD_THIS_DANGEROUSLY_AND_I_KNOW_ITS_PRIVACY_UNSAFE ===
+        true
+    ) {
       await model.load__PRIVACY_UNSAFE();
     } else {
       await model.load();
@@ -364,11 +372,11 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       & Partial<TOptionalProps>;
   }
 
-  protected async beforeCreate() {}
-  protected async afterCreate() {}
-  protected async beforeLoad() {}
-  protected async beforeSave() {}
-  protected async afterSave() {}
+  protected beforeCreate(): Promise<void> | void {}
+  protected afterCreate(): Promise<void> | void {}
+  protected beforeLoad(): Promise<void> | void {}
+  protected beforeSave(): Promise<void> | void {}
+  protected afterSave(): Promise<void> | void {}
 
   protected toString() {
     return `${this.constructor.name}#${this.metadata.bfGid}`;

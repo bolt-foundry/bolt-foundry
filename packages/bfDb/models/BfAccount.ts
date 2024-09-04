@@ -14,6 +14,7 @@ import { BfModelErrorNotFound } from "packages/bfDb/classes/BfModelError.ts";
 import { bfQueryItems } from "packages/bfDb/bfDb.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 export type BfAccountRequiredProps = {
   organizationBfGid: BfGid;
@@ -98,6 +99,14 @@ export class BfAccount extends BfNode<BfAccountRequiredProps> {
       }
       throw new BfAccountErrorRefreshToken();
     }
+  }
+
+  protected async afterCreate() {
+    const person = await BfPerson.findX(
+      this.currentViewer,
+      this.currentViewer.personBfGid,
+    );
+    await BfEdge.createEdgeBetweenNodes(this.currentViewer, person, this);
   }
 
   async generateAccessToken(importMeta: ImportMeta) {

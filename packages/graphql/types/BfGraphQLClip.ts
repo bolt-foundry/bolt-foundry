@@ -10,7 +10,7 @@ import { BfClip } from "packages/bfDb/models/BfClip.ts";
 import { getLogger } from "deps.ts";
 import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
-import { floatArg } from "infra/graphql/deps.ts";
+import { floatArg } from "packages/graphql/deps.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
 import {
   type BfAnyid,

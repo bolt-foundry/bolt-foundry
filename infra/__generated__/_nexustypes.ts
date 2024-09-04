@@ -56,7 +56,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  AccountRole: "ADMIN" | "ANON" | "OMNI" | "OWNER" | "REFRESH_CREDENTIALS_ONLY" | "SERVICE_INGESTION"
+  AccountRole: "ADMIN" | "ANON" | "MEMBER" | "OMNI" | "OWNER" | "REFRESH_CREDENTIALS_ONLY" | "SERVICE_INGESTION"
 }
 
 export interface NexusGenScalars {
@@ -430,6 +430,7 @@ export interface NexusGenFieldTypes {
     type: string | null; // String
   }
   Mutation: { // field return type
+    createOrg: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     createTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
     deleteGoogleDriveResource: NexusGenRootTypes['DeleteMutationPayload'] | null; // DeleteMutationPayload
     deleteTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
@@ -673,6 +674,7 @@ export interface NexusGenFieldTypeNames {
     type: 'String'
   }
   Mutation: { // field return type name
+    createOrg: 'BfOrganization'
     createTranscript: 'BfMediaTranscript'
     deleteGoogleDriveResource: 'DeleteMutationPayload'
     deleteTranscript: 'BfMediaTranscript'
@@ -796,6 +798,11 @@ export interface NexusGenArgTypes {
     }
   }
   Mutation: {
+    createOrg: { // args
+      domainName: string; // String!
+      name: string; // String!
+      youtubePlaylistUrl?: string | null; // String
+    }
     createTranscript: { // args
       filename: string; // String!
       words: string; // String!
