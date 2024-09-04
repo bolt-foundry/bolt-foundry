@@ -1,1 +1,0 @@
-export * from "packages/graphql/deps.ts";
