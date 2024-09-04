@@ -1,4 +1,4 @@
-import { type React, ReactRelay } from "deps.ts";
+import { getLogger, React, ReactRelay } from "deps.ts";
 import { IBfFrame } from "infra/internalbf.com/client/components/IBfFrame.tsx";
 import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
@@ -8,9 +8,13 @@ import type { IBfOrganizationsPage_BfOrganization$key } from "infra/__generated_
 import type { IBfOrganizationsPageQuery } from "infra/__generated__/IBfOrganizationsPageQuery.graphql.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
-import { Example } from "packages/bfDs/BfDsForm.tsx";
+import { CreateOrgModal } from "infra/internalbf.com/client/components/CreateOrgModal.tsx";
+import type { ModalHandles } from "packages/bfDs/BfDsModal.tsx";
 
-const { useFragment, useLazyLoadQuery } = ReactRelay;
+const { useFragment, useLazyLoadQuery, useMutation } = ReactRelay;
+const { useState } = React;
+
+const logger = getLogger(import.meta);
 
 const columns: BfDsColumns<IBfOrganizationsPage_BfOrganization$key> = [
   {
@@ -26,6 +30,7 @@ const columns: BfDsColumns<IBfOrganizationsPage_BfOrganization$key> = [
 const query = await graphql`
   query IBfOrganizationsPageQuery {
     organizations(first: 10) {
+      count
       edges {
         node {
           ...IBfOrganizationsPage_BfOrganization
@@ -41,12 +46,9 @@ const fragment = await graphql`
   }
 `;
 
-function CreateOrgModal() {
-  return <Example />;
-}
-
 export function IBfOrganizationsPage() {
   const queryData = useLazyLoadQuery<IBfOrganizationsPageQuery>(query, {});
+  const modalRef = React.useRef<ModalHandles>(null);
   const organization$keys =
     queryData?.organizations?.edges?.map((edge) => edge?.node).filter(
       Boolean,
@@ -55,12 +57,17 @@ export function IBfOrganizationsPage() {
 
   return (
     <IBfFrame
-      header="Organizations"
+      header={`Organizations (${queryData.organizations.count})`}
       headerAction={
         <BfDsButton
           text="Add organization"
           kind="secondary"
-          onClick={() => showModal(<CreateOrgModal />)}
+          onClick={() => {
+            showModal(
+              <CreateOrgModal modalRef={modalRef} />,
+              modalRef
+            );
+          }}
         />
       }
     >

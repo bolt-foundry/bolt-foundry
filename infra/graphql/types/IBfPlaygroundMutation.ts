@@ -3,7 +3,7 @@ import {
   nonNull,
   objectType,
   stringArg,
-} from "packages/graphql/deps.ts";
+} from "nexus";
 import { callAPI } from "infra/aiPlayground/langchainAPI.ts";
 
 // Define the output type for the mutation response

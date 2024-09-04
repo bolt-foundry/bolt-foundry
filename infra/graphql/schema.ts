@@ -1,6 +1,6 @@
 #! /usr/bin/env -S deno run --allow-net --allow-read --allow-write --allow-env --watch
 
-import { connectionPlugin, makeSchema } from "packages/graphql/deps.ts";
+import { connectionPlugin, makeSchema } from "nexus";
 import * as types from "infra/graphql/types/mod.ts";
 import { getLogger } from "deps.ts";
 

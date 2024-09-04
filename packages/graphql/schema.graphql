@@ -6,6 +6,7 @@
 enum AccountRole {
   ADMIN
   ANON
+  MEMBER
   OMNI
   OWNER
   REFRESH_CREDENTIALS_ONLY

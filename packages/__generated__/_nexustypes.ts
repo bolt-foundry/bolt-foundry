@@ -56,7 +56,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  AccountRole: "ADMIN" | "ANON" | "OMNI" | "OWNER" | "REFRESH_CREDENTIALS_ONLY" | "SERVICE_INGESTION"
+  AccountRole: "ADMIN" | "ANON" | "MEMBER" | "OMNI" | "OWNER" | "REFRESH_CREDENTIALS_ONLY" | "SERVICE_INGESTION"
 }
 
 export interface NexusGenScalars {
