@@ -10,7 +10,6 @@ export function BfSymbol({ color = "var(--logoBolt)", color2 }: Props) {
 
   return (
     <svg
-      // fill={colors.textOnPrimary}
       version="1.1"
       id="Layer_1"
       xmlns="http://www.w3.org/2000/svg"
@@ -24,8 +23,8 @@ export function BfSymbol({ color = "var(--logoBolt)", color2 }: Props) {
       {color2 && (
         <defs>
           <linearGradient id="symbolGradient" x2="0.35" y2="1">
-            <stop offset="0%" stop-color={color} />
-            <stop offset="100%" stop-color={color2} />
+            <stop offset="0%" stopColor={color} />
+            <stop offset="100%" stopColor={color2} />
           </linearGradient>
         </defs>
       )}
