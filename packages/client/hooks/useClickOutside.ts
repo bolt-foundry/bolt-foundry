@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import * as React from "react";
 const { useEffect } = React;
 
 type Options = {
@@ -6,6 +6,7 @@ type Options = {
   showConfirmation?: boolean;
   ignoreParent?: boolean;
   excludeElementIds?: string[];
+  portal?: string;
 };
 
 const useClickOutside = (
@@ -16,6 +17,7 @@ const useClickOutside = (
     showConfirmation = false,
     ignoreParent = false,
     excludeElementIds = [],
+    portal,
   }: Options,
 ) => {
   useEffect(() => {
@@ -56,10 +58,19 @@ const useClickOutside = (
     };
 
     if (isActive) {
+      // set active class on portal root to active pointer events
+      if (portal) {
+        const portalComponent = document.getElementById(portal);
+        portalComponent.classList.add("active");
+      }
       document.addEventListener("mousedown", handleClickOutside, true);
     }
 
     return () => {
+      if (portal) {
+        const portalComponent = document.getElementById(portal);
+        portalComponent.classList.remove("active");
+      }
       document.removeEventListener("mousedown", handleClickOutside, true);
     };
   }, [ref, callback, isActive, showConfirmation, excludeElementIds]);
