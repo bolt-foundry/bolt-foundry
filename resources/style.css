@@ -30,6 +30,9 @@ body {
   pointer-events: none;
   z-index: 1000;
 }
+.portalRoot.active {
+  pointer-events: all !important;
+}
 #tooltip-root {
   z-index: 1001;
 }

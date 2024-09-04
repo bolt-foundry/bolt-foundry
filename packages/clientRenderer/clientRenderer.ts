@@ -15,6 +15,11 @@ const _logger = getLogger(import.meta);
 
 const importableEnvironmentVariables = [
   "GOOGLE_OAUTH_CLIENT_ID",
+  "POSTHOG_API_KEY",
+  "FB_DOMAIN_AUTH_ID",
+  "META_PIXEL_ID",
+  "HUBSPOT_API_KEY",
+  "CLEARBIT_API_KEY",
 ];
 
 async function clientRendererMain(
