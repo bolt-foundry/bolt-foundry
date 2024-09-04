@@ -6,6 +6,7 @@
 enum AccountRole {
   ADMIN
   ANON
+  MEMBER
   OMNI
   OWNER
   REFRESH_CREDENTIALS_ONLY
@@ -425,6 +426,7 @@ type ImageBlock implements BlogPostContentBlock {
 }
 
 type Mutation {
+  createOrg(domainName: String!, name: String!, youtubePlaylistUrl: String): BfOrganization
   createTranscript(filename: String!, words: String!): BfMediaTranscript
   deleteGoogleDriveResource(resourceId: String): DeleteMutationPayload
   deleteTranscript(id: String!): BfMediaTranscript

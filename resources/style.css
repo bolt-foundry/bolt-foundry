@@ -30,6 +30,9 @@ body {
   pointer-events: none;
   z-index: 1000;
 }
+.portalRoot.active {
+  pointer-events: all !important;
+}
 #tooltip-root {
   z-index: 1001;
 }
@@ -1155,6 +1158,13 @@ input[type="range"].scrubber::-moz-range-thumb:active {
     top: 0;
     backdrop-filter: none;
   }
+}
+
+/* Landing Page */
+.landing-page-meeting-section {
+  flex: 1;
+  min-width: max(300px, 40vw);
+  background-color: var(--tertiaryColor);
 }
 
 /* Transcript View */

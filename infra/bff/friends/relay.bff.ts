@@ -147,7 +147,7 @@ register("relay", "Builds all relay artifacts", async (args) => {
   ]);
   return 0;
 });
-register("relay:packages", "Builds packaes relay artifacts.", buildRelay);
+register("relay:packages", "Builds packages relay artifacts.", buildRelay);
 register("relay:infra", "builds infra relay artifacts", (args) => {
   return buildRelay(["infra", ...args]);
 });

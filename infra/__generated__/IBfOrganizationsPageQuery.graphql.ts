@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a31545e120988ce5ff76ba4eb3328b93>>
+ * @generated SignedSource<<52a396e97b991304c9a43c9ee717e16a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,6 +13,7 @@ import { FragmentRefs } from "relay-runtime";
 export type IBfOrganizationsPageQuery$variables = Record<PropertyKey, never>;
 export type IBfOrganizationsPageQuery$data = {
   readonly organizations: {
+    readonly count: number | null | undefined;
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly " $fragmentSpreads": FragmentRefs<"IBfOrganizationsPage_BfOrganization">;
@@ -32,7 +33,14 @@ var v0 = [
     "name": "first",
     "value": 10
   }
-];
+],
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "count",
+  "storageKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -48,6 +56,7 @@ return {
         "name": "organizations",
         "plural": false,
         "selections": [
+          (v1/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -96,6 +105,7 @@ return {
         "name": "organizations",
         "plural": false,
         "selections": [
+          (v1/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -138,16 +148,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "ccf18bc85f38ba825cb38e3444e00900",
+    "cacheID": "6e2fd8c9bc4b5f49661fa78e16817f38",
     "id": null,
     "metadata": {},
     "name": "IBfOrganizationsPageQuery",
     "operationKind": "query",
-    "text": "query IBfOrganizationsPageQuery {\n  organizations(first: 10) {\n    edges {\n      node {\n        ...IBfOrganizationsPage_BfOrganization\n        id\n      }\n    }\n  }\n}\n\nfragment IBfOrganizationsPage_BfOrganization on BfOrganization {\n  name\n}\n"
+    "text": "query IBfOrganizationsPageQuery {\n  organizations(first: 10) {\n    count\n    edges {\n      node {\n        ...IBfOrganizationsPage_BfOrganization\n        id\n      }\n    }\n  }\n}\n\nfragment IBfOrganizationsPage_BfOrganization on BfOrganization {\n  name\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f6cbe5d079da7138cb311f523fdcbf2b";
+(node as any).hash = "7e0255e6bc077d3139bc88afdb87b93e";
 
 export default node;

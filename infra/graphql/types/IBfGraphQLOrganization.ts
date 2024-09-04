@@ -1,6 +1,7 @@
-import { queryField } from "infra/graphql/deps.ts";
+import { mutationField, nonNull, queryField, stringArg } from "nexus";
 import { IBfCurrentViewerInternalAdmin } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
+import { BfError } from "lib/BfError.ts";
 
 export const IBfGraphQLOrganizationQuery = queryField((t) => {
   t.connectionField("organizations", {
@@ -16,7 +17,19 @@ export const IBfGraphQLOrganizationQuery = queryField((t) => {
           args,
         );
       }
-      throw new Error("Not implemented");
+      throw new BfError("Not authorized");
     },
   });
+});
+
+export const IBfGraphQLCreateOrganizationMutation = mutationField("createOrg", {
+  type: "BfOrganization",
+  args: {
+    name: nonNull(stringArg()),
+    domainName: nonNull(stringArg()),
+    youtubePlaylistUrl: stringArg(),
+  },
+  resolve: async (_, args, { bfCurrentViewer }) => {
+    return await BfOrganization.createFromGraphQL(bfCurrentViewer, args);
+  }
 });
