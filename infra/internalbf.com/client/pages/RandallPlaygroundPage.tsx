@@ -7,7 +7,6 @@ import { BfDsIcon, type BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { classnames } from "lib/classnames.ts";
-import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
 import type { RandallPlaygroundPageQuery } from "infra/__generated__/RandallPlaygroundPageQuery.graphql.ts";
 import type { RandallPlaygroundPageAddToGoogleMutation } from "infra/__generated__/RandallPlaygroundPageAddToGoogleMutation.graphql.ts";
 import type { RandallPlaygroundPagePickFolderMutation } from "infra/__generated__/RandallPlaygroundPagePickFolderMutation.graphql.ts";
@@ -363,23 +362,6 @@ export function RandallPlaygroundPage() {
           })}
         </div>
       </div>
-      {currentClipId && currentClip?.status === "changes" &&
-        (
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              height: "100%",
-              width: "100%",
-            }}
-          >
-            <ClipChangesPage
-              currentClip={currentClip}
-              onClose={() => setCurrentClipId(null)}
-            />
-          </div>
-        )}
     </>
   );
 }
