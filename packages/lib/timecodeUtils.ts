@@ -2,8 +2,12 @@ import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
 
 export function getTimecodesForClips(response, documents) {
-  if (!response || !Array.isArray(response.anecdotes)) {
+  if (!response) {
     logger.error("No response");
+    return [];
+  }
+  if (!Array.isArray(response.anecdotes)) {
+    logger.error("No anecdotes from response: ", response);
     return [];
   }
   const anecdotes: Array<unknown> = [];

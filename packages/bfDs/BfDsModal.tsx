@@ -1,13 +1,13 @@
-import { React } from "deps.ts";
+import * as React from "react";
+import { createPortal } from "react-dom";
 import { fonts } from "packages/bfDs/const.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 // import { captureEvent } from "packages/events/mod.ts";
 import useClickOutside from "packages/client/hooks/useClickOutside.ts";
-import { ReactDOMClient } from "packages/client/deps.ts";
 import { classnames } from "lib/classnames.ts";
 
-const { createPortal } = ReactDOMClient;
 const { useEffect, useRef, useState } = React;
+
 type ModalOptions = {
   children: React.ReactNode;
   clickOusideToClose?: boolean;

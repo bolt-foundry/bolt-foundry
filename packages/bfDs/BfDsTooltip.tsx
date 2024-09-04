@@ -1,16 +1,14 @@
-import { React } from "deps.ts";
-import { ReactDOMClient } from "packages/client/deps.ts";
+import * as React from "react";
+import { createPortal } from "react-dom";
 import { BfDsIcon, type BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import type { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useCopyToClipboard } from "packages/bfDs/hooks/useCopyToClipboard.ts";
-// import type FeatureMenu from "packages/bfDs/FeatureMenu.tsx";
 
-const { createPortal } = ReactDOMClient;
 const { useEffect, useMemo, useRef, useState } = React;
 
 export type BfDsTooltipMenu = {
-  button?: React.ReactElement<typeof Button>;
+  button?: React.ReactElement<typeof BfDsButton>;
   closeOnClick?: boolean;
   disabled?: boolean;
   icon?: BfDsIconType;
@@ -26,9 +24,9 @@ export type BfDsTooltipPosition = "top" | "bottom" | "left" | "right";
 export type BfDsTooltipJustification = "center" | "end" | "start";
 type Props = {
   text?: string | React.ReactNode;
-  menu?: unknown; //BfDsTooltipMenu[] | React.ReactElement<typeof FeatureMenu>;
-  position?: TooltipPosition; // default: "top"
-  justification?: TooltipJustification; // default: "center"
+  menu?: Array<BfDsTooltipMenu>;
+  position?: BfDsTooltipPosition; // default: "top"
+  justification?: BfDsTooltipJustification; // default: "center"
   delay?: number; // default: 1000
   canCopy?: boolean;
 };
@@ -310,7 +308,7 @@ function MenuItem({ menuItem, hovering }: MenuItemProps) {
 }
 
 type MenuProps = {
-  menu: unknown; //BfDsTooltipMenu[] | React.ReactElement<typeof FeatureMenu> | undefined;
+  menu: Array<BfDsTooltipMenu> | undefined;
 };
 function Menu({ menu }: MenuProps) {
   const [hovering, setHovering] = useState<number | null>(null);
