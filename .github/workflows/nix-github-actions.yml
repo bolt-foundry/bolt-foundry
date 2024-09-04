@@ -2,9 +2,6 @@ name: Nix Flake actions
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
 
 jobs:
   bff-ci:
