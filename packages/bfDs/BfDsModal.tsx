@@ -2,7 +2,6 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { fonts } from "packages/bfDs/const.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-// import { captureEvent } from "packages/events/mod.ts";
 import useClickOutside from "packages/client/hooks/useClickOutside.ts";
 import { classnames } from "lib/classnames.ts";
 
@@ -54,8 +53,6 @@ const styles: Record<string, React.CSSProperties> = {
     left: "0",
     width: "100%",
     height: "100%",
-    // 'modalBase' class set in renderer.ts
-    // background: "rgba(0, 0, 0, 0.5)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -70,11 +67,6 @@ const styles: Record<string, React.CSSProperties> = {
     maxHeight: "90%",
     display: "flex",
     flexDirection: "column",
-    // 'modal' class set in renderer.ts
-    // borderRadius: 16,
-    // width: "60rem",
-    // maxWidth: "80%",
-    // position: "relative",
   },
 };
 
@@ -91,7 +83,6 @@ export function BfDsModal(
     kind,
   }: ModalOptions,
 ) {
-  // const { currentViewer: { id: personId } } = useAppEnvironment();
   const [show, setShow] = useState(false);
   const [inDom, setInDom] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -101,11 +92,9 @@ export function BfDsModal(
     clearTimeout(domTimer);
     setInDom(true);
     setTimeout(() => setShow(true), 0);
-    // captureEvent("modal", "loaded", { kind }, personId);
   }, []);
 
   const close = () => {
-    // captureEvent("modal", "closed", { kind }, personId);
     setShow(false);
     domTimer = setTimeout(() => {
       onClose?.();
@@ -116,6 +105,7 @@ export function BfDsModal(
     isActive: clickOusideToClose,
     showConfirmation: confirmClose,
     excludeElementIds: ["tooltip-root"],
+    portal: "modal-root",
   });
 
   const handleClose = () => {
@@ -156,7 +146,6 @@ export function BfDsModal(
                 iconLeft="cross"
                 kind="overlay"
                 onClick={() => {
-                  // captureEvent("modal", "closed from x", { kind }, personId);
                   handleClose();
                 }}
                 testId="button-close-modal"
