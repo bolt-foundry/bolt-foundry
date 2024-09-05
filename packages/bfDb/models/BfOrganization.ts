@@ -1,4 +1,5 @@
 import {
+__DANGEROUS__BfCurrentViewerFromThinAir,
   type BfCurrentViewer,
   type BfCurrentViewerAccessToken,
   IBfCurrentViewerInternalAdmin,
@@ -75,7 +76,7 @@ export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
     domainName: string,
   ) {
     logger.warn(
-      `Creating an account dangerously for ${currentViewer.personBfGid} in ${domainName} from ${importMeta.url}`,
+      `Creating an account for ${currentViewer.personBfGid} in ${domainName} from ${importMeta.url}`,
     );
     const ONLY_USE_THIS_VC_TO_FIND_THE_ORGANIZATION_YOU_WANT_TO_ADD_A_PERSON_TO =
       IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(import.meta);
@@ -83,16 +84,25 @@ export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
       ONLY_USE_THIS_VC_TO_FIND_THE_ORGANIZATION_YOU_WANT_TO_ADD_A_PERSON_TO,
       domainName,
     );
-    const orgId = _SCARY_ORG_WITH_OMNI_VC.metadata.bfGid;
-    const org = await this.findX(currentViewer, orgId, {
-      I_WANT_TO_LOAD_THIS_DANGEROUSLY_AND_I_KNOW_ITS_PRIVACY_UNSAFE: true,
-    });
-    const DANGEROUSLY_CREATED_ACCOUNT = org.createTargetNode(BfAccount, {
-      role: ACCOUNT_ROLE.MEMBER,
-      organizationBfGid: orgId,
-      personBfGid: currentViewer.personBfGid,
-    }, ACCOUNT_ROLE.MEMBER);
-    logger.warn("Created dangerous account successfully.");
+    const organizationBfGid = _SCARY_ORG_WITH_OMNI_VC.metadata.bfGid;
+    const personBfGid = currentViewer.personBfGid;
+    const role = ACCOUNT_ROLE.MEMBER;
+    const props = { organizationBfGid, personBfGid, role };
+
+    // we're going to generate a new vc with the org and the person, so the ownership
+    // doesn't get messed up.
+
+    const newViewer = __DANGEROUS__BfCurrentViewerFromThinAir
+      .__DANGEROUS__create(import.meta, props);
+
+    const org = await this.findX(newViewer, organizationBfGid);
+
+    const DANGEROUSLY_CREATED_ACCOUNT = org.createTargetNode(
+      BfAccount,
+      props,
+      ACCOUNT_ROLE.MEMBER,
+    );
+    logger.warn("Created account successfully.");
     return DANGEROUSLY_CREATED_ACCOUNT;
   }
 }
