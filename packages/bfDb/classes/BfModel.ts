@@ -130,21 +130,13 @@ export abstract class BfBaseModel<
     this: TThis,
     currentViewer: BfCurrentViewer,
     bfGid: BfAnyid,
-    dangerousOptions = {
-      I_WANT_TO_LOAD_THIS_DANGEROUSLY_AND_I_KNOW_ITS_PRIVACY_UNSAFE: false,
-    },
   ): Promise<
     InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
   > {
     const model = new this(currentViewer, undefined, undefined, {
       bfGid,
     });
-    if (
-      currentViewer instanceof IBfCurrentViewerInternalAdminOmni ||
-      dangerousOptions
-          .I_WANT_TO_LOAD_THIS_DANGEROUSLY_AND_I_KNOW_ITS_PRIVACY_UNSAFE ===
-        true
-    ) {
+    if (currentViewer instanceof IBfCurrentViewerInternalAdminOmni) {
       await model.load__PRIVACY_UNSAFE();
     } else {
       await model.load();
