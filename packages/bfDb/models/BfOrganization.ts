@@ -89,6 +89,8 @@ export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
     });
     const DANGEROUSLY_CREATED_ACCOUNT = org.createTargetNode(BfAccount, {
       role: ACCOUNT_ROLE.MEMBER,
+      organizationBfGid: orgId,
+      personBfGid: currentViewer.personBfGid,
     }, ACCOUNT_ROLE.MEMBER);
     logger.warn("Created dangerous account successfully.");
     return DANGEROUSLY_CREATED_ACCOUNT;
