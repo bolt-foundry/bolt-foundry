@@ -390,6 +390,7 @@ type ImageBlock implements BlogPostContentBlock {
 type Mutation {
   createTranscript(filename: String!, words: String!): BfMediaTranscript
   deleteGoogleDriveResource(resourceId: String): DeleteMutationPayload
+  deleteMedia(id: String!): BfMedia
   deleteTranscript(id: String!): BfMediaTranscript
   downloadClip(endTime: Float!, mediaId: String!, startTime: Float!, title: String!, transcriptId: String!): DownloadMutationPayload
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
