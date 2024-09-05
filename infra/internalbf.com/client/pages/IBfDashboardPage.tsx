@@ -6,9 +6,7 @@ export function IBfDashboardPage() {
 
   return (
     <IBfFrame header={`Welcome ${name}!`} headerAction={"button here"}>
-      {Array.from({ length: 100 }).map((_, i) => {
-        return <div>Coming soon.</div>;
-      })}
+      Hi.
     </IBfFrame>
   );
 }

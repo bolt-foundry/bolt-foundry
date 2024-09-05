@@ -1,17 +1,30 @@
-import type {
-  BfCurrentViewer,
-  BfCurrentViewerAccessToken,
+import {
+  type BfCurrentViewer,
+  type BfCurrentViewerAccessToken,
+  IBfCurrentViewerInternalAdmin,
+  IBfCurrentViewerInternalAdminOmni,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import type { BfAccountRequiredProps } from "packages/bfDb/models/BfAccount.ts";
-import { ACCOUNT_ROLE } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import {
+  ACCOUNT_ROLE,
+  toBfGid,
+  toBfOid,
+} from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { bfQueryItems } from "packages/bfDb/bfDb.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfError } from "lib/BfError.ts";
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
 
 type BfOrganizationRequiredProps = {
   name: string;
   domainName: string;
+  youtubePlaylistUrl: string;
 };
+
+type GraphQLCreateArgs = BfOrganizationRequiredProps;
 
 export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
   __typename = "BfOrganization" as const;
@@ -24,22 +37,62 @@ export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
     return this.findX(currentViewer, item[0].metadata.bfGid);
   }
 
-  async addCurrentViewer(
-    currentViewer: BfCurrentViewerAccessToken,
+  static async createFromGraphQL(
+    currentViewer: BfCurrentViewer,
+    { name, domainName, youtubePlaylistUrl }: GraphQLCreateArgs,
   ) {
-    const props: BfAccountRequiredProps = {
-      organizationBfGid: this.metadata.bfGid,
-      personBfGid: currentViewer.personBfGid,
-      role: ACCOUNT_ROLE.OWNER,
-      displayName: this.props.name,
-    };
-    const newAccount = await BfAccount.__DANGEROUS__createUnattached(
-      currentViewer,
-      props,
-      {
-        bfOid: this.metadata.bfOid,
-      },
+    const isCurrentViewerInternalAdmin = currentViewer instanceof
+      IBfCurrentViewerInternalAdmin;
+    if (!isCurrentViewerInternalAdmin) {
+      throw new BfError("Not authorized");
+    }
+
+    // probably should be a transaction but the transaction code needs to be better, like a callback style
+    const newOrg = await this.__DANGEROUS__createUnattached(currentViewer, {
+      name,
+      domainName,
+      youtubePlaylistUrl,
+    }, {
+      bfGid: toBfGid(domainName),
+      bfOid: toBfOid(domainName),
+    });
+
+    await newOrg.createTargetNode(
+      BfAccount,
+      { role: ACCOUNT_ROLE.OWNER },
+      ACCOUNT_ROLE.OWNER,
     );
-    return newAccount;
+    return newOrg.toGraphql();
+  }
+
+  /**
+   * I shouldn't have to explain how terrifying this is. Calling this lets anyone
+   * add themselves as a member to an organization.
+   */
+  static async __DANGEROUS__addCurrentViewerFromGoogleToOrganization(
+    importMeta: ImportMeta,
+    currentViewer: BfCurrentViewerAccessToken,
+    domainName: string,
+  ) {
+    logger.warn(
+      `Creating an account dangerously for ${currentViewer.personBfGid} in ${domainName} from ${importMeta.url}`,
+    );
+    const ONLY_USE_THIS_VC_TO_FIND_THE_ORGANIZATION_YOU_WANT_TO_ADD_A_PERSON_TO =
+      IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(import.meta);
+    const _SCARY_ORG_WITH_OMNI_VC = await this.findByDomainName(
+      ONLY_USE_THIS_VC_TO_FIND_THE_ORGANIZATION_YOU_WANT_TO_ADD_A_PERSON_TO,
+      domainName,
+    );
+    const orgId = _SCARY_ORG_WITH_OMNI_VC.metadata.bfGid;
+    const org = await this.findX(currentViewer, orgId, {
+      I_WANT_TO_LOAD_THIS_DANGEROUSLY_AND_I_KNOW_ITS_PRIVACY_UNSAFE: true,
+    });
+    const DANGEROUSLY_CREATED_ACCOUNT = org.createTargetNode(BfAccount, {
+      role: ACCOUNT_ROLE.MEMBER,
+      organizationBfGid: orgId,
+      personBfGid: currentViewer.personBfGid,
+    }, ACCOUNT_ROLE.MEMBER);
+    logger.warn("Created dangerous account successfully.");
+    return DANGEROUSLY_CREATED_ACCOUNT;
   }
 }

@@ -9,10 +9,7 @@ import {
 } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 
 import { LoginPage } from "infra/internalbf.com/client/pages/LoginPage.tsx";
-import { QcPage } from "infra/internalbf.com/client/pages/QcPage.tsx";
-import { ChangesPage } from "infra/internalbf.com/client/pages/ChangesPage.tsx";
 import { RandallPlaygroundPage } from "infra/internalbf.com/client/pages/RandallPlaygroundPage.tsx";
-import { ClipChangesPage } from "infra/internalbf.com/client/pages/ClipChangesPage.tsx";
 import { PlaygroundPage } from "infra/internalbf.com/client/pages/PlaygroundPage.tsx";
 import { IBfDashboardPage } from "infra/internalbf.com/client/pages/IBfDashboardPage.tsx";
 import { IBfOrganizationsPage } from "infra/internalbf.com/client/pages/IBfOrganizationsPage.tsx";
@@ -20,16 +17,9 @@ import { InternalBfDotComPage } from "packages/client/pages/InternalBfDotComPage
 
 export const routes = new Map([
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
-  ["/", { Component: IBfDashboardPage, allowLoggedOut: true }],
+  ["/", { Component: IBfDashboardPage }],
   ["/media", { Component: IBfDashboardPage }],
   ["/organizations", { Component: IBfOrganizationsPage }],
-
-  // class bf pages
-  ["/qc", { Component: QcPage }],
-  ["/changes", { Component: ChangesPage }],
-  ["/clip-changes", {
-    Component: ClipChangesPage,
-  }],
 
   // playgrounds
   ["/colby", { Component: PlaygroundPage }],

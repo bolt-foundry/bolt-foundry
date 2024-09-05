@@ -24,21 +24,21 @@ const styles = {
 
 export function Client(props: ServerProps) {
   return (
-    <BfDsProvider>
-      <ErrorBoundary>
-        <Suspense
-          fallback={
-            <div style={styles.loading}>
-              <BfDsSpinner size={64} waitIcon={true} />
-            </div>
-          }
-        >
-          <AppEnvironmentProvider {...props}>
+    <AppEnvironmentProvider {...props}>
+      <BfDsProvider>
+        <ErrorBoundary>
+          <Suspense
+            fallback={
+              <div style={styles.loading}>
+                <BfDsSpinner size={64} waitIcon={true} />
+              </div>
+            }
+          >
             <App />
-          </AppEnvironmentProvider>
-        </Suspense>
-      </ErrorBoundary>
-    </BfDsProvider>
+          </Suspense>
+        </ErrorBoundary>
+      </BfDsProvider>
+    </AppEnvironmentProvider>
   );
 }
 

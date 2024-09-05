@@ -1,4 +1,5 @@
 import * as React from "react";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { LandingPageHero } from "packages/client/components/LandingPageHero.tsx";
 import { ComingSoonHero } from "packages/client/components/ComingSoonHero.tsx";
@@ -46,7 +47,7 @@ export function LandingPage(): React.ReactElement {
       >
         <LandingPageTestimonials />
       </div>
-      <div className="landing-page-footer">
+      <div className="landing-page-meeting-section">
         <LandingPageSetUpMeeting />
       </div>
     </MarketingFrame>

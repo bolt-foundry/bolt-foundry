@@ -1,4 +1,10 @@
-import { extendType, objectType } from "packages/graphql/deps.ts";
+import {
+  extendType,
+  mutationField,
+  nonNull,
+  objectType,
+  stringArg,
+} from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { getLogger } from "deps.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
@@ -34,3 +40,23 @@ export const BfGraphQLMediaQuery = extendType({
     });
   },
 });
+
+export const BfGraphQLMediaDeleteMutation = mutationField(
+  "deleteMedia",
+  {
+    type: BfGraphQLMediaType,
+    args: {
+      id: nonNull(stringArg()),
+    },
+    resolve: async (_, { id }, { bfCurrentViewer }) => {
+      const media = await BfMedia.find(bfCurrentViewer, id);
+      if (!media) {
+        throw new Error("Media not found");
+      }
+      logger.debug("deleteMedia", { id });
+      await media.delete();
+      logger.debug("Deleted media successfully");
+      return media.toGraphql();
+    },
+  },
+);
