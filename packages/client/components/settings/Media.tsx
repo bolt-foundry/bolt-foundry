@@ -1,16 +1,18 @@
-import type * as React from "react";
+import * as React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import type { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
 import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
+import { DeleteMediaButton } from "packages/client/components/settings/DeleteMediaButton.tsx";
 
 const fragment = await graphql`
 fragment Media_bfOrganization on BfOrganization {
   media(first: 100) {
     edges {
       node {
+        id
         filename
         transcripts(first: 1) {
           edges {
@@ -30,6 +32,7 @@ type Props = {
 };
 
 type Data = {
+  id: string;
   filename: string;
   words: number;
   tokens: number;
@@ -39,17 +42,27 @@ export function Media({ settings$key }: Props) {
   if (!settings$key) {
     return <BfDsFullPageSpinner />;
   }
+  const [deletedRows, setDeletedRows] = React.useState<Array<string>>([]);
   const data = useFragment(fragment, settings$key);
+
+  const handleDeletedRow = (id: string) => {
+    setDeletedRows((prev) => [...prev, id]);
+  };
+
   const tableData = data?.media?.edges?.map((d, i) => {
+    if (deletedRows.includes(d?.node?.id)) {
+      return false;
+    }
     const transcriptString = d?.node?.transcripts?.edges?.[0]?.node?.words ??
       "[]";
     const transcript = JSON.parse(transcriptString);
     return {
+      id: d?.node?.id,
       filename: d?.node?.filename,
       words: transcript.length,
       tokens: `~${transcript.length / 4}`,
     };
-  });
+  }).filter(Boolean);
   const columns: BfDsColumns<Data> = [
     {
       title: "File name",
@@ -65,6 +78,20 @@ export function Media({ settings$key }: Props) {
       title: "Tokens",
       width: "0.5fr",
       renderer: (data) => <BfDsTableCell text={data.tokens} />,
+    },
+    {
+      title: " ",
+      width: "48px",
+      renderer: (data) => (
+        <BfDsTableCell
+          element={
+            <DeleteMediaButton
+              id={data.id}
+              onDelete={() => handleDeletedRow(data.id)}
+            />
+          }
+        />
+      ),
     },
   ];
 

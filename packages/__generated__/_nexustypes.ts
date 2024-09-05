@@ -398,6 +398,7 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     createTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
     deleteGoogleDriveResource: NexusGenRootTypes['DeleteMutationPayload'] | null; // DeleteMutationPayload
+    deleteMedia: NexusGenRootTypes['BfMedia'] | null; // BfMedia
     deleteTranscript: NexusGenRootTypes['BfMediaTranscript'] | null; // BfMediaTranscript
     downloadClip: NexusGenRootTypes['DownloadMutationPayload'] | null; // DownloadMutationPayload
     linkAdvancedGoogleAuth: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
@@ -616,6 +617,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     createTranscript: 'BfMediaTranscript'
     deleteGoogleDriveResource: 'DeleteMutationPayload'
+    deleteMedia: 'BfMedia'
     deleteTranscript: 'BfMediaTranscript'
     downloadClip: 'DownloadMutationPayload'
     linkAdvancedGoogleAuth: 'BfCurrentViewer'
@@ -734,6 +736,9 @@ export interface NexusGenArgTypes {
     }
     deleteGoogleDriveResource: { // args
       resourceId?: string | null; // String
+    }
+    deleteMedia: { // args
+      id: string; // String!
     }
     deleteTranscript: { // args
       id: string; // String!
