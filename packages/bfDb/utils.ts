@@ -22,7 +22,6 @@ export async function upsertBfDb() {
     class_name VARCHAR(255),
     bf_gid VARCHAR(255) PRIMARY KEY,
     last_updated TIMESTAMP WITHOUT TIME ZONE,
-    props JSONB NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE,
     bf_oid VARCHAR(255) NOT NULL,
     bf_cid VARCHAR(255) NOT NULL,
@@ -30,7 +29,8 @@ export async function upsertBfDb() {
     bf_sid VARCHAR(255),
     bf_t_class_name VARCHAR(255),
     bf_tid VARCHAR(255),
-    sort_value BIGINT NOT NULL
+    sort_value BIGINT NOT NULL,
+    props JSONB NOT NULL
   );
   `;
   logger.info("Schema upserted");
