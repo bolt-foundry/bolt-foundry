@@ -355,7 +355,7 @@ export async function bfDeleteItem(bfOid: BfOid, bfGid: BfGid): Promise<void> {
       DELETE FROM bfdb
       WHERE bf_oid = ${bfOid} AND bf_gid = ${bfGid}
     `;
-    if (result.length === 0) {
+    if (result.rowCount === 0) {
       throw new BfDbError(
         `No item found with bfOid: ${bfOid} and bfGid: ${bfGid}`,
       );
