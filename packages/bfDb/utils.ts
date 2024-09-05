@@ -19,17 +19,17 @@ const sql = neon(databaseUrl);
 export async function upsertBfDb() {
   await sql`
   CREATE TABLE IF NOT EXISTS bfDb (
+    class_name VARCHAR(255),
     bf_gid VARCHAR(255) PRIMARY KEY,
+    last_updated TIMESTAMP WITHOUT TIME ZONE,
+    props JSONB NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
     bf_oid VARCHAR(255) NOT NULL,
     bf_cid VARCHAR(255) NOT NULL,
     bf_s_class_name VARCHAR(255),
     bf_sid VARCHAR(255),
     bf_t_class_name VARCHAR(255),
     bf_tid VARCHAR(255),
-    class_name VARCHAR(255),
-    last_updated TIMESTAMP WITHOUT TIME ZONE,
-    created_at TIMESTAMP WITHOUT TIME ZONE,
-    props JSONB NOT NULL,
     sort_value BIGINT NOT NULL
   );
   `;
