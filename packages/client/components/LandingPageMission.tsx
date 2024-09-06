@@ -7,7 +7,7 @@ export function LandingPageMission() {
     <div className="marketing-cta" style={{ alignItems: "start" }}>
       <div className="marketing-title">Our mission</div>
       <div className="marketing-text">
-        Highlight key features and info.
+        Bolt Foundry: We do the heavy lifting so you can do what you do best - create.
       </div>
       <BfDsButton
         href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
