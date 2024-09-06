@@ -9,6 +9,7 @@ import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
+import { BfError } from "lib/BfError.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 
@@ -43,6 +44,10 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
       credential,
     );
 
+    if (!hd) {
+      throw new BfError("Need a google workspace account");
+    }
+
     const currentViewer = await BfCurrentViewerAccessToken
       .createFromGoogle(
         import.meta,
@@ -57,13 +62,12 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
     });
 
     if (hd) {
-      const org = await BfOrganization.findByDomainName(
-        currentViewer,
-        hd,
-      );
-      if (org) {
-        org.addCurrentViewer(currentViewer);
-      }
+      await BfOrganization
+        .__DANGEROUS__addCurrentViewerFromGoogleToOrganization(
+          import.meta,
+          currentViewer,
+          hd,
+        );
     }
 
     logVerbose("newPerson", newPerson);
@@ -79,7 +83,7 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
     await this.save();
   }
 
-  beforeLoad() {
+  protected beforeLoad() {
     // people actually own themselves.
     this.metadata.bfOid = toBfOid(this.currentViewer.personBfGid);
   }

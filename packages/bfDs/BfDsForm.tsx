@@ -5,6 +5,8 @@ import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { Toggle } from "packages/bfDs/Toggle.tsx";
 const { useState, createContext, useContext } = React;
 
+const logger = getLogger(import.meta);
+
 type FormError = {
   message: string;
   field: string;
@@ -35,7 +37,7 @@ type BfDsFormProps<T = Record<string, string | number | boolean | null>> =
   };
 
 export function BfDsForm<T>(
-  { initialData, bfDsFormCallbacks = {}, children }: BfDsFormProps<T>,
+  { initialData, children, ...bfDsFormCallbacks }: BfDsFormProps<T>,
 ) {
   const [data, setData] = useState<T>(initialData);
   const [errors, setErrors] = useState<BfDsFormErrorRecord<T>>({});
@@ -51,6 +53,7 @@ export function BfDsForm<T>(
   }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    logger.info("hi", bfDsFormCallbacks);
     e.preventDefault();
     bfDsFormCallbacks.onSubmit?.(data);
   }
@@ -79,59 +82,54 @@ type BfDsFormElementProps<
   title: string;
 };
 
-function BfDsTextInput({ id, title }: BfDsFormElementProps) {
+export function BfDsFormTextInput({ id, title }: BfDsFormElementProps) {
   const { data, onChange } = useBfDsFormContext();
   return (
-    <div>
-      <BfDsInput
-        label={title}
-        type="text"
-        id={id}
-        name={id}
-        value={data[id]}
-        onChange={(e) => onChange({ ...data, [id]: e.target.value })}
-      />
-    </div>
+    <BfDsInput
+      label={title}
+      type="text"
+      name={id}
+      value={data[id]}
+      onChange={(e) => onChange({ ...data, [id]: e.target.value })}
+    />
   );
 }
 
-function BfDsNumberInput({ id, title }: { id: string; title: string }) {
+export function BfDsFormNumberInput(
+  { id, title }: { id: string; title: string },
+) {
   const { data, onChange } = useBfDsFormContext();
   return (
-    <div>
-      <BfDsInput
-        label={title}
-        type="number"
-        id={id}
-        name={id}
-        value={data[id]}
-        onChange={(e) => onChange({ ...data, [id]: e.target.value })}
-      />
-    </div>
+    <BfDsInput
+      label={title}
+      type="number"
+      name={id}
+      value={data[id]}
+      onChange={(e) => onChange({ ...data, [id]: e.target.value })}
+    />
   );
 }
 
-function BfDsCheckboxInput({ id, title }: { id: string; title: string }) {
-  const { data, onChange } = useBfDsFormContext();
-  return (
-    <div>
-      <Toggle
-        label={title}
-        type="checkbox"
-        id={id}
-        name={id}
-        checked={data[id]}
-        onChange={(e) => onChange({ ...data, [id]: e.target.checked })}
-      />
-    </div>
-  );
-}
+// function BfDsFormToggle(
+//   { id, title }: { id: string; title: string },
+// ) {
+//   const { data, onChange } = useBfDsFormContext();
+//   return (
+//     <Toggle
+//       label={title}
+//       name={id}
+//       checked={data[id]}
+//       onChange={(e) => onChange({ ...data, [id]: e.target.checked })}
+//     />
+//   );
+// }
 
-function BfDsSubmitButton({ text }: { text: string }) {
-  return <BfDsButton kind="primary" text={text} />;
+export function BfDsFormSubmitButton(
+  { text, showSpinner }: { text: string; showSpinner: boolean },
+) {
+  logger.info("loggering");
+  return <BfDsButton type="submit" text={text} showSpinner={showSpinner} />;
 }
-
-const logger = getLogger(import.meta);
 
 /**
  * Example usage of BfDsForm and subsequent fields
@@ -157,11 +155,11 @@ function exampleOnSubmit(value: BfDsFormValue<ExampleFormData>) {
 export function Example() {
   return (
     <BfDsForm onSubmit={exampleOnSubmit} initialData={exampleInitialFormData}>
-      <BfDsTextInput id="name" title="What is your name?" />
-      <BfDsTextInput id="email" title="What is your email?" />
-      <BfDsNumberInput id="number" title="What is your favorite number?" />
-      <BfDsCheckboxInput id="checkbox" title="Do you like cheese?" />
-      <BfDsSubmitButton text="Submit" />
+      <BfDsFormTextInput id="name" title="What is your name?" />
+      <BfDsFormTextInput id="email" title="What is your email?" />
+      <BfDsFormNumberInput id="number" title="What is your favorite number?" />
+      {/* <BfDsFormToggle id="checkbox" title="Do you like cheese?" /> */}
+      {/* <BfDsSubmitButton text="Submit" /> */}
     </BfDsForm>
   );
 }

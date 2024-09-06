@@ -11,7 +11,7 @@ type Props = {
 export function ClipsViewNullState({ count, settings$key }: Props) {
   return (
     <div className="flexColumn">
-      <div className="cs-page-callout">
+      <div className="cs-page-hero-callout">
         Search <span style={{ fontWeight: 700 }}>{count ?? ""}</span>{" "}
         videos in your library for a topic above.<br />{" "}
         You can manage which videos are active in{" "}

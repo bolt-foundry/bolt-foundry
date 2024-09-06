@@ -1,9 +1,8 @@
-import { React } from "deps.ts";
-import { ReactDOMClient } from "packages/client/deps.ts";
+import * as React from "react";
+import { createPortal } from "react-dom";
 import { classnames } from "lib/classnames.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
-const { createPortal } = ReactDOMClient;
 const { useState, useEffect } = React;
 
 export const TRANSITION_DURATION = 500;

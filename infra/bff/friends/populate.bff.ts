@@ -5,15 +5,25 @@ import { getHeaders } from "infra/watcher/ingest.ts";
 import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
-const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT");
+import { getLogger } from "deps.ts";
+import { BfError } from "lib/BfError.ts";
+const logger = getLogger(import.meta);
 
-const client = new GraphQLClient(GRAPHQL_ENDPOINT);
+type Projects = Array<{
+  projectId: string;
+  fileId: string | null;
+}>;
 
-async function populate(projects = accounting) {
-  // deno-lint-ignore no-console
-  console.log("running populate");
+async function populate(projects: Projects = accounting) {
+  logger.info("running populate");
   const stopSpinner = startSpinner();
+
+  const GRAPHQL_ENDPOINT = Deno.env.get("BFI_GRAPHQL_ENDPOINT");
+  if (!GRAPHQL_ENDPOINT) {
+    throw new BfError("No BFI_GRAPHQL_ENDPOINT defined");
+  }
+
+  const client = new GraphQLClient(GRAPHQL_ENDPOINT);
 
   const headers = await getHeaders();
 
@@ -61,23 +71,14 @@ async function populate(projects = accounting) {
         fileId: transcript.fileId,
       },
     );
-    const newTranscript = await BfMediaTranscript.create(currentViewer, {
+    const newTranscript = await newMedia.createTargetNode(BfMediaTranscript, {
       words: transcript.words,
       filename: transcript.filename,
     });
-    await BfEdge.__DANGEROUS__createUnattached(currentViewer, {}, {
-      // @ts-expect-error idk why the metadata types are messed up for bf edges.
-      bfTClassName: "BfMediaTranscript",
-      bfTid: newTranscript.metadata.bfGid,
-      bfSClassName: "BfMedia",
-      bfSid: newMedia.metadata.bfGid,
-    });
-    // deno-lint-ignore no-console
-    console.log(newTranscript.metadata.bfGid);
+    logger.info(newTranscript.metadata.bfGid);
   }
 
-  // deno-lint-ignore no-console
-  console.log(`Populated ${transcripts.length} transcripts`);
+  logger.info(`Populated ${transcripts.length} transcripts`);
 
   stopSpinner();
   return 0;
@@ -97,20 +98,81 @@ register(
 // Dan's demo
 const demo = [
   {
-    projectId: "Project-1724521896558_ba4392251fe94facbf7d09b75c4e534a",
-    fileId: "1ko5BmYBouDay2nbpw9ujoiYNxlbKalfE",
+    // "2 ChatGPT & Technical Hiring꞉ What You Need to Know - Webinar.mp4",
+    fileId: "1q9TFdqIcH_xAMDdi4JMYLWM6ziJS_uvD",
+    projectId: "Project-1726639055572_427cc133bf324471a6f6bbee3b48f6ce",
   },
+
   {
-    projectId: "Project-1724558334145_87b046dbd6344b2aab779610d109f1af",
-    fileId: "1ko5BmYBouDay2nbpw9ujoiYNxlbKalfE",
+    // "3 Tech Recruiting Intensive꞉ Proven Tactics for Hiring Software Engineers.mp4",
+    fileId: "1prNQtcXjwxqKjKRFJm13uzJat6gv6x9X",
+    projectId: "Project-1726232104461_ee2825a992b04f56baa35519fc8a224d",
   },
+
   {
-    projectId: "Project-1724268554986_02d0d2c24abc43c78be316e42985e8d8",
-    fileId: "1ko5BmYBouDay2nbpw9ujoiYNxlbKalfE",
+    // "4 How Interviewers Are Leveraging ChatGPT to Hire Developers.mp4",
+    fileId: "1UlLTkAzqegdZNiJSNJwls4xYhsCaMLuI",
+    projectId: "Project-1726805905103_a5273295f9e744bab009357ffe2e082e",
   },
+
   {
-    projectId: "Project-1724785123687_cd07e7a2e2b040f2ab2a0d3b05f11f95",
-    fileId: "1ko5BmYBouDay2nbpw9ujoiYNxlbKalfE",
+    // "7 Why Gender Bias is Still a Struggle in Tech Recruitment and What You Can Do About It.mp4",
+    fileId: "1siI7a7-0GwGGCHzS0N183l4tfjCJ0D3b",
+    projectId: "Project-1729648483031_04913cf395634ba980aa36a771ad0ce6",
+  },
+
+  {
+    // "8 Skills-Based Hiring꞉ The Dos and Don’ts.mp4",
+    fileId: "1L5_lSnGVuZ5KyKQoBhrbJqeWrTdBhzQS",
+    projectId: "Project-1729654979059_013aae378250409885c16e3e740c2758",
+  },
+
+  {
+    // "9 Tech Recruitment Trends꞉ What to Plan For in 2024.mp4",
+    fileId: "1DkTOhRsYw0MdHPul66gs80jfR9SL_rEj",
+    projectId: "Project-1726232387735_5089955d13e948978942135c655cf53d",
+  },
+
+  {
+    // "10 Skills-Based Hiring꞉ An Old Practice With New Power.mp4",
+    fileId: "1gUvuUnsLl0RxMRqFJ7sYv8S0b9Ijjbnt",
+    projectId: "Project-1726502322152_2f3fa1d8a24d42438e65ef4bd0abe1ff",
+  },
+
+  {
+    // "12 AI & Bias in Tech Recruitment.mp4",
+    fileId: "1TYPTgb9LA7lcPZ7CVn7B8RDIeh6mQ9xa",
+    projectId: "Project-1726542089572_46bed4ad61c74fee915e7317129af9f2",
+  },
+
+  {
+    // "13 Enhancing Hiring Practices through Skills Based Talent Acquisition - Ere Media.mp4",
+    fileId: "1tm_uzDuSfjWgE_KEy1DlU-deJPlioY9P",
+    projectId: "Project-1729788737250_d144c7fcb1e34e13aa854b9415117be4",
+  },
+
+  {
+    // "14 Spring 2024꞉ What’s New in CoderPad Webinar.mp4",
+    fileId: "1lnQ7aV_ztl5c7fXqqbESORLkCea7CYrd",
+    projectId: "Project-1728260453318_f236c3b309da461a916cea0edcc716e4",
+  },
+
+  {
+    // "15 How to Successfully Apply AI to Your Tech Hiring.mp4",
+    fileId: "1rxRQRMjGhBNvWdGlaZPAx-GAjd00lm1G",
+    projectId: "Project-1729740769628_0054dfe464a7444f966fade5339ff268",
+  },
+
+  {
+    // "16 How to Prevent and Detect Cheating in Your Tech Recruitment Process.mp4",
+    fileId: "1_tdyAxIEGFKpmv5-BhP6ky8e3hgQhH61",
+    projectId: "Project-1726509082740_f872d352fef347a7be461df27e7750b8",
+  },
+
+  {
+    // "18 Candidate Cheating vs. Candidate Experience in IT Recruitment.mp4",
+    fileId: "1znjIUrojzKRMZ1DPFfX6xm-uc7osHcPy",
+    projectId: "Project-1726736983332_744a6d9f4d7748aeb9fc8c1b78b9fd42",
   },
 ];
 

@@ -1,9 +1,4 @@
-import {
-  mutationField,
-  nonNull,
-  objectType,
-  stringArg,
-} from "packages/graphql/deps.ts";
+import { mutationField, nonNull, objectType, stringArg } from "nexus";
 import { callAPI } from "infra/aiPlayground/langchainAPI.ts";
 
 // Define the output type for the mutation response

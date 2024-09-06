@@ -364,11 +364,11 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       & Partial<TOptionalProps>;
   }
 
-  protected async beforeCreate() {}
-  protected async afterCreate() {}
-  protected async beforeLoad() {}
-  protected async beforeSave() {}
-  protected async afterSave() {}
+  protected beforeCreate(): Promise<void> | void {}
+  protected afterCreate(): Promise<void> | void {}
+  protected beforeLoad(): Promise<void> | void {}
+  protected beforeSave(): Promise<void> | void {}
+  protected afterSave(): Promise<void> | void {}
 
   protected toString() {
     return `${this.constructor.name}#${this.metadata.bfGid}`;
