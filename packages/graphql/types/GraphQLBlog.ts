@@ -61,6 +61,10 @@ export const BlogPostContentBlock = interfaceType({
         return "ParagraphBlock";
       case "image":
         return "ImageBlock";
+      case "callout":
+        return "CalloutBlock";
+      case "code":
+        return "CodeBlock";
       default:
         //todo add error logging
         return null;
@@ -74,6 +78,25 @@ export const ParagraphBlock = objectType({
     t.implements("BlogPostContentBlock");
     t.list.field("RichText", { type: "RichText" });
     t.string("color", { default: "default" });
+  },
+});
+
+export const CalloutBlock = objectType({
+  name: "CalloutBlock",
+  definition(t) {
+    t.implements("BlogPostContentBlock");
+    t.list.field("RichText", { type: "RichText" });
+    t.string("icon");
+    t.string("color");
+  },
+});
+
+export const CodeBlock = objectType({
+  name: "CodeBlock",
+  definition(t) {
+    t.implements("BlogPostContentBlock");
+    t.list.field("RichText", { type: "RichText" });
+    t.string("language");
   },
 });
 
