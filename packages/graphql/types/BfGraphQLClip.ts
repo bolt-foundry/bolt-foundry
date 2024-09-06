@@ -98,6 +98,31 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
       transcriptPromise,
     ]);
 
+    // TODO get settings from Org
+    const settings = {
+      captionLines: 3,
+      captionWordsPerLine: 15,
+      template: "joe",
+      captionColor: "white",
+      captionHighlightColor: "rgb(255, 255, 70)",
+      font: "BebasNeue",
+      showCaptions: true,
+      strokeColor: "rgba(0, 0, 0, 0.75)",
+      strokeWidth_px: 6,
+      useEndCap: false,
+      capCta: "",
+      capName: "",
+      useTitle: false,
+      titleColor: "red",
+      titleStrokeColor: "yellow",
+      titleStrokeWidth: 12,
+      showWatermark: true,
+      watermarkLogo: "made_with_bf.png",
+      watermarkOpacity: 0.5,
+      watermarkPosition: "top-left",
+      watermarkScale: 0.25,
+    };
+
     const payload = {
       file: {
         url: media?.props.filename,
@@ -107,6 +132,8 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
       transcript: {
         start_time: startTime,
         end_time: endTime,
+        settings,
+        title,
         transcript: JSON.parse(transcript?.props.words ?? "[]"),
       },
     };
