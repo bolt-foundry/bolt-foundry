@@ -1,16 +1,13 @@
 import { React } from "deps.ts";
-import { videoPlaceholderStyle } from "packages/client/pages/LandingPage.tsx";
 
 export function LandingPageTestimonials() {
   return (
-    <div style={{ width: "80%" }}>
-      <div
-        className="marketing-title"
-        style={{ textAlign: "center", marginBottom: "12px" }}
-      >
+    <div className="landing-page-testimonial-section">
+      <div className="landing-page-title landing-page-testimonial-title">
         Testimonials
       </div>
-      <div style={{ ...videoPlaceholderStyle, margin: "auto" }}></div>
+      <div className="landing-page-video-placeholder landing-page-testimonial-video">
+      </div>
     </div>
   );
 }

@@ -3,28 +3,42 @@ import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { SetUpMeeting } from "packages/client/components/SetUpMeeting.tsx";
 
 export function LandingPageSetUpMeeting(): React.ReactElement {
+  //this is dumb, I know it's dumb.
+  const lines = [
+    { "style": "normal", "text": "It's" },
+    { "style": "normal", "text": "your" },
+    { "style": "normal", "text": "content," },
+    { "style": "normal", "text": "use" },
+    { "style": "blueWord", "text": "more" },
+    { "style": "normal", "text": "of" },
+    { "style": "normal", "text": "it." },
+  ];
+
+  const elements = lines.map(({ style, text }, index: number) => {
+    const textColor = style === "normal" ? "text-white" : "text-brand-gold";
+    const styleClass = `landing-page-set-up-meeting-headline ${textColor}`;
+    //ensures consistent spacing as spaces will collapse between divs and spans when rendered inline-block.
+    if (index != lines.length - 1) {
+      text += "\u00A0";
+    }
+    return <div key={index} className={styleClass}>{text}</div>;
+  });
   return (
-    <div className="meetingSection flexRow">
-      <div style={{ flex: 1.5, alignSelf: "center", padding: "70px" }}>
-        <div
-          className="marketing-title"
-          style={{ fontSize: "40px", color: "white" }}
-        >
-          Leverage your content
+    <div className="landing-page-set-up-meeting-section">
+      <div className="landing-page-set-up-meeting-text-area">
+        <div>
+          {elements}
         </div>
-        <div
-          className="marketing-text"
-          style={{ color: "white", textAlign: "left" }}
-        >
-          Copy that helps to highlight the problem and how we can help
+        <div className="landing-page-set-up-meeting-cta">
+          Schedule to see how Bolt Foundry can help!
         </div>
       </div>
-      <div style={{ flex: 1, alignSelf: "center" }}>
+      <div className="landing-page-book-a-meeting-button">
         <BfDsButton
           href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
           hrefTarget="blank"
           text="Book a meeting"
-          size="large"
+          size="xlarge"
         />
       </div>
     </div>

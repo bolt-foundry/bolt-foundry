@@ -10,58 +10,31 @@ import { LandingPageTestimonials } from "packages/client/components/LandingPageT
 import { LandingPageSetUpMeeting } from "packages/client/components/LandingPageSetUpMeeting.tsx";
 
 export function LandingPage(): React.ReactElement {
-  const mainContainerStyle = {
-    display: "flex",
-    flexWrap: "wrap",
-    margin: "2vw",
-    marginBottom: "10vw",
-  };
-
   return (
     <MarketingFrame
       showLoginLink={false}
       showFooter={true}
     >
-      <div style={{ ...mainContainerStyle }}>
-        <div style={blockStyle}>
+      <div className="landing-page-section-wrapper">
+        <div className="landing-page-block">
           <LandingPageHero />
         </div>
-        <div style={blockStyle}>
+        <div className="landing-page-block">
           <LandingPageClipCollection />
         </div>
       </div>
-      <div style={mainContainerStyle}>
-        <div style={blockStyle}>
-          <div style={videoPlaceholderStyle}></div>
+      <div className="landing-page-section-wrapper">
+        <div className="landing-page-block">
+          <div className="landing-page-video-placeholder"></div>
         </div>
-        <div style={blockStyle}>
+        <div className="landing-page-block">
           <LandingPageMission />
         </div>
       </div>
-      <div
-        style={{
-          ...mainContainerStyle,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <div className="landing-page-section-wrapper">
         <LandingPageTestimonials />
       </div>
-      <div className="landing-page-meeting-section">
-        <LandingPageSetUpMeeting />
-      </div>
+      <LandingPageSetUpMeeting />
     </MarketingFrame>
   );
 }
-
-export const blockStyle = {
-  flex: "1",
-  minWidth: "max(300px, 40vw)",
-};
-
-export const videoPlaceholderStyle = {
-  backgroundColor: "grey",
-  paddingTop: "56.25%",
-  borderRadius: "20px",
-  maxWidth: "100%",
-};
