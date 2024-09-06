@@ -10,11 +10,14 @@ const DURATION = 2; // 2 seconds
 export default function TitleCard() {
   const time = useVideoTime();
   const { startTimecode, settings, title } = useParams();
-  const { additionalJson: json = "{}", font: fontFamily } = JSON.parse(
-    settings,
-  );
-  const { useTitle, titleColor, titleStrokeColor, titleStrokeWidth } = JSON
-    .parse(json);
+  const { 
+    useTitle, 
+    titleColor, 
+    titleStrokeColor, 
+    titleStrokeWidth, 
+    font: fontFamily 
+  } = JSON.parse(settings);
+
   if (!useTitle) return null;
   const labelStyle = {
     textColor: titleColor ?? "rgba(255, 215, 0, 1)",

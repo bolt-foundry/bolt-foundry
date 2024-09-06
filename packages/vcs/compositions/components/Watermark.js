@@ -14,11 +14,9 @@ export default function Watermark({
     watermarkLogo,
     watermarkOpacity,
     watermarkPosition,
+    watermarkScale,
   } = JSON.parse(settings);
   if (!showWatermark) return null;
-  const {
-    watermarkScale,
-  } = JSON.parse(additionalJson);
 
   return (
     <Box id="watermark">
