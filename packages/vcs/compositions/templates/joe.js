@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Box, Text, Video } from "#vcs-react/components";
-import { useParams, useVideoTime } from "#vcs-react/hooks";
+import { useActiveVideo, useParams, useVideoTime } from "#vcs-react/hooks";
 import { fontBoldWeights, fontRelativeCharacterWidths } from "../fonts.js";
 import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
 import EndCap from "../components/EndCap.js";
@@ -27,23 +27,22 @@ export default function JoeGraphics({
     Array(captionLines).fill({ ...EMPTY_LINE_STATE }),
   );
   const time = useVideoTime();
+
+  const { activeIds } = useActiveVideo();
+  let video;
+  if (activeIds.length > 0) {
+    video = <Video src={activeIds[0]} />;
+  }
+  
   const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
-    additionalJson: json = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
     showCaptions,
+    strokeColor = "rgba(0, 0, 0, 0.75)",
+    strokeWidth_px = 6,
   } = JSON.parse(settings);
-  const additionalJson = JSON.parse(json);
-  let strokeColor = "rgba(0, 0, 0, 0.75)";
-  if (additionalJson.strokeColor) {
-    strokeColor = additionalJson.strokeColor;
-  }
-  let strokeWidth_px = 6;
-  if (additionalJson.strokeWidth_px) {
-    strokeWidth_px = additionalJson.strokeWidth_px;
-  }
 
   const labelStyle = {
     textColor: captionColor ?? "white",
@@ -76,7 +75,7 @@ export default function JoeGraphics({
 
   return (
     <Box id="videoWithGraphics">
-      <Video src={"video1"} />
+      {video}
       {showCaptions &&
         lineState &&
         lineState.map((line, index) => {
@@ -84,17 +83,31 @@ export default function JoeGraphics({
           return (
             <Text
               key={index}
-              style={line.currentLine ? highlightStyle : labelStyle}
+              style={labelStyle}
               layout={[
                 layoutFuncs.plainSubtitles,
                 {
+                  pad_gu: 0.5,
                   fontSize_vh,
                   index,
-                  pad_gu: 0.5,
                 },
               ]}
             >
-              {line.lineText.join(" ")}
+              {line.lineText.map((word, wordIndex) => {
+                const isHighlighted = line.currentLineIndex > index
+                  ? true
+                  : wordIndex <= line.highlightedWordIndexWithinLine;
+                return [
+                  word + (
+                    wordIndex < line.lineText.length - 1 ? " " : ""
+                  ),
+                  {
+                    ...(
+                      isHighlighted ? highlightStyle : labelStyle
+                    ),
+                  },
+                ];
+              })}
             </Text>
           );
         })}

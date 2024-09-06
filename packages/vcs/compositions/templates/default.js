@@ -39,18 +39,13 @@ export default function DefaultGraphics() {
     transcriptWords,
   } = useParams();
   const {
-    additionalJson = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
     showCaptions,
+    strokeColor = "rgba(0, 0, 0, 0.75)",
+    strokeWidth_px = 6,
   } = JSON.parse(settings);
-  const strokeColor = getValueFromJson(
-    additionalJson,
-    "strokeColor",
-    "rgba(0, 0, 0, 0.75)",
-  );
-  const strokeWidth_px = getValueFromJson(additionalJson, "strokeWidth_px", 6);
 
   const labelStyle = {
     textColor: captionColor ?? "white",
