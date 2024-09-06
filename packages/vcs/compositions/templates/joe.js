@@ -36,7 +36,6 @@ export default function JoeGraphics({
   
   const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
-    additionalJson: json = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
