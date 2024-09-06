@@ -14,7 +14,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@envelop/core@npm:^5.0.0":
+"@envelop/core@npm:^5.0.1":
   version: 5.0.2
   resolution: "@envelop/core@npm:5.0.2"
   dependencies:
@@ -248,7 +248,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/executor@npm:^1.0.0":
+"@graphql-tools/executor@npm:^1.3.0":
   version: 1.3.1
   resolution: "@graphql-tools/executor@npm:1.3.1"
   dependencies:
@@ -275,7 +275,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:^10.0.0":
+"@graphql-tools/schema@npm:^10.0.4":
   version: 10.0.6
   resolution: "@graphql-tools/schema@npm:10.0.6"
   dependencies:
@@ -289,7 +289,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:^10.0.0, @graphql-tools/utils@npm:^10.3.4, @graphql-tools/utils@npm:^10.5.4":
+"@graphql-tools/utils@npm:^10.3.2, @graphql-tools/utils@npm:^10.3.4, @graphql-tools/utils@npm:^10.5.4":
   version: 10.5.4
   resolution: "@graphql-tools/utils@npm:10.5.4"
   dependencies:
@@ -321,7 +321,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-yoga/subscription@npm:^5.0.0":
+"@graphql-yoga/subscription@npm:^5.0.1":
   version: 5.0.1
   resolution: "@graphql-yoga/subscription@npm:5.0.1"
   dependencies:
@@ -385,7 +385,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@replit/object-storage@npm:1.0.0":
+"@replit/object-storage@npm:^1.0.0":
   version: 1.0.0
   resolution: "@replit/object-storage@npm:1.0.0"
   dependencies:
@@ -409,11 +409,44 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 22.5.2
-  resolution: "@types/node@npm:22.5.2"
+  version: 22.5.4
+  resolution: "@types/node@npm:22.5.4"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/624a7fd76229eacc6c158eb3b9afd55b811d7f01976c5f92c630d5b9d47047cc218928c343988484a165ac400e5eb6fe70ea300fc7242deeb0e920c7724290f6
+  checksum: 10c0/b445daa7eecd761ad4d778b882d6ff7bcc3b4baad2086ea9804db7c5d4a4ab0298b00d7f5315fc640a73b5a1d52bbf9628e09c9fec0cf44dbf9b4df674a8717d
+  languageName: node
+  linkType: hard
+
+"@types/prop-types@npm:*":
+  version: 15.7.12
+  resolution: "@types/prop-types@npm:15.7.12"
+  checksum: 10c0/1babcc7db6a1177779f8fde0ccc78d64d459906e6ef69a4ed4dd6339c920c2e05b074ee5a92120fe4e9d9f1a01c952f843ebd550bee2332fc2ef81d1706878f8
+  languageName: node
+  linkType: hard
+
+"@types/react-dom@npm:^18":
+  version: 18.3.0
+  resolution: "@types/react-dom@npm:18.3.0"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10c0/6c90d2ed72c5a0e440d2c75d99287e4b5df3e7b011838cdc03ae5cd518ab52164d86990e73246b9d812eaf02ec351d74e3b4f5bd325bf341e13bf980392fd53b
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:*, @types/react@npm:^18":
+  version: 18.3.5
+  resolution: "@types/react@npm:18.3.5"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    csstype: "npm:^3.0.2"
+  checksum: 10c0/548b1d3d7c2f0242fbfdbbd658731b4ce69a134be072fa83e6ab516f2840402a3f20e3e7f72e95133b23d4880ef24a6d864050dc8e1f7c68f39fa87ca8445917
+  languageName: node
+  linkType: hard
+
+"@types/relay-runtime@npm:^17":
+  version: 17.0.4
+  resolution: "@types/relay-runtime@npm:17.0.4"
+  checksum: 10c0/d784d49413d4e9da90274bcf8949d8f522e94f4663569c4eb915ccd69581f5035114b27d17ccd347243aa97315774b30c127c8c0692860a116293ecf2376430a
   languageName: node
   linkType: hard
 
@@ -445,7 +478,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@whatwg-node/fetch@npm:^0.9.21, @whatwg-node/fetch@npm:^0.9.7":
+"@whatwg-node/fetch@npm:^0.9.18, @whatwg-node/fetch@npm:^0.9.21":
   version: 0.9.21
   resolution: "@whatwg-node/fetch@npm:0.9.21"
   dependencies:
@@ -467,7 +500,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@whatwg-node/server@npm:^0.9.1":
+"@whatwg-node/server@npm:^0.9.44":
   version: 0.9.49
   resolution: "@whatwg-node/server@npm:0.9.49"
   dependencies:
@@ -571,19 +604,22 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "bolt-foundry@workspace:."
   dependencies:
-    "@replit/object-storage": "npm:1.0.0"
-    esbuild: "npm:0.23.1"
-    google-auth-library: "npm:9.2.0"
-    graphql: "npm:16.6.0"
-    graphql-relay: "npm:0.10.0"
-    graphql-request: "npm:7.1.0"
-    graphql-yoga: "npm:5.1.1"
-    nexus: "npm:1.3.0"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    react-relay: "npm:16.1.0"
-    relay-compiler: "npm:16.1.0"
-    relay-runtime: "npm:16.1.0"
+    "@replit/object-storage": "npm:^1.0.0"
+    "@types/react": "npm:^18"
+    "@types/react-dom": "npm:^18"
+    "@types/relay-runtime": "npm:^17"
+    esbuild: "npm:^0.23.1"
+    google-auth-library: "npm:^9.14.1"
+    graphql: "npm:^16.9.0"
+    graphql-relay: "npm:^0.10.2"
+    graphql-request: "npm:^7.1.0"
+    graphql-yoga: "npm:^5.7.0"
+    nexus: "npm:^1.3.0"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
+    react-relay: "npm:^17.0.0"
+    relay-compiler: "npm:^17.0.0"
+    relay-runtime: "npm:^17.0.0"
   languageName: unknown
   linkType: soft
 
@@ -637,15 +673,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"csstype@npm:^3.0.2":
+  version: 3.1.3
+  resolution: "csstype@npm:3.1.3"
+  checksum: 10c0/80c089d6f7e0c5b2bd83cf0539ab41474198579584fa10d86d0cafe0642202343cbc119e076a0b1aece191989477081415d66c9fefbf3c957fc2fc4b7009f248
+  languageName: node
+  linkType: hard
+
 "debug@npm:4, debug@npm:^4.3.4":
-  version: 4.3.6
-  resolution: "debug@npm:4.3.6"
+  version: 4.3.7
+  resolution: "debug@npm:4.3.7"
   dependencies:
-    ms: "npm:2.1.2"
+    ms: "npm:^2.1.3"
   peerDependenciesMeta:
     supports-color:
       optional: true
-  checksum: 10c0/3293416bff072389c101697d4611c402a6bacd1900ac20c0492f61a9cdd6b3b29750fc7f5e299f8058469ef60ff8fb79b86395a30374fbd2490113c1c7112285
+  checksum: 10c0/1471db19c3b06d485a622d62f65947a19a23fbd0dd73f7fd3eafb697eec5360cde447fb075919987899b1a2096e85d35d4eb5a4de09a57600ac9cf7e6c8e768b
   languageName: node
   linkType: hard
 
@@ -693,7 +736,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:0.23.1":
+"esbuild@npm:^0.23.1":
   version: 0.23.1
   resolution: "esbuild@npm:0.23.1"
   dependencies:
@@ -807,13 +850,13 @@ __metadata:
   linkType: hard
 
 "fast-xml-parser@npm:^4.4.1":
-  version: 4.4.1
-  resolution: "fast-xml-parser@npm:4.4.1"
+  version: 4.5.0
+  resolution: "fast-xml-parser@npm:4.5.0"
   dependencies:
     strnum: "npm:^1.0.5"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10c0/7f334841fe41bfb0bf5d920904ccad09cefc4b5e61eaf4c225bf1e1bb69ee77ef2147d8942f783ee8249e154d1ca8a858e10bda78a5d78b8bed3f48dcee9bf33
+  checksum: 10c0/71d206c9e137f5c26af88d27dde0108068a5d074401901d643c500c36e95dfd828333a98bda020846c41f5b9b364e2b0e9be5b19b0bdcab5cf31559c07b80a95
   languageName: node
   linkType: hard
 
@@ -863,7 +906,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gcp-metadata@npm:^6.0.0, gcp-metadata@npm:^6.1.0":
+"gcp-metadata@npm:^6.1.0":
   version: 6.1.0
   resolution: "gcp-metadata@npm:6.1.0"
   dependencies:
@@ -873,23 +916,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:9.2.0":
-  version: 9.2.0
-  resolution: "google-auth-library@npm:9.2.0"
-  dependencies:
-    base64-js: "npm:^1.3.0"
-    ecdsa-sig-formatter: "npm:^1.0.11"
-    gaxios: "npm:^6.0.0"
-    gcp-metadata: "npm:^6.0.0"
-    gtoken: "npm:^7.0.0"
-    jws: "npm:^4.0.0"
-  checksum: 10c0/045dc01161b0f0d95a8ee6c991003fb13bccd9f89793ffa7b02e9866f086b97cb5c8f81af32f8831b1eeaf48da1f7ad9402e131dd24356e8bdcd46e113aabc0d
-  languageName: node
-  linkType: hard
-
-"google-auth-library@npm:^9.6.3":
-  version: 9.14.0
-  resolution: "google-auth-library@npm:9.14.0"
+"google-auth-library@npm:^9.14.1, google-auth-library@npm:^9.6.3":
+  version: 9.14.1
+  resolution: "google-auth-library@npm:9.14.1"
   dependencies:
     base64-js: "npm:^1.3.0"
     ecdsa-sig-formatter: "npm:^1.0.11"
@@ -897,20 +926,20 @@ __metadata:
     gcp-metadata: "npm:^6.1.0"
     gtoken: "npm:^7.0.0"
     jws: "npm:^4.0.0"
-  checksum: 10c0/f421e45ca4f22f54787b9fb81b51dea77f2a8847988ed32d9d8756e0c47dcf08b6e1f7f792c9e59faccff1f4f207fbf2c3001353238dd3fbba02e21f0b3d52a4
+  checksum: 10c0/050e16343d93768300a800bc69773d8c451c4e778b0e503fc9dcf72e40e9563c0877f7a79ed06dffad664b49fdd1183080c41f081034b86d54a6795475fb73d2
   languageName: node
   linkType: hard
 
-"graphql-relay@npm:0.10.0":
-  version: 0.10.0
-  resolution: "graphql-relay@npm:0.10.0"
+"graphql-relay@npm:^0.10.2":
+  version: 0.10.2
+  resolution: "graphql-relay@npm:0.10.2"
   peerDependencies:
     graphql: ^16.2.0
-  checksum: 10c0/07f34c1292f9624667643bc2c1edd89759f370a4f5844c976d0211e5dddcb1d0526bc7ffba81592d59c2403d29b2500639d845423b626b90924a42b7bc3786f9
+  checksum: 10c0/312748377c699c812541551cb2079308be6efef99e5398928dbbeca7596581d1fd8d939f60b2c77d184a185b64717e8c2b62b102a8f85167d379fd49cad39a3d
   languageName: node
   linkType: hard
 
-"graphql-request@npm:7.1.0":
+"graphql-request@npm:^7.1.0":
   version: 7.1.0
   resolution: "graphql-request@npm:7.1.0"
   dependencies:
@@ -935,31 +964,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-yoga@npm:5.1.1":
-  version: 5.1.1
-  resolution: "graphql-yoga@npm:5.1.1"
+"graphql-yoga@npm:^5.7.0":
+  version: 5.7.0
+  resolution: "graphql-yoga@npm:5.7.0"
   dependencies:
-    "@envelop/core": "npm:^5.0.0"
-    "@graphql-tools/executor": "npm:^1.0.0"
-    "@graphql-tools/schema": "npm:^10.0.0"
-    "@graphql-tools/utils": "npm:^10.0.0"
+    "@envelop/core": "npm:^5.0.1"
+    "@graphql-tools/executor": "npm:^1.3.0"
+    "@graphql-tools/schema": "npm:^10.0.4"
+    "@graphql-tools/utils": "npm:^10.3.2"
     "@graphql-yoga/logger": "npm:^2.0.0"
-    "@graphql-yoga/subscription": "npm:^5.0.0"
-    "@whatwg-node/fetch": "npm:^0.9.7"
-    "@whatwg-node/server": "npm:^0.9.1"
+    "@graphql-yoga/subscription": "npm:^5.0.1"
+    "@whatwg-node/fetch": "npm:^0.9.18"
+    "@whatwg-node/server": "npm:^0.9.44"
     dset: "npm:^3.1.1"
     lru-cache: "npm:^10.0.0"
     tslib: "npm:^2.5.2"
   peerDependencies:
     graphql: ^15.2.0 || ^16.0.0
-  checksum: 10c0/282b46c3539528c767b08351a7ddc3e2a171c5f8187ffaa70aaff144607da97a48fba7af3c4e43e97c9bd724ad867fa1861ab795be17e7d89f5f12f8cc56eb11
+  checksum: 10c0/dc7524bd076bf336ca671a40a9765cf5ec66c0c6feda658bcd817966814010c849a7fa5b49ffdc3121ad9887b9791a460bf51ebdab3d0c7d2b9d5038230c6328
   languageName: node
   linkType: hard
 
-"graphql@npm:16.6.0":
-  version: 16.6.0
-  resolution: "graphql@npm:16.6.0"
-  checksum: 10c0/3a2c15ff58b69d017618d2b224fa6f3c4a7937e1f711c3a5e0948db536b4931e6e649560b53de7cc26735e027ceea6e2d0a6bb7c29fc4639b290313e3aa71618
+"graphql@npm:^16.9.0":
+  version: 16.9.0
+  resolution: "graphql@npm:16.9.0"
+  checksum: 10c0/a8850f077ff767377237d1f8b1da2ec70aeb7623cdf1dfc9e1c7ae93accc0c8149c85abe68923be9871a2934b1bce5a2496f846d4d56e1cfb03eaaa7ddba9b6a
   languageName: node
   linkType: hard
 
@@ -1142,14 +1171,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ms@npm:2.1.2":
-  version: 2.1.2
-  resolution: "ms@npm:2.1.2"
-  checksum: 10c0/a437714e2f90dbf881b5191d35a6db792efbca5badf112f87b9e1c712aace4b4b9b742dd6537f3edf90fd6f684de897cec230abde57e87883766712ddda297cc
+"ms@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "ms@npm:2.1.3"
+  checksum: 10c0/d924b57e7312b3b63ad21fc5b3dc0af5e78d61a1fc7cfb5457edaf26326bf62be5307cc87ffb6862ef1c2b33b0233cdb5d4f01c4c958cc0d660948b65a287a48
   languageName: node
   linkType: hard
 
-"nexus@npm:1.3.0":
+"nexus@npm:^1.3.0":
   version: 1.3.0
   resolution: "nexus@npm:1.3.0"
   dependencies:
@@ -1216,39 +1245,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:18.2.0":
-  version: 18.2.0
-  resolution: "react-dom@npm:18.2.0"
+"react-dom@npm:^18.3.1":
+  version: 18.3.1
+  resolution: "react-dom@npm:18.3.1"
   dependencies:
     loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.23.0"
+    scheduler: "npm:^0.23.2"
   peerDependencies:
-    react: ^18.2.0
-  checksum: 10c0/66dfc5f93e13d0674e78ef41f92ed21dfb80f9c4ac4ac25a4b51046d41d4d2186abc915b897f69d3d0ebbffe6184e7c5876f2af26bfa956f179225d921be713a
+    react: ^18.3.1
+  checksum: 10c0/a752496c1941f958f2e8ac56239172296fcddce1365ce45222d04a1947e0cc5547df3e8447f855a81d6d39f008d7c32eab43db3712077f09e3f67c4874973e85
   languageName: node
   linkType: hard
 
-"react-relay@npm:16.1.0":
-  version: 16.1.0
-  resolution: "react-relay@npm:16.1.0"
+"react-relay@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "react-relay@npm:17.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.0.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
     nullthrows: "npm:^1.1.1"
-    relay-runtime: "npm:16.1.0"
+    relay-runtime: "npm:17.0.0"
   peerDependencies:
     react: ^16.9.0 || ^17 || ^18
-  checksum: 10c0/6c4746e88366a01a69d30c2910f05809715adc5fe684dff749c44f56e79ae56f4f1132c5a5e77a50dfa9c9f6a8e03868a82ff38d0b6ca15662a0727e6e1b2815
+  checksum: 10c0/244dc3311ec36167c662fc0f947e7c817c034456d7b1cca13cf8ae61f7f6492a111f4ce391ed4897ce91f9f4498d320088853a6cf433fc8da3eb70cbae8aadf7
   languageName: node
   linkType: hard
 
-"react@npm:18.2.0":
-  version: 18.2.0
-  resolution: "react@npm:18.2.0"
+"react@npm:^18.3.1":
+  version: 18.3.1
+  resolution: "react@npm:18.3.1"
   dependencies:
     loose-envify: "npm:^1.1.0"
-  checksum: 10c0/b562d9b569b0cb315e44b48099f7712283d93df36b19a39a67c254c6686479d3980b7f013dc931f4a5a3ae7645eae6386b4aa5eea933baa54ecd0f9acb0902b8
+  checksum: 10c0/283e8c5efcf37802c9d1ce767f302dd569dd97a70d9bb8c7be79a789b9902451e0d16334b05d73299b20f048cbc3c7d288bbbde10b701fa194e2089c237dbea3
   languageName: node
   linkType: hard
 
@@ -1277,23 +1306,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"relay-compiler@npm:16.1.0":
-  version: 16.1.0
-  resolution: "relay-compiler@npm:16.1.0"
+"relay-compiler@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "relay-compiler@npm:17.0.0"
   bin:
     relay-compiler: cli.js
-  checksum: 10c0/24dc9f4ae3cc6b3c1ce323366205e317aabb4889c193c39ac487d6afbe372c52af7e953d3d13582c5aca70cb5567fd7c2c35b9def048a7c4f34b02572da41c87
+  checksum: 10c0/302998376e2c6f7a71d3c78d2e351578bea3217b121d8cb642b40be56ed7aba816aadcab2271f538dab055a4e05a453ce4d76e7a10dd64b88c1ccfe07dc29ac0
   languageName: node
   linkType: hard
 
-"relay-runtime@npm:16.1.0":
-  version: 16.1.0
-  resolution: "relay-runtime@npm:16.1.0"
+"relay-runtime@npm:17.0.0, relay-runtime@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "relay-runtime@npm:17.0.0"
   dependencies:
     "@babel/runtime": "npm:^7.0.0"
     fbjs: "npm:^3.0.2"
     invariant: "npm:^2.2.4"
-  checksum: 10c0/1abb8f62f297f77c09694c091c86894058b884fcf93da74c38a465cbfc40a8e4400a2a9642cafe3733dd728de468bfd73d70759ad07fade63a2f37c2c334eceb
+  checksum: 10c0/fa05682b4f910f49611cd77898cf4bcbfac34023f7d1b91e85b9d8a5f2fb61617c993d4a9462edb04115aadaff4e0d325ccefd0ac7af1092e576321c5893172d
   languageName: node
   linkType: hard
 
@@ -1329,7 +1358,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.0":
+"scheduler@npm:^0.23.2":
   version: 0.23.2
   resolution: "scheduler@npm:0.23.2"
   dependencies:
