@@ -1,13 +1,12 @@
 import * as React from "react";
 import { Box, Text, Video } from "#vcs-react/components";
-import { useParams, useVideoTime } from "#vcs-react/hooks";
+import { useActiveVideo, useParams, useVideoTime } from "#vcs-react/hooks";
 import { fontBoldWeights, fontRelativeCharacterWidths } from "../fonts.js";
 import getLinesOfWordsFromTranscript from "../utils/getLinesOfWordsFromTranscript.js";
 import EndCap from "../components/EndCap.js";
 import TitleCard from "../components/TitleCard.js";
 import Watermark from "../components/Watermark.js";
 
-const FONT_SIZE_VH = 96 / 1920;
 const CAPTION_POSITION = 0.6;
 const MAX_CHARACTERS_PER_LINE = 16;
 const DEFAULT_NUMBER_OF_LINES = 3;
@@ -27,29 +26,30 @@ export default function JoeGraphics({
     Array(captionLines).fill({ ...EMPTY_LINE_STATE }),
   );
   const time = useVideoTime();
+
+  const { activeIds } = useActiveVideo();
+  let video;
+  if (activeIds.length > 0) {
+    video = <Video src={activeIds[0]} />;
+  }
+
   const { endTimecode, startTimecode, settings, transcriptWords } = useParams();
   const {
-    additionalJson: json = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
+    fontSize = 96,
     showCaptions,
+    strokeColor = "rgba(0, 0, 0, 0.75)",
+    strokeWidth_px = 6,
   } = JSON.parse(settings);
-  const additionalJson = JSON.parse(json);
-  let strokeColor = "rgba(0, 0, 0, 0.75)";
-  if (additionalJson.strokeColor) {
-    strokeColor = additionalJson.strokeColor;
-  }
-  let strokeWidth_px = 6;
-  if (additionalJson.strokeWidth_px) {
-    strokeWidth_px = additionalJson.strokeWidth_px;
-  }
+  const fontSize_vh = fontSize / 1920;
 
   const labelStyle = {
     textColor: captionColor ?? "white",
     fontFamily,
     fontWeight: fontBoldWeights[fontFamily],
-    fontSize_vh: FONT_SIZE_VH,
+    fontSize_vh: fontSize_vh,
     strokeColor,
     strokeWidth_px,
   };
@@ -76,7 +76,7 @@ export default function JoeGraphics({
 
   return (
     <Box id="videoWithGraphics">
-      <Video src={"video1"} />
+      {video}
       {showCaptions &&
         lineState &&
         lineState.map((line, index) => {
@@ -84,24 +84,38 @@ export default function JoeGraphics({
           return (
             <Text
               key={index}
-              style={line.currentLine ? highlightStyle : labelStyle}
+              style={labelStyle}
               layout={[
                 layoutFuncs.plainSubtitles,
                 {
+                  pad_gu: 0.5,
                   fontSize_vh,
                   index,
-                  pad_gu: 0.5,
                 },
               ]}
             >
-              {line.lineText.join(" ")}
+              {line.lineText.map((word, wordIndex) => {
+                const isHighlighted = line.currentLineIndex > index
+                  ? true
+                  : wordIndex <= line.highlightedWordIndexWithinLine;
+                return [
+                  word + (
+                    wordIndex < line.lineText.length - 1 ? " " : ""
+                  ),
+                  {
+                    ...(
+                      isHighlighted ? highlightStyle : labelStyle
+                    ),
+                  },
+                ];
+              })}
             </Text>
           );
         })}
       <Watermark
-        fontSizeVh={FONT_SIZE_VH}
+        fontSizeVh={fontSize_vh}
         captionPosition={CAPTION_POSITION}
-        defaultNumberOfLines={2}
+        defaultNumberOfLines={captionLines}
       />
       <TitleCard />
       <EndCap />
@@ -114,7 +128,7 @@ export default function JoeGraphics({
 const layoutFuncs = {
   plainSubtitles: (parentFrame, params, layoutCtx) => {
     const pxPerGu = layoutCtx.pixelsPerGridUnit;
-    const { fontSize_vh = FONT_SIZE_VH, index = 0, pad_gu = 0 } = params;
+    const { fontSize_vh, index = 0, pad_gu = 0 } = params;
     let { x, y, w, h } = parentFrame;
 
     const textSize = layoutCtx.useIntrinsicSize();
