@@ -16,7 +16,6 @@ import {
   getAvailableActionsForRole,
   type JsUnixtime,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import type { ConnectionArguments, ConnectionInterface } from "relay-runtime";
 import { generateUUID } from "lib/generateUUID.ts";
 import {
   bfDeleteItem,
@@ -198,60 +197,6 @@ export abstract class BfBaseModel<
     });
   }
 
-  static async queryConnectionForGraphQL<
-    TThis extends Constructor<
-      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
-    >,
-    TRequiredProps,
-    TOptionalProps,
-    TCreationMetadata extends CreationMetadata,
-  >(
-    this: TThis,
-    currentViewer: BfCurrentViewer,
-    metadataToQuery: Partial<BfBaseModelMetadata<TCreationMetadata>>,
-    propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
-    connectionArgs: ConnectionArguments,
-    bfGids: Array<BfAnyid> = [],
-  ): Promise<
-    ConnectionInterface<
-      InstanceType<TThis> & BfBaseModelMetadata<TCreationMetadata>
-    > & { count: number }
-  > {
-    const currentViewerIsAdmin = currentViewer instanceof
-      IBfCurrentViewerInternalAdmin;
-    const combinedMetadata = {
-      ...metadataToQuery,
-      // allow internal admins to query all models regardless of owner
-      bfOid: currentViewerIsAdmin
-        ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid
-        : currentViewer.organizationBfGid,
-      className: this.name,
-    };
-    const { edges, ...others } = await bfQueryItemsForGraphQLConnection<
-      TRequiredProps & Partial<TOptionalProps>,
-      BfBaseModelMetadata<TCreationMetadata>
-    >(
-      combinedMetadata,
-      propsToQuery,
-      connectionArgs,
-      bfGids,
-    );
-
-    return {
-      ...others,
-      // @ts-expect-error edge is anytyped but it shouldn't be... it should be a rowitem.
-      edges: edges.map((edge) => ({
-        cursor: edge.cursor,
-        node: new this(
-          currentViewer,
-          edge.node.props,
-          {},
-          edge.node.metadata,
-          true,
-        ).toGraphql(),
-      })),
-    };
-  }
 
   private static generateDefaultMetadata<
     TCreationMetadata extends CreationMetadata = CreationMetadata,
