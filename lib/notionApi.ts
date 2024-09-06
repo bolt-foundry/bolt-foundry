@@ -1,4 +1,6 @@
 // cms: https://www.notion.so/boltfoundry/1d6117a9a86441f1b339e96346bbf0e1?v=887423b5acf24d93b501bd3975b0c11e
+import { getLogger } from "deps.ts";
+const logger = getLogger(import.meta);
 const NOTION_API_KEY = Deno.env.get("NOTION_API_KEY");
 
 export interface NotionPostsResponse {
@@ -35,13 +37,28 @@ export interface NotionBlogPostContentObject {
   id: string;
   image: {
     caption: RichText[];
-    file: {
+    external?: {
+      url: string;
+    };
+    file?: {
       url: string;
     };
   };
   paragraph: {
     rich_text: RichText[];
     color: string;
+  };
+  callout: {
+    rich_text: RichText[];
+    color: string;
+    icon: {
+      type: string;
+      emoji: string;
+    };
+  };
+  code: {
+    rich_text: RichText[];
+    language: string;
   };
 }
 
@@ -88,10 +105,10 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
       const urlWithoutId = url.substring(0, lastDashIndex);
       const slug = urlWithoutId.replace("https://www.notion.so/", "");
       return {
-        title: properties.Name.title[0].text.content,
+        title: properties.Name.title[0]?.text?.content ?? "Untitled",
         slug: slug,
         id: id,
-        status: properties.Status.status.name,
+        status: properties.Status.status?.name ?? "No status",
       };
     },
   );
@@ -122,7 +139,8 @@ export async function getListOfContentForAPost(
           return {
             id: contentBlock.id,
             type: contentBlock.type,
-            imageUrl: contentBlock.image.file.url,
+            imgUrl: contentBlock.image.external?.url ??
+              contentBlock.image.file?.url,
             caption: contentBlock.image.caption,
           };
         case "paragraph": {
@@ -137,8 +155,25 @@ export async function getListOfContentForAPost(
             color: contentBlock.paragraph.color,
           };
         }
+        case "callout": {
+          return {
+            id: contentBlock.id,
+            type: contentBlock.type,
+            RichText: contentBlock.callout.rich_text,
+            icon: contentBlock.callout.icon?.emoji,
+            color: contentBlock.callout.color,
+          };
+        }
+        case "code": {
+          return {
+            id: contentBlock.id,
+            type: contentBlock.type,
+            RichText: contentBlock.code.rich_text,
+            language: contentBlock.code.language,
+          };
+        }
         default: {
-          //todo add logging for unknown content type.
+          logger.error("Unknown content type", contentBlock.type, contentBlock);
           return;
         }
       }

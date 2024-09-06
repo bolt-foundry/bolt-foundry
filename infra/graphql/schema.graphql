@@ -394,6 +394,21 @@ type BlogPostEdge {
   node: BlogPost
 }
 
+type CalloutBlock implements BlogPostContentBlock {
+  RichText: [RichText]
+  color: String
+  icon: String
+  id: String
+  type: String
+}
+
+type CodeBlock implements BlogPostContentBlock {
+  RichText: [RichText]
+  id: String
+  language: String
+  type: String
+}
+
 type DeleteMutationPayload {
   success: Boolean!
 }

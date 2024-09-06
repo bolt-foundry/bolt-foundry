@@ -185,6 +185,19 @@ export interface NexusGenObjects {
     cursor: string; // String!
     node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  CalloutBlock: { // root type
+    RichText?: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    color?: string | null; // String
+    icon?: string | null; // String
+    id?: string | null; // String
+    type?: string | null; // String
+  }
+  CodeBlock: { // root type
+    RichText?: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    id?: string | null; // String
+    language?: string | null; // String
+    type?: string | null; // String
+  }
   DeleteMutationPayload: { // root type
     success: boolean; // Boolean!
   }
@@ -233,7 +246,7 @@ export interface NexusGenObjects {
 export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'>;
   BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
-  BlogPostContentBlock: core.Discriminate<'ImageBlock', 'optional'> | core.Discriminate<'ParagraphBlock', 'optional'>;
+  BlogPostContentBlock: core.Discriminate<'CalloutBlock', 'optional'> | core.Discriminate<'CodeBlock', 'optional'> | core.Discriminate<'ImageBlock', 'optional'> | core.Discriminate<'ParagraphBlock', 'optional'>;
   Node: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
 }
 
@@ -382,6 +395,19 @@ export interface NexusGenFieldTypes {
   BlogPostEdge: { // field return type
     cursor: string; // String!
     node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
+  }
+  CalloutBlock: { // field return type
+    RichText: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    color: string | null; // String
+    icon: string | null; // String
+    id: string | null; // String
+    type: string | null; // String
+  }
+  CodeBlock: { // field return type
+    RichText: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    id: string | null; // String
+    language: string | null; // String
+    type: string | null; // String
   }
   DeleteMutationPayload: { // field return type
     success: boolean; // Boolean!
@@ -602,6 +628,19 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'BlogPost'
   }
+  CalloutBlock: { // field return type name
+    RichText: 'RichText'
+    color: 'String'
+    icon: 'String'
+    id: 'String'
+    type: 'String'
+  }
+  CodeBlock: { // field return type name
+    RichText: 'RichText'
+    id: 'String'
+    language: 'String'
+    type: 'String'
+  }
   DeleteMutationPayload: { // field return type name
     success: 'Boolean'
   }
@@ -794,7 +833,7 @@ export interface NexusGenArgTypes {
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon"
   BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaTranscript" | "BfOrganization" | "BfPerson"
-  BlogPostContentBlock: "ImageBlock" | "ParagraphBlock"
+  BlogPostContentBlock: "CalloutBlock" | "CodeBlock" | "ImageBlock" | "ParagraphBlock"
   Node: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaTranscript" | "BfOrganization" | "BfPerson"
 }
 
@@ -809,6 +848,8 @@ export interface NexusGenTypeInterfaces {
   BfMediaTranscript: "BfNode" | "Node"
   BfOrganization: "BfNode" | "Node"
   BfPerson: "BfNode" | "Node"
+  CalloutBlock: "BlogPostContentBlock"
+  CodeBlock: "BlogPostContentBlock"
   ImageBlock: "BlogPostContentBlock"
   ParagraphBlock: "BlogPostContentBlock"
   BfNode: "Node"
