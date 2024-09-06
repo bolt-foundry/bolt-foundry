@@ -169,6 +169,36 @@ export class BfMedia extends BfNode<BfMediaProps> {
       throw new Error(error);
     }
 
+    // Clear /tmp folder
+    logger.info("Clearing /tmp folder");
+    await Deno.remove(fileroot);
+    logger.info("❌", fileroot);
+    await Deno.remove(testVideoFilename);
+    logger.info("❌", testVideoFilename);
+    await Deno.remove(transcriptFilename);
+    logger.info("❌", transcriptFilename);
+    await Deno.remove(renderedFilename);
+    logger.info("❌", renderedFilename);
+
+    for await (const dirEntry of Deno.readDir("/tmp")) {
+      const entryPath = `/tmp/${dirEntry.name}`;
+      if (dirEntry.isFile) {
+        if (
+          dirEntry.name.includes("vcscut") ||
+          dirEntry.name.includes("cut_ffmpegout")
+        ) {
+          await Deno.remove(entryPath);
+          logger.info("❌", entryPath);
+        }
+      } else if (dirEntry.isDirectory) {
+        if (dirEntry.name.includes("vcs")) {
+          await Deno.remove(entryPath, { recursive: true });
+          logger.info("❌", entryPath);
+        }
+      }
+    }
+    logger.info("Cleared /tmp folder");
+
     if (renderCode !== 0) {
       logger.error(`Error rendering ${renderedFilename}`);
       throw new Error(`Error rendering ${renderedFilename}`);
