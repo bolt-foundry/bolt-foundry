@@ -58,6 +58,7 @@ export default function getLinesOfWordsFromTranscript(
   let characterCount = 0;
   let actualWordsPerScreen = 0;
   const words = JSON.parse(transcriptWords);
+  let currentLineIndex = 100; // highlight all lines by default
   const currentWordIndex = words.findIndex((word) => {
     return (
       word.start <= time && word.end >= time && word.start >= startTimecode
@@ -205,12 +206,16 @@ export default function getLinesOfWordsFromTranscript(
     actualWordsPerScreen += actualWordsPerLine;
     currentLine = firstWordIndex <= currentWordIndex &&
       currentWordIndex <= lastWordIndex;
+    if (currentLine) {
+      currentLineIndex = index;
+    }
 
     lineState.current[index] = {
       firstWordIndex,
       actualWordsPerLine,
       lineText,
       currentLine,
+      currentLineIndex,
       highlightedWordIndexWithinLine,
     };
 

@@ -14,7 +14,7 @@ import type { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import { getLogger } from "deps.ts";
 import { BF_INTERNAL_ORG_NAME } from "packages/bfDb/utils.ts";
 
-const _logger = getLogger(import.meta);
+const logger = getLogger(import.meta);
 
 export class BfCurrentViewerCreationError extends Error {
   constructor(reason: string) {
@@ -111,6 +111,22 @@ export class BfCurrentViewerFromAccount extends BfCurrentViewer {
   }
 }
 
+export class __DANGEROUS__BfCurrentViewerFromThinAir extends BfCurrentViewer {
+  static __DANGEROUS__create(
+    importMeta: ImportMeta,
+    props: { organizationBfGid: BfGid; role: ACCOUNT_ROLE; personBfGid: BfGid },
+  ) {
+    logger.warn(`Creating a CV from thin air, this is dangerous.`, props);
+    return new this(
+      props.organizationBfGid,
+      props.role,
+      props.personBfGid,
+      props.personBfGid,
+      importMeta.url,
+    );
+  }
+}
+
 export class IBfCurrentViewerInternalAdmin extends BfCurrentViewerAccessToken {
   static async create(
     importMeta: ImportMeta,
@@ -143,6 +159,7 @@ export class IBfCurrentViewerInternalAdmin extends BfCurrentViewerAccessToken {
 export class IBfCurrentViewerInternalAdminOmni
   extends IBfCurrentViewerInternalAdmin {
   static __DANGEROUS__create(importMeta: ImportMeta, orgId = "omni_person") {
+    logger.warn("Creating omni cv, tread carefully. Created for: ", orgId);
     return new this(
       toBfOid(orgId),
       ACCOUNT_ROLE.OMNI,

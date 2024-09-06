@@ -8,8 +8,8 @@ import TitleCard from "../components/TitleCard.js";
 import Watermark from "../components/Watermark.js";
 import { getValueFromJson } from "../utils/jsonUtils.js";
 
-const MAX_CHARACTERS_PER_LINE = 24;
-const FONT_SIZE_VH = 64 / 1920;
+const MAX_CHARACTERS_PER_LINE = 16;
+const FONT_SIZE_VH = 96 / 1920;
 const CAPTION_POSITION = 0.6;
 const EMPTY_LINE_STATE = {
   firstWordIndex: -1,
@@ -60,13 +60,20 @@ export default function DefaultGraphics() {
     strokeColor,
     strokeWidth_px,
   };
+  const highlightStyle = {
+    ...labelStyle,
+    fontSize_vh: FONT_SIZE_VH * 1,
+    strokeColor: "rgba(0,0,0,0.25)",
+    textColor: "rgb(255, 255, 70)",
+    // textColor: captionHighlightColor ?? "rgb(255, 215, 0)",
+  };
 
   const charactersPerLineByFont = MAX_CHARACTERS_PER_LINE *
     fontRelativeCharacterWidths[fontFamily];
 
   const options = {
     maxCharactersPerLine: charactersPerLineByFont,
-    maxWordsPerLine: 8,
+    maxWordsPerLine: 5,
     maxPauseForBreak: 0.5,
     endTimecode: endTimecode,
     startTimecode: startTimecode,
@@ -97,14 +104,19 @@ export default function DefaultGraphics() {
               ]}
             >
               {line.lineText.map((word, wordIndex) => {
-                const isHighlighted =
-                  wordIndex === line.highlightedWordIndexWithinLine;
+                const isHighlighted = line.currentLineIndex > index
+                  ? true 
+                  : wordIndex <= line.highlightedWordIndexWithinLine;
                 return [
-                  word + (wordIndex < line.lineText.length - 1 ? " " : ""),
+                  word + (
+                    wordIndex < line.lineText.length - 1 ? " " : ""
+                  ),
                   {
-                    textColor: isHighlighted ? "yellow" : labelStyle.textColor, // you can do word-specific style override here
-                    fontSize_vh: labelStyle.fontSize_vh *
-                      (isHighlighted ? 1.3 : 1),
+                    ...(
+                      isHighlighted
+                        ? highlightStyle
+                        : labelStyle
+                    )
                   },
                 ];
               })}
