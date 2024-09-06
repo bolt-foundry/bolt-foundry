@@ -9,6 +9,6 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "zx": "^8.1.4"
+    "zx": "^8.1.5"
   }
 }
