@@ -32,13 +32,13 @@ if (!transcriptJsonPath || transcriptJsonPath.length < 1) {
   console.error("transcript input is required");
   process.exit(1);
 }
-const transcriptObj = JSON.parse(
+const renderObj = JSON.parse(
   fs.readFileSync(transcriptJsonPath, { encoding: "utf-8" }),
 );
 if (
-  !Number.isFinite(transcriptObj.start_time) ||
-  !Number.isFinite(transcriptObj.end_time) ||
-  transcriptObj.transcript == null
+  !Number.isFinite(renderObj.start_time) ||
+  !Number.isFinite(renderObj.end_time) ||
+  renderObj.transcript == null
 ) {
   console.error("transcript object doesn't have expected keys");
   process.exit(1);
@@ -62,8 +62,8 @@ const sourceId = "video1"; // a default id for the single input video
 
 const timelineId = "tl1"; // a default id for this timeline
 
-const extractStartT = transcriptObj.start_time;
-const extractEndT = transcriptObj.end_time;
+const extractStartT = renderObj.start_time;
+const extractEndT = renderObj.end_time;
 const extractDuration = extractEndT - extractStartT;
 if (extractDuration <= 0) {
   console.error(
@@ -122,7 +122,7 @@ if (compositionId === "daily:baseline") {
   params = {
     showTextOverlay: true,
     "text.content": getRawWordsForExtract(
-      transcriptObj.transcript,
+      renderObj.transcript,
       extractStartT,
       extractEndT,
     ),
@@ -132,7 +132,9 @@ if (compositionId === "daily:baseline") {
   params = {
     startTimecode: extractStartT,
     endTimecode: extractEndT,
-    transcriptWords: JSON.stringify(transcriptObj.transcript),
+    settings: JSON.stringify(renderObj.settings),
+    title: renderObj.title,
+    transcriptWords: JSON.stringify(renderObj.transcript),
   };
 }
 

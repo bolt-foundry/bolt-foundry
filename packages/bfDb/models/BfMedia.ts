@@ -25,6 +25,7 @@ type DownloadClipArgs = {
     start_time: number;
     end_time: number;
     transcript: Array<DGWord>;
+    settings: Record<string, unknown>;
   };
 };
 
@@ -105,7 +106,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
     // because replit runs out of disk space
     const transcriptOverride = {
       ...transcript,
-      end_time: transcript.start_time + 20,
+      end_time: transcript.start_time + 10,
     };
     const fileContent = JSON.stringify(transcriptOverride, null, 2);
     try {
