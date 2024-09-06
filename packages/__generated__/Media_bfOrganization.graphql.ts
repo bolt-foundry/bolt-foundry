@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ad949f31ca71fb6316007a4f6048de36>>
+ * @generated SignedSource<<8b84271b8326f4ab5d9f47ef08f34013>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,6 +15,7 @@ export type Media_bfOrganization$data = {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly filename: string | null | undefined;
+        readonly id: string;
         readonly transcripts: {
           readonly edges: ReadonlyArray<{
             readonly node: {
@@ -68,6 +69,13 @@ const node: ReaderFragment = {
               "name": "node",
               "plural": false,
               "selections": [
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "id",
+                  "storageKey": null
+                },
                 {
                   "alias": null,
                   "args": null,
@@ -135,6 +143,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "fe800e1317388c360b57b42e6c7b75de";
+(node as any).hash = "210205c6e9d75c7ceed3311207b78d17";
 
 export default node;

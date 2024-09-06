@@ -15,17 +15,12 @@ export function LandingPageHero() {
     return <div key={index} className={styleClass}>{text}</div>;
   });
 
-  const MarketingHeroStyleOverride = {
-    background: "none",
-    textAlign: "left",
-  };
-
   return (
-    <div className="marketing-hero" style={MarketingHeroStyleOverride}>
-      <div className="marketing-title" style={{ textAlign: "left" }}>
+    <div className="landing-page-hero">
+      <div className="landing-page-title">
         {elements}
       </div>
-      <div className="marketing-text" style={{ textAlign: "left" }}>
+      <div className="landing-page-text">
         Customer testimonials are powerful. Bolt Foundry helps you take those
         stories and turn them into polished clips you can use anywhere.
         <br />
