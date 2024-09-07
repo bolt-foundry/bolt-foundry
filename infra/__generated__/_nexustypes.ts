@@ -180,10 +180,18 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   BlogPost: { // root type
+    coverUrl?: string | null; // String
+    date?: string | null; // String
+    icon?: string | null; // String
     id: string; // String!
     slug?: string | null; // String
     status?: string | null; // String
     title?: string | null; // String
+  }
+  BlogPostAuthor: { // root type
+    avatarUrl?: string | null; // String
+    email?: string | null; // String
+    name?: string | null; // String
   }
   BlogPostConnection: { // root type
     count?: number | null; // Int
@@ -408,11 +416,20 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   BlogPost: { // field return type
+    author: NexusGenRootTypes['BlogPostAuthor'] | null; // BlogPostAuthor
     content: Array<NexusGenRootTypes['BlogPostContentBlock'] | null> | null; // [BlogPostContentBlock]
+    coverUrl: string | null; // String
+    date: string | null; // String
+    icon: string | null; // String
     id: string; // String!
     slug: string | null; // String
     status: string | null; // String
     title: string | null; // String
+  }
+  BlogPostAuthor: { // field return type
+    avatarUrl: string | null; // String
+    email: string | null; // String
+    name: string | null; // String
   }
   BlogPostConnection: { // field return type
     count: number | null; // Int
@@ -666,11 +683,20 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   BlogPost: { // field return type name
+    author: 'BlogPostAuthor'
     content: 'BlogPostContentBlock'
+    coverUrl: 'String'
+    date: 'String'
+    icon: 'String'
     id: 'String'
     slug: 'String'
     status: 'String'
     title: 'String'
+  }
+  BlogPostAuthor: { // field return type name
+    avatarUrl: 'String'
+    email: 'String'
+    name: 'String'
   }
   BlogPostConnection: { // field return type name
     count: 'Int'
@@ -831,7 +857,9 @@ export interface NexusGenArgTypes {
   Blog: {
     posts: { // args
       after?: string | null; // String
+      author?: string | null; // String
       before?: string | null; // String
+      date?: string | null; // String
       first?: number | null; // Int
       last?: number | null; // Int
       slug?: string | null; // String

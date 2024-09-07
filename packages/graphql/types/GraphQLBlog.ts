@@ -16,6 +16,8 @@ export const Blog = objectType({
       additionalArgs: {
         slug: stringArg(),
         status: stringArg(),
+        date: stringArg(),
+        author: stringArg(),
       },
       resolve: async (_, args) => {
         let posts: BlogPostData[] = await getBlogPostsFromNotion();
@@ -36,6 +38,15 @@ export const BlogPost = objectType({
     t.nonNull.string("id");
     t.string("title");
     t.string("slug");
+    t.string("date");
+    t.field("author", {
+      type: "BlogPostAuthor",
+      resolve: (parent) => {
+        return parent.author;
+      },
+    });
+    t.string("coverUrl");
+    t.string("icon");
     t.list.field("content", {
       type: "BlogPostContentBlock",
       resolve: async (parent) => {
@@ -46,6 +57,15 @@ export const BlogPost = objectType({
       },
     });
     t.string("status");
+  },
+});
+
+export const BlogPostAuthor = objectType({
+  name: "BlogPostAuthor",
+  definition(t) {
+    t.string("name");
+    t.string("email");
+    t.string("avatarUrl");
   },
 });
 

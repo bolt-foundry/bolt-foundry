@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c6e41e2bba5f1527112e2d4e5d0a4b83>>
+ * @generated SignedSource<<56bd5249d1c734d78ae21caca1f600f9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -15,6 +15,12 @@ export type BlogPageQuery$data = {
     readonly blog: {
       readonly posts: {
         readonly nodes: ReadonlyArray<{
+          readonly author: {
+            readonly avatarUrl: string | null | undefined;
+            readonly email: string | null | undefined;
+            readonly name: string | null | undefined;
+          } | null | undefined;
+          readonly date: string | null | undefined;
           readonly id: string;
           readonly slug: string | null | undefined;
           readonly title: string | null | undefined;
@@ -84,6 +90,45 @@ var v0 = {
               "kind": "ScalarField",
               "name": "slug",
               "storageKey": null
+            },
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "date",
+              "storageKey": null
+            },
+            {
+              "alias": null,
+              "args": null,
+              "concreteType": "BlogPostAuthor",
+              "kind": "LinkedField",
+              "name": "author",
+              "plural": false,
+              "selections": [
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "name",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "email",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "avatarUrl",
+                  "storageKey": null
+                }
+              ],
+              "storageKey": null
             }
           ],
           "storageKey": null
@@ -145,16 +190,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "e44394fdb957e869917f7d88b053add9",
+    "cacheID": "a8b832480d0b01a99dea1565c8273703",
     "id": null,
     "metadata": {},
     "name": "BlogPageQuery",
     "operationKind": "query",
-    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10, status: \"Ready for publish\") {\n        nodes {\n          id\n          title\n          slug\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10, status: \"Ready for publish\") {\n        nodes {\n          id\n          title\n          slug\n          date\n          author {\n            name\n            email\n            avatarUrl\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "68f3f9214820f920352930485934ae07";
+(node as any).hash = "24aa948c2daa84f9b3a632fb55601bdc";
 
 export default node;

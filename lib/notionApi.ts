@@ -9,6 +9,8 @@ export interface NotionPostsResponse {
   title: string;
   slug: string;
   properties: NotionPostsResponseDataProperties;
+  cover: string;
+  icon: string;
 }
 
 interface NotionPostsResponseDataProperties {
@@ -30,6 +32,14 @@ export interface BlogPostData {
   title: string;
   slug: string;
   id: string;
+  date: string;
+  author: {
+    name: string;
+    email: string;
+    avatarUrl: string;
+  };
+  coverUrl: string;
+  icon: string;
 }
 
 export interface NotionBlogPostContentObject {
@@ -99,8 +109,11 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
     },
   );
   const data = await response.json();
+  logger.info("RAW DATA", data);
   const filteredData = data.results.map(
-    ({ id, url, properties }: NotionPostsResponse) => {
+    ({ id, url, properties, cover, icon }: NotionPostsResponse) => {
+      logger.debug("DATE", properties["Publish date"]);
+      logger.debug("AUTHOR", properties.Author)
       const lastDashIndex = url.lastIndexOf("-");
       const urlWithoutId = url.substring(0, lastDashIndex);
       const slug = urlWithoutId.replace("https://www.notion.so/", "");
@@ -109,6 +122,14 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
         slug: slug,
         id: id,
         status: properties.Status.status?.name ?? "No status",
+        date: properties["Publish date"]?.date?.start,
+        author: {
+          name: properties.Author.people[0]?.name,
+          email: properties.Author.people[0]?.person?.email,
+          avatarUrl: properties.Author.people[0]?.avatar_url,
+        },
+        coverUrl: cover?.external?.url,
+        icon: icon?.emoji
       };
     },
   );

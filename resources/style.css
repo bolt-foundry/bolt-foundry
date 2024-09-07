@@ -1582,7 +1582,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .blog_page_header_inner {
   padding: 16px 20px;
   width: 100%;
-  max-width: 50rem;
+  max-width: 43rem;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -1620,9 +1620,9 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   background-position: center;
 }
 .blog_post {
-  padding: 20px 80px;
+  padding: 20px;
   width: 100%;
-  max-width: 50rem;
+  max-width: 43rem;
   margin: 0 auto;
   flex: 1;
   box-sizing: border-box;
@@ -1631,6 +1631,12 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .blog_post_meta {
 }
 .blog_post_author {
+}
+.blog_post_author_avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: white 100% 100% / cover;
 }
 .blog_post_content {
 }
@@ -1653,18 +1659,63 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .blog_code {
   border-radius: 8px;
   padding: 20px;
+  margin: 12px 0;
+}
+.blog_callout {
+  background-color: var(--background);
+  border: 1px solid var(--border);
 }
 .blog_callout.gray_background {
   background-color: var(--pageBackground);
+  border-color: transparent;
+}
+.blog_callout.blue_background {
+  background-color: var(--secondaryColor015);
+  border-color: transparent;
+}
+.blog_callout.yellow_background {
+  background-color: var(--primaryColor015);
+  border-color: transparent;
+}
+.blog_callout.purple_background {
+  background-color: var(--fourtharyColor015);
+  border-color: transparent;
+}
+.blog_callout.red_background {
+  background-color: var(--alert015);
+  border-color: transparent;
 }
 .blog_callout_inner {
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 20px;
+}
+.blog_callout_icon {
+  font-size: 1.4em;
 }
 .blog_code {
   background-color: var(--pageBackground);
   font-family: var(--fontFamilyMono);
+}
+
+.richText.bold {
+  font-weight: 700;
+}
+.richText.italic {
+  font-style: italic;
+}
+.richText.strikethrough {
+  text-decoration: line-through;
+}
+.richText.underlined {
+  text-decoration: underline;
+}
+.richText.code {
+  font-family: var(--fontFamilyMono);
+  background-color: var(--pageBackground);
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .blog_page a {
