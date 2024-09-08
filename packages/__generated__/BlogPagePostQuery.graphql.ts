@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<10664815f33d20285837090fba659fcd>>
+ * @generated SignedSource<<810b1302056f9f8669edcafa478713f5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,6 +17,11 @@ export type BlogPagePostQuery$data = {
     readonly blog: {
       readonly posts: {
         readonly nodes: ReadonlyArray<{
+          readonly author: {
+            readonly avatarUrl: string | null | undefined;
+            readonly email: string | null | undefined;
+            readonly name: string | null | undefined;
+          } | null | undefined;
           readonly content: ReadonlyArray<{
             readonly RichText?: ReadonlyArray<{
               readonly annotations: {
@@ -53,6 +58,9 @@ export type BlogPagePostQuery$data = {
             readonly language?: string | null | undefined;
             readonly type: string | null | undefined;
           } | null | undefined> | null | undefined;
+          readonly coverUrl: string | null | undefined;
+          readonly date: string | null | undefined;
+          readonly icon: string | null | undefined;
           readonly slug: string | null | undefined;
           readonly status: string | null | undefined;
           readonly title: string | null | undefined;
@@ -111,24 +119,77 @@ v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "type",
+  "name": "date",
   "storageKey": null
 },
 v6 = {
   "alias": null,
   "args": null,
-  "kind": "ScalarField",
-  "name": "id",
+  "concreteType": "BlogPostAuthor",
+  "kind": "LinkedField",
+  "name": "author",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "name",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "email",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "avatarUrl",
+      "storageKey": null
+    }
+  ],
   "storageKey": null
 },
 v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
+  "name": "coverUrl",
+  "storageKey": null
+},
+v8 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "icon",
+  "storageKey": null
+},
+v9 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "type",
+  "storageKey": null
+},
+v10 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v11 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "color",
   "storageKey": null
 },
-v8 = [
+v12 = [
   {
     "alias": null,
     "args": null,
@@ -176,7 +237,7 @@ v8 = [
         "name": "code",
         "storageKey": null
       },
-      (v7/*: any*/),
+      (v11/*: any*/),
       {
         "alias": null,
         "args": null,
@@ -202,7 +263,7 @@ v8 = [
     "storageKey": null
   }
 ],
-v9 = {
+v13 = {
   "kind": "InlineFragment",
   "selections": [
     {
@@ -219,49 +280,43 @@ v9 = {
       "kind": "LinkedField",
       "name": "caption",
       "plural": true,
-      "selections": (v8/*: any*/),
+      "selections": (v12/*: any*/),
       "storageKey": null
     }
   ],
   "type": "ImageBlock",
   "abstractKey": null
 },
-v10 = {
+v14 = {
   "alias": null,
   "args": null,
   "concreteType": "RichText",
   "kind": "LinkedField",
   "name": "RichText",
   "plural": true,
-  "selections": (v8/*: any*/),
+  "selections": (v12/*: any*/),
   "storageKey": null
 },
-v11 = {
+v15 = {
   "kind": "InlineFragment",
   "selections": [
-    (v7/*: any*/),
-    (v10/*: any*/)
+    (v11/*: any*/),
+    (v14/*: any*/)
   ],
   "type": "ParagraphBlock",
   "abstractKey": null
 },
-v12 = {
+v16 = {
   "kind": "InlineFragment",
   "selections": [
-    (v7/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "icon",
-      "storageKey": null
-    },
-    (v10/*: any*/)
+    (v11/*: any*/),
+    (v8/*: any*/),
+    (v14/*: any*/)
   ],
   "type": "CalloutBlock",
   "abstractKey": null
 },
-v13 = {
+v17 = {
   "kind": "InlineFragment",
   "selections": [
     {
@@ -271,12 +326,12 @@ v13 = {
       "name": "language",
       "storageKey": null
     },
-    (v10/*: any*/)
+    (v14/*: any*/)
   ],
   "type": "CodeBlock",
   "abstractKey": null
 },
-v14 = {
+v18 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -325,6 +380,10 @@ return {
                       (v2/*: any*/),
                       (v3/*: any*/),
                       (v4/*: any*/),
+                      (v5/*: any*/),
+                      (v6/*: any*/),
+                      (v7/*: any*/),
+                      (v8/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -333,12 +392,12 @@ return {
                         "name": "content",
                         "plural": true,
                         "selections": [
-                          (v5/*: any*/),
-                          (v6/*: any*/),
                           (v9/*: any*/),
-                          (v11/*: any*/),
-                          (v12/*: any*/),
-                          (v13/*: any*/)
+                          (v10/*: any*/),
+                          (v13/*: any*/),
+                          (v15/*: any*/),
+                          (v16/*: any*/),
+                          (v17/*: any*/)
                         ],
                         "storageKey": null
                       }
@@ -372,7 +431,7 @@ return {
         "name": "currentViewer",
         "plural": false,
         "selections": [
-          (v14/*: any*/),
+          (v18/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -400,6 +459,10 @@ return {
                       (v2/*: any*/),
                       (v3/*: any*/),
                       (v4/*: any*/),
+                      (v5/*: any*/),
+                      (v6/*: any*/),
+                      (v7/*: any*/),
+                      (v8/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -408,13 +471,13 @@ return {
                         "name": "content",
                         "plural": true,
                         "selections": [
-                          (v14/*: any*/),
-                          (v5/*: any*/),
-                          (v6/*: any*/),
+                          (v18/*: any*/),
                           (v9/*: any*/),
-                          (v11/*: any*/),
-                          (v12/*: any*/),
-                          (v13/*: any*/)
+                          (v10/*: any*/),
+                          (v13/*: any*/),
+                          (v15/*: any*/),
+                          (v16/*: any*/),
+                          (v17/*: any*/)
                         ],
                         "storageKey": null
                       }
@@ -433,16 +496,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d20b9111d0ee242c62e27e4ccba7fef9",
+    "cacheID": "eac163ce9e433bf060f0137a8ffd992b",
     "id": null,
     "metadata": {},
     "name": "BlogPagePostQuery",
     "operationKind": "query",
-    "text": "query BlogPagePostQuery(\n  $slug: String!\n) {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 1, slug: $slug) {\n        nodes {\n          title\n          slug\n          status\n          content {\n            __typename\n            type\n            id\n            ... on ImageBlock {\n              id\n              type\n              imgUrl\n              caption {\n                text {\n                  content\n                  link\n                }\n                annotations {\n                  bold\n                  code\n                  color\n                  italic\n                  strikethrough\n                  underlined\n                }\n              }\n            }\n            ... on ParagraphBlock {\n              id\n              type\n              color\n              RichText {\n                text {\n                  content\n                  link\n                }\n                annotations {\n                  bold\n                  code\n                  color\n                  italic\n                  strikethrough\n                  underlined\n                }\n              }\n            }\n            ... on CalloutBlock {\n              id\n              type\n              color\n              icon\n              RichText {\n                text {\n                  content\n                  link\n                }\n                annotations {\n                  bold\n                  code\n                  color\n                  italic\n                  strikethrough\n                  underlined\n                }\n              }\n            }\n            ... on CodeBlock {\n              id\n              type\n              language\n              RichText {\n                text {\n                  content\n                  link\n                }\n                annotations {\n                  bold\n                  code\n                  color\n                  italic\n                  strikethrough\n                  underlined\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query BlogPagePostQuery(\n  $slug: String!\n) {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 1, slug: $slug) {\n        nodes {\n          title\n          slug\n          status\n          date\n          author {\n            name\n            email\n            avatarUrl\n          }\n          coverUrl\n          icon\n          content {\n            __typename\n            type\n            id\n            ... on ImageBlock {\n              id\n              type\n              imgUrl\n              caption {\n                text {\n                  content\n                  link\n                }\n                annotations {\n                  bold\n                  code\n                  color\n                  italic\n                  strikethrough\n                  underlined\n                }\n              }\n            }\n            ... on ParagraphBlock {\n              id\n              type\n              color\n              RichText {\n                text {\n                  content\n                  link\n                }\n                annotations {\n                  bold\n                  code\n                  color\n                  italic\n                  strikethrough\n                  underlined\n                }\n              }\n            }\n            ... on CalloutBlock {\n              id\n              type\n              color\n              icon\n              RichText {\n                text {\n                  content\n                  link\n                }\n                annotations {\n                  bold\n                  code\n                  color\n                  italic\n                  strikethrough\n                  underlined\n                }\n              }\n            }\n            ... on CodeBlock {\n              id\n              type\n              language\n              RichText {\n                text {\n                  content\n                  link\n                }\n                annotations {\n                  bold\n                  code\n                  color\n                  italic\n                  strikethrough\n                  underlined\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d4e700964c607a34415bd6d6074e76a4";
+(node as any).hash = "88ddea6e3e50e8d431b6c401cc13bd6b";
 
 export default node;
