@@ -1171,7 +1171,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 .landing-page-block {
   flex: 1;
-  minWidth: max(300px, 40vw);
+  min-width: max(450px, 40vw);
 }
 
 .landing-page-title {
@@ -1186,6 +1186,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   text-align: left;
   font-weight: 600;
   color: var(--textMarketing);
+  max-width: 400px;
 }
 
 .landing-page-hero {
@@ -1195,13 +1196,34 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   justify-content: center;
   text-align: left;
   padding: 60px 40px;
-  min-height: 60vh;
 }
 
 .landing-page-clips-container {
+  height: 700px;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+}
+
+/* Fires when the blocks wrap around for all of th content to be vertical */
+@media(max-width: 938px) and (min-width:601px) {
+  #clips-column-one {
+    flex-direction: row;
+  }
+  .landing-page-clips-container {
+    justify-content: right;
+  }
+  .landing-page-block {
+    padding-left: 10vw;
+    padding-right: 10vw;
+  }
+}
+
+@media(max-width: 600px) {
+  #clip2, #clip3 {
+    display: none;
+  }
+  .landing-page-clips-container {
+    justify-content: center;
+  }
 }
 
 .landing-page-clips {
@@ -1209,6 +1231,33 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   height: 355px;
   background-color: grey;
   margin: 10px;
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+#clips-column-one {
+  display: flex;
+  flex-direction: column;
+  align-content: space-evenly;
+}
+
+#clips-column-two {
+  
+}
+
+#clip1 {
+  
+}
+
+#clip2 {
+  margin-left: 60px;
+  margin-top: 16px;
+}
+
+#clip3 {
+  margin-top: 90px;
+  margin-left: 10px;
 }
 
 .landing-page-mission {
