@@ -4,6 +4,8 @@ import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { getLogger } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 import { BfLogo } from "packages/bfDs/static/BfLogo.tsx";
+import { classnames } from "lib/classnames.ts";
+import { Link } from "packages/bfDs/Link.tsx";
 
 const logger = getLogger(import.meta);
 
@@ -16,6 +18,13 @@ const postsQuery = await graphql`
             id
             title
             slug
+            date
+            author {
+              name
+              email
+              avatarUrl
+            }
+            coverUrl
           }
         }
       }
@@ -25,34 +34,53 @@ const postsQuery = await graphql`
 
 type Props = {
   cover?: string;
+  post?: boolean;
 };
 
-function ContentFrame({ children, cover }: React.PropsWithChildren<Props>) {
+function ContentFrame(
+  { children, cover, post }: React.PropsWithChildren<Props>,
+) {
+  const classRoot = post ? "blog_post" : "blog_page";
   return (
-    <div className="blog_page">
+    <div className={classRoot}>
       {cover && (
         <div
-          className="blog_post_cover_bg"
+          className={`${classRoot}_cover_bg`}
           style={{ backgroundImage: `url(${cover})` }}
         />
       )}
-      <div className="blog_page_header">
-        <div className="blog_page_header_inner">
-          <div className="logo">
-            <BfLogo
-              boltColor="var(--text)"
-              foundryColor="var(--textSecondary)"
-            />
-          </div>
-          <div className="logo_text">Open mic</div>
+      <div
+        className={`${classRoot}_header`}
+        style={{ backgroundImage: cover ? `url(${cover})` : "" }}
+      >
+        <div className={`${classRoot}_header_inner`}>
+          {post
+            ? (
+              <div className="logo_container">
+                <Link to="/blog">
+                  <div className="logo">
+                    <BfLogo
+                      boltColor="white"
+                      foundryColor="white"
+                    />
+                  </div>
+                  <div className="logo_text">Open mic</div>
+                </Link>
+              </div>
+            )
+            : (
+              <div className="logo_container">
+                <div className="logo">
+                  <BfLogo
+                    boltColor="var(--text)"
+                    foundryColor="var(--text)"
+                  />
+                </div>
+                <div className="logo_text">Open mic</div>
+              </div>
+            )}
         </div>
       </div>
-      {cover && (
-        <div
-          className="blog_post_cover"
-          style={{ backgroundImage: `url(${cover})` }}
-        />
-      )}
       {children}
     </div>
   );
@@ -71,12 +99,24 @@ export function BlogPage() {
     <ContentFrame>
       <div className="blog_list">
         {posts.map((post) => (
-          <h1
-            key={post.title}
+          <div
+            key={post.id}
+            className="blog_list_item"
             onClick={() => window.location.href = `/blog/${post.slug}`}
+            style={{ backgroundImage: `url(${post.coverUrl})` }}
           >
-            {post.title}
-          </h1>
+            <div className="blog_list_item_title">{post.title}</div>
+            <div className="blog_list_item_post">
+              <div className="blog_author">
+                <div
+                  className="blog_author_avatar"
+                  style={{ backgroundImage: `url(${post.author?.avatarUrl})` }}
+                />
+                <div>{post.author?.name}</div>
+              </div>
+              <div className="blog_post_meta">{posts[0]?.date}</div>
+            </div>
+          </div>
         ))}
       </div>
     </ContentFrame>
@@ -92,6 +132,14 @@ query BlogPagePostQuery($slug: String!) {
           title
           slug
           status
+          date
+          author {
+            name
+            email
+            avatarUrl
+          }
+          coverUrl
+          icon
           content {
             type
             id
@@ -180,29 +228,57 @@ query BlogPagePostQuery($slug: String!) {
 }
 `;
 
+function RichText({ richText }) {
+  return richText.map((textBlock) => {
+    const { bold, code, color, italic, strikethrough, underlined } =
+      textBlock.annotations;
+    const classList = classnames([
+      "richText",
+      { bold },
+      { code },
+      { italic },
+      { strikethrough },
+      { underlined },
+    ]);
+    return (
+      <span
+        className={classList}
+        style={{ color }}
+        key={textBlock.text.content}
+      >
+        {textBlock.text.content}
+      </span>
+    );
+  });
+}
+
 function BlogPost() {
   const { slug } = useRouter().routeParams;
   const { currentViewer } = useLazyLoadQuery<BlogPagePostQuery>(query, {
     slug,
   });
   const posts = currentViewer?.blog?.posts?.nodes || [];
-  console.log("POSTS", posts);
+  logger.setLevel(logger.levels.DEBUG);
+  logger.debug("POSTS", posts);
   return (
-    <ContentFrame>
-      <div className="blog_post">
-        <h1>{posts[0]?.title}</h1>
+    <ContentFrame cover={posts[0].coverUrl} post={true}>
+      <div className="blog_post_content">
+        <h1 className="blog_post_title">{posts[0]?.title}</h1>
+        <div className="blog_author">
+          <div
+            className="blog_author_avatar"
+            style={{ backgroundImage: `url(${posts[0]?.author?.avatarUrl})` }}
+          />
+          <div>{posts[0]?.author?.name}</div>
+        </div>
+        {/* <div>{posts[0]?.author?.email}</div> */}
+        <div className="blog_meta">{posts[0]?.date}</div>
         {posts[0]?.content.map((content) => {
           if (!content) return;
           if (content.type === "paragraph") {
             return (
               <p key={content.id}>
-                {content.RichText.map((richText) => {
-                  return (
-                    <span key={richText.text.content}>
-                      {richText.text.content}
-                    </span>
-                  );
-                })}
+                <RichText richText={content.RichText} />
               </p>
             );
           }
@@ -222,19 +298,15 @@ function BlogPost() {
                 key={content.id}
                 className={`blog_callout ${content.color}`}
               >
-                {content.RichText.map((richText) => {
-                  return (
-                    <div
-                      className="blog_callout_inner"
-                      style={{ backgroundColor: content.color }}
-                    >
-                      <div>{content.icon}</div>
-                      <div key={richText.text.content} style={{ flex: 1 }}>
-                        {richText.text.content}
-                      </div>
-                    </div>
-                  );
-                })}
+                <div
+                  className="blog_callout_inner"
+                  style={{ backgroundColor: content.color }}
+                >
+                  <div className="blog_callout_icon">{content.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <RichText richText={content.RichText} />
+                  </div>
+                </div>
               </div>
             );
           }
@@ -243,19 +315,9 @@ function BlogPost() {
               <div
                 key={content.id}
                 className="blog_code"
+                style={{ backgroundColor: content.color }}
               >
-                {content.RichText.map((richText) => {
-                  return (
-                    <div
-                      className="blog_callout_inner"
-                      style={{ backgroundColor: content.color }}
-                    >
-                      <div key={richText.text.content} style={{ flex: 1 }}>
-                        {richText.text.content}
-                      </div>
-                    </div>
-                  );
-                })}
+                <RichText richText={content.RichText} />
               </div>
             );
           }
