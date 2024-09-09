@@ -1,25 +1,19 @@
-/*
- * @deprecated
- * We should push all of this into local relay stores asap.
- */
-
-import { React } from "deps.ts";
-import type { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
-
+import * as React from "react";
+import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 const { useEffect, useState } = React;
 
+type FeatureFlags = Record<string, boolean>;
+
 type ValueType = {
-  settingsOpen: boolean;
-  setSettingsOpen: (settingsOpen: boolean) => void;
-  loginOpen: boolean;
-  setLoginOpen: (loginOpen: boolean) => void;
+  showHud: boolean;
+  featureFlags: FeatureFlags;
 };
 
 const AppStateContext = React.createContext<ValueType>({
-  settingsOpen: false,
-  setSettingsOpen: (settingsOpen: boolean) => {},
-  loginOpen: false,
-  setLoginOpen: (loginOpen: boolean) => {},
+  showHud: false,
+  featureFlags: {
+    placeholder: false,
+  },
 });
 
 export function useAppState(): ValueType {
@@ -29,17 +23,22 @@ export function useAppState(): ValueType {
 export default function AppStateProvider(
   { children }: React.PropsWithChildren,
 ) {
-  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
-  const [loginOpen, setLoginOpen] = useState<boolean>(false);
+  const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({});
+  const getFeatureFlag = (name: string) => featureFlags[name];
+  const setFeatureFlag = (name: string) => {
+    setFeatureFlags({ ...featureFlags, [name]: !featureFlags[name] });
+  };
+
+  let showHud = false;
+  useEffect(() => {
+    if (process.env.NODE_ENV === "development") {
+      showHud = true;
+    }
+  }, []);
 
   return (
     <AppStateContext.Provider
-      value={{
-        settingsOpen,
-        setSettingsOpen,
-        loginOpen,
-        setLoginOpen,
-      }}
+      value={{ showHud, getFeatureFlag, setFeatureFlag }}
     >
       {children}
     </AppStateContext.Provider>
