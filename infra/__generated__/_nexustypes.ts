@@ -180,10 +180,17 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   BlogPost: { // root type
+    coverUrl?: string | null; // String
+    icon?: string | null; // String
     id: string; // String!
     slug?: string | null; // String
     status?: string | null; // String
     title?: string | null; // String
+  }
+  BlogPostAuthor: { // root type
+    avatarUrl?: string | null; // String
+    email?: string | null; // String
+    name?: string | null; // String
   }
   BlogPostConnection: { // root type
     count?: number | null; // Int
@@ -194,6 +201,19 @@ export interface NexusGenObjects {
   BlogPostEdge: { // root type
     cursor: string; // String!
     node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
+  }
+  CalloutBlock: { // root type
+    RichText?: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    color?: string | null; // String
+    icon?: string | null; // String
+    id?: string | null; // String
+    type?: string | null; // String
+  }
+  CodeBlock: { // root type
+    RichText?: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    id?: string | null; // String
+    language?: string | null; // String
+    type?: string | null; // String
   }
   DeleteMutationPayload: { // root type
     success: boolean; // Boolean!
@@ -250,7 +270,7 @@ export interface NexusGenObjects {
 export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'> | core.Discriminate<'IBfCurrentViewerInternalAdmin', 'required'>;
   BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
-  BlogPostContentBlock: core.Discriminate<'ImageBlock', 'optional'> | core.Discriminate<'ParagraphBlock', 'optional'>;
+  BlogPostContentBlock: core.Discriminate<'CalloutBlock', 'optional'> | core.Discriminate<'CodeBlock', 'optional'> | core.Discriminate<'ImageBlock', 'optional'> | core.Discriminate<'ParagraphBlock', 'optional'>;
   IBfGraphQLNode: any;
   Node: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
 }
@@ -395,11 +415,20 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   BlogPost: { // field return type
+    author: NexusGenRootTypes['BlogPostAuthor'] | null; // BlogPostAuthor
     content: Array<NexusGenRootTypes['BlogPostContentBlock'] | null> | null; // [BlogPostContentBlock]
+    coverUrl: string | null; // String
+    date: string | null; // String
+    icon: string | null; // String
     id: string; // String!
     slug: string | null; // String
     status: string | null; // String
     title: string | null; // String
+  }
+  BlogPostAuthor: { // field return type
+    avatarUrl: string | null; // String
+    email: string | null; // String
+    name: string | null; // String
   }
   BlogPostConnection: { // field return type
     count: number | null; // Int
@@ -410,6 +439,19 @@ export interface NexusGenFieldTypes {
   BlogPostEdge: { // field return type
     cursor: string; // String!
     node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
+  }
+  CalloutBlock: { // field return type
+    RichText: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    color: string | null; // String
+    icon: string | null; // String
+    id: string | null; // String
+    type: string | null; // String
+  }
+  CodeBlock: { // field return type
+    RichText: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    id: string | null; // String
+    language: string | null; // String
+    type: string | null; // String
   }
   DeleteMutationPayload: { // field return type
     success: boolean; // Boolean!
@@ -640,11 +682,20 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   BlogPost: { // field return type name
+    author: 'BlogPostAuthor'
     content: 'BlogPostContentBlock'
+    coverUrl: 'String'
+    date: 'String'
+    icon: 'String'
     id: 'String'
     slug: 'String'
     status: 'String'
     title: 'String'
+  }
+  BlogPostAuthor: { // field return type name
+    avatarUrl: 'String'
+    email: 'String'
+    name: 'String'
   }
   BlogPostConnection: { // field return type name
     count: 'Int'
@@ -655,6 +706,19 @@ export interface NexusGenFieldTypeNames {
   BlogPostEdge: { // field return type name
     cursor: 'String'
     node: 'BlogPost'
+  }
+  CalloutBlock: { // field return type name
+    RichText: 'RichText'
+    color: 'String'
+    icon: 'String'
+    id: 'String'
+    type: 'String'
+  }
+  CodeBlock: { // field return type name
+    RichText: 'RichText'
+    id: 'String'
+    language: 'String'
+    type: 'String'
   }
   DeleteMutationPayload: { // field return type name
     success: 'Boolean'
@@ -792,7 +856,9 @@ export interface NexusGenArgTypes {
   Blog: {
     posts: { // args
       after?: string | null; // String
+      author?: string | null; // String
       before?: string | null; // String
+      date?: string | null; // String
       first?: number | null; // Int
       last?: number | null; // Int
       slug?: string | null; // String
@@ -879,7 +945,7 @@ export interface NexusGenArgTypes {
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon" | "IBfCurrentViewerInternalAdmin"
   BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaTranscript" | "BfOrganization" | "BfPerson"
-  BlogPostContentBlock: "ImageBlock" | "ParagraphBlock"
+  BlogPostContentBlock: "CalloutBlock" | "CodeBlock" | "ImageBlock" | "ParagraphBlock"
   Node: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaTranscript" | "BfOrganization" | "BfPerson"
 }
 
@@ -894,6 +960,8 @@ export interface NexusGenTypeInterfaces {
   BfMediaTranscript: "BfNode" | "Node"
   BfOrganization: "BfNode" | "Node"
   BfPerson: "BfNode" | "Node"
+  CalloutBlock: "BlogPostContentBlock"
+  CodeBlock: "BlogPostContentBlock"
   IBfCurrentViewerInternalAdmin: "BfCurrentViewer"
   ImageBlock: "BlogPostContentBlock"
   ParagraphBlock: "BlogPostContentBlock"

@@ -6,6 +6,7 @@ import {
   getListOfContentForAPost,
   type NotionBlogPostContent,
 } from "lib/notionApi.ts";
+import { formatDateString } from "packages/lib/textUtils.ts";
 
 export const Blog = objectType({
   name: "Blog",
@@ -16,6 +17,8 @@ export const Blog = objectType({
       additionalArgs: {
         slug: stringArg(),
         status: stringArg(),
+        date: stringArg(),
+        author: stringArg(),
       },
       resolve: async (_, args) => {
         let posts: BlogPostData[] = await getBlogPostsFromNotion();
@@ -36,6 +39,17 @@ export const BlogPost = objectType({
     t.nonNull.string("id");
     t.string("title");
     t.string("slug");
+    t.string("date", {
+      resolve: (parent) => parent.date ? formatDateString(parent.date) : null,
+    });
+    t.field("author", {
+      type: "BlogPostAuthor",
+      resolve: (parent) => {
+        return parent.author;
+      },
+    });
+    t.string("coverUrl");
+    t.string("icon");
     t.list.field("content", {
       type: "BlogPostContentBlock",
       resolve: async (parent) => {
@@ -46,6 +60,15 @@ export const BlogPost = objectType({
       },
     });
     t.string("status");
+  },
+});
+
+export const BlogPostAuthor = objectType({
+  name: "BlogPostAuthor",
+  definition(t) {
+    t.string("name");
+    t.string("email");
+    t.string("avatarUrl");
   },
 });
 
@@ -61,6 +84,10 @@ export const BlogPostContentBlock = interfaceType({
         return "ParagraphBlock";
       case "image":
         return "ImageBlock";
+      case "callout":
+        return "CalloutBlock";
+      case "code":
+        return "CodeBlock";
       default:
         //todo add error logging
         return null;
@@ -74,6 +101,25 @@ export const ParagraphBlock = objectType({
     t.implements("BlogPostContentBlock");
     t.list.field("RichText", { type: "RichText" });
     t.string("color", { default: "default" });
+  },
+});
+
+export const CalloutBlock = objectType({
+  name: "CalloutBlock",
+  definition(t) {
+    t.implements("BlogPostContentBlock");
+    t.list.field("RichText", { type: "RichText" });
+    t.string("icon");
+    t.string("color");
+  },
+});
+
+export const CodeBlock = objectType({
+  name: "CodeBlock",
+  definition(t) {
+    t.implements("BlogPostContentBlock");
+    t.list.field("RichText", { type: "RichText" });
+    t.string("language");
   },
 });
 

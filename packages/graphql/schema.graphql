@@ -316,9 +316,11 @@ type Blog {
   posts(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
+    author: String
 
     """Returns the elements in the list that come before the specified cursor"""
     before: String
+    date: String
 
     """Returns the first n elements from the list."""
     first: Int
@@ -332,11 +334,21 @@ type Blog {
 }
 
 type BlogPost {
+  author: BlogPostAuthor
   content: [BlogPostContentBlock]
+  coverUrl: String
+  date: String
+  icon: String
   id: String!
   slug: String
   status: String
   title: String
+}
+
+type BlogPostAuthor {
+  avatarUrl: String
+  email: String
+  name: String
 }
 
 type BlogPostConnection {
@@ -367,6 +379,21 @@ type BlogPostEdge {
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
   node: BlogPost
+}
+
+type CalloutBlock implements BlogPostContentBlock {
+  RichText: [RichText]
+  color: String
+  icon: String
+  id: String
+  type: String
+}
+
+type CodeBlock implements BlogPostContentBlock {
+  RichText: [RichText]
+  id: String
+  language: String
+  type: String
 }
 
 type DeleteMutationPayload {
