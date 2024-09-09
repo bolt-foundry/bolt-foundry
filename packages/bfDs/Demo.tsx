@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import * as React from "react";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { ButtonGroup } from "packages/bfDs/ButtonGroup.tsx";
 import { BfDsIconDemo } from "packages/bfDs/BfDsIcon.tsx";
@@ -10,6 +10,7 @@ import { fonts } from "packages/bfDs/const.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { ContactUs } from "packages/client/components/ContactUs.tsx";
 import { BfDsCallout } from "packages/bfDs/BfDsCallout.tsx";
+import { Demo as ToggleDemo } from "packages/bfDs/Toggle.tsx";
 
 const buttonElements = [
   {
@@ -465,6 +466,7 @@ export function Demo() {
             onChange={() => {}}
           />
         </div>
+        <ToggleDemo />
       </div>
       <div className="element" style={styles.element}>
         <div style={styles.name}>Icons</div>
