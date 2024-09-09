@@ -20,6 +20,17 @@ body {
   color: var(--text);
 }
 
+/* HUD */
+.hud {
+  position: absolute;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  color: white;
+  border-radius: 8px;
+  min-width: 150px;
+}
+
 #tooltip-root,
 #modal-root {
   position: absolute;
