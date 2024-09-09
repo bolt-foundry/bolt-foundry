@@ -40,6 +40,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
   static async createFromGoogleDriveResource(
     _driveResource: BfGoogleDriveResource,
   ) {
+    throw new BfError("Ingesting video is not yet implemented");
     /**
      * Check if google drive resource is a file.
      * If it is, create a new this.
