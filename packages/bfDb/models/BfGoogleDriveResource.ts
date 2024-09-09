@@ -12,7 +12,6 @@ import {
 import { BfError } from "lib/BfError.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
-import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 
 const GOOGLE_DRIVE_CACHE_DIRECTORY =
   Deno.env.get("GOOGLE_DRIVE_CACHE_DIRECTORY") ?? "/tmp/google-drive-cache";
@@ -32,15 +31,26 @@ export class BfGoogleDriveResource
     const resources = await (this.constructor as typeof BfGoogleDriveResource)
       .query(this.currentViewer, {}, { resourceId: this.props.resourceId });
     if (resources.length > 0) {
+      logger.debug(resources);
       throw new BfError("Resource already exists");
     }
     this.metadata.bfGid = toBfGid(this.props.resourceId);
   }
 
   async afterCreate() {
-    const accessToken = await this.getAccessToken();
+    const currentViewerPerson = await BfPerson.findCurrentViewer(
+      this.currentViewer,
+    );
+    const googleAuth = await currentViewerPerson?.getGoogleAuth();
+    if (!googleAuth) throw new Error("no google auth");
 
-    const googleDriveMetadataPromise = fetchMetadata(
+    await BfEdge.createEdgeBetweenNodes(this.currentViewer, googleAuth, this);
+    const accessToken = await googleAuth.getAccessToken();
+    if (!accessToken) {
+      throw new BfError("Can't get Google Auth access token");
+    }
+
+    await fetchMetadata(
       accessToken,
       this.props.resourceId,
     ).then(async (metadata) => {
@@ -49,65 +59,32 @@ export class BfGoogleDriveResource
       await this.save();
     });
 
-    const currentViewerPerson = await BfPerson.findCurrentViewer(
-      this.currentViewer,
-    );
-    const googleAuth = await currentViewerPerson?.getGoogleAuth();
-    if (!googleAuth) {
-      throw new Error("no google auth");
-    }
-
-    const googleAuthEdgePromise = BfEdge.__DANGEROUS__createUnattached(
-      this.currentViewer,
-      {},
-      {
-        // @ts-expect-error typing is bad on bfEdge
-        bfSid: googleAuth.metadata.bfGid,
-        bfSClassName: "BfGoogleAuth",
-        bfTid: this.metadata.bfGid,
-        bfTClassName: this.constructor.name,
-      },
-    );
-
-    const jobPromise = BfJob.createJobForNode(
-      this,
-      "__JOB_ONLY__crawlChildren",
-      [],
-    );
-
-    const _ingestPromise = BfJob.createJobForNode(
+    await BfJob.createJobForNode(
       this,
       "__JOB_ONLY__ingest",
       [],
     );
-
-    await Promise.all([
-      googleAuthEdgePromise,
-      googleDriveMetadataPromise,
-      ingestPromise,
-      jobPromise,
-    ]);
   }
 
-  private async getAccessToken(): Promise<string> {
+  private async getAccessToken(): Promise<string | void> {
     logger.debug(
       "getting access token for folder",
       this.props.resourceId,
       this.metadata.bfGid,
     );
     const googleAuth = await this.getGoogleAuth();
-    logger.debug("got googleAuth", googleAuth);
+    logger.debug(`got googleAuth ${googleAuth}`);
     const token = await googleAuth?.getAccessToken();
     return token;
   }
 
   private async getGoogleAuth() {
-    const bfGoogleAuths = await BfEdge.querySources(
+    const bfGoogleAuths = await BfEdge.querySourceInstances(
       this.currentViewer,
       BfGoogleAuth,
       this.metadata.bfGid,
     );
-    logger.debug("got bfGoogleAuths", bfGoogleAuths);
+    logger.debug(`got bfGoogleAuths ${bfGoogleAuths}`);
     const googleAuth = bfGoogleAuths[0];
     return googleAuth;
   }
@@ -118,6 +95,9 @@ export class BfGoogleDriveResource
   private async crawlChildren() {
     logger.debug(`getting folder contents for folder ${this}`);
     const token = await this.getAccessToken();
+    if (!token) {
+      throw new BfError("Can't crawl children, no Google Auth access token");
+    }
     const response = await fetchFolderContents(token, this.props.resourceId);
     logger.debug("folder contents", response);
     const childrenProps: Array<BfGoogleDriveResourceRequiredProps> =
@@ -143,24 +123,13 @@ export class BfGoogleDriveResource
   }
   private async createChild(childProps: BfGoogleDriveResourceRequiredProps) {
     logger.debug("creating child", childProps, this.metadata.bfGid);
-    try {
-      await this.transactionStart();
-      const child = await (this.constructor as typeof BfGoogleDriveResource)
-        .__DANGEROUS__createUnattached(this.currentViewer, childProps);
-      const edge = await BfEdge.createEdgeBetweenNodes(
-        this.currentViewer,
-        this,
-        child,
-      );
-      logger.debug("created child and edge", child, edge);
-      await this.transactionCommit();
-      logger.debug("committed transaction");
-    } catch (e) {
-      logger.debug("failed to create child and edge", e);
-      await this.transactionRollback();
-      logger.debug("rolled back transaction");
-      throw e;
-    }
+    const child = await this.createTargetNode(
+      this.constructor as typeof BfGoogleDriveResource,
+      childProps,
+      "child",
+    );
+    logger.debug(`created child ${child}`);
+    return child;
   }
 
   __JOB_ONLY__ingest() {
@@ -168,10 +137,22 @@ export class BfGoogleDriveResource
   }
 
   private async ingest() {
-    if (this.props.mimeType.startsWith("video")) {
-      await BfMedia.createFromGoogleDriveResource(this);
-    }
+    if (this.isVideo()) await this.ingestVideo();
+    if (this.isFolder()) await this.crawlChildren();
     return this;
+  }
+
+  isFolder() {
+    const FOLDER_MIMETYPE = "application/vnd.google-apps.folder";
+    return this.props.mimeType === FOLDER_MIMETYPE;
+  }
+
+  isVideo() {
+    return this.props.mimeType.startsWith("video");
+  }
+
+  private ingestVideo() {
+    throw new BfError("Ingesting video is not yet implemented");
   }
 
   getFilePath() {
@@ -201,6 +182,9 @@ export class BfGoogleDriveResource
     await Deno.mkdir(GOOGLE_DRIVE_CACHE_DIRECTORY, { recursive: true });
     const path = targetPath;
     const token = await this.getAccessToken();
+    if (!token) {
+      throw new BfError("Can't download file, no Google Auth access token");
+    }
     const response = await fetchFile(token, this.props.resourceId);
     logger.debug("downloading", this.props.resourceId, path);
     const file = await Deno.create(path);

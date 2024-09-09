@@ -25,12 +25,7 @@ export const LinkGoogleAccountMutation = mutationField(
       if (!refreshToken) {
         throw new Error("No refresh token found");
       }
-      const _googleAuth = await BfGoogleAuth.__DANGEROUS__createUnattached(
-        bfCurrentViewer,
-        {
-          refreshToken,
-        },
-      );
+      await person.createTargetNode(BfGoogleAuth, { refreshToken });
       return bfCurrentViewer;
     },
   },
