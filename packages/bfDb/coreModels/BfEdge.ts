@@ -11,7 +11,7 @@ import type {
 import type { ConnectionArguments } from "packages/graphql/deps.ts";
 import { BfModel } from "packages/bfDb/classes/BfModel.ts";
 import { bfGetItemsByBfGid } from "packages/bfDb/bfDb.ts";
-import type { ConnectionInterface } from "react-relay";
+import type { ConnectionInterface } from "relay";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
 
