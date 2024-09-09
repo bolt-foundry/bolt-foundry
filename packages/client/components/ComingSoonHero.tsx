@@ -5,7 +5,7 @@ export function ComingSoonHero() {
     { "style": "normal", "text": "Use all of your content" },
     {
       "style": "blueWord",
-      "text": "no editors required",
+      "text": "we make it easy",
     },
   ];
 
