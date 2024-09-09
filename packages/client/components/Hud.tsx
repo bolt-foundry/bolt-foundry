@@ -2,7 +2,6 @@ import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
 import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
-import { Toggle } from "packages/bfDs/Toggle.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 
 export function Hud() {
