@@ -23,7 +23,7 @@ type ReadonlyProps = BaseProps & {
   onChange?: never;
 };
 
-type ToggleProps = EditableProps | ReadonlyProps;
+type BfDsToggleProps = EditableProps | ReadonlyProps;
 
 const styles: Record<string, React.CSSProperties> = {
   toggle: {
@@ -125,7 +125,7 @@ const sizeStyles: Record<string, Record<string, React.CSSProperties>> = {
   },
 };
 
-export function Toggle(
+export function BfDsToggle(
   {
     disabled,
     label,
@@ -138,7 +138,7 @@ export function Toggle(
     readonly,
     size = "large",
     testId,
-  }: ToggleProps,
+  }: BfDsToggleProps,
 ) {
   const slider = (
     <span
@@ -211,21 +211,21 @@ export function Demo() {
   const [large, setLarge] = React.useState(false);
   return (
     <div style={{ width: 300 }}>
-      <Toggle />
-      <Toggle
+      <BfDsToggle />
+      <BfDsToggle
         meta="This is small toggle"
         size="small"
         label="Small"
         value={small}
         onChange={() => setSmall(!small)}
       />
-      <Toggle
+      <BfDsToggle
         size="medium"
         label="Medium"
         value={medium}
         onChange={() => setMedium(!medium)}
       />
-      <Toggle
+      <BfDsToggle
         size="large"
         label="Large"
         value={large}

@@ -8,7 +8,7 @@ import {
 } from "packages/types/settings.ts";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { RatioSelector } from "packages/client/components/RatioSelector.tsx";
-import { Toggle } from "packages/bfDs/Toggle.tsx";
+import { BfDsToggle } from "packages/bfDs/BfDsToggle.tsx";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { fontFamilies } from "packages/vcs/params.js";
 import {
@@ -249,7 +249,7 @@ export function SettingsForm(
           description="Censor swear words in captions"
           name="Censor swears"
           settingElement={
-            <Toggle
+            <BfDsToggle
               value={draftSettings.censorSwears ??
                 initialSettings.censorSwears ?? true}
               onChange={(censorSwears) =>
@@ -265,7 +265,7 @@ export function SettingsForm(
           disabled={!showCensorSwearsValue}
           name="Show first letter"
           settingElement={
-            <Toggle
+            <BfDsToggle
               value={draftSettings.censorShowFirstLetter ??
                 initialSettings.censorShowFirstLetter ?? true}
               onChange={(censorShowFirstLetter) =>
@@ -284,7 +284,7 @@ export function SettingsForm(
           disabled={!showCensorSwearsValue}
           name="Use asterisks"
           settingElement={
-            <Toggle
+            <BfDsToggle
               value={draftSettings.censorUseAsterisks ??
                 initialSettings.censorUseAsterisks ?? true}
               onChange={(censorUseAsterisks) =>
@@ -317,7 +317,7 @@ export function SettingsForm(
           description="Show captions on rendered video"
           name="Show captions"
           settingElement={
-            <Toggle
+            <BfDsToggle
               value={showCaptionsValue}
               onChange={(showCaptions) =>
                 setDraftSettings({ ...draftSettings, showCaptions })}
@@ -495,7 +495,7 @@ export function SettingsForm(
             description="Show watermark on rendered video"
             name="Show watermark"
             settingElement={
-              <Toggle
+              <BfDsToggle
                 value={showWatermarkValue}
                 onChange={(showWatermark) =>
                   setDraftSettings({ ...draftSettings, showWatermark })}
@@ -600,7 +600,7 @@ export function SettingsForm(
             description="Camera tracks the face to keep it in frame"
             name="Use tracking"
             settingElement={
-              <Toggle
+              <BfDsToggle
                 value={trackingToggleValue}
                 onChange={(useTracking) =>
                   setDraftSettings({ ...draftSettings, useTracking })}
@@ -638,7 +638,7 @@ export function SettingsForm(
             disabled={!trackingToggleValue}
             name="Use autocropping"
             settingElement={
-              <Toggle
+              <BfDsToggle
                 disabled={!trackingToggleValue}
                 value={draftSettings.useAutocropping ??
                   initialSettings.useAutocropping ?? false}
@@ -655,7 +655,7 @@ export function SettingsForm(
             disabled={!trackingToggleValue}
             name="Show tracking debug"
             settingElement={
-              <Toggle
+              <BfDsToggle
                 disabled={!trackingToggleValue}
                 value={draftSettings.showTrackingDebug ??
                   initialSettings.showTrackingDebug ?? false}
