@@ -61,14 +61,12 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
       bfOid: toBfOid(currentViewer.personBfGid),
     });
 
-    if (hd) {
-      await BfOrganization
-        .__DANGEROUS__addCurrentViewerFromGoogleToOrganization(
-          import.meta,
-          currentViewer,
-          hd,
-        );
-    }
+    await BfOrganization
+      .__DANGEROUS__addCurrentViewerFromGoogleToOrganization(
+        import.meta,
+        currentViewer,
+        hd,
+      );
 
     logVerbose("newPerson", newPerson);
     return newPerson;
@@ -89,17 +87,12 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
   }
 
   async getGoogleAuth() {
-    const edges = await BfEdge.query(this.currentViewer, {
-      bfSid: this.metadata.bfGid,
-      bfTClassName: "BfGoogleAuth",
-    });
-    const edge = edges[0];
-    const bfTid = edge?.metadata.bfTid;
-    if (!bfTid) {
-      logger.debug(`edges`, edges);
-      return null;
-    }
-    const bfGoogleAuth = await BfGoogleAuth.find(this.currentViewer, bfTid);
-    return bfGoogleAuth;
+    const auths = await BfEdge.queryTargetInstances(
+      this.currentViewer,
+      BfGoogleAuth,
+      this.metadata.bfGid,
+    );
+    const bfGoogleAuth = auths[0];
+    return bfGoogleAuth as unknown as BfGoogleAuth | void;
   }
 }
