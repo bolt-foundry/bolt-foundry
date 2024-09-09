@@ -2,6 +2,7 @@ import type { React } from "deps.ts";
 import { WatchFolderList } from "packages/client/components/settings/WatchFolderList.tsx";
 import { UserList } from "packages/client/components/clipsearch/UserList.tsx";
 import { Link } from "packages/client/components/Link.tsx";
+import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 
 type Props = {
   count: number;
@@ -19,14 +20,16 @@ export function ClipsViewNullState({ count, settings$key }: Props) {
           Settings
         </Link>
       </div>
-      <div className="cs-page-section-outside-header">
-        <div className="cs-page-section-title">
-          Recent clips
+      <FeatureFlag name="placeholder">
+        <div className="cs-page-section-outside-header">
+          <div className="cs-page-section-title">
+            Recent clips
+          </div>
         </div>
-      </div>
-      <div className="cs-page-section">
-        Clips coming soon.....
-      </div>
+        <div className="cs-page-section">
+          Clips coming soon.....
+        </div>
+      </FeatureFlag>
       <div className="cs-page-section-outside-header">
         <div className="cs-page-section-title">
           Watched folder
@@ -35,7 +38,9 @@ export function ClipsViewNullState({ count, settings$key }: Props) {
       </div>
       {/* <GoogleFilePicker /> */}
       <WatchFolderList settings$key={settings$key} />
-      <UserList />
+      <FeatureFlag name="placeholder">
+        <UserList />
+      </FeatureFlag>
     </div>
   );
 }
