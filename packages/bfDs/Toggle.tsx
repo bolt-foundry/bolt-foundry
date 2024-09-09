@@ -1,9 +1,10 @@
-import type { React } from "deps.ts";
+import * as React from "react";
 
 type BaseProps = {
   disabled?: boolean;
   label?: string;
   value: boolean;
+  size?: "small" | "large";
   style?: React.CSSProperties;
   className?: string;
   meta?: string | React.ReactNode;
@@ -22,14 +23,12 @@ type ReadonlyProps = BaseProps & {
   onChange?: never;
 };
 
-type ToggleProps = EditableProps | ReadonlyProps;
+type BfDsToggleProps = EditableProps | ReadonlyProps;
 
 const styles: Record<string, React.CSSProperties> = {
   toggle: {
     position: "relative",
     display: "inline-block",
-    width: "60px",
-    height: "34px",
   },
   slider: {
     position: "absolute",
@@ -41,18 +40,15 @@ const styles: Record<string, React.CSSProperties> = {
     backgroundColor: "var(--secondaryButton)",
     borderRadius: "34px",
   },
+  switch: {
+    position: "absolute",
+    transition: "200ms all ease",
+    borderRadius: "50%",
+    boxShadow: "0 0 2px 0 rgba(10, 10, 10, 0.3)",
+  },
   sliderDisabled: {
     opacity: "0.5",
     cursor: "not-allowed",
-  },
-  switch: {
-    position: "absolute",
-    width: "26px",
-    height: "26px",
-    top: "4px",
-    transition: "200ms all ease",
-    borderRadius: "50%",
-    boxShadow: "0 0 2px 0 rgba(10, 10, 10, 0.29)",
   },
   input: {
     opacity: "0",
@@ -60,19 +56,76 @@ const styles: Record<string, React.CSSProperties> = {
     height: "0",
   },
   label: {
+    marginBottom: 12,
+    display: "inline-block",
+    width: "100%",
+  },
+  row: {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginBottom: 12,
   },
   meta: {
     color: "var(--textSecondary)",
     marginTop: 4,
   },
 };
+const sizeStyles: Record<string, Record<string, React.CSSProperties>> = {
+  small: {
+    toggle: {
+      width: 30,
+      height: 16,
+    },
+    switch: {
+      width: 10,
+      height: 10,
+      top: 3,
+    },
+    switchOff: {
+      left: 3,
+    },
+    switchOn: {
+      left: 17,
+    },
+  },
+  medium: {
+    toggle: {
+      width: 40,
+      height: 24,
+    },
+    switch: {
+      width: 16,
+      height: 16,
+      top: 4,
+    },
+    switchOff: {
+      left: 4,
+    },
+    switchOn: {
+      left: 20,
+    },
+  },
+  large: {
+    toggle: {
+      width: 60,
+      height: 34,
+    },
+    switch: {
+      width: 26,
+      height: 26,
+      top: 4,
+    },
+    switchOff: {
+      left: 4,
+    },
+    switchOn: {
+      left: 30,
+    },
+  },
+};
 
-export function Toggle(
+export function BfDsToggle(
   {
     disabled,
     label,
@@ -83,8 +136,9 @@ export function Toggle(
     name,
     required,
     readonly,
+    size = "large",
     testId,
-  }: ToggleProps,
+  }: BfDsToggleProps,
 ) {
   const slider = (
     <span
@@ -99,7 +153,8 @@ export function Toggle(
       <span
         style={{
           ...styles.switch,
-          left: value ? "30px" : "4px",
+          ...sizeStyles[size].switch,
+          ...(value ? sizeStyles[size].switchOn : sizeStyles[size].switchOff),
           backgroundColor: value ? "var(--success)" : "var(--textLight)",
         }}
       />
@@ -109,12 +164,13 @@ export function Toggle(
   const testIdValue = testId ? `${testId}-${!value}` : undefined;
 
   const toggle = (
-    <label style={styles.toggle} data-bf-testid={testIdValue}>
+    <div style={{...styles.toggle, ...sizeStyles[size].toggle}} data-bf-testid={testIdValue}>
       <input
         type="checkbox"
         checked={value}
         disabled={disabled}
-        onChange={(e) => onChange && onChange(e.target.checked)}
+        onChange={(e) =>
+          onChange && onChange(e.target.checked)}
         style={styles.input}
         className={className}
         name={name}
@@ -122,15 +178,19 @@ export function Toggle(
         readOnly={readonly}
       />
       {slider}
-    </label>
+    </div>
   );
 
   if (label) {
     return (
       <label style={styles.label}>
-        {label}
-        {required && " *"}
-        {toggle}
+        <div style={styles.row}>
+          <div style={{flex: 1}}>
+            {label}
+            {required && " *"}
+          </div>
+          {toggle}
+        </div>
         {meta && <div style={styles.meta}>{meta}</div>}
       </label>
     );
@@ -141,4 +201,34 @@ export function Toggle(
       {meta && <div style={styles.meta}>{meta}</div>}
     </div>
   );
+}
+
+export function Demo() {
+  const [small, setSmall] = React.useState(false);
+  const [medium, setMedium] = React.useState(false);
+  const [large, setLarge] = React.useState(false);
+  return (
+    <div style={{width: 300}}>
+      <BfDsToggle />
+      <BfDsToggle
+        meta="This is small toggle"
+        size="small"
+        label="Small"
+        value={small}
+        onChange={() => setSmall(!small)} 
+        />
+      <BfDsToggle
+        size="medium"
+        label="Medium"
+        value={medium}
+        onChange={() => setMedium(!medium)} 
+        />
+      <BfDsToggle
+        size="large"
+        label="Large"
+        value={large}
+        onChange={() => setLarge(!large)} 
+      />
+    </div>
+  )
 }

@@ -2,7 +2,7 @@ import * as React from "react";
 import { getLogger } from "deps.ts";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { Toggle } from "packages/bfDs/Toggle.tsx";
+import { BfDsToggle } from "packages/bfDs/BfDsToggle.tsx";
 const { useState, createContext, useContext } = React;
 
 const logger = getLogger(import.meta);
@@ -115,7 +115,7 @@ export function BfDsFormNumberInput(
 // ) {
 //   const { data, onChange } = useBfDsFormContext();
 //   return (
-//     <Toggle
+//     <BfDsToggle
 //       label={title}
 //       name={id}
 //       checked={data[id]}

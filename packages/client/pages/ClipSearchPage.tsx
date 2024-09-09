@@ -11,6 +11,7 @@ import { ClipsViewNullState } from "packages/client/components/clipsearch/ClipsV
 import ClipSearchProvider, {
   useClipSearchState,
 } from "packages/client/contexts/ClipSearchContext.tsx";
+import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 
 const query = await graphql`
   query ClipSearchPageQuery {
@@ -37,7 +38,7 @@ export function ClipSearchPageContent() {
   const data = useLazyLoadQuery(query, {});
   const count = data?.currentViewer?.organization?.media?.count;
   const sidebarContents = (
-    <>
+    <FeatureFlag name="placeholder">
       <List collapsible={true} header="Lists">
         <ListItem
           content="work-life balance"
@@ -72,7 +73,7 @@ export function ClipSearchPageContent() {
           onClick={() => console.log("click")}
         />
       </List>
-    </>
+    </FeatureFlag>
   );
   return (
     <div className="cs-page flexRow">
