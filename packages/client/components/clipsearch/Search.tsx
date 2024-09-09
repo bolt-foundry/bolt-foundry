@@ -4,6 +4,7 @@ import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
 import { useClipSearchState } from "packages/client/contexts/ClipSearchContext.tsx";
 import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
+import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 
 export function Search() {
   const { aiModel, setAiModel, commitSearch, isInFlight, prompt, setPrompt } =
@@ -26,18 +27,20 @@ export function Search() {
           }}
         />
       </div>
-      <DropdownSelector
-        placeholder="Select AI Model"
-        value={aiModel}
-        onChange={(value) => setAiModel(value as AiModel)}
-        options={{
-          "GPT 3.5 turbo": AiModel.OPENAI_35,
-          "GPT 4o mini": AiModel.OPENAI_4O,
-          "Claude 3 opus": AiModel.CLAUDE_OPUS,
-          "Claude 3.5 sonnet": AiModel.CLAUDE_SONNET,
-        }}
-        justification="end"
-      />
+      <FeatureFlag name="placeholder">
+        <DropdownSelector
+          placeholder="Select AI Model"
+          value={aiModel}
+          onChange={(value) => setAiModel(value as AiModel)}
+          options={{
+            "GPT 3.5 turbo": AiModel.OPENAI_35,
+            "GPT 4o mini": AiModel.OPENAI_4O,
+            "Claude 3 opus": AiModel.CLAUDE_OPUS,
+            "Claude 3.5 sonnet": AiModel.CLAUDE_SONNET,
+          }}
+          justification="end"
+        />
+      </FeatureFlag>
       <BfDsButton type="submit" text="Search" />
     </form>
   );

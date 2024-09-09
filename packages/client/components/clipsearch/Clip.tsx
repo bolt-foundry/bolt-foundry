@@ -5,6 +5,7 @@ import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { Pill } from "packages/bfDs/Pill.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
+import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 
 const fragment = await graphql`
     fragment Clip_bfPerson on BfPerson {
@@ -54,9 +55,11 @@ export function Clip(
   return (
     <div className="clip">
       <div className="clipInner clipContainer">
-        <div className="videoPlayer tall">
-          (video player)
-        </div>
+        <FeatureFlag name="placeholder">
+          <div className="videoPlayer tall">
+            (video player)
+          </div>
+        </FeatureFlag>
         <div className="clipContent">
           <div className="clipHeader">
             <div className="clipHeaderLeft">
@@ -66,11 +69,13 @@ export function Clip(
               </div>
             </div>
             <div className="clipActions row-column">
-              <BfDsButton
-                kind="secondary"
-                iconLeft="pencil"
-                testId="button-edit-clip"
-              />
+              <FeatureFlag name="placeholder">
+                <BfDsButton
+                  kind="secondary"
+                  iconLeft="pencil"
+                  testId="button-edit-clip"
+                />
+              </FeatureFlag>
               <DownloadClipButton
                 startTime={startTime}
                 endTime={endTime}
