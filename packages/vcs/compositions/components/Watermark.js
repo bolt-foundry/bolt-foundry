@@ -3,22 +3,20 @@ import { Box, Image } from "#vcs-react/components";
 import { useParams } from "#vcs-react/hooks";
 
 export default function Watermark({
-  fontSizeVh = 96 / 1920,
   captionPosition = 0.6,
   defaultNumberOfLines = 3,
 }) {
   const { settings } = useParams();
   const {
-    additionalJson = "{}",
+    fontSize,
     showWatermark,
     watermarkLogo,
     watermarkOpacity,
     watermarkPosition,
-  } = JSON.parse(settings);
-  if (!showWatermark) return null;
-  const {
     watermarkScale,
-  } = JSON.parse(additionalJson);
+  } = JSON.parse(settings);
+  const fontSize_vh = (fontSize ?? 96) / 1920;
+  if (!showWatermark) return null;
 
   return (
     <Box id="watermark">
@@ -28,7 +26,7 @@ export default function Watermark({
         layout={[layoutFuncs.watermark, {
           position: watermarkPosition,
           scale: watermarkScale,
-          fontSizeVh,
+          fontSize_vh,
           captionPosition,
           defaultNumberOfLines,
         }]}
@@ -43,7 +41,7 @@ const layoutFuncs = {
     const {
       position,
       scale,
-      fontSizeVh,
+      fontSize_vh,
       captionPosition,
       defaultNumberOfLines,
     } = params;
@@ -52,7 +50,7 @@ const layoutFuncs = {
     const imgSize = layoutCtx.useIntrinsicSize();
     const imgAsp = imgSize.h > 0 ? imgSize.w / imgSize.h : 1;
     const vh = layoutCtx.viewport.h;
-    const fontSize = fontSizeVh * vh;
+    const fontSize = fontSize_vh * vh;
 
     const margin = fontSize * 0.4;
     w = parentW * scale ?? 0.25;

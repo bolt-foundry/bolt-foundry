@@ -1,4 +1,5 @@
-import { isBrowser, React } from "deps.ts";
+import * as React from "react";
+import { isBrowser } from "deps.ts";
 
 const { useState } = React;
 
@@ -14,7 +15,7 @@ export function useLocalStorage<T>(
     try {
       if (isBrowser()) { // disable on server side
         // Get from local storage by key
-        const item = window.localStorage.getItem(key);
+        const item = globalThis.localStorage.getItem(key);
         // Parse stored json or if none return initialValue
         return item ? JSON.parse(item) : initialValue;
       } else {
@@ -40,7 +41,7 @@ export function useLocalStorage<T>(
         // Save state
         setStoredValue(valueToStore);
         // Save to local storage
-        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        globalThis.localStorage.setItem(key, JSON.stringify(valueToStore));
       } else {
         setStoredValue(value);
       }

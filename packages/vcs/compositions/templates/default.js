@@ -8,8 +8,8 @@ import TitleCard from "../components/TitleCard.js";
 import Watermark from "../components/Watermark.js";
 import { getValueFromJson } from "../utils/jsonUtils.js";
 
-const MAX_CHARACTERS_PER_LINE = 24;
-const FONT_SIZE_VH = 64 / 1920;
+const MAX_CHARACTERS_PER_LINE = 16;
+const FONT_SIZE_VH = 96 / 1920;
 const CAPTION_POSITION = 0.6;
 const EMPTY_LINE_STATE = {
   firstWordIndex: -1,
@@ -18,12 +18,13 @@ const EMPTY_LINE_STATE = {
   currentLine: false,
 };
 
-export default function DefaultGraphics() {
+export default function DefaultGraphics({
+  captionLines = 2,
+}) {
   // 2 lines of captions
-  const initialLineState = React.useRef([
-    { ...EMPTY_LINE_STATE },
-    { ...EMPTY_LINE_STATE },
-  ]);
+  const initialLineState = React.useRef(
+    Array(captionLines).fill({ ...EMPTY_LINE_STATE }),
+  );
   let time = useVideoTime();
 
   const { activeIds } = useActiveVideo();
@@ -39,26 +40,30 @@ export default function DefaultGraphics() {
     transcriptWords,
   } = useParams();
   const {
-    additionalJson = "{}",
     captionColor,
     captionHighlightColor,
     font: fontFamily,
+    fontSize,
     showCaptions,
+    strokeColor = "rgba(0, 0, 0, 0.75)",
+    strokeWidth_px = 6,
   } = JSON.parse(settings);
-  const strokeColor = getValueFromJson(
-    additionalJson,
-    "strokeColor",
-    "rgba(0, 0, 0, 0.75)",
-  );
-  const strokeWidth_px = getValueFromJson(additionalJson, "strokeWidth_px", 6);
+  const fontSize_vh = fontSize / 1920;
 
   const labelStyle = {
     textColor: captionColor ?? "white",
     fontFamily,
     fontWeight: fontBoldWeights[fontFamily],
-    fontSize_vh: FONT_SIZE_VH,
+    fontSize_vh,
     strokeColor,
     strokeWidth_px,
+  };
+  const highlightStyle = {
+    ...labelStyle,
+    fontSize_vh: fontSize_vh * 1,
+    strokeColor: "rgba(0,0,0,0.25)",
+    textColor: "rgb(255, 255, 70)",
+    // textColor: captionHighlightColor ?? "rgb(255, 215, 0)",
   };
 
   const charactersPerLineByFont = MAX_CHARACTERS_PER_LINE *
@@ -66,7 +71,7 @@ export default function DefaultGraphics() {
 
   const options = {
     maxCharactersPerLine: charactersPerLineByFont,
-    maxWordsPerLine: 8,
+    maxWordsPerLine: 5,
     maxPauseForBreak: 0.5,
     endTimecode: endTimecode,
     startTimecode: startTimecode,
@@ -97,14 +102,17 @@ export default function DefaultGraphics() {
               ]}
             >
               {line.lineText.map((word, wordIndex) => {
-                const isHighlighted =
-                  wordIndex === line.highlightedWordIndexWithinLine;
+                const isHighlighted = line.currentLineIndex > index
+                  ? true
+                  : wordIndex <= line.highlightedWordIndexWithinLine;
                 return [
-                  word + (wordIndex < line.lineText.length - 1 ? " " : ""),
+                  word + (
+                    wordIndex < line.lineText.length - 1 ? " " : ""
+                  ),
                   {
-                    textColor: isHighlighted ? "yellow" : labelStyle.textColor, // you can do word-specific style override here
-                    fontSize_vh: labelStyle.fontSize_vh *
-                      (isHighlighted ? 1.3 : 1),
+                    ...(
+                      isHighlighted ? highlightStyle : labelStyle
+                    ),
                   },
                 ];
               })}
@@ -114,7 +122,7 @@ export default function DefaultGraphics() {
       <Watermark
         fontSizeVh={FONT_SIZE_VH}
         captionPosition={CAPTION_POSITION}
-        defaultNumberOfLines={2}
+        defaultNumberOfLines={captionLines}
       />
       <TitleCard />
       <EndCap />

@@ -6,7 +6,8 @@ import {
 import type { DGWord } from "packages/types/transcript.ts";
 import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
 import { getTimecodesForClips } from "packages/lib/timecodeUtils.ts";
-
+import { getLogger } from "deps.ts";
+const logger = getLogger(import.meta);
 const openAIApiKey = Deno.env.get("OPENAI_API_KEY") ?? "";
 const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
 
@@ -127,7 +128,19 @@ export const callAPI = async (
   ]);
 
   const chain = prompt.pipe(structuredLlm);
+  const start = performance.now();
   const response = await chain.invoke({ input: userMessage });
+  const end = performance.now();
+  const duration = end - start;
+  const results = {
+    model: suggestedModel,
+    duration: duration,
+    response: response,
+    numOfDocuments: documents.length,
+    prompt: userMessage,
+  };
+
+  logger.info("prompt completed", results);
 
   const responseWithTimecode = getTimecodesForClips(response, documents);
   return JSON.stringify(responseWithTimecode);
