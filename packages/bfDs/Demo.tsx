@@ -10,7 +10,7 @@ import { fonts } from "packages/bfDs/const.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { ContactUs } from "packages/client/components/ContactUs.tsx";
 import { BfDsCallout } from "packages/bfDs/BfDsCallout.tsx";
-import { Demo as ToggleDemo } from "packages/bfDs/Toggle.tsx";
+import { Demo as ToggleDemo } from "packages/bfDs/BfDsToggle.tsx";
 
 const buttonElements = [
   {
@@ -466,7 +466,7 @@ export function Demo() {
             onChange={() => {}}
           />
         </div>
-        <ToggleDemo />
+        <BfDsToggleDemo />
       </div>
       <div className="element" style={styles.element}>
         <div style={styles.name}>Icons</div>
