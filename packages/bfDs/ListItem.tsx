@@ -1,7 +1,7 @@
 import type { React } from "deps.ts";
 import { BfDsIcon, type BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { classnames } from "lib/classnames.ts";
-import { Toggle } from "packages/bfDs/Toggle.tsx";
+import { BfDsToggle } from "packages/bfDs/BfDsToggle.tsx";
 
 type Props = {
   content: string | React.ReactNode;
@@ -48,7 +48,7 @@ export function ListItem(
       {toggle &&
         (
           <div className="list-item-toggle">
-            <Toggle value={!!toggled} onChange={toggle} />
+            <BfDsToggle value={!!toggled} onChange={toggle} />
           </div>
         )}
     </div>
