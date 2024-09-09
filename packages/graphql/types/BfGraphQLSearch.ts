@@ -39,7 +39,7 @@ export const searchMutation = mutationField("searchMutation", {
       allMedia.map(async (media) => {
         const mediaId = media.metadata.bfGid;
         // get the transcript
-        const transcriptsOnMedia = await BfEdge.queryTargets(
+        const transcriptsOnMedia = await BfEdge.queryTargetInstances(
           bfCurrentViewer,
           BfMediaTranscript as typeof BfNode,
           media.metadata.bfGid,
