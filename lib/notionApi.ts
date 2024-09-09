@@ -1,4 +1,6 @@
 // cms: https://www.notion.so/boltfoundry/1d6117a9a86441f1b339e96346bbf0e1?v=887423b5acf24d93b501bd3975b0c11e
+import { getLogger } from "deps.ts";
+const logger = getLogger(import.meta);
 const NOTION_API_KEY = Deno.env.get("NOTION_API_KEY");
 
 export interface NotionPostsResponse {
@@ -7,6 +9,8 @@ export interface NotionPostsResponse {
   title: string;
   slug: string;
   properties: NotionPostsResponseDataProperties;
+  cover: string;
+  icon: string;
 }
 
 interface NotionPostsResponseDataProperties {
@@ -28,6 +32,14 @@ export interface BlogPostData {
   title: string;
   slug: string;
   id: string;
+  date: string;
+  author: {
+    name: string;
+    email: string;
+    avatarUrl: string;
+  };
+  coverUrl: string;
+  icon: string;
 }
 
 export interface NotionBlogPostContentObject {
@@ -35,13 +47,28 @@ export interface NotionBlogPostContentObject {
   id: string;
   image: {
     caption: RichText[];
-    file: {
+    external?: {
+      url: string;
+    };
+    file?: {
       url: string;
     };
   };
   paragraph: {
     rich_text: RichText[];
     color: string;
+  };
+  callout: {
+    rich_text: RichText[];
+    color: string;
+    icon: {
+      type: string;
+      emoji: string;
+    };
+  };
+  code: {
+    rich_text: RichText[];
+    language: string;
   };
 }
 
@@ -82,16 +109,27 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
     },
   );
   const data = await response.json();
+  logger.info("RAW DATA", data);
   const filteredData = data.results.map(
-    ({ id, url, properties }: NotionPostsResponse) => {
+    ({ id, url, properties, cover, icon }: NotionPostsResponse) => {
+      logger.debug("DATE", properties["Publish date"]);
+      logger.debug("AUTHOR", properties.Author);
       const lastDashIndex = url.lastIndexOf("-");
       const urlWithoutId = url.substring(0, lastDashIndex);
       const slug = urlWithoutId.replace("https://www.notion.so/", "");
       return {
-        title: properties.Name.title[0].text.content,
+        title: properties.Name.title[0]?.text?.content ?? "Untitled",
         slug: slug,
         id: id,
-        status: properties.Status.status.name,
+        status: properties.Status.status?.name ?? "No status",
+        date: properties["Publish date"]?.date?.start,
+        author: {
+          name: properties.Author.people[0]?.name,
+          email: properties.Author.people[0]?.person?.email,
+          avatarUrl: properties.Author.people[0]?.avatar_url,
+        },
+        coverUrl: cover?.external?.url,
+        icon: icon?.emoji,
       };
     },
   );
@@ -122,7 +160,8 @@ export async function getListOfContentForAPost(
           return {
             id: contentBlock.id,
             type: contentBlock.type,
-            imageUrl: contentBlock.image.file.url,
+            imgUrl: contentBlock.image.external?.url ??
+              contentBlock.image.file?.url,
             caption: contentBlock.image.caption,
           };
         case "paragraph": {
@@ -137,8 +176,25 @@ export async function getListOfContentForAPost(
             color: contentBlock.paragraph.color,
           };
         }
+        case "callout": {
+          return {
+            id: contentBlock.id,
+            type: contentBlock.type,
+            RichText: contentBlock.callout.rich_text,
+            icon: contentBlock.callout.icon?.emoji,
+            color: contentBlock.callout.color,
+          };
+        }
+        case "code": {
+          return {
+            id: contentBlock.id,
+            type: contentBlock.type,
+            RichText: contentBlock.code.rich_text,
+            language: contentBlock.code.language,
+          };
+        }
         default: {
-          //todo add logging for unknown content type.
+          logger.error("Unknown content type", contentBlock.type, contentBlock);
           return;
         }
       }

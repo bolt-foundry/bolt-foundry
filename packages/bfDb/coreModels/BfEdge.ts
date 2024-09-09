@@ -11,7 +11,7 @@ import type {
 import type { ConnectionArguments } from "packages/graphql/deps.ts";
 import { BfModel } from "packages/bfDb/classes/BfModel.ts";
 import { bfGetItemsByBfGid } from "packages/bfDb/bfDb.ts";
-import type { ConnectionInterface } from "react-relay";
+import type { ConnectionInterface } from "relay";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
 
@@ -60,10 +60,10 @@ export class BfEdge<
     role?: string,
   ): Promise<BfEdge> {
     const metadata = {
-      bfTClassName: targetNode.constructor.name,
-      bfTid: targetNode.metadata.bfGid,
       bfSClassName: sourceNode.constructor.name,
       bfSid: sourceNode.metadata.bfGid,
+      bfTClassName: targetNode.constructor.name,
+      bfTid: targetNode.metadata.bfGid,
     } as EdgeCreationMetadata;
 
     const newEdge = await BfEdge.__DANGEROUS__createUnattached(currentViewer, {
@@ -87,16 +87,14 @@ export class BfEdge<
    * const connection = await BfEdge.queryTargetsConnectionForGraphQL(currentViewer, TargetNode, sourceNodeGid, {}, connectionArgs);
    */
   static async queryTargetsConnectionForGraphQL<
-    TThis extends Constructor<
-      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
-    >,
+    TTargetClass extends abstract new (...args: any) => any,
+    TThis extends Constructor<BfEdge>,
     TRequiredProps,
     TOptionalProps,
-    TCreationMetadata extends CreationMetadata,
   >(
     this: TThis,
     currentViewer: BfCurrentViewer,
-    TargetClass: typeof BfNode,
+    TargetClass: TTargetClass,
     sourceBfGid: BfGid | BfSid,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
     connectionArgs: ConnectionArguments,
@@ -106,13 +104,13 @@ export class BfEdge<
     > & { count: number }
   > {
     logger.debug("queryTargetsConnectionForGraphQL", TargetClass, sourceBfGid);
-    // @ts-expect-error done is better than good™
-    const connection = await this.queryConnectionForGraphQL(
-      currentViewer,
-      { bfSid: sourceBfGid, bfTClassName: TargetClass.name },
-      propsToQuery,
-      connectionArgs,
-    );
+    const connection = await (this as unknown as typeof BfEdge)
+      .queryConnectionForGraphQL(
+        currentViewer,
+        { bfSid: sourceBfGid, bfTClassName: TargetClass.name },
+        propsToQuery,
+        connectionArgs,
+      );
     logger.debug("connection", connection);
     const targetEdgeIds = connection.edges.map((
       edge: { node: { id: string } },
@@ -123,29 +121,28 @@ export class BfEdge<
       Boolean,
     );
     logger.debug("targetIds", targetIds);
-    const targetConnection = await TargetClass.queryConnectionForGraphQL(
-      currentViewer,
-      {},
-      {},
-      connectionArgs,
-      // @ts-expect-error typescript is mistakenly keeping undefineds.
-      targetIds,
-    );
+    const targetConnection = await (TargetClass as unknown as typeof BfNode)
+      .queryConnectionForGraphQL(
+        currentViewer,
+        {},
+        {},
+        connectionArgs,
+        // @ts-expect-error typescript is mistakenly keeping undefineds.
+        targetIds,
+      );
     logger.debug("targetConnection", targetConnection);
     return targetConnection;
   }
 
-  static async querySources<
-    TThis extends Constructor<
-      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
-    >,
+  static async querySourceInstances<
+    TSourceClass extends abstract new (...args: any) => any,
+    TThis extends Constructor<BfEdge>,
     TRequiredProps,
     TOptionalProps,
-    TCreationMetadata extends CreationMetadata,
   >(
     this: TThis,
     currentViewer: BfCurrentViewer,
-    SourceClass: Constructor<BfNode>,
+    SourceClass: TSourceClass,
     targetBfGid: BfGid | BfTid,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
   ) {
@@ -158,17 +155,17 @@ export class BfEdge<
     const sourceEdgeIds = sourceEdges.map((edge: BfNode) => edge.metadata.bfSid)
       .filter(Boolean) as Array<BfSid>;
     logger.debug("sourceEdgeIds", sourceEdgeIds);
-    const sources = await (SourceClass as typeof BfNode).query(
+    const sources = await (SourceClass as unknown as typeof BfNode).query(
       currentViewer,
       {},
       propsToQuery,
       sourceEdgeIds,
     );
     logger.debug("sources", sources);
-    return sources;
+    return sources as Array<InstanceType<TSourceClass>>;
   }
 
-  static async queryAllSourceEdgesForNode(bfNode: BfNode) {
+  static async querySourceEdgesForNode(bfNode: BfNode) {
     logger.debug("queryAllSources");
     const sources = await (this as typeof BfEdge).query(
       bfNode.currentViewer,
@@ -178,38 +175,36 @@ export class BfEdge<
     return sources;
   }
 
-  static async queryTargets<
-    TThis extends Constructor<
-      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
-    >,
+  static async queryTargetInstances<
+    TSourceClass extends abstract new (...args: any) => any,
+    TThis extends Constructor<BfEdge>,
     TRequiredProps,
     TOptionalProps,
-    TCreationMetadata extends CreationMetadata,
   >(
     this: TThis,
     currentViewer: BfCurrentViewer,
-    TargetClass: typeof BfNode,
+    TargetClass: TSourceClass,
     sourceBfGid: BfGid | BfSid,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
   ) {
     logger.debug("queryTargets", TargetClass, sourceBfGid);
-    // @ts-expect-error done is better than good™
-    const targetEdges = await this.query(
+
+    const targetEdges = await (this as unknown as typeof BfEdge).query(
       currentViewer,
       { bfSid: sourceBfGid, bfTClassName: TargetClass.name },
       propsToQuery,
     );
     logger.debug("targetEdges", targetEdges);
-    const targetEdgeIds = targetEdges.map((edge: BfNode) => edge.metadata.bfTid)
+    const targetEdgeIds = targetEdges.map((edge: BfEdge) => edge.metadata.bfTid)
       .filter(Boolean);
     logger.debug("targetEdgeIds", targetEdgeIds);
-    const targets = await TargetClass.query(
+    const targets = await (TargetClass as unknown as typeof BfNode).query(
       currentViewer,
       {},
       propsToQuery,
       targetEdgeIds,
     );
     logger.debug("targets", targets);
-    return targets;
+    return targets as Array<InstanceType<TSourceClass>>;
   }
 }
