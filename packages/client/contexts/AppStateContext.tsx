@@ -1,19 +1,18 @@
 import * as React from "react";
-import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
-const { useEffect, useState } = React;
+const { useState } = React;
 
 type FeatureFlags = Record<string, boolean>;
 
 type ValueType = {
-  showHud: boolean;
   featureFlags: FeatureFlags;
+  setFeatureFlag: (name: string) => void;
+  getFeatureFlag: (name: string) => boolean;
 };
 
 const AppStateContext = React.createContext<ValueType>({
-  showHud: false,
-  featureFlags: {
-    placeholder: false,
-  },
+  featureFlags: {},
+  getFeatureFlag: () => false,
+  setFeatureFlag: () => void null,
 });
 
 export function useAppState(): ValueType {
@@ -23,22 +22,17 @@ export function useAppState(): ValueType {
 export default function AppStateProvider(
   { children }: React.PropsWithChildren,
 ) {
-  const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({});
+  const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
+    placeholder: false,
+  });
   const getFeatureFlag = (name: string) => featureFlags[name];
   const setFeatureFlag = (name: string) => {
     setFeatureFlags({ ...featureFlags, [name]: !featureFlags[name] });
   };
 
-  let showHud = false;
-  useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      showHud = true;
-    }
-  }, []);
-
   return (
     <AppStateContext.Provider
-      value={{ showHud, getFeatureFlag, setFeatureFlag }}
+      value={{ featureFlags, getFeatureFlag, setFeatureFlag }}
     >
       {children}
     </AppStateContext.Provider>

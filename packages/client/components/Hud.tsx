@@ -1,10 +1,17 @@
-import * as React from "react";
+import type * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
 import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
+import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 
 export function Hud() {
+  const { BF_ENV } = useAppEnvironment();
+  const showHud = BF_ENV !== "PRODUCTION";
+  if (!showHud) {
+    return null;
+  }
+
   const hudRef = useRef<HTMLDivElement>(null);
   const [initComplete, setInitComplete] = useState(false);
   const [position, setPosition] = useLocalStorage("hud-position", {

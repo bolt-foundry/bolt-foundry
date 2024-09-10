@@ -96,7 +96,7 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
     logger.debug(`Executing job ${this}`);
     this.props.status = BfJobType.RUNNING;
     await this.save();
-    const edges = await BfEdge.queryAllSourceEdgesForNode(this);
+    const edges = await BfEdge.querySourceEdgesForNode(this);
     if (edges.length !== 1) {
       throw new BfError(
         `Job has either too many or not enough source edges: ${edges.length}`,

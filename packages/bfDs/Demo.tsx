@@ -11,6 +11,7 @@ import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { ContactUs } from "packages/client/components/ContactUs.tsx";
 import { BfDsCallout } from "packages/bfDs/BfDsCallout.tsx";
 import { Demo as BfDsToggleDemo } from "packages/bfDs/BfDsToggle.tsx";
+import { Demo as GlimmerDemo } from "packages/bfDs/BfDsGlimmer.tsx";
 
 const buttonElements = [
   {
@@ -573,6 +574,12 @@ export function Demo() {
           <BfDsCallout kind="warning" header="Warning" body="Warning callout" />
           <BfDsCallout kind="error" header="Error" body="Error callout" />
           <BfDsCallout kind="success" header="Success" body="Success callout" />
+        </div>
+      </div>
+      <div style={styles.element}>
+        <div style={styles.name}>Glimmer</div>
+        <div style={styles.group}>
+          <GlimmerDemo />
         </div>
       </div>
       <div style={styles.element}>

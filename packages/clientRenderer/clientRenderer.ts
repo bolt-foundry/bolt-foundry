@@ -20,6 +20,7 @@ const importableEnvironmentVariables = [
   "META_PIXEL_ID",
   "HUBSPOT_API_KEY",
   "CLEARBIT_API_KEY",
+  "BF_ENV",
 ];
 
 async function clientRendererMain(
