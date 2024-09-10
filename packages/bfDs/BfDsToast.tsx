@@ -89,7 +89,7 @@ export function BfDsToast({
         <div className="close-toast">
           <BfDsButton
             iconLeft="cross"
-            kind="overlayDark"
+            kind="outlineDark"
             size="small"
             onClick={removeToast}
           />
