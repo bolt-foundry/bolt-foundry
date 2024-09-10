@@ -5,7 +5,7 @@ import { getLogger } from "deps.ts";
 import { parseArgs } from "@std/cli";
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { AssemblyAI } from "assemblyai";
-import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
+import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import type { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
@@ -76,7 +76,7 @@ export async function createTranscript(
   // create transcript
   logger.info("Creating Transcript");
   const bfTranscript = await bfMedia.createTargetNode(
-    BfMediaTranscript,
+    BfMediaNodeTranscript,
     {
       words: JSON.stringify(transcript.words),
       filename: inputAudio,
