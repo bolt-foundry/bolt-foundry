@@ -4,18 +4,19 @@ import { SetUpMeeting } from "packages/client/components/SetUpMeeting.tsx";
 
 export function LandingPageSetUpMeeting(): React.ReactElement {
   //this is dumb, I know it's dumb.
+  //this component is built to show different colors for different words. Right now I made the decision to have it all be the same color.
   const lines = [
     { "style": "normal", "text": "It's" },
     { "style": "normal", "text": "your" },
     { "style": "normal", "text": "content," },
     { "style": "normal", "text": "use" },
-    { "style": "blueWord", "text": "more" },
+    { "style": "normal", "text": "more" },
     { "style": "normal", "text": "of" },
     { "style": "normal", "text": "it." },
   ];
 
   const elements = lines.map(({ style, text }, index: number) => {
-    const textColor = style === "normal" ? "text-white" : "text-brand-gold";
+    const textColor = style === "normal" ? "" : "text-brand-gold";
     const styleClass = `landing-page-set-up-meeting-headline ${textColor}`;
     //ensures consistent spacing as spaces will collapse between divs and spans when rendered inline-block.
     if (index != lines.length - 1) {
