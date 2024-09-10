@@ -21,6 +21,8 @@ import {
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { getLogger } from "deps.ts";
+import { exchangeCodeForToken } from "lib/googleOauth.ts";
+import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
 const logger = getLogger(import.meta);
 
 export const AccountRole = enumType({
@@ -191,3 +193,27 @@ export const LogoutMutation = mutationField((t) => {
     },
   });
 });
+
+export const LinkGoogleAccountMutation = mutationField(
+  "linkAdvancedGoogleAuth",
+  {
+    type: "BfCurrentViewer",
+    args: {
+      code: nonNull(stringArg()),
+    },
+    // @ts-expect-error #techdebt
+    resolve: async (_root, { code }, { bfCurrentViewer }: GraphQLContext) => {
+      const person = await BfPerson.findCurrentViewer(bfCurrentViewer);
+      const tokenResponse = await exchangeCodeForToken(code);
+      const refreshToken = tokenResponse.refresh_token;
+      if (!person) {
+        throw new Error("No person found");
+      }
+      if (!refreshToken) {
+        throw new Error("No refresh token found");
+      }
+      await person.createTargetNode(BfGoogleAuth, { refreshToken });
+      return bfCurrentViewer;
+    },
+  },
+);
