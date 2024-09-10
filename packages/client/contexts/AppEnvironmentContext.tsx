@@ -21,6 +21,7 @@ const AppEnvironmentContext = React.createContext<AppEnvironmentProps>({
   GOOGLE_OAUTH_CLIENT_ID: "",
   initialPath: globalThis.location?.pathname ?? "/",
   phBootstrap: {},
+  bfEnvironment: "PRODUCTION",
 });
 
 export type AppEnvironmentProps = {
@@ -36,6 +37,7 @@ export type AppEnvironmentProps = {
   initialPath: string;
   phBootstrap: unknown;
   serverRelayEnvironment?: RelayRuntime.Environment;
+  BF_ENV: string;
 };
 
 export type ServerProps = AppEnvironmentProps & RouterProviderProps & {
