@@ -5,11 +5,11 @@ export function LandingPageHero() {
   const lines = [
     {
       "style": "normal",
-      "text": "Put your video to",
+      "text": "Put your",
     },
     {
       "style": "blue-word",
-      "text": "work",
+      "text": "video to work",
     },
   ];
 
@@ -24,10 +24,13 @@ export function LandingPageHero() {
         {elements}
       </div>
       <div className="landing-page-text">
-        Customer testimonials are powerful. Bolt Foundry helps you take those
-        stories and turn them into polished clips you can use anywhere.
-        <br />
-        Let's work together to get the word out.
+        <p>
+          Customer testimonials are powerful. Bolt Foundry helps you take those
+          stories and turn them into polished clips you can use anywhere.
+        </p>
+        <p>
+          Let's work together to get the word out.
+        </p>
       </div>
       <div style={{ width: "50%" }}>
         <BfDsButton

@@ -1225,8 +1225,8 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 }
 
 .landing-page-block {
-  flex: 1;
   min-width: max(300px, 40vw);
+  flex: 1;
 }
 
 .landing-page-title {
@@ -1239,7 +1239,6 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .landing-page-text {
   font-size: max(16px, 1.6vw);
   text-align: left;
-  font-weight: 600;
   color: var(--textMarketing);
   max-width: 400px;
 }
@@ -1256,33 +1255,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .landing-page-clips-container {
   height: 700px;
   display: flex;
-}
-
-/* Fires when the blocks wrap around for all of th content to be vertical */
-@media(max-width: 938px) and (min-width:601px) {
-  #clips-column-one {
-    flex-direction: row;
-  }
-  .landing-page-clips-container {
-    justify-content: right;
-  }
-  .landing-page-block {
-    padding-left: 10vw;
-    padding-right: 10vw;
-  }
-}
-
-@media(max-width: 600px) {
-  #clip2, #clip3 {
-    display: none;
-  }
-  .landing-page-clips-container {
-    justify-content: center;
-    height: 340px;
-  }
-  #landing-page-mission-section {
-    flex-direction: column-reverse;
-  }
+  background: radial-gradient(var(--fourtharyColor030), transparent 70%);
 }
 
 .landing-page-clips {
@@ -1292,6 +1265,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
+  border-radius: 8px;
 }
 
 .landing-page-clip-placeholder {
@@ -1320,7 +1294,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 #clip2 {
   margin-left: 60px;
-  margin-top: 16px;
+  margin-top: 10px;
 }
 
 #clip3 {
@@ -1344,6 +1318,10 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   width: 100%;
 }
 
+.landing-page-testimonial-section-wrapper {
+  margin-bottom: 2vw;
+}
+
 .landing-page-testimonial-section {
   width: 80%;
   margin: auto;
@@ -1358,6 +1336,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   aspect-ratio: 16 / 9;
   width: 100%;
   max-width: 60rem;
+  border-radius: 8px;
 }
 
 .landing-page-video-placeholder {
@@ -1371,14 +1350,14 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  padding-left: 12vw;
-  padding-right: 12vw;
-  min-height: 200px;
+  padding: 12vw;
+  padding-top: 0;
 }
 
 .landing-page-set-up-meeting-text-area {
   display: inline-block;
   align-content: center;
+  font-size: max(20px, 3vw);
 }
 
 .landing-page-book-a-meeting-button {
@@ -1410,6 +1389,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .landing-page-set-up-meeting-cta {
   margin-top: 4px;
   text-align: right;
+  font-size: .7em;
 }
 
 .landing-page-footer {
@@ -1420,7 +1400,41 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   padding: 10px;
   padding-right: 88px;
   align-items: center;
-  
+}
+
+/* Fires when the blocks wrap around for all of th content to be vertical */
+@media(max-width: 938px) and (min-width:601px) {
+  #clips-column-one {
+    flex-direction: row;
+  }
+  .landing-page-clips-container {
+    justify-content: right;
+  }
+  .landing-page-block {
+    padding-left: 10vw;
+    padding-right: 10vw;
+  }
+}
+
+@media(max-width: 600px) {
+  #clip2, #clip3 {
+    display: none;
+  }
+  .landing-page-clips-container {
+    justify-content: center;
+    height: 340px;
+  }
+  #landing-page-mission-section {
+    flex-direction: column-reverse;
+  }
+  .landing-page-set-up-meeting-cta {
+    text-align: center;
+  }
+  .landing-page-set-up-meeting-text-area {
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
 }
 
 /* Transcript View */
