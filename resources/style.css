@@ -26,9 +26,26 @@ body {
   z-index: 10000;
   background: rgba(0, 0, 0, 0.2);
   padding: 20px;
+  padding-bottom: 8px;
   color: white;
   border-radius: 8px;
   min-width: 150px;
+}
+.hud_close {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+}
+.hud_corner {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 100000;
+  cursor: pointer;
+}
+.hud_title {
+  font-weight: 600;
+  margin-bottom: 6px;
 }
 
 #tooltip-root,
