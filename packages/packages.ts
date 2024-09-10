@@ -50,6 +50,7 @@ if (import.meta.main) {
 if (isNotDevelopment) {
   Deno.addSignalListener("SIGTERM", () => {
     logger.error("SIGTERM signal received. Shutting down.");
+    return 0;
   });
 
   Deno.addSignalListener("SIGINT", () => {
@@ -58,5 +59,6 @@ if (isNotDevelopment) {
 
   Deno.addSignalListener("SIGHUP", () => {
     logger.error("SIGHUP signal received. Shutting down.");
+    return 0;
   });
 }
