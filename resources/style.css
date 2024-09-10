@@ -1173,6 +1173,11 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 /* Landing Page */
 
+.landing-page-logo {
+  width: 15%; 
+  min-width: 150px;
+}
+
 .landing-page-section-wrapper {
   display: flex;
   flex-wrap: wrap;
@@ -1182,7 +1187,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 .landing-page-block {
   flex: 1;
-  min-width: max(450px, 40vw);
+  min-width: max(300px, 40vw);
 }
 
 .landing-page-title {
@@ -1234,14 +1239,27 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   }
   .landing-page-clips-container {
     justify-content: center;
+    height: 340px;
+  }
+  #landing-page-mission-section {
+    flex-direction: column-reverse;
   }
 }
 
 .landing-page-clips {
   width: 200px;
   height: 355px;
-  background-color: grey;
   margin: 10px;
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.landing-page-clip-placeholder {
+  width: 200px;
+  height: 355px;
+  margin: 10px;
+  background: grey;
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
@@ -1281,6 +1299,11 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   padding: 60px 40px;
   justify-content: center;
 }
+.landing-page-mission-image {
+  display: block; 
+  height: 100%;
+  width: 100%;
+}
 
 .landing-page-testimonial-section {
   width: 80%;
@@ -1293,7 +1316,9 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 }
 
 .landing-page-testimonial-video {
-  margin: auto;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  max-width: 60rem;
 }
 
 .landing-page-video-placeholder {
@@ -1304,7 +1329,6 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 }
 
 .landing-page-set-up-meeting-section {
-  background-color: var(--tertiaryColor);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
@@ -1331,15 +1355,33 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   color: var(--primaryColor)
 }
 
+.text-tertiary {
+  color: var(--tertiary)
+}
+
+.landing-page-set-up-meeting-text {
+  
+}
+
 .landing-page-set-up-meeting-headline {
   font-size: 40px;
   display: inline-block;
 }
 
 .landing-page-set-up-meeting-cta {
-   color: white;
   margin-top: 4px;
   text-align: right;
+}
+
+.landing-page-footer {
+  min-height: 5vh;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.3vw;
+  padding: 10px;
+  padding-right: 88px;
+  align-items: center;
+  
 }
 
 /* Transcript View */
