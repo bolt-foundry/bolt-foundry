@@ -1,0 +1,75 @@
+{
+  "manifest": {
+    "/mod.ts": {
+      "size": 520,
+      "checksum": "sha256-64d1d54e70bf1bf30e82f6ef369daf2787c41e0993286db16a58d0cacc3440c0"
+    },
+    "/get_available_port.ts": {
+      "size": 2127,
+      "checksum": "sha256-c2fbeb529c6e80e7be7cca6d8298183f40b5c01b194b1ab1b84b6ce1cc3dc817"
+    },
+    "/get_network_address_test.ts": {
+      "size": 2599,
+      "checksum": "sha256-b65ba99d2188d0afcf33dc07fb8593588e19f8551fcd86eb9e249d9cabdb1900"
+    },
+    "/get_available_port_test.ts": {
+      "size": 1786,
+      "checksum": "sha256-769927c048a69f12dbe6f679b99cefe62aa2216948725c527857b1313a41caa1"
+    },
+    "/LICENSE": {
+      "size": 1075,
+      "checksum": "sha256-0961f97da6619d5fe9ddb98649191d5ca6e958856ea5252f4cce7c9b85513819"
+    },
+    "/deno.json": {
+      "size": 199,
+      "checksum": "sha256-a4302529d4af20059b12dc1f3b73b218868e415f03959cc04a90e9206850f716"
+    },
+    "/get_network_address.ts": {
+      "size": 1703,
+      "checksum": "sha256-3c966c2b2fba2cf8f988e01a1faa5bd0def1f134617b2e63a64ab7be258019c0"
+    }
+  },
+  "moduleGraph2": {
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./get_available_port.ts",
+          "specifierRange": [
+            [
+              20,
+              14
+            ],
+            [
+              20,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./get_network_address.ts",
+          "specifierRange": [
+            [
+              21,
+              14
+            ],
+            [
+              21,
+              40
+            ]
+          ]
+        }
+      ]
+    },
+    "/get_network_address.ts": {},
+    "/get_available_port.ts": {}
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./get-available-port": "./get_available_port.ts",
+    "./get-network-address": "./get_network_address.ts"
+  }
+}
