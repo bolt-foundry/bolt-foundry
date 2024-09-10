@@ -3,10 +3,13 @@ import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 export function LandingPageHero() {
   const lines = [
-    { "style": "normal", "text": "Tell" },
     {
-      "style": "blueWord",
-      "text": "your story",
+      "style": "normal",
+      "text": "Put your video to",
+    },
+    {
+      "style": "blue-word",
+      "text": "work",
     },
   ];
 

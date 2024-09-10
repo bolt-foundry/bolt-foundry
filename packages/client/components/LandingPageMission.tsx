@@ -6,8 +6,7 @@ export function LandingPageMission() {
     <div className="landing-page-mission">
       <div className="landing-page-title">Our mission</div>
       <div className="landing-page-text">
-        Bolt Foundry: We do the heavy lifting so you can do what you do best -
-        create.
+        We do the heavy lifting so you can do what you do best - create.
       </div>
       <BfDsButton
         href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
