@@ -4,16 +4,18 @@ import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
 import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
+import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 export function Hud() {
   const { BF_ENV } = useAppEnvironment();
-  const showHud = BF_ENV !== "PRODUCTION";
-  if (!showHud) {
+  const enableHud = BF_ENV !== "PRODUCTION";
+  if (!enableHud) {
     return null;
   }
 
   const hudRef = useRef<HTMLDivElement>(null);
   const [initComplete, setInitComplete] = useState(false);
+  const [showHud, setShowHud] = useLocalStorage("showHud", true);
   const [position, setPosition] = useLocalStorage("hud-position", {
     x: 0,
     y: 0,
@@ -109,23 +111,37 @@ export function Hud() {
     cursor: dragging ? "grabbing" : "grab",
   };
 
-  return (
-    <div
-      ref={hudRef}
-      className="hud"
-      style={hudStyle}
-    >
+  return showHud
+    ? (
       <div
-        className="hud_title"
-        style={titleStyle}
-        onMouseDown={handleMouseDown}
+        ref={hudRef}
+        className="hud"
+        style={hudStyle}
       >
-        <BfDsIcon name="drag" color="white" size={12} />
-        Flags
+        <div className="hud_close">
+          <BfDsButton
+            iconLeft="cross"
+            kind="overlayDark"
+            onClick={() => setShowHud(false)}
+            size="medium"
+          />
+        </div>
+        <div
+          className="hud_title"
+          style={titleStyle}
+          onMouseDown={handleMouseDown}
+        >
+          <BfDsIcon name="drag" color="white" size={12} />
+          Flags
+        </div>
+        <div>
+          <FeatureFlag toggle name="placeholder" />
+        </div>
       </div>
-      <div>
-        <FeatureFlag toggle name="placeholder" />
+    )
+    : (
+      <div className="hud_corner" onClick={() => setShowHud(true)}>
+        ⛳️
       </div>
-    </div>
-  );
+    );
 }

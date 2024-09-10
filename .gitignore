@@ -12,3 +12,4 @@
 .DS_Store
 .direnv
 *.ipynb_checkpoints
+nix_system

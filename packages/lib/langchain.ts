@@ -7,6 +7,7 @@ import type { DGWord } from "packages/types/transcript.ts";
 import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
 import { getTimecodesForClips } from "packages/lib/timecodeUtils.ts";
 import { getLogger } from "deps.ts";
+import { z } from "zod";
 const logger = getLogger(import.meta);
 const openAIApiKey = Deno.env.get("OPENAI_API_KEY") ?? "";
 const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
@@ -36,51 +37,29 @@ export const callAPI = async (
   documents: Array<Document>,
   suggestedModel?: string | null | undefined,
 ) => {
-  const properties = {
-    anecdotes: {
-      type: "array",
-      items: {
-        titleText: {
-          type: "string",
-          description: "The title of the anecdote.",
-        },
-        text: {
-          type: "string",
-          description: "The verbatim transcript of the anecdote",
-        },
-        descriptionText: {
-          type: "string",
-          description: "A summary of the anecdote.",
-        },
-        filename: {
-          type: "string",
-          description: "The name of the file containing the anecdote.",
-        },
-        mediaId: {
-          type: "string",
-          description: "The Media ID of the file containing the anecdote.",
-        },
-        transcriptId: {
-          type: "string",
-          description: "The Transcript ID of the file containing the anecdote.",
-        },
-        topics: {
-          type: "string",
-          description:
-            "A comma-separated list of topics related to the anecdote.",
-        },
-        rationale: {
-          type: "string",
-          description: "A rationale for the confidence rating.",
-        },
-        confidence: {
-          type: "number",
-          description:
-            "A floating point confidence rating from 0 to 1, where 0 doesn't relate to the prompt and 1 relates best.",
-        },
-      },
-    },
-  };
+  const anecdote = z.object({
+    anecdotes: z.array(z.object({
+      titleText: z.string().describe("The title of the anecdote."),
+      text: z.string().describe("The verbatim transcript of the anecdote"),
+      descriptionText: z.string().describe("A summary of the anecdote."),
+      filename: z.string().describe(
+        "The name of the file containing the anecdote.",
+      ),
+      mediaId: z.string().describe(
+        "The Media ID of the file containing the anecdote.",
+      ),
+      transcriptId: z.string().describe(
+        "The Transcript ID of the file containing the anecdote.",
+      ),
+      topics: z.string().describe(
+        "A comma-separated list of topics related to the anecdote.",
+      ),
+      rationale: z.string().describe("A rationale for the confidence rating."),
+      confidence: z.number().describe(
+        "A floating point confidence rating from 0 to 1, where 0 doesn't relate to the prompt and 1 relates best.",
+      ),
+    })),
+  });
 
   let llmInterface;
   let structuredLlm;
@@ -92,13 +71,9 @@ export const callAPI = async (
         apiKey: anthropicApiKey,
         temperature: 0,
       });
-      structuredLlm = llmInterface.withStructuredOutput({
+      structuredLlm = llmInterface.withStructuredOutput(anecdote, {
+        method: "json_mode",
         name: "anecdote",
-        description: "an anecdote from the text relating to the user prompt.",
-        input_schema: {
-          type: "object",
-          properties,
-        },
       });
       break;
     }
@@ -110,14 +85,9 @@ export const callAPI = async (
         presencePenalty: 0,
         frequencyPenalty: 0,
       });
-      structuredLlm = llmInterface.withStructuredOutput({
+      structuredLlm = llmInterface.withStructuredOutput(anecdote, {
+        method: "json_mode",
         name: "anecdote",
-        description: "an anecdote from the text relating to the user prompt.",
-        parameters: {
-          title: "Anecdote",
-          type: "object",
-          properties,
-        },
       });
     }
   }
@@ -134,7 +104,7 @@ export const callAPI = async (
   const duration = end - start;
   const results = {
     model: suggestedModel,
-    duration: duration,
+    duration: (duration / 1000),
     response: response,
     numOfDocuments: documents.length,
     prompt: userMessage,
@@ -150,38 +120,20 @@ const createSystemMessage = (documents: Array<Document>) => {
   const formattedData = formatDocs(documents);
 
   return `
-You have access to a comprehensive database of video transcripts. Your task is to extract all anecdotes from these transcripts based on a user-provided prompt. This task is to be performed using the provided transcript data sections listed below. 
+  You have access to several video transcripts. Your task is to extract all anecdotes from these transcripts based on a user-provided prompt. This task is to be performed using the provided transcript data sections listed below. 
 
-Each anecdote should:
-- Be directly relevant to the specified word or concept wherever it appears in the transcripts.
-- Have a clear beginning and end, focusing on distinct narratives within the text.
-- Be a coherent standalone story or joke.
+  Each anecdote should:
+  - Be directly relevant to the specified word or concept wherever it appears in the transcripts.
+  - Have a clear beginning and end, focusing on distinct narratives within the text.
+  - Be a coherent standalone story or joke.
+  - Be verbatim text from the transcript
 
-Output each anecdote as a JSON formatted object within an array. Iterate through all available data to ensure no relevant anecdotes are missed. 
+  It is crucial that the language of the output matches the language of the input.
 
-Each JSON formatted object must:
-- Be verbatim from the transcript. *THIS IS VERY IMPORTANT, IT MUST EXACTLY MATCH THE ORIGINAL TRANSCRIPT*
-- Have no whitespace other than spaces.
-- Contain the following keys:
-  - "titleText": A brief title describing the content of the anecdote.
-  - "descriptionText": A summary of the anecdote.
-  - "text": The verbatim transcript of the anecdote. *THIS IS VERY IMPORTANT, IT MUST EXACTLY MATCH THE ORIGINAL TRANSCRIPT*
-  - "filename": The name of the file containing the anecdote.
-  - "mediaId": The Media ID of the file containing the anecdote.
-  - "transcriptId": The Transcript ID of the file containing the anecdote.
-  - "topics": A comma-separated list of topics related to the anecdote.
-  - "rationale": A rationale for the confidence rating.
-  - "confidence": A floating point confidence rating from 0 to 1, where 0 doesn't relate to the prompt and 1 relates best. If the rationale is not clear, the confidence should be 0. This should reflect how well the anecdote fits into the prompt based on the rationale.
+  Ensure that the anecdotes are directly related to the user-provided word or concept. Avoid metaphors, analogies, or abstract interpretations. Focus strictly on direct mentions and explicit contexts related to the user-provided word or concept. 
 
-The output must be a single JSON object with an "anecdotes" key as the array, where each object in the array represents a unique anecdote.
 
-It is crucial that the language of the output matches the language of the input.
-
-Ensure that the anecdotes are directly related to the user-provided word or concept. Avoid metaphors, analogies, or abstract interpretations. Focus strictly on direct mentions and explicit contexts related to the user-provided word or concept. 
-
-The output **must be a single JSON formatted object containing an "anecdotes" array**, where each object in the array represents a unique anecdote, **and contain nothing else**. Ensure that there are no explanatory texts or additional messages apart from the JSON output.
-
-Here is the large database of video transcripts to reference:
-${formattedData}
-    `;
+  Here are the video transcripts to reference:
+  ${formattedData}
+      `;
 };

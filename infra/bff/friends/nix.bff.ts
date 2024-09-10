@@ -7,7 +7,7 @@ export function buildNix(profile = ".") {
     "build",
     profile,
     "--out-link",
-    "build/system",
+    "nix_system",
   ]);
 }
 
