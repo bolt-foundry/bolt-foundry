@@ -1,15 +1,15 @@
 import * as React from "react";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { LandingPageHero } from "packages/client/components/LandingPageHero.tsx";
-import { ComingSoonHero } from "packages/client/components/ComingSoonHero.tsx";
-import { MarketingCallToAction } from "packages/client/components/MarketingCallToAction.tsx";
 import { LandingPageMission } from "packages/client/components/LandingPageMission.tsx";
 import { LandingPageClipCollection } from "packages/client/components/LandingPageClipCollection.tsx";
 import { LandingPageTestimonials } from "packages/client/components/LandingPageTestimonials.tsx";
 import { LandingPageSetUpMeeting } from "packages/client/components/LandingPageSetUpMeeting.tsx";
 import { BfLogo } from "packages/bfDs/static/BfLogo.tsx";
 import { Link } from "packages/client/components/Link.tsx";
+import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
+import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
+import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 
 export function LandingPage(): React.ReactElement {
   return (
@@ -26,7 +26,28 @@ export function LandingPage(): React.ReactElement {
           <LandingPageHero />
         </div>
         <div className="landing-page-block">
-          <LandingPageClipCollection />
+          <FeatureFlag
+            name="landing-page-videos"
+            fallback={
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background:
+                    "radial-gradient(var(--fourtharyColor030), transparent 70%)",
+                }}
+              >
+                <div style={{ width: "50%" }}>
+                  <BfSymbol color="white" />
+                </div>
+              </div>
+            }
+          >
+            <LandingPageClipCollection />
+          </FeatureFlag>
         </div>
       </div>
       <div
