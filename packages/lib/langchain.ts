@@ -110,7 +110,7 @@ export const callAPI = async (
     prompt: userMessage,
   };
 
-  logger.info("prompt completed", results);
+  logger.debug("prompt completed", results);
 
   const responseWithTimecode = getTimecodesForClips(response, documents);
   return JSON.stringify(responseWithTimecode);
