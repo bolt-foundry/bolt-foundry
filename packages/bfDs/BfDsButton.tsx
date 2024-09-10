@@ -23,6 +23,7 @@ export type ButtonKind =
   | "filledAlert"
   | "filledSuccess"
   | "outline"
+  | "outlineDark"
   | "outlineAlert"
   | "outlineSuccess"
   | "overlay"
@@ -49,7 +50,7 @@ type ButtonType = {
   progress?: number;
   shadow?: boolean;
   // use showSpinner to show a spinner with an icon button
-  // doesn't work with overlay or overlayDark or outline
+  // doesn't work with overlayDark, overlay, outlineDark, or outline
   showSpinner?: boolean;
   size?: ButtonSizeType;
   subtext?: string;
@@ -252,6 +253,12 @@ export function BfDsButton({
         ? "var(--secondaryButton)"
         : "var(--secondaryButtonHover)",
     },
+    outlineDark: {
+      ...baseButtonStyle,
+      backgroundColor: hover ? "var(--outlineDarkHover)" : "var(--outlineDark)",
+      color: "var(--background)",
+      borderColor: hover ? "var(--outlineDarkHover)" : "var(--outlineDark)",
+    },
     outlineAlert: {
       ...baseButtonStyle,
       backgroundColor: hover ? "var(--outlineHover)" : "var(--background)",
@@ -272,10 +279,11 @@ export function BfDsButton({
     },
     overlayDark: {
       ...baseButtonStyle,
-      backgroundColor: hover ? "var(--overlayDarkHover)" : "transparent",
+      backgroundColor: hover ? "var(--outlineDarkHover)" : "transparent",
       color: "var(--background)",
-      borderColor: hover ? "var(--overlayDarkHover)" : "transparent",
+      borderColor: hover ? "var(--outlineDarkHover)" : "transparent",
     },
+
     accent: {
       ...baseButtonStyle,
       backgroundColor: hover
@@ -334,6 +342,12 @@ export function BfDsButton({
         : "var(--secondaryButtonHover)",
       color: "var(--text)",
     },
+    outlineDark: {
+      ...baseIconButtonStyle,
+      backgroundColor: hover ? "var(--outlineDarkHover)" : "var(--outlineDark)",
+      borderColor: hover ? "var(--outlineDarkHover)" : "var(--outlineDark)",
+      color: "var(--background)",
+    },
     outlineAlert: {
       ...baseIconButtonStyle,
       backgroundColor: hover ? "var(--outlineHover)" : "var(--background)",
@@ -354,8 +368,8 @@ export function BfDsButton({
     },
     overlayDark: {
       ...baseIconButtonStyle,
-      backgroundColor: hover ? "var(--overlayDarkHover)" : "var(--overlayDark)",
-      borderColor: hover ? "var(--overlayDarkHover)" : "var(--overlayDark)",
+      backgroundColor: hover ? "var(--outlineDarkHover)" : "transparent",
+      borderColor: hover ? "var(--outlineDarkHover)" : "transparent",
       color: "var(--background)",
     },
     accent: {
@@ -380,7 +394,7 @@ export function BfDsButton({
   const disableButton = disabled;
   const shouldShowSpinner = (showSpinner || progress != null) &&
     kind !== "overlay" &&
-    kind !== "overlayDark" &&
+    kind !== "outlineDark" &&
     kind !== "outline";
   const percent = progress != null ? Math.round(progress) : 0;
 
