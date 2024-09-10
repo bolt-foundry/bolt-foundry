@@ -49,7 +49,7 @@ export function LandingPage(): React.ReactElement {
           <LandingPageMission />
         </div>
       </div>
-      <div className="landing-page-section-wrapper">
+      <div className="landing-page-section-wrapper landing-page-testimonial-section-wrapper">
         <LandingPageTestimonials />
       </div>
       <LandingPageSetUpMeeting />
