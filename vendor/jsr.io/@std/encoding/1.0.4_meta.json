@@ -1,0 +1,602 @@
+{
+  "manifest": {
+    "/base64_stream.ts": {
+      "size": 2934,
+      "checksum": "sha256-2b4aec3180ab5da23263542ea397e521d62d9905b0e5088ec20f05b35a177eb4"
+    },
+    "/hex.ts": {
+      "size": 3102,
+      "checksum": "sha256-c7f4d71486d573ef2eb10b5d509e071297cfa85ca658d96f2b8221f9680a24ea"
+    },
+    "/base58.ts": {
+      "size": 4469,
+      "checksum": "sha256-701aed7336bd3c89bfa0648d00dd6de4ac95ae2de891d084700a92ca107d4862"
+    },
+    "/varint_test.ts": {
+      "size": 4500,
+      "checksum": "sha256-6055913f87a9daa11ff19f0b994c6edabba7a64afe39b86186e025997696474b"
+    },
+    "/deno.json": {
+      "size": 579,
+      "checksum": "sha256-f1bb8838c0dc997148ac2f3010fbbaf3b24c78069bc04c249fcb5efe6004f6b7"
+    },
+    "/base64_test.ts": {
+      "size": 1196,
+      "checksum": "sha256-9ad5fde440aa9d950f2be4db9352d68f366836fa5ae16d982aaeaf9fe0038196"
+    },
+    "/base32hex_test.ts": {
+      "size": 1583,
+      "checksum": "sha256-b6a54cdf98520908231fd924dda44b3f8735720a14a8e9a52e590729aeffe9fc"
+    },
+    "/_random_slice_stream.ts": {
+      "size": 542,
+      "checksum": "sha256-b91aa5a1f4ccd2c93f6df68afce9031bd9dab08da925442dbdc89eb88e61997d"
+    },
+    "/_validate_binary_like_test.ts": {
+      "size": 1935,
+      "checksum": "sha256-fcec2f4560ad6eb99c4c90661c88c24317da2d3962ae15d7b101f3f4e323ec14"
+    },
+    "/hex_test.ts": {
+      "size": 2205,
+      "checksum": "sha256-de1fe87601ee7a13bcbd6b7bb135439f2277480dcc7969767f8a5eb3eddbe369"
+    },
+    "/base32hex.ts": {
+      "size": 2205,
+      "checksum": "sha256-031985d2fa84fb3bfcaf166ad3be5659c472e21c69fffd446a3e1aacf53cfa8b"
+    },
+    "/base64_stream_test.ts": {
+      "size": 1121,
+      "checksum": "sha256-a3b7e6d8217eba07c6acbc874c530b405dc0607e27931083e0ebfe0d6470200b"
+    },
+    "/base32hex_stream.ts": {
+      "size": 3027,
+      "checksum": "sha256-05d47374c6a474863d72385f2ff6654745b1ecd9e150be0032a23167522bd6fa"
+    },
+    "/base32_test.ts": {
+      "size": 1544,
+      "checksum": "sha256-55707786476c382c324150c618a3fbd5fdd297d6e1190185c7e197fdd0035bc4"
+    },
+    "/base32_stream_test.ts": {
+      "size": 1119,
+      "checksum": "sha256-13e3d51ccd05d673d756e551b0db291d7cd0eda2f1c4d76f33048c8d57d4e3e6"
+    },
+    "/base64url_test.ts": {
+      "size": 1756,
+      "checksum": "sha256-918ef39c56221b9b173b4852a88008255cc82f4b2c15f0b54f3d91f52371f660"
+    },
+    "/base32_stream.ts": {
+      "size": 2934,
+      "checksum": "sha256-9553d37887b9959d1f27248ee29a480e730561ed0a248c4e1c18d0dcf3a0c737"
+    },
+    "/mod.ts": {
+      "size": 890,
+      "checksum": "sha256-c3125f432a14118f1cc47cb48e893a114ac1c4a01ba522538b9fc23a963afa1a"
+    },
+    "/hex_stream_test.ts": {
+      "size": 1088,
+      "checksum": "sha256-5a2e33349464d1660ace3a9bdf3821d1dbd8691e3328347a491e231588aaf1cf"
+    },
+    "/hex_stream.ts": {
+      "size": 2417,
+      "checksum": "sha256-df2938eb133b4bd5e002f8a124b054468161d13b3c88d403cd1d0c91f679ab4f"
+    },
+    "/base64url_stream.ts": {
+      "size": 3082,
+      "checksum": "sha256-1ddd444a99b01f9ca65c8823f2f2f8e3aa22cf7775f91cfbdda576e96697cf9b"
+    },
+    "/varint.ts": {
+      "size": 8044,
+      "checksum": "sha256-14fffecdd350de8916dac05cff65dc953f13a921fdec86bda69b3cb4a4d08b6d"
+    },
+    "/ascii85.ts": {
+      "size": 6008,
+      "checksum": "sha256-60f5bdb54c6e44c2df92f85135b4c3545c877b9f397b9fc2d08621f3e85ae9e5"
+    },
+    "/base32.ts": {
+      "size": 1955,
+      "checksum": "sha256-175fe2627a836518f8755c0b778ae58b168c0e31086181f762f24e057a477032"
+    },
+    "/base64.ts": {
+      "size": 3253,
+      "checksum": "sha256-838d630a03ae8ba7ddcab1a59eb6943e4fdc6ccfe0d19cf111ee6bc131011571"
+    },
+    "/base64url.ts": {
+      "size": 2513,
+      "checksum": "sha256-5a39b5dddaa201be27782a90ffe6d9794a6e6ee2a9f1919bc9a1a48a76c30733"
+    },
+    "/_base32_common.ts": {
+      "size": 6977,
+      "checksum": "sha256-ab45ca2db2aa3c5d64d6c76ccf765eaef4416a2ebd46255f2fb44347d5663b0f"
+    },
+    "/ascii85_test.ts": {
+      "size": 9012,
+      "checksum": "sha256-18662f26cf985495b47f5bcf1227395d4a5c4c54e1b1cff5e5ee72f8a9d0bc64"
+    },
+    "/LICENSE": {
+      "size": 1075,
+      "checksum": "sha256-0961f97da6619d5fe9ddb98649191d5ca6e958856ea5252f4cce7c9b85513819"
+    },
+    "/base32hex_stream_test.ts": {
+      "size": 1153,
+      "checksum": "sha256-cb20090ec164eb2f72b6a4daba9d3929367f44d2ab7a35967bde6a574d4fc47e"
+    },
+    "/base64url_stream_test.ts": {
+      "size": 1159,
+      "checksum": "sha256-051ceee615c812f7bb6d73c8e1af09a897cd9db2cedce16d481f01c637b90492"
+    },
+    "/base58_test.ts": {
+      "size": 1952,
+      "checksum": "sha256-7e8202836adcf044039c6d1e162f01b058c46aaf2a5b396886ca6a12ed49f656"
+    },
+    "/_validate_binary_like.ts": {
+      "size": 819,
+      "checksum": "sha256-719b2e6127b8ffb008c01a726c06c60de9b7c83208880ee651720a5cbfdd7637"
+    }
+  },
+  "moduleGraph2": {
+    "/base64url.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./base64.ts",
+          "specifierRange": [
+            [
+              11,
+              24
+            ],
+            [
+              11,
+              37
+            ]
+          ]
+        }
+      ]
+    },
+    "/base64_stream.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./base64.ts",
+          "specifierRange": [
+            [
+              11,
+              43
+            ],
+            [
+              11,
+              56
+            ]
+          ]
+        }
+      ]
+    },
+    "/base64.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_validate_binary_like.ts",
+          "specifierRange": [
+            [
+              24,
+              35
+            ],
+            [
+              24,
+              63
+            ]
+          ]
+        }
+      ]
+    },
+    "/_validate_binary_like.ts": {},
+    "/base32hex.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_base32_common.ts",
+          "specifierRange": [
+            [
+              29,
+              31
+            ],
+            [
+              29,
+              52
+            ]
+          ]
+        }
+      ]
+    },
+    "/base32_stream.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./base32.ts",
+          "specifierRange": [
+            [
+              11,
+              43
+            ],
+            [
+              11,
+              56
+            ]
+          ]
+        }
+      ]
+    },
+    "/base32hex_stream.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./base32hex.ts",
+          "specifierRange": [
+            [
+              11,
+              49
+            ],
+            [
+              11,
+              65
+            ]
+          ]
+        }
+      ]
+    },
+    "/hex_stream.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./hex.ts",
+          "specifierRange": [
+            [
+              11,
+              37
+            ],
+            [
+              11,
+              47
+            ]
+          ]
+        }
+      ]
+    },
+    "/base58.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_validate_binary_like.ts",
+          "specifierRange": [
+            [
+              22,
+              35
+            ],
+            [
+              22,
+              63
+            ]
+          ]
+        }
+      ]
+    },
+    "/base32.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_base32_common.ts",
+          "specifierRange": [
+            [
+              25,
+              31
+            ],
+            [
+              25,
+              52
+            ]
+          ]
+        }
+      ]
+    },
+    "/hex.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_validate_binary_like.ts",
+          "specifierRange": [
+            [
+              28,
+              35
+            ],
+            [
+              28,
+              63
+            ]
+          ]
+        }
+      ]
+    },
+    "/ascii85.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_validate_binary_like.ts",
+          "specifierRange": [
+            [
+              23,
+              35
+            ],
+            [
+              23,
+              63
+            ]
+          ]
+        }
+      ]
+    },
+    "/_base32_common.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_validate_binary_like.ts",
+          "specifierRange": [
+            [
+              8,
+              35
+            ],
+            [
+              8,
+              63
+            ]
+          ]
+        }
+      ]
+    },
+    "/base64url_stream.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./base64url.ts",
+          "specifierRange": [
+            [
+              11,
+              49
+            ],
+            [
+              11,
+              65
+            ]
+          ]
+        }
+      ]
+    },
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./ascii85.ts",
+          "specifierRange": [
+            [
+              17,
+              14
+            ],
+            [
+              17,
+              28
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./base32.ts",
+          "specifierRange": [
+            [
+              18,
+              14
+            ],
+            [
+              18,
+              27
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./base32_stream.ts",
+          "specifierRange": [
+            [
+              19,
+              14
+            ],
+            [
+              19,
+              34
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./base32hex.ts",
+          "specifierRange": [
+            [
+              20,
+              14
+            ],
+            [
+              20,
+              30
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./base32hex_stream.ts",
+          "specifierRange": [
+            [
+              21,
+              14
+            ],
+            [
+              21,
+              37
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./base58.ts",
+          "specifierRange": [
+            [
+              22,
+              14
+            ],
+            [
+              22,
+              27
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./base64.ts",
+          "specifierRange": [
+            [
+              23,
+              14
+            ],
+            [
+              23,
+              27
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./base64_stream.ts",
+          "specifierRange": [
+            [
+              24,
+              14
+            ],
+            [
+              24,
+              34
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./base64url.ts",
+          "specifierRange": [
+            [
+              25,
+              14
+            ],
+            [
+              25,
+              30
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./base64url_stream.ts",
+          "specifierRange": [
+            [
+              26,
+              14
+            ],
+            [
+              26,
+              37
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./hex.ts",
+          "specifierRange": [
+            [
+              27,
+              14
+            ],
+            [
+              27,
+              24
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./hex_stream.ts",
+          "specifierRange": [
+            [
+              28,
+              14
+            ],
+            [
+              28,
+              31
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./varint.ts",
+          "specifierRange": [
+            [
+              29,
+              14
+            ],
+            [
+              29,
+              27
+            ]
+          ]
+        }
+      ]
+    },
+    "/varint.ts": {}
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./ascii85": "./ascii85.ts",
+    "./base32": "./base32.ts",
+    "./base32-stream": "./base32_stream.ts",
+    "./base32hex": "./base32hex.ts",
+    "./base32hex-stream": "./base32hex_stream.ts",
+    "./base58": "./base58.ts",
+    "./base64": "./base64.ts",
+    "./base64-stream": "./base64_stream.ts",
+    "./base64url": "./base64url.ts",
+    "./base64url-stream": "./base64url_stream.ts",
+    "./hex": "./hex.ts",
+    "./hex-stream": "./hex_stream.ts",
+    "./varint": "./varint.ts"
+  }
+}
