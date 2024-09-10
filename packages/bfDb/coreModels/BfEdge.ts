@@ -104,7 +104,7 @@ export class BfEdge<
     > & { count: number }
   > {
     logger.debug("queryTargetsConnectionForGraphQL", TargetClass, sourceBfGid);
-    const connection = await (this as unknown as typeof BfEdge)
+    const connection = await (TargetClass as unknown as typeof BfNode)
       .queryConnectionForGraphQL(
         currentViewer,
         { bfSid: sourceBfGid, bfTClassName: TargetClass.name },

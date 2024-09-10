@@ -32,7 +32,6 @@ export const routes = new Map([
 
 export function App() {
   const { currentPath } = useRouter();
-  const { showHud } = useAppState();
 
   logger.debug("paths", routes);
   const matchingRoute = Array.from(routes).find(([path]) => {
