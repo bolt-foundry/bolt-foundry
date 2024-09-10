@@ -6,14 +6,14 @@ import {
   stringArg,
 } from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
-import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
+import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 import { getLogger } from "deps.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);
 
 export const BfGraphQLMediaTranscriptType = objectType({
-  name: "BfMediaTranscript",
+  name: "BfMediaNodeTranscript",
   description: "A transcript of a clip.",
   definition: (t) => {
     t.implements(BfNodeGraphQLType);
@@ -26,12 +26,12 @@ export const BfGraphQLMediaTranscriptsQuery = extendType({
   type: "BfMedia",
   definition(t) {
     t.connectionField("transcripts", {
-      type: "BfMediaTranscript",
+      type: "BfMediaNodeTranscript",
       resolve: (parent, args, { bfCurrentViewer }) => {
         logger.debug("Fetching all transcripts");
         const transcripts = BfEdge.queryTargetsConnectionForGraphQL(
           bfCurrentViewer,
-          BfMediaTranscript,
+          BfMediaNodeTranscript,
           parent.id,
           {},
           args,
@@ -53,7 +53,7 @@ export const BfGraphQLMediaTranscriptCreateMutation = mutationField(
     },
     resolve: async (_, { words, filename }, { bfCurrentViewer }) => {
       logger.debug("createTranscript");
-      const newTranscript = await BfMediaTranscript.create(bfCurrentViewer, {
+      const newTranscript = await BfMediaNodeTranscript.create(bfCurrentViewer, {
         words,
         filename,
       });
@@ -74,7 +74,7 @@ export const BfGraphQLMediaTranscriptUpdateMutation = mutationField(
     },
     resolve: async (_, args, { bfCurrentViewer }) => {
       logger.debug("updateTranscript", args);
-      const transcriptToUpdate = await BfMediaTranscript.find(
+      const transcriptToUpdate = await BfMediaNodeTranscript.find(
         bfCurrentViewer,
         args.id,
       );
@@ -105,7 +105,7 @@ export const BfGraphQLMediaTranscriptDeleteMutation = mutationField(
       id: nonNull(stringArg()),
     },
     resolve: async (_, { id }, { bfCurrentViewer }) => {
-      const transcript = await BfMediaTranscript.find(bfCurrentViewer, id);
+      const transcript = await BfMediaNodeTranscript.find(bfCurrentViewer, id);
       if (!transcript) {
         throw new Error("Transcript not found");
       }
