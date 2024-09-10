@@ -8,10 +8,10 @@ import type {
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { getLogger } from "deps.ts";
 import {
-  BfCurrentViewer,
+  type BfCurrentViewer,
   IBfCurrentViewerInternalAdmin,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import type { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { bfQueryItemsForGraphQLConnection } from "packages/bfDb/bfDb.ts";
 const logger = getLogger(import.meta);
 

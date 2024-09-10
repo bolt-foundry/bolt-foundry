@@ -23,7 +23,7 @@ import {
   bfGetItemByBfGid,
   bfPutItem,
   bfQueryItems,
-  bfQueryItemsForGraphQLConnection,
+  type bfQueryItemsForGraphQLConnection,
   transactionCommit,
   transactionRollback,
   transactionStart,

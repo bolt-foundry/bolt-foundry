@@ -15,7 +15,7 @@ import { SettingsPage } from "packages/client/pages/SettingsPage.tsx";
 import { ClipSearchPage } from "packages/client/pages/ClipSearchPage.tsx";
 import { BlogPage } from "packages/client/pages/BlogPage.tsx";
 import { LandingPage } from "packages/client/pages/LandingPage.tsx";
-import { useAppState } from "packages/client/contexts/AppStateContext.tsx";
+import type { useAppState } from "packages/client/contexts/AppStateContext.tsx";
 import { Hud } from "packages/client/components/Hud.tsx";
 
 export const routes = new Map([
