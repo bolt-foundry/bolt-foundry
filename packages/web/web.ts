@@ -12,6 +12,7 @@ import { redirectIfNotLoggedIn } from "/aws/clientRenderer/main.ts";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { createTranscript } from "infra/bff/friends/transcribe.bff.ts";
+import { serveDir } from "@std/http";
 
 const logger = getLogger(import.meta);
 export enum DeploymentTypes {
@@ -93,63 +94,11 @@ routes.set("/webhooks/assemblyai", async (req, _routeParams) => {
   }
 });
 
-function getContentType(ext) {
-  switch (ext) {
-    case "css":
-      return "text/css";
-    case "js":
-      return "application/javascript";
-    case "html":
-      return "text/html";
-    case "json":
-      return "application/json";
-    case "xml":
-      return "application/xml";
-    case "png":
-      return "image/png";
-    case "jpg":
-    case "jpeg":
-      return "image/jpeg";
-    case "gif":
-      return "image/gif";
-    case "svg":
-      return "image/svg+xml";
-    case "mp4":
-      return "video/mp4";
-    // case "ttf":
-    //   return "application/font-sfnt";
-    default:
-      return "text/plain";
-  }
-}
-
-async function handleFileServing(
-  pathPrefix: string,
-  routeParams: Record<string, string>,
-) {
-  const { filename } = routeParams;
-  try {
-    const filePath = `${pathPrefix}/${filename}`;
-    const fileContent = await Deno.readFile(
-      new URL(import.meta.resolve(filePath)),
-    );
-    const ext = filename.split(".").pop();
-    const contentType = getContentType(ext);
-    return new Response(fileContent, {
-      headers: {
-        "content-type": contentType,
-      },
-    });
-  } catch {
-    return new Response("File not found", { status: 404 });
-  }
-}
-
-routes.set("/resources/:filename+", (_req, routeParams) => {
-  return handleFileServing("resources", routeParams);
+routes.set("/resources/:filename+", (req, routeParams) => {
+  return serveDir(req);
 });
-routes.set("/build/:filename+", (_req, routeParams) => {
-  return handleFileServing("build", routeParams);
+routes.set("/build/:filename+", (req, routeParams) => {
+  return serveDir(req);
 });
 
 routes.set("/login", (...args) => {
@@ -342,19 +291,16 @@ const defaultRoute = () => {
 };
 
 logger.info("Ready to serve");
-Deno.serve(async (req, info) => {
-  const tick = performance.now();
+
+Deno.serve(async (req) => {
   const incomingUrl = new URL(req.url);
+
   logger.info(
-    `Incoming request: ${req.method} ${incomingUrl.pathname}`,
+    `[${new Date().toISOString()}] [${req.method}] ${incomingUrl} ${
+      req.headers.get("content-type")
+    }`,
   );
-  info.completed.then(() => {
-    logger.info(
-      `(${
-        performance.now() - tick
-      }ms) Completed: ${req.method} ${incomingUrl.pathname}`,
-    );
-  });
+
   // Attempt to match routes with optional URL params
   const pathWithParams = incomingUrl.pathname.split("?")[0];
   const routeParams: Record<string, string> = {};
@@ -386,5 +332,6 @@ Deno.serve(async (req, info) => {
   }
   // Use the matched handler if found, otherwise use the default route
   matchedHandler = matchedHandler || defaultRoute;
-  return await matchedHandler(req, routeParams);
+  const res = await matchedHandler(req, routeParams);
+  return res;
 });

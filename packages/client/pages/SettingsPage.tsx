@@ -1,5 +1,5 @@
 import type * as React from "react";
-import { Suspense, useState } from "react";
+import { startTransition, Suspense, useState } from "react";
 import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import type { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
@@ -11,6 +11,7 @@ import { Media } from "packages/client/components/settings/Media.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
+import { BfDsGlimmer } from "packages/bfDs/BfDsGlimmer.tsx";
 
 const query = await graphql`
 query SettingsPageQuery {
@@ -51,6 +52,12 @@ export function SettingsPage() {
     }
   }
 
+  const handleSetSelected = (tab: Tabs) => {
+    startTransition(() => {
+      setSelected(tab);
+    });
+  };
+
   return (
     <div className="cs-page">
       <Sidebar
@@ -59,12 +66,12 @@ export function SettingsPage() {
             <ListItem
               isHighlighted={selected === Tabs.WATCH_FOLDERS}
               content="Watch folders"
-              onClick={() => setSelected(Tabs.WATCH_FOLDERS)}
+              onClick={() => handleSetSelected(Tabs.WATCH_FOLDERS)}
             />
             <ListItem
               isHighlighted={selected === Tabs.MEDIA}
               content="Media"
-              onClick={() => setSelected(Tabs.MEDIA)}
+              onClick={() => handleSetSelected(Tabs.MEDIA)}
             />
           </List>
         }
@@ -81,15 +88,19 @@ export function SettingsPage() {
                 toggled={darkMode}
               />
             </List>
-            <div>Welcome, {data?.currentViewer?.person?.name}</div>
-            <div>{data?.currentViewer?.organization?.name}</div>
+            {data?.currentViewer?.person?.name
+              ? (
+                <>
+                  <div>Welcome, {data?.currentViewer?.person?.name}</div>
+                  <div>{data?.currentViewer?.organization?.name}</div>
+                </>
+              )
+              : <BfDsGlimmer height="42px" order={0} />}
           </>
         }
         header="Settings"
       />
-      <Suspense fallback={<BfDsFullPageSpinner />}>
-        {content}
-      </Suspense>
+      {content}
     </div>
   );
 }

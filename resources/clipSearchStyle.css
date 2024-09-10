@@ -15,7 +15,7 @@
 }
 
 .cs-sidebar {
-  width: 300px;
+  min-width: 300px;
   padding: 20px 16px;
   box-sizing: border-box;
   display: flex;

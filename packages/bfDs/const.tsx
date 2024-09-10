@@ -12,6 +12,8 @@ const palletteLight = {
   background: [255, 255, 255], // rgba(255, 255, 255, 1)
   border: [242, 242, 242], // rgba(242, 242, 242, 1)
   menuBackground: [255, 255, 255], // background
+  glimmerBackground: [250, 250, 250],
+  glimmer: [255, 255, 255],
 };
 
 const constantColors = {
@@ -32,6 +34,8 @@ const palletteDark = {
   background: [24, 25, 26],
   border: [64, 65, 66],
   menuBackground: [49, 50, 53],
+  glimmerBackground: [30, 30, 30],
+  glimmer: [26, 26, 26],
 };
 
 const defaultAdjustment = 10;
@@ -139,6 +143,8 @@ function generateColors(dark = false) {
     transparentSecondary: color(pallette.secondary, 0, 0.2),
     transparentBackground: color(pallette.background, 0, 0.97),
     transparentDark: color(pallette.tertiary, 0, 0.95),
+    glimmerBackground: color(pallette.glimmerBackground),
+    glimmer: color(pallette.glimmer),
   };
 }
 

@@ -3,14 +3,11 @@ import { ReactDOMClient } from "packages/client/deps.ts";
 import { App } from "packages/client/components/App.tsx";
 import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
 import type { ServerProps } from "packages/client/contexts/AppEnvironmentContext.tsx";
-import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import AppEnvironmentProvider from "packages/client/contexts/AppEnvironmentContext.tsx";
 import { BfDsProvider } from "packages/bfDs/contexts/BfDsContext.tsx";
 // import { ensurePosthogClientIsSetUp } from "packages/events/mod.ts";
 
 const logger = getLogger(import.meta);
-
-const { Suspense } = React;
 
 const styles = {
   loading: {
@@ -26,17 +23,9 @@ export function Client(props: ServerProps) {
   return (
     <BfDsProvider>
       <ErrorBoundary>
-        <Suspense
-          fallback={
-            <div style={styles.loading}>
-              <BfDsSpinner size={64} waitIcon={true} />
-            </div>
-          }
-        >
-          <AppEnvironmentProvider {...props}>
-            <App />
-          </AppEnvironmentProvider>
-        </Suspense>
+        <AppEnvironmentProvider {...props}>
+          <App />
+        </AppEnvironmentProvider>
       </ErrorBoundary>
     </BfDsProvider>
   );

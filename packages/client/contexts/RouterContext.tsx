@@ -1,9 +1,12 @@
-import { getLogger, React } from "deps.ts";
+import * as React from "react";
+import { getLogger } from "deps.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 import { routes } from "packages/client/components/App.tsx";
+import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 const logger = getLogger(import.meta);
 
-const { createContext, useContext, useState, useCallback } = React;
+const { createContext, useContext, useState, useCallback, useTransition } =
+  React;
 export const registeredRoutes = new Set<string>();
 export const dynamicRoutes = new Set<string>();
 
@@ -108,6 +111,7 @@ export function RouterProvider(
     RouterProviderProps
   >,
 ) {
+  const [isPending, startTransition] = useTransition();
   const { initialPath } = useAppEnvironment();
   const initialState = {
     currentPath: initialPath,
@@ -138,8 +142,10 @@ export function RouterProvider(
   }, []);
 
   const navigate = (path: string, search = "") => {
-    globalThis.history.pushState(null, "", path);
-    updateState(path, search);
+    startTransition(() => {
+      globalThis.history.pushState(null, "", path);
+      updateState(path, search);
+    });
   };
 
   // add all routes to the router context
@@ -153,6 +159,16 @@ export function RouterProvider(
       }}
     >
       {children}
+      {isPending && (
+        <BfDsFullPageSpinner
+          xstyle={{
+            backgroundColor: "transparent",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
+      )}
     </RouterContext.Provider>
   );
 }
