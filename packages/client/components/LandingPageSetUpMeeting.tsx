@@ -10,7 +10,7 @@ export function LandingPageSetUpMeeting(): React.ReactElement {
     { "style": "normal", "text": "your" },
     { "style": "normal", "text": "content," },
     { "style": "normal", "text": "use" },
-    { "style": "normal", "text": "more" },
+    { "style": "normal", "text": "all" },
     { "style": "normal", "text": "of" },
     { "style": "normal", "text": "it." },
   ];
