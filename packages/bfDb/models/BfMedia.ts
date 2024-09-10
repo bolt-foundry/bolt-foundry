@@ -7,12 +7,14 @@ import { fetchFile } from "lib/googleDriveApi.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { sanitizeFilename } from "packages/lib/textUtils.ts";
 import type { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
+import { BfError } from "lib/BfError.ts";
+import type { BfMediaNodeVideo } from "packages/bfDb/models/BfMediaNodeVideo.ts";
+import { BfMediaNodeVideoGoogleDriveResource } from "packages/bfDb/models/BfMediaNodeVideoGoogleDriveResource.ts";
 
 const logger = getLogger(import.meta);
 
 export type BfMediaProps = {
   filename: string;
-  fileId: string | null;
 };
 
 type DownloadClipArgs = {
@@ -22,7 +24,7 @@ type DownloadClipArgs = {
   };
   title: string;
   transcript: {
-    start_time: number;
+    // start_time: number;
     end_time: number;
     transcript: Array<DGWord>;
     settings: Record<string, unknown>;
@@ -38,8 +40,13 @@ export class BfMedia extends BfNode<BfMediaProps> {
   }
 
   static async createFromGoogleDriveResource(
-    _driveResource: BfGoogleDriveResource,
+    driveResource: BfGoogleDriveResource,
   ) {
+    if (!driveResource.isVideo()) throw new BfError(`Can't create media from ${driveResource}. Type is ${driveResource.props.mimeType}`);
+    
+    const bfMedia = await driveResource.createTargetNode(BfMedia, {}, "original");
+    const bfMediaNodeVideoGoogleDriveResource = await bfMedia.createTargetNode(BfMediaNodeVideoGoogleDriveResource, {googleDriveResourceId: driveResource.props.resourceId}, "ingested");
+    const bfMediaNodeTranscript = await bfMediaNodeVideoGoogleDriveResource.createTranscript();
     throw new BfError("Ingesting video is not yet implemented");
     /**
      * Check if google drive resource is a file.

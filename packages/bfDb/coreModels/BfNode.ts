@@ -8,10 +8,10 @@ import type {
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { getLogger } from "deps.ts";
 import {
-  BfCurrentViewer,
+  type BfCurrentViewer,
   IBfCurrentViewerInternalAdmin,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import type { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { bfQueryItemsForGraphQLConnection } from "packages/bfDb/bfDb.ts";
 const logger = getLogger(import.meta);
 
@@ -122,5 +122,26 @@ export class BfNode<
       role,
     });
     return targetModel as InstanceType<TTargetClass>;
+  }
+
+  public querySourceInstances<
+    // an actual good use of any.
+    // deno-lint-ignore no-explicit-any
+    TSourceClass extends abstract new (...args: any) => any,
+  >(SourceClassRaw: TSourceClass, props: Partial<ChildRequiredProps & ChildOptionalProps> = {}) {
+    const SourceClass = SourceClassRaw as unknown as typeof BfNode;
+
+    return BfEdge.querySourceInstances(this.currentViewer, SourceClass, this.metadata.bfGid, props)
+  }
+
+  
+  public queryTargetInstances<
+    // an actual good use of any.
+    // deno-lint-ignore no-explicit-any
+    TTargetClass extends abstract new (...args: any) => any,
+  >(TargetClassRaw: TTargetClass, props: Partial<ChildRequiredProps & ChildOptionalProps> = {}) {
+    const TargetClass = TargetClassRaw as unknown as typeof BfNode;
+
+    return BfEdge.queryTargetInstances(this.currentViewer, TargetClass, this.metadata.bfGid, props);
   }
 }

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 const { useEffect, useState } = React;
 
 type FeatureFlags = Record<string, boolean>;
@@ -31,7 +30,7 @@ export default function AppStateProvider(
 
   let showHud = false;
   useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
+    if (false) {
       showHud = true;
     }
   }, []);

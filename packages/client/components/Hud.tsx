@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
 import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";

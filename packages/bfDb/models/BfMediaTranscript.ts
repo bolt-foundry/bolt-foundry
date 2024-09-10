@@ -1,6 +1,6 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import type { BfMediaAudio } from "packages/bfDb/models/BfMediaAudio.ts";
+import type { BfMediaNodeAudio } from "packages/bfDb/models/BfMediaNodeAudio.ts";
 import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
@@ -28,7 +28,7 @@ export class BfMediaTranscript extends BfNode<BfMediaTranscriptProps> {
     return transcripts;
   }
 
-  static async createFromBfMediaAudio(bfMediaAudio: BfMediaAudio) {
+  static async createFromBfMediaAudio(bfMediaAudio: BfMediaNodeAudio) {
     const transcript = await this.create(bfMediaAudio.currentViewer, {
       status: BfMediaTranscriptStatus.CREATED,
     });
@@ -36,7 +36,7 @@ export class BfMediaTranscript extends BfNode<BfMediaTranscriptProps> {
     return transcript;
   }
 
-  async populateFromBfMediaAudio(_bfMediaAudio: BfMediaAudio) {
+  async populateFromBfMediaAudio(_bfMediaAudio: BfMediaNodeAudio) {
     await logger.error("Need to send to assembly ai probably");
   }
 }

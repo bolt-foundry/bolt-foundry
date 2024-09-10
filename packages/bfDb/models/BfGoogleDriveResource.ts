@@ -12,6 +12,7 @@ import {
 import { BfError } from "lib/BfError.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
+import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 
 const GOOGLE_DRIVE_CACHE_DIRECTORY =
   Deno.env.get("GOOGLE_DRIVE_CACHE_DIRECTORY") ?? "/tmp/google-drive-cache";
@@ -211,10 +212,8 @@ export class BfGoogleDriveResource
     return file;
   }
 
-  private async reportProgress(progress: number) {
+  private reportProgress(progress: number) {
     logger.debug("reporting progress", progress, this.metadata.bfGid);
-    this.props.ingestionProgress = progress;
-    await this.save();
     return this;
   }
 }
