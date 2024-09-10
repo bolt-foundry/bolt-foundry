@@ -296,7 +296,9 @@ Deno.serve(async (req) => {
   const incomingUrl = new URL(req.url);
 
   logger.info(
-    `[${new Date().toISOString()}] [${req.method}] ${incomingUrl} ${req.headers.get("content-type")}`,
+    `[${new Date().toISOString()}] [${req.method}] ${incomingUrl} ${
+      req.headers.get("content-type")
+    }`,
   );
 
   // Attempt to match routes with optional URL params
