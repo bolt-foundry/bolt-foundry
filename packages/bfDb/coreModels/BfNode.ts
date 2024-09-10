@@ -123,4 +123,36 @@ export class BfNode<
     });
     return targetModel as InstanceType<TTargetClass>;
   }
+
+  public querySourceInstances<
+    // an actual good use of any.
+    // deno-lint-ignore no-explicit-any
+    TSourceClass extends abstract new (...args: any) => any,
+  >(
+    SourceClass: TSourceClass,
+    props: Partial<ChildRequiredProps & ChildOptionalProps> = {},
+  ) {
+    return BfEdge.querySourceInstances(
+      this.currentViewer,
+      SourceClass,
+      this.metadata.bfGid,
+      props,
+    );
+  }
+
+  public queryTargetInstances<
+    // an actual good use of any.
+    // deno-lint-ignore no-explicit-any
+    TTargetClass extends abstract new (...args: any) => any,
+  >(
+    TargetClass: TTargetClass,
+    props: Partial<ChildRequiredProps & ChildOptionalProps> = {},
+  ) {
+    return BfEdge.queryTargetInstances(
+      this.currentViewer,
+      TargetClass,
+      this.metadata.bfGid,
+      props,
+    );
+  }
 }
