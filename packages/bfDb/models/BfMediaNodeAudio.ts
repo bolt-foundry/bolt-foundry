@@ -5,7 +5,7 @@ import { getLogger } from "deps.ts";
 const BF_MEDIA_AUDIO_CACHE_LOCATION = "/tmp/bfMediaAudioCache";
 
 const logger = getLogger(import.meta);
-export class BfMediaAudio extends BfNode {
+export class BfMediaNodeAudio extends BfNode {
   static async createFromGoogleDriveResource(
     googleDriveResource: BfGoogleDriveResource,
   ) {
