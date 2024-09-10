@@ -239,17 +239,32 @@ const buttonGroupElements = [
 ];
 const darkElements = [
   {
+    name: "Button (outlineDark)",
+    component: <BfDsButton text="Outline Dark" kind="outlineDark" />,
+  },
+  {
     name: "Button (overlayDark)",
     component: <BfDsButton text="Overlay Dark" kind="overlayDark" />,
   },
   {
     name: "Link",
-    component: <BfDsButton text="Link" kind="overlayDark" link="/" />,
+    component: <BfDsButton text="Link" kind="outlineDark" link="/" />,
   },
   {
     name: "Href",
     component: (
-      <BfDsButton text="Href" kind="overlayDark" href="https://facebook.com" />
+      <BfDsButton text="Href" kind="outlineDark" href="https://facebook.com" />
+    ),
+  },
+  {
+    name: "Icon (outlineDark)",
+    component: (
+      <BfDsButton
+        iconLeft="brand-tiktok"
+        kind="outlineDark"
+        href="https://www.tiktok.com"
+        hrefTarget="_blank"
+      />
     ),
   },
   {
@@ -479,21 +494,21 @@ export function Demo() {
         <div style={styles.group}>
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="right start"
             tooltipPosition="right"
             tooltipJustification="start"
           />
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="right center"
             tooltipPosition="right"
             tooltipJustification="center"
           />
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="right end"
             tooltipPosition="right"
             tooltipJustification="end"
@@ -501,21 +516,21 @@ export function Demo() {
 
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="top start"
             tooltipPosition="top"
             tooltipJustification="start"
           />
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="top center"
             tooltipPosition="top"
             tooltipJustification="center"
           />
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="top end"
             tooltipPosition="top"
             tooltipJustification="end"
@@ -523,21 +538,21 @@ export function Demo() {
 
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="left start"
             tooltipPosition="left"
             tooltipJustification="start"
           />
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="left center"
             tooltipPosition="left"
             tooltipJustification="center"
           />
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="left end"
             tooltipPosition="left"
             tooltipJustification="end"
@@ -545,21 +560,21 @@ export function Demo() {
 
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="bottom start"
             tooltipPosition="bottom"
             tooltipJustification="start"
           />
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="bottom center"
             tooltipPosition="bottom"
             tooltipJustification="center"
           />
           <BfDsButton
             iconLeft="brand-discord"
-            kind="overlayDark"
+            kind="outlineDark"
             tooltip="bottom end"
             tooltipPosition="bottom"
             tooltipJustification="end"

@@ -825,6 +825,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@langchain/openai@^0.2.10",
         "npm:@replit/object-storage@^1.0.0",
         "npm:@types/react-dom@^18",
         "npm:@types/react@^18",
@@ -840,7 +841,8 @@
         "npm:react-relay@^17.0.0",
         "npm:react@^18.3.1",
         "npm:relay-compiler@^17.0.0",
-        "npm:relay-runtime@^17.0.0"
+        "npm:relay-runtime@^17.0.0",
+        "npm:zod@^3.23.8"
       ]
     }
   }
