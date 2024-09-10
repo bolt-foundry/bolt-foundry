@@ -4,7 +4,6 @@ import type { SettingsPageQuery$data } from "packages/__generated__/SettingsPage
 import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { graphql } from "packages/client/deps.ts";
-import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { WatchFolderListMenu } from "packages/client/components/settings/WatchFolderListMenu.tsx";
 
@@ -46,9 +45,6 @@ type Data = {
 };
 
 export function WatchFolderList({ settings$key }: Props) {
-  if (!settings$key) {
-    return <BfDsFullPageSpinner />;
-  }
   const { data, loadNext, hasNext, isLoadingNext } = usePaginationFragment(
     fragment,
     settings$key,
