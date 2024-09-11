@@ -37,26 +37,11 @@ export const searchMutation = mutationField("searchMutation", {
   ) => {
 
     const currentOrg = await BfOrganization.findX(bfCurrentViewer, bfCurrentViewer.organizationBfGid);
-    const bfMedias = await currentOrg.queryTargetInstances(BfMedia)
+    const allMedia = await currentOrg.queryTargetInstances(BfMedia)
     
-    const allMedia = await BfMedia.findMediaByViewer(bfCurrentViewer);
-    const transcripts = await Promise.all(
-      allMedia.map(async (media) => {
-        const mediaId = media.metadata.bfGid;
-        // get the transcript
-        const transcriptsOnMedia = await BfEdge.queryTargetInstances(
-          bfCurrentViewer,
-          BfMediaNodeTranscript as typeof BfNode,
-          media.metadata.bfGid,
-        );
-        const transcript = transcriptsOnMedia[0]; // assuming there's only one transcript
-        const transcriptId = transcript?.metadata.bfGid;
-
-        const { filename, words } = (transcript?.props ??
-          { filename: "no file", words: "[]" }) as BfMediaNodeTranscriptProps;
-        return { mediaId, transcriptId, filename, words };
-      }),
-    );
+    const [transcripts] = await Promise.all(allMedia.map((media) => {
+      return media.queryTargetInstances(BfMediaNodeTranscript)
+    }))
 
     try {
       const message = await callAPI(
