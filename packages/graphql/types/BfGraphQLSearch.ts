@@ -14,6 +14,7 @@ import { callAPI } from "packages/lib/langchain.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import type { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 
 const searchMutationPayload = objectType({
   name: "SearchMutationPayload",
@@ -34,6 +35,10 @@ export const searchMutation = mutationField("searchMutation", {
     { input, suggestedModel },
     { bfCurrentViewer }: GraphQLContext,
   ) => {
+
+    const currentOrg = await BfOrganization.findX(bfCurrentViewer, bfCurrentViewer.organizationBfGid);
+    const bfMedias = await currentOrg.queryTargetInstances(BfMedia)
+    
     const allMedia = await BfMedia.findMediaByViewer(bfCurrentViewer);
     const transcripts = await Promise.all(
       allMedia.map(async (media) => {
