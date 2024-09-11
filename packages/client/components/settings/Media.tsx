@@ -17,7 +17,13 @@ fragment Media_bfOrganization on BfOrganization {
         transcripts(first: 1) {
           edges {
             node {
-              words
+              words {
+                start
+                end
+                text
+                confidence
+                speaker
+              }
             }
           }
         }
@@ -53,9 +59,8 @@ export function Media({ settings$key }: Props) {
     if (deletedRows.includes(d?.node?.id)) {
       return false;
     }
-    const transcriptString = d?.node?.transcripts?.edges?.[0]?.node?.words ??
-      "[]";
-    const transcript = JSON.parse(transcriptString);
+    const transcript = d?.node?.transcripts?.edges?.[0]?.node?.words ??
+      [];
     return {
       id: d?.node?.id,
       filename: d?.node?.filename,

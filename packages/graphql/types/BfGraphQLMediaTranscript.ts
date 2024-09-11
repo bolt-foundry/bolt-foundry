@@ -12,12 +12,25 @@ import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);
 
+export const AssemblyAIWordType = objectType({
+  name: "AssemblyAIWord",
+  description: "An AssemblyAI word",
+  definition: (t) => {
+    t.string("word");
+    t.int("start");
+    t.int("end");
+    t.string("text");
+    t.float("confidence");
+    t.string("speaker");
+  },
+});
+
 export const BfGraphQLMediaTranscriptType = objectType({
   name: "BfMediaNodeTranscript",
   description: "A transcript of a clip.",
   definition: (t) => {
     t.implements(BfNodeGraphQLType);
-    t.string("words");
+    t.list.field("words", { type: AssemblyAIWordType });
     t.string("filename");
   },
 });
