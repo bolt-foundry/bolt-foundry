@@ -7,12 +7,13 @@ import { fetchFile } from "lib/googleDriveApi.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { sanitizeFilename } from "packages/lib/textUtils.ts";
 import type { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
+import { BfError } from "lib/BfError.ts";
+import { BfMediaNodeVideoGoogleDriveResource } from "packages/bfDb/models/BfMediaNodeVideoGoogleDriveResource.ts";
 
 const logger = getLogger(import.meta);
 
 export type BfMediaProps = {
   filename: string;
-  fileId: string | null;
 };
 
 type DownloadClipArgs = {
@@ -38,9 +39,26 @@ export class BfMedia extends BfNode<BfMediaProps> {
   }
 
   static async createFromGoogleDriveResource(
-    _driveResource: BfGoogleDriveResource,
+    driveResource: BfGoogleDriveResource,
   ) {
-    throw new BfError("Ingesting video is not yet implemented");
+    if (!driveResource.isVideo()) {
+      throw new BfError(
+        `Can't create media from ${driveResource}. Type is ${driveResource.props.mimeType}`,
+      );
+    }
+
+    const bfMedia = await driveResource.createTargetNode(
+      BfMedia,
+      {},
+      "original",
+    );
+    const bfMediaNodeVideoGoogleDriveResource = await bfMedia.createTargetNode(
+      BfMediaNodeVideoGoogleDriveResource,
+      { googleDriveResourceId: driveResource.props.resourceId },
+      "ingested",
+    );
+    const bfMediaNodeTranscript = await bfMediaNodeVideoGoogleDriveResource
+      .createTranscript();
     /**
      * Check if google drive resource is a file.
      * If it is, create a new this.
@@ -49,7 +67,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
      * If it's not a video, ignore it for now.
      *
      * Video things:
-     * 1. generate a transcription (BfMediaTranscript, role: primary) without storing the original audio
+     * 1. generate a transcription (BfMediaNodeTranscript, role: primary) without storing the original audio
      * 2. create a preview quality version (BfMediaVideo, role: preview?)
      * 3. create a render quality version (BfMediaVideo, role: renderable?) and upload it to object storage
      * 4. create a poster frame (BfMediaImage, role: poster?) and upload it to object storage
@@ -61,33 +79,6 @@ export class BfMedia extends BfNode<BfMediaProps> {
      * 10. Gather language data (BfMediaLanguage)
      * 11. Gather people who appear in the video (BMediaFaceRecognition)
      */
-
-    // const bfMediaAudioPromise = BfMediaAudio.createFromGoogleDriveResource(
-    //   driveResource,
-    // );
-    // const bfMedia = await this.create(driveResource.currentViewer, {});
-    // await BfEdge.createEdgeBetweenNodes(
-    //   bfMedia.currentViewer,
-    //   bfMedia,
-    //   driveResource,
-    // );
-
-    // const bfMediaAudio = await bfMediaAudioPromise;
-    // await BfEdge.createEdgeBetweenNodes(
-    //   bfMedia.currentViewer,
-    //   bfMedia,
-    //   bfMediaAudio,
-    // );
-    // const bfMediaTranscript = await BfMediaTranscript.createFromBfMediaAudio(
-    //   bfMediaAudio,
-    // );
-    // await BfEdge.createEdgeBetweenNodes(
-    //   bfMedia.currentViewer,
-    //   bfMedia,
-    //   bfMediaTranscript,
-    // );
-
-    // return bfMedia;
   }
 
   async downloadClip(args: DownloadClipArgs) {
