@@ -3,7 +3,7 @@ import { graphql } from "packages/client/deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
-import { BfDsTextArea } from "packages/bfDs/BfDsTextArea.tsx";
+import type { BfDsTextArea } from "packages/bfDs/BfDsTextArea.tsx";
 const { useMutation } = ReactRelay;
 
 const { useState } = React;

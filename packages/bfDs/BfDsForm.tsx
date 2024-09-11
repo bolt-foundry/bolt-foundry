@@ -2,7 +2,7 @@ import * as React from "react";
 import { getLogger } from "deps.ts";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { BfDsToggle } from "packages/bfDs/BfDsToggle.tsx";
+import type { BfDsToggle } from "packages/bfDs/BfDsToggle.tsx";
 const { useState, createContext, useContext } = React;
 
 const logger = getLogger(import.meta);
