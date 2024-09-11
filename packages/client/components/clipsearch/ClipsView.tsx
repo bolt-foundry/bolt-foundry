@@ -8,6 +8,7 @@ import { graphql } from "packages/client/deps.ts";
 import { useClipSearchState } from "packages/client/contexts/ClipSearchContext.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { BfDsCallout } from "packages/bfDs/BfDsCallout.tsx";
+import { ClipsViewGlimmer } from "packages/client/components/clipsearch/ClipsViewGlimmer.tsx";
 
 type Props = {
   count: number;
@@ -62,7 +63,7 @@ export function ClipsView({ count, clips$key }: Props) {
         <div className="cs-page-hero-callout">
           Searching {count} videos for "{italicPrompt(prompt)}".
         </div>
-        <BfDsFullPageSpinner />
+        <ClipsViewGlimmer />
       </div>
     );
   }
