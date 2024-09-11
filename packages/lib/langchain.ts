@@ -3,7 +3,6 @@ import {
   ChatOpenAI,
   ChatPromptTemplate,
 } from "packages/deps.ts";
-import type { DGWord } from "packages/types/transcript.ts";
 import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
 import { getTimecodesForClips } from "packages/lib/timecodeUtils.ts";
 import { getLogger } from "deps.ts";
@@ -11,22 +10,19 @@ import { z } from "zod";
 const logger = getLogger(import.meta);
 const openAIApiKey = Deno.env.get("OPENAI_API_KEY") ?? "";
 const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
+import type { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 
-type Document = {
-  mediaId: string;
-  transcriptId: string;
-  filename: string;
-  words: string;
-};
-
-function formatDocs(documents: Array<Document>) {
-  return documents.map((document) => {
-    const transcript = JSON.parse(document?.words ?? "[]") as Array<DGWord>;
-    const content = transcript.map((word) => word.word).join(" ");
+function formatBfMediaNodeTranscripts(bfmnTranscripts: Array<BfMediaNodeTranscript>) {
+  return formatBfMediaNodeTranscriptsripts.map((bfmnTranscript) => {
+    const transcript = bfmnTranscript.words
+    const content = transcript.map((word) => word.text).join(" ");
+    const medias = bfmnTranscript.querySourceInstances(BfMedia);
+    const originalMediaID = medias[0].metadata.bfGid;
+    
     return `
-Filename: ${document.filename ?? "Untitled"}
-Media ID: ${document.mediaId}
-Transcript ID: ${document.transcriptId}
+Filename: ${bfmnTranscript.props.filename ?? "Untitled"}
+Media ID: ${originalMediaID}
+Transcript ID: ${bfmnTranscript.metadata.bfGid}
 Content: ${content}
 `;
   }).join("\n\n");
@@ -34,7 +30,7 @@ Content: ${content}
 
 export const callAPI = async (
   userMessage: string,
-  documents: Array<Document>,
+  bfmnTranscripts: Array<BfMediaNodeTranscript>,
   suggestedModel?: string | null | undefined,
 ) => {
   const anecdote = z.object({
@@ -116,9 +112,9 @@ export const callAPI = async (
   return JSON.stringify(responseWithTimecode);
 };
 
-const createSystemMessage = (documents: Array<Document>) => {
-  const formattedData = formatDocs(documents);
-
+const createSystemMessage = (bfmnTranscripts: Array<Document>) => {
+  const formattedData = formatBfMediaNodeTranscripts(bfmnTranscripts);
+formatBfMediaNodeTranscripts
   return `
   You have access to several video transcripts. Your task is to extract all anecdotes from these transcripts based on a user-provided prompt. This task is to be performed using the provided transcript data sections listed below. 
 
