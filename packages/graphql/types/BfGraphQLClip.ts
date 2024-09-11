@@ -8,7 +8,7 @@ import {
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { BfClip } from "packages/bfDb/models/BfClip.ts";
 import { getLogger } from "deps.ts";
-import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
+import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { floatArg } from "packages/graphql/deps.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
@@ -89,7 +89,7 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
       endTime,
     });
     const mediaPromise = BfMedia.find(bfCurrentViewer, mediaId as BfAnyid);
-    const transcriptPromise = BfMediaTranscript.find(
+    const transcriptPromise = BfMediaNodeTranscript.find(
       bfCurrentViewer,
       transcriptId as BfAnyid,
     );
