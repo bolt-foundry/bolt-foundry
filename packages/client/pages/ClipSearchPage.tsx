@@ -1,4 +1,4 @@
-import type * as React from "react";
+import * as React from "react";
 import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";
@@ -12,6 +12,8 @@ import ClipSearchProvider, {
   useClipSearchState,
 } from "packages/client/contexts/ClipSearchContext.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
+import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
+const { Suspense } = React;
 
 const query = await graphql`
   query ClipSearchPageQuery {
@@ -91,14 +93,21 @@ export function ClipSearchPageContent() {
       />
       <div className="cs-main">
         <Search />
-        {clips || isInFlight
-          ? <ClipsView count={count} clips$key={data?.currentViewer?.person} />
-          : (
-            <ClipsViewNullState
-              count={count}
-              settings$key={data?.currentViewer?.organization}
-            />
-          )}
+        <Suspense fallback={<BfDsFullPageSpinner />}>
+          {clips || isInFlight
+            ? (
+              <ClipsView
+                count={count}
+                clips$key={data?.currentViewer?.person}
+              />
+            )
+            : (
+              <ClipsViewNullState
+                count={count}
+                settings$key={data?.currentViewer?.organization}
+              />
+            )}
+        </Suspense>
       </div>
     </div>
   );

@@ -1,17 +1,15 @@
-import type * as React from "react";
+import * as React from "react";
 import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFilePicker.tsx";
 import type { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery.graphql.ts";
 import { WatchFolderList } from "packages/client/components/settings/WatchFolderList.tsx";
-import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
+import { BfDsGlimmer } from "packages/bfDs/BfDsGlimmer.tsx";
+const { Suspense } = React;
 
 type Props = {
   settings$key: SettingsPageQuery$data | null;
 };
 
 export function WatchFolder({ settings$key }: Props) {
-  if (!settings$key) {
-    return <BfDsFullPageSpinner />;
-  }
   return (
     <div className="cs-main">
       <div className="cs-page-header">
@@ -19,7 +17,9 @@ export function WatchFolder({ settings$key }: Props) {
         <GoogleFilePicker />
       </div>
       <div className="cs-page-content">
-        <WatchFolderList settings$key={settings$key} />
+        <Suspense fallback={<BfDsGlimmer height="400px" order={0} />}>
+          <WatchFolderList settings$key={settings$key} />
+        </Suspense>
       </div>
     </div>
   );
