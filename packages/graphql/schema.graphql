@@ -22,6 +22,16 @@ type Annotations {
   underlined: Boolean
 }
 
+"""An AssemblyAI word"""
+type AssemblyAIWord {
+  confidence: Float
+  end: Int
+  speaker: String
+  start: Int
+  text: String
+  word: String
+}
+
 """A person who uses our system on behalf of an orginization"""
 type BfAccount implements BfNode & Node {
   displayName: String
@@ -209,7 +219,7 @@ type BfMediaNodeTranscript implements BfNode & Node {
 
   """Unique identifier for the resource"""
   id: ID!
-  words: String
+  words: [AssemblyAIWord]
 }
 
 type BfMediaNodeTranscriptConnection {
