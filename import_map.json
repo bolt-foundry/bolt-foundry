@@ -31,8 +31,7 @@
     "@std/cli": "jsr:@std/cli",
     "@std/http": "jsr:@std/http",
     
-    "@neon/serverless": "jsr:@neon/serverless@0.9.2",
-    "assemblyai": "https://www.unpkg.com/assemblyai@4.4.3/dist/browser.mjs"
+    "@neon/serverless": "jsr:@neon/serverless@0.9.2"
   },
   "scopes": {}
 }
