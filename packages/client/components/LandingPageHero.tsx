@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import type { React } from "deps.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 export function LandingPageHero() {

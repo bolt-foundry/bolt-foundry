@@ -5,7 +5,7 @@ import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { featureFlags } from "packages/features/list.ts";
+import type { featureFlags } from "packages/features/list.ts";
 
 const flags = [
   "placeholder",
