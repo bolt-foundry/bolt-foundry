@@ -296,7 +296,7 @@ return {
                                 "value": 1
                               }
                             ],
-                            "concreteType": "BfMediaTranscriptConnection",
+                            "concreteType": "BfMediaNodeTranscriptConnection",
                             "kind": "LinkedField",
                             "name": "transcripts",
                             "plural": false,
@@ -304,7 +304,7 @@ return {
                               {
                                 "alias": null,
                                 "args": null,
-                                "concreteType": "BfMediaTranscriptEdge",
+                                "concreteType": "BfMediaNodeTranscriptEdge",
                                 "kind": "LinkedField",
                                 "name": "edges",
                                 "plural": true,
@@ -312,7 +312,7 @@ return {
                                   {
                                     "alias": null,
                                     "args": null,
-                                    "concreteType": "BfMediaTranscript",
+                                    "concreteType": "BfMediaNodeTranscript",
                                     "kind": "LinkedField",
                                     "name": "node",
                                     "plural": false,

@@ -92,7 +92,7 @@ const node: ReaderFragment = {
                       "value": 1
                     }
                   ],
-                  "concreteType": "BfMediaTranscriptConnection",
+                  "concreteType": "BfMediaNodeTranscriptConnection",
                   "kind": "LinkedField",
                   "name": "transcripts",
                   "plural": false,
@@ -100,7 +100,7 @@ const node: ReaderFragment = {
                     {
                       "alias": null,
                       "args": null,
-                      "concreteType": "BfMediaTranscriptEdge",
+                      "concreteType": "BfMediaNodeTranscriptEdge",
                       "kind": "LinkedField",
                       "name": "edges",
                       "plural": true,
@@ -108,7 +108,7 @@ const node: ReaderFragment = {
                         {
                           "alias": null,
                           "args": null,
-                          "concreteType": "BfMediaTranscript",
+                          "concreteType": "BfMediaNodeTranscript",
                           "kind": "LinkedField",
                           "name": "node",
                           "plural": false,
