@@ -9,6 +9,8 @@ import { sanitizeFilename } from "packages/lib/textUtils.ts";
 import type { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { BfError } from "lib/BfError.ts";
 import { BfMediaNodeVideoGoogleDriveResource } from "packages/bfDb/models/BfMediaNodeVideoGoogleDriveResource.ts";
+import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);
 
@@ -52,6 +54,10 @@ export class BfMedia extends BfNode<BfMediaProps> {
       {},
       "original",
     );
+    const currentOrgBfGid = bfMedia.currentViewer.organizationBfGid;
+    const currentOrg = await BfOrganization.findX(bfMedia.currentViewer, currentOrgBfGid);
+    await BfEdge.createEdgeBetweenNodes(currentOrg.currentViewer, currentOrg, bfMedia);
+      
     const bfMediaNodeVideoGoogleDriveResource = await bfMedia.createTargetNode(
       BfMediaNodeVideoGoogleDriveResource,
       { googleDriveResourceId: driveResource.props.resourceId },
