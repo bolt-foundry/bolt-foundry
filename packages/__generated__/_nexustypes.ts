@@ -78,6 +78,14 @@ export interface NexusGenObjects {
     strikethrough?: boolean | null; // Boolean
     underlined?: boolean | null; // Boolean
   }
+  AssemblyAIWord: { // root type
+    confidence?: number | null; // Float
+    end?: number | null; // Int
+    speaker?: string | null; // String
+    start?: number | null; // Int
+    text?: string | null; // String
+    word?: string | null; // String
+  }
   BfAccount: { // root type
     displayName?: string | null; // String
     organizationBfGid?: string | null; // ID
@@ -146,7 +154,7 @@ export interface NexusGenObjects {
   }
   BfMediaNodeTranscript: { // root type
     filename?: string | null; // String
-    words?: string | null; // String
+    words?: Array<NexusGenRootTypes['AssemblyAIWord'] | null> | null; // [AssemblyAIWord]
   }
   BfMediaNodeTranscriptConnection: { // root type
     count?: number | null; // Int
@@ -273,6 +281,14 @@ export interface NexusGenFieldTypes {
     strikethrough: boolean | null; // Boolean
     underlined: boolean | null; // Boolean
   }
+  AssemblyAIWord: { // field return type
+    confidence: number | null; // Float
+    end: number | null; // Int
+    speaker: string | null; // String
+    start: number | null; // Int
+    text: string | null; // String
+    word: string | null; // String
+  }
   BfAccount: { // field return type
     displayName: string | null; // String
     id: string; // ID!
@@ -356,7 +372,7 @@ export interface NexusGenFieldTypes {
   BfMediaNodeTranscript: { // field return type
     filename: string | null; // String
     id: string; // ID!
-    words: string | null; // String
+    words: Array<NexusGenRootTypes['AssemblyAIWord'] | null> | null; // [AssemblyAIWord]
   }
   BfMediaNodeTranscriptConnection: { // field return type
     count: number | null; // Int
@@ -514,6 +530,14 @@ export interface NexusGenFieldTypeNames {
     strikethrough: 'Boolean'
     underlined: 'Boolean'
   }
+  AssemblyAIWord: { // field return type name
+    confidence: 'Float'
+    end: 'Int'
+    speaker: 'String'
+    start: 'Int'
+    text: 'String'
+    word: 'String'
+  }
   BfAccount: { // field return type name
     displayName: 'String'
     id: 'ID'
@@ -597,7 +621,7 @@ export interface NexusGenFieldTypeNames {
   BfMediaNodeTranscript: { // field return type name
     filename: 'String'
     id: 'ID'
-    words: 'String'
+    words: 'AssemblyAIWord'
   }
   BfMediaNodeTranscriptConnection: { // field return type name
     count: 'Int'
