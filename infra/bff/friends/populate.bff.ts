@@ -2,7 +2,7 @@ import { gql, GraphQLClient } from "infra/watcher/deps.ts";
 import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
 import { getHeaders } from "infra/watcher/ingest.ts";
-import { BfMediaTranscript } from "packages/bfDb/models/BfMediaTranscript.ts";
+import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { getLogger } from "deps.ts";
@@ -71,10 +71,13 @@ async function populate(projects: Projects = accounting) {
         fileId: transcript.fileId,
       },
     );
-    const newTranscript = await newMedia.createTargetNode(BfMediaTranscript, {
-      words: transcript.words,
-      filename: transcript.filename,
-    });
+    const newTranscript = await newMedia.createTargetNode(
+      BfMediaNodeTranscript,
+      {
+        words: transcript.words,
+        filename: transcript.filename,
+      },
+    );
     logger.info(newTranscript.metadata.bfGid);
   }
 

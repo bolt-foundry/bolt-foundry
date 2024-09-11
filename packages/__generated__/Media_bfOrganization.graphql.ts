@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<8b84271b8326f4ab5d9f47ef08f34013>>
+ * @generated SignedSource<<b091b8ae962fb41ad2e01586ac6cd92e>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,13 @@ export type Media_bfOrganization$data = {
         readonly transcripts: {
           readonly edges: ReadonlyArray<{
             readonly node: {
-              readonly words: string | null | undefined;
+              readonly words: ReadonlyArray<{
+                readonly confidence: number | null | undefined;
+                readonly end: number | null | undefined;
+                readonly speaker: string | null | undefined;
+                readonly start: number | null | undefined;
+                readonly text: string | null | undefined;
+              } | null | undefined> | null | undefined;
             } | null | undefined;
           } | null | undefined> | null | undefined;
         } | null | undefined;
@@ -92,7 +98,7 @@ const node: ReaderFragment = {
                       "value": 1
                     }
                   ],
-                  "concreteType": "BfMediaTranscriptConnection",
+                  "concreteType": "BfMediaNodeTranscriptConnection",
                   "kind": "LinkedField",
                   "name": "transcripts",
                   "plural": false,
@@ -100,7 +106,7 @@ const node: ReaderFragment = {
                     {
                       "alias": null,
                       "args": null,
-                      "concreteType": "BfMediaTranscriptEdge",
+                      "concreteType": "BfMediaNodeTranscriptEdge",
                       "kind": "LinkedField",
                       "name": "edges",
                       "plural": true,
@@ -108,7 +114,7 @@ const node: ReaderFragment = {
                         {
                           "alias": null,
                           "args": null,
-                          "concreteType": "BfMediaTranscript",
+                          "concreteType": "BfMediaNodeTranscript",
                           "kind": "LinkedField",
                           "name": "node",
                           "plural": false,
@@ -116,8 +122,47 @@ const node: ReaderFragment = {
                             {
                               "alias": null,
                               "args": null,
-                              "kind": "ScalarField",
+                              "concreteType": "AssemblyAIWord",
+                              "kind": "LinkedField",
                               "name": "words",
+                              "plural": true,
+                              "selections": [
+                                {
+                                  "alias": null,
+                                  "args": null,
+                                  "kind": "ScalarField",
+                                  "name": "start",
+                                  "storageKey": null
+                                },
+                                {
+                                  "alias": null,
+                                  "args": null,
+                                  "kind": "ScalarField",
+                                  "name": "end",
+                                  "storageKey": null
+                                },
+                                {
+                                  "alias": null,
+                                  "args": null,
+                                  "kind": "ScalarField",
+                                  "name": "text",
+                                  "storageKey": null
+                                },
+                                {
+                                  "alias": null,
+                                  "args": null,
+                                  "kind": "ScalarField",
+                                  "name": "confidence",
+                                  "storageKey": null
+                                },
+                                {
+                                  "alias": null,
+                                  "args": null,
+                                  "kind": "ScalarField",
+                                  "name": "speaker",
+                                  "storageKey": null
+                                }
+                              ],
                               "storageKey": null
                             }
                           ],
@@ -143,6 +188,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "210205c6e9d75c7ceed3311207b78d17";
+(node as any).hash = "672f0498b12bd8858ceb4b0d0c422ef2";
 
 export default node;

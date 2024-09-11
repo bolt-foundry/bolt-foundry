@@ -5,6 +5,12 @@ import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
+import type { featureFlags } from "packages/features/list.ts";
+
+const flags = [
+  "placeholder",
+  "landing-page-videos",
+];
 
 export function Hud() {
   const { BF_ENV } = useAppEnvironment();
@@ -135,7 +141,9 @@ export function Hud() {
           Flags
         </div>
         <div>
-          <FeatureFlag toggle name="placeholder" />
+          {flags.map((flag) => {
+            return <FeatureFlag key={flag} toggle name={flag} />;
+          })}
         </div>
       </div>
     )

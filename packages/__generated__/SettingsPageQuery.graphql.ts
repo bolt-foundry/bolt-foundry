@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<7bc44f201f51a85094a14d98004c37d8>>
+ * @generated SignedSource<<de00a126c3335902eee13c0bb8719ea9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -296,7 +296,7 @@ return {
                                 "value": 1
                               }
                             ],
-                            "concreteType": "BfMediaTranscriptConnection",
+                            "concreteType": "BfMediaNodeTranscriptConnection",
                             "kind": "LinkedField",
                             "name": "transcripts",
                             "plural": false,
@@ -304,7 +304,7 @@ return {
                               {
                                 "alias": null,
                                 "args": null,
-                                "concreteType": "BfMediaTranscriptEdge",
+                                "concreteType": "BfMediaNodeTranscriptEdge",
                                 "kind": "LinkedField",
                                 "name": "edges",
                                 "plural": true,
@@ -312,7 +312,7 @@ return {
                                   {
                                     "alias": null,
                                     "args": null,
-                                    "concreteType": "BfMediaTranscript",
+                                    "concreteType": "BfMediaNodeTranscript",
                                     "kind": "LinkedField",
                                     "name": "node",
                                     "plural": false,
@@ -320,8 +320,47 @@ return {
                                       {
                                         "alias": null,
                                         "args": null,
-                                        "kind": "ScalarField",
+                                        "concreteType": "AssemblyAIWord",
+                                        "kind": "LinkedField",
                                         "name": "words",
+                                        "plural": true,
+                                        "selections": [
+                                          {
+                                            "alias": null,
+                                            "args": null,
+                                            "kind": "ScalarField",
+                                            "name": "start",
+                                            "storageKey": null
+                                          },
+                                          {
+                                            "alias": null,
+                                            "args": null,
+                                            "kind": "ScalarField",
+                                            "name": "end",
+                                            "storageKey": null
+                                          },
+                                          {
+                                            "alias": null,
+                                            "args": null,
+                                            "kind": "ScalarField",
+                                            "name": "text",
+                                            "storageKey": null
+                                          },
+                                          {
+                                            "alias": null,
+                                            "args": null,
+                                            "kind": "ScalarField",
+                                            "name": "confidence",
+                                            "storageKey": null
+                                          },
+                                          {
+                                            "alias": null,
+                                            "args": null,
+                                            "kind": "ScalarField",
+                                            "name": "speaker",
+                                            "storageKey": null
+                                          }
+                                        ],
                                         "storageKey": null
                                       },
                                       (v1/*: any*/)
@@ -353,12 +392,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "8680d782bad4e209561e56fb5dda6e64",
+    "cacheID": "cd652448bb05bca92f8643851177566d",
     "id": null,
     "metadata": {},
     "name": "SettingsPageQuery",
     "operationKind": "query",
-    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        transcripts(first: 1) {\n          edges {\n            node {\n              words\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  googleDriveFolders(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        transcripts(first: 1) {\n          edges {\n            node {\n              words {\n                start\n                end\n                text\n                confidence\n                speaker\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  googleDriveFolders(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
   }
 };
 })();

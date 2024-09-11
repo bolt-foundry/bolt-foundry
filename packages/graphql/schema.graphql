@@ -22,6 +22,16 @@ type Annotations {
   underlined: Boolean
 }
 
+"""An AssemblyAI word"""
+type AssemblyAIWord {
+  confidence: Float
+  end: Int
+  speaker: String
+  start: Int
+  text: String
+  word: String
+}
+
 """A person who uses our system on behalf of an orginization"""
 type BfAccount implements BfNode & Node {
   displayName: String
@@ -175,7 +185,7 @@ type BfMedia implements BfNode & Node {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): BfMediaTranscriptConnection
+  ): BfMediaNodeTranscriptConnection
 }
 
 type BfMediaConnection {
@@ -204,24 +214,24 @@ type BfMediaEdge {
 }
 
 """A transcript of a clip."""
-type BfMediaTranscript implements BfNode & Node {
+type BfMediaNodeTranscript implements BfNode & Node {
   filename: String
 
   """Unique identifier for the resource"""
   id: ID!
-  words: String
+  words: [AssemblyAIWord]
 }
 
-type BfMediaTranscriptConnection {
+type BfMediaNodeTranscriptConnection {
   count: Int
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
   """
-  edges: [BfMediaTranscriptEdge]
+  edges: [BfMediaNodeTranscriptEdge]
 
-  """Flattened list of BfMediaTranscript type"""
-  nodes: [BfMediaTranscript]
+  """Flattened list of BfMediaNodeTranscript type"""
+  nodes: [BfMediaNodeTranscript]
 
   """
   https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
@@ -229,12 +239,12 @@ type BfMediaTranscriptConnection {
   pageInfo: PageInfo!
 }
 
-type BfMediaTranscriptEdge {
+type BfMediaNodeTranscriptEdge {
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
   cursor: String!
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: BfMediaTranscript
+  node: BfMediaNodeTranscript
 }
 
 interface BfNode implements Node {
@@ -415,10 +425,10 @@ type ImageBlock implements BlogPostContentBlock {
 }
 
 type Mutation {
-  createTranscript(filename: String!, words: String!): BfMediaTranscript
+  createTranscript(filename: String!, words: String!): BfMediaNodeTranscript
   deleteGoogleDriveResource(resourceId: String): DeleteMutationPayload
   deleteMedia(id: String!): BfMedia
-  deleteTranscript(id: String!): BfMediaTranscript
+  deleteTranscript(id: String!): BfMediaNodeTranscript
   downloadClip(endTime: Float!, mediaId: String!, startTime: Float!, title: String!, transcriptId: String!): DownloadMutationPayload
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
@@ -428,7 +438,7 @@ type Mutation {
   searchMutation(input: String!, suggestedModel: String): SearchMutationPayload
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
-  updateTranscript(filename: String, id: String!, words: String): BfMediaTranscript
+  updateTranscript(filename: String, id: String!, words: String): BfMediaNodeTranscript
   upsertClip(file: File!, originalClipId: String!, title: String): BfClip
 }
 

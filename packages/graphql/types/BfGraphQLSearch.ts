@@ -6,9 +6,9 @@ import {
 } from "packages/graphql/deps.ts";
 import type { GraphQLContext } from "packages/graphql/graphql.ts";
 import {
-  BfMediaTranscript,
-  type BfMediaTranscriptProps,
-} from "packages/bfDb/models/BfMediaTranscript.ts";
+  BfMediaNodeTranscript,
+  type BfMediaNodeTranscriptProps,
+} from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 
 import { callAPI } from "packages/lib/langchain.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
@@ -41,14 +41,14 @@ export const searchMutation = mutationField("searchMutation", {
         // get the transcript
         const transcriptsOnMedia = await BfEdge.queryTargetInstances(
           bfCurrentViewer,
-          BfMediaTranscript as typeof BfNode,
+          BfMediaNodeTranscript as typeof BfNode,
           media.metadata.bfGid,
         );
         const transcript = transcriptsOnMedia[0]; // assuming there's only one transcript
         const transcriptId = transcript?.metadata.bfGid;
 
         const { filename, words } = (transcript?.props ??
-          { filename: "no file", words: "[]" }) as BfMediaTranscriptProps;
+          { filename: "no file", words: "[]" }) as BfMediaNodeTranscriptProps;
         return { mediaId, transcriptId, filename, words };
       }),
     );

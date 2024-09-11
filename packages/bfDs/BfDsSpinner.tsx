@@ -83,7 +83,11 @@ export function BfDsSpinner(
   );
 }
 
-export function BfDsFullPageSpinner() {
+type FullPageProps = {
+  xstyle?: React.CSSProperties;
+};
+
+export function BfDsFullPageSpinner({ xstyle = {} }: FullPageProps) {
   return (
     <div
       style={{
@@ -94,6 +98,7 @@ export function BfDsFullPageSpinner() {
         alignItems: "center",
         padding: 20,
         boxSizing: "border-box",
+        ...xstyle,
       }}
     >
       <BfDsSpinner backgroundColor={"var(--pageBackground)"} waitIcon={true} />

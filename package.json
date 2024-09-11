@@ -4,6 +4,7 @@
   "dependencies": {
     "@langchain/openai": "^0.2.10",
     "@replit/object-storage": "^1.0.0",
+    "assemblyai": "^4.7.0",
     "esbuild": "^0.23.1",
     "google-auth-library": "^9.14.1",
     "graphql": "^16.9.0",

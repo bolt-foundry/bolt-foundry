@@ -1,15 +1,14 @@
-import * as React from "react";
+import type * as React from "react";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { LandingPageHero } from "packages/client/components/LandingPageHero.tsx";
-import { ComingSoonHero } from "packages/client/components/ComingSoonHero.tsx";
-import { MarketingCallToAction } from "packages/client/components/MarketingCallToAction.tsx";
 import { LandingPageMission } from "packages/client/components/LandingPageMission.tsx";
 import { LandingPageClipCollection } from "packages/client/components/LandingPageClipCollection.tsx";
 import { LandingPageTestimonials } from "packages/client/components/LandingPageTestimonials.tsx";
 import { LandingPageSetUpMeeting } from "packages/client/components/LandingPageSetUpMeeting.tsx";
 import { BfLogo } from "packages/bfDs/static/BfLogo.tsx";
 import { Link } from "packages/client/components/Link.tsx";
+import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
+import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 
 export function LandingPage(): React.ReactElement {
   return (
@@ -37,7 +36,7 @@ export function LandingPage(): React.ReactElement {
           <div
             style={{
               background:
-                "url(/resources/media/BF-mission_v2_word.jpeg) no-repeat center / contain",
+                "url(https://bf-static-assets.s3.amazonaws.com/marketing/landing-page-mission-graphic.png) no-repeat center / contain",
               width: "100%",
               aspectRatio: "2/1",
               height: "100%",

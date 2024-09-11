@@ -12,6 +12,7 @@ import {
 import { BfError } from "lib/BfError.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
+import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 
 const GOOGLE_DRIVE_CACHE_DIRECTORY =
   Deno.env.get("GOOGLE_DRIVE_CACHE_DIRECTORY") ?? "/tmp/google-drive-cache";

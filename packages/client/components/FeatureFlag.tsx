@@ -1,14 +1,16 @@
-import * as React from "react";
+import type * as React from "react";
 import { useAppState } from "packages/client/contexts/AppStateContext.tsx";
 import { BfDsToggle } from "packages/bfDs/BfDsToggle.tsx";
 
 type Props = {
+  fallback?: React.ReactNode;
   name: string;
   toggle?: boolean;
 };
 
 export function FeatureFlag({
   children,
+  fallback,
   name,
   toggle,
 }: React.PropsWithChildren<Props>) {
@@ -21,7 +23,7 @@ export function FeatureFlag({
       <BfDsToggle
         label={name}
         size="small"
-        value={isFeatureEnabled}
+        value={!!isFeatureEnabled}
         onChange={() => {
           setFeatureFlag(name);
         }}
@@ -29,5 +31,5 @@ export function FeatureFlag({
     );
   }
 
-  return isFeatureEnabled ? children : null;
+  return isFeatureEnabled ? children : fallback ?? null;
 }
