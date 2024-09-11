@@ -10,13 +10,13 @@ import {
 import { LoginPage } from "packages/client/pages/LoginPage.tsx";
 import { Demo } from "packages/bfDs/Demo.tsx";
 import { ContactUs } from "packages/client/components/ContactUs.tsx";
-import { ComingSoonPage } from "packages/client/pages/ComingSoonPage.tsx";
+import type { ComingSoonPage } from "packages/client/pages/ComingSoonPage.tsx";
 import { Marketing } from "packages/client/pages/MarketingPage.tsx";
 import { SettingsPage } from "packages/client/pages/SettingsPage.tsx";
 import { ClipSearchPage } from "packages/client/pages/ClipSearchPage.tsx";
 import { BlogPage } from "packages/client/pages/BlogPage.tsx";
 import { LandingPage } from "packages/client/pages/LandingPage.tsx";
-import { useAppState } from "packages/client/contexts/AppStateContext.tsx";
+import type { useAppState } from "packages/client/contexts/AppStateContext.tsx";
 import { Hud } from "packages/client/components/Hud.tsx";
 
 export const routes = new Map([

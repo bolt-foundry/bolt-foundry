@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { useAppState } from "packages/client/contexts/AppStateContext.tsx";
 import { BfDsToggle } from "packages/bfDs/BfDsToggle.tsx";
 

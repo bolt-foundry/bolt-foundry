@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { LandingPageHero } from "packages/client/components/LandingPageHero.tsx";
 import { LandingPageMission } from "packages/client/components/LandingPageMission.tsx";

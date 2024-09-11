@@ -1,6 +1,6 @@
-import * as React from "react";
+import type * as React from "react";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { SetUpMeeting } from "packages/client/components/SetUpMeeting.tsx";
+import type { SetUpMeeting } from "packages/client/components/SetUpMeeting.tsx";
 
 export function LandingPageSetUpMeeting(): React.ReactElement {
   return (
