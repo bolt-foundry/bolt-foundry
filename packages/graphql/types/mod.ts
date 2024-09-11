@@ -11,7 +11,6 @@ export * from "packages/graphql/types/BfGraphQLClip.ts";
 export * from "packages/graphql/types/BfGraphQLClipReview.ts";
 export * from "packages/graphql/types/BfGraphQLContactForm.ts";
 export * from "packages/graphql/types/BfGraphQLCurrentViewer.ts";
-export * from "packages/graphql/types/BfGraphQLGoogleAuth.ts";
 export * from "packages/graphql/types/BfGraphQLGoogleDriveResource.ts";
 export * from "packages/graphql/types/BfGraphQLMedia.ts";
 export * from "packages/graphql/types/BfGraphQLMediaTranscript.ts";
