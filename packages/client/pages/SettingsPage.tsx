@@ -1,5 +1,5 @@
 import type * as React from "react";
-import { startTransition, Suspense, useState } from "react";
+import { useState } from "react";
 import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import type { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
@@ -8,7 +8,6 @@ import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";
 import { WatchFolder } from "packages/client/components/settings/WatchFolder.tsx";
 import { Media } from "packages/client/components/settings/Media.tsx";
-import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { BfDsGlimmer } from "packages/bfDs/BfDsGlimmer.tsx";
@@ -35,10 +34,14 @@ enum Tabs {
 }
 
 export function SettingsPage() {
+  const { routeParams } = useRouter();
   const { darkMode, setDarkMode } = useBfDs();
-  const [selected, setSelected] = useState<Tabs>(Tabs.WATCH_FOLDERS);
+  const [selected, setSelected] = useState<Tabs>(
+    routeParams.tab as Tabs ?? Tabs.WATCH_FOLDERS,
+  );
   const data = useLazyLoadQuery<SettingsPageQuery>(query, {});
   const { navigate } = useRouter();
+
   const organizationFragmentRef = data?.currentViewer?.organization ?? null;
 
   let content: JSX.Element;
@@ -53,9 +56,8 @@ export function SettingsPage() {
   }
 
   const handleSetSelected = (tab: Tabs) => {
-    startTransition(() => {
-      setSelected(tab);
-    });
+    setSelected(tab);
+    navigate(`/settings/${tab}`);
   };
 
   return (
