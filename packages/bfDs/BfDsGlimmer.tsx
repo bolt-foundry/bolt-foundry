@@ -4,15 +4,17 @@ type GlimmerProps = {
   order: number;
   width?: string;
   height?: string;
+  xstyle?: Record<string, React.CSSProperties>;
 };
 
 export function BfDsGlimmer(
-  { order, width = "100%", height = "100%" }: GlimmerProps,
+  { order, width = "100%", height = "100%", xstyle = {} }: GlimmerProps,
 ) {
   const glimmerStyle = {
     animationDelay: `${order * 0.1}s`,
     width,
     height,
+    ...xstyle,
   };
 
   return <div className="glimmer" style={glimmerStyle}></div>;
