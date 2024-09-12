@@ -21,7 +21,7 @@ export function Hud() {
 
   const hudRef = useRef<HTMLDivElement>(null);
   const [initComplete, setInitComplete] = useState(false);
-  const [showHud, setShowHud] = useLocalStorage("showHud", true);
+  const [showHud, setShowHud] = useLocalStorage("showHud", false);
   const [position, setPosition] = useLocalStorage("hud-position", {
     x: 0,
     y: 0,
