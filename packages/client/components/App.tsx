@@ -25,10 +25,9 @@ export const routes = new Map([
   ["/login", { Component: LoginPage, allowLoggedOut: true }],
   ["/ui", { Component: Demo, allowLoggedOut: true }],
   ["/contact-us", { Component: ContactUs, allowLoggedOut: true }],
-  ["/settings", { Component: SettingsPage, allowLoggedOut: false }],
+  ["/settings/:tab?", { Component: SettingsPage, allowLoggedOut: false }],
   ["/search", { Component: ClipSearchPage, allowLoggedOut: false }],
-  ["/blog", { Component: BlogPage, allowLoggedOut: true }],
-  ["/blog/:slug", { Component: BlogPage, allowLoggedOut: true }],
+  ["/blog/:slug?", { Component: BlogPage, allowLoggedOut: true }],
 ]);
 
 export function App() {

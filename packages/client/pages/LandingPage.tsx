@@ -25,28 +25,7 @@ export function LandingPage(): React.ReactElement {
           <LandingPageHero />
         </div>
         <div className="landing-page-block">
-          <FeatureFlag
-            name="landing-page-videos"
-            fallback={
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background:
-                    "radial-gradient(var(--fourtharyColor030), transparent 70%)",
-                }}
-              >
-                <div style={{ width: "50%" }}>
-                  <BfSymbol color="white" />
-                </div>
-              </div>
-            }
-          >
-            <LandingPageClipCollection />
-          </FeatureFlag>
+          <LandingPageClipCollection />
         </div>
       </div>
       <div
@@ -57,7 +36,7 @@ export function LandingPage(): React.ReactElement {
           <div
             style={{
               background:
-                "url(/resources/media/BF-mission_v2_word.jpeg) no-repeat center / contain",
+                "url(https://bf-static-assets.s3.amazonaws.com/marketing/landing-page-mission-graphic.png) no-repeat center / contain",
               width: "100%",
               aspectRatio: "2/1",
               height: "100%",
