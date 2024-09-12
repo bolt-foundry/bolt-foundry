@@ -30,20 +30,7 @@ const ClipSearchContext = createContext<ClipSearchContextProps | undefined>(
   undefined,
 );
 
-const mutation = await graphql`
-  mutation ClipSearchContextMutation(
-    $input: String!,
-    $suggestedModel: String,
-  ) {
-    searchMutation(
-      input: $input,
-      suggestedModel: $suggestedModel,
-    ) {
-      success
-      message
-    }
-  }
-`;
+
 
 export default function ClipSearchProvider(
   { children }: React.PropsWithChildren,

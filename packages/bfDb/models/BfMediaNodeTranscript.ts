@@ -4,6 +4,28 @@ import { AssemblyAI } from "assemblyai";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 
+/**
+ * LAZY STUFF
+ */
+
+import { PineconeStore } from "@langchain/pinecone";
+import { OpenAIEmbeddings } from "@langchain/openai";
+
+import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
+import type { Document } from "@langchain/core/documents";
+import { BfError } from "lib/BfError.ts";
+
+const embeddings = new OpenAIEmbeddings({
+  model: "text-embedding-3-small",
+});
+
+const pinecone = new PineconeClient();
+// Will automatically read the PINECONE_API_KEY and PINECONE_ENVIRONMENT env vars
+const pineconeIndex = pinecone.Index("test");
+
+/**
+ * / LAZY STUFF
+ */
 const logger = getLogger(import.meta);
 
 const BF_MEDIA_AUDIO_CACHE_DIRECTORY =
@@ -106,6 +128,27 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     this.props.words = words;
     await this.save();
     logger.info(`Transcription complete for ${this}`);
+    await this.sendToVectorStore();
+    return this;
+  }
+
+  private async sendToVectorStore() {
+    logger.info(`Sending to vector store for ${this}`);
+    const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
+      pineconeIndex,
+      // Maximum number of batch requests to allow at once. Each batch is 1000 vectors.
+      maxConcurrency: 5,
+      namespace: "test",
+    });
+
+    const langchainDocument: Document = {
+      id: this.metadata.bfGid,
+      metadata: this.metadata,
+      pageContent: this.text,
+    };
+
+    await vectorStore.addDocuments([langchainDocument]);
+    logger.info(`Sent to vector store for ${this}`);
     return this;
   }
 

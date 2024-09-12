@@ -350,6 +350,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@langchain/core@npm:>0.2.0 <0.3.0, @langchain/core@npm:^0.2.32":
+  version: 0.2.32
+  resolution: "@langchain/core@npm:0.2.32"
+  dependencies:
+    ansi-styles: "npm:^5.0.0"
+    camelcase: "npm:6"
+    decamelize: "npm:1.2.0"
+    js-tiktoken: "npm:^1.0.12"
+    langsmith: "npm:^0.1.43"
+    mustache: "npm:^4.2.0"
+    p-queue: "npm:^6.6.2"
+    p-retry: "npm:4"
+    uuid: "npm:^10.0.0"
+    zod: "npm:^3.22.4"
+    zod-to-json-schema: "npm:^3.22.3"
+  checksum: 10c0/76ccb437d21651e959cbc5ebecb5a4c7c0f553a820abcf5160f08781ed0264cfdcc016f399f1d61a4ce9dab720e16508997263edb49d47f7b1f559a7ee78bc62
+  languageName: node
+  linkType: hard
+
 "@langchain/core@npm:>=0.2.26 <0.3.0":
   version: 0.2.31
   resolution: "@langchain/core@npm:0.2.31"
@@ -382,6 +401,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@langchain/pinecone@npm:^0.0.9":
+  version: 0.0.9
+  resolution: "@langchain/pinecone@npm:0.0.9"
+  dependencies:
+    "@langchain/core": "npm:>0.2.0 <0.3.0"
+    "@pinecone-database/pinecone": "npm:^3.0.0"
+    flat: "npm:^5.0.2"
+    uuid: "npm:^10.0.0"
+  checksum: 10c0/d6d3e589973717409fdc0f6654c64ffd88cfde504ddfcd18a9fdd474c01f92de42b9e0839803e2cf8511da2a7ed32e8c062d2a54ea38cd817a56b0df4b0c7336
+  languageName: node
+  linkType: hard
+
 "@molt/command@npm:^0.9.0":
   version: 0.9.0
   resolution: "@molt/command@npm:0.9.0"
@@ -407,6 +438,15 @@ __metadata:
   dependencies:
     ts-toolbelt: "npm:^9.6.0"
   checksum: 10c0/e7e266a6df45d28283004e34b143a92d1f7fca82239f35158ca69b0aa4f727e5606cf0df96706785b54e5c89a20ea268eddb6a58593493aacf61cfaa52acf433
+  languageName: node
+  linkType: hard
+
+"@pinecone-database/pinecone@npm:^3.0.0, @pinecone-database/pinecone@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@pinecone-database/pinecone@npm:3.0.3"
+  dependencies:
+    encoding: "npm:^0.1.13"
+  checksum: 10c0/71607345ddfb28ff949acc87efea11ccf6fb0134c5f3edf6b0f4695e1a5884c7da4761f1f28e3b30f435009853c3b72baf3e1349d2f987cdbdcfc26bdd796de9
   languageName: node
   linkType: hard
 
@@ -491,6 +531,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-relay@npm:^16.0.6":
+  version: 16.0.6
+  resolution: "@types/react-relay@npm:16.0.6"
+  dependencies:
+    "@types/react": "npm:*"
+    "@types/relay-runtime": "npm:*"
+  checksum: 10c0/91a7b2e3e95610dc5ba4a994e847dd250cb6b95c5757a15662d36ab601abaddef970dd09f104333c43416b5ef0901101b55d0507fd999af60873ed849c4e9d76
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:*, @types/react@npm:^18":
   version: 18.3.5
   resolution: "@types/react@npm:18.3.5"
@@ -501,7 +551,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/relay-runtime@npm:^17":
+"@types/relay-runtime@npm:*, @types/relay-runtime@npm:^17":
   version: 17.0.4
   resolution: "@types/relay-runtime@npm:17.0.4"
   checksum: 10c0/d784d49413d4e9da90274bcf8949d8f522e94f4663569c4eb915ccd69581f5035114b27d17ccd347243aa97315774b30c127c8c0692860a116293ecf2376430a
@@ -701,10 +751,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "bolt-foundry@workspace:."
   dependencies:
+    "@langchain/core": "npm:^0.2.32"
     "@langchain/openai": "npm:^0.2.10"
+    "@langchain/pinecone": "npm:^0.0.9"
+    "@pinecone-database/pinecone": "npm:^3.0.3"
     "@replit/object-storage": "npm:^1.0.0"
     "@types/react": "npm:^18"
     "@types/react-dom": "npm:^18"
+    "@types/react-relay": "npm:^16.0.6"
     "@types/relay-runtime": "npm:^17"
     assemblyai: "npm:^4.7.0"
     esbuild: "npm:^0.23.1"
@@ -869,6 +923,15 @@ __metadata:
   dependencies:
     safe-buffer: "npm:^5.0.1"
   checksum: 10c0/ebfbf19d4b8be938f4dd4a83b8788385da353d63307ede301a9252f9f7f88672e76f2191618fd8edfc2f24679236064176fab0b78131b161ee73daa37125408c
+  languageName: node
+  linkType: hard
+
+"encoding@npm:^0.1.13":
+  version: 0.1.13
+  resolution: "encoding@npm:0.1.13"
+  dependencies:
+    iconv-lite: "npm:^0.6.2"
+  checksum: 10c0/36d938712ff00fe1f4bac88b43bcffb5930c1efa57bbcdca9d67e1d9d6c57cfb1200fb01efe0f3109b2ce99b231f90779532814a81370a1bd3274a0f58585039
   languageName: node
   linkType: hard
 
@@ -1047,6 +1110,15 @@ __metadata:
     setimmediate: "npm:^1.0.5"
     ua-parser-js: "npm:^1.0.35"
   checksum: 10c0/66d0a2fc9a774f9066e35ac2ac4bf1245931d27f3ac287c7d47e6aa1fc152b243c2109743eb8f65341e025621fb51a12038fadb9fd8fda2e3ddae04ebab06f91
+  languageName: node
+  linkType: hard
+
+"flat@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "flat@npm:5.0.2"
+  bin:
+    flat: cli.js
+  checksum: 10c0/f178b13482f0cd80c7fede05f4d10585b1f2fdebf26e12edc138e32d3150c6ea6482b7f12813a1091143bad52bb6d3596bca51a162257a21163c0ff438baa5fe
   languageName: node
   linkType: hard
 
@@ -1303,6 +1375,15 @@ __metadata:
   dependencies:
     ms: "npm:^2.0.0"
   checksum: 10c0/f34a2c20161d02303c2807badec2f3b49cbfbbb409abd4f95a07377ae01cfe6b59e3d15ac609cffcd8f2521f0eb37b7e1091acf65da99aa2a4f1ad63c21e7e7a
+  languageName: node
+  linkType: hard
+
+"iconv-lite@npm:^0.6.2":
+  version: 0.6.3
+  resolution: "iconv-lite@npm:0.6.3"
+  dependencies:
+    safer-buffer: "npm:>= 2.1.2 < 3.0.0"
+  checksum: 10c0/98102bc66b33fcf5ac044099d1257ba0b7ad5e3ccd3221f34dd508ab4070edff183276221684e1e0555b145fce0850c9f7d2b60a9fcac50fbb4ea0d6e845a3b1
   languageName: node
   linkType: hard
 
@@ -1747,6 +1828,13 @@ __metadata:
   version: 5.2.1
   resolution: "safe-buffer@npm:5.2.1"
   checksum: 10c0/6501914237c0a86e9675d4e51d89ca3c21ffd6a31642efeba25ad65720bce6921c9e7e974e5be91a786b25aa058b5303285d3c15dbabf983a919f5f630d349f3
+  languageName: node
+  linkType: hard
+
+"safer-buffer@npm:>= 2.1.2 < 3.0.0":
+  version: 2.1.2
+  resolution: "safer-buffer@npm:2.1.2"
+  checksum: 10c0/7e3c8b2e88a1841c9671094bbaeebd94448111dd90a81a1f606f3f67708a6ec57763b3b47f06da09fc6054193e0e6709e77325415dc8422b04497a8070fa02d4
   languageName: node
   linkType: hard
 
