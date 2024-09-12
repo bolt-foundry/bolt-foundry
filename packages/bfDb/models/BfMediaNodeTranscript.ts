@@ -33,7 +33,7 @@ export type BfMediaNodeTranscriptProps = {
 
 export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
   private get filePath() {
-    return `${BF_MEDIA_AUDIO_CACHE_LOCATION}/${this.metadata.bfGid}.aac`;
+    return `${BF_MEDIA_AUDIO_CACHE_DIRECTORY}/${this.metadata.bfGid}.aac`;
   }
 
   async requestTranscriptionFromGoogleDriveResourceId(
