@@ -52,6 +52,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
       {},
       "original",
     );
+    logger.info(`Created new media ${bfMedia}`)
     const bfMediaNodeVideoGoogleDriveResource = await bfMedia.createTargetNode(
       BfMediaNodeVideoGoogleDriveResource,
       { googleDriveResourceId: driveResource.props.resourceId },
@@ -59,6 +60,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
     );
     const bfMediaNodeTranscript = await bfMediaNodeVideoGoogleDriveResource
       .createTranscript();
+    logger.info(`Successfully created ${bfMediaNodeTranscript}`)
     /**
      * Check if google drive resource is a file.
      * If it is, create a new this.

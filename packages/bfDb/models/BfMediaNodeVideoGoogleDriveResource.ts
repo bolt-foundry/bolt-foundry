@@ -6,7 +6,7 @@ import {
   BfMediaNodeTranscriptStatus,
 } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 
-const _logger = getLogger(import.meta);
+const logger = getLogger(import.meta);
 
 type BfMediaNodeVideoGoogleDriveResourceProps = {
   googleDriveResourceId: string;
@@ -18,6 +18,7 @@ export class BfMediaNodeVideoGoogleDriveResource
     const bfmnTranscript = await this.createTargetNode(BfMediaNodeTranscript, {
       status: BfMediaNodeTranscriptStatus.NEW,
     });
+    logger.info(`Creating transcript for ${this}`)
     await bfmnTranscript.requestTranscriptionFromGoogleDriveResourceId(
       this.props.googleDriveResourceId,
     );
