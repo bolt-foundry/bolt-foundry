@@ -1,5 +1,5 @@
 import type * as React from "react";
-import { useState } from "react";
+import { startTransition, useState } from "react";
 import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import type { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
@@ -37,7 +37,7 @@ export function SettingsPage() {
   const { routeParams } = useRouter();
   const { darkMode, setDarkMode } = useBfDs();
   const [selected, setSelected] = useState<Tabs>(
-    routeParams.tab as Tabs ?? Tabs.WATCH_FOLDERS,
+    (routeParams.tab as Tabs) ?? Tabs.WATCH_FOLDERS,
   );
   const data = useLazyLoadQuery<SettingsPageQuery>(query, {});
   const { navigate } = useRouter();
@@ -55,7 +55,9 @@ export function SettingsPage() {
   }
 
   const handleSetSelected = (tab: Tabs) => {
-    setSelected(tab);
+    startTransition(() => {
+      setSelected(tab);
+    });
     navigate(`/settings/${tab}`);
   };
 
