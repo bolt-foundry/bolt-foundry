@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2e3d7bf99e171da477a43cfbe86ec599>>
+ * @generated SignedSource<<262d9ed0d795e66866c543914c7f63f7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,6 +9,7 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
+import { FragmentRefs } from "relay-runtime";
 export type BlogPageQuery$variables = Record<PropertyKey, never>;
 export type BlogPageQuery$data = {
   readonly currentViewer: {
@@ -25,6 +26,7 @@ export type BlogPageQuery$data = {
           readonly id: string;
           readonly slug: string | null | undefined;
           readonly title: string | null | undefined;
+          readonly " $fragmentSpreads": FragmentRefs<"BlogPagePostFragment">;
         } | null | undefined> | null | undefined;
       } | null | undefined;
     } | null | undefined;
@@ -36,115 +38,195 @@ export type BlogPageQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = {
+var v0 = [
+  {
+    "kind": "Literal",
+    "name": "first",
+    "value": 10
+  },
+  {
+    "kind": "Literal",
+    "name": "status",
+    "value": "Ready for publish"
+  }
+],
+v1 = {
   "alias": null,
   "args": null,
-  "concreteType": "Blog",
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "title",
+  "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "slug",
+  "storageKey": null
+},
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "date",
+  "storageKey": null
+},
+v5 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "BlogPostAuthor",
   "kind": "LinkedField",
-  "name": "blog",
+  "name": "author",
   "plural": false,
   "selections": [
     {
       "alias": null,
-      "args": [
-        {
-          "kind": "Literal",
-          "name": "first",
-          "value": 10
-        },
-        {
-          "kind": "Literal",
-          "name": "status",
-          "value": "Ready for publish"
-        }
-      ],
-      "concreteType": "BlogPostConnection",
-      "kind": "LinkedField",
-      "name": "posts",
-      "plural": false,
-      "selections": [
-        {
-          "alias": null,
-          "args": null,
-          "concreteType": "BlogPost",
-          "kind": "LinkedField",
-          "name": "nodes",
-          "plural": true,
-          "selections": [
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "id",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "title",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "slug",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "date",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "concreteType": "BlogPostAuthor",
-              "kind": "LinkedField",
-              "name": "author",
-              "plural": false,
-              "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "name",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "email",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "avatarUrl",
-                  "storageKey": null
-                }
-              ],
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "coverUrl",
-              "storageKey": null
-            }
-          ],
-          "storageKey": null
-        }
-      ],
-      "storageKey": "posts(first:10,status:\"Ready for publish\")"
+      "args": null,
+      "kind": "ScalarField",
+      "name": "name",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "email",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "avatarUrl",
+      "storageKey": null
     }
   ],
+  "storageKey": null
+},
+v6 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "coverUrl",
+  "storageKey": null
+},
+v7 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "__typename",
+  "storageKey": null
+},
+v8 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "icon",
+  "storageKey": null
+},
+v9 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "type",
+  "storageKey": null
+},
+v10 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "color",
+  "storageKey": null
+},
+v11 = [
+  {
+    "alias": null,
+    "args": null,
+    "concreteType": "Text",
+    "kind": "LinkedField",
+    "name": "text",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "content",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "link",
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
+  },
+  {
+    "alias": null,
+    "args": null,
+    "concreteType": "Annotations",
+    "kind": "LinkedField",
+    "name": "annotations",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "bold",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "code",
+        "storageKey": null
+      },
+      (v10/*: any*/),
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "italic",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "strikethrough",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "underlined",
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
+  }
+],
+v12 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "RichText",
+  "kind": "LinkedField",
+  "name": "RichText",
+  "plural": true,
+  "selections": (v11/*: any*/),
   "storageKey": null
 };
 return {
@@ -162,7 +244,50 @@ return {
         "name": "currentViewer",
         "plural": false,
         "selections": [
-          (v0/*: any*/)
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "Blog",
+            "kind": "LinkedField",
+            "name": "blog",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": (v0/*: any*/),
+                "concreteType": "BlogPostConnection",
+                "kind": "LinkedField",
+                "name": "posts",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "BlogPost",
+                    "kind": "LinkedField",
+                    "name": "nodes",
+                    "plural": true,
+                    "selections": [
+                      {
+                        "args": null,
+                        "kind": "FragmentSpread",
+                        "name": "BlogPagePostFragment"
+                      },
+                      (v1/*: any*/),
+                      (v2/*: any*/),
+                      (v3/*: any*/),
+                      (v4/*: any*/),
+                      (v5/*: any*/),
+                      (v6/*: any*/)
+                    ],
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": "posts(first:10,status:\"Ready for publish\")"
+              }
+            ],
+            "storageKey": null
+          }
         ],
         "storageKey": null
       }
@@ -184,30 +309,148 @@ return {
         "name": "currentViewer",
         "plural": false,
         "selections": [
+          (v7/*: any*/),
           {
             "alias": null,
             "args": null,
-            "kind": "ScalarField",
-            "name": "__typename",
+            "concreteType": "Blog",
+            "kind": "LinkedField",
+            "name": "blog",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": (v0/*: any*/),
+                "concreteType": "BlogPostConnection",
+                "kind": "LinkedField",
+                "name": "posts",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "BlogPost",
+                    "kind": "LinkedField",
+                    "name": "nodes",
+                    "plural": true,
+                    "selections": [
+                      (v1/*: any*/),
+                      (v2/*: any*/),
+                      (v3/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "status",
+                        "storageKey": null
+                      },
+                      (v4/*: any*/),
+                      (v5/*: any*/),
+                      (v6/*: any*/),
+                      (v8/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": null,
+                        "kind": "LinkedField",
+                        "name": "content",
+                        "plural": true,
+                        "selections": [
+                          (v7/*: any*/),
+                          {
+                            "kind": "InlineFragment",
+                            "selections": [
+                              (v1/*: any*/),
+                              (v9/*: any*/),
+                              (v10/*: any*/),
+                              (v12/*: any*/)
+                            ],
+                            "type": "ParagraphBlock",
+                            "abstractKey": null
+                          },
+                          {
+                            "kind": "InlineFragment",
+                            "selections": [
+                              (v1/*: any*/),
+                              (v9/*: any*/),
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "imgUrl",
+                                "storageKey": null
+                              },
+                              {
+                                "alias": null,
+                                "args": null,
+                                "concreteType": "RichText",
+                                "kind": "LinkedField",
+                                "name": "caption",
+                                "plural": true,
+                                "selections": (v11/*: any*/),
+                                "storageKey": null
+                              }
+                            ],
+                            "type": "ImageBlock",
+                            "abstractKey": null
+                          },
+                          {
+                            "kind": "InlineFragment",
+                            "selections": [
+                              (v1/*: any*/),
+                              (v9/*: any*/),
+                              (v10/*: any*/),
+                              (v8/*: any*/),
+                              (v12/*: any*/)
+                            ],
+                            "type": "CalloutBlock",
+                            "abstractKey": null
+                          },
+                          {
+                            "kind": "InlineFragment",
+                            "selections": [
+                              (v1/*: any*/),
+                              (v9/*: any*/),
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "language",
+                                "storageKey": null
+                              },
+                              (v12/*: any*/)
+                            ],
+                            "type": "CodeBlock",
+                            "abstractKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": "posts(first:10,status:\"Ready for publish\")"
+              }
+            ],
             "storageKey": null
-          },
-          (v0/*: any*/)
+          }
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "33c34417ec34c4f2a0accc2c6b41fbdb",
+    "cacheID": "46bd159a70221df75767e3db28465295",
     "id": null,
     "metadata": {},
     "name": "BlogPageQuery",
     "operationKind": "query",
-    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10, status: \"Ready for publish\") {\n        nodes {\n          id\n          title\n          slug\n          date\n          author {\n            name\n            email\n            avatarUrl\n          }\n          coverUrl\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10, status: \"Ready for publish\") {\n        nodes {\n          ...BlogPagePostFragment\n          id\n          title\n          slug\n          date\n          author {\n            name\n            email\n            avatarUrl\n          }\n          coverUrl\n        }\n      }\n    }\n  }\n}\n\nfragment BlogPagePostFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n  icon\n  content {\n    __typename\n    ... on ParagraphBlock {\n      id\n      type\n      color\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on ImageBlock {\n      id\n      type\n      imgUrl\n      caption {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CalloutBlock {\n      id\n      type\n      color\n      icon\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CodeBlock {\n      id\n      type\n      language\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "087666c7817b11c0185647552a464504";
+(node as any).hash = "4cba630a2135afe070a5c645c03b4a2b";
 
 export default node;
