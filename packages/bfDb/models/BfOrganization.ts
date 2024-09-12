@@ -1,6 +1,6 @@
 import {
   __DANGEROUS__BfCurrentViewerFromThinAir,
-  type BfCurrentViewer,
+  BfCurrentViewer,
   type BfCurrentViewerAccessToken,
   IBfCurrentViewerInternalAdmin,
   IBfCurrentViewerInternalAdminOmni,
@@ -104,5 +104,9 @@ export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
     );
     logger.warn("Created account successfully.");
     return DANGEROUSLY_CREATED_ACCOUNT;
+  }
+
+  static findForCurrentViewer(currentViewer: BfCurrentViewer) {
+    return this.findX(currentViewer, currentViewer.organizationBfGid);
   }
 }
