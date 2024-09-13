@@ -1256,6 +1256,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   height: 700px;
   display: flex;
   background: radial-gradient(var(--fourtharyColor030), transparent 70%);
+  justify-content: center;
 }
 
 .landing-page-clips {
