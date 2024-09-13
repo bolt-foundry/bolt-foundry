@@ -348,6 +348,191 @@ export async function bfQueryItems<
   }
 }
 
+export async function bfQueryItemsWithSizeLimit<
+  TProps = Props,
+  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
+>(
+  metadataToQuery: Partial<TMetadata>,
+  propsToQuery: Partial<TProps> = {},
+  bfGids?: Array<string>,
+  orderDirection: "ASC" | "DESC" = "ASC",
+  orderBy: keyof Row = "sort_value",
+  cursorValue?: number | string,
+  maxSizeBytes: number = 10 * 1024 * 1024, // 10MB in bytes
+  batchSize: number = 10
+): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
+  logger.setLevel(logger.levels.DEBUG)
+  logger.debug({
+    metadataToQuery,
+    propsToQuery,
+    bfGids,
+    orderDirection,
+    orderBy,
+    cursorValue,
+    maxSizeBytes,
+    batchSize,
+  });
+
+  const metadataConditions: string[] = [];
+  const propsConditions: string[] = [];
+  const variables = [];
+
+  for (const [originalKey, value] of Object.entries(metadataToQuery)) {
+    // convert key from camelCase to snake_case, ensure consecutive capital letters are underscored
+    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(
+      /([A-Z])(?=[A-Z])/g,
+      "$1_",
+    );
+    const lowercaseKey = key.toLowerCase();
+    if (VALID_METADATA_COLUMN_NAMES.includes(lowercaseKey)) {
+      variables.push(value);
+      const valuePosition = variables.length;
+      metadataConditions.push(`${lowercaseKey} = $${valuePosition}`);
+    } else {
+      logger.warn(
+        `Invalid metadata column name`,
+        originalKey,
+        key,
+        lowercaseKey,
+      );
+    }
+  }
+
+  for (const [key, value] of Object.entries(propsToQuery)) {
+    variables.push(key);
+    const keyPosition = variables.length;
+    variables.push(value);
+    const valuePosition = variables.length;
+    propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
+  }
+
+  if (bfGids) {
+    if (bfGids.length === 0) {
+      logger.debug("Skipping query because bfGids is empty");
+      return [];
+    } else {
+      for (const bfGid of bfGids) {
+        variables.push(bfGid);
+        metadataConditions.push(`bf_gid = $${variables.length}`);
+      }
+    }
+  }
+
+  if (metadataConditions.length == 0) {
+    metadataConditions.push(defaultClause);
+  }
+
+  if (propsConditions.length == 0) {
+    propsConditions.push(defaultClause);
+  }
+
+  
+  
+  if (bfGids) {
+    if (bfGids.length === 0) {
+      logger.debug("Skipping query because bfGids is empty");
+      return [];
+    } else {
+      for (const bfGid of bfGids) {
+        variables.push(bfGid);
+        metadataConditions.push(`bf_gid = $${variables.length}`);
+      }
+    }
+  }
+
+  if (metadataConditions.length == 0) {
+    metadataConditions.push(defaultClause);
+  }
+
+  if (propsConditions.length == 0) {
+    propsConditions.push(defaultClause);
+  }
+
+  const items: Array<DbItem<TProps, BfBaseModelMetadata>> = [];
+  let totalSize = 0;
+  let currentCursor = cursorValue;
+
+  while (true) {
+    let cursorCondition = "";
+    if (currentCursor !== undefined) {
+      cursorCondition = `${orderBy} ${orderDirection === "ASC" ? ">" : "<"} $${variables.length + 1}`;
+      variables.push(currentCursor);
+    }
+
+    const allConditions = [
+      ...metadataConditions,
+      ...propsConditions,
+      cursorCondition,
+    ].filter(Boolean).join(" AND ");
+
+    const query = `
+      SELECT *
+      FROM bfdb
+      WHERE ${allConditions || defaultClause}
+      ORDER BY ${orderBy} ${orderDirection}
+      LIMIT ${batchSize}
+    `;
+
+    try {
+      logger.debug("Executing query", query, variables);
+      const batchResult = await sql(query, variables) as Row<TProps>[];
+
+      if (batchResult.length === 0) {
+        break;
+      }
+
+      for (const row of batchResult) {
+        const item = {
+          props: row.props,
+          metadata: {
+            bfGid: row.bf_gid,
+            bfSid: row.bf_sid,
+            bfOid: row.bf_oid,
+            bfTid: row.bf_tid,
+            bfCid: row.bf_cid,
+            bfTClassName: row.bf_t_class_name,
+            bfSClassName: row.bf_s_class_name,
+            className: row.class_name,
+            createdAt: new Date(row.created_at),
+            lastUpdated: new Date(row.last_updated),
+            sortValue: row.sort_value,
+          },
+        };
+
+        const itemSize = JSON.stringify(item).length; // Rough estimation
+
+        if (totalSize + itemSize > maxSizeBytes) {
+          return items;
+        }
+
+        items.push(item);
+        totalSize += itemSize;
+        const value = row[orderBy as keyof typeof row];
+        if (typeof value === 'string' || typeof value === 'number') {
+            currentCursor = value;
+        } else {
+            logger.warn(`Unexpected type for cursor value: ${typeof value}`);
+        }
+      }
+
+      if (batchResult.length < batchSize) {
+        break;
+      }
+
+      // Remove the previous cursor value from variables
+      if (cursorValue !== undefined) {
+        variables.pop();
+      }
+
+    } catch (e) {
+      logger.error(e);
+      throw e;
+    }
+  }
+
+  return items;
+}
+
 export async function bfDeleteItem(bfOid: BfOid, bfGid: BfGid): Promise<void> {
   try {
     logger.debug("bfDeleteItem", { bfOid, bfGid });
