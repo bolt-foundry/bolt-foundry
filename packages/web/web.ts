@@ -278,7 +278,7 @@ Deno.serve(async (req) => {
   if (!matchedHandler) {
     // If no direct match, try matching with optional params
     for (const [routePath, routeHandler] of routes) {
-      const regexPath = routePath.replace(/:\w+\??\+?/g, (match) => {
+      const regexPath = routePath.replace(/\/:\w+\??\+?/g, (match) => {
         if (match.endsWith("+")) {
           return "(.+)";
         } else if (match.endsWith("?")) {

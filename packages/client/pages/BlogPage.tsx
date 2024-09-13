@@ -1,20 +1,23 @@
 import type * as React from "react";
-import { useLazyLoadQuery } from "react-relay";
+import { useFragment, useLazyLoadQuery } from "react-relay";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { getLogger } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 import { BfLogo } from "packages/bfDs/static/BfLogo.tsx";
 import { classnames } from "lib/classnames.ts";
 import { Link } from "packages/bfDs/Link.tsx";
+import type { BlogPageQuery } from "packages/__generated__/BlogPageQuery.graphql.ts";
+import type { BlogPagePostFragment$key } from "packages/__generated__/BlogPagePostFragment.graphql.ts";
 
 const logger = getLogger(import.meta);
 
-const postsQuery = await graphql`
+const pageQuery = await graphql`
   query BlogPageQuery {
     currentViewer {
       blog {
         posts(first: 10, status: "Ready for publish") {
           nodes {
+            ...BlogPagePostFragment
             id
             title
             slug
@@ -87,12 +90,18 @@ function ContentFrame(
 }
 
 export function BlogPage() {
-  const { currentPath, routeParams } = useRouter();
-  const { currentViewer } = useLazyLoadQuery<BlogPageQuery>(postsQuery);
-  const posts = currentViewer?.blog?.posts?.nodes || [];
-  logger.debug("path", currentPath, routeParams);
+  const { navigate, routeParams } = useRouter();
+  const data = useLazyLoadQuery<BlogPageQuery>(
+    pageQuery,
+    {},
+  );
+  const posts = data.currentViewer?.blog?.posts?.nodes || [];
+
   if (routeParams.slug) {
-    return <BlogPost />;
+    const post = posts.find((post) =>
+      post.slug === routeParams.slug
+    ) as BlogPagePostFragment$key;
+    return <BlogPost postRef={post} />;
   }
 
   return (
@@ -102,7 +111,7 @@ export function BlogPage() {
           <div
             key={post.id}
             className="blog_list_item"
-            onClick={() => window.location.href = `/blog/${post.slug}`}
+            onClick={() => navigate(`/blog/${post.slug}`)}
             style={{ backgroundImage: `url(${post.coverUrl})` }}
           >
             <div className="blog_list_item_title">{post.title}</div>
@@ -114,7 +123,7 @@ export function BlogPage() {
                 />
                 <div>{post.author?.name}</div>
               </div>
-              <div className="blog_post_meta">{posts[0]?.date}</div>
+              <div className="blog_post_meta">{post?.date}</div>
             </div>
           </div>
         ))}
@@ -123,104 +132,95 @@ export function BlogPage() {
   );
 }
 
-const query = await graphql`
-query BlogPagePostQuery($slug: String!) {
-  currentViewer {
-    blog {
-      posts(first: 1, slug: $slug) {
-        nodes {
-          title
-          slug
-          status
-          date
-          author {
-            name
-            email
-            avatarUrl
-          }
-          coverUrl
-          icon
-          content {
-            type
-            id
-            ... on ImageBlock {
-              id
-              type
-              imgUrl
-              caption {
-                text {
-                  content
-                  link
-                }
-                annotations {
-                  bold
-                  code
-                  color
-                  italic
-                  strikethrough
-                  underlined
-                }
-              }
-            }
-            ... on ParagraphBlock {
-              id
-              type
-              color
-              RichText {
-                text {
-                  content
-                  link
-                }
-                annotations {
-                  bold
-                  code
-                  color
-                  italic
-                  strikethrough
-                  underlined
-                }
-              }
-            }
-            ... on CalloutBlock {
-              id
-              type
-              color
-              icon
-              RichText {
-                text {
-                  content
-                  link
-                }
-                annotations {
-                  bold
-                  code
-                  color
-                  italic
-                  strikethrough
-                  underlined
-                }
-              }
-            }
-            ... on CodeBlock {
-              id
-              type
-              language
-              RichText {
-                text {
-                  content
-                  link
-                }
-                annotations {
-                  bold
-                  code
-                  color
-                  italic
-                  strikethrough
-                  underlined
-                }
-              }
-            }
-          }
+const fragment = await graphql`
+fragment BlogPagePostFragment on BlogPost {
+  id
+  title
+  slug
+  status
+  date
+  author {
+    name
+    email
+    avatarUrl
+  }
+  coverUrl
+  icon
+  content {
+    ... on ParagraphBlock {
+      id
+      type
+      color
+      RichText {
+        text {
+          content
+          link
+        }
+        annotations {
+          bold
+          code
+          color
+          italic
+          strikethrough
+          underlined
+        }
+      }
+    }
+    ... on ImageBlock {
+      id
+      type
+      imgUrl
+      caption {
+        text {
+          content
+          link
+        }
+        annotations {
+          bold
+          code
+          color
+          italic
+          strikethrough
+          underlined
+        }
+      }
+    }
+    ... on CalloutBlock {
+      id
+      type
+      color
+      icon
+      RichText {
+        text {
+          content
+          link
+        }
+        annotations {
+          bold
+          code
+          color
+          italic
+          strikethrough
+          underlined
+        }
+      }
+    }
+    ... on CodeBlock {
+      id
+      type
+      language
+      RichText {
+        text {
+          content
+          link
+        }
+        annotations {
+          bold
+          code
+          color
+          italic
+          strikethrough
+          underlined
         }
       }
     }
@@ -252,27 +252,28 @@ function RichText({ richText }) {
   });
 }
 
-function BlogPost() {
-  const { slug } = useRouter().routeParams;
-  const { currentViewer } = useLazyLoadQuery<BlogPagePostQuery>(query, {
-    slug,
-  });
-  const posts = currentViewer?.blog?.posts?.nodes || [];
-  logger.debug("POSTS", posts);
+type PostProps = {
+  postRef: BlogPagePostFragment$key;
+};
+
+export function BlogPost({ postRef }: PostProps) {
+  const { routeParams: { slug } } = useRouter();
+  const post = useFragment(fragment, postRef);
+  logger.debug("POST", post);
   return (
-    <ContentFrame cover={posts[0].coverUrl} post={true}>
+    <ContentFrame cover={post?.coverUrl} post={true}>
       <div className="blog_post_content">
-        <h1 className="blog_post_title">{posts[0]?.title}</h1>
+        <h1 className="blog_post_title">{post?.title}</h1>
         <div className="blog_author">
           <div
             className="blog_author_avatar"
-            style={{ backgroundImage: `url(${posts[0]?.author?.avatarUrl})` }}
+            style={{ backgroundImage: `url(${post?.author?.avatarUrl})` }}
           />
-          <div>{posts[0]?.author?.name}</div>
+          <div>{post?.author?.name}</div>
         </div>
-        {/* <div>{posts[0]?.author?.email}</div> */}
-        <div className="blog_meta">{posts[0]?.date}</div>
-        {posts[0]?.content.map((content) => {
+        {/* <div>{post?.author?.email}</div> */}
+        <div className="blog_meta">{post?.date}</div>
+        {post?.content.map((content) => {
           if (!content) return;
           if (content.type === "paragraph") {
             return (
