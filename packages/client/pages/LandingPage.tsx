@@ -34,12 +34,10 @@ export function LandingPage(): React.ReactElement {
       >
         <div className="landing-page-block">
           <div
+            className="landing-page-mission-image"
             style={{
               background:
                 "url(https://bf-static-assets.s3.amazonaws.com/marketing/landing-page-mission-graphic.png) no-repeat center / contain",
-              width: "100%",
-              aspectRatio: "2/1",
-              height: "100%",
             }}
           >
           </div>
