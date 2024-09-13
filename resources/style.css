@@ -930,9 +930,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   height: 100%;
   transition: 250ms opacity ease;
 }
-.hscroll-video-gradient {
-  background: linear-gradient(0deg, black, transparent 40%);
-}
+
 .hscroll-video-controls {
   display: flex;
   flex-direction: column;

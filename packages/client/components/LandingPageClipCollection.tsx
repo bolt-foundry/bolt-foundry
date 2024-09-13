@@ -127,7 +127,6 @@ function HscrollVideo(
       >
         Your browser does not support the video tag.
       </video>
-      <div className="hscroll-video-gradient" />
       <div
         className="hscroll-video-controls"
         style={{ opacity: hovering ? 1 : 0 }}
