@@ -1220,13 +1220,12 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .landing-page-section-wrapper {
   display: flex;
   flex-wrap: wrap;
-  margin: 2vw;
+  margin: 2vw auto;
   margin-bottom: 10vw;
 }
 
 .landing-page-block {
   min-width: max(300px, 40vw);
-  flex: 1;
 }
 
 .landing-page-title {
@@ -1254,7 +1253,8 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 .landing-page-clips-container {
   height: 700px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto;
   background: radial-gradient(var(--fourtharyColor030), transparent 70%);
   justify-content: center;
 }
@@ -1289,18 +1289,18 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   
 }
 
-#clip1 {
-  
+#video1 {
+  transform: translateX(-33%);
 }
 
-#clip2 {
-  margin-left: 60px;
-  margin-top: 10px;
+#video2 {
+  grid-row: span 2;
+  align-self: center;
+  transform: translateY(-20%);
 }
 
-#clip3 {
-  margin-top: 90px;
-  margin-left: 10px;
+#video3 {
+
 }
 
 .landing-page-mission {
@@ -1314,9 +1314,9 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   justify-content: center;
 }
 .landing-page-mission-image {
-  display: block; 
-  height: 100%;
   width: 100%;
+  aspect-ratio: 2/1;
+  height: 100%;
 }
 
 .landing-page-testimonial-section-wrapper {
@@ -1338,13 +1338,6 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   width: 100%;
   max-width: 60rem;
   border-radius: 8px;
-}
-
-.landing-page-video-placeholder {
-  background-color: grey;
-  padding-top: 56.25%;
-  border-radius: 20px;
-  max-width: 100%;
 }
 
 .landing-page-set-up-meeting-section {
@@ -1403,27 +1396,31 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   align-items: center;
 }
 
-/* Fires when the blocks wrap around for all of th content to be vertical */
-@media(max-width: 938px) and (min-width:601px) {
-  #clips-column-one {
-    flex-direction: row;
-  }
-  .landing-page-clips-container {
-    justify-content: right;
-  }
+@media(max-width: 1300px) {
   .landing-page-block {
-    padding-left: 10vw;
-    padding-right: 10vw;
+    margin: auto;
   }
-}
-
-@media(max-width: 600px) {
-  #clip2, #clip3 {
-    display: none;
+  #video1, #video2 {
+    transform: translateX(0%);
+    transform: translateY(0%);
+  }
+  #video2 {
+    align-self: auto;
+  }
+  .landing-page-clips {
   }
   .landing-page-clips-container {
-    justify-content: center;
-    height: 340px;
+    padding-left: 450px;
+    overflow: scroll;
+    width: 100vw;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    height: 380px;
+    box-sizing: border-box;
+    justify-content: start;
+    padding-left: 105px;
+    padding-right:105px;
   }
   #landing-page-mission-section {
     flex-direction: column-reverse;
@@ -1436,6 +1433,24 @@ input[type="range"].scrubber::-moz-range-thumb:active {
     text-align: center;
   }
 
+}
+
+@media(min-width: 500px) and (max-width: 1300px) {
+  .landing-page-clips-container {
+    justify-content: center;
+  }
+}
+
+@media(max-width: 1300px) {
+  .landing-page-mission-image {
+    width: 80vw;
+  }
+}
+
+@media(max-width: 900px) {
+  .landing-page-mission-image {
+    width: 100vw;
+  }
 }
 
 /* Transcript View */
