@@ -1442,13 +1442,13 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 @media(max-width: 1300px) {
   .landing-page-mission-image {
-    width: 80vw;
+    width: 40vw;
   }
 }
 
 @media(max-width: 900px) {
   .landing-page-mission-image {
-    width: 100vw;
+    width: 80vw;
   }
 }
 
