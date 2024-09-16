@@ -13,6 +13,8 @@ import ClipSearchProvider, {
 } from "packages/client/contexts/ClipSearchContext.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
+import { ClipSearchPageQuery } from "packages/__generated__/ClipSearchPageQuery.graphql.ts";
+import { SearchResultList } from "packages/client/components/clipsearch/ClipSearchSearchResultList.tsx";
 const { Suspense } = React;
 
 const query = await graphql`
@@ -30,57 +32,22 @@ const query = await graphql`
           count
         }
       }
+      ...ClipSearchSearchResultList_currentViewer
     }
   }
 `;
 
+
+
 export function ClipSearchPageContent() {
   const { navigate } = useRouter();
-  const { clips, isInFlight } = useClipSearchState();
-  const data = useLazyLoadQuery(query, {});
-  const count = data?.currentViewer?.organization?.media?.count;
-  const sidebarContents = (
-    <FeatureFlag name="placeholder">
-      <List collapsible={true} header="Lists">
-        <ListItem
-          content="work-life balance"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="taxes"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-      </List>
-      <List collapsible={true} header="Searches">
-        <ListItem
-          content="work-life balance"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="taxes"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="duck"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="clouds"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-      </List>
-    </FeatureFlag>
-  );
+  const data = useLazyLoadQuery<ClipSearchPageQuery>(query, {});
+  const count = data?.currentViewer?.organization?.media?.count ?? 0;
+
   return (
     <div className="cs-page flexRow">
       <Sidebar
-        contents={sidebarContents}
+        contents={<SearchResultList currentViewer$key={data.currentViewer} />}
         footer={
           <List>
             <ListItem
@@ -94,19 +61,10 @@ export function ClipSearchPageContent() {
       <div className="cs-main">
         <Search />
         <Suspense fallback={<BfDsFullPageSpinner />}>
-          {clips || isInFlight
-            ? (
-              <ClipsView
-                count={count}
-                clips$key={data?.currentViewer?.person}
-              />
-            )
-            : (
-              <ClipsViewNullState
-                count={count}
-                settings$key={data?.currentViewer?.organization}
-              />
-            )}
+          <ClipsViewNullState
+            count={count}
+            settings$key={data?.currentViewer?.organization}
+          />
         </Suspense>
       </div>
     </div>
@@ -114,9 +72,5 @@ export function ClipSearchPageContent() {
 }
 
 export function ClipSearchPage() {
-  return (
-    <ClipSearchProvider>
-      <ClipSearchPageContent />
-    </ClipSearchProvider>
-  );
+  return <ClipSearchPageContent />;
 }

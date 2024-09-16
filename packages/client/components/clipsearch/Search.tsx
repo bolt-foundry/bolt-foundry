@@ -1,14 +1,32 @@
-import type * as React from "react";
+import * as React from "react";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
-import { useClipSearchState } from "packages/client/contexts/ClipSearchContext.tsx";
 import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
+import { graphql } from "packages/client/deps.ts";
+import { useMutation } from "react-relay";
+
+const mutation = await graphql`
+  mutation SearchForClipsMutation($query: String!) {
+    createSearchResult(query: $query) {
+      __typename
+    }
+  }
+`;
 
 export function Search() {
-  const { aiModel, setAiModel, commitSearch, isInFlight, prompt, setPrompt } =
-    useClipSearchState();
+  const [aiModel, setAiModel] = React.useState(AiModel.OPENAI_4O);
+  const [searchText, setSearchText] = React.useState("");
+  const [commit, isInFlight] = useMutation(mutation);
+
+  function commitSearch() {
+    commit({
+      variables: {
+        query: searchText,
+      }
+    })
+  }
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,9 +39,9 @@ export function Search() {
         <BfDsInput
           placeholder="Search"
           showSpinner={isInFlight}
-          value={prompt}
+          value={searchText}
           onChange={(e) => {
-            setPrompt(e.target.value);
+            setSearchText(e.target.value as AiModel);
           }}
         />
       </div>
