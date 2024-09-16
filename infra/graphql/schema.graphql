@@ -566,6 +566,10 @@ type SubmitContactFormPayload {
   success: Boolean!
 }
 
+type Subscription {
+  node(id: ID!): BfNode
+}
+
 type Text {
   content: String
   link: String
