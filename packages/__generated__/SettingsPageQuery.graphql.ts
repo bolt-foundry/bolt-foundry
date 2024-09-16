@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<de00a126c3335902eee13c0bb8719ea9>>
+ * @generated SignedSource<<b8c469a525614c5c4aae8f18e40c44a4>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,7 +16,7 @@ export type SettingsPageQuery$data = {
     readonly organization: {
       readonly id: string;
       readonly name: string | null | undefined;
-      readonly " $fragmentSpreads": FragmentRefs<"Media_bfOrganization" | "WatchFolderList_bfOrganization">;
+      readonly " $fragmentSpreads": FragmentRefs<"Media_bfOrganization" | "OrganizationSwitcher_bfOrganization" | "WatchFolderList_bfOrganization">;
     } | null | undefined;
     readonly person: {
       readonly name: string | null | undefined;
@@ -95,6 +95,11 @@ return {
               {
                 "args": null,
                 "kind": "FragmentSpread",
+                "name": "OrganizationSwitcher_bfOrganization"
+              },
+              {
+                "args": null,
+                "kind": "FragmentSpread",
                 "name": "WatchFolderList_bfOrganization"
               },
               {
@@ -150,6 +155,8 @@ return {
             "name": "organization",
             "plural": false,
             "selections": [
+              (v0/*: any*/),
+              (v1/*: any*/),
               {
                 "alias": null,
                 "args": (v3/*: any*/),
@@ -248,7 +255,6 @@ return {
                 "kind": "LinkedHandle",
                 "name": "googleDriveFolders"
               },
-              (v1/*: any*/),
               {
                 "alias": null,
                 "args": [
@@ -381,8 +387,7 @@ return {
                   }
                 ],
                 "storageKey": "media(first:100)"
-              },
-              (v0/*: any*/)
+              }
             ],
             "storageKey": null
           }
@@ -392,16 +397,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "cd652448bb05bca92f8643851177566d",
+    "cacheID": "d8912f860cc9c7c5e0fab4ab5c8c1240",
     "id": null,
     "metadata": {},
     "name": "SettingsPageQuery",
     "operationKind": "query",
-    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        transcripts(first: 1) {\n          edges {\n            node {\n              words {\n                start\n                end\n                text\n                confidence\n                speaker\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  googleDriveFolders(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...OrganizationSwitcher_bfOrganization\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        transcripts(first: 1) {\n          edges {\n            node {\n              words {\n                start\n                end\n                text\n                confidence\n                speaker\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment OrganizationSwitcher_bfOrganization on BfOrganization {\n  name\n  id\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  googleDriveFolders(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "93173447903639e5ed937e7f82786ea6";
+(node as any).hash = "3b239e5a6208e66858aa38ca20b3323d";
 
 export default node;

@@ -1,54 +1,40 @@
 import { RelayRuntime } from "deps.ts";
-import { GraphqlWs } from "packages/client/deps.ts";
 import { getLogger } from "deps.ts";
 import { BfError } from "lib/BfError.ts";
 
 const logger = getLogger(import.meta);
 const { Environment, Network, RecordSource, Store, Observable } = RelayRuntime;
 
-let wsClient: GraphqlWs.Client;
+function subscribe(
+  operation: RelayRuntime.RequestParameters,
+  variables: RelayRuntime.Variables,
+) {
+  return Observable.create((sink) => {
+    if (!operation.text) throw new Error("No operation text");
+    const eventSource = new EventSource(
+      `/graphql?query=${encodeURIComponent(operation.text)}&variables=${
+        encodeURIComponent(JSON.stringify(variables))
+      }&operationName=${encodeURIComponent(operation.name)}`,
+    );
 
-// @ts-expect-error not typed
-const subscribe = (operation, variables) => {
-  return Observable.create<RelayRuntime.GraphQLResponse>((sink) => {
-    if (typeof Deno === "undefined" && !wsClient) {
-      logger.debug("Creating WS client");
-      // @ts-expect-error global environment isn't typed
-      let url = `wss://${globalThis.__ENVIRONMENT__.WS_DOMAIN_NAME}/`;
-      const parsedCookie = decodeURIComponent(document.cookie);
-      const devTokenCookie = parsedCookie
-        .split(";")
-        .find((c) => c.trim().startsWith("BF_DevOnlyAccessToken"));
-
-      const idTokenCookie = parsedCookie
-        .split(";")
-        .find((c) => c.trim().startsWith("BF_DevOnlyIdToken"));
-
-      if (devTokenCookie && idTokenCookie) {
-        const accessToken = devTokenCookie.split("=")[1];
-        const idToken = idTokenCookie.split("=")[1];
-        url += `?access_token=${accessToken}&id_token=${idToken}`;
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      sink.next(data);
+      if (eventSource.readyState === EventSource.CLOSED) {
+        sink.complete();
       }
-      wsClient = GraphqlWs.createClient({
-        url,
-        lazy: false,
-      });
-    }
+    };
 
-    if (wsClient != null) {
-      logger.debug("WS client exists, subscribing");
-      return wsClient.subscribe(
-        {
-          operationName: operation.name,
-          query: operation.text,
-          variables,
-        },
-        sink,
-      );
-    }
-    logger.debug("WS client not created yet");
+    eventSource.onerror = (error) => {
+      sink.error(error);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
   });
-};
+}
 
 // Define a function that fetches the results of an operation (query/mutation/etc)
 // and returns its results as a Promise:
