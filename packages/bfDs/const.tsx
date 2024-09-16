@@ -18,12 +18,13 @@ const palletteLight = {
 
 const constantColors = {
   lightText: [230, 230, 235], // rgba(230, 230, 235, 1)
+  alwaysTertiary: palletteLight.tertiary,
 };
 
 const palletteDark = {
   primary: [255, 215, 0], // rgba(255, 215, 0, 1)
   secondary: [34, 217, 229], // rgba(34, 217, 229, 1)
-  tertiary: [15, 16, 17],
+  tertiary: [255, 255, 255],
   fourthary: [238, 130, 238], // rgba(238, 130, 238, 1)
   negative: [248, 113, 113], // rgba(248, 113, 113, 1)
   // success: use 'secondary'
@@ -68,6 +69,7 @@ function generateColors(dark = false) {
   const adjustment = dark ? -defaultAdjustment : defaultAdjustment;
   return {
     alwaysLight: color(constantColors.lightText),
+    alwaysTertiary: color(constantColors.alwaysTertiary),
     primaryColor: color(pallette.primary),
     primaryColor015: color(pallette.primary, null, 0.15),
     primaryColor030: color(pallette.primary, null, 0.30),
@@ -95,8 +97,8 @@ function generateColors(dark = false) {
     secondaryButtonHover: color(pallette.background, -adjustment * 3),
     accentButton: color(pallette.fourthary),
     accentButtonHover: color(pallette.fourthary, -adjustment),
-    sidebarBackground: color(pallette.tertiary),
-    sidebarBackgroundDark: color(pallette.tertiary, -defaultAdjustment),
+    sidebarBackground: color(constantColors.alwaysTertiary),
+    sidebarBackgroundDark: color(constantColors.alwaysTertiary, -defaultAdjustment),
     sidebarText: color(constantColors.lightText),
     outlineHover: color(pallette.background, -adjustment),
     outlineDark: color(pallette.secondaryText, null, 0.2),
@@ -117,7 +119,7 @@ function generateColors(dark = false) {
     textMarketing: color(pallette.textMarketing),
     textSecondary: color(pallette.secondaryText),
     textLight: color(pallette.secondaryText, adjustment * 4),
-    textOnPrimary: color(pallette.tertiary),
+    textOnPrimary: color(constantColors.alwaysTertiary),
     textOnSecondary: color(pallette.text),
     textOnAccent: color(pallette.background),
     textOnSuccess: color(pallette.background),

@@ -28,24 +28,7 @@ export function LandingPage(): React.ReactElement {
           <LandingPageClipCollection />
         </div>
       </div>
-      <div
-        className="landing-page-section-wrapper"
-        id="landing-page-mission-section"
-      >
-        <div className="landing-page-block">
-          <div
-            className="landing-page-mission-image"
-            style={{
-              background:
-                "url(https://bf-static-assets.s3.amazonaws.com/marketing/landing-page-mission-graphic.png) no-repeat center / contain",
-            }}
-          >
-          </div>
-        </div>
-        <div className="landing-page-block">
-          <LandingPageMission />
-        </div>
-      </div>
+      <LandingPageMission />
       <div className="landing-page-section-wrapper landing-page-testimonial-section-wrapper">
         <LandingPageTestimonials />
       </div>
