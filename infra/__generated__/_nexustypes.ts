@@ -269,6 +269,7 @@ export interface NexusGenObjects {
     message?: string | null; // String
     success: boolean; // Boolean!
   }
+  Subscription: {};
   Text: { // root type
     content?: string | null; // String
     link?: string | null; // String
@@ -539,6 +540,9 @@ export interface NexusGenFieldTypes {
   SubmitContactFormPayload: { // field return type
     message: string | null; // String
     success: boolean; // Boolean!
+  }
+  Subscription: { // field return type
+    node: NexusGenRootTypes['BfNode'] | null; // BfNode
   }
   Text: { // field return type
     content: string | null; // String
@@ -815,6 +819,9 @@ export interface NexusGenFieldTypeNames {
     message: 'String'
     success: 'Boolean'
   }
+  Subscription: { // field return type name
+    node: 'BfNode'
+  }
   Text: { // field return type name
     content: 'String'
     link: 'String'
@@ -962,6 +969,11 @@ export interface NexusGenArgTypes {
       before?: string | null; // String
       first?: number | null; // Int
       last?: number | null; // Int
+    }
+  }
+  Subscription: {
+    node: { // args
+      id: string; // ID!
     }
   }
 }

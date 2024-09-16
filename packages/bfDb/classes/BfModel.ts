@@ -37,6 +37,15 @@ const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 const log = logger.trace;
 
+import { interval } from "rxjs";
+import { map, takeWhile } from "rxjs/operators";
+import { observableToAsyncIterable } from "@graphql-tools/utils";
+const countdownObservable = (from: number) => {
+  return interval(1000).pipe(
+    map((i) => from - i),
+    takeWhile((value) => value >= 0),
+  );
+};
 export type BfBaseModelGraphQL<TRequiredProps, TOptionalProps> =
   & TRequiredProps
   & TOptionalProps
@@ -145,6 +154,19 @@ export abstract class BfBaseModel<
       & InstanceType<TThis>
       & BfBaseModelMetadata<TCreationMetadata>;
   }
+
+  static async findAndSubscribe<
+    TThis extends Constructor<
+      BfModel<TRequiredProps, TOptionalProps, TCreationMetadata>
+    >,
+    TRequiredProps,
+    TOptionalProps,
+    TCreationMetadata extends CreationMetadata,
+  >(
+    this: TThis,
+    currentViewer: BfCurrentViewer,
+    bfGid: BfAnyid,
+  ) {}
 
   static async query<
     TThis extends Constructor<
@@ -333,6 +355,10 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     throw new BfModelErrorPermission(
       `Your role (${this.currentViewer.role}) does not have permission to ${action} on ${this.constructor.name}.`,
     );
+  }
+
+  getSubscriptionForGraphql() {
+    return observableToAsyncIterable(countdownObservable(10));
   }
 
   toGraphql() {
