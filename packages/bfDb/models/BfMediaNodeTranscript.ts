@@ -5,6 +5,19 @@ import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { BfError } from "lib/BfError.ts";
 
+/**
+ * LAZY STUFF
+ */
+
+import { PineconeStore } from "@langchain/pinecone";
+import { OpenAIEmbeddings } from "@langchain/openai";
+
+import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
+import type { Document } from "@langchain/core/documents";
+
+/**
+ * / LAZY STUFF
+ */
 const logger = getLogger(import.meta);
 
 const BF_MEDIA_AUDIO_CACHE_DIRECTORY =
@@ -41,10 +54,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     googleDriveResourceId: string,
   ) {
     logger.setLevel(logger.levels.DEBUG);
-    logger.debug(
-      "requestTranscriptionFromGoogleDriveResourceId",
-      googleDriveResourceId,
-    );
+    logger.info(`creating transcript from google drive resource id ${this}`)
     const bfGoogleDriveResource = await BfGoogleDriveResource.findX(
       this.currentViewer,
       toBfGid(googleDriveResourceId),
@@ -73,7 +83,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       stdin: "piped",
       stderr: "piped",
     });
-    logger.debug("Starting ffmpeg");
+    logger.info(`Starting ffmpeg transcript encode for ${this}`);
     const { stdin, stderr } = ffmpegProcess.spawn();
     const fileLoadingPromise = fileHandlePromise.then((fileHandle) => {
       logger.debug(`File handle ready from ${bfGoogleDriveResource}`);
@@ -110,10 +120,66 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     logger.info(`Transcription complete for ${this}`);
     logger.info(`Removing ${this.filePath}`);
     await Deno.remove(this.filePath);
+    await this.sendToVectorStore();
+    return this;
+  }
+
+  private async sendToVectorStore() {
+    const embeddings = new OpenAIEmbeddings({
+      model: "text-embedding-3-small",
+    });
+
+    const pinecone = new PineconeClient();
+    const pineconeIndexName = Deno.env.get("PINECONE_INDEX_NAME") ?? "BF_DEV";
+    logger.debug(pineconeIndexName);
+    const pineconeIndex = pinecone.Index(pineconeIndexName);
+
+    logger.debug("pinecone index", pineconeIndex);
+    logger.info(`Sending to vector store for ${this}`);
+    const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
+      pineconeIndex,
+      // Maximum number of batch requests to allow at once. Each batch is 1000 vectors.
+      maxConcurrency: 5,
+      namespace: this.metadata.bfOid,
+    });
+
+    const documents: Array<Document> = this.getTokenSafeText().map((text) => {
+      logger.debug(text.length / 4)
+      return {
+        id: this.metadata.bfGid,
+        metadata: this.metadata,
+        pageContent: text,
+      };
+    });
+    logger.debug("langchainDocument to send", documents);
+    try {
+      const results = await vectorStore.addDocuments(documents);
+      logger.info("Sent", results);
+    } catch (e) {
+      logger.error(e);
+      throw e;
+    }
+    logger.info(`Sent to vector store for ${this}`);
     return this;
   }
 
   get text() {
     return this.props.words.map((word) => word.text).join(" ");
+  }
+
+  getTokenSafeText(length = 8192) {
+    const text = this.text;
+    const texts = [];
+    const charactersPerToken = 3;
+    let nextWritableString = "";
+    for (const char of text) {
+      if ((nextWritableString.length / charactersPerToken) > length) {
+        texts.push(nextWritableString);
+        nextWritableString = "";
+      }
+      nextWritableString += char;
+    }
+
+    return texts;
   }
 }
