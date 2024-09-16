@@ -1,13 +1,12 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import {
   idArg,
-  intArg,
   interfaceType,
   nonNull,
-  objectType,
   queryField,
   subscriptionField,
 } from "packages/graphql/deps.ts";
+import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
@@ -47,9 +46,7 @@ export const BfNodeGraphQLQueryType = queryField("node", {
   },
 });
 
-import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 
-let timesRun = 0;
 export const BfNodeGraphQLSubscriptionType = subscriptionField("node", {
   type: BfNodeGraphQLType,
   args: {
@@ -63,10 +60,7 @@ export const BfNodeGraphQLSubscriptionType = subscriptionField("node", {
   },
   resolve: async function (_, { id }, { bfCurrentViewer }) {
     logger.debug(`Resolving ${id} for ${bfCurrentViewer}`);
-    const node = await BfNode.findX(bfCurrentViewer, toBfGid(id));
-    const textForGraphql = node?.toGraphql();
-    timesRun++;
-    textForGraphql.name = `${textForGraphql.name} - ${timesRun}`;
-    return textForGraphql;
+    const node = await BfNode.find(bfCurrentViewer, toBfGid(id));
+    return node?.toGraphql();
   },
 });
