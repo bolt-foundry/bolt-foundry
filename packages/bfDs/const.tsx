@@ -2,6 +2,7 @@ const palletteLight = {
   primary: [255, 215, 0], // rgba(255, 215, 0, 1)
   secondary: [34, 217, 229], // rgba(34, 217, 229, 1)
   tertiary: [11, 41, 75], // rgba(11, 41, 75, 1)
+  tertiaryDark: [11, 41, 75], // rgba(11, 41, 75, 1)
   fourthary: [238, 130, 238], // rgba(238, 130, 238, 1)
   negative: [248, 113, 113], // rgba(248, 113, 113, 1)
   // success: use 'secondary'
@@ -23,7 +24,8 @@ const constantColors = {
 const palletteDark = {
   primary: [255, 215, 0], // rgba(255, 215, 0, 1)
   secondary: [34, 217, 229], // rgba(34, 217, 229, 1)
-  tertiary: [15, 16, 17],
+  tertiary: [255, 255, 255],
+  tertiaryDark: [15, 16, 17],
   fourthary: [238, 130, 238], // rgba(238, 130, 238, 1)
   negative: [248, 113, 113], // rgba(248, 113, 113, 1)
   // success: use 'secondary'
@@ -75,6 +77,7 @@ function generateColors(dark = false) {
     secondaryColor015: color(pallette.secondary, null, 0.15),
     secondaryColor030: color(pallette.secondary, null, 0.3),
     tertiaryColor: color(pallette.tertiary),
+    tertiaryColorDark: color(pallette.tertiaryDark),
     fourtharyColor: color(pallette.fourthary),
     fourtharyColor015: color(pallette.fourthary, null, 0.15),
     fourtharyColor030: color(pallette.fourthary, null, 0.3),
@@ -95,8 +98,11 @@ function generateColors(dark = false) {
     secondaryButtonHover: color(pallette.background, -adjustment * 3),
     accentButton: color(pallette.fourthary),
     accentButtonHover: color(pallette.fourthary, -adjustment),
-    sidebarBackground: color(pallette.tertiary),
-    sidebarBackgroundDark: color(pallette.tertiary, -defaultAdjustment),
+    sidebarBackground: color(pallette.tertiaryDark),
+    sidebarBackgroundDark: color(
+      pallette.tertiaryDark,
+      -defaultAdjustment,
+    ),
     sidebarText: color(constantColors.lightText),
     outlineHover: color(pallette.background, -adjustment),
     outlineDark: color(pallette.secondaryText, null, 0.2),
@@ -117,7 +123,7 @@ function generateColors(dark = false) {
     textMarketing: color(pallette.textMarketing),
     textSecondary: color(pallette.secondaryText),
     textLight: color(pallette.secondaryText, adjustment * 4),
-    textOnPrimary: color(pallette.tertiary),
+    textOnPrimary: color(pallette.tertiaryDark),
     textOnSecondary: color(pallette.text),
     textOnAccent: color(pallette.background),
     textOnSuccess: color(pallette.background),
@@ -131,7 +137,7 @@ function generateColors(dark = false) {
     menuBackground: color(pallette.menuBackground),
     menuBackgroundHover: color(pallette.menuBackground, -adjustment),
     marketingBackground: `black linear-gradient(125deg, ${
-      color(pallette.tertiary, 0, 0.5)
+      color(pallette.tertiaryDark, 0, 0.5)
     }, ${color(pallette.fourthary, 0, 0.4)})`,
     marketingGradient: `linear-gradient(in oklch 90deg, ${
       color(pallette.secondary)
@@ -142,7 +148,7 @@ function generateColors(dark = false) {
     transparentGray: color(pallette.secondaryText, 0, 0.1),
     transparentSecondary: color(pallette.secondary, 0, 0.2),
     transparentBackground: color(pallette.background, 0, 0.97),
-    transparentDark: color(pallette.tertiary, 0, 0.95),
+    transparentDark: color(pallette.tertiaryDark, 0, 0.95),
     glimmerBackground: color(pallette.glimmerBackground),
     glimmer: color(pallette.glimmer),
   };
