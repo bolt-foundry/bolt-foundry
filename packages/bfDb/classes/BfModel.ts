@@ -25,6 +25,7 @@ import {
   bfQueryItems,
   type bfQueryItemsForGraphQLConnection,
   bfSubscribeToItemChanges,
+  bfQueryItemsWithSizeLimit,
   transactionCommit,
   transactionRollback,
   transactionStart,
@@ -180,7 +181,7 @@ export abstract class BfBaseModel<
       queryableMetadata.bfOid = currentViewer.organizationBfGid;
     }
     logger.debug("Queryable metadata:", queryableMetadata);
-    const items = await bfQueryItems<
+    const items = await bfQueryItemsWithSizeLimit<
       TRequiredProps & Partial<TOptionalProps>,
       BfBaseModelMetadata<TCreationMetadata>
     >(
