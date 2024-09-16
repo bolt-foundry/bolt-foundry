@@ -1,4 +1,4 @@
-import { neon } from "@neon/serverless";
+import { Client, neon } from "@neon/serverless";
 import type {
   ConnectionArguments,
   ConnectionInterface,
@@ -48,6 +48,82 @@ type Row<
   last_updated: string;
   sort_value: number;
 };
+
+import { interval, Subject } from "rxjs";
+import { map, takeWhile } from "rxjs/operators";
+import { observableToAsyncIterable } from "@graphql-tools/utils";
+const countdownObservable = (from: number) => {
+  console.log("running");
+  return interval(1000).pipe(
+    map((i) => {
+      console.log("still running");
+      return from - i;
+    }),
+    takeWhile((value) => {
+      return value >= 0;
+    }),
+  );
+};
+
+type BfModelUpdateNotification = {
+  bfGid: BfGid;
+  bfOid: BfOid;
+  operation: "INSERT" | "UPDATE" | "DELETE";
+};
+type NotificationResponseMessage = {
+  length: number;
+  processId: number;
+  channel: string;
+  payload: string;
+  name: string;
+};
+
+const bfOidToGidMap = new Map<
+  BfOid,
+  Map<BfGid, Set<Subject<BfModelUpdateNotification>>>
+>();
+
+function respondToNotification({ payload }: NotificationResponseMessage) {
+  const { operation, bf_gid, bf_oid } = JSON.parse(payload);
+  const oidSubscribers = bfOidToGidMap.get(bf_oid);
+  if (oidSubscribers) {
+    const gidSubjects = oidSubscribers.get(bf_gid);
+    if (gidSubjects) {
+      gidSubjects.forEach((subject) =>
+        subject.next({ operation, bfGid: bf_gid, bfOid: bf_oid })
+      );
+    }
+  }
+}
+
+async function initializeSubscriptions() {
+  const connectionString = Deno.env.get("BFDB_URL");
+  // @ts-expect-error no types, underlying it's a `pg` thing
+  const client = new Client({ connectionString });
+  // @ts-expect-error no types, underlying it's a `pg` thing
+  await client.connect();
+  // @ts-expect-error no types, underlying it's a `pg` thing
+  client.on("notification", respondToNotification);
+  // @ts-expect-error no types, underlying it's a `pg` thing
+  await client.query("LISTEN item_changes");
+  logger.info("Notifications configured.");
+}
+
+export function bfSubscribeToItemChanges(bfOid: BfOid, bfGid: BfGid) {
+  if (!bfOidToGidMap.has(bfOid)) {
+    bfOidToGidMap.set(bfOid, new Map());
+  }
+  const oidSubscribers = bfOidToGidMap.get(bfOid)!;
+  if (!oidSubscribers.has(bfGid)) {
+    oidSubscribers.set(bfGid, new Set());
+  }
+  const gidSubjects = oidSubscribers.get(bfGid)!;
+  const subject = new Subject<BfModelUpdateNotification>();
+  gidSubjects.add(subject);
+  return observableToAsyncIterable(subject.asObservable());
+}
+
+initializeSubscriptions();
 
 export async function bfGetItem<
   TProps = Props,
