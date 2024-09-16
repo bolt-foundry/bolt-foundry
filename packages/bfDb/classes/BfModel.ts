@@ -38,7 +38,6 @@ const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
 const log = logger.trace;
 
-
 export type BfBaseModelGraphQL<TRequiredProps, TOptionalProps> =
   & TRequiredProps
   & TOptionalProps

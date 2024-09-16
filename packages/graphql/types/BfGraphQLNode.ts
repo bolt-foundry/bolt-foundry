@@ -46,7 +46,6 @@ export const BfNodeGraphQLQueryType = queryField("node", {
   },
 });
 
-
 export const BfNodeGraphQLSubscriptionType = subscriptionField("node", {
   type: BfNodeGraphQLType,
   args: {

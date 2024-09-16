@@ -4,7 +4,7 @@ import type {
   ConnectionInterface,
   EdgeInterface,
   PageInfoInterface,
-} from "relay-runtime"; // Ensure this is correctly imported
+} from "relay-runtime";
 import type {
   BfBaseModelMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
@@ -18,7 +18,9 @@ import type {
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
+import { Subject } from "rxjs";
 
+import { observableToAsyncIterable } from "@graphql-tools/utils";
 const logger = getLogger(import.meta);
 
 type DbItem<T, TMetadata extends BfBaseModelMetadata> = {
@@ -47,22 +49,6 @@ type Row<
   created_at: string;
   last_updated: string;
   sort_value: number;
-};
-
-import { interval, Subject } from "rxjs";
-import { map, takeWhile } from "rxjs/operators";
-import { observableToAsyncIterable } from "@graphql-tools/utils";
-const countdownObservable = (from: number) => {
-  console.log("running");
-  return interval(1000).pipe(
-    map((i) => {
-      console.log("still running");
-      return from - i;
-    }),
-    takeWhile((value) => {
-      return value >= 0;
-    }),
-  );
 };
 
 type BfModelUpdateNotification = {
@@ -96,7 +82,13 @@ function respondToNotification({ payload }: NotificationResponseMessage) {
   }
 }
 
+let areNotificationsInitialized = false;
 async function initializeSubscriptions() {
+  if (areNotificationsInitialized) {
+    logger.info("Notifications are already configured");
+    return;
+  }
+  areNotificationsInitialized = true;
   const connectionString = Deno.env.get("BFDB_URL");
   // @ts-expect-error no types, underlying it's a `pg` thing
   const client = new Client({ connectionString });
@@ -110,6 +102,9 @@ async function initializeSubscriptions() {
 }
 
 export function bfSubscribeToItemChanges(bfOid: BfOid, bfGid: BfGid) {
+  if (!areNotificationsInitialized) {
+    initializeSubscriptions();
+  }
   if (!bfOidToGidMap.has(bfOid)) {
     bfOidToGidMap.set(bfOid, new Map());
   }
@@ -122,8 +117,6 @@ export function bfSubscribeToItemChanges(bfOid: BfOid, bfGid: BfGid) {
   gidSubjects.add(subject);
   return observableToAsyncIterable(subject.asObservable());
 }
-
-initializeSubscriptions();
 
 export async function bfGetItem<
   TProps = Props,
