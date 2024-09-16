@@ -1,3 +1,4 @@
+// @ts-nocheck langchain is dependency hell
 import {
   ChatAnthropic,
   ChatOpenAI,
@@ -8,35 +9,18 @@ import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
 import { getTimecodesForClips } from "packages/lib/timecodeUtils.ts";
 import { getLogger } from "deps.ts";
 import { z } from "zod";
+import { BfError } from "lib/BfError.ts";
 const logger = getLogger(import.meta);
 const openAIApiKey = Deno.env.get("OPENAI_API_KEY") ?? "";
 const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
 
-type Document = {
-  mediaId: string;
-  transcriptId: string;
-  filename: string;
-  words: string;
-};
-
-function formatDocs(documents: Array<Document>) {
-  return documents.map((document) => {
-    const transcript = JSON.parse(document?.words ?? "[]") as Array<DGWord>;
-    const content = transcript.map((word) => word.word).join(" ");
-    return `
-Filename: ${document.filename ?? "Untitled"}
-Media ID: ${document.mediaId}
-Transcript ID: ${document.transcriptId}
-Content: ${content}
-`;
-  }).join("\n\n");
-}
 
 export const callAPI = async (
   userMessage: string,
-  documents: Array<Document>,
+  textToSearch: string,
   suggestedModel?: string | null | undefined,
 ) => {
+  logger.debug({userMessage, textToSearch, suggestedModel});
   const anecdote = z.object({
     anecdotes: z.array(z.object({
       titleText: z.string().describe("The title of the anecdote."),
@@ -93,34 +77,22 @@ export const callAPI = async (
   }
 
   const prompt = ChatPromptTemplate.fromMessages([
-    ["system", `${createSystemMessage(documents)}`],
+    ["system", `${createSystemMessage(textToSearch)}`],
     ["user", "{input}"],
   ]);
 
   const chain = prompt.pipe(structuredLlm);
-  const start = performance.now();
   const response = await chain.invoke({ input: userMessage });
-  const end = performance.now();
-  const duration = end - start;
-  const results = {
-    model: suggestedModel,
-    duration: (duration / 1000),
-    response: response,
-    numOfDocuments: documents.length,
-    prompt: userMessage,
-  };
-
-  logger.debug("prompt completed", results);
-
-  const responseWithTimecode = getTimecodesForClips(response, documents);
-  return JSON.stringify(responseWithTimecode);
+  logger.debug(response)
+  throw new BfError("Need to rewrite timecode gathering")
+  // const responseWithTimecode = getTimecodesForClips(response, textToSearch);
+  // return responseWithTimecode;
 };
 
-const createSystemMessage = (documents: Array<Document>) => {
-  const formattedData = formatDocs(documents);
+const createSystemMessage = (textToSearch) => {
 
   return `
-  You have access to several video transcripts. Your task is to extract all anecdotes from these transcripts based on a user-provided prompt. This task is to be performed using the provided transcript data sections listed below. 
+  You are looking at a video transcript. Your task is to extract all anecdotes from these transcripts based on a user-provided prompt. This task is to be performed using the provided transcript data sections listed below. 
 
   Each anecdote should:
   - Be directly relevant to the specified word or concept wherever it appears in the transcripts.
@@ -133,7 +105,7 @@ const createSystemMessage = (documents: Array<Document>) => {
   Ensure that the anecdotes are directly related to the user-provided word or concept. Avoid metaphors, analogies, or abstract interpretations. Focus strictly on direct mentions and explicit contexts related to the user-provided word or concept. 
 
 
-  Here are the video transcripts to reference:
-  ${formattedData}
+  Here is the video transcript to reference:
+  ${textToSearch}
       `;
 };
