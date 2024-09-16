@@ -15,7 +15,9 @@ import { BfJob } from "packages/bfDb/models/BfJob.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 
 const GOOGLE_DRIVE_CACHE_DIRECTORY =
-  Deno.env.get("GOOGLE_DRIVE_CACHE_DIRECTORY") ?? "/tmp/google-drive-cache";
+  Deno.env.get("GOOGLE_DRIVE_CACHE_DIRECTORY") ?? Deno.env.get("REPL_HOME")
+    ? `${Deno.env.get("REPL_HOME")}/tmp/google-drive-cache`
+    : "/tmp/google-drive-cache";
 
 const logger = getLogger(import.meta);
 
@@ -153,6 +155,7 @@ export class BfGoogleDriveResource
   }
 
   private ingestVideo() {
+    logger.info(`Starting to ingest video ${this}`);
     return BfMedia.createFromGoogleDriveResource(this);
   }
 

@@ -6,7 +6,10 @@ import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResourc
 
 const logger = getLogger(import.meta);
 
-const BF_MEDIA_AUDIO_CACHE_LOCATION = "/tmp/bfMediaAudioCache";
+const BF_MEDIA_AUDIO_CACHE_DIRECTORY =
+  Deno.env.get("BF_MEDIA_AUDIO_CACHE_DIRECTORY") ?? Deno.env.get("REPL_HOME")
+    ? `${Deno.env.get("REPL_HOME")}/tmp/bf-media-audio-cache`
+    : "/tmp/bf-media-audio-cache";
 
 export enum BfMediaNodeTranscriptStatus {
   CREATED = "CREATED",
@@ -30,7 +33,7 @@ export type BfMediaNodeTranscriptProps = {
 
 export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
   private get filePath() {
-    return `${BF_MEDIA_AUDIO_CACHE_LOCATION}/${this.metadata.bfGid}.aac`;
+    return `${BF_MEDIA_AUDIO_CACHE_DIRECTORY}/${this.metadata.bfGid}.aac`;
   }
 
   async requestTranscriptionFromGoogleDriveResourceId(
@@ -44,7 +47,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       this.currentViewer,
       toBfGid(googleDriveResourceId),
     );
-    await Deno.mkdir(BF_MEDIA_AUDIO_CACHE_LOCATION, { recursive: true });
+    await Deno.mkdir(BF_MEDIA_AUDIO_CACHE_DIRECTORY, { recursive: true });
     logger.debug(`Getting file handle for ${bfGoogleDriveResource}`);
     const fileHandlePromise = bfGoogleDriveResource.getFileHandle();
     const ffmpegArgs = [
@@ -89,10 +92,11 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       logger.debug("ffmpeg stats", stats);
     }
     await fileLoadingPromise;
-    logger.debug(`File encoded to ${this.filePath}`);
+    logger.info(`File encoded to ${this.filePath}`);
     const apiKey = Deno.env.get("ASSEMBLY_AI_KEY");
+    if (!apiKey) throw new BfError("No assembly AI key found");
     const assemblyAIClient = new AssemblyAI({ apiKey });
-    logger.debug(`Starting transcription for ${this}`);
+    logger.info(`Starting transcription for ${this}`);
     const transcript = await assemblyAIClient.transcripts.transcribe({
       audio: this.filePath,
       speaker_labels: true,
@@ -101,7 +105,11 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     const words = transcript.words as AssemblyAIWords;
     this.props.words = words;
     await this.save();
-    logger.debug(`Transcription complete for ${this}`);
+    logger.info(`Transcription complete for ${this}`);
     return this;
+  }
+
+  get text() {
+    return this.props.words.map((word) => word.text).join(" ");
   }
 }
