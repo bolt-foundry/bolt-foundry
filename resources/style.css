@@ -1315,6 +1315,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   width: 100%;
   aspect-ratio: 2/1;
   height: 100%;
+  background: radial-gradient(var(--secondaryColor060), transparent 70%);
 }
 
 .landing-page-testimonial-section-wrapper {
