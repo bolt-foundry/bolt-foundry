@@ -3,6 +3,7 @@ import { getLogger } from "deps.ts";
 import { AssemblyAI } from "assemblyai";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
+import { BfError } from "lib/BfError.ts";
 
 const logger = getLogger(import.meta);
 
@@ -106,6 +107,8 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     this.props.words = words;
     await this.save();
     logger.info(`Transcription complete for ${this}`);
+    logger.info(`Removing ${this.filePath}`);
+    await Deno.remove(this.filePath);
     return this;
   }
 
