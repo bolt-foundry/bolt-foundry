@@ -37,28 +37,23 @@ export const callAPI = async (
   documents: Array<Document>,
   suggestedModel?: string | null | undefined,
 ) => {
-  const anecdote = z.object({
-    anecdotes: z.array(z.object({
-      titleText: z.string().describe("The title of the anecdote."),
-      text: z.string().describe("The verbatim transcript of the anecdote"),
-      descriptionText: z.string().describe("A summary of the anecdote."),
-      filename: z.string().describe(
-        "The name of the file containing the anecdote.",
+  const excerpt = z.object({
+    excerpts: z.array(z.object({
+      titleText: z.string().describe("The title of the excerpt."),
+      text: z.string().describe(
+        "A side-by-side exact verbatim copy from the transcript of the excerpt uncorrected directly from the transcript given. The excerpt must be an exact copy of the verbatim text from the transcript. Any change to the text, including paraphrasing, rewording, or reordering, will be considered incorrect.",
       ),
-      mediaId: z.string().describe(
-        "The Media ID of the file containing the anecdote.",
-      ),
-      transcriptId: z.string().describe(
-        "The Transcript ID of the file containing the anecdote.",
-      ),
+      descriptionText: z.string().describe("A summary of the excerpt."),
       topics: z.string().describe(
-        "A comma-separated list of topics related to the anecdote.",
+        "A comma-separated list of topics related to the excerpt.",
       ),
-      rationale: z.string().describe("A rationale for the confidence rating."),
+      rationale: z.string().describe(
+        "A rationale for the confidence rating. Avoid metaphors, analogies, or abstract interpretations. Focus strictly on direct mentions and explicit contexts related to the user-provided word or concept.",
+      ),
       confidence: z.number().describe(
         "A floating point confidence rating from 0 to 1, where 0 doesn't relate to the prompt and 1 relates best.",
       ),
-    })),
+    })).describe("an array containing MANY excerpts").optional(),
   });
 
   let llmInterface;
@@ -71,10 +66,7 @@ export const callAPI = async (
         apiKey: anthropicApiKey,
         temperature: 0,
       });
-      structuredLlm = llmInterface.withStructuredOutput(anecdote, {
-        method: "json_mode",
-        name: "anecdote",
-      });
+      structuredLlm = llmInterface.withStructuredOutput(excerpt);
       break;
     }
     default: {
@@ -85,9 +77,9 @@ export const callAPI = async (
         presencePenalty: 0,
         frequencyPenalty: 0,
       });
-      structuredLlm = llmInterface.withStructuredOutput(anecdote, {
+      structuredLlm = llmInterface.withStructuredOutput(excerpt, {
         method: "json_mode",
-        name: "anecdote",
+        name: "excerpt",
       });
     }
   }
@@ -101,13 +93,25 @@ export const callAPI = async (
   const start = performance.now();
   const response = await chain.invoke({ input: userMessage });
   const end = performance.now();
-  const duration = end - start;
+  const performanceDuration = end - start;
+
+  const verbatim = () => {
+    const excerpts = response.excerpts ?? [];
+    let verbatimString = "";
+    excerpts.forEach((a, i) => {
+      verbatimString += `${i}: ${
+        documents[0]?.toLowerCase().includes(excerpts[i].text.toLowerCase())
+      }, `;
+    });
+    return verbatimString;
+  };
   const results = {
     model: suggestedModel,
-    duration: (duration / 1000),
+    performance: (performanceDuration / 1000),
     response: response,
     numOfDocuments: documents.length,
     prompt: userMessage,
+    verbatim: verbatim(),
   };
 
   logger.debug("prompt completed", results);
@@ -120,20 +124,27 @@ const createSystemMessage = (documents: Array<Document>) => {
   const formattedData = formatDocs(documents);
 
   return `
-  You have access to several video transcripts. Your task is to extract all anecdotes from these transcripts based on a user-provided prompt. This task is to be performed using the provided transcript data sections listed below. 
+  You have access to a video transcripts. Your task is to catalog multiple instances of a topic from this transcript based on a user-provided prompt. This task is to be performed using the provided transcript data sections listed below. 
 
-  Each anecdote should:
-  - Be directly relevant to the specified word or concept wherever it appears in the transcripts.
+  Each excerpt should:
+  - Be directly relevant to the specified word or concept wherever it appears in the transcript.
   - Have a clear beginning and end, focusing on distinct narratives within the text.
   - Be a coherent standalone story or joke.
-  - Be verbatim text from the transcript
+  - Be VERBATIM text from the transcript
+  - The excerpts must be an exact copy of the verbatim text from the transcript. Any change to the text, including paraphrasing, rewording, or reordering, will be considered incorrect.
+  - If no suitable excerpts are found, return 'No excerpt found.' Do not alter the transcript in any way.
+  - Don't skip any text when extracting an excerpt
+  - Avoid metaphors, analogies, or abstract interpretations. Focus strictly on direct mentions and explicit contexts related to the user-provided word or concept.
 
   It is crucial that the language of the output matches the language of the input.
 
-  Ensure that the anecdotes are directly related to the user-provided word or concept. Avoid metaphors, analogies, or abstract interpretations. Focus strictly on direct mentions and explicit contexts related to the user-provided word or concept. 
+  DO NOT correct the transcript in your output
 
+  Ensure that the excerpts are directly related to the user-provided word or concept.
 
-  Here are the video transcripts to reference:
+  It is ok if you don't find anything strongly related to the user-provided word or concept. Just return an empty object. This is not a reflection on you. You are good enough, and smart enough and doggonit, people like you.
+
+  Here is the video transcript to reference:
   ${formattedData}
       `;
 };
