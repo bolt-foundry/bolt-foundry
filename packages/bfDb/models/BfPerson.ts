@@ -73,7 +73,7 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
   }
 
   static findCurrentViewer(bfCurrentViewer: BfCurrentViewer) {
-    return this.find(bfCurrentViewer, bfCurrentViewer.personBfGid);
+    return this.findX(bfCurrentViewer, bfCurrentViewer.personBfGid);
   }
 
   async logout() {
