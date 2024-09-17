@@ -1313,7 +1313,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 }
 .landing-page-mission-image {
   width: 100%;
-  aspect-ratio: 2/1;
+  aspect-ratio: 4/3;
   height: 100%;
   background: radial-gradient(var(--secondaryColor060), transparent 70%);
 }
