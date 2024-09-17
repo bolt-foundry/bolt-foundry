@@ -767,6 +767,7 @@ __metadata:
     graphql: "npm:^16.9.0"
     graphql-relay: "npm:^0.10.2"
     graphql-request: "npm:^7.1.0"
+    graphql-ws: "npm:^5.16.0"
     graphql-yoga: "npm:^5.7.0"
     nexus: "npm:^1.3.0"
     react: "npm:^18.3.1"
@@ -1260,6 +1261,15 @@ __metadata:
   bin:
     graffle: build/cli/generate.js
   checksum: 10c0/ded2c63bc4ba383c8d16bee176f0160bfa065d4d3fcef06822bfddf06664f10cae1b0388ad338801e491832b591c8b9316bb34821d14f5741e7229c534516357
+  languageName: node
+  linkType: hard
+
+"graphql-ws@npm:^5.16.0":
+  version: 5.16.0
+  resolution: "graphql-ws@npm:5.16.0"
+  peerDependencies:
+    graphql: ">=0.11 <=16"
+  checksum: 10c0/5e538c3460ca997a1634bd0f64236d8d7aa6ac75c58aba549b49953faf0dd2497f4fa43eedb0bc82cfff50426c7ce47682a670d2571fd7f3af5dcf00911c9e1b
   languageName: node
   linkType: hard
 
