@@ -6,7 +6,7 @@ import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
 
-export const schema = import.meta.main ? null : makeSchema({
+export const schema = import.meta.main ? undefined : makeSchema({
   types,
   plugins: [connectionPlugin({
     extendConnection: {
