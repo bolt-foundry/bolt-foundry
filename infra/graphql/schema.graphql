@@ -377,6 +377,7 @@ type BlogPost {
   id: String!
   slug: String
   status: String
+  summary: String
   title: String
 }
 
@@ -564,6 +565,10 @@ input SubmitContactFormInput {
 type SubmitContactFormPayload {
   message: String
   success: Boolean!
+}
+
+type Subscription {
+  node(id: ID!): BfNode
 }
 
 type Text {

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<262d9ed0d795e66866c543914c7f63f7>>
+ * @generated SignedSource<<554d4957683eef44512c332736b75ecd>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -25,6 +25,7 @@ export type BlogPageQuery$data = {
           readonly date: string | null | undefined;
           readonly id: string;
           readonly slug: string | null | undefined;
+          readonly summary: string | null | undefined;
           readonly title: string | null | undefined;
           readonly " $fragmentSpreads": FragmentRefs<"BlogPagePostFragment">;
         } | null | undefined> | null | undefined;
@@ -81,6 +82,13 @@ v4 = {
 v5 = {
   "alias": null,
   "args": null,
+  "kind": "ScalarField",
+  "name": "summary",
+  "storageKey": null
+},
+v6 = {
+  "alias": null,
+  "args": null,
   "concreteType": "BlogPostAuthor",
   "kind": "LinkedField",
   "name": "author",
@@ -110,42 +118,42 @@ v5 = {
   ],
   "storageKey": null
 },
-v6 = {
+v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "coverUrl",
   "storageKey": null
 },
-v7 = {
+v8 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v8 = {
+v9 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "icon",
   "storageKey": null
 },
-v9 = {
+v10 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "type",
   "storageKey": null
 },
-v10 = {
+v11 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "color",
   "storageKey": null
 },
-v11 = [
+v12 = [
   {
     "alias": null,
     "args": null,
@@ -193,7 +201,7 @@ v11 = [
         "name": "code",
         "storageKey": null
       },
-      (v10/*: any*/),
+      (v11/*: any*/),
       {
         "alias": null,
         "args": null,
@@ -219,14 +227,14 @@ v11 = [
     "storageKey": null
   }
 ],
-v12 = {
+v13 = {
   "alias": null,
   "args": null,
   "concreteType": "RichText",
   "kind": "LinkedField",
   "name": "RichText",
   "plural": true,
-  "selections": (v11/*: any*/),
+  "selections": (v12/*: any*/),
   "storageKey": null
 };
 return {
@@ -278,7 +286,8 @@ return {
                       (v3/*: any*/),
                       (v4/*: any*/),
                       (v5/*: any*/),
-                      (v6/*: any*/)
+                      (v6/*: any*/),
+                      (v7/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -309,7 +318,7 @@ return {
         "name": "currentViewer",
         "plural": false,
         "selections": [
-          (v7/*: any*/),
+          (v8/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -347,7 +356,8 @@ return {
                       (v4/*: any*/),
                       (v5/*: any*/),
                       (v6/*: any*/),
-                      (v8/*: any*/),
+                      (v7/*: any*/),
+                      (v9/*: any*/),
                       {
                         "alias": null,
                         "args": null,
@@ -356,14 +366,14 @@ return {
                         "name": "content",
                         "plural": true,
                         "selections": [
-                          (v7/*: any*/),
+                          (v8/*: any*/),
                           {
                             "kind": "InlineFragment",
                             "selections": [
                               (v1/*: any*/),
-                              (v9/*: any*/),
                               (v10/*: any*/),
-                              (v12/*: any*/)
+                              (v11/*: any*/),
+                              (v13/*: any*/)
                             ],
                             "type": "ParagraphBlock",
                             "abstractKey": null
@@ -372,7 +382,7 @@ return {
                             "kind": "InlineFragment",
                             "selections": [
                               (v1/*: any*/),
-                              (v9/*: any*/),
+                              (v10/*: any*/),
                               {
                                 "alias": null,
                                 "args": null,
@@ -387,7 +397,7 @@ return {
                                 "kind": "LinkedField",
                                 "name": "caption",
                                 "plural": true,
-                                "selections": (v11/*: any*/),
+                                "selections": (v12/*: any*/),
                                 "storageKey": null
                               }
                             ],
@@ -398,10 +408,10 @@ return {
                             "kind": "InlineFragment",
                             "selections": [
                               (v1/*: any*/),
-                              (v9/*: any*/),
                               (v10/*: any*/),
-                              (v8/*: any*/),
-                              (v12/*: any*/)
+                              (v11/*: any*/),
+                              (v9/*: any*/),
+                              (v13/*: any*/)
                             ],
                             "type": "CalloutBlock",
                             "abstractKey": null
@@ -410,7 +420,7 @@ return {
                             "kind": "InlineFragment",
                             "selections": [
                               (v1/*: any*/),
-                              (v9/*: any*/),
+                              (v10/*: any*/),
                               {
                                 "alias": null,
                                 "args": null,
@@ -418,7 +428,7 @@ return {
                                 "name": "language",
                                 "storageKey": null
                               },
-                              (v12/*: any*/)
+                              (v13/*: any*/)
                             ],
                             "type": "CodeBlock",
                             "abstractKey": null
@@ -441,16 +451,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "46bd159a70221df75767e3db28465295",
+    "cacheID": "eb8b586b8f7b9559604670e8fd799bbd",
     "id": null,
     "metadata": {},
     "name": "BlogPageQuery",
     "operationKind": "query",
-    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10, status: \"Ready for publish\") {\n        nodes {\n          ...BlogPagePostFragment\n          id\n          title\n          slug\n          date\n          author {\n            name\n            email\n            avatarUrl\n          }\n          coverUrl\n        }\n      }\n    }\n  }\n}\n\nfragment BlogPagePostFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n  icon\n  content {\n    __typename\n    ... on ParagraphBlock {\n      id\n      type\n      color\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on ImageBlock {\n      id\n      type\n      imgUrl\n      caption {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CalloutBlock {\n      id\n      type\n      color\n      icon\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CodeBlock {\n      id\n      type\n      language\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10, status: \"Ready for publish\") {\n        nodes {\n          ...BlogPagePostFragment\n          id\n          title\n          slug\n          date\n          summary\n          author {\n            name\n            email\n            avatarUrl\n          }\n          coverUrl\n        }\n      }\n    }\n  }\n}\n\nfragment BlogPagePostFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  summary\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n  icon\n  content {\n    __typename\n    ... on ParagraphBlock {\n      id\n      type\n      color\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on ImageBlock {\n      id\n      type\n      imgUrl\n      caption {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CalloutBlock {\n      id\n      type\n      color\n      icon\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CodeBlock {\n      id\n      type\n      language\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4cba630a2135afe070a5c645c03b4a2b";
+(node as any).hash = "5688627633cea3a525c38d7292f6f47f";
 
 export default node;

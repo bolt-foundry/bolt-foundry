@@ -48,6 +48,7 @@ export const BlogPost = objectType({
         return parent.author;
       },
     });
+    t.string("summary");
     t.string("coverUrl");
     t.string("icon");
     t.list.field("content", {

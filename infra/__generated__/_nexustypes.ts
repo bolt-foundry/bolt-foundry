@@ -193,6 +193,7 @@ export interface NexusGenObjects {
     id: string; // String!
     slug?: string | null; // String
     status?: string | null; // String
+    summary?: string | null; // String
     title?: string | null; // String
   }
   BlogPostAuthor: { // root type
@@ -269,6 +270,7 @@ export interface NexusGenObjects {
     message?: string | null; // String
     success: boolean; // Boolean!
   }
+  Subscription: {};
   Text: { // root type
     content?: string | null; // String
     link?: string | null; // String
@@ -439,6 +441,7 @@ export interface NexusGenFieldTypes {
     id: string; // String!
     slug: string | null; // String
     status: string | null; // String
+    summary: string | null; // String
     title: string | null; // String
   }
   BlogPostAuthor: { // field return type
@@ -539,6 +542,9 @@ export interface NexusGenFieldTypes {
   SubmitContactFormPayload: { // field return type
     message: string | null; // String
     success: boolean; // Boolean!
+  }
+  Subscription: { // field return type
+    node: NexusGenRootTypes['BfNode'] | null; // BfNode
   }
   Text: { // field return type
     content: string | null; // String
@@ -714,6 +720,7 @@ export interface NexusGenFieldTypeNames {
     id: 'String'
     slug: 'String'
     status: 'String'
+    summary: 'String'
     title: 'String'
   }
   BlogPostAuthor: { // field return type name
@@ -814,6 +821,9 @@ export interface NexusGenFieldTypeNames {
   SubmitContactFormPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
+  }
+  Subscription: { // field return type name
+    node: 'BfNode'
   }
   Text: { // field return type name
     content: 'String'
@@ -962,6 +972,11 @@ export interface NexusGenArgTypes {
       before?: string | null; // String
       first?: number | null; // Int
       last?: number | null; // Int
+    }
+  }
+  Subscription: {
+    node: { // args
+      id: string; // ID!
     }
   }
 }

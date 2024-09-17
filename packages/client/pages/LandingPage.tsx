@@ -13,11 +13,22 @@ import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 export function LandingPage(): React.ReactElement {
   return (
     <div className="marketing">
-      <nav className="nav marketing-nav start-center">
+      <nav className="nav landing-page-header">
         <div className="landing-page-logo">
           <Link to="/">
             <BfLogo />
           </Link>
+        </div>
+        <div className="landing-page-nav">
+          <Link to="/blog">
+            <div>Blog</div>
+          </Link>
+          <BfDsButton
+            href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
+            hrefTarget="blank"
+            text="Let's talk"
+            size="large"
+          />
         </div>
       </nav>
       <div className="landing-page-section-wrapper">
@@ -32,19 +43,7 @@ export function LandingPage(): React.ReactElement {
         className="landing-page-section-wrapper"
         id="landing-page-mission-section"
       >
-        <div className="landing-page-block">
-          <div
-            className="landing-page-mission-image"
-            style={{
-              background:
-                "url(https://bf-static-assets.s3.amazonaws.com/marketing/landing-page-mission-graphic.png) no-repeat center / contain",
-            }}
-          >
-          </div>
-        </div>
-        <div className="landing-page-block">
-          <LandingPageMission />
-        </div>
+        <LandingPageMission />
       </div>
       <div className="landing-page-section-wrapper landing-page-testimonial-section-wrapper">
         <LandingPageTestimonials />
