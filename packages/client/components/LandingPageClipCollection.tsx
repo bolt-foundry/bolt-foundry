@@ -121,6 +121,7 @@ function HscrollVideo(
       onMouseLeave={() => setHovering(false)}
     >
       <video
+        playsInline
         preload="metadata"
         ref={videoRef}
         src={src}
