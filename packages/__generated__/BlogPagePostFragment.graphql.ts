@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<959bf346a8743eb5c1ae6d4baed8200b>>
+ * @generated SignedSource<<fa94cdce0123629d9644add3b0d8a54c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -58,6 +58,7 @@ export type BlogPagePostFragment$data = {
   readonly id: string;
   readonly slug: string | null | undefined;
   readonly status: string | null | undefined;
+  readonly summary: string | null | undefined;
   readonly title: string | null | undefined;
   readonly " $fragmentType": "BlogPagePostFragment";
 };
@@ -217,6 +218,13 @@ return {
     {
       "alias": null,
       "args": null,
+      "kind": "ScalarField",
+      "name": "summary",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
       "concreteType": "BlogPostAuthor",
       "kind": "LinkedField",
       "name": "author",
@@ -337,6 +345,6 @@ return {
 };
 })();
 
-(node as any).hash = "bf39403d271a286df10a17dbafb0aa11";
+(node as any).hash = "e27e61b472a5bc21adcdf1dc6b68dc57";
 
 export default node;
