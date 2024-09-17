@@ -22,6 +22,7 @@ const pageQuery = await graphql`
             title
             slug
             date
+            summary
             author {
               name
               email
@@ -139,6 +140,7 @@ fragment BlogPagePostFragment on BlogPost {
   slug
   status
   date
+  summary
   author {
     name
     email
@@ -254,6 +256,7 @@ function RichText({ richText }) {
 
 type PostProps = {
   postRef: BlogPagePostFragment$key;
+  additionalClassName?: string;
 };
 
 export function BlogPost({ postRef }: PostProps) {
