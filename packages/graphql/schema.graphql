@@ -352,6 +352,7 @@ type BlogPost {
   id: String!
   slug: String
   status: String
+  summary: String
   title: String
 }
 
