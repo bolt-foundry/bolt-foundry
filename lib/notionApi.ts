@@ -128,6 +128,7 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
           email: properties.Author.people[0]?.person?.email,
           avatarUrl: properties.Author.people[0]?.avatar_url,
         },
+        summary: properties.Summary.rich_text[0]?.plain_text ?? "",
         coverUrl: cover?.external?.url,
         icon: icon?.emoji,
       };
