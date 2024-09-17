@@ -2,6 +2,7 @@
   "name": "bolt-foundry",
   "packageManager": "yarn@4.4.1",
   "dependencies": {
+    "@graphql-tools/utils": "^10.5.4",
     "@langchain/openai": "^0.2.10",
     "@replit/object-storage": "^1.0.0",
     "assemblyai": "^4.7.0",
@@ -17,6 +18,7 @@
     "react-relay": "^17.0.0",
     "relay-compiler": "^17.0.0",
     "relay-runtime": "^17.0.0",
+    "rxjs": "^7.8.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

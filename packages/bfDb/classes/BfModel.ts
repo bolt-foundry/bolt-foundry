@@ -24,6 +24,7 @@ import {
   bfPutItem,
   bfQueryItems,
   type bfQueryItemsForGraphQLConnection,
+  bfSubscribeToItemChanges,
   transactionCommit,
   transactionRollback,
   transactionStart,
@@ -333,6 +334,10 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     throw new BfModelErrorPermission(
       `Your role (${this.currentViewer.role}) does not have permission to ${action} on ${this.constructor.name}.`,
     );
+  }
+
+  getSubscriptionForGraphql() {
+    return bfSubscribeToItemChanges(this.metadata.bfOid, this.metadata.bfGid);
   }
 
   toGraphql() {

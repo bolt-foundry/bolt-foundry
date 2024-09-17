@@ -33,6 +33,26 @@ export async function upsertBfDb() {
     props JSONB NOT NULL
   );
   `;
+  await sql`
+  CREATE OR REPLACE FUNCTION notify_item_change() RETURNS TRIGGER AS $$
+  BEGIN
+    PERFORM pg_notify(
+      'item_changes',
+      json_build_object(
+        'operation', TG_OP,
+        'bf_gid', NEW.bf_gid,
+        'bf_oid', NEW.bf_oid
+      )::text
+    );
+    RETURN NEW;
+  END;
+  $$ LANGUAGE plpgsql;
+  `;
+  await sql`
+  CREATE TRIGGER item_change_trigger
+  AFTER INSERT OR UPDATE OR DELETE ON bfdb
+  FOR EACH ROW EXECUTE FUNCTION notify_item_change();
+  `;
   logger.info("Schema upserted");
   const indexes = [
     "sort_value",
