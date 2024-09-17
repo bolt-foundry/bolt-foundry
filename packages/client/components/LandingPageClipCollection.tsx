@@ -68,7 +68,11 @@ export function LandingPageClipCollection() {
     <div className="landing-page-clips-container" ref={containerRef}>
       {testimonialVideos.map((video, index) => {
         return (
-          <div className="landing-page-clips" id={`video${index + 1}`}>
+          <div
+            className="landing-page-clips"
+            id={`video${index + 1}`}
+            key={index}
+          >
             <HscrollVideo
               src={video}
               videoRef={videoRefs.current[index]}
@@ -76,7 +80,6 @@ export function LandingPageClipCollection() {
               handlePlay={() => handlePlay(index)}
               handleMute={() => setMuted(!muted)}
               muted={muted}
-              key={index}
             />
           </div>
         );
