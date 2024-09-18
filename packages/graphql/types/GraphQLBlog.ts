@@ -149,7 +149,16 @@ export const TextObject = objectType({
   name: "Text",
   definition(t) {
     t.string("content");
-    t.string("link");
+    t.field("link", {
+      type: "Link",
+    });
+  },
+});
+
+export const Link = objectType({
+  name: "Link",
+  definition(t) {
+    t.string("url");
   },
 });
 

@@ -72,11 +72,11 @@ export interface NotionBlogPostContentObject {
   };
 }
 
-export interface RichText {
+interface RichText {
   type: string;
-  text: {
+  text?: {
     content: string;
-    link: string;
+    link: { url: string };
   };
   annotations: {
     bold: boolean;
