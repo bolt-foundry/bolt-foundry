@@ -166,7 +166,9 @@ fragment BlogPagePostFragment on BlogPost {
       RichText {
         text {
           content
-          link
+          link {
+            url
+          }
         }
         annotations {
           bold
@@ -185,7 +187,9 @@ fragment BlogPagePostFragment on BlogPost {
       caption {
         text {
           content
-          link
+          link {
+            url
+          }
         }
         annotations {
           bold
@@ -205,7 +209,9 @@ fragment BlogPagePostFragment on BlogPost {
       RichText {
         text {
           content
-          link
+          link {
+            url
+          }
         }
         annotations {
           bold
@@ -224,7 +230,9 @@ fragment BlogPagePostFragment on BlogPost {
       RichText {
         text {
           content
-          link
+          link {
+            url
+          }
         }
         annotations {
           bold

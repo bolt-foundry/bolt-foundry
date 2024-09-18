@@ -149,9 +149,15 @@ export const TextObject = objectType({
   name: "Text",
   definition(t) {
     t.string("content");
-    t.string("link");
+    t.field("link", {
+    });
   },
 });
+
+export const Link = objectType({
+  name: "Link",
+  definition(t) {
+    t.string("url");
 
 export const RichText = objectType({
   name: "RichText",

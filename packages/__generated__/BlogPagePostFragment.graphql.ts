@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fa94cdce0123629d9644add3b0d8a54c>>
+ * @generated SignedSource<<59e015df8966b96125269185903de460>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -28,7 +28,9 @@ export type BlogPagePostFragment$data = {
       } | null | undefined;
       readonly text: {
         readonly content: string | null | undefined;
-        readonly link: string | null | undefined;
+        readonly link: {
+          readonly url: string | null | undefined;
+        } | null | undefined;
       } | null | undefined;
     } | null | undefined> | null | undefined;
     readonly caption?: ReadonlyArray<{
@@ -42,7 +44,9 @@ export type BlogPagePostFragment$data = {
       } | null | undefined;
       readonly text: {
         readonly content: string | null | undefined;
-        readonly link: string | null | undefined;
+        readonly link: {
+          readonly url: string | null | undefined;
+        } | null | undefined;
       } | null | undefined;
     } | null | undefined> | null | undefined;
     readonly color?: string | null | undefined;
@@ -115,8 +119,19 @@ v4 = [
       {
         "alias": null,
         "args": null,
-        "kind": "ScalarField",
+        "concreteType": "Link",
+        "kind": "LinkedField",
         "name": "link",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "url",
+            "storageKey": null
+          }
+        ],
         "storageKey": null
       }
     ],
@@ -345,6 +360,6 @@ return {
 };
 })();
 
-(node as any).hash = "e27e61b472a5bc21adcdf1dc6b68dc57";
+(node as any).hash = "05b19797b2c9f56659df87393ed37c37";
 
 export default node;
