@@ -512,28 +512,6 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   display: block;
 }
 
-/* Glimmer */
-.glimmer {
-  border-radius: 8px;
-  background: linear-gradient(
-    125deg, 
-    var(--glimmerBackground) 25%, 
-    var(--glimmer) 45%, 
-    var(--glimmerBackground) 65%
-  );
-  background-size: 200% 200%;
-  animation: glimmer 1.4s infinite;
-}
-
-@keyframes glimmer {
-  0% {
-    background-position: 130% 0;
-  }
-  100% {
-    background-position: -60% 0;
-  }
-}
-
 /* ClipList */
 .clips {
   width: 100%;
@@ -2208,4 +2186,27 @@ div#toast-root {
   height: 5px;
   background-color: var(--fourtharyColor060);
   transition: width 0.1s linear;
+}
+
+
+/* Glimmer */
+.glimmer {
+  border-radius: 8px;
+  background: linear-gradient(
+    125deg, 
+    var(--glimmerBackground) 25%, 
+    var(--glimmer) 45%, 
+    var(--glimmerBackground) 65%
+  );
+  background-size: 200% 200%;
+  animation: glimmer 1.4s infinite;
+}
+
+@keyframes glimmer {
+  0% {
+    background-position: 130% 0;
+  }
+  100% {
+    background-position: -60% 0;
+  }
 }
