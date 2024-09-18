@@ -20,7 +20,7 @@ export function LandingPageMission() {
             href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
             hrefTarget="blank"
             text="Let's talk"
-            size="large"
+            size="xlarge"
           />
         </div>
       </div>
