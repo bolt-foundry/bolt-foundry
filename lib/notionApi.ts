@@ -72,11 +72,11 @@ export interface NotionBlogPostContentObject {
   };
 }
 
-export interface RichText {
+interface RichText {
   type: string;
-  text: {
+  text?: {
     content: string;
-    link: string;
+    link: { url: string };
   };
   annotations: {
     bold: boolean;
@@ -128,11 +128,24 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
           email: properties.Author.people[0]?.person?.email,
           avatarUrl: properties.Author.people[0]?.avatar_url,
         },
+        summary: properties.Summary.rich_text[0]?.plain_text ?? "",
         coverUrl: cover?.external?.url,
         icon: icon?.emoji,
       };
     },
   );
+  filteredData.sort((a, b) => {
+    const dateA = a.date ? new Date(a.date) : null;
+    const dateB = b.date ? new Date(b.date) : null;
+
+    if (!dateA && !dateB) return 0;
+    if (!dateA) return 1;
+    if (!dateB) return -1;
+
+    if (dateA > dateB) return -1;
+    if (dateA < dateB) return 1;
+    return 0;
+  });
   return filteredData;
 }
 

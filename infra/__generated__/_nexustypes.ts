@@ -193,6 +193,7 @@ export interface NexusGenObjects {
     id: string; // String!
     slug?: string | null; // String
     status?: string | null; // String
+    summary?: string | null; // String
     title?: string | null; // String
   }
   BlogPostAuthor: { // root type
@@ -238,6 +239,9 @@ export interface NexusGenObjects {
     imgUrl?: string | null; // String
     type?: string | null; // String
   }
+  Link: { // root type
+    url?: string | null; // String
+  }
   Mutation: {};
   PageInfo: { // root type
     endCursor?: string | null; // String
@@ -272,7 +276,7 @@ export interface NexusGenObjects {
   Subscription: {};
   Text: { // root type
     content?: string | null; // String
-    link?: string | null; // String
+    link?: NexusGenRootTypes['Link'] | null; // Link
   }
 }
 
@@ -440,6 +444,7 @@ export interface NexusGenFieldTypes {
     id: string; // String!
     slug: string | null; // String
     status: string | null; // String
+    summary: string | null; // String
     title: string | null; // String
   }
   BlogPostAuthor: { // field return type
@@ -487,6 +492,9 @@ export interface NexusGenFieldTypes {
     id: string | null; // String
     imgUrl: string | null; // String
     type: string | null; // String
+  }
+  Link: { // field return type
+    url: string | null; // String
   }
   Mutation: { // field return type
     createOrg: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
@@ -546,7 +554,7 @@ export interface NexusGenFieldTypes {
   }
   Text: { // field return type
     content: string | null; // String
-    link: string | null; // String
+    link: NexusGenRootTypes['Link'] | null; // Link
   }
   BfCurrentViewer: { // field return type
     blog: NexusGenRootTypes['Blog'] | null; // Blog
@@ -718,6 +726,7 @@ export interface NexusGenFieldTypeNames {
     id: 'String'
     slug: 'String'
     status: 'String'
+    summary: 'String'
     title: 'String'
   }
   BlogPostAuthor: { // field return type name
@@ -765,6 +774,9 @@ export interface NexusGenFieldTypeNames {
     id: 'String'
     imgUrl: 'String'
     type: 'String'
+  }
+  Link: { // field return type name
+    url: 'String'
   }
   Mutation: { // field return type name
     createOrg: 'BfOrganization'
@@ -824,7 +836,7 @@ export interface NexusGenFieldTypeNames {
   }
   Text: { // field return type name
     content: 'String'
-    link: 'String'
+    link: 'Link'
   }
   BfCurrentViewer: { // field return type name
     blog: 'Blog'

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 const testimonialVideos: string[] = [
   "https://bf-static-assets.s3.amazonaws.com/marketing/Working_with_rodger_testimonial.mp4",
   "https://bf-static-assets.s3.amazonaws.com/marketing/Why_GRIP6_wallet_verified_testimonial.mp4",
-  "https://bf-static-assets.s3.amazonaws.com/marketing/10_pattern_pxm_success_story.mp4",
+  "https://bf-static-assets.s3.amazonaws.com/marketing/deadpool_leaked_footage_3mb.mp4",
 ];
 
 export function LandingPageClipCollection() {

@@ -36,8 +36,8 @@ export function LandingPageHero() {
         <BfDsButton
           href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
           hrefTarget="blank"
-          text="Book a meeting"
-          size="large"
+          text="Let's talk"
+          size="xlarge"
         />
       </div>
     </div>

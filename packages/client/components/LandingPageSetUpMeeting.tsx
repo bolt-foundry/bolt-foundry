@@ -6,7 +6,7 @@ export function LandingPageSetUpMeeting(): React.ReactElement {
   return (
     <div className="landing-page-set-up-meeting-section">
       <div className="landing-page-set-up-meeting-text-area">
-        It's your content, use all of it.
+        It's your content, get the most from it.
         <div className="landing-page-set-up-meeting-cta">
           Schedule to see how Bolt Foundry can help!
         </div>
@@ -15,7 +15,7 @@ export function LandingPageSetUpMeeting(): React.ReactElement {
         <BfDsButton
           href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
           hrefTarget="blank"
-          text="Book a meeting"
+          text="Let's talk"
           size="xlarge"
         />
       </div>

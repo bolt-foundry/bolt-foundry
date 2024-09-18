@@ -352,6 +352,7 @@ type BlogPost {
   id: String!
   slug: String
   status: String
+  summary: String
   title: String
 }
 
@@ -422,6 +423,10 @@ type ImageBlock implements BlogPostContentBlock {
   id: String
   imgUrl: String
   type: String
+}
+
+type Link {
+  url: String
 }
 
 type Mutation {
@@ -514,7 +519,7 @@ type Subscription {
 
 type Text {
   content: String
-  link: String
+  link: Link
 }
 
 """a fully qualified URL"""

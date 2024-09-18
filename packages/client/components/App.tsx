@@ -18,6 +18,7 @@ import { BlogPage } from "packages/client/pages/BlogPage.tsx";
 import { LandingPage } from "packages/client/pages/LandingPage.tsx";
 import type { useAppState } from "packages/client/contexts/AppStateContext.tsx";
 import { Hud } from "packages/client/components/Hud.tsx";
+import { TermsAndPrivacyPage } from "packages/client/pages/TermsAndPrivacyPage.tsx";
 
 export const routes = new Map([
   ["/", { Component: LandingPage, allowLoggedOut: true }],
@@ -28,6 +29,10 @@ export const routes = new Map([
   ["/settings/:tab?", { Component: SettingsPage, allowLoggedOut: false }],
   ["/search", { Component: ClipSearchPage, allowLoggedOut: false }],
   ["/blog/:slug?", { Component: BlogPage, allowLoggedOut: true }],
+  ["/terms-and-privacy", {
+    Component: TermsAndPrivacyPage,
+    allowLoggedOut: true,
+  }],
 ]);
 
 export function App() {

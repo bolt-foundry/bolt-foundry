@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<959bf346a8743eb5c1ae6d4baed8200b>>
+ * @generated SignedSource<<22703b01961382292f6f9e34c61619f7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type BlogPagePostFragment$data = {
+export type BlogPostContentFragment$data = {
   readonly author: {
     readonly avatarUrl: string | null | undefined;
     readonly email: string | null | undefined;
@@ -28,7 +28,9 @@ export type BlogPagePostFragment$data = {
       } | null | undefined;
       readonly text: {
         readonly content: string | null | undefined;
-        readonly link: string | null | undefined;
+        readonly link: {
+          readonly url: string | null | undefined;
+        } | null | undefined;
       } | null | undefined;
     } | null | undefined> | null | undefined;
     readonly caption?: ReadonlyArray<{
@@ -42,7 +44,9 @@ export type BlogPagePostFragment$data = {
       } | null | undefined;
       readonly text: {
         readonly content: string | null | undefined;
-        readonly link: string | null | undefined;
+        readonly link: {
+          readonly url: string | null | undefined;
+        } | null | undefined;
       } | null | undefined;
     } | null | undefined> | null | undefined;
     readonly color?: string | null | undefined;
@@ -58,12 +62,13 @@ export type BlogPagePostFragment$data = {
   readonly id: string;
   readonly slug: string | null | undefined;
   readonly status: string | null | undefined;
+  readonly summary: string | null | undefined;
   readonly title: string | null | undefined;
-  readonly " $fragmentType": "BlogPagePostFragment";
+  readonly " $fragmentType": "BlogPostContentFragment";
 };
-export type BlogPagePostFragment$key = {
-  readonly " $data"?: BlogPagePostFragment$data;
-  readonly " $fragmentSpreads": FragmentRefs<"BlogPagePostFragment">;
+export type BlogPostContentFragment$key = {
+  readonly " $data"?: BlogPostContentFragment$data;
+  readonly " $fragmentSpreads": FragmentRefs<"BlogPostContentFragment">;
 };
 
 const node: ReaderFragment = (function(){
@@ -114,8 +119,19 @@ v4 = [
       {
         "alias": null,
         "args": null,
-        "kind": "ScalarField",
+        "concreteType": "Link",
+        "kind": "LinkedField",
         "name": "link",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "url",
+            "storageKey": null
+          }
+        ],
         "storageKey": null
       }
     ],
@@ -183,7 +199,7 @@ return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "BlogPagePostFragment",
+  "name": "BlogPostContentFragment",
   "selections": [
     (v0/*: any*/),
     {
@@ -212,6 +228,13 @@ return {
       "args": null,
       "kind": "ScalarField",
       "name": "date",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "summary",
       "storageKey": null
     },
     {
@@ -337,6 +360,6 @@ return {
 };
 })();
 
-(node as any).hash = "bf39403d271a286df10a17dbafb0aa11";
+(node as any).hash = "4fc01d0ed2f4f54867678cd59f81f215";
 
 export default node;

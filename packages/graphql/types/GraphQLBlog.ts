@@ -48,6 +48,7 @@ export const BlogPost = objectType({
         return parent.author;
       },
     });
+    t.string("summary");
     t.string("coverUrl");
     t.string("icon");
     t.list.field("content", {
@@ -148,7 +149,16 @@ export const TextObject = objectType({
   name: "Text",
   definition(t) {
     t.string("content");
-    t.string("link");
+    t.field("link", {
+      type: "Link",
+    });
+  },
+});
+
+export const Link = objectType({
+  name: "Link",
+  definition(t) {
+    t.string("url");
   },
 });
 
