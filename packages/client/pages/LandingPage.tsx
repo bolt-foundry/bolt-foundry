@@ -53,7 +53,7 @@ export function LandingPage(): React.ReactElement {
         <BfDsButton
           kind="outline"
           text="Terms and Privacy"
-          href="/terms"
+          href="/terms-and-privacy"
           hrefTarget="blank"
           testId="button-terms-footer"
         />
