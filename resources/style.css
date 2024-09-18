@@ -1476,6 +1476,22 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   }
 }
 
+/* terms-and-privacy */
+.terms-and-privacy-content {
+  gap: 20px;
+  padding: 20px 60px;
+  font-family: var(--marketingFontFamily);
+}
+
+.terms-and-privacy-title {
+  font-size: max(24px, 3vw);
+  margin: 5% 0;
+}
+
+.terms-and-privacy-body {
+  font-size: max(16px, 1vw);
+}
+
 /* Transcript View */
 .transcript {
   background: var(--background);

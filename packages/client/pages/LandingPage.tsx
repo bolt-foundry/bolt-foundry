@@ -53,7 +53,7 @@ export function LandingPage(): React.ReactElement {
         <BfDsButton
           kind="outline"
           text="Terms and Privacy"
-          href="/terms"
+          href="/terms-and-privacy"
           hrefTarget="blank"
           testId="button-terms-footer"
         />
@@ -90,7 +90,7 @@ export function LandingPage(): React.ReactElement {
         <BfDsButton
           iconLeft="brand-discord"
           kind="outline"
-          href="https://discord.gg/ZTVJkfxHkC"
+          href="https://discord.gg/fQETC95grU"
           hrefTarget="_blank"
           size="large"
           tooltip="Join our Discord!"
