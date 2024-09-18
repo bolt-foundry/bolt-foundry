@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<554d4957683eef44512c332736b75ecd>>
+ * @generated SignedSource<<21c63ba8b2a343e09d2f9f74c44f0482>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -172,8 +172,19 @@ v12 = [
       {
         "alias": null,
         "args": null,
-        "kind": "ScalarField",
+        "concreteType": "Link",
+        "kind": "LinkedField",
         "name": "link",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "url",
+            "storageKey": null
+          }
+        ],
         "storageKey": null
       }
     ],
@@ -451,12 +462,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "eb8b586b8f7b9559604670e8fd799bbd",
+    "cacheID": "691f58ebd715307f9b1a2ed6530ebfe9",
     "id": null,
     "metadata": {},
     "name": "BlogPageQuery",
     "operationKind": "query",
-    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10, status: \"Ready for publish\") {\n        nodes {\n          ...BlogPagePostFragment\n          id\n          title\n          slug\n          date\n          summary\n          author {\n            name\n            email\n            avatarUrl\n          }\n          coverUrl\n        }\n      }\n    }\n  }\n}\n\nfragment BlogPagePostFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  summary\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n  icon\n  content {\n    __typename\n    ... on ParagraphBlock {\n      id\n      type\n      color\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on ImageBlock {\n      id\n      type\n      imgUrl\n      caption {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CalloutBlock {\n      id\n      type\n      color\n      icon\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CodeBlock {\n      id\n      type\n      language\n      RichText {\n        text {\n          content\n          link\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query BlogPageQuery {\n  currentViewer {\n    __typename\n    blog {\n      posts(first: 10, status: \"Ready for publish\") {\n        nodes {\n          ...BlogPagePostFragment\n          id\n          title\n          slug\n          date\n          summary\n          author {\n            name\n            email\n            avatarUrl\n          }\n          coverUrl\n        }\n      }\n    }\n  }\n}\n\nfragment BlogPagePostFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  summary\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n  icon\n  content {\n    __typename\n    ... on ParagraphBlock {\n      id\n      type\n      color\n      RichText {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on ImageBlock {\n      id\n      type\n      imgUrl\n      caption {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CalloutBlock {\n      id\n      type\n      color\n      icon\n      RichText {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CodeBlock {\n      id\n      type\n      language\n      RichText {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();

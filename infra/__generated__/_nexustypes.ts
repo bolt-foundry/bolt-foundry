@@ -239,6 +239,9 @@ export interface NexusGenObjects {
     imgUrl?: string | null; // String
     type?: string | null; // String
   }
+  Link: { // root type
+    url?: string | null; // String
+  }
   Mutation: {};
   PageInfo: { // root type
     endCursor?: string | null; // String
@@ -273,7 +276,7 @@ export interface NexusGenObjects {
   Subscription: {};
   Text: { // root type
     content?: string | null; // String
-    link?: string | null; // String
+    link?: NexusGenRootTypes['Link'] | null; // Link
   }
 }
 
@@ -490,6 +493,9 @@ export interface NexusGenFieldTypes {
     imgUrl: string | null; // String
     type: string | null; // String
   }
+  Link: { // field return type
+    url: string | null; // String
+  }
   Mutation: { // field return type
     createOrg: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     createTranscript: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
@@ -548,7 +554,7 @@ export interface NexusGenFieldTypes {
   }
   Text: { // field return type
     content: string | null; // String
-    link: string | null; // String
+    link: NexusGenRootTypes['Link'] | null; // Link
   }
   BfCurrentViewer: { // field return type
     blog: NexusGenRootTypes['Blog'] | null; // Blog
@@ -769,6 +775,9 @@ export interface NexusGenFieldTypeNames {
     imgUrl: 'String'
     type: 'String'
   }
+  Link: { // field return type name
+    url: 'String'
+  }
   Mutation: { // field return type name
     createOrg: 'BfOrganization'
     createTranscript: 'BfMediaNodeTranscript'
@@ -827,7 +836,7 @@ export interface NexusGenFieldTypeNames {
   }
   Text: { // field return type name
     content: 'String'
-    link: 'String'
+    link: 'Link'
   }
   BfCurrentViewer: { // field return type name
     blog: 'Blog'

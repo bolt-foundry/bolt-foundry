@@ -425,6 +425,10 @@ type ImageBlock implements BlogPostContentBlock {
   type: String
 }
 
+type Link {
+  url: String
+}
+
 type Mutation {
   createTranscript(filename: String!, words: String!): BfMediaNodeTranscript
   deleteGoogleDriveResource(resourceId: String): DeleteMutationPayload
@@ -515,7 +519,7 @@ type Subscription {
 
 type Text {
   content: String
-  link: String
+  link: Link
 }
 
 """a fully qualified URL"""
