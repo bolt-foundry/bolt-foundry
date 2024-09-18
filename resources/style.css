@@ -1261,7 +1261,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   font-size: max(16px, 1.6vw);
   text-align: left;
   color: var(--textMarketing);
-  max-width: 400px;
+  max-width: 600px;
 }
 
 .landing-page-hero {
@@ -1363,11 +1363,15 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   border-radius: 8px;
 }
 
+.landing-page-testimonial-video-wrapper {
+  align-content: center;
+}
+
 .landing-page-set-up-meeting-section {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  padding: 12vw;
+  padding: 10vw;
   padding-top: 0;
 }
 
@@ -1410,13 +1414,15 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 }
 
 .landing-page-footer {
-  min-height: 5vh;
-  display: flex;
-  justify-content: flex-end;
   gap: 1.3vw;
-  padding: 10px;
-  padding-right: 88px;
-  align-items: center;
+  padding: 20px;
+  align-items: end;
+}
+.landing-page-footer-buttons {
+  gap: 1.3vw;
+}
+.terms-and-privacy {
+  
 }
 
 @media(max-width: 1300px) {
@@ -1455,7 +1461,11 @@ input[type="range"].scrubber::-moz-range-thumb:active {
     margin-bottom: 32px;
     text-align: center;
   }
+}
 
+.landing-page-bottom-logo {
+  margin: 0 auto 10vw;
+  width: min(400px, 50%);
 }
 
 @media(min-width: 500px) and (max-width: 1300px) {
@@ -1474,6 +1484,9 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   .landing-page-mission-image {
     width: 80vw;
   }
+  .landing-page-footer {
+    align-items: center;
+  }
 }
 
 /* terms-and-privacy */
@@ -1481,6 +1494,9 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   gap: 20px;
   padding: 20px 60px;
   font-family: var(--marketingFontFamily);
+  width: min(100%, 60rem);
+  margin: 0 auto;
+  text-align: justify;
 }
 
 .terms-and-privacy-title {
@@ -1834,7 +1850,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .blog_list {
   padding: 16px 50px;
   width: 100%;
-  max-width: 55rem;
+  max-width: 50rem;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -1863,7 +1879,8 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 }
 .blog_page_header .logo,
 .blog_post_header .logo{
-  width: 130px;
+  width: 150px;
+  height: 20px;
   margin-left: 4px;
 }
 .blog_page_header .logo_text,
