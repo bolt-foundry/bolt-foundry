@@ -90,7 +90,7 @@ export function LandingPage(): React.ReactElement {
         <BfDsButton
           iconLeft="brand-discord"
           kind="outline"
-          href="https://discord.gg/ZTVJkfxHkC"
+          href="https://discord.gg/fQETC95grU"
           hrefTarget="_blank"
           size="large"
           tooltip="Join our Discord!"
