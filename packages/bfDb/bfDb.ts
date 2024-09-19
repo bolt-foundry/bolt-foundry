@@ -428,7 +428,7 @@ export async function bfQueryItemsWithSizeLimit<
   orderBy: keyof Row = "sort_value",
   cursorValue?: number | string,
   maxSizeBytes: number = 10 * 1024 * 1024, // 10MB in bytes
-  batchSize: number = 10,
+  batchSize: number = 4,
 ): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
   logger.debug({
     metadataToQuery,
@@ -516,15 +516,21 @@ export async function bfQueryItemsWithSizeLimit<
 
   const items: Array<DbItem<TProps, BfBaseModelMetadata>> = [];
   let totalSize = 0;
+  let hasUsedCursor = false;
   let currentCursor = cursorValue;
 
   while (true) {
     let cursorCondition = "";
     if (currentCursor !== undefined) {
-      cursorCondition = `${orderBy} ${orderDirection === "ASC" ? ">" : "<"} $${
-        variables.length + 1
-      }`;
-      variables.push(currentCursor);
+      if (hasUsedCursor) {
+        variables[variables.length - 1] = currentCursor;
+      } else {
+        variables.push(currentCursor);
+        hasUsedCursor = true;
+      }
+      cursorCondition = `${orderBy} ${
+        orderDirection === "ASC" ? ">" : "<"
+      } $${variables.length}`;
     }
 
     const allConditions = [
