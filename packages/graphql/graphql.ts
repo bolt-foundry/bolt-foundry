@@ -30,6 +30,8 @@ export const yoga = createYoga<GraphQLServerContext, GraphQLUserContext>({
   schema,
 });
 
+
+
 export async function handler(request: Request): Promise<Response> {
   const ctx = await getContextFromRequest(request);
 
