@@ -49,9 +49,12 @@ export const BfNodeGraphQLQueryType = queryField("node", {
 export const BfNodeGraphQLSubscriptionType = subscriptionField("node", {
   type: BfNodeGraphQLType,
   args: {
-    id: nonNull(idArg()),
+    id: idArg(),
   },
   subscribe: async function (_, { id }, { bfCurrentViewer }) {
+    if (!id) {
+      return Promise.reject();
+    }
     logger.debug(`Subscribing to node ${id}`);
     const node = await BfNode.findX(bfCurrentViewer, toBfGid(id));
     return node.getSubscriptionForGraphql();
