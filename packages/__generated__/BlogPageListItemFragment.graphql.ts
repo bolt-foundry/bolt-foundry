@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<446cd683ace83d76abd822786b66ef69>>
+ * @generated SignedSource<<ec8dec05c16d514efd70e6affc932c6d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { Fragment, ReaderFragment } from 'relay-runtime';
 export type PostStatus = "DEV_ONLY" | "READY_FOR_PUBLISH" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
-export type BlogPageHeroFragment$data = {
+export type BlogPageListItemFragment$data = {
   readonly author: {
     readonly avatarUrl: string | null | undefined;
     readonly email: string | null | undefined;
@@ -24,18 +24,18 @@ export type BlogPageHeroFragment$data = {
   readonly status: PostStatus | null | undefined;
   readonly summary: string | null | undefined;
   readonly title: string | null | undefined;
-  readonly " $fragmentType": "BlogPageHeroFragment";
+  readonly " $fragmentType": "BlogPageListItemFragment";
 };
-export type BlogPageHeroFragment$key = {
-  readonly " $data"?: BlogPageHeroFragment$data;
-  readonly " $fragmentSpreads": FragmentRefs<"BlogPageHeroFragment">;
+export type BlogPageListItemFragment$key = {
+  readonly " $data"?: BlogPageListItemFragment$data;
+  readonly " $fragmentSpreads": FragmentRefs<"BlogPageListItemFragment">;
 };
 
 const node: ReaderFragment = {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "BlogPageHeroFragment",
+  "name": "BlogPageListItemFragment",
   "selections": [
     {
       "alias": null,
@@ -123,6 +123,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "012be9eb40aa961e3c82879a3f35c3e4";
+(node as any).hash = "7011c15c5f35c8acfc1297bb7c6dd416";
 
 export default node;

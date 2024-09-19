@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<22703b01961382292f6f9e34c61619f7>>
+ * @generated SignedSource<<e1647a47984a004ffc98569a596fdef0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,6 +9,7 @@
 // @ts-nocheck
 
 import { Fragment, ReaderFragment } from 'relay-runtime';
+export type PostStatus = "DEV_ONLY" | "READY_FOR_PUBLISH" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type BlogPostContentFragment$data = {
   readonly author: {
@@ -61,7 +62,7 @@ export type BlogPostContentFragment$data = {
   readonly icon: string | null | undefined;
   readonly id: string;
   readonly slug: string | null | undefined;
-  readonly status: string | null | undefined;
+  readonly status: PostStatus | null | undefined;
   readonly summary: string | null | undefined;
   readonly title: string | null | undefined;
   readonly " $fragmentType": "BlogPostContentFragment";

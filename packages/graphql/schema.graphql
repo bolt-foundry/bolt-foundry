@@ -338,7 +338,7 @@ type Blog {
     """Returns the last n elements from the list."""
     last: Int
     slug: String
-    status: String
+    status: [PostStatus]
   ): BlogPostConnection
   title: String
 }
@@ -351,7 +351,7 @@ type BlogPost {
   icon: String
   id: String!
   slug: String
-  status: String
+  status: PostStatus
   summary: String
   title: String
 }
@@ -482,6 +482,11 @@ type ParagraphBlock implements BlogPostContentBlock {
   color: String
   id: String
   type: String
+}
+
+enum PostStatus {
+  DEV_ONLY
+  READY_FOR_PUBLISH
 }
 
 type Query {

@@ -1,42 +1,48 @@
-import { useFragment, useLazyLoadQuery } from "react-relay";
+import { useFragment } from "react-relay";
 import { getLogger } from "deps.ts";
 import { graphql } from "packages/client/deps.ts";
 import type { BlogPostContentFragment$key } from "packages/__generated__/BlogPostContentFragment.graphql.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { BlogPageHero } from "packages/client/components/blog/BlogPageHero.tsx";
+import { BlogPageContentFragment$key } from "packages/__generated__/BlogPageContentFragment.graphql.ts";
 import { BlogPageListItem } from "packages/client/components/blog/BlogPageListItem.tsx";
 
-const logger = getLogger(import.meta);
+// const logger = getLogger(import.meta);
 const fragment = await graphql`
-fragment BlogPageContentFragment on Blog {
-  posts(first: 10, status: "Ready for publish") {
-    nodes {
-      ...BlogPageHeroFragment
-      ...BlogPostContentFragment
-      id
-      title
-      slug
-      status
-      date
-      summary
-      author {
-        name
-        email
-        avatarUrl
+fragment BlogPageContentFragment on Blog
+@argumentDefinitions(status: { type: "[PostStatus!]" }) {
+  posts(first: 10, status: $status) @connection(key: "Blog_posts") {
+    edges {
+      node {
+        ...BlogPageHeroFragment
+        ...BlogPostContentFragment
+        ...BlogPageListItemFragment
+        id
+        title
+        slug
+        status
+        date
+        summary
+        author {
+          name
+          email
+          avatarUrl
+        }
+        coverUrl
       }
-      coverUrl
     }
   }
 }
 `;
 
 type Props = {
-  blogRef: BlogPostContentFragment$key;
+  blogRef: BlogPageContentFragment$key | null;
 };
 
 export function BlogPageContent({ blogRef }: Props) {
   const data = useFragment(fragment, blogRef);
-  const posts = data.posts?.nodes || [];
+  const posts = data?.posts?.edges?.map((edge) => edge?.node).filter(Boolean) ??
+    [];
 
   const blogPostList: JSX.Element[] = [];
   posts.forEach((post: BlogPostContentFragment$key, index: number) => {

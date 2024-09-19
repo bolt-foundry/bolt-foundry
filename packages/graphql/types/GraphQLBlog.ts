@@ -1,4 +1,4 @@
-import { interfaceType, objectType, stringArg } from "nexus";
+import { enumType, interfaceType, list, objectType, stringArg } from "nexus";
 import { connectionFromArray } from "packages/graphql/deps.ts";
 import {
   type BlogPostData,
@@ -8,6 +8,14 @@ import {
 } from "lib/notionApi.ts";
 import { formatDateString } from "packages/lib/textUtils.ts";
 
+export const PostStatus = enumType({
+  name: "PostStatus",
+  members: {
+    READY_FOR_PUBLISH: "Ready for publish",
+    DEV_ONLY: "Dev only",
+  },
+});
+
 export const Blog = objectType({
   name: "Blog",
   definition(t) {
@@ -16,7 +24,7 @@ export const Blog = objectType({
       type: "BlogPost",
       additionalArgs: {
         slug: stringArg(),
-        status: stringArg(),
+        status: list(PostStatus),
         date: stringArg(),
         author: stringArg(),
       },
@@ -25,7 +33,9 @@ export const Blog = objectType({
         if (args.slug) {
           posts = posts.filter((post) => post.slug === args.slug);
         } else if (args.status) {
-          posts = posts.filter((post) => post.status === args.status);
+          posts = posts.filter((post) => {
+            return args.status && args.status.includes(post.status);
+          });
         }
         return connectionFromArray(posts, args);
       },
@@ -60,7 +70,9 @@ export const BlogPost = objectType({
         return content; // Directly return the list
       },
     });
-    t.string("status");
+    t.field("status", {
+      type: PostStatus,
+    });
   },
 });
 
