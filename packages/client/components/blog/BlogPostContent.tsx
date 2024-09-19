@@ -124,15 +124,28 @@ function RichText({ richText }) {
       { strikethrough },
       { underlined },
     ]);
-    return (
-      <span
-        className={classList}
-        style={{ color }}
-        key={textBlock.text.content}
-      >
-        {textBlock.text.content}
-      </span>
-    );
+    const link = textBlock.text?.link?.url;
+    return link
+      ? (
+        <a
+          href={link}
+          target="_blank"
+          className={classList}
+          style={{ color }}
+          key={textBlock.text.content}
+        >
+          {textBlock.text.content}
+        </a>
+      )
+      : (
+        <span
+          className={classList}
+          style={{ color }}
+          key={textBlock.text.content}
+        >
+          {textBlock.text.content}
+        </span>
+      );
   });
 }
 
