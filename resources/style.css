@@ -1793,14 +1793,14 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   align-items: center;
   justify-content: space-between;
   min-width: 150px;
-  color: black;
+  color: var(--text);
   padding: 15px 23px;
-  background: white;
+  background: var(--background);
   border-radius: 20px;
 }
 
 .blog-navbar a {
-  color: black;
+  color: var(--text);
 }
 
 .blog_page a:hover {
@@ -1808,15 +1808,15 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 }
 
 .blog_page {
-  background: radial-gradient(white 50%, transparent 100%), linear-gradient(in oklch -25deg, var(--secondaryColor) 40%, var(--fourtharyColor) 60%);
+  background: radial-gradient(var(--background) 50%, transparent 100%), linear-gradient(in oklch -25deg, var(--secondaryColor) 40%, var(--fourtharyColor) 60%);
   background-size: 120% 210%;
   background-position: 40%;
 }
 .blog_post {
-  background: linear-gradient(90deg, transparent 0%, white 25%, white 75%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, var(--background) 25%, var(--background) 75%, transparent 100%);
 }
 .blog_page_header {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--transparentBackground);
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
 }
 .blog_post_header {
@@ -1868,11 +1868,11 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   font-size: 2.7em;
   font-weight: 500;
   line-height: 1;
-  color: black;
+  color: var(--text);
 }
 .blog_post_header .logo_text {
   font-size: 1.5em;
-  color: white;
+  color: var(--alwaysWhite);
 }
 
 .blog_list {
@@ -1889,7 +1889,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 .blog-page-hero {
   aspect-ratio: 2 / 1;
-  color: white;
+  color: var(--alwaysWhite);
   cursor: pointer;
   background-size: cover;
   border-radius: 8px;
@@ -1905,6 +1905,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 }
 
 .blog-page-hero-title {
+  color: var(--alwaysWhite);
   display: flex;
   flex-direction: column;
   justify-content: end;
@@ -1925,6 +1926,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 }
 
 .blog-page-hero-summary {
+  color: var(--alwaysWhite);
   padding-top: 10px;
 }
 
@@ -1970,7 +1972,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 .blog-page-cta-text-area {
   font-size: 21px;
-  color: white;
+  color: var(--alwaysWhite);
   text-shadow: 0 0 18px rgba(0, 0, 0, .2);
 }
 
@@ -2025,7 +2027,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   background-position: center;
 }
 .blog_post_content {
-  background: linear-gradient(90deg, transparent 0%, white 25%, white 75%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, var(--background) 25%, var(--background) 75%, transparent 100%);
   padding: 20px 50px;
   width: 100%;
   max-width: 50rem;
