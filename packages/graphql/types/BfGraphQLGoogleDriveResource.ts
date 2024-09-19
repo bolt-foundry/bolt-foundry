@@ -4,7 +4,7 @@ import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import type { GraphQLContext } from "packages/graphql/graphql.ts";
 import { GraphQLError } from "packages/graphql/deps.ts";
-import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { toBfGid, toBfSid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 
 export const BfGraphQLGoogleDriveFolderType = objectType({
   name: "BfGoogleDriveResource",
@@ -18,13 +18,12 @@ export const BfGraphQLPickGoogleDriveFolderQuery = extendType({
   type: "BfOrganization",
   definition(t) {
     t.connectionField("googleDriveFolders", {
-      type: "BfGoogleDriveResource",
+      type: BfGraphQLGoogleDriveFolderType,
       resolve: async (_, args, { bfCurrentViewer }: GraphQLContext) => {
-        // @ts-expect-error types are bad apparently
         const connection = await BfEdge.queryTargetsConnectionForGraphQL(
           bfCurrentViewer,
           BfGoogleDriveResource,
-          bfCurrentViewer.organizationBfGid,
+          toBfSid(bfCurrentViewer.organizationBfGid),
           {},
           args,
         );
@@ -37,7 +36,7 @@ export const BfGraphQLPickGoogleDriveFolderQuery = extendType({
 export const BfGraphQLPickGoogleDriveFolderMutation = mutationField(
   "pickGoogleDriveFolder",
   {
-    type: "BfGoogleDriveResource",
+    type: BfGraphQLGoogleDriveFolderType,
     args: {
       resourceId: "String",
       name: "String",
@@ -47,22 +46,18 @@ export const BfGraphQLPickGoogleDriveFolderMutation = mutationField(
       { resourceId, name },
       { bfCurrentViewer }: GraphQLContext,
     ) => {
-      const folder = await BfGoogleDriveResource.__DANGEROUS__createUnattached(
+      const organization = await BfOrganization.findX(
         bfCurrentViewer,
+        bfCurrentViewer.organizationBfGid,
+      );
+      const folder = await organization.createTargetNode(
+        BfGoogleDriveResource,
         {
           resourceId,
           name,
         },
       );
-      const organization = await BfOrganization.findX(
-        bfCurrentViewer,
-        bfCurrentViewer.organizationBfGid,
-      );
-      const _edge = await BfEdge.createEdgeBetweenNodes(
-        bfCurrentViewer,
-        organization,
-        folder,
-      );
+      
       return folder.toGraphql();
     },
   },
