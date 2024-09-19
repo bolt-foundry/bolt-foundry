@@ -19,6 +19,7 @@ const palletteLight = {
 
 const constantColors = {
   lightText: [230, 230, 235], // rgba(230, 230, 235, 1)
+  alwaysWhite: [255, 255, 255], // rgba(255, 255, 255, 1)
 };
 
 const palletteDark = {
@@ -70,6 +71,7 @@ function generateColors(dark = false) {
   const adjustment = dark ? -defaultAdjustment : defaultAdjustment;
   return {
     alwaysLight: color(constantColors.lightText),
+    alwaysWhite: color(constantColors.alwaysWhite),
     primaryColor: color(pallette.primary),
     primaryColor015: color(pallette.primary, null, 0.15),
     primaryColor030: color(pallette.primary, null, 0.30),
