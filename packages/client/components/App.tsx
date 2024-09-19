@@ -27,7 +27,7 @@ export const routes = new Map([
   ["/ui", { Component: Demo, allowLoggedOut: true }],
   ["/contact-us", { Component: ContactUs, allowLoggedOut: true }],
   ["/settings/:tab?", { Component: SettingsPage, allowLoggedOut: false }],
-  ["/search", { Component: ClipSearchPage, allowLoggedOut: false }],
+  ["/search/:searchId?", { Component: ClipSearchPage, allowLoggedOut: false }],
   ["/blog/:slug?", { Component: BlogPage, allowLoggedOut: true }],
   ["/terms-and-privacy", {
     Component: TermsAndPrivacyPage,
