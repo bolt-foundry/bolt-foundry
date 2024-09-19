@@ -515,7 +515,7 @@ type SubmitContactFormPayload {
 }
 
 type Subscription {
-  node(id: ID!): BfNode
+  node(id: ID): BfNode
 }
 
 type Text {
