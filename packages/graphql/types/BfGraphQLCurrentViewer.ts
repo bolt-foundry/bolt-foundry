@@ -23,6 +23,8 @@ import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { getLogger } from "deps.ts";
 import { exchangeCodeForToken } from "lib/googleOauth.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
+import { BfGraphQLSearchResult } from "packages/graphql/types/BfGraphQLSearchResult.ts";
+import { BfSearchResult } from "packages/bfDb/models/BfSearchResult.ts";
 const logger = getLogger(import.meta);
 
 export const AccountRole = enumType({
@@ -61,6 +63,18 @@ export const BfGraphQLCurrentViewerType = interfaceType({
       type: "Blog",
       resolve: () => {
         return { title: "Bolt foundry af" };
+      },
+    });
+    t.connectionField("searchResults", {
+      type: BfGraphQLSearchResult,
+      resolve: async (parent, args, { bfCurrentViewer }: GraphQLContext) => {
+        const personId = bfCurrentViewer.personBfGid;
+        const person = await BfPerson.findX(bfCurrentViewer, personId);
+        const searchResults = await person.queryTargetsConnectionForGraphQL(
+          BfSearchResult,
+          args,
+        );
+        return searchResults;
       },
     });
   },
