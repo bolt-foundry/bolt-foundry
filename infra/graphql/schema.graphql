@@ -347,6 +347,61 @@ type BfPerson implements BfNode & Node {
   name: String
 }
 
+"""Search results"""
+type BfSearchResult implements BfNode & Node {
+  collectionLength: Int
+  creator: BfPerson
+
+  """Unique identifier for the resource"""
+  id: ID!
+  query: String
+  searchResultItems(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfSearchResultItemConnection
+  status: String
+}
+
+"""A search result item."""
+type BfSearchResultItem implements BfNode & Node {
+  """Unique identifier for the resource"""
+  id: ID!
+}
+
+type BfSearchResultItemConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BfSearchResultItemEdge]
+
+  """Flattened list of BfSearchResultItem type"""
+  nodes: [BfSearchResultItem]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type BfSearchResultItemEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BfSearchResultItem
+}
+
 type Blog {
   posts(
     """Returns the elements in the list that come after the specified cursor"""
@@ -469,6 +524,7 @@ type Link {
 
 type Mutation {
   createOrg(domainName: String!, name: String!, youtubePlaylistUrl: String): BfOrganization
+  createSearchResult(query: String!): BfSearchResult
   createTranscript(filename: String!, words: String!): BfMediaNodeTranscript
   deleteGoogleDriveResource(resourceId: String): DeleteMutationPayload
   deleteMedia(id: String!): BfMedia
@@ -480,7 +536,6 @@ type Mutation {
   pickGoogleDriveFolder(name: String, resourceId: String): BfGoogleDriveResource
   playgroundMutation(input: String!, suggestedModel: String): PlaygroundMutationPayload
   readTextFile(file: File!): String
-  searchMutation(input: String!, suggestedModel: String): SearchMutationPayload
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
   updateTranscript(filename: String, id: String!, words: String): BfMediaNodeTranscript
@@ -556,11 +611,6 @@ type RichText {
   annotations: Annotations
   text: Text
   type: String
-}
-
-type SearchMutationPayload {
-  message: String
-  success: Boolean!
 }
 
 input SubmitContactFormInput {
