@@ -4,7 +4,7 @@ import { LandingPageMissionImage } from "packages/client/components/LandingPageM
 
 export function LandingPageMission() {
   return (
-    <>
+    <div className="landing-page-mission-section">
       <div className="landing-page-block">
         <div className="landing-page-mission-image">
           <LandingPageMissionImage />
@@ -24,6 +24,6 @@ export function LandingPageMission() {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }
