@@ -53,6 +53,7 @@ async function clientRendererMain(
   const serverEnvironment = {
     ...clientEnvironment,
     serverRelayEnvironment,
+    BF_ENV: Deno.env.get("BF_ENV") ?? "production",
     POSTHOG_API_KEY: Deno.env.get("POSTHOG_API_KEY") ?? "",
     GOOGLE_OAUTH_CLIENT_ID: Deno.env.get("GOOGLE_OAUTH_CLIENT_ID") ?? "",
     featureFlags: {} as FeatureFlags,
