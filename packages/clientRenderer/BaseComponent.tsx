@@ -88,20 +88,20 @@ export function BaseComponent({ children, environment }: Props) {
             fbq('track', 'PageView');`,
           }}
         />
-        <script
+        {/* <script
           type="text/javascript"
           id="hs-script-loader"
           async
           defer
           src={`//js-na1.hs-scripts.com/${environment.HUBSPOT_API_KEY}.js`}
         >
-        </script>
-        <script
+        </script> */}
+        {/* <script
           async
           src={`https://tag.clearbitscripts.com/v1/${environment.CLEARBIT_API_KEY}/tags.js`}
           referrerPolicy="strict-origin-when-cross-origin"
         >
-        </script>
+        </script> */}
 
         <script
           dangerouslySetInnerHTML={{
