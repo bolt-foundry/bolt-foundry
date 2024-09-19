@@ -430,7 +430,6 @@ export async function bfQueryItemsWithSizeLimit<
   maxSizeBytes: number = 10 * 1024 * 1024, // 10MB in bytes
   batchSize: number = 10,
 ): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
-  logger.setLevel(logger.levels.DEBUG);
   logger.debug({
     metadataToQuery,
     propsToQuery,

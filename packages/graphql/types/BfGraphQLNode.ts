@@ -52,7 +52,6 @@ export const BfNodeGraphQLSubscriptionType = subscriptionField("node", {
     id: nonNull(idArg()),
   },
   subscribe: async function (_, { id }, { bfCurrentViewer }) {
-    logger.setLevel(logger.levels.DEBUG);
     logger.debug(`Subscribing to node ${id}`);
     const node = await BfNode.findX(bfCurrentViewer, toBfGid(id));
     return node.getSubscriptionForGraphql();
