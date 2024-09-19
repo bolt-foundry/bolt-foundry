@@ -421,6 +421,10 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     await this.afterSave();
   }
 
+  async touch() {
+    await this.save();
+  }
+
   async delete() {
     await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
     try {
