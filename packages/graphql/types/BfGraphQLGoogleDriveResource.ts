@@ -68,17 +68,10 @@ export const BfGraphQLPickGoogleDriveFolderMutation = mutationField(
   },
 );
 
-const deleteMutationPayload = objectType({
-  name: "DeleteMutationPayload",
-  definition(t) {
-    t.nonNull.boolean("success");
-  },
-});
-
 export const BfGraphQLDeleteGoogleDriveResourceMutation = mutationField(
   "deleteGoogleDriveResource",
   {
-    type: deleteMutationPayload,
+    type: BfGraphQLGoogleDriveFolderType,
     args: {
       resourceId: "String",
     },
@@ -91,7 +84,7 @@ export const BfGraphQLDeleteGoogleDriveResourceMutation = mutationField(
         toBfGid(resourceId),
       );
       await folder.delete();
-      return { success: true };
+      return folder.toGraphql();
     },
   },
 );
