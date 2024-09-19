@@ -60,31 +60,14 @@ function ContentFrame(
         style={{ backgroundImage: cover ? `url(${cover})` : "" }}
       >
         <div className={`${classRoot}_header_inner`}>
-          {post
-            ? (
-              <div className="logo_container">
-                <Link to="/">
-                  <div className="logo">
-                    <BfLogo
-                      boltColor="white"
-                      foundryColor="white"
-                    />
-                  </div>
-                </Link>
-              </div>
-            )
-            : (
-              <div className="logo_container">
-                <Link to="/">
-                  <div className="logo">
-                    <BfLogo
-                      boltColor="black"
-                      foundryColor="black"
-                    />
-                  </div>
-                </Link>
-              </div>
-            )}
+          <div className="logo_container">
+            <Link to="/">
+              <BfLogo
+                boltColor={post ? "white" : "var(--text)"}
+                foundryColor={post ? "white" : "var(--text)"}
+              />
+            </Link>
+          </div>
           <BlogNavbar />
         </div>
       </div>
