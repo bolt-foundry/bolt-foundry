@@ -8,17 +8,16 @@ const logger = getLogger(import.meta);
 const mutation = await graphql`
   mutation DeleteMediaButtonMutation($id: String!) {
     deleteMedia(id: $id) {
-      id
+      id @deleteRecord
     }
   }
 `;
 
 type Props = {
   id: string;
-  onDelete: () => void;
 };
 
-export function DeleteMediaButton({ id, onDelete }: Props) {
+export function DeleteMediaButton({ id }: Props) {
   const [confirm, setConfirm] = React.useState(false);
   const [commit, isInFlight] = useMutation(mutation);
 
@@ -26,7 +25,6 @@ export function DeleteMediaButton({ id, onDelete }: Props) {
     commit({
       variables: { id },
       onCompleted: () => {
-        onDelete();
         setConfirm(false);
         logger.debug("Deleted media successfully");
       },
