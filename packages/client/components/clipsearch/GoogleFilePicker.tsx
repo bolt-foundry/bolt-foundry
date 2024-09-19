@@ -28,13 +28,14 @@ function openPicker(
     const showPicker = async () => {
       await gapiload;
       const sharedDrive = new google.picker.DocsView(google.picker.ViewId.DOCS);
-      sharedDrive.setEnableDrives(true).setIncludeFolders(true);
+      sharedDrive.setIncludeFolders(true);
 
       switch (type) {
         case GoogleDriveFilePickerFileType.FOLDER: {
-          sharedDrive.setSelectFolderEnabled(true).setMimeTypes(
-            "application/vnd.google-apps.folder",
-          );
+          sharedDrive.setSelectFolderEnabled(true);
+          // .setMimeTypes(
+          //   "application/vnd.google-apps.folder",
+          // );
         }
       }
 
