@@ -69,6 +69,7 @@ export class BfEdge<
     const newEdge = await BfEdge.__DANGEROUS__createUnattached(currentViewer, {
       role,
     }, metadata);
+    await Promise.all([sourceNode.touch(), targetNode.touch()]);
     return newEdge;
   }
 
