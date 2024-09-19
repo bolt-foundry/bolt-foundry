@@ -22,6 +22,7 @@ export class BfMediaNodeVideoGoogleDriveResource
     await bfmnTranscript.requestTranscriptionFromGoogleDriveResourceId(
       this.props.googleDriveResourceId,
     );
+    logger.info(`Transcript created for ${this}`);
     return this;
   }
 }

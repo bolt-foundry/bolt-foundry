@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<eece85df4da1d66471e0b1a9af53c469>>
+ * @generated SignedSource<<a17b36048b70b5975c7bd55a9aa786a9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type WatchFolderListMenu_deleteMutation$variables = {
 };
 export type WatchFolderListMenu_deleteMutation$data = {
   readonly deleteGoogleDriveResource: {
-    readonly success: boolean;
+    readonly id: string;
   } | null | undefined;
 };
 export type WatchFolderListMenu_deleteMutation = {
@@ -32,37 +32,38 @@ var v0 = [
 ],
 v1 = [
   {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "resourceId",
-        "variableName": "id"
-      }
-    ],
-    "concreteType": "DeleteMutationPayload",
-    "kind": "LinkedField",
-    "name": "deleteGoogleDriveResource",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "success",
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
+    "kind": "Variable",
+    "name": "resourceId",
+    "variableName": "id"
   }
-];
+],
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "WatchFolderListMenu_deleteMutation",
-    "selections": (v1/*: any*/),
+    "selections": [
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "BfGoogleDriveResource",
+        "kind": "LinkedField",
+        "name": "deleteGoogleDriveResource",
+        "plural": false,
+        "selections": [
+          (v2/*: any*/)
+        ],
+        "storageKey": null
+      }
+    ],
     "type": "Mutation",
     "abstractKey": null
   },
@@ -71,19 +72,41 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "WatchFolderListMenu_deleteMutation",
-    "selections": (v1/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "BfGoogleDriveResource",
+        "kind": "LinkedField",
+        "name": "deleteGoogleDriveResource",
+        "plural": false,
+        "selections": [
+          (v2/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "filters": null,
+            "handle": "deleteRecord",
+            "key": "",
+            "kind": "ScalarHandle",
+            "name": "id"
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
-    "cacheID": "9c61c749dfe40393e5b8060717fd8a95",
+    "cacheID": "4f21907c2f6645ffa6f27e01f5d21ead",
     "id": null,
     "metadata": {},
     "name": "WatchFolderListMenu_deleteMutation",
     "operationKind": "mutation",
-    "text": "mutation WatchFolderListMenu_deleteMutation(\n  $id: String\n) {\n  deleteGoogleDriveResource(resourceId: $id) {\n    success\n  }\n}\n"
+    "text": "mutation WatchFolderListMenu_deleteMutation(\n  $id: String\n) {\n  deleteGoogleDriveResource(resourceId: $id) {\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "31e61eb2b75babc625586a51f4fde386";
+(node as any).hash = "380249d2bdfddd2677ab104135ccdc60";
 
 export default node;

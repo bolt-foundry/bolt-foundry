@@ -5,6 +5,19 @@ import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { BfError } from "lib/BfError.ts";
 
+/**
+ * LAZY STUFF
+ */
+
+import { PineconeStore } from "@langchain/pinecone";
+import { OpenAIEmbeddings } from "@langchain/openai";
+
+import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
+import type { Document } from "@langchain/core/documents";
+
+/**
+ * / LAZY STUFF
+ */
 const logger = getLogger(import.meta);
 
 const BF_MEDIA_AUDIO_CACHE_DIRECTORY =
@@ -17,6 +30,7 @@ export enum BfMediaNodeTranscriptStatus {
   PROCESSING = "PROCESSING",
   COMPLETED = "COMPLETED",
   NEW = "NEW",
+  FAILED = "FAILED",
 }
 type AssemblyAIWord = {
   start: number;
@@ -30,6 +44,8 @@ type AssemblyAIWords = Array<AssemblyAIWord>;
 export type BfMediaNodeTranscriptProps = {
   words: AssemblyAIWords;
   status: BfMediaNodeTranscriptStatus;
+  ingestionPct: number;
+  transcriptionPct: number;
 };
 
 export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
@@ -40,11 +56,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
   async requestTranscriptionFromGoogleDriveResourceId(
     googleDriveResourceId: string,
   ) {
-    logger.setLevel(logger.levels.DEBUG);
-    logger.debug(
-      "requestTranscriptionFromGoogleDriveResourceId",
-      googleDriveResourceId,
-    );
+    logger.info(`creating transcript from google drive resource id ${this}`);
     const bfGoogleDriveResource = await BfGoogleDriveResource.findX(
       this.currentViewer,
       toBfGid(googleDriveResourceId),
@@ -52,6 +64,15 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     await Deno.mkdir(BF_MEDIA_AUDIO_CACHE_DIRECTORY, { recursive: true });
     logger.debug(`Getting file handle for ${bfGoogleDriveResource}`);
     const fileHandlePromise = bfGoogleDriveResource.getFileHandle();
+    const ffprobeArgs = [
+      "-i",
+      "-",
+      "-v",
+      "quiet",
+      "-show_format",
+      "-print_format",
+      "json",
+    ];
     const ffmpegArgs = [
       "-i",
       "-",
@@ -63,7 +84,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       "-progress",
       "pipe:2",
       "-stats_period",
-      "0.2", // seconds
+      "0.1", // seconds
       "-v",
       "quiet",
       this.filePath,
@@ -73,12 +94,50 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       stdin: "piped",
       stderr: "piped",
     });
-    logger.debug("Starting ffmpeg");
+    logger.info(`Starting ffmpeg transcript encode for ${this}`);
     const { stdin, stderr } = ffmpegProcess.spawn();
-    const fileLoadingPromise = fileHandlePromise.then((fileHandle) => {
-      logger.debug(`File handle ready from ${bfGoogleDriveResource}`);
-      return fileHandle.readable.pipeTo(stdin);
+    const ffprobeProcess = new Deno.Command("ffprobe", {
+      args: ffprobeArgs,
+      stdin: "piped",
+      stdout: "piped",
     });
+    const { stdin: ffprobeStdin, stdout: ffprobeStdout } = ffprobeProcess
+      .spawn();
+
+    fileHandlePromise.then((fileHandle) => {
+      logger.debug(`File handle ready from ${bfGoogleDriveResource}`);
+      const readableStream = fileHandle.readable;
+      const ffmpegPipe = readableStream.pipeTo(stdin);
+      return ffmpegPipe;
+    }).catch((r) => {
+      logger.error(r);
+    });
+
+    bfGoogleDriveResource.getFileHandle().then((fileHandle) => {
+      const readableStream = fileHandle.readable;
+      const ffprobePipe = readableStream.pipeTo(ffprobeStdin);
+      return ffprobePipe;
+    }).catch((r) => {
+      logger.warn(`ffprobe reading fails ${r}`);
+    });
+    const fileDuration = await (async () => {
+      const ffprobeStdoutReader = ffprobeStdout.pipeThrough(
+        new TextDecoderStream(),
+      ).getReader();
+      let outputText = "";
+      while (true) {
+        const { done, value } = await ffprobeStdoutReader.read();
+        if (done) break;
+        outputText += value;
+      }
+      logger.setLevel(logger.levels.DEBUG);
+      const ffprobeStdoutJson = JSON.parse(outputText);
+      logger.debug(`ffprobe output`, ffprobeStdoutJson);
+      const durationInUs = Math.floor(
+        ffprobeStdoutJson.format.duration * 1000,
+      );
+      return durationInUs;
+    })();
     const stderrReader = stderr.pipeThrough(new TextDecoderStream())
       .getReader();
     while (true) {
@@ -91,29 +150,130 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
         }
         return acc;
       }, {} as Record<string, string>);
-      logger.debug("ffmpeg stats", stats);
+      const outTimeUs = parseInt(stats.out_time_us);
+      const outTimeMs = outTimeUs / 1000;
+      const pctComplete = outTimeMs / fileDuration;
+      this.updateIngestionPct(pctComplete);
     }
-    await fileLoadingPromise;
     logger.info(`File encoded to ${this.filePath}`);
     const apiKey = Deno.env.get("ASSEMBLY_AI_KEY");
     if (!apiKey) throw new BfError("No assembly AI key found");
     const assemblyAIClient = new AssemblyAI({ apiKey });
     logger.info(`Starting transcription for ${this}`);
+    const audioDuration = fileDuration;
+    let transcriptionInProgress = true;
+    const expectedTranscriptionDuration = audioDuration * 0.7;
+    const intervalLength = expectedTranscriptionDuration / 100 / 100;
+    let timesReported = 0;
+    const interval = setInterval(async () => {
+      if (transcriptionInProgress === false) {
+        clearInterval(interval);
+        this.updateTranscriptionPct(1);
+        return;
+      }
+      const currentCompleted = expectedTranscriptionDuration * (timesReported * .4);
+      const currentPct = currentCompleted / expectedTranscriptionDuration /
+        100;
+      const cheaterCurrentPct = .90 + currentPct / 150;
+      if (cheaterCurrentPct > .99) {
+        this.updateTranscriptionPct(.99);
+      } else if (currentPct > .90) {
+        this.updateTranscriptionPct(cheaterCurrentPct);
+      } else {
+        this.updateTranscriptionPct(currentPct);
+      }
+
+      timesReported++;
+    }, intervalLength);
     const transcript = await assemblyAIClient.transcripts.transcribe({
       audio: this.filePath,
       speaker_labels: true,
     }, {});
+
+    transcriptionInProgress = false;
+    logger.debug(`Transcription estimated 100`);
+
     logger.debug("Got transcript", transcript);
     const words = transcript.words as AssemblyAIWords;
     this.props.words = words;
     await this.save();
     logger.info(`Transcription complete for ${this}`);
+    await this.sendToVectorStore();
+    logger.info("Sent to vector store");
     logger.info(`Removing ${this.filePath}`);
     await Deno.remove(this.filePath);
+
+    return this;
+  }
+
+  private async sendToVectorStore() {
+    const embeddings = new OpenAIEmbeddings({
+      model: "text-embedding-3-small",
+    });
+
+    const pinecone = new PineconeClient();
+    const pineconeIndexName = Deno.env.get("PINECONE_INDEX_NAME") ?? "test";
+    logger.debug(pineconeIndexName);
+    const pineconeIndex = pinecone.Index(pineconeIndexName);
+
+    logger.debug("pinecone index", pineconeIndex);
+    logger.info(`Sending to vector store for ${this}`);
+    const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
+      pineconeIndex,
+      // Maximum number of batch requests to allow at once. Each batch is 1000 vectors.
+      maxConcurrency: 5,
+      namespace: this.metadata.bfOid,
+    });
+
+    const documents: Array<Document> = this.getTokenSafeText().map((text) => {
+      return {
+        id: this.metadata.bfGid,
+        metadata: this.metadata,
+        pageContent: text,
+      };
+    });
+    logger.debug("langchainDocument to send", documents);
+    try {
+      const results = await vectorStore.addDocuments(documents);
+      logger.info("Sent", results);
+    } catch (e) {
+      logger.error(e);
+      throw e;
+    }
+    logger.info(`Sent to vector store for ${this}`);
     return this;
   }
 
   get text() {
     return this.props.words.map((word) => word.text).join(" ");
+  }
+
+  getTokenSafeText(maxTokenLength = 8192) {
+    const charactersPerToken = 3;
+    const maxStringLength = maxTokenLength * charactersPerToken;
+    const text = this.text;
+
+    const texts = [];
+    for (let i = 0; i < text.length; i += maxStringLength) {
+      texts.push(text.slice(i, i + maxStringLength));
+    }
+
+    return texts;
+  }
+
+  private async updateTranscriptionPct(pct: number) {
+    logger.setLevel(logger.levels.DEBUG);
+    this.props.transcriptionPct = pct;
+    await this.save();
+    logger.debug(`${this} Transcription pct updated to ${(pct * 100).toFixed(2)}%`);
+    logger.resetLevel();
+  }
+
+  private async updateIngestionPct(pct: number) {
+    logger.setLevel(logger.levels.DEBUG);
+    this.props.ingestionPct = pct;
+    await this.save();
+    logger.debug(`${this} Ingestion pct updated to ${(pct * 100).toFixed(2)}%`);
+    logger.resetLevel();
   }
 }

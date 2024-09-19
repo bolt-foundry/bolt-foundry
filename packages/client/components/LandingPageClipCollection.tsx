@@ -67,8 +67,9 @@ export function LandingPageClipCollection() {
   return (
     <div className="landing-page-clips-container" ref={containerRef}>
       {testimonialVideos.map((video, index) => {
+      const id = `video${index + 1}`
         return (
-          <div className="landing-page-clips" id={`video${index + 1}`}>
+          <div className="landing-page-clips" id={id} key={id}>
             <HscrollVideo
               src={video}
               videoRef={videoRefs.current[index]}
