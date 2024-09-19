@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<59e015df8966b96125269185903de460>>
+ * @generated SignedSource<<22703b01961382292f6f9e34c61619f7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type BlogPagePostFragment$data = {
+export type BlogPostContentFragment$data = {
   readonly author: {
     readonly avatarUrl: string | null | undefined;
     readonly email: string | null | undefined;
@@ -64,11 +64,11 @@ export type BlogPagePostFragment$data = {
   readonly status: string | null | undefined;
   readonly summary: string | null | undefined;
   readonly title: string | null | undefined;
-  readonly " $fragmentType": "BlogPagePostFragment";
+  readonly " $fragmentType": "BlogPostContentFragment";
 };
-export type BlogPagePostFragment$key = {
-  readonly " $data"?: BlogPagePostFragment$data;
-  readonly " $fragmentSpreads": FragmentRefs<"BlogPagePostFragment">;
+export type BlogPostContentFragment$key = {
+  readonly " $data"?: BlogPostContentFragment$data;
+  readonly " $fragmentSpreads": FragmentRefs<"BlogPostContentFragment">;
 };
 
 const node: ReaderFragment = (function(){
@@ -199,7 +199,7 @@ return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "BlogPagePostFragment",
+  "name": "BlogPostContentFragment",
   "selections": [
     (v0/*: any*/),
     {
@@ -360,6 +360,6 @@ return {
 };
 })();
 
-(node as any).hash = "05b19797b2c9f56659df87393ed37c37";
+(node as any).hash = "4fc01d0ed2f4f54867678cd59f81f215";
 
 export default node;
