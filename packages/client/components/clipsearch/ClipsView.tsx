@@ -1,5 +1,5 @@
 import type { React } from "deps.ts";
-import { Clip } from "packages/client/components/clipsearch/Clip.tsx";
+import { SearchResultItem } from "packages/client/components/clipsearch/SearchResultItem.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { isValidJSON } from "packages/lib/jsonUtils.ts";
 import { GoogleFilePicker } from "packages/client/components/clipsearch/GoogleFilePicker.tsx";
@@ -9,75 +9,75 @@ import { useClipSearchState } from "packages/client/contexts/ClipSearchContext.t
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { BfDsCallout } from "packages/bfDs/BfDsCallout.tsx";
 import { ClipsViewGlimmer } from "packages/client/components/clipsearch/ClipsViewGlimmer.tsx";
+import { ClipsViewNullState } from "packages/client/components/clipsearch/ClipsViewNullState.tsx";
+import { useRouter } from "packages/client/contexts/RouterContext.tsx";
+import { ClipsView_bfSearchResult$key } from "packages/__generated__/ClipsView_bfSearchResult.graphql.ts"; 
 
 type Props = {
-  count: number;
-  clips$key: unknown;
+  currentViewer$key: unknown;
+  bfSearchResult$key: ClipsView_bfSearchResult$key | null;
 };
 
-const fragment = await graphql`
-  fragment ClipsView_bfPerson on BfPerson {
-    googleAuthAccessToken
+const bfSearchResultFragment = await graphql`
+  fragment ClipsView_bfSearchResult on BfSearchResult {
+    collectionLength
+    query
+    status
+    searchResultItems(first: 10) {
+      count
+      edges {
+        node {
+          id
+        }
+      }
+    }
   }
+
 `;
 
-function GoogleAuthSection() {
-  return (
-    <BfDsCallout
-      kind="warning"
-      header="Google authorization"
-      body="In order to download videos, you must authorize Google Drive access."
-      action={<GoogleFilePicker />}
-    />
-  );
-}
-
-export function ClipsView({ count, clips$key }: Props) {
-  const {
-    clips,
-    clipsCount,
-    clearSearch,
-    commitSearch,
-    prompt,
-    previousPrompt,
-  } = useClipSearchState();
-  const data = useFragment(fragment, clips$key);
-  if (clips === undefined) {
-    return (
-      <>
-        {data?.googleAuthAccessToken == null &&
-          <GoogleAuthSection />}
-      </>
-    );
+const currentViewerFragment = await graphql`
+  fragment ClipsView_currentViewer on BfCurrentViewer {
+  __typename
   }
-  const italicPrompt = (text: string = previousPrompt) => {
+
+`;
+
+export function ClipsView({ currentViewer$key, bfSearchResult$key }: Props) {
+  if (!bfSearchResult$key) {
+    return <ClipsViewNullState />
+  }
+
+  const { navigate } = useRouter();
+
+  const { collectionLength, query, status} = useFragment(bfSearchResultFragment, bfSearchResult$key);
+  // const { collectionLength, query, searchResultItems: {count}, status } = useFragment(bfSearchResultFragment, bfSearchResult$key);
+  
+  const count = 137;
+  const italicPrompt = (text: string) => {
     return (
       <span style={{ fontStyle: "italic" }}>
         {text}
       </span>
     );
   };
-  if (clips === null) {
+  if (status === "SEARCHING") {
     return (
       <div className="flexColumn" style={{ gap: "20px" }}>
         <div className="cs-page-hero-callout">
-          Searching {count} videos for "{italicPrompt(prompt)}".
+          Searching {collectionLength} videos for "{italicPrompt(query)}".
         </div>
         <ClipsViewGlimmer />
       </div>
     );
   }
 
-  const parsedClips = isValidJSON(clips)
-    ? JSON.parse(clips)
-    : { anecdotes: [] };
+  
 
-  if (parsedClips.anecdotes == null || parsedClips.anecdotes.length === 0) {
+  if (status === "COMPLETE" && count === 0) {
     return (
       <div className="flexColumn" style={{ gap: "20px" }}>
         <div className="cs-page-hero-callout">
-          No clips found for "{italicPrompt()}".{" "}
-          <a onClick={() => commitSearch(previousPrompt)}>Retry</a>
+          No clips found for "{italicPrompt(query)}".{" "}
         </div>
       </div>
     );
@@ -85,46 +85,33 @@ export function ClipsView({ count, clips$key }: Props) {
 
   return (
     <div className="cs-clipsView">
-      {data?.googleAuthAccessToken == null &&
-        <GoogleAuthSection />}
+      {/* {data?.googleAuthAccessToken == null &&
+        <GoogleAuthSection />} */}
       <div
         className="cs-page-section-outside-header flexRow"
         style={{ alignItems: "center", gap: 8 }}
       >
         <div className="cs-page-section-title" style={{ flex: 1 }}>
-          Search results for "{italicPrompt()}"
+          Search results for "{italicPrompt(query)}"
         </div>
         <div>
-          {clipsCount} clips found in {count} videos
+          {count} clips found in {collectionLength} videos
         </div>
         <div>
           <BfDsButton
             kind="secondary"
             iconLeft="cross"
-            onClick={clearSearch}
+            onClick={() => navigate("/search")}
             tooltip="Clear search"
           />
         </div>
       </div>
-      {parsedClips?.anecdotes?.map((clip, index: number) => (
-        <Clip
-          key={index}
-          titleText={clip.titleText}
-          text={clip.text}
-          descriptionText={clip.descriptionText}
-          rationale={clip.rationale}
-          filename={clip.filename}
-          topics={clip.topics}
-          confidence={clip.confidence}
-          mediaId={clip.mediaId}
-          transcriptId={clip.transcriptId}
-          startIndex={clip.startIndex}
-          endIndex={clip.endIndex}
-          startTime={clip.startTime}
-          endTime={clip.endTime}
-          clips$key={clips$key}
+      {/* {data.searchResultItems.edges.map((searchResultItem) => (
+        <SearchResultItem
+          key={searchResultItem.id}
+          searchResultItem$key={searchResultItem}
         />
-      ))}
+      ))} */}
     </div>
   );
 }
