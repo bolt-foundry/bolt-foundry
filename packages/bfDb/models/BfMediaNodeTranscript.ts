@@ -40,7 +40,6 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
   async requestTranscriptionFromGoogleDriveResourceId(
     googleDriveResourceId: string,
   ) {
-    logger.setLevel(logger.levels.DEBUG);
     logger.debug(
       "requestTranscriptionFromGoogleDriveResourceId",
       googleDriveResourceId,
