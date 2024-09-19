@@ -104,13 +104,13 @@
     },
     "https://esm.sh/@langchain/pinecone": {
       "headers": {
-        "location": "https://esm.sh/@langchain/pinecone@0.1.0"
+        "location": "https://esm.sh/@langchain/pinecone@0.0.9"
       }
     },
-    "https://esm.sh/@langchain/pinecone@0.1.0": {
+    "https://esm.sh/@langchain/pinecone@0.0.9": {
       "headers": {
         "content-type": "application/javascript; charset=utf-8",
-        "x-typescript-types": "https://esm.sh/v135/@langchain/pinecone@0.1.0/index.d.ts"
+        "x-typescript-types": "https://esm.sh/v135/@langchain/pinecone@0.0.9/index.d.ts"
       }
     },
     "https://esm.sh/@mdx-js/mdx@3.0.0": {
