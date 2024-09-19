@@ -1,14 +1,16 @@
 import type * as React from "react";
 
 type GlimmerProps = {
-  order: number;
+  className?: string;
+  order?: number;
   width?: string;
   height?: string;
-  xstyle?: Record<string, React.CSSProperties>;
+  xstyle?: React.CSSProperties;
 };
 
 export function BfDsGlimmer(
-  { order, width = "100%", height = "100%", xstyle = {} }: GlimmerProps,
+  { className = "", order = 0, width = "100%", height = "100%", xstyle = {} }:
+    GlimmerProps,
 ) {
   const glimmerStyle = {
     animationDelay: `${order * 0.1}s`,
@@ -17,7 +19,7 @@ export function BfDsGlimmer(
     ...xstyle,
   };
 
-  return <div className="glimmer" style={glimmerStyle}></div>;
+  return <div className={`${className} glimmer`} style={glimmerStyle}></div>;
 }
 
 export function Demo() {
