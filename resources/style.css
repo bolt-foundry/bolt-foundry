@@ -1188,6 +1188,17 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 /* Landing Page */
 
+.landing-page-frame {
+  scroll-margin-top: 10vh;
+  font-family: "DM Sans", sans-serif;
+  background: var(--background) linear-gradient(-10deg, var(--primaryColor) -70%, transparent 20%);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
 .landing-page-logo {
   height: 25px;
   aspect-ratio: 601 / 74;
@@ -1303,6 +1314,10 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 
 }
 
+.landing-page-mission-section {
+  display: flex;
+}
+
 .landing-page-mission {
   color: var(--textMarketing);
   flex: 1;
@@ -1318,10 +1333,6 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   aspect-ratio: 4/3;
   height: 100%;
   background: radial-gradient(var(--secondaryColor060), transparent 70%);
-}
-
-.landing-page-testimonial-section-wrapper {
-  margin-bottom: 2vw;
 }
 
 .landing-page-testimonial-section {
@@ -1349,8 +1360,9 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  padding: 10vw;
-  padding-top: 0;
+  margin-top: 2vw;
+  width: 80vw;
+  padding: 0 10vw 0;
 }
 
 .landing-page-set-up-meeting-text-area {
@@ -1429,7 +1441,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
     padding-left: 105px;
     padding-right:105px;
   }
-  #landing-page-mission-section {
+  .landing-page-mission-section {
     flex-direction: column-reverse;
   }
   .landing-page-set-up-meeting-cta {

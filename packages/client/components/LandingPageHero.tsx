@@ -19,26 +19,29 @@ export function LandingPageHero() {
   });
 
   return (
-    <div className="landing-page-hero">
-      <div className="landing-page-title">
-        {elements}
-      </div>
-      <div className="landing-page-text">
-        <p>
-          Customer testimonials are powerful. Bolt Foundry helps you take those
-          stories and turn them into polished clips you can use anywhere.
-        </p>
-        <p>
-          Let's work together to get the word out.
-        </p>
-      </div>
-      <div style={{ width: "50%" }}>
-        <BfDsButton
-          href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
-          hrefTarget="blank"
-          text="Let's talk"
-          size="xlarge"
-        />
+    <div className="landing-page-block">
+      <div className="landing-page-hero">
+        <div className="landing-page-title">
+          {elements}
+        </div>
+        <div className="landing-page-text">
+          <p>
+            Customer testimonials are powerful. Bolt Foundry helps you take
+            those stories and turn them into polished clips you can use
+            anywhere.
+          </p>
+          <p>
+            Let's work together to get the word out.
+          </p>
+        </div>
+        <div style={{ width: "50%" }}>
+          <BfDsButton
+            href="https://meetings.hubspot.com/dan-sisco/bolt-foundry-demo"
+            hrefTarget="blank"
+            text="Let's talk"
+            size="xlarge"
+          />
+        </div>
       </div>
     </div>
   );
