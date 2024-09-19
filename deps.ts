@@ -62,7 +62,7 @@ export function getLogger(importMeta: ImportMeta | string) {
     return log.getLogger(url.pathname);
   }
   // get relative url and remove leading slash
-  const relativePathname = url.pathname.split(Deno.cwd())[1];
+  const relativePathname = url.pathname.split(Deno.env.get("BF_PATH") ?? "")[1];
   const pathName = relativePathname
     ? relativePathname.replace(/^\//, "")
     : url.pathname;
