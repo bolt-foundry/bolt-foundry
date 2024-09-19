@@ -155,4 +155,22 @@ export class BfNode<
       props,
     );
   }
+
+  public queryTargetsConnectionForGraphQL<
+    // an actual good use of any.
+    // deno-lint-ignore no-explicit-any
+    TTargetClass extends abstract new (...args: any) => any,
+  >(
+    TargetClass: TTargetClass,
+    args: ConnectionArguments,
+    props: Partial<ChildRequiredProps & ChildOptionalProps> = {},
+  ) {
+    return BfEdge.queryTargetsConnectionForGraphQL(
+      this.currentViewer,
+      TargetClass,
+      this.metadata.bfGid,
+      props,
+      args,
+    );
+  }
 }
