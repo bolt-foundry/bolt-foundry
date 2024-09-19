@@ -1,5 +1,8 @@
 import { type Maybe, RelayRuntime } from "deps.ts";
 import { yoga } from "packages/graphql/graphql.ts";
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
 
 const { Environment, Network, RecordSource, Store } = RelayRuntime;
 
@@ -33,8 +36,7 @@ export function getEnvironment() {
   const store = new Store(new RecordSource());
   const environment = new Environment({
     network,
-    // deno-lint-ignore no-console
-    requiredFieldLogger: console.error,
+    requiredFieldLogger: logger.error,
     store,
   });
   return environment;
