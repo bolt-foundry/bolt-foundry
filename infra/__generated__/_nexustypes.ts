@@ -189,6 +189,16 @@ export interface NexusGenObjects {
     creator?: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     query?: string | null; // String
   }
+  BfSearchResultConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['BfSearchResultEdge'] | null> | null; // [BfSearchResultEdge]
+    nodes?: Array<NexusGenRootTypes['BfSearchResult'] | null> | null; // [BfSearchResult]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfSearchResultEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BfSearchResult'] | null; // BfSearchResult
+  }
   BfSearchResultItem: {};
   BfSearchResultItemConnection: { // root type
     count?: number | null; // Int
@@ -367,12 +377,14 @@ export interface NexusGenFieldTypes {
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
+    searchResults: NexusGenRootTypes['BfSearchResultConnection'] | null; // BfSearchResultConnection
   }
   BfCurrentViewerAnon: { // field return type
     blog: NexusGenRootTypes['Blog'] | null; // Blog
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
+    searchResults: NexusGenRootTypes['BfSearchResultConnection'] | null; // BfSearchResultConnection
   }
   BfGoogleDriveResource: { // field return type
     id: string; // ID!
@@ -451,6 +463,16 @@ export interface NexusGenFieldTypes {
     searchResultItems: NexusGenRootTypes['BfSearchResultItemConnection'] | null; // BfSearchResultItemConnection
     status: string | null; // String
   }
+  BfSearchResultConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['BfSearchResultEdge'] | null> | null; // [BfSearchResultEdge]
+    nodes: Array<NexusGenRootTypes['BfSearchResult'] | null> | null; // [BfSearchResult]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfSearchResultEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BfSearchResult'] | null; // BfSearchResult
+  }
   BfSearchResultItem: { // field return type
     id: string; // ID!
   }
@@ -519,6 +541,7 @@ export interface NexusGenFieldTypes {
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
+    searchResults: NexusGenRootTypes['BfSearchResultConnection'] | null; // BfSearchResultConnection
   }
   ImageBlock: { // field return type
     caption: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
@@ -590,6 +613,7 @@ export interface NexusGenFieldTypes {
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
+    searchResults: NexusGenRootTypes['BfSearchResultConnection'] | null; // BfSearchResultConnection
   }
   BfNode: { // field return type
     id: string; // ID!
@@ -666,12 +690,14 @@ export interface NexusGenFieldTypeNames {
     organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
+    searchResults: 'BfSearchResultConnection'
   }
   BfCurrentViewerAnon: { // field return type name
     blog: 'Blog'
     organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
+    searchResults: 'BfSearchResultConnection'
   }
   BfGoogleDriveResource: { // field return type name
     id: 'ID'
@@ -750,6 +776,16 @@ export interface NexusGenFieldTypeNames {
     searchResultItems: 'BfSearchResultItemConnection'
     status: 'String'
   }
+  BfSearchResultConnection: { // field return type name
+    count: 'Int'
+    edges: 'BfSearchResultEdge'
+    nodes: 'BfSearchResult'
+    pageInfo: 'PageInfo'
+  }
+  BfSearchResultEdge: { // field return type name
+    cursor: 'String'
+    node: 'BfSearchResult'
+  }
   BfSearchResultItem: { // field return type name
     id: 'ID'
   }
@@ -818,6 +854,7 @@ export interface NexusGenFieldTypeNames {
     organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
+    searchResults: 'BfSearchResultConnection'
   }
   ImageBlock: { // field return type name
     caption: 'RichText'
@@ -889,6 +926,7 @@ export interface NexusGenFieldTypeNames {
     organization: 'BfOrganization'
     person: 'BfPerson'
     role: 'AccountRole'
+    searchResults: 'BfSearchResultConnection'
   }
   BfNode: { // field return type name
     id: 'ID'
@@ -906,6 +944,22 @@ export interface NexusGenFieldTypeNames {
 }
 
 export interface NexusGenArgTypes {
+  BfCurrentViewerAccessToken: {
+    searchResults: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
+  }
+  BfCurrentViewerAnon: {
+    searchResults: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
+  }
   BfMedia: {
     transcripts: { // args
       after?: string | null; // String
@@ -960,6 +1014,14 @@ export interface NexusGenArgTypes {
       last?: number | null; // Int
       slug?: string | null; // String
       status?: Array<NexusGenEnums['PostStatus'] | null> | null; // [PostStatus]
+    }
+  }
+  IBfCurrentViewerInternalAdmin: {
+    searchResults: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
     }
   }
   Mutation: {
@@ -1039,6 +1101,14 @@ export interface NexusGenArgTypes {
   Subscription: {
     node: { // args
       id: string; // ID!
+    }
+  }
+  BfCurrentViewer: {
+    searchResults: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
     }
   }
 }
