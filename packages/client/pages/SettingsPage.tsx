@@ -10,7 +10,7 @@ import { WatchFolder } from "packages/client/components/settings/WatchFolder.tsx
 import { Media } from "packages/client/components/settings/Media.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
-import { BfDsGlimmer } from "packages/bfDs/BfDsGlimmer.tsx";
+import { OrganizationSwitcher } from "packages/client/components/OrganizationSwitcher.tsx";
 
 const query = await graphql`
 query SettingsPageQuery {
@@ -19,6 +19,7 @@ query SettingsPageQuery {
       name
     }
     organization {
+      ...OrganizationSwitcher_bfOrganization
       ...WatchFolderList_bfOrganization
       ...Media_bfOrganization
       id
@@ -27,6 +28,7 @@ query SettingsPageQuery {
   }
 }
 `;
+
 
 enum Tabs {
   WATCH_FOLDERS = "watchFolders",
@@ -91,14 +93,7 @@ export function SettingsPage() {
                 toggled={darkMode}
               />
             </List>
-            {data?.currentViewer?.person?.name
-              ? (
-                <>
-                  <div>Welcome, {data?.currentViewer?.person?.name}</div>
-                  <div>{data?.currentViewer?.organization?.name}</div>
-                </>
-              )
-              : <BfDsGlimmer height="42px" order={0} />}
+            <OrganizationSwitcher bfOrganization$key={data?.currentViewer?.organization} />
           </>
         }
         header="Settings"
