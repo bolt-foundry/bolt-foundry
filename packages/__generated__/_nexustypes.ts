@@ -215,9 +215,6 @@ export interface NexusGenObjects {
     language?: string | null; // String
     type?: string | null; // String
   }
-  DeleteMutationPayload: { // root type
-    success: boolean; // Boolean!
-  }
   DownloadMutationPayload: { // root type
     success: boolean; // Boolean!
   }
@@ -448,9 +445,6 @@ export interface NexusGenFieldTypes {
     language: string | null; // String
     type: string | null; // String
   }
-  DeleteMutationPayload: { // field return type
-    success: boolean; // Boolean!
-  }
   DownloadMutationPayload: { // field return type
     success: boolean; // Boolean!
   }
@@ -465,7 +459,7 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     createTranscript: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
-    deleteGoogleDriveResource: NexusGenRootTypes['DeleteMutationPayload'] | null; // DeleteMutationPayload
+    deleteGoogleDriveResource: NexusGenRootTypes['BfGoogleDriveResource'] | null; // BfGoogleDriveResource
     deleteMedia: NexusGenRootTypes['BfMedia'] | null; // BfMedia
     deleteTranscript: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
     downloadClip: NexusGenRootTypes['DownloadMutationPayload'] | null; // DownloadMutationPayload
@@ -704,9 +698,6 @@ export interface NexusGenFieldTypeNames {
     language: 'String'
     type: 'String'
   }
-  DeleteMutationPayload: { // field return type name
-    success: 'Boolean'
-  }
   DownloadMutationPayload: { // field return type name
     success: 'Boolean'
   }
@@ -721,7 +712,7 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     createTranscript: 'BfMediaNodeTranscript'
-    deleteGoogleDriveResource: 'DeleteMutationPayload'
+    deleteGoogleDriveResource: 'BfGoogleDriveResource'
     deleteMedia: 'BfMedia'
     deleteTranscript: 'BfMediaNodeTranscript'
     downloadClip: 'DownloadMutationPayload'
