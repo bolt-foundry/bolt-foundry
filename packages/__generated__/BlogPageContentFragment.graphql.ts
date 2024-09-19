@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b0fdbe9be1493fae35734e26c911b37b>>
+ * @generated SignedSource<<80a58611cf0c859bb7fa32252391bbe6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,23 +9,26 @@
 // @ts-nocheck
 
 import { Fragment, ReaderFragment } from 'relay-runtime';
+export type PostStatus = "DEV_ONLY" | "READY_FOR_PUBLISH" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type BlogPageContentFragment$data = {
   readonly posts: {
-    readonly nodes: ReadonlyArray<{
-      readonly author: {
-        readonly avatarUrl: string | null | undefined;
-        readonly email: string | null | undefined;
-        readonly name: string | null | undefined;
+    readonly edges: ReadonlyArray<{
+      readonly node: {
+        readonly author: {
+          readonly avatarUrl: string | null | undefined;
+          readonly email: string | null | undefined;
+          readonly name: string | null | undefined;
+        } | null | undefined;
+        readonly coverUrl: string | null | undefined;
+        readonly date: string | null | undefined;
+        readonly id: string;
+        readonly slug: string | null | undefined;
+        readonly status: PostStatus | null | undefined;
+        readonly summary: string | null | undefined;
+        readonly title: string | null | undefined;
+        readonly " $fragmentSpreads": FragmentRefs<"BlogPageHeroFragment" | "BlogPageListItemFragment" | "BlogPostContentFragment">;
       } | null | undefined;
-      readonly coverUrl: string | null | undefined;
-      readonly date: string | null | undefined;
-      readonly id: string;
-      readonly slug: string | null | undefined;
-      readonly status: string | null | undefined;
-      readonly summary: string | null | undefined;
-      readonly title: string | null | undefined;
-      readonly " $fragmentSpreads": FragmentRefs<"BlogPageHeroFragment" | "BlogPostContentFragment">;
     } | null | undefined> | null | undefined;
   } | null | undefined;
   readonly " $fragmentType": "BlogPageContentFragment";
@@ -36,117 +39,159 @@ export type BlogPageContentFragment$key = {
 };
 
 const node: ReaderFragment = {
-  "argumentDefinitions": [],
+  "argumentDefinitions": [
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "status"
+    }
+  ],
   "kind": "Fragment",
-  "metadata": null,
+  "metadata": {
+    "connection": [
+      {
+        "count": null,
+        "cursor": null,
+        "direction": "forward",
+        "path": [
+          "posts"
+        ]
+      }
+    ]
+  },
   "name": "BlogPageContentFragment",
   "selections": [
     {
-      "alias": null,
+      "alias": "posts",
       "args": [
         {
-          "kind": "Literal",
-          "name": "first",
-          "value": 10
-        },
-        {
-          "kind": "Literal",
+          "kind": "Variable",
           "name": "status",
-          "value": "Ready for publish"
+          "variableName": "status"
         }
       ],
       "concreteType": "BlogPostConnection",
       "kind": "LinkedField",
-      "name": "posts",
+      "name": "__Blog_posts_connection",
       "plural": false,
       "selections": [
         {
           "alias": null,
           "args": null,
-          "concreteType": "BlogPost",
+          "concreteType": "BlogPostEdge",
           "kind": "LinkedField",
-          "name": "nodes",
+          "name": "edges",
           "plural": true,
           "selections": [
             {
-              "args": null,
-              "kind": "FragmentSpread",
-              "name": "BlogPageHeroFragment"
-            },
-            {
-              "args": null,
-              "kind": "FragmentSpread",
-              "name": "BlogPostContentFragment"
-            },
-            {
               "alias": null,
               "args": null,
-              "kind": "ScalarField",
-              "name": "id",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "title",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "slug",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "status",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "date",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "summary",
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "concreteType": "BlogPostAuthor",
+              "concreteType": "BlogPost",
               "kind": "LinkedField",
-              "name": "author",
+              "name": "node",
               "plural": false,
               "selections": [
                 {
+                  "args": null,
+                  "kind": "FragmentSpread",
+                  "name": "BlogPageHeroFragment"
+                },
+                {
+                  "args": null,
+                  "kind": "FragmentSpread",
+                  "name": "BlogPostContentFragment"
+                },
+                {
+                  "args": null,
+                  "kind": "FragmentSpread",
+                  "name": "BlogPageListItemFragment"
+                },
+                {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "name",
+                  "name": "id",
                   "storageKey": null
                 },
                 {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "email",
+                  "name": "title",
                   "storageKey": null
                 },
                 {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "avatarUrl",
+                  "name": "slug",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "status",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "date",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "summary",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "concreteType": "BlogPostAuthor",
+                  "kind": "LinkedField",
+                  "name": "author",
+                  "plural": false,
+                  "selections": [
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "name",
+                      "storageKey": null
+                    },
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "email",
+                      "storageKey": null
+                    },
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "avatarUrl",
+                      "storageKey": null
+                    }
+                  ],
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "coverUrl",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "__typename",
                   "storageKey": null
                 }
               ],
@@ -156,20 +201,45 @@ const node: ReaderFragment = {
               "alias": null,
               "args": null,
               "kind": "ScalarField",
-              "name": "coverUrl",
+              "name": "cursor",
+              "storageKey": null
+            }
+          ],
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "concreteType": "PageInfo",
+          "kind": "LinkedField",
+          "name": "pageInfo",
+          "plural": false,
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "endCursor",
+              "storageKey": null
+            },
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "hasNextPage",
               "storageKey": null
             }
           ],
           "storageKey": null
         }
       ],
-      "storageKey": "posts(first:10,status:\"Ready for publish\")"
+      "storageKey": null
     }
   ],
   "type": "Blog",
   "abstractKey": null
 };
 
-(node as any).hash = "99398b15ccabbfb7acc5257eec8cb06b";
+(node as any).hash = "3bef1ce4a6e1de230412efcf8cf70460";
 
 export default node;

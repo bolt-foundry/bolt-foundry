@@ -57,6 +57,7 @@ export interface NexusGenInputs {
 
 export interface NexusGenEnums {
   AccountRole: "ADMIN" | "ANON" | "MEMBER" | "OMNI" | "OWNER" | "REFRESH_CREDENTIALS_ONLY" | "SERVICE_INGESTION"
+  PostStatus: "Dev only" | "Ready for publish"
 }
 
 export interface NexusGenScalars {
@@ -182,7 +183,7 @@ export interface NexusGenObjects {
     icon?: string | null; // String
     id: string; // String!
     slug?: string | null; // String
-    status?: string | null; // String
+    status?: NexusGenEnums['PostStatus'] | null; // PostStatus
     summary?: string | null; // String
     title?: string | null; // String
   }
@@ -415,7 +416,7 @@ export interface NexusGenFieldTypes {
     icon: string | null; // String
     id: string; // String!
     slug: string | null; // String
-    status: string | null; // String
+    status: NexusGenEnums['PostStatus'] | null; // PostStatus
     summary: string | null; // String
     title: string | null; // String
   }
@@ -671,7 +672,7 @@ export interface NexusGenFieldTypeNames {
     icon: 'String'
     id: 'String'
     slug: 'String'
-    status: 'String'
+    status: 'PostStatus'
     summary: 'String'
     title: 'String'
   }
@@ -835,7 +836,7 @@ export interface NexusGenArgTypes {
       first?: number | null; // Int
       last?: number | null; // Int
       slug?: string | null; // String
-      status?: string | null; // String
+      status?: Array<NexusGenEnums['PostStatus'] | null> | null; // [PostStatus]
     }
   }
   Mutation: {

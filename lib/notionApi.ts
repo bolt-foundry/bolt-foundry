@@ -40,6 +40,7 @@ export interface BlogPostData {
   };
   coverUrl: string;
   icon: string;
+  status: string;
 }
 
 export interface NotionBlogPostContentObject {
@@ -109,7 +110,7 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
     },
   );
   const data = await response.json();
-  logger.info("RAW DATA", data);
+  logger.debug("RAW DATA", data);
   const filteredData = data.results.map(
     ({ id, url, properties, cover, icon }: NotionPostsResponse) => {
       logger.debug("DATE", properties["Publish date"]);
