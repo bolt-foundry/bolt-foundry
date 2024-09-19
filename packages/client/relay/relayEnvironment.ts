@@ -1,30 +1,34 @@
-import { RelayRuntime } from "deps.ts";
-import { getLogger } from "deps.ts";
+import {
+  type CacheConfig,
+  Environment,
+  type GraphQLResponse,
+  type LogRequestInfoFunction,
+  Network,
+  Observable,
+  RecordSource,
+  type RequestParameters,
+  Store,
+  type UploadableMap,
+  type Variables,
+} from "relay-runtime";
+import { createClient, type Sink } from "graphql-ws";
 import { BfError } from "lib/BfError.ts";
+import { getLogger } from "deps.ts";
 
 const logger = getLogger(import.meta);
-const { Environment, Network, RecordSource, Store, Observable } = RelayRuntime;
 
-function subscribe(
-  operation: RelayRuntime.RequestParameters,
-  variables: RelayRuntime.Variables,
-) {
-  return Observable.create<RelayRuntime.GraphQLResponse>((sink) => {
-    
-  });
-}
+const subscriptionsClient = createClient({
+  url: "/graphql",
+});
 
-// Define a function that fetches the results of an operation (query/mutation/etc)
-// and returns its results as a Promise:
 async function fetchQuery(
-  operation: RelayRuntime.RequestParameters,
-  variables: RelayRuntime.Variables,
-  _cacheConfig: RelayRuntime.CacheConfig,
-  uploadables?: RelayRuntime.UploadableMap | null,
-  _logRequestInfo?: RelayRuntime.LogRequestInfoFunction | null,
+  operation: RequestParameters,
+  variables: Variables,
+  _cacheConfig: CacheConfig,
+  uploadables?: UploadableMap | null,
+  _logRequestInfo?: LogRequestInfoFunction | null,
 ): Promise<
-  | RelayRuntime.GraphQLResponse
-  | RelayRuntime.Subscribable<RelayRuntime.GraphQLResponse>
+  GraphQLResponse
 > {
   let body: BodyInit;
   const headers: HeadersInit = {};
@@ -71,17 +75,36 @@ async function fetchQuery(
     );
     throw error;
   }
-  return returnResponse as RelayRuntime.GraphQLResponse;
+  return returnResponse as GraphQLResponse;
 }
 
-// Create a network layer from the fetch function
-const network = Network.create(fetchQuery, subscribe);
+function fetchOrSubscribe(
+  operation: RequestParameters,
+  variables: Variables,
+) {
+  return Observable.create<GraphQLResponse>((sink) => {
+    if (!operation.text) {
+      return sink.error(new Error("Operation text cannot be empty"));
+    }
+    return subscriptionsClient.subscribe(
+      {
+        operationName: operation.name,
+        query: operation.text,
+        variables,
+      },
+      sink as Sink,
+    );
+  });
+}
+
+// TODO: unify these... we only need fetchQuery for uploadables and login (since it sets cookies).
+export const network = Network.create(fetchQuery, fetchOrSubscribe);
+
 const store = new Store(new RecordSource());
 
 const environment = new Environment({
   network,
   store,
-  requiredFieldLogger: logger.error,
 });
 
 export default environment;

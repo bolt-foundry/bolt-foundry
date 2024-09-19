@@ -8,6 +8,7 @@ import {
   nonNull,
   objectType,
   stringArg,
+  subscriptionField,
 } from "packages/graphql/deps.ts";
 import {
   ACCOUNT_ROLE,
@@ -23,6 +24,8 @@ import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { getLogger } from "deps.ts";
 import { exchangeCodeForToken } from "lib/googleOauth.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
+import { BfGraphQLSearchResult } from "packages/graphql/types/BfGraphQLSearchResult.ts";
+import { BfSearchResult } from "packages/bfDb/models/BfSearchResult.ts";
 const logger = getLogger(import.meta);
 
 export const AccountRole = enumType({
@@ -63,6 +66,15 @@ export const BfGraphQLCurrentViewerType = interfaceType({
         return { title: "Bolt foundry af" };
       },
     });
+    t.connectionField("searchResults", {
+      type: BfGraphQLSearchResult,
+      resolve: async (parent, args, { bfCurrentViewer }: GraphQLContext) => {
+        const personId = bfCurrentViewer.personBfGid;
+        const person = await BfPerson.findX(bfCurrentViewer, personId);
+        const searchResults = await person.queryTargetsConnectionForGraphQL(BfSearchResult, args);
+        return searchResults;
+      }
+    })
   },
 });
 
@@ -201,7 +213,6 @@ export const LinkGoogleAccountMutation = mutationField(
     args: {
       code: nonNull(stringArg()),
     },
-    // @ts-expect-error #techdebt
     resolve: async (_root, { code }, { bfCurrentViewer }: GraphQLContext) => {
       const person = await BfPerson.findCurrentViewer(bfCurrentViewer);
       const tokenResponse = await exchangeCodeForToken(code);
@@ -217,3 +228,7 @@ export const LinkGoogleAccountMutation = mutationField(
     },
   },
 );
+
+
+
+

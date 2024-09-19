@@ -8,28 +8,15 @@ import { DownloadClipButton } from "packages/client/components/clipsearch/Downlo
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 
 const fragment = await graphql`
-    fragment Clip_bfPerson on BfPerson {
+    fragment SearchResultItem_bfPerson on BfPerson {
     googleAuthAccessToken
   }
 `;
 
 type Props = {
-  titleText: string;
-  text: string;
-  descriptionText: string;
-  rationale: string;
-  filename: string;
-  topics: string;
-  confidence: number;
-  mediaId: string;
-  transcriptId: string;
-  startTime: number;
-  endTime: number;
-  startIndex: number;
-  endIndex: number;
-  clips$key: unknown;
+  bfSearchResultItem$key: unknown
 };
-export function Clip(
+export function SearchResultItem(
   {
     titleText,
     text,

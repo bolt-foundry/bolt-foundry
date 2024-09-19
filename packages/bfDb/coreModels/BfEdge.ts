@@ -69,6 +69,7 @@ export class BfEdge<
     const newEdge = await BfEdge.__DANGEROUS__createUnattached(currentViewer, {
       role,
     }, metadata);
+    await Promise.all([sourceNode.touch(), targetNode.touch()]);
     return newEdge;
   }
 
@@ -105,6 +106,7 @@ export class BfEdge<
       InstanceType<TThis> & EdgeCreationMetadata
     > & { count: number }
   > {
+    logger.setLevel(logger.levels.DEBUG);
     logger.debug("queryTargetsConnectionForGraphQL", TargetClass, sourceBfGid);
     const TargetClassAsBfNode = TargetClass as unknown as typeof BfNode;
     const connection = await TargetClassAsBfNode

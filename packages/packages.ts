@@ -22,10 +22,7 @@ export function createWorker(entrypointPath: string) {
   worker.onerror = (event) => {
     logger.error(`Worker error in ${entrypointPath}:`, event.message);
     restartWorker();
-    // stop the worker from crashing the main thread in non dev environments
-    if (isNotDevelopment) {
-      event.preventDefault();
-    }
+    event.preventDefault();
   };
 
   return worker;

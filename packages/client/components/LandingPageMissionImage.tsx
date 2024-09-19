@@ -37,7 +37,7 @@ export const LandingPageMissionImage = () => (
     <g id="arrows">
       <polygon
         style={styles.st0}
-        points="371,160.63 383.63,175.11 389.87,157 371,160.63 	"
+        points="371,160.63 383.63,175.11 389.87,157 371,160.63"
       />
       <path
         style={styles.st1}
@@ -45,7 +45,7 @@ export const LandingPageMissionImage = () => (
       />
       <polygon
         style={styles.st0}
-        points="448.29,162.36 454.27,180.62 467.09,166.39 448.29,162.36 	"
+        points="448.29,162.36 454.27,180.62 467.09,166.39 448.29,162.36"
       />
       <path
         style={styles.st1}
@@ -53,7 +53,7 @@ export const LandingPageMissionImage = () => (
       />
       <polygon
         style={styles.st0}
-        points="303.42,207.01 293.85,223.67 313,223.67 303.42,207.01 	"
+        points="303.42,207.01 293.85,223.67 313,223.67 303.42,207.01"
       />
       <path
         style={styles.st1}
@@ -61,7 +61,7 @@ export const LandingPageMissionImage = () => (
       />
       <polygon
         style={styles.st0}
-        points="523.85,218.72 504.63,218.4 514.45,201.96 523.85,218.72 	"
+        points="523.85,218.72 504.63,218.4 514.45,201.96 523.85,218.72"
       />
       <path
         style={styles.st1}
@@ -69,7 +69,7 @@ export const LandingPageMissionImage = () => (
       />
       <polygon
         style={styles.st0}
-        points="586.18,406.4 563.31,416.66 583.53,431.32 586.18,406.4 	"
+        points="586.18,406.4 563.31,416.66 583.53,431.32 586.18,406.4"
       />
       <path
         style={styles.st1}
@@ -81,11 +81,11 @@ export const LandingPageMissionImage = () => (
       />
       <polygon
         style={styles.st0}
-        points="407.09,434.27 417.51,415.64 396.25,415.88 407.09,434.27 	"
+        points="407.09,434.27 417.51,415.64 396.25,415.88 407.09,434.27"
       />
       <polygon
         style={styles.st0}
-        points="208.94,431.49 204.56,410.87 224.55,417.31 208.94,431.49 	"
+        points="208.94,431.49 204.56,410.87 224.55,417.31 208.94,431.49"
       />
       <path
         style={styles.st1}

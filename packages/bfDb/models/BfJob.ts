@@ -45,7 +45,7 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
     bfNode: T,
     method: K,
     args: unknown,
-    runImmediately = Deno.env.get("BF_ENV") === "DEVELOPMENT",
+    runImmediately = false,
     runInForeground = false,
   ): Promise<BfJob> {
     const currentViewer = bfNode.currentViewer;
@@ -99,7 +99,7 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
     const edges = await BfEdge.querySourceEdgesForNode(this);
     if (edges.length !== 1) {
       throw new BfError(
-        `Job has either too many or not enough source edges: ${edges.length}`,
+        `${this} has either too many or not enough source edges: ${edges.length}`,
       );
     }
     const edge = edges[0];

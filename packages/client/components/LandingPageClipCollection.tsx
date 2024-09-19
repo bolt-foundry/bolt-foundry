@@ -67,6 +67,7 @@ export function LandingPageClipCollection() {
   return (
     <div className="landing-page-clips-container" ref={containerRef}>
       {testimonialVideos.map((video, index) => {
+      const id = `video${index + 1}`
         return (
           <div
             className="landing-page-clips"
