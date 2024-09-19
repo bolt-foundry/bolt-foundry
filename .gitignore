@@ -13,3 +13,4 @@
 .direnv
 *.ipynb_checkpoints
 nix_system
+tmp

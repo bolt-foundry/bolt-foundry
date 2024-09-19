@@ -12,3 +12,5 @@ const bfmn = bfMediaNodeVideoGoogleDriveResources[0];
 
 import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 bfmn.queryTargetInstances(BfMediaNodeTranscript);
+
+import { BfSearchResult } from "packages/bfDb/models/BfSearchResult.ts";
