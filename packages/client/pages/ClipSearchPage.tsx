@@ -3,25 +3,21 @@ import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";
 import { Search } from "packages/client/components/clipsearch/Search.tsx";
-import { ClipsView } from "packages/client/components/clipsearch/ClipsView.tsx";
 import { List } from "packages/bfDs/List.tsx";
 import { ListItem } from "packages/bfDs/ListItem.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { ClipsViewNullState } from "packages/client/components/clipsearch/ClipsViewNullState.tsx";
-import ClipSearchProvider, {
-  useClipSearchState,
-} from "packages/client/contexts/ClipSearchContext.tsx";
-import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
+import type { ClipSearchPageQuery } from "packages/__generated__/ClipSearchPageQuery.graphql.ts";
+import { SearchResultList } from "packages/client/components/clipsearch/ClipSearchSearchResultList.tsx";
+import { ClipsView } from "packages/client/components/clipsearch/ClipsView.tsx";
 const { Suspense } = React;
 
 const query = await graphql`
-  query ClipSearchPageQuery {
+  query ClipSearchPageQuery($searchId: ID!, $includeSearchResults: Boolean!) {
     currentViewer {
       person {
         id
-        ...ClipsView_bfPerson
-        ...Clip_bfPerson
       }
       organization {
         ...WatchFolderList_bfOrganization
@@ -30,57 +26,40 @@ const query = await graphql`
           count
         }
       }
+      searchResults(first:10) {
+        ...ClipSearchSearchResultList_bfSearchResultConnection
+        ...SearchForClipsFragment_bfSearchResultConnection
+      }
+    }
+    node(id: $searchId) @include(if: $includeSearchResults) {
+      ... on BfSearchResult {
+        ...ClipsView_bfSearchResult
+        id
+        __typename
+      }
     }
   }
 `;
 
 export function ClipSearchPageContent() {
-  const { navigate } = useRouter();
-  const { clips, isInFlight } = useClipSearchState();
-  const data = useLazyLoadQuery(query, {});
-  const count = data?.currentViewer?.organization?.media?.count;
-  const sidebarContents = (
-    <FeatureFlag name="placeholder">
-      <List collapsible={true} header="Lists">
-        <ListItem
-          content="work-life balance"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="taxes"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-      </List>
-      <List collapsible={true} header="Searches">
-        <ListItem
-          content="work-life balance"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="taxes"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="duck"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="clouds"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-      </List>
-    </FeatureFlag>
-  );
+  const { navigate, routeParams } = useRouter();
+  const { searchId } = routeParams;
+  const includeSearchResult = searchId !== null;
+  const data = useLazyLoadQuery<ClipSearchPageQuery>(query, {
+    searchId: searchId ?? "",
+    includeSearchResults: includeSearchResult,
+  });
+  const count = data?.currentViewer?.organization?.media?.count ?? 0;
+  const searchResult = data.node;
+
   return (
     <div className="cs-page flexRow">
       <Sidebar
-        contents={sidebarContents}
+        contents={data.currentViewer?.searchResults && (
+          <SearchResultList
+            bfSearchResultConnection$key={data.currentViewer.searchResults}
+          />
+        )}
         footer={
           <List>
             <ListItem
@@ -92,21 +71,16 @@ export function ClipSearchPageContent() {
         header="Clip search"
       />
       <div className="cs-main">
-        <Search />
+        {data?.currentViewer?.searchResults && (
+          <Search
+            bfSearchResultConnection$key={data.currentViewer.searchResults}
+          />
+        )}
         <Suspense fallback={<BfDsFullPageSpinner />}>
-          {clips || isInFlight
-            ? (
-              <ClipsView
-                count={count}
-                clips$key={data?.currentViewer?.person}
-              />
-            )
-            : (
-              <ClipsViewNullState
-                count={count}
-                settings$key={data?.currentViewer?.organization}
-              />
-            )}
+          <ClipsView
+            currentViewer$key={data.currentViewer}
+            bfSearchResult$key={data.node}
+          />
         </Suspense>
       </div>
     </div>
@@ -114,9 +88,5 @@ export function ClipSearchPageContent() {
 }
 
 export function ClipSearchPage() {
-  return (
-    <ClipSearchProvider>
-      <ClipSearchPageContent />
-    </ClipSearchProvider>
-  );
+  return <ClipSearchPageContent />;
 }

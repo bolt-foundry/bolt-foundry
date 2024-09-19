@@ -5,7 +5,7 @@ import {
   RouterProvider,
   type RouterProviderProps,
 } from "packages/client/contexts/RouterContext.tsx";
-import clientEnvironment from "packages/client/relay/environment.ts";
+import clientEnvironment from "packages/client/relay/relayEnvironment.ts";
 import AppStateProvider from "packages/client/contexts/AppStateContext.tsx";
 import { featureFlags, featureVariants } from "packages/features/list.ts";
 
