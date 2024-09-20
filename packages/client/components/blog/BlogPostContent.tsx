@@ -176,26 +176,28 @@ export function BlogPostContent({ postRef }: PostProps) {
         <div className="blog_meta">{post?.date}</div>
         {post?.content?.map((content) => {
           if (!content) return;
-          if (content.type === "heading_1") {
-            return (
-              <h1 key={content.id}>
-                <RichText richText={content.RichText} />
-              </h1>
-            );
-          }
-          if (content.type === "heading_2") {
-            return (
-              <h2 key={content.id}>
-                <RichText richText={content.RichText} />
-              </h2>
-            );
-          }
-          if (content.type === "heading_3") {
-            return (
-              <h3 key={content.id}>
-                <RichText richText={content.RichText} />
-              </h3>
-            );
+          if (content.type === "heading") {
+            if (content.size === "1") {
+              return (
+                <h1 key={content.id}>
+                  <RichText richText={content.RichText} />
+                </h1>
+              );
+            }
+            if (content.size === "2") {
+              return (
+                <h2 key={content.id}>
+                  <RichText richText={content.RichText} />
+                </h2>
+              );
+            }
+            if (content.size === "3") {
+              return (
+                <h3 key={content.id}>
+                  <RichText richText={content.RichText} />
+                </h3>
+              );
+            }
           }
           if (content.type === "paragraph") {
             return (

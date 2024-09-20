@@ -45,18 +45,6 @@ export interface BlogPostData {
 
 export interface NotionBlogPostContentObject {
   type: string;
-  heading_1: {
-    rich_text: RichText[];
-    color: string;
-  };
-  heading_2: {
-    rich_text: RichText[];
-    color: string;
-  };
-  heading_3: {
-    rich_text: RichText[];
-    color: string;
-  };
   id: string;
   image: {
     caption: RichText[];
@@ -82,6 +70,27 @@ export interface NotionBlogPostContentObject {
   code: {
     rich_text: RichText[];
     language: string;
+  };
+  heading_1: {
+    rich_text: RichText[];
+    color: string;
+    is_toggleable: boolean;
+    size?: string;
+    oldType: string;
+  };
+  heading_2: {
+    rich_text: RichText[];
+    color: string;
+    is_toggleable: boolean;
+    size?: string;
+    oldType: string;
+  };
+  heading_3: {
+    rich_text: RichText[];
+    color: string;
+    is_toggleable: boolean;
+    size?: string;
+    oldType: string;
   };
 }
 
@@ -183,6 +192,33 @@ export async function getListOfContentForAPost(
     (contentBlock: NotionBlogPostContentObject) => {
       //todo refactor so that common items such as id and type are deconstructed from a common object.
       switch (contentBlock.type) {
+        case "heading_1":
+          return {
+            id: contentBlock.id,
+            type: "heading",
+            size: "1",
+            RichText: contentBlock.heading_1.rich_text,
+            color: contentBlock.heading_1.color,
+            isToggleable: contentBlock.heading_1.is_toggleable,
+          };
+        case "heading_2":
+          return {
+            id: contentBlock.id,
+            type: "heading",
+            size: "2",
+            RichText: contentBlock.heading_2.rich_text,
+            color: contentBlock.heading_2.color,
+            isToggleable: contentBlock.heading_2.is_toggleable,
+          };
+        case "heading_3":
+          return {
+            id: contentBlock.id,
+            type: "heading",
+            size: "3",
+            RichText: contentBlock.heading_3.rich_text,
+            color: contentBlock.heading_3.color,
+            isToggleable: contentBlock.heading_3.is_toggleable,
+          };
         case "image":
           return {
             id: contentBlock.id,
@@ -191,30 +227,6 @@ export async function getListOfContentForAPost(
               contentBlock.image.file?.url,
             caption: contentBlock.image.caption,
           };
-        case "heading_1": {
-          return {
-            id: contentBlock.id,
-            type: contentBlock.type,
-            RichText: contentBlock.heading_1.rich_text,
-            color: contentBlock.heading_1.color,
-          };
-        }
-        case "heading_2": {
-          return {
-            id: contentBlock.id,
-            type: contentBlock.type,
-            RichText: contentBlock.heading_2.rich_text,
-            color: contentBlock.heading_2.color,
-          };
-        }
-        case "heading_3": {
-          return {
-            id: contentBlock.id,
-            type: contentBlock.type,
-            RichText: contentBlock.heading_3.rich_text,
-            color: contentBlock.heading_3.color,
-          };
-        }
         case "paragraph": {
           return {
             id: contentBlock.id,
