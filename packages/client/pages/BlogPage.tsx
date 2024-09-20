@@ -31,16 +31,12 @@ const query = await graphql`
 
 export function BlogPage() {
   const { routeParams } = useRouter();
-  const { BF_ENV } = useAppEnvironment();
-  const isDevEnv = BF_ENV !== "PRODUCTION";
-  const status = isDevEnv
-    ? ["READY_FOR_PUBLISH", "DEV_ONLY"]
-    : ["READY_FOR_PUBLISH"];
+
+  const status = ["READY_FOR_PUBLISH"];
   const data = useLazyLoadQuery<BlogPageQuery>(
     query,
     { status },
   );
-  logger.debug("BlogPage data", data);
 
   const posts = data.currentViewer?.blog?.posts?.edges ?? [];
   const blogRef = data.currentViewer?.blog;
