@@ -29,13 +29,26 @@ const query = await graphql`
   }
 `;
 
+const BfMemberQuery = await graphql`
+  query BlogPageBfMemberQuery {
+  currentViewer {
+    role
+  }
+}
+`;
+
 export function BlogPage() {
   const { routeParams } = useRouter();
+  const isBfMemberQuery = useLazyLoadQuery<BlogPageBfMemberQuery>(
+    BfMemberQuery,
+    {},
+  );
+  const isBfMember: boolean = isBfMemberQuery?.currentViewer?.role === "MEMBER";
   const { BF_ENV } = useAppEnvironment();
   const isDevEnv = BF_ENV !== "PRODUCTION";
-  const status = isDevEnv
-    ? ["READY_FOR_PUBLISH", "DEV_ONLY"]
-    : ["READY_FOR_PUBLISH"];
+  const status = ["READY_FOR_PUBLISH"];
+  isBfMember && status.push("WORKSHOP");
+  isDevEnv && status.push("DEV_ONLY");
   const data = useLazyLoadQuery<BlogPageQuery>(
     query,
     { status },

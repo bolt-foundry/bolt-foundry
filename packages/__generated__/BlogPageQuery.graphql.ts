@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d025afd06ad1b8b7dba74c10e1d994c1>>
+ * @generated SignedSource<<1da48023a90383ecee24abcda8296921>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type PostStatus = "DEV_ONLY" | "READY_FOR_PUBLISH" | "%future added value";
+export type PostStatus = "DEV_ONLY" | "READY_FOR_PUBLISH" | "WORKSHOP" | "%future added value";
 export type BlogPageQuery$variables = {
   status?: ReadonlyArray<PostStatus> | null | undefined;
 };
