@@ -3,6 +3,8 @@ import { graphql } from "packages/client/deps.ts";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { BlogPostContentFragment$key } from "packages/__generated__/BlogPostContentFragment.graphql.ts";
 
+import { BlogPostStatus } from "packages/client/components/blog/BlogPostStatus.tsx";
+
 const fragment = await graphql`
 fragment BlogPageHeroFragment on BlogPost {
   id
@@ -37,7 +39,10 @@ export function BlogPageHero({ postRef }: Props) {
     >
       <div className="blog-hero-info">
         <div className="blog-page-hero-title">
-          <div>{post.title}</div>
+          <div>
+            {post.title}
+            <BlogPostStatus status={post.status} />
+          </div>
         </div>
         <div className="blog_author blog-hero-author">
           <div
