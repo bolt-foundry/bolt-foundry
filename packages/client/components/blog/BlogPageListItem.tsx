@@ -3,6 +3,7 @@ import { useFragment } from "react-relay";
 import type { BlogPostContentFragment$key } from "packages/__generated__/BlogPostContentFragment.graphql.ts";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
+import { BlogPostStatus } from "packages/client/components/blog/BlogPostStatus.tsx";
 
 const fragment = await graphql`
 fragment BlogPageListItemFragment on BlogPost {
@@ -54,7 +55,10 @@ export function BlogPageListItem({ postRef, additionalClassName }: PostProps) {
       onClick={() => navigate(`/blog/${post.slug}`)}
     >
       <div className="blog-page-item-info">
-        <div className="blog-list-item-title">{post.title}</div>
+        <div className="blog-list-item-title">
+          {post.title}
+          <BlogPostStatus status={post.status} />
+        </div>
         <div className="blog_author">
           <div
             className="blog_author_avatar"
