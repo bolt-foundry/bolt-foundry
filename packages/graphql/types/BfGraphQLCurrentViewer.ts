@@ -1,4 +1,5 @@
 import {
+  connectionFromArray,
   enumType,
   extendType,
   GraphQLError,
@@ -35,6 +36,11 @@ export const BfGraphQLCurrentViewerType = interfaceType({
   description:
     "The person acting on this request. The person is the person who is acting, the organization is the org on which they're acting",
   definition(t) {
+    t.id("personBfGid", {
+      resolve: (_parent, args, { bfCurrentViewer }: GraphQLContext) => {
+        return bfCurrentViewer.personBfGid;
+      },
+    });
     t.field("role", {
       type: "AccountRole",
     });

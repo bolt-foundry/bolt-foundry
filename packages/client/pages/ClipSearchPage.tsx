@@ -13,6 +13,8 @@ import ClipSearchProvider, {
 } from "packages/client/contexts/ClipSearchContext.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
+import { ClipSearchPageQuery } from "packages/__generated__/ClipSearchPageQuery.graphql.ts";
+import { ClipSearchSidebar } from "packages/client/components/clipsearch/ClipSearchSidebar.tsx";
 const { Suspense } = React;
 
 const query = await graphql`
@@ -20,6 +22,10 @@ const query = await graphql`
     currentViewer {
       person {
         id
+        savedSearches(first: 10) {
+          ...Search_bfSavedSearchConnection
+          ...ClipSearchSidebar_savedSearchConnection
+        }
         ...ClipsView_bfPerson
         ...Clip_bfPerson
       }
@@ -30,57 +36,41 @@ const query = await graphql`
           count
         }
       }
+      
     }
   }
 `;
 
-export function ClipSearchPageContent() {
+const subscription = await graphql`
+  subscription ClipSearchPageSavedSearchesSubscription($id: ID!){
+    node(id: $id) {
+    ... on BfPerson {
+      savedSearches(first: 10) {
+          ...Search_bfSavedSearchConnection
+          ...ClipSearchSidebar_savedSearchConnection
+        }
+      }
+    }
+  }
+`
+
+export function ClipSearchPage() {
   const { navigate } = useRouter();
-  const { clips, isInFlight } = useClipSearchState();
-  const data = useLazyLoadQuery(query, {});
+  const data = useLazyLoadQuery<ClipSearchPageQuery>(query, {});
+  // const subscriptionConfig = React.useMemo(
+  //   () => ({
+  //     variables: { id: data.currentViewer.person.id },
+  //     subscription: subscription,
+  //   }),
+  //   [projectId],
+  // );
+  // useSubscription(subscriptionConfig)
   const count = data?.currentViewer?.organization?.media?.count;
-  const sidebarContents = (
-    <FeatureFlag name="placeholder">
-      <List collapsible={true} header="Lists">
-        <ListItem
-          content="work-life balance"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="taxes"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-      </List>
-      <List collapsible={true} header="Searches">
-        <ListItem
-          content="work-life balance"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="taxes"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="duck"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="clouds"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-      </List>
-    </FeatureFlag>
-  );
+  const savedSearchConnection = data?.currentViewer?.person?.savedSearches;
   return (
     <div className="cs-page flexRow">
       <Sidebar
-        contents={sidebarContents}
+        contents={savedSearchConnection && <ClipSearchSidebar bfSavedSearchConnection$key={savedSearchConnection} />}
         footer={
           <List>
             <ListItem
@@ -92,9 +82,9 @@ export function ClipSearchPageContent() {
         header="Clip search"
       />
       <div className="cs-main">
-        <Search />
+        {savedSearchConnection && <Search bfSavedSearchConnection$key={savedSearchConnection} />}
         <Suspense fallback={<BfDsFullPageSpinner />}>
-          {clips || isInFlight
+          {/* {clips || isInFlight
             ? (
               <ClipsView
                 count={count}
@@ -106,17 +96,9 @@ export function ClipSearchPageContent() {
                 count={count}
                 settings$key={data?.currentViewer?.organization}
               />
-            )}
+            )} */}
         </Suspense>
       </div>
     </div>
-  );
-}
-
-export function ClipSearchPage() {
-  return (
-    <ClipSearchProvider>
-      <ClipSearchPageContent />
-    </ClipSearchProvider>
   );
 }

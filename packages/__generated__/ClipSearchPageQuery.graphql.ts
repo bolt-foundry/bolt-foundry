@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3839305b566156c9c0f6432b8fe82dd3>>
+ * @generated SignedSource<<733574bdac6740e6b466ebd35a20f914>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -22,6 +22,9 @@ export type ClipSearchPageQuery$data = {
     } | null | undefined;
     readonly person: {
       readonly id: string;
+      readonly savedSearches: {
+        readonly " $fragmentSpreads": FragmentRefs<"ClipSearchSidebar_savedSearchConnection" | "Search_bfSavedSearchConnection">;
+      } | null | undefined;
       readonly " $fragmentSpreads": FragmentRefs<"Clip_bfPerson" | "ClipsView_bfPerson">;
     } | null | undefined;
   } | null | undefined;
@@ -39,14 +42,21 @@ var v0 = {
   "name": "id",
   "storageKey": null
 },
-v1 = {
+v1 = [
+  {
+    "kind": "Literal",
+    "name": "first",
+    "value": 10
+  }
+],
+v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "count",
   "storageKey": null
 },
-v2 = {
+v3 = {
   "alias": null,
   "args": [
     {
@@ -60,18 +70,46 @@ v2 = {
   "name": "media",
   "plural": false,
   "selections": [
-    (v1/*: any*/)
+    (v2/*: any*/)
   ],
   "storageKey": "media(first:1)"
 },
-v3 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v4 = [
+v5 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "startCursor",
+  "storageKey": null
+},
+v6 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "endCursor",
+  "storageKey": null
+},
+v7 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "hasNextPage",
+  "storageKey": null
+},
+v8 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "hasPreviousPage",
+  "storageKey": null
+},
+v9 = [
   {
     "kind": "Literal",
     "name": "first",
@@ -103,6 +141,27 @@ return {
             "selections": [
               (v0/*: any*/),
               {
+                "alias": null,
+                "args": (v1/*: any*/),
+                "concreteType": "BfSavedSearchConnection",
+                "kind": "LinkedField",
+                "name": "savedSearches",
+                "plural": false,
+                "selections": [
+                  {
+                    "args": null,
+                    "kind": "FragmentSpread",
+                    "name": "Search_bfSavedSearchConnection"
+                  },
+                  {
+                    "args": null,
+                    "kind": "FragmentSpread",
+                    "name": "ClipSearchSidebar_savedSearchConnection"
+                  }
+                ],
+                "storageKey": "savedSearches(first:10)"
+              },
+              {
                 "args": null,
                 "kind": "FragmentSpread",
                 "name": "ClipsView_bfPerson"
@@ -129,7 +188,7 @@ return {
                 "name": "WatchFolderList_bfOrganization"
               },
               (v0/*: any*/),
-              (v2/*: any*/)
+              (v3/*: any*/)
             ],
             "storageKey": null
           }
@@ -154,7 +213,7 @@ return {
         "name": "currentViewer",
         "plural": false,
         "selections": [
-          (v3/*: any*/),
+          (v4/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -164,6 +223,75 @@ return {
             "plural": false,
             "selections": [
               (v0/*: any*/),
+              {
+                "alias": null,
+                "args": (v1/*: any*/),
+                "concreteType": "BfSavedSearchConnection",
+                "kind": "LinkedField",
+                "name": "savedSearches",
+                "plural": false,
+                "selections": [
+                  {
+                    "kind": "ClientExtension",
+                    "selections": [
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "__id",
+                        "storageKey": null
+                      }
+                    ]
+                  },
+                  (v2/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "BfSavedSearchEdge",
+                    "kind": "LinkedField",
+                    "name": "edges",
+                    "plural": true,
+                    "selections": [
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "BfSavedSearch",
+                        "kind": "LinkedField",
+                        "name": "node",
+                        "plural": false,
+                        "selections": [
+                          (v0/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "query",
+                            "storageKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "PageInfo",
+                    "kind": "LinkedField",
+                    "name": "pageInfo",
+                    "plural": false,
+                    "selections": [
+                      (v5/*: any*/),
+                      (v6/*: any*/),
+                      (v7/*: any*/),
+                      (v8/*: any*/)
+                    ],
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": "savedSearches(first:10)"
+              },
               {
                 "alias": null,
                 "args": null,
@@ -184,13 +312,13 @@ return {
             "selections": [
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v9/*: any*/),
                 "concreteType": "BfGoogleDriveResourceConnection",
                 "kind": "LinkedField",
                 "name": "googleDriveFolders",
                 "plural": false,
                 "selections": [
-                  (v1/*: any*/),
+                  (v2/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -215,7 +343,7 @@ return {
                             "storageKey": null
                           },
                           (v0/*: any*/),
-                          (v3/*: any*/)
+                          (v4/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -237,34 +365,10 @@ return {
                     "name": "pageInfo",
                     "plural": false,
                     "selections": [
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "endCursor",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "hasNextPage",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "hasPreviousPage",
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "startCursor",
-                        "storageKey": null
-                      }
+                      (v6/*: any*/),
+                      (v7/*: any*/),
+                      (v8/*: any*/),
+                      (v5/*: any*/)
                     ],
                     "storageKey": null
                   }
@@ -273,7 +377,7 @@ return {
               },
               {
                 "alias": null,
-                "args": (v4/*: any*/),
+                "args": (v9/*: any*/),
                 "filters": null,
                 "handle": "connection",
                 "key": "WatchFolderList_googleDriveFolders",
@@ -281,7 +385,7 @@ return {
                 "name": "googleDriveFolders"
               },
               (v0/*: any*/),
-              (v2/*: any*/)
+              (v3/*: any*/)
             ],
             "storageKey": null
           }
@@ -291,16 +395,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "dbd2589af4624018b96f455a3aa8603c",
+    "cacheID": "bc9a58c6dd55e40b544f59528f5b7fbd",
     "id": null,
     "metadata": {},
     "name": "ClipSearchPageQuery",
     "operationKind": "query",
-    "text": "query ClipSearchPageQuery {\n  currentViewer {\n    __typename\n    person {\n      id\n      ...ClipsView_bfPerson\n      ...Clip_bfPerson\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      id\n      media(first: 1) {\n        count\n      }\n    }\n  }\n}\n\nfragment Clip_bfPerson on BfPerson {\n  googleAuthAccessToken\n}\n\nfragment ClipsView_bfPerson on BfPerson {\n  googleAuthAccessToken\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  googleDriveFolders(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
+    "text": "query ClipSearchPageQuery {\n  currentViewer {\n    __typename\n    person {\n      id\n      savedSearches(first: 10) {\n        ...ClipSearchSidebar_savedSearchConnection\n      }\n      ...ClipsView_bfPerson\n      ...Clip_bfPerson\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      id\n      media(first: 1) {\n        count\n      }\n    }\n  }\n}\n\nfragment ClipSearchSidebar_savedSearchConnection on BfSavedSearchConnection {\n  count\n  edges {\n    node {\n      id\n      query\n    }\n  }\n  pageInfo {\n    startCursor\n    endCursor\n    hasNextPage\n    hasPreviousPage\n  }\n}\n\nfragment Clip_bfPerson on BfPerson {\n  googleAuthAccessToken\n}\n\nfragment ClipsView_bfPerson on BfPerson {\n  googleAuthAccessToken\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  googleDriveFolders(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "f2522c6a3d0565ff302a96ffef2bd11a";
+(node as any).hash = "3030b9b1cc67b327fb4aa10903567f8c";
 
 export default node;

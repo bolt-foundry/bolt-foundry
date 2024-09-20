@@ -3,7 +3,9 @@ import {
   idArg,
   interfaceType,
   nonNull,
+  objectType,
   queryField,
+  stringArg,
   subscriptionField,
 } from "packages/graphql/deps.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
@@ -52,6 +54,7 @@ export const BfNodeGraphQLSubscriptionType = subscriptionField("node", {
     id: idArg(),
   },
   subscribe: async function (_, { id }, { bfCurrentViewer }) {
+    logger.setLevel(logger.levels.DEBUG);
     if (!id) {
       return Promise.reject();
     }
@@ -65,3 +68,65 @@ export const BfNodeGraphQLSubscriptionType = subscriptionField("node", {
     return node?.toGraphql();
   },
 });
+
+export const BfConnectionEdgeType = objectType({
+  name: "BfConnectionEdge",
+  definition(t) {
+    t.field("node", {
+      type: BfNodeGraphQLType,
+    });
+    t.string("cursor");
+  },
+});
+
+export const BfConnectionSubscriptionPayloadType = objectType({
+  name: "BfConnectionSubscriptionPayload",
+  definition(t) {
+    t.field("append", { type: BfConnectionEdgeType });
+    // t.field("prepend", { type: BfConnectionEdgeType });
+    t.field("delete", { type: BfConnectionEdgeType });
+    // TODO: Move would be so sick.
+    // t.field("move", { type: BfConnectionEdgeType });
+  },
+});
+
+export const BfConnectionCreateEdgeSubscriptionType = subscriptionField(
+  "connection",
+  {
+    type: BfConnectionSubscriptionPayloadType,
+    args: {
+      id: idArg(),
+      targetClassName: stringArg(),
+    },
+    subscribe: async function (
+      _,
+      { id, targetClassName },
+      { bfCurrentViewer },
+    ) {
+      if (!id || !targetClassName) {
+        return Promise.reject();
+      }
+      logger.debug(`Subscribing to node ${id}`);
+      const node = await BfNode.findX(bfCurrentViewer, toBfGid(id));
+      return node.getConnectionSubscriptionForGraphql(targetClassName);
+    },
+    resolve: async function (
+      { operation, bfTid, cursor },
+      _,
+      { bfCurrentViewer },
+    ) {
+      const node = await BfNode.findX(bfCurrentViewer, bfTid);
+      const edge = {
+        node: node.toGraphql(),
+        cursor,
+      };
+      switch (operation) {
+        case "INSERT": {
+          return {
+            append: edge,
+          };
+        }
+      }
+    },
+  },
+);
