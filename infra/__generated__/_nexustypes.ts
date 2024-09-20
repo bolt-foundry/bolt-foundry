@@ -57,7 +57,7 @@ export interface NexusGenInputs {
 
 export interface NexusGenEnums {
   AccountRole: "ADMIN" | "ANON" | "MEMBER" | "OMNI" | "OWNER" | "REFRESH_CREDENTIALS_ONLY" | "SERVICE_INGESTION"
-  PostStatus: "Dev only" | "Ready for publish"
+  PostStatus: "Dev only" | "Ready for publish" | "Workshop"
 }
 
 export interface NexusGenScalars {
@@ -228,6 +228,14 @@ export interface NexusGenObjects {
   DownloadMutationPayload: { // root type
     success: boolean; // Boolean!
   }
+  HeadingBlock: { // root type
+    RichText?: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    color?: string | null; // String
+    id?: string | null; // String
+    isToggleable?: boolean | null; // Boolean
+    size?: string | null; // String
+    type?: string | null; // String
+  }
   IBfCurrentViewerInternalAdmin: { // root type
     role?: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
@@ -281,7 +289,7 @@ export interface NexusGenObjects {
 export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'> | core.Discriminate<'IBfCurrentViewerInternalAdmin', 'required'>;
   BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
-  BlogPostContentBlock: core.Discriminate<'CalloutBlock', 'optional'> | core.Discriminate<'CodeBlock', 'optional'> | core.Discriminate<'ImageBlock', 'optional'> | core.Discriminate<'ParagraphBlock', 'optional'>;
+  BlogPostContentBlock: core.Discriminate<'CalloutBlock', 'optional'> | core.Discriminate<'CodeBlock', 'optional'> | core.Discriminate<'HeadingBlock', 'optional'> | core.Discriminate<'ImageBlock', 'optional'> | core.Discriminate<'ParagraphBlock', 'optional'>;
   IBfGraphQLNode: any;
   Node: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfClip', 'required'> | core.Discriminate<'BfClipReview', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
 }
@@ -475,6 +483,14 @@ export interface NexusGenFieldTypes {
   }
   DownloadMutationPayload: { // field return type
     success: boolean; // Boolean!
+  }
+  HeadingBlock: { // field return type
+    RichText: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
+    color: string | null; // String
+    id: string | null; // String
+    isToggleable: boolean | null; // Boolean
+    size: string | null; // String
+    type: string | null; // String
   }
   IBfCurrentViewerInternalAdmin: { // field return type
     blog: NexusGenRootTypes['Blog'] | null; // Blog
@@ -755,6 +771,14 @@ export interface NexusGenFieldTypeNames {
   DownloadMutationPayload: { // field return type name
     success: 'Boolean'
   }
+  HeadingBlock: { // field return type name
+    RichText: 'RichText'
+    color: 'String'
+    id: 'String'
+    isToggleable: 'Boolean'
+    size: 'String'
+    type: 'String'
+  }
   IBfCurrentViewerInternalAdmin: { // field return type name
     blog: 'Blog'
     organization: 'BfOrganization'
@@ -985,7 +1009,7 @@ export interface NexusGenArgTypes {
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon" | "IBfCurrentViewerInternalAdmin"
   BfNode: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfOrganization" | "BfPerson"
-  BlogPostContentBlock: "CalloutBlock" | "CodeBlock" | "ImageBlock" | "ParagraphBlock"
+  BlogPostContentBlock: "CalloutBlock" | "CodeBlock" | "HeadingBlock" | "ImageBlock" | "ParagraphBlock"
   Node: "BfAccount" | "BfClip" | "BfClipReview" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfOrganization" | "BfPerson"
 }
 
@@ -1002,6 +1026,7 @@ export interface NexusGenTypeInterfaces {
   BfPerson: "BfNode" | "Node"
   CalloutBlock: "BlogPostContentBlock"
   CodeBlock: "BlogPostContentBlock"
+  HeadingBlock: "BlogPostContentBlock"
   IBfCurrentViewerInternalAdmin: "BfCurrentViewer"
   ImageBlock: "BlogPostContentBlock"
   ParagraphBlock: "BlogPostContentBlock"
