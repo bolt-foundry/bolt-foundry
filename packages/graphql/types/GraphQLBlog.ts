@@ -13,6 +13,7 @@ export const PostStatus = enumType({
   members: {
     READY_FOR_PUBLISH: "Ready for publish",
     DEV_ONLY: "Dev only",
+    WORKSHOP: "Workshop",
   },
 });
 
@@ -28,13 +29,23 @@ export const Blog = objectType({
         date: stringArg(),
         author: stringArg(),
       },
-      resolve: async (_, args) => {
+      resolve: async (_, args, { bfCurrentViewer }) => {
         let posts: BlogPostData[] = await getBlogPostsFromNotion();
         if (args.slug) {
           posts = posts.filter((post) => post.slug === args.slug);
         } else if (args.status) {
+          const statuses = [...args.status];
+          if (bfCurrentViewer.role === "MEMBER") {
+            statuses.push("Workshop");
+          }
+
+          if (Deno.env.get("BF_ENV") === "DEVELOPMENT") {
+            statuses.push("Dev only");
+          }
           posts = posts.filter((post) => {
-            return args.status && args.status.includes(post.status);
+            console.log("post.status", post.status);
+            console.log("post statuses", statuses);
+            return statuses.includes(post.status);
           });
         }
         return connectionFromArray(posts, args);
@@ -93,12 +104,6 @@ export const BlogPostContentBlock = interfaceType({
   },
   resolveType(item) {
     switch (item.type) {
-      case "heading_1":
-        return "ParagraphBlock";
-      case "heading_2":
-        return "ParagraphBlock";
-      case "heading_3":
-        return "ParagraphBlock";
       case "paragraph":
         return "ParagraphBlock";
       case "image":
@@ -107,10 +112,23 @@ export const BlogPostContentBlock = interfaceType({
         return "CalloutBlock";
       case "code":
         return "CodeBlock";
+      case "heading":
+        return "HeadingBlock";
       default:
         //todo add error logging
         return null;
     }
+  },
+});
+
+export const HeadingBlock = objectType({
+  name: "HeadingBlock",
+  definition(t) {
+    t.implements("BlogPostContentBlock");
+    t.string("size");
+    t.list.field("RichText", { type: "RichText" });
+    t.string("color", { default: "default" });
+    t.boolean("isToggleable", { default: false });
   },
 });
 

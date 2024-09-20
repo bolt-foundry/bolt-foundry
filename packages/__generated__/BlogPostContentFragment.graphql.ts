@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e1647a47984a004ffc98569a596fdef0>>
+ * @generated SignedSource<<cf4b15524af64c5e766ceabff166698c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,7 +9,7 @@
 // @ts-nocheck
 
 import { Fragment, ReaderFragment } from 'relay-runtime';
-export type PostStatus = "DEV_ONLY" | "READY_FOR_PUBLISH" | "%future added value";
+export type PostStatus = "DEV_ONLY" | "READY_FOR_PUBLISH" | "WORKSHOP" | "%future added value";
 import { FragmentRefs } from "relay-runtime";
 export type BlogPostContentFragment$data = {
   readonly author: {
