@@ -93,6 +93,12 @@ export const BlogPostContentBlock = interfaceType({
   },
   resolveType(item) {
     switch (item.type) {
+      case "heading_1":
+        return "ParagraphBlock";
+      case "heading_2":
+        return "ParagraphBlock";
+      case "heading_3":
+        return "ParagraphBlock";
       case "paragraph":
         return "ParagraphBlock";
       case "image":
