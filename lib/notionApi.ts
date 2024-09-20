@@ -45,6 +45,22 @@ export interface BlogPostData {
 
 export interface NotionBlogPostContentObject {
   type: string;
+  heading_1: {
+    rich_text: RichText[];
+    color: string;
+  };
+  heading_2: {
+    rich_text: RichText[];
+    color: string;
+  };
+  heading_3: {
+    rich_text: RichText[];
+    color: string;
+  };
+  heading_4: {
+    rich_text: RichText[];
+    color: string;
+  };
   id: string;
   image: {
     caption: RichText[];
@@ -179,6 +195,55 @@ export async function getListOfContentForAPost(
               contentBlock.image.file?.url,
             caption: contentBlock.image.caption,
           };
+        case "heading_1": {
+          logger.info("CONTENT BLOCK H1", contentBlock)
+          let textString = "";
+          contentBlock.heading_1.rich_text.forEach((rich_text) => {
+            textString += rich_text.plain_text;
+          });
+          return {
+            id: contentBlock.id,
+            type: contentBlock.type,
+            RichText: contentBlock.heading_1.rich_text,
+            color: contentBlock.heading_1.color,
+          };
+        }
+        // case "heading_2": {
+        //   let textString = "";
+        //   contentBlock.header_2.rich_text.forEach((rich_text) => {
+        //     textString += rich_text.plain_text;
+        //   });
+        //   return {
+        //     id: contentBlock.id,
+        //     type: contentBlock.type,
+        //     RichText: contentBlock.header_2.rich_text,
+        //     color: contentBlock.header_2.color,
+        //   };
+        // }
+        // case "heading_3": {
+        //   let textString = "";
+        //   contentBlock.header_3.rich_text.forEach((rich_text) => {
+        //     textString += rich_text.plain_text;
+        //   });
+        //   return {
+        //     id: contentBlock.id,
+        //     type: contentBlock.type,
+        //     RichText: contentBlock.header_3.rich_text,
+        //     color: contentBlock.header_3.color,
+        //   };
+        // }
+        // case "heading_4": {
+        //   let textString = "";
+        //   contentBlock.header_4.rich_text.forEach((rich_text) => {
+        //     textString += rich_text.plain_text;
+        //   });
+        //   return {
+        //     id: contentBlock.id,
+        //     type: contentBlock.type,
+        //     RichText: contentBlock.header_4.rich_text,
+        //     color: contentBlock.header_4.color,
+        //   };
+        // }
         case "paragraph": {
           let textString = "";
           contentBlock.paragraph.rich_text.forEach((rich_text) => {
