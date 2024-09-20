@@ -1994,6 +1994,16 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   font-weight: 700;
   margin-bottom: 8px;
 }
+.blog_status_tag {
+  background: var(--secondaryColor015);
+  border: 1px solid var(--secondaryColor);
+  border-radius: 8px;
+  font-size: 10px;
+  vertical-align: middle;
+  padding: 2px 6px;
+  color: var(--secondaryColor);
+  margin-left: 8px;
+}
 
 .blog-page-item-info {
   flex: 1;

@@ -4,6 +4,7 @@ import { graphql } from "packages/client/deps.ts";
 import { classnames } from "lib/classnames.ts";
 import { BlogFrame } from "packages/client/components/blog/BlogFrame.tsx";
 import { BlogPostContentFragment$key } from "packages/__generated__/BlogPostContentFragment.graphql.ts";
+import { BlogPostStatus } from "packages/client/components/blog/BlogPostStatus.tsx";
 
 const logger = getLogger(import.meta);
 
@@ -160,7 +161,10 @@ export function BlogPostContent({ postRef }: PostProps) {
   return (
     <BlogFrame cover={post?.coverUrl} post={true}>
       <div className="blog_post_content">
-        <h1 className="blog_post_title">{post?.title}</h1>
+        <h1 className="blog_post_title">
+          {post?.title}
+          <BlogPostStatus status={post.status} />
+        </h1>
         <div className="blog_author">
           <div
             className="blog_author_avatar"
