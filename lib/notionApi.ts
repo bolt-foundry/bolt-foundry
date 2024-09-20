@@ -115,6 +115,7 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
     ({ id, url, properties, cover, icon }: NotionPostsResponse) => {
       logger.debug("DATE", properties["Publish date"]);
       logger.debug("AUTHOR", properties.Author);
+      logger.debug("COVER", cover);
       const lastDashIndex = url.lastIndexOf("-");
       const urlWithoutId = url.substring(0, lastDashIndex);
       const slug = urlWithoutId.replace("https://www.notion.so/", "");
@@ -130,7 +131,7 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
           avatarUrl: properties.Author.people[0]?.avatar_url,
         },
         summary: properties.Summary.rich_text[0]?.plain_text ?? "",
-        coverUrl: cover?.external?.url,
+        coverUrl: cover?.file?.url ?? cover?.external?.url,
         icon: icon?.emoji,
       };
     },
