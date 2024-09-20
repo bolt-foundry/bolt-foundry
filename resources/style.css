@@ -2065,6 +2065,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   height: 24px;
   border-radius: 50%;
   background: white 100% 100% / cover;
+  background-position-y: 20%;
 }
 .blog_post_tag {
   font-size: 0.8em;
