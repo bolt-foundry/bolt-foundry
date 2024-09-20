@@ -528,6 +528,7 @@ type PlaygroundMutationPayload {
 enum PostStatus {
   DEV_ONLY
   READY_FOR_PUBLISH
+  WORKSHOP
 }
 
 type Query {

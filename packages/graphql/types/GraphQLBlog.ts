@@ -13,6 +13,7 @@ export const PostStatus = enumType({
   members: {
     READY_FOR_PUBLISH: "Ready for publish",
     DEV_ONLY: "Dev only",
+    WORKSHOP: "Workshop",
   },
 });
 
