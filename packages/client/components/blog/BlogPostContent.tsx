@@ -170,8 +170,36 @@ export function BlogPostContent({ postRef }: PostProps) {
         </div>
         {/* <div>{post?.author?.email}</div> */}
         <div className="blog_meta">{post?.date}</div>
-        {post?.content.map((content) => {
+        {post?.content?.map((content) => {
           if (!content) return;
+          if (content.type === "heading_1") {
+            return (
+              <h1 key={content.id}>
+                <RichText richText={content.RichText} />
+              </h1>
+            );
+          }
+          if (content.type === "heading_2") {
+            return (
+              <h2 key={content.id}>
+                <RichText richText={content.RichText} />
+              </h2>
+            );
+          }
+          if (content.type === "heading_3") {
+            return (
+              <h3 key={content.id}>
+                <RichText richText={content.RichText} />
+              </h3>
+            );
+          }
+          if (content.type === "heading_4") {
+            return (
+              <h4 key={content.id}>
+                <RichText richText={content.RichText} />
+              </h4>
+            );
+          }
           if (content.type === "paragraph") {
             return (
               <p key={content.id}>
@@ -197,7 +225,7 @@ export function BlogPostContent({ postRef }: PostProps) {
               >
                 <div
                   className="blog_callout_inner"
-                  style={{ backgroundColor: content.color }}
+                  style={{ backgroundColor: content.color ?? "white" }}
                 >
                   <div className="blog_callout_icon">{content.icon}</div>
                   <div style={{ flex: 1 }}>

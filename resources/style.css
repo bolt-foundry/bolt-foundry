@@ -2048,8 +2048,15 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   box-sizing: border-box;
   line-height: 1.7;
 }
+.blog_post_content h1,
+.blog_post_content h2,
+.blog_post_content h3,
+.blog_post_content h4 {
+  line-height: 1.1;
+}
 .blog_post_title {
   font-size: clamp(18px, 5vw, 48px);
+  line-height: 1.1;
 }
 .blog_meta {
   font-size: 0.8em;
