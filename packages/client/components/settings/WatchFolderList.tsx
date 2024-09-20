@@ -49,24 +49,19 @@ export function WatchFolderList({ settings$key }: Props) {
     fragment,
     settings$key,
   );
-  const [removedItems, setRemovedItems] = React.useState<Array<string>>([]);
-  const removeItem = (resourceId: string) => {
-    setRemovedItems(removedItems.concat(resourceId));
-  };
 
   const tableData = data?.googleDriveFolders?.edges?.map((edge) => {
-    const shouldShow = removedItems.indexOf(edge.node.id) === -1;
-    if (!shouldShow) {
+    if (!edge?.node) {
       return null;
     }
     return {
-      id: edge.node.id,
+      id: edge.node?.id,
       folder: edge.node.name ?? "Untitled",
       videos: 0,
       active: false,
       status: "INGESTING",
     };
-  }).filter(Boolean);
+  }).filter(Boolean) ?? [];
 
   const columns: BfDsColumns<Data> = [
     {
@@ -91,9 +86,7 @@ export function WatchFolderList({ settings$key }: Props) {
     },
     {
       width: "0.5fr",
-      renderer: (data) => (
-        <WatchFolderListMenu removeItem={removeItem} resourceId={data.id} />
-      ),
+      renderer: (data) => <WatchFolderListMenu resourceId={data.id} />,
     },
   ];
 

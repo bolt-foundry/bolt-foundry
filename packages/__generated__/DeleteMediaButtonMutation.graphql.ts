@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f117fb5564892ced063959cdec1d5d9a>>
+ * @generated SignedSource<<44ee0eaa7b2d7d6ccf5cd2ff3b5c9a67>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -32,37 +32,38 @@ var v0 = [
 ],
 v1 = [
   {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "id",
-        "variableName": "id"
-      }
-    ],
-    "concreteType": "BfMedia",
-    "kind": "LinkedField",
-    "name": "deleteMedia",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "id",
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
+    "kind": "Variable",
+    "name": "id",
+    "variableName": "id"
   }
-];
+],
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "DeleteMediaButtonMutation",
-    "selections": (v1/*: any*/),
+    "selections": [
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "BfMedia",
+        "kind": "LinkedField",
+        "name": "deleteMedia",
+        "plural": false,
+        "selections": [
+          (v2/*: any*/)
+        ],
+        "storageKey": null
+      }
+    ],
     "type": "Mutation",
     "abstractKey": null
   },
@@ -71,7 +72,29 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "DeleteMediaButtonMutation",
-    "selections": (v1/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "BfMedia",
+        "kind": "LinkedField",
+        "name": "deleteMedia",
+        "plural": false,
+        "selections": [
+          (v2/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "filters": null,
+            "handle": "deleteRecord",
+            "key": "",
+            "kind": "ScalarHandle",
+            "name": "id"
+          }
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
     "cacheID": "ee3c19c2f32c954bb5409973daa5d6e8",
@@ -84,6 +107,6 @@ return {
 };
 })();
 
-(node as any).hash = "2d6267571d3376a44d34f7cd29df3d5a";
+(node as any).hash = "2aa205ec82f93467f080168a668ec157";
 
 export default node;
