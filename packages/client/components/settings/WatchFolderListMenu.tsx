@@ -4,26 +4,24 @@ import { graphql } from "packages/client/deps.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 type Props = {
-  removeItem: (resourceId: string) => void;
   resourceId: string;
 };
 
 const deleteMutation = await graphql`
   mutation WatchFolderListMenu_deleteMutation($id: String) {
     deleteGoogleDriveResource(resourceId: $id) {
-      success
+      id @deleteRecord
     }
   }
 `;
 
-export function WatchFolderListMenu({ removeItem, resourceId }: Props) {
+export function WatchFolderListMenu({ resourceId }: Props) {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = React.useState(
     false,
   );
   const [commitDelete, deleteIsInFlight] = useMutation(deleteMutation);
 
   const handleDelete = () => {
-    removeItem(resourceId);
     commitDelete({
       variables: {
         id: resourceId,
