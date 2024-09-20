@@ -892,7 +892,7 @@ export interface NexusGenArgTypes {
   }
   Subscription: {
     node: { // args
-      id: string; // ID!
+      id?: string | null; // ID
     }
   }
 }
