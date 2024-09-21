@@ -22,6 +22,7 @@ export type BfBaseModelMetadata<TCreationMetadata = CreationMetadata> =
     bfSid?: BfSid;
     bfTClassName?: string;
     bfTid?: BfTid;
+    sortValue: number;
   }
   & TCreationMetadata;
 
