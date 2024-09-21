@@ -51,10 +51,17 @@ type Row<
   sort_value: number;
 };
 
-type BfModelUpdateNotification = {
+export type BfModelUpdateNotification = {
+  operation: "INSERT" | "UPDATE" | "DELETE";
   bfGid: BfGid;
   bfOid: BfOid;
-  operation: "INSERT" | "UPDATE" | "DELETE";
+};
+
+export type BfConnectionUpdateNotification = BfModelUpdateNotification & {
+  bfTid: BfTid;
+  bfTClassName: BfClassName;
+  sortValue: number;
+  cursor: string;
 };
 type NotificationResponseMessage = {
   length: number;
@@ -64,14 +71,59 @@ type NotificationResponseMessage = {
   name: string;
 };
 
-const bfOidToGidMap = new Map<
+type BfClassName = string;
+
+const bfModelUpdateSubjects = new Map<
   BfOid,
   Map<BfGid, Set<Subject<BfModelUpdateNotification>>>
 >();
 
-function respondToNotification({ payload }: NotificationResponseMessage) {
-  const { operation, bf_gid, bf_oid } = JSON.parse(payload);
-  const oidSubscribers = bfOidToGidMap.get(bf_oid);
+const bfConnectionUpdateSubjects = new Map<
+  BfOid,
+  Map<BfSid, Map<BfClassName, Set<Subject<BfConnectionUpdateNotification>>>>
+>();
+
+function respondToConnectionChangeNotification(
+  message: NotificationResponseMessage,
+) {
+  logger.setLevel(logger.levels.DEBUG);
+  logger.debug(message);
+  const { operation, bf_oid, bf_sid, bf_t_class_name, bf_tid, sort_value } =
+    JSON.parse(message.payload);
+  const oidSubscribers = bfConnectionUpdateSubjects.get(bf_oid);
+  if (!oidSubscribers) {
+    return;
+  }
+  const sidSubscribers = oidSubscribers.get(bf_sid);
+  if (!sidSubscribers) {
+    return;
+  }
+  const classNameSubscribers = sidSubscribers.get(bf_t_class_name);
+  if (!classNameSubscribers) {
+    return;
+  }
+  logger.info(`Notifying ${classNameSubscribers.size} subscribers`);
+  classNameSubscribers.forEach((subject) =>
+    subject.next({
+      operation,
+      bfOid: bf_oid,
+      bfGid: bf_sid,
+      bfTClassName: bf_t_class_name,
+      bfTid: bf_tid,
+      sortValue: sort_value,
+      cursor: sortValueToCursor(sort_value),
+    })
+  );
+}
+
+function respondToNotification(message: NotificationResponseMessage) {
+  const { operation, bf_gid, bf_oid, bf_sid, bf_t_class_name } = JSON.parse(
+    message.payload,
+  );
+  if (bf_sid && bf_t_class_name) {
+    return respondToConnectionChangeNotification(message);
+  }
+  const oidSubscribers = bfModelUpdateSubjects.get(bf_oid);
   if (oidSubscribers) {
     const gidSubjects = oidSubscribers.get(bf_gid);
     if (gidSubjects) {
@@ -85,7 +137,7 @@ function respondToNotification({ payload }: NotificationResponseMessage) {
 let areNotificationsInitialized = false;
 async function initializeSubscriptions() {
   if (areNotificationsInitialized) {
-    logger.info("Notifications are already configured");
+    logger.debug("Notifications are already configured");
     return;
   }
   areNotificationsInitialized = true;
@@ -105,17 +157,50 @@ export function bfSubscribeToItemChanges(bfOid: BfOid, bfGid: BfGid) {
   if (!areNotificationsInitialized) {
     initializeSubscriptions();
   }
-  if (!bfOidToGidMap.has(bfOid)) {
-    bfOidToGidMap.set(bfOid, new Map());
+  if (!bfModelUpdateSubjects.has(bfOid)) {
+    bfModelUpdateSubjects.set(bfOid, new Map());
   }
-  const oidSubscribers = bfOidToGidMap.get(bfOid)!;
+  const oidSubscribers = bfModelUpdateSubjects.get(bfOid)!;
   if (!oidSubscribers.has(bfGid)) {
     oidSubscribers.set(bfGid, new Set());
   }
   const gidSubjects = oidSubscribers.get(bfGid)!;
   const subject = new Subject<BfModelUpdateNotification>();
   gidSubjects.add(subject);
-  return observableToAsyncIterable(subject.asObservable());
+  // send a first one so the listener gets something immediately.
+  setTimeout(() => {
+    subject.next({ operation: "UPDATE", bfGid, bfOid });
+  }, 0);
+  return observableToAsyncIterable<BfModelUpdateNotification>(
+    subject.asObservable(),
+  );
+}
+
+export function bfSubscribeToConnectionChanges(
+  bfOid: BfOid,
+  bfSid: BfSid,
+  bfTClassName: BfClassName,
+) {
+  if (!areNotificationsInitialized) {
+    initializeSubscriptions();
+  }
+  if (!bfConnectionUpdateSubjects.has(bfOid)) {
+    bfConnectionUpdateSubjects.set(bfOid, new Map());
+  }
+  const oidSubscribers = bfConnectionUpdateSubjects.get(bfOid)!;
+  if (!oidSubscribers.has(bfSid)) {
+    oidSubscribers.set(bfSid, new Map());
+  }
+  const sidSubscribers = oidSubscribers.get(bfSid)!;
+  if (!sidSubscribers.has(bfTClassName)) {
+    sidSubscribers.set(bfTClassName, new Set());
+  }
+  const classNameSubscribers = sidSubscribers.get(bfTClassName)!;
+  const subject = new Subject<BfConnectionUpdateNotification>();
+  classNameSubscribers.add(subject);
+  return observableToAsyncIterable<BfConnectionUpdateNotification>(
+    subject.asObservable(),
+  );
 }
 
 export async function bfGetItem<
@@ -768,7 +853,7 @@ export async function transactionRollback(): Promise<void> {
 }
 
 // Function to convert sortValue to base64 cursor
-function sortValueToCursor(sortValue: number): string {
+export function sortValueToCursor(sortValue: number = Date.now()): string {
   // Convert number to string and then Uint8Array
   const uint8Array = new TextEncoder().encode(sortValue.toString());
   // Convert Uint8Array to base64
