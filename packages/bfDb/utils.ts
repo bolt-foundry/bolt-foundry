@@ -41,7 +41,12 @@ export async function upsertBfDb() {
       json_build_object(
         'operation', TG_OP,
         'bf_gid', NEW.bf_gid,
-        'bf_oid', NEW.bf_oid
+        'bf_oid', NEW.bf_oid,
+        'bf_sid', NEW.bf_sid,
+        'bf_tid', NEW.bf_tid,
+        'bf_s_class_name', NEW.bf_s_class_name,
+        'bf_t_class_name', NEW.bf_t_class_name,
+        'sort_value', NEW.sort_value
       )::text
     );
     RETURN NEW;
