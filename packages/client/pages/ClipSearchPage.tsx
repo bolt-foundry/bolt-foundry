@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useLazyLoadQuery } from "react-relay";
+import { useLazyLoadQuery, useSubscription } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { Sidebar } from "packages/client/components/Sidebar.tsx";
 import { Search } from "packages/client/components/clipsearch/Search.tsx";
@@ -13,6 +13,8 @@ import ClipSearchProvider, {
 } from "packages/client/contexts/ClipSearchContext.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
+import { ClipSearchPageQuery } from "packages/__generated__/ClipSearchPageQuery.graphql.ts";
+import { ClipSearchSidebar } from "packages/client/components/clipsearch/ClipSearchSidebar.tsx";
 const { Suspense } = React;
 
 const query = await graphql`
@@ -24,63 +26,63 @@ const query = await graphql`
         ...Clip_bfPerson
       }
       organization {
+        savedSearches(first: 100) {
+          __id
+          ...Search_bfSavedSearchConnection
+          ...ClipSearchSidebar_savedSearchConnection
+        }
         ...WatchFolderList_bfOrganization
         id
         media (first: 1) {
           count
         }
       }
+      
     }
   }
 `;
 
-export function ClipSearchPageContent() {
+const subscription = await graphql`
+  subscription ClipSearchPageSavedSearchesSubscription($organizationId: ID!, $connections: [ID!]!){
+    connection(id: $organizationId, targetClassName: "BfSavedSearch")  {
+      append {
+        node @appendNode(connections: $connections, edgeTypeName: "BfSavedSearch") {
+          id
+          ... on BfSavedSearch {
+            query
+            id
+            __typename
+          }
+        }
+      }
+    }
+  }
+`;
+
+export function ClipSearchPage() {
   const { navigate } = useRouter();
-  const { clips, isInFlight } = useClipSearchState();
-  const data = useLazyLoadQuery(query, {});
-  const count = data?.currentViewer?.organization?.media?.count;
-  const sidebarContents = (
-    <FeatureFlag name="placeholder">
-      <List collapsible={true} header="Lists">
-        <ListItem
-          content="work-life balance"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="taxes"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-      </List>
-      <List collapsible={true} header="Searches">
-        <ListItem
-          content="work-life balance"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="taxes"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="duck"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="clouds"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-      </List>
-    </FeatureFlag>
+  const data = useLazyLoadQuery<ClipSearchPageQuery>(query, {});
+  const orgId = data.currentViewer?.organization?.id;
+  const connection = data.currentViewer?.organization?.savedSearches?.__id;
+  const subscriptionConfig = React.useMemo(
+    () => ({
+      variables: { organizationId: orgId, connections: [connection] },
+      subscription: subscription,
+    }),
+    [orgId],
   );
+  useSubscription(subscriptionConfig);
+  const count = data?.currentViewer?.organization?.media?.count;
+  const savedSearchConnection = data?.currentViewer?.organization
+    ?.savedSearches;
   return (
     <div className="cs-page flexRow">
       <Sidebar
-        contents={sidebarContents}
+        contents={savedSearchConnection && (
+          <ClipSearchSidebar
+            bfSavedSearchConnection$key={savedSearchConnection}
+          />
+        )}
         footer={
           <List>
             <ListItem
@@ -92,9 +94,12 @@ export function ClipSearchPageContent() {
         header="Clip search"
       />
       <div className="cs-main">
-        <Search />
+        {savedSearchConnection && (
+          <Search bfSavedSearchConnection$key={savedSearchConnection} />
+        )}
         <Suspense fallback={<BfDsFullPageSpinner />}>
-          {clips || isInFlight
+          {
+            /* {clips || isInFlight
             ? (
               <ClipsView
                 count={count}
@@ -106,17 +111,10 @@ export function ClipSearchPageContent() {
                 count={count}
                 settings$key={data?.currentViewer?.organization}
               />
-            )}
+            )} */
+          }
         </Suspense>
       </div>
     </div>
-  );
-}
-
-export function ClipSearchPage() {
-  return (
-    <ClipSearchProvider>
-      <ClipSearchPageContent />
-    </ClipSearchProvider>
   );
 }
