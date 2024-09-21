@@ -7,6 +7,9 @@ import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import type { GraphQLContext } from "packages/graphql/graphql.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { getLogger } from "deps.ts";
+import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { BfSavedSearch } from "packages/bfDb/models/BfSavedSearch.ts";
+import { bfSavedSearchType } from "packages/graphql/types/BfGraphQLSavedSearch.ts";
 
 const logger = getLogger(import.meta);
 
@@ -17,6 +20,7 @@ export const BfGraphQLPerson = objectType({
     t.implements("BfNode");
     t.string("name");
     t.string("email");
+    
     t.string("googleAuthAccessToken", {
       async resolve(parent, _, { bfCurrentViewer }) {
         // @ts-expect-error #techdebt
@@ -29,17 +33,15 @@ export const BfGraphQLPerson = objectType({
     t.connectionField("accounts", {
       type: "BfAccount",
       async resolve(
-        _,
-        args: ConnectionArguments,
+        { id },
+        args,
         { bfCurrentViewer }: GraphQLContext,
       ) {
-        const accounts = await BfAccount.findAllForCurrentViewer(
+        const person = await BfPerson.findX(
           bfCurrentViewer,
-        );
-        const accountsForGraphQL = accounts.map((account) =>
-          account.toGraphql()
-        );
-        return connectionFromArray(accountsForGraphQL, args);
+          toBfGid(id),
+        )
+        return person.queryTargetInstances(BfAccount, args)
       },
     });
   },

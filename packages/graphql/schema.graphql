@@ -109,6 +109,15 @@ type BfClipReviewEdge {
   node: BfClipReview
 }
 
+type BfConnectionEdge {
+  cursor: String
+  node: BfNode
+}
+
+type BfConnectionSubscriptionPayload {
+  append: BfConnectionEdge
+}
+
 """
 The person acting on this request. The person is the person who is acting, the organization is the org on which they're acting
 """
@@ -116,6 +125,7 @@ interface BfCurrentViewer {
   blog: Blog
   organization: BfOrganization
   person: BfPerson
+  personBfGid: ID
   role: AccountRole
 }
 
@@ -124,6 +134,7 @@ type BfCurrentViewerAccessToken implements BfCurrentViewer {
   blog: Blog
   organization: BfOrganization
   person: BfPerson
+  personBfGid: ID
   role: AccountRole
 }
 
@@ -132,6 +143,7 @@ type BfCurrentViewerAnon implements BfCurrentViewer {
   blog: Blog
   organization: BfOrganization
   person: BfPerson
+  personBfGid: ID
   role: AccountRole
 }
 
@@ -297,6 +309,19 @@ type BfOrganization implements BfNode & Node {
     """Returns the last n elements from the list."""
     last: Int
   ): BfClipReviewConnection
+  savedSearches(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfSavedSearchConnection
 }
 
 """A real human who uses our system"""
@@ -320,6 +345,38 @@ type BfPerson implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   name: String
+}
+
+type BfSavedSearch implements BfNode & Node {
+  """Unique identifier for the resource"""
+  id: ID!
+  query: String
+  status: SearchStatus
+}
+
+type BfSavedSearchConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BfSavedSearchEdge]
+
+  """Flattened list of BfSavedSearch type"""
+  nodes: [BfSavedSearch]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type BfSavedSearchEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BfSavedSearch
 }
 
 type Blog {
@@ -426,6 +483,7 @@ type Link {
 }
 
 type Mutation {
+  createSavedSearch(query: String!): BfSavedSearchEdge
   createTranscript(filename: String!, words: String!): BfMediaNodeTranscript
   deleteGoogleDriveResource(resourceId: String): BfGoogleDriveResource
   deleteMedia(id: String!): BfMedia
@@ -436,7 +494,6 @@ type Mutation {
   logout: BfCurrentViewer
   pickGoogleDriveFolder(name: String, resourceId: String): BfGoogleDriveResource
   readTextFile(file: File!): String
-  searchMutation(input: String!, suggestedModel: String): SearchMutationPayload
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
   updateTranscript(filename: String, id: String!, words: String): BfMediaNodeTranscript
@@ -496,9 +553,11 @@ type RichText {
   type: String
 }
 
-type SearchMutationPayload {
-  message: String
-  success: Boolean!
+enum SearchStatus {
+  COMPLETED
+  ERRORED
+  PENDING
+  RUNNING
 }
 
 input SubmitContactFormInput {
@@ -515,6 +574,7 @@ type SubmitContactFormPayload {
 }
 
 type Subscription {
+  connection(id: ID, targetClassName: String): BfConnectionSubscriptionPayload
   node(id: ID): BfNode
 }
 
