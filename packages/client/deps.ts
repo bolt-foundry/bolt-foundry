@@ -3,6 +3,9 @@ export * as GraphqlWs from "https://esm.sh/graphql-ws@5.14.0";
 import "packages/__generated__/_graphql_imports.ts";
 // @deno-types="https://esm.sh/v135/@types/react-relay@16.0.6/index.d.ts";
 import * as ReactRelay from "react-relay";
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
 
 export async function graphql(
   strings: TemplateStringsArray,
@@ -15,10 +18,15 @@ export async function graphql(
     const { action, name } = string?.match(regex)?.groups ?? {};
     if (action && name) {
       const importName = name;
-      const generatedGraphQLFile = await import(
-        `packages/__generated__/${importName}.graphql.ts`
-      );
-      return generatedGraphQLFile as typeof generatedGraphQLFile;
+      try {
+        const generatedGraphQLFile = await import(
+          `packages/__generated__/${importName}.graphql.ts`
+        );
+        return generatedGraphQLFile as typeof generatedGraphQLFile;
+      } catch {
+        logger.warn(`Can't find ${importName}.graphql.ts`);
+        return;
+      }
     }
   }
 
