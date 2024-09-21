@@ -30,57 +30,28 @@ const ClipSearchContext = createContext<ClipSearchContextProps | undefined>(
   undefined,
 );
 
-const mutation = await graphql`
-  mutation ClipSearchContextMutation(
-    $input: String!,
-    $suggestedModel: String,
-  ) {
-    searchMutation(
-      input: $input,
-      suggestedModel: $suggestedModel,
-    ) {
-      success
-      message
-    }
-  }
-`;
-
 export default function ClipSearchProvider(
   { children }: React.PropsWithChildren,
 ) {
   const [commit, isInFlight] = useMutation(mutation);
-  const [clips, setClips] = useState<string | null>();
+  const [clips, setClips] = useState<string | null>(null);
   const [clipsCount, setClipsCount] = useState<number | null>();
   const [prompt, setPrompt] = useState("");
   const [aiModel, setAiModel] = useState(AiModel.OPENAI_4O);
   const previousPromptRef = React.useRef<string>("");
 
   const commitSearch = (input: string = prompt) => {
-    setPrompt(input);
-    setClips(null);
-    setClipsCount(null);
     commit({
       variables: {
         input,
         suggestedModel: aiModel,
       },
       onCompleted: (response) => {
-        setClips(response.searchMutation.message);
-        const parsedClips = isValidJSON(response.searchMutation.message)
-          ? JSON.parse(response.searchMutation.message)
-          : { anecdotes: [] };
-        const numberOfClips = parsedClips?.anecdotes?.length ?? 0;
-        setClipsCount(numberOfClips);
-        previousPromptRef.current = input;
-        setPrompt("");
       },
     });
   };
 
   const clearSearch = () => {
-    setPrompt("");
-    setClips(null);
-    setClipsCount(null);
   };
 
   const value = {

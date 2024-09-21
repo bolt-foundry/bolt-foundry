@@ -1,18 +1,59 @@
-import type * as React from "react";
+import * as React from "react";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
-import { DropdownSelector } from "packages/bfDs/DropdownSelector.tsx";
-import { useClipSearchState } from "packages/client/contexts/ClipSearchContext.tsx";
-import { AiModel } from "packages/client/contexts/ClipSearchContext.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
+import { graphql } from "packages/client/deps.ts";
+import { useFragment, useMutation } from "react-relay";
+import type { SearchMutation } from "packages/__generated__/SearchMutation.graphql.ts";
+import { Search_bfSavedSearchConnection$key } from "packages/__generated__/Search_bfSavedSearchConnection.graphql.ts";
 
-export function Search() {
-  const { aiModel, setAiModel, commitSearch, isInFlight, prompt, setPrompt } =
-    useClipSearchState();
+const mutation = await graphql`
+  mutation SearchMutation(
+    $query: String!,
+    $connections: [ID!]!
+  ) {
+    createSavedSearch(
+      query: $query,
+    ) {
+        node @appendNode(connections: $connections, edgeTypeName: "BfSavedSearchEdge")  {
+        id
+        query
+        status
+      }
+    }
+  }
+`;
 
+const fragment = await graphql`
+  fragment Search_bfSavedSearchConnection on BfSavedSearchConnection {
+    __id
+  }
+`;
+
+type Props = {
+  bfSavedSearchConnection$key: Search_bfSavedSearchConnection$key;
+};
+
+export function Search({ bfSavedSearchConnection$key }: Props) {
+  const [commitSearch, isInFlight] = useMutation<SearchMutation>(mutation);
+  const connection = useFragment(fragment, bfSavedSearchConnection$key);
+  const [query, setQuery] = React.useState("");
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    commitSearch();
+    commitSearch({
+      variables: {
+        query,
+        connections: [connection.__id],
+      },
+      optimisticResponse: {
+        createSavedSearch: {
+          node: {
+            query: query,
+            id: "",
+            status: "PENDING",
+          },
+        },
+      },
+    });
   }
 
   return (
@@ -21,26 +62,12 @@ export function Search() {
         <BfDsInput
           placeholder="Search"
           showSpinner={isInFlight}
-          value={prompt}
+          value={query}
           onChange={(e) => {
-            setPrompt(e.target.value);
+            setQuery(e.target.value);
           }}
         />
       </div>
-      <FeatureFlag name="placeholder">
-        <DropdownSelector
-          placeholder="Select AI Model"
-          value={aiModel}
-          onChange={(value) => setAiModel(value as AiModel)}
-          options={{
-            "GPT 3.5 turbo": AiModel.OPENAI_35,
-            "GPT 4o mini": AiModel.OPENAI_4O,
-            "Claude 3 opus": AiModel.CLAUDE_OPUS,
-            "Claude 3.5 sonnet": AiModel.CLAUDE_SONNET,
-          }}
-          justification="end"
-        />
-      </FeatureFlag>
       <BfDsButton type="submit" text="Search" />
     </form>
   );

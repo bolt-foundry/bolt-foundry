@@ -359,12 +359,14 @@ export interface NexusGenFieldTypes {
     blog: NexusGenRootTypes['Blog'] | null; // Blog
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
+    personBfGid: string | null; // ID
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfCurrentViewerAnon: { // field return type
     blog: NexusGenRootTypes['Blog'] | null; // Blog
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
+    personBfGid: string | null; // ID
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfGoogleDriveResource: { // field return type
@@ -552,6 +554,7 @@ export interface NexusGenFieldTypes {
     blog: NexusGenRootTypes['Blog'] | null; // Blog
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     person: NexusGenRootTypes['BfPerson'] | null; // BfPerson
+    personBfGid: string | null; // ID
     role: NexusGenEnums['AccountRole'] | null; // AccountRole
   }
   BfNode: { // field return type
@@ -632,12 +635,14 @@ export interface NexusGenFieldTypeNames {
     blog: 'Blog'
     organization: 'BfOrganization'
     person: 'BfPerson'
+    personBfGid: 'ID'
     role: 'AccountRole'
   }
   BfCurrentViewerAnon: { // field return type name
     blog: 'Blog'
     organization: 'BfOrganization'
     person: 'BfPerson'
+    personBfGid: 'ID'
     role: 'AccountRole'
   }
   BfGoogleDriveResource: { // field return type name
@@ -825,6 +830,7 @@ export interface NexusGenFieldTypeNames {
     blog: 'Blog'
     organization: 'BfOrganization'
     person: 'BfPerson'
+    personBfGid: 'ID'
     role: 'AccountRole'
   }
   BfNode: { // field return type name
