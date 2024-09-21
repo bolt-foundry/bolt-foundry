@@ -12,7 +12,10 @@ import {
   IBfCurrentViewerInternalAdmin,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import type { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { bfQueryItemsForGraphQLConnection } from "packages/bfDb/bfDb.ts";
+import {
+  bfQueryItemsForGraphQLConnection,
+  bfSubscribeToConnectionChanges,
+} from "packages/bfDb/bfDb.ts";
 const logger = getLogger(import.meta);
 
 export type BfNodeRequiredProps = Record<string, unknown>;
@@ -171,6 +174,14 @@ export class BfNode<
       this.metadata.bfGid,
       props,
       args,
+    );
+  }
+
+  getConnectionSubscriptionForGraphql(targetClassName: string) {
+    return bfSubscribeToConnectionChanges(
+      this.metadata.bfOid,
+      this.metadata.bfGid,
+      targetClassName,
     );
   }
 }
