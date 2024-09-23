@@ -5,6 +5,8 @@ import {
   BfMediaNodeTranscript,
   BfMediaNodeTranscriptStatus,
 } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
+import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);
 
@@ -19,10 +21,12 @@ export class BfMediaNodeVideoGoogleDriveResource
       status: BfMediaNodeTranscriptStatus.NEW,
     });
     logger.info(`Creating transcript for ${this}`);
+    const currentOrg = await BfOrganization.findForCurrentViewer(this.currentViewer);
+    await BfEdge.createBetweenNodes(this.currentViewer, currentOrg, bfmnTranscript)
     await bfmnTranscript.requestTranscriptionFromGoogleDriveResourceId(
       this.props.googleDriveResourceId,
     );
     logger.info(`Transcript created for ${this}`);
-    return this;
+    return bfmnTranscript;
   }
 }

@@ -111,7 +111,7 @@ export class BfNode<
         targetProps,
         targetCreationMetadata,
       );
-    await BfEdge.createEdgeBetweenNodes(
+    await BfEdge.createBetweenNodes(
       this.currentViewer,
       this,
       targetModel,
