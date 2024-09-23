@@ -53,7 +53,7 @@ export class BfEdge<
    * const targetNode = await BfNode.create(currentViewer, {name: "Target Node"});
    * const edge = await BfEdge.createEdgeBetweenNodes(currentViewer, sourceNode, targetNode);
    */
-  static async createEdgeBetweenNodes(
+  static async createBetweenNodes(
     currentViewer: BfCurrentViewer,
     sourceNode: BfNode,
     targetNode: BfNode,

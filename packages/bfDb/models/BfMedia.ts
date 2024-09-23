@@ -12,6 +12,10 @@ import { BfMediaNodeVideoGoogleDriveResource } from "packages/bfDb/models/BfMedi
 
 const logger = getLogger(import.meta);
 
+export enum GoogleDriveResourceToMediaEdgeRoles {
+  ORIGINAL = "ORIGINAL",
+}
+
 export type BfMediaProps = {
   filename: string;
 };
@@ -50,17 +54,15 @@ export class BfMedia extends BfNode<BfMediaProps> {
     const bfMedia = await driveResource.createTargetNode(
       BfMedia,
       {},
-      "original",
+      GoogleDriveResourceToMediaEdgeRoles.ORIGINAL,
     );
     logger.info(`Created new media ${bfMedia}`);
-    const bfMediaNodeVideoGoogleDriveResource = await bfMedia.createTargetNode(
+    await bfMedia.createTargetNode(
       BfMediaNodeVideoGoogleDriveResource,
       { googleDriveResourceId: driveResource.props.resourceId },
-      "ingested",
     );
-    const bfMediaNodeTranscript = await bfMediaNodeVideoGoogleDriveResource
-      .createTranscript();
-    logger.info(`Successfully created ${bfMediaNodeTranscript}`);
+
+    return bfMedia;
     /**
      * Check if google drive resource is a file.
      * If it is, create a new this.
@@ -81,6 +83,16 @@ export class BfMedia extends BfNode<BfMediaProps> {
      * 10. Gather language data (BfMediaLanguage)
      * 11. Gather people who appear in the video (BMediaFaceRecognition)
      */
+  }
+
+  async createTranscripts() {
+    const targets = await this.queryTargetInstances(
+      BfMediaNodeVideoGoogleDriveResource,
+    );
+    const transcripts = targets.map(async (target) => {
+      return await target.createTranscript();
+    });
+    return Promise.all(transcripts);
   }
 
   async downloadClip(args: DownloadClipArgs) {

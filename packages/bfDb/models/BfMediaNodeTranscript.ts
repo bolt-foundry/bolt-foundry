@@ -9,11 +9,7 @@ import { BfError } from "lib/BfError.ts";
  * LAZY STUFF
  */
 
-import { PineconeStore } from "@langchain/pinecone";
-import { OpenAIEmbeddings } from "@langchain/openai";
 
-import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
-import type { Document } from "@langchain/core/documents";
 
 /**
  * / LAZY STUFF
@@ -210,42 +206,12 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     return this;
   }
 
+  async getEmbeddings() {
+    
+  }
+
   private async sendToVectorStore() {
-    const embeddings = new OpenAIEmbeddings({
-      model: "text-embedding-3-small",
-    });
-
-    const pinecone = new PineconeClient();
-    const pineconeIndexName = Deno.env.get("PINECONE_INDEX_NAME") ?? "test";
-    logger.debug(pineconeIndexName);
-    const pineconeIndex = pinecone.Index(pineconeIndexName);
-
-    logger.debug("pinecone index", pineconeIndex);
-    logger.info(`Sending to vector store for ${this}`);
-    const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
-      pineconeIndex,
-      // Maximum number of batch requests to allow at once. Each batch is 1000 vectors.
-      maxConcurrency: 5,
-      namespace: this.metadata.bfOid,
-    });
-
-    const documents: Array<Document> = this.getTokenSafeText().map((text) => {
-      return {
-        id: this.metadata.bfGid,
-        metadata: this.metadata,
-        pageContent: text,
-      };
-    });
-    logger.debug("langchainDocument to send", documents);
-    try {
-      const results = await vectorStore.addDocuments(documents);
-      logger.info("Sent", results);
-    } catch (e) {
-      logger.error(e);
-      throw e;
-    }
-    logger.info(`Sent to vector store for ${this}`);
-    return this;
+    
   }
 
   get text() {
