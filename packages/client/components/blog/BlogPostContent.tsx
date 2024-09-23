@@ -46,6 +46,30 @@ fragment BlogPostContentFragment on BlogPost {
         }
       }
     }
+    ... on HeadingBlock {
+      id
+      type
+      size
+      color
+      isToggleable
+      RichText {
+        text {
+          content
+          link {
+            url
+          }
+        }
+        annotations {
+          bold
+          code
+          color
+          italic
+          strikethrough
+          underlined
+        }
+        type
+      }
+    }
     ... on ImageBlock {
       id
       type
