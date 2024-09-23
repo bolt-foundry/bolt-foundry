@@ -11,7 +11,14 @@ type Props = {
 export function BlogFrame(
   { children, cover, post }: React.PropsWithChildren<Props>,
 ) {
-  const classRoot = post ? "blog_post" : "blog_page";
+  let classRoot = "";
+  let additionalClassNameForNavbar = "";
+  if (post) {
+    classRoot = "blog_post";
+    additionalClassNameForNavbar = "blog-post-navbar";
+  } else {
+    classRoot = "blog_page";
+  }
   return (
     <div className={classRoot}>
       {cover && (
@@ -33,7 +40,7 @@ export function BlogFrame(
               />
             </Link>
           </div>
-          <BlogPageNavbar />
+          <BlogPageNavbar additionalClassName={additionalClassNameForNavbar} />
         </div>
       </div>
       {children}
