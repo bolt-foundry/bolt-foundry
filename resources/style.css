@@ -1232,6 +1232,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   align-items: center;
   justify-content: space-between;
   margin-right: 20px;
+  gap: 15px;
   min-width: 150px;
 }
 
