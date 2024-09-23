@@ -1808,12 +1808,20 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   min-width: 150px;
   color: var(--text);
   padding: 15px 23px;
-  background: var(--background);
   border-radius: 20px;
+  background: var(--background);
 }
 
 .blog-navbar a {
   color: var(--text);
+}
+
+.blog-post-navbar {
+  background: rgb(0 0 0 / 25%);
+}
+
+.blog-post-navbar a {
+  color: white;
 }
 
 .blog_page a:hover {
