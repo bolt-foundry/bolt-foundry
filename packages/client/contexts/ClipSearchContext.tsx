@@ -33,7 +33,7 @@ const ClipSearchContext = createContext<ClipSearchContextProps | undefined>(
 export default function ClipSearchProvider(
   { children }: React.PropsWithChildren,
 ) {
-  const [commit, isInFlight] = useMutation(mutation);
+  // const [commit, isInFlight] = useMutation(mutation);
   const [clips, setClips] = useState<string | null>();
   const [clipsCount, setClipsCount] = useState<number | null>();
   const [prompt, setPrompt] = useState("");
@@ -44,22 +44,22 @@ export default function ClipSearchProvider(
     setPrompt(input);
     setClips(null);
     setClipsCount(null);
-    commit({
-      variables: {
-        input,
-        suggestedModel: aiModel,
-      },
-      onCompleted: (response) => {
-        setClips(response.searchMutation.message);
-        const parsedClips = isValidJSON(response.searchMutation.message)
-          ? JSON.parse(response.searchMutation.message)
-          : { anecdotes: [] };
-        const numberOfClips = parsedClips?.anecdotes?.length ?? 0;
-        setClipsCount(numberOfClips);
-        previousPromptRef.current = input;
-        setPrompt("");
-      },
-    });
+    // commit({
+    //   variables: {
+    //     input,
+    //     suggestedModel: aiModel,
+    //   },
+    //   onCompleted: (response) => {
+    //     setClips(response.searchMutation.message);
+    //     const parsedClips = isValidJSON(response.searchMutation.message)
+    //       ? JSON.parse(response.searchMutation.message)
+    //       : { anecdotes: [] };
+    //     const numberOfClips = parsedClips?.anecdotes?.length ?? 0;
+    //     setClipsCount(numberOfClips);
+    //     previousPromptRef.current = input;
+    //     setPrompt("");
+    //   },
+    // });
   };
 
   const clearSearch = () => {
@@ -77,7 +77,7 @@ export default function ClipSearchProvider(
     setClipsCount,
     clearSearch,
     commitSearch,
-    isInFlight,
+    // isInFlight,
     prompt,
     setPrompt,
     previousPrompt: previousPromptRef.current,
