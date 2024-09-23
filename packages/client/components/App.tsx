@@ -10,13 +10,11 @@ import {
 import { LoginPage } from "packages/client/pages/LoginPage.tsx";
 import { Demo } from "packages/bfDs/Demo.tsx";
 import { ContactUs } from "packages/client/components/ContactUs.tsx";
-import type { ComingSoonPage } from "packages/client/pages/ComingSoonPage.tsx";
 import { Marketing } from "packages/client/pages/MarketingPage.tsx";
 import { SettingsPage } from "packages/client/pages/SettingsPage.tsx";
 import { ClipSearchPage } from "packages/client/pages/ClipSearchPage.tsx";
 import { BlogPage } from "packages/client/pages/BlogPage.tsx";
 import { LandingPage } from "packages/client/pages/LandingPage.tsx";
-import type { useAppState } from "packages/client/contexts/AppStateContext.tsx";
 import { Hud } from "packages/client/components/Hud.tsx";
 import { TermsAndPrivacyPage } from "packages/client/pages/TermsAndPrivacyPage.tsx";
 
@@ -27,7 +25,7 @@ export const routes = new Map([
   ["/ui", { Component: Demo, allowLoggedOut: true }],
   ["/contact-us", { Component: ContactUs, allowLoggedOut: true }],
   ["/settings/:tab?", { Component: SettingsPage, allowLoggedOut: false }],
-  ["/search", { Component: ClipSearchPage, allowLoggedOut: false }],
+  ["/search/:searchId?", { Component: ClipSearchPage, allowLoggedOut: false }],
   ["/blog/:slug?", { Component: BlogPage, allowLoggedOut: true }],
   ["/terms-and-privacy", {
     Component: TermsAndPrivacyPage,
