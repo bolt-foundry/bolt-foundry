@@ -106,7 +106,7 @@ export class BfAccount extends BfNode<BfAccountRequiredProps> {
       this.currentViewer,
       this.currentViewer.personBfGid,
     );
-    await BfEdge.createEdgeBetweenNodes(this.currentViewer, person, this);
+    await BfEdge.createBetweenNodes(this.currentViewer, person, this);
   }
 
   async generateAccessToken(importMeta: ImportMeta) {

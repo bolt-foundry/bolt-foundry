@@ -59,7 +59,7 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
       currentViewer,
       jobProps,
     );
-    const _jobEdge = await BfEdge.createEdgeBetweenNodes(
+    const _jobEdge = await BfEdge.createBetweenNodes(
       currentViewer,
       bfNode,
       job,
