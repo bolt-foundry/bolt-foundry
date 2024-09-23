@@ -21,8 +21,14 @@ export class BfMediaNodeVideoGoogleDriveResource
       status: BfMediaNodeTranscriptStatus.NEW,
     });
     logger.info(`Creating transcript for ${this}`);
-    const currentOrg = await BfOrganization.findForCurrentViewer(this.currentViewer);
-    await BfEdge.createBetweenNodes(this.currentViewer, currentOrg, bfmnTranscript)
+    const currentOrg = await BfOrganization.findForCurrentViewer(
+      this.currentViewer,
+    );
+    await BfEdge.createBetweenNodes(
+      this.currentViewer,
+      currentOrg,
+      bfmnTranscript,
+    );
     await bfmnTranscript.requestTranscriptionFromGoogleDriveResourceId(
       this.props.googleDriveResourceId,
     );

@@ -9,8 +9,6 @@ import { BfError } from "lib/BfError.ts";
  * LAZY STUFF
  */
 
-
-
 /**
  * / LAZY STUFF
  */
@@ -207,11 +205,9 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
   }
 
   async getEmbeddings() {
-    
   }
 
   private async sendToVectorStore() {
-    
   }
 
   get text() {

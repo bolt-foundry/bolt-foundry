@@ -117,7 +117,6 @@ export class BfGoogleDriveResource
 
   private ingestVideo() {
     logger.info(`Starting to ingest video ${this}`);
-    
   }
 
   getFilePath() {
