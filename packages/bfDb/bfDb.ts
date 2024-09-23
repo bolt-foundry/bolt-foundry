@@ -768,7 +768,7 @@ export async function transactionRollback(): Promise<void> {
 }
 
 // Function to convert sortValue to base64 cursor
-function sortValueToCursor(sortValue: number): string {
+export function sortValueToCursor(sortValue: number): string {
   // Convert number to string and then Uint8Array
   const uint8Array = new TextEncoder().encode(sortValue.toString());
   // Convert Uint8Array to base64

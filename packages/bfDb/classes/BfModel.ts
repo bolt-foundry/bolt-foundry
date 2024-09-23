@@ -26,6 +26,7 @@ import {
   type bfQueryItemsForGraphQLConnection,
   bfQueryItemsWithSizeLimit,
   bfSubscribeToItemChanges,
+  sortValueToCursor,
   transactionCommit,
   transactionRollback,
   transactionStart,
@@ -348,6 +349,13 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       // @ts-expect-error we declare the __typename in children classes as a constant
       __typename: this.metadata.className ?? this.__typename ??
         this.constructor.name,
+    };
+  }
+
+  toGraphqlEdge() {
+    return {
+      node: this.toGraphql(),
+      cursor: sortValueToCursor(this.metadata.sortValue),
     };
   }
 
