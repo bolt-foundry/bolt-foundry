@@ -19,22 +19,9 @@ type Document = {
   words: string;
 };
 
-function formatDocs(documents: Array<Document>) {
-  return documents.map((document) => {
-    const transcript = JSON.parse(document?.words ?? "[]") as Array<DGWord>;
-    const content = transcript.map((word) => word.word).join(" ");
-    return `
-Filename: ${document.filename ?? "Untitled"}
-Media ID: ${document.mediaId}
-Transcript ID: ${document.transcriptId}
-Content: ${content}
-`;
-  }).join("\n\n");
-}
-
 export const callAPI = async (
   userMessage: string,
-  documents: Array<Document>,
+  textToSearch: string,
   suggestedModel?: string | null | undefined,
 ) => {
   const excerpt = z.object({
@@ -85,7 +72,7 @@ export const callAPI = async (
   }
 
   const prompt = ChatPromptTemplate.fromMessages([
-    ["system", `${createSystemMessage(documents)}`],
+    ["system", `${createSystemMessage(textToSearch)}`],
     ["user", "{input}"],
   ]);
 
@@ -100,7 +87,7 @@ export const callAPI = async (
     let verbatimString = "";
     excerpts.forEach((a, i) => {
       verbatimString += `${i}: ${
-        documents[0]?.toLowerCase().includes(excerpts[i].text.toLowerCase())
+        textToSearch.toLowerCase().includes(excerpts[i].text.toLowerCase())
       }, `;
     });
     return verbatimString;
@@ -109,19 +96,16 @@ export const callAPI = async (
     model: suggestedModel,
     performance: (performanceDuration / 1000),
     response: response,
-    numOfDocuments: documents.length,
     prompt: userMessage,
     verbatim: verbatim(),
   };
 
   logger.debug("prompt completed", results);
 
-  const responseWithTimecode = getTimecodesForClips(response, documents);
-  return JSON.stringify(responseWithTimecode);
+  return response;
 };
 
-const createSystemMessage = (documents: Array<Document>) => {
-  const formattedData = formatDocs(documents);
+const createSystemMessage = (text: string) => {
 
   return `
   You have access to a video transcripts. Your task is to catalog multiple instances of a topic from this transcript based on a user-provided prompt. This task is to be performed using the provided transcript data sections listed below. 
@@ -145,6 +129,6 @@ const createSystemMessage = (documents: Array<Document>) => {
   It is ok if you don't find anything strongly related to the user-provided word or concept. Just return an empty object. This is not a reflection on you. You are good enough, and smart enough and doggonit, people like you.
 
   Here is the video transcript to reference:
-  ${formattedData}
+  ${text}
       `;
 };

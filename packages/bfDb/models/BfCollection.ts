@@ -81,7 +81,7 @@ export class BfCollection extends BfNode<BfCollectionProps> {
     return vectorStore;
   }
 
-  async addToVectorSearchIndex(transcripts: Array<BfMediaNodeTranscript>) {
+  addToVectorSearchIndex(transcripts: Array<BfMediaNodeTranscript>) {
     const promises = transcripts.map(async (transcript) => {
       const vectorStore = await this.getVectorStore();
 
@@ -109,17 +109,31 @@ export class BfCollection extends BfNode<BfCollectionProps> {
     return Promise.all(promises);
   }
 
-  async search(query: string) {
+  async createSavedSearch(query: string) {
+    // Step 1: Create the saved search
     const savedSearch = await this.createTargetNode(BfSavedSearch, { query });
+    // Step 2: Perform similarity search
     const vectorStore = await this.getVectorStore();
-    const results = await vectorStore.similaritySearch(query, 15);
-    const clipsPromise = results.map((result) => toBfGid(result.metadata.bfGid))
-      .map(async (id) =>
-        await BfMediaNodeTranscript.find(this.currentViewer, id)
-      )
-      .filter(Boolean)
-      .map(async (transcript) => await transcript.findClips(query))
-      .map(async (clipProps) => await savedSearch.createResult(clipProps));
+    const searchResults = await vectorStore.similaritySearch(query, 15);
+    // Step 3: Process results and create clips
+    const clipCreationPromises = searchResults.map(async (result) => {
+      const transcriptId = toBfGid(result.metadata.bfGid);
+      const transcript = await BfMediaNodeTranscript.findX(this.currentViewer, transcriptId);
+
+      const clipsPropsPromises = await transcript.findClips(query);
+      
+      return Promise.all(
+          clipsPropsPromises.map(
+            async (clipsPromise) => {
+              const clipsProps = (await clipsPromise) ?? [];
+              return clipsProps.map(async clipProps => savedSearch.createResult(await clipProps))
+            })
+      );
+    });
+
+    await Promise.all(clipCreationPromises);
+    
+    // Step 4: Return the saved search
     return savedSearch;
   }
 }

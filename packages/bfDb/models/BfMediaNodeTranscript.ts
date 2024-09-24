@@ -4,14 +4,9 @@ import { AssemblyAI } from "assemblyai";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { BfError } from "lib/BfError.ts";
+import { callAPI } from "packages/lib/langchain.ts";
 
-/**
- * LAZY STUFF
- */
 
-/**
- * / LAZY STUFF
- */
 const logger = getLogger(import.meta);
 
 const BF_MEDIA_AUDIO_CACHE_DIRECTORY =
@@ -204,12 +199,6 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     return this;
   }
 
-  async getEmbeddings() {
-  }
-
-  private async sendToVectorStore() {
-  }
-
   get text() {
     return this.props.words.map((word) => word.text).join(" ");
   }
@@ -225,6 +214,27 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     }
 
     return texts;
+  }
+
+  findClips(query: string) {
+    const transcripts = this.getTokenSafeText()
+    const clipsPromises = transcripts.map((transcript) => callAPI(query, transcript)).map(async (clipsPromise) => {
+      try {
+        
+      const clips = await clipsPromise;
+      const clipsWithTimecodes = clips.excerpts.map(this.getTimecodesForClip)
+      return clipsWithTimecodes;
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+    
+    return clipsPromises;
+  }
+
+  private getTimecodesForClip(clip){
+    // no op for now, but we'll inject the timecodes here.
+    return clip;
   }
 
   private async updateTranscriptionPct(pct: number) {

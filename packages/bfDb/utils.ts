@@ -110,3 +110,37 @@ export async function __DANGEROUSLY_DESTROY_THE_DATABASE__(
   await sql`DROP TABLE IF EXISTS bfDb`;
   logger.warn("Database destroyed");
 }
+
+export async function cleanModels(modelNames: Array<string>, dryRun = true) {
+  if (dryRun) {
+    logger.warn("Dry run of cleaning models.")
+  }
+  const classNames = modelNames.map(name => `'${name}'`).join(', ');
+  const [{count}] = await sql`
+  WITH class_names AS (
+    SELECT unnest(ARRAY[${classNames}]) AS name
+  )
+  SELECT COUNT(*) FROM bfdb
+  WHERE class_name IN (SELECT name FROM class_names)
+   OR bf_s_class_name IN (SELECT name FROM class_names)
+   OR bf_t_class_name IN (SELECT name FROM class_names);
+   `;
+
+  logger.warn(`Removing ${modelNames.join(", ")} model classes from ${count} nodes and edges`)
+  if (dryRun) {
+    logger.warn("Skipping remove, dry run only.")
+    return;
+  }
+  await sql`
+  WITH class_names AS (
+    SELECT unnest(ARRAY[${classNames}]) AS name
+  )
+  DELETE FROM bfdb
+  WHERE class_name IN (SELECT name FROM class_names)
+   OR bf_s_class_name IN (SELECT name FROM class_names)
+   OR bf_t_class_name IN (SELECT name FROM class_names);
+  `;
+
+  logger.warn(`Removed ${modelNames.join(", ")} model classes from nodes and edges`)
+
+}
