@@ -47,26 +47,19 @@ export class BfGoogleDriveResource
     const googleAuth = await currentViewerPerson?.getGoogleAuth();
     if (!googleAuth) throw new Error("no google auth");
 
-    await BfEdge.createEdgeBetweenNodes(this.currentViewer, googleAuth, this);
+    await BfEdge.createBetweenNodes(this.currentViewer, googleAuth, this);
     const accessToken = await googleAuth.getAccessToken();
     if (!accessToken) {
       throw new BfError("Can't get Google Auth access token");
     }
 
-    await fetchMetadata(
+    const metadata = await fetchMetadata(
       accessToken,
       this.props.resourceId,
-    ).then(async (metadata) => {
-      this.props.googleDriveMetadata = metadata;
-      this.props.mimeType = metadata.mimeType;
-      await this.save();
-    });
-
-    await BfJob.createJobForNode(
-      this,
-      "__JOB_ONLY__ingest",
-      [],
     );
+    this.props.googleDriveMetadata = metadata;
+    this.props.mimeType = metadata.mimeType;
+    await this.save();
   }
 
   private async getAccessToken(): Promise<string | void> {
@@ -92,10 +85,7 @@ export class BfGoogleDriveResource
     return googleAuth;
   }
 
-  __JOB_ONLY__crawlChildren() {
-    return this.crawlChildren();
-  }
-  private async crawlChildren() {
+  async getChildren() {
     logger.debug(`getting folder contents for folder ${this}`);
     const token = await this.getAccessToken();
     if (!token) {
@@ -113,36 +103,7 @@ export class BfGoogleDriveResource
           ingestionProgress: 0,
         };
       }) ?? [];
-    for (const childProps of childrenProps) {
-      await BfJob.createJobForNode(this, "__JOB_ONLY__createChild", [
-        childProps,
-      ]);
-    }
-    return this;
-  }
-
-  __JOB_ONLY__createChild(childProps: BfGoogleDriveResourceRequiredProps) {
-    return this.createChild(childProps);
-  }
-  private async createChild(childProps: BfGoogleDriveResourceRequiredProps) {
-    logger.debug("creating child", childProps, this.metadata.bfGid);
-    const child = await this.createTargetNode(
-      this.constructor as typeof BfGoogleDriveResource,
-      childProps,
-      "child",
-    );
-    logger.debug(`created child ${child}`);
-    return child;
-  }
-
-  __JOB_ONLY__ingest() {
-    return this.ingest();
-  }
-
-  private async ingest() {
-    if (this.isVideo()) await this.ingestVideo();
-    if (this.isFolder()) await this.crawlChildren();
-    return this;
+    return childrenProps;
   }
 
   isFolder() {
@@ -156,7 +117,6 @@ export class BfGoogleDriveResource
 
   private ingestVideo() {
     logger.info(`Starting to ingest video ${this}`);
-    return BfMedia.createFromGoogleDriveResource(this);
   }
 
   getFilePath() {

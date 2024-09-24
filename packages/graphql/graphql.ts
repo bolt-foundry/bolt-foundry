@@ -26,6 +26,17 @@ export const yoga = createYoga<GraphQLServerContext, GraphQLUserContext>({
   graphqlEndpoint: "/graphql",
   graphiql: {
     subscriptionsProtocol: "WS",
+    defaultQuery: `query LoggedInUserAccountsQuery {
+        currentViewer {
+          person {
+            accounts(first:10) {
+              nodes {
+                id
+              }
+            }
+          }
+        }
+      }`,
   },
   schema,
 });

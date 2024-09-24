@@ -1,16 +1,39 @@
-import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
-import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
-import { BfMediaNodeVideoGoogleDriveResource } from "packages/bfDb/models/BfMediaNodeVideoGoogleDriveResource.ts";
-const fileId = "1JX9Ia2wYHh-M8e6ykxSkoBAkIhHe7FUe";
-const file = await BfGoogleDriveResource.findX(cv, fileId);
-const bfMedias = await file.queryTargetInstances(BfMedia);
-const bfm = bfMedias[0];
-const bfMediaNodeVideoGoogleDriveResources = await bfm.queryTargetInstances(
-  BfMediaNodeVideoGoogleDriveResource,
-);
-const bfmn = bfMediaNodeVideoGoogleDriveResources[0];
+import { getJupyterCurrentViewer } from "infra/lib/jupyterUtils.ts";
+const cv = await getJupyterCurrentViewer();
+if (!cv) throw new Error();
+import { getLogger } from "deps.ts";
+const logger = getLogger("jupyter");
+logger.setLevel(logger.levels.DEBUG);
 
-import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
-bfmn.queryTargetInstances(BfMediaNodeTranscript);
+///
 
-import { BfSearchResult } from "packages/bfDb/models/BfSearchResult.ts";
+///
+
+import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
+import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import { BfCollection } from "packages/bfDb/models/BfCollection.ts";
+
+async function createCollectionMutation(
+  bfCurrentViewer: BfCurrentViewer,
+  name: string,
+  googleDriveResourceFolderId: string,
+) {
+  const org = await BfOrganization.findForCurrentViewer(bfCurrentViewer);
+  const collection = await org.createTargetNode(BfCollection, {
+    name,
+  });
+  const watchedFolder = await collection.addWatchedFolder(
+    googleDriveResourceFolderId,
+  );
+  // return collection.toGraphql();
+  return collection;
+}
+
+///
+
+const folderId = "1sq4gNo6pZ89xiu9hGD11o6z_9uoMI1Ka";
+const name = "default";
+
+const collection = await createCollectionMutation(cv, name, folderId);
+
+///

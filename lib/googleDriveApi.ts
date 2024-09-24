@@ -50,7 +50,7 @@ export function fetchFile(
 export async function fetchFolderContents(
   accessToken: string,
   folderId: string,
-  fields: string = `nextPageToken, files(id)`,
+  fields: string = `nextPageToken, files(id,name,mimeType,parents,webViewLink)`,
 ): Promise<GoogleDriveFileMetadata> {
   const searchParams = new URLSearchParams();
   searchParams.set("supportsAllDrives", "true");
