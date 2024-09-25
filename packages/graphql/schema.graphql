@@ -115,6 +115,31 @@ type BfCollection implements BfNode & Node {
   name: String
 }
 
+type BfCollectionConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BfCollectionEdge]
+
+  """Flattened list of BfCollection type"""
+  nodes: [BfCollection]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type BfCollectionEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BfCollection
+}
+
 type BfConnectionEdge {
   cursor: String
   node: BfNode
@@ -269,6 +294,19 @@ interface BfNode implements Node {
 
 """A collection of people working together"""
 type BfOrganization implements BfNode & Node {
+  collections(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfCollectionConnection
   googleDriveFolders(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
