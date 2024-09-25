@@ -5,6 +5,7 @@ import { classnames } from "lib/classnames.ts";
 import { BlogFrame } from "packages/client/components/blog/BlogFrame.tsx";
 import { BlogPostContentFragment$key } from "packages/__generated__/BlogPostContentFragment.graphql.ts";
 import { BlogPostStatus } from "packages/client/components/blog/BlogPostStatus.tsx";
+import { BlogCta } from "packages/client/components/blog/BlogCta.tsx";
 
 const logger = getLogger(import.meta);
 
@@ -43,6 +44,30 @@ fragment BlogPostContentFragment on BlogPost {
           strikethrough
           underlined
         }
+      }
+    }
+    ... on HeadingBlock {
+      id
+      type
+      size
+      color
+      isToggleable
+      RichText {
+        text {
+          content
+          link {
+            url
+          }
+        }
+        annotations {
+          bold
+          code
+          color
+          italic
+          strikethrough
+          underlined
+        }
+        type
       }
     }
     ... on ImageBlock {
@@ -246,6 +271,7 @@ export function BlogPostContent({ postRef }: PostProps) {
             );
           }
         })}
+        <BlogCta />
       </div>
     </BlogFrame>
   );

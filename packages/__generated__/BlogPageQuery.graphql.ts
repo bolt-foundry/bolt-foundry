@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<1da48023a90383ecee24abcda8296921>>
+ * @generated SignedSource<<33ebf6cbddb3cb61b98b4d190ec6c080>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -97,99 +97,101 @@ v8 = {
   "name": "color",
   "storageKey": null
 },
-v9 = [
-  {
-    "alias": null,
-    "args": null,
-    "concreteType": "Text",
-    "kind": "LinkedField",
-    "name": "text",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "content",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "Link",
-        "kind": "LinkedField",
-        "name": "link",
-        "plural": false,
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "url",
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
-  },
-  {
-    "alias": null,
-    "args": null,
-    "concreteType": "Annotations",
-    "kind": "LinkedField",
-    "name": "annotations",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "bold",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "code",
-        "storageKey": null
-      },
-      (v8/*: any*/),
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "italic",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "strikethrough",
-        "storageKey": null
-      },
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "underlined",
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
-  }
-],
+v9 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "Text",
+  "kind": "LinkedField",
+  "name": "text",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "content",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "concreteType": "Link",
+      "kind": "LinkedField",
+      "name": "link",
+      "plural": false,
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "url",
+          "storageKey": null
+        }
+      ],
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
 v10 = {
+  "alias": null,
+  "args": null,
+  "concreteType": "Annotations",
+  "kind": "LinkedField",
+  "name": "annotations",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "bold",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "code",
+      "storageKey": null
+    },
+    (v8/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "italic",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "strikethrough",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "underlined",
+      "storageKey": null
+    }
+  ],
+  "storageKey": null
+},
+v11 = [
+  (v9/*: any*/),
+  (v10/*: any*/)
+],
+v12 = {
   "alias": null,
   "args": null,
   "concreteType": "RichText",
   "kind": "LinkedField",
   "name": "RichText",
   "plural": true,
-  "selections": (v9/*: any*/),
+  "selections": (v11/*: any*/),
   "storageKey": null
 };
 return {
@@ -403,9 +405,47 @@ return {
                                   (v5/*: any*/),
                                   (v7/*: any*/),
                                   (v8/*: any*/),
-                                  (v10/*: any*/)
+                                  (v12/*: any*/)
                                 ],
                                 "type": "ParagraphBlock",
+                                "abstractKey": null
+                              },
+                              {
+                                "kind": "InlineFragment",
+                                "selections": [
+                                  (v5/*: any*/),
+                                  (v7/*: any*/),
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "kind": "ScalarField",
+                                    "name": "size",
+                                    "storageKey": null
+                                  },
+                                  (v8/*: any*/),
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "kind": "ScalarField",
+                                    "name": "isToggleable",
+                                    "storageKey": null
+                                  },
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "concreteType": "RichText",
+                                    "kind": "LinkedField",
+                                    "name": "RichText",
+                                    "plural": true,
+                                    "selections": [
+                                      (v9/*: any*/),
+                                      (v10/*: any*/),
+                                      (v7/*: any*/)
+                                    ],
+                                    "storageKey": null
+                                  }
+                                ],
+                                "type": "HeadingBlock",
                                 "abstractKey": null
                               },
                               {
@@ -427,7 +467,7 @@ return {
                                     "kind": "LinkedField",
                                     "name": "caption",
                                     "plural": true,
-                                    "selections": (v9/*: any*/),
+                                    "selections": (v11/*: any*/),
                                     "storageKey": null
                                   }
                                 ],
@@ -441,7 +481,7 @@ return {
                                   (v7/*: any*/),
                                   (v8/*: any*/),
                                   (v6/*: any*/),
-                                  (v10/*: any*/)
+                                  (v12/*: any*/)
                                 ],
                                 "type": "CalloutBlock",
                                 "abstractKey": null
@@ -458,7 +498,7 @@ return {
                                     "name": "language",
                                     "storageKey": null
                                   },
-                                  (v10/*: any*/)
+                                  (v12/*: any*/)
                                 ],
                                 "type": "CodeBlock",
                                 "abstractKey": null
@@ -528,12 +568,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "e41d803b6bde9dbcb9ab2763a45b7fa6",
+    "cacheID": "45836f1bba44bd41ce6ecd7adf950154",
     "id": null,
     "metadata": {},
     "name": "BlogPageQuery",
     "operationKind": "query",
-    "text": "query BlogPageQuery(\n  $status: [PostStatus!]\n) {\n  currentViewer {\n    __typename\n    blog {\n      ...BlogPageContentFragment_lg5YC\n      posts(first: 10, status: $status) {\n        edges {\n          node {\n            ...BlogPostContentFragment\n            slug\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment BlogPageContentFragment_lg5YC on Blog {\n  posts(first: 10, status: $status) {\n    edges {\n      node {\n        ...BlogPageHeroFragment\n        ...BlogPostContentFragment\n        ...BlogPageListItemFragment\n        id\n        title\n        slug\n        status\n        date\n        summary\n        author {\n          name\n          email\n          avatarUrl\n        }\n        coverUrl\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment BlogPageHeroFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  summary\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n}\n\nfragment BlogPageListItemFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  summary\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n}\n\nfragment BlogPostContentFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  summary\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n  icon\n  content {\n    __typename\n    ... on ParagraphBlock {\n      id\n      type\n      color\n      RichText {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on ImageBlock {\n      id\n      type\n      imgUrl\n      caption {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CalloutBlock {\n      id\n      type\n      color\n      icon\n      RichText {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CodeBlock {\n      id\n      type\n      language\n      RichText {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n  }\n}\n"
+    "text": "query BlogPageQuery(\n  $status: [PostStatus!]\n) {\n  currentViewer {\n    __typename\n    blog {\n      ...BlogPageContentFragment_lg5YC\n      posts(first: 10, status: $status) {\n        edges {\n          node {\n            ...BlogPostContentFragment\n            slug\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment BlogPageContentFragment_lg5YC on Blog {\n  posts(first: 10, status: $status) {\n    edges {\n      node {\n        ...BlogPageHeroFragment\n        ...BlogPostContentFragment\n        ...BlogPageListItemFragment\n        id\n        title\n        slug\n        status\n        date\n        summary\n        author {\n          name\n          email\n          avatarUrl\n        }\n        coverUrl\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment BlogPageHeroFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  summary\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n}\n\nfragment BlogPageListItemFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  summary\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n}\n\nfragment BlogPostContentFragment on BlogPost {\n  id\n  title\n  slug\n  status\n  date\n  summary\n  author {\n    name\n    email\n    avatarUrl\n  }\n  coverUrl\n  icon\n  content {\n    __typename\n    ... on ParagraphBlock {\n      id\n      type\n      color\n      RichText {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on HeadingBlock {\n      id\n      type\n      size\n      color\n      isToggleable\n      RichText {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n        type\n      }\n    }\n    ... on ImageBlock {\n      id\n      type\n      imgUrl\n      caption {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CalloutBlock {\n      id\n      type\n      color\n      icon\n      RichText {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n    ... on CodeBlock {\n      id\n      type\n      language\n      RichText {\n        text {\n          content\n          link {\n            url\n          }\n        }\n        annotations {\n          bold\n          code\n          color\n          italic\n          strikethrough\n          underlined\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
