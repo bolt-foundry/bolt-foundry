@@ -116,6 +116,9 @@ export class BfEdge<
         connectionArgs,
       );
     logger.debug("connection", connection);
+    if (connection.edges.length === 0) {
+      return connection;
+    }
     const targetEdgeIds = connection.edges.map((
       edge: { node: { id: string } },
     ) => edge.node.id);
