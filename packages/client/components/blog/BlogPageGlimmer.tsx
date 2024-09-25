@@ -1,4 +1,5 @@
 import { BfDsGlimmer } from "packages/bfDs/BfDsGlimmer.tsx";
+import { BlogFrame } from "packages/client/components/blog/BlogFrame.tsx";
 
 export function BlogPageGlimmer() {
   const blogPostList: Array<JSX.Element> = [];
@@ -24,8 +25,33 @@ export function BlogPageGlimmer() {
   return blogPostList;
 }
 
+export function BlogPostContentsGlimmer(
+  { additionalClassName, orderStart }: PostProps,
+) {
+  let order = orderStart;
+  return (
+    <BlogFrame>
+      <div
+        className="blog-page-item-info blog-page-item-info-glimmer"
+      >
+        <BfDsGlimmer height="65px" order={order} />
+        <div className="blog_author">
+          <BfDsGlimmer
+            width="24px"
+            xstyle={{ borderRadius: "50%" }}
+            order={order++}
+          />
+          <BfDsGlimmer height="25px" width="100px" order={order++} />
+        </div>
+        <BfDsGlimmer className="blog_meta" height="65px" order={order++} />
+        <BfDsGlimmer className="blog-list-item-summary" order={order++} />
+      </div>
+    </BlogFrame>
+  );
+}
+
 type PostProps = {
-  additionalClassName: string;
+  additionalClassName?: string;
   orderStart: number;
 };
 
