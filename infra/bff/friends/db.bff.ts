@@ -21,7 +21,6 @@ register(
   "db:clean",
   "Deletes edges and nodes for specified classes",
   async (...classes) => {
-    
     return 0;
   },
 );
