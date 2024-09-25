@@ -401,108 +401,7 @@ const VALID_METADATA_COLUMN_NAMES = [
 
 const defaultClause = "1=1";
 
-export async function bfQueryItems<
-  TProps = Props,
-  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
->(
-  metadataToQuery: Partial<TMetadata>,
-  propsToQuery: Partial<TProps> = {},
-  bfGids?: Array<string>,
-  orderDirection: "ASC" | "DESC" = "ASC", // Default to ascending order
-  orderBy: keyof Row = "sort_value", // Default to sort by sort_value
-): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
-  logger.debug({
-    metadataToQuery,
-    propsToQuery,
-    bfGids,
-    orderDirection,
-    orderBy,
-  });
-  const metadataConditions: string[] = [];
-  const propsConditions: string[] = [];
-  const variables = [];
-
-  for (const [originalKey, value] of Object.entries(metadataToQuery)) {
-    // convert key from camelCase to snake_case, ensure consecutive capital letters are underscored
-    const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(
-      /([A-Z])(?=[A-Z])/g,
-      "$1_",
-    );
-    const lowercaseKey = key.toLowerCase();
-    if (VALID_METADATA_COLUMN_NAMES.includes(lowercaseKey)) {
-      variables.push(value);
-      const valuePosition = variables.length;
-      metadataConditions.push(`${lowercaseKey} = $${valuePosition}`);
-    } else {
-      logger.warn(
-        `Invalid metadata column name`,
-        originalKey,
-        key,
-        lowercaseKey,
-      );
-    }
-  }
-
-  for (const [key, value] of Object.entries(propsToQuery)) {
-    variables.push(key);
-    const keyPosition = variables.length;
-    variables.push(value);
-    const valuePosition = variables.length;
-    propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
-  }
-
-  if (bfGids) {
-    if (bfGids.length === 0) {
-      logger.debug("Skipping query because bfGids is empty");
-      return [];
-    } else {
-      for (const bfGid of bfGids) {
-        variables.push(bfGid);
-        metadataConditions.push(`bf_gid = $${variables.length}`);
-      }
-    }
-  }
-
-  if (metadataConditions.length == 0) {
-    metadataConditions.push(defaultClause);
-  }
-
-  if (propsConditions.length == 0) {
-    propsConditions.push(defaultClause);
-  }
-
-  const allConditions = [...metadataConditions, ...propsConditions].filter(
-    Boolean,
-  ).join(" AND ");
-  const query =
-    `SELECT * FROM bfdb WHERE ${allConditions} ORDER BY ${orderBy} ${orderDirection}`;
-  try {
-    logger.debug("Executing query", query, variables);
-    const rows = await sql(query, variables) as Row<TProps>[];
-    const items = rows.map((row) => ({
-      props: row.props,
-      metadata: {
-        bfGid: row.bf_gid,
-        bfSid: row.bf_sid,
-        bfOid: row.bf_oid,
-        bfTid: row.bf_tid,
-        bfCid: row.bf_cid,
-        bfTClassName: row.bf_t_class_name,
-        bfSClassName: row.bf_s_class_name,
-        className: row.class_name,
-        createdAt: new Date(row.created_at), // Convert timestamp to Date object
-        lastUpdated: new Date(row.last_updated), // Convert timestamp to Date object
-        sortValue: row.sort_value,
-      },
-    }));
-    return items;
-  } catch (e) {
-    logger.error(e);
-    throw e;
-  }
-}
-
-export async function bfQueryItemsWithSizeLimit<
+async function bfQueryItemsUnified<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
 >(
@@ -511,16 +410,28 @@ export async function bfQueryItemsWithSizeLimit<
   bfGids?: Array<string>,
   orderDirection: "ASC" | "DESC" = "ASC",
   orderBy: keyof Row = "sort_value",
-  cursorValue?: number | string,
-  maxSizeBytes: number = 10 * 1024 * 1024, // 10MB in bytes
-  batchSize: number = 4,
+  options: {
+    useSizeLimit?: boolean;
+    cursorValue?: number | string;
+    maxSizeBytes?: number;
+    batchSize?: number;
+  } = {},
 ): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
+  const {
+    useSizeLimit = false,
+    cursorValue,
+    maxSizeBytes = 10 * 1024 * 1024, // 10MB in bytes
+    batchSize = 4,
+  } = options;
+
+  logger.setLevel(logger.levels.DEBUG);
   logger.debug({
     metadataToQuery,
     propsToQuery,
     bfGids,
     orderDirection,
     orderBy,
+    useSizeLimit,
     cursorValue,
     maxSizeBytes,
     batchSize,
@@ -528,119 +439,75 @@ export async function bfQueryItemsWithSizeLimit<
 
   const metadataConditions: string[] = [];
   const propsConditions: string[] = [];
-  const variables = [];
+  const specificIdConditions: string[] = [];
+  const variables: unknown[] = [];
 
+  // Process metadata conditions
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
     // convert key from camelCase to snake_case, ensure consecutive capital letters are underscored
     const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(
       /([A-Z])(?=[A-Z])/g,
       "$1_",
-    );
-    const lowercaseKey = key.toLowerCase();
-    if (VALID_METADATA_COLUMN_NAMES.includes(lowercaseKey)) {
+    ).toLowerCase();
+    if (VALID_METADATA_COLUMN_NAMES.includes(key)) {
       variables.push(value);
-      const valuePosition = variables.length;
-      metadataConditions.push(`${lowercaseKey} = $${valuePosition}`);
+      metadataConditions.push(`${key} = $${variables.length}`);
     } else {
-      logger.warn(
-        `Invalid metadata column name`,
-        originalKey,
-        key,
-        lowercaseKey,
-      );
+      logger.warn(`Invalid metadata column name`, originalKey, key);
     }
   }
 
+  // Process props conditions
   for (const [key, value] of Object.entries(propsToQuery)) {
     variables.push(key);
-    const keyPosition = variables.length;
     variables.push(value);
-    const valuePosition = variables.length;
-    propsConditions.push(`props->>$${keyPosition} = $${valuePosition}`);
+    propsConditions.push(`props->>$${variables.length - 1} = $${variables.length}`);
   }
 
-  if (bfGids) {
-    if (bfGids.length === 0) {
-      logger.debug("Skipping query because bfGids is empty");
-      return [];
-    } else {
-      for (const bfGid of bfGids) {
-        variables.push(bfGid);
-        metadataConditions.push(`bf_gid = $${variables.length}`);
-      }
-    }
+  // Process bfGids
+  if (bfGids && bfGids.length > 0) {
+    const bfGidConditions = bfGids.map((bfGid) => {
+      variables.push(bfGid);
+      return `bf_gid = $${variables.length}`;
+    });
+    specificIdConditions.push(`(${bfGidConditions.join(" OR ")})`);
   }
 
-  if (metadataConditions.length == 0) {
-    metadataConditions.push(defaultClause);
+  if (metadataConditions.length === 0) metadataConditions.push(defaultClause);
+  if (propsConditions.length === 0) propsConditions.push(defaultClause);
+  if (specificIdConditions.length === 0) {
+    specificIdConditions.push(defaultClause);
   }
 
-  if (propsConditions.length == 0) {
-    propsConditions.push(defaultClause);
-  }
-
-  if (bfGids) {
-    if (bfGids.length === 0) {
-      logger.debug("Skipping query because bfGids is empty");
-      return [];
-    } else {
-      for (const bfGid of bfGids) {
-        variables.push(bfGid);
-        metadataConditions.push(`bf_gid = $${variables.length}`);
-      }
-    }
-  }
-
-  if (metadataConditions.length == 0) {
-    metadataConditions.push(defaultClause);
-  }
-
-  if (propsConditions.length == 0) {
-    propsConditions.push(defaultClause);
-  }
-
-  const items: Array<DbItem<TProps, BfBaseModelMetadata>> = [];
-  let totalSize = 0;
-  let hasUsedCursor = false;
-  let currentCursor = cursorValue;
-
-  while (true) {
-    let cursorCondition = "";
-    if (currentCursor !== undefined) {
-      if (hasUsedCursor) {
-        variables[variables.length - 1] = currentCursor;
-      } else {
-        variables.push(currentCursor);
-        hasUsedCursor = true;
-      }
-      cursorCondition = `${orderBy} ${
-        orderDirection === "ASC" ? ">" : "<"
-      } $${variables.length}`;
-    }
-
+  const buildQuery = (offset: number) => {
     const allConditions = [
       ...metadataConditions,
       ...propsConditions,
-      cursorCondition,
+      ...specificIdConditions,
     ].filter(Boolean).join(" AND ");
 
-    const query = `
+    return `
       SELECT *
       FROM bfdb
-      WHERE ${allConditions || defaultClause}
+      WHERE ${allConditions}
       ORDER BY ${orderBy} ${orderDirection}
-      LIMIT ${batchSize}
+      LIMIT ${batchSize} OFFSET ${offset}
     `;
+  };
 
+  const allItems: Array<DbItem<TProps, BfBaseModelMetadata>> = [];
+  let offset = 0;
+  let totalSize = 0;
+
+  while (true) {
+    const query = buildQuery(offset);
     try {
       logger.debug("Executing query", query, variables);
-      const batchResult = await sql(query, variables) as Row<TProps>[];
+      const rows = await sql(query, variables) as Row<TProps>[];
 
-      if (batchResult.length === 0) {
-        break;
-      }
+      if (rows.length === 0) break; // No more results
 
-      for (const row of batchResult) {
+      for (const row of rows) {
         const item = {
           props: row.props,
           metadata: {
@@ -658,37 +525,83 @@ export async function bfQueryItemsWithSizeLimit<
           },
         };
 
-        const itemSize = JSON.stringify(item).length; // Rough estimation
-
-        if (totalSize + itemSize > maxSizeBytes) {
-          return items;
+        if (useSizeLimit) {
+          const itemSize = JSON.stringify(item).length;
+          if (totalSize + itemSize > maxSizeBytes) return allItems;
+          totalSize += itemSize;
         }
 
-        items.push(item);
-        totalSize += itemSize;
-        const value = row[orderBy as keyof typeof row];
-        if (typeof value === "string" || typeof value === "number") {
-          currentCursor = value;
-        } else {
-          logger.warn(`Unexpected type for cursor value: ${typeof value}`);
-        }
+        allItems.push(item);
       }
 
-      if (batchResult.length < batchSize) {
-        break;
-      }
+      offset += batchSize;
 
-      // Remove the previous cursor value from variables
-      if (cursorValue !== undefined) {
-        variables.pop();
-      }
+      if (rows.length < batchSize) break; // Last batch
     } catch (e) {
       logger.error(e);
       throw e;
     }
   }
 
-  return items;
+  return allItems;
+}
+
+export function bfQueryItems<
+  TProps = Props,
+  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
+>(
+  metadataToQuery: Partial<TMetadata>,
+  propsToQuery: Partial<TProps> = {},
+  bfGids?: Array<string>,
+  orderDirection: "ASC" | "DESC" = "ASC",
+  orderBy: keyof Row = "sort_value",
+): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
+  logger.debug({
+    metadataToQuery,
+    propsToQuery,
+    bfGids,
+    orderDirection,
+    orderBy,
+  });
+
+  return bfQueryItemsUnified(
+    metadataToQuery,
+    propsToQuery,
+    bfGids,
+    orderDirection,
+    orderBy,
+    {
+      useSizeLimit: false,
+    }
+  );
+}
+
+export function bfQueryItemsWithSizeLimit<
+  TProps = Props,
+  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
+>(
+  metadataToQuery: Partial<TMetadata>,
+  propsToQuery: Partial<TProps> = {},
+  bfGids?: Array<string>,
+  orderDirection: "ASC" | "DESC" = "ASC",
+  orderBy: keyof Row = "sort_value",
+  cursorValue?: number | string,
+  maxSizeBytes: number = 10 * 1024 * 1024, // 10MB in bytes
+  batchSize: number = 4,
+): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
+  return bfQueryItemsUnified(
+    metadataToQuery,
+    propsToQuery,
+    bfGids,
+    orderDirection,
+    orderBy,
+    {
+      useSizeLimit: true,
+      cursorValue,
+      maxSizeBytes,
+      batchSize,
+    },
+  );
 }
 
 export async function bfDeleteItem(bfOid: BfOid, bfGid: BfGid): Promise<void> {
