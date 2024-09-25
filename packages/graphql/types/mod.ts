@@ -18,6 +18,7 @@ export * from "packages/graphql/types/BfGraphQLNode.ts";
 export * from "packages/graphql/types/BfGraphQLOrganization.ts";
 export * from "packages/graphql/types/BfGraphQLPerson.ts";
 export * from "packages/graphql/types/BfGraphQLSavedSearch.ts";
+export * from "packages/graphql/types/BfGraphQLSavedSearchResult.ts";
 export * from "packages/graphql/types/GraphQLBlog.ts";
 export * from "packages/graphql/types/File.ts";
 export * from "packages/graphql/types/Url.ts";

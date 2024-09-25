@@ -128,7 +128,7 @@ export async function cleanModels(modelNames: Array<string>, dryRun = true) {
 
   logger.warn(
     `Removing ${
-      modelNames.join(", ")
+      classNames
     } model classes from ${count} nodes and edges`,
   );
   if (dryRun) {
@@ -146,6 +146,6 @@ export async function cleanModels(modelNames: Array<string>, dryRun = true) {
   `;
 
   logger.warn(
-    `Removed ${modelNames.join(", ")} model classes from nodes and edges`,
+    `Removed ${classNames} model classes from nodes and edges`,
   );
 }
