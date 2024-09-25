@@ -58,7 +58,6 @@ export class BfNode<
       bfOid: currentViewerIsAdmin
         ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid
         : currentViewer.organizationBfGid,
-      className: this.name,
     };
     const { edges, ...others } = await bfQueryItemsForGraphQLConnection<
       ChildRequiredProps & Partial<ChildOptionalProps>,
