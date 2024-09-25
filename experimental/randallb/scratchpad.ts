@@ -29,11 +29,35 @@ async function createCollectionMutation(
   return collection;
 }
 
+import { cleanModels } from "packages/bfDb/utils.ts";
+
+async function resetCollection(dryRun = false) {
+  await cleanModels(
+    ["BfMedia", "BfGoogleDriveResource", "BfCollection"],
+    dryRun,
+  );
+}
+
 ///
 
 const folderId = "1sq4gNo6pZ89xiu9hGD11o6z_9uoMI1Ka";
 const name = "default";
 
+await resetCollection();
 const collection = await createCollectionMutation(cv, name, folderId);
 
 ///
+
+const query = "docker";
+const savedSearch = await collection.createSavedSearch(query);
+savedSearch.metadata.bfGid;
+
+///
+import { BfSavedSearchResult } from "packages/bfDb/models/BfSavedSearchResult.ts";
+import { BfSavedSearch } from "packages/bfDb/models/BfSavedSearch.ts";
+const id = "0ca97092246f43c5ba10dcc56de0ef72";
+const ss = await BfSavedSearch.findX(cv, id);
+const results = await savedSearch.queryTargetsConnectionForGraphQL(
+  BfSavedSearchResult,
+  {},
+);
