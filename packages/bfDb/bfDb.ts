@@ -461,7 +461,9 @@ async function bfQueryItemsUnified<
   for (const [key, value] of Object.entries(propsToQuery)) {
     variables.push(key);
     variables.push(value);
-    propsConditions.push(`props->>$${variables.length - 1} = $${variables.length}`);
+    propsConditions.push(
+      `props->>$${variables.length - 1} = $${variables.length}`,
+    );
   }
 
   // Process bfGids
@@ -572,7 +574,7 @@ export function bfQueryItems<
     orderBy,
     {
       useSizeLimit: false,
-    }
+    },
   );
 }
 
