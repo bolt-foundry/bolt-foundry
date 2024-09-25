@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2444af5a934f5073ed30821656067d97>>
+ * @generated SignedSource<<51a52aea780b049c726ad99ea609c9e3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,8 +14,8 @@ export type GoogleFilePickerPickFolderMutation$variables = {
   resourceId: string;
 };
 export type GoogleFilePickerPickFolderMutation$data = {
-  readonly pickGoogleDriveFolder: {
-    readonly __typename: "BfGoogleDriveResource";
+  readonly createCollection: {
+    readonly __typename: "BfCollection";
     readonly id: string;
     readonly name: string | null | undefined;
   } | null | undefined;
@@ -42,18 +42,18 @@ v2 = [
     "args": [
       {
         "kind": "Variable",
-        "name": "name",
-        "variableName": "name"
+        "name": "googleDriveResourceId",
+        "variableName": "resourceId"
       },
       {
         "kind": "Variable",
-        "name": "resourceId",
-        "variableName": "resourceId"
+        "name": "name",
+        "variableName": "name"
       }
     ],
-    "concreteType": "BfGoogleDriveResource",
+    "concreteType": "BfCollection",
     "kind": "LinkedField",
-    "name": "pickGoogleDriveFolder",
+    "name": "createCollection",
     "plural": false,
     "selections": [
       {
@@ -105,16 +105,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "510f7cfdbf4e9ba532a125d48a41e138",
+    "cacheID": "5a7c3d3757550c50d9301ea3fcc643a6",
     "id": null,
     "metadata": {},
     "name": "GoogleFilePickerPickFolderMutation",
     "operationKind": "mutation",
-    "text": "mutation GoogleFilePickerPickFolderMutation(\n  $resourceId: String!\n  $name: String!\n) {\n  pickGoogleDriveFolder(resourceId: $resourceId, name: $name) {\n    __typename\n    id\n    name\n  }\n}\n"
+    "text": "mutation GoogleFilePickerPickFolderMutation(\n  $resourceId: String!\n  $name: String!\n) {\n  createCollection(googleDriveResourceId: $resourceId, name: $name) {\n    __typename\n    id\n    name\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "a248db3c1886dc1f47aa826eb6d0c46c";
+(node as any).hash = "e59221c1ebfabadbf5b6c865ff61b601";
 
 export default node;

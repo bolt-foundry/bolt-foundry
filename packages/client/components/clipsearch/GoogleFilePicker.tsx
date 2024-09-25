@@ -116,7 +116,7 @@ const mutationToAuthorizeGoogle = await graphql`
 
 const mutationToPickFolder = await graphql`
   mutation GoogleFilePickerPickFolderMutation($resourceId: String!, $name: String!) {
-    pickGoogleDriveFolder(resourceId: $resourceId, name: $name) {
+    createCollection(googleDriveResourceId: $resourceId, name: $name) {
       __typename
       id
       name
