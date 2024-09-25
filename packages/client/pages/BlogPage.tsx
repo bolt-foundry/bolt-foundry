@@ -1,6 +1,9 @@
 import { useLazyLoadQuery } from "react-relay";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
-import { BlogPageGlimmer } from "packages/client/components/blog/BlogPageGlimmer.tsx";
+import {
+  BlogPageGlimmer,
+  BlogPostContentsGlimmer,
+} from "packages/client/components/blog/BlogPageGlimmer.tsx";
 import { BlogPageContent } from "packages/client/components/blog/BlogPageContent.tsx";
 import { BlogFrame } from "packages/client/components/blog/BlogFrame.tsx";
 import { graphql } from "packages/client/deps.ts";
@@ -31,20 +34,23 @@ const query = await graphql`
 
 export function BlogPage() {
   const { routeParams } = useRouter();
-
   const status = ["READY_FOR_PUBLISH"];
   const data = useLazyLoadQuery<BlogPageQuery>(
     query,
     { status },
   );
 
-  const posts = data.currentViewer?.blog?.posts?.edges ?? [];
+  const posts = data.currentViewer?.blog?.posts?.edges;
   const blogRef = data.currentViewer?.blog;
 
   if (routeParams.slug) {
-    const post = posts.find((edge) => edge.node?.slug === routeParams.slug)
-      ?.node;
-    return <BlogPostContent postRef={post} />;
+    if (posts) {
+      const post = posts.find((edge) => edge.node?.slug === routeParams.slug)
+        ?.node;
+      return <BlogPostContent postRef={post} />;
+    } else {
+      return <BlogPostContentsGlimmer />;
+    }
   }
 
   return (
