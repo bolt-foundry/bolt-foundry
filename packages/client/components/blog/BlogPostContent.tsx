@@ -188,7 +188,7 @@ export function BlogPostContent({ postRef }: PostProps) {
       <div className="blog_post_content">
         <h1 className="blog_post_title">
           {post?.title}
-          <BlogPostStatus status={post.status} />
+          <BlogPostStatus status={post?.status} />
         </h1>
         <div className="blog_author">
           <div
