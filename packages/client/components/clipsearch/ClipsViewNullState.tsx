@@ -36,8 +36,6 @@ export function ClipsViewNullState({ count, settings$key }: Props) {
         </div>
         Set up Google Drive watch folders to use this software.
       </div>
-      {/* <GoogleFilePicker /> */}
-      <WatchFolderList settings$key={settings$key} />
       <FeatureFlag name="placeholder">
         <UserList />
       </FeatureFlag>

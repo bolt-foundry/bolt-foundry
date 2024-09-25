@@ -13,70 +13,49 @@ import ClipSearchProvider, {
 } from "packages/client/contexts/ClipSearchContext.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
+import { ClipSearchPageQuery } from "packages/__generated__/ClipSearchPageQuery.graphql.ts";
+import { getLogger } from "deps.ts";
+import { SearchResults } from "packages/client/components/clipsearch/SearchResults.tsx";
 const { Suspense } = React;
 
+const logger = getLogger(import.meta);
+
 const query = await graphql`
-  query ClipSearchPageQuery {
+  query ClipSearchPageQuery($searchId: ID!, $includeSearch: Boolean!) {
     currentViewer {
       person {
-        id
-        ...ClipsView_bfPerson
-        ...Clip_bfPerson
+        name 
       }
       organization {
-        ...WatchFolderList_bfOrganization
-        id
-        media (first: 1) {
+        collections(first: 10) {
           count
+          edges {
+            node {
+              __typename
+              ...Search_bfCollection
+            }
+          }
         }
       }
+    }
+    node(id: $searchId) @include(if: $includeSearch) {
+      ...SearchResults_bfSavedSearch
     }
   }
 `;
 
 export function ClipSearchPageContent() {
-  const { navigate } = useRouter();
-  const { clips, isInFlight } = useClipSearchState();
-  const data = useLazyLoadQuery(query, {});
-  const count = data?.currentViewer?.organization?.media?.count;
-  const sidebarContents = (
-    <FeatureFlag name="placeholder">
-      <List collapsible={true} header="Lists">
-        <ListItem
-          content="work-life balance"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="taxes"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-      </List>
-      <List collapsible={true} header="Searches">
-        <ListItem
-          content="work-life balance"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="taxes"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="duck"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-        <ListItem
-          content="clouds"
-          // deno-lint-ignore no-console
-          onClick={() => console.log("click")}
-        />
-      </List>
-    </FeatureFlag>
-  );
+  const { navigate, routeParams } = useRouter();
+  const searchId = routeParams.searchId ?? "";
+  const data = useLazyLoadQuery<ClipSearchPageQuery>(query, {
+    searchId,
+    includeSearch: Boolean(searchId),
+  });
+  const count = 0;
+  const firstCollection = data?.currentViewer?.organization?.collections?.edges
+    ?.[0]?.node;
+  logger.info(firstCollection);
+  const sidebarContents = null;
   return (
     <div className="cs-page flexRow">
       <Sidebar
@@ -92,21 +71,9 @@ export function ClipSearchPageContent() {
         header="Clip search"
       />
       <div className="cs-main">
-        <Search />
+        {firstCollection && <Search bfCollection$key={firstCollection} />}
         <Suspense fallback={<BfDsFullPageSpinner />}>
-          {clips || isInFlight
-            ? (
-              <ClipsView
-                count={count}
-                clips$key={data?.currentViewer?.person}
-              />
-            )
-            : (
-              <ClipsViewNullState
-                count={count}
-                settings$key={data?.currentViewer?.organization}
-              />
-            )}
+          <SearchResults bfSavedSearch$key={data.node} />
         </Suspense>
       </div>
     </div>
