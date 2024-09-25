@@ -124,6 +124,16 @@ export interface NexusGenObjects {
   BfCollection: { // root type
     name?: string | null; // String
   }
+  BfCollectionConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['BfCollectionEdge'] | null> | null; // [BfCollectionEdge]
+    nodes?: Array<NexusGenRootTypes['BfCollection'] | null> | null; // [BfCollection]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfCollectionEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BfCollection'] | null; // BfCollection
+  }
   BfConnectionEdge: { // root type
     cursor?: string | null; // String
     node?: NexusGenRootTypes['BfNode'] | null; // BfNode
@@ -381,6 +391,16 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     name: string | null; // String
   }
+  BfCollectionConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['BfCollectionEdge'] | null> | null; // [BfCollectionEdge]
+    nodes: Array<NexusGenRootTypes['BfCollection'] | null> | null; // [BfCollection]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfCollectionEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BfCollection'] | null; // BfCollection
+  }
   BfConnectionEdge: { // field return type
     cursor: string | null; // String
     node: NexusGenRootTypes['BfNode'] | null; // BfNode
@@ -446,6 +466,7 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
   }
   BfOrganization: { // field return type
+    collections: NexusGenRootTypes['BfCollectionConnection'] | null; // BfCollectionConnection
     googleDriveFolders: NexusGenRootTypes['BfGoogleDriveResourceConnection'] | null; // BfGoogleDriveResourceConnection
     id: string; // ID!
     media: NexusGenRootTypes['BfMediaConnection'] | null; // BfMediaConnection
@@ -687,6 +708,16 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     name: 'String'
   }
+  BfCollectionConnection: { // field return type name
+    count: 'Int'
+    edges: 'BfCollectionEdge'
+    nodes: 'BfCollection'
+    pageInfo: 'PageInfo'
+  }
+  BfCollectionEdge: { // field return type name
+    cursor: 'String'
+    node: 'BfCollection'
+  }
   BfConnectionEdge: { // field return type name
     cursor: 'String'
     node: 'BfNode'
@@ -752,6 +783,7 @@ export interface NexusGenFieldTypeNames {
     node: 'BfMediaNodeTranscript'
   }
   BfOrganization: { // field return type name
+    collections: 'BfCollectionConnection'
     googleDriveFolders: 'BfGoogleDriveResourceConnection'
     id: 'ID'
     media: 'BfMediaConnection'
@@ -944,6 +976,12 @@ export interface NexusGenArgTypes {
     }
   }
   BfOrganization: {
+    collections: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
     googleDriveFolders: { // args
       after?: string | null; // String
       before?: string | null; // String
