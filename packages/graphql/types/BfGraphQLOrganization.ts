@@ -1,5 +1,5 @@
 import { objectType } from "packages/graphql/deps.ts";
-import { bfSavedSearchType } from "packages/graphql/types/BfGraphQLSavedSearch.ts";
+import { BfGraphQLSavedSearchType } from "packages/graphql/types/BfGraphQLSavedSearch.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { GraphQLContext } from "packages/graphql/graphql.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
@@ -13,7 +13,7 @@ export const BfGraphQLOrganizationType = objectType({
     t.string("name");
     t.nonNull.id("id");
     t.connectionField("savedSearches", {
-      type: bfSavedSearchType,
+      type: BfGraphQLSavedSearchType,
       resolve: async (
         { id },
         args,

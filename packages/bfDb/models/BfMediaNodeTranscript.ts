@@ -4,14 +4,8 @@ import { AssemblyAI } from "assemblyai";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { BfError } from "lib/BfError.ts";
+import { callAPI } from "packages/lib/langchain.ts";
 
-/**
- * LAZY STUFF
- */
-
-/**
- * / LAZY STUFF
- */
 const logger = getLogger(import.meta);
 
 const BF_MEDIA_AUDIO_CACHE_DIRECTORY =
@@ -127,7 +121,6 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
         if (done) break;
         outputText += value;
       }
-      logger.setLevel(logger.levels.DEBUG);
       const ffprobeStdoutJson = JSON.parse(outputText);
       logger.debug(`ffprobe output`, ffprobeStdoutJson);
       const durationInUs = Math.floor(
@@ -196,18 +189,9 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     this.props.words = words;
     await this.save();
     logger.info(`Transcription complete for ${this}`);
-    await this.sendToVectorStore();
-    logger.info("Sent to vector store");
-    logger.info(`Removing ${this.filePath}`);
     await Deno.remove(this.filePath);
 
     return this;
-  }
-
-  async getEmbeddings() {
-  }
-
-  private async sendToVectorStore() {
   }
 
   get text() {
@@ -227,21 +211,39 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     return texts;
   }
 
+  findClips(query: string) {
+    const transcripts = this.getTokenSafeText();
+    const clipsPromises = transcripts.map((transcript) =>
+      callAPI(query, transcript)
+    ).map(async (clipsPromise) => {
+      try {
+        const clips = await clipsPromise;
+        const clipsWithTimecodes = clips.excerpts.map(this.getTimecodesForClip);
+        return clipsWithTimecodes;
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+
+    return clipsPromises;
+  }
+
+  private getTimecodesForClip(clip) {
+    // no op for now, but we'll inject the timecodes here.
+    return clip;
+  }
+
   private async updateTranscriptionPct(pct: number) {
-    logger.setLevel(logger.levels.DEBUG);
     this.props.transcriptionPct = pct;
     await this.save();
     logger.debug(
       `${this} Transcription pct updated to ${(pct * 100).toFixed(2)}%`,
     );
-    logger.resetLevel();
   }
 
   private async updateIngestionPct(pct: number) {
-    logger.setLevel(logger.levels.DEBUG);
     this.props.ingestionPct = pct;
     await this.save();
     logger.debug(`${this} Ingestion pct updated to ${(pct * 100).toFixed(2)}%`);
-    logger.resetLevel();
   }
 }

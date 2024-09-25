@@ -2,7 +2,7 @@ import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
-import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { BfGid, toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
 import { getLogger } from "deps.ts";
 import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
@@ -81,7 +81,7 @@ export class BfCollection extends BfNode<BfCollectionProps> {
     return vectorStore;
   }
 
-  async addToVectorSearchIndex(transcripts: Array<BfMediaNodeTranscript>) {
+  addToVectorSearchIndex(transcripts: Array<BfMediaNodeTranscript>) {
     const promises = transcripts.map(async (transcript) => {
       const vectorStore = await this.getVectorStore();
 
@@ -109,17 +109,52 @@ export class BfCollection extends BfNode<BfCollectionProps> {
     return Promise.all(promises);
   }
 
-  async search(query: string) {
+  async createSavedSearch(query: string) {
     const savedSearch = await this.createTargetNode(BfSavedSearch, { query });
     const vectorStore = await this.getVectorStore();
-    const results = await vectorStore.similaritySearch(query, 15);
-    const clipsPromise = results.map((result) => toBfGid(result.metadata.bfGid))
-      .map(async (id) =>
-        await BfMediaNodeTranscript.find(this.currentViewer, id)
-      )
-      .filter(Boolean)
-      .map(async (transcript) => await transcript.findClips(query))
-      .map(async (clipProps) => await savedSearch.createResult(clipProps));
+    const searchResults = await vectorStore.similaritySearch(query, 15);
+    // await BfJob.createJobForNode(this, "__JOB_ONLY__createSearchResults", [searchResults, query, savedSearch.metadata.bfGid]);
+    await this.createSearchResults(searchResults, query, savedSearch);
     return savedSearch;
+  }
+
+  async __JOB_ONLY__createSearchResults(
+    searchResults,
+    query: string,
+    savedSearchId: BfGid,
+  ) {
+    const savedSearch = await BfSavedSearch.findX(
+      this.currentViewer,
+      savedSearchId,
+    );
+    return this.createSearchResults(searchResults, query, savedSearch);
+  }
+
+  private createSearchResults(
+    searchResults,
+    query: string,
+    savedSearch: BfSavedSearch,
+  ) {
+    const clipCreationPromises = searchResults.map(async (result) => {
+      const transcriptId = toBfGid(result.metadata.bfGid);
+      const transcript = await BfMediaNodeTranscript.findX(
+        this.currentViewer,
+        transcriptId,
+      );
+
+      const clipsPropsPromises = await transcript.findClips(query);
+
+      return Promise.all(
+        clipsPropsPromises.map(
+          async (clipsPromise) => {
+            const clipsProps = (await clipsPromise) ?? [];
+            return clipsProps.map(async (clipProps) =>
+              savedSearch.createResult(await clipProps)
+            );
+          },
+        ),
+      );
+    });
+    return Promise.all(clipCreationPromises);
   }
 }
