@@ -2023,6 +2023,12 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   overflow-y: scroll;
 }
 
+.blog-page-item-info-glimmer {
+  gap: 8px; 
+  max-width: 50rem; 
+  margin: 0 25rem;
+}
+
 .blog-list-item-summary {
   margin-top: 20px;
 }
@@ -2199,6 +2205,11 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   .blog-page-cta-text-area {
     font-size: 22px;
     text-align: center;
+  }
+  .blog-page-item-info-glimmer {
+    gap: 8px;
+    max-width: 50rem;
+    margin: 0 40px;
   }
 }
 
