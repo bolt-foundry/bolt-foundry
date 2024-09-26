@@ -2206,6 +2206,9 @@ input[type="range"].scrubber::-moz-range-thumb:active {
     font-size: 22px;
     text-align: center;
   }
+  .blog_post_content {
+    padding: 20px;
+  }
   .blog-page-item-info-glimmer {
     gap: 8px;
     max-width: 50rem;
