@@ -9,7 +9,7 @@ export function LandingPageHero() {
     },
     {
       "style": "blue-word",
-      "text": "video to work",
+      "text": "mom to work",
     },
   ];
 
@@ -26,7 +26,7 @@ export function LandingPageHero() {
         </div>
         <div className="landing-page-text">
           <p>
-            Customer testimonials are powerful. Bolt Foundry helps you take
+            Customer testimonios is powerful. Bolt Foundry helps you take
             those stories and turn them into polished clips you can use
             anywhere.
           </p>
