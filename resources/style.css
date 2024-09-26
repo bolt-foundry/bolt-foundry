@@ -2023,6 +2023,10 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   overflow-y: scroll;
 }
 
+.blog-page-item-info::-webkit-scrollbar {
+  display: none;
+}
+
 .blog-page-item-info-glimmer {
   gap: 8px; 
   max-width: 50rem; 
