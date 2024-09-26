@@ -23,6 +23,9 @@ type Props = {
 
 export function SearchResults({ bfSavedSearch$key }: Props) {
   const data = useFragment(fragment, bfSavedSearch$key);
+  if (!data) {
+    return "null state goes here.";
+  }
   const list = data?.searchResults?.edges?.map((edge) => {
     return edge?.node;
   });
