@@ -14,7 +14,7 @@ export function LandingPageFrame({ children }: React.PropsWithChildren<Props>) {
         </div>
         <div className="landing-page-nav">
           <Link to="/login">
-            <div>Login</div>
+            <div className="landing-page-nav-login">Login</div>
           </Link>
           <Link to="/blog">
             <div>Blog</div>
