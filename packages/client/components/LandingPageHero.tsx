@@ -29,6 +29,7 @@ export function LandingPageHero() {
             Customer testimonials are powerful. Bolt Foundry helps you take
             those stories and turn them into polished clips you can use
             anywhere.
+            Test. Hello world.
           </p>
           <p>
             Let's work together to get the word out.
