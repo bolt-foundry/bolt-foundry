@@ -31,10 +31,12 @@ export async function checkForWork(shouldClose = true) {
     logger.info(`Peeling off ${job}`);
     try {
       await job.executeJob();
+      logger.info(`Completed ${job}`);
     } catch (e) {
       logger.error(e);
       job.props.status = BfJobType.FAILED;
       await job.save();
+      logger.error(`Failed ${job}`);
     }
   }
 
