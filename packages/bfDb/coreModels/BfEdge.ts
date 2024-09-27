@@ -137,7 +137,8 @@ export class BfEdge<
         targetIds,
       );
     logger.debug("targetConnection", targetConnection);
-    return targetConnection;
+    // TODO Total hack.
+    return {...targetConnection, count: connection.count};
   }
 
   static async querySourceInstances<
