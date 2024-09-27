@@ -24,6 +24,23 @@ fragment BlogPostContentFragment on BlogPost {
   }
   coverUrl
   icon
+  callToAction {
+    annotations {
+      bold
+      code
+      color
+      italic
+      strikethrough
+      underlined
+    }
+    text {
+      content
+      link {
+        url
+      }
+    }
+    type
+  }
   content {
     ... on ParagraphBlock {
       id
@@ -183,6 +200,10 @@ type PostProps = {
 export function BlogPostContent({ postRef }: PostProps) {
   const post = useFragment(fragment, postRef);
   logger.debug("POST", post);
+  let ctaChildren;
+  if (post?.callToAction.length > 0) {
+    ctaChildren = <RichText richText={post?.callToAction} />;
+  }
   return (
     <BlogFrame cover={post?.coverUrl} post={true}>
       <div className="blog_post_content">
@@ -271,7 +292,9 @@ export function BlogPostContent({ postRef }: PostProps) {
             );
           }
         })}
-        <BlogCta />
+        <BlogCta>
+          {ctaChildren}
+        </BlogCta>
       </div>
     </BlogFrame>
   );

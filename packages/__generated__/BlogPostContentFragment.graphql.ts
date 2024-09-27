@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5eb7ed52ea5fc1d0ca8b3c8703b0c2b8>>
+ * @generated SignedSource<<4a06bc3131ef5d6fd235b7962997ddb5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,6 +17,23 @@ export type BlogPostContentFragment$data = {
     readonly email: string | null | undefined;
     readonly name: string | null | undefined;
   } | null | undefined;
+  readonly callToAction: ReadonlyArray<{
+    readonly annotations: {
+      readonly bold: boolean | null | undefined;
+      readonly code: boolean | null | undefined;
+      readonly color: string | null | undefined;
+      readonly italic: boolean | null | undefined;
+      readonly strikethrough: boolean | null | undefined;
+      readonly underlined: boolean | null | undefined;
+    } | null | undefined;
+    readonly text: {
+      readonly content: string | null | undefined;
+      readonly link: {
+        readonly url: string | null | undefined;
+      } | null | undefined;
+    } | null | undefined;
+    readonly type: string | null | undefined;
+  } | null | undefined> | null | undefined;
   readonly content: ReadonlyArray<{
     readonly RichText?: ReadonlyArray<{
       readonly annotations: {
@@ -94,14 +111,54 @@ v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "type",
+  "name": "color",
   "storageKey": null
 },
 v3 = {
   "alias": null,
   "args": null,
-  "kind": "ScalarField",
-  "name": "color",
+  "concreteType": "Annotations",
+  "kind": "LinkedField",
+  "name": "annotations",
+  "plural": false,
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "bold",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "code",
+      "storageKey": null
+    },
+    (v2/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "italic",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "strikethrough",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "underlined",
+      "storageKey": null
+    }
+  ],
   "storageKey": null
 },
 v4 = {
@@ -143,53 +200,13 @@ v4 = {
 v5 = {
   "alias": null,
   "args": null,
-  "concreteType": "Annotations",
-  "kind": "LinkedField",
-  "name": "annotations",
-  "plural": false,
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "bold",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "code",
-      "storageKey": null
-    },
-    (v3/*: any*/),
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "italic",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "strikethrough",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "underlined",
-      "storageKey": null
-    }
-  ],
+  "kind": "ScalarField",
+  "name": "type",
   "storageKey": null
 },
 v6 = [
   (v4/*: any*/),
-  (v5/*: any*/)
+  (v3/*: any*/)
 ],
 v7 = {
   "alias": null,
@@ -286,6 +303,20 @@ return {
     {
       "alias": null,
       "args": null,
+      "concreteType": "RichText",
+      "kind": "LinkedField",
+      "name": "callToAction",
+      "plural": true,
+      "selections": [
+        (v3/*: any*/),
+        (v4/*: any*/),
+        (v5/*: any*/)
+      ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
       "concreteType": null,
       "kind": "LinkedField",
       "name": "content",
@@ -295,8 +326,8 @@ return {
           "kind": "InlineFragment",
           "selections": [
             (v0/*: any*/),
+            (v5/*: any*/),
             (v2/*: any*/),
-            (v3/*: any*/),
             (v7/*: any*/)
           ],
           "type": "ParagraphBlock",
@@ -306,7 +337,7 @@ return {
           "kind": "InlineFragment",
           "selections": [
             (v0/*: any*/),
-            (v2/*: any*/),
+            (v5/*: any*/),
             {
               "alias": null,
               "args": null,
@@ -314,7 +345,7 @@ return {
               "name": "size",
               "storageKey": null
             },
-            (v3/*: any*/),
+            (v2/*: any*/),
             {
               "alias": null,
               "args": null,
@@ -331,8 +362,8 @@ return {
               "plural": true,
               "selections": [
                 (v4/*: any*/),
-                (v5/*: any*/),
-                (v2/*: any*/)
+                (v3/*: any*/),
+                (v5/*: any*/)
               ],
               "storageKey": null
             }
@@ -344,7 +375,7 @@ return {
           "kind": "InlineFragment",
           "selections": [
             (v0/*: any*/),
-            (v2/*: any*/),
+            (v5/*: any*/),
             {
               "alias": null,
               "args": null,
@@ -370,8 +401,8 @@ return {
           "kind": "InlineFragment",
           "selections": [
             (v0/*: any*/),
+            (v5/*: any*/),
             (v2/*: any*/),
-            (v3/*: any*/),
             (v1/*: any*/),
             (v7/*: any*/)
           ],
@@ -382,7 +413,7 @@ return {
           "kind": "InlineFragment",
           "selections": [
             (v0/*: any*/),
-            (v2/*: any*/),
+            (v5/*: any*/),
             {
               "alias": null,
               "args": null,
@@ -404,6 +435,6 @@ return {
 };
 })();
 
-(node as any).hash = "df58348109f8b525b972a200938d3560";
+(node as any).hash = "ef6fa58de8f962baf611523cefccc0e0";
 
 export default node;

@@ -493,6 +493,7 @@ type Blog {
 
 type BlogPost {
   author: BlogPostAuthor
+  callToAction: [RichText]
   content: [BlogPostContentBlock]
   coverUrl: String
   date: String
