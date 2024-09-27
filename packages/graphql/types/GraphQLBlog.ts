@@ -82,6 +82,9 @@ export const BlogPost = objectType({
     t.field("status", {
       type: PostStatus,
     });
+    t.list.field("callToAction", {
+      type: "RichText",
+    });
   },
 });
 

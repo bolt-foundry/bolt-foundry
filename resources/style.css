@@ -1994,14 +1994,13 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .blog-page-cta {
   border-radius: 8px;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   background: linear-gradient(15deg, var(--fourtharyColor) -30%, transparent 116%), linear-gradient(var(--secondaryColor), var(--secondaryColor), transparent 130%);
   box-shadow: 0 0 11px rgba(0, 0, 0, 0.2);
-  height: 110px;
   align-items: center;
   margin: 50px auto;
-  padding: 0 20px;
-  gap: 10px;
+  padding: 20px;
+  gap: 20px;
   text-align: center;
 }
 
@@ -2223,10 +2222,10 @@ input[type="range"].scrubber::-moz-range-thumb:active {
     max-height: 30vh;
   }
   .blog-page-cta {
-    height: 200px;
+    gap: 10px;
+    justify-content: space-evenly;
+    margin-bottom: 100px;
     flex-wrap: wrap;
-    padding: 15px;
-    gap: 0px;
   }
   .blog-page-cta-text-area {
     font-size: 22px;

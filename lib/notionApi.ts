@@ -26,6 +26,7 @@ interface NotionPostsResponseDataProperties {
       };
     }];
   };
+  call_to_action: RichText[];
 }
 
 export interface BlogPostData {
@@ -154,6 +155,7 @@ export async function getBlogPostsFromNotion(): Promise<[BlogPostData]> {
         summary: properties.Summary.rich_text[0]?.plain_text ?? "",
         coverUrl: cover?.file?.url ?? cover?.external?.url,
         icon: icon?.emoji,
+        callToAction: properties["Call to action"]?.rich_text ?? [],
       };
     },
   );

@@ -242,6 +242,7 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   BlogPost: { // root type
+    callToAction?: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
     coverUrl?: string | null; // String
     icon?: string | null; // String
     id: string; // String!
@@ -550,6 +551,7 @@ export interface NexusGenFieldTypes {
   }
   BlogPost: { // field return type
     author: NexusGenRootTypes['BlogPostAuthor'] | null; // BlogPostAuthor
+    callToAction: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
     content: Array<NexusGenRootTypes['BlogPostContentBlock'] | null> | null; // [BlogPostContentBlock]
     coverUrl: string | null; // String
     date: string | null; // String
@@ -893,6 +895,7 @@ export interface NexusGenFieldTypeNames {
   }
   BlogPost: { // field return type name
     author: 'BlogPostAuthor'
+    callToAction: 'RichText'
     content: 'BlogPostContentBlock'
     coverUrl: 'String'
     date: 'String'
