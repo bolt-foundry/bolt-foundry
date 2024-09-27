@@ -34,6 +34,7 @@ import {
 import {
   BfModelErrorNotFound,
   BfModelErrorPermission,
+  BfModelErrorClassMismatch,
 } from "packages/bfDb/classes/BfModelError.ts";
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
@@ -376,6 +377,9 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         );
       }
       const { props, metadata } = response;
+      if (metadata.className !== this.constructor.name) {
+        throw new BfModelErrorClassMismatch(`Mismatched classname. Got ${metadata.className} expected ${this.constructor.name}`)
+      }
       if (props) {
         this.serverProps = props;
       }
