@@ -385,7 +385,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
             `Mismatched classname. Got ${metadata.className} expected ${this.constructor.name}`,
           );
         }
-        logger.warn(
+        logger.debug(
           `Mismatched classname. Got ${metadata.className} expected ${this.constructor.name}`,
         );
       }
