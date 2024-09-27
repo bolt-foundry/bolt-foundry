@@ -229,23 +229,38 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     ).map(async (clipsPromise) => {
       try {
         const clips = await clipsPromise;
-        return clips;
+        const excerpts = clips.excerpts.map((clip) => {
+          const timecodeInfo = this.getTimecodesForText(clip.body);
+          return { ...clip, ...timecodeInfo };
+        });
+        return excerpts;
       } catch (e) {
-        logger.error(e);
+        logger.error(`couldn't parse transcript for ${this}`);
+        logger.debug(e);
       }
     });
 
     return clipsPromises;
   }
 
-  private getTimecodesForText(text: string) {
-    // Step 1: Split the text into words
+  private getTimecodesForText(
+    text: string,
+  ):
+    | { duration: number; start: number; end: number; words: AssemblyAIWord[] }
+    | null {
     const words = text.toLowerCase().split(" ");
     const firstWord = words[0];
     const lastWord = words[words.length - 1];
     const originalLength = words.length;
+    const MAX_ALLOWED_WORDS = 10000; // Set an appropriate limit
 
-    // Step 2: Search through this.props.words and create candidate arrays
+    if (originalLength > MAX_ALLOWED_WORDS) {
+      logger.error(
+        `Input text is too long (${originalLength} words). Maximum allowed is ${MAX_ALLOWED_WORDS}.`,
+      );
+      return null;
+    }
+
     const candidates = [];
 
     for (let i = 0; i < this.props.words.length; i++) {
@@ -275,9 +290,20 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       logger.debug("Candidates", candidates);
       candidates.sort((a, b) => a.score - b.score);
       bestCandidate = candidates[0];
-      logger.info(
-        `${this} found ${candidates.length} potential candidates. The chosen one was ${bestCandidate.score} with ${bestCandidate.words.length}, the original text had ${originalLength} words`,
-      );
+
+      if (bestCandidate.score > 50) {
+        logger.info(
+          `${this} found ${candidates.length} potential candidates. The chosen one had a score of ${bestCandidate.score} and was ${bestCandidate.words.length} words long, the original text had ${originalLength} words`,
+        );
+        const chosenText = bestCandidate.words.map((w) => w.text).join(" ");
+        logger.debug({ chosenText, originalText: text });
+        candidates.forEach((candidate) => {
+          logger.debug({
+            foundText: candidate.words.map((w) => w.text).join(" "),
+            originalText: text,
+          });
+        });
+      }
     }
 
     const start = bestCandidate.words[0].start;
