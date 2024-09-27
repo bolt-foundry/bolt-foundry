@@ -32,6 +32,7 @@ import {
   transactionStart,
 } from "packages/bfDb/bfDb.ts";
 import {
+  BfModelErrorClassMismatch,
   BfModelErrorNotFound,
   BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
@@ -376,6 +377,18 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
         );
       }
       const { props, metadata } = response;
+      const genericClass = this.constructor.name === "BfModel" ||
+        this.constructor.name === "BfNode";
+      if (metadata.className !== this.constructor.name) {
+        if (!genericClass) {
+          throw new BfModelErrorClassMismatch(
+            `Mismatched classname. Got ${metadata.className} expected ${this.constructor.name}`,
+          );
+        }
+        logger.warn(
+          `Mismatched classname. Got ${metadata.className} expected ${this.constructor.name}`,
+        );
+      }
       if (props) {
         this.serverProps = props;
       }
