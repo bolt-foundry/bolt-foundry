@@ -113,8 +113,8 @@ export class BfCollection extends BfNode<BfCollectionProps> {
     const savedSearch = await this.createTargetNode(BfSavedSearch, { query });
     const vectorStore = await this.getVectorStore();
     const searchResults = await vectorStore.similaritySearch(query, 15);
-    // await BfJob.createJobForNode(this, "__JOB_ONLY__createSearchResults", [searchResults, query, savedSearch.metadata.bfGid]);
-    await this.createSearchResults(searchResults, query, savedSearch);
+    await BfJob.createJobForNode(this, "__JOB_ONLY__createSearchResults", [searchResults, query, savedSearch.metadata.bfGid]);
+    // await this.createSearchResults(searchResults, query, savedSearch);
     return savedSearch;
   }
 
