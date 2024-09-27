@@ -76,7 +76,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       "-progress",
       "pipe:2",
       "-stats_period",
-      "1", // seconds
+      ".3", // seconds
       "-v",
       "quiet",
       this.filePath,
@@ -124,10 +124,12 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
         if (done) break;
         outputText += value;
       }
+
       const ffprobeStdoutJson = JSON.parse(outputText);
       logger.debug(`ffprobe output`, ffprobeStdoutJson);
+      const duration = parseFloat(ffprobeStdoutJson.format.duration);
       const durationInUs = Math.floor(
-        ffprobeStdoutJson?.format?.duration ?? 10_0000 * 1000,
+        duration * 1000,
       );
       logger.debug(`durationInUs`, durationInUs);
       return durationInUs;
@@ -147,6 +149,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       const outTimeUs = parseInt(stats.out_time_us);
       const outTimeMs = outTimeUs / 1000;
       const pctComplete = outTimeMs / fileDuration;
+      logger.debug("stats", stats);
       this.updateIngestionPct(pctComplete);
     }
     logger.info(`File encoded to ${this.filePath}`);
@@ -226,8 +229,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     ).map(async (clipsPromise) => {
       try {
         const clips = await clipsPromise;
-        const clipsWithTimecodes = clips.excerpts.map(this.getTimecodesForClip);
-        return clipsWithTimecodes;
+        return clips;
       } catch (e) {
         logger.error(e);
       }
@@ -236,14 +238,62 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     return clipsPromises;
   }
 
-  private getTimecodesForClip(clip) {
-    // no op for now, but we'll inject the timecodes here.
-    return clip;
+  private getTimecodesForText(text: string) {
+    // Step 1: Split the text into words
+    const words = text.toLowerCase().split(" ");
+    const firstWord = words[0];
+    const lastWord = words[words.length - 1];
+    const originalLength = words.length;
+
+    // Step 2: Search through this.props.words and create candidate arrays
+    const candidates = [];
+
+    for (let i = 0; i < this.props.words.length; i++) {
+      if (this.props.words[i].text.toLowerCase() === firstWord) {
+        const candidate = [];
+        let j = i;
+        while (j < this.props.words.length && candidate.length < words.length) {
+          candidate.push(this.props.words[j]);
+          if (this.props.words[j].text.toLowerCase() === lastWord) {
+            // Calculate a score based on length difference
+            const lengthDiff = Math.abs(candidate.length - originalLength);
+            candidates.push({ words: candidate, score: lengthDiff });
+            break;
+          }
+          j++;
+        }
+      }
+    }
+
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    let bestCandidate = candidates[0];
+
+    if (candidates.length > 1) {
+      logger.debug("Candidates", candidates);
+      candidates.sort((a, b) => a.score - b.score);
+      bestCandidate = candidates[0];
+      logger.info(
+        `${this} found ${candidates.length} potential candidates. The chosen one was ${bestCandidate.score} with ${bestCandidate.words.length}, the original text had ${originalLength} words`,
+      );
+    }
+
+    const start = bestCandidate.words[0].start;
+    const end = bestCandidate.words[bestCandidate.words.length - 1].end;
+    const duration = end - start;
+    return {
+      duration,
+      start,
+      end,
+      words: bestCandidate.words,
+    };
   }
 
   private async updateTranscriptionPct(pct: number) {
     this.props.transcriptionPct = pct;
-    // await this.save();
+    await this.save();
     logger.debug(
       `${this} Transcription pct updated to ${(pct * 100).toFixed(2)}%`,
     );
@@ -251,7 +301,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
 
   private async updateIngestionPct(pct: number) {
     this.props.ingestionPct = pct;
-    // await this.save();
+    await this.save();
     logger.debug(`${this} Ingestion pct updated to ${(pct * 100).toFixed(2)}%`);
   }
 }
