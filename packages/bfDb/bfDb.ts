@@ -33,6 +33,10 @@ if (!databaseUrl) {
 }
 const sql = neon(databaseUrl);
 
+const connectionString = Deno.env.get("BFDB_URL");
+// @ts-expect-error no types, underlying it's a `pg` thing
+const client = new Client({ connectionString });
+
 type Props = Record<string, unknown>;
 type Row<
   TProps = Props,
@@ -140,9 +144,6 @@ async function initializeSubscriptions() {
     return;
   }
   areNotificationsInitialized = true;
-  const connectionString = Deno.env.get("BFDB_URL");
-  // @ts-expect-error no types, underlying it's a `pg` thing
-  const client = new Client({ connectionString });
   // @ts-expect-error no types, underlying it's a `pg` thing
   await client.connect();
   // @ts-expect-error no types, underlying it's a `pg` thing
@@ -414,6 +415,8 @@ async function bfQueryItemsUnified<
     cursorValue?: number | string;
     maxSizeBytes?: number;
     batchSize?: number;
+    totalLimit?: number;
+    countOnly?: boolean;
   } = {},
 ): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
   const {
@@ -421,6 +424,8 @@ async function bfQueryItemsUnified<
     cursorValue,
     maxSizeBytes = 10 * 1024 * 1024, // 10MB in bytes
     batchSize = 4,
+    totalLimit,
+    countOnly = false,
   } = options;
 
   logger.debug({
@@ -478,6 +483,19 @@ async function bfQueryItemsUnified<
     specificIdConditions.push(defaultClause);
   }
 
+  if (countOnly) {
+    const allConditions = [
+      ...metadataConditions,
+      ...propsConditions,
+      ...specificIdConditions,
+    ].filter(Boolean).join(" AND ");
+    const query = await sql(
+      `SELECT COUNT(*) FROM bfdb WHERE ${allConditions}`,
+      variables,
+    );
+    return parseInt(query[0].count);
+  }
+
   const buildQuery = (offset: number) => {
     const allConditions = [
       ...metadataConditions,
@@ -497,6 +515,7 @@ async function bfQueryItemsUnified<
   const allItems: Array<DbItem<TProps, BfBaseModelMetadata>> = [];
   let offset = 0;
   let totalSize = 0;
+  let itemCount = 0;
 
   while (true) {
     const query = buildQuery(offset);
@@ -507,6 +526,9 @@ async function bfQueryItemsUnified<
       if (rows.length === 0) break; // No more results
 
       for (const row of rows) {
+        if (totalLimit && itemCount >= totalLimit) {
+          return allItems; // Exit if we've reached the total limit
+        }
         const item = {
           props: row.props,
           metadata: {
@@ -531,6 +553,7 @@ async function bfQueryItemsUnified<
         }
 
         allItems.push(item);
+        itemCount++;
       }
 
       offset += batchSize;
@@ -636,7 +659,7 @@ export async function bfQueryItemsForGraphQLConnection<
 
   let orderDirection: "ASC" | "DESC" = "ASC";
   let cursorValue: number | undefined;
-  let limit: number | undefined;
+  let limit: number = 10;
 
   if (first !== undefined) {
     orderDirection = "ASC";
@@ -661,7 +684,8 @@ export async function bfQueryItemsForGraphQLConnection<
     {
       useSizeLimit: false,
       cursorValue,
-      batchSize: limit,
+      batchSize: 4,
+      totalLimit: limit,
     },
   );
 
@@ -690,21 +714,20 @@ export async function bfQueryItemsForGraphQLConnection<
     hasPreviousPage,
   };
 
-  const countQuery = bfQueryItemsUnified<TProps, TMetadata>(
+  const count = await bfQueryItemsUnified<TProps, TMetadata>(
     metadata,
     props,
-    bfGids,
-    "ASC",
+    [],
+    orderDirection,
     "sort_value",
-    { useSizeLimit: false },
+    {
+      countOnly: true,
+    },
   );
-
-  const [count] = await Promise.all([countQuery]);
-
   return {
     edges,
     pageInfo,
-    count: count.length,
+    count,
   };
 }
 
