@@ -26,12 +26,11 @@ export function LandingPageHero() {
         </div>
         <div className="landing-page-text">
           <p>
-            Customer testimonials are powerful. Bolt Foundry helps you take
-            those stories and turn them into polished clips you can use
-            anywhere.
+            Turn your library of testimonials, podcasts, and conference talks
+            into polished video clips you can use anywhere.
           </p>
           <p>
-            Let's work together to get the word out.
+            Let Bolt Foundry help you get more from your videos.
           </p>
         </div>
         <div style={{ width: "50%" }}>
