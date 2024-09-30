@@ -43,7 +43,7 @@ export class BfNode<
     currentViewer: BfCurrentViewer,
     metadataToQuery: Partial<BfBaseModelMetadata<ChildRequiredProps>>,
     propsToQuery: Partial<ChildRequiredProps & ChildOptionalProps> = {},
-    connectionArgs: ChildOptionalProps,
+    connectionArgs: unknown,
     bfGids: Array<BfAnyid> = [],
   ): Promise<
     ConnectionInterface<
