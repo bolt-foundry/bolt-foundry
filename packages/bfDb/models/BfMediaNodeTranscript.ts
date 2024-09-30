@@ -291,6 +291,10 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       candidates.sort((a, b) => a.score - b.score);
       bestCandidate = candidates[0];
 
+      logger.info(
+        `Found ${candidates.length} candidates - Chosen candidate has a score of ${bestCandidate.score}`,
+      );
+
       if (bestCandidate.score > 50) {
         logger.info(
           `${this} found ${candidates.length} potential candidates. The chosen one had a score of ${bestCandidate.score} and was ${bestCandidate.words.length} words long, the original text had ${originalLength} words`,
