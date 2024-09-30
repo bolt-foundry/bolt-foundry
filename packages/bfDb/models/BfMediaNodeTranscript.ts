@@ -7,6 +7,7 @@ import { BfError } from "lib/BfError.ts";
 import { callAPI } from "packages/lib/langchain.ts";
 
 const logger = getLogger(import.meta);
+logger.setLevel(logger.levels.DEBUG);
 
 const BF_MEDIA_AUDIO_CACHE_DIRECTORY =
   Deno.env.get("BF_MEDIA_AUDIO_CACHE_DIRECTORY") ?? Deno.env.get("REPL_HOME")
@@ -76,7 +77,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       "-progress",
       "pipe:2",
       "-stats_period",
-      ".3", // seconds
+      "1", // seconds
       "-v",
       "quiet",
       this.filePath,
@@ -114,7 +115,8 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     }).catch((r) => {
       logger.warn(`ffprobe reading fails ${r}`);
     });
-    const fileDuration = await (async () => {
+
+    await (async () => {
       const ffprobeStdoutReader = ffprobeStdout.pipeThrough(
         new TextDecoderStream(),
       ).getReader();
@@ -124,16 +126,16 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
         if (done) break;
         outputText += value;
       }
-
       const ffprobeStdoutJson = JSON.parse(outputText);
       logger.debug(`ffprobe output`, ffprobeStdoutJson);
-      const duration = parseFloat(ffprobeStdoutJson.format.duration);
       const durationInUs = Math.floor(
-        duration * 1000,
+        parseFloat(ffprobeStdoutJson?.format?.duration) * 1000,
       );
       logger.debug(`durationInUs`, durationInUs);
+      this.durationInUs = durationInUs;
       return durationInUs;
     })();
+
     const stderrReader = stderr.pipeThrough(new TextDecoderStream())
       .getReader();
     while (true) {
@@ -148,8 +150,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       }, {} as Record<string, string>);
       const outTimeUs = parseInt(stats.out_time_us);
       const outTimeMs = outTimeUs / 1000;
-      const pctComplete = outTimeMs / fileDuration;
-      logger.debug("stats", stats);
+      const pctComplete = outTimeMs / this.durationInUs;
       this.updateIngestionPct(pctComplete);
     }
     logger.info(`File encoded to ${this.filePath}`);
@@ -157,7 +158,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     if (!apiKey) throw new BfError("No assembly AI key found");
     const assemblyAIClient = new AssemblyAI({ apiKey });
     logger.info(`Starting transcription for ${this}`);
-    const audioDuration = fileDuration;
+    const audioDuration = this.durationInUs;
     let transcriptionInProgress = true;
     const expectedTranscriptionDuration = audioDuration * 0.7;
     const intervalLength = expectedTranscriptionDuration / 100 / 100;
@@ -323,7 +324,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
 
   private async updateTranscriptionPct(pct: number) {
     this.props.transcriptionPct = pct;
-    await this.save();
+    // await this.save();
     logger.debug(
       `${this} Transcription pct updated to ${(pct * 100).toFixed(2)}%`,
     );
@@ -331,7 +332,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
 
   private async updateIngestionPct(pct: number) {
     this.props.ingestionPct = pct;
-    await this.save();
+    // await this.save();
     logger.debug(`${this} Ingestion pct updated to ${(pct * 100).toFixed(2)}%`);
   }
 }
