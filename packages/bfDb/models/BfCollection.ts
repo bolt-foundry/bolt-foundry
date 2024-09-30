@@ -152,9 +152,16 @@ export class BfCollection extends BfNode<BfCollectionProps> {
         clipsPropsPromises.map(
           async (clipsPromise) => {
             const clipsProps = (await clipsPromise) ?? [];
-            return clipsProps.map(async (clipProps) =>
-              savedSearch.createResult(await clipProps)
-            );
+            return clipsProps.map(async (clipProps) => {
+              const savedSearchResult = await savedSearch.createResult(
+                await clipProps,
+              );
+              await BfEdge.createBetweenNodes(
+                this.currentViewer,
+                transcript,
+                savedSearchResult,
+              );
+            });
           },
         ),
       );
