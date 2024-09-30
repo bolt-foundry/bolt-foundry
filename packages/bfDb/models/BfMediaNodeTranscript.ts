@@ -77,7 +77,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       "-progress",
       "pipe:2",
       "-stats_period",
-      "1", // seconds
+      ".2", // seconds
       "-v",
       "quiet",
       this.filePath,
