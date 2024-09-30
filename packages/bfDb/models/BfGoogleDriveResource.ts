@@ -130,7 +130,7 @@ export class BfGoogleDriveResource
    * Otherwise you'll need to dispose of the file handle yourself.
    *
    * @example
-   * const fileHandle = await bfGoogleDriveResource.getFileHandle();
+   * using fileHandle = await bfGoogleDriveResource.getFileHandle();
    *
    * @example
    * const fileHandle = await bfGoogleDriveResource.getFileHandle();
