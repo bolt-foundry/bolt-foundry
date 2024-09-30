@@ -114,7 +114,8 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     }).catch((r) => {
       logger.warn(`ffprobe reading fails ${r}`);
     });
-    const fileDuration = await (async () => {
+
+    await (async () => {
       const ffprobeStdoutReader = ffprobeStdout.pipeThrough(
         new TextDecoderStream(),
       ).getReader();
@@ -124,16 +125,16 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
         if (done) break;
         outputText += value;
       }
-
       const ffprobeStdoutJson = JSON.parse(outputText);
       logger.debug(`ffprobe output`, ffprobeStdoutJson);
-      const duration = parseFloat(ffprobeStdoutJson.format.duration);
       const durationInUs = Math.floor(
-        duration * 1000,
+        parseFloat(ffprobeStdoutJson?.format?.duration) * 1000,
       );
       logger.debug(`durationInUs`, durationInUs);
+      this.durationInUs = durationInUs;
       return durationInUs;
     })();
+
     const stderrReader = stderr.pipeThrough(new TextDecoderStream())
       .getReader();
     while (true) {
@@ -148,8 +149,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       }, {} as Record<string, string>);
       const outTimeUs = parseInt(stats.out_time_us);
       const outTimeMs = outTimeUs / 1000;
-      const pctComplete = outTimeMs / fileDuration;
-      logger.debug("stats", stats);
+      const pctComplete = outTimeMs / this.durationInUs;
       this.updateIngestionPct(pctComplete);
     }
     logger.info(`File encoded to ${this.filePath}`);
@@ -157,7 +157,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     if (!apiKey) throw new BfError("No assembly AI key found");
     const assemblyAIClient = new AssemblyAI({ apiKey });
     logger.info(`Starting transcription for ${this}`);
-    const audioDuration = fileDuration;
+    const audioDuration = this.durationInUs;
     let transcriptionInProgress = true;
     const expectedTranscriptionDuration = audioDuration * 0.7;
     const intervalLength = expectedTranscriptionDuration / 100 / 100;
