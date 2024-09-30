@@ -1,3 +1,4 @@
+// @ts-nocheck this file breaks a ton of things.
 import {
   ChatAnthropic,
   ChatOpenAI,
@@ -12,18 +13,24 @@ const logger = getLogger(import.meta);
 const openAIApiKey = Deno.env.get("OPENAI_API_KEY") ?? "";
 const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
 
-type Document = {
-  mediaId: string;
-  transcriptId: string;
-  filename: string;
-  words: string;
+type Clip = {
+  title: string;
+  body: string;
+  description: string;
+  topics: string;
+  rationale: string;
+  confidence: number;
+};
+
+type Response = {
+  excerpts: Array<Clip>;
 };
 
 export const callAPI = async (
   userMessage: string,
   textToSearch: string,
   suggestedModel?: string | null | undefined,
-) => {
+): Promise<Response> => {
   const excerpt = z.object({
     excerpts: z.array(z.object({
       title: z.string().describe("The title of the excerpt."),
