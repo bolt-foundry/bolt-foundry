@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9db3822bd0e516c63577b5fc9b400d74>>
+ * @generated SignedSource<<72e87d5d4220ec9839be329bc1cd36d7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -300,6 +300,7 @@ return {
             "plural": false,
             "selections": [
               (v5/*: any*/),
+              (v7/*: any*/),
               {
                 "kind": "InlineFragment",
                 "selections": [
@@ -342,6 +343,34 @@ return {
                                 "kind": "ScalarField",
                                 "name": "body",
                                 "storageKey": null
+                              },
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "title",
+                                "storageKey": null
+                              },
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "description",
+                                "storageKey": null
+                              },
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "rationale",
+                                "storageKey": null
+                              },
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "confidence",
+                                "storageKey": null
                               }
                             ],
                             "storageKey": null
@@ -355,8 +384,7 @@ return {
                 ],
                 "type": "BfSavedSearch",
                 "abstractKey": null
-              },
-              (v7/*: any*/)
+              }
             ],
             "storageKey": null
           }
@@ -365,12 +393,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "8834d58ebd12af7d543bf48be2e84782",
+    "cacheID": "8a407d576aa4fa0c645fdf9d5bcc4a54",
     "id": null,
     "metadata": {},
     "name": "ClipSearchPageQuery",
     "operationKind": "query",
-    "text": "query ClipSearchPageQuery(\n  $searchId: ID!\n  $includeSearch: Boolean!\n) {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      collections(first: 10) {\n        count\n        edges {\n          node {\n            __typename\n            ...Search_bfCollection\n            id\n          }\n        }\n      }\n      id\n    }\n  }\n  node(id: $searchId) @include(if: $includeSearch) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n      }\n    }\n  }\n}\n\nfragment Search_bfCollection on BfCollection {\n  id\n}\n"
+    "text": "query ClipSearchPageQuery(\n  $searchId: ID!\n  $includeSearch: Boolean!\n) {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      collections(first: 10) {\n        count\n        edges {\n          node {\n            __typename\n            ...Search_bfCollection\n            id\n          }\n        }\n      }\n      id\n    }\n  }\n  node(id: $searchId) @include(if: $includeSearch) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        title\n        description\n        rationale\n        confidence\n      }\n    }\n  }\n}\n\nfragment Search_bfCollection on BfCollection {\n  id\n}\n"
   }
 };
 })();
