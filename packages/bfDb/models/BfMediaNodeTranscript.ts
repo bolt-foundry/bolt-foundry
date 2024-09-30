@@ -15,7 +15,8 @@ const BF_MEDIA_AUDIO_CACHE_DIRECTORY =
 
 export enum BfMediaNodeTranscriptStatus {
   CREATED = "CREATED",
-  PROCESSING = "PROCESSING",
+  EXTRACTING_AUDIO = "EXTRACTING_AUDIO",
+  TRANSCRIBING = "TRANSCRIBING",
   COMPLETED = "COMPLETED",
   NEW = "NEW",
   FAILED = "FAILED",
@@ -75,7 +76,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       "-progress",
       "pipe:2",
       "-stats_period",
-      "0.1", // seconds
+      "1", // seconds
       "-v",
       "quiet",
       this.filePath,
@@ -86,6 +87,8 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       stderr: "piped",
     });
     logger.info(`Starting ffmpeg transcript encode for ${this}`);
+    this.props.status = BfMediaNodeTranscriptStatus.EXTRACTING_AUDIO;
+    this.save();
     const { stdin, stderr } = ffmpegProcess.spawn();
     const ffprobeProcess = new Deno.Command("ffprobe", {
       args: ffprobeArgs,
@@ -124,8 +127,9 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       const ffprobeStdoutJson = JSON.parse(outputText);
       logger.debug(`ffprobe output`, ffprobeStdoutJson);
       const durationInUs = Math.floor(
-        ffprobeStdoutJson.format.duration * 1000,
+        ffprobeStdoutJson?.format?.duration ?? 10_0000 * 1000,
       );
+      logger.debug(`durationInUs`, durationInUs);
       return durationInUs;
     })();
     const stderrReader = stderr.pipeThrough(new TextDecoderStream())
@@ -159,6 +163,8 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       if (transcriptionInProgress === false) {
         clearInterval(interval);
         this.updateTranscriptionPct(1);
+        this.props.status = BfMediaNodeTranscriptStatus.COMPLETED;
+        await this.save();
         return;
       }
       const currentCompleted = expectedTranscriptionDuration *
@@ -176,6 +182,8 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
 
       timesReported++;
     }, intervalLength);
+    this.props.status = BfMediaNodeTranscriptStatus.TRANSCRIBING;
+    this.save();
     const transcript = await assemblyAIClient.transcripts.transcribe({
       audio: this.filePath,
       speaker_labels: true,
@@ -235,7 +243,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
 
   private async updateTranscriptionPct(pct: number) {
     this.props.transcriptionPct = pct;
-    await this.save();
+    // await this.save();
     logger.debug(
       `${this} Transcription pct updated to ${(pct * 100).toFixed(2)}%`,
     );
@@ -243,7 +251,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
 
   private async updateIngestionPct(pct: number) {
     this.props.ingestionPct = pct;
-    await this.save();
+    // await this.save();
     logger.debug(`${this} Ingestion pct updated to ${(pct * 100).toFixed(2)}%`);
   }
 }
