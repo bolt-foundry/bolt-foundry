@@ -215,7 +215,7 @@ export interface NexusGenObjects {
     description?: string | null; // String
     rationale?: string | null; // String
     title?: string | null; // String
-    topics?: Array<string | null> | null; // [String]
+    topics?: string | null; // String
     verbatim?: boolean | null; // Boolean
   }
   BfSavedSearchResultConnection: { // root type
@@ -504,7 +504,7 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     rationale: string | null; // String
     title: string | null; // String
-    topics: Array<string | null> | null; // [String]
+    topics: string | null; // String
     verbatim: boolean | null; // Boolean
   }
   BfSavedSearchResultConnection: { // field return type
