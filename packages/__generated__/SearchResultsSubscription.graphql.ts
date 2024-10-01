@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5765793adf2abc5169f4bf0e19d7da76>>
+ * @generated SignedSource<<d278323a7d2402a4ae5a981bb0574e11>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -146,13 +146,6 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "body",
-                            "storageKey": null
-                          },
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
                             "name": "title",
                             "storageKey": null
                           },
@@ -160,7 +153,7 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "description",
+                            "name": "body",
                             "storageKey": null
                           },
                           {
@@ -175,6 +168,20 @@ return {
                             "args": null,
                             "kind": "ScalarField",
                             "name": "confidence",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "topics",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "description",
                             "storageKey": null
                           }
                         ],
@@ -196,12 +203,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "24276bfe9512f18820ba9facd2bb8f53",
+    "cacheID": "90a2e209c3540dcd98da6dd221e44e6c",
     "id": null,
     "metadata": {},
     "name": "SearchResultsSubscription",
     "operationKind": "subscription",
-    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        title\n        description\n        rationale\n        confidence\n      }\n    }\n  }\n}\n"
+    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  rationale\n  confidence\n  topics\n  description\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        ...SearchResult_bfSavedSearchResult\n        body\n        id\n      }\n    }\n  }\n}\n"
   }
 };
 })();
