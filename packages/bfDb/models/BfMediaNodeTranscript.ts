@@ -82,18 +82,18 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     const ffprobeCmd = new Deno.Command("ffprobe", {
       args: ffprobeArgs,
       stdout: "piped",
-    })
+    });
 
     const { stdout } = await ffprobeCmd.output();
-    const ffprobeOutput = JSON.parse(new TextDecoder().decode(stdout))
+    const ffprobeOutput = JSON.parse(new TextDecoder().decode(stdout));
     logger.debug(`ffprobe stdout`, ffprobeOutput);
     const fileDuration = parseFloat(ffprobeOutput.format.duration) * 1000;
     logger.debug(`fileDuration`, fileDuration);
-    const ffmpegCmd = new Deno.Command("ffmpeg",{
+    const ffmpegCmd = new Deno.Command("ffmpeg", {
       args: ffmpegArgs,
       stderr: "piped",
     });
-    
+
     const { stderr } = ffmpegCmd.spawn();
     const stderrReader = stderr.pipeThrough(new TextDecoderStream())
       .getReader();
@@ -112,7 +112,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       const pctComplete = outTimeMs / fileDuration;
       this.updateIngestionPct(pctComplete);
     }
-    
+
     const apiKey = Deno.env.get("ASSEMBLY_AI_KEY");
     if (!apiKey) throw new BfError("No assembly AI key found");
     const assemblyAIClient = new AssemblyAI({ apiKey });

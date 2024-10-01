@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fa678c9b870d2b500731523a87c55fbe>>
+ * @generated SignedSource<<e58d99c3287abc9b62e61ea7fe794c22>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,11 +18,7 @@ export type SearchResults_bfSavedSearch$data = {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly body: string | null | undefined;
-        readonly confidence: number | null | undefined;
-        readonly description: string | null | undefined;
-        readonly id: string;
-        readonly rationale: string | null | undefined;
-        readonly title: string | null | undefined;
+        readonly " $fragmentSpreads": FragmentRefs<"SearchResult_bfSavedSearchResult">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   } | null | undefined;
@@ -33,15 +29,7 @@ export type SearchResults_bfSavedSearch$key = {
   readonly " $fragmentSpreads": FragmentRefs<"SearchResults_bfSavedSearch">;
 };
 
-const node: ReaderFragment = (function(){
-var v0 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
-return {
+const node: ReaderFragment = {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
@@ -54,7 +42,13 @@ return {
       "name": "query",
       "storageKey": null
     },
-    (v0/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
+    },
     {
       "alias": null,
       "args": [
@@ -92,40 +86,16 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                (v0/*: any*/),
+                {
+                  "args": null,
+                  "kind": "FragmentSpread",
+                  "name": "SearchResult_bfSavedSearchResult"
+                },
                 {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
                   "name": "body",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "title",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "description",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "rationale",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "confidence",
                   "storageKey": null
                 }
               ],
@@ -141,8 +111,7 @@ return {
   "type": "BfSavedSearch",
   "abstractKey": null
 };
-})();
 
-(node as any).hash = "d0c58e1f138d6ee39247a211c23f1975";
+(node as any).hash = "6670b6175e42b1da4005287a85da0f94";
 
 export default node;
