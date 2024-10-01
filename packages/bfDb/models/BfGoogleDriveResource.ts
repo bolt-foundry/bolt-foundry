@@ -11,8 +11,6 @@ import {
 } from "lib/googleDriveApi.ts";
 import { BfError } from "lib/BfError.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { BfJob } from "packages/bfDb/models/BfJob.ts";
-import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 
 const GOOGLE_DRIVE_CACHE_DIRECTORY =
   Deno.env.get("GOOGLE_DRIVE_CACHE_DIRECTORY") ?? Deno.env.get("REPL_HOME")
@@ -142,7 +140,7 @@ export class BfGoogleDriveResource
     return existsOnDisk ? Deno.open(this.getFilePath()) : this.download();
   }
 
-  private async download(targetPath = this.getFilePath()) {
+  async download(targetPath = this.getFilePath()) {
     await Deno.mkdir(GOOGLE_DRIVE_CACHE_DIRECTORY, { recursive: true });
     const path = targetPath;
     const token = await this.getAccessToken();

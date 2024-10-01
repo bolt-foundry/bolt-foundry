@@ -55,10 +55,10 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     );
     await Deno.mkdir(BF_MEDIA_AUDIO_CACHE_DIRECTORY, { recursive: true });
     logger.debug(`Getting file handle for ${bfGoogleDriveResource}`);
-    const fileHandlePromise = bfGoogleDriveResource.getFileHandle();
+    using _fileHandle = await bfGoogleDriveResource.download();
     const ffprobeArgs = [
       "-i",
-      "-",
+      bfGoogleDriveResource.getFilePath(),
       "-v",
       "quiet",
       "-show_format",
@@ -67,74 +67,34 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     ];
     const ffmpegArgs = [
       "-i",
-      "-",
-      "-codec:a",
-      "aac",
-      "-b:a",
-      "256k",
-      "-y",
+      bfGoogleDriveResource.getFilePath(),
       "-progress",
       "pipe:2",
       "-stats_period",
-      ".3", // seconds
+      "0.5", // seconds
       "-v",
       "quiet",
       this.filePath,
     ];
-    const ffmpegProcess = new Deno.Command("ffmpeg", {
-      args: ffmpegArgs,
-      stdin: "piped",
-      stderr: "piped",
-    });
     logger.info(`Starting ffmpeg transcript encode for ${this}`);
     this.props.status = BfMediaNodeTranscriptStatus.EXTRACTING_AUDIO;
     this.save();
-    const { stdin, stderr } = ffmpegProcess.spawn();
-    const ffprobeProcess = new Deno.Command("ffprobe", {
+    const ffprobeCmd = new Deno.Command("ffprobe", {
       args: ffprobeArgs,
-      stdin: "piped",
       stdout: "piped",
+    })
+
+    const { stdout } = await ffprobeCmd.output();
+    const ffprobeOutput = JSON.parse(new TextDecoder().decode(stdout))
+    logger.debug(`ffprobe stdout`, ffprobeOutput);
+    const fileDuration = parseFloat(ffprobeOutput.format.duration) * 1000;
+    logger.debug(`fileDuration`, fileDuration);
+    const ffmpegCmd = new Deno.Command("ffmpeg",{
+      args: ffmpegArgs,
+      stderr: "piped",
     });
-    const { stdin: ffprobeStdin, stdout: ffprobeStdout } = ffprobeProcess
-      .spawn();
-
-    fileHandlePromise.then((fileHandle) => {
-      logger.debug(`File handle ready from ${bfGoogleDriveResource}`);
-      const readableStream = fileHandle.readable;
-      const ffmpegPipe = readableStream.pipeTo(stdin);
-      return ffmpegPipe;
-    }).catch((r) => {
-      logger.error(r);
-    });
-
-    bfGoogleDriveResource.getFileHandle().then((fileHandle) => {
-      const readableStream = fileHandle.readable;
-      const ffprobePipe = readableStream.pipeTo(ffprobeStdin);
-      return ffprobePipe;
-    }).catch((r) => {
-      logger.warn(`ffprobe reading fails ${r}`);
-    });
-
-    await (async () => {
-      const ffprobeStdoutReader = ffprobeStdout.pipeThrough(
-        new TextDecoderStream(),
-      ).getReader();
-      let outputText = "";
-      while (true) {
-        const { done, value } = await ffprobeStdoutReader.read();
-        if (done) break;
-        outputText += value;
-      }
-      const ffprobeStdoutJson = JSON.parse(outputText);
-      logger.debug(`ffprobe output`, ffprobeStdoutJson);
-      const durationInUs = Math.floor(
-        parseFloat(ffprobeStdoutJson?.format?.duration) * 1000,
-      );
-      logger.debug(`durationInUs`, durationInUs);
-      this.durationInUs = durationInUs;
-      return durationInUs;
-    })();
-
+    
+    const { stderr } = ffmpegCmd.spawn();
     const stderrReader = stderr.pipeThrough(new TextDecoderStream())
       .getReader();
     while (true) {
@@ -149,15 +109,15 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       }, {} as Record<string, string>);
       const outTimeUs = parseInt(stats.out_time_us);
       const outTimeMs = outTimeUs / 1000;
-      const pctComplete = outTimeMs / this.durationInUs;
+      const pctComplete = outTimeMs / fileDuration;
       this.updateIngestionPct(pctComplete);
     }
-    logger.info(`File encoded to ${this.filePath}`);
+    
     const apiKey = Deno.env.get("ASSEMBLY_AI_KEY");
     if (!apiKey) throw new BfError("No assembly AI key found");
     const assemblyAIClient = new AssemblyAI({ apiKey });
     logger.info(`Starting transcription for ${this}`);
-    const audioDuration = this.durationInUs;
+    const audioDuration = fileDuration;
     let transcriptionInProgress = true;
     const expectedTranscriptionDuration = audioDuration * 0.7;
     const intervalLength = expectedTranscriptionDuration / 100 / 100;
@@ -174,7 +134,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
         (timesReported * .4);
       const currentPct = currentCompleted / expectedTranscriptionDuration /
         100;
-      const cheaterCurrentPct = .90 + currentPct / 150;
+      const cheaterCurrentPct = .90 + currentPct / 50;
       if (cheaterCurrentPct > .99) {
         this.updateTranscriptionPct(.99);
       } else if (currentPct > .90) {
@@ -195,7 +155,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     transcriptionInProgress = false;
     logger.debug(`Transcription estimated 100`);
 
-    logger.debug("Got transcript", transcript);
+    logger.debug("Got transcript");
     const words = transcript.words as AssemblyAIWords;
     this.props.words = words;
     await this.save();
