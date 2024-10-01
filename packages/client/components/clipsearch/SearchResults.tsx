@@ -12,12 +12,8 @@ const fragment = await graphql`
       count
       edges {
        node {
-          id
+          ...SearchResult_bfSavedSearchResult
           body
-          title
-          description
-          rationale
-          confidence
         } 
       }
     }
@@ -55,18 +51,11 @@ export function SearchResults({ bfSavedSearch$key }: Props) {
   const list = data?.searchResults?.edges?.map((edge) => {
     return edge?.node;
   });
-  const elements = list?.map((
-    { body, title, description, rationale, topics, confidence, id },
-  ) => {
-    if (body !== "No excerpt found.") {
+  const elements = list?.map((node) => {
+    if (node.body !== "No excerpt found.") {
       return (
         <SearchResult
-          title={title}
-          body={body}
-          description={description}
-          rationale={rationale}
-          topics={topics}
-          confidence={confidence}
+          bfSavedSearchResult$key={node}
         />
       );
     }
