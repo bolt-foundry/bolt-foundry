@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9f365a709305a19ee56544751764e505>>
+ * @generated SignedSource<<d219189594a9aaa1b2504ff1d1255e7d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -400,12 +400,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "e0442e73fb21087c10f65869863db958",
+    "cacheID": "3301058f0ab321c8a55176d606bce664",
     "id": null,
     "metadata": {},
     "name": "ClipSearchPageQuery",
     "operationKind": "query",
-    "text": "query ClipSearchPageQuery(\n  $searchId: ID!\n  $includeSearch: Boolean!\n) {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      collections(first: 10) {\n        count\n        edges {\n          node {\n            __typename\n            ...Search_bfCollection\n            id\n          }\n        }\n      }\n      id\n    }\n  }\n  node(id: $searchId) @include(if: $includeSearch) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  rationale\n  confidence\n  topics\n  description\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        ...SearchResult_bfSavedSearchResult\n        body\n        id\n      }\n    }\n  }\n}\n\nfragment Search_bfCollection on BfCollection {\n  id\n}\n"
+    "text": "query ClipSearchPageQuery(\n  $searchId: ID!\n  $includeSearch: Boolean!\n) {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      collections(first: 10) {\n        count\n        edges {\n          node {\n            __typename\n            ...Search_bfCollection\n            id\n          }\n        }\n      }\n      id\n    }\n  }\n  node(id: $searchId) @include(if: $includeSearch) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  ...ClipEditModal_bfSavedSearchResult\n  id\n  title\n  body\n  rationale\n  confidence\n  topics\n  description\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        ...SearchResult_bfSavedSearchResult\n        body\n        id\n      }\n    }\n  }\n}\n\nfragment Search_bfCollection on BfCollection {\n  id\n}\n"
   }
 };
 })();

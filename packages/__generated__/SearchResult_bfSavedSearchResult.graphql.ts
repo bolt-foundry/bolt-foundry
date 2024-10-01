@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5ed1e82faf1690c691ac192b3dcc9c34>>
+ * @generated SignedSource<<fb72b08923d10c66b7d69c59ebc39820>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,6 +18,7 @@ export type SearchResult_bfSavedSearchResult$data = {
   readonly rationale: string | null | undefined;
   readonly title: string | null | undefined;
   readonly topics: string | null | undefined;
+  readonly " $fragmentSpreads": FragmentRefs<"ClipEditModal_bfSavedSearchResult">;
   readonly " $fragmentType": "SearchResult_bfSavedSearchResult";
 };
 export type SearchResult_bfSavedSearchResult$key = {
@@ -31,6 +32,11 @@ const node: ReaderFragment = {
   "metadata": null,
   "name": "SearchResult_bfSavedSearchResult",
   "selections": [
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "ClipEditModal_bfSavedSearchResult"
+    },
     {
       "alias": null,
       "args": null,
@@ -85,6 +91,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "3369eb7b798fb99885a94b10e9dde620";
+(node as any).hash = "b7a40e2aa46e49819e3d96e580a1b680";
 
 export default node;

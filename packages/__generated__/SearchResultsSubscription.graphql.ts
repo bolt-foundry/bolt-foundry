@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d278323a7d2402a4ae5a981bb0574e11>>
+ * @generated SignedSource<<42821274d64ff4becfe6690ecaa15de5>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -203,12 +203,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "90a2e209c3540dcd98da6dd221e44e6c",
+    "cacheID": "376564bdfd622d6e86d7c1059ecebc89",
     "id": null,
     "metadata": {},
     "name": "SearchResultsSubscription",
     "operationKind": "subscription",
-    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  rationale\n  confidence\n  topics\n  description\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        ...SearchResult_bfSavedSearchResult\n        body\n        id\n      }\n    }\n  }\n}\n"
+    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  ...ClipEditModal_bfSavedSearchResult\n  id\n  title\n  body\n  rationale\n  confidence\n  topics\n  description\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        ...SearchResult_bfSavedSearchResult\n        body\n        id\n      }\n    }\n  }\n}\n"
   }
 };
 })();

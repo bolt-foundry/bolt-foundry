@@ -6,9 +6,11 @@ import { Pill } from "packages/bfDs/Pill.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
+import { ClipEditButton } from "packages/client/components/clipsearch/ClipEditButton.tsx";
 
 const fragment = await graphql`
   fragment SearchResult_bfSavedSearchResult on BfSavedSearchResult{
+    ...ClipEditModal_bfSavedSearchResult
     id
     title
     body
@@ -46,11 +48,7 @@ export function SearchResult(props) {
             </div>
             <div className="clipActions row-column">
               <FeatureFlag name="placeholder">
-                <BfDsButton
-                  kind="secondary"
-                  iconLeft="pencil"
-                  testId="button-edit-clip"
-                />
+                <ClipEditButton bfSavedSearchResult$key={data} />
               </FeatureFlag>
               {
                 /* <DownloadClipButton
