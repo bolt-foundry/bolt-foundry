@@ -2,7 +2,7 @@ import { graphql } from "packages/client/deps.ts";
 import { useMemo } from "react";
 import { useFragment, useSubscription } from "react-relay";
 import { SearchResult } from "packages/client/components/clipsearch/SearchResult.tsx";
-import { SearchResults_bfSavedSearch$key } from "packages/__generated__/SearchResults_bfSavedSearch.graphql.ts";
+import type { SearchResults_bfSavedSearch$key } from "packages/__generated__/SearchResults_bfSavedSearch.graphql.ts";
 
 const fragment = await graphql`
   fragment SearchResults_bfSavedSearch on BfSavedSearch {
@@ -13,6 +13,7 @@ const fragment = await graphql`
       edges {
        node {
           id
+          body
           ...SearchResult_bfSavedSearchResult
         } 
       }
@@ -51,15 +52,14 @@ export function SearchResults({ bfSavedSearch$key }: Props) {
   const list = data?.searchResults?.edges?.map((edge) => {
     return edge?.node;
   });
-  const elements = list?.filter(Boolean).map((
-    node,
-  ) => {
-    return (
-      <SearchResult
-        key={node!.id}
-        bfSavedSearchResult$key={node!}
-      />
-    );
+  const elements = list?.map((node) => {
+    if (node.body !== "No excerpt found.") {
+      return (
+        <SearchResult
+          bfSavedSearchResult$key={node}
+        />
+      );
+    }
   });
   return (
     <div>

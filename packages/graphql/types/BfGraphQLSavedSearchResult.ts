@@ -10,7 +10,7 @@ export const BfGraphQLSavedSearchResultType = objectType({
     t.string("rationale");
     t.string("description");
     t.float("confidence");
-    t.list.string("topics");
+    t.string("topics");
     t.boolean("verbatim");
     t.msTime("duration");
     t.msTime("startTime");

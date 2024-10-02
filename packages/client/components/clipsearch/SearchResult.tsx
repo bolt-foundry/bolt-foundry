@@ -1,109 +1,109 @@
-import type { React } from "deps.ts";
-import { graphql } from "packages/client/deps.ts";
-import { useFragment } from "react-relay";
-import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
-import { Pill } from "packages/bfDs/Pill.tsx";
-import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
-import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
-import type { SearchResult_bfSavedSearchResult$key } from "packages/__generated__/SearchResult_bfSavedSearchResult.graphql.ts";
+  import { graphql } from "packages/client/deps.ts";
+  import { useFragment } from "react-relay";
+  import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
+  import { Pill } from "packages/bfDs/Pill.tsx";
+  import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
+  import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
+  import type { SearchResult_bfSavedSearchResult$key } from "packages/__generated__/SearchResult_bfSavedSearchResult.graphql.ts";
 
-const fragment = await graphql`
-  fragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {
-    id
-    title
-    body
-    description
-    rationale
-    topics
-    confidence
-    startTime
-    endTime
-  }
-`;
+  const fragment = await graphql`
+    fragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {
+      id
+      title
+      body
+      description
+      rationale
+      topics
+      confidence
+      startTime
+      endTime
+    }
+  `;
 
-type Props = {
-  bfSavedSearchResult$key: SearchResult_bfSavedSearchResult$key;
-};
-export function SearchResult(
-  { bfSavedSearchResult$key }: Props,
-) {
-  const {
-    title,
-    body,
-    description,
-    rationale,
-    topics,
-    confidence,
-    startTime,
-    endTime,
-  } = useFragment(fragment, bfSavedSearchResult$key);
-  const topicPills = topics?.filter(Boolean).map((topic) => (
-    <Pill text={topic!.trim()} />
-  ));
-  const length = `${(endTime - startTime).toFixed(2)}s`;
-  return (
-    <div className="clip">
-      <div className="clipInner clipContainer">
-        <FeatureFlag name="placeholder">
-          <div className="videoPlayer tall">
-            (video player)
-          </div>
-        </FeatureFlag>
-        <div className="clipContent">
-          <div className="clipHeader">
-            <div className="clipHeaderLeft">
-              <div className="clipTitle" dir="auto">{title}</div>
-              <div className="clipDescription" dir="auto">
-                {description}
+  type Props = {
+    bfSavedSearchResult$key: SearchResult_bfSavedSearchResult$key;
+  };
+
+  export function SearchResult(props: Props) {
+    const data = useFragment(fragment, props.bfSavedSearchResult$key);
+    const topicPills = data.topics?.split(",").map((topic) => (
+      <Pill text={topic?.trim()} />
+    // const length = `${(endTime - startTime).toFixed(2)}s`;
+    return (
+      <div className="clip">
+        <div className="clipInner clipContainer">
+          <FeatureFlag name="placeholder">
+            <div className="videoPlayer tall">
+              (video player)
+            </div>
+          </FeatureFlag>
+          <div className="clipContent">
+            <div className="clipHeader">
+              <div className="clipHeaderLeft">
+                <div className="clipTitle" dir="auto">{data.title}</div>
+                <div className="clipDescription" dir="auto">
+                  {data.description}
+                </div>
+              </div>
+              <div className="clipActions row-column">
+                <FeatureFlag name="placeholder">
+                  <BfDsButton
+                    kind="secondary"
+                    iconLeft="pencil"
+                    testId="button-edit-clip"
+                  />
+                </FeatureFlag>
+                {/* <DownloadClipButton
+  ||||||| base:   34e6694f886e - george: Boiler plate for clip edit button and ...
+                <DownloadClipButton
+  =======
+                {
+                  /* <DownloadClipButton
+  >>>>>>> source: 8b924877d90b - george: fake data in graphql for search results
+                  startTime={startTime}
+                  endTime={endTime}
+                  mediaId={mediaId}
+                  title={title}
+                  transcriptId={transcriptId}
+  <<<<<<< dest:   1d7210a8f0f7 - george: Boiler plate for clip edit button and ...
+                /> */}
+
+                {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
+                {
+                  /* <ChangeRequestButton /> */
+                }
               </div>
             </div>
-            <div className="clipActions row-column">
-              <FeatureFlag name="placeholder">
-                <BfDsButton
-                  kind="secondary"
-                  iconLeft="pencil"
-                  testId="button-edit-clip"
-                />
-              </FeatureFlag>
-              {/* <DownloadClipButton
-                startTime={startTime}
-                endTime={endTime}
-                mediaId={mediaId}
-                title={title}
-                transcriptId={transcriptId}
-              /> */}
-              {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
-              {
-                /* <ChangeRequestButton /> */
-              }
-            </div>
-          </div>
 
-          <div className="clipMain">{body}</div>
+            <div className="clipMain">{data.body}</div>
 
-          <div className="clipMeta flexColumn" style={{ gap: "10px" }}>
-            <div className="flexRow" style={{ gap: "5px" }}>
-              {/* <BfDsTooltip canCopy text={mediaId} position="right">
-                <Pill label="Source" text={filename} />
-              </BfDsTooltip> */}
-              <BfDsTooltip text={rationale} position="right">
-                <Pill label="Rating" text={confidence ?? "?"} />
-              </BfDsTooltip>
-              <BfDsTooltip
-                text={`Start: ${startTime} End: ${endTime}`}
-                position="right"
-              >
-                <Pill label="Length" text={length} />
-              </BfDsTooltip>
-            </div>
+            <div className="clipMeta flexColumn" style={{ gap: "10px" }}>
+              <div className="flexRow" style={{ gap: "5px" }}>
+                {/* <BfDsTooltip canCopy text={mediaId} position="right">
+                  <Pill label="Source" text={filename} />
+                </BfDsTooltip> */}
+                <BfDsTooltip text={rationale} position="right">
+                  <Pill label="Rating" text={confidence ?? "?"} />
+                </BfDsTooltip>
+                <BfDsTooltip canCopy text="mediaId" position="right">
+                  <Pill label="Source" text="filename" />
+                </BfDsTooltip>
+                {
+                  /* <BfDsTooltip
+                  text={`Start: ${startTime} End: ${endTime}`}
+                  position="right"
+                >
+                  <Pill label="Length" text={length} />
+                </BfDsTooltip> */
+                }
+              </div>
 
-            <div className="flexRow" style={{ gap: "5px" }}>
-              {topicPills}
+              <div className="flexRow" style={{ gap: "5px" }}>
+                {topicPills}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
