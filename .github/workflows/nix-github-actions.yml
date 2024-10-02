@@ -1,7 +1,8 @@
 name: Nix Flake actions
 
 on:
-  # pull_request:
+  pull_request:
+  push:
 
 jobs:
   bff-ci:
