@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3c63c3671fe1b748c1257da0c284aa1b>>
+ * @generated SignedSource<<5ade5976adf7399e93126916fc70644b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,7 @@ export type SearchResult_bfSavedSearchResult$data = {
   readonly rationale: string | null | undefined;
   readonly startTime: any | null | undefined;
   readonly title: string | null | undefined;
-  readonly topics: ReadonlyArray<string | null | undefined> | null | undefined;
+  readonly topics: string | null | undefined;
   readonly " $fragmentType": "SearchResult_bfSavedSearchResult";
 };
 export type SearchResult_bfSavedSearchResult$key = {
