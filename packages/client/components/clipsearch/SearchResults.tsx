@@ -13,11 +13,7 @@ const fragment = await graphql`
       edges {
        node {
           id
-          body
-          title
-          description
-          rationale
-          confidence
+          ...SearchResult_bfSavedSearchResult
         } 
       }
     }
@@ -55,21 +51,15 @@ export function SearchResults({ bfSavedSearch$key }: Props) {
   const list = data?.searchResults?.edges?.map((edge) => {
     return edge?.node;
   });
-  const elements = list?.map((
-    { body, title, description, rationale, topics, confidence, id },
+  const elements = list?.filter(Boolean).map((
+    node,
   ) => {
-    if (body !== "No excerpt found.") {
-      return (
-        <SearchResult
-          title={title}
-          body={body}
-          description={description}
-          rationale={rationale}
-          topics={topics}
-          confidence={confidence}
-        />
-      );
-    }
+    return (
+      <SearchResult
+        key={node!.id}
+        bfSavedSearchResult$key={node!}
+      />
+    );
   });
   return (
     <div>

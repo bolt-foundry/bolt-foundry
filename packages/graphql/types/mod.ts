@@ -21,3 +21,4 @@ export * from "packages/graphql/types/BfGraphQLSavedSearchResult.ts";
 export * from "packages/graphql/types/GraphQLBlog.ts";
 export * from "packages/graphql/types/File.ts";
 export * from "packages/graphql/types/Url.ts";
+export * from "packages/graphql/types/Timecode.ts";
