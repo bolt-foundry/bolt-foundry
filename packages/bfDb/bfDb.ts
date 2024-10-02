@@ -33,7 +33,10 @@ if (!databaseUrl) {
 }
 const sql = neon(databaseUrl);
 
-const connectionString = Deno.env.get("BFDB_URL");
+const connectionString = Deno.env.get("BF_ENV") === "DEVELOPMENT"
+  ? Deno.env.get("DATABASE_URL") ?? Deno.env.get("BFDB_URL")
+  : Deno.env.get("BFDB_URL");
+
 // @ts-expect-error no types, underlying it's a `pg` thing
 const client = new Client({ connectionString });
 
