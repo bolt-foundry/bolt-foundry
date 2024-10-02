@@ -7,9 +7,26 @@ import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { Pill } from "packages/bfDs/Pill.tsx";
 import { useFragment } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
-
+import { useClipEditData } from "packages/client/hooks/useClipEditData.tsx";
 type Props = {
   setIsEditing: (isEditing: boolean) => void;
+};
+
+const EXTRA_WORDS = 20;
+
+const initialState = {
+  startIndex: 30,
+  endIndex: 45,
+  endTimeOverride: null,
+  highlightStartIndex: null,
+  highlightEndIndex: null,
+  editableText: null,
+  editableTextPre: EXTRA_WORDS,
+  editableTextPost: EXTRA_WORDS,
+  wordsToUpdate: [],
+  title: "test",
+  manualCrop: [],
+  manualCropActive: false,
 };
 
 const fragment = await graphql`
@@ -43,7 +60,91 @@ export function ClipEditModal(
                 </div>
               </div>
 
-              <div className="clipMain">{data.body}</div>
+              <div
+                className="clipText"
+                data-bf-testid="section-clip-text-editing"
+                dir="auto"
+              >
+                {
+                  /* {state.editableText?.map((xitem, index, arr) => {
+                  const item = xitem.item;
+                  const i = xitem.index;
+                  const draftWord = state.wordsToUpdate.find((w) =>
+                    w.start === item.start
+                  );
+                  const isExtraText = i < state.startIndex ||
+                    i > state.endIndex;
+                  if (item == null) {
+                    return null;
+                  }
+                  let isHighlighted = false;
+                  if (
+                    state.highlightStartIndex != null ||
+                    state.highlightEndIndex != null
+                  ) {
+                    isHighlighted =
+                      i >= (state.highlightStartIndex ?? state.startIndex) &&
+                      i <= (state.highlightEndIndex ?? state.endIndex);
+                  }
+                  const nextStart = arr[index + 1]?.item?.start ??
+                    arr[arr.length - 1]?.item?.end;
+                  const isCurrentWord = currentTime >= item.start &&
+                    currentTime < nextStart;
+                  const word = draftWord ?? item;
+
+                  const swearsOptions = {
+                    useAsterisks: settings.censorUseAsterisks,
+                    showFirstLetter: settings.censorShowFirstLetter,
+                  };
+                  let renderedWord = settings.censorSwears
+                    // @ts-ignore - swears is not typed properly
+                    ? swearsFilter(word.punctuated_word, swears, swearsOptions)
+                    : word.punctuated_word;
+                  renderedWord = `${renderedWord} `; // add a space after each word
+
+                  const wordData = {
+                    index: i,
+                    word,
+                    renderedWord,
+                    isCurrentWord,
+                    isExtraText,
+                    isHighlighted,
+                    nextStart,
+                  };
+
+                  switch (editMode) {
+                    case "crop":
+                      return (
+                        <CropModeWord
+                          goto={goto}
+                          manualCrop={state.manualCrop}
+                          updateManualCrop={updateManualCrop}
+                          state={state}
+                          wordData={wordData}
+                        />
+                      );
+                    case "sticker":
+                      return (
+                        <StickerModeWord
+                          goto={goto}
+                          wordData={wordData}
+                        />
+                      );
+                    default:
+                      return (
+                        <TextModeWord
+                          endTimeOverride={draftClip.endTimeOverride ??
+                            data.endTimeOverride ?? null}
+                          wordData={wordData}
+                          goto={goto}
+                          state={state}
+                          dispatch={dispatch}
+                        />
+                      );
+                  }
+                })} */
+                }
+              </div>
 
               {
                 /* <div className="clipMeta flexColumn" style={{ gap: "10px" }}>

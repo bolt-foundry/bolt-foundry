@@ -220,7 +220,7 @@ export interface NexusGenObjects {
     rationale?: string | null; // String
     startTime?: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     title?: string | null; // String
-    topics?: string | null; // String
+    topics?: Array<string | null> | null; // [String]
     verbatim?: boolean | null; // Boolean
   }
   BfSavedSearchResultConnection: { // root type
@@ -509,7 +509,7 @@ export interface NexusGenFieldTypes {
     rationale: string | null; // String
     startTime: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     title: string | null; // String
-    topics: string | null; // String
+    topics: Array<string | null> | null; // [String]
     verbatim: boolean | null; // Boolean
   }
   BfSavedSearchResultConnection: { // field return type
