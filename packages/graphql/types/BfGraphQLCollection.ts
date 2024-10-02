@@ -6,17 +6,25 @@ import {
   stringArg,
 } from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
-import { BfGraphQLSavedSearchType } from "packages/graphql/types/mod.ts";
+import { BfGraphQLGoogleDriveFolderType, BfGraphQLSavedSearchType } from "packages/graphql/types/mod.ts";
 import { BfCollection } from "packages/bfDb/models/BfCollection.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfError } from "lib/BfError.ts";
+import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 
 export const BfGraphQLCollectionType = objectType({
   name: "BfCollection",
   definition(t) {
     t.implements(BfNodeGraphQLType);
     t.string("name");
+    t.connectionField("watchedFolders", {
+      type: BfGraphQLGoogleDriveFolderType,
+      resolve: async ({id}, args, {bfCurrentViewer}) => {
+        const collection = await BfCollection.findX(bfCurrentViewer, id);
+        return collection.queryTargetsConnectionForGraphQL(BfGoogleDriveResource, args)
+      },
+    })
   },
 });
 
