@@ -53,8 +53,9 @@ export function Search({ bfCollection$key }: Props) {
         },
       },
       onCompleted: (data) => {
-        logger.info(data.searchCollection.id);
-        navigate(`/search/${data.searchCollection.id}`);
+        const { id } = data.searchCollection ?? {}
+        logger.info(id);
+        navigate(`/search/${id}`);
       },
     });
   }
