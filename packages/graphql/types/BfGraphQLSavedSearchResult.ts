@@ -12,5 +12,8 @@ export const BfGraphQLSavedSearchResultType = objectType({
     t.float("confidence");
     t.list.string("topics");
     t.boolean("verbatim");
+    t.msTime("duration");
+    t.msTime("startTime");
+    t.msTime("endTime");
   },
 });

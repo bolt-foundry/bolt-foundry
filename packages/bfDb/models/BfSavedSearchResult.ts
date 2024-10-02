@@ -7,7 +7,9 @@ export type BfSavedSearchResultProps = {
   topics: string;
   rationale: string;
   confidence: number;
-  verbatim: boolean;
+  startTime: number;
+  endTime: number;
+  duration: number;
 };
 
 export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {

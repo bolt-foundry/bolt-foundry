@@ -39,7 +39,6 @@ export function Search({ bfCollection$key }: Props) {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    logger.info("wat");
 
     commit({
       variables: {

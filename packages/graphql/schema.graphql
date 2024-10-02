@@ -70,49 +70,23 @@ type BfAccountEdge {
   node: BfAccount
 }
 
-type BfClip implements BfNode & Node {
-  """Unique identifier for the resource"""
-  id: ID!
-  title: String
-}
-
-"""A review of a clip."""
-type BfClipReview implements BfNode & Node {
-  """Unique identifier for the resource"""
-  id: ID!
-  mediaUrl: Url
-  title: String
-}
-
-type BfClipReviewConnection {
-  count: Int
-
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
-  """
-  edges: [BfClipReviewEdge]
-
-  """Flattened list of BfClipReview type"""
-  nodes: [BfClipReview]
-
-  """
-  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
-  """
-  pageInfo: PageInfo!
-}
-
-type BfClipReviewEdge {
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
-  cursor: String!
-
-  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
-  node: BfClipReview
-}
-
 type BfCollection implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   name: String
+  watchedFolders(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfGoogleDriveResourceConnection
 }
 
 type BfCollectionConnection {
@@ -307,6 +281,7 @@ type BfOrganization implements BfNode & Node {
     """Returns the last n elements from the list."""
     last: Int
   ): BfCollectionConnection
+  defaultCollection: BfCollection
   googleDriveFolders(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -335,21 +310,6 @@ type BfOrganization implements BfNode & Node {
     last: Int
   ): BfMediaConnection
   name: String
-
-  """Clips available."""
-  reviewableClips(
-    """Returns the elements in the list that come after the specified cursor"""
-    after: String
-
-    """Returns the elements in the list that come before the specified cursor"""
-    before: String
-
-    """Returns the first n elements from the list."""
-    first: Int
-
-    """Returns the last n elements from the list."""
-    last: Int
-  ): BfClipReviewConnection
   savedSearches(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -436,10 +396,13 @@ type BfSavedSearchResult implements BfNode & Node {
   body: String
   confidence: Float
   description: String
+  duration: TimecodeInMilliseconds
+  endTime: TimecodeInMilliseconds
 
   """Unique identifier for the resource"""
   id: ID!
   rationale: String
+  startTime: TimecodeInMilliseconds
   title: String
   topics: [String]
   verbatim: Boolean
@@ -556,10 +519,6 @@ type CodeBlock implements BlogPostContentBlock {
   type: String
 }
 
-type DownloadMutationPayload {
-  success: Boolean!
-}
-
 """The `File` scalar type represents a file upload."""
 scalar File
 
@@ -584,12 +543,11 @@ type Link {
 }
 
 type Mutation {
-  createCollection(googleDriveResourceId: String!, name: String!): BfCollection
+  addFolderToCollection(googleDriveResourceId: String!, name: String!): BfCollection
   createTranscript(filename: String!, words: String!): BfMediaNodeTranscript
   deleteGoogleDriveResource(resourceId: String): BfGoogleDriveResource
   deleteMedia(id: String!): BfMedia
   deleteTranscript(id: String!): BfMediaNodeTranscript
-  downloadClip(endTime: Float!, mediaId: String!, startTime: Float!, title: String!, transcriptId: String!): DownloadMutationPayload
   linkAdvancedGoogleAuth(code: String!): BfCurrentViewer
   loginWithGoogle(credential: String!): BfCurrentViewerAccessToken
   logout: BfCurrentViewer
@@ -599,7 +557,6 @@ type Mutation {
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
   updateTranscript(filename: String, id: String!, words: String): BfMediaNodeTranscript
-  upsertClip(file: File!, originalClipId: String!, title: String): BfClip
 }
 
 interface Node {
@@ -685,6 +642,9 @@ type Text {
   content: String
   link: Link
 }
+
+"""Timecode described as milliseconds"""
+scalar TimecodeInMilliseconds
 
 """a fully qualified URL"""
 scalar Url

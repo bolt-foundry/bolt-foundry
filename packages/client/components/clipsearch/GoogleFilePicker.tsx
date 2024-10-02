@@ -86,17 +86,8 @@ const query = await graphql`
   query GoogleFilePickerQuery {
     currentViewer {
     person {
-    name
-    googleAuthAccessToken
-    }
-    organization {
-      reviewableClips(first: 10) {
-        nodes {
-          id
-          title
-          mediaUrl
-        }
-      } 
+      name
+      googleAuthAccessToken
     }
   }
 }
@@ -116,10 +107,8 @@ const mutationToAuthorizeGoogle = await graphql`
 
 const mutationToPickFolder = await graphql`
   mutation GoogleFilePickerPickFolderMutation($resourceId: String!, $name: String!) {
-    createCollection(googleDriveResourceId: $resourceId, name: $name) {
+    addFolderToCollection(googleDriveResourceId: $resourceId, name: $name) {
       __typename
-      id
-      name
     }
   }
 `;
@@ -169,17 +158,6 @@ export function GoogleFilePicker() {
     );
     commitFolder({
       variables: { resourceId: folder.docs[0].id, name: folder.docs[0].name },
-      onCompleted: (data) => {
-        // deno-lint-ignore no-console
-        console.log("file successfully posted", data);
-      },
-      optimisticResponse: {
-        pickGoogleDriveFolder: {
-          __typename: "BfGoogleDriveResource",
-          id: folder.docs[0].id,
-          name: folder.docs[0].name,
-        },
-      },
     });
   }
 

@@ -10,6 +10,7 @@ import {
   makeServer,
 } from "graphql-ws";
 const logger = getLogger(import.meta);
+logger.setLevel(logger.levels.DEBUG);
 
 const { createYoga } = GraphQLYoga;
 
@@ -26,17 +27,19 @@ export const yoga = createYoga<GraphQLServerContext, GraphQLUserContext>({
   graphqlEndpoint: "/graphql",
   graphiql: {
     subscriptionsProtocol: "WS",
-    defaultQuery: `query LoggedInUserAccountsQuery {
-        currentViewer {
-          person {
-            accounts(first:10) {
-              nodes {
-                id
-              }
-            }
-          }
+    defaultQuery: `
+query LoggedInUserAccountsQuery {
+  currentViewer {
+    person {
+      accounts(first:10) {
+        nodes {
+          id
         }
-      }`,
+      }
+    }
+  }
+}
+`,
   },
   schema,
 });
@@ -45,13 +48,14 @@ export async function handler(request: Request): Promise<Response> {
   const ctx = await getContextFromRequest(request);
 
   if (request.headers.get("upgrade") === "websocket") {
+    logger.debug("Upgrading to websocket")
     const { socket, response } = Deno.upgradeWebSocket(request, {
       protocol: GRAPHQL_TRANSPORT_WS_PROTOCOL,
       idleTimeout: 12_000,
     });
 
     let closed: (code: number, reason: string) => void = () => {
-      // noop
+      // no-op
     };
 
     const wsServer = makeServer({
@@ -112,6 +116,7 @@ export async function handler(request: Request): Promise<Response> {
     };
 
     socket.onclose = (event) => {
+      logger.debug(`Closing connection ${event.code} ${event.reason}`)
       closed(event.code, event.reason);
     };
 
