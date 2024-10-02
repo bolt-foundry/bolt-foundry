@@ -56,6 +56,7 @@ export function disableCheckForWork() {
 export function close() {
   disableCheckForWork();
   logger.info("Closing");
+  globalThis.postMessage("close")
   globalThis.close();
 }
 if (import.meta.main) {
