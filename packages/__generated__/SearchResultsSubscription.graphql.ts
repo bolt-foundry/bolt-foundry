@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9de6ab83156c7e65b300344de3ff423a>>
+ * @generated SignedSource<<e706dc156a252a02cc186795fc89777a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -44,7 +44,14 @@ v2 = {
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
-};
+},
+v3 = [
+  {
+    "kind": "Literal",
+    "name": "first",
+    "value": 10
+  }
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -106,13 +113,7 @@ return {
               },
               {
                 "alias": null,
-                "args": [
-                  {
-                    "kind": "Literal",
-                    "name": "first",
-                    "value": 10
-                  }
-                ],
+                "args": (v3/*: any*/),
                 "concreteType": "BfSavedSearchResultConnection",
                 "kind": "LinkedField",
                 "name": "searchResults",
@@ -197,6 +198,75 @@ return {
                             "kind": "ScalarField",
                             "name": "endTime",
                             "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": (v3/*: any*/),
+                            "concreteType": "BfFakeClipDataConnection",
+                            "kind": "LinkedField",
+                            "name": "words",
+                            "plural": false,
+                            "selections": [
+                              {
+                                "alias": null,
+                                "args": null,
+                                "concreteType": "BfFakeClipDataEdge",
+                                "kind": "LinkedField",
+                                "name": "edges",
+                                "plural": true,
+                                "selections": [
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "concreteType": "BfFakeClipData",
+                                    "kind": "LinkedField",
+                                    "name": "node",
+                                    "plural": false,
+                                    "selections": [
+                                      {
+                                        "alias": null,
+                                        "args": null,
+                                        "kind": "ScalarField",
+                                        "name": "word",
+                                        "storageKey": null
+                                      },
+                                      {
+                                        "alias": null,
+                                        "args": null,
+                                        "kind": "ScalarField",
+                                        "name": "start",
+                                        "storageKey": null
+                                      },
+                                      {
+                                        "alias": null,
+                                        "args": null,
+                                        "kind": "ScalarField",
+                                        "name": "end",
+                                        "storageKey": null
+                                      },
+                                      {
+                                        "alias": null,
+                                        "args": null,
+                                        "kind": "ScalarField",
+                                        "name": "punctuated_word",
+                                        "storageKey": null
+                                      },
+                                      {
+                                        "alias": null,
+                                        "args": null,
+                                        "kind": "ScalarField",
+                                        "name": "speaker",
+                                        "storageKey": null
+                                      },
+                                      (v2/*: any*/)
+                                    ],
+                                    "storageKey": null
+                                  }
+                                ],
+                                "storageKey": null
+                              }
+                            ],
+                            "storageKey": "words(first:10)"
                           }
                         ],
                         "storageKey": null
@@ -217,12 +287,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "21a09b8e56da9f605e7558727974e247",
+    "cacheID": "438aa1a8203ae26dcbdaf6ef34c7203f",
     "id": null,
     "metadata": {},
     "name": "SearchResultsSubscription",
     "operationKind": "subscription",
-    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n  ...ClipEditModal_bfSavedSearchResult\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n"
+    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  words(first: 10) {\n    edges {\n      node {\n        word\n        start\n        end\n        punctuated_word\n        speaker\n        id\n      }\n    }\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n  ...ClipEditModal_bfSavedSearchResult\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n"
   }
 };
 })();
