@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f2f88500639b8ce2c65bf002dffde581>>
+ * @generated SignedSource<<e2a10e5d15011ffc896313a265f76761>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,15 +12,6 @@ import { ConcreteRequest, Query } from 'relay-runtime';
 export type GoogleFilePickerQuery$variables = Record<PropertyKey, never>;
 export type GoogleFilePickerQuery$data = {
   readonly currentViewer: {
-    readonly organization: {
-      readonly reviewableClips: {
-        readonly nodes: ReadonlyArray<{
-          readonly id: string;
-          readonly mediaUrl: any | null | undefined;
-          readonly title: string | null | undefined;
-        } | null | undefined> | null | undefined;
-      } | null | undefined;
-    } | null | undefined;
     readonly person: {
       readonly googleAuthAccessToken: string | null | undefined;
       readonly name: string | null | undefined;
@@ -46,56 +37,6 @@ v1 = {
   "kind": "ScalarField",
   "name": "googleAuthAccessToken",
   "storageKey": null
-},
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
-v3 = {
-  "alias": null,
-  "args": [
-    {
-      "kind": "Literal",
-      "name": "first",
-      "value": 10
-    }
-  ],
-  "concreteType": "BfClipReviewConnection",
-  "kind": "LinkedField",
-  "name": "reviewableClips",
-  "plural": false,
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "BfClipReview",
-      "kind": "LinkedField",
-      "name": "nodes",
-      "plural": true,
-      "selections": [
-        (v2/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "title",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "mediaUrl",
-          "storageKey": null
-        }
-      ],
-      "storageKey": null
-    }
-  ],
-  "storageKey": "reviewableClips(first:10)"
 };
 return {
   "fragment": {
@@ -122,18 +63,6 @@ return {
             "selections": [
               (v0/*: any*/),
               (v1/*: any*/)
-            ],
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "BfOrganization",
-            "kind": "LinkedField",
-            "name": "organization",
-            "plural": false,
-            "selections": [
-              (v3/*: any*/)
             ],
             "storageKey": null
           }
@@ -175,20 +104,13 @@ return {
             "selections": [
               (v0/*: any*/),
               (v1/*: any*/),
-              (v2/*: any*/)
-            ],
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "BfOrganization",
-            "kind": "LinkedField",
-            "name": "organization",
-            "plural": false,
-            "selections": [
-              (v3/*: any*/),
-              (v2/*: any*/)
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "id",
+                "storageKey": null
+              }
             ],
             "storageKey": null
           }
@@ -198,16 +120,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "6e14b7a7d26b664aec52389925ed60b0",
+    "cacheID": "26ea21dbb789ee600ecceab583c616e3",
     "id": null,
     "metadata": {},
     "name": "GoogleFilePickerQuery",
     "operationKind": "query",
-    "text": "query GoogleFilePickerQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      googleAuthAccessToken\n      id\n    }\n    organization {\n      reviewableClips(first: 10) {\n        nodes {\n          id\n          title\n          mediaUrl\n        }\n      }\n      id\n    }\n  }\n}\n"
+    "text": "query GoogleFilePickerQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      googleAuthAccessToken\n      id\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "44f7de88b1992fc01aae512371d05577";
+(node as any).hash = "2223bc879170f46de3685ec17cd752f8";
 
 export default node;

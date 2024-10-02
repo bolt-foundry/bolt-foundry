@@ -89,15 +89,6 @@ const query = await graphql`
     name
     googleAuthAccessToken
     }
-    organization {
-      reviewableClips(first: 10) {
-        nodes {
-          id
-          title
-          mediaUrl
-        }
-      } 
-    }
   }
 }
 `;
@@ -116,7 +107,7 @@ const mutationToAuthorizeGoogle = await graphql`
 
 const mutationToPickFolder = await graphql`
   mutation GoogleFilePickerPickFolderMutation($resourceId: String!, $name: String!) {
-    createCollection(googleDriveResourceId: $resourceId, name: $name) {
+    addFolderToCollection(googleDriveResourceId: $resourceId, name: $name) {
       __typename
       id
       name
