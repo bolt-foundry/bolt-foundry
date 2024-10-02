@@ -33,7 +33,17 @@ const fragment = await graphql`
   fragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult{
     id
     title
-    body
+    words(first: 10) {
+      edges {
+       node {
+        word
+        start
+        end
+        punctuated_word
+        speaker
+        }
+      }
+    }
   }
 `;
 

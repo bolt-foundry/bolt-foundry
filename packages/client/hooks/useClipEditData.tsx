@@ -66,9 +66,6 @@ export type ClipReducerAction =
   | { type: ActionType.SET_MANUAL_CROP; payload: Array<ManualCrop> }
   | { type: ActionType.SET_MANUAL_CROP_ACTIVE; payload: boolean };
 
-
-
-
 const clipReducer = (
   state: ClipReducerState,
   action: ClipReducerAction,
@@ -132,7 +129,8 @@ export function useClipEditData(
     endTimeOverride: null,
     start_index: 22,
     start_time: 13.726,
-    text: "me. Just edit me out. Okay, let's go. Can you just back attack surfaces? So at Hany and company, the tax services we office our. Wow. Okay. Restart that. So at Haney and company, the tax",
+    text:
+      "me. Just edit me out. Okay, let's go. Can you just back attack surfaces? So at Hany and company, the tax services we office our. Wow. Okay. Restart that. So at Haney and company, the tax",
     title: "Shitty tax clip",
     manualCrop: [],
     manualCropActive: false,
