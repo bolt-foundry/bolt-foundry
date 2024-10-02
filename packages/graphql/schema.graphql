@@ -404,7 +404,7 @@ type BfSavedSearchResult implements BfNode & Node {
   rationale: String
   startTime: TimecodeInMilliseconds
   title: String
-  topics: String
+  topics: [String]
   verbatim: Boolean
 }
 
