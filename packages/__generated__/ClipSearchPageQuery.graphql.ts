@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<864b741c7bef91af7f67d17f9bc1482b>>
+ * @generated SignedSource<<37cb4c0aa62094ce2f43e7abf528b277>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -341,14 +341,14 @@ return {
                                 "alias": null,
                                 "args": null,
                                 "kind": "ScalarField",
-                                "name": "title",
+                                "name": "body",
                                 "storageKey": null
                               },
                               {
                                 "alias": null,
                                 "args": null,
                                 "kind": "ScalarField",
-                                "name": "body",
+                                "name": "title",
                                 "storageKey": null
                               },
                               {
@@ -414,12 +414,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "32d9286f30d4a28138b0461f8b8755ad",
+    "cacheID": "bbab4b697ae82b8598ee1985130bd95b",
     "id": null,
     "metadata": {},
     "name": "ClipSearchPageQuery",
     "operationKind": "query",
-    "text": "query ClipSearchPageQuery(\n  $searchId: ID!\n  $includeSearch: Boolean!\n) {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      collections(first: 10) {\n        count\n        edges {\n          node {\n            __typename\n            ...Search_bfCollection\n            id\n          }\n        }\n      }\n      id\n    }\n  }\n  node(id: $searchId) @include(if: $includeSearch) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n\nfragment Search_bfCollection on BfCollection {\n  id\n}\n"
+    "text": "query ClipSearchPageQuery(\n  $searchId: ID!\n  $includeSearch: Boolean!\n) {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      collections(first: 10) {\n        count\n        edges {\n          node {\n            __typename\n            ...Search_bfCollection\n            id\n          }\n        }\n      }\n      id\n    }\n  }\n  node(id: $searchId) @include(if: $includeSearch) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n\nfragment Search_bfCollection on BfCollection {\n  id\n}\n"
   }
 };
 })();

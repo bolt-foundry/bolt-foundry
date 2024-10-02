@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4aa999e34ca2a4b075bf3eb102d21489>>
+ * @generated SignedSource<<abc116d1f270758436447a9743eb1438>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -146,14 +146,14 @@ return {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "title",
+                            "name": "body",
                             "storageKey": null
                           },
                           {
                             "alias": null,
                             "args": null,
                             "kind": "ScalarField",
-                            "name": "body",
+                            "name": "title",
                             "storageKey": null
                           },
                           {
@@ -217,12 +217,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c458ca257ed1c015e8b9d73351f966ff",
+    "cacheID": "ca7313a67c15c45e5473692eaf70e0d3",
     "id": null,
     "metadata": {},
     "name": "SearchResultsSubscription",
     "operationKind": "subscription",
-    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n"
+    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n"
   }
 };
 })();

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<9f1308ff093f73bc0ee1c0ad561de7c7>>
+ * @generated SignedSource<<c5bb8b1021476405f570a388eddab247>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,6 +17,7 @@ export type SearchResults_bfSavedSearch$data = {
     readonly count: number | null | undefined;
     readonly edges: ReadonlyArray<{
       readonly node: {
+        readonly body: string | null | undefined;
         readonly id: string;
         readonly " $fragmentSpreads": FragmentRefs<"SearchResult_bfSavedSearchResult">;
       } | null | undefined;
@@ -90,6 +91,13 @@ return {
               "selections": [
                 (v0/*: any*/),
                 {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "body",
+                  "storageKey": null
+                },
+                {
                   "args": null,
                   "kind": "FragmentSpread",
                   "name": "SearchResult_bfSavedSearchResult"
@@ -109,6 +117,6 @@ return {
 };
 })();
 
-(node as any).hash = "f144f45348de363248c539d20074a48b";
+(node as any).hash = "49687764d63a00fdd70fed6b65796875";
 
 export default node;
