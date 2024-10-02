@@ -5,12 +5,25 @@ import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
 import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { Pill } from "packages/bfDs/Pill.tsx";
+import { useFragment } from "react-relay";
+import { graphql } from "packages/client/deps.ts";
 
 type Props = {
   setIsEditing: (isEditing: boolean) => void;
 };
 
-export function ClipEditModal({ setIsEditing }: Props) {
+const fragment = await graphql`
+  fragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult{
+    id
+    title
+    body
+  }
+`;
+
+export function ClipEditModal(
+  { setIsEditing, bfSavedSearchResult$key }: Props,
+) {
+  const data = useFragment(fragment, bfSavedSearchResult$key);
   return (
     <>
       <BfDsModal onClose={() => setIsEditing(false)}>
@@ -25,38 +38,12 @@ export function ClipEditModal({ setIsEditing }: Props) {
               <div className="clipHeader">
                 <div className="clipHeaderLeft">
                   <div className="clipTitle" dir="auto">
-                    {"titleText"}
+                    {data.title}
                   </div>
-                  <div className="clipDescription" dir="auto">
-                    {"descriptionText"}
-                  </div>
-                </div>
-                <div className="clipActions row-column">
-                  <FeatureFlag name="placeholder">
-                    <BfDsButton
-                      kind="secondary"
-                      iconLeft="pencil"
-                      testId="button-edit-clip"
-                    />
-                  </FeatureFlag>
-                  {
-                    /* <DownloadClipButton
-                    startTime={startTime}
-                    endTime={endTime}
-                    mediaId={mediaId}
-                    title={titleText}
-                    transcriptId={transcriptId}
-                    disabled={!data.googleAuthAccessToken}
-                  /> */
-                  }
-                  {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
-                  {
-                    /* <ChangeRequestButton /> */
-                  }
                 </div>
               </div>
 
-              <div className="clipMain">{"text"}</div>
+              <div className="clipMain">{data.body}</div>
 
               {
                 /* <div className="clipMeta flexColumn" style={{ gap: "10px" }}>
