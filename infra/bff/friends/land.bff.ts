@@ -18,17 +18,17 @@ function parseLogInfo(loginfo: string) {
 async function land() {
   const ghToken = Deno.env.get("GITHUB_TOKEN") ?? "";
   logger.info(
-    "This command will overwrite any changes you have made to the current branch. ctrl + c now. You have 5 seconds",
+    "This command will overwrite any changes you have made to the current branch. ctrl + c now. You have 1 second",
   );
-  await runShellCommand(["sleep", "5"]);
+  await runShellCommand(["sleep", "1"]);
   await runShellCommand(["sl", "pull"], { GH_TOKEN: ghToken });
   await runShellCommand(["sl", "goto", "main", "--clean"], {
     GH_TOKEN: ghToken,
   });
   logger.info(
-    "We will automatically make a git commit in 5 seconds. Please cancel if you don't want this.",
+    "We will automatically make a git commit in 1 second. Please cancel if you don't want this.",
   );
-  await runShellCommand(["sleep", "5"]);
+  await runShellCommand(["sleep", "1"]);
   const logInfoString = await runShellCommandWithOutput([
     "sl",
     "log",
