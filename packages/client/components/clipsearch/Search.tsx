@@ -52,7 +52,7 @@ export function Search({ bfCollection$key }: Props) {
         },
       },
       onCompleted: (data) => {
-        const { id } = data.searchCollection ?? {}
+        const { id } = data.searchCollection ?? {};
         logger.info(id);
         navigate(`/search/${id}`);
       },

@@ -48,7 +48,7 @@ export async function handler(request: Request): Promise<Response> {
   const ctx = await getContextFromRequest(request);
 
   if (request.headers.get("upgrade") === "websocket") {
-    logger.debug("Upgrading to websocket")
+    logger.debug("Upgrading to websocket");
     const { socket, response } = Deno.upgradeWebSocket(request, {
       protocol: GRAPHQL_TRANSPORT_WS_PROTOCOL,
       idleTimeout: 12_000,
@@ -116,7 +116,7 @@ export async function handler(request: Request): Promise<Response> {
     };
 
     socket.onclose = (event) => {
-      logger.debug(`Closing connection ${event.code} ${event.reason}`)
+      logger.debug(`Closing connection ${event.code} ${event.reason}`);
       closed(event.code, event.reason);
     };
 
