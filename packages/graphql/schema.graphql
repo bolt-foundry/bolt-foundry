@@ -74,6 +74,19 @@ type BfCollection implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   name: String
+  watchedFolders(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfGoogleDriveResourceConnection
 }
 
 type BfCollectionConnection {
@@ -268,6 +281,7 @@ type BfOrganization implements BfNode & Node {
     """Returns the last n elements from the list."""
     last: Int
   ): BfCollectionConnection
+  defaultCollection: BfCollection
   googleDriveFolders(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -382,13 +396,13 @@ type BfSavedSearchResult implements BfNode & Node {
   body: String
   confidence: Float
   description: String
-  duration: Int
+  duration: TimecodeInMilliseconds
+  endTime: TimecodeInMilliseconds
 
   """Unique identifier for the resource"""
   id: ID!
-  inTime: Int
-  outTime: Int
   rationale: String
+  startTime: TimecodeInMilliseconds
   title: String
   topics: [String]
   verbatim: Boolean
@@ -628,6 +642,9 @@ type Text {
   content: String
   link: Link
 }
+
+"""Timecode described as milliseconds"""
+scalar TimecodeInMilliseconds
 
 """a fully qualified URL"""
 scalar Url

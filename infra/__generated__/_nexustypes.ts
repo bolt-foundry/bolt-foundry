@@ -13,6 +13,10 @@ declare global {
      */
     file<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "File";
     /**
+     * Timecode described as milliseconds
+     */
+    msTime<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "TimecodeInMilliseconds";
+    /**
      * a fully qualified URL
      */
     url<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "Url";
@@ -24,6 +28,10 @@ declare global {
      * The `File` scalar type represents a file upload.
      */
     file<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "File";
+    /**
+     * Timecode described as milliseconds
+     */
+    msTime<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "TimecodeInMilliseconds";
     /**
      * a fully qualified URL
      */
@@ -68,6 +76,7 @@ export interface NexusGenScalars {
   Boolean: boolean
   ID: string
   File: File
+  TimecodeInMilliseconds: int
   Url: string
 }
 
@@ -206,10 +215,10 @@ export interface NexusGenObjects {
     body?: string | null; // String
     confidence?: number | null; // Float
     description?: string | null; // String
-    duration?: number | null; // Int
-    inTime?: number | null; // Int
-    outTime?: number | null; // Int
+    duration?: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
+    endTime?: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     rationale?: string | null; // String
+    startTime?: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     title?: string | null; // String
     topics?: Array<string | null> | null; // [String]
     verbatim?: boolean | null; // Boolean
@@ -373,6 +382,7 @@ export interface NexusGenFieldTypes {
   BfCollection: { // field return type
     id: string; // ID!
     name: string | null; // String
+    watchedFolders: NexusGenRootTypes['BfGoogleDriveResourceConnection'] | null; // BfGoogleDriveResourceConnection
   }
   BfCollectionConnection: { // field return type
     count: number | null; // Int
@@ -450,6 +460,7 @@ export interface NexusGenFieldTypes {
   }
   BfOrganization: { // field return type
     collections: NexusGenRootTypes['BfCollectionConnection'] | null; // BfCollectionConnection
+    defaultCollection: NexusGenRootTypes['BfCollection'] | null; // BfCollection
     googleDriveFolders: NexusGenRootTypes['BfGoogleDriveResourceConnection'] | null; // BfGoogleDriveResourceConnection
     id: string; // ID!
     media: NexusGenRootTypes['BfMediaConnection'] | null; // BfMediaConnection
@@ -492,11 +503,11 @@ export interface NexusGenFieldTypes {
     body: string | null; // String
     confidence: number | null; // Float
     description: string | null; // String
-    duration: number | null; // Int
+    duration: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
+    endTime: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     id: string; // ID!
-    inTime: number | null; // Int
-    outTime: number | null; // Int
     rationale: string | null; // String
+    startTime: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     title: string | null; // String
     topics: Array<string | null> | null; // [String]
     verbatim: boolean | null; // Boolean
@@ -695,6 +706,7 @@ export interface NexusGenFieldTypeNames {
   BfCollection: { // field return type name
     id: 'ID'
     name: 'String'
+    watchedFolders: 'BfGoogleDriveResourceConnection'
   }
   BfCollectionConnection: { // field return type name
     count: 'Int'
@@ -772,6 +784,7 @@ export interface NexusGenFieldTypeNames {
   }
   BfOrganization: { // field return type name
     collections: 'BfCollectionConnection'
+    defaultCollection: 'BfCollection'
     googleDriveFolders: 'BfGoogleDriveResourceConnection'
     id: 'ID'
     media: 'BfMediaConnection'
@@ -814,11 +827,11 @@ export interface NexusGenFieldTypeNames {
     body: 'String'
     confidence: 'Float'
     description: 'String'
-    duration: 'Int'
+    duration: 'TimecodeInMilliseconds'
+    endTime: 'TimecodeInMilliseconds'
     id: 'ID'
-    inTime: 'Int'
-    outTime: 'Int'
     rationale: 'String'
+    startTime: 'TimecodeInMilliseconds'
     title: 'String'
     topics: 'String'
     verbatim: 'Boolean'
@@ -979,6 +992,14 @@ export interface NexusGenFieldTypeNames {
 }
 
 export interface NexusGenArgTypes {
+  BfCollection: {
+    watchedFolders: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
+  }
   BfMedia: {
     transcripts: { // args
       after?: string | null; // String

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<fa678c9b870d2b500731523a87c55fbe>>
+ * @generated SignedSource<<9f1308ff093f73bc0ee1c0ad561de7c7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,12 +17,8 @@ export type SearchResults_bfSavedSearch$data = {
     readonly count: number | null | undefined;
     readonly edges: ReadonlyArray<{
       readonly node: {
-        readonly body: string | null | undefined;
-        readonly confidence: number | null | undefined;
-        readonly description: string | null | undefined;
         readonly id: string;
-        readonly rationale: string | null | undefined;
-        readonly title: string | null | undefined;
+        readonly " $fragmentSpreads": FragmentRefs<"SearchResult_bfSavedSearchResult">;
       } | null | undefined;
     } | null | undefined> | null | undefined;
   } | null | undefined;
@@ -94,39 +90,9 @@ return {
               "selections": [
                 (v0/*: any*/),
                 {
-                  "alias": null,
                   "args": null,
-                  "kind": "ScalarField",
-                  "name": "body",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "title",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "description",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "rationale",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "confidence",
-                  "storageKey": null
+                  "kind": "FragmentSpread",
+                  "name": "SearchResult_bfSavedSearchResult"
                 }
               ],
               "storageKey": null
@@ -143,6 +109,6 @@ return {
 };
 })();
 
-(node as any).hash = "d0c58e1f138d6ee39247a211c23f1975";
+(node as any).hash = "f144f45348de363248c539d20074a48b";
 
 export default node;

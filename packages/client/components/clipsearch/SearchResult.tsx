@@ -6,41 +6,40 @@ import { Pill } from "packages/bfDs/Pill.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
+import type { SearchResult_bfSavedSearchResult$key } from "packages/__generated__/SearchResult_bfSavedSearchResult.graphql.ts";
+
+const fragment = await graphql`
+  fragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {
+    id
+    title
+    body
+    description
+    rationale
+    topics
+    confidence
+    startTime
+    endTime
+  }
+`;
 
 type Props = {
-  title: string;
-  body: string;
-  description: string;
-  rationale: string;
-  filename?: string;
-  topics?: string;
-  confidence: number;
-  mediaId?: string;
-  transcriptId?: string;
-  startTime?: number;
-  endTime?: number;
-  startIndex?: number;
-  endIndex?: number;
+  bfSavedSearchResult$key: SearchResult_bfSavedSearchResult$key;
 };
 export function SearchResult(
-  {
+  { bfSavedSearchResult$key }: Props,
+) {
+  const {
     title,
     body,
     description,
     rationale,
-    filename,
     topics,
     confidence,
-    mediaId,
-    transcriptId,
     startTime,
     endTime,
-    startIndex,
-    endIndex,
-  }: Props,
-) {
-  const topicPills = topics?.split(",").map((topic) => (
-    <Pill text={topic?.trim()} />
+  } = useFragment(fragment, bfSavedSearchResult$key);
+  const topicPills = topics?.filter(Boolean).map((topic) => (
+    <Pill text={topic!.trim()} />
   ));
   const length = `${(endTime - startTime).toFixed(2)}s`;
   return (
@@ -67,13 +66,13 @@ export function SearchResult(
                   testId="button-edit-clip"
                 />
               </FeatureFlag>
-              <DownloadClipButton
+              {/* <DownloadClipButton
                 startTime={startTime}
                 endTime={endTime}
                 mediaId={mediaId}
                 title={title}
                 transcriptId={transcriptId}
-              />
+              /> */}
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
               {
                 /* <ChangeRequestButton /> */
@@ -85,11 +84,11 @@ export function SearchResult(
 
           <div className="clipMeta flexColumn" style={{ gap: "10px" }}>
             <div className="flexRow" style={{ gap: "5px" }}>
-              <BfDsTooltip canCopy text={mediaId} position="right">
+              {/* <BfDsTooltip canCopy text={mediaId} position="right">
                 <Pill label="Source" text={filename} />
-              </BfDsTooltip>
+              </BfDsTooltip> */}
               <BfDsTooltip text={rationale} position="right">
-                <Pill label="Rating" text={confidence} />
+                <Pill label="Rating" text={confidence ?? "?"} />
               </BfDsTooltip>
               <BfDsTooltip
                 text={`Start: ${startTime} End: ${endTime}`}
