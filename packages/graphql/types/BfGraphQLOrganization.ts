@@ -47,9 +47,11 @@ export const BfGraphQLOrganizationType = objectType({
       type: BfGraphQLCollectionType,
       resolve: async ({ id }, _, { bfCurrentViewer }) => {
         const org = await BfOrganization.findX(bfCurrentViewer, toBfGid(id));
-        const [defaultCollection] = await org.queryTargetInstances(BfCollection);
+        const [defaultCollection] = await org.queryTargetInstances(
+          BfCollection,
+        );
         return defaultCollection.toGraphql();
-      }
+      },
     });
   },
 });
