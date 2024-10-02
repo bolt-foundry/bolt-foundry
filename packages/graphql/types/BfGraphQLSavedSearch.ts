@@ -57,7 +57,7 @@ export const BfGraphQLSavedSearchType = objectType({
                   id: "1",
                   title: "Test",
                   body: "Test body that's a bit longer",
-                  topics: ["1", "2", "3"],  
+                  topics: ["1", "2", "3"],
                   description: "Test description",
                   rationale: "Test rationale",
                   confidence: 0.5,
