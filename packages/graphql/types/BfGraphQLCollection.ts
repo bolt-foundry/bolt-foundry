@@ -10,6 +10,7 @@ import { BfGraphQLSavedSearchType } from "packages/graphql/types/mod.ts";
 import { BfCollection } from "packages/bfDb/models/BfCollection.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { BfError } from "lib/BfError.ts";
 
 export const BfGraphQLCollectionType = objectType({
   name: "BfCollection",
@@ -19,7 +20,7 @@ export const BfGraphQLCollectionType = objectType({
   },
 });
 
-export const createCollectionMutation = mutationField("createCollection", {
+export const createCollectionMutation = mutationField("addFolderToCollection", {
   type: BfGraphQLCollectionType,
   args: {
     googleDriveResourceId: nonNull(stringArg()),
@@ -27,13 +28,22 @@ export const createCollectionMutation = mutationField("createCollection", {
   },
   resolve: async (_, { googleDriveResourceId, name }, { bfCurrentViewer }) => {
     const org = await BfOrganization.findForCurrentViewer(bfCurrentViewer);
-    const collection = await org.createTargetNode(BfCollection, { name });
+    const collections = await org.queryTargetInstances(BfCollection);
+    if (collections.length > 1) {
+      throw new BfError("Don't know how to handle multiple collections");
+    }
+    let collection = collections[0];
+    if (!collection) {
+      collection = await org.createTargetNode(BfCollection, { name });
+    }
     const _watchedFolder = await collection.addWatchedFolder(
       googleDriveResourceId,
     );
     return collection.toGraphql();
   },
 });
+
+
 
 export const searchCollectionMutation = mutationField("searchCollection", {
   type: "BfSavedSearch",

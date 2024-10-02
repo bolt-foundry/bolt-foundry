@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<51a52aea780b049c726ad99ea609c9e3>>
+ * @generated SignedSource<<f73e9e9ed5808dcedc5f32f12512c32c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,7 +14,7 @@ export type GoogleFilePickerPickFolderMutation$variables = {
   resourceId: string;
 };
 export type GoogleFilePickerPickFolderMutation$data = {
-  readonly createCollection: {
+  readonly addFolderToCollection: {
     readonly __typename: "BfCollection";
     readonly id: string;
     readonly name: string | null | undefined;
@@ -53,7 +53,7 @@ v2 = [
     ],
     "concreteType": "BfCollection",
     "kind": "LinkedField",
-    "name": "createCollection",
+    "name": "addFolderToCollection",
     "plural": false,
     "selections": [
       {
@@ -105,16 +105,16 @@ return {
     "selections": (v2/*: any*/)
   },
   "params": {
-    "cacheID": "5a7c3d3757550c50d9301ea3fcc643a6",
+    "cacheID": "d4c91a77b6a4beb73f157a64d2e5a976",
     "id": null,
     "metadata": {},
     "name": "GoogleFilePickerPickFolderMutation",
     "operationKind": "mutation",
-    "text": "mutation GoogleFilePickerPickFolderMutation(\n  $resourceId: String!\n  $name: String!\n) {\n  createCollection(googleDriveResourceId: $resourceId, name: $name) {\n    __typename\n    id\n    name\n  }\n}\n"
+    "text": "mutation GoogleFilePickerPickFolderMutation(\n  $resourceId: String!\n  $name: String!\n) {\n  addFolderToCollection(googleDriveResourceId: $resourceId, name: $name) {\n    __typename\n    id\n    name\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e59221c1ebfabadbf5b6c865ff61b601";
+(node as any).hash = "37c7a6e7d49e4e92be9739eac59500dc";
 
 export default node;

@@ -7,25 +7,7 @@ import { sanitizeFilename } from "packages/lib/textUtils.ts";
 
 const logger = getLogger(import.meta);
 
-const mutation = await graphql`
-  mutation DownloadClipButtonDownloadMutation (
-    $startTime: Float!,
-    $endTime: Float!,
-    $mediaId: String!,
-    $title: String!,
-    $transcriptId: String!
-  ) {
-    downloadClip (
-      startTime: $startTime, 
-      endTime: $endTime, 
-      mediaId: $mediaId,
-      title: $title,
-      transcriptId: $transcriptId
-    ) {
-      success
-    }
-  }
-`;
+
 
 type Props = {
   startTime: number;
@@ -40,37 +22,13 @@ type Props = {
 export function DownloadClipButton(
   { startTime = 0, endTime = 0, mediaId, title, transcriptId, disabled }: Props,
 ) {
-  const [commit, isInFlight] = useMutation(mutation);
 
   const handleDownload = () => {
-    commit({
-      variables: {
-        startTime,
-        endTime,
-        mediaId,
-        title,
-        transcriptId,
-      },
-      onCompleted: (data) => {
-        const formattedTitle = `${sanitizeFilename(title)}.mp4`;
-        const href = `/build/downloads/${formattedTitle}`;
-        if (data.downloadClip.success) {
-          const link = document.createElement("a");
-          link.href = href;
-          link.download = formattedTitle;
-          link.click();
-        }
-      },
-      onError: (error) => {
-        logger.error(error);
-        throw new Error(error);
-      },
-    });
+    logger.error("Clip download doesn't work yet.")
   };
   return (
     <BfDsButton
       iconLeft="download"
-      showSpinner={isInFlight}
       onClick={handleDownload}
       disabled={disabled}
     />

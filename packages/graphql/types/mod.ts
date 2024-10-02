@@ -7,8 +7,6 @@
  */
 
 export * from "packages/graphql/types/BfGraphQLAccount.ts";
-export * from "packages/graphql/types/BfGraphQLClip.ts";
-export * from "packages/graphql/types/BfGraphQLClipReview.ts";
 export * from "packages/graphql/types/BfGraphQLCollection.ts";
 export * from "packages/graphql/types/BfGraphQLContactForm.ts";
 export * from "packages/graphql/types/BfGraphQLCurrentViewer.ts";

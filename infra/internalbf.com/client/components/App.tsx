@@ -1,6 +1,6 @@
 import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
 
-import { getLogger, type React } from "deps.ts";
+import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
 
 import {
@@ -9,8 +9,6 @@ import {
 } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 
 import { LoginPage } from "infra/internalbf.com/client/pages/LoginPage.tsx";
-import { RandallPlaygroundPage } from "infra/internalbf.com/client/pages/RandallPlaygroundPage.tsx";
-import { PlaygroundPage } from "infra/internalbf.com/client/pages/PlaygroundPage.tsx";
 import { IBfDashboardPage } from "infra/internalbf.com/client/pages/IBfDashboardPage.tsx";
 import { IBfOrganizationsPage } from "infra/internalbf.com/client/pages/IBfOrganizationsPage.tsx";
 import { InternalBfDotComPage } from "packages/client/pages/InternalBfDotComPage.tsx";
@@ -22,8 +20,6 @@ export const routes = new Map([
   ["/organizations", { Component: IBfOrganizationsPage }],
 
   // playgrounds
-  ["/colby", { Component: PlaygroundPage }],
-  ["/randall", { Component: RandallPlaygroundPage }],
   ["/justin", { Component: InternalBfDotComPage }],
 ]);
 
