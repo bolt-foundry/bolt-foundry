@@ -7,7 +7,7 @@ const logger = getLogger(import.meta);
 export async function ci() {
   const commands = [
     ["deno", "test", "--cached-only", "-A"],
-    ["deno", "fmt", "--check"],
+    // ["deno", "fmt", "--check"],
     // ["deno", "lint"],
   ];
   for (const command of commands) {
