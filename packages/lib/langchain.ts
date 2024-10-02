@@ -38,9 +38,11 @@ export const callAPI = async (
         "A side-by-side exact verbatim copy from the transcript of the excerpt uncorrected directly from the transcript given. The excerpt must be an exact copy of the verbatim text from the transcript. Any change to the text, including paraphrasing, rewording, or reordering, will be considered incorrect.",
       ),
       description: z.string().describe("A summary of the excerpt."),
-      topics: z.array(z.string().describe(
-        "A comma-separated list of topics related to the excerpt.",
-      )),
+      topics: z.array(
+        z.string().describe(
+          "A comma-separated list of topics related to the excerpt.",
+        ),
+      ),
       rationale: z.string().describe(
         "A rationale for the confidence rating. Avoid metaphors, analogies, or abstract interpretations. Focus strictly on direct mentions and explicit contexts related to the user-provided word or concept.",
       ),

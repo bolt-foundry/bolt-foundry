@@ -16,7 +16,7 @@ function killWorker(worker: Worker) {
     logger.info("All workers have been killed");
     globalThis.close();
   }
-  logger.info(`${workers.length} remaining workers`)
+  logger.info(`${workers.length} remaining workers`);
 }
 
 for (let i = 0; i < WORKER_CONCURRENCY; i++) {
@@ -28,8 +28,8 @@ for (let i = 0; i < WORKER_CONCURRENCY; i++) {
     worker.onmessage = (e) => {
       if (e.data == "close") {
         killWorker(worker);
-      } 
-    }
+      }
+    };
     logger.info(`Created ${workers.length} job runners`);
   }, i * 250 + Math.random() * 1000);
 }

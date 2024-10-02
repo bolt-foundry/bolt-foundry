@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5ab17826ad2736ce3c18d7166c406d59>>
+ * @generated SignedSource<<e2d64c542b488539d46e0eebfc9a9221>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,9 +11,19 @@
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type ClipEditModal_bfSavedSearchResult$data = {
-  readonly body: string | null | undefined;
   readonly id: string;
   readonly title: string | null | undefined;
+  readonly words: {
+    readonly edges: ReadonlyArray<{
+      readonly node: {
+        readonly end: any | null | undefined;
+        readonly punctuated_word: string | null | undefined;
+        readonly speaker: string | null | undefined;
+        readonly start: any | null | undefined;
+        readonly word: string | null | undefined;
+      } | null | undefined;
+    } | null | undefined> | null | undefined;
+  } | null | undefined;
   readonly " $fragmentType": "ClipEditModal_bfSavedSearchResult";
 };
 export type ClipEditModal_bfSavedSearchResult$key = {
@@ -43,16 +53,83 @@ const node: ReaderFragment = {
     },
     {
       "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "body",
-      "storageKey": null
+      "args": [
+        {
+          "kind": "Literal",
+          "name": "first",
+          "value": 10
+        }
+      ],
+      "concreteType": "BfFakeClipDataConnection",
+      "kind": "LinkedField",
+      "name": "words",
+      "plural": false,
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "concreteType": "BfFakeClipDataEdge",
+          "kind": "LinkedField",
+          "name": "edges",
+          "plural": true,
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "concreteType": "BfFakeClipData",
+              "kind": "LinkedField",
+              "name": "node",
+              "plural": false,
+              "selections": [
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "word",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "start",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "end",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "punctuated_word",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "speaker",
+                  "storageKey": null
+                }
+              ],
+              "storageKey": null
+            }
+          ],
+          "storageKey": null
+        }
+      ],
+      "storageKey": "words(first:10)"
     }
   ],
   "type": "BfSavedSearchResult",
   "abstractKey": null
 };
 
-(node as any).hash = "893087019463df2390ec358837025efd";
+(node as any).hash = "e27914522a6bb62195fc1afb4bc6999f";
 
 export default node;

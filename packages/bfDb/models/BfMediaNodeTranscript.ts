@@ -206,7 +206,12 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
   private getTimecodesForText(
     text: string,
   ):
-    | { duration: number; startTime: number; endTime: number; words: AssemblyAIWord[] }
+    | {
+      duration: number;
+      startTime: number;
+      endTime: number;
+      words: AssemblyAIWord[];
+    }
     | null {
     const words = text.toLowerCase().split(" ");
     const firstWord = words[0];
