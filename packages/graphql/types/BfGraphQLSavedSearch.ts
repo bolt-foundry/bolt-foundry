@@ -48,7 +48,25 @@ export const BfGraphQLSavedSearchType = objectType({
           BfSavedSearchResult,
           args,
         );
-        // logger.debug(results);
+        logger.debug(results);
+        if (results.edges.length === 0) {
+          return {
+            edges: [
+              {
+                node: {
+                  id: "1",
+                  title: "Test",
+                  body: "Test body that's a bit longer",
+                  topics: "1, 2, 3",
+                  description: "Test description",
+                  rationale: "Test rationale",
+                  confidence: 0.5,
+                  verbatim: true,
+                },
+              },
+            ],
+          };
+        }
         return results;
       },
     });
