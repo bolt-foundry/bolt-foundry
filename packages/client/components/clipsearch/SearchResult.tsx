@@ -51,9 +51,9 @@ export function SearchResult({ bfSavedSearchResult$key }: Props) {
               <FeatureFlag name="placeholder">
                 <ClipEditButton bfSavedSearchResult$key={data} />
               </FeatureFlag>
-                <DownloadClipButton
-                  bfSavedSearchResult$key={data}
-                />
+              <DownloadClipButton
+                bfSavedSearchResult$key={data}
+              />
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
               {
                 /* <ChangeRequestButton /> */
