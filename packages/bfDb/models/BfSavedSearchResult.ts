@@ -30,4 +30,27 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
       percentageRendered,
     };
   }
+
+  async getWordsForGraphql(startTime, endTime) {
+    const outputFromAssembly = await import(
+      "infra/aiPlayground/test_database/words/1da49b0955384e7aa51e110dbd25b736_words.json",
+      {
+        with: { type: "json" },
+      }
+    );
+    const coersedOutput = outputFromAssembly?.default?.map((word) => {
+      const wordStartTime = Math.floor(word.start * 1000);
+      const wordEndTime = Math.floor(word.end * 1000);
+      if (wordStartTime >= startTime && wordEndTime <= endTime) {
+        return {
+          __typename: "Word",
+          text: word.punctuated_word,
+          startTime: wordStartTime,
+          endTime: wordEndTime,
+          speaker: word.speaker,
+        };
+      }
+    }).filter(Boolean);
+    return coersedOutput;
+  }
 }

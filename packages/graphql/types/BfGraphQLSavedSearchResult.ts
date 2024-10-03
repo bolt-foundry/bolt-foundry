@@ -1,12 +1,12 @@
-import { intArg, objectType } from "nexus";
+import { arg, intArg, objectType } from "nexus";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
-import { BfGraphQLFakeClipDataType } from "packages/graphql/types/BfGraphQLFakeClipData.ts";
+import { GraphQLWordType } from "packages/graphql/types/GraphQLWord.ts";
 import {
   GraphQLVideoDownloadableType,
   GraphQLVideoPreviewableType,
 } from "packages/graphql/types/GraphQLMedia.ts";
 import { BfSavedSearchResult } from "packages/bfDb/models/BfSavedSearchResult.ts";
-import { fakeWords } from "packages/client/components/clipsearch/fakeData/fakeWords.tsx";
+import { TimecodeInMillisecondsScalarType } from "packages/graphql/types/Timecode.ts";
 export const BfGraphQLSavedSearchResultType = objectType({
   name: "BfSavedSearchResult",
   definition: (t) => {
@@ -35,12 +35,15 @@ export const BfGraphQLSavedSearchResultType = objectType({
         return result.getDownloadableForGraphql();
       },
     });
-    t.connectionField("words", {
-      type: BfGraphQLFakeClipDataType,
-      resolve: (_a, _b, _c) => {
-        return {
-          edges: fakeWords,
-        };
+    t.list.field("words", {
+      type: GraphQLWordType,
+      args: {
+        startTime: arg({ type: TimecodeInMillisecondsScalarType }),
+        endTime: arg({ type: TimecodeInMillisecondsScalarType }),
+      },
+      async resolve({ id }, { startTime, endTime }, { bfCurrentViewer }) {
+        const result = await BfSavedSearchResult.findX(bfCurrentViewer, id);
+        return result.getWordsForGraphql(startTime, endTime);
       },
     });
   },

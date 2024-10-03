@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5a38b77bc5ffb56e7a08aa0d0116afb7>>
+ * @generated SignedSource<<11e0221bea20722fb0a5cf8663e860a6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,18 +13,12 @@ import { FragmentRefs } from "relay-runtime";
 export type ClipEditModal_bfSavedSearchResult$data = {
   readonly id: string;
   readonly title: string | null | undefined;
-  readonly words: {
-    readonly edges: ReadonlyArray<{
-      readonly node: {
-        readonly end: any | null | undefined;
-        readonly id: string;
-        readonly punctuated_word: string | null | undefined;
-        readonly speaker: string | null | undefined;
-        readonly start: any | null | undefined;
-        readonly word: string | null | undefined;
-      } | null | undefined;
-    } | null | undefined> | null | undefined;
-  } | null | undefined;
+  readonly words: ReadonlyArray<{
+    readonly endTime: any | null | undefined;
+    readonly speaker: string | null | undefined;
+    readonly startTime: any | null | undefined;
+    readonly text: string | null | undefined;
+  } | null | undefined> | null | undefined;
   readonly " $fragmentType": "ClipEditModal_bfSavedSearchResult";
 };
 export type ClipEditModal_bfSavedSearchResult$key = {
@@ -32,21 +26,19 @@ export type ClipEditModal_bfSavedSearchResult$key = {
   readonly " $fragmentSpreads": FragmentRefs<"ClipEditModal_bfSavedSearchResult">;
 };
 
-const node: ReaderFragment = (function(){
-var v0 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
-return {
+const node: ReaderFragment = {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "ClipEditModal_bfSavedSearchResult",
   "selections": [
-    (v0/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
+    },
     {
       "alias": null,
       "args": null,
@@ -59,82 +51,56 @@ return {
       "args": [
         {
           "kind": "Literal",
-          "name": "first",
-          "value": 10
+          "name": "endTime",
+          "value": 74434
+        },
+        {
+          "kind": "Literal",
+          "name": "startTime",
+          "value": 33530
         }
       ],
-      "concreteType": "BfFakeClipDataConnection",
+      "concreteType": "Word",
       "kind": "LinkedField",
       "name": "words",
-      "plural": false,
+      "plural": true,
       "selections": [
         {
           "alias": null,
           "args": null,
-          "concreteType": "BfFakeClipDataEdge",
-          "kind": "LinkedField",
-          "name": "edges",
-          "plural": true,
-          "selections": [
-            {
-              "alias": null,
-              "args": null,
-              "concreteType": "BfFakeClipData",
-              "kind": "LinkedField",
-              "name": "node",
-              "plural": false,
-              "selections": [
-                (v0/*: any*/),
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "word",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "start",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "end",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "punctuated_word",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "speaker",
-                  "storageKey": null
-                }
-              ],
-              "storageKey": null
-            }
-          ],
+          "kind": "ScalarField",
+          "name": "text",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "startTime",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "endTime",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "speaker",
           "storageKey": null
         }
       ],
-      "storageKey": "words(first:10)"
+      "storageKey": "words(endTime:74434,startTime:33530)"
     }
   ],
   "type": "BfSavedSearchResult",
   "abstractKey": null
 };
-})();
 
-(node as any).hash = "25d8c45cff3e8f04448f267ab7d2a6cc";
+(node as any).hash = "b5712d56e14279035ad19a5acc78c938";
 
 export default node;
