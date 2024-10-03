@@ -19,7 +19,6 @@ type BfSavedSearchProps = {
   status: SearchStatus;
 };
 
-
 export class BfSavedSearch extends BfNode<BfSavedSearchProps> {
   protected beforeCreate(): Promise<void> | void {
     this.props.status = SearchStatus.PENDING;

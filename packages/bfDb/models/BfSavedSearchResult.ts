@@ -18,7 +18,7 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
       __typename: "VideoPreviewable",
       url: "https://example.com/video.mp4",
       duration: 1337,
-    }
+    };
   }
 
   getDownloadableForGraphql(ready = false, percentageRendered = .25) {
@@ -28,6 +28,6 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
       duration: 1337,
       ready,
       percentageRendered,
-    }
+    };
   }
 }

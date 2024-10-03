@@ -25,7 +25,7 @@ export async function graphql(
         return generatedGraphQLFile as typeof generatedGraphQLFile;
       } catch {
         logger.warn(`Can't find ${importName}.graphql.ts`);
-        return ReactRelay.graphql(['']);
+        return ReactRelay.graphql([""]);
       }
     }
   }

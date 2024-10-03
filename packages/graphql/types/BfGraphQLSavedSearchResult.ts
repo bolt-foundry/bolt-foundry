@@ -1,7 +1,10 @@
-import { objectType, intArg } from "nexus";
+import { intArg, objectType } from "nexus";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { BfGraphQLFakeClipDataType } from "packages/graphql/types/BfGraphQLFakeClipData.ts";
-import { GraphQLVideoDownloadableType, GraphQLVideoPreviewableType } from "packages/graphql/types/GraphQLMedia.ts";
+import {
+  GraphQLVideoDownloadableType,
+  GraphQLVideoPreviewableType,
+} from "packages/graphql/types/GraphQLMedia.ts";
 import { BfSavedSearchResult } from "packages/bfDb/models/BfSavedSearchResult.ts";
 
 export const BfGraphQLSavedSearchResultType = objectType({
@@ -20,17 +23,17 @@ export const BfGraphQLSavedSearchResultType = objectType({
     t.msTime("endTime");
     t.field("previewable", {
       type: GraphQLVideoPreviewableType,
-      async resolve({id}, _, { bfCurrentViewer }) {
+      async resolve({ id }, _, { bfCurrentViewer }) {
         const result = await BfSavedSearchResult.findX(bfCurrentViewer, id);
         return result.getPreviewableForGraphql();
-      }
+      },
     });
     t.field("downloadable", {
       type: GraphQLVideoDownloadableType,
-      async resolve({id}, _, { bfCurrentViewer }) {
+      async resolve({ id }, _, { bfCurrentViewer }) {
         const result = await BfSavedSearchResult.findX(bfCurrentViewer, id);
         return result.getDownloadableForGraphql();
-      }
+      },
     });
     t.connectionField("words", {
       type: BfGraphQLFakeClipDataType,
