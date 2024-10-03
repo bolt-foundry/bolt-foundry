@@ -13,4 +13,21 @@ export type BfSavedSearchResultProps = {
 };
 
 export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
+  getPreviewableForGraphql() {
+    return {
+      __typename: "VideoPreviewable",
+      url: "https://example.com/video.mp4",
+      duration: 1337,
+    }
+  }
+
+  getDownloadableForGraphql(ready = false, percentageRendered = .25) {
+    return {
+      __typename: "VideoDownloadable",
+      url: "https://example.com/video.mp4",
+      duration: 1337,
+      ready,
+      percentageRendered,
+    }
+  }
 }

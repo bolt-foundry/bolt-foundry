@@ -20,6 +20,7 @@ export * from "packages/graphql/types/BfGraphQLPerson.ts";
 export * from "packages/graphql/types/BfGraphQLSavedSearch.ts";
 export * from "packages/graphql/types/BfGraphQLSavedSearchResult.ts";
 export * from "packages/graphql/types/GraphQLBlog.ts";
+export * from "packages/graphql/types/GraphQLMedia.ts";
 export * from "packages/graphql/types/File.ts";
 export * from "packages/graphql/types/Url.ts";
 export * from "packages/graphql/types/Timecode.ts";
