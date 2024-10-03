@@ -111,7 +111,7 @@ export class BfCollection extends BfNode<BfCollectionProps> {
 
   async createSavedSearch(query: string) {
     const savedSearch = await this.createTargetNode(BfSavedSearch, { query });
-    
+
     await BfJob.createJobForNode(this, "__JOB_ONLY__createSearchResults", [
       query,
       savedSearch.metadata.bfGid,

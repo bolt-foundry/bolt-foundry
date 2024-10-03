@@ -7,8 +7,6 @@ import { sanitizeFilename } from "packages/lib/textUtils.ts";
 
 const logger = getLogger(import.meta);
 
-
-
 type Props = {
   startTime: number;
   endTime: number;
@@ -22,9 +20,8 @@ type Props = {
 export function DownloadClipButton(
   { startTime = 0, endTime = 0, mediaId, title, transcriptId, disabled }: Props,
 ) {
-
   const handleDownload = () => {
-    logger.error("Clip download doesn't work yet.")
+    logger.error("Clip download doesn't work yet.");
   };
   return (
     <BfDsButton

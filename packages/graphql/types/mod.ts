@@ -10,6 +10,7 @@ export * from "packages/graphql/types/BfGraphQLAccount.ts";
 export * from "packages/graphql/types/BfGraphQLCollection.ts";
 export * from "packages/graphql/types/BfGraphQLContactForm.ts";
 export * from "packages/graphql/types/BfGraphQLCurrentViewer.ts";
+export * from "packages/graphql/types/BfGraphQLFakeClipData.ts";
 export * from "packages/graphql/types/BfGraphQLGoogleDriveResource.ts";
 export * from "packages/graphql/types/BfGraphQLMedia.ts";
 export * from "packages/graphql/types/BfGraphQLMediaTranscript.ts";

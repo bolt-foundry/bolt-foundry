@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3c63c3671fe1b748c1257da0c284aa1b>>
+ * @generated SignedSource<<993dd21f3565bd4a493426b47f808d15>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,6 +20,7 @@ export type SearchResult_bfSavedSearchResult$data = {
   readonly startTime: any | null | undefined;
   readonly title: string | null | undefined;
   readonly topics: ReadonlyArray<string | null | undefined> | null | undefined;
+  readonly " $fragmentSpreads": FragmentRefs<"ClipEditModal_bfSavedSearchResult">;
   readonly " $fragmentType": "SearchResult_bfSavedSearchResult";
 };
 export type SearchResult_bfSavedSearchResult$key = {
@@ -95,12 +96,17 @@ const node: ReaderFragment = {
       "kind": "ScalarField",
       "name": "endTime",
       "storageKey": null
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "ClipEditModal_bfSavedSearchResult"
     }
   ],
   "type": "BfSavedSearchResult",
   "abstractKey": null
 };
 
-(node as any).hash = "2395fe7be1c9b12f9e107acc6d1128af";
+(node as any).hash = "eedaeb3af12a4c8a506bec8e74a5518b";
 
 export default node;
