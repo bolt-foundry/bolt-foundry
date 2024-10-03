@@ -10,7 +10,7 @@ const logger = getLogger(import.meta);
 
 export const BF_INTERNAL_ORG_NAME = "bf_internal_org";
 
-const databaseUrl = Deno.env.get("BFDB_URL");
+const databaseUrl = Deno.env.get("DATABASE_URL") ?? Deno.env.get("BFDB_URL");
 if (!databaseUrl) {
   throw new BfDbError("BFDB_URL is not set");
 }
