@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e2d64c542b488539d46e0eebfc9a9221>>
+ * @generated SignedSource<<5a38b77bc5ffb56e7a08aa0d0116afb7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,6 +17,7 @@ export type ClipEditModal_bfSavedSearchResult$data = {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly end: any | null | undefined;
+        readonly id: string;
         readonly punctuated_word: string | null | undefined;
         readonly speaker: string | null | undefined;
         readonly start: any | null | undefined;
@@ -31,19 +32,21 @@ export type ClipEditModal_bfSavedSearchResult$key = {
   readonly " $fragmentSpreads": FragmentRefs<"ClipEditModal_bfSavedSearchResult">;
 };
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
+return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "ClipEditModal_bfSavedSearchResult",
   "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "id",
-      "storageKey": null
-    },
+    (v0/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -81,6 +84,7 @@ const node: ReaderFragment = {
               "name": "node",
               "plural": false,
               "selections": [
+                (v0/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -129,7 +133,8 @@ const node: ReaderFragment = {
   "type": "BfSavedSearchResult",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "e27914522a6bb62195fc1afb4bc6999f";
+(node as any).hash = "25d8c45cff3e8f04448f267ab7d2a6cc";
 
 export default node;

@@ -38,6 +38,7 @@ const fragment = await graphql`
     words(first: 10) {
       edges {
        node {
+        id
         word
         start
         end
@@ -77,6 +78,10 @@ export function ClipEditModal(
                 data-bf-testid="section-clip-text-editing"
                 dir="auto"
               >
+                {data.words.edges.map(edge => {
+                  return edge.node.punctuated_word;
+                }).join(" ")
+                }
                 {
                   /* {state.editableText?.map((xitem, index, arr) => {
                   const item = xitem.item;
