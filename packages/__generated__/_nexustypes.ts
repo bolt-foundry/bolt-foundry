@@ -326,13 +326,25 @@ export interface NexusGenObjects {
     content?: string | null; // String
     link?: NexusGenRootTypes['Link'] | null; // Link
   }
+  VideoDownloadable: { // root type
+    duration?: number | null; // Int
+    percentageRendered?: number | null; // Float
+    ready?: boolean | null; // Boolean
+    url?: NexusGenScalars['Url'] | null; // Url
+  }
+  VideoPreviewable: { // root type
+    duration?: number | null; // Int
+    url?: NexusGenScalars['Url'] | null; // Url
+  }
 }
 
 export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'>;
   BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfCollection', 'required'> | core.Discriminate<'BfFakeClipData', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfSavedSearch', 'required'> | core.Discriminate<'BfSavedSearchResult', 'required'>;
   BlogPostContentBlock: core.Discriminate<'CalloutBlock', 'optional'> | core.Discriminate<'CodeBlock', 'optional'> | core.Discriminate<'HeadingBlock', 'optional'> | core.Discriminate<'ImageBlock', 'optional'> | core.Discriminate<'ParagraphBlock', 'optional'>;
+  Media: core.Discriminate<'VideoDownloadable', 'required'> | core.Discriminate<'VideoPreviewable', 'required'>;
   Node: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfCollection', 'required'> | core.Discriminate<'BfFakeClipData', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfSavedSearch', 'required'> | core.Discriminate<'BfSavedSearchResult', 'required'>;
+  Video: core.Discriminate<'VideoDownloadable', 'required'> | core.Discriminate<'VideoPreviewable', 'required'>;
 }
 
 export interface NexusGenUnions {
@@ -510,9 +522,11 @@ export interface NexusGenFieldTypes {
     body: string | null; // String
     confidence: number | null; // Float
     description: string | null; // String
+    downloadable: NexusGenRootTypes['VideoDownloadable'] | null; // VideoDownloadable
     duration: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     endTime: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     id: string; // ID!
+    previewable: NexusGenRootTypes['VideoPreviewable'] | null; // VideoPreviewable
     rationale: string | null; // String
     startTime: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     title: string | null; // String
@@ -641,6 +655,16 @@ export interface NexusGenFieldTypes {
     content: string | null; // String
     link: NexusGenRootTypes['Link'] | null; // Link
   }
+  VideoDownloadable: { // field return type
+    duration: number | null; // Int
+    percentageRendered: number | null; // Float
+    ready: boolean | null; // Boolean
+    url: NexusGenScalars['Url'] | null; // Url
+  }
+  VideoPreviewable: { // field return type
+    duration: number | null; // Int
+    url: NexusGenScalars['Url'] | null; // Url
+  }
   BfCurrentViewer: { // field return type
     blog: NexusGenRootTypes['Blog'] | null; // Blog
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
@@ -654,8 +678,16 @@ export interface NexusGenFieldTypes {
     id: string | null; // String
     type: string | null; // String
   }
+  Media: { // field return type
+    duration: number | null; // Int
+    url: NexusGenScalars['Url'] | null; // Url
+  }
   Node: { // field return type
     id: string; // ID!
+  }
+  Video: { // field return type
+    duration: number | null; // Int
+    url: NexusGenScalars['Url'] | null; // Url
   }
 }
 
@@ -827,9 +859,11 @@ export interface NexusGenFieldTypeNames {
     body: 'String'
     confidence: 'Float'
     description: 'String'
+    downloadable: 'VideoDownloadable'
     duration: 'TimecodeInMilliseconds'
     endTime: 'TimecodeInMilliseconds'
     id: 'ID'
+    previewable: 'VideoPreviewable'
     rationale: 'String'
     startTime: 'TimecodeInMilliseconds'
     title: 'String'
@@ -958,6 +992,16 @@ export interface NexusGenFieldTypeNames {
     content: 'String'
     link: 'Link'
   }
+  VideoDownloadable: { // field return type name
+    duration: 'Int'
+    percentageRendered: 'Float'
+    ready: 'Boolean'
+    url: 'Url'
+  }
+  VideoPreviewable: { // field return type name
+    duration: 'Int'
+    url: 'Url'
+  }
   BfCurrentViewer: { // field return type name
     blog: 'Blog'
     organization: 'BfOrganization'
@@ -971,8 +1015,16 @@ export interface NexusGenFieldTypeNames {
     id: 'String'
     type: 'String'
   }
+  Media: { // field return type name
+    duration: 'Int'
+    url: 'Url'
+  }
   Node: { // field return type name
     id: 'ID'
+  }
+  Video: { // field return type name
+    duration: 'Int'
+    url: 'Url'
   }
 }
 
@@ -1122,7 +1174,9 @@ export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon"
   BfNode: "BfAccount" | "BfCollection" | "BfFakeClipData" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfOrganization" | "BfPerson" | "BfSavedSearch" | "BfSavedSearchResult"
   BlogPostContentBlock: "CalloutBlock" | "CodeBlock" | "HeadingBlock" | "ImageBlock" | "ParagraphBlock"
+  Media: "VideoDownloadable" | "VideoPreviewable"
   Node: "BfAccount" | "BfCollection" | "BfFakeClipData" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfOrganization" | "BfPerson" | "BfSavedSearch" | "BfSavedSearchResult"
+  Video: "VideoDownloadable" | "VideoPreviewable"
 }
 
 export interface NexusGenTypeInterfaces {
@@ -1143,7 +1197,10 @@ export interface NexusGenTypeInterfaces {
   HeadingBlock: "BlogPostContentBlock"
   ImageBlock: "BlogPostContentBlock"
   ParagraphBlock: "BlogPostContentBlock"
+  VideoDownloadable: "Media" | "Video"
+  VideoPreviewable: "Media" | "Video"
   BfNode: "Node"
+  Video: "Media"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;

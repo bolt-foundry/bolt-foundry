@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<993dd21f3565bd4a493426b47f808d15>>
+ * @generated SignedSource<<eb40ca1de1221c2f4a42bba1954b0498>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,7 +20,7 @@ export type SearchResult_bfSavedSearchResult$data = {
   readonly startTime: any | null | undefined;
   readonly title: string | null | undefined;
   readonly topics: ReadonlyArray<string | null | undefined> | null | undefined;
-  readonly " $fragmentSpreads": FragmentRefs<"ClipEditModal_bfSavedSearchResult">;
+  readonly " $fragmentSpreads": FragmentRefs<"ClipEditButton_bfSavedSearchResult" | "DownloadClipButton_bfSavedSearchResult">;
   readonly " $fragmentType": "SearchResult_bfSavedSearchResult";
 };
 export type SearchResult_bfSavedSearchResult$key = {
@@ -100,13 +100,18 @@ const node: ReaderFragment = {
     {
       "args": null,
       "kind": "FragmentSpread",
-      "name": "ClipEditModal_bfSavedSearchResult"
+      "name": "ClipEditButton_bfSavedSearchResult"
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "DownloadClipButton_bfSavedSearchResult"
     }
   ],
   "type": "BfSavedSearchResult",
   "abstractKey": null
 };
 
-(node as any).hash = "eedaeb3af12a4c8a506bec8e74a5518b";
+(node as any).hash = "dde91ebcb639219a582a0789ba44ae68";
 
 export default node;

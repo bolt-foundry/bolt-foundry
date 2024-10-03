@@ -457,11 +457,13 @@ type BfSavedSearchResult implements BfNode & Node {
   body: String
   confidence: Float
   description: String
+  downloadable: VideoDownloadable
   duration: TimecodeInMilliseconds
   endTime: TimecodeInMilliseconds
 
   """Unique identifier for the resource"""
   id: ID!
+  previewable: VideoPreviewable
   rationale: String
   startTime: TimecodeInMilliseconds
   title: String
@@ -629,6 +631,11 @@ type Link {
   url: String
 }
 
+interface Media {
+  duration: Int
+  url: Url
+}
+
 type Mutation {
   addFolderToCollection(googleDriveResourceId: String!, name: String!): BfCollection
   createOrg(domainName: String!, name: String!, youtubePlaylistUrl: String): BfOrganization
@@ -755,3 +762,20 @@ scalar TimecodeInMilliseconds
 
 """a fully qualified URL"""
 scalar Url
+
+interface Video implements Media {
+  duration: Int
+  url: Url
+}
+
+type VideoDownloadable implements Media & Video {
+  duration: Int
+  percentageRendered: Float
+  ready: Boolean
+  url: Url
+}
+
+type VideoPreviewable implements Media & Video {
+  duration: Int
+  url: Url
+}
