@@ -1,12 +1,20 @@
-import { React } from "deps.ts";
+import { useState } from "react";
+import { useFragment } from "react-relay";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { ClipEditModal } from "packages/client/components/clipsearch/ClipEditModal.tsx";
-const useState = React.useState;
+import { graphql } from "packages/client/deps.ts";
+import type { ClipEditButton_bfSavedSearchResult$key } from "packages/__generated__/ClipEditButton_bfSavedSearchResult.graphql.ts";
 type Props = {
   bfSavedSearchResult$key: ClipEditButton_bfSavedSearchResult$key;
 };
-export function ClipEditButton({ bfSavedSearchResult$key }: props) {
+const fragment = await graphql`
+  fragment ClipEditButton_bfSavedSearchResult on BfSavedSearchResult{
+    ...ClipEditModal_bfSavedSearchResult
+  }
+`;
+export function ClipEditButton({ bfSavedSearchResult$key }: Props) {
   const [isEditing, setIsEditing] = useState(false);
+  const data = useFragment(fragment, bfSavedSearchResult$key);
 
   return (
     <>
@@ -19,7 +27,7 @@ export function ClipEditButton({ bfSavedSearchResult$key }: props) {
       {isEditing && (
         <ClipEditModal
           setIsEditing={setIsEditing}
-          bfSavedSearchResult$key={bfSavedSearchResult$key}
+          bfSavedSearchResult$key={data}
         />
       )}
     </>

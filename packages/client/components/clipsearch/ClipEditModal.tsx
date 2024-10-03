@@ -8,8 +8,10 @@ import { Pill } from "packages/bfDs/Pill.tsx";
 import { useFragment } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { useClipEditData } from "packages/client/hooks/useClipEditData.tsx";
+import { ClipEditModal_bfSavedSearchResult$key } from "packages/__generated__/ClipEditModal_bfSavedSearchResult.graphql.ts";
 type Props = {
   setIsEditing: (isEditing: boolean) => void;
+  bfSavedSearchResult$key: ClipEditModal_bfSavedSearchResult$key
 };
 
 const EXTRA_WORDS = 20;

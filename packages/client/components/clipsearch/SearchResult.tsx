@@ -5,6 +5,7 @@ import { Pill } from "packages/bfDs/Pill.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { ClipEditButton } from "packages/client/components/clipsearch/ClipEditButton.tsx";
 import type { SearchResult_bfSavedSearchResult$key } from "packages/__generated__/SearchResult_bfSavedSearchResult.graphql.ts";
+import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
 
 const fragment = await graphql`
     fragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {
@@ -17,7 +18,8 @@ const fragment = await graphql`
       confidence
       startTime
       endTime
-      ...ClipEditModal_bfSavedSearchResult
+      ...ClipEditButton_bfSavedSearchResult
+      ...DownloadClipButton_bfSavedSearchResult
     }
   `;
 
@@ -25,8 +27,8 @@ type Props = {
   bfSavedSearchResult$key: SearchResult_bfSavedSearchResult$key;
 };
 
-export function SearchResult(props: Props) {
-  const data = useFragment(fragment, props.bfSavedSearchResult$key);
+export function SearchResult({ bfSavedSearchResult$key }: Props) {
+  const data = useFragment(fragment, bfSavedSearchResult$key);
   const topicPills = data.topics?.map((topic) => <Pill text={topic?.trim()} />);
   // const length = `${(endTime - startTime).toFixed(2)}s`;
   return (
@@ -49,16 +51,9 @@ export function SearchResult(props: Props) {
               <FeatureFlag name="placeholder">
                 <ClipEditButton bfSavedSearchResult$key={data} />
               </FeatureFlag>
-              {
-                /* <DownloadClipButton
-                  startTime={startTime}
-                  endTime={endTime}
-                  mediaId={mediaId}
-                  title={title}
-                  transcriptId={transcriptId}
-                /> */
-              }
-
+                <DownloadClipButton
+                  bfSavedSearchResult$key={data}
+                />
               {/* <StarClipButton clip$key={{id: 20, isStarred: true}}/> */}
               {
                 /* <ChangeRequestButton /> */
