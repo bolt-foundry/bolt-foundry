@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<10e15fd94ca0d4b0a792c378afea18d2>>
+ * @generated SignedSource<<d9d0e0475cedb8bc92f87600dce14db6>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -223,6 +223,7 @@ return {
                                     "name": "node",
                                     "plural": false,
                                     "selections": [
+                                      (v2/*: any*/),
                                       {
                                         "alias": null,
                                         "args": null,
@@ -257,8 +258,7 @@ return {
                                         "kind": "ScalarField",
                                         "name": "speaker",
                                         "storageKey": null
-                                      },
-                                      (v2/*: any*/)
+                                      }
                                     ],
                                     "storageKey": null
                                   }
@@ -319,12 +319,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3d25627be7fe549b121b75176a2eb464",
+    "cacheID": "fe4bc8d0fe230018b281673e30dec48a",
     "id": null,
     "metadata": {},
     "name": "SearchResultsSubscription",
     "operationKind": "subscription",
-    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment ClipEditButton_bfSavedSearchResult on BfSavedSearchResult {\n  ...ClipEditModal_bfSavedSearchResult\n}\n\nfragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  words(first: 10) {\n    edges {\n      node {\n        word\n        start\n        end\n        punctuated_word\n        speaker\n        id\n      }\n    }\n  }\n}\n\nfragment DownloadClipButton_bfSavedSearchResult on BfSavedSearchResult {\n  downloadable {\n    url\n    percentageRendered\n    ready\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n  ...ClipEditButton_bfSavedSearchResult\n  ...DownloadClipButton_bfSavedSearchResult\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n"
+    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment ClipEditButton_bfSavedSearchResult on BfSavedSearchResult {\n  ...ClipEditModal_bfSavedSearchResult\n}\n\nfragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  words(first: 10) {\n    edges {\n      node {\n        id\n        word\n        start\n        end\n        punctuated_word\n        speaker\n      }\n    }\n  }\n}\n\nfragment DownloadClipButton_bfSavedSearchResult on BfSavedSearchResult {\n  downloadable {\n    url\n    percentageRendered\n    ready\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n  ...ClipEditButton_bfSavedSearchResult\n  ...DownloadClipButton_bfSavedSearchResult\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n"
   }
 };
 })();
