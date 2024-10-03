@@ -49,7 +49,7 @@ export const BfGraphQLSavedSearchType = objectType({
           args,
         );
         logger.debug(results);
-        if (results.edges.length === 0) {
+        if (results.edges.length === 0 && Deno.env.get("BF_ENV") === "DEVELOPMENT") {
           return {
             edges: [
               {
