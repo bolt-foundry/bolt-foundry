@@ -19,9 +19,7 @@ type BfSavedSearchProps = {
   status: SearchStatus;
 };
 
-function artificialDelay() {
-  return new Promise((resolve) => setTimeout(resolve, 5000));
-}
+
 export class BfSavedSearch extends BfNode<BfSavedSearchProps> {
   protected beforeCreate(): Promise<void> | void {
     this.props.status = SearchStatus.PENDING;
@@ -29,7 +27,6 @@ export class BfSavedSearch extends BfNode<BfSavedSearchProps> {
 
   async createResult(savedSearchResultProps: BfSavedSearchResultProps) {
     logger.debug(savedSearchResultProps);
-    await artificialDelay();
     const result = await this.createTargetNode(
       BfSavedSearchResult,
       savedSearchResultProps,
