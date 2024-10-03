@@ -49,26 +49,26 @@ export const BfGraphQLSavedSearchType = objectType({
           args,
         );
         logger.debug(results);
-        if (
-          results.edges.length === 0 && Deno.env.get("BF_ENV") === "DEVELOPMENT"
-        ) {
-          return {
-            edges: [
-              {
-                node: {
-                  id: "1",
-                  title: "Test",
-                  body: "Test body that's a bit longer",
-                  topics: ["1", "2", "3"],
-                  description: "Test description",
-                  rationale: "Test rationale",
-                  confidence: 0.5,
-                  verbatim: true,
-                },
-              },
-            ],
-          };
-        }
+        // if (
+        //   results.edges.length === 0 && Deno.env.get("BF_ENV") === "DEVELOPMENT"
+        // ) {
+        //   return {
+        //     edges: [
+        //       {
+        //         node: {
+        //           id: "1",
+        //           title: "Test",
+        //           body: "Test body that's a bit longer",
+        //           topics: ["1", "2", "3"],
+        //           description: "Test description",
+        //           rationale: "Test rationale",
+        //           confidence: 0.5,
+        //           verbatim: true,
+        //         },
+        //       },
+        //     ],
+        //   };
+        // }
         return results;
       },
     });

@@ -35,17 +35,11 @@ const fragment = await graphql`
   fragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult{
     id
     title
-    words(first: 10) {
-      edges {
-       node {
-        id
-        word
-        start
-        end
-        punctuated_word
-        speaker
-        }
-      }
+    words( startTime: 33530, endTime: 74434) {
+      text
+      startTime
+      endTime
+      speaker
     }
   }
 `;
@@ -78,8 +72,8 @@ export function ClipEditModal(
                 data-bf-testid="section-clip-text-editing"
                 dir="auto"
               >
-                {data.words.edges.map((edge) => {
-                  return edge.node.punctuated_word;
+                {data.words.map((word) => {
+                  return word.text;
                 }).join(" ")}
                 {
                   /* {state.editableText?.map((xitem, index, arr) => {

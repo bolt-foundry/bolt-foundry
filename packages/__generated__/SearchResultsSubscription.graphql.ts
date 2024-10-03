@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d9d0e0475cedb8bc92f87600dce14db6>>
+ * @generated SignedSource<<99013e2804b74d57a0112a254b05b7ea>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -45,13 +45,20 @@ v2 = {
   "name": "id",
   "storageKey": null
 },
-v3 = [
-  {
-    "kind": "Literal",
-    "name": "first",
-    "value": 10
-  }
-];
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "startTime",
+  "storageKey": null
+},
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "endTime",
+  "storageKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -113,7 +120,13 @@ return {
               },
               {
                 "alias": null,
-                "args": (v3/*: any*/),
+                "args": [
+                  {
+                    "kind": "Literal",
+                    "name": "first",
+                    "value": 10
+                  }
+                ],
                 "concreteType": "BfSavedSearchResultConnection",
                 "kind": "LinkedField",
                 "name": "searchResults",
@@ -185,88 +198,45 @@ return {
                             "name": "confidence",
                             "storageKey": null
                           },
+                          (v3/*: any*/),
+                          (v4/*: any*/),
                           {
                             "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "startTime",
-                            "storageKey": null
-                          },
-                          {
-                            "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "endTime",
-                            "storageKey": null
-                          },
-                          {
-                            "alias": null,
-                            "args": (v3/*: any*/),
-                            "concreteType": "BfFakeClipDataConnection",
+                            "args": [
+                              {
+                                "kind": "Literal",
+                                "name": "endTime",
+                                "value": 74434
+                              },
+                              {
+                                "kind": "Literal",
+                                "name": "startTime",
+                                "value": 33530
+                              }
+                            ],
+                            "concreteType": "Word",
                             "kind": "LinkedField",
                             "name": "words",
-                            "plural": false,
+                            "plural": true,
                             "selections": [
                               {
                                 "alias": null,
                                 "args": null,
-                                "concreteType": "BfFakeClipDataEdge",
-                                "kind": "LinkedField",
-                                "name": "edges",
-                                "plural": true,
-                                "selections": [
-                                  {
-                                    "alias": null,
-                                    "args": null,
-                                    "concreteType": "BfFakeClipData",
-                                    "kind": "LinkedField",
-                                    "name": "node",
-                                    "plural": false,
-                                    "selections": [
-                                      (v2/*: any*/),
-                                      {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "word",
-                                        "storageKey": null
-                                      },
-                                      {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "start",
-                                        "storageKey": null
-                                      },
-                                      {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "end",
-                                        "storageKey": null
-                                      },
-                                      {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "punctuated_word",
-                                        "storageKey": null
-                                      },
-                                      {
-                                        "alias": null,
-                                        "args": null,
-                                        "kind": "ScalarField",
-                                        "name": "speaker",
-                                        "storageKey": null
-                                      }
-                                    ],
-                                    "storageKey": null
-                                  }
-                                ],
+                                "kind": "ScalarField",
+                                "name": "text",
+                                "storageKey": null
+                              },
+                              (v3/*: any*/),
+                              (v4/*: any*/),
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "speaker",
                                 "storageKey": null
                               }
                             ],
-                            "storageKey": "words(first:10)"
+                            "storageKey": "words(endTime:74434,startTime:33530)"
                           },
                           {
                             "alias": null,
@@ -319,12 +289,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "fe4bc8d0fe230018b281673e30dec48a",
+    "cacheID": "71c9df5ed4a226f20e13c950f98b9f13",
     "id": null,
     "metadata": {},
     "name": "SearchResultsSubscription",
     "operationKind": "subscription",
-    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment ClipEditButton_bfSavedSearchResult on BfSavedSearchResult {\n  ...ClipEditModal_bfSavedSearchResult\n}\n\nfragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  words(first: 10) {\n    edges {\n      node {\n        id\n        word\n        start\n        end\n        punctuated_word\n        speaker\n      }\n    }\n  }\n}\n\nfragment DownloadClipButton_bfSavedSearchResult on BfSavedSearchResult {\n  downloadable {\n    url\n    percentageRendered\n    ready\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n  ...ClipEditButton_bfSavedSearchResult\n  ...DownloadClipButton_bfSavedSearchResult\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n"
+    "text": "subscription SearchResultsSubscription(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment ClipEditButton_bfSavedSearchResult on BfSavedSearchResult {\n  ...ClipEditModal_bfSavedSearchResult\n}\n\nfragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  words(startTime: 33530, endTime: 74434) {\n    text\n    startTime\n    endTime\n    speaker\n  }\n}\n\nfragment DownloadClipButton_bfSavedSearchResult on BfSavedSearchResult {\n  downloadable {\n    url\n    percentageRendered\n    ready\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n  ...ClipEditButton_bfSavedSearchResult\n  ...DownloadClipButton_bfSavedSearchResult\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n"
   }
 };
 })();
