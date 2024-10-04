@@ -1,4 +1,5 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 
 export type BfSavedSearchResultProps = {
   title: string;
@@ -31,22 +32,23 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
     };
   }
 
-  async getWordsForGraphql(startTime, endTime) {
-    const outputFromAssembly = await import(
-      "infra/aiPlayground/test_database/words/1da49b0955384e7aa51e110dbd25b736_words.json",
-      {
-        with: { type: "json" },
-      }
-    );
-    const coersedOutput = outputFromAssembly?.default?.map((word) => {
-      const wordStartTime = Math.floor(word.start * 1000);
-      const wordEndTime = Math.floor(word.end * 1000);
-      if (wordStartTime >= startTime && wordEndTime <= endTime) {
+  async getWordsForGraphql(
+    startTime?: number | undefined,
+    endTime?: number | undefined,
+  ) {
+    const transcripts = await this.querySourceInstances(BfMediaNodeTranscript);
+    const realStartTime = startTime ?? this.props.startTime;
+    const realEndTime = endTime ?? this.props.endTime;
+    const coersedOutput = transcripts[0]?.props.words.map((word) => {
+      if (
+        word.start >= realStartTime &&
+        word.end <= realEndTime
+      ) {
         return {
           __typename: "Word",
-          text: word.punctuated_word,
-          startTime: wordStartTime,
-          endTime: wordEndTime,
+          text: word.text,
+          startTime: word.start,
+          endTime: word.end,
           speaker: word.speaker,
         };
       }

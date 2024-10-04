@@ -5,7 +5,7 @@ import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { DownloadClipButton } from "packages/client/components/clipsearch/DownloadClipButton.tsx";
 import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { Pill } from "packages/bfDs/Pill.tsx";
-import { useFragment } from "react-relay";
+import { useRefetchableFragment } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { useClipEditData } from "packages/client/hooks/useClipEditData.tsx";
 import { ClipEditModal_bfSavedSearchResult$key } from "packages/__generated__/ClipEditModal_bfSavedSearchResult.graphql.ts";
@@ -14,28 +14,23 @@ type Props = {
   bfSavedSearchResult$key: ClipEditModal_bfSavedSearchResult$key;
 };
 
-const EXTRA_WORDS = 20;
-
-const initialState = {
-  startIndex: 30,
-  endIndex: 45,
-  endTimeOverride: null,
-  highlightStartIndex: null,
-  highlightEndIndex: null,
-  editableText: null,
-  editableTextPre: EXTRA_WORDS,
-  editableTextPost: EXTRA_WORDS,
-  wordsToUpdate: [],
-  title: "test",
-  manualCrop: [],
-  manualCropActive: false,
-};
+const EXTRA_TIME_MS = 15000;
+const FAKE_START_TIME_MS = 33530;
+const FAKE_END_TIME_MS = 74434;
 
 const fragment = await graphql`
-  fragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult{
+  fragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult
+    @refetchable(queryName: "ClipEditModalRefetchQuery")
+    @argumentDefinitions(
+    startTime: { type: "TimecodeInMilliseconds" }
+    endTime: { type: "TimecodeInMilliseconds" }
+  ) {
     id
     title
-    words( startTime: 33530, endTime: 74434) {
+    startTime
+    endTime
+    duration
+    words( startTime: $startTime, endTime: $endTime ) {
       text
       startTime
       endTime
@@ -47,7 +42,10 @@ const fragment = await graphql`
 export function ClipEditModal(
   { setIsEditing, bfSavedSearchResult$key }: Props,
 ) {
-  const data = useFragment(fragment, bfSavedSearchResult$key);
+  const [data, refetch] = useRefetchableFragment(
+    fragment,
+    bfSavedSearchResult$key,
+  );
   return (
     <>
       <BfDsModal onClose={() => setIsEditing(false)}>

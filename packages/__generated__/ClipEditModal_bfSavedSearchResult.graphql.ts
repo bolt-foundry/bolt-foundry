@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<11e0221bea20722fb0a5cf8663e860a6>>
+ * @generated SignedSource<<e0e31a855e6599cccfde8ad6bcf11d19>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -8,10 +8,14 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Fragment, ReaderFragment } from 'relay-runtime';
+import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
+import * as __ClipEditModalRefetchQuery_graphql from "packages/__generated__/./ClipEditModalRefetchQuery.graphql.ts";
 import { FragmentRefs } from "relay-runtime";
 export type ClipEditModal_bfSavedSearchResult$data = {
+  readonly duration: any | null | undefined;
+  readonly endTime: any | null | undefined;
   readonly id: string;
+  readonly startTime: any | null | undefined;
   readonly title: string | null | undefined;
   readonly words: ReadonlyArray<{
     readonly endTime: any | null | undefined;
@@ -26,10 +30,48 @@ export type ClipEditModal_bfSavedSearchResult$key = {
   readonly " $fragmentSpreads": FragmentRefs<"ClipEditModal_bfSavedSearchResult">;
 };
 
-const node: ReaderFragment = {
-  "argumentDefinitions": [],
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "startTime",
+  "storageKey": null
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "endTime",
+  "storageKey": null
+};
+return {
+  "argumentDefinitions": [
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "endTime"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "startTime"
+    }
+  ],
   "kind": "Fragment",
-  "metadata": null,
+  "metadata": {
+    "refetch": {
+      "connection": null,
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": __ClipEditModalRefetchQuery_graphql,
+      "identifierInfo": {
+        "identifierField": "id",
+        "identifierQueryVariableName": "id"
+      }
+    }
+  },
   "name": "ClipEditModal_bfSavedSearchResult",
   "selections": [
     {
@@ -46,18 +88,27 @@ const node: ReaderFragment = {
       "name": "title",
       "storageKey": null
     },
+    (v0/*: any*/),
+    (v1/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "duration",
+      "storageKey": null
+    },
     {
       "alias": null,
       "args": [
         {
-          "kind": "Literal",
+          "kind": "Variable",
           "name": "endTime",
-          "value": 74434
+          "variableName": "endTime"
         },
         {
-          "kind": "Literal",
+          "kind": "Variable",
           "name": "startTime",
-          "value": 33530
+          "variableName": "startTime"
         }
       ],
       "concreteType": "Word",
@@ -72,20 +123,8 @@ const node: ReaderFragment = {
           "name": "text",
           "storageKey": null
         },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "startTime",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "endTime",
-          "storageKey": null
-        },
+        (v0/*: any*/),
+        (v1/*: any*/),
         {
           "alias": null,
           "args": null,
@@ -94,13 +133,14 @@ const node: ReaderFragment = {
           "storageKey": null
         }
       ],
-      "storageKey": "words(endTime:74434,startTime:33530)"
+      "storageKey": null
     }
   ],
   "type": "BfSavedSearchResult",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "b5712d56e14279035ad19a5acc78c938";
+(node as any).hash = "2aab863a418954734714c65b82f1283f";
 
 export default node;
