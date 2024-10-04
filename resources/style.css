@@ -685,6 +685,9 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   cursor: pointer;
   border-bottom: 3px solid transparent;
 }
+.clipWord:hover {
+  background-color: var(--highlight);
+}
 
 .clipWordLight {
   font-weight: 400;
@@ -1645,6 +1648,51 @@ input[type="range"].scrubber::-moz-range-thumb:active {
 .word.last-word.clipSelected::after {
   background-color: var(--primaryColor);
 } */
+
+.word-menu {
+  position: absolute;
+  bottom: 100%;
+  background-color: var(--menuBackground);
+  border-radius: 6px;
+  left: 0;
+  min-width: 100px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 12px;
+}
+
+.word-menu-item {
+  color: var(--text);
+  font-size: 14px;
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.word-menu-item:hover {
+  background-color: var(--menuBackgroundHover);
+},
+
+.word-menu-text {
+  flex-grow: 1;
+}
+
+.word-menu-arrow {
+  width: 0;
+  height: 0;
+  border-left: 0px solid transparent;
+  border-right: 16px solid transparent;
+  border-top: 10px solid var(--menuBackground);
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+}
+
+.separator {
+  border-bottom: 1px solid var(--border);
+  height: 0;
+  width: 100%;
+}
 
 .word .multiple {
   position: absolute;
