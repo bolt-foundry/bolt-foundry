@@ -36,13 +36,15 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
     startTime?: number | undefined,
     endTime?: number | undefined,
   ) {
+    const EXTRA_RANGE_MS = 10_000;
     const transcripts = await this.querySourceInstances(BfMediaNodeTranscript);
-    const realStartTime = startTime ?? this.props.startTime;
-    const realEndTime = endTime ?? this.props.endTime;
+    const adjustedStartTime = (startTime ?? this.props.startTime) -
+      EXTRA_RANGE_MS;
+    const adjustedEndTime = (endTime ?? this.props.endTime) + EXTRA_RANGE_MS;
     const coersedOutput = transcripts[0]?.props.words.map((word) => {
       if (
-        word.start >= realStartTime &&
-        word.end <= realEndTime
+        word.start >= adjustedStartTime &&
+        word.end <= adjustedEndTime
       ) {
         return {
           __typename: "Word",

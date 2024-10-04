@@ -8,6 +8,7 @@ import { Pill } from "packages/bfDs/Pill.tsx";
 import { useRefetchableFragment } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { useClipEditData } from "packages/client/hooks/useClipEditData.tsx";
+import { ClipWord } from "packages/client/components/clipsearch/ClipWord.tsx";
 import { ClipEditModal_bfSavedSearchResult$key } from "packages/__generated__/ClipEditModal_bfSavedSearchResult.graphql.ts";
 type Props = {
   setIsEditing: (isEditing: boolean) => void;
@@ -35,8 +36,8 @@ const fragment = await graphql`
       startTime
       endTime
       speaker
-    }
   }
+}
 `;
 
 export function ClipEditModal(
@@ -46,6 +47,16 @@ export function ClipEditModal(
     fragment,
     bfSavedSearchResult$key,
   );
+
+  const draftClip = {
+    id: data?.id,
+    title: data?.title,
+    startTime: data?.startTime,
+    endTime: data?.endTime,
+    duration: data?.duration,
+    words: data?.words,
+  };
+
   return (
     <>
       <BfDsModal onClose={() => setIsEditing(false)}>
@@ -60,7 +71,7 @@ export function ClipEditModal(
               <div className="clipHeader">
                 <div className="clipHeaderLeft">
                   <div className="clipTitle" dir="auto">
-                    {data.title}
+                    {draftClip.title}
                   </div>
                 </div>
               </div>
@@ -70,9 +81,15 @@ export function ClipEditModal(
                 data-bf-testid="section-clip-text-editing"
                 dir="auto"
               >
-                {data.words.map((word) => {
-                  return word.text;
-                }).join(" ")}
+                {draftClip.words.map((word) => {
+                  return (
+                    <ClipWord
+                      word={word}
+                      clipStartTime={draftClip.startTime}
+                      clipEndTime={draftClip.endTime}
+                    />
+                  );
+                })}
                 {
                   /* {state.editableText?.map((xitem, index, arr) => {
                   const item = xitem.item;
