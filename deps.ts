@@ -28,20 +28,52 @@ const colors = {
   ERROR: chalk.red,
 };
 
+function getCallerInfo() {
+  const error = new Error();
+  const stack = error.stack?.split("\n");
+  if (stack) {
+    // Iterate through the stack to find the first valid call from user code
+    for (let i = 0; i < stack.length; i++) {
+      const line = stack[i];
+      if (
+        !line.includes("/node_modules/") && // Skip over node_module calls
+        !line.includes("loglevel-plugin-prefix.mjs") &&  // Skip logging library
+        !line.includes("getCallerInfo") &&  // Ignore utility function
+        !line.includes("Object.nameFormatter") // Skip inside logger formatting
+      ) {
+        const match = line.match(/at (.+):(\d+):(\d+)/);
+        if (match) {
+          // Return the line number
+          return `:${match[2]}`;
+        }
+      }
+    }
+  }
+
+  return "unknown:0";
+}
+
 if (!isBrowser()) {
   const defaultLogLevelString = Deno.env.get("LOG_LEVEL") ?? "INFO";
   const defaultLogLevel =
     log.levels[defaultLogLevelString as keyof typeof log.levels];
   log.setDefaultLevel(defaultLogLevel);
   logLevelPrefixPlugin.reg(log);
+  let previousPath = "";
   logLevelPrefixPlugin.apply(log, {
-    template: "%n - %l: ",
+    template: "%n%l:",
     levelFormatter(level) {
       const LEVEL = level.toUpperCase() as keyof typeof colors;
       return colors[LEVEL](LEVEL);
     },
     nameFormatter(name) {
-      return name || "global";
+      const callerInfo = getCallerInfo();
+      const currentPath = `${name || "global"}${callerInfo}`;
+      if (currentPath !== previousPath) {
+        previousPath = currentPath;
+        return chalk.dim(`↱ ${currentPath}\n`);
+      }
+      return "";
     },
     timestampFormatter(date) {
       return date.toISOString();
