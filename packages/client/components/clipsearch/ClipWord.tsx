@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { classnames } from "lib/classnames.ts";
 import useClickOutside from "packages/client/hooks/useClickOutside.ts";
 import { WordMenu } from "packages/client/components/clipsearch/WordMenu.tsx";
+import { EditWordMenu } from "packages/client/components/clipsearch/EditWordMenu.tsx";
 
 export enum ClipWordKindType {
   PRIMARY = "primary",
@@ -19,9 +20,20 @@ type Props = {
   };
   clipStartTime: number;
   clipEndTime: number;
+  updateStartAndEndTime: (startTime?: number, endTime?: number) => void;
+  updateWord: (word: {
+    text: string;
+    startTime: number;
+    endTime: number;
+    speaker: string;
+  }) => void;
 };
 
-export function ClipWord({ clipStartTime, clipEndTime, word }: Props) {
+export function ClipWord(
+  { clipStartTime, clipEndTime, word, updateStartAndEndTime, updateWord }:
+    Props,
+) {
+  const [isEdittingWord, setIsEdittingWord] = useState(false);
   const wordRef = useRef<HTMLSpanElement | null>(null);
   let kind = "primary";
   if (
@@ -35,6 +47,7 @@ export function ClipWord({ clipStartTime, clipEndTime, word }: Props) {
   );
 
   const close = () => {
+    setIsEdittingWord(false);
     setIsSelected(false);
   };
 
@@ -56,14 +69,23 @@ export function ClipWord({ clipStartTime, clipEndTime, word }: Props) {
           { clipCurrentWord: kind === ClipWordKindType.CURRENT },
         ])}
         onClick={() => setIsSelected(true)}
+        onDoubleClick={() => (setIsEdittingWord(true))}
       >
         {`${word.text} `}
+        {isEdittingWord && (
+          <EditWordMenu
+            word={word}
+            updateWord={updateWord}
+            handleClose={() => close()}
+          />
+        )}
         {isSelected && (
           <WordMenu
             wordStartTime={word.startTime}
             wordEndTime={word.endTime}
             clipStartTime={clipStartTime}
             clipEndTime={clipEndTime}
+            updateStartAndEndTime={updateStartAndEndTime}
           />
         )}
       </span>
