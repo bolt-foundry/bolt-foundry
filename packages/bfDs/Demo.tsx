@@ -340,6 +340,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: "0 6px 0 0",
   },
   tertiary: {
+    color: "white",
     top: 30,
     right: 0,
     height: 30,
@@ -413,10 +414,18 @@ export function Demo() {
       <div className="element" style={styles.element}>
         <div style={styles.name}>Color Palette</div>
         <div style={styles.palette}>
-          <div style={{ ...styles.box, ...styles.primary }} />
-          <div style={{ ...styles.box, ...styles.secondary }} />
-          <div style={{ ...styles.box, ...styles.tertiary }} />
-          <div style={{ ...styles.box, ...styles.fourthary }} />
+          <div style={{ ...styles.box, ...styles.primary }}>
+            #ffd700
+          </div>
+          <div style={{ ...styles.box, ...styles.secondary }}>
+            #22d9e5
+          </div>
+          <div style={{ ...styles.box, ...styles.tertiary }}>
+            #0b294b
+          </div>
+          <div style={{ ...styles.box, ...styles.fourthary }}>
+            #ee82ee
+          </div>
         </div>
       </div>
       {uiElementGroups.map((group, index) => (
