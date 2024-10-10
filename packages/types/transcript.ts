@@ -28,6 +28,13 @@ export type DGWord = {
   punctuated_word: string;
 };
 
+export type Word = {
+  text: string;
+  startTime: number;
+  endTime: number;
+  speaker: string;
+};
+
 export type DGTranscript = {
   results: {
     channels: Array<{
