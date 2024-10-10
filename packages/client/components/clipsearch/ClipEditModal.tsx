@@ -10,6 +10,7 @@ import { graphql } from "packages/client/deps.ts";
 import { useClipEditData } from "packages/client/hooks/useClipEditData.tsx";
 import { ClipWord } from "packages/client/components/clipsearch/ClipWord.tsx";
 import { ClipEditModal_bfSavedSearchResult$key } from "packages/__generated__/ClipEditModal_bfSavedSearchResult.graphql.ts";
+import { useState } from "react";
 type Props = {
   setIsEditing: (isEditing: boolean) => void;
   bfSavedSearchResult$key: ClipEditModal_bfSavedSearchResult$key;
@@ -48,15 +49,43 @@ export function ClipEditModal(
     bfSavedSearchResult$key,
   );
 
-  const draftClip = {
+  const initialDraftClip = {
     id: data?.id,
     title: data?.title,
     startTime: data?.startTime,
     endTime: data?.endTime,
     duration: data?.duration,
-    words: data?.words,
+    newWords: [],
   };
 
+  const [draftClip, setDraftClip] = useState(initialDraftClip);
+
+  const updateStartAndEndTime = (startTime?, endTime?) => {
+    const newStartTime = startTime || draftClip.startTime;
+    const newEndTime = endTime || draftClip.endTime;
+    setDraftClip({
+      ...draftClip,
+      startTime: newStartTime,
+      endTime: newEndTime,
+    });
+    refetch({ startTime: newStartTime, endTime: newEndTime });
+  };
+  const updateWord = (newWord) => {
+    setDraftClip({
+      ...draftClip,
+      newWords: [...draftClip.newWords, newWord],
+    });
+  };
+  const words = data.words.map((word) => {
+    if (draftClip.newWords.length > 0) {
+      for (const newWord of draftClip.newWords) {
+        if (newWord.startTime === word.startTime) {
+          return newWord;
+        }
+      }
+    }
+    return word;
+  });
   return (
     <>
       <BfDsModal onClose={() => setIsEditing(false)}>
@@ -81,12 +110,14 @@ export function ClipEditModal(
                 data-bf-testid="section-clip-text-editing"
                 dir="auto"
               >
-                {draftClip.words.map((word) => {
+                {words.map((word) => {
                   return (
                     <ClipWord
                       word={word}
                       clipStartTime={draftClip.startTime}
                       clipEndTime={draftClip.endTime}
+                      updateStartAndEndTime={updateStartAndEndTime}
+                      updateWord={updateWord}
                     />
                   );
                 })}
@@ -191,6 +222,13 @@ export function ClipEditModal(
               }
             </div>
           </div>
+          <BfDsButton
+            text="Save"
+            kind="primary"
+            onClick={() => {
+              setIsEditing(false);
+            }}
+          />
         </div>
       </BfDsModal>
     </>
