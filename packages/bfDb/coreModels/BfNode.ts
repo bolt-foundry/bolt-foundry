@@ -16,6 +16,7 @@ import {
   bfQueryItemsForGraphQLConnection,
   bfSubscribeToConnectionChanges,
 } from "packages/bfDb/bfDb.ts";
+import { BfModelErrorClassMismatch } from "packages/bfDb/classes/BfModelError.ts";
 const logger = getLogger(import.meta);
 
 export type BfNodeRequiredProps = Record<string, unknown>;
@@ -58,6 +59,7 @@ export class BfNode<
       bfOid: currentViewerIsAdmin
         ? metadataToQuery.bfOid ?? currentViewer.organizationBfGid
         : currentViewer.organizationBfGid,
+      className: this.name,
     };
     const { edges, ...others } = await bfQueryItemsForGraphQLConnection<
       ChildRequiredProps & Partial<ChildOptionalProps>,
@@ -72,16 +74,23 @@ export class BfNode<
     return {
       ...others,
       // @ts-expect-error edge is anytyped but it shouldn't be... it should be a rowitem.
-      edges: edges.map((edge) => ({
-        cursor: edge.cursor,
-        node: new this(
-          currentViewer,
-          edge.node.props,
-          {},
-          edge.node.metadata,
-          true,
-        ).toGraphql(),
-      })),
+      edges: edges.map((edge) => {
+        if (edge.node.metadata.className != this.name) {
+          throw new BfModelErrorClassMismatch(
+            `Connection class mismatch. Got ${edge.node.metadata.className} but expected ${this.name}`,
+          );
+        }
+        return {
+          cursor: edge.cursor,
+          node: new this(
+            currentViewer,
+            edge.node.props,
+            {},
+            edge.node.metadata,
+            true,
+          ).toGraphql(),
+        };
+      }),
     };
   }
 
