@@ -49,18 +49,20 @@ export class BfMediaNodeVideo extends BfNode<BfMediaNodeVideoProps> {
   }
 
   async createPreview(): Promise<BfMediaNodeVideo> {
-    const videos = await this.queryTargetInstances(BfMediaNodeVideo, {
-      role: BfMediaNodeVideoRole.PREVIEW,
-      status: BfMediaNodeVideoStatus.COMPLETED,
-    });
+    const videos = await this.queryTargetInstances(
+      BfMediaNodeVideo, 
+      { status: BfMediaNodeVideoStatus.COMPLETED },
+      { role: BfMediaNodeVideoRole.PREVIEW },
+    );
     if (videos.length > 0) {
       logger.info("Found existing video", this);
       return videos[0];
     }
-    const bfmnVideo = await this.createTargetNode(BfMediaNodeVideo, {
-      status: BfMediaNodeVideoStatus.NEW,
-      role: BfMediaNodeVideoRole.PREVIEW,
-    });
+    const bfmnVideo = await this.createTargetNode(
+      BfMediaNodeVideo, 
+      { status: BfMediaNodeVideoStatus.NEW },
+      BfMediaNodeVideoRole.PREVIEW,
+    );
     logger.info(`Creating preview video for ${this}`);
     const filePath = await this.getFile();
     await bfmnVideo.compressVideo(filePath);
