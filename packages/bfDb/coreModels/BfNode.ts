@@ -185,6 +185,7 @@ export class BfNode<
       this.metadata.bfGid,
       props,
       args,
+      edgeProps,
     );
   }
 

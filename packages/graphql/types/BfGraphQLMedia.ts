@@ -27,14 +27,14 @@ export const BfGraphQLMediaQuery = extendType({
     t.connectionField("media", {
       type: "BfMedia",
       resolve: (_, args, { bfCurrentViewer }) => {
-        logger.debug("Fetching all transcripts");
+        logger.debug("Fetching all media");
         const media = BfMedia.queryConnectionForGraphQL(
           bfCurrentViewer,
           { bfOid: bfCurrentViewer.bfOid },
           {},
           args,
         );
-        logger.debug("Fetched all transcripts successfully");
+        logger.debug("Fetched all media successfully");
         return media;
       },
     });
