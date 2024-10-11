@@ -1,4 +1,12 @@
-import { arg, intArg, objectType } from "nexus";
+import {
+  arg,
+  inputObjectType,
+  list,
+  mutationField,
+  nonNull,
+  objectType,
+  stringArg,
+} from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { GraphQLWordType } from "packages/graphql/types/GraphQLWord.ts";
 import {
@@ -7,6 +15,7 @@ import {
 } from "packages/graphql/types/GraphQLMedia.ts";
 import { BfSavedSearchResult } from "packages/bfDb/models/BfSavedSearchResult.ts";
 import { TimecodeInMillisecondsScalarType } from "packages/graphql/types/Timecode.ts";
+
 export const BfGraphQLSavedSearchResultType = objectType({
   name: "BfSavedSearchResult",
   definition: (t) => {
@@ -48,3 +57,50 @@ export const BfGraphQLSavedSearchResultType = objectType({
     });
   },
 });
+
+export const SearchResultWordInput = inputObjectType({
+  name: "SearchResultWordInput",
+  definition(t) {
+    t.nonNull.string("text");
+    t.nonNull.msTime("startTime");
+    t.nonNull.msTime("endTime");
+    t.nonNull.string("speaker");
+  },
+});
+
+export const BfGraphQLSavedSearchResultUpdateMutation = mutationField(
+  "updateSearchResult",
+  {
+    type: BfGraphQLSavedSearchResultType,
+    args: {
+      id: nonNull(stringArg()),
+      startTime: nonNull(arg({ type: TimecodeInMillisecondsScalarType })),
+      endTime: nonNull(arg({ type: TimecodeInMillisecondsScalarType })),
+      title: nonNull(stringArg()),
+      description: nonNull(stringArg()),
+      words: list(arg({ type: SearchResultWordInput })),
+    },
+    resolve: async (
+      _,
+      {
+        id,
+        startTime,
+        endTime,
+        title,
+        description,
+        words,
+      },
+      { bfCurrentViewer },
+    ) => {
+      const result = await BfSavedSearchResult.findX(bfCurrentViewer, id);
+      await result.updateSearchResult(
+        startTime,
+        endTime,
+        title,
+        description,
+        words,
+      );
+      return result.toGraphql();
+    },
+  },
+);

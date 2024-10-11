@@ -54,6 +54,12 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  SearchResultWordInput: { // input type
+    endTime: NexusGenScalars['TimecodeInMilliseconds']; // TimecodeInMilliseconds!
+    speaker: string; // String!
+    startTime: NexusGenScalars['TimecodeInMilliseconds']; // TimecodeInMilliseconds!
+    text: string; // String!
+  }
   SubmitContactFormInput: { // input type
     company?: string | null; // String
     email: string; // String!
@@ -591,6 +597,7 @@ export interface NexusGenFieldTypes {
     searchCollection: NexusGenRootTypes['BfSavedSearch'] | null; // BfSavedSearch
     submitContactForm: NexusGenRootTypes['SubmitContactFormPayload'] | null; // SubmitContactFormPayload
     switchAccount: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
+    updateSearchResult: NexusGenRootTypes['BfSavedSearchResult'] | null; // BfSavedSearchResult
     updateTranscript: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
   }
   PageInfo: { // field return type
@@ -916,6 +923,7 @@ export interface NexusGenFieldTypeNames {
     searchCollection: 'BfSavedSearch'
     submitContactForm: 'SubmitContactFormPayload'
     switchAccount: 'BfCurrentViewerAccessToken'
+    updateSearchResult: 'BfSavedSearchResult'
     updateTranscript: 'BfMediaNodeTranscript'
   }
   PageInfo: { // field return type name
@@ -1110,6 +1118,14 @@ export interface NexusGenArgTypes {
     }
     switchAccount: { // args
       accountId: string; // ID!
+    }
+    updateSearchResult: { // args
+      description: string; // String!
+      endTime: NexusGenScalars['TimecodeInMilliseconds']; // TimecodeInMilliseconds!
+      id: string; // String!
+      startTime: NexusGenScalars['TimecodeInMilliseconds']; // TimecodeInMilliseconds!
+      title: string; // String!
+      words?: Array<NexusGenInputs['SearchResultWordInput'] | null> | null; // [SearchResultWordInput]
     }
     updateTranscript: { // args
       filename?: string | null; // String

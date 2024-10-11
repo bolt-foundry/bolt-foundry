@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2af8808139638551aae3a6e32f0a63a1>>
+ * @generated SignedSource<<6c000ec5640cc169b31801c58bbb739a>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -398,13 +398,6 @@ return {
                               {
                                 "alias": null,
                                 "args": null,
-                                "kind": "ScalarField",
-                                "name": "duration",
-                                "storageKey": null
-                              },
-                              {
-                                "alias": null,
-                                "args": null,
                                 "concreteType": "Word",
                                 "kind": "LinkedField",
                                 "name": "words",
@@ -482,12 +475,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "30ec1442d75835114fe0fda22b1f2363",
+    "cacheID": "beffbf70664532052e642ec5716960fa",
     "id": null,
     "metadata": {},
     "name": "ClipSearchPageQuery",
     "operationKind": "query",
-    "text": "query ClipSearchPageQuery(\n  $searchId: ID!\n  $includeSearch: Boolean!\n) {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      collections(first: 10) {\n        count\n        edges {\n          node {\n            __typename\n            ...Search_bfCollection\n            id\n          }\n        }\n      }\n      id\n    }\n  }\n  node(id: $searchId) @include(if: $includeSearch) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment ClipEditButton_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  startTime\n  endTime\n  duration\n  words {\n    text\n    speaker\n    startTime\n    endTime\n  }\n  ...ClipEditModal_bfSavedSearchResult\n}\n\nfragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  startTime\n  endTime\n  duration\n  words {\n    text\n    startTime\n    endTime\n    speaker\n  }\n}\n\nfragment DownloadClipButton_bfSavedSearchResult on BfSavedSearchResult {\n  downloadable {\n    url\n    percentageRendered\n    ready\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n  ...ClipEditButton_bfSavedSearchResult\n  ...DownloadClipButton_bfSavedSearchResult\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n\nfragment Search_bfCollection on BfCollection {\n  id\n}\n"
+    "text": "query ClipSearchPageQuery(\n  $searchId: ID!\n  $includeSearch: Boolean!\n) {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      collections(first: 10) {\n        count\n        edges {\n          node {\n            __typename\n            ...Search_bfCollection\n            id\n          }\n        }\n      }\n      id\n    }\n  }\n  node(id: $searchId) @include(if: $includeSearch) {\n    __typename\n    ...SearchResults_bfSavedSearch\n    id\n  }\n}\n\nfragment ClipEditButton_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  startTime\n  endTime\n  description\n  words {\n    text\n    speaker\n    startTime\n    endTime\n  }\n  ...ClipEditModal_bfSavedSearchResult\n}\n\nfragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  description\n  startTime\n  endTime\n  words {\n    text\n    startTime\n    endTime\n    speaker\n  }\n}\n\nfragment DownloadClipButton_bfSavedSearchResult on BfSavedSearchResult {\n  downloadable {\n    url\n    percentageRendered\n    ready\n  }\n}\n\nfragment SearchResult_bfSavedSearchResult on BfSavedSearchResult {\n  id\n  title\n  body\n  description\n  rationale\n  topics\n  confidence\n  startTime\n  endTime\n  ...ClipEditButton_bfSavedSearchResult\n  ...DownloadClipButton_bfSavedSearchResult\n}\n\nfragment SearchResults_bfSavedSearch on BfSavedSearch {\n  query\n  id\n  searchResults(first: 10) {\n    count\n    edges {\n      node {\n        id\n        body\n        ...SearchResult_bfSavedSearchResult\n      }\n    }\n  }\n}\n\nfragment Search_bfCollection on BfCollection {\n  id\n}\n"
   }
 };
 })();
