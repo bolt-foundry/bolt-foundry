@@ -166,6 +166,9 @@ export class BfEdge<
     const sourceEdgeIds = sourceEdges.map((edge) => edge.metadata.bfSid)
       .filter(Boolean) as Array<BfSid>;
     logger.debug("sourceEdgeIds", sourceEdgeIds);
+    if (sourceEdgeIds.length === 0) {
+      return [];
+    }
     const sources = await SourceClass.query(
       currentViewer,
       {},
@@ -213,6 +216,9 @@ export class BfEdge<
     const targetEdgeIds = targetEdges.map((edge) => edge.metadata.bfTid)
       .filter(Boolean) as Array<BfTid>;
     logger.debug("targetEdgeIds", targetEdgeIds);
+    if (targetEdgeIds.length === 0) {
+      return [];
+    }
     const targets = await TargetClass.query(
       currentViewer,
       {},
