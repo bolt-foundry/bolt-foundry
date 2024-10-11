@@ -158,12 +158,14 @@ export class BfNode<
   >(
     TargetClass: TTargetClass,
     props: Partial<ChildRequiredProps & ChildOptionalProps> = {},
+    edgeProps: Partial<ChildOptionalProps> = {},
   ) {
     return BfEdge.queryTargetInstances(
       this.currentViewer,
       TargetClass,
       this.metadata.bfGid,
       props,
+      edgeProps,
     );
   }
 
@@ -175,6 +177,7 @@ export class BfNode<
     TargetClass: TTargetClass,
     args: ConnectionArguments,
     props: Partial<ChildRequiredProps & ChildOptionalProps> = {},
+    edgeProps: Partial<ChildOptionalProps> = {},
   ) {
     return BfEdge.queryTargetsConnectionForGraphQL(
       this.currentViewer,

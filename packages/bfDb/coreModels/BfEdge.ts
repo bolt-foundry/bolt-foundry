@@ -202,6 +202,7 @@ export class BfEdge<
     TargetClassRaw: TSourceClass,
     sourceBfGid: BfGid | BfSid,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
+    edgePropsToQuery: Partial<ChildOptionalProps> = {},
   ) {
     const TargetClass = TargetClassRaw as unknown as typeof BfNode;
     const This = this as unknown as typeof BfEdge;
@@ -209,8 +210,11 @@ export class BfEdge<
 
     const targetEdges = await This.query(
       currentViewer,
-      { bfSid: sourceBfGid, bfTClassName: TargetClass.name },
-      propsToQuery,
+      {
+        bfSid: sourceBfGid,
+        bfTClassName: TargetClass.name,
+      },
+      edgePropsToQuery,
     );
     logger.debug("targetEdges", targetEdges);
     const targetEdgeIds = targetEdges.map((edge) => edge.metadata.bfTid)
