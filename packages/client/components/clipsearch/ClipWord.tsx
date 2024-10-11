@@ -69,14 +69,7 @@ export function ClipWord({ word }: Props) {
           { clipCurrentWord: kind === ClipWordKindType.CURRENT },
         ])}
         onClick={() => {
-          console.log("clicked");
-          console.log(word);
           setSelectedWord(word);
-          console.log("first isSelected?", isSelected);
-          setTimeout(() => {
-            console.log("isSelected?", isSelected);
-            console.log("selected word", selectedWord);
-          }, 100);
         }}
       >
         {`${word.text} `}

@@ -91,7 +91,9 @@ export default function ClipEditModalProvider(
       ...draftClip,
       startTime: selectedWord.startTime,
     });
-    setSelectedWord(undefined);
+    setTimeout(() => {
+      setSelectedWord(undefined);
+    }, 1); // hack
   };
 
   const updateEndTime = () => {
@@ -100,7 +102,9 @@ export default function ClipEditModalProvider(
       ...draftClip,
       endTime: selectedWord.endTime,
     });
-    setSelectedWord(undefined);
+    setTimeout(() => {
+      setSelectedWord(undefined);
+    }, 1); // hack
   };
 
   const value = {
