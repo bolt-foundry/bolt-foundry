@@ -1,9 +1,10 @@
-import { React } from "deps.ts";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { classnames } from "lib/classnames.ts";
 import useClickOutside from "packages/client/hooks/useClickOutside.ts";
+import { useClipEditModal } from "packages/client/contexts/ClipEditModalContext.tsx";
 import { WordMenu } from "packages/client/components/clipsearch/WordMenu.tsx";
-import { EditWordMenu } from "packages/client/components/clipsearch/EditWordMenu.tsx";
+import type { Word } from "packages/types/transcript.ts";
 
 export enum ClipWordKindType {
   PRIMARY = "primary",
@@ -12,50 +13,49 @@ export enum ClipWordKindType {
   CURRENT = "current",
 }
 type Props = {
-  word: {
-    text: string;
-    startTime: number;
-    endTime: number;
-    speaker: string;
-  };
-  clipStartTime: number;
-  clipEndTime: number;
-  updateStartAndEndTime: (startTime?: number, endTime?: number) => void;
-  updateWord: (word: {
-    text: string;
-    startTime: number;
-    endTime: number;
-    speaker: string;
-  }) => void;
+  word: Word;
 };
 
-export function ClipWord(
-  { clipStartTime, clipEndTime, word, updateStartAndEndTime, updateWord }:
-    Props,
-) {
-  const [isEdittingWord, setIsEdittingWord] = useState(false);
+export function ClipWord({ word }: Props) {
   const wordRef = useRef<HTMLSpanElement | null>(null);
+  const { draftClip, isMiniModalOpen, selectedWord, setSelectedWord } =
+    useClipEditModal();
+  const isSelected = selectedWord?.startTime === word.startTime;
+  const [tooltipSize, setTooltipSize] = useState({
+    width: 0,
+    height: 0,
+    x: 0,
+    y: 0,
+  });
   let kind = "primary";
   if (
-    word.startTime < clipStartTime ||
-    word.endTime > clipEndTime
+    word.startTime < draftClip.startTime ||
+    word.endTime > draftClip.endTime
   ) {
     kind = "secondary";
+  } else if (isSelected) {
+    kind = "selected";
   }
-  const [isSelected, setIsSelected] = useState(
-    kind === ClipWordKindType.SELECTED,
-  );
 
   const close = () => {
-    setIsEdittingWord(false);
-    setIsSelected(false);
+    setSelectedWord();
   };
 
   useClickOutside(wordRef, () => close(), {
     isActive: true,
     showConfirmation: false,
-    excludeElementIds: ["tooltip-root"],
+    excludeElementIds: ["tooltip-root", "mini-modal"],
   });
+
+  useEffect(() => {
+    // get the size of the tooltip-container and set the size of the tooltip-base
+    if (isSelected) {
+      const tooltipContainer = wordRef.current;
+      if (!tooltipContainer) return;
+      const { width, height, x, y } = tooltipContainer.getBoundingClientRect();
+      setTooltipSize({ width, height, x, y });
+    }
+  }, [isSelected]);
 
   return (
     <>
@@ -68,25 +68,24 @@ export function ClipWord(
           { clipHighlight: kind === ClipWordKindType.SELECTED },
           { clipCurrentWord: kind === ClipWordKindType.CURRENT },
         ])}
-        onClick={() => setIsSelected(true)}
-        onDoubleClick={() => (setIsEdittingWord(true))}
+        onClick={() => {
+          setSelectedWord(word);
+        }}
       >
         {`${word.text} `}
-        {isEdittingWord && (
-          <EditWordMenu
-            word={word}
-            updateWord={updateWord}
-            handleClose={() => close()}
-          />
-        )}
-        {isSelected && (
-          <WordMenu
-            wordStartTime={word.startTime}
-            wordEndTime={word.endTime}
-            clipStartTime={clipStartTime}
-            clipEndTime={clipEndTime}
-            updateStartAndEndTime={updateStartAndEndTime}
-          />
+        {isSelected && !isMiniModalOpen && createPortal(
+          <div
+            style={{
+              position: "absolute",
+              width: tooltipSize.width,
+              height: tooltipSize.height,
+              left: tooltipSize.x,
+              top: tooltipSize.y,
+            }}
+          >
+            <WordMenu />
+          </div>,
+          document.getElementById("tooltip-root"),
         )}
       </span>
     </>

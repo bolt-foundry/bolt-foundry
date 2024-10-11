@@ -359,7 +359,6 @@ a.dark:visited {
   top: 0;
   left: 0;
   border-radius: 16px;
-  z-index: 1;
 }
 
 .miniModal {
@@ -1691,6 +1690,7 @@ input[type="range"].scrubber::-moz-range-thumb:active {
   left: 0;
   min-width: 100px;
   box-shadow: rgba(0, 0, 0, 0.25) 0px 4px 12px;
+  pointer-events: all;
 }
 
 .word-menu-item {

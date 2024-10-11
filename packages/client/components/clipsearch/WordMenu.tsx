@@ -1,48 +1,36 @@
-import { React } from "deps.ts";
 import { useRef } from "react";
+import { useClipEditModal } from "packages/client/contexts/ClipEditModalContext.tsx";
+import { WordMenuItem } from "packages/client/components/clipsearch/WordMenuItem.tsx";
 
-type Props = {
-  wordStartTime: number;
-  wordEndTime: number;
-  clipStartTime: number;
-  clipEndTime: number;
-  updateStartAndEndTime: (startTime?: number, endTime?: number) => void;
-};
+export function WordMenu() {
+  const {
+    draftClip,
+    selectedWord,
+    setIsMiniModalOpen,
+    updateStartTime,
+    updateEndTime,
+  } = useClipEditModal();
+  const showStart = selectedWord.startTime < draftClip.endTime;
+  const showEnd = selectedWord.endTime > draftClip.startTime;
 
-export function WordMenu(
-  {
-    wordStartTime,
-    wordEndTime,
-    clipStartTime,
-    clipEndTime,
-    updateStartAndEndTime,
-  },
-) {
-  const menuRef = useRef<HTMLDivElement | null>(null);
-  const showStart = wordStartTime < clipEndTime;
-  const showEnd = wordEndTime > clipStartTime;
   return (
-    <div className="word-menu" ref={menuRef}>
+    <div className="word-menu">
       {showStart && (
-        <div
-          onClick={() => {
-            updateStartAndEndTime(wordStartTime, null);
-          }} //TODO
-          className="word-menu-item"
-        >
-          <div className="word-menu-text">Start here</div>
-        </div>
+        <WordMenuItem
+          onClick={updateStartTime}
+          label={"Start here"}
+        />
       )}
       {showEnd && (
-        <div
-          onClick={() => {
-            updateStartAndEndTime(null, wordEndTime);
-          }} // TODO
-          className="word-menu-item"
-        >
-          <div className="word-menu-text">End here</div>
-        </div>
+        <WordMenuItem
+          onClick={updateEndTime}
+          label={"End here"}
+        />
       )}
+      <WordMenuItem
+        onClick={() => setIsMiniModalOpen(true)}
+        label={"Edit word"}
+      />
     </div>
   );
 }
