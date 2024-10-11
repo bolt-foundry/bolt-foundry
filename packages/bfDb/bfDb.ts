@@ -404,7 +404,7 @@ const VALID_METADATA_COLUMN_NAMES = [
 
 const defaultClause = "1=1";
 
-async function bfQueryItemsUnified<
+export async function bfQueryItemsUnified<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
 >(

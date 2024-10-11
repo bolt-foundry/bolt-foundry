@@ -10,7 +10,11 @@ import type {
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import type { ConnectionArguments } from "packages/graphql/deps.ts";
 import { BfModel } from "packages/bfDb/classes/BfModel.ts";
-import { bfGetItemsByBfGid } from "packages/bfDb/bfDb.ts";
+import {
+  bfGetItemsByBfGid,
+  bfQueryItemsForGraphQLConnection,
+  bfQueryItemsUnified,
+} from "packages/bfDb/bfDb.ts";
 import type { ConnectionInterface } from "relay";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
@@ -101,21 +105,26 @@ export class BfEdge<
     sourceBfGid: BfGid | BfSid,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
     connectionArgs: ConnectionArguments,
+    edgePropsToQuery?: Partial<BfEdgeOptionalProps>,
   ): Promise<
     ConnectionInterface<
       InstanceType<TThis> & EdgeCreationMetadata
     > & { count: number }
   > {
-    logger.debug("queryTargetsConnectionForGraphQL", TargetClass, sourceBfGid);
-    const TargetClassAsBfNode = TargetClass as unknown as typeof BfNode;
-    const connection = await TargetClassAsBfNode
-      .queryConnectionForGraphQL(
-        currentViewer,
-        { bfSid: sourceBfGid, bfTClassName: TargetClass.name },
-        propsToQuery,
-        connectionArgs,
-      );
-    logger.debug("connection", connection);
+    const edgeMetadataForQuery = {
+      bfTClassName: TargetClass.name,
+      bfSid: sourceBfGid,
+      bfOid: currentViewer.organizationBfGid,
+      className: this.name,
+    };
+    logger.info("edgePropsToQuery", edgePropsToQuery);
+    const connection = await bfQueryItemsForGraphQLConnection(
+      edgeMetadataForQuery,
+      edgePropsToQuery,
+      connectionArgs,
+      [],
+    );
+
     if (connection.edges.length === 0) {
       return connection;
     }
@@ -128,17 +137,27 @@ export class BfEdge<
       Boolean,
     ) as Array<BfTid>;
     logger.debug("targetIds", targetIds);
+    const count = await bfQueryItemsUnified(
+      { className: TargetClass.name },
+      propsToQuery,
+      targetIds,
+      undefined,
+      undefined,
+      {
+        countOnly: true,
+      },
+    );
+    const TargetClassAsBfNode = TargetClass as unknown as typeof BfNode;
     const targetConnection = await TargetClassAsBfNode
       .queryConnectionForGraphQL(
         currentViewer,
         {},
-        {},
+        propsToQuery,
         connectionArgs,
         targetIds,
       );
     logger.debug("targetConnection", targetConnection);
-    // TODO Total hack.
-    return { ...targetConnection, count: connection.count };
+    return { ...targetConnection, count };
   }
 
   static async querySourceInstances<
