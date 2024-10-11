@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c2ae7d801cf788e14995e156fda284cd>>
+ * @generated SignedSource<<cacefbb43c8a04b8e9212b97a95a4a1c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type ClipEditButton_bfSavedSearchResult$data = {
-  readonly duration: any | null | undefined;
+  readonly description: string | null | undefined;
   readonly endTime: any | null | undefined;
   readonly id: string;
   readonly startTime: any | null | undefined;
@@ -71,7 +71,7 @@ return {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "duration",
+      "name": "description",
       "storageKey": null
     },
     {
@@ -112,6 +112,6 @@ return {
 };
 })();
 
-(node as any).hash = "b8fd9f795a248b057777648e5a323319";
+(node as any).hash = "454fa92aaaca3da3628e38583d072c2c";
 
 export default node;

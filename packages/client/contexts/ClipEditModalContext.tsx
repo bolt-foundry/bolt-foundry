@@ -2,7 +2,8 @@ import * as React from "react";
 import type { Word } from "packages/types/transcript.ts";
 const { createContext, useContext, useState } = React;
 
-type DraftClip = {
+export type DraftClip = {
+  description: string;
   duration: number;
   endTime: number;
   id: string;
@@ -53,6 +54,34 @@ export default function ClipEditModalProvider(
     setNewWordsString("");
   };
 
+  const updateStartTime = () => {
+    if (!selectedWord) throw new Error("No selected word");
+    setDraftClip({
+      ...draftClip,
+      startTime: selectedWord.startTime,
+    });
+    setTimeout(() => {
+      setSelectedWord(undefined);
+    }, 1); // hack
+  };
+
+  const updateEndTime = (
+    _e?: React.TouchEvent,
+    endTime?: number | undefined,
+  ) => {
+    console.log("IT:S THE END TIMES", endTime);
+    if (!selectedWord) throw new Error("No selected word");
+    console.log("selectedWord.endTime", selectedWord.endTime);
+    const newEndTime = endTime ?? selectedWord.endTime;
+    setDraftClip({
+      ...draftClip,
+      endTime: newEndTime,
+    });
+    setTimeout(() => {
+      setSelectedWord(undefined);
+    }, 1); // hack
+  };
+
   const miniModalOnConfirm = () => {
     const splitWords = newWordsString.split(" ");
     if (!selectedWord) throw new Error("No selected word");
@@ -73,6 +102,9 @@ export default function ClipEditModalProvider(
       }
       return word;
     });
+    if (newWords.length > 1) {
+      updateEndTime(undefined, startOfNextWord);
+    }
     const updatedWords = [...oldDraftWordsMinusEditedWord, ...newWords].sort(
       (a, b) => {
         return a.startTime - b.startTime;
@@ -83,28 +115,6 @@ export default function ClipEditModalProvider(
       words: updatedWords,
     });
     miniModalOnCancel();
-  };
-
-  const updateStartTime = () => {
-    if (!selectedWord) throw new Error("No selected word");
-    setDraftClip({
-      ...draftClip,
-      startTime: selectedWord.startTime,
-    });
-    setTimeout(() => {
-      setSelectedWord(undefined);
-    }, 1); // hack
-  };
-
-  const updateEndTime = () => {
-    if (!selectedWord) throw new Error("No selected word");
-    setDraftClip({
-      ...draftClip,
-      endTime: selectedWord.endTime,
-    });
-    setTimeout(() => {
-      setSelectedWord(undefined);
-    }, 1); // hack
   };
 
   const value = {

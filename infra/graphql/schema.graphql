@@ -604,6 +604,7 @@ type Mutation {
   searchCollection(collectionId: ID!, query: String!): BfSavedSearch
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
+  updateSearchResult(description: String!, endTime: TimecodeInMilliseconds!, id: String!, startTime: TimecodeInMilliseconds!, title: String!, words: [SearchResultWordInput]): BfSavedSearchResult
   updateTranscript(filename: String, id: String!, words: String): BfMediaNodeTranscript
 }
 
@@ -677,6 +678,13 @@ type RichText {
   annotations: Annotations
   text: Text
   type: String
+}
+
+input SearchResultWordInput {
+  endTime: TimecodeInMilliseconds!
+  speaker: String!
+  startTime: TimecodeInMilliseconds!
+  text: String!
 }
 
 enum SearchStatus {
