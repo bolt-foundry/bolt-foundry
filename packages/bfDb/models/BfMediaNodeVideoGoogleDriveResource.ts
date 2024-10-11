@@ -7,6 +7,8 @@ import {
 } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
+import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
+import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 
 const logger = getLogger(import.meta);
 
@@ -34,5 +36,21 @@ export class BfMediaNodeVideoGoogleDriveResource
     );
     logger.info(`Transcript created for ${this}`);
     return bfmnTranscript;
+  }
+
+  async getFile() {
+    logger.debug(
+      "getFile",
+      "compressVideoFromGoogleDriveResourceId",
+      this.props.googleDriveResourceId,
+    );
+
+    const bfGoogleDriveResource = await BfGoogleDriveResource.findX(
+      this.currentViewer,
+      toBfGid(this.props.googleDriveResourceId),
+    );
+    logger.debug(`Getting file handle for ${bfGoogleDriveResource}`);
+    using _fileHandle = await bfGoogleDriveResource.download();
+    return bfGoogleDriveResource.getFilePath();
   }
 }
