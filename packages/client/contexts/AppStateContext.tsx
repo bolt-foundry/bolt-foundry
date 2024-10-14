@@ -1,5 +1,5 @@
 import * as React from "react";
-const { useState } = React;
+import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
 
 type FeatureFlags = Record<string, boolean>;
 
@@ -22,9 +22,12 @@ export function useAppState(): ValueType {
 export default function AppStateProvider(
   { children }: React.PropsWithChildren,
 ) {
-  const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
-    placeholder: false,
-  });
+  const [featureFlags, setFeatureFlags] = useLocalStorage<FeatureFlags>(
+    "featureFlags",
+    {
+      placeholder: false,
+    },
+  );
   const getFeatureFlag = (name: string) => featureFlags[name];
   const setFeatureFlag = (name: string) => {
     setFeatureFlags({ ...featureFlags, [name]: !featureFlags[name] });
