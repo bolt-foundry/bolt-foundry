@@ -14,12 +14,22 @@ const fragment = await graphql`
     after: { type: "String" }
     first: { type: "Int", defaultValue: 5 }
   ) {
-    googleDriveFolders(first: $first, after: $after) @connection(key: "WatchFolderList_googleDriveFolders") {
+    collections(first: $first, after: $after) @connection(key: "WatchFolderList_collections") {
       count
       edges {
         node {
           name
           id
+          watchedFolders(first: 10) {
+            count
+            edges {
+              node {
+                __typename
+                name
+                id
+              }
+            }
+          }
         }
       }
       pageInfo {
@@ -49,14 +59,18 @@ export function WatchFolderList({ settings$key }: Props) {
     fragment,
     settings$key,
   );
+  const collection = data?.collections?.edges?.[0]?.node;
+  const watchedFolders = collection?.watchedFolders?.edges?.map((edge) =>
+    edge?.node
+  );
 
-  const tableData = data?.googleDriveFolders?.edges?.map((edge) => {
-    if (!edge?.node) {
+  const tableData = watchedFolders.map((folder) => {
+    if (!folder) {
       return null;
     }
     return {
-      id: edge.node?.id,
-      folder: edge.node.name ?? "Untitled",
+      id: folder?.id,
+      folder: folder.name ?? collection?.name ?? "Untitled",
       videos: 0,
       active: false,
       status: "INGESTING",
@@ -92,7 +106,7 @@ export function WatchFolderList({ settings$key }: Props) {
 
   return (
     <div>
-      {data?.googleDriveFolders?.edges?.length === 0 &&
+      {watchedFolders?.length === 0 &&
         (
           <div className="cs-page-section">
             Authenticate with Google, then choose a folder.

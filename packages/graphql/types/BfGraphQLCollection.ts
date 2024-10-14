@@ -6,11 +6,11 @@ import {
   stringArg,
 } from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
+import { BfGraphQLGoogleDriveFolderType } from "packages/graphql/types/mod.ts";
 import {
-  BfGraphQLGoogleDriveFolderType,
-  BfGraphQLSavedSearchType,
-} from "packages/graphql/types/mod.ts";
-import { BfCollection, CollectionToGoogleDriveResourceEdgeRoles } from "packages/bfDb/models/BfCollection.ts";
+  BfCollection,
+  CollectionToGoogleDriveResourceEdgeRoles,
+} from "packages/bfDb/models/BfCollection.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfError } from "lib/BfError.ts";
@@ -29,7 +29,7 @@ export const BfGraphQLCollectionType = objectType({
           BfGoogleDriveResource,
           args,
           {},
-          { role: CollectionToGoogleDriveResourceEdgeRoles.WATCHED_FOLDER }
+          { role: CollectionToGoogleDriveResourceEdgeRoles.WATCHED_FOLDER },
         );
       },
     });
