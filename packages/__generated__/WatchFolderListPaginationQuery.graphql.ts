@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<a397a6f054b9b0557ff3beee20c00d56>>
+ * @generated SignedSource<<b3bfa8481dd54137dc83261c45476679>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -75,6 +75,20 @@ v4 = {
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
+},
+v5 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "count",
+  "storageKey": null
+},
+v6 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
 };
 return {
   "fragment": {
@@ -125,22 +139,16 @@ return {
               {
                 "alias": null,
                 "args": (v2/*: any*/),
-                "concreteType": "BfGoogleDriveResourceConnection",
+                "concreteType": "BfCollectionConnection",
                 "kind": "LinkedField",
-                "name": "googleDriveFolders",
+                "name": "collections",
                 "plural": false,
                 "selections": [
+                  (v5/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "count",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "BfGoogleDriveResourceEdge",
+                    "concreteType": "BfCollectionEdge",
                     "kind": "LinkedField",
                     "name": "edges",
                     "plural": true,
@@ -148,19 +156,56 @@ return {
                       {
                         "alias": null,
                         "args": null,
-                        "concreteType": "BfGoogleDriveResource",
+                        "concreteType": "BfCollection",
                         "kind": "LinkedField",
                         "name": "node",
                         "plural": false,
                         "selections": [
+                          (v6/*: any*/),
+                          (v4/*: any*/),
                           {
                             "alias": null,
-                            "args": null,
-                            "kind": "ScalarField",
-                            "name": "name",
-                            "storageKey": null
+                            "args": [
+                              {
+                                "kind": "Literal",
+                                "name": "first",
+                                "value": 10
+                              }
+                            ],
+                            "concreteType": "BfGoogleDriveResourceConnection",
+                            "kind": "LinkedField",
+                            "name": "watchedFolders",
+                            "plural": false,
+                            "selections": [
+                              (v5/*: any*/),
+                              {
+                                "alias": null,
+                                "args": null,
+                                "concreteType": "BfGoogleDriveResourceEdge",
+                                "kind": "LinkedField",
+                                "name": "edges",
+                                "plural": true,
+                                "selections": [
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "concreteType": "BfGoogleDriveResource",
+                                    "kind": "LinkedField",
+                                    "name": "node",
+                                    "plural": false,
+                                    "selections": [
+                                      (v3/*: any*/),
+                                      (v6/*: any*/),
+                                      (v4/*: any*/)
+                                    ],
+                                    "storageKey": null
+                                  }
+                                ],
+                                "storageKey": null
+                              }
+                            ],
+                            "storageKey": "watchedFolders(first:10)"
                           },
-                          (v4/*: any*/),
                           (v3/*: any*/)
                         ],
                         "storageKey": null
@@ -222,9 +267,9 @@ return {
                 "args": (v2/*: any*/),
                 "filters": null,
                 "handle": "connection",
-                "key": "WatchFolderList_googleDriveFolders",
+                "key": "WatchFolderList_collections",
                 "kind": "LinkedHandle",
-                "name": "googleDriveFolders"
+                "name": "collections"
               }
             ],
             "type": "BfOrganization",
@@ -236,16 +281,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "f833bb0e0ab6e41cf49d9458cc648811",
+    "cacheID": "c5a46e109fe46d202c406ea2f10f67c2",
     "id": null,
     "metadata": {},
     "name": "WatchFolderListPaginationQuery",
     "operationKind": "query",
-    "text": "query WatchFolderListPaginationQuery(\n  $after: String\n  $first: Int = 5\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...WatchFolderList_bfOrganization_2HEEH6\n    id\n  }\n}\n\nfragment WatchFolderList_bfOrganization_2HEEH6 on BfOrganization {\n  googleDriveFolders(first: $first, after: $after) {\n    count\n    edges {\n      node {\n        name\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
+    "text": "query WatchFolderListPaginationQuery(\n  $after: String\n  $first: Int = 5\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...WatchFolderList_bfOrganization_2HEEH6\n    id\n  }\n}\n\nfragment WatchFolderList_bfOrganization_2HEEH6 on BfOrganization {\n  collections(first: $first, after: $after) {\n    count\n    edges {\n      node {\n        name\n        id\n        watchedFolders(first: 10) {\n          count\n          edges {\n            node {\n              __typename\n              name\n              id\n            }\n          }\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "408ac56e3cd3a14d496f65513c4f835d";
+(node as any).hash = "4543d7585f9ec141ff97dfab80902a93";
 
 export default node;

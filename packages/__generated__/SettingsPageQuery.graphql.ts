@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<de00a126c3335902eee13c0bb8719ea9>>
+ * @generated SignedSource<<d7ba8a98f76ff9fdf1021484ca9e43d3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -56,7 +56,14 @@ v3 = [
     "name": "first",
     "value": 5
   }
-];
+],
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "count",
+  "storageKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -153,22 +160,16 @@ return {
               {
                 "alias": null,
                 "args": (v3/*: any*/),
-                "concreteType": "BfGoogleDriveResourceConnection",
+                "concreteType": "BfCollectionConnection",
                 "kind": "LinkedField",
-                "name": "googleDriveFolders",
+                "name": "collections",
                 "plural": false,
                 "selections": [
+                  (v4/*: any*/),
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "count",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "concreteType": "BfGoogleDriveResourceEdge",
+                    "concreteType": "BfCollectionEdge",
                     "kind": "LinkedField",
                     "name": "edges",
                     "plural": true,
@@ -176,13 +177,56 @@ return {
                       {
                         "alias": null,
                         "args": null,
-                        "concreteType": "BfGoogleDriveResource",
+                        "concreteType": "BfCollection",
                         "kind": "LinkedField",
                         "name": "node",
                         "plural": false,
                         "selections": [
                           (v0/*: any*/),
                           (v1/*: any*/),
+                          {
+                            "alias": null,
+                            "args": [
+                              {
+                                "kind": "Literal",
+                                "name": "first",
+                                "value": 10
+                              }
+                            ],
+                            "concreteType": "BfGoogleDriveResourceConnection",
+                            "kind": "LinkedField",
+                            "name": "watchedFolders",
+                            "plural": false,
+                            "selections": [
+                              (v4/*: any*/),
+                              {
+                                "alias": null,
+                                "args": null,
+                                "concreteType": "BfGoogleDriveResourceEdge",
+                                "kind": "LinkedField",
+                                "name": "edges",
+                                "plural": true,
+                                "selections": [
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "concreteType": "BfGoogleDriveResource",
+                                    "kind": "LinkedField",
+                                    "name": "node",
+                                    "plural": false,
+                                    "selections": [
+                                      (v2/*: any*/),
+                                      (v0/*: any*/),
+                                      (v1/*: any*/)
+                                    ],
+                                    "storageKey": null
+                                  }
+                                ],
+                                "storageKey": null
+                              }
+                            ],
+                            "storageKey": "watchedFolders(first:10)"
+                          },
                           (v2/*: any*/)
                         ],
                         "storageKey": null
@@ -237,16 +281,16 @@ return {
                     "storageKey": null
                   }
                 ],
-                "storageKey": "googleDriveFolders(first:5)"
+                "storageKey": "collections(first:5)"
               },
               {
                 "alias": null,
                 "args": (v3/*: any*/),
                 "filters": null,
                 "handle": "connection",
-                "key": "WatchFolderList_googleDriveFolders",
+                "key": "WatchFolderList_collections",
                 "kind": "LinkedHandle",
-                "name": "googleDriveFolders"
+                "name": "collections"
               },
               (v1/*: any*/),
               {
@@ -392,12 +436,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "cd652448bb05bca92f8643851177566d",
+    "cacheID": "3a8af718fa770b7af6548c5776451e2a",
     "id": null,
     "metadata": {},
     "name": "SettingsPageQuery",
     "operationKind": "query",
-    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        transcripts(first: 1) {\n          edges {\n            node {\n              words {\n                start\n                end\n                text\n                confidence\n                speaker\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  googleDriveFolders(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        transcripts(first: 1) {\n          edges {\n            node {\n              words {\n                start\n                end\n                text\n                confidence\n                speaker\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  collections(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        watchedFolders(first: 10) {\n          count\n          edges {\n            node {\n              __typename\n              name\n              id\n            }\n          }\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
   }
 };
 })();
