@@ -720,7 +720,7 @@ export async function bfQueryItemsForGraphQLConnection<
   const count = await bfQueryItemsUnified<TProps, TMetadata>(
     metadata,
     props,
-    [],
+    bfGids,
     orderDirection,
     "sort_value",
     {
