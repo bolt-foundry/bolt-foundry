@@ -10,7 +10,7 @@ import {
   BfGraphQLGoogleDriveFolderType,
   BfGraphQLSavedSearchType,
 } from "packages/graphql/types/mod.ts";
-import { BfCollection } from "packages/bfDb/models/BfCollection.ts";
+import { BfCollection, CollectionToGoogleDriveResourceEdgeRoles } from "packages/bfDb/models/BfCollection.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfError } from "lib/BfError.ts";
@@ -28,6 +28,8 @@ export const BfGraphQLCollectionType = objectType({
         return collection.queryTargetsConnectionForGraphQL(
           BfGoogleDriveResource,
           args,
+          {},
+          { role: CollectionToGoogleDriveResourceEdgeRoles.WATCHED_FOLDER }
         );
       },
     });

@@ -129,8 +129,8 @@ export class BfEdge<
       return connection;
     }
     const targetEdgeIds = connection.edges.map((
-      edge: { node: { id: string } },
-    ) => edge.node.id);
+      edge: { node: { metadata: { bfGid: string } } },
+    ) => edge.node.metadata.bfGid);
     logger.debug("targetEdgeIds", targetEdgeIds);
     const targetEdges = await bfGetItemsByBfGid(targetEdgeIds);
     const targetIds = targetEdges.map((edge) => edge.metadata.bfTid).filter(
