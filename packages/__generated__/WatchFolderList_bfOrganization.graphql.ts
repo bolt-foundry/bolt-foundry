@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b2c40c1aabe1a476aa6a234179009be9>>
+ * @generated SignedSource<<3ec458415cb9ecef0c1bde18f4fb1126>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,12 +12,22 @@ import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 import * as __WatchFolderListPaginationQuery_graphql from "packages/__generated__/./WatchFolderListPaginationQuery.graphql.ts";
 import { FragmentRefs } from "relay-runtime";
 export type WatchFolderList_bfOrganization$data = {
-  readonly googleDriveFolders: {
+  readonly collections: {
     readonly count: number | null | undefined;
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
         readonly name: string | null | undefined;
+        readonly watchedFolders: {
+          readonly count: number | null | undefined;
+          readonly edges: ReadonlyArray<{
+            readonly node: {
+              readonly __typename: "BfGoogleDriveResource";
+              readonly id: string;
+              readonly name: string | null | undefined;
+            } | null | undefined;
+          } | null | undefined> | null | undefined;
+        } | null | undefined;
       } | null | undefined;
     } | null | undefined> | null | undefined;
     readonly pageInfo: {
@@ -37,13 +47,34 @@ export type WatchFolderList_bfOrganization$key = {
 
 const node: ReaderFragment = (function(){
 var v0 = [
-  "googleDriveFolders"
+  "collections"
 ],
 v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
+  "name": "count",
+  "storageKey": null
+},
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "name",
+  "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "id",
+  "storageKey": null
+},
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "__typename",
   "storageKey": null
 };
 return {
@@ -91,24 +122,18 @@ return {
   "name": "WatchFolderList_bfOrganization",
   "selections": [
     {
-      "alias": "googleDriveFolders",
+      "alias": "collections",
       "args": null,
-      "concreteType": "BfGoogleDriveResourceConnection",
+      "concreteType": "BfCollectionConnection",
       "kind": "LinkedField",
-      "name": "__WatchFolderList_googleDriveFolders_connection",
+      "name": "__WatchFolderList_collections_connection",
       "plural": false,
       "selections": [
+        (v1/*: any*/),
         {
           "alias": null,
           "args": null,
-          "kind": "ScalarField",
-          "name": "count",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "concreteType": "BfGoogleDriveResourceEdge",
+          "concreteType": "BfCollectionEdge",
           "kind": "LinkedField",
           "name": "edges",
           "plural": true,
@@ -116,26 +141,57 @@ return {
             {
               "alias": null,
               "args": null,
-              "concreteType": "BfGoogleDriveResource",
+              "concreteType": "BfCollection",
               "kind": "LinkedField",
               "name": "node",
               "plural": false,
               "selections": [
+                (v2/*: any*/),
+                (v3/*: any*/),
                 {
                   "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "name",
-                  "storageKey": null
+                  "args": [
+                    {
+                      "kind": "Literal",
+                      "name": "first",
+                      "value": 10
+                    }
+                  ],
+                  "concreteType": "BfGoogleDriveResourceConnection",
+                  "kind": "LinkedField",
+                  "name": "watchedFolders",
+                  "plural": false,
+                  "selections": [
+                    (v1/*: any*/),
+                    {
+                      "alias": null,
+                      "args": null,
+                      "concreteType": "BfGoogleDriveResourceEdge",
+                      "kind": "LinkedField",
+                      "name": "edges",
+                      "plural": true,
+                      "selections": [
+                        {
+                          "alias": null,
+                          "args": null,
+                          "concreteType": "BfGoogleDriveResource",
+                          "kind": "LinkedField",
+                          "name": "node",
+                          "plural": false,
+                          "selections": [
+                            (v4/*: any*/),
+                            (v2/*: any*/),
+                            (v3/*: any*/)
+                          ],
+                          "storageKey": null
+                        }
+                      ],
+                      "storageKey": null
+                    }
+                  ],
+                  "storageKey": "watchedFolders(first:10)"
                 },
-                (v1/*: any*/),
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "__typename",
-                  "storageKey": null
-                }
+                (v4/*: any*/)
               ],
               "storageKey": null
             },
@@ -191,13 +247,13 @@ return {
       ],
       "storageKey": null
     },
-    (v1/*: any*/)
+    (v3/*: any*/)
   ],
   "type": "BfOrganization",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "408ac56e3cd3a14d496f65513c4f835d";
+(node as any).hash = "4543d7585f9ec141ff97dfab80902a93";
 
 export default node;
