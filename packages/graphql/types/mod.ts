@@ -18,6 +18,8 @@ export * from "packages/graphql/types/BfGraphQLOrganization.ts";
 export * from "packages/graphql/types/BfGraphQLPerson.ts";
 export * from "packages/graphql/types/BfGraphQLSavedSearch.ts";
 export * from "packages/graphql/types/BfGraphQLSavedSearchResult.ts";
+export * from "packages/graphql/types/BfGraphQLTTGame.ts";
+export * from "packages/graphql/types/BfGraphQLTTQuestion.ts";
 export * from "packages/graphql/types/GraphQLWord.ts";
 export * from "packages/graphql/types/GraphQLBlog.ts";
 export * from "packages/graphql/types/GraphQLMedia.ts";
