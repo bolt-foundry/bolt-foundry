@@ -2394,3 +2394,71 @@ div#toast-root {
     background-position: -60% 0;
   }
 }
+
+
+/* Trivia Taxi Styles */
+.answers-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 16px; /* Optional: adjust the space between grid items */
+}
+
+.answer-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 320px;
+  width: 450px;
+  border: 2px solid black;
+  border-radius: 15px;
+  font-size: 3em;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px black;
+}
+
+.answer-container:active {
+  transform: translateY(10px);
+  box-shadow: 0 2px black;
+}
+
+
+.game-over-modal {
+  position: absolute;
+  display: flex;
+  z-index: 1000;
+  font-size: 5em;
+  background: linear-gradient(to top, black, transparent);
+  color: var(--alwaysWhite);
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  height: 900px;
+  width: 1100px;
+}
+
+.question-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100px;
+  width: 900px;
+  border: 2px solid black;
+  border-radius: 15px;
+  font-size: 1.7em;
+  padding: 20px;
+}
+
+.trivia-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  gap: 20px;
+}

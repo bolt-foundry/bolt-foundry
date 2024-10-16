@@ -233,6 +233,28 @@ export interface NexusGenObjects {
     cursor: string; // String!
     node?: NexusGenRootTypes['BfSavedSearchResult'] | null; // BfSavedSearchResult
   }
+  BfTTGame: { // root type
+    correctResponses?: number | null; // Int
+    incorrectResponses?: number | null; // Int
+  }
+  BfTTQuestion: { // root type
+    category?: string | null; // String
+    correct_answer?: string | null; // String
+    difficulty?: string | null; // String
+    incorrect_answers?: Array<string | null> | null; // [String]
+    question?: string | null; // String
+    type?: string | null; // String
+  }
+  BfTTQuestionConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['BfTTQuestionEdge'] | null> | null; // [BfTTQuestionEdge]
+    nodes?: Array<NexusGenRootTypes['BfTTQuestion'] | null> | null; // [BfTTQuestion]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfTTQuestionEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BfTTQuestion'] | null; // BfTTQuestion
+  }
   Blog: { // root type
     title?: string | null; // String
   }
@@ -346,11 +368,11 @@ export interface NexusGenObjects {
 
 export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'> | core.Discriminate<'IBfCurrentViewerInternalAdmin', 'required'>;
-  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfCollection', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfSavedSearch', 'required'> | core.Discriminate<'BfSavedSearchResult', 'required'>;
+  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfCollection', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfSavedSearch', 'required'> | core.Discriminate<'BfSavedSearchResult', 'required'> | core.Discriminate<'BfTTGame', 'required'> | core.Discriminate<'BfTTQuestion', 'required'>;
   BlogPostContentBlock: core.Discriminate<'CalloutBlock', 'optional'> | core.Discriminate<'CodeBlock', 'optional'> | core.Discriminate<'HeadingBlock', 'optional'> | core.Discriminate<'ImageBlock', 'optional'> | core.Discriminate<'ParagraphBlock', 'optional'>;
   IBfGraphQLNode: any;
   Media: core.Discriminate<'VideoDownloadable', 'required'> | core.Discriminate<'VideoPreviewable', 'required'>;
-  Node: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfCollection', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfSavedSearch', 'required'> | core.Discriminate<'BfSavedSearchResult', 'required'>;
+  Node: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfCollection', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfSavedSearch', 'required'> | core.Discriminate<'BfSavedSearchResult', 'required'> | core.Discriminate<'BfTTGame', 'required'> | core.Discriminate<'BfTTQuestion', 'required'>;
   Video: core.Discriminate<'VideoDownloadable', 'required'> | core.Discriminate<'VideoPreviewable', 'required'>;
 }
 
@@ -543,6 +565,31 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['BfSavedSearchResult'] | null; // BfSavedSearchResult
   }
+  BfTTGame: { // field return type
+    correctResponses: number | null; // Int
+    id: string; // ID!
+    incorrectResponses: number | null; // Int
+    questions: NexusGenRootTypes['BfTTQuestionConnection'] | null; // BfTTQuestionConnection
+  }
+  BfTTQuestion: { // field return type
+    category: string | null; // String
+    correct_answer: string | null; // String
+    difficulty: string | null; // String
+    id: string; // ID!
+    incorrect_answers: Array<string | null> | null; // [String]
+    question: string | null; // String
+    type: string | null; // String
+  }
+  BfTTQuestionConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['BfTTQuestionEdge'] | null> | null; // [BfTTQuestionEdge]
+    nodes: Array<NexusGenRootTypes['BfTTQuestion'] | null> | null; // [BfTTQuestion]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfTTQuestionEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BfTTQuestion'] | null; // BfTTQuestion
+  }
   Blog: { // field return type
     posts: NexusGenRootTypes['BlogPostConnection'] | null; // BlogPostConnection
     title: string | null; // String
@@ -614,6 +661,7 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     addFolderToCollection: NexusGenRootTypes['BfCollection'] | null; // BfCollection
     createOrg: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
+    createTTGame: NexusGenRootTypes['BfTTGame'] | null; // BfTTGame
     createTranscript: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
     deleteGoogleDriveResource: NexusGenRootTypes['BfGoogleDriveResource'] | null; // BfGoogleDriveResource
     deleteMedia: NexusGenRootTypes['BfMedia'] | null; // BfMedia
@@ -627,6 +675,7 @@ export interface NexusGenFieldTypes {
     searchCollection: NexusGenRootTypes['BfSavedSearch'] | null; // BfSavedSearch
     submitContactForm: NexusGenRootTypes['SubmitContactFormPayload'] | null; // SubmitContactFormPayload
     switchAccount: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
+    updateTTGameScore: NexusGenRootTypes['BfTTGame'] | null; // BfTTGame
     updateTranscript: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
   }
   PageInfo: { // field return type
@@ -894,6 +943,31 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'BfSavedSearchResult'
   }
+  BfTTGame: { // field return type name
+    correctResponses: 'Int'
+    id: 'ID'
+    incorrectResponses: 'Int'
+    questions: 'BfTTQuestionConnection'
+  }
+  BfTTQuestion: { // field return type name
+    category: 'String'
+    correct_answer: 'String'
+    difficulty: 'String'
+    id: 'ID'
+    incorrect_answers: 'String'
+    question: 'String'
+    type: 'String'
+  }
+  BfTTQuestionConnection: { // field return type name
+    count: 'Int'
+    edges: 'BfTTQuestionEdge'
+    nodes: 'BfTTQuestion'
+    pageInfo: 'PageInfo'
+  }
+  BfTTQuestionEdge: { // field return type name
+    cursor: 'String'
+    node: 'BfTTQuestion'
+  }
   Blog: { // field return type name
     posts: 'BlogPostConnection'
     title: 'String'
@@ -965,6 +1039,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     addFolderToCollection: 'BfCollection'
     createOrg: 'BfOrganization'
+    createTTGame: 'BfTTGame'
     createTranscript: 'BfMediaNodeTranscript'
     deleteGoogleDriveResource: 'BfGoogleDriveResource'
     deleteMedia: 'BfMedia'
@@ -978,6 +1053,7 @@ export interface NexusGenFieldTypeNames {
     searchCollection: 'BfSavedSearch'
     submitContactForm: 'SubmitContactFormPayload'
     switchAccount: 'BfCurrentViewerAccessToken'
+    updateTTGameScore: 'BfTTGame'
     updateTranscript: 'BfMediaNodeTranscript'
   }
   PageInfo: { // field return type name
@@ -1128,6 +1204,14 @@ export interface NexusGenArgTypes {
       startTime?: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     }
   }
+  BfTTGame: {
+    questions: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
+  }
   Blog: {
     posts: { // args
       after?: string | null; // String
@@ -1149,6 +1233,9 @@ export interface NexusGenArgTypes {
       domainName: string; // String!
       name: string; // String!
       youtubePlaylistUrl?: string | null; // String
+    }
+    createTTGame: { // args
+      shouldCreate?: boolean | null; // Boolean
     }
     createTranscript: { // args
       filename: string; // String!
@@ -1190,6 +1277,9 @@ export interface NexusGenArgTypes {
     switchAccount: { // args
       accountId: string; // ID!
     }
+    updateTTGameScore: { // args
+      respondedCorrectly: boolean; // Boolean!
+    }
     updateTranscript: { // args
       filename?: string | null; // String
       id: string; // String!
@@ -1220,10 +1310,10 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon" | "IBfCurrentViewerInternalAdmin"
-  BfNode: "BfAccount" | "BfCollection" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfOrganization" | "BfPerson" | "BfSavedSearch" | "BfSavedSearchResult"
+  BfNode: "BfAccount" | "BfCollection" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfOrganization" | "BfPerson" | "BfSavedSearch" | "BfSavedSearchResult" | "BfTTGame" | "BfTTQuestion"
   BlogPostContentBlock: "CalloutBlock" | "CodeBlock" | "HeadingBlock" | "ImageBlock" | "ParagraphBlock"
   Media: "VideoDownloadable" | "VideoPreviewable"
-  Node: "BfAccount" | "BfCollection" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfOrganization" | "BfPerson" | "BfSavedSearch" | "BfSavedSearchResult"
+  Node: "BfAccount" | "BfCollection" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfOrganization" | "BfPerson" | "BfSavedSearch" | "BfSavedSearchResult" | "BfTTGame" | "BfTTQuestion"
   Video: "VideoDownloadable" | "VideoPreviewable"
 }
 
@@ -1239,6 +1329,8 @@ export interface NexusGenTypeInterfaces {
   BfPerson: "BfNode" | "Node"
   BfSavedSearch: "BfNode" | "Node"
   BfSavedSearchResult: "BfNode" | "Node"
+  BfTTGame: "BfNode" | "Node"
+  BfTTQuestion: "BfNode" | "Node"
   CalloutBlock: "BlogPostContentBlock"
   CodeBlock: "BlogPostContentBlock"
   HeadingBlock: "BlogPostContentBlock"

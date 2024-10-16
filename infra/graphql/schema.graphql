@@ -461,6 +461,64 @@ type BfSavedSearchResultEdge {
   node: BfSavedSearchResult
 }
 
+type BfTTGame implements BfNode & Node {
+  correctResponses: Int
+
+  """Unique identifier for the resource"""
+  id: ID!
+  incorrectResponses: Int
+  questions(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfTTQuestionConnection
+}
+
+type BfTTQuestion implements BfNode & Node {
+  category: String
+  correct_answer: String
+  difficulty: String
+
+  """Unique identifier for the resource"""
+  id: ID!
+  incorrect_answers: [String]
+  question: String
+  type: String
+}
+
+type BfTTQuestionConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BfTTQuestionEdge]
+
+  """Flattened list of BfTTQuestion type"""
+  nodes: [BfTTQuestion]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type BfTTQuestionEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BfTTQuestion
+}
+
 type Blog {
   posts(
     """Returns the elements in the list that come after the specified cursor"""
@@ -591,6 +649,7 @@ interface Media {
 type Mutation {
   addFolderToCollection(googleDriveResourceId: String!, name: String!): BfCollection
   createOrg(domainName: String!, name: String!, youtubePlaylistUrl: String): BfOrganization
+  createTTGame(shouldCreate: Boolean): BfTTGame
   createTranscript(filename: String!, words: String!): BfMediaNodeTranscript
   deleteGoogleDriveResource(resourceId: String): BfGoogleDriveResource
   deleteMedia(id: String!): BfMedia
@@ -604,6 +663,7 @@ type Mutation {
   searchCollection(collectionId: ID!, query: String!): BfSavedSearch
   submitContactForm(input: SubmitContactFormInput!): SubmitContactFormPayload
   switchAccount(accountId: ID!): BfCurrentViewerAccessToken
+  updateTTGameScore(respondedCorrectly: Boolean!): BfTTGame
   updateTranscript(filename: String, id: String!, words: String): BfMediaNodeTranscript
 }
 
