@@ -2,7 +2,6 @@ import { GraphQLYoga } from "packages/graphql/deps.ts";
 import { schema } from "packages/graphql/schema.ts";
 import { getLogger } from "deps.ts";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
-// import { startupBackend } from "packages/events/mod.ts";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 import {
   CloseCode,
@@ -10,7 +9,6 @@ import {
   makeServer,
 } from "graphql-ws";
 const logger = getLogger(import.meta);
-logger.setLevel(logger.levels.DEBUG);
 
 const { createYoga } = GraphQLYoga;
 

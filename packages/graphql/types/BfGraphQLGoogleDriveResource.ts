@@ -18,6 +18,7 @@ export const BfGraphQLPickGoogleDriveFolderQuery = extendType({
   type: "BfOrganization",
   definition(t) {
     t.connectionField("googleDriveFolders", {
+      deprecation: "Use the `watchFolders` field on `Collection` instead.",
       type: BfGraphQLGoogleDriveFolderType,
       resolve: async (_, args, { bfCurrentViewer }: GraphQLContext) => {
         const connection = await BfEdge.queryTargetsConnectionForGraphQL(
