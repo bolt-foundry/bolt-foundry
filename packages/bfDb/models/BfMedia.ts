@@ -85,6 +85,27 @@ export class BfMedia extends BfNode<BfMediaProps> {
      */
   }
 
+  async findVideo(
+    role: BfMediaNodeVideoRole = BfMediaNodeVideoRole.PREVIEW,
+  ) {
+    const targets = await this.queryTargetInstances(
+      BfMediaNodeVideoGoogleDriveResource,
+    );
+    logger.info("FIND VIDEO targets", targets);
+    const resource = targets[0];
+
+    const video = await resource.queryTargetInstances(
+      BfMediaNodeVideo,
+      {
+        status: BfMediaNodeVideoStatus.COMPLETED,
+      },
+      {
+        role,
+      },
+    );
+    return video[0];
+  }
+
   async createTranscripts() {
     const targets = await this.queryTargetInstances(
       BfMediaNodeVideoGoogleDriveResource,

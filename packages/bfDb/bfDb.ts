@@ -404,6 +404,59 @@ const VALID_METADATA_COLUMN_NAMES = [
 
 const defaultClause = "1=1";
 
+export async function bfQueryAncestorsByClassName<
+  TProps = Record<string, unknown>,
+  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
+>(
+  bfOid: string,
+  targetBfGid: string,
+  sourceBfClassName: string,
+  depth: number = 10,
+): Promise<Array<DbItem<TProps, TMetadata>>> {
+  try {
+    const rows = await sql`
+      WITH RECURSIVE AncestorTree AS (
+        SELECT bf_sid, bf_s_class_name, 1 AS depth
+        FROM bfDb
+        WHERE bf_tid = ${targetBfGid} AND bf_oid = ${bfOid}
+        UNION ALL
+        SELECT b.bf_sid, b.bf_s_class_name, at.depth + 1
+        FROM bfDb AS b
+        INNER JOIN AncestorTree AS at ON b.bf_tid = at.bf_sid
+        WHERE at.depth < ${depth}
+      )
+      SELECT *
+      FROM bfDb
+      WHERE bf_gid = (
+        SELECT bf_sid
+        FROM AncestorTree
+        WHERE bf_s_class_name = ${sourceBfClassName}
+        LIMIT 1
+      );
+    `;
+    const items = rows.map((row) => ({
+      props: row.props,
+      metadata: {
+        bfGid: row.bf_gid,
+        bfSid: row.bf_sid,
+        bfOid: row.bf_oid,
+        bfTid: row.bf_tid,
+        bfCid: row.bf_cid,
+        bfTClassName: row.bf_t_class_name,
+        bfSClassName: row.bf_s_class_name,
+        className: row.class_name,
+        createdAt: new Date(row.created_at),
+        lastUpdated: new Date(row.last_updated),
+        sortValue: row.sort_value,
+      },
+    } as DbItem<TProps, TMetadata>));
+    return items;
+  } catch (error) {
+    logger.error("Error finding ancestor by class name:", error);
+    throw error;
+  }
+}
+
 export async function bfQueryItemsUnified<
   TProps = Props,
   TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
