@@ -20,7 +20,7 @@ type BfMediaNodeVideoGoogleDriveResourceProps = {
 export class BfMediaNodeVideoGoogleDriveResource
   extends BfMediaNodeVideo<BfMediaNodeVideoGoogleDriveResourceProps> {
   async afterCreate() {
-    logger.info("Creating preview video job");
+    logger.debug(`Creating preview video job for ${this}`);
     await BfJob.createJobForNode(
       this,
       "createPreview",
@@ -32,7 +32,7 @@ export class BfMediaNodeVideoGoogleDriveResource
     const bfmnTranscript = await this.createTargetNode(BfMediaNodeTranscript, {
       status: BfMediaNodeTranscriptStatus.NEW,
     });
-    logger.info(`Creating transcript for ${this}`);
+    logger.debug(`Creating transcript for ${this}`);
     const currentOrg = await BfOrganization.findForCurrentViewer(
       this.currentViewer,
     );
@@ -44,7 +44,7 @@ export class BfMediaNodeVideoGoogleDriveResource
     await bfmnTranscript.requestTranscriptionFromGoogleDriveResourceId(
       this.props.googleDriveResourceId,
     );
-    logger.info(`Transcript created for ${this}`);
+    logger.debug(`Transcript created for ${this}`);
     return bfmnTranscript;
   }
 
