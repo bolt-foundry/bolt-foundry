@@ -17,7 +17,9 @@ export const BfGraphQLMediaType = objectType({
   definition: (t) => {
     t.implements(BfNodeGraphQLType);
     t.string("filename");
-    t.string("fileId");
+    t.string("fileId", {
+      deprecation: "Only used for demo hack",
+    });
   },
 });
 
