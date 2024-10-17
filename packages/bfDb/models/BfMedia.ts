@@ -35,6 +35,9 @@ type DownloadClipArgs = {
 };
 
 export class BfMedia extends BfNode<BfMediaProps> {
+  /**
+   * @deprecated Use another method to find media related to the current viewer.
+   */
   static async findMediaByViewer(bfCurrentViewer: BfCurrentViewer) {
     const media = await this.query(bfCurrentViewer, {
       bfOid: bfCurrentViewer.organizationBfGid,
