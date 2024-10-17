@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<edd439c9c9cf95d5ae826cac2859b9fd>>
+ * @generated SignedSource<<ddf0bd933850126951565fca91a3d98c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,6 +16,15 @@ export type DownloadClipButton_bfSavedSearchResult$data = {
     readonly ready: boolean | null | undefined;
     readonly url: any | null | undefined;
   } | null | undefined;
+  readonly endTime: any | null | undefined;
+  readonly id: string;
+  readonly startTime: any | null | undefined;
+  readonly title: string | null | undefined;
+  readonly words: ReadonlyArray<{
+    readonly endTime: any | null | undefined;
+    readonly startTime: any | null | undefined;
+    readonly text: string | null | undefined;
+  } | null | undefined> | null | undefined;
   readonly " $fragmentType": "DownloadClipButton_bfSavedSearchResult";
 };
 export type DownloadClipButton_bfSavedSearchResult$key = {
@@ -23,12 +32,43 @@ export type DownloadClipButton_bfSavedSearchResult$key = {
   readonly " $fragmentSpreads": FragmentRefs<"DownloadClipButton_bfSavedSearchResult">;
 };
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "startTime",
+  "storageKey": null
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "endTime",
+  "storageKey": null
+};
+return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "DownloadClipButton_bfSavedSearchResult",
   "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
+    },
+    (v0/*: any*/),
+    (v1/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "title",
+      "storageKey": null
+    },
     {
       "alias": null,
       "args": null,
@@ -60,12 +100,33 @@ const node: ReaderFragment = {
         }
       ],
       "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "concreteType": "Word",
+      "kind": "LinkedField",
+      "name": "words",
+      "plural": true,
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "text",
+          "storageKey": null
+        },
+        (v0/*: any*/),
+        (v1/*: any*/)
+      ],
+      "storageKey": null
     }
   ],
   "type": "BfSavedSearchResult",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "a67d89de55ea9ca597ba5a426caf4012";
+(node as any).hash = "ecb4ad37268b76e56a96a75249ccab5d";
 
 export default node;
