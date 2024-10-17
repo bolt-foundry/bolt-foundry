@@ -23,16 +23,17 @@ export enum BfMediaNodeVideoRole {
   BEST = "BEST",
 }
 
-export type BfMediaNodeVideoProps = {
+export type BfMediaNodeVideoProps<T> = {
   status: BfMediaNodeVideoStatus;
   processingPct: number;
   role: BfMediaNodeVideoRole;
-};
+} & T;
 
-export class BfMediaNodeVideo extends BfNode<BfMediaNodeVideoProps> {
+export class BfMediaNodeVideo<T = {}> extends BfNode<BfMediaNodeVideoProps<T>> {
+  private cacheDirectory = getMediaCacheDirectory("bf-media-video-cache");
+
   private getRawFilePath(): string {
-    const cacheDirectory = getMediaCacheDirectory("bf-media-video-cache");
-    return `${cacheDirectory}/${this.metadata.bfGid}.mp4`;
+    return `${this.cacheDirectory}/${this.metadata.bfGid}.mp4`;
   }
 
   async getFilePath(): Promise<string | null> {
@@ -50,7 +51,7 @@ export class BfMediaNodeVideo extends BfNode<BfMediaNodeVideoProps> {
 
   async createPreview(): Promise<BfMediaNodeVideo> {
     const videos = await this.queryTargetInstances(
-      BfMediaNodeVideo, 
+      BfMediaNodeVideo,
       { status: BfMediaNodeVideoStatus.COMPLETED },
       { role: BfMediaNodeVideoRole.PREVIEW },
     );
@@ -59,7 +60,7 @@ export class BfMediaNodeVideo extends BfNode<BfMediaNodeVideoProps> {
       return videos[0];
     }
     const bfmnVideo = await this.createTargetNode(
-      BfMediaNodeVideo, 
+      BfMediaNodeVideo,
       { status: BfMediaNodeVideoStatus.NEW },
       BfMediaNodeVideoRole.PREVIEW,
     );
@@ -77,15 +78,15 @@ export class BfMediaNodeVideo extends BfNode<BfMediaNodeVideoProps> {
     );
     logger.debug("Input file:", filePath, fileExists);
     if (
-      !await Deno.stat(BF_MEDIA_VIDEO_CACHE_DIRECTORY).then(() => true).catch(
+      !await Deno.stat(this.cacheDirectory).then(() => true).catch(
         () => false,
       )
     ) {
       logger.error(
         "Directory doesn't exist, creating",
-        BF_MEDIA_VIDEO_CACHE_DIRECTORY,
+        this.cacheDirectory,
       );
-      await Deno.mkdir(BF_MEDIA_VIDEO_CACHE_DIRECTORY, { recursive: true });
+      await Deno.mkdir(this.cacheDirectory, { recursive: true });
     }
     const outputFilePath = this.getRawFilePath();
 

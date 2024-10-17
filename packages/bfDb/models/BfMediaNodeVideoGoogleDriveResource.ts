@@ -9,6 +9,7 @@ import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { BfJob } from "packages/bfDb/models/BfJob.ts";
 
 const logger = getLogger(import.meta);
 
@@ -18,6 +19,15 @@ type BfMediaNodeVideoGoogleDriveResourceProps = {
 
 export class BfMediaNodeVideoGoogleDriveResource
   extends BfMediaNodeVideo<BfMediaNodeVideoGoogleDriveResourceProps> {
+  async afterCreate() {
+    logger.info("Creating preview video job");
+    await BfJob.createJobForNode(
+      this,
+      "createPreview",
+      [],
+    );
+  }
+
   async createTranscript() {
     const bfmnTranscript = await this.createTargetNode(BfMediaNodeTranscript, {
       status: BfMediaNodeTranscriptStatus.NEW,
