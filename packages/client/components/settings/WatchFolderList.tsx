@@ -80,10 +80,7 @@ export function WatchFolderList({ settings$key }: Props) {
     return {
       id: folder?.id,
       folder: folder.name ?? collection?.name ?? "Untitled",
-      // videos: collection?.media?.count ?? 0,
-      videos: collection?.media?.edges?.map((node) => {
-        return node?.node?.name ?? "-";
-      }).join(",\n"),
+      videos: collection?.media?.count ?? 0,
       active: false,
       status: "INGESTING",
     };
@@ -97,20 +94,9 @@ export function WatchFolderList({ settings$key }: Props) {
     },
     {
       title: "Videos",
-      // width: "0.5fr",
       width: "2fr",
       renderer: (data) => <BfDsTableCell text={data.videos} />,
     },
-    // {
-    //   title: "Active",
-    //   width: "0.5fr",
-    //   renderer: (data) => <BfDsTableCell text={data.active ? "Yes" : "No"} />,
-    // },
-    // {
-    //   title: "Status",
-    //   width: "1fr",
-    //   renderer: (data) => <BfDsTableCell text={data.status} />,
-    // },
     {
       width: "0.5fr",
       renderer: (data) => <WatchFolderListMenu resourceId={data.id} />,
