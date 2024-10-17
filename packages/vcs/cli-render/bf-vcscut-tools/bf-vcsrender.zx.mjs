@@ -1,7 +1,8 @@
 #!/usr/bin/env zx
 import "zx/globals";
 
-const inputVideoPath = argv._[0];
+const inputVideoPath = argv._[1];
+console.log("argb", argv, argv._)
 if (!inputVideoPath) {
   echo`Error: path to media file must be provided as first argument`;
   process.exit(1);
@@ -12,8 +13,13 @@ const baseFileName = path.basename(
   inputVideoPath,
   path.extname(inputVideoPath),
 );
+console.log("________VCS________")
+console.log("Input video path: " + inputVideoPath)
+console.log("baseDir: " + baseDir)
+console.log("baseFileName: " + baseFileName)
 
 const inputJsonPath = path.resolve(baseDir, baseFileName + ".json");
+console.log("inputJsonPath: " + inputJsonPath)
 if (!fs.existsSync(inputJsonPath)) {
   echo`Error: BoltFoundry transcript JSON file expected next to media file (at path: ${inputJsonPath})`;
   process.exit(1);
@@ -23,6 +29,7 @@ const vcsCutFilePath = path.resolve(
   baseDir,
   baseFileName + "_render.vcscut.json",
 );
+console.log("vcsCutFilePath: " + vcsCutFilePath)
 
 // -- generate the VCSCut file --
 await $`node gen-cut-from-bf.js -t ${inputJsonPath} -v ${inputVideoPath} -o ${vcsCutFilePath}`;
