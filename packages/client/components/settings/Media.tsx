@@ -14,6 +14,8 @@ fragment Media_bfOrganization on BfOrganization {
       node {
         id
         filename
+        name
+        previewVideoUrl
         transcripts(first: 1) {
           edges {
             node {
@@ -40,6 +42,7 @@ type Props = {
 type Data = {
   id: string;
   filename: string;
+  previewVideoUrl: string;
   words: number;
   tokens: number;
 };
@@ -63,12 +66,18 @@ export function Media({ settings$key }: Props) {
       [];
     return {
       id: d?.node?.id,
-      filename: d?.node?.filename,
+      filename: d?.node?.name,
+      previewVideoUrl: d?.node?.previewVideoUrl,
       words: transcript.length,
       tokens: `~${transcript.length / 4}`,
     };
   }).filter(Boolean);
   const columns: BfDsColumns<Data> = [
+    // {
+    //   title: "File name",
+    //   width: "100px",
+    //   renderer: (data) => <video src={data.previewVideoUrl} />,
+    // },
     {
       title: "File name",
       width: "2fr",

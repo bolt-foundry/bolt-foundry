@@ -15,6 +15,8 @@ import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfError } from "lib/BfError.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
+import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
+import { BfGraphQLMediaType } from "packages/graphql/types/BfGraphQLMedia.ts";
 
 export const BfGraphQLCollectionType = objectType({
   name: "BfCollection",
@@ -30,6 +32,18 @@ export const BfGraphQLCollectionType = objectType({
           args,
           {},
           { role: CollectionToGoogleDriveResourceEdgeRoles.WATCHED_FOLDER },
+        );
+      },
+    });
+    t.connectionField("media", {
+      type: BfGraphQLMediaType,
+      resolve: async ({ id }, args, { bfCurrentViewer }) => {
+        const collection = await BfCollection.findX(bfCurrentViewer, id);
+        return collection.queryTargetsConnectionForGraphQL(
+          BfMedia,
+          args,
+          {},
+          {},
         );
       },
     });

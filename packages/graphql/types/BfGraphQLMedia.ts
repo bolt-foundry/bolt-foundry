@@ -8,6 +8,12 @@ import {
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { getLogger } from "deps.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
+import { BfMediaNodeVideoGoogleDriveResource } from "packages/bfDb/models/BfMediaNodeVideoGoogleDriveResource.ts";
+import {
+  BfMediaNodeVideo,
+  BfMediaNodeVideoRole,
+  BfMediaNodeVideoStatus,
+} from "packages/bfDb/models/BfMediaNodeVideo.ts";
 
 const logger = getLogger(import.meta);
 
@@ -20,6 +26,14 @@ export const BfGraphQLMediaType = objectType({
     t.string("fileId", {
       deprecation: "Only used for demo hack",
     });
+    t.string("name");
+    t.string("previewVideoUrl", {
+      resolve: async ({ id }, _, { bfCurrentViewer }) => {
+        const media = await BfMedia.findX(bfCurrentViewer, id);
+        const video = await media.findVideo(BfMediaNodeVideoRole.PREVIEW);
+        return await video?.getFilePath();
+      },
+    });
   },
 });
 
@@ -28,9 +42,9 @@ export const BfGraphQLMediaQuery = extendType({
   definition(t) {
     t.connectionField("media", {
       type: "BfMedia",
-      resolve: (_, args, { bfCurrentViewer }) => {
+      resolve: async (_, args, { bfCurrentViewer }) => {
         logger.debug("Fetching all media");
-        const media = BfMedia.queryConnectionForGraphQL(
+        const media = await BfMedia.queryConnectionForGraphQL(
           bfCurrentViewer,
           { bfOid: bfCurrentViewer.bfOid },
           {},

@@ -30,6 +30,15 @@ const fragment = await graphql`
               }
             }
           }
+          media(first: 10) {
+            __typename
+            count
+            edges {
+              node {
+                name
+              }
+            }
+          }
         }
       }
       pageInfo {
@@ -64,14 +73,17 @@ export function WatchFolderList({ settings$key }: Props) {
     edge?.node
   );
 
-  const tableData = watchedFolders.map((folder) => {
+  const tableData = watchedFolders?.map((folder) => {
     if (!folder) {
       return null;
     }
     return {
       id: folder?.id,
       folder: folder.name ?? collection?.name ?? "Untitled",
-      videos: 0,
+      // videos: collection?.media?.count ?? 0,
+      videos: collection?.media?.edges?.map((node) => {
+        return node?.node?.name ?? "-";
+      }).join(",\n"),
       active: false,
       status: "INGESTING",
     };
@@ -85,19 +97,20 @@ export function WatchFolderList({ settings$key }: Props) {
     },
     {
       title: "Videos",
-      width: "0.5fr",
+      // width: "0.5fr",
+      width: "2fr",
       renderer: (data) => <BfDsTableCell text={data.videos} />,
     },
-    {
-      title: "Active",
-      width: "0.5fr",
-      renderer: (data) => <BfDsTableCell text={data.active ? "Yes" : "No"} />,
-    },
-    {
-      title: "Status",
-      width: "1fr",
-      renderer: (data) => <BfDsTableCell text={data.status} />,
-    },
+    // {
+    //   title: "Active",
+    //   width: "0.5fr",
+    //   renderer: (data) => <BfDsTableCell text={data.active ? "Yes" : "No"} />,
+    // },
+    // {
+    //   title: "Status",
+    //   width: "1fr",
+    //   renderer: (data) => <BfDsTableCell text={data.status} />,
+    // },
     {
       width: "0.5fr",
       renderer: (data) => <WatchFolderListMenu resourceId={data.id} />,

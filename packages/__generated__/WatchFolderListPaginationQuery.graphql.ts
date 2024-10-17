@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b3bfa8481dd54137dc83261c45476679>>
+ * @generated SignedSource<<186d6fd09f11064c8edaadfeee871094>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -89,7 +89,14 @@ v6 = {
   "kind": "ScalarField",
   "name": "name",
   "storageKey": null
-};
+},
+v7 = [
+  {
+    "kind": "Literal",
+    "name": "first",
+    "value": 10
+  }
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -165,13 +172,7 @@ return {
                           (v4/*: any*/),
                           {
                             "alias": null,
-                            "args": [
-                              {
-                                "kind": "Literal",
-                                "name": "first",
-                                "value": 10
-                              }
-                            ],
+                            "args": (v7/*: any*/),
                             "concreteType": "BfGoogleDriveResourceConnection",
                             "kind": "LinkedField",
                             "name": "watchedFolders",
@@ -205,6 +206,43 @@ return {
                               }
                             ],
                             "storageKey": "watchedFolders(first:10)"
+                          },
+                          {
+                            "alias": null,
+                            "args": (v7/*: any*/),
+                            "concreteType": "BfMediaConnection",
+                            "kind": "LinkedField",
+                            "name": "media",
+                            "plural": false,
+                            "selections": [
+                              (v3/*: any*/),
+                              (v5/*: any*/),
+                              {
+                                "alias": null,
+                                "args": null,
+                                "concreteType": "BfMediaEdge",
+                                "kind": "LinkedField",
+                                "name": "edges",
+                                "plural": true,
+                                "selections": [
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "concreteType": "BfMedia",
+                                    "kind": "LinkedField",
+                                    "name": "node",
+                                    "plural": false,
+                                    "selections": [
+                                      (v6/*: any*/),
+                                      (v4/*: any*/)
+                                    ],
+                                    "storageKey": null
+                                  }
+                                ],
+                                "storageKey": null
+                              }
+                            ],
+                            "storageKey": "media(first:10)"
                           },
                           (v3/*: any*/)
                         ],
@@ -281,16 +319,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c5a46e109fe46d202c406ea2f10f67c2",
+    "cacheID": "45249311b9708785f2ae09df4bc92c16",
     "id": null,
     "metadata": {},
     "name": "WatchFolderListPaginationQuery",
     "operationKind": "query",
-    "text": "query WatchFolderListPaginationQuery(\n  $after: String\n  $first: Int = 5\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...WatchFolderList_bfOrganization_2HEEH6\n    id\n  }\n}\n\nfragment WatchFolderList_bfOrganization_2HEEH6 on BfOrganization {\n  collections(first: $first, after: $after) {\n    count\n    edges {\n      node {\n        name\n        id\n        watchedFolders(first: 10) {\n          count\n          edges {\n            node {\n              __typename\n              name\n              id\n            }\n          }\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
+    "text": "query WatchFolderListPaginationQuery(\n  $after: String\n  $first: Int = 5\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...WatchFolderList_bfOrganization_2HEEH6\n    id\n  }\n}\n\nfragment WatchFolderList_bfOrganization_2HEEH6 on BfOrganization {\n  collections(first: $first, after: $after) {\n    count\n    edges {\n      node {\n        name\n        id\n        watchedFolders(first: 10) {\n          count\n          edges {\n            node {\n              __typename\n              name\n              id\n            }\n          }\n        }\n        media(first: 10) {\n          __typename\n          count\n          edges {\n            node {\n              name\n              id\n            }\n          }\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4543d7585f9ec141ff97dfab80902a93";
+(node as any).hash = "ce930a69ff35d96e2487b4f2df5728fb";
 
 export default node;

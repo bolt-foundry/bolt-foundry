@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d7ba8a98f76ff9fdf1021484ca9e43d3>>
+ * @generated SignedSource<<78c06fac0f4e9ace4468a8b4894d37c8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -51,19 +51,30 @@ v2 = {
   "storageKey": null
 },
 v3 = [
+  (v0/*: any*/),
+  (v1/*: any*/)
+],
+v4 = [
   {
     "kind": "Literal",
     "name": "first",
     "value": 5
   }
 ],
-v4 = {
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "count",
   "storageKey": null
-};
+},
+v6 = [
+  {
+    "kind": "Literal",
+    "name": "first",
+    "value": 10
+  }
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -143,10 +154,7 @@ return {
             "kind": "LinkedField",
             "name": "person",
             "plural": false,
-            "selections": [
-              (v0/*: any*/),
-              (v1/*: any*/)
-            ],
+            "selections": (v3/*: any*/),
             "storageKey": null
           },
           {
@@ -159,13 +167,13 @@ return {
             "selections": [
               {
                 "alias": null,
-                "args": (v3/*: any*/),
+                "args": (v4/*: any*/),
                 "concreteType": "BfCollectionConnection",
                 "kind": "LinkedField",
                 "name": "collections",
                 "plural": false,
                 "selections": [
-                  (v4/*: any*/),
+                  (v5/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -186,19 +194,13 @@ return {
                           (v1/*: any*/),
                           {
                             "alias": null,
-                            "args": [
-                              {
-                                "kind": "Literal",
-                                "name": "first",
-                                "value": 10
-                              }
-                            ],
+                            "args": (v6/*: any*/),
                             "concreteType": "BfGoogleDriveResourceConnection",
                             "kind": "LinkedField",
                             "name": "watchedFolders",
                             "plural": false,
                             "selections": [
-                              (v4/*: any*/),
+                              (v5/*: any*/),
                               {
                                 "alias": null,
                                 "args": null,
@@ -226,6 +228,40 @@ return {
                               }
                             ],
                             "storageKey": "watchedFolders(first:10)"
+                          },
+                          {
+                            "alias": null,
+                            "args": (v6/*: any*/),
+                            "concreteType": "BfMediaConnection",
+                            "kind": "LinkedField",
+                            "name": "media",
+                            "plural": false,
+                            "selections": [
+                              (v2/*: any*/),
+                              (v5/*: any*/),
+                              {
+                                "alias": null,
+                                "args": null,
+                                "concreteType": "BfMediaEdge",
+                                "kind": "LinkedField",
+                                "name": "edges",
+                                "plural": true,
+                                "selections": [
+                                  {
+                                    "alias": null,
+                                    "args": null,
+                                    "concreteType": "BfMedia",
+                                    "kind": "LinkedField",
+                                    "name": "node",
+                                    "plural": false,
+                                    "selections": (v3/*: any*/),
+                                    "storageKey": null
+                                  }
+                                ],
+                                "storageKey": null
+                              }
+                            ],
+                            "storageKey": "media(first:10)"
                           },
                           (v2/*: any*/)
                         ],
@@ -285,7 +321,7 @@ return {
               },
               {
                 "alias": null,
-                "args": (v3/*: any*/),
+                "args": (v4/*: any*/),
                 "filters": null,
                 "handle": "connection",
                 "key": "WatchFolderList_collections",
@@ -329,6 +365,14 @@ return {
                             "args": null,
                             "kind": "ScalarField",
                             "name": "filename",
+                            "storageKey": null
+                          },
+                          (v0/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "previewVideoUrl",
                             "storageKey": null
                           },
                           {
@@ -436,12 +480,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "3a8af718fa770b7af6548c5776451e2a",
+    "cacheID": "7da271686f225446b38c1355d596c0aa",
     "id": null,
     "metadata": {},
     "name": "SettingsPageQuery",
     "operationKind": "query",
-    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        transcripts(first: 1) {\n          edges {\n            node {\n              words {\n                start\n                end\n                text\n                confidence\n                speaker\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  collections(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        watchedFolders(first: 10) {\n          count\n          edges {\n            node {\n              __typename\n              name\n              id\n            }\n          }\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        name\n        previewVideoUrl\n        transcripts(first: 1) {\n          edges {\n            node {\n              words {\n                start\n                end\n                text\n                confidence\n                speaker\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  collections(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        watchedFolders(first: 10) {\n          count\n          edges {\n            node {\n              __typename\n              name\n              id\n            }\n          }\n        }\n        media(first: 10) {\n          __typename\n          count\n          edges {\n            node {\n              name\n              id\n            }\n          }\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
   }
 };
 })();
