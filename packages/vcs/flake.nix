@@ -60,6 +60,7 @@
           meson
           argp-standalone
           ninja
+          zx
         ] ++ (if pkgs.stdenv.isDarwin then
           with pkgs.darwin.apple_sdk.frameworks; [
             CoreGraphics
