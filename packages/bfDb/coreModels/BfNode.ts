@@ -13,6 +13,7 @@ import {
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import type { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import {
+  bfQueryAncestorsByClassName,
   bfQueryItemsForGraphQLConnection,
   bfSubscribeToConnectionChanges,
 } from "packages/bfDb/bfDb.ts";
@@ -133,6 +134,32 @@ export class BfNode<
       role,
     });
     return targetModel as InstanceType<TTargetClass>;
+  }
+
+  public async queryAncestorsByClassName<
+    // an actual good use of any.
+    // deno-lint-ignore no-explicit-any
+    TSourceClass extends abstract new (...args: any) => any,
+  >(
+    BfNodeClass: TSourceClass,
+    limit: number = 10,
+  ) {
+    const ancestors = await bfQueryAncestorsByClassName(
+      this.currentViewer.organizationBfGid,
+      this.metadata.bfGid,
+      BfNodeClass.name,
+      limit,
+    );
+    logger.debug("BfNode ancestors", ancestors);
+    return ancestors.map(({ props, metadata }) => {
+      return new (BfNodeClass as unknown as typeof BfNode)(
+        this.currentViewer,
+        props,
+        {},
+        metadata,
+        false,
+      );
+    }) as Array<InstanceType<TSourceClass>>;
   }
 
   public querySourceInstances<
