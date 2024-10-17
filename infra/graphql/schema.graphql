@@ -182,7 +182,7 @@ type BfGoogleDriveResourceEdge {
 
 """A media object"""
 type BfMedia implements BfNode & Node {
-  fileId: String
+  fileId: String @deprecated(reason: "Only used for demo hack")
   filename: String
 
   """Unique identifier for the resource"""
@@ -294,7 +294,7 @@ type BfOrganization implements BfNode & Node {
 
     """Returns the last n elements from the list."""
     last: Int
-  ): BfGoogleDriveResourceConnection
+  ): BfGoogleDriveResourceConnection @deprecated(reason: "Use the `watchFolders` field on `Collection` instead.")
   id: ID!
   media(
     """Returns the elements in the list that come after the specified cursor"""
