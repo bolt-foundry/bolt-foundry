@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<3ec458415cb9ecef0c1bde18f4fb1126>>
+ * @generated SignedSource<<ca0db9711abe8f769811f3b79566c798>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -17,6 +17,15 @@ export type WatchFolderList_bfOrganization$data = {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
+        readonly media: {
+          readonly __typename: "BfMediaConnection";
+          readonly count: number | null | undefined;
+          readonly edges: ReadonlyArray<{
+            readonly node: {
+              readonly name: string | null | undefined;
+            } | null | undefined;
+          } | null | undefined> | null | undefined;
+        } | null | undefined;
         readonly name: string | null | undefined;
         readonly watchedFolders: {
           readonly count: number | null | undefined;
@@ -70,7 +79,14 @@ v3 = {
   "name": "id",
   "storageKey": null
 },
-v4 = {
+v4 = [
+  {
+    "kind": "Literal",
+    "name": "first",
+    "value": 10
+  }
+],
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -150,13 +166,7 @@ return {
                 (v3/*: any*/),
                 {
                   "alias": null,
-                  "args": [
-                    {
-                      "kind": "Literal",
-                      "name": "first",
-                      "value": 10
-                    }
-                  ],
+                  "args": (v4/*: any*/),
                   "concreteType": "BfGoogleDriveResourceConnection",
                   "kind": "LinkedField",
                   "name": "watchedFolders",
@@ -179,7 +189,7 @@ return {
                           "name": "node",
                           "plural": false,
                           "selections": [
-                            (v4/*: any*/),
+                            (v5/*: any*/),
                             (v2/*: any*/),
                             (v3/*: any*/)
                           ],
@@ -191,7 +201,43 @@ return {
                   ],
                   "storageKey": "watchedFolders(first:10)"
                 },
-                (v4/*: any*/)
+                {
+                  "alias": null,
+                  "args": (v4/*: any*/),
+                  "concreteType": "BfMediaConnection",
+                  "kind": "LinkedField",
+                  "name": "media",
+                  "plural": false,
+                  "selections": [
+                    (v5/*: any*/),
+                    (v1/*: any*/),
+                    {
+                      "alias": null,
+                      "args": null,
+                      "concreteType": "BfMediaEdge",
+                      "kind": "LinkedField",
+                      "name": "edges",
+                      "plural": true,
+                      "selections": [
+                        {
+                          "alias": null,
+                          "args": null,
+                          "concreteType": "BfMedia",
+                          "kind": "LinkedField",
+                          "name": "node",
+                          "plural": false,
+                          "selections": [
+                            (v2/*: any*/)
+                          ],
+                          "storageKey": null
+                        }
+                      ],
+                      "storageKey": null
+                    }
+                  ],
+                  "storageKey": "media(first:10)"
+                },
+                (v5/*: any*/)
               ],
               "storageKey": null
             },
@@ -254,6 +300,6 @@ return {
 };
 })();
 
-(node as any).hash = "4543d7585f9ec141ff97dfab80902a93";
+(node as any).hash = "ce930a69ff35d96e2487b4f2df5728fb";
 
 export default node;
