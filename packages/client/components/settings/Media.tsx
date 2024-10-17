@@ -73,11 +73,11 @@ export function Media({ settings$key }: Props) {
     };
   }).filter(Boolean);
   const columns: BfDsColumns<Data> = [
-    // {
-    //   title: "File name",
-    //   width: "100px",
-    //   renderer: (data) => <video src={data.previewVideoUrl} />,
-    // },
+    {
+      title: "File name",
+      width: "100px",
+      renderer: (data) => <video src={data.previewVideoUrl} />,
+    },
     {
       title: "File name",
       width: "2fr",

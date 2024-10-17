@@ -9,6 +9,7 @@ import { sanitizeFilename } from "packages/lib/textUtils.ts";
 import type { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { BfError } from "lib/BfError.ts";
 import { BfMediaNodeVideoGoogleDriveResource } from "packages/bfDb/models/BfMediaNodeVideoGoogleDriveResource.ts";
+import { BfMediaNodeVideo, BfMediaNodeVideoRole, BfMediaNodeVideoStatus } from "packages/bfDb/models/BfMediaNodeVideo.ts";
 
 const logger = getLogger(import.meta);
 
@@ -95,7 +96,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
     const targets = await this.queryTargetInstances(
       BfMediaNodeVideoGoogleDriveResource,
     );
-    logger.info("FIND VIDEO targets", targets);
+    logger.debug("FIND VIDEO targets", targets);
     const resource = targets[0];
 
     const video = await resource.queryTargetInstances(
