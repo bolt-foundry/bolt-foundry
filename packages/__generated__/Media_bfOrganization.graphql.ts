@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<b091b8ae962fb41ad2e01586ac6cd92e>>
+ * @generated SignedSource<<5507bf0c69f68c32d15138c6ec6a0cb9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -16,6 +16,8 @@ export type Media_bfOrganization$data = {
       readonly node: {
         readonly filename: string | null | undefined;
         readonly id: string;
+        readonly name: string | null | undefined;
+        readonly previewVideoUrl: string | null | undefined;
         readonly transcripts: {
           readonly edges: ReadonlyArray<{
             readonly node: {
@@ -87,6 +89,20 @@ const node: ReaderFragment = {
                   "args": null,
                   "kind": "ScalarField",
                   "name": "filename",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "name",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "previewVideoUrl",
                   "storageKey": null
                 },
                 {
@@ -188,6 +204,6 @@ const node: ReaderFragment = {
   "abstractKey": null
 };
 
-(node as any).hash = "672f0498b12bd8858ceb4b0d0c422ef2";
+(node as any).hash = "06463260bcbe10e865040180fad45d58";
 
 export default node;

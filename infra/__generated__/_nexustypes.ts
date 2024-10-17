@@ -155,6 +155,7 @@ export interface NexusGenObjects {
   BfMedia: { // root type
     fileId?: string | null; // String
     filename?: string | null; // String
+    name?: string | null; // String
   }
   BfMediaConnection: { // root type
     count?: number | null; // Int
@@ -399,6 +400,7 @@ export interface NexusGenFieldTypes {
   }
   BfCollection: { // field return type
     id: string; // ID!
+    media: NexusGenRootTypes['BfMediaConnection'] | null; // BfMediaConnection
     name: string | null; // String
     watchedFolders: NexusGenRootTypes['BfGoogleDriveResourceConnection'] | null; // BfGoogleDriveResourceConnection
   }
@@ -449,6 +451,8 @@ export interface NexusGenFieldTypes {
     fileId: string | null; // String
     filename: string | null; // String
     id: string; // ID!
+    name: string | null; // String
+    previewVideoUrl: string | null; // String
     transcripts: NexusGenRootTypes['BfMediaNodeTranscriptConnection'] | null; // BfMediaNodeTranscriptConnection
   }
   BfMediaConnection: { // field return type
@@ -750,6 +754,7 @@ export interface NexusGenFieldTypeNames {
   }
   BfCollection: { // field return type name
     id: 'ID'
+    media: 'BfMediaConnection'
     name: 'String'
     watchedFolders: 'BfGoogleDriveResourceConnection'
   }
@@ -800,6 +805,8 @@ export interface NexusGenFieldTypeNames {
     fileId: 'String'
     filename: 'String'
     id: 'ID'
+    name: 'String'
+    previewVideoUrl: 'String'
     transcripts: 'BfMediaNodeTranscriptConnection'
   }
   BfMediaConnection: { // field return type name
@@ -1065,6 +1072,12 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   BfCollection: {
+    media: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
     watchedFolders: { // args
       after?: string | null; // String
       before?: string | null; // String

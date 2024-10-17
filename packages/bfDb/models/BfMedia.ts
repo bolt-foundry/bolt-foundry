@@ -18,6 +18,7 @@ export enum GoogleDriveResourceToMediaEdgeRoles {
 
 export type BfMediaProps = {
   filename: string;
+  name: string;
 };
 
 type DownloadClipArgs = {
@@ -56,7 +57,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
 
     const bfMedia = await driveResource.createTargetNode(
       BfMedia,
-      {},
+      { name: driveResource.props.googleDriveMetadata.name },
       GoogleDriveResourceToMediaEdgeRoles.ORIGINAL,
     );
     logger.info(`Created new media ${bfMedia}`);
