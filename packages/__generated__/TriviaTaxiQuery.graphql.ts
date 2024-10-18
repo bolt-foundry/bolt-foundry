@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<c05033e15325886d4618209d6ceba341>>
+ * @generated SignedSource<<daac4f53df7b99aebe23277817641f10>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -83,7 +83,7 @@ v6 = {
     {
       "kind": "Literal",
       "name": "first",
-      "value": 10
+      "value": 75
     }
   ],
   "concreteType": "BfTTQuestionConnection",
@@ -157,7 +157,7 @@ v6 = {
       "storageKey": null
     }
   ],
-  "storageKey": "questions(first:10)"
+  "storageKey": "questions(first:75)"
 };
 return {
   "fragment": {
@@ -250,16 +250,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "5bfec2cd50964575760dd0c37cd5d8bc",
+    "cacheID": "c538245270dd576a00b21d422057bb8c",
     "id": null,
     "metadata": {},
     "name": "TriviaTaxiQuery",
     "operationKind": "query",
-    "text": "query TriviaTaxiQuery(\n  $gameID: ID!\n  $gameExists: Boolean!\n) {\n  node(id: $gameID) @include(if: $gameExists) {\n    __typename\n    ... on BfTTGame {\n      id\n      correctResponses\n      incorrectResponses\n      questions(first: 10) {\n        edges {\n          node {\n            id\n            type\n            difficulty\n            category\n            question\n            correct_answer\n            incorrect_answers\n          }\n        }\n      }\n    }\n    id\n  }\n}\n"
+    "text": "query TriviaTaxiQuery(\n  $gameID: ID!\n  $gameExists: Boolean!\n) {\n  node(id: $gameID) @include(if: $gameExists) {\n    __typename\n    ... on BfTTGame {\n      id\n      correctResponses\n      incorrectResponses\n      questions(first: 75) {\n        edges {\n          node {\n            id\n            type\n            difficulty\n            category\n            question\n            correct_answer\n            incorrect_answers\n          }\n        }\n      }\n    }\n    id\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "bbfba7d2d5126ef21810dfdf4b3b9110";
+(node as any).hash = "6eadeaa8e74695f19c4bec0375b2308b";
 
 export default node;
