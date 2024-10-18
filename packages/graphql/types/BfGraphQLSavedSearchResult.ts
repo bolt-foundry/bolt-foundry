@@ -1,4 +1,4 @@
-import { arg, mutationField, nonNull, objectType, idArg } from "nexus";
+import { arg, idArg, mutationField, nonNull, objectType } from "nexus";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { GraphQLWordType } from "packages/graphql/types/GraphQLWord.ts";
 import {
@@ -24,6 +24,7 @@ export const BfGraphQLSavedSearchResultType = objectType({
     t.msTime("duration");
     t.msTime("startTime");
     t.msTime("endTime");
+    t.float("percentageRendered");
     t.field("previewable", {
       type: GraphQLVideoPreviewableType,
       async resolve({ id }, _, { bfCurrentViewer }) {
