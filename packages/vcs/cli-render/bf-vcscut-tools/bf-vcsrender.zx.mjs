@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 import "zx/globals";
 
-const inputVideoPath = argv._[0];
+const inputVideoPath = argv._[1];
 if (!inputVideoPath) {
   echo`Error: path to media file must be provided as first argument`;
   process.exit(1);
