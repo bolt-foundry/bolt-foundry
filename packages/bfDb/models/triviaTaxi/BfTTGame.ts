@@ -1,5 +1,4 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import {
   BfTTQuestion,
   type BfTTQuestionProps,
@@ -10,13 +9,24 @@ type BfTTGameProps = {
   incorrectResponses: int;
 };
 
+enum Difficulty {
+  EASY = "easy",
+  MEDIUM = "medium",
+  HARD = "hard",
+}
+
 const OPEN_TRIVIA_DB_REQUEST_URL =
-  "https://opentdb.com/api.php?amount=50&type=multiple";
+  "https://opentdb.com/api.php?type=multiple&encode=url3986";
 
 export class BfTTGame extends BfNode<BfTTGameProps> {
   __typename = "BfTTGame" as const;
-  async genQuestions() {
-    const response = await fetch(OPEN_TRIVIA_DB_REQUEST_URL);
+  private async genQuestionsByDifficulty(
+    difficulty: Difficulty = Difficulty.EASY,
+    quantity: int = 40,
+  ) {
+    const response = await fetch(
+      `${OPEN_TRIVIA_DB_REQUEST_URL}&difficulty=${difficulty}&amount=${quantity}`,
+    );
     const questions = await response.json();
     const questionCreationPromises = questions.results.map(
       async (question) => {
@@ -24,19 +34,30 @@ export class BfTTGame extends BfNode<BfTTGameProps> {
           type: question.type,
           difficulty: question.difficulty,
           category: question.category,
-          question: question.question,
-          correct_answer: question.correct_answer,
-          incorrect_answers: question.incorrect_answers,
+          question: decodeURIComponent(question.question),
+          correct_answer: decodeURIComponent(question.correct_answer),
+          incorrect_answers: question.incorrect_answers.map((a) =>
+            decodeURIComponent(a)
+          ),
         };
-        const ttQuestion = await this.createQuestion(questionProps);
-        await BfEdge.createBetweenNodes(
-          this.currentViewer,
-          this,
-          ttQuestion,
-        );
+        await this.createQuestion(questionProps);
       },
     );
     return Promise.all(questionCreationPromises);
+  }
+
+  async genQuestions() {
+    return Promise.all([
+      await this.genQuestionsByDifficulty(Difficulty.EASY, 40),
+      setTimeout(
+        async () => await this.genQuestionsByDifficulty(Difficulty.MEDIUM, 30),
+        6000,
+      ),
+      setTimeout(
+        async () => await this.genQuestionsByDifficulty(Difficulty.HARD, 5),
+        12000,
+      ),
+    ]);
   }
 
   private async createQuestion(questionProps: BfTTQuestionProps) {
