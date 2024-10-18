@@ -54,7 +54,7 @@ export function ClipSearchPageContent() {
   const count = 0;
   const firstCollection = data?.currentViewer?.organization?.collections?.edges
     ?.[0]?.node;
-  logger.info(firstCollection);
+  logger.debug(firstCollection);
   const sidebarContents = null;
   return (
     <div className="cs-page flexRow">
