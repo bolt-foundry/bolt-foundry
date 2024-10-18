@@ -297,6 +297,9 @@ export interface NexusGenObjects {
     language?: string | null; // String
     type?: string | null; // String
   }
+  DownloadMutationType: { // root type
+    id?: string | null; // ID
+  }
   HeadingBlock: { // root type
     RichText?: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
     color?: string | null; // String
@@ -639,6 +642,9 @@ export interface NexusGenFieldTypes {
     language: string | null; // String
     type: string | null; // String
   }
+  DownloadMutationType: { // field return type
+    id: string | null; // ID
+  }
   HeadingBlock: { // field return type
     RichText: Array<NexusGenRootTypes['RichText'] | null> | null; // [RichText]
     color: string | null; // String
@@ -670,6 +676,7 @@ export interface NexusGenFieldTypes {
     deleteGoogleDriveResource: NexusGenRootTypes['BfGoogleDriveResource'] | null; // BfGoogleDriveResource
     deleteMedia: NexusGenRootTypes['BfMedia'] | null; // BfMedia
     deleteTranscript: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
+    downloadClip: NexusGenRootTypes['DownloadMutationType'] | null; // DownloadMutationType
     linkAdvancedGoogleAuth: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginWithGoogle: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
     logout: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
@@ -1020,6 +1027,9 @@ export interface NexusGenFieldTypeNames {
     language: 'String'
     type: 'String'
   }
+  DownloadMutationType: { // field return type name
+    id: 'ID'
+  }
   HeadingBlock: { // field return type name
     RichText: 'RichText'
     color: 'String'
@@ -1051,6 +1061,7 @@ export interface NexusGenFieldTypeNames {
     deleteGoogleDriveResource: 'BfGoogleDriveResource'
     deleteMedia: 'BfMedia'
     deleteTranscript: 'BfMediaNodeTranscript'
+    downloadClip: 'DownloadMutationType'
     linkAdvancedGoogleAuth: 'BfCurrentViewer'
     loginWithGoogle: 'BfCurrentViewerAccessToken'
     logout: 'BfCurrentViewer'
@@ -1262,6 +1273,9 @@ export interface NexusGenArgTypes {
     }
     deleteTranscript: { // args
       id: string; // String!
+    }
+    downloadClip: { // args
+      id: string; // ID!
     }
     linkAdvancedGoogleAuth: { // args
       code: string; // String!
