@@ -14,13 +14,14 @@ type AnswersProps = {
 
 function Answer({ text, onClick, isSelected, isCorrect }: AnswerProps) {
   const backgroundColor = isSelected
-    ? (isCorrect ? "green" : "red")
+    ? (isCorrect ? "var(--success)" : "var(--alert)")
     : "initial";
+  const color = isSelected ? "white" : "black";
   return (
     <div
       className="answer-container"
       onClick={onClick}
-      style={{ backgroundColor }}
+      style={{ backgroundColor, color }}
     >
       {text}
     </div>
@@ -28,7 +29,10 @@ function Answer({ text, onClick, isSelected, isCorrect }: AnswerProps) {
 }
 
 export function Answers({ incorrectAnswers, correctAnswer }: AnswersProps) {
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  if (!incorrectAnswers) {
+    return null;
+  }
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [randomizedAnswers, setRandomizedAnswers] = useState([]);
 
   useEffect(() => {
@@ -36,8 +40,15 @@ export function Answers({ incorrectAnswers, correctAnswer }: AnswersProps) {
       Math.random() - 0.5
     );
     setRandomizedAnswers(answers);
-    setSelectedAnswer(null);
   }, [incorrectAnswers, correctAnswer]);
+
+  useEffect(() => {
+    if (selectedAnswer && selectedAnswer !== correctAnswer) {
+      setTimeout(() => {
+        setSelectedAnswer(correctAnswer);
+      }, 1500);
+    }
+  }, [selectedAnswer]);
 
   return (
     <div className="answers-container">
@@ -47,8 +58,7 @@ export function Answers({ incorrectAnswers, correctAnswer }: AnswersProps) {
           text={a}
           isSelected={selectedAnswer === a}
           isCorrect={a === correctAnswer}
-          onClick={(e) => {
-            e.preventDefault();
+          onClick={() => {
             setSelectedAnswer(a);
           }}
         />
