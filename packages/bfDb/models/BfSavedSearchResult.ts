@@ -3,14 +3,10 @@ import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscrip
 import { render } from "infra/bff/friends/render.bff.ts";
 import { sanitizeFilename } from "packages/lib/textUtils.ts";
 import {
-  BfMediaNodeVideo,
   BfMediaNodeVideoRole,
-  BfMediaNodeVideoStatus,
 } from "packages/bfDb/models/BfMediaNodeVideo.ts";
-import type { DGWord } from "packages/types/transcript.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfError } from "lib/BfError.ts";
-import { BfMediaNodeVideoGoogleDriveResource } from "packages/bfDb/models/BfMediaNodeVideoGoogleDriveResource.ts";
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
 
@@ -24,6 +20,8 @@ export type BfSavedSearchResultProps = {
   startTime: number;
   endTime: number;
   duration: number;
+  renderUrl: string;
+  percentageRendered: number;
 };
 
 export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
@@ -35,13 +33,13 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
     };
   }
 
-  getDownloadableForGraphql(ready = false, percentageRendered = .25) {
+  getDownloadableForGraphql() {
     return {
       __typename: "VideoDownloadable",
-      url: "https://example.com/video.mp4",
-      duration: 1337,
-      ready,
-      percentageRendered,
+      url: this.props.renderUrl,
+      duration: (this.props.endTime - this.props.startTime) / 1000,
+      ready: this.props.renderingProgress === 1,
+      percentageRendered: this.props.renderingProgress,
     };
   }
 
@@ -72,6 +70,8 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
   }
 
   async downloadClip() {
+    this.props.renderingProgress = 0;
+    await this.save();
     // TODO get settings from Org
     const settings = {
       captionLines: 3,
@@ -138,7 +138,11 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
       throw new Error(error);
     }
 
+    this.props.renderingProgress = 0.1;
+    await this.save();
     const renderCode = await render(["-i", videoFilename]);
+    this.props.renderingProgress = 0.5;
+    await this.save();
 
     const extension = videoFilename.split(".").pop();
     const renderedFilename = videoFilename.replace(
@@ -153,9 +157,12 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
       ? `${sanitizeFilename(title)}.mp4`
       : renderedFilename.split("/").pop();
     const BFF_ROOT = Deno.env.get("BFF_ROOT") ?? Deno.cwd();
-    const destinationPath = `${BFF_ROOT}/build/downloads/${formattedTitle}`;
+    const url = `/build/downloads/${formattedTitle}`;
+    const destinationPath = `${BFF_ROOT}${url}`;
     try {
       await Deno.copyFile(renderedFilename, destinationPath);
+      this.props.renderUrl = url;
+      await this.save();
       logger.info(`File copied to ${destinationPath}`);
     } catch (error) {
       logger.error(`Failed to copy file to ${destinationPath}: ${error}`);
@@ -166,6 +173,8 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
       logger.error(`Error rendering ${renderedFilename}`);
       throw new Error(`Error rendering ${renderedFilename}`);
     }
+    this.props.renderingProgress = 1;
+    await this.save();
     logger.info(`Rendered ${renderedFilename}`);
   }
 }

@@ -417,6 +417,7 @@ type BfSavedSearchResult implements BfNode & Node {
 
   """Unique identifier for the resource"""
   id: ID!
+  percentageRendered: Float
   previewable: VideoPreviewable
   rationale: String
   startTime: TimecodeInMilliseconds
