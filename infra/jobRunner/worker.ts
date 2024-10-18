@@ -1,10 +1,9 @@
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfJob, BfJobType } from "packages/bfDb/models/BfJob.ts";
 import { getLogger } from "deps.ts";
-const logger = getLogger(import.meta);
 
 const randomSecondsSeed = Math.floor(Math.random() * 1000);
-
+const logger = getLogger(`${randomSecondsSeed} worker - ${import.meta.url}`);
 // keep workers checking for work no longer than the specified environment variable.
 const WORKER_TIMEOUT: number = Deno.env.get("BF_ENV") === "DEVELOPMENT"
   ? 0
@@ -12,35 +11,22 @@ const WORKER_TIMEOUT: number = Deno.env.get("BF_ENV") === "DEVELOPMENT"
     randomSecondsSeed;
 
 const WORKER_INTERVAL: number =
-  parseInt(Deno.env.get("JOB_RUNNER_INTERVAL") ?? "1") * 1000 -
+  parseInt(Deno.env.get("JOB_RUNNER_INTERVAL") ?? "4") * 1000 -
   randomSecondsSeed;
 logger.info(
   `Worker timeout: ${WORKER_TIMEOUT}ms, interval: ${WORKER_INTERVAL}ms`,
 );
 
-let shouldCheckForWork = true;
+let readyForWork = true;
 const currentViewer = IBfCurrentViewerInternalAdminOmni.__DANGEROUS__create(
   import.meta,
 );
 export async function checkForWork(shouldClose = true) {
-  logger.debug("Checking for work");
-  const jobs = await BfJob.findAvailableJobs(currentViewer);
-  logger.debug(`Found ${jobs.length} jobs`);
-  if (jobs.length > 0) {
-    const job = jobs[0];
-    logger.info(`Peeling off ${job}`);
-    try {
-      await job.executeJob();
-      logger.info(`Completed ${job}`);
-    } catch (e) {
-      logger.error(e);
-      job.props.status = BfJobType.FAILED;
-      await job.save();
-      logger.error(`Failed ${job}`);
-    }
-  }
+  logger.debug("Checking to execute");
+  await BfJob.executeNextJob(currentViewer);
+  logger.debug("Done with execution of work");
 
-  if (shouldCheckForWork) {
+  if (readyForWork) {
     logger.debug(`Setting up next work check in ${WORKER_INTERVAL}ms`);
     setTimeout(checkForWork, WORKER_INTERVAL);
     return;
@@ -51,7 +37,7 @@ export async function checkForWork(shouldClose = true) {
   }
 }
 export function disableCheckForWork() {
-  shouldCheckForWork = false;
+  readyForWork = false;
 }
 export function close() {
   disableCheckForWork();
