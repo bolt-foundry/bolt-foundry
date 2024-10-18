@@ -1,0 +1,36 @@
+{
+  "name": "@livekit/protocol",
+  "version": "1.24.0",
+  "description": "",
+  "type": "module",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
+  "files": [
+    "src"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./*": {
+      "types": "./src/gen/livekit_*_pb.d.ts",
+      "default": "./src/gen/livekit_*_pb.js"
+    }
+  },
+  "keywords": [],
+  "author": "LiveKit",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@bufbuild/protoc-gen-es": "^1.10.0",
+    "genversion": "^3.2.0"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^1.10.0"
+  },
+  "scripts": {
+    "generate:version": "genversion --esm --semi src/gen/version.js",
+    "generate:proto": "protoc --es_out src/gen --es_opt target=js+dts -I=../../protobufs ../../protobufs/livekit_*.proto",
+    "build": "pnpm generate:version && pnpm generate:proto"
+  }
+}
