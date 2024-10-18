@@ -218,6 +218,7 @@ export interface NexusGenObjects {
     description?: string | null; // String
     duration?: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     endTime?: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
+    percentageRendered?: number | null; // Float
     rationale?: string | null; // String
     startTime?: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     title?: string | null; // String
@@ -554,6 +555,7 @@ export interface NexusGenFieldTypes {
     duration: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     endTime: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
     id: string; // ID!
+    percentageRendered: number | null; // Float
     previewable: NexusGenRootTypes['VideoPreviewable'] | null; // VideoPreviewable
     rationale: string | null; // String
     startTime: NexusGenScalars['TimecodeInMilliseconds'] | null; // TimecodeInMilliseconds
@@ -939,6 +941,7 @@ export interface NexusGenFieldTypeNames {
     duration: 'TimecodeInMilliseconds'
     endTime: 'TimecodeInMilliseconds'
     id: 'ID'
+    percentageRendered: 'Float'
     previewable: 'VideoPreviewable'
     rationale: 'String'
     startTime: 'TimecodeInMilliseconds'

@@ -53,7 +53,7 @@ export function SearchResults({ bfSavedSearch$key }: Props) {
     return edge?.node;
   });
   const elements = list?.map((node) => {
-    if (node.body !== "No excerpt found.") {
+    if (node?.body !== "No excerpt found.") {
       return (
         <SearchResult
           bfSavedSearchResult$key={node}
