@@ -1,5 +1,7 @@
-// Import necessary dependencies
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+
+// @ts-types="@types/pg"
+import { Client } from "@neon/serverless";
 import type { BfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
 import { BfError } from "lib/BfError.ts";
@@ -15,9 +17,14 @@ import {
 
 const logger = getLogger(import.meta);
 
+const connectionString = Deno.env.get("BF_ENV") === "DEVELOPMENT"
+  ? Deno.env.get("DATABASE_URL") ?? Deno.env.get("BFDB_URL")
+  : Deno.env.get("BFDB_URL");
+
 export enum BfJobType {
   NOT_READY = "NOT_READY",
   AVAILABLE = "AVAILABLE",
+  CLAIMED = "CLAIMED",
   RUNNING = "RUNNING",
   COMPLETED = "COMPLETED",
   FAILED = "FAILED",
@@ -78,22 +85,49 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
     return job;
   }
 
-  static async findAvailableJobs(
+  static async executeNextJob(
     currentViewer: IBfCurrentViewerInternalAdminOmni,
-  ): Promise<Array<BfJob>> {
+  ) {
+    const client = new Client({ connectionString });
+    logger.debug("Connecting to postgres");
+    await client.connect();
+
     const isJobRunner = currentViewer instanceof
       IBfCurrentViewerInternalAdminOmni;
     if (!isJobRunner) {
       throw new BfError("Not an omnicv");
     }
-    const jobs = await this.query(currentViewer, {}, {
-      status: BfJobType.AVAILABLE,
-    });
-    return jobs;
+    await client.query("BEGIN");
+    const { rows } = await client.query(
+      `SELECT * from bfDb where class_name = 'BfJob' AND props->>'status' = 'AVAILABLE' FOR UPDATE SKIP LOCKED LIMIT 1`,
+    );
+
+    let jobId;
+    if (rows.length > 0) {
+      jobId = rows[0]?.bf_gid;
+      logger.debug(`Found job ${jobId}, claiming`)
+      await client.query(
+        `UPDATE bfDb SET props = props || $1::jsonb WHERE bf_gid = $2`,
+        [JSON.stringify({ status: BfJobType.CLAIMED }), jobId],
+      );
+      logger.debug(`Claimed job ${jobId}`)
+    }
+
+    await client.query("COMMIT");
+    await client.end();
+    if (jobId) {
+      logger.debug(`finding job ${jobId}`)
+      const job = await this.findX(currentViewer, jobId);
+      logger.debug(`found ${job}, executing`)
+      await job.executeJob();
+      logger.debug(`Executed ${job}`)
+      return job;
+    }
   }
 
-  async executeJob() {
-    logger.debug(`Executing job ${this}`);
+  private async executeJob() {
+    logger.debug(`Starting job ${this} execution`);
+
     this.props.status = BfJobType.RUNNING;
     await this.save();
     const edges = await BfEdge.querySourceEdgesForNode(this);
@@ -116,7 +150,7 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
         );
 
         logger.info(
-          `running ${this} as ${account}`,
+          `executing ${this} as ${account}`,
         );
         const currentViewer = BfCurrentViewerFromAccount.create(
           import.meta,
@@ -126,9 +160,12 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
           currentViewer,
           edge.metadata.bfSid,
         );
-        logger.debug("found", target, this.props.method, this.props.args);
+
         // @ts-expect-error dynamic typing naughtiness
         await target[this.props.method](...this.props.args);
+        this.props.status = BfJobType.COMPLETED;
+        await this.save();
+        logger.info(`Completed job ${this}`);
       }
     } catch (e) {
       logger.error("Error executing job", e);

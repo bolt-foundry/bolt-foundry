@@ -9,7 +9,6 @@ import { useState } from "react";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 const { Suspense } = React;
 import { TriviaTaxiCreateTTGameMutation } from "packages/__generated__/TriviaTaxiCreateTTGameMutation.graphql.ts";
-
 const createGameMutation = await graphql`
   mutation TriviaTaxiCreateTTGameMutation($shouldCreate: Boolean!) {
     createTTGame(shouldCreate: $shouldCreate) {
@@ -25,7 +24,7 @@ const query = await graphql`
         id
         correctResponses
         incorrectResponses
-        questions(first: 10) {
+        questions(first: 75) {
           edges {
             node {
               id
@@ -43,23 +42,31 @@ const query = await graphql`
   }
 `;
 
+enum Difficulty {
+  EASY = "easy",
+  MEDIUM = "medium",
+  HARD = "hard",
+}
+
 export function TriviaTaxi() {
   const { navigate, routeParams } = useRouter();
   const gameId = routeParams.gameId ?? "";
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(-1);
   const [gameOver, setGameOver] = useState(false);
   const [commit, isInFlight] = useMutation<TriviaTaxiCreateTTGameMutation>(
     createGameMutation,
   );
+  const [difficulty, setDifficulty] = useState<Difficulty>(Difficulty.EASY);
   const data = useLazyLoadQuery<TriviaTaxiQuery>(query, {
     gameID: gameId,
     gameExists: Boolean(gameId),
   });
   const questions = data?.node?.questions?.edges ?? [];
-  console.log("questions", data);
-  function onSubmit() {
-    console.log("SUBMITTING BLARGH");
+  const filteredQuestions = questions.filter((q) =>
+    q.node.difficulty === difficulty
+  );
 
+  function onSubmit() {
     commit({
       variables: {
         shouldCreate: true,
@@ -77,49 +84,105 @@ export function TriviaTaxi() {
   }
 
   const handleNextQuestion = () => {
-    if (currentQuestion >= (questions?.length - 1)) {
+    if (currentQuestion >= (filteredQuestions?.length - 1)) {
       setGameOver(true);
     } else {
       setCurrentQuestion(currentQuestion + 1);
     }
   };
 
-  const handleStartNewGame = () => {
-    setTimeout(() => {
-      setCurrentQuestion(0);
-      setGameOver(false);
-    }, 200);
+  const handleSetDifficulty = (newDifficulty: Difficulty) => {
+    if (newDifficulty === difficulty) return;
+    setCurrentQuestion(0);
+    setDifficulty(newDifficulty);
   };
 
   return (
     <div className="trivia-page-wrapper">
-      {(gameOver || !gameId) && (
+      {(currentQuestion === -1) && (
         <>
           <div className="game-over-modal">
-            Trivia Taxi
+            Welcome to Taxi Trivia!
             <BfDsButton
               kind="primary"
               size="xlarge"
-              text="Start New Game"
-              onClick={() => onSubmit()}
+              text="Start"
+              onClick={() => {
+                setCurrentQuestion(currentQuestion + 1);
+                if (!gameId || filteredQuestions.length === currentQuestion) {
+                  onSubmit();
+                }
+              }}
+            />
+          </div>
+        </>
+      )}
+      {gameOver && (
+        <>
+          <div className="game-over-modal">
+            {`That's all of the ${difficulty} questions!`}
+            <BfDsButton
+              kind="primary"
+              size="xlarge"
+              text="Start"
+              onClick={() => {
+                setCurrentQuestion(-1);
+                setGameOver(false);
+              }}
             />
           </div>
         </>
       )}
       {gameId && (
         <Suspense fallback={<BfDsFullPageSpinner />}>
-          <Question text={questions[currentQuestion]?.node.question} />
+          <div className="main-content-container">
+            <div className="difficulty-container">
+              <BfDsButton
+                kind={difficulty === Difficulty.EASY ? "primary" : "outline"}
+                size="large"
+                text="Easy"
+                onClick={() => handleSetDifficulty(Difficulty.EASY)}
+              />
+              <BfDsButton
+                kind={difficulty === Difficulty.MEDIUM ? "primary" : "outline"}
+                size="large"
+                text="Medium"
+                onClick={() => handleSetDifficulty(Difficulty.MEDIUM)}
+              />
+              <BfDsButton
+                kind={difficulty === Difficulty.HARD ? "primary" : "outline"}
+                size="large"
+                text="Hard"
+                onClick={() => handleSetDifficulty(Difficulty.HARD)}
+              />
+            </div>
+            <Question
+              text={filteredQuestions[currentQuestion]?.node.question}
+            />
+          </div>
           <Answers
-            incorrectAnswers={questions[currentQuestion]?.node
+            incorrectAnswers={filteredQuestions[currentQuestion]?.node
               .incorrect_answers}
-            correctAnswer={questions[currentQuestion]?.node.correct_answer}
+            correctAnswer={filteredQuestions[currentQuestion]?.node
+              .correct_answer}
           />
-          <BfDsButton
-            kind="primary"
-            size="xlarge"
-            text="Next question"
-            onClick={() => handleNextQuestion()}
-          />
+          <div
+            className="flexRow"
+            style={{ width: "80%", justifyContent: "space-between" }}
+          >
+            <BfDsButton
+              kind="primary"
+              size="xlarge"
+              text="Next question"
+              onClick={() => handleNextQuestion()}
+            />
+            <BfDsButton
+              kind="primary"
+              size="xlarge"
+              text="Previous question"
+              onClick={() => setCurrentQuestion(currentQuestion - 1)}
+            />
+          </div>
         </Suspense>
       )}
     </div>

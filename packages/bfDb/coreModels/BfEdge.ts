@@ -117,7 +117,7 @@ export class BfEdge<
       bfOid: currentViewer.organizationBfGid,
       className: this.name,
     };
-    logger.info("edgePropsToQuery", edgePropsToQuery);
+    logger.debug("edgePropsToQuery", edgePropsToQuery);
     const connection = await bfQueryItemsForGraphQLConnection(
       edgeMetadataForQuery,
       edgePropsToQuery,
