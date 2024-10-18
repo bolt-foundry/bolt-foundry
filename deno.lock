@@ -932,6 +932,7 @@
         "npm:@langchain/pinecone@^0.0.9",
         "npm:@pinecone-database/pinecone@^3.0.3",
         "npm:@replit/object-storage@^1.0.0",
+        "npm:@types/pg@^8.11.10",
         "npm:@types/react-dom@^18",
         "npm:@types/react-relay@^16.0.6",
         "npm:@types/react@^18",
