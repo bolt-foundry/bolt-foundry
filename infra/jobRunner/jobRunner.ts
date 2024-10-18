@@ -1,4 +1,4 @@
-const WORKER_CONCURRENCY = parseInt(Deno.env.get("WORKER_CONCURRENCY") ?? "4");
+const WORKER_CONCURRENCY = parseInt(Deno.env.get("WORKER_CONCURRENCY") ?? "6");
 import { createWorker } from "packages/packages.ts";
 import { getLogger } from "deps.ts";
 
