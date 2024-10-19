@@ -1,0 +1,8 @@
+{
+  "scope": "wok",
+  "name": "djwt",
+  "latest": "3.0.2",
+  "versions": {
+    "3.0.2": {}
+  }
+}

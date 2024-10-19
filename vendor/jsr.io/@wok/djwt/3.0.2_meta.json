@@ -1,0 +1,208 @@
+{
+  "manifest": {
+    "/README.md": {
+      "size": 4089,
+      "checksum": "sha256-6fdff936c95e059fa69e9aace37dba468765b5f8c4e53d191c331d948608eb41"
+    },
+    "/deno.json": {
+      "size": 516,
+      "checksum": "sha256-7e01ef27354541ee353bd51d1ec22a56ee967de484daec888c14383e1a102c7a"
+    },
+    "/algorithm.ts": {
+      "size": 3089,
+      "checksum": "sha256-b1c6645f9dbd6e6c47c123a3b18c28b956f91c65ed17f5b6d5d968fc3750542b"
+    },
+    "/util.ts": {
+      "size": 1226,
+      "checksum": "sha256-5cb264d2125c553678e11446bcfa0494025d120e3f59d0a3ab38f6800def697d"
+    },
+    "/deps.ts": {
+      "size": 90,
+      "checksum": "sha256-5d5b289dc9df806d99ef452dbc0decbb456b11d342779ce68e4f8570103a0890"
+    },
+    "/mod.ts": {
+      "size": 8396,
+      "checksum": "sha256-962d8f2c4d6a4db111f45d777b152356aec31ba7db0ca664601175a422629857"
+    },
+    "/signature.ts": {
+      "size": 813,
+      "checksum": "sha256-16238fbf558267c85dd6c0178045f006c8b914a7301db87149f3318326569272"
+    },
+    "/LICENSE": {
+      "size": 1065,
+      "checksum": "sha256-6d4bc08ea6aa46088a08bad68e87db86d25762d159d6ab5baa79daf156a2e8ab"
+    }
+  },
+  "moduleGraph1": {
+    "/signature.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./algorithm.ts",
+          "specifierRange": [
+            [
+              0,
+              29
+            ],
+            [
+              0,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./deps.ts",
+          "specifierRange": [
+            [
+              1,
+              32
+            ],
+            [
+              1,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./util.ts",
+          "specifierRange": [
+            [
+              2,
+              32
+            ],
+            [
+              2,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./algorithm.ts",
+          "specifierRange": [
+            [
+              4,
+              31
+            ],
+            [
+              4,
+              47
+            ]
+          ]
+        }
+      ]
+    },
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./deps.ts",
+          "specifierRange": [
+            [
+              0,
+              49
+            ],
+            [
+              0,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./signature.ts",
+          "specifierRange": [
+            [
+              4,
+              7
+            ],
+            [
+              4,
+              23
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./algorithm.ts",
+          "specifierRange": [
+            [
+              5,
+              58
+            ],
+            [
+              5,
+              74
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./util.ts",
+          "specifierRange": [
+            [
+              18,
+              7
+            ],
+            [
+              18,
+              18
+            ]
+          ]
+        }
+      ]
+    },
+    "/algorithm.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./util.ts",
+          "specifierRange": [
+            [
+              0,
+              36
+            ],
+            [
+              0,
+              47
+            ]
+          ]
+        }
+      ]
+    },
+    "/deps.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "jsr:/@std/encoding@^0.221.0/base64url",
+          "specifierRange": [
+            [
+              0,
+              49
+            ],
+            [
+              0,
+              88
+            ]
+          ]
+        }
+      ]
+    },
+    "/util.ts": {}
+  },
+  "exports": {
+    ".": "./mod.ts"
+  }
+}

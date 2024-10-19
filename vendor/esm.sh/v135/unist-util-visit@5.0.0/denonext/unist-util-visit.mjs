@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(unist-util-visit@5.0.0) denonext production */
-import{visitParents as r}from"/v135/unist-util-visit-parents@6.0.1/denonext/unist-util-visit-parents.mjs";import{CONTINUE as m,EXIT as E,SKIP as N}from"/v135/unist-util-visit-parents@6.0.1/denonext/unist-util-visit-parents.mjs";function x(l,n,e,u){let t,f,o;typeof n=="function"&&typeof e!="function"?(f=void 0,o=n,t=e):(f=n,o=e,t=u),r(l,f,p,t);function p(c,d){let i=d[d.length-1],I=i?i.children.indexOf(c):void 0;return o(c,I,i)}}export{m as CONTINUE,E as EXIT,N as SKIP,x as visit};
-//# sourceMappingURL=unist-util-visit.mjs.map

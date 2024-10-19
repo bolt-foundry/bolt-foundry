@@ -1,7 +1,7 @@
-/// <reference path="https://esm.sh/v135/@types/google.accounts@0.0.14/index.d.ts" />
-/// <reference path="https://esm.sh/v135/@types/google.picker@0.0.42/index.d.ts" />
-/// <reference path="https://esm.sh/v135/@types/gapi.drive@0.0.9/index.d.ts" />
-/// <reference path="https://esm.sh/v135/@types/gapi@0.0.47/index.d.ts" />
+/// <reference path="@types/google.accounts/index.d.ts" />
+/// <reference path="@types/google.picker/index.d.ts" />
+/// <reference path="@types/gapi.drive/index.d.ts" />
+/// <reference path="@types/gapi/index.d.ts" />
 import { React } from "deps.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 

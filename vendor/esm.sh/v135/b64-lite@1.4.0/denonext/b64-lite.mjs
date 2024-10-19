@@ -1,4 +1,0 @@
-/* esm.sh - esbuild bundle(b64-lite@1.4.0) denonext production */
-import { Buffer as __Buffer$ } from "node:buffer";
-function o(r){return __Buffer$.from(r,"base64").toString("binary")}function n(r){for(var t=0,e=r;t<e.length;t+=1)if(String.prototype.charCodeAt.call(e[t],0)>255)throw new Error("Failed to execute 'btoa': The string to be encoded contains characters outside of the Latin1 range.");return __Buffer$.from(r,"binary").toString("base64")}function a(r){return __Buffer$.from(r).toString("base64")}function f(r){return __Buffer$.from(r,"base64").toString()}function i(r){return new Uint8Array(__Buffer$.from(r,"base64"))}export{o as atob,n as btoa,f as fromBase64,a as toBase64,i as toBuffer};
-//# sourceMappingURL=b64-lite.mjs.map

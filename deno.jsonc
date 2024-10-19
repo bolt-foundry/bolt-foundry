@@ -1,6 +1,37 @@
 {
   "unstable": ["temporal", "byonm"],
-  "importMap": "import_map.json",
+  "imports": {
+    "/aws/": "./aws/",
+    "/build/": "./build/",
+    "/content/": "./content/",
+    "/docs/": "./docs/",
+    "/experimental/": "./experimental/",
+    "/infra/": "./infra/",
+    "/lib/": "./lib/",
+    "/packages/": "./packages/",
+    "/resources/": "./resources/",
+    "/thirdParty/": "./thirdParty/",
+    "@neon/serverless": "jsr:@neon/serverless@0.9.2",
+    "@std/assert": "jsr:@std/assert",
+    "@std/cli": "jsr:@std/cli",
+    "@std/flags": "jsr:@std/flags@^0.224.0",
+    "@std/fs": "jsr:@std/fs@^1.0.4",
+    "@std/http": "jsr:@std/http@^1.0.8",
+    "@std/path": "jsr:@std/path@^1.0.6",
+    "@wok/djwt": "jsr:@wok/djwt@^3.0.2",
+    "aws/": "./aws/",
+    "build/": "./build/",
+    "content/": "./content/",
+    "deps.ts": "./deps.ts",
+    "docs/": "./docs/",
+    "experimental/": "./experimental/",
+    "infra/": "./infra/",
+    "lib/": "./lib/",
+    "packages/": "./packages/",
+    "resources/": "./resources/",
+    "testDeps.ts": "./testDeps.ts",
+    "thirdParty/": "./thirdParty/"
+  },
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react",
@@ -14,8 +45,8 @@
       "deno.unstable"
     ],
     "types": [
-      "https://esm.sh/v135/@types/dom-webcodecs@0.1.8/index.d.ts",
-      "https://esm.sh/v135/@types/sharedworker@0.0.115/index.d.ts"
+      "npm:@types/dom-webcodecs@0.1.8/index.d.ts",
+      "npm:@types/sharedworker@0.0.115/index.d.ts"
     ]
   },
   "fmt": {
@@ -34,7 +65,7 @@
       "experimental",
       "infra",
       "lib",
-      "packages",
+      "packages"
     ]
   },
   "test": {
@@ -42,13 +73,13 @@
       "__generated__",
       "packages/__generated__",
       "packages/third-party",
-      "packages/client/static",
+      "packages/client/static"
     ],
     "include": [
       "experimental",
       "infra",
       "lib",
-      "packages",
+      "packages"
     ]
   },
   "lint": {
@@ -76,10 +107,13 @@
       "experimental",
       "infra",
       "lib",
-      "packages",
+      "packages"
     ]
   },
-  "lock": true,
-  "nodeModulesDir": true,
+  "lock": {
+    "path": "./deno.lock"
+    "frozen": true
+  },
+  "nodeModulesDir": "auto",
   "vendor": true
 }

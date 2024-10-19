@@ -1,1 +1,1 @@
-export * from "std/assert/mod.ts";
+export * from "@std/assert";

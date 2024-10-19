@@ -1,19 +1,15 @@
-// @deno-types="https://esm.sh/v135/@types/react-relay@16.0.6/index.d.ts";
 export * as ReactRelay from "react-relay";
-// @deno-types="https://esm.sh/v135/@types/relay-runtime@14.1.23/index.d.ts";
 import * as RelayRuntime from "relay-runtime";
-// @deno-types="https://esm.sh/v135/@types/react@18.2.38/index.d.ts";
 import * as React from "react";
-export * as rxjs from "https://esm.sh/rxjs@7.8.1";
+export * as rxjs from "rxjs";
 export { RelayRuntime };
 RelayRuntime.RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true;
 
 // log stuff and random exports
 
-// @deno-types="https://esm.sh/v135/loglevel@1.9.1/index.d.ts";
-import log from "https://esm.sh/loglevel@1.9.1";
-import chalk from "https://esm.sh/chalk@5.3.0";
-import logLevelPrefixPlugin from "https://esm.sh/loglevel-plugin-prefix@0.8.4";
+import log from "loglevel";
+import chalk from "chalk";
+import logLevelPrefixPlugin from "loglevel-plugin-prefix";
 chalk.level = 3;
 
 export { React };
