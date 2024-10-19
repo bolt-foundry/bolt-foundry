@@ -1,4 +1,4 @@
-import type { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import type {
   Constructor,
   CreationMetadata,
@@ -15,7 +15,7 @@ import {
   bfQueryItemsForGraphQLConnection,
   bfQueryItemsUnified,
 } from "packages/bfDb/bfDb.ts";
-import type { ConnectionInterface } from "relay";
+import type { ConnectionInterface } from "react-relay";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
 
@@ -250,5 +250,70 @@ export class BfEdge<
     );
     logger.debug("targets", targets);
     return targets as Array<InstanceType<TSourceClass>>;
+  }
+
+  static async deleteEdgesTouchingNode(
+    currentViewer: BfCurrentViewer,
+    bfGid: BfGid,
+  ) {
+    const edgesWhereBfGidIsATargetPromise = this.query(currentViewer, {
+      bfTid: bfGid,
+    });
+    const edgesWhereBfGidIsASourcePromise = this.query(currentViewer, {
+      bfSid: bfGid,
+    });
+    const edgesWhereBfGidIsATarget = await edgesWhereBfGidIsATargetPromise;
+    logger.debug(
+      `Found ${edgesWhereBfGidIsATarget.length} edges where ${bfGid} is a target`,
+    );
+    const targetEdgeDeletionPromises = edgesWhereBfGidIsATarget.map((edge) =>
+      edge.delete()
+    );
+    const edgesWhereBfGidIsASource = await edgesWhereBfGidIsASourcePromise;
+    logger.debug(
+      `Found ${edgesWhereBfGidIsASource.length} edges where ${bfGid} is a source`,
+    );
+    const sourceEdgeDeletionPromises = edgesWhereBfGidIsASource.map((edge) =>
+      edge.deleteAndCheckForNetworkDelete()
+    );
+    await Promise.all([
+      ...targetEdgeDeletionPromises,
+      ...sourceEdgeDeletionPromises,
+    ]);
+  }
+
+  async deleteAndCheckForNetworkDelete() {
+    const modelUrl = (this.metadata.bfTClassName === BfNode.name ||
+        this.metadata.bfTClassName === BfEdge.name)
+      ? `packages/bfDb/coreModels/${this.metadata.bfTClassName}.ts`
+      : `packages/bfDb/models/${this.metadata.bfTClassName}.ts`;
+    const TargetClassModule = await import(modelUrl);
+    const TargetClass = TargetClassModule[this.metadata.bfTClassName];
+    const targetNode = await TargetClass.find(
+      this.currentViewer,
+      this.metadata.bfTid,
+    );
+    logger.debug(TargetClass, this, targetNode);
+    const edgesWhereNodeIsTarget = await BfEdge.query(this.currentViewer, {
+      bfTid: targetNode.metadata.bfGid,
+    });
+    if (edgesWhereNodeIsTarget.length === 1) {
+      logger.debug(
+        `Found ${edgesWhereNodeIsTarget.length} edges where ${targetNode.metadata.bfGid} is a target`,
+      );
+      if (edgesWhereNodeIsTarget[0].metadata.bfGid === this.metadata.bfGid) {
+        logger.info(
+          `${this} is the last remaining edge to ${targetNode} so deleting the node.`,
+        );
+        await targetNode.delete();
+      } else {
+        logger.info(`Deleting ${this} but not ${targetNode}`);
+      }
+    } else {
+      logger.info(
+        `More than one edge to ${targetNode} so deleting ${this} without deleting the other`,
+      );
+    }
+    await this.delete();
   }
 }
