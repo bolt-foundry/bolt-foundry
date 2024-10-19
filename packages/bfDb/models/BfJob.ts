@@ -46,14 +46,14 @@ export type BfJobRequiredProps<T extends ValidJSONValues = ValidJSONValues> = {
 
 export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
   static async createJobForNode<
-    T extends BfNode,
+    T extends BfNode | BfEdge,
     K extends keyof T & (string | symbol),
   >(
     bfNode: T,
     method: K,
     args: unknown,
     runImmediately = false,
-    runInForeground = false,
+    runInForeground = Deno.env.get("BF_ENV") === "TEST",
   ): Promise<BfJob> {
     const currentViewer = bfNode.currentViewer;
     const jobProps = {
@@ -105,22 +105,22 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
     let jobId;
     if (rows.length > 0) {
       jobId = rows[0]?.bf_gid;
-      logger.debug(`Found job ${jobId}, claiming`)
+      logger.debug(`Found job ${jobId}, claiming`);
       await client.query(
         `UPDATE bfDb SET props = props || $1::jsonb WHERE bf_gid = $2`,
         [JSON.stringify({ status: BfJobType.CLAIMED }), jobId],
       );
-      logger.debug(`Claimed job ${jobId}`)
+      logger.debug(`Claimed job ${jobId}`);
     }
 
     await client.query("COMMIT");
     await client.end();
     if (jobId) {
-      logger.debug(`finding job ${jobId}`)
+      logger.debug(`finding job ${jobId}`);
       const job = await this.findX(currentViewer, jobId);
-      logger.debug(`found ${job}, executing`)
+      logger.debug(`found ${job}, executing`);
       await job.executeJob();
-      logger.debug(`Executed ${job}`)
+      logger.debug(`Executed ${job}`);
       return job;
     }
   }
@@ -138,8 +138,13 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
     }
     const edge = edges[0];
     try {
+      const moduleUrl =
+        (edge.metadata.bfSClassName === "BfEdge" ||
+            edge.metadata.bfSClassName === "BfNode")
+          ? `packages/bfDb/coreModels/${edge.metadata.bfSClassName}.ts`
+          : `packages/bfDb/models/${edge.metadata.bfSClassName}.ts`;
       const module = await import(
-        `packages/bfDb/models/${edge.metadata.bfSClassName}.ts`
+        moduleUrl
       );
       const JobClass: typeof BfNode = module[edge.metadata.bfSClassName];
 
