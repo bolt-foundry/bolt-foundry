@@ -100,7 +100,7 @@ export class BfNode<
       BfModel<TProps, Record<string, unknown>, TCreationMetadata>
     >,
     TProps extends Record<string, unknown>,
-    TCreationMetadata extends BfBaseModelMetadata<CreationMetadata> =
+    TCreationMetadata extends Partial<BfBaseModelMetadata<CreationMetadata>> =
       BfBaseModelMetadata<CreationMetadata>,
   >(
     TargetClass: TTargetClass,
@@ -222,5 +222,11 @@ export class BfNode<
       this.metadata.bfGid,
       targetClassName,
     );
+  }
+
+  async delete() {
+    const bfGid = this.metadata.bfGid;
+    await super.delete();
+    await BfEdge.deleteEdgesTouchingNode(this.currentViewer, bfGid);
   }
 }
