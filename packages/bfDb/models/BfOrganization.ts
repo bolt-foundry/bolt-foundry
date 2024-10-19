@@ -39,7 +39,7 @@ export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
   }
 
   static async createFromGraphQL(
-    currentViewer: BfCurrentViewer,
+    currentViewer: IBfCurrentViewerInternalAdmin,
     { name, domainName, youtubePlaylistUrl }: GraphQLCreateArgs,
   ) {
     const isCurrentViewerInternalAdmin = currentViewer instanceof

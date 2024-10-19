@@ -3,11 +3,12 @@
   "packages": {
     "specifiers": {
       "jsr:@neon/serverless@0.9.2": "jsr:@neon/serverless@0.9.2",
-      "jsr:@std/cli": "jsr:@std/cli@1.0.5",
+      "jsr:@std/assert": "jsr:@std/assert@1.0.6",
       "jsr:@std/cli@^1.0.5": "jsr:@std/cli@1.0.5",
       "jsr:@std/encoding@^1.0.4": "jsr:@std/encoding@1.0.4",
       "jsr:@std/fmt@^1.0.2": "jsr:@std/fmt@1.0.2",
       "jsr:@std/http": "jsr:@std/http@1.0.5",
+      "jsr:@std/internal@^1.0.4": "jsr:@std/internal@1.0.4",
       "jsr:@std/media-types@^1.0.3": "jsr:@std/media-types@1.0.3",
       "jsr:@std/net@^1.0.2": "jsr:@std/net@1.0.2",
       "jsr:@std/path@^1.0.4": "jsr:@std/path@1.0.4",
@@ -17,8 +18,11 @@
       "@neon/serverless@0.9.2": {
         "integrity": "87568997fd4feeb3cd7d986e3d3f9f272f52b80d12d17ba07720c7d8f8cde486"
       },
-      "@std/cli@1.0.4": {
-        "integrity": "79ca75add572a99a8ba93ae37ccbd8d43fb4e2b635a8a7ebebb4f2d092048764"
+      "@std/assert@1.0.6": {
+        "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
+        "dependencies": [
+          "jsr:@std/internal@^1.0.4"
+        ]
       },
       "@std/cli@1.0.5": {
         "integrity": "c93cce26ffd26f617c15a12874e1bfeabc90b1eee86017c9639093734c2bf587"
@@ -41,6 +45,9 @@
           "jsr:@std/streams@^1.0.4"
         ]
       },
+      "@std/internal@1.0.4": {
+        "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
+      },
       "@std/media-types@1.0.3": {
         "integrity": "b12d30a7852f7578f4d210622df713bbfd1cbdd9b4ec2eaf5c1845ab70bab159"
       },
@@ -59,14 +66,9 @@
     "https://esm.sh/@langchain/anthropic": "https://esm.sh/@langchain/anthropic@0.2.11",
     "https://esm.sh/@langchain/core/output_parsers": "https://esm.sh/@langchain/core@0.2.18/output_parsers",
     "https://esm.sh/@langchain/core/prompts": "https://esm.sh/@langchain/core@0.2.18/prompts",
-    "https://esm.sh/@langchain/openai": "https://esm.sh/@langchain/openai@0.2.5",
-    "https://esm.sh/@langchain/pinecone": "https://esm.sh/@langchain/pinecone@0.0.9",
-    "https://esm.sh/@pinecone-database/pinecone": "https://esm.sh/@pinecone-database/pinecone@3.0.3"
+    "https://esm.sh/@langchain/openai": "https://esm.sh/@langchain/openai@0.2.5"
   },
   "remote": {
-    "https://deno.land/std@0.150.0/media_types/_util.ts": "ce9b4fc4ba1c447dafab619055e20fd88236ca6bdd7834a21f98bd193c3fbfa1",
-    "https://deno.land/std@0.150.0/media_types/mod.ts": "2d4b6f32a087029272dc59e0a55ae3cc4d1b27b794ccf528e94b1925795b3118",
-    "https://deno.land/std@0.150.0/media_types/vendor/mime-db.v1.52.0.ts": "724cee25fa40f1a52d3937d6b4fbbfdd7791ff55e1b7ac08d9319d5632c7f5af",
     "https://deno.land/std@0.192.0/encoding/base64.ts": "144ae6234c1fbe5b68666c711dc15b1e9ee2aef6d42b3b4345bf9a6c91d70d0d",
     "https://deno.land/std@0.192.0/encoding/base64url.ts": "2ed4ba122b20fedf226c5d337cf22ee2024fa73a8f85d915d442af7e9ce1fae1",
     "https://deno.land/std@0.197.0/assert/assert.ts": "9a97dad6d98c238938e7540736b826440ad8c1c1e54430ca4c4e623e585607ee",
@@ -259,7 +261,6 @@
     "https://deno.land/x/djwt@v2.9.1/signature.ts": "a5649368a4b433b2810e7d47f53661fe3b0f7fe1778cb49234ceae3d6e861185",
     "https://deno.land/x/djwt@v2.9.1/util.ts": "0d78272bd23a4656ceabe137d496fcca37cf3de36212477642aa5d85a880d87a",
     "https://deno.land/x/esbuild@v0.19.11/mod.js": "bd4916647799a0cd046dcf4eafd6ace09d22d5898870bd062206b8b6343d5e6a",
-    "https://deno.land/x/xhr@0.3.0/mod.ts": "094aacd627fd9635cd942053bf8032b5223b909858fa9dc8ffa583752ff63b20",
     "https://esm.sh/@hyperdx/browser@0.19.3": "832be165eede6f30c2045a2d2294a610ed5f7dbdec1b7bd9c7eb81befc6b724a",
     "https://esm.sh/@langchain/anthropic@0.2.11": "61627a2d9be3f3e0cfd13d12b6d4c9b073c5b2e99f42e54edae7226a2334fde9",
     "https://esm.sh/@langchain/core@0.2.18/output_parsers": "21eb82398b304cb6d86cf1f3a3b5dec5dcc5101510acd1e60fdd6bb1f725cf63",
@@ -267,9 +268,7 @@
     "https://esm.sh/@langchain/core@0.2.21/output_parsers": "7a3b0d5f5fe7935893f535418881a110ecbdaa5078060287756388ff48b8f061",
     "https://esm.sh/@langchain/core@0.2.21/prompts": "7316d0ed62460d9fdf3a20afb2013777d32f9418a77bd310753ce2c273990389",
     "https://esm.sh/@langchain/openai@0.2.5": "a2608b2f3b617c3ab623a1cb138198f8cbc714004b7eb6cd23be1311b0e0fe81",
-    "https://esm.sh/@langchain/pinecone@0.0.9": "320590422f6c38545e3ab37a6078010abd7235ab2e9c8f805b4b60ba24205bf5",
     "https://esm.sh/@mdx-js/mdx@3.0.0": "01fa75f1d9e40a60b3c9d6e6243c7ff1a8360b4c1562457bc3691903a183d6ed",
-    "https://esm.sh/@pinecone-database/pinecone@3.0.3": "94bf60d0289ccc305a6792876965d0203ecd6de1f4e5bc0d01f42bf3fb8e15ea",
     "https://esm.sh/@tensorflow-models/pose-detection@2.1.3/dist/pose-detection.js": "5a89f7a22f79e2215ab9d65aa5f43130cc5816ad4d5b78fc022cd53450e32401",
     "https://esm.sh/@tensorflow/tfjs-backend-webgl@4.15.0": "6d6e7f776a03d4aee8b46383845e1adfe3077154fc8302de7d44877b822f558e",
     "https://esm.sh/@tensorflow/tfjs-core@4.15.0": "2a811d40ccc3eb695639c384d9927dc8b422bf8cd6d5799a6184fc9f78d0627a",
@@ -337,20 +336,10 @@
     "https://esm.sh/v135/@langchain/core@0.2.21/denonext/dist/prompts/prompt.js": "29746c49212ec0417d1b510da2ac727344d4a512166a100b02e6d6c12cd60af0",
     "https://esm.sh/v135/@langchain/core@0.2.21/denonext/output_parsers.js": "dcf05dea62d97bcee2c7c99627453c31f9c642169aea229db93a14113efbdc48",
     "https://esm.sh/v135/@langchain/core@0.2.21/denonext/prompts.js": "e578981b5266a251f7a5d793ce7923a36ffee1b8a7aed368a6b1471a9360a12a",
-    "https://esm.sh/v135/@langchain/core@0.2.24/denonext/documents.js": "86916b49cb4f3dbc2e564cd1f055764c8dd941959d39acdfde4afd4a79fef640",
-    "https://esm.sh/v135/@langchain/core@0.2.24/denonext/structured_query.js": "b7295f1c441d0c104f1268becd4d08d9272bb7daa77425cf2ea76142f2609268",
-    "https://esm.sh/v135/@langchain/core@0.2.24/denonext/utils/async_caller.js": "6dbd93157fcb3820c4eb690f3fadc0797ae9e316067e0e2f7c6459f90fb9f67b",
-    "https://esm.sh/v135/@langchain/core@0.2.24/denonext/utils/chunk_array.js": "75caba33d762b50cea2ea18327b8a0a453b87c5747dc9e4bc035024fb9c9dbf0",
-    "https://esm.sh/v135/@langchain/core@0.2.24/denonext/utils/math.js": "089fbe6092664d78ef2bbdc4bcba2bd12e698e4458edadcb456e6d58b8122a27",
-    "https://esm.sh/v135/@langchain/core@0.2.24/denonext/vectorstores.js": "e7bee1f5a7e005f5671e13653afab0398005fb15cfc8aecaead619d37ce13566",
     "https://esm.sh/v135/@langchain/openai@0.2.5/denonext/openai.mjs": "d9378e1b21f7e181371e547e14e7225a4f13c838db735266fff571d7ea167518",
-    "https://esm.sh/v135/@langchain/pinecone@0.0.9/denonext/pinecone.mjs": "42b2c9458c62033fab6aed963cd9c5f917c8241694707b096d44c4807844e877",
     "https://esm.sh/v135/@mdx-js/mdx@3.0.0/denonext/internal-resolve-evaluate-options.js": "34960aaa1fe2b380d9914f95e28f78920a23aa3204957bc8eed8fc55e85d64e0",
     "https://esm.sh/v135/@mdx-js/mdx@3.0.0/denonext/mdx.mjs": "11ed17a797e104750f410b1a849f915fb6fe7b72f26432b1fff3b28f52763cd1",
     "https://esm.sh/v135/@mediapipe/pose@0.5.1675469404/denonext/pose.mjs": "e8bf3bec6229668bcf8a3e9334679d90584e2485fd6f54ac6a6d6b03fb1f67dd",
-    "https://esm.sh/v135/@pinecone-database/pinecone@3.0.0/denonext/pinecone.mjs": "143cbeb7dd048c95e6a55b7fb0fd215062e9171e2a4ec96171216ecfe3a016be",
-    "https://esm.sh/v135/@pinecone-database/pinecone@3.0.3/denonext/pinecone.mjs": "adc5d4ecb456191169a451ba65b673fbadd04150ea470681cc8a3d7b00557e60",
-    "https://esm.sh/v135/@sinclair/typebox@0.29.6/denonext/typebox.mjs": "ae53ccea6af896100ed775ead9659d420d435483af22b99e8fd2d4654f311c64",
     "https://esm.sh/v135/@tensorflow-models/pose-detection@2.1.3/denonext/dist/pose-detection.js": "4f461e6d35ef256e1e3a50a27f2d72b8129cf1a586366e9553bf322ab13bb8bb",
     "https://esm.sh/v135/@tensorflow/tfjs-backend-cpu@4.15.0/denonext/dist/shared.js": "78da0372486beb2f4f2681f447d6f06d5269d8f3c56c8ff86c1d0769dda01c54",
     "https://esm.sh/v135/@tensorflow/tfjs-backend-cpu@4.17.0/denonext/dist/shared.js": "c2602deaa32f6c038f6d06090d915c80537dbab9cd0f308d1bb6f1dba113e4c6",
@@ -715,7 +704,6 @@
     "https://esm.sh/v135/@ungap/structured-clone@1.2.0/denonext/structured-clone.mjs": "e683ab48ef7a3afd3bce9d1589d14177ddbdbf76fa1483524dddbeb6b142469f",
     "https://esm.sh/v135/acorn-jsx@5.3.2/denonext/acorn-jsx.mjs": "0c42da89d21f37d8910944820b5f336a5a6ce6f50e36c6aa81f195d340ca371d",
     "https://esm.sh/v135/acorn@8.11.2/denonext/acorn.mjs": "83ac9a721f8b7340ef5cbb2034e8d6dc16293bb253fa1f3ca503b77f5810507e",
-    "https://esm.sh/v135/ajv@8.17.1/denonext/ajv.mjs": "704f78083e7ac737f67c38f37a3473d135e2204219db8ccd992a13f6a1f4e212",
     "https://esm.sh/v135/ansi-styles@5.2.0/denonext/ansi-styles.mjs": "8a10e68165432fcfd0929bdeb4e33a194af8b790702f60b2ea0477749990964c",
     "https://esm.sh/v135/astring@1.8.6/denonext/astring.mjs": "e851defe7aef30e249bd193857f24ff5b67cfd1f43058d685787efb1088a3c8c",
     "https://esm.sh/v135/bail@2.0.2/denonext/bail.mjs": "cab740cf24417dfad8567cbb78a49ae7e492ecca299f2b3185520805aba4d073",
@@ -729,7 +717,6 @@
     "https://esm.sh/v135/character-reference-invalid@2.0.1/denonext/character-reference-invalid.mjs": "41034e591247fb2bc6a12dd190e776b84cfe1da74e984fef3efbff2a97814d53",
     "https://esm.sh/v135/collapse-white-space@2.1.0/denonext/collapse-white-space.mjs": "f9413c2273567b627ded33e389b26ec20249af2337e51933f7c459a3bb4c875c",
     "https://esm.sh/v135/comma-separated-tokens@2.0.3/denonext/comma-separated-tokens.mjs": "ad5df8a36487e0a63d15bbbb6bab8b153e08583d0d5eb6d0058cd0fc619252e0",
-    "https://esm.sh/v135/cross-fetch@3.1.8/denonext/cross-fetch.mjs": "8fba9e7c3fbaf0d2168beb63ce0cd21b5bfbfbd77e2fcbf8d957d533a71222f6",
     "https://esm.sh/v135/decamelize@1.2.0/denonext/decamelize.mjs": "504737df810416c264e5b908664fcce90aa57500ef725b262a8bea0ccb7f8e14",
     "https://esm.sh/v135/decode-named-character-reference@1.0.2/denonext/decode-named-character-reference.mjs": "1a5a8f9cbe302be478e964ab701be8644dbdfd4d8ce9f14de186cf84ee2a4bc1",
     "https://esm.sh/v135/devlop@1.1.0/denonext/devlop.mjs": "05fffa5a5168daec45963b784734dbc468758e130a340af874adfe0d457e394a",
@@ -744,10 +731,7 @@
     "https://esm.sh/v135/estree-walker@3.0.3/denonext/estree-walker.mjs": "099c406b0a95d6e021b603fd38955620ffe70a69189beb4509a2f06670c30c2f",
     "https://esm.sh/v135/eventemitter3@4.0.7/denonext/eventemitter3.mjs": "6f8a6195e1a9effb73bb163c577400d608dec7c4e0bd839045fd9ea4db66e9fe",
     "https://esm.sh/v135/extend@3.0.2/denonext/extend.mjs": "6ab9e4890dfa54ec88fa326fca525c211141d6da72188f54e9610d1281219c9e",
-    "https://esm.sh/v135/fast-deep-equal@3.1.3/denonext/fast-deep-equal.mjs": "6313b3e05436550e1c0aeb2a282206b9b8d9213b4c6f247964dd7bb4835fb9e5",
-    "https://esm.sh/v135/fast-uri@3.0.1/denonext/fast-uri.mjs": "fac5187f11b297bc2be866610ab5acefa2bce51aa681e8d5f28d24f0c76cbd7d",
     "https://esm.sh/v135/fault@2.0.1/denonext/fault.mjs": "3020bde23eea0e686b9fa20ede62ffe834ad796eb94d041ebb2cb345883fdc94",
-    "https://esm.sh/v135/flat@5.0.2/denonext/flat.mjs": "d9955be953ff4fcd281cfc7e941864ab8f776c9e918a1cdc49866d2d88222ef5",
     "https://esm.sh/v135/format@0.2.2/denonext/format.mjs": "4b5f307e1a0dab630893e8f5c91c4b38541d29b640ba6977adfecb2a22d3647d",
     "https://esm.sh/v135/graphql-ws@5.14.0/denonext/graphql-ws.mjs": "ad2035e0c89afa6aafc681e17033960253009530df8f8d775c1171a48b53b818",
     "https://esm.sh/v135/graphql-ws@5.14.0/denonext/lib/client.js": "f903e3b842d9c44cf9f3890c83fae70c56912fb63856e585597db11b3c378946",
@@ -765,16 +749,12 @@
     "https://esm.sh/v135/is-plain-obj@4.1.0/denonext/is-plain-obj.mjs": "d3d86a7174ad7935de7b00f904b6424c103bce530c502efb7f42114cbb1a555f",
     "https://esm.sh/v135/is-reference@3.0.2/denonext/is-reference.mjs": "555e2e683a9fc9b9162f8fb550442d8d49c429bb3b5a7d393dd2fc4a3454a64c",
     "https://esm.sh/v135/js-tiktoken@1.0.12/denonext/lite.js": "9dbcd982b11e4a5a8577f21a3d937251da47635f27d70f7bb88923e0d0e3c5bc",
-    "https://esm.sh/v135/json-schema-traverse@1.0.0/denonext/json-schema-traverse.mjs": "c5da8353bc014e49ebbb1a2c0162d29969a14c325da19644e511f96ba670cc45",
     "https://esm.sh/v135/langsmith@0.1.39/denonext/langsmith.mjs": "051043b10536f79990fa2b9c2b9f341091817a9c4e6ef8705c4c558ac62454d0",
     "https://esm.sh/v135/langsmith@0.1.39/denonext/run_trees.js": "9d50e78a4f824312b3cb164bbc48a4a0286dc86a61b569ed407e8cd9931ab981",
     "https://esm.sh/v135/langsmith@0.1.39/denonext/singletons/traceable.js": "1c047eda5c560cc0adde3b3c52b57f61b964b5fb74bfd8172ee10733bbed9dd1",
     "https://esm.sh/v135/langsmith@0.1.40/denonext/langsmith.mjs": "7b9e61b4bf8d1684100266c8c69b643403fcf970b14536499fb90ff7ff9535c1",
     "https://esm.sh/v135/langsmith@0.1.40/denonext/run_trees.js": "060bd192b2f1fdd8d879ab32c78d60e6a0e9363d620b30750a149450b3a44a06",
     "https://esm.sh/v135/langsmith@0.1.40/denonext/singletons/traceable.js": "58b6708b1f3f62069c17b6ba31571847a2329c56b20ad0098f0ae7774cfcd46f",
-    "https://esm.sh/v135/langsmith@0.1.41/denonext/langsmith.mjs": "c3d8d0e0c12ade5a200a82b30acf4b0a6d41625622ac1e263240bde7aef0e147",
-    "https://esm.sh/v135/langsmith@0.1.41/denonext/run_trees.js": "58767b198e77b38d567ca325094be25f614d84f73274521a4bf6a92dfe4309bc",
-    "https://esm.sh/v135/langsmith@0.1.41/denonext/singletons/traceable.js": "d958fc3f74d1d37062d46647de12c14d0432f7b8fdde0ac842228b48461852c8",
     "https://esm.sh/v135/loglevel-plugin-prefix@0.8.4/denonext/loglevel-plugin-prefix.mjs": "a710f38536a10c0fca20c47f0271d8681156dc43228fbbcb5dae7dc768b5b049",
     "https://esm.sh/v135/loglevel@1.9.1/denonext/loglevel.mjs": "5db09fc1646eb32f40ba8d86ae1073a85d7e61f8f97114c841e0f345fc639825",
     "https://esm.sh/v135/long@4.0.0/denonext/long.mjs": "9d8381bedbbbafd1f1a5056955eb66cbaa6bb541066f47329ddcb4ac1f1b81fd",
@@ -918,10 +898,8 @@
     "https://esm.sh/v135/yaml@2.4.1/denonext/yaml.mjs": "4cca3db3db65962184279ef4d4de18ed1358885831ea5114d6956462ce4377fd",
     "https://esm.sh/v135/zod-to-json-schema@3.23.1/denonext/zod-to-json-schema.mjs": "210b3e5dcb2bd331e593d5041b7e4a38fbb8f5cfd13417e76abeb899431918c0",
     "https://esm.sh/v135/zod-to-json-schema@3.23.2/denonext/zod-to-json-schema.mjs": "567cc08684da504a40415849045afac147341b110a597a72d85cb4fbfa1e32e9",
-    "https://esm.sh/v135/zod-to-json-schema@3.23.3/denonext/zod-to-json-schema.mjs": "ed31a65c2842177aa65b19cb51e5d7fa393fd2c167380c9871548b4a1cdd0c94",
     "https://esm.sh/v135/zod@3.23.8/denonext/zod.mjs": "b3707b03ddc01aab11b740436ab23c0fcc8d15fed072be20085c1fd611016b61",
-    "https://esm.sh/v135/zwitch@2.0.4/denonext/zwitch.mjs": "c0e8c246a1f38b425335ea78cc366a7801d3ef89701229a35f85a51310e6e49f",
-    "https://www.unpkg.com/assemblyai@4.4.3/dist/browser.mjs": "6bf2a08c83536e152cc3addd53904fc6b91912c8c44db3d6c7d446e90fb61970"
+    "https://esm.sh/v135/zwitch@2.0.4/denonext/zwitch.mjs": "c0e8c246a1f38b425335ea78cc366a7801d3ef89701229a35f85a51310e6e49f"
   },
   "workspace": {
     "packageJson": {
@@ -945,6 +923,8 @@
         "npm:graphql-ws@^5.16.0",
         "npm:graphql-yoga@^5.7.0",
         "npm:graphql@^16.9.0",
+        "npm:livekit-client@^2.5.9",
+        "npm:livekit-server-sdk@^2.7.2",
         "npm:nexus@^1.3.0",
         "npm:react-dom@^18.3.1",
         "npm:react-relay@^17.0.0",
