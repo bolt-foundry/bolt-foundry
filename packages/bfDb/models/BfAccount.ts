@@ -4,7 +4,6 @@ import {
   toBfGid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import {
   type BfJwtPayload,
   encodeBfAccessToken,
@@ -14,7 +13,6 @@ import { BfModelErrorNotFound } from "packages/bfDb/classes/BfModelError.ts";
 import { bfQueryItems } from "packages/bfDb/bfDb.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 export type BfAccountRequiredProps = {
   organizationBfGid: BfGid;
@@ -74,6 +72,7 @@ export class BfAccount extends BfNode<BfAccountRequiredProps> {
       importMeta,
       refreshToken,
     );
+    const { BfPerson } = await import("packages/bfDb/models/BfPerson.ts");
     const person = await BfPerson.findX(
       currentViewer,
       currentViewer.personBfGid,
@@ -102,10 +101,12 @@ export class BfAccount extends BfNode<BfAccountRequiredProps> {
   }
 
   protected override async afterCreate() {
+    const { BfPerson } = await import("packages/bfDb/models/BfPerson.ts");
     const person = await BfPerson.findX(
       this.currentViewer,
       this.currentViewer.personBfGid,
     );
+    const { BfEdge } = await import("packages/bfDb/coreModels/BfEdge.ts");
     await BfEdge.createBetweenNodes(this.currentViewer, person, this);
   }
 

@@ -5,7 +5,6 @@ import type {
   Constructor,
   CreationMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { getLogger } from "deps.ts";
 import {
   type BfCurrentViewer,
@@ -121,6 +120,7 @@ export class BfNode<
         targetProps,
         targetCreationMetadata,
       );
+    const { BfEdge } = await import("packages/bfDb/coreModels/BfEdge.ts");
     await BfEdge.createBetweenNodes(
       this.currentViewer,
       this,
@@ -163,7 +163,7 @@ export class BfNode<
     }) as Array<InstanceType<TSourceClass>>;
   }
 
-  public querySourceInstances<
+  public async querySourceInstances<
     // an actual good use of any.
     // deno-lint-ignore no-explicit-any
     TSourceClass extends abstract new (...args: any) => any,
@@ -171,6 +171,7 @@ export class BfNode<
     SourceClass: TSourceClass,
     props: Partial<ChildRequiredProps & ChildOptionalProps> = {},
   ) {
+    const { BfEdge } = await import("packages/bfDb/coreModels/BfEdge.ts");
     return BfEdge.querySourceInstances(
       this.currentViewer,
       SourceClass,
@@ -179,7 +180,7 @@ export class BfNode<
     );
   }
 
-  public queryTargetInstances<
+  public async queryTargetInstances<
     // an actual good use of any.
     // deno-lint-ignore no-explicit-any
     TTargetClass extends abstract new (...args: any) => any,
@@ -188,6 +189,7 @@ export class BfNode<
     props: Partial<ChildRequiredProps & ChildOptionalProps> = {},
     edgeProps: Partial<ChildOptionalProps> = {},
   ) {
+    const { BfEdge } = await import("packages/bfDb/coreModels/BfEdge.ts");
     return BfEdge.queryTargetInstances(
       this.currentViewer,
       TargetClass,
@@ -197,7 +199,7 @@ export class BfNode<
     );
   }
 
-  public queryTargetsConnectionForGraphQL<
+  public async queryTargetsConnectionForGraphQL<
     // an actual good use of any.
     // deno-lint-ignore no-explicit-any
     TTargetClass extends abstract new (...args: any) => any,
@@ -207,6 +209,7 @@ export class BfNode<
     props: Partial<ChildRequiredProps & ChildOptionalProps> = {},
     edgeProps: Partial<ChildOptionalProps> = {},
   ) {
+    const { BfEdge } = await import("packages/bfDb/coreModels/BfEdge.ts");
     return BfEdge.queryTargetsConnectionForGraphQL(
       this.currentViewer,
       TargetClass,
@@ -226,6 +229,7 @@ export class BfNode<
   }
 
   override async delete() {
+    const { BfEdge } = await import("packages/bfDb/coreModels/BfEdge.ts");
     const bfGid = this.metadata.bfGid;
     await super.delete();
     await BfEdge.deleteEdgesTouchingNode(this.currentViewer, bfGid);
