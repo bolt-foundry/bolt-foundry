@@ -23,6 +23,11 @@
     "@std/path": "jsr:@std/path@^1.0.6",
     "@wok/djwt": "jsr:@wok/djwt@^3.0.2",
     "build/": "./build/",
+    "@neon/serverless": "npm:@neondatabase/serverless",
+    "@std/assert": "jsr:@std/assert@^1.0.6",
+    "@std/cli": "jsr:@std/cli",
+    "@std/http": "jsr:@std/http",
+    "build/": "./build/",
     "content/": "./content/",
     "deps.ts": "./deps.ts",
     "docs/": "./docs/",
@@ -31,7 +36,6 @@
     "lib/": "./lib/",
     "packages/": "./packages/",
     "resources/": "./resources/",
-    "testDeps.ts": "./testDeps.ts",
     "thirdParty/": "./thirdParty/"
 
     "@neon/serverless": "npm:@neondatabase/serverless"
