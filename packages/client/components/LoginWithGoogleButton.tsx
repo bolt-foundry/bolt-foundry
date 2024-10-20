@@ -1,7 +1,3 @@
-/// <reference path="@types/google.accounts/index.d.ts" />
-/// <reference path="@types/google.picker/index.d.ts" />
-/// <reference path="@types/gapi.drive/index.d.ts" />
-/// <reference path="@types/gapi/index.d.ts" />
 import { React } from "deps.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 
