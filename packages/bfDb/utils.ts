@@ -1,6 +1,4 @@
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
-import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { toBfGid, toBfOid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { getLogger } from "deps.ts";
 import { neon } from "@neon/serverless";
@@ -79,6 +77,7 @@ export async function upsertBfDb() {
     import.meta,
   );
   logger.info("Checking for omni account");
+  const { BfPerson } = await import("packages/bfDb/models/BfPerson.ts");
   if (!(await BfPerson.find(omniCv, toBfGid("omni_person")))) {
     logger.info("Creating omni person");
     await BfPerson.__DANGEROUS__createUnattached(omniCv, {
@@ -86,6 +85,7 @@ export async function upsertBfDb() {
     }, { bfGid: toBfGid("omni_person"), bfOid: toBfOid("omni_person") });
   }
   logger.info("Checking for internal org");
+  const { BfOrganization } = await import("packages/bfDb/models/BfOrganization.ts");
   if (!(await BfOrganization.find(omniCv, toBfOid(BF_INTERNAL_ORG_NAME)))) {
     logger.info("Creating internal org");
     await BfOrganization.__DANGEROUS__createUnattached(omniCv, {
