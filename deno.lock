@@ -1,11 +1,12 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@neon/serverless@0.9.2": "0.9.2",
+    "jsr:@std/assert@*": "1.0.6",
     "jsr:@std/cli@^1.0.6": "1.0.6",
     "jsr:@std/encoding@^1.0.5": "1.0.5",
     "jsr:@std/fmt@^1.0.2": "1.0.2",
     "jsr:@std/http@*": "1.0.8",
+    "jsr:@std/internal@^1.0.4": "1.0.4",
     "jsr:@std/media-types@^1.0.3": "1.0.3",
     "jsr:@std/net@^1.0.4": "1.0.4",
     "jsr:@std/path@^1.0.6": "1.0.6",
@@ -15,19 +16,25 @@
     "npm:@langchain/core@~0.2.32": "0.2.36_zod@3.23.8",
     "npm:@langchain/openai@~0.2.10": "0.2.11_zod@3.23.8_openai@4.68.1__zod@3.23.8",
     "npm:@langchain/pinecone@^0.0.9": "0.0.9",
+    "npm:@neondatabase/serverless@*": "0.10.1",
+    "npm:@neondatabase/serverless@~0.10.1": "0.10.1",
     "npm:@pinecone-database/pinecone@^3.0.3": "3.0.3",
     "npm:@replit/extensions@^1.10.0": "1.10.0",
+    "npm:@replit/object-storage@*": "1.0.0",
     "npm:@replit/object-storage@1": "1.0.0",
+    "npm:@types/dom-webcodecs@*": "0.1.13",
     "npm:@types/dom-webcodecs@~0.1.13": "0.1.13",
     "npm:@types/gapi.drive@^0.0.9": "0.0.9",
     "npm:@types/gapi@^0.0.47": "0.0.47",
     "npm:@types/google.accounts@^0.0.15": "0.0.15",
     "npm:@types/google.picker@^0.0.43": "0.0.43",
+    "npm:@types/node@*": "22.5.4",
     "npm:@types/pg@^8.11.10": "8.11.10",
     "npm:@types/react-dom@18": "18.3.1",
     "npm:@types/react-relay@^16.0.6": "16.0.6",
     "npm:@types/react@18": "18.3.11",
     "npm:@types/relay-runtime@17": "17.0.4",
+    "npm:@types/sharedworker@*": "0.0.129",
     "npm:@types/sharedworker@^0.0.129": "0.0.129",
     "npm:assemblyai@^4.7.0": "4.7.1",
     "npm:chalk@^5.3.0": "5.3.0",
@@ -53,8 +60,11 @@
     "npm:zod@^3.23.8": "3.23.8"
   },
   "jsr": {
-    "@neon/serverless@0.9.2": {
-      "integrity": "87568997fd4feeb3cd7d986e3d3f9f272f52b80d12d17ba07720c7d8f8cde486"
+    "@std/assert@1.0.6": {
+      "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
     },
     "@std/cli@1.0.6": {
       "integrity": "d22d8b38c66c666d7ad1f2a66c5b122da1704f985d3c47f01129f05abb6c5d3d"
@@ -76,6 +86,9 @@
         "jsr:@std/path",
         "jsr:@std/streams"
       ]
+    },
+    "@std/internal@1.0.4": {
+      "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
     },
     "@std/media-types@1.0.3": {
       "integrity": "b12d30a7852f7578f4d210622df713bbfd1cbdd9b4ec2eaf5c1845ab70bab159"
@@ -399,6 +412,12 @@
         "ts-toolbelt"
       ]
     },
+    "@neondatabase/serverless@0.10.1": {
+      "integrity": "sha512-Upn555uEYL/q8aqMdPSviggNWeeZLCl5FhCIs7A4hmshfoOAAfML+Sqbcxr+Re2WZN5+hpyM9JClImXnBuhuXw==",
+      "dependencies": [
+        "@types/pg@8.11.6"
+      ]
+    },
     "@noble/curves@1.6.0": {
       "integrity": "sha512-TlaHRXDehJuRNR9TfZDNQ45mMEd5dwUwmicsafcIX4SsNiqnCHKjE/1alYPd/lDRVhxdhUAlv8uEhMCI5zjIJQ==",
       "dependencies": [
@@ -488,6 +507,14 @@
     },
     "@types/pg@8.11.10": {
       "integrity": "sha512-LczQUW4dbOQzsH2RQ5qoeJ6qJPdrcM/DcMLoqWQkMLMsq83J5lAX3LXjdkWdpscFy67JSOWDnh7Ny/sPFykmkg==",
+      "dependencies": [
+        "@types/node@22.5.4",
+        "pg-protocol",
+        "pg-types"
+      ]
+    },
+    "@types/pg@8.11.6": {
+      "integrity": "sha512-/2WmmBXHLsfRqzfHW7BNZ8SbYzE8OSk7i3WjFYvfgRHj7S1xj+16Je5fUKv3lVdVzk/zn9TXOqf+avFCFIE0yQ==",
       "dependencies": [
         "@types/node@22.5.4",
         "pg-protocol",
@@ -1674,10 +1701,10 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@neon/serverless@0.9.2",
       "jsr:@std/assert@*",
       "jsr:@std/cli@*",
-      "jsr:@std/http@*"
+      "jsr:@std/http@*",
+      "npm:@neondatabase/serverless@*"
     ],
     "packageJson": {
       "dependencies": [
@@ -1686,6 +1713,7 @@
         "npm:@langchain/core@~0.2.32",
         "npm:@langchain/openai@~0.2.10",
         "npm:@langchain/pinecone@^0.0.9",
+        "npm:@neondatabase/serverless@~0.10.1",
         "npm:@pinecone-database/pinecone@^3.0.3",
         "npm:@replit/extensions@^1.10.0",
         "npm:@replit/object-storage@1",
