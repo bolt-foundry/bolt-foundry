@@ -31,7 +31,7 @@
     "@std/http": "jsr:@std/http",
     "@std/assert": "jsr:@std/assert",
 
-    "@neon/serverless": "jsr:@neon/serverless@0.9.2"
+    "@neon/serverless": "npm:@neondatabase/serverless"
   }
   "compilerOptions": {
     "jsx": "react-jsx",
@@ -75,6 +75,7 @@
       "packages/__generated__",
       "packages/third-party",
       "packages/client/static",
+      "**/*.disabled.ts"
     ],
     "include": [
       "experimental",
