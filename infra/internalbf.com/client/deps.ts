@@ -1,7 +1,3 @@
-/// <reference path="@types/google.accounts/index.d.ts" />
-/// <reference path="@types/google.picker/index.d.ts" />
-/// <reference path="@types/gapi.drive/index.d.ts" />
-/// <reference path="@types/gapi/index.d.ts" />
 export * as ReactDOMClient from "react-dom/client";
 export * as GraphqlWs from "graphql-ws";
 import "infra/__generated__/_graphql_imports.ts";
