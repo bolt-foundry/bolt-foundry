@@ -28,10 +28,12 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/dom-webcodecs": "^0.1.13",
     "@types/pg": "^8.11.10",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-relay": "^16.0.6",
-    "@types/relay-runtime": "^17"
+    "@types/relay-runtime": "^17",
+    "@types/sharedworker": "^0.0.129"
   }
 }

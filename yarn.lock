@@ -505,6 +505,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/dom-webcodecs@npm:^0.1.13":
+  version: 0.1.13
+  resolution: "@types/dom-webcodecs@npm:0.1.13"
+  checksum: 10c0/16683fd0330fdfbb867affec1c18fd493d88433a4ec66257579adc5d07b07e9492268b4401e9017b7388b13750722365b0392b375e39c84e74f564d5b4f634a4
+  languageName: node
+  linkType: hard
+
 "@types/node-fetch@npm:^2.6.4":
   version: 2.6.11
   resolution: "@types/node-fetch@npm:2.6.11"
@@ -610,6 +617,13 @@ __metadata:
   version: 0.12.0
   resolution: "@types/retry@npm:0.12.0"
   checksum: 10c0/7c5c9086369826f569b83a4683661557cab1361bac0897a1cefa1a915ff739acd10ca0d62b01071046fe3f5a3f7f2aec80785fe283b75602dc6726781ea3e328
+  languageName: node
+  linkType: hard
+
+"@types/sharedworker@npm:^0.0.129":
+  version: 0.0.129
+  resolution: "@types/sharedworker@npm:0.0.129"
+  checksum: 10c0/de60379bfc9f7f16919ef71b2a14c994427bbfbb99e86204a0bd3dd1dde834279048c24aefdcdc4bc56b2bfbc1487495da0e456613967c469a80ffc7be69f618
   languageName: node
   linkType: hard
 
@@ -793,11 +807,13 @@ __metadata:
     "@langchain/pinecone": "npm:^0.0.9"
     "@pinecone-database/pinecone": "npm:^3.0.3"
     "@replit/object-storage": "npm:^1.0.0"
+    "@types/dom-webcodecs": "npm:^0.1.13"
     "@types/pg": "npm:^8.11.10"
     "@types/react": "npm:^18"
     "@types/react-dom": "npm:^18"
     "@types/react-relay": "npm:^16.0.6"
     "@types/relay-runtime": "npm:^17"
+    "@types/sharedworker": "npm:^0.0.129"
     assemblyai: "npm:^4.7.0"
     esbuild: "npm:^0.23.1"
     google-auth-library: "npm:^9.14.1"
