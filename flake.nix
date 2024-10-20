@@ -26,7 +26,7 @@
         unstablePkgs = pkgsForSystem nixpkgs-unstable;
 
         sharedPackages = with pkgs; [
-          unstablePkgs.deno_1
+          unstablePkgs.deno
           ffmpeg
           yarn
           nodejs_22
