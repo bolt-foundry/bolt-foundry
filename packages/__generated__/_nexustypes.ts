@@ -76,7 +76,7 @@ export interface NexusGenScalars {
   Boolean: boolean
   ID: string
   File: File
-  TimecodeInMilliseconds: int
+  TimecodeInMilliseconds: number
   Url: string
 }
 

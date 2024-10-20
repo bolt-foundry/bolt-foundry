@@ -418,7 +418,8 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
       }
       this.metadata = metadata;
       return this;
-    } catch (error) {
+    } catch (errorRaw) {
+      const error = errorRaw as Error;
       if (error.name === "ItemNotFoundError") {
         throw new BfModelErrorNotFound(
           `Could not find ${this.constructor.name} with bfGid: ${this.metadata.bfGid}`,
