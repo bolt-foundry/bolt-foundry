@@ -1,5 +1,5 @@
 {
-  "unstable": ["temporal", "byonm"],
+  "unstable": ["temporal", "webgpu"],
   "imports": {
     "#vcs-react/components": "./thirdParty/daily-vcs/src/react/components/index.js",
     "#vcs-react/hooks": "./thirdParty/daily-vcs/src/react/hooks/index.js",
@@ -111,7 +111,9 @@
       "packages",
     ]
   },
-  "lock": true,
-  "nodeModulesDir": "auto",
-  "vendor": true
+  "lock": {
+    "path": "./deno.lock",
+    "frozen": true
+  },
+  "nodeModulesDir": "auto"
 }
