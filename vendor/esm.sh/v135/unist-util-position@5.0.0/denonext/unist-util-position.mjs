@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(unist-util-position@5.0.0) denonext production */
-var e=p("end"),f=p("start");function p(o){return i;function i(n){let t=n&&n.position&&n.position[o]||{};if(typeof t.line=="number"&&t.line>0&&typeof t.column=="number"&&t.column>0)return{line:t.line,column:t.column,offset:typeof t.offset=="number"&&t.offset>-1?t.offset:void 0}}}function r(o){let i=f(o),n=e(o);if(i&&n)return{start:i,end:n}}export{e as pointEnd,f as pointStart,r as position};
-//# sourceMappingURL=unist-util-position.mjs.map

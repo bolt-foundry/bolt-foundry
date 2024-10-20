@@ -33,7 +33,6 @@ jobs:
         run: |
           ./result/bin/direnv allow .
           eval "$(./result/bin/direnv export bash)"
-          yarn install
           ./infra/bin/bff ci
           
           
