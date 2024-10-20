@@ -5,7 +5,6 @@ import {
   IBfCurrentViewerInternalAdmin,
   IBfCurrentViewerInternalAdminOmni,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import type { BfAccountRequiredProps } from "packages/bfDb/models/BfAccount.ts";
 import {
   ACCOUNT_ROLE,
@@ -29,7 +28,7 @@ type GraphQLCreateArgs = BfOrganizationRequiredProps;
 
 export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
   __typename = "BfOrganization" as const;
-  protected static isSelfOwned = true;
+  protected static override isSelfOwned = true;
 
   static async findByDomainName(currentViewer: BfCurrentViewer, hd: string) {
     const item = await bfQueryItems({ className: "BfOrganization" }, {
@@ -58,6 +57,7 @@ export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
       bfOid: toBfOid(domainName),
     });
 
+    const { BfAccount } = await import("packages/bfDb/models/BfAccount.ts");
     await newOrg.createTargetNode(
       BfAccount,
       { role: ACCOUNT_ROLE.OWNER },
@@ -97,6 +97,7 @@ export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
 
     const org = await this.findX(newViewer, organizationBfGid);
 
+    const { BfAccount } = await import("packages/bfDb/models/BfAccount.ts");
     const DANGEROUSLY_CREATED_ACCOUNT = org.createTargetNode(
       BfAccount,
       props,
