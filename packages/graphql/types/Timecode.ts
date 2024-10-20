@@ -4,5 +4,5 @@ export const TimecodeInMillisecondsScalarType = scalarType({
   name: "TimecodeInMilliseconds",
   asNexusMethod: "msTime",
   description: "Timecode described as milliseconds",
-  sourceType: "int",
+  sourceType: "number",
 });

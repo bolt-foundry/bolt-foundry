@@ -81,7 +81,7 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
     await this.save();
   }
 
-  protected beforeLoad() {
+  protected override beforeLoad() {
     // people actually own themselves.
     this.metadata.bfOid = toBfOid(this.currentViewer.personBfGid);
   }
