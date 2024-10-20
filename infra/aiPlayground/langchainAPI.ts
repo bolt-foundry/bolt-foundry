@@ -1,14 +1,10 @@
-// deno-lint-ignore no-external-import
-import { ChatOpenAI } from "https://esm.sh/@langchain/openai";
-// deno-lint-ignore no-external-import
-import { ChatAnthropic } from "https://esm.sh/@langchain/anthropic";
-// deno-lint-ignore no-external-import
-import { ChatPromptTemplate } from "https://esm.sh/@langchain/core/prompts";
-// deno-lint-ignore no-external-import
+import { ChatOpenAI } from "@langchain/openai";
+import { ChatAnthropic } from "@langchain/anthropic";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 import {
   JsonOutputParser,
   StringOutputParser,
-} from "https://esm.sh/@langchain/core/output_parsers";
+} from "@langchain/core/output_parsers";
 
 const samples = [
   {
