@@ -51,10 +51,6 @@ export function toBfCid(value: string): BfCid {
   return value as BfCid;
 }
 
-export function toBfSortValue<T extends string>(value: T): BfSortValue<T> {
-  return value as BfSortValue<T>;
-}
-
 export function toUnixtime(value: number): Unixtime {
   return value as Unixtime;
 }

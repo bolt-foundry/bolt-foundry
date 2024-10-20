@@ -37,7 +37,6 @@ const connectionString = Deno.env.get("BF_ENV") === "DEVELOPMENT"
   ? Deno.env.get("DATABASE_URL") ?? Deno.env.get("BFDB_URL")
   : Deno.env.get("BFDB_URL");
 
-// @ts-expect-error no types, underlying it's a `pg` thing
 const client = new Client({ connectionString });
 
 type Props = Record<string, unknown>;
@@ -147,11 +146,9 @@ async function initializeSubscriptions() {
     return;
   }
   areNotificationsInitialized = true;
-  // @ts-expect-error no types, underlying it's a `pg` thing
   await client.connect();
-  // @ts-expect-error no types, underlying it's a `pg` thing
+  // @ts-expect-error this must be out of date or something... not sure why it doesn't know about notif type
   client.on("notification", respondToNotification);
-  // @ts-expect-error no types, underlying it's a `pg` thing
   await client.query("LISTEN item_changes");
   logger.info("Notifications configured.");
 }
@@ -549,6 +546,7 @@ export async function bfQueryItemsUnified<
       `SELECT COUNT(*) FROM bfdb WHERE ${allConditions}`,
       variables,
     );
+    // @ts-expect-error #techdebt
     return parseInt(query[0].count);
   }
 
@@ -689,7 +687,7 @@ export async function bfDeleteItem(bfOid: BfOid, bfGid: BfGid): Promise<void> {
       DELETE FROM bfdb
       WHERE bf_oid = ${bfOid} AND bf_gid = ${bfGid}
     `;
-    if (result.rowCount === 0) {
+    if (result.length === 0) {
       throw new BfDbError(
         `No item found with bfOid: ${bfOid} and bfGid: ${bfGid}`,
       );
