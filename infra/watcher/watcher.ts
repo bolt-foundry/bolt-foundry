@@ -1,6 +1,6 @@
 #! /usr/bin/env -S deno run -A
 
-import { dirname } from "std/path/mod.ts";
+import { dirname } from "@std/path";
 import { notifyDiscord, processFile } from "infra/watcher/ingest.ts";
 import { getLogger } from "deps.ts";
 

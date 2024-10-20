@@ -1,6 +1,6 @@
 import { register } from "infra/bff/mod.ts";
-import { walk } from "std/fs/mod.ts";
-import { normalize, resolve } from "std/path/mod.ts";
+import { walk } from "@std/fs";
+import { normalize, resolve } from "@std/path";
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
 
