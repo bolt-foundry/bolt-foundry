@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(micromark-util-chunked@2.0.0) denonext production */
-function u(e,n,h,f){let l=e.length,p=0,c;if(n<0?n=-n>l?0:l+n:n=n>l?l:n,h=h>0?h:0,f.length<1e4)c=Array.from(f),c.unshift(n,h),e.splice(...c);else for(h&&e.splice(n,h);p<f.length;)c=f.slice(p,p+1e4),c.unshift(n,0),e.splice(...c),p+=1e4,n+=1e4}function g(e,n){return e.length>0?(u(e,e.length,0,n),e):n}export{g as push,u as splice};
-//# sourceMappingURL=micromark-util-chunked.mjs.map
