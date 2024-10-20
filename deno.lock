@@ -54,6 +54,7 @@
     "npm:react-dom@^18.3.1": "18.3.1_react@18.3.1",
     "npm:react-relay@17": "17.0.0_react@18.3.1",
     "npm:react@^18.3.1": "18.3.1",
+    "npm:relay-compiler@*": "17.0.0",
     "npm:relay-compiler@17": "17.0.0",
     "npm:relay-runtime@17": "17.0.0",
     "npm:rxjs@^7.8.1": "7.8.1",
