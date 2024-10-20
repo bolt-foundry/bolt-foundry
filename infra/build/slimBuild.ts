@@ -60,7 +60,7 @@ const slimRelay = {
 
 export async function build(
   buildOptions = {
-    jsx: "automatic",
+    jsx: "automatic" as const,
     minify: Deno.env.get("BF_ENV") === "PRODUCTION",
     sourcemap: "inline" as const,
     sourceRoot: `${Deno.cwd()}`,
@@ -72,7 +72,6 @@ export async function build(
     entryPoints: [
       "infra/internalbf.com/client/Client.tsx",
       "packages/client/Client.tsx",
-      "aws/client/main.tsx",
     ],
     write: true,
     outdir: "build",

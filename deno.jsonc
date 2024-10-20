@@ -14,8 +14,8 @@
       "deno.unstable"
     ],
     "types": [
-      "https://esm.sh/v135/@types/dom-webcodecs@0.1.8/index.d.ts",
-      "https://esm.sh/v135/@types/sharedworker@0.0.115/index.d.ts"
+      "npm:@types/dom-webcodecs/index.d.ts",
+      "npm:@types/sharedworker/index.d.ts"
     ]
   },
   "fmt": {

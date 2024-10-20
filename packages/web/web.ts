@@ -3,12 +3,10 @@
 import { clientRenderer } from "packages/clientRenderer/clientRenderer.ts";
 import { getLogger } from "deps.ts";
 import { routes as appRoutes } from "packages/client/components/App.tsx";
-import { routes as oldAppRoutes } from "aws/client/components/App.tsx";
 import { getHeaders } from "infra/watcher/ingest.ts";
 import { workerList } from "infra/build/workerList.ts";
 import { handler as graphQlHandler } from "packages/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";
-import { redirectIfNotLoggedIn } from "/aws/clientRenderer/main.ts";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
 import { BfCurrentViewerAccessToken } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { serveDir } from "@std/http";
@@ -34,11 +32,6 @@ const routes = new Map<string, Handler>();
 for (const entry of appRoutes.entries()) {
   const [path, { allowLoggedOut }] = entry;
   routes.set(path, clientRenderer(allowLoggedOut));
-}
-
-for (const entry of oldAppRoutes.entries()) {
-  const [path] = entry;
-  routes.set(path, redirectIfNotLoggedIn);
 }
 
 for (const workerPathWithoutLeadingSlash of workerList) {
