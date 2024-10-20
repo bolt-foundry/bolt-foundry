@@ -29,7 +29,7 @@ type GraphQLCreateArgs = BfOrganizationRequiredProps;
 
 export class BfOrganization extends BfNode<BfOrganizationRequiredProps> {
   __typename = "BfOrganization" as const;
-  protected static isSelfOwned = true;
+  protected static override isSelfOwned = true;
 
   static async findByDomainName(currentViewer: BfCurrentViewer, hd: string) {
     const item = await bfQueryItems({ className: "BfOrganization" }, {
