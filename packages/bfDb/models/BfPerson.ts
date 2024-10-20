@@ -5,10 +5,7 @@ import {
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "deps.ts";
 import { toBfOid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
-import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
 import { BfError } from "lib/BfError.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.trace;
@@ -61,6 +58,8 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
       bfOid: toBfOid(currentViewer.personBfGid),
     });
 
+    const { BfOrganization } = await import("packages/bfDb/models/BfOrganization.ts");
+
     await BfOrganization
       .__DANGEROUS__addCurrentViewerFromGoogleToOrganization(
         import.meta,
@@ -68,7 +67,7 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
         hd,
       );
 
-    logVerbose("newPerson", newPerson);
+    logVerbose("newPerson", newPerson); 
     return newPerson;
   }
 
@@ -87,12 +86,14 @@ export class BfPerson extends BfNode<BfPersonRequiredProps> {
   }
 
   async getGoogleAuth() {
+    const { BfEdge } = await import("packages/bfDb/coreModels/BfEdge.ts");
+    const { BfGoogleAuth } = await import("packages/bfDb/models/BfGoogleAuth.ts");
     const auths = await BfEdge.queryTargetInstances(
       this.currentViewer,
       BfGoogleAuth,
       this.metadata.bfGid,
     );
     const bfGoogleAuth = auths[0];
-    return bfGoogleAuth as unknown as BfGoogleAuth | void;
+    return bfGoogleAuth as unknown as InstanceType<typeof BfGoogleAuth> | void;
   }
 }
