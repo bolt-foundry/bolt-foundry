@@ -95,7 +95,8 @@ export async function decodeAndVerifyGoogleToken(
     await verify(token, key, {
       audience: GOOGLE_OAUTH_CLIENT_ID,
     });
-  } catch (e) {
+  } catch (eRaw) {
+    const e = eRaw as Error;
     throw new JwtVerificationError(e.message);
   }
 
@@ -103,7 +104,8 @@ export async function decodeAndVerifyGoogleToken(
   try {
     const [_header, payload, _signature] = decode(token);
     return payload as GooglePayload;
-  } catch (e) {
+  } catch (eRaw) {
+    const e = eRaw as Error;
     throw new JwtVerificationError(e.message);
   }
 }
@@ -141,7 +143,8 @@ export async function decodeAndVerifyBfJwt(
 ): Promise<BfJwtPayload> {
   try {
     return await verify(token, bfCryptoKey, { audience: aud }) as BfJwtPayload;
-  } catch (e) {
+  } catch (eRaw) {
+    const e = eRaw as Error;
     throw new JwtVerificationError(e.message);
   }
 }

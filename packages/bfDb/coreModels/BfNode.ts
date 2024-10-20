@@ -66,6 +66,7 @@ export class BfNode<
       ChildRequiredProps & Partial<ChildOptionalProps>,
       BfBaseModelMetadata<ChildCreationMetadata>
     >(
+      // @ts-expect-error #techdebt
       combinedMetadata,
       propsToQuery,
       connectionArgs,
@@ -224,7 +225,7 @@ export class BfNode<
     );
   }
 
-  async delete() {
+  override async delete() {
     const bfGid = this.metadata.bfGid;
     await super.delete();
     await BfEdge.deleteEdgesTouchingNode(this.currentViewer, bfGid);
