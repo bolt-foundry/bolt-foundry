@@ -1,3 +1,0 @@
-/* esm.sh - esbuild bundle(unist-util-position-from-estree@2.0.0) denonext production */
-function r(n){let o=n||{},e=o.loc||{},d=o.range||[void 0,void 0],t=c(e.start,d[0]||o.start),f=c(e.end,d[1]||o.end);if(t&&f)return{start:t,end:f}}function c(n,o){if(n&&typeof n=="object"){let e="line"in n?i(n.line):void 0,d="column"in n?i(n.column):void 0;if(e&&d!==void 0)return{line:e,column:d+1,offset:i(o)}}}function i(n){return typeof n=="number"&&n>-1?n:void 0}export{r as positionFromEstree};
-//# sourceMappingURL=unist-util-position-from-estree.mjs.map
