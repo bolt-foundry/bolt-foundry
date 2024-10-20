@@ -22,7 +22,7 @@ register(
       }
     };
 
-    const fnsToRun = [ci, buildRelay, mappedSlimBuild, buildVcs];
+    const fnsToRun = [buildRelay, mappedSlimBuild, buildVcs];
     for (const fn of fnsToRun) {
       const code = await fn();
       if (code !== 0) {
