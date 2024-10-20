@@ -1281,6 +1281,7 @@
     "https://esm.sh/v135/zod@3.23.8/lib/helpers/errorUtil.d.ts": {},
     "https://esm.sh/v135/zod@3.23.8/lib/helpers/parseUtil.d.ts": {},
     "https://esm.sh/v135/zod@3.23.8/lib/helpers/partialUtil.d.ts": {},
-    "https://esm.sh/v135/zod@3.23.8/lib/helpers/typeAliases.d.ts": {}
+    "https://esm.sh/v135/zod@3.23.8/lib/helpers/typeAliases.d.ts": {},
+    "https://jsr.io/@std/net/1.0.4/unstable_get_network_address.ts": {}
   }
 }
