@@ -1,0 +1,245 @@
+{
+  "manifest": {
+    "/unicode_width.ts": {
+      "size": 2845,
+      "checksum": "sha256-dc40ca6a2c8a2f23e0a6a39b9076fd5b00d72284b333634787a81ceb61c6423c"
+    },
+    "/testdata/unicode_width_crate/Cargo.toml": {
+      "size": 185,
+      "checksum": "sha256-9a9db49f8245eee59614b09ec12117624e8539e9776322bbdac15ea4c9063eb5"
+    },
+    "/testdata/spinner_cases/change_message.ts": {
+      "size": 268,
+      "checksum": "sha256-e2dbfb8a9d80439709cab01300e4555972e6692e3f1c4d12c71eec4ddec4610b"
+    },
+    "/testdata/spinner_cases/custom_color_black.ts": {
+      "size": 161,
+      "checksum": "sha256-e66b8f87f9d47fa8905eb7a948dfa8b369ff61ad2e89f13b1770a640f2f06262"
+    },
+    "/_run_length.ts": {
+      "size": 957,
+      "checksum": "sha256-7960f6cae47c6d06eceb3e1070b5b4497418210d0138503ddf812e49e6df7c65"
+    },
+    "/testdata/spinner_cases/custom_message.ts": {
+      "size": 181,
+      "checksum": "sha256-b42a15d45e8ee78bfa380a5311a2a547574955757fe1c9d9d128a7fa20128054"
+    },
+    "/testdata/spinner_cases/custom_color_white.ts": {
+      "size": 161,
+      "checksum": "sha256-fe7af6fb8b8c82f4661676c0acc99cff4e030b97c12e53fc93d98c1da2722376"
+    },
+    "/LICENSE": {
+      "size": 1075,
+      "checksum": "sha256-0961f97da6619d5fe9ddb98649191d5ca6e958856ea5252f4cce7c9b85513819"
+    },
+    "/testdata/spinner_cases/custom_color_magenta.ts": {
+      "size": 163,
+      "checksum": "sha256-6ce0583ebd4e946b0ef577853af64cb4110266ec42a63be6b10abce6696932f8"
+    },
+    "/testdata/unicode_width_crate/src/lib.rs": {
+      "size": 541,
+      "checksum": "sha256-e0580008e6a53a50b6233fa5ab2fe5ff9110fd68e566ffcba1c0ddc583b582e8"
+    },
+    "/mod.ts": {
+      "size": 584,
+      "checksum": "sha256-75d9254ccdd65f796576491a16b1589bfb8cd6f10954a480f1e738d0ef336f93"
+    },
+    "/parse_args_test.ts": {
+      "size": 45111,
+      "checksum": "sha256-76e160d67022d509a90b1f4a7245eba761e8fa69502c03e6f9113b72d7638b8e"
+    },
+    "/_tools/generate_data.ts": {
+      "size": 8043,
+      "checksum": "sha256-59e19ad9d304ae6acd615a2cc240bd0ab6968991664277dce7179b427a6048d9"
+    },
+    "/testdata/spinner_cases/set_color.ts": {
+      "size": 222,
+      "checksum": "sha256-c6addb5fae9097a4035740744d13752b1f5852853106ab6100052254d7094d36"
+    },
+    "/testdata/spinner_cases/stop.ts": {
+      "size": 170,
+      "checksum": "sha256-02fba03c28366abae20d2310e4075fde2fe685c7e91296f30ee2e2a5ebfcb0d4"
+    },
+    "/testdata/spinner_cases/custom_color_gray.ts": {
+      "size": 160,
+      "checksum": "sha256-17d181241985bea40698c7384637e93782ff04957bdc38eb221311bf608f5eff"
+    },
+    "/deno.json": {
+      "size": 267,
+      "checksum": "sha256-e576e899c862cc5f75c2e8b09172a7273667b0853ed42dbb0a43107d88dcd3e2"
+    },
+    "/prompt_secret.ts": {
+      "size": 3101,
+      "checksum": "sha256-4adc35f1115ae0fe2a36800fa6303e1331e91a3fee66dc7c56d47cf8a0b5a3cb"
+    },
+    "/_tools/compare_with_rust.ts": {
+      "size": 1972,
+      "checksum": "sha256-37745a5379879ab2e437967511f7b9f0c7d3954dc7d6b66608059226b52a787d"
+    },
+    "/testdata/spinner_cases/start.ts": {
+      "size": 143,
+      "checksum": "sha256-fc57dcef9852dbccd348793c8caafda8c12e8481fff04df1efe76cf001cbf5b5"
+    },
+    "/testdata/spinner_cases/custom_color_cyan.ts": {
+      "size": 160,
+      "checksum": "sha256-6ad4b4a6937ccffde8069c145e0fc88b1b3b551b7f8e0abe0c536d80a25eaa1d"
+    },
+    "/testdata/spinner_cases/custom_color_red.ts": {
+      "size": 159,
+      "checksum": "sha256-d929617d4ef9ac4614fe9ea2defff7f1dbe215ca898a1b3d57872394b8ccdb75"
+    },
+    "/testdata/spinner_cases/custom_interval_10.ts": {
+      "size": 160,
+      "checksum": "sha256-a73cc10ae28425bbe8e4e3fe50e8b844734640de8cfe0c46c4795dd7f2a1de12"
+    },
+    "/testdata/spinner_cases/custom_interval_750.ts": {
+      "size": 161,
+      "checksum": "sha256-093ef7a400c827aa84f9269f3a56a48b43adbd6e52b314f347a7ba9aa74753b2"
+    },
+    "/unstable_spinner.ts": {
+      "size": 6213,
+      "checksum": "sha256-99f8e067e66c1498ec1f0965e58af44013c619d3f04cb7eaa3a89393e13db782"
+    },
+    "/parse_args.ts": {
+      "size": 22412,
+      "checksum": "sha256-969875edb9fe6772236353eec6ac2ec242dbacf1bd86262a0c46d2ccd037e37e"
+    },
+    "/testdata/spinner_cases/custom_color_yellow.ts": {
+      "size": 162,
+      "checksum": "sha256-3d631abf4e9afac45f53e78e82f447c27a18310bfb0dac3dbb2ee85132436335"
+    },
+    "/_run_length_test.ts": {
+      "size": 1886,
+      "checksum": "sha256-e8455be299d6acdbd6c8be6ec044b6e365061157c013dbf3c61f8c7441ee2e59"
+    },
+    "/unstable_spinner_test.ts": {
+      "size": 6148,
+      "checksum": "sha256-cf2652b6bfbaab97d4dece84fe48b8d44c67a7dab36a1f86289101b89d744a4a"
+    },
+    "/_data.json": {
+      "size": 4202,
+      "checksum": "sha256-cf2cc9d039a192b3adbfe64627167c7e6212704c888c25c769fc8f1709e1e1b8"
+    },
+    "/testdata/spinner_cases/custom_color_green.ts": {
+      "size": 161,
+      "checksum": "sha256-a7d3cbd08cce4e0036d2fe26b3abd1b27a64b01226c1622e032b0ef0a13fbb22"
+    },
+    "/unicode_width_test.ts": {
+      "size": 2888,
+      "checksum": "sha256-e7c9b18f1c5fec2d3b6e7efc25de849606ec0c568b6475d8c7c8c863f551b6ca"
+    },
+    "/testdata/spinner_cases/custom_spinner.ts": {
+      "size": 210,
+      "checksum": "sha256-f8675f5a90569300548f97fce823844e58d7b5aea3c31af17aa800d06dd67895"
+    },
+    "/testdata/spinner_cases/custom_color_blue.ts": {
+      "size": 160,
+      "checksum": "sha256-1e725d22bdffc94478ca0975814b60ecfc79e77adebd534937192da783b5a839"
+    },
+    "/testdata/unicode_width_crate/Cargo.lock": {
+      "size": 1420,
+      "checksum": "sha256-b8690a50f8edb28b117d1066bf08fc44bb6ef4a9909bc99e6e452dc8bccd808b"
+    }
+  },
+  "moduleGraph2": {
+    "/unicode_width.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_data.json",
+          "specifierRange": [
+            [
+              4,
+              17
+            ],
+            [
+              4,
+              31
+            ]
+          ],
+          "importAttributes": {
+            "known": {
+              "type": "json"
+            }
+          }
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_run_length.ts",
+          "specifierRange": [
+            [
+              5,
+              32
+            ],
+            [
+              5,
+              50
+            ]
+          ]
+        }
+      ]
+    },
+    "/parse_args.ts": {},
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./parse_args.ts",
+          "specifierRange": [
+            [
+              17,
+              14
+            ],
+            [
+              17,
+              31
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./prompt_secret.ts",
+          "specifierRange": [
+            [
+              18,
+              14
+            ],
+            [
+              18,
+              34
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./unicode_width.ts",
+          "specifierRange": [
+            [
+              19,
+              14
+            ],
+            [
+              19,
+              34
+            ]
+          ]
+        }
+      ]
+    },
+    "/_run_length.ts": {},
+    "/prompt_secret.ts": {},
+    "/unstable_spinner.ts": {}
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./parse-args": "./parse_args.ts",
+    "./prompt-secret": "./prompt_secret.ts",
+    "./unstable-spinner": "./unstable_spinner.ts",
+    "./unicode-width": "./unicode_width.ts"
+  }
+}
