@@ -128,7 +128,7 @@ export class __DANGEROUS__BfCurrentViewerFromThinAir extends BfCurrentViewer {
 }
 
 export class IBfCurrentViewerInternalAdmin extends BfCurrentViewerAccessToken {
-  static async create(
+  static override async create(
     importMeta: ImportMeta,
     accessToken?: string,
   ) {
