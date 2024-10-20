@@ -1,11 +1,10 @@
-/// <reference path="https://esm.sh/v135/@types/google.accounts@0.0.14/index.d.ts" />
-/// <reference path="https://esm.sh/v135/@types/google.picker@0.0.42/index.d.ts" />
-/// <reference path="https://esm.sh/v135/@types/gapi.drive@0.0.9/index.d.ts" />
-/// <reference path="https://esm.sh/v135/@types/gapi@0.0.47/index.d.ts" />
+/// <reference path="@types/google.accounts/index.d.ts" />
+/// <reference path="@types/google.picker/index.d.ts" />
+/// <reference path="@types/gapi.drive/index.d.ts" />
+/// <reference path="@types/gapi/index.d.ts" />
 export * as ReactDOMClient from "react-dom/client";
-export * as GraphqlWs from "https://esm.sh/graphql-ws@5.14.0";
+export * as GraphqlWs from "graphql-ws";
 import "infra/__generated__/_graphql_imports.ts";
-// @deno-types="https://esm.sh/v135/@types/react-relay@16.0.6/index.d.ts";
 import * as ReactRelay from "react-relay";
 
 export async function graphql(

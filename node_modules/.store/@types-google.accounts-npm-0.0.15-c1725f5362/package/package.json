@@ -1,0 +1,26 @@
+{
+    "name": "@types/google.accounts",
+    "version": "0.0.15",
+    "description": "TypeScript definitions for google.accounts",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/google.accounts",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Arthur E. Jones",
+            "githubUsername": "partylich",
+            "url": "https://github.com/partylich"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/google.accounts"
+    },
+    "scripts": {},
+    "dependencies": {},
+    "typesPublisherContentHash": "cde4516199181889f9db5210c151392185a033d40db1ec7ea30f9ae5587b9b55",
+    "typeScriptVersion": "4.8",
+    "nonNpm": true
+}
