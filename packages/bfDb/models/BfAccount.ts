@@ -101,7 +101,7 @@ export class BfAccount extends BfNode<BfAccountRequiredProps> {
     }
   }
 
-  protected async afterCreate() {
+  protected override async afterCreate() {
     const person = await BfPerson.findX(
       this.currentViewer,
       this.currentViewer.personBfGid,

@@ -221,7 +221,7 @@ export class BfEdge<
     TargetClassRaw: TSourceClass,
     sourceBfGid: BfGid | BfSid,
     propsToQuery: Partial<TRequiredProps & TOptionalProps> = {},
-    edgePropsToQuery: Partial<ChildOptionalProps> = {},
+    edgePropsToQuery: Partial<unknown> = {},
   ) {
     const TargetClass = TargetClassRaw as unknown as typeof BfNode;
     const This = this as unknown as typeof BfEdge;
