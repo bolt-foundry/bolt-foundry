@@ -118,7 +118,7 @@
   },
   "lock": {
     "path": "./deno.lock"
-    // "frozen": true
+    "frozen": true
   },
   "vendor": true,
   "nodeModulesDir": "manual"
