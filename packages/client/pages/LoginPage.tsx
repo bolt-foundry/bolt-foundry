@@ -1,4 +1,4 @@
-import { React, ReactRelay } from "deps.ts";
+import { React, ReactRelay } from "packages/logger/logger.ts";
 import { graphql } from "packages/client/deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";

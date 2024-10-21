@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import { React } from "packages/logger/logger.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { useCopyToClipboard } from "packages/bfDs/hooks/useCopyToClipboard.ts";
 type Props = {

@@ -14,7 +14,7 @@ import ClipSearchProvider, {
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { ClipSearchPageQuery } from "packages/__generated__/ClipSearchPageQuery.graphql.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { SearchResults } from "packages/client/components/clipsearch/SearchResults.tsx";
 const { Suspense } = React;
 

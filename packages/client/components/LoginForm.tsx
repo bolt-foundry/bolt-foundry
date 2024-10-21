@@ -1,8 +1,8 @@
-import { React, ReactRelay } from "deps.ts";
+import { React, ReactRelay } from "packages/logger/logger.ts";
 import { graphql } from "packages/client/deps.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 const { useEffect, useRef } = React;
 

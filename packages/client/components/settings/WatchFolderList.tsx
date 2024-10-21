@@ -1,4 +1,4 @@
-import { React, type ReactRelay } from "deps.ts";
+import { React, type ReactRelay } from "packages/logger/logger.ts";
 import { usePaginationFragment } from "react-relay";
 import type { SettingsPageQuery$data } from "packages/__generated__/SettingsPageQuery.graphql.ts";
 import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";

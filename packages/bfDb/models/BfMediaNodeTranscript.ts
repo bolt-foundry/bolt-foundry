@@ -1,5 +1,5 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { AssemblyAI } from "assemblyai";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";

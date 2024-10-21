@@ -1,4 +1,4 @@
-import type { React } from "deps.ts";
+import type { React } from "packages/logger/logger.ts";
 import { colors, colorsDark, fonts } from "packages/bfDs/const.tsx";
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(

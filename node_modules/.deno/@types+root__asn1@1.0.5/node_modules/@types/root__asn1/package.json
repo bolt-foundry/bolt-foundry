@@ -1,0 +1,25 @@
+{
+    "name": "@types/root__asn1",
+    "version": "1.0.5",
+    "description": "TypeScript definitions for @root/asn1",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/root__asn1",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Junxiao Shi",
+            "githubUsername": "yoursunny",
+            "url": "https://github.com/yoursunny"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/root__asn1"
+    },
+    "scripts": {},
+    "dependencies": {},
+    "typesPublisherContentHash": "91d1ac3610659589246cade31ab943bdaaab84ee56cb704d3b526336b9077611",
+    "typeScriptVersion": "4.5"
+}

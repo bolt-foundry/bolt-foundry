@@ -7,7 +7,7 @@ import {
 } from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);

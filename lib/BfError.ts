@@ -1,5 +1,5 @@
 // #BOOTCAMPTASK move this to packages/client/lib because the frontend needs it or something.
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const _logger = getLogger(import.meta);
 export class BfError extends Error {
   constructor(

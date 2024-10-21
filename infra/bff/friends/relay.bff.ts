@@ -5,7 +5,7 @@ import startSpinner from "lib/terminalSpinner.ts";
 import { build as buildPackages } from "packages/graphql/schema.ts";
 import { build as buildInfra } from "infra/graphql/schema.ts";
 
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 export async function buildRelay(args: Array<string> = []) {

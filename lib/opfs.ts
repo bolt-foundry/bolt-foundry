@@ -1,8 +1,8 @@
 // #BOOTCAMPTASK move this to packages/client/lib because the frontend needs it or something.
 
-import { getLogger, rxjs } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfError } from "lib/BfError.ts";
-const { ReplaySubject } = rxjs;
+import { ReplaySubject } from "rxjs";
 const logger = getLogger(import.meta);
 
 export class ErrorOpfsGenericError extends BfError {

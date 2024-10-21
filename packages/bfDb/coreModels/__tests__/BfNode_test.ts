@@ -7,13 +7,13 @@ import {
   ACCOUNT_ROLE,
   toBfGid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 const uniqueRoleString = `test-${Math.random()}`;
 
 // Mock BfCurrentViewer for testing purposes
-class MockBfCurrentViewer extends BfCurrentViewer {
+export class MockBfCurrentViewer extends BfCurrentViewer {
   constructor() {
     super(
       toBfGid("test-org"),

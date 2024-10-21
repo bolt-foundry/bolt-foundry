@@ -1,7 +1,7 @@
 export * from "@wok/djwt";
 // @deno-types="npm:@replit/object-storage"
 import { Client } from "@replit/object-storage";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 export { Readable } from "node:stream";
 const logger = getLogger(import.meta);
 const REPLIT_OBJECT_STORAGE_BUCKET_URL =

@@ -1,7 +1,7 @@
 // https://www.npmjs.com/package/graphql-request
 import { gql, GraphQLClient, rawRequest } from "infra/watcher/deps.ts";
 import { addClipToNotion } from "infra/watcher/addClipToNotion.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 const USERNAME = Deno.env.get("BFI_USERNAME");

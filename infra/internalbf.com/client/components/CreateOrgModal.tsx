@@ -1,11 +1,11 @@
 import type * as React from "react";
-import { ReactRelay } from "deps.ts";
+import { ReactRelay } from "packages/logger/logger.ts";
 import {
   BfDsForm,
   BfDsFormSubmitButton,
   BfDsFormTextInput,
 } from "packages/bfDs/BfDsForm.tsx";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { graphql } from "infra/internalbf.com/client/deps.ts";
 import type { ModalHandles } from "packages/bfDs/BfDsModal.tsx";
 const logger = getLogger(import.meta);

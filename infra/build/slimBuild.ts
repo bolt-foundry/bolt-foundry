@@ -1,7 +1,7 @@
 #! /usr/bin/env -S deno run -A
 
 import * as esbuild from "esbuild";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { generateBluey } from "lib/generateBluey.ts";
 import {
   extractGraphqlTags,

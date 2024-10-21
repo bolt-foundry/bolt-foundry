@@ -1,6 +1,6 @@
 import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const _logger = getLogger(import.meta);
 

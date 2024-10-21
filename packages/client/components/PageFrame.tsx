@@ -1,4 +1,4 @@
-import { React, ReactRelay } from "deps.ts";
+import { React, ReactRelay } from "packages/logger/logger.ts";
 import { useAppState } from "packages/client/contexts/AppStateContext.tsx";
 import { BfDsModal } from "packages/bfDs/BfDsModal.tsx";
 import { LeftNav } from "packages/client/components/LeftNav.tsx";

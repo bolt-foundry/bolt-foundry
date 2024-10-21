@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import { React } from "packages/logger/logger.ts";
 import type { Button, ButtonSizeType } from "packages/bfDs/Button.tsx";
 import {
   BfDsIcon,

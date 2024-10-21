@@ -25,7 +25,7 @@ import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
 import { BfGraphQLSavedSearchResultType } from "packages/graphql/types/BfGraphQLSavedSearchResult.ts";
 import { BfSavedSearchResult } from "packages/bfDb/models/BfSavedSearchResult.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfCollection } from "packages/bfDb/models/BfCollection.ts";
 
 const logger = getLogger(import.meta);

@@ -1,4 +1,4 @@
-import type { React } from "deps.ts";
+import type { React } from "packages/logger/logger.ts";
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 import { BfDsIcon, type BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";

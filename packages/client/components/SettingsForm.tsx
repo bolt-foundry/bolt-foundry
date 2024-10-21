@@ -1,4 +1,4 @@
-import { React, ReactRelay } from "deps.ts";
+import { React, ReactRelay } from "packages/logger/logger.ts";
 import {
   DEFAULT_SETTINGS,
   type Settings,

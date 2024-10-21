@@ -1,5 +1,5 @@
 import * as React from "react";
-import { isBrowser } from "deps.ts";
+import { isBrowser } from "packages/logger/logger.ts";
 
 const { useState } = React;
 

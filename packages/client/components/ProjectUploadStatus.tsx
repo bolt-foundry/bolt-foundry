@@ -1,4 +1,4 @@
-import { type Maybe, React, type ReactRelay } from "deps.ts";
+import { type Maybe, React, type ReactRelay } from "packages/logger/logger.ts";
 // import { CreateNewProject_project$key } from "packages/__generated__/CreateNewProject_project.graphql.ts";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 import { WorkflowUploadStep } from "packages/client/components/WorkflowUploadStep.tsx";

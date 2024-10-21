@@ -1,4 +1,4 @@
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import startSpinner from "lib/terminalSpinner.ts";
 
 const logger = getLogger(import.meta);

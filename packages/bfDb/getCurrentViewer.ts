@@ -5,7 +5,7 @@ import {
   BfCurrentViewerAnon,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 export async function getContextFromRequest(

@@ -6,7 +6,7 @@ import {
 import { BfAccount } from "packages/bfDb/models/BfAccount.ts";
 import type { GraphQLContext } from "packages/graphql/graphql.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

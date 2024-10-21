@@ -8,7 +8,7 @@ import { graphql } from "packages/client/deps.ts";
 import { Search_bfCollection$key } from "packages/__generated__/Search_bfCollection.graphql.ts";
 import { useFragment, useMutation } from "react-relay";
 import { SearchMutation } from "packages/__generated__/SearchMutation.graphql.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 
 const logger = getLogger(import.meta);

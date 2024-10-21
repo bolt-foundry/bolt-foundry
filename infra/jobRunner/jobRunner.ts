@@ -1,6 +1,6 @@
 const WORKER_CONCURRENCY = parseInt(Deno.env.get("WORKER_CONCURRENCY") ?? "6");
 import { createWorker } from "packages/packages.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

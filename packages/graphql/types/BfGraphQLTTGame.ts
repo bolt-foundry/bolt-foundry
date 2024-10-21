@@ -10,7 +10,7 @@ import { BfGraphQLTTQuestionType } from "packages/graphql/types/BfGraphQLTTQuest
 import { BfTTGame } from "packages/bfDb/models/triviaTaxi/BfTTGame.ts";
 import { BfTTQuestion } from "packages/bfDb/models/triviaTaxi/BfTTQuestion.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

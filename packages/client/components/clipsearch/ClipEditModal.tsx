@@ -1,4 +1,4 @@
-import type { React } from "deps.ts";
+import type { React } from "packages/logger/logger.ts";
 import { BfDsModal } from "packages/bfDs/BfDsModal.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";

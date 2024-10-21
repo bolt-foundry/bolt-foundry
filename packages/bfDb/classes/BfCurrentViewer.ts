@@ -11,7 +11,7 @@ import {
   decodeAndVerifyGoogleToken,
 } from "packages/bfDb/classes/BfAuth.ts";
 import type { BfAccount } from "packages/bfDb/models/BfAccount.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BF_INTERNAL_ORG_NAME } from "packages/bfDb/utils.ts";
 
 const logger = getLogger(import.meta);

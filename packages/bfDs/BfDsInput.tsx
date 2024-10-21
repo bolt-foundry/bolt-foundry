@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import { React } from "packages/logger/logger.ts";
 import { fonts } from "packages/bfDs/const.tsx";
 import { BfDsSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 

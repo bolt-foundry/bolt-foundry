@@ -1,4 +1,4 @@
-import { getLogger, React } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { ReactDOMServer } from "packages/clientRenderer/deps.ts";
 import { BaseComponent } from "packages/clientRenderer/BaseComponent.tsx";
 import { Client } from "packages/client/Client.tsx"; // "new client"

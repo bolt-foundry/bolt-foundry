@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import { React } from "packages/logger/logger.ts";
 import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { useEffect, useRef, useState } from "react";
 

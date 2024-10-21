@@ -6,7 +6,7 @@ import {
   stringArg,
 } from "nexus";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfMediaNodeVideoGoogleDriveResource } from "packages/bfDb/models/BfMediaNodeVideoGoogleDriveResource.ts";
 import {

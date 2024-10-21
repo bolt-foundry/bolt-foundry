@@ -1,7 +1,7 @@
 #! /usr/bin/env -S deno run -A
 
 import { clientRenderer } from "packages/clientRenderer/clientRenderer.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { routes as appRoutes } from "packages/client/components/App.tsx";
 import { getHeaders } from "infra/watcher/ingest.ts";
 import { workerList } from "infra/build/workerList.ts";

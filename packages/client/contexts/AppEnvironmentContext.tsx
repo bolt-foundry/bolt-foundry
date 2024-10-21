@@ -1,4 +1,4 @@
-import { getLogger, React, ReactRelay, type RelayRuntime } from "deps.ts";
+import { getLogger, React, ReactRelay, type RelayRuntime } from "packages/logger/logger.ts";
 // import { identifyPerson } from "packages/events/mod.ts";
 // import { Path } from "lib/types/Path.ts";
 import {

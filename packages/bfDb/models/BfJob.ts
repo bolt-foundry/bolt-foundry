@@ -3,7 +3,7 @@ import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 // @ts-types="@types/pg"
 import { Client } from "@neon/serverless";
 import type { BfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfError } from "lib/BfError.ts";
 import {
   BfCurrentViewerFromAccount,

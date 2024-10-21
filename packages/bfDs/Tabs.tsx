@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import { React } from "packages/logger/logger.ts";
 
 const { useEffect, useState } = React;
 

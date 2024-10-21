@@ -1,6 +1,6 @@
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfJob, BfJobType } from "packages/bfDb/models/BfJob.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const randomSecondsSeed = Math.floor(Math.random() * 1000);
 const logger = getLogger(`${randomSecondsSeed} worker - ${import.meta.url}`);

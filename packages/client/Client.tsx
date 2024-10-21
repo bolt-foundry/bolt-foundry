@@ -1,5 +1,5 @@
-import { getLogger, React } from "deps.ts";
-import { ReactDOMClient } from "packages/client/deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
+import { hydrateRoot } from "react-dom/client";
 import { App } from "packages/client/components/App.tsx";
 import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
 import type { ServerProps } from "packages/client/contexts/AppEnvironmentContext.tsx";
@@ -19,7 +19,7 @@ const styles = {
   },
 };
 
-export function Client(props: ServerProps) {
+export function Client(props: ServerProps): React.ReactNode {
   return (
     <BfDsProvider>
       <ErrorBoundary>
@@ -31,13 +31,12 @@ export function Client(props: ServerProps) {
   );
 }
 
-export function rehydrate(props: unknown) {
+export function rehydrate(props: ServerProps) {
   // await ensurePosthogClientIsSetUp(props.currentViewer.id, props.featureFlags);
   const root = document.querySelector("#root");
   if (root) {
     logger.debug("rehydrating root", root);
-    // @ts-expect-error this seems like a react typing bug, not sure why this isn't typed.
-    ReactDOMClient.hydrateRoot(root, <Client {...props} />);
+    hydrateRoot(root, <Client {...props} />);
   } else {
     logger.error("couldn't rehydrate, root not found");
   }

@@ -1,6 +1,6 @@
 import { GraphQLYoga } from "packages/graphql/deps.ts";
 import { schema } from "infra/graphql/schema.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import {
   type BfCurrentViewer,
   IBfCurrentViewerInternalAdmin,

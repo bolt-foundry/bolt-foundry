@@ -1,10 +1,6 @@
 import { Client, neon } from "@neon/serverless";
-import type {
-  ConnectionArguments,
-  ConnectionInterface,
-  EdgeInterface,
-  PageInfoInterface,
-} from "relay-runtime";
+
+import type { ConnectionArguments } from "packages/graphql/deps.ts";
 import type {
   BfBaseModelMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
@@ -16,10 +12,33 @@ import type {
   BfSid,
   BfTid,
 } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 import { Subject } from "rxjs";
 
+export type EdgeRecord<
+  T extends Record<string, unknown> = Record<string, unknown>,
+  C = string | null | undefined,
+> = {
+  cursor: C;
+  node: T;
+};
+
+export type EdgeRecords<
+  T extends Record<string, unknown> = Record<string, unknown>,
+  C = string | null | undefined,
+> = Array<EdgeRecord<T, C>>;
+
+export type PageInfo = {
+  endCursor: string | null | undefined;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  startCursor: string | null | undefined;
+};
+
+export type ConnectionInterface<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> = { pageInfo: PageInfo; edges: Array<EdgeRecord<T>>; count: number };
 import { observableToAsyncIterable } from "@graphql-tools/utils";
 const logger = getLogger(import.meta);
 
@@ -546,8 +565,7 @@ export async function bfQueryItemsUnified<
       `SELECT COUNT(*) FROM bfdb WHERE ${allConditions}`,
       variables,
     );
-    // @ts-expect-error #techdebt
-    return parseInt(query[0].count);
+    return Array.from({ length: parseInt(query[0].count, 10) }, () => ({} as DbItem<TProps, BfBaseModelMetadata>));
   }
 
   const buildQuery = (offset: number) => {
@@ -710,13 +728,13 @@ export async function bfQueryItemsForGraphQLConnection<
   let cursorValue: number | undefined;
   let limit: number = 10;
 
-  if (first !== undefined) {
+  if (first != undefined) {
     orderDirection = "ASC";
     limit = first + 1; // Fetch one extra for next page check
     if (after) {
       cursorValue = cursorToSortValue(after);
     }
-  } else if (last !== undefined) {
+  } else if (last != undefined) {
     orderDirection = "DESC";
     limit = last + 1; // Fetch one extra for previous page check
     if (before) {
@@ -738,32 +756,32 @@ export async function bfQueryItemsForGraphQLConnection<
     },
   );
 
-  const edges: EdgeInterface<DbItem<TProps, TMetadata>>[] = results.map((
+  const edges: EdgeRecords<DbItem<TProps, TMetadata>> = results.map((
     item,
   ) => ({
     cursor: sortValueToCursor(item.metadata.sortValue),
-    node: item,
+    node: item as DbItem<TProps, TMetadata>,
   }));
 
   let hasNextPage = false;
   let hasPreviousPage = false;
 
-  if (first !== undefined && edges.length > first) {
+  if (first != undefined && edges.length > first) {
     hasNextPage = true;
     edges.pop(); // Remove the extra item
-  } else if (last !== undefined && edges.length > last) {
+  } else if (last != undefined && edges.length > last) {
     hasPreviousPage = true;
     edges.shift(); // Remove the extra item from the beginning
   }
 
-  const pageInfo: PageInfoInterface = {
+  const pageInfo: PageInfo = {
     startCursor: edges.length > 0 ? edges[0].cursor : null,
     endCursor: edges.length > 0 ? edges[edges.length - 1].cursor : null,
     hasNextPage,
     hasPreviousPage,
   };
 
-  const count = await bfQueryItemsUnified<TProps, TMetadata>(
+  const arrayWithEmptyElements = await bfQueryItemsUnified<TProps, TMetadata>(
     metadata,
     props,
     bfGids,
@@ -773,6 +791,7 @@ export async function bfQueryItemsForGraphQLConnection<
       countOnly: true,
     },
   );
+  const count = arrayWithEmptyElements.length;
   return {
     edges,
     pageInfo,

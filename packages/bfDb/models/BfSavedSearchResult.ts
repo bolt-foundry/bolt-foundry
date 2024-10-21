@@ -7,7 +7,7 @@ import {
 } from "packages/bfDb/models/BfMediaNodeVideo.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfError } from "lib/BfError.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 export type BfSavedSearchResultProps = {

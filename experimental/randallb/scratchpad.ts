@@ -1,7 +1,7 @@
 import { getJupyterCurrentViewer } from "infra/lib/jupyterUtils.ts";
 const cv = await getJupyterCurrentViewer();
 if (!cv) throw new Error();
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger("jupyter");
 logger.setLevel(logger.levels.DEBUG);
 

@@ -2,7 +2,7 @@ import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import {
   fetchFile,
   fetchFolderContents,

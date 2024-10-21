@@ -1,5 +1,5 @@
 #! /usr/bin/env -S deno run -A
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 type Handler = (

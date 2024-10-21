@@ -1,6 +1,7 @@
-import { type Maybe, React } from "deps.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
+import { useState } from "react";
+import type { Maybe } from "packages/maybe.ts";
 
 export type TrimmingType = {
   currentValue: Maybe<number>;
@@ -13,7 +14,7 @@ export type TrimmingType = {
 export function TrimMenu(
   { currentValue, startTime, endTime, onClose, onSave }: TrimmingType,
 ) {
-  const [value, setValue] = React.useState(
+  const [value, setValue] = useState(
     currentValue && currentValue > -1 ? currentValue : endTime,
   );
   return (

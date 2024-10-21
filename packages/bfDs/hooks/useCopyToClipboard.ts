@@ -1,5 +1,5 @@
 // Adapted from https://usehooks-ts.com/react-hook/use-copy-to-clipboard
-import { React } from "deps.ts";
+import { React } from "packages/logger/logger.ts";
 const { useState } = React;
 
 type CopiedValue = string | null;
