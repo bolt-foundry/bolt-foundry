@@ -20,7 +20,6 @@ const AppEnvironmentContext = React.createContext<AppEnvironmentProps>({
   content: "",
   featureFlags,
   featureVariants,
-  GOOGLE_DEVELOPER_API_KEY: "",
   GOOGLE_OAUTH_CLIENT_ID: "",
   initialPath: globalThis.location?.pathname ?? "/",
   phBootstrap: {},
@@ -29,7 +28,6 @@ const AppEnvironmentContext = React.createContext<AppEnvironmentProps>({
 
 export type AppEnvironmentProps = {
   CONTACT_FORM_ID?: string;
-  GOOGLE_DEVELOPER_API_KEY: string;
   GOOGLE_OAUTH_CLIENT_ID: string;
   HUBSPOT_PORTAL_ID?: string;
   HYPERDX_API_KEY?: string;
@@ -40,7 +38,9 @@ export type AppEnvironmentProps = {
   initialPath: string;
   phBootstrap: unknown;
   serverRelayEnvironment?: Environment;
-  BF_ENV: string;
+  BF_ENV?: string;
+  LIVEKIT_TEST_TOKEN?: string;
+  LIVEKIT_URL?: string;
 };
 
 export type ServerProps = AppEnvironmentProps & RouterProviderProps & {
