@@ -5,9 +5,9 @@ import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { BfDsTextArea } from "packages/bfDs/BfDsTextArea.tsx";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
-import { useMutation } from 'react-relay';
+import { useMutation } from "react-relay";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 const styles: Record<string, React.CSSProperties> = {
   mainTitle: {

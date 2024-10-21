@@ -6,8 +6,7 @@ import {
   extractEncodedAudio,
 } from "packages/mediaProcessing/encodingTools.ts";
 
-import { Subject } from 'rxjs';
-
+import { Subject } from "rxjs";
 
 const logger = getLogger(import.meta);
 

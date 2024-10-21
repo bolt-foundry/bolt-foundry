@@ -1,5 +1,3 @@
-
-
 type Props = {
   header?: React.ReactNode;
   headerAction?: React.ReactNode;

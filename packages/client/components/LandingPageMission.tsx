@@ -1,4 +1,3 @@
-
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { LandingPageMissionImage } from "packages/client/components/LandingPageMissionImage.tsx";
 

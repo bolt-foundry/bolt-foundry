@@ -2,9 +2,7 @@ import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 import { render } from "infra/bff/friends/render.bff.ts";
 import { sanitizeFilename } from "packages/lib/textUtils.ts";
-import {
-  BfMediaNodeVideoRole,
-} from "packages/bfDb/models/BfMediaNodeVideo.ts";
+import { BfMediaNodeVideoRole } from "packages/bfDb/models/BfMediaNodeVideo.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfError } from "lib/BfError.ts";
 import { getLogger } from "packages/logger/logger.ts";
@@ -63,9 +61,9 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
 
     const coersedOutput = transcripts[0]?.props.words.map((word) => {
       if (
-        word.start >=(startTime ?? this.props.startTime) &&
-        word.end <=(endTime ?? this.props.endTime)
-       ) {
+        word.start >= (startTime ?? this.props.startTime) &&
+        word.end <= (endTime ?? this.props.endTime)
+      ) {
         return {
           __typename: "Word",
           text: word.text,
@@ -105,8 +103,8 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
         };
       }
     }).filter(Boolean);
-   
-     return[beforeWords, ccoersedOutpu, afterWords];;
+
+    return [beforeWords, ccoersedOutpu, afterWords];
   }
 
   async downloadClip() {

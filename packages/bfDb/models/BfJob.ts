@@ -138,11 +138,10 @@ export class BfJob extends BfNode<BfJobRequiredProps, Record<string, never>> {
     }
     const edge = edges[0];
     try {
-      const moduleUrl =
-        (edge.metadata.bfSClassName === "BfEdge" ||
-            edge.metadata.bfSClassName === "BfNode")
-          ? `packages/bfDb/coreModels/${edge.metadata.bfSClassName}.ts`
-          : `packages/bfDb/models/${edge.metadata.bfSClassName}.ts`;
+      const moduleUrl = (edge.metadata.bfSClassName === "BfEdge" ||
+          edge.metadata.bfSClassName === "BfNode")
+        ? `packages/bfDb/coreModels/${edge.metadata.bfSClassName}.ts`
+        : `packages/bfDb/models/${edge.metadata.bfSClassName}.ts`;
       const module = await import(
         moduleUrl
       );

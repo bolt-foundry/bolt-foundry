@@ -1,9 +1,8 @@
-
 import { graphql } from "react-relay";
 
 import type { DGWord } from "packages/types/transcript.ts";
-import { useState, useEffect, useMemo, useReducer } from 'react'
-import * as ReactRelay from 'react-relay';
+import { useEffect, useMemo, useReducer, useState } from "react";
+import * as ReactRelay from "react-relay";
 
 const EXTRA_WORDS = 20;
 

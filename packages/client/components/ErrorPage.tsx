@@ -1,5 +1,3 @@
-
-
 const styles: Record<string, React.CSSProperties> = {
   error: {
     color: "var(--alert)",

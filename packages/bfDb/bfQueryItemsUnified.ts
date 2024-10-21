@@ -1,10 +1,17 @@
-import { Props, Row, DbItem, logger, VALID_METADATA_COLUMN_NAMES, defaultClause, sql } from "./bfDb";
+import {
+  DbItem,
+  defaultClause,
+  logger,
+  Props,
+  Row,
+  sql,
+  VALID_METADATA_COLUMN_NAMES,
+} from "./bfDb";
 import type { BfBaseModelMetadata } from "./classes/BfBaseModelMetadata";
-
 
 export async function bfQueryItemsUnified<
   TProps = Props,
-  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata
+  TMetadata extends BfBaseModelMetadata = BfBaseModelMetadata,
 >(
   metadataToQuery: Partial<TMetadata>,
   propsToQuery: Partial<TProps> = {},
@@ -18,11 +25,15 @@ export async function bfQueryItemsUnified<
     batchSize?: number;
     totalLimit?: number;
     countOnly?: boolean;
-  } = {}
+  } = {},
 ): Promise<Array<DbItem<TProps, BfBaseModelMetadata>>> {
   const {
-    useSizeLimit = false, cursorValue, maxSizeBytes = 10 * 1024 * 1024, // 10MB in bytes
-    batchSize = 4, totalLimit, countOnly = false,
+    useSizeLimit = false,
+    cursorValue,
+    maxSizeBytes = 10 * 1024 * 1024, // 10MB in bytes
+    batchSize = 4,
+    totalLimit,
+    countOnly = false,
   } = options;
 
   logger.debug({
@@ -46,7 +57,7 @@ export async function bfQueryItemsUnified<
   for (const [originalKey, value] of Object.entries(metadataToQuery)) {
     const key = originalKey.replace(/([a-z])([A-Z])/g, "$1_$2").replace(
       /([A-Z])(?=[A-Z])/g,
-      "$1_"
+      "$1_",
     ).toLowerCase();
     if (VALID_METADATA_COLUMN_NAMES.includes(key)) {
       variables.push(value);
@@ -61,7 +72,7 @@ export async function bfQueryItemsUnified<
     variables.push(key);
     variables.push(value);
     propsConditions.push(
-      `props->>$${variables.length - 1} = $${variables.length}`
+      `props->>$${variables.length - 1} = $${variables.length}`,
     );
   }
 
@@ -88,7 +99,7 @@ export async function bfQueryItemsUnified<
     ].filter(Boolean).join(" AND ");
     const query = await sql(
       `SELECT COUNT(*) FROM bfdb WHERE ${allConditions}`,
-      variables
+      variables,
     );
     return parseInt(query[0].count);
   }

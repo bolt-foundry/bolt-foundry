@@ -1,4 +1,3 @@
-
 import { colors, colorsDark, fonts } from "packages/bfDs/const.tsx";
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(

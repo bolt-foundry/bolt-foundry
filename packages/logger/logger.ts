@@ -24,8 +24,8 @@ function getCallerInfo() {
       const line = stack[i];
       if (
         !line.includes("/node_modules/") && // Skip over node_module calls
-        !line.includes("loglevel-plugin-prefix.mjs") &&  // Skip logging library
-        !line.includes("getCallerInfo") &&  // Ignore utility function
+        !line.includes("loglevel-plugin-prefix.mjs") && // Skip logging library
+        !line.includes("getCallerInfo") && // Ignore utility function
         !line.includes("Object.nameFormatter") // Skip inside logger formatting
       ) {
         const match = line.match(/at (.+):(\d+):(\d+)/);
@@ -92,4 +92,3 @@ export function getLogger(importMeta: ImportMeta | string) {
   logger.setDefaultLevel(defaultLogLevel);
   return logger;
 }
-

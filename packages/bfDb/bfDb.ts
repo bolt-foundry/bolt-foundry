@@ -565,7 +565,10 @@ export async function bfQueryItemsUnified<
       `SELECT COUNT(*) FROM bfdb WHERE ${allConditions}`,
       variables,
     );
-    return Array.from({ length: parseInt(query[0].count, 10) }, () => ({} as DbItem<TProps, BfBaseModelMetadata>));
+    return Array.from(
+      { length: parseInt(query[0].count, 10) },
+      () => ({} as DbItem<TProps, BfBaseModelMetadata>),
+    );
   }
 
   const buildQuery = (offset: number) => {
