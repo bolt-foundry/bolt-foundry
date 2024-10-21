@@ -20,7 +20,7 @@ import {
   BfCurrentViewerAccessToken,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfOrganization } from "packages/bfDb/models/BfOrganization.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { exchangeCodeForToken } from "lib/googleOauth.ts";
 import { BfGoogleAuth } from "packages/bfDb/models/BfGoogleAuth.ts";
 const logger = getLogger(import.meta);

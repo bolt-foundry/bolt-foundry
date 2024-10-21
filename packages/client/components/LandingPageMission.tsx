@@ -1,4 +1,4 @@
-import type { React } from "deps.ts";
+import type { React } from "packages/logger/logger.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { LandingPageMissionImage } from "packages/client/components/LandingPageMissionImage.tsx";
 

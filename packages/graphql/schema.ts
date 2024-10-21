@@ -2,7 +2,7 @@
 
 import { connectionPlugin, makeSchema } from "packages/graphql/deps.ts";
 import * as types from "packages/graphql/types/mod.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

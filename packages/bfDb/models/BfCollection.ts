@@ -4,7 +4,7 @@ import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { BfGid, toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 import { PineconeStore } from "@langchain/pinecone";
 import { OpenAIEmbeddings } from "@langchain/openai";

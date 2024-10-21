@@ -9,7 +9,7 @@ import {
   subscriptionField,
 } from "packages/graphql/deps.ts";
 import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

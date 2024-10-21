@@ -14,7 +14,7 @@ import {
 import { bfQueryItems } from "packages/bfDb/bfDb.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfError } from "lib/BfError.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

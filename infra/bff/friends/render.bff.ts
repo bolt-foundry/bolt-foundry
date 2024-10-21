@@ -2,7 +2,7 @@ import { register } from "infra/bff/mod.ts";
 import startSpinner from "lib/terminalSpinner.ts";
 import { parse } from "@std/flags";
 
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 export async function render(args: Array<string>) {

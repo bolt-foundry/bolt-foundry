@@ -1,4 +1,4 @@
-import { getLogger, React, ReactRelay } from "deps.ts";
+import { getLogger, React, ReactRelay } from "packages/logger/logger.ts";
 import { IBfFrame } from "infra/internalbf.com/client/components/IBfFrame.tsx";
 import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";

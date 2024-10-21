@@ -1,6 +1,6 @@
 import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/mod.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -9,7 +9,7 @@ export async function ci() {
     const commands = [
       // ["deno", "lint"],
       // ["deno", "fmt", "--check"],
-      ["deno", "test", "--cached-only", "-A"],
+      ["deno", "test", "--cached-only", "-A", "--parallel"],
     ];
 
     for (const command of commands) {

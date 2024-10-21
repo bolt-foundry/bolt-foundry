@@ -1,6 +1,6 @@
 import { BfMediaNodeVideo } from "packages/bfDb/models/BfMediaNodeVideo.ts";
 import type { BfNodeRequiredProps } from "packages/bfDb/coreModels/BfNode.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import {
   BfMediaNodeTranscript,
   BfMediaNodeTranscriptStatus,

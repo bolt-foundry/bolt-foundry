@@ -1,7 +1,7 @@
-import { type Maybe, RelayRuntime } from "deps.ts";
 import { yoga } from "packages/graphql/graphql.ts";
 
-const { Environment, Network, RecordSource, Store } = RelayRuntime;
+import { Environment, Network, RecordSource, Store } from "relay-runtime";
+import type { Maybe } from "packages/maybe.ts";
 
 export function getEnvironment() {
   // Define a function that fetches the results of an operation (query/mutation/etc)

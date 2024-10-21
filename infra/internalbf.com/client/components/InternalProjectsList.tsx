@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import { React } from "packages/logger/logger.ts";
 import type { Progress } from "packages/bfDs/Progress.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { type BfDsColumn, BfDsTable } from "packages/bfDs/BfDsTable.tsx";

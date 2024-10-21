@@ -1,4 +1,4 @@
-import type { React } from "deps.ts";
+import type { React } from "packages/logger/logger.ts";
 import BackgroundBlobs from "packages/client/images/BackgroundBlobs.tsx";
 
 const styles: Record<string, React.CSSProperties> = {

@@ -1,4 +1,4 @@
-import { getLogger, React } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { ReactDOMClient } from "packages/client/deps.ts";
 import { App } from "infra/internalbf.com/client/components/App.tsx";
 import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";

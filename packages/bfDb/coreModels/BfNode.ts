@@ -1,11 +1,10 @@
 import { BfModel } from "packages/bfDb/classes/BfModel.ts";
-import type { ConnectionArguments, ConnectionInterface } from "relay-runtime";
 import type {
   BfBaseModelMetadata,
   Constructor,
   CreationMetadata,
 } from "packages/bfDb/classes/BfBaseModelMetadata.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import {
   type BfCurrentViewer,
   IBfCurrentViewerInternalAdmin,
@@ -16,6 +15,7 @@ import {
   bfQueryItemsForGraphQLConnection,
   bfSubscribeToConnectionChanges,
 } from "packages/bfDb/bfDb.ts";
+import type { ConnectionArguments } from "packages/graphql/deps.ts";
 import { BfModelErrorClassMismatch } from "packages/bfDb/classes/BfModelError.ts";
 const logger = getLogger(import.meta);
 
@@ -47,6 +47,7 @@ export class BfNode<
     connectionArgs: unknown,
     bfGids: Array<BfAnyid> = [],
   ): Promise<
+    // @ts-expect-error #techdebt on deno upgrade
     ConnectionInterface<
       InstanceType<TThis> & BfBaseModelMetadata<ChildCreationMetadata>
     > & { count: number }
@@ -74,7 +75,6 @@ export class BfNode<
 
     return {
       ...others,
-      // @ts-expect-error edge is anytyped but it shouldn't be... it should be a rowitem.
       edges: edges.map((edge) => {
         if (edge.node.metadata.className != this.name) {
           throw new BfModelErrorClassMismatch(

@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import { React } from "packages/logger/logger.ts";
 import type { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 const styles: Record<string, React.CSSProperties> = {

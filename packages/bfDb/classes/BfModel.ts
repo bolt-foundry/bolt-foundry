@@ -36,7 +36,7 @@ import {
   BfModelErrorNotFound,
   BfModelErrorPermission,
 } from "packages/bfDb/classes/BfModelError.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 const logVerbose = logger.debug;
 const log = logger.debug;

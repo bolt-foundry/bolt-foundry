@@ -1,7 +1,7 @@
 import { register } from "infra/bff/mod.ts";
 import { walk } from "@std/fs";
 import { normalize, resolve } from "@std/path";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 const DIRECTORIES = ["infra", "packages", "lib"];

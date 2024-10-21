@@ -1,4 +1,4 @@
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 export function getTimecodesForClips(response, documents) {

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useFragment, useMutation, useSubscription } from "react-relay";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { graphql } from "packages/client/deps.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import type {
   DownloadClipButton_bfSavedSearchResult$data,
   DownloadClipButton_bfSavedSearchResult$key,

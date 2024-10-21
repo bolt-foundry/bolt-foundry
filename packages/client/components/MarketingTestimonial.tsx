@@ -1,4 +1,4 @@
-import type { React } from "deps.ts";
+import type { React } from "packages/logger/logger.ts";
 import { VideoPlayer } from "packages/client/components/VideoPlayer.tsx";
 
 export default function MarketingTestimonial() {

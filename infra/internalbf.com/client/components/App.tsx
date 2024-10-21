@@ -1,6 +1,6 @@
 import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
 
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 import {

@@ -2,7 +2,7 @@ import * as React from "react";
 import { useMutation } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 const mutation = await graphql`

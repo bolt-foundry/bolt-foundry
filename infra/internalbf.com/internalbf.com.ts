@@ -1,6 +1,6 @@
 #! /usr/bin/env -S deno run -A
 import { clientRenderer } from "infra/internalbf.com/clientRenderer/clientRenderer.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { routes as appRoutes } from "infra/internalbf.com/client/components/App.tsx";
 import { handler as graphQlHandler } from "infra/graphql/graphql.ts";
 import { getGoogleOauthUrl } from "lib/googleOauth.ts";

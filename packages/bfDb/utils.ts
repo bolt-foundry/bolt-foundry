@@ -1,6 +1,6 @@
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { toBfGid, toBfOid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { neon } from "@neon/serverless";
 import { BfDbError } from "packages/bfDb/classes/BfDbError.ts";
 

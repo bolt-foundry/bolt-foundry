@@ -9,7 +9,7 @@ import { BlogFrame } from "packages/client/components/blog/BlogFrame.tsx";
 import { graphql } from "packages/client/deps.ts";
 import type { BlogPageQuery } from "packages/__generated__/BlogPageQuery.graphql.ts";
 import { BlogPostContent } from "packages/client/components/blog/BlogPostContent.tsx";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
 
 const logger = getLogger(import.meta);

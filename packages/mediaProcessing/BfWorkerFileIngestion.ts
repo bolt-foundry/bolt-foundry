@@ -1,4 +1,4 @@
-import { getLogger, rxjs } from "deps.ts";
+import { getLogger, rxjs } from "packages/logger/logger.ts";
 import { BfWorkerObservable } from "packages/bfWorker/BfWorker.ts";
 import { BfError } from "lib/BfError.ts";
 import {

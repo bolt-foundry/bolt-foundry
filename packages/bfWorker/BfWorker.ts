@@ -1,4 +1,4 @@
-import { getLogger, rxjs } from "deps.ts";
+import { getLogger, rxjs } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

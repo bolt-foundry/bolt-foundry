@@ -1,5 +1,4 @@
-// deno-lint-ignore-file
-import { React } from "deps.ts";
+import * as React from "react";
 import { ErrorPage } from "packages/client/components/ErrorPage.tsx";
 
 type ErrorProps = {
@@ -29,12 +28,12 @@ export class ErrorBoundary extends React.Component<ErrorProps, ErrorState> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, info: unknown) {
+  override componentDidCatch(error: Error, info: unknown) {
     // TODO log error to posthog
     // logError(error, info);
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       // e.g. <ErrorBoundary fallback={(error) => <ErrorPage error={error} />}>
       if (typeof this.props.fallback === "function") {

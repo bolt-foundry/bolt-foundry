@@ -3,7 +3,7 @@ import {
   type BfCurrentViewer,
   BfCurrentViewerAccessToken,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { toBfOid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfError } from "lib/BfError.ts";

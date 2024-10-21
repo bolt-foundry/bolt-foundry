@@ -1,4 +1,4 @@
-import { React } from "deps.ts";
+import { React } from "packages/logger/logger.ts";
 import { BfDsToast, TRANSITION_DURATION } from "packages/bfDs/BfDsToast.tsx";
 import { BfDsModal, type ModalHandles } from "packages/bfDs/BfDsModal.tsx";
 import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";

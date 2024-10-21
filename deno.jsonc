@@ -1,12 +1,17 @@
 {
   "unstable": ["temporal", "webgpu"],
   "imports": {
-    "#vcs-react/components": "./thirdParty/daily-vcs/src/react/components/index.js",
-    "#vcs-react/contexts": "./thirdParty/daily-vcs/src/react/contexts/index.js",
-    "#vcs-react/hooks": "./thirdParty/daily-vcs/src/react/hooks/index.js",
-    "#vcs-stdlib/components": "./thirdParty/daily-vcs/src/stdlib/components/index.js",
-    "#vcs-stdlib/layouts": "./thirdParty/daily-vcs/src/stdlib/layouts/index.js",
+    // "#vcs-react/components": "./thirdParty/daily-vcs/src/react/components/index.js",
+    // "#vcs-react/contexts": "./thirdParty/daily-vcs/src/react/contexts/index.js",
+    // "#vcs-react/hooks": "./thirdParty/daily-vcs/src/react/hooks/index.js",
+    // "#vcs-stdlib/components": "./thirdParty/daily-vcs/src/stdlib/components/index.js",
+    // "#vcs-stdlib/layouts": "./thirdParty/daily-vcs/src/stdlib/layouts/index.js",
     "/build/": "./build/",
+    "infra/": "./infra/",
+    "lib/": "./lib/",
+    "packages/": "./packages/",
+    "resources/": "./resources/",
+    "thirdParty/": "./thirdParty/"
     "/content/": "./content/",
     "/docs/": "./docs/",
     "/experimental/": "./experimental/",
@@ -29,16 +34,8 @@
     "@std/http": "jsr:@std/http",
     "build/": "./build/",
     "content/": "./content/",
-    "deps.ts": "./deps.ts",
     "docs/": "./docs/",
     "experimental/": "./experimental/",
-    "infra/": "./infra/",
-    "lib/": "./lib/",
-    "packages/": "./packages/",
-    "resources/": "./resources/",
-    "thirdParty/": "./thirdParty/"
-
-    "@neon/serverless": "npm:@neondatabase/serverless"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
@@ -121,8 +118,8 @@
   },
   "lock": {
     "path": "./deno.lock"
-    "frozen": true
+    // "frozen": true
   },
   "vendor": true,
-  "nodeModulesDir": "auto"
+  "nodeModulesDir": "manual"
 }

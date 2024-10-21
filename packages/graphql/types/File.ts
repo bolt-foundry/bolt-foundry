@@ -4,7 +4,7 @@ import {
   nonNull,
   scalarType,
 } from "packages/graphql/deps.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

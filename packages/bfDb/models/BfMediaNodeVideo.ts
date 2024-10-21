@@ -1,5 +1,5 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfError } from "lib/BfError.ts";
 
 const logger = getLogger(import.meta);

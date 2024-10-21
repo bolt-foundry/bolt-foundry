@@ -2,7 +2,7 @@ export * as ReactDOMClient from "react-dom/client";
 export * as GraphqlWs from "graphql-ws";
 import "packages/__generated__/_graphql_imports.ts";
 import * as ReactRelay from "react-relay";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

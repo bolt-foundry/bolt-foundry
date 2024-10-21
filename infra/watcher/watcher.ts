@@ -2,7 +2,7 @@
 
 import { dirname } from "@std/path";
 import { notifyDiscord, processFile } from "infra/watcher/ingest.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

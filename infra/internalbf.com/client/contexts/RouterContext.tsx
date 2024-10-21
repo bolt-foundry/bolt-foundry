@@ -1,4 +1,4 @@
-import { getLogger, React } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
 import { routes } from "infra/internalbf.com/client/components/App.tsx";
 const logger = getLogger(import.meta);

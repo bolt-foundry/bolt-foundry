@@ -1,4 +1,4 @@
-import { getLogger, type Maybe, React } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { useIntersectionObserver } from "packages/client/hooks/useIntersectionObserver.ts";
 import type { useAppEnvironment } from "packages/client/contexts/AppEnvironmentContext.tsx";
@@ -6,8 +6,8 @@ import { throttle } from "lib/throttle.ts";
 const log = getLogger(import.meta);
 const logError = log.error;
 
-const { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } =
-  React;
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from "react";
+import type { Maybe } from "packages/maybe.ts";
 
 let currentlyPlayingVideo: React.RefObject<HTMLVideoElement> | null = null;
 

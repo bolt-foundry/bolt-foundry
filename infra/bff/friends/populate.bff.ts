@@ -5,7 +5,7 @@ import { getHeaders } from "infra/watcher/ingest.ts";
 import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 import { IBfCurrentViewerInternalAdminOmni } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfError } from "lib/BfError.ts";
 const logger = getLogger(import.meta);
 

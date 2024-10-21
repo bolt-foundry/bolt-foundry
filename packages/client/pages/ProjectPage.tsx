@@ -1,4 +1,4 @@
-import { getLogger, React, ReactRelay } from "deps.ts";
+import { getLogger, React, ReactRelay } from "packages/logger/logger.ts";
 // import {
 //   ProjectPageOldQuery,
 //   ProjectPageOldQuery$data,

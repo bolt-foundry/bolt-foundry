@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import type { BfDsToggle } from "packages/bfDs/BfDsToggle.tsx";

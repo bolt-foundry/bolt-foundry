@@ -1,4 +1,4 @@
-import { getLogger, React } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { type graphql, ReactRelay } from "packages/client/deps.ts";
 import { PageFrame } from "packages/client/components/PageFrame.tsx";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";

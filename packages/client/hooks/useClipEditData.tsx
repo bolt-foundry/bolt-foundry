@@ -1,4 +1,4 @@
-import { React, ReactRelay } from "deps.ts";
+import { React, ReactRelay } from "packages/logger/logger.ts";
 import { graphql } from "react-relay";
 
 import type { DGWord } from "packages/types/transcript.ts";

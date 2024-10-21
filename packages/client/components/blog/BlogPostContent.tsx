@@ -1,5 +1,5 @@
 import { useFragment } from "react-relay";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { graphql } from "packages/client/deps.ts";
 import { classnames } from "lib/classnames.ts";
 import { BlogFrame } from "packages/client/components/blog/BlogFrame.tsx";

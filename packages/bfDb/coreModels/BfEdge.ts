@@ -13,11 +13,10 @@ import { BfModel } from "packages/bfDb/classes/BfModel.ts";
 import {
   bfGetItemsByBfGid,
   bfQueryItemsForGraphQLConnection,
-  bfQueryItemsUnified,
 } from "packages/bfDb/bfDb.ts";
-import type { ConnectionInterface } from "react-relay";
+import { bfQueryItemsUnified } from "packages/bfDb/bfDb.ts";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { getLogger } from "deps.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 export type BfEdgeRequiredProps = Record<string, never>;
@@ -107,6 +106,7 @@ export class BfEdge<
     connectionArgs: ConnectionArguments,
     edgePropsToQuery?: Partial<BfEdgeOptionalProps>,
   ): Promise<
+    // @ts-expect-error #techdebt on deno upgrade
     ConnectionInterface<
       InstanceType<TThis> & EdgeCreationMetadata
     > & { count: number }
@@ -137,7 +137,7 @@ export class BfEdge<
       Boolean,
     ) as Array<BfTid>;
     logger.debug("targetIds", targetIds);
-    const count = await bfQueryItemsUnified(
+    const arrayWithEmptyElements = await bfQueryItemsUnified(
       { className: TargetClass.name },
       propsToQuery,
       targetIds,
@@ -147,6 +147,7 @@ export class BfEdge<
         countOnly: true,
       },
     );
+    const count = arrayWithEmptyElements.length;
     const TargetClassAsBfNode = TargetClass as unknown as typeof BfNode;
     const targetConnection = await TargetClassAsBfNode
       .queryConnectionForGraphQL(
