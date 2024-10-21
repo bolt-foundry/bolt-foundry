@@ -3,7 +3,7 @@ import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvir
 import { routes } from "infra/internalbf.com/client/components/App.tsx";
 const logger = getLogger(import.meta);
 
-const { createContext, useContext, useState, useCallback } = React;
+import { createContext, useContext, useState, useCallback } from 'react';
 export const registeredRoutes = new Set<string>();
 export const dynamicRoutes = new Set<string>();
 
