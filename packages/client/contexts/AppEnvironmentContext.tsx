@@ -1,6 +1,7 @@
-import { getLogger, React, ReactRelay, type RelayRuntime } from "packages/logger/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 // import { identifyPerson } from "packages/events/mod.ts";
 // import { Path } from "lib/types/Path.ts";
+
 import {
   RouterProvider,
   type RouterProviderProps,
@@ -9,7 +10,9 @@ import clientEnvironment from "packages/client/relay/relayEnvironment.ts";
 import AppStateProvider from "packages/client/contexts/AppStateContext.tsx";
 import { featureFlags, featureVariants } from "packages/features/list.ts";
 
-const { RelayEnvironmentProvider } = ReactRelay;
+import { RelayEnvironmentProvider } from "react-relay";
+import * as React from "react";
+import type { Environment } from "relay-runtime";
 
 const logger = getLogger(import.meta);
 
@@ -21,7 +24,7 @@ const AppEnvironmentContext = React.createContext<AppEnvironmentProps>({
   GOOGLE_OAUTH_CLIENT_ID: "",
   initialPath: globalThis.location?.pathname ?? "/",
   phBootstrap: {},
-  bfEnvironment: "PRODUCTION",
+  BF_ENV: "PRODUCTION",
 });
 
 export type AppEnvironmentProps = {
@@ -36,7 +39,7 @@ export type AppEnvironmentProps = {
   featureVariants: typeof featureVariants;
   initialPath: string;
   phBootstrap: unknown;
-  serverRelayEnvironment?: RelayRuntime.Environment;
+  serverRelayEnvironment?: Environment;
   BF_ENV: string;
 };
 

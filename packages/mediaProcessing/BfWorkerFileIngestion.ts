@@ -1,4 +1,4 @@
-import { getLogger, rxjs } from "packages/logger/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { BfWorkerObservable } from "packages/bfWorker/BfWorker.ts";
 import { BfError } from "lib/BfError.ts";
 import {
@@ -6,7 +6,8 @@ import {
   extractEncodedAudio,
 } from "packages/mediaProcessing/encodingTools.ts";
 
-const { Subject } = rxjs;
+import { Subject } from 'rxjs';
+
 
 const logger = getLogger(import.meta);
 

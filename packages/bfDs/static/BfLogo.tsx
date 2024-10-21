@@ -1,4 +1,4 @@
-import type { React } from "packages/logger/logger.ts";
+
 
 type Props = {
   boltColor?: string;

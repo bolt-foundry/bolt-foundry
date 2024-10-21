@@ -1,0 +1,38 @@
+{
+	"name": "@root/asn1",
+	"version": "1.0.2",
+	"description": "VanillaJS, Lightweight, Zero-Dependency, ASN.1 encoder and decoder.",
+	"main": "index.js",
+	"files": [
+		"*.js",
+		"*.d.ts",
+		"dist"
+	],
+	"scripts": {
+		"bump": "npm version -m \"chore(release): bump to v%s\"",
+		"build": "sh ./build.sh",
+		"fmt": "npm run basetag-rebase && npm run prettier",
+		"test": "node ./tests/",
+		"--------": "--------------------------------------------------------------------------",
+		"prettier": "npx -p prettier@2 -- prettier --write '**/*.{md,js,jsx,json,css,html,vue}'"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/therootcompany/asn1.js.git"
+	},
+	"keywords": [
+		"ASN.1",
+		"asn1",
+		"x509",
+		"PEM"
+	],
+	"author": "AJ ONeal <aj@therootcompany.com> (https://therootcompany.com/)",
+	"license": "MPL-2.0",
+	"devDependencies": {
+		"@root/pem": "^1.0.4"
+	},
+	"dependencies": {
+		"@root/encoding": "^1.0.1",
+		"@types/root__asn1": "^1.0.0"
+	}
+}

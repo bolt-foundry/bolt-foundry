@@ -1,5 +1,3 @@
-import type * as React from "react";
-import { ReactRelay } from "packages/logger/logger.ts";
 import {
   BfDsForm,
   BfDsFormSubmitButton,
@@ -10,7 +8,7 @@ import { graphql } from "infra/internalbf.com/client/deps.ts";
 import type { ModalHandles } from "packages/bfDs/BfDsModal.tsx";
 const logger = getLogger(import.meta);
 
-const { useMutation } = ReactRelay;
+import { useMutation } from 'react-relay';
 
 const mutation = await graphql`
   mutation CreateOrgModalMutation($name: String!, $youtubePlaylistUrl: String, $domainName: String!) {

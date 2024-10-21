@@ -1,0 +1,76 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.extractToolCallChunk = exports.handleToolChoice = void 0;
+function handleToolChoice(toolChoice) {
+    if (!toolChoice) {
+        return undefined;
+    }
+    else if (toolChoice === "any") {
+        return {
+            type: "any",
+        };
+    }
+    else if (toolChoice === "auto") {
+        return {
+            type: "auto",
+        };
+    }
+    else if (typeof toolChoice === "string") {
+        return {
+            type: "tool",
+            name: toolChoice,
+        };
+    }
+    else {
+        return toolChoice;
+    }
+}
+exports.handleToolChoice = handleToolChoice;
+function extractToolCallChunk(chunk) {
+    let newToolCallChunk;
+    // Initial chunk for tool calls from anthropic contains identifying information like ID and name.
+    // This chunk does not contain any input JSON.
+    const toolUseChunks = Array.isArray(chunk.content)
+        ? chunk.content.find((c) => c.type === "tool_use")
+        : undefined;
+    if (toolUseChunks &&
+        "index" in toolUseChunks &&
+        "name" in toolUseChunks &&
+        "id" in toolUseChunks) {
+        newToolCallChunk = {
+            args: "",
+            id: toolUseChunks.id,
+            name: toolUseChunks.name,
+            index: toolUseChunks.index,
+            type: "tool_call_chunk",
+        };
+    }
+    // Chunks after the initial chunk only contain the index and partial JSON.
+    const inputJsonDeltaChunks = Array.isArray(chunk.content)
+        ? chunk.content.find((c) => c.type === "input_json_delta")
+        : undefined;
+    if (inputJsonDeltaChunks &&
+        "index" in inputJsonDeltaChunks &&
+        "input" in inputJsonDeltaChunks) {
+        if (typeof inputJsonDeltaChunks.input === "string") {
+            newToolCallChunk = {
+                id: inputJsonDeltaChunks.id,
+                name: inputJsonDeltaChunks.name,
+                args: inputJsonDeltaChunks.input,
+                index: inputJsonDeltaChunks.index,
+                type: "tool_call_chunk",
+            };
+        }
+        else {
+            newToolCallChunk = {
+                id: inputJsonDeltaChunks.id,
+                name: inputJsonDeltaChunks.name,
+                args: JSON.stringify(inputJsonDeltaChunks.input, null, 2),
+                index: inputJsonDeltaChunks.index,
+                type: "tool_call_chunk",
+            };
+        }
+    }
+    return newToolCallChunk;
+}
+exports.extractToolCallChunk = extractToolCallChunk;

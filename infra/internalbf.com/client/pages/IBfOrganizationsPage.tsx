@@ -1,4 +1,4 @@
-import { getLogger, React, ReactRelay } from "packages/logger/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { IBfFrame } from "infra/internalbf.com/client/components/IBfFrame.tsx";
 import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
@@ -11,8 +11,7 @@ import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { CreateOrgModal } from "infra/internalbf.com/client/components/CreateOrgModal.tsx";
 import type { ModalHandles } from "packages/bfDs/BfDsModal.tsx";
 
-const { useFragment, useLazyLoadQuery, useMutation } = ReactRelay;
-const { useState } = React;
+import { useFragment, useLazyLoadQuery } from 'react-relay';
 
 const logger = getLogger(import.meta);
 

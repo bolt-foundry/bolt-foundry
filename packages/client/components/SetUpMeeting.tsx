@@ -1,12 +1,11 @@
-import { React, ReactRelay } from "packages/logger/logger.ts";
 import { graphql } from "packages/client/deps.ts";
 import { fonts } from "packages/bfDs/const.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 import type { BfDsTextArea } from "packages/bfDs/BfDsTextArea.tsx";
-const { useMutation } = ReactRelay;
+import { useMutation } from "react-relay";
 
-const { useState } = React;
+import { useState } from 'react';
 
 const styles: Record<string, React.CSSProperties> = {
   mainTitle: {

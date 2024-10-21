@@ -9,7 +9,7 @@ import {
 import type { FeatureFlags, FeatureVariants } from "packages/features/list.ts";
 import { matchRouteWithParams } from "packages/client/contexts/RouterContext.tsx";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
-
+import * as React from 'react';
 const _logger = getLogger(import.meta);
 
 const importableEnvironmentVariables = [

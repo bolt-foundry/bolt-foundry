@@ -1,4 +1,3 @@
-import { React } from "packages/client/deps.ts";
 import PageFrame from "packages/client/components/PageFrame.tsx";
 // deno-lint-ignore no-console
 const log = console.log;
@@ -13,7 +12,8 @@ if (typeof Deno === "undefined") {
     "packages/client/static/vcs/dev_bf.bundle.js"
   );
 }
-const { useState, useEffect, useRef } = React;
+import { useState, useEffect, useRef } from "react";
+
 const VcsPlayground = () => {
   const [text, setText] = useState<string>("Hiyeee");
   const [url, setUrl] = useState(

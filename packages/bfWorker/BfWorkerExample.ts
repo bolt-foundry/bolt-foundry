@@ -3,7 +3,7 @@ import {
   BfWorkerPromise,
 } from "packages/bfWorker/BfWorker.ts";
 
-import { rxjs } from "packages/logger/logger.ts";
+import rxjs from "rxjs";
 
 const { of } = rxjs;
 

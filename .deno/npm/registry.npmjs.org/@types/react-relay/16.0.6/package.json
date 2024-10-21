@@ -1,0 +1,43 @@
+{
+    "name": "@types/react-relay",
+    "version": "16.0.6",
+    "description": "TypeScript definitions for react-relay",
+    "homepage": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react-relay",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Eloy Durán",
+            "githubUsername": "alloy",
+            "url": "https://github.com/alloy"
+        },
+        {
+            "name": "Marais Rossouw",
+            "githubUsername": "maraisr",
+            "url": "https://github.com/maraisr"
+        },
+        {
+            "name": "Edvin Erikson",
+            "githubUsername": "edvinerikson",
+            "url": "https://github.com/edvinerikson"
+        },
+        {
+            "name": "Levi Buzolic",
+            "githubUsername": "levibuzolic",
+            "url": "https://github.com/levibuzolic"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/react-relay"
+    },
+    "scripts": {},
+    "dependencies": {
+        "@types/react": "*",
+        "@types/relay-runtime": "*"
+    },
+    "typesPublisherContentHash": "8be19d06f88c2d4a53aef93c40bb813e8f010554f72c6a8c1c37133339f29136",
+    "typeScriptVersion": "4.6"
+}

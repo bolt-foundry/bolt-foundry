@@ -1,16 +1,28 @@
-import { RelayRuntime } from "packages/logger/logger.ts";
 import { GraphqlWs } from "packages/client/deps.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { BfError } from "lib/BfError.ts";
 
 const logger = getLogger(import.meta);
-const { Environment, Network, RecordSource, Store, Observable } = RelayRuntime;
+import {
+  type CacheConfig,
+  Environment,
+  type GraphQLResponse,
+  type LogRequestInfoFunction,
+  Network,
+  Observable,
+  RecordSource,
+  type RequestParameters,
+  Store,
+  type Subscribable,
+  type UploadableMap,
+  type Variables,
+} from "relay-runtime";
 
 let wsClient: GraphqlWs.Client;
 
 // @ts-expect-error not typed
 const subscribe = (operation, variables) => {
-  return Observable.create<RelayRuntime.GraphQLResponse>((sink) => {
+  return Observable.create<GraphQLResponse>((sink) => {
     if (typeof Deno === "undefined" && !wsClient) {
       logger.debug("Creating WS client");
       // @ts-expect-error global environment isn't typed
@@ -53,14 +65,14 @@ const subscribe = (operation, variables) => {
 // Define a function that fetches the results of an operation (query/mutation/etc)
 // and returns its results as a Promise:
 async function fetchQuery(
-  operation: RelayRuntime.RequestParameters,
-  variables: RelayRuntime.Variables,
-  _cacheConfig: RelayRuntime.CacheConfig,
-  uploadables?: RelayRuntime.UploadableMap | null,
-  _logRequestInfo?: RelayRuntime.LogRequestInfoFunction | null,
+  operation: RequestParameters,
+  variables: Variables,
+  _cacheConfig: CacheConfig,
+  uploadables?: UploadableMap | null,
+  _logRequestInfo?: LogRequestInfoFunction | null,
 ): Promise<
-  | RelayRuntime.GraphQLResponse
-  | RelayRuntime.Subscribable<RelayRuntime.GraphQLResponse>
+  | GraphQLResponse
+  | Subscribable<GraphQLResponse>
 > {
   let body: BodyInit;
   const headers: HeadersInit = {};
@@ -107,7 +119,7 @@ async function fetchQuery(
     );
     throw error;
   }
-  return returnResponse as RelayRuntime.GraphQLResponse;
+  return returnResponse as GraphQLResponse;
 }
 
 // Create a network layer from the fetch function
