@@ -1,4 +1,4 @@
-import { React } from "packages/logger/logger.ts";
+import * as React from "react";
 import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 import { useEffect, useRef, useState } from "react";
 

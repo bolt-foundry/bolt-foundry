@@ -1,4 +1,5 @@
-import { getLogger, rxjs } from "packages/logger/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
+import { Observable } from "rxjs";
 
 const logger = getLogger(import.meta);
 
@@ -327,8 +328,8 @@ export abstract class BfWorkerObservable<
     completeChannel: MessageChannel,
     errorChannel: MessageChannel,
     nextChannel: MessageChannel,
-  ): rxjs.Observable<TEvents["data"]> {
-    return new rxjs.Observable((subscriber) => {
+  ): Observable<TEvents["data"]> {
+    return new Observable((subscriber) => {
       nextChannel.port1.onmessage = (event) => subscriber.next(event.data);
       errorChannel.port1.onmessage = (event) => subscriber.error(event.data);
       completeChannel.port1.onmessage = () => subscriber.complete();

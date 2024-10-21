@@ -1,4 +1,4 @@
-import type { React } from "packages/logger/logger.ts";
+
 import { BfDsIcon, type BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { classnames } from "lib/classnames.ts";
 import { BfDsToggle } from "packages/bfDs/BfDsToggle.tsx";

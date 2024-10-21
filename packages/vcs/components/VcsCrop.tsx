@@ -1,4 +1,4 @@
-import { React } from "packages/client/deps.ts";
+import * as React from "react";
 import PageFrame from "packages/client/components/PageFrame.tsx";
 import BFRenderer from "packages/client/lib/BFRenderer.ts";
 // deno-lint-ignore no-console

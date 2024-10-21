@@ -1,4 +1,4 @@
-import { getLogger, React, ReactRelay, type RelayRuntime } from "packages/logger/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 // import { identifyPerson } from "packages/events/mod.ts";
 // import { Path } from "lib/types/Path.ts";
 import {
@@ -9,6 +9,8 @@ import clientEnvironment from "packages/client/relay/environment.ts";
 import AppStateProvider from "infra/internalbf.com/client/contexts/AppStateContext.tsx";
 import { featureFlags, featureVariants } from "packages/features/list.ts";
 
+import * as React from 'react';
+import * as ReactRelay from 'react-relay';
 const { RelayEnvironmentProvider } = ReactRelay;
 
 const logger = getLogger(import.meta);

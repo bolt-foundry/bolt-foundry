@@ -1,4 +1,4 @@
-import { React } from "packages/logger/logger.ts";
+import * as React from "react";
 import { fonts } from "packages/bfDs/const.tsx";
 import { BfDsIcon, type BfDsIconType } from "packages/bfDs/BfDsIcon.tsx";
 import { Link } from "packages/client/components/Link.tsx";

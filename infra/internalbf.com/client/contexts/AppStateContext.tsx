@@ -3,7 +3,7 @@
  * We should push all of this into local relay stores asap.
  */
 
-import { React } from "packages/logger/logger.ts";
+import * as React from "react";
 import { useLocalStorage } from "packages/client/hooks/useLocalStorage.ts";
 
 const { useEffect, useState } = React;

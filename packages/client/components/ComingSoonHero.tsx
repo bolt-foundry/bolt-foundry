@@ -1,4 +1,4 @@
-import type { React } from "packages/logger/logger.ts";
+
 
 export function ComingSoonHero() {
   const lines = [

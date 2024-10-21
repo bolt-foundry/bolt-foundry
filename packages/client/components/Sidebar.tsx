@@ -1,4 +1,4 @@
-import type { React } from "packages/logger/logger.ts";
+
 import { BfSymbol } from "packages/bfDs/static/BfSymbol.tsx";
 
 type Props = {
