@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e0e31a855e6599cccfde8ad6bcf11d19>>
+ * @generated SignedSource<<019945e13e4ad89c9fad132714418bb1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,7 +12,7 @@ import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 import * as __ClipEditModalRefetchQuery_graphql from "packages/__generated__/./ClipEditModalRefetchQuery.graphql.ts";
 import { FragmentRefs } from "relay-runtime";
 export type ClipEditModal_bfSavedSearchResult$data = {
-  readonly duration: any | null | undefined;
+  readonly description: string | null | undefined;
   readonly endTime: any | null | undefined;
   readonly id: string;
   readonly startTime: any | null | undefined;
@@ -88,15 +88,15 @@ return {
       "name": "title",
       "storageKey": null
     },
-    (v0/*: any*/),
-    (v1/*: any*/),
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "duration",
+      "name": "description",
       "storageKey": null
     },
+    (v0/*: any*/),
+    (v1/*: any*/),
     {
       "alias": null,
       "args": [
@@ -141,6 +141,6 @@ return {
 };
 })();
 
-(node as any).hash = "2aab863a418954734714c65b82f1283f";
+(node as any).hash = "3ff84d0ebc06cc87381f92f23c415e42";
 
 export default node;

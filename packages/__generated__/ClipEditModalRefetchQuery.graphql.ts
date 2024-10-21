@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<2c4941f5880bc50a145711872c6f2ff4>>
+ * @generated SignedSource<<ce0faf1f874ac00b15b299fe2ee7f0f7>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -147,15 +147,15 @@ return {
                 "name": "title",
                 "storageKey": null
               },
-              (v5/*: any*/),
-              (v6/*: any*/),
               {
                 "alias": null,
                 "args": null,
                 "kind": "ScalarField",
-                "name": "duration",
+                "name": "description",
                 "storageKey": null
               },
+              (v5/*: any*/),
+              (v6/*: any*/),
               {
                 "alias": null,
                 "args": (v4/*: any*/),
@@ -193,16 +193,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "1964bb129a8a25cd507a7cc383155c9f",
+    "cacheID": "8c1e82a4bdfcfe2361c88ac3483adc20",
     "id": null,
     "metadata": {},
     "name": "ClipEditModalRefetchQuery",
     "operationKind": "query",
-    "text": "query ClipEditModalRefetchQuery(\n  $endTime: TimecodeInMilliseconds\n  $startTime: TimecodeInMilliseconds\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...ClipEditModal_bfSavedSearchResult_3uKjWt\n    id\n  }\n}\n\nfragment ClipEditModal_bfSavedSearchResult_3uKjWt on BfSavedSearchResult {\n  id\n  title\n  startTime\n  endTime\n  duration\n  words(startTime: $startTime, endTime: $endTime) {\n    text\n    startTime\n    endTime\n    speaker\n  }\n}\n"
+    "text": "query ClipEditModalRefetchQuery(\n  $endTime: TimecodeInMilliseconds\n  $startTime: TimecodeInMilliseconds\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...ClipEditModal_bfSavedSearchResult_3uKjWt\n    id\n  }\n}\n\nfragment ClipEditModal_bfSavedSearchResult_3uKjWt on BfSavedSearchResult {\n  id\n  title\n  description\n  startTime\n  endTime\n  words(startTime: $startTime, endTime: $endTime) {\n    text\n    startTime\n    endTime\n    speaker\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2aab863a418954734714c65b82f1283f";
+(node as any).hash = "3ff84d0ebc06cc87381f92f23c415e42";
 
 export default node;

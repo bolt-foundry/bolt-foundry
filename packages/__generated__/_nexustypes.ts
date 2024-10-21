@@ -54,6 +54,12 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  SearchResultWordInput: { // input type
+    endTime: NexusGenScalars['TimecodeInMilliseconds']; // TimecodeInMilliseconds!
+    speaker: string; // String!
+    startTime: NexusGenScalars['TimecodeInMilliseconds']; // TimecodeInMilliseconds!
+    text: string; // String!
+  }
   SubmitContactFormInput: { // input type
     company?: string | null; // String
     email: string; // String!
@@ -652,6 +658,7 @@ export interface NexusGenFieldTypes {
     searchCollection: NexusGenRootTypes['BfSavedSearch'] | null; // BfSavedSearch
     submitContactForm: NexusGenRootTypes['SubmitContactFormPayload'] | null; // SubmitContactFormPayload
     switchAccount: NexusGenRootTypes['BfCurrentViewerAccessToken'] | null; // BfCurrentViewerAccessToken
+    updateSearchResult: NexusGenRootTypes['BfSavedSearchResult'] | null; // BfSavedSearchResult
     updateTTGameScore: NexusGenRootTypes['BfTTGame'] | null; // BfTTGame
     updateTranscript: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
   }
@@ -1012,6 +1019,7 @@ export interface NexusGenFieldTypeNames {
     searchCollection: 'BfSavedSearch'
     submitContactForm: 'SubmitContactFormPayload'
     switchAccount: 'BfCurrentViewerAccessToken'
+    updateSearchResult: 'BfSavedSearchResult'
     updateTTGameScore: 'BfTTGame'
     updateTranscript: 'BfMediaNodeTranscript'
   }
@@ -1227,6 +1235,14 @@ export interface NexusGenArgTypes {
     }
     switchAccount: { // args
       accountId: string; // ID!
+    }
+    updateSearchResult: { // args
+      description: string; // String!
+      endTime: NexusGenScalars['TimecodeInMilliseconds']; // TimecodeInMilliseconds!
+      id: string; // String!
+      startTime: NexusGenScalars['TimecodeInMilliseconds']; // TimecodeInMilliseconds!
+      title: string; // String!
+      words?: Array<NexusGenInputs['SearchResultWordInput'] | null> | null; // [SearchResultWordInput]
     }
     updateTTGameScore: { // args
       respondedCorrectly: boolean; // Boolean!
