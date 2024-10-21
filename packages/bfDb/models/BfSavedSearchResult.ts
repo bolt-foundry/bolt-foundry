@@ -60,11 +60,12 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
     const adjustedStartTime = (startTime ?? this.props.startTime) -
       EXTRA_RANGE_MS;
     const adjustedEndTime = (endTime ?? this.props.endTime) + EXTRA_RANGE_MS;
+
     const coersedOutput = transcripts[0]?.props.words.map((word) => {
       if (
-        word.start >= adjustedStartTime &&
-        word.end <= adjustedEndTime
-      ) {
+        word.start >=(startTime ?? this.props.startTime) &&
+        word.end <=(endTime ?? this.props.endTime)
+       ) {
         return {
           __typename: "Word",
           text: word.text,
@@ -74,7 +75,38 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
         };
       }
     }).filter(Boolean);
-    return coersedOutput;
+
+    const beforeWords = transcripts[0]?.props.words.map((word) => {
+      if (
+        word.start >= adjustedStartTime &&
+        word.start < (startTime ?? this.props.startTime)
+      ) {
+        return {
+          __typename: "Word",
+          text: "before",
+          startTime: word.start,
+          endTime: word.end,
+          speaker: word.speaker,
+        };
+      }
+    }).filter(Boolean);
+
+    const afterWords = transcripts[0]?.props.words.map((word) => {
+      if (
+        word.end <= adjustedEndTime &&
+        word.end > (endTime ?? this.props.endTime)
+      ) {
+        return {
+          __typename: "Word",
+          text: "after",
+          startTime: word.start,
+          endTime: word.end,
+          speaker: word.speaker,
+        };
+      }
+    }).filter(Boolean);
+   
+     return[beforeWords, ccoersedOutpu, afterWords];;
   }
 
   async downloadClip() {
