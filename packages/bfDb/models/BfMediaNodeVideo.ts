@@ -50,7 +50,7 @@ export class BfMediaNodeVideo extends BfNode<BfMediaNodeVideoProps> {
 
   async createPreview(): Promise<BfMediaNodeVideo> {
     const videos = await this.queryTargetInstances(
-      BfMediaNodeVideo, 
+      BfMediaNodeVideo,
       { status: BfMediaNodeVideoStatus.COMPLETED },
       { role: BfMediaNodeVideoRole.PREVIEW },
     );
@@ -59,7 +59,7 @@ export class BfMediaNodeVideo extends BfNode<BfMediaNodeVideoProps> {
       return videos[0];
     }
     const bfmnVideo = await this.createTargetNode(
-      BfMediaNodeVideo, 
+      BfMediaNodeVideo,
       { status: BfMediaNodeVideoStatus.NEW },
       BfMediaNodeVideoRole.PREVIEW,
     );
