@@ -3,16 +3,23 @@ import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { assertEquals, assertExists } from "@std/assert";
-import { ACCOUNT_ROLE } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import {
+  ACCOUNT_ROLE,
+  toBfGid,
+} from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+import { getLogger } from "deps.ts";
+
+const logger = getLogger(import.meta);
+const uniqueRoleString = `test-${Math.random()}`;
 
 // Mock BfCurrentViewer for testing purposes
 class MockBfCurrentViewer extends BfCurrentViewer {
   constructor() {
     super(
-      "test-org",
+      toBfGid("test-org"),
       ACCOUNT_ROLE.ADMIN,
-      "test-person",
-      "test-account",
+      toBfGid("test-person"),
+      toBfGid("test-account"),
       import.meta.url,
     );
   }
@@ -43,11 +50,12 @@ Deno.test("BfNode - Create a target node and edge", async () => {
   const sourceNode = await BfNode.__DANGEROUS__createUnattached(currentViewer, {
     name: "Source Node",
   });
+  const role = `create-and-retrieve-${uniqueRoleString}`
 
   // Create a target node
   const targetNode = await sourceNode.createTargetNode(BfNode, {
     name: "Target Node",
-  }, "test-role");
+  }, role);
 
   assertExists(targetNode);
   assertEquals(targetNode.props.name, "Target Node");
@@ -59,7 +67,7 @@ Deno.test("BfNode - Create a target node and edge", async () => {
   });
 
   assertEquals(edges.length, 1);
-  assertEquals(edges[0].props.role, "test-role");
+  assertEquals(edges[0].props.role, role);
 });
 
 Deno.test("BfNode - Query target instances", async () => {
@@ -67,10 +75,11 @@ Deno.test("BfNode - Query target instances", async () => {
   const sourceNode = await BfNode.__DANGEROUS__createUnattached(currentViewer, {
     name: "Source Node",
   });
+  const role = `query-and-retrieve-${uniqueRoleString}`
 
   // Create multiple target nodes
-  await sourceNode.createTargetNode(BfNode, { name: "Target 1" });
-  await sourceNode.createTargetNode(BfNode, { name: "Target 2" });
+  await sourceNode.createTargetNode(BfNode, { name: "Target 1" }, role);
+  await sourceNode.createTargetNode(BfNode, { name: "Target 2" }, role);
 
   // Query target instances
   const targetInstances = await sourceNode.queryTargetInstances(BfNode);
@@ -82,7 +91,7 @@ Deno.test("BfNode - Query target instances", async () => {
 
 Deno.test("BfNode - Delete node and associated edges", async () => {
   const currentViewer = new MockBfCurrentViewer();
-  const role = "delete-a-node";
+  const role = `delete-a-node-${uniqueRoleString}`;
   const sourceNode = await BfNode.__DANGEROUS__createUnattached(currentViewer, {
     name: "Source Node",
   });
@@ -90,7 +99,10 @@ Deno.test("BfNode - Delete node and associated edges", async () => {
     name: "Target Node",
   }, role);
 
-  // Delete the source node
+  logger.debug(`Deleting node ${sourceNode.metadata.bfGid}`);
+
+  const sourceNodeBfGid = sourceNode.metadata.bfGid;
+  // // Delete the source node
   await sourceNode.delete();
 
   // Check if the node and associated edges are deleted
@@ -98,17 +110,22 @@ Deno.test("BfNode - Delete node and associated edges", async () => {
     currentViewer,
     sourceNode.metadata.bfGid,
   );
+  const targetDeletedNode = await BfNode.find(
+    currentViewer,
+    targetNode.metadata.bfGid,
+  );
   assertEquals(deletedNode, null);
+  assertEquals(targetDeletedNode, null);
 
   const edges = await BfEdge.query(currentViewer, {
-    bfSid: sourceNode.metadata.bfGid,
+    bfSid: sourceNodeBfGid,
   }, { role });
   assertEquals(edges.length, 0);
 });
 
 Deno.test("BfNode - Deep network delete with multiple generations", async () => {
   const currentViewer = new MockBfCurrentViewer();
-  const role = "deep-network-delete-test-role";
+  const role = `deep-network-delete-test-role-${uniqueRoleString}`;
   // Create a network of nodes
   const rootNode = await BfNode.__DANGEROUS__createUnattached(currentViewer, {
     name: "Root",
@@ -158,7 +175,7 @@ Deno.test("BfNode - Deep network delete with multiple generations", async () => 
 });
 Deno.test("BfNode - Deep network delete with multiple sources", async () => {
   const currentViewer = new MockBfCurrentViewer();
-  const role = "deep-network-delete-multiple-source-test-role";
+  const role = `deep-network-delete-multiple-source-test-role-${uniqueRoleString}`;
   // Create a network of nodes
   const root1 = await BfNode.__DANGEROUS__createUnattached(currentViewer, {
     name: "Root 1",
@@ -222,3 +239,19 @@ Deno.test("BfNode - Deep network delete with multiple sources", async () => {
   const remainingEdges = await BfEdge.query(currentViewer, {}, { role });
   assertEquals(remainingEdges.length, 0, "All edges should be deleted");
 });
+
+Deno.test("BfNode - Query ancestors by class name", async () => {
+  const currentViewer = new MockBfCurrentViewer();
+  const role = `ancestor-query-${uniqueRoleString}`;
+
+  const rootNode = await BfNode.__DANGEROUS__createUnattached(currentViewer, {
+    name: "Root Node",
+  });
+  const middleNode = await rootNode.createTargetNode(BfNode, { name: "Middle Node" }, role);
+  const leafNode = await middleNode.createTargetNode(BfNode, { name: "Leaf Node" }, role);
+
+  const ancestors = await leafNode.queryAncestorsByClassName(BfNode);
+
+  assertEquals(ancestors[0].props.name, "Middle Node");
+});
+
