@@ -1,23 +1,34 @@
 import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/mod.ts";
 import { getLogger } from "deps.ts";
+import { upsertBfDb } from "packages/bfDb/utils.ts";
 
 const logger = getLogger(import.meta);
 
 export async function ci() {
-  const commands = [
-    ["deno", "test", "--cached-only", "-A"],
-    // ["deno", "fmt", "--check"],
-    // ["deno", "lint"],
-  ];
-  for (const command of commands) {
-    const code = await runShellCommand(command);
-    if (code !== 0) {
-      logger.error(`CI failed on command: ${command.join(" ")}`);
-      return code;
+  try {
+    if (Deno.env.get("BF_ENV") === "TEST") {
+      await upsertBfDb();
     }
+    const commands = [
+      // ["deno", "lint"],
+      // ["deno", "fmt", "--check"],
+      ["deno", "test", "--cached-only", "-A"],
+    ];
+
+    for (const command of commands) {
+      const code = await runShellCommand(command);
+      if (code !== 0) {
+        logger.error(`CI failed on command: ${command.join(" ")}`);
+        return code;
+      }
+    }
+
+    return 0;
+  } catch (error) {
+    logger.error("CI failed with error:", error);
+    return 1;
   }
-  return 0;
 }
 
 register(

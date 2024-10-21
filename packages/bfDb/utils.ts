@@ -8,13 +8,12 @@ const logger = getLogger(import.meta);
 
 export const BF_INTERNAL_ORG_NAME = "bf_internal_org";
 
-const databaseUrl = Deno.env.get("DATABASE_URL") ?? Deno.env.get("BFDB_URL");
-if (!databaseUrl) {
-  throw new BfDbError("BFDB_URL is not set");
-}
-const sql = neon(databaseUrl);
-
 export async function upsertBfDb() {
+  const databaseUrl = Deno.env.get("DATABASE_URL") ?? Deno.env.get("BFDB_URL");
+  if (!databaseUrl) {
+    throw new BfDbError("BFDB_URL is not set");
+  }
+  const sql = neon(databaseUrl);
   await sql`
   CREATE TABLE IF NOT EXISTS bfDb (
     class_name VARCHAR(255),
@@ -85,7 +84,9 @@ export async function upsertBfDb() {
     }, { bfGid: toBfGid("omni_person"), bfOid: toBfOid("omni_person") });
   }
   logger.info("Checking for internal org");
-  const { BfOrganization } = await import("packages/bfDb/models/BfOrganization.ts");
+  const { BfOrganization } = await import(
+    "packages/bfDb/models/BfOrganization.ts"
+  );
   if (!(await BfOrganization.find(omniCv, toBfOid(BF_INTERNAL_ORG_NAME)))) {
     logger.info("Creating internal org");
     await BfOrganization.__DANGEROUS__createUnattached(omniCv, {
@@ -104,6 +105,11 @@ const CONFIRMATION_STRING =
 export async function __DANGEROUSLY_DESTROY_THE_DATABASE__(
   confirmation: string,
 ) {
+  const databaseUrl = Deno.env.get("DATABASE_URL") ?? Deno.env.get("BFDB_URL");
+  if (!databaseUrl) {
+    throw new BfDbError("BFDB_URL is not set");
+  }
+  const sql = neon(databaseUrl);
   if (confirmation !== CONFIRMATION_STRING) {
     throw new BfDbError("You must confirm the deletion of the database");
   }
@@ -112,6 +118,11 @@ export async function __DANGEROUSLY_DESTROY_THE_DATABASE__(
 }
 
 export async function cleanModels(modelNames: Array<string>, dryRun = true) {
+  const databaseUrl = Deno.env.get("DATABASE_URL") ?? Deno.env.get("BFDB_URL");
+  if (!databaseUrl) {
+    throw new BfDbError("BFDB_URL is not set");
+  }
+  const sql = neon(databaseUrl);
   if (dryRun) {
     logger.warn("Dry run of cleaning models.");
   }
