@@ -38,8 +38,8 @@ import {
 } from "packages/bfDb/classes/BfModelError.ts";
 import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
-const logVerbose = logger.trace;
-const log = logger.trace;
+const logVerbose = logger.debug;
+const log = logger.debug;
 
 export type BfBaseModelGraphQL<TRequiredProps, TOptionalProps> =
   & TRequiredProps
@@ -282,12 +282,12 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     if (!this._cachedProps) {
       this._cachedProps = new Proxy(this.combinedProps, {
         get: (_target, prop) => {
-          logger.trace(`Getting property: ${prop.toString()}`);
+          logger.debug(`Getting property: ${prop.toString()}`);
           return this
             .combinedProps[prop as keyof TRequiredProps & TOptionalProps];
         },
         set: (_target, prop, value) => {
-          logger.trace(`Setting property ${String(prop)} to value ${value}`);
+          logger.debug(`Setting property ${String(prop)} to value ${value}`);
           if (this.clientProps == null) {
             this.clientProps = {};
           }
@@ -301,7 +301,7 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     return this._cachedProps;
   }
   set props(newProps: Partial<TRequiredProps> & Partial<TOptionalProps>) {
-    logger.trace("Setting props:", newProps);
+    logger.debug("Setting props:", newProps);
     this.clientProps = newProps;
     this._cachedProps = undefined; // Invalidate the cache
   }
@@ -451,11 +451,11 @@ instance methods at the bottom alphabetized. This is to make it easier to find t
     await this.validatePermissions(ACCOUNT_ACTIONS.DELETE);
     try {
       await bfDeleteItem(this.metadata.bfOid, this.metadata.bfGid);
-      logger.trace(
+      logger.debug(
         `Deleted ${this.constructor.name} with bfOid: ${this.metadata.bfOid} and bfGid: ${this.metadata.bfGid}`,
       );
     } catch (error) {
-      logger.trace(`Failed to delete ${this.constructor.name}:`, error);
+      logger.debug(`Failed to delete ${this}:`, error);
       throw error;
     }
   }
