@@ -7,7 +7,7 @@ import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { TopNav } from "packages/client/components/TopNav.tsx";
 import { ProjectListMobile } from "packages/client/components/ProjectListMobile.tsx";
 
-import { useEffect, useState, Suspense } from 'react';
+import { Suspense, useEffect, useState } from "react";
 import { useLazyLoadQuery } from "react-relay";
 
 const styles: Record<string, React.CSSProperties> = {

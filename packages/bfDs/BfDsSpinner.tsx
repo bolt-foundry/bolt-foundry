@@ -1,5 +1,3 @@
-
-
 type Props = {
   size?: number;
   spinnerColor?: string;

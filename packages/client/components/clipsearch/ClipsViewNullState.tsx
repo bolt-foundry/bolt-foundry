@@ -1,4 +1,3 @@
-
 import { WatchFolderList } from "packages/client/components/settings/WatchFolderList.tsx";
 import { UserList } from "packages/client/components/clipsearch/UserList.tsx";
 import { Link } from "packages/client/components/Link.tsx";

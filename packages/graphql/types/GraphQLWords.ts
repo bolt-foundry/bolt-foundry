@@ -1,4 +1,4 @@
-import { objectType, list } from "packages/graphql/deps.ts";
+import { list, objectType } from "packages/graphql/deps.ts";
 import { GraphQLWordType } from "./GraphQLWord.ts";
 
 export const GraphQLWordsType = objectType({
@@ -25,5 +25,5 @@ export const GraphQLWordsType = objectType({
         return result.getWordsForGraphql();
       },
     });
-  }
+  },
 });

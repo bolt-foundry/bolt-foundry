@@ -9,8 +9,8 @@ import clientEnvironment from "packages/client/relay/environment.ts";
 import AppStateProvider from "infra/internalbf.com/client/contexts/AppStateContext.tsx";
 import { featureFlags, featureVariants } from "packages/features/list.ts";
 
-import * as React from 'react';
-import * as ReactRelay from 'react-relay';
+import * as React from "react";
+import * as ReactRelay from "react-relay";
 const { RelayEnvironmentProvider } = ReactRelay;
 
 const logger = getLogger(import.meta);

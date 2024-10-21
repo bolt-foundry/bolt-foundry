@@ -1,5 +1,3 @@
-
-
 export function LandingPageTestimonials() {
   return (
     <div className="landing-page-testimonial-section">

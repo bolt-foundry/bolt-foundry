@@ -1,4 +1,3 @@
-
 import type { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 export function MarketingHero() {

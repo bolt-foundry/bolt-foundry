@@ -7,8 +7,8 @@ import type { LoginPageCVQuery } from "packages/__generated__/LoginPageCVQuery.g
 import { useRouter } from "infra/internalbf.com/client/contexts/RouterContext.tsx";
 import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvironmentContext.tsx";
 
-import { useMutation, useLazyLoadQuery } from 'react-relay'
-import { Suspense, useEffect, useRef } from 'react';
+import { useLazyLoadQuery, useMutation } from "react-relay";
+import { Suspense, useEffect, useRef } from "react";
 const logger = getLogger(import.meta);
 
 const loginWithGoogleMutation = await graphql`

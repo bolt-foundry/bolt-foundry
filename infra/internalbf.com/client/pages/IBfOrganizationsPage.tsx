@@ -11,7 +11,7 @@ import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { CreateOrgModal } from "infra/internalbf.com/client/components/CreateOrgModal.tsx";
 import type { ModalHandles } from "packages/bfDs/BfDsModal.tsx";
 
-import { useFragment, useLazyLoadQuery } from 'react-relay';
+import { useFragment, useLazyLoadQuery } from "react-relay";
 
 const logger = getLogger(import.meta);
 

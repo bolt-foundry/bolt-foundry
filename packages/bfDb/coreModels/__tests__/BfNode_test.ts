@@ -50,7 +50,7 @@ Deno.test("BfNode - Create a target node and edge", async () => {
   const sourceNode = await BfNode.__DANGEROUS__createUnattached(currentViewer, {
     name: "Source Node",
   });
-  const role = `create-and-retrieve-${uniqueRoleString}`
+  const role = `create-and-retrieve-${uniqueRoleString}`;
 
   // Create a target node
   const targetNode = await sourceNode.createTargetNode(BfNode, {
@@ -75,7 +75,7 @@ Deno.test("BfNode - Query target instances", async () => {
   const sourceNode = await BfNode.__DANGEROUS__createUnattached(currentViewer, {
     name: "Source Node",
   });
-  const role = `query-and-retrieve-${uniqueRoleString}`
+  const role = `query-and-retrieve-${uniqueRoleString}`;
 
   // Create multiple target nodes
   await sourceNode.createTargetNode(BfNode, { name: "Target 1" }, role);
@@ -175,7 +175,8 @@ Deno.test("BfNode - Deep network delete with multiple generations", async () => 
 });
 Deno.test("BfNode - Deep network delete with multiple sources", async () => {
   const currentViewer = new MockBfCurrentViewer();
-  const role = `deep-network-delete-multiple-source-test-role-${uniqueRoleString}`;
+  const role =
+    `deep-network-delete-multiple-source-test-role-${uniqueRoleString}`;
   // Create a network of nodes
   const root1 = await BfNode.__DANGEROUS__createUnattached(currentViewer, {
     name: "Root 1",
@@ -247,11 +248,14 @@ Deno.test("BfNode - Query ancestors by class name", async () => {
   const rootNode = await BfNode.__DANGEROUS__createUnattached(currentViewer, {
     name: "Root Node",
   });
-  const middleNode = await rootNode.createTargetNode(BfNode, { name: "Middle Node" }, role);
-  const leafNode = await middleNode.createTargetNode(BfNode, { name: "Leaf Node" }, role);
+  const middleNode = await rootNode.createTargetNode(BfNode, {
+    name: "Middle Node",
+  }, role);
+  const leafNode = await middleNode.createTargetNode(BfNode, {
+    name: "Leaf Node",
+  }, role);
 
   const ancestors = await leafNode.queryAncestorsByClassName(BfNode);
 
   assertEquals(ancestors[0].props.name, "Middle Node");
 });
-
