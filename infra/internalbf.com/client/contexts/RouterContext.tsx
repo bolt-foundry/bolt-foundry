@@ -3,7 +3,7 @@ import { useAppEnvironment } from "infra/internalbf.com/client/contexts/AppEnvir
 import { routes } from "infra/internalbf.com/client/components/App.tsx";
 const logger = getLogger(import.meta);
 
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, type PropsWithChildren } from 'react';
 export const registeredRoutes = new Set<string>();
 export const dynamicRoutes = new Set<string>();
 
@@ -104,7 +104,7 @@ export type RouterProviderProps = {
 };
 
 export function RouterProvider(
-  { routeParams, queryParams, children }: React.PropsWithChildren<
+  { routeParams, queryParams, children }: PropsWithChildren<
     RouterProviderProps
   >,
 ) {
@@ -127,7 +127,7 @@ export function RouterProvider(
     });
   }, [setState]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handlePopState = () => {
       updateState(globalThis.location.pathname, globalThis.location.search);
     };
