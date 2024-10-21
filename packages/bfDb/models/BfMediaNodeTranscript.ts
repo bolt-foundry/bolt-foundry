@@ -21,7 +21,7 @@ export enum BfMediaNodeTranscriptStatus {
   NEW = "NEW",
   FAILED = "FAILED",
 }
-type AssemblyAIWord = {
+export type AssemblyAIWord = {
   start: number;
   end: number;
   text: string;
@@ -298,5 +298,25 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     this.props.ingestionPct = pct;
     await this.save();
     logger.debug(`${this} Ingestion pct updated to ${(pct * 100).toFixed(2)}%`);
+  }
+
+  async updateWords(
+    startTime: number,
+    endTime: number,
+    words: AssemblyAIWords,
+  ) {
+    const indexOfFirstWordToBeReplaced = this.props.words.findIndex(
+      (word) => word.start >= startTime,
+    );
+    const indexOfLastWordToBeReplaced = this.props.words.findIndex(
+      (word) => word.end > endTime,
+    ) - 1;
+    const updatedTranscriptWords = this.props.words.toSpliced(
+      indexOfFirstWordToBeReplaced,
+      indexOfLastWordToBeReplaced - indexOfFirstWordToBeReplaced,
+      ...words,
+    );
+    this.props.words = updatedTranscriptWords;
+    await this.save();
   }
 }

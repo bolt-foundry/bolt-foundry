@@ -9,6 +9,7 @@ import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfError } from "lib/BfError.ts";
 import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
+import type { AssemblyAIWord } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 
 export type BfSavedSearchResultProps = {
   title: string;
@@ -22,6 +23,13 @@ export type BfSavedSearchResultProps = {
   duration: number;
   renderUrl: string;
   percentageRendered: number;
+};
+
+type Word = {
+  text: string;
+  startTime: number;
+  endTime: number;
+  speaker: string;
 };
 
 export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
@@ -52,11 +60,12 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
     const adjustedStartTime = (startTime ?? this.props.startTime) -
       EXTRA_RANGE_MS;
     const adjustedEndTime = (endTime ?? this.props.endTime) + EXTRA_RANGE_MS;
+
     const coersedOutput = transcripts[0]?.props.words.map((word) => {
       if (
-        word.start >= adjustedStartTime &&
-        word.end <= adjustedEndTime
-      ) {
+        word.start >=(startTime ?? this.props.startTime) &&
+        word.end <=(endTime ?? this.props.endTime)
+       ) {
         return {
           __typename: "Word",
           text: word.text,
@@ -66,7 +75,38 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
         };
       }
     }).filter(Boolean);
-    return coersedOutput;
+
+    const beforeWords = transcripts[0]?.props.words.map((word) => {
+      if (
+        word.start >= adjustedStartTime &&
+        word.start < (startTime ?? this.props.startTime)
+      ) {
+        return {
+          __typename: "Word",
+          text: "before",
+          startTime: word.start,
+          endTime: word.end,
+          speaker: word.speaker,
+        };
+      }
+    }).filter(Boolean);
+
+    const afterWords = transcripts[0]?.props.words.map((word) => {
+      if (
+        word.end <= adjustedEndTime &&
+        word.end > (endTime ?? this.props.endTime)
+      ) {
+        return {
+          __typename: "Word",
+          text: "after",
+          startTime: word.start,
+          endTime: word.end,
+          speaker: word.speaker,
+        };
+      }
+    }).filter(Boolean);
+   
+     return[beforeWords, ccoersedOutpu, afterWords];;
   }
 
   async downloadClip() {
@@ -176,5 +216,35 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
     this.props.renderingProgress = 1;
     await this.save();
     logger.info(`Rendered ${renderedFilename}`);
+  }
+
+  async updateSearchResult(
+    startTime: number,
+    endTime: number,
+    title: string,
+    description: string,
+    words?: Array<Word>,
+  ) {
+    this.props.startTime = startTime;
+    this.props.endTime = endTime;
+    this.props.title = title;
+    this.props.description = description;
+    await this.save();
+    if (words !== undefined) {
+      const transcript = (await this.querySourceInstances(
+        BfMediaNodeTranscript,
+      ))[0];
+      if (!transcript) throw new Error("No transcript found for Clip");
+      const formattedWords = words.map((word: Word): AssemblyAIWord => {
+        return {
+          start: word.startTime,
+          end: word.endTime,
+          text: word.text,
+          speaker: word.speaker,
+          confidence: Infinity,
+        };
+      });
+      await transcript.updateWords(startTime, endTime, formattedWords);
+    }
   }
 }

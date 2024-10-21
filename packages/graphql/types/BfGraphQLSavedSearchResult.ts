@@ -1,4 +1,13 @@
-import { arg, idArg, mutationField, nonNull, objectType } from "nexus";
+import {
+  arg,
+  idArg,
+  inputObjectType,
+  list,
+  mutationField,
+  nonNull,
+  objectType,
+  stringArg,
+} from "packages/graphql/deps.ts";
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { GraphQLWordType } from "packages/graphql/types/GraphQLWord.ts";
 import {
@@ -10,6 +19,7 @@ import { TimecodeInMillisecondsScalarType } from "packages/graphql/types/Timecod
 import { BfJob } from "packages/bfDb/models/BfJob.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import type { BfAnyid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
+
 export const BfGraphQLSavedSearchResultType = objectType({
   name: "BfSavedSearchResult",
   definition: (t) => {
@@ -78,3 +88,50 @@ export const BfGraphQLClipDownloadMutation = mutationField("downloadClip", {
     return { id };
   },
 });
+
+export const SearchResultWordInput = inputObjectType({
+  name: "SearchResultWordInput",
+  definition(t) {
+    t.nonNull.string("text");
+    t.nonNull.msTime("startTime");
+    t.nonNull.msTime("endTime");
+    t.nonNull.string("speaker");
+  },
+});
+
+export const BfGraphQLSavedSearchResultUpdateMutation = mutationField(
+  "updateSearchResult",
+  {
+    type: BfGraphQLSavedSearchResultType,
+    args: {
+      id: nonNull(stringArg()),
+      startTime: nonNull(arg({ type: TimecodeInMillisecondsScalarType })),
+      endTime: nonNull(arg({ type: TimecodeInMillisecondsScalarType })),
+      title: nonNull(stringArg()),
+      description: nonNull(stringArg()),
+      words: list(arg({ type: SearchResultWordInput })),
+    },
+    resolve: async (
+      _,
+      {
+        id,
+        startTime,
+        endTime,
+        title,
+        description,
+        words,
+      },
+      { bfCurrentViewer },
+    ) => {
+      const result = await BfSavedSearchResult.findX(bfCurrentViewer, id);
+      await result.updateSearchResult(
+        startTime,
+        endTime,
+        title,
+        description,
+        words,
+      );
+      return result.toGraphql();
+    },
+  },
+);
