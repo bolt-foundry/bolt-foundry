@@ -1,5 +1,3 @@
-
-
 const icons = {
   autoframe: {
     viewbox: "0 0 18 17",

@@ -1,4 +1,3 @@
-
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 export function LandingPageHero() {

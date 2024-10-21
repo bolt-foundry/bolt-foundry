@@ -12,7 +12,7 @@ if (typeof Deno === "undefined") {
     "packages/client/static/vcs/dev_bf.bundle.js"
   );
 }
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const VcsPlayground = () => {
   const [text, setText] = useState<string>("Hiyeee");

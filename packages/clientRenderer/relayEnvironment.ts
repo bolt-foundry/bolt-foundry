@@ -3,7 +3,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-import { Environment, Network, RecordSource, Store } from "relay-runtime"
+import { Environment, Network, RecordSource, Store } from "relay-runtime";
 import type { Maybe } from "packages/maybe.ts";
 
 export function getEnvironment() {

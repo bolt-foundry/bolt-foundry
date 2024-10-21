@@ -1,5 +1,3 @@
-
-
 type Props = {
   boltColor?: string;
   foundryColor?: string;

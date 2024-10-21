@@ -10,7 +10,7 @@ import { BfDsProvider } from "packages/bfDs/contexts/BfDsContext.tsx";
 
 const logger = getLogger(import.meta);
 
-const { Suspense } = React;
+import { Suspense } from "react";
 
 const styles = {
   loading: {

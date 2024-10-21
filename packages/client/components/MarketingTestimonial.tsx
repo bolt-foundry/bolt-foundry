@@ -1,4 +1,3 @@
-
 import { VideoPlayer } from "packages/client/components/VideoPlayer.tsx";
 
 export default function MarketingTestimonial() {

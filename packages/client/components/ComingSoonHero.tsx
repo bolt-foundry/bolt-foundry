@@ -1,5 +1,3 @@
-
-
 export function ComingSoonHero() {
   const lines = [
     { "style": "normal", "text": "Use all of your content" },
