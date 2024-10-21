@@ -5,19 +5,26 @@ import { getLogger } from "deps.ts";
 const logger = getLogger(import.meta);
 
 export async function ci() {
-  const commands = [
-    ["deno", "test", "--cached-only", "-A"],
-    // ["deno", "fmt", "--check"],
-    // ["deno", "lint"],
-  ];
-  for (const command of commands) {
-    const code = await runShellCommand(command);
-    if (code !== 0) {
-      logger.error(`CI failed on command: ${command.join(" ")}`);
-      return code;
+  try {
+    const commands = [
+      // ["deno", "lint"],
+      // ["deno", "fmt", "--check"],
+      ["deno", "test", "--cached-only", "-A"],
+    ];
+
+    for (const command of commands) {
+      const code = await runShellCommand(command);
+      if (code !== 0) {
+        logger.error(`CI failed on command: ${command.join(" ")}`);
+        return code;
+      }
     }
-  }
-  return 0;
+
+    return 0;
+  } catch (error) {
+    logger.error("CI failed with error:", error);
+    return 1;
+  } 
 }
 
 register(

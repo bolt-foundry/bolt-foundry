@@ -41,11 +41,13 @@
 
         devShellPackages = with pkgs; [
           jq
-          unstablePkgs.livekit-cli  # Use pkgs instead of overlayedNixpkgs
+          unstablePkgs.livekit-cli
+          postgresql
         ];
 
         deployPackages = with pkgs; [
           direnv
+          postgresql
         ];
       in
       rec {
