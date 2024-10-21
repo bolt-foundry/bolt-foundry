@@ -1,21 +1,49 @@
-
 import { BfDsModal } from "packages/bfDs/BfDsModal.tsx";
 import { FeatureFlag } from "packages/client/components/FeatureFlag.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
-import { useRefetchableFragment } from "react-relay";
+import { useMutation, useRefetchableFragment } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import { ClipWord } from "packages/client/components/clipsearch/ClipWord.tsx";
 import type { ClipEditModal_bfSavedSearchResult$key } from "packages/__generated__/ClipEditModal_bfSavedSearchResult.graphql.ts";
 import { useClipEditModal } from "packages/client/contexts/ClipEditModalContext.tsx";
-import { useState } from "react";
-import type { Word } from "packages/types/transcript.ts";
 import { EditWordMiniModal } from "packages/client/components/clipsearch/EditWordMiniModal.tsx";
-import { createPortal } from "react-dom";
 
 type Props = {
   setIsEditing: (isEditing: boolean) => void;
   bfSavedSearchResult$key: ClipEditModal_bfSavedSearchResult$key;
 };
+
+const updateSearchResultMutation = await graphql`
+  mutation ClipEditModal_updateSearchResultMutation(
+    $id: String!
+    $startTime: TimecodeInMilliseconds!
+    $endTime: TimecodeInMilliseconds!
+    $title: String!
+    $description: String!
+    $words: [SearchResultWordInput]
+  ) {
+    updateSearchResult(
+      id: $id
+      startTime: $startTime
+      endTime: $endTime
+      title: $title
+      description: $description
+      words: $words
+    ) {
+      id
+      title
+      description
+      startTime
+      endTime
+      words {
+        text
+        startTime
+        endTime
+        speaker
+      }
+    }
+  }
+`;
 
 const fragment = await graphql`
   fragment ClipEditModal_bfSavedSearchResult on BfSavedSearchResult
@@ -26,9 +54,9 @@ const fragment = await graphql`
   ) {
     id
     title
+    description
     startTime
     endTime
-    duration
     words( startTime: $startTime, endTime: $endTime ) {
       text
       startTime
@@ -47,6 +75,35 @@ export function ClipEditModal(
   );
 
   const { isMiniModalOpen, draftClip } = useClipEditModal();
+
+  const [
+    updateSearchResultCommit,
+    updateSearchResultInFlight,
+  ] = useMutation(updateSearchResultMutation);
+
+  const onSave = () => {
+    updateSearchResultCommit({
+      variables: {
+        id: draftClip.id,
+        startTime: draftClip.startTime,
+        endTime: draftClip.endTime,
+        title: draftClip.title,
+        description: draftClip.description,
+        words: draftClip.words,
+      },
+      onCompleted: (_response, errors) => {
+        if (errors) {
+          const errorMessage = errors.map((e: { message: string }) => e.message)
+            .join(", ");
+          console.log("ERROROROROROROR", errorMessage);
+        }
+        setIsEditing(false);
+      },
+      onError: (error) => {
+        console.log("ERROROROROROROR", error);
+      },
+    });
+  };
 
   return (
     <>
@@ -85,9 +142,7 @@ export function ClipEditModal(
           <BfDsButton
             text="Save"
             kind="primary"
-            onClick={() => {
-              setIsEditing(false);
-            }}
+            onClick={onSave}
           />
         </div>
         {isMiniModalOpen && <EditWordMiniModal />}

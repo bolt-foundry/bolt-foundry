@@ -9,6 +9,7 @@ import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 import { BfError } from "lib/BfError.ts";
 import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
+import type { AssemblyAIWord } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 
 export type BfSavedSearchResultProps = {
   title: string;
@@ -22,6 +23,13 @@ export type BfSavedSearchResultProps = {
   duration: number;
   renderUrl: string;
   percentageRendered: number;
+};
+
+type Word = {
+  text: string;
+  startTime: number;
+  endTime: number;
+  speaker: string;
 };
 
 export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
@@ -176,5 +184,35 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
     this.props.renderingProgress = 1;
     await this.save();
     logger.info(`Rendered ${renderedFilename}`);
+  }
+
+  async updateSearchResult(
+    startTime: number,
+    endTime: number,
+    title: string,
+    description: string,
+    words?: Array<Word>,
+  ) {
+    this.props.startTime = startTime;
+    this.props.endTime = endTime;
+    this.props.title = title;
+    this.props.description = description;
+    await this.save();
+    if (words !== undefined) {
+      const transcript = (await this.querySourceInstances(
+        BfMediaNodeTranscript,
+      ))[0];
+      if (!transcript) throw new Error("No transcript found for Clip");
+      const formattedWords = words.map((word: Word): AssemblyAIWord => {
+        return {
+          start: word.startTime,
+          end: word.endTime,
+          text: word.text,
+          speaker: word.speaker,
+          confidence: Infinity,
+        };
+      });
+      await transcript.updateWords(startTime, endTime, formattedWords);
+    }
   }
 }
