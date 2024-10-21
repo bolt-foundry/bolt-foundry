@@ -1,4 +1,4 @@
-import { React } from "packages/logger/logger.ts";
+import { React } from "react";
 const { useEffect } = React;
 
 type Keybindings = {

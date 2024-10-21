@@ -1,4 +1,4 @@
-import { React } from "packages/logger/logger.ts";
+import { React } from "react";
 import { classnames } from "lib/classnames.ts";
 import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 

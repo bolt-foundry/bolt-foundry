@@ -1,4 +1,4 @@
-import type { React } from "packages/logger/logger.ts";
+
 import type { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
 
 export function MarketingHero() {

@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "packages/client/components/ErrorBoundary.tsx";
-import { getLogger, type React } from "packages/logger/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 import {

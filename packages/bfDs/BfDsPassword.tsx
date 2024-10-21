@@ -1,4 +1,4 @@
-import { React } from "packages/logger/logger.ts";
+import { React } from "react";
 import { BfDsTooltip } from "packages/bfDs/BfDsTooltip.tsx";
 import { BfDsInput } from "packages/bfDs/BfDsInput.tsx";
 

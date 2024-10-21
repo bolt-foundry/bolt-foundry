@@ -1,4 +1,4 @@
-import { rxjs } from "packages/logger/logger.ts";
+import rxjs from "rxjs";
 import { streamFileToOpfs } from "lib/opfs.ts";
 import {
   type AudioStreamOutput,

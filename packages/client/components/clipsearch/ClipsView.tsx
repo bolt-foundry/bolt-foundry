@@ -1,4 +1,4 @@
-import type { React } from "packages/logger/logger.ts";
+
 import { Clip } from "packages/client/components/clipsearch/Clip.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { isValidJSON } from "packages/lib/jsonUtils.ts";

@@ -1,0 +1,19 @@
+{
+  "name": "relay-compiler",
+  "description": "A compiler tool for building GraphQL-driven applications.",
+  "version": "17.0.0",
+  "keywords": [
+    "graphql",
+    "relay"
+  ],
+  "license": "MIT",
+  "homepage": "https://relay.dev",
+  "bugs": "https://github.com/facebook/relay/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/facebook/relay.git",
+    "directory": "packages/relay-compiler"
+  },
+  "main": "index.js",
+  "bin": "cli.js"
+}

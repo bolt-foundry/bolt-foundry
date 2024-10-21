@@ -1,4 +1,4 @@
-import type { React } from "packages/logger/logger.ts";
+
 import { Progress } from "packages/bfDs/Progress.tsx";
 
 type Props = {

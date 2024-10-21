@@ -1,4 +1,3 @@
-import { React, ReactRelay } from "packages/logger/logger.ts";
 import {
   DEFAULT_SETTINGS,
   type Settings,
@@ -20,8 +19,8 @@ import { hexToRgb, rgbToHex } from "lib/color.ts";
 import { imagePreloads } from "packages/vcs/preloads.js";
 import { classnames } from "lib/classnames.ts";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
+import { useState } from "react";
 
-const { useFragment } = ReactRelay;
 export type SettingRowProps = {
   changed: boolean;
   description: string;
@@ -78,7 +77,7 @@ const Section = (
       SectionProps
     >,
 ) => {
-  const [collapsed, setCollapsed] = React.useState(isCollapsible);
+  const [collapsed, setCollapsed] = useState(isCollapsible);
   const classes = classnames([
     "separatorSection",
     { separator: showSeparator },

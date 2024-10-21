@@ -1,4 +1,4 @@
-import { React } from "packages/logger/logger.ts";
+import { React } from "react";
 const { useEffect, useState, useRef } = React;
 
 export const useIntersectionObserver = (threshold = 0.01) => {

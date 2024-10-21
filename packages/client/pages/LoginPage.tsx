@@ -1,4 +1,3 @@
-import { React, ReactRelay } from "packages/logger/logger.ts";
 import { graphql } from "packages/client/deps.ts";
 import { MarketingFrame } from "packages/client/components/MarketingFrame.tsx";
 import { BfDsButton } from "packages/bfDs/BfDsButton.tsx";
@@ -8,8 +7,8 @@ import { LoginForm } from "packages/client/components/LoginForm.tsx";
 import type { LoginPageCVQuery } from "packages/__generated__/LoginPageCVQuery.graphql.ts";
 // import { useFeatureFlag } from "packages/client/hooks/featureFlagHooks.tsx";
 
-const { useQueryLoader, useMutation, useLazyLoadQuery } = ReactRelay;
-const { Suspense, useEffect } = React;
+import { useMutation, useLazyLoadQuery } from "react-relay";
+import { Suspense, useEffect } from "react";
 
 const styles: Record<string, React.CSSProperties> = {
   container: {

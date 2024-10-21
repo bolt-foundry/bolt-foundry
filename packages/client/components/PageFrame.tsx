@@ -1,4 +1,3 @@
-import { React, ReactRelay } from "packages/logger/logger.ts";
 import { useAppState } from "packages/client/contexts/AppStateContext.tsx";
 import { BfDsModal } from "packages/bfDs/BfDsModal.tsx";
 import { LeftNav } from "packages/client/components/LeftNav.tsx";
@@ -8,8 +7,8 @@ import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { TopNav } from "packages/client/components/TopNav.tsx";
 import { ProjectListMobile } from "packages/client/components/ProjectListMobile.tsx";
 
-const { useEffect, useState, Suspense } = React;
-const { useLazyLoadQuery } = ReactRelay;
+import { useEffect, useState, Suspense } from 'react';
+import { useLazyLoadQuery } from "react-relay";
 
 const styles: Record<string, React.CSSProperties> = {
   pageContainer: {

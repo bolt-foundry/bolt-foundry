@@ -1,5 +1,3 @@
-import type { React } from "packages/logger/logger.ts";
-
 const styles: Record<string, React.CSSProperties> = {
   bg: {
     position: "absolute",
