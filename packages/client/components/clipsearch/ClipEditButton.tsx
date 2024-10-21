@@ -5,6 +5,7 @@ import { ClipEditModal } from "packages/client/components/clipsearch/ClipEditMod
 import { graphql } from "packages/client/deps.ts";
 import type { ClipEditButton_bfSavedSearchResult$key } from "packages/__generated__/ClipEditButton_bfSavedSearchResult.graphql.ts";
 import ClipEditModalProvider from "packages/client/contexts/ClipEditModalContext.tsx";
+import type { DraftClip } from "packages/client/contexts/ClipEditModalContext.tsx";
 
 type Props = {
   bfSavedSearchResult$key: ClipEditButton_bfSavedSearchResult$key;
@@ -16,7 +17,7 @@ const fragment = await graphql`
     title
     startTime
     endTime
-    duration
+    description
     words {
      text
      speaker
