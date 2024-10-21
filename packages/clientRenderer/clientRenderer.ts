@@ -7,10 +7,12 @@ import {
   BfCurrentViewerAccessToken,
 } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import type { FeatureFlags, FeatureVariants } from "packages/features/list.ts";
-import { matchRouteWithParams } from "packages/client/contexts/RouterContext.tsx";
+import { matchRouteWithParams, type RouterProviderProps } from "packages/client/contexts/RouterContext.tsx";
 import { getContextFromRequest } from "packages/bfDb/getCurrentViewer.ts";
-import * as React from "react";
+import * as React from 'react';
+import type { AppEnvironmentProps } from "packages/client/contexts/AppEnvironmentContext.tsx";
 const _logger = getLogger(import.meta);
+
 
 const importableEnvironmentVariables = [
   "GOOGLE_OAUTH_CLIENT_ID",
@@ -20,13 +22,19 @@ const importableEnvironmentVariables = [
   "HUBSPOT_API_KEY",
   "CLEARBIT_API_KEY",
   "BF_ENV",
+  "LIVEKIT_TEST_TOKEN",
+  "LIVEKIT_URL"
 ];
+
+type EnvironmentVars = {
+  [K in typeof importableEnvironmentVariables[number]]?: string;
+};
 
 async function clientRendererMain(
   request: Request,
 ): Promise<Response> {
   const { pathname } = new URL(request.url);
-  const environment: Record<string, string | undefined> = {
+  const environment: EnvironmentVars = {
     pathname,
   };
   importableEnvironmentVariables.forEach((key) => {
@@ -49,14 +57,12 @@ async function clientRendererMain(
 
   const serverRelayEnvironment = getEnvironment();
 
-  const serverEnvironment = {
+  // @ts-expect-error dynamic adding of the environment variables
+  const serverEnvironment: AppEnvironmentProps & RouterProviderProps & { IS_SERVER_RENDERING: boolean } = {
     ...clientEnvironment,
     serverRelayEnvironment,
-    POSTHOG_API_KEY: Deno.env.get("POSTHOG_API_KEY") ?? "",
-    GOOGLE_OAUTH_CLIENT_ID: Deno.env.get("GOOGLE_OAUTH_CLIENT_ID") ?? "",
     featureFlags: {} as FeatureFlags,
     featureVariants: {} as FeatureVariants,
-    GOOGLE_DEVELOPER_API_KEY: Deno.env.get("GOOGLE_DEVELOPER_API_KEY") ?? "",
     content: "",
     phBootstrap: {},
     IS_SERVER_RENDERING: true,

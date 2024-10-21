@@ -18,6 +18,7 @@ import { LandingPage } from "packages/client/pages/LandingPage.tsx";
 import { Hud } from "packages/client/components/Hud.tsx";
 import { TermsAndPrivacyPage } from "packages/client/pages/TermsAndPrivacyPage.tsx";
 import { TriviaTaxi } from "packages/client/pages/TriviaTaxi.tsx";
+import { AgentPage } from "packages/client/pages/AgentPage.tsx";
 
 export const routes = new Map([
   ["/", { Component: LandingPage, allowLoggedOut: true }],
@@ -33,6 +34,7 @@ export const routes = new Map([
     allowLoggedOut: true,
   }],
   ["/trivia-taxi/:gameId?", { Component: TriviaTaxi, allowLoggedOut: false }],
+  ["/agent", {Component: AgentPage, allowLoggedOut: false}]
 ]);
 
 export function App() {
