@@ -48,7 +48,7 @@ const cvQuery = await graphql`
 function LoginPageContent() {
   const cvData = useLazyLoadQuery<LoginPageCVQuery>(cvQuery, {});
 
-  const [logoutError, setLogoutError] = React.useState<string | null>(null);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
   const [logoutCommit, logoutInFlight] = useMutation(logoutMutation);
 
   const loggedInPerson = cvData?.currentViewer?.person;
