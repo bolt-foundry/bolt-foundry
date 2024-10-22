@@ -53,14 +53,15 @@ export function SearchResults({ bfSavedSearch$key }: Props) {
     return edge?.node;
   });
   const elements = list?.map((node) => {
-    if (node?.body !== "No excerpt found.") {
+    if (node) {
       return (
         <SearchResult
+          key={node.id}
           bfSavedSearchResult$key={node}
         />
       );
     }
-  });
+  }).filter(Boolean);
   return (
     <div>
       <div>query: {data.query}</div>

@@ -104,7 +104,7 @@ export class BfSavedSearchResult extends BfNode<BfSavedSearchResultProps> {
       }
     }).filter(Boolean);
 
-    return [beforeWords, ccoersedOutpu, afterWords];
+    return [beforeWords, coersedOutput, afterWords];
   }
 
   async downloadClip() {
