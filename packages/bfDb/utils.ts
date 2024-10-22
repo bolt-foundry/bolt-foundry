@@ -15,7 +15,7 @@ export async function upsertBfDb() {
   }
   const sql = neon(databaseUrl);
   await sql`
-  CREATE TABLE IF NOT EXISTS bfDb (
+  CREATE TABLE IF NOT EXISTS bfdb (
     class_name VARCHAR(255),
     bf_gid VARCHAR(255) PRIMARY KEY,
     last_updated TIMESTAMP WITHOUT TIME ZONE,
@@ -68,7 +68,7 @@ export async function upsertBfDb() {
     "class_name",
   ];
   for (const index of indexes) {
-    await sql(`CREATE INDEX IF NOT EXISTS idx_${index} ON bfDb(${index})`);
+    await sql(`CREATE INDEX IF NOT EXISTS idx_${index} ON bfdb(${index})`);
   }
   logger.info("Indexes upserted", indexes);
 
@@ -113,7 +113,7 @@ export async function __DANGEROUSLY_DESTROY_THE_DATABASE__(
   if (confirmation !== CONFIRMATION_STRING) {
     throw new BfDbError("You must confirm the deletion of the database");
   }
-  await sql`DROP TABLE IF EXISTS bfDb`;
+  await sql`DROP TABLE IF EXISTS bfdb`;
   logger.warn("Database destroyed");
 }
 
