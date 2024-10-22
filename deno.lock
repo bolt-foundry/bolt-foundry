@@ -1545,7 +1545,8 @@
       "jsr:@std/http@*",
       "jsr:@std/path@^1.0.6",
       "jsr:@wok/djwt@^3.0.2",
-      "npm:@neondatabase/serverless@*"
+      "npm:@neondatabase/serverless@*",
+      "npm:@replit/object-storage@*"
     ],
     "packageJson": {
       "dependencies": [
