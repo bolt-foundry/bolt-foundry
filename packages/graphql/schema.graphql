@@ -201,7 +201,9 @@ type BfMedia implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   name: String
+  previewVideoStatus: String
   previewVideoUrl: String
+  transcriptStatus: String
   transcripts(
     """Returns the elements in the list that come after the specified cursor"""
     after: String

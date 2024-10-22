@@ -34,6 +34,18 @@ export const BfGraphQLMediaType = objectType({
         return await video?.getFilePath();
       },
     });
+    t.string("transcriptStatus", {
+      resolve: async ({ id }, _, { bfCurrentViewer }) => {
+        const media = await BfMedia.findX(bfCurrentViewer, id);
+        return await media.getTranscriptStatus();
+      },
+    });
+    t.string("previewVideoStatus", {
+      resolve: async ({ id }, _, { bfCurrentViewer }) => {
+        const media = await BfMedia.findX(bfCurrentViewer, id);
+        return await media.getVideoStatus(BfMediaNodeVideoRole.PREVIEW);
+      },
+    });
   },
 });
 
