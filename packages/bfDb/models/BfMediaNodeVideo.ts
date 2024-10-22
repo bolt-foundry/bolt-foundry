@@ -3,6 +3,7 @@ import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { BfError } from "lib/BfError.ts";
 import { Client } from "@replit/object-storage";
+import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 
 const logger = getLogger(import.meta);
 
@@ -84,6 +85,7 @@ export class BfMediaNodeVideo<T = {}> extends BfNode<BfMediaNodeVideoProps<T>> {
   }
 
   async compressVideo(filePath: string): Promise<this> {
+    const bfMediaAncestor = await this.queryAncestorsByClassName(BfMedia);
     const fileExists = await Deno.stat(filePath).then(() => "EXISTS").catch(
       () => "DOESN'T EXIST",
     );
@@ -142,6 +144,7 @@ export class BfMediaNodeVideo<T = {}> extends BfNode<BfMediaNodeVideoProps<T>> {
     logger.info(`Starting video compression for ${this}`);
     this.props.status = BfMediaNodeVideoStatus.PROCESSING;
     await this.save();
+    await bfMediaAncestor[0].touch();
     const ffprobeCmd = new Deno.Command("ffprobe", {
       args: ffprobeArgs,
       stdout: "piped",
@@ -201,6 +204,7 @@ export class BfMediaNodeVideo<T = {}> extends BfNode<BfMediaNodeVideoProps<T>> {
     logger.info(`Video compression complete for ${this}`);
     this.props.status = BfMediaNodeVideoStatus.COMPLETED;
     await this.save();
+    await bfMediaAncestor[0].touch();
     return this;
   }
 

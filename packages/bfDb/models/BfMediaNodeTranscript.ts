@@ -5,6 +5,7 @@ import { toBfGid } from "packages/bfDb/classes/BfBaseModelIdTypes.ts";
 import { BfGoogleDriveResource } from "packages/bfDb/models/BfGoogleDriveResource.ts";
 import { BfError } from "lib/BfError.ts";
 import { callAPI } from "packages/lib/langchain.ts";
+import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
 
 const logger = getLogger(import.meta);
 
@@ -53,6 +54,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       this.currentViewer,
       toBfGid(googleDriveResourceId),
     );
+    const bfMediaAncestor = await this.queryAncestorsByClassName(BfMedia);
     await Deno.mkdir(BF_MEDIA_AUDIO_CACHE_DIRECTORY, { recursive: true });
     logger.debug(`Getting file handle for ${bfGoogleDriveResource}`);
     using _fileHandle = await bfGoogleDriveResource.download();
@@ -78,7 +80,8 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     ];
     logger.info(`Starting ffmpeg transcript encode for ${this}`);
     this.props.status = BfMediaNodeTranscriptStatus.EXTRACTING_AUDIO;
-    this.save();
+    await this.save();
+    await bfMediaAncestor[0].touch();
     const ffprobeCmd = new Deno.Command("ffprobe", {
       args: ffprobeArgs,
       stdout: "piped",
@@ -128,6 +131,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
         this.updateTranscriptionPct(1);
         this.props.status = BfMediaNodeTranscriptStatus.COMPLETED;
         await this.save();
+        await bfMediaAncestor[0].touch();
         return;
       }
       const currentCompleted = expectedTranscriptionDuration *
@@ -146,7 +150,8 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       timesReported++;
     }, intervalLength);
     this.props.status = BfMediaNodeTranscriptStatus.TRANSCRIBING;
-    this.save();
+    await this.save();
+    await bfMediaAncestor[0].touch();
     const transcript = await assemblyAIClient.transcripts.transcribe({
       audio: this.filePath,
       speaker_labels: true,
