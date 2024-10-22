@@ -15,9 +15,10 @@ const mutation = await graphql`
 
 type Props = {
   id: string;
+  onDelete: (id: string) => void;
 };
 
-export function DeleteMediaButton({ id }: Props) {
+export function DeleteMediaButton({ id, onDelete }: Props) {
   const [confirm, setConfirm] = React.useState(false);
   const [commit, isInFlight] = useMutation(mutation);
 
@@ -25,6 +26,7 @@ export function DeleteMediaButton({ id }: Props) {
     commit({
       variables: { id },
       onCompleted: () => {
+        onDelete(id);
         setConfirm(false);
         logger.debug("Deleted media successfully");
       },

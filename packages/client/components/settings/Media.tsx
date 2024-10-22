@@ -1,14 +1,16 @@
-import * as React from "react";
-import { useFragment } from "react-relay";
+import { useMemo, useState } from "react";
+import { useFragment, useSubscription } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import type { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
 import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { DeleteMediaButton } from "packages/client/components/settings/DeleteMediaButton.tsx";
+import { PillStatus } from "packages/bfDs/PillStatus.tsx";
 
 const fragment = await graphql`
 fragment Media_bfOrganization on BfOrganization {
+  id
   media(first: 100) {
     edges {
       node {
@@ -16,6 +18,8 @@ fragment Media_bfOrganization on BfOrganization {
         filename
         name
         previewVideoUrl
+        transcriptStatus
+        previewVideoStatus
         transcripts(first: 1) {
           edges {
             node {
@@ -35,6 +39,14 @@ fragment Media_bfOrganization on BfOrganization {
 }
 `;
 
+const subscription = await graphql`
+  subscription MediaSubscription($id: ID!) {
+    node(id: $id) {
+      ...Media_bfOrganization
+    }
+  }
+`;
+
 type Props = {
   settings$key: SettingsPageQuery | null;
 };
@@ -45,14 +57,25 @@ type Data = {
   previewVideoUrl: string;
   words: number;
   tokens: number;
+  transcriptStatus: string;
+  previewVideoStatus: string;
 };
 
 export function Media({ settings$key }: Props) {
   if (!settings$key) {
     return <BfDsFullPageSpinner />;
   }
-  const [deletedRows, setDeletedRows] = React.useState<Array<string>>([]);
+  const [deletedRows, setDeletedRows] = useState<Array<string>>([]);
   const data = useFragment(fragment, settings$key);
+  const subscriptionConfig = useMemo(() => {
+    return {
+      variables: {
+        id: data?.id,
+      },
+      subscription,
+    };
+  }, [data?.id]);
+  useSubscription(subscriptionConfig);
 
   const handleDeletedRow = (id: string) => {
     setDeletedRows((prev) => [...prev, id]);
@@ -60,7 +83,7 @@ export function Media({ settings$key }: Props) {
 
   const tableData = data?.media?.edges?.map((d, i) => {
     if (deletedRows.includes(d?.node?.id)) {
-      return false;
+      return null;
     }
     const transcript = d?.node?.transcripts?.edges?.[0]?.node?.words ??
       [];
@@ -70,8 +93,11 @@ export function Media({ settings$key }: Props) {
       previewVideoUrl: d?.node?.previewVideoUrl,
       words: transcript.length,
       tokens: `~${transcript.length / 4}`,
+      transcriptStatus: d?.node?.transcriptStatus,
+      previewVideoStatus: d?.node?.previewVideoStatus,
     };
   }).filter(Boolean);
+
   const columns: BfDsColumns<Data> = [
     {
       title: "File name",
@@ -81,7 +107,17 @@ export function Media({ settings$key }: Props) {
     {
       title: "File name",
       width: "2fr",
-      renderer: (data) => <BfDsTableCell text={data.filename} />,
+      renderer: (data) => (
+        <BfDsTableCell
+          text={data.filename}
+          meta={
+            <div className="flexRow" style={{ gap: "5px" }}>
+              <PillStatus label="transcript" status={data.transcriptStatus} />
+              <PillStatus label="preview" status={data.previewVideoStatus} />
+            </div>
+          }
+        />
+      ),
     },
     {
       title: "Transcript words",

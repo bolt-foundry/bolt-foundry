@@ -59,12 +59,14 @@ export class BfMediaNodeVideo<T = {}> extends BfNode<BfMediaNodeVideoProps<T>> {
 
   async getFile(): Promise<string> {
     const objectKey = await this.getObjectKey();
-    const { ok, value, error } = await this.objectStorageClient.exists(objectKey);
+    const { ok, value, error } = await this.objectStorageClient.exists(
+      objectKey,
+    );
     if (!ok) {
       throw new BfError(error.message);
     }
     // TODO
-    return value ? "exists" : "doesn't exist"; 
+    return value ? "exists" : "doesn't exist";
   }
 
   async createPreview(): Promise<BfMediaNodeVideo> {

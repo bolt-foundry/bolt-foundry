@@ -484,7 +484,9 @@ export interface NexusGenFieldTypes {
     filename: string | null; // String
     id: string; // ID!
     name: string | null; // String
+    previewVideoStatus: string | null; // String
     previewVideoUrl: string | null; // String
+    transcriptStatus: string | null; // String
     transcripts: NexusGenRootTypes['BfMediaNodeTranscriptConnection'] | null; // BfMediaNodeTranscriptConnection
   }
   BfMediaConnection: { // field return type
@@ -871,7 +873,9 @@ export interface NexusGenFieldTypeNames {
     filename: 'String'
     id: 'ID'
     name: 'String'
+    previewVideoStatus: 'String'
     previewVideoUrl: 'String'
+    transcriptStatus: 'String'
     transcripts: 'BfMediaNodeTranscriptConnection'
   }
   BfMediaConnection: { // field return type name
