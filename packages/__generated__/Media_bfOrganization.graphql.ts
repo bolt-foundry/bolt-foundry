@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5507bf0c69f68c32d15138c6ec6a0cb9>>
+ * @generated SignedSource<<4945ef0c177a95db5800ca0b3b3d077d>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,13 +11,16 @@
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type Media_bfOrganization$data = {
+  readonly id: string;
   readonly media: {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly filename: string | null | undefined;
         readonly id: string;
         readonly name: string | null | undefined;
+        readonly previewVideoStatus: string | null | undefined;
         readonly previewVideoUrl: string | null | undefined;
+        readonly transcriptStatus: string | null | undefined;
         readonly transcripts: {
           readonly edges: ReadonlyArray<{
             readonly node: {
@@ -41,12 +44,21 @@ export type Media_bfOrganization$key = {
   readonly " $fragmentSpreads": FragmentRefs<"Media_bfOrganization">;
 };
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
+return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "Media_bfOrganization",
   "selections": [
+    (v0/*: any*/),
     {
       "alias": null,
       "args": [
@@ -77,13 +89,7 @@ const node: ReaderFragment = {
               "name": "node",
               "plural": false,
               "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id",
-                  "storageKey": null
-                },
+                (v0/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -103,6 +109,20 @@ const node: ReaderFragment = {
                   "args": null,
                   "kind": "ScalarField",
                   "name": "previewVideoUrl",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "transcriptStatus",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "previewVideoStatus",
                   "storageKey": null
                 },
                 {
@@ -203,7 +223,8 @@ const node: ReaderFragment = {
   "type": "BfOrganization",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "06463260bcbe10e865040180fad45d58";
+(node as any).hash = "7d81bd10b904e0ab3269a7f7b68638fa";
 
 export default node;
