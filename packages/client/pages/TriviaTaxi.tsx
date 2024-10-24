@@ -9,6 +9,9 @@ import { useState } from "react";
 import { useRouter } from "packages/client/contexts/RouterContext.tsx";
 const { Suspense } = React;
 import { TriviaTaxiCreateTTGameMutation } from "packages/__generated__/TriviaTaxiCreateTTGameMutation.graphql.ts";
+import { easyQuestions } from "packages/client/components/triviataxi/FakeQuestions/EasyQuestions.tsx";
+import { mediumQuestions } from "packages/client/components/triviataxi/FakeQuestions/MediumQuestions.tsx";
+import { hardQuestions } from "packages/client/components/triviataxi/FakeQuestions/HardQuestions.tsx";
 const createGameMutation = await graphql`
   mutation TriviaTaxiCreateTTGameMutation($shouldCreate: Boolean!) {
     createTTGame(shouldCreate: $shouldCreate) {
@@ -61,9 +64,10 @@ export function TriviaTaxi() {
     gameID: gameId,
     gameExists: Boolean(gameId),
   });
-  const questions = data?.node?.questions?.edges ?? [];
+  // const questions = data?.node?.questions?.edges ?? [];
+  const questions = [...easyQuestions, ...mediumQuestions, ...hardQuestions];
   const filteredQuestions = questions.filter((q) =>
-    q.node.difficulty === difficulty
+    q.difficulty === difficulty
   );
 
   function onSubmit() {
@@ -157,14 +161,13 @@ export function TriviaTaxi() {
               />
             </div>
             <Question
-              text={filteredQuestions[currentQuestion]?.node.question}
+              text={filteredQuestions[currentQuestion]?.question}
             />
           </div>
           <Answers
-            incorrectAnswers={filteredQuestions[currentQuestion]?.node
-              .incorrect_answers}
-            correctAnswer={filteredQuestions[currentQuestion]?.node
-              .correct_answer}
+            incorrectAnswers={filteredQuestions[currentQuestion]
+              ?.incorrect_answers}
+            correctAnswer={filteredQuestions[currentQuestion]?.correct_answer}
           />
           <div
             className="flexRow"

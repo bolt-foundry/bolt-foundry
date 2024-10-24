@@ -9,7 +9,6 @@ import type { LoginPageCVQuery } from "packages/__generated__/LoginPageCVQuery.g
 import { useLazyLoadQuery, useMutation } from "react-relay";
 import { Suspense, useEffect, useState } from "react";
 
-
 const styles: Record<string, React.CSSProperties> = {
   container: {
     flex: "auto",
