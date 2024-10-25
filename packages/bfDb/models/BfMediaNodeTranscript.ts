@@ -78,7 +78,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
     ];
     logger.info(`Starting ffmpeg transcript encode for ${this}`);
     this.props.status = BfMediaNodeTranscriptStatus.EXTRACTING_AUDIO;
-    this.save();
+    await this.save();
     const ffprobeCmd = new Deno.Command("ffprobe", {
       args: ffprobeArgs,
       stdout: "piped",
@@ -146,7 +146,7 @@ export class BfMediaNodeTranscript extends BfNode<BfMediaNodeTranscriptProps> {
       timesReported++;
     }, intervalLength);
     this.props.status = BfMediaNodeTranscriptStatus.TRANSCRIBING;
-    this.save();
+    await this.save();
     const transcript = await assemblyAIClient.transcripts.transcribe({
       audio: this.filePath,
       speaker_labels: true,

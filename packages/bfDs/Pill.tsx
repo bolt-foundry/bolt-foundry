@@ -3,13 +3,13 @@ import { BfDsIcon } from "packages/bfDs/BfDsIcon.tsx";
 
 type Props = {
   label?: string;
-  text?: string | number;
-  textIcon?: BfDsIconType;
+  text?: string | number | undefined;
+  icon?: BfDsIconType | undefined;
   color?: string;
 };
 
 export function Pill(
-  { label, text, color = "fourtharyColor", textIcon }: Props,
+  { label, text, color = "fourtharyColor", icon }: Props,
 ) {
   return (
     <div className="ds-pill" style={{ background: `var(--${color}015)` }}>
@@ -23,9 +23,7 @@ export function Pill(
         style={{ borderColor: `var(--${color}015)` }}
       >
         {text}
-        {textIcon && (
-          <BfDsIcon color={`var(--${color})`} name={textIcon} size={12} />
-        )}
+        {icon && <BfDsIcon color={`var(--${color})`} name={icon} size={12} />}
       </div>
     </div>
   );

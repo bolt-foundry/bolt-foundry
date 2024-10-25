@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4945ef0c177a95db5800ca0b3b3d077d>>
+ * @generated SignedSource<<cb21e3a03776bb67350bdc6c6afb5744>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -18,21 +18,16 @@ export type Media_bfOrganization$data = {
         readonly filename: string | null | undefined;
         readonly id: string;
         readonly name: string | null | undefined;
-        readonly previewVideoStatus: string | null | undefined;
-        readonly previewVideoUrl: string | null | undefined;
-        readonly transcriptStatus: string | null | undefined;
-        readonly transcripts: {
-          readonly edges: ReadonlyArray<{
-            readonly node: {
-              readonly words: ReadonlyArray<{
-                readonly confidence: number | null | undefined;
-                readonly end: number | null | undefined;
-                readonly speaker: string | null | undefined;
-                readonly start: number | null | undefined;
-                readonly text: string | null | undefined;
-              } | null | undefined> | null | undefined;
-            } | null | undefined;
+        readonly previewVideo: {
+          readonly id: string;
+          readonly url: string | null | undefined;
+          readonly " $fragmentSpreads": FragmentRefs<"PillStatusPreviewVideo_bfVideo">;
+        } | null | undefined;
+        readonly transcript: {
+          readonly words: ReadonlyArray<{
+            readonly __typename: "AssemblyAIWord";
           } | null | undefined> | null | undefined;
+          readonly " $fragmentSpreads": FragmentRefs<"PillStatusTranscript_bfTranscript" | "TranscriptWordCount_bfTranscript">;
         } | null | undefined;
       } | null | undefined;
     } | null | undefined> | null | undefined;
@@ -107,108 +102,65 @@ return {
                 {
                   "alias": null,
                   "args": null,
-                  "kind": "ScalarField",
-                  "name": "previewVideoUrl",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "transcriptStatus",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "previewVideoStatus",
-                  "storageKey": null
-                },
-                {
-                  "alias": null,
-                  "args": [
-                    {
-                      "kind": "Literal",
-                      "name": "first",
-                      "value": 1
-                    }
-                  ],
-                  "concreteType": "BfMediaNodeTranscriptConnection",
+                  "concreteType": "BfMediaNodeVideo",
                   "kind": "LinkedField",
-                  "name": "transcripts",
+                  "name": "previewVideo",
                   "plural": false,
                   "selections": [
+                    (v0/*: any*/),
                     {
                       "alias": null,
                       "args": null,
-                      "concreteType": "BfMediaNodeTranscriptEdge",
+                      "kind": "ScalarField",
+                      "name": "url",
+                      "storageKey": null
+                    },
+                    {
+                      "args": null,
+                      "kind": "FragmentSpread",
+                      "name": "PillStatusPreviewVideo_bfVideo"
+                    }
+                  ],
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "concreteType": "BfMediaNodeTranscript",
+                  "kind": "LinkedField",
+                  "name": "transcript",
+                  "plural": false,
+                  "selections": [
+                    {
+                      "args": null,
+                      "kind": "FragmentSpread",
+                      "name": "PillStatusTranscript_bfTranscript"
+                    },
+                    {
+                      "args": null,
+                      "kind": "FragmentSpread",
+                      "name": "TranscriptWordCount_bfTranscript"
+                    },
+                    {
+                      "alias": null,
+                      "args": null,
+                      "concreteType": "AssemblyAIWord",
                       "kind": "LinkedField",
-                      "name": "edges",
+                      "name": "words",
                       "plural": true,
                       "selections": [
                         {
                           "alias": null,
                           "args": null,
-                          "concreteType": "BfMediaNodeTranscript",
-                          "kind": "LinkedField",
-                          "name": "node",
-                          "plural": false,
-                          "selections": [
-                            {
-                              "alias": null,
-                              "args": null,
-                              "concreteType": "AssemblyAIWord",
-                              "kind": "LinkedField",
-                              "name": "words",
-                              "plural": true,
-                              "selections": [
-                                {
-                                  "alias": null,
-                                  "args": null,
-                                  "kind": "ScalarField",
-                                  "name": "start",
-                                  "storageKey": null
-                                },
-                                {
-                                  "alias": null,
-                                  "args": null,
-                                  "kind": "ScalarField",
-                                  "name": "end",
-                                  "storageKey": null
-                                },
-                                {
-                                  "alias": null,
-                                  "args": null,
-                                  "kind": "ScalarField",
-                                  "name": "text",
-                                  "storageKey": null
-                                },
-                                {
-                                  "alias": null,
-                                  "args": null,
-                                  "kind": "ScalarField",
-                                  "name": "confidence",
-                                  "storageKey": null
-                                },
-                                {
-                                  "alias": null,
-                                  "args": null,
-                                  "kind": "ScalarField",
-                                  "name": "speaker",
-                                  "storageKey": null
-                                }
-                              ],
-                              "storageKey": null
-                            }
-                          ],
+                          "kind": "ScalarField",
+                          "name": "__typename",
                           "storageKey": null
                         }
                       ],
                       "storageKey": null
                     }
                   ],
-                  "storageKey": "transcripts(first:1)"
+                  "storageKey": null
                 }
               ],
               "storageKey": null
@@ -225,6 +177,6 @@ return {
 };
 })();
 
-(node as any).hash = "7d81bd10b904e0ab3269a7f7b68638fa";
+(node as any).hash = "867a8c9d967568287b474ac5d51d0046";
 
 export default node;

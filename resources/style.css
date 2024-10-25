@@ -145,6 +145,8 @@ a.dark:visited {
 
 .table-cell .meta {
   margin-top: 4px;
+  font-size: 0.8em;
+  color: var(--textSecondary);
 }
 
 
@@ -248,6 +250,7 @@ a.dark:visited {
   display: flex;
   flex-direction: row;
   align-items: center;
+  min-height: 16px;
 }
 
 .ellipsis {

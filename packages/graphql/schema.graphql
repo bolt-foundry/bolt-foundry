@@ -201,9 +201,9 @@ type BfMedia implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   name: String
-  previewVideoStatus: String
+  previewVideo: BfMediaNodeVideo
   previewVideoUrl: String
-  transcriptStatus: String
+  transcript: BfMediaNodeTranscript
   transcripts(
     """Returns the elements in the list that come after the specified cursor"""
     after: String
@@ -250,6 +250,7 @@ type BfMediaNodeTranscript implements BfNode & Node {
 
   """Unique identifier for the resource"""
   id: ID!
+  status: String
   words: [AssemblyAIWord]
 }
 
@@ -276,6 +277,14 @@ type BfMediaNodeTranscriptEdge {
 
   """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
   node: BfMediaNodeTranscript
+}
+
+"""A video."""
+type BfMediaNodeVideo implements BfNode & Node {
+  """Unique identifier for the resource"""
+  id: ID!
+  status: String
+  url: String
 }
 
 interface BfNode implements Node {

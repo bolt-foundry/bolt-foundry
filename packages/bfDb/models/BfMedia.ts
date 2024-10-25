@@ -89,7 +89,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
     return video[0];
   }
 
-  async getVideoStatus(
+  async getVideo(
     role: BfMediaNodeVideoRole = BfMediaNodeVideoRole.PREVIEW,
   ) {
     const resource = await this.getGoogleDriveResource();
@@ -98,7 +98,7 @@ export class BfMedia extends BfNode<BfMediaProps> {
       {},
       { role },
     );
-    return video[0].props.status;
+    return video[0];
   }
 
   async createTranscripts() {
@@ -111,12 +111,12 @@ export class BfMedia extends BfNode<BfMediaProps> {
     return Promise.all(transcripts);
   }
 
-  async getTranscriptStatus() {
+  async getPrimaryTranscript() {
     const resource = await this.getGoogleDriveResource();
     const transcripts = await resource.queryTargetInstances(
       BfMediaNodeTranscript,
     );
-    return transcripts[0].props.status;
+    return transcripts[0];
   }
 
   async getGoogleDriveResource() {

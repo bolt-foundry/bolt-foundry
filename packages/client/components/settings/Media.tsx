@@ -1,12 +1,14 @@
-import { useMemo, useState } from "react";
-import { useFragment, useSubscription } from "react-relay";
+import { useState } from "react";
+import { useFragment } from "react-relay";
 import { graphql } from "packages/client/deps.ts";
 import type { SettingsPageQuery } from "packages/__generated__/SettingsPageQuery.graphql.ts";
 import { type BfDsColumns, BfDsTable } from "packages/bfDs/BfDsTable.tsx";
 import { BfDsTableCell } from "packages/bfDs/BfDsTableCell.tsx";
 import { BfDsFullPageSpinner } from "packages/bfDs/BfDsSpinner.tsx";
 import { DeleteMediaButton } from "packages/client/components/settings/DeleteMediaButton.tsx";
-import { PillStatus } from "packages/bfDs/PillStatus.tsx";
+import { PillStatusTranscript } from "packages/client/components/settings/PillStatusTranscript.tsx";
+import { PillStatusPreviewVideo } from "packages/client/components/settings/PillStatusPreviewVideo.tsx";
+import { TranscriptWordCount } from "packages/client/components/settings/TranscriptWordCount.tsx";
 
 const fragment = await graphql`
 fragment Media_bfOrganization on BfOrganization {
@@ -17,34 +19,22 @@ fragment Media_bfOrganization on BfOrganization {
         id
         filename
         name
-        previewVideoUrl
-        transcriptStatus
-        previewVideoStatus
-        transcripts(first: 1) {
-          edges {
-            node {
-              words {
-                start
-                end
-                text
-                confidence
-                speaker
-              }
-            }
+        previewVideo {
+          id
+          url
+          ...PillStatusPreviewVideo_bfVideo
+        }
+        transcript {
+          ...PillStatusTranscript_bfTranscript
+          ...TranscriptWordCount_bfTranscript
+          words {
+            __typename
           }
         }
       }
     }
   }
 }
-`;
-
-const subscription = await graphql`
-  subscription MediaSubscription($id: ID!) {
-    node(id: $id) {
-      ...Media_bfOrganization
-    }
-  }
 `;
 
 type Props = {
@@ -57,8 +47,8 @@ type Data = {
   previewVideoUrl: string;
   words: number;
   tokens: number;
-  transcriptStatus: string;
-  previewVideoStatus: string;
+  transcript: SettingsPageQuery;
+  previewVideo: SettingsPageQuery;
 };
 
 export function Media({ settings$key }: Props) {
@@ -67,16 +57,6 @@ export function Media({ settings$key }: Props) {
   }
   const [deletedRows, setDeletedRows] = useState<Array<string>>([]);
   const data = useFragment(fragment, settings$key);
-  const subscriptionConfig = useMemo(() => {
-    return {
-      variables: {
-        id: data?.id,
-      },
-      subscription,
-    };
-  }, [data?.id]);
-  useSubscription(subscriptionConfig);
-
   const handleDeletedRow = (id: string) => {
     setDeletedRows((prev) => [...prev, id]);
   };
@@ -85,25 +65,16 @@ export function Media({ settings$key }: Props) {
     if (deletedRows.includes(d?.node?.id)) {
       return null;
     }
-    const transcript = d?.node?.transcripts?.edges?.[0]?.node?.words ??
-      [];
     return {
       id: d?.node?.id,
       filename: d?.node?.name,
-      previewVideoUrl: d?.node?.previewVideoUrl,
-      words: transcript.length,
-      tokens: `~${transcript.length / 4}`,
-      transcriptStatus: d?.node?.transcriptStatus,
-      previewVideoStatus: d?.node?.previewVideoStatus,
+      previewVideoUrl: d?.node?.previewVideo?.url,
+      transcript: d?.node?.transcript,
+      previewVideo: d?.node?.previewVideo,
     };
   }).filter(Boolean);
 
   const columns: BfDsColumns<Data> = [
-    {
-      title: "File name",
-      width: "100px",
-      renderer: (data) => <video src={data.previewVideoUrl} />,
-    },
     {
       title: "File name",
       width: "2fr",
@@ -112,8 +83,8 @@ export function Media({ settings$key }: Props) {
           text={data.filename}
           meta={
             <div className="flexRow" style={{ gap: "5px" }}>
-              <PillStatus label="transcript" status={data.transcriptStatus} />
-              <PillStatus label="preview" status={data.previewVideoStatus} />
+              <PillStatusTranscript settings$key={data?.transcript} />
+              <PillStatusPreviewVideo settings$key={data?.previewVideo} />
             </div>
           }
         />
@@ -122,12 +93,7 @@ export function Media({ settings$key }: Props) {
     {
       title: "Transcript words",
       width: "0.5fr",
-      renderer: (data) => <BfDsTableCell text={data.words} />,
-    },
-    {
-      title: "Tokens",
-      width: "0.5fr",
-      renderer: (data) => <BfDsTableCell text={data.tokens} />,
+      renderer: (data) => <TranscriptWordCount settings$key={data?.transcript} />,
     },
     {
       title: " ",
