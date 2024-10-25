@@ -1,6 +1,8 @@
 import { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { BfError } from "lib/BfError.ts";
+import { Client } from "@replit/object-storage";
 
 const logger = getLogger(import.meta);
 
@@ -36,6 +38,18 @@ export class BfMediaNodeVideo<T = {}> extends BfNode<BfMediaNodeVideoProps<T>> {
     return `${this.cacheDirectory}/${this.metadata.bfGid}.mp4`;
   }
 
+  async getRole(): Promise<string | undefined> {
+    const edge = await BfEdge.querySourceEdgesForNode(this);
+    return edge[0]?.props?.role?.toLowerCase();
+  }
+
+  private async getObjectKey(): Promise<string> {
+    const role = await this.getRole();
+    return `${this.metadata.bfGid}_${role}.mp4`;
+  }
+
+  private objectStorageClient = new Client();
+
   async getFilePath(): Promise<string | null> {
     const filePath = this.getRawFilePath();
     logger.debug("getFilePath", filePath);
@@ -43,22 +57,19 @@ export class BfMediaNodeVideo<T = {}> extends BfNode<BfMediaNodeVideoProps<T>> {
     return await Deno.stat(filePath).then(() => filePath).catch(() => null);
   }
 
-  getFile(): Promise<string> {
-    throw new BfError(
-      `Need to implement getFile() for ${this.constructor.name}`,
+  async getFile(): Promise<string> {
+    const objectKey = await this.getObjectKey();
+    const { ok, value, error } = await this.objectStorageClient.exists(
+      objectKey,
     );
+    if (!ok) {
+      throw new BfError(error.message);
+    }
+    // TODO
+    return value ? "exists" : "doesn't exist";
   }
 
   async createPreview(): Promise<BfMediaNodeVideo> {
-    const videos = await this.queryTargetInstances(
-      BfMediaNodeVideo,
-      { status: BfMediaNodeVideoStatus.COMPLETED },
-      { role: BfMediaNodeVideoRole.PREVIEW },
-    );
-    if (videos.length > 0) {
-      logger.info("Found existing video", this);
-      return videos[0];
-    }
     const bfmnVideo = await this.createTargetNode(
       BfMediaNodeVideo,
       { status: BfMediaNodeVideoStatus.NEW },
@@ -172,6 +183,21 @@ export class BfMediaNodeVideo<T = {}> extends BfNode<BfMediaNodeVideoProps<T>> {
     )
       .catch(() => "DOESN'T EXIST");
     logger.debug("Output file", outputFilePath, outputFileExists);
+
+    if (outputFileExists === "EXISTS" && this.objectStorageClient) {
+      const objectKey = await this.getObjectKey();
+      try {
+        await this.objectStorageClient.uploadFromFilename(
+          objectKey,
+          outputFilePath,
+        );
+        logger.info(`Video uploaded to Object Storage: ${objectKey}`);
+      } catch (error) {
+        logger.error(`Failed to upload video: ${error}`);
+        throw error;
+      }
+    }
+
     logger.info(`Video compression complete for ${this}`);
     this.props.status = BfMediaNodeVideoStatus.COMPLETED;
     await this.save();

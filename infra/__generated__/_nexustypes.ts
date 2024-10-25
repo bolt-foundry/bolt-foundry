@@ -175,6 +175,7 @@ export interface NexusGenObjects {
   }
   BfMediaNodeTranscript: { // root type
     filename?: string | null; // String
+    status?: string | null; // String
     words?: Array<NexusGenRootTypes['AssemblyAIWord'] | null> | null; // [AssemblyAIWord]
   }
   BfMediaNodeTranscriptConnection: { // root type
@@ -186,6 +187,10 @@ export interface NexusGenObjects {
   BfMediaNodeTranscriptEdge: { // root type
     cursor: string; // String!
     node?: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
+  }
+  BfMediaNodeVideo: { // root type
+    status?: string | null; // String
+    url?: string | null; // String
   }
   BfOrganization: { // root type
     id: string; // ID!
@@ -379,11 +384,11 @@ export interface NexusGenObjects {
 
 export interface NexusGenInterfaces {
   BfCurrentViewer: core.Discriminate<'BfCurrentViewerAccessToken', 'required'> | core.Discriminate<'BfCurrentViewerAnon', 'required'> | core.Discriminate<'IBfCurrentViewerInternalAdmin', 'required'>;
-  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfCollection', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfSavedSearch', 'required'> | core.Discriminate<'BfSavedSearchResult', 'required'> | core.Discriminate<'BfTTGame', 'required'> | core.Discriminate<'BfTTQuestion', 'required'>;
+  BfNode: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfCollection', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfMediaNodeVideo', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfSavedSearch', 'required'> | core.Discriminate<'BfSavedSearchResult', 'required'> | core.Discriminate<'BfTTGame', 'required'> | core.Discriminate<'BfTTQuestion', 'required'>;
   BlogPostContentBlock: core.Discriminate<'CalloutBlock', 'optional'> | core.Discriminate<'CodeBlock', 'optional'> | core.Discriminate<'HeadingBlock', 'optional'> | core.Discriminate<'ImageBlock', 'optional'> | core.Discriminate<'ParagraphBlock', 'optional'>;
   IBfGraphQLNode: any;
   Media: core.Discriminate<'VideoDownloadable', 'required'> | core.Discriminate<'VideoPreviewable', 'required'>;
-  Node: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfCollection', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfSavedSearch', 'required'> | core.Discriminate<'BfSavedSearchResult', 'required'> | core.Discriminate<'BfTTGame', 'required'> | core.Discriminate<'BfTTQuestion', 'required'>;
+  Node: core.Discriminate<'BfAccount', 'required'> | core.Discriminate<'BfCollection', 'required'> | core.Discriminate<'BfGoogleDriveResource', 'required'> | core.Discriminate<'BfMedia', 'required'> | core.Discriminate<'BfMediaNodeTranscript', 'required'> | core.Discriminate<'BfMediaNodeVideo', 'required'> | core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'> | core.Discriminate<'BfSavedSearch', 'required'> | core.Discriminate<'BfSavedSearchResult', 'required'> | core.Discriminate<'BfTTGame', 'required'> | core.Discriminate<'BfTTQuestion', 'required'>;
   Video: core.Discriminate<'VideoDownloadable', 'required'> | core.Discriminate<'VideoPreviewable', 'required'>;
 }
 
@@ -484,7 +489,9 @@ export interface NexusGenFieldTypes {
     filename: string | null; // String
     id: string; // ID!
     name: string | null; // String
+    previewVideo: NexusGenRootTypes['BfMediaNodeVideo'] | null; // BfMediaNodeVideo
     previewVideoUrl: string | null; // String
+    transcript: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
     transcripts: NexusGenRootTypes['BfMediaNodeTranscriptConnection'] | null; // BfMediaNodeTranscriptConnection
   }
   BfMediaConnection: { // field return type
@@ -500,6 +507,7 @@ export interface NexusGenFieldTypes {
   BfMediaNodeTranscript: { // field return type
     filename: string | null; // String
     id: string; // ID!
+    status: string | null; // String
     words: Array<NexusGenRootTypes['AssemblyAIWord'] | null> | null; // [AssemblyAIWord]
   }
   BfMediaNodeTranscriptConnection: { // field return type
@@ -511,6 +519,11 @@ export interface NexusGenFieldTypes {
   BfMediaNodeTranscriptEdge: { // field return type
     cursor: string; // String!
     node: NexusGenRootTypes['BfMediaNodeTranscript'] | null; // BfMediaNodeTranscript
+  }
+  BfMediaNodeVideo: { // field return type
+    id: string; // ID!
+    status: string | null; // String
+    url: string | null; // String
   }
   BfOrganization: { // field return type
     collections: NexusGenRootTypes['BfCollectionConnection'] | null; // BfCollectionConnection
@@ -871,7 +884,9 @@ export interface NexusGenFieldTypeNames {
     filename: 'String'
     id: 'ID'
     name: 'String'
+    previewVideo: 'BfMediaNodeVideo'
     previewVideoUrl: 'String'
+    transcript: 'BfMediaNodeTranscript'
     transcripts: 'BfMediaNodeTranscriptConnection'
   }
   BfMediaConnection: { // field return type name
@@ -887,6 +902,7 @@ export interface NexusGenFieldTypeNames {
   BfMediaNodeTranscript: { // field return type name
     filename: 'String'
     id: 'ID'
+    status: 'String'
     words: 'AssemblyAIWord'
   }
   BfMediaNodeTranscriptConnection: { // field return type name
@@ -898,6 +914,11 @@ export interface NexusGenFieldTypeNames {
   BfMediaNodeTranscriptEdge: { // field return type name
     cursor: 'String'
     node: 'BfMediaNodeTranscript'
+  }
+  BfMediaNodeVideo: { // field return type name
+    id: 'ID'
+    status: 'String'
+    url: 'String'
   }
   BfOrganization: { // field return type name
     collections: 'BfCollectionConnection'
@@ -1356,10 +1377,10 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerAccessToken" | "BfCurrentViewerAnon" | "IBfCurrentViewerInternalAdmin"
-  BfNode: "BfAccount" | "BfCollection" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfOrganization" | "BfPerson" | "BfSavedSearch" | "BfSavedSearchResult" | "BfTTGame" | "BfTTQuestion"
+  BfNode: "BfAccount" | "BfCollection" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfMediaNodeVideo" | "BfOrganization" | "BfPerson" | "BfSavedSearch" | "BfSavedSearchResult" | "BfTTGame" | "BfTTQuestion"
   BlogPostContentBlock: "CalloutBlock" | "CodeBlock" | "HeadingBlock" | "ImageBlock" | "ParagraphBlock"
   Media: "VideoDownloadable" | "VideoPreviewable"
-  Node: "BfAccount" | "BfCollection" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfOrganization" | "BfPerson" | "BfSavedSearch" | "BfSavedSearchResult" | "BfTTGame" | "BfTTQuestion"
+  Node: "BfAccount" | "BfCollection" | "BfGoogleDriveResource" | "BfMedia" | "BfMediaNodeTranscript" | "BfMediaNodeVideo" | "BfOrganization" | "BfPerson" | "BfSavedSearch" | "BfSavedSearchResult" | "BfTTGame" | "BfTTQuestion"
   Video: "VideoDownloadable" | "VideoPreviewable"
 }
 
@@ -1371,6 +1392,7 @@ export interface NexusGenTypeInterfaces {
   BfGoogleDriveResource: "BfNode" | "Node"
   BfMedia: "BfNode" | "Node"
   BfMediaNodeTranscript: "BfNode" | "Node"
+  BfMediaNodeVideo: "BfNode" | "Node"
   BfOrganization: "BfNode" | "Node"
   BfPerson: "BfNode" | "Node"
   BfSavedSearch: "BfNode" | "Node"

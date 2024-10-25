@@ -143,6 +143,12 @@ a.dark:visited {
   font-weight: bold;
 }
 
+.table-cell .meta {
+  margin-top: 4px;
+  font-size: 0.8em;
+  color: var(--textSecondary);
+}
+
 
 /* BfDs List */
 .list {
@@ -241,6 +247,10 @@ a.dark:visited {
   color: var(--text);
   padding: 0 8px;
   border-radius: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 16px;
 }
 
 .ellipsis {

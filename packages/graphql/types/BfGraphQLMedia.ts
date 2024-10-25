@@ -8,12 +8,9 @@ import {
 import { BfNodeGraphQLType } from "packages/graphql/types/BfGraphQLNode.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { BfMedia } from "packages/bfDb/models/BfMedia.ts";
-import { BfMediaNodeVideoGoogleDriveResource } from "packages/bfDb/models/BfMediaNodeVideoGoogleDriveResource.ts";
-import {
-  BfMediaNodeVideo,
-  BfMediaNodeVideoRole,
-  BfMediaNodeVideoStatus,
-} from "packages/bfDb/models/BfMediaNodeVideo.ts";
+import { BfMediaNodeVideoRole } from "packages/bfDb/models/BfMediaNodeVideo.ts";
+import { BfGraphQLMediaTranscriptType } from "packages/graphql/types/BfGraphQLMediaTranscript.ts";
+import { BfGraphQLMediaVideoType } from "packages/graphql/types/BfGraphQLMediaNodeVideo.ts";
 
 const logger = getLogger(import.meta);
 
@@ -32,6 +29,22 @@ export const BfGraphQLMediaType = objectType({
         const media = await BfMedia.findX(bfCurrentViewer, id);
         const video = await media.findVideo(BfMediaNodeVideoRole.PREVIEW);
         return await video?.getFilePath();
+      },
+    });
+    t.field("transcript", {
+      type: BfGraphQLMediaTranscriptType,
+      resolve: async ({ id }, _, { bfCurrentViewer }) => {
+        const media = await BfMedia.findX(bfCurrentViewer, id);
+        const transcript = await media.getPrimaryTranscript();
+        return transcript.toGraphql();
+      },
+    });
+    t.string("previewVideo", {
+      type: BfGraphQLMediaVideoType,
+      resolve: async ({ id }, _, { bfCurrentViewer }) => {
+        const media = await BfMedia.findX(bfCurrentViewer, id);
+        const video = await media.getVideo(BfMediaNodeVideoRole.PREVIEW);
+        return video.toGraphql();
       },
     });
   },

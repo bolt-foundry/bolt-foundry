@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<78c06fac0f4e9ace4468a8b4894d37c8>>
+ * @generated SignedSource<<4575079df7654c9c634c682d34d9b9a9>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -74,7 +74,14 @@ v6 = [
     "name": "first",
     "value": 10
   }
-];
+],
+v7 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "status",
+  "storageKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -371,95 +378,47 @@ return {
                           {
                             "alias": null,
                             "args": null,
-                            "kind": "ScalarField",
-                            "name": "previewVideoUrl",
+                            "concreteType": "BfMediaNodeVideo",
+                            "kind": "LinkedField",
+                            "name": "previewVideo",
+                            "plural": false,
+                            "selections": [
+                              (v1/*: any*/),
+                              {
+                                "alias": null,
+                                "args": null,
+                                "kind": "ScalarField",
+                                "name": "url",
+                                "storageKey": null
+                              },
+                              (v7/*: any*/)
+                            ],
                             "storageKey": null
                           },
                           {
                             "alias": null,
-                            "args": [
-                              {
-                                "kind": "Literal",
-                                "name": "first",
-                                "value": 1
-                              }
-                            ],
-                            "concreteType": "BfMediaNodeTranscriptConnection",
+                            "args": null,
+                            "concreteType": "BfMediaNodeTranscript",
                             "kind": "LinkedField",
-                            "name": "transcripts",
+                            "name": "transcript",
                             "plural": false,
                             "selections": [
+                              (v1/*: any*/),
+                              (v7/*: any*/),
                               {
                                 "alias": null,
                                 "args": null,
-                                "concreteType": "BfMediaNodeTranscriptEdge",
+                                "concreteType": "AssemblyAIWord",
                                 "kind": "LinkedField",
-                                "name": "edges",
+                                "name": "words",
                                 "plural": true,
                                 "selections": [
-                                  {
-                                    "alias": null,
-                                    "args": null,
-                                    "concreteType": "BfMediaNodeTranscript",
-                                    "kind": "LinkedField",
-                                    "name": "node",
-                                    "plural": false,
-                                    "selections": [
-                                      {
-                                        "alias": null,
-                                        "args": null,
-                                        "concreteType": "AssemblyAIWord",
-                                        "kind": "LinkedField",
-                                        "name": "words",
-                                        "plural": true,
-                                        "selections": [
-                                          {
-                                            "alias": null,
-                                            "args": null,
-                                            "kind": "ScalarField",
-                                            "name": "start",
-                                            "storageKey": null
-                                          },
-                                          {
-                                            "alias": null,
-                                            "args": null,
-                                            "kind": "ScalarField",
-                                            "name": "end",
-                                            "storageKey": null
-                                          },
-                                          {
-                                            "alias": null,
-                                            "args": null,
-                                            "kind": "ScalarField",
-                                            "name": "text",
-                                            "storageKey": null
-                                          },
-                                          {
-                                            "alias": null,
-                                            "args": null,
-                                            "kind": "ScalarField",
-                                            "name": "confidence",
-                                            "storageKey": null
-                                          },
-                                          {
-                                            "alias": null,
-                                            "args": null,
-                                            "kind": "ScalarField",
-                                            "name": "speaker",
-                                            "storageKey": null
-                                          }
-                                        ],
-                                        "storageKey": null
-                                      },
-                                      (v1/*: any*/)
-                                    ],
-                                    "storageKey": null
-                                  }
+                                  (v2/*: any*/)
                                 ],
                                 "storageKey": null
                               }
                             ],
-                            "storageKey": "transcripts(first:1)"
+                            "storageKey": null
                           }
                         ],
                         "storageKey": null
@@ -480,12 +439,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "7da271686f225446b38c1355d596c0aa",
+    "cacheID": "f9859638b8514be11ca09f89cdb1133e",
     "id": null,
     "metadata": {},
     "name": "SettingsPageQuery",
     "operationKind": "query",
-    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        name\n        previewVideoUrl\n        transcripts(first: 1) {\n          edges {\n            node {\n              words {\n                start\n                end\n                text\n                confidence\n                speaker\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  collections(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        watchedFolders(first: 10) {\n          count\n          edges {\n            node {\n              __typename\n              name\n              id\n            }\n          }\n        }\n        media(first: 10) {\n          __typename\n          count\n          edges {\n            node {\n              name\n              id\n            }\n          }\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  id\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        name\n        previewVideo {\n          id\n          url\n          ...PillStatusPreviewVideo_bfVideo\n        }\n        transcript {\n          ...PillStatusTranscript_bfTranscript\n          ...TranscriptWordCount_bfTranscript\n          words {\n            __typename\n          }\n          id\n        }\n      }\n    }\n  }\n}\n\nfragment PillStatusPreviewVideo_bfVideo on BfMediaNodeVideo {\n  id\n  status\n}\n\nfragment PillStatusTranscript_bfTranscript on BfMediaNodeTranscript {\n  id\n  status\n}\n\nfragment TranscriptWordCount_bfTranscript on BfMediaNodeTranscript {\n  id\n  words {\n    __typename\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  collections(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        watchedFolders(first: 10) {\n          count\n          edges {\n            node {\n              __typename\n              name\n              id\n            }\n          }\n        }\n        media(first: 10) {\n          __typename\n          count\n          edges {\n            node {\n              name\n              id\n            }\n          }\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
   }
 };
 })();
