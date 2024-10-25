@@ -1,4 +1,3 @@
-import type * as React from "react";
 import { startTransition, useState } from "react";
 import { useLazyLoadQuery } from "react-relay";
 import { graphql } from "packages/client/deps.ts";

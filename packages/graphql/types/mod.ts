@@ -13,6 +13,7 @@ export * from "packages/graphql/types/BfGraphQLCurrentViewer.ts";
 export * from "packages/graphql/types/BfGraphQLGoogleDriveResource.ts";
 export * from "packages/graphql/types/BfGraphQLMedia.ts";
 export * from "packages/graphql/types/BfGraphQLMediaTranscript.ts";
+export * from "packages/graphql/types/BfGraphQLMediaNodeVideo.ts";
 export * from "packages/graphql/types/BfGraphQLNode.ts";
 export * from "packages/graphql/types/BfGraphQLOrganization.ts";
 export * from "packages/graphql/types/BfGraphQLPerson.ts";

@@ -31,6 +31,7 @@ export const BfGraphQLMediaTranscriptType = objectType({
   definition: (t) => {
     t.implements(BfNodeGraphQLType);
     t.list.field("words", { type: AssemblyAIWordType });
+    t.string("status");
     t.string("filename");
   },
 });

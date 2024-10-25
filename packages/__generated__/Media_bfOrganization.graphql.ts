@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<5507bf0c69f68c32d15138c6ec6a0cb9>>
+ * @generated SignedSource<<cb21e3a03776bb67350bdc6c6afb5744>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,25 +11,23 @@
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type Media_bfOrganization$data = {
+  readonly id: string;
   readonly media: {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly filename: string | null | undefined;
         readonly id: string;
         readonly name: string | null | undefined;
-        readonly previewVideoUrl: string | null | undefined;
-        readonly transcripts: {
-          readonly edges: ReadonlyArray<{
-            readonly node: {
-              readonly words: ReadonlyArray<{
-                readonly confidence: number | null | undefined;
-                readonly end: number | null | undefined;
-                readonly speaker: string | null | undefined;
-                readonly start: number | null | undefined;
-                readonly text: string | null | undefined;
-              } | null | undefined> | null | undefined;
-            } | null | undefined;
+        readonly previewVideo: {
+          readonly id: string;
+          readonly url: string | null | undefined;
+          readonly " $fragmentSpreads": FragmentRefs<"PillStatusPreviewVideo_bfVideo">;
+        } | null | undefined;
+        readonly transcript: {
+          readonly words: ReadonlyArray<{
+            readonly __typename: "AssemblyAIWord";
           } | null | undefined> | null | undefined;
+          readonly " $fragmentSpreads": FragmentRefs<"PillStatusTranscript_bfTranscript" | "TranscriptWordCount_bfTranscript">;
         } | null | undefined;
       } | null | undefined;
     } | null | undefined> | null | undefined;
@@ -41,12 +39,21 @@ export type Media_bfOrganization$key = {
   readonly " $fragmentSpreads": FragmentRefs<"Media_bfOrganization">;
 };
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
+return {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "Media_bfOrganization",
   "selections": [
+    (v0/*: any*/),
     {
       "alias": null,
       "args": [
@@ -77,13 +84,7 @@ const node: ReaderFragment = {
               "name": "node",
               "plural": false,
               "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id",
-                  "storageKey": null
-                },
+                (v0/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -101,94 +102,65 @@ const node: ReaderFragment = {
                 {
                   "alias": null,
                   "args": null,
-                  "kind": "ScalarField",
-                  "name": "previewVideoUrl",
+                  "concreteType": "BfMediaNodeVideo",
+                  "kind": "LinkedField",
+                  "name": "previewVideo",
+                  "plural": false,
+                  "selections": [
+                    (v0/*: any*/),
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "url",
+                      "storageKey": null
+                    },
+                    {
+                      "args": null,
+                      "kind": "FragmentSpread",
+                      "name": "PillStatusPreviewVideo_bfVideo"
+                    }
+                  ],
                   "storageKey": null
                 },
                 {
                   "alias": null,
-                  "args": [
-                    {
-                      "kind": "Literal",
-                      "name": "first",
-                      "value": 1
-                    }
-                  ],
-                  "concreteType": "BfMediaNodeTranscriptConnection",
+                  "args": null,
+                  "concreteType": "BfMediaNodeTranscript",
                   "kind": "LinkedField",
-                  "name": "transcripts",
+                  "name": "transcript",
                   "plural": false,
                   "selections": [
                     {
+                      "args": null,
+                      "kind": "FragmentSpread",
+                      "name": "PillStatusTranscript_bfTranscript"
+                    },
+                    {
+                      "args": null,
+                      "kind": "FragmentSpread",
+                      "name": "TranscriptWordCount_bfTranscript"
+                    },
+                    {
                       "alias": null,
                       "args": null,
-                      "concreteType": "BfMediaNodeTranscriptEdge",
+                      "concreteType": "AssemblyAIWord",
                       "kind": "LinkedField",
-                      "name": "edges",
+                      "name": "words",
                       "plural": true,
                       "selections": [
                         {
                           "alias": null,
                           "args": null,
-                          "concreteType": "BfMediaNodeTranscript",
-                          "kind": "LinkedField",
-                          "name": "node",
-                          "plural": false,
-                          "selections": [
-                            {
-                              "alias": null,
-                              "args": null,
-                              "concreteType": "AssemblyAIWord",
-                              "kind": "LinkedField",
-                              "name": "words",
-                              "plural": true,
-                              "selections": [
-                                {
-                                  "alias": null,
-                                  "args": null,
-                                  "kind": "ScalarField",
-                                  "name": "start",
-                                  "storageKey": null
-                                },
-                                {
-                                  "alias": null,
-                                  "args": null,
-                                  "kind": "ScalarField",
-                                  "name": "end",
-                                  "storageKey": null
-                                },
-                                {
-                                  "alias": null,
-                                  "args": null,
-                                  "kind": "ScalarField",
-                                  "name": "text",
-                                  "storageKey": null
-                                },
-                                {
-                                  "alias": null,
-                                  "args": null,
-                                  "kind": "ScalarField",
-                                  "name": "confidence",
-                                  "storageKey": null
-                                },
-                                {
-                                  "alias": null,
-                                  "args": null,
-                                  "kind": "ScalarField",
-                                  "name": "speaker",
-                                  "storageKey": null
-                                }
-                              ],
-                              "storageKey": null
-                            }
-                          ],
+                          "kind": "ScalarField",
+                          "name": "__typename",
                           "storageKey": null
                         }
                       ],
                       "storageKey": null
                     }
                   ],
-                  "storageKey": "transcripts(first:1)"
+                  "storageKey": null
                 }
               ],
               "storageKey": null
@@ -203,7 +175,8 @@ const node: ReaderFragment = {
   "type": "BfOrganization",
   "abstractKey": null
 };
+})();
 
-(node as any).hash = "06463260bcbe10e865040180fad45d58";
+(node as any).hash = "867a8c9d967568287b474ac5d51d0046";
 
 export default node;

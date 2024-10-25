@@ -125,6 +125,7 @@ function generateColors(dark = false) {
     textAccent: color(pallette.accentText),
     textMarketing: color(pallette.textMarketing),
     textSecondary: color(pallette.secondaryText),
+    textSecondary015: color(pallette.secondaryText, null, 0.15),
     textLight: color(pallette.secondaryText, adjustment * 4),
     textOnPrimary: color(pallette.tertiaryDark),
     textOnSecondary: color(pallette.text),
