@@ -9,6 +9,7 @@ import {
   BfMediaNodeVideoRole,
   BfMediaNodeVideoStatus,
 } from "packages/bfDb/models/BfMediaNodeVideo.ts";
+import { BfMediaNodeTranscript } from "packages/bfDb/models/BfMediaNodeTranscript.ts";
 
 const logger = getLogger(import.meta);
 
@@ -78,22 +79,26 @@ export class BfMedia extends BfNode<BfMediaProps> {
   async findVideo(
     role: BfMediaNodeVideoRole = BfMediaNodeVideoRole.PREVIEW,
   ) {
-    const targets = await this.queryTargetInstances(
-      BfMediaNodeVideoGoogleDriveResource,
-    );
-    logger.debug("FIND VIDEO targets", targets);
-    const resource = targets[0];
+    const resource = await this.getGoogleDriveResource();
 
     const video = await resource.queryTargetInstances(
       BfMediaNodeVideo,
-      {
-        status: BfMediaNodeVideoStatus.COMPLETED,
-      },
-      {
-        role,
-      },
+      { status: BfMediaNodeVideoStatus.COMPLETED },
+      { role },
     );
     return video[0];
+  }
+
+  async getVideoStatus(
+    role: BfMediaNodeVideoRole = BfMediaNodeVideoRole.PREVIEW,
+  ) {
+    const resource = await this.getGoogleDriveResource();
+    const video = await resource.queryTargetInstances(
+      BfMediaNodeVideo,
+      {},
+      { role },
+    );
+    return video[0].props.status;
   }
 
   async createTranscripts() {
@@ -104,5 +109,20 @@ export class BfMedia extends BfNode<BfMediaProps> {
       return await target.createTranscript();
     });
     return Promise.all(transcripts);
+  }
+
+  async getTranscriptStatus() {
+    const resource = await this.getGoogleDriveResource();
+    const transcripts = await resource.queryTargetInstances(
+      BfMediaNodeTranscript,
+    );
+    return transcripts[0].props.status;
+  }
+
+  async getGoogleDriveResource() {
+    const targets = await this.queryTargetInstances(
+      BfMediaNodeVideoGoogleDriveResource,
+    );
+    return targets[0];
   }
 }

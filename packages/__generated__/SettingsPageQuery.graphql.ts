@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<78c06fac0f4e9ace4468a8b4894d37c8>>
+ * @generated SignedSource<<2dc9314d90a4749fe2acf248e0d41acf>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -377,6 +377,20 @@ return {
                           },
                           {
                             "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "transcriptStatus",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "previewVideoStatus",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
                             "args": [
                               {
                                 "kind": "Literal",
@@ -480,12 +494,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "7da271686f225446b38c1355d596c0aa",
+    "cacheID": "c046fca7062a66f2b8e73a7e2868a054",
     "id": null,
     "metadata": {},
     "name": "SettingsPageQuery",
     "operationKind": "query",
-    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        name\n        previewVideoUrl\n        transcripts(first: 1) {\n          edges {\n            node {\n              words {\n                start\n                end\n                text\n                confidence\n                speaker\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  collections(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        watchedFolders(first: 10) {\n          count\n          edges {\n            node {\n              __typename\n              name\n              id\n            }\n          }\n        }\n        media(first: 10) {\n          __typename\n          count\n          edges {\n            node {\n              name\n              id\n            }\n          }\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
+    "text": "query SettingsPageQuery {\n  currentViewer {\n    __typename\n    person {\n      name\n      id\n    }\n    organization {\n      ...WatchFolderList_bfOrganization\n      ...Media_bfOrganization\n      id\n      name\n    }\n  }\n}\n\nfragment Media_bfOrganization on BfOrganization {\n  id\n  media(first: 100) {\n    edges {\n      node {\n        id\n        filename\n        name\n        previewVideoUrl\n        transcriptStatus\n        previewVideoStatus\n        transcripts(first: 1) {\n          edges {\n            node {\n              words {\n                start\n                end\n                text\n                confidence\n                speaker\n              }\n              id\n            }\n          }\n        }\n      }\n    }\n  }\n}\n\nfragment WatchFolderList_bfOrganization on BfOrganization {\n  collections(first: 5) {\n    count\n    edges {\n      node {\n        name\n        id\n        watchedFolders(first: 10) {\n          count\n          edges {\n            node {\n              __typename\n              name\n              id\n            }\n          }\n        }\n        media(first: 10) {\n          __typename\n          count\n          edges {\n            node {\n              name\n              id\n            }\n          }\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      hasPreviousPage\n      startCursor\n    }\n  }\n  id\n}\n"
   }
 };
 })();
