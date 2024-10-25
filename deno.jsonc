@@ -36,6 +36,8 @@
     "content/": "./content/",
     "docs/": "./docs/",
     "experimental/": "./experimental/",
+    "@replit/object-storage": "npm:@replit/object-storage",
+    "stream": "node:stream",
   },
   "compilerOptions": {
     "jsx": "react-jsx",
@@ -117,8 +119,8 @@
     ]
   },
   "lock": {
-    "path": "./deno.lock"
-    "frozen": true
+    "path": "./deno.lock",
+    "frozen": false
   },
   "vendor": true,
   "nodeModulesDir": "manual"
