@@ -836,29 +836,23 @@ These are prefixed with `!` to distinguish them from regular queries.
 ### !bff commit
 
 When you send the message `!bff commit`, the assistant will analyze your recent
-code changes and attempt to create a well-structured commit message following
-the Content Foundry commit format.
+code changes and attempt to create a well-structured commit message following the Content Foundry commit format.
 
 Example usage:
-
 ```
 !bff commit
 ```
 
-The assistant will:
-
+The assistant will run each of these steps individually
 1. Generate a descriptive title summarizing the changes
 2. Create a structured message with Summary and Test Plan sections
 3. Format the commit message according to project standards
-4. Configure the Sapling user with
-   `sl config --user ui.username "Bff Bot <bot@contentfoundry.com>"`
+4. Configure the Sapling user with `sl config --user ui.username "Bff Bot <bot@contentfoundry.com>"`
 5. Automatically run `sl commit` with the generated message
 6. Push the commit by running `sl submit`
-7. Get the currently logged in github user by running `gh api user` and note the
-   "login" and "name" return
-8. Set the user back using `sl config --user ui.username` again, but with the
-   "name" from the prior step, and the "login" as the email
-   "$LOGIN@noreply.githubusers.com"
+7. Get the currently logged in github user by running `gh api user` and note the "login" and "name" return
+8. Set the user back using `sl config --user ui.username ` again, but with the "name" from the prior step, and the "login" as the email "$LOGIN@noreply.githubusers.com"
+
 
 ## Best Practices
 
@@ -998,4 +992,3 @@ When writing tests, remember to use the `@std/assert` module for assertions:
 
 ```typescript
 import { assertEquals, assertThrows } from "@std/assert";
-```
