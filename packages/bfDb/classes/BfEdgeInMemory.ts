@@ -113,6 +113,25 @@ export class BfEdgeInMemory<
    * @param edgePropsToQuery - Optional edge properties to filter the query
    * @returns Promise resolving to an array of source instances
    */
+  /**
+   * Queries edges where a node is the source.
+   *
+   * @param node - The source node to find edges for
+   * @returns Promise resolving to an array of edges where the node is the source
+   */
+  static override querySourceEdgesForNode<TProps extends BfEdgeBaseProps>(
+    node: BfNodeBase,
+  ): Promise<Array<InstanceType<typeof BfEdgeInMemory<TProps>>>> {
+    // Filter edges where the given node is the source
+    const edges = Array.from(this.inMemoryEdges.values()).filter(
+      (edge) => edge.metadata.bfSid === node.metadata.bfGid,
+    );
+
+    return Promise.resolve(
+      edges as Array<InstanceType<typeof BfEdgeInMemory<TProps>>>,
+    );
+  }
+
   static override async querySourceInstances<
     TSourceClass extends typeof BfNodeBase<TSourceProps>,
     TEdgeProps extends BfEdgeBaseProps,

@@ -118,5 +118,59 @@ export function testBfEdgeBase<
         );
       },
     );
+
+    await t.step(
+      "querySourceEdgesForNode should return edges where a node is the source",
+      async () => {
+        // Create nodes for testing
+        const sourceNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Source Node for Edge Query",
+          },
+        );
+        const targetNode1 = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Target Node 1",
+          },
+        );
+        const targetNode2 = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Target Node 2",
+          },
+        );
+
+        // Create edges with different roles
+        const role1 = "source-role-1";
+        const role2 = "source-role-2";
+        await BfEdgeClass.createBetweenNodes(
+          mockCv,
+          sourceNode,
+          targetNode1,
+          role1,
+        );
+        await BfEdgeClass.createBetweenNodes(
+          mockCv,
+          sourceNode,
+          targetNode2,
+          role2,
+        );
+
+        // Test querying source edges
+        const sourceEdges = await BfEdgeClass.querySourceEdgesForNode(
+          sourceNode,
+        );
+
+        assertEquals(sourceEdges.length, 2);
+        assertEquals(sourceEdges[0].metadata.bfSid, sourceNode.metadata.bfGid);
+        assertEquals(sourceEdges[0].metadata.bfTid, targetNode1.metadata.bfGid);
+        assertEquals(sourceEdges[0].props.role, role1);
+        assertEquals(sourceEdges[1].metadata.bfSid, sourceNode.metadata.bfGid);
+        assertEquals(sourceEdges[1].metadata.bfTid, targetNode2.metadata.bfGid);
+        assertEquals(sourceEdges[1].props.role, role2);
+      },
+    );
   });
 }

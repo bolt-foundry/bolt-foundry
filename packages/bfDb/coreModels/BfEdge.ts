@@ -84,9 +84,19 @@ export class BfEdge<TProps extends BfEdgeProps = BfEdgeProps>
   }
 
   static querySourceEdgesForNode<TProps extends BfEdgeBaseProps>(
-    _node: BfNodeBase,
+    node: BfNodeBase,
   ): Promise<Array<InstanceType<typeof BfEdge<TProps>>>> {
-    throw new BfErrorNotImplemented("Not implemented");
+    // Query edges where the provided node is the source
+    const metadataToQuery: Partial<BfMetadataEdge> = {
+      bfSid: node.metadata.bfGid,
+      className: this.name,
+    };
+
+    return this.query(
+      node.cv,
+      metadataToQuery,
+      {}, // No specific props filter
+    ) as Promise<Array<InstanceType<typeof BfEdge<TProps>>>>;
   }
 
   static queryTargetInstances<
