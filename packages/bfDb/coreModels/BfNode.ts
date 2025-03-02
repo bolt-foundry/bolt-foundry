@@ -102,11 +102,11 @@ export class BfNode<
   }
 
   constructor(
-    protected override _currentViewer: BfCurrentViewer,
+    currentViewer: BfCurrentViewer,
     protected override _props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
-    super(_currentViewer, _props, metadata);
+    super(currentViewer, _props, metadata);
     this._serverProps = _props;
   }
 

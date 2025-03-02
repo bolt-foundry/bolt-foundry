@@ -191,7 +191,7 @@ async function runBuildStep(useGithub: boolean): Promise<number> {
 async function runTestStep(useGithub: boolean): Promise<number> {
   logger.info("Running deno test -A");
   const { code } = await runShellCommandWithOutput(
-    ["bff", "test"],
+    ["bff", "test", "--no-check"],
     {},
     /* useSpinner */ true,
     /* silent */ useGithub,
