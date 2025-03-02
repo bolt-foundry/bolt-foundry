@@ -1,6 +1,9 @@
 import { assertEquals, assertExists } from "@std/assert";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import type { BfNodeBase } from "packages/bfDb/classes/BfNodeBase.ts";
+import { getLogger } from "packages/logger.ts";
+
+const _logger = getLogger(import.meta);
 
 export function testBfNodeBase(BfNodeClass: typeof BfNodeBase) {
   Deno.test(`BfNodeBase test suite: ${BfNodeClass.name}`, async (t) => {

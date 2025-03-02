@@ -35,6 +35,7 @@ export class BfNodeBase<
   private _metadata: TMetadata;
   protected relatedEdge = "packages/bfDb/classes/BfEdgeBase.ts";
 
+  readonly _currentViewer: BfCurrentViewer;
   static generateSortValue() {
     return Date.now();
   }
@@ -53,6 +54,7 @@ export class BfNodeBase<
       bfGid: bfGid,
       bfOid: cv.bfOid,
       className: this.name,
+      sortValue: this.generateSortValue(),
     } as TMetadata;
     return { ...defaults, ...metadata } as TMetadata;
   }
@@ -61,7 +63,6 @@ export class BfNodeBase<
     TProps extends BfNodeBaseProps,
     TThis extends typeof BfNodeBase<TProps>,
   >(
-    this: TThis,
     _cv: BfCurrentViewer,
     _id: BfGid,
     _cache?: BfNodeCache,
@@ -140,14 +141,15 @@ export class BfNodeBase<
    * Don't use the constructor outside of BfNodeBase-ish classes please. Use create instead.
    */
   constructor(
-    protected _currentViewer: BfCurrentViewer,
+    currentViewer: BfCurrentViewer,
     protected _props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
     this._metadata = (this.constructor as typeof BfNodeBase).generateMetadata(
-      _currentViewer,
+      currentViewer,
       metadata,
     );
+    this._currentViewer = currentViewer;
   }
 
   get cv(): BfCurrentViewer {
