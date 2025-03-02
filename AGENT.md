@@ -849,7 +849,7 @@ The assistant will run each of these steps individually
 3. Format the commit message according to project standards
 4. Configure the Sapling user with `sl config --user ui.username "Bff Bot <bot@contentfoundry.com>"`
 5. Automatically run `sl commit` with the generated message
-6. Push the commit by running `sl submit`
+6. Push the commit by running `sl pr submit`
 7. Get the currently logged in github user by running `gh api user` and note the "login" and "name" return
 8. Set the user back using `sl config --user ui.username ` again, but with the "name" from the prior step, and the "login" as the email "$LOGIN@noreply.githubusers.com"
 
