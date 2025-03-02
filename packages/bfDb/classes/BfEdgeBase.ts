@@ -39,11 +39,11 @@ export class BfEdgeBase<
    * @param metadata - Optional partial metadata for the edge including source and target IDs
    */
   constructor(
-    protected override _currentViewer: BfCurrentViewer,
-    protected override _props: TProps,
+    currentViewer: BfCurrentViewer,
+    props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
-    super(_currentViewer, _props, metadata);
+    super(currentViewer, props, metadata);
   }
 
   /**
@@ -88,9 +88,9 @@ export class BfEdgeBase<
    * @returns Promise resolving to an array of source instances
    */
   static querySourceInstances<
-    TSourceClass extends typeof BfNodeBase,
+    TSourceClass extends typeof BfNodeBase<TSourceProps>,
     TEdgeProps extends BfEdgeBaseProps,
-    TSourceProps extends BfNodeBaseProps = BfNodeBaseProps,
+    TSourceProps extends BfNodeBaseProps,
   >(
     _cv: BfCurrentViewer,
     _SourceClass: TSourceClass,
