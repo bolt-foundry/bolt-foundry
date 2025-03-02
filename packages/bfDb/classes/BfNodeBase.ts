@@ -79,7 +79,7 @@ export class BfNodeBase<
     _metadata: Partial<BfMetadataBase>,
     _props: Partial<TProps>,
     _bfGids: Array<BfGid>,
-    _cache: BfNodeCache,
+    _cache?: BfNodeCache,
   ): Promise<Array<InstanceType<TThis>>> {
     throw new BfErrorNotImplemented();
   }
