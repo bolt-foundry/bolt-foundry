@@ -39,11 +39,11 @@ export class BfEdgeBase<
    * @param metadata - Optional partial metadata for the edge including source and target IDs
    */
   constructor(
-    protected override _currentViewer: BfCurrentViewer,
-    protected override _props: TProps,
+    currentViewer: BfCurrentViewer,
+    props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
-    super(_currentViewer, _props, metadata);
+    super(currentViewer, props, metadata);
   }
 
   /**
