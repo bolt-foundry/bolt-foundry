@@ -88,9 +88,9 @@ export class BfEdgeBase<
    * @returns Promise resolving to an array of source instances
    */
   static querySourceInstances<
-    TSourceClass extends typeof BfNodeBase,
+    TSourceClass extends typeof BfNodeBase<TSourceProps>,
     TEdgeProps extends BfEdgeBaseProps,
-    TSourceProps extends BfNodeBaseProps = BfNodeBaseProps,
+    TSourceProps extends BfNodeBaseProps,
   >(
     _cv: BfCurrentViewer,
     _SourceClass: TSourceClass,

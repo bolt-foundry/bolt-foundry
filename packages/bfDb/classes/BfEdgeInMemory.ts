@@ -3,9 +3,13 @@ import {
   type BfEdgeBaseProps,
   type BfMetadataEdgeBase,
 } from "packages/bfDb/classes/BfEdgeBase.ts";
-import type { BfNodeBase } from "packages/bfDb/classes/BfNodeBase.ts";
+import type {
+  BfNodeBase,
+  BfNodeBaseProps,
+} from "packages/bfDb/classes/BfNodeBase.ts";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "packages/logger.ts";
+import type { BfGid } from "packages/bfDb/classes/BfNodeIds.ts";
 
 const _logger = getLogger(import.meta);
 
@@ -97,5 +101,74 @@ export class BfEdgeInMemory<
    */
   static clearInMemoryEdges(): void {
     this.inMemoryEdges.clear();
+  }
+
+  /**
+   * Queries source instances connected to a target node.
+   *
+   * @param cv - The current viewer context
+   * @param SourceClass - The class of the source nodes to query
+   * @param targetId - The ID of the target node
+   * @param propsToQuery - Optional properties to filter the query
+   * @param edgePropsToQuery - Optional edge properties to filter the query
+   * @returns Promise resolving to an array of source instances
+   */
+  static override async querySourceInstances<
+    TSourceClass extends typeof BfNodeBase<TSourceProps>,
+    TEdgeProps extends BfEdgeBaseProps,
+    TSourceProps extends BfNodeBaseProps,
+  >(
+    cv: BfCurrentViewer,
+    SourceClass: TSourceClass,
+    targetId: BfGid,
+    propsToQuery: Partial<TSourceProps> = {},
+    edgePropsToQuery: Partial<TEdgeProps> = {},
+  ): Promise<Array<InstanceType<TSourceClass>>> {
+    // Filter edges based on target ID and optionally by edge properties
+    const matchingEdges = Array.from(this.inMemoryEdges.values()).filter(
+      (edge) => {
+        // Match target ID
+        const targetMatches = edge.metadata.bfTid === targetId;
+        if (!targetMatches) return false;
+
+        // Match source class name if specified
+        if (SourceClass && edge.metadata.bfSClassName !== SourceClass.name) {
+          return false;
+        }
+
+        // Match edge properties if specified
+        if (Object.keys(edgePropsToQuery).length > 0) {
+          return Object.entries(edgePropsToQuery).every(([key, value]) => {
+            return edge.props[key as keyof typeof edge.props] === value;
+          });
+        }
+
+        return true;
+      },
+    );
+
+    // Create a set of unique source IDs to prevent duplicates
+    const sourceIds = new Set(matchingEdges.map((edge) => edge.metadata.bfSid));
+
+    // Find the source nodes for each edge
+    const sourcePromises = Array.from(sourceIds).map(async (sourceId) => {
+      // For in-memory implementation, create a mock object with the source ID
+      // In a real database implementation, this would be a lookup to the actual node
+      const sourceNode = await SourceClass.find(cv, sourceId);
+
+      // Filter by source node properties if specified
+      if (sourceNode && Object.keys(propsToQuery).length > 0) {
+        const matches = Object.entries(propsToQuery).every(([key, value]) => {
+          return (sourceNode.props as TSourceProps)[key] === value;
+        });
+        return matches ? sourceNode : null;
+      }
+
+      return sourceNode;
+    });
+
+    // Wait for all source nodes to be retrieved and filter out nulls
+    const sources = await Promise.all(sourcePromises);
+    return sources.filter(Boolean) as Array<InstanceType<TSourceClass>>;
   }
 }
