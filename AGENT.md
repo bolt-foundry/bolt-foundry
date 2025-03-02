@@ -828,6 +828,38 @@ const collection = await ctx.find(BfContentCollection, collectionId);
 For content collections specifically, ensure you're using the full ID pattern
 that includes the content path prefix.
 
+## Commands
+
+This section documents special commands that can be used with the assistant.
+These are prefixed with `!` to distinguish them from regular queries.
+
+### !bff commit
+
+When you send the message `!bff commit`, the assistant will analyze your recent
+code changes and attempt to create a well-structured commit message following
+the Content Foundry commit format.
+
+Example usage:
+
+```
+!bff commit
+```
+
+The assistant will:
+
+1. Generate a descriptive title summarizing the changes
+2. Create a structured message with Summary and Test Plan sections
+3. Format the commit message according to project standards
+4. Configure the Sapling user with
+   `sl config --user ui.username "Bff Bot <bot@contentfoundry.com>"`
+5. Automatically run `sl commit` with the generated message
+6. Push the commit by running `sl submit`
+7. Get the currently logged in github user by running `gh api user` and note the
+   "login" and "name" return
+8. Set the user back using `sl config --user ui.username` again, but with the
+   "name" from the prior step, and the "login" as the email
+   "$LOGIN@noreply.githubusers.com"
+
 ## Best Practices
 
 1. **Use BFF commands** for common tasks
@@ -898,13 +930,13 @@ Deno.test("BfEdgeInMemory should find edges by source node", async () => {
   const mockCv = getMockCurrentViewer();
   const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, { name: "Source" });
   const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, { name: "Target" });
-  
+
   // Create an edge between nodes
   await BfEdgeInMemory.createBetweenNodes(mockCv, sourceNode, targetNode, "test-role");
-  
+
   // Test the findBySource method (which doesn't exist yet)
   const edges = await BfEdgeInMemory.findBySource(mockCv, sourceNode);
-  
+
   assertEquals(edges.length, 1);
   assertEquals(edges[0].metadata.bfSid, sourceNode.metadata.bfGid);
   assertEquals(edges[0].metadata.bfTid, targetNode.metadata.bfGid);
@@ -916,13 +948,13 @@ static async findBySource(
   sourceNode: BfNodeBase,
 ): Promise<BfEdgeInMemory[]> {
   const result: BfEdgeInMemory[] = [];
-  
+
   for (const edge of this.inMemoryEdges.values()) {
     if (edge.metadata.bfSid === sourceNode.metadata.bfGid) {
       result.push(edge);
     }
   }
-  
+
   return result;
 }
 
