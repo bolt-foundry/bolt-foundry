@@ -951,6 +951,9 @@ static async findBySource(
 - **Documentation**: Tests serve as executable documentation showing how
   components should work
 
+**It's important to build red tests by themselves initially. Don't try to skip
+steps.**
+
 ### Running Tests
 
 Content Foundry provides several ways to run tests:
