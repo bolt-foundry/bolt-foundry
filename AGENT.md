@@ -21,10 +21,16 @@
   - [Before Committing Changes](#before-committing-changes)
   - [Dependency Management](#dependency-management)
 - [Code Quality](#code-quality)
+  - [Testing Approaches](#testing-approaches)
   - [Code Reviews](#code-reviews)
   - [Code Style Guidelines](#code-style-guidelines)
   - [Common Type Errors](#common-type-errors)
+- [Special Protocols](#special-protocols)
+  - [BFF Commit Protocol](#bff-commit-protocol)
+  - [BFF Agent Update Protocol](#bff-agent-update-protocol)
+  - [BFF Help Protocol](#bff-help-protocol)
 - [Best Practices](#best-practices)
+- [Test-Driven Development](#test-driven-development-tdd)
 
 ## Project Overview
 
@@ -210,6 +216,29 @@ sl commit -m "Descriptive title
 - Ran Y test and confirmed Z outcome"
 ```
 
+To use a file for the commit message (useful for long, complex commit messages):
+
+```bash
+# Create a commit message file
+cat > build/commit-message.txt << 'EOF'
+Descriptive title
+
+## Summary
+- Change 1: Brief explanation of first change
+- Change 2: Brief explanation of second change
+
+## Test Plan
+- Verified X works as expected
+- Ran Y test and confirmed Z outcome
+EOF
+
+# Commit using the file content as the message
+sl commit -m "$(cat build/commit-message.txt)"
+```
+
+Note: Unlike Git, Sapling doesn't support the `-F` flag for reading commit
+messages from a file. Use the approach above instead.
+
 The key is to use line breaks and formatting to make your commit message
 readable.
 
@@ -244,145 +273,6 @@ Guidelines for splitting commits:
 - Make sure each commit can be understood on its own
 
 Example commit message:
-
-## Isograph
-
-Isograph is a key technology used in Content Foundry for data fetching and
-component rendering. It provides a type-safe way to declare data dependencies
-for React components and efficiently fetch that data from the GraphQL API.
-
-### What is Isograph?
-
-Isograph is a framework that integrates GraphQL with React components, allowing
-you to:
-
-1. Declare data requirements directly inside component definitions
-2. Automatically generate TypeScript types for your data
-3. Efficiently manage data fetching and caching
-4. Create reusable component fragments
-
-### How Isograph Works in Content Foundry
-
-In Content Foundry, Isograph components are defined using the `iso` function
-imported from the generated isograph module:
-
-```typescript
-import { iso } from "packages/app/__generated__/__isograph/iso.ts";
-
-export const MyComponent = iso(`
-  field TypeName.FieldName @component {
-    id
-    title
-    description
-    items {
-      id
-      name
-    }
-  }
-`)(function MyComponent({ data }) {
-  // data is typed based on the GraphQL fragment above
-  return <div>{data.title}</div>;
-});
-```
-
-The `iso` function takes a GraphQL fragment string that defines what data the
-component needs, and returns a higher-order function that wraps your component,
-providing the requested data via props.
-
-### Key Concepts
-
-#### Field Definitions
-
-Components declare their data needs using GraphQL field definitions:
-
-- `field TypeName.FieldName @component` - Creates a component field
-- `entrypoint TypeName.FieldName` - Creates an entry point for routing
-
-#### Component Structure
-
-Isograph components follow this pattern:
-
-1. Import the `iso` function
-2. Define the GraphQL fragment with fields needed
-3. Create a function component that receives the data
-4. Apply the iso HOC to the component
-
-#### Important Note on Isograph Component Usage
-
-One of the key benefits of Isograph is that you **don't need to explicitly
-import** components that are referenced in your GraphQL fragments. The Isograph
-system automatically makes these components available through the `data` prop.
-
-For example, if your GraphQL fragment includes a field like:
-
-```typescript
-// In ParentComponent.tsx
-export const ParentComponent = iso(`
-  field TypeName.ParentComponent @component {
-    childItems {
-      id
-      ChildComponent  // This references another Isograph component
-    }
-  }
-`)(function ParentComponent({ data }) {
-  return (
-    <div>
-      {data.childItems.map((item) => (
-        // The ChildComponent is automatically available as item.ChildComponent
-        <item.ChildComponent key={item.id} />
-      ))}
-    </div>
-  );
-});
-```
-
-The `ChildComponent` becomes accessible directly through the data object without
-explicit imports. This creates a tightly integrated system where the data
-structure and component structure align perfectly.
-
-#### Environment Setup
-
-Content Foundry sets up the Isograph environment in
-`packages/app/isographEnvironment.ts`:
-
-- Creates an Isograph store
-- Configures network requests to the GraphQL endpoint
-- Sets up caching
-
-### Development Workflow
-
-1. **Define Components**: Create components with their data requirements
-2. **Build**: Run `bff build` to generate Isograph types
-3. **Use Components**: Import and use the components in your app
-
-### Fragment Reader Components
-
-For dynamic component rendering, Content Foundry uses
-`BfIsographFragmentReader`:
-
-```typescript
-<BfIsographFragmentReader
-  fragmentReference={someFragmentReference}
-  networkRequestOptions={{
-    suspendIfInFlight: true,
-    throwOnNetworkError: true,
-  }}
-/>;
-```
-
-This utility component helps render Isograph fragments with proper error
-handling and loading states.
-
-### Common Isograph Patterns
-
-1. **Component Fields**: Use `field TypeName.ComponentName @component` for
-   reusable components
-2. **Entrypoints**: Use `entrypoint TypeName.EntrypointName` for route entry
-   points
-3. **Mutations**: Use `entrypoint Mutation.MutationName` for GraphQL mutations
-
-The Isograph compiler automatically generates TypeScript types and utilities in
-`packages/app/__generated__/__isograph/`.
 
 ```
 Fix content collection ID lookup and add BfGid type documentation
@@ -457,6 +347,145 @@ Content Foundry uses a component-based architecture with React:
 - Isograph used for component data fetching
 - Router context for navigation
 
+### Isograph
+
+Isograph is a key technology used in Content Foundry for data fetching and
+component rendering. It provides a type-safe way to declare data dependencies
+for React components and efficiently fetch that data from the GraphQL API.
+
+#### What is Isograph?
+
+Isograph is a framework that integrates GraphQL with React components, allowing
+you to:
+
+1. Declare data requirements directly inside component definitions
+2. Automatically generate TypeScript types for your data
+3. Efficiently manage data fetching and caching
+4. Create reusable component fragments
+
+#### How Isograph Works in Content Foundry
+
+In Content Foundry, Isograph components are defined using the `iso` function
+imported from the generated isograph module:
+
+```typescript
+import { iso } from "packages/app/__generated__/__isograph/iso.ts";
+
+export const MyComponent = iso(`
+  field TypeName.FieldName @component {
+    id
+    title
+    description
+    items {
+      id
+      name
+    }
+  }
+`)(function MyComponent({ data }) {
+  // data is typed based on the GraphQL fragment above
+  return <div>{data.title}</div>;
+});
+```
+
+The `iso` function takes a GraphQL fragment string that defines what data the
+component needs, and returns a higher-order function that wraps your component,
+providing the requested data via props.
+
+#### Key Concepts
+
+##### Field Definitions
+
+Components declare their data needs using GraphQL field definitions:
+
+- `field TypeName.FieldName @component` - Creates a component field
+- `entrypoint TypeName.FieldName` - Creates an entry point for routing
+
+##### Component Structure
+
+Isograph components follow this pattern:
+
+1. Import the `iso` function
+2. Define the GraphQL fragment with fields needed
+3. Create a function component that receives the data
+4. Apply the iso HOC to the component
+
+##### Important Note on Isograph Component Usage
+
+One of the key benefits of Isograph is that you **don't need to explicitly
+import** components that are referenced in your GraphQL fragments. The Isograph
+system automatically makes these components available through the `data` prop.
+
+For example, if your GraphQL fragment includes a field like:
+
+```typescript
+// In ParentComponent.tsx
+export const ParentComponent = iso(`
+  field TypeName.ParentComponent @component {
+    childItems {
+      id
+      ChildComponent  // This references another Isograph component
+    }
+  }
+`)(function ParentComponent({ data }) {
+  return (
+    <div>
+      {data.childItems.map((item) => (
+        // The ChildComponent is automatically available as item.ChildComponent
+        <item.ChildComponent key={item.id} />
+      ))}
+    </div>
+  );
+});
+```
+
+The `ChildComponent` becomes accessible directly through the data object without
+explicit imports. This creates a tightly integrated system where the data
+structure and component structure align perfectly.
+
+#### Environment Setup
+
+Content Foundry sets up the Isograph environment in
+`packages/app/isographEnvironment.ts`:
+
+- Creates an Isograph store
+- Configures network requests to the GraphQL endpoint
+- Sets up caching
+
+#### Development Workflow
+
+1. **Define Components**: Create components with their data requirements
+2. **Build**: Run `bff build` to generate Isograph types
+3. **Use Components**: Import and use the components in your app
+
+#### Fragment Reader Components
+
+For dynamic component rendering, Content Foundry uses
+`BfIsographFragmentReader`:
+
+```typescript
+<BfIsographFragmentReader
+  fragmentReference={someFragmentReference}
+  networkRequestOptions={{
+    suspendIfInFlight: true,
+    throwOnNetworkError: true,
+  }}
+/>;
+```
+
+This utility component helps render Isograph fragments with proper error
+handling and loading states.
+
+#### Common Isograph Patterns
+
+1. **Component Fields**: Use `field TypeName.ComponentName @component` for
+   reusable components
+2. **Entrypoints**: Use `entrypoint TypeName.EntrypointName` for route entry
+   points
+3. **Mutations**: Use `entrypoint Mutation.MutationName` for GraphQL mutations
+
+The Isograph compiler automatically generates TypeScript types and utilities in
+`packages/app/__generated__/__isograph/`.
+
 ### GraphQL API
 
 Content Foundry uses GraphQL for its API layer:
@@ -497,7 +526,7 @@ Key context methods:
 - `ctx.findCurrentUser()`: Get the current authenticated user
 - `ctx.login()`, `ctx.register()`: Authentication methods
 
-### Database Backends
+### Database Layer
 
 Content Foundry supports multiple database backends through an abstraction
 layer:
@@ -767,24 +796,28 @@ chaining operator (`?.`) to safely access properties or methods:
 
 ```typescript
 // PROBLEMATIC - TypeScript will warn about possible null/undefined
-<Component key={item.id} /> // Error: 'item' is possibly 'null'
+<Component key={item.id} />; // Error: 'item' is possibly 'null'
 
 // BETTER - Using conditional rendering with && and Using optional chaining operator
-{item && <Component key={item?.id} />}
+{
+  item && <Component key={item?.id} />;
+}
+```
 
-The optional chaining operator (`?.`) short-circuits if the value before it is `null` or `undefined`, returning `undefined` instead of throwing an error.
+The optional chaining operator (`?.`) short-circuits if the value before it is
+`null` or `undefined`, returning `undefined` instead of throwing an error.
 
 #### String vs BfGid Type Mismatch
 
 A common error when working with the Content Foundry database layer occurs when
 trying to use string IDs directly with collection caches or database lookups:
-```
 
+```
 TS2345 [ERROR]: Argument of type 'string' is not assignable to parameter of type
 'BfGid'. Type 'string' is not assignable to type '{ readonly [__nominal__type]:
 "BfGid"; }'.
+```
 
-````
 ##### Why This Happens
 
 Content Foundry uses a nominal typing system for IDs to prevent accidental
@@ -801,7 +834,7 @@ const collection = collectionsCache.get("collection-id");
 
 // Correct - converts string to BfGid
 const collection = collectionsCache.get(toBfGid("collection-id"));
-````
+```
 
 ##### Content Collection ID Format
 
@@ -828,31 +861,137 @@ const collection = await ctx.find(BfContentCollection, collectionId);
 For content collections specifically, ensure you're using the full ID pattern
 that includes the content path prefix.
 
-## Commands
+## Special Protocols
 
-This section documents special commands that can be used with the assistant.
+This section documents special protocols that can be used with the assistant.
 These are prefixed with `!` to distinguish them from regular queries.
 
-### !bff commit
+### BFF Commit Protocol
 
-When you send the message `!bff commit`, the assistant will analyze your recent
-code changes and attempt to create a well-structured commit message following the Content Foundry commit format.
+The BFF Commit process is split into two separate protocols:
+
+#### BFF Precommit Protocol
+
+When you send the message `!bff precommit`, the assistant will:
+
+1. Delete the build folder
+2. Recreate the build folder with a blank .gitkeep folder inside of it
+3. Format your code with `bff f`
+4. Run tests with `bff t`
+5. Generate a diff of your recent code changes
+6. Save the diff to `build/diff.txt` for review
 
 Example usage:
+
+```
+!bff precommit
+```
+
+This protocol helps you review your changes before executing the actual commit.
+Unlike the previous version, it no longer automatically generates a commit
+message.
+
+#### BFF Commit Protocol
+
+When you send the message `!bff commit`, the assistant will:
+
+1. Configure the Sapling user with
+   `sl config --user ui.username "Bff Bot <bot@contentfoundry.com>"`
+2. **CRITICAL: Read the diff from `build/diff.txt` (generated in the precommit
+   step)**
+   - **ALWAYS examine the contents of `build/diff.txt` first before making any
+     assumptions about the changes**
+   - **LOOK ONLY at files mentioned in the diff file, not files you think should
+     be changed**
+   - **DO NOT make code changes that aren't related to what's in the diff file**
+   - **DO NOT implement any functionality that isn't already modified in the
+     diff**
+   - Generate a commit message based on this diff, not by looking at the
+     codebase directly
+   - Store the generated message in `build/commit-message.txt`
+3. Automatically run `sl commit` with the generated message from
+   `build/commit-message.txt`
+4. Push the commit by running `sl pr submit`
+5. Get the currently logged in GitHub user information by running
+   `gh api user > build/gh-user.json` to save the data to a JSON file
+6. Set the user back using `sl config --user ui.username` again, but with the
+   "name" from the JSON file, and the "login" as the email
+   "$LOGIN@noreply.githubusers.com"
+
+Example usage:
+
 ```
 !bff commit
 ```
 
-The assistant will run each of these steps individually
-1. Generate a descriptive title summarizing the changes
-2. Create a structured message with Summary and Test Plan sections
-3. Format the commit message according to project standards
-4. Configure the Sapling user with `sl config --user ui.username "Bff Bot <bot@contentfoundry.com>"`
-5. Automatically run `sl commit` with the generated message
-6. Push the commit by running `sl pr submit`
-7. Get the currently logged in github user by running `gh api user` and note the "login" and "name" return
-8. Set the user back using `sl config --user ui.username ` again, but with the "name" from the prior step, and the "login" as the email "$LOGIN@noreply.githubusers.com"
+#### Common BFF Commit Mistakes to Avoid
 
+1. **Implementing unrelated code changes**: Only make changes directly related
+   to what's in the diff.
+2. **Assuming file contents**: Never assume what's in a file without checking
+   the diff first.
+3. **Misinterpreting the diff context**: Make sure you understand what changes
+   are actually being made.
+4. **Modifying the wrong files**: Only edit files that appear in the diff.
+5. **Implementing "todo" comments**: Unless explicitly changed in the diff,
+   don't implement functionality from todo comments.
+6. **Adding new features**: Unless the diff shows partial implementation of a
+   new feature, don't add new features.
+
+Always run `cat build/diff.txt` as your first command to understand the actual
+changes before proceeding with any implementation.
+
+### BFF Agent Update Protocol
+
+When you send the message `!bff agent update`, the assistant will analyze the
+contents of the AGENT.md file and update it to improve clarity, organization,
+and consistency.
+
+Example usage:
+
+```
+!bff agent update
+```
+
+The assistant will:
+
+1. Review the current AGENT.md document structure
+2. Improve formatting and organization for better readability
+3. Ensure consistent style throughout the document
+4. Update or clarify confusing sections
+5. Consolidate redundant information
+6. Ensure proper heading hierarchy and section flow
+
+This protocol is useful when documentation has grown organically and needs
+restructuring or when new information needs to be integrated cohesively with
+existing content.
+
+### BFF Help Protocol
+
+When you send the message `!bff help`, the assistant will list and explain all
+available protocols that can be used with the assistant.
+
+Example usage:
+
+```
+!bff help
+```
+
+The assistant will:
+
+1. Provide a complete list of all available !bff protocols
+2. Include a brief description of what each protocol does
+3. Show examples of how to use each protocol
+
+Available protocols include:
+
+- `!bff precommit` - Format code, run tests, and prepare for commit
+- `!bff commit` - Execute the commit using the prepared diff
+- `!bff agent update` - Update the AGENT.md file
+- `!bff help` - Show this help information
+
+If you reply to the assistant's response with a specific protocol (e.g.,
+`!bff commit-prepare`), the assistant will automatically execute that protocol.
 
 ## Best Practices
 
@@ -871,7 +1010,7 @@ The assistant will run each of these steps individually
 10. **Use lexically sortable inheritance naming** for classes that implement
     interfaces or extend base classes. Start with the base class or interface
     name, followed by specifics, like `DatabaseBackendPostgres` instead of
-    `DatabaseBackendPostgres`. This makes imports and directory listings easier
+    `PostgresDatabaseBackend`. This makes imports and directory listings easier
     to scan and understand inheritance hierarchies.
 11. **Use static factory methods instead of constructors** for BfModels (BfNode,
     BfEdge, etc.). Never use the `new` keyword directly with these classes.
@@ -992,3 +1131,4 @@ When writing tests, remember to use the `@std/assert` module for assertions:
 
 ```typescript
 import { assertEquals, assertThrows } from "@std/assert";
+```
