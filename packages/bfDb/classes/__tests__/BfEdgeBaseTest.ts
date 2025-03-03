@@ -218,6 +218,8 @@ export function testBfEdgeBase<
           BfNodeInMemory,
           sourceNode1.metadata.bfGid,
           {},
+          {}, // No edge props filter
+          undefined, // No cache
         );
 
         assertEquals(targets.length, 1);
@@ -230,6 +232,7 @@ export function testBfEdgeBase<
           sourceNode1.metadata.bfGid,
           {},
           { role: role1 },
+          undefined, // No cache
         );
 
         assertEquals(filteredTargets.length, 1);
@@ -282,6 +285,7 @@ export function testBfEdgeBase<
         // Test querying target edges
         const targetEdges = await BfEdgeClass.queryTargetEdgesForNode(
           targetNode,
+          undefined, // No cache
         );
 
         assertEquals(targetEdges.length, 2);
@@ -291,6 +295,72 @@ export function testBfEdgeBase<
         assertEquals(targetEdges[1].metadata.bfSid, sourceNode2.metadata.bfGid);
         assertEquals(targetEdges[1].metadata.bfTid, targetNode.metadata.bfGid);
         assertEquals(targetEdges[1].props.role, role2);
+      },
+    );
+
+    await t.step(
+      "cache is used for queryTarget methods",
+      async () => {
+        // Create a test node
+        const sourceNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Source Node for Cache Test",
+          },
+        );
+        const targetNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Target Node for Cache Test",
+          },
+        );
+
+        // Create an edge between them
+        const role = "cache-test-role";
+        await BfEdgeClass.createBetweenNodes(
+          mockCv,
+          sourceNode,
+          targetNode,
+          role,
+        );
+
+        // Create a cache map to use for the test
+        const cache = new Map();
+
+        // This test will fail at first because the implementations don't
+        // actually use the cache yet. The test expects the cache to be populated
+        // after calling these methods
+
+        // Test cache with queryTargetInstances
+        await BfEdgeClass.queryTargetInstances(
+          mockCv,
+          BfNodeInMemory,
+          sourceNode.metadata.bfGid,
+          {},
+          {},
+          cache,
+        );
+
+        // If cache is properly used, the target node should be cached
+        assertEquals(
+          cache.has(targetNode.metadata.bfGid),
+          true,
+          "Cache was not populated by queryTargetInstances",
+        );
+
+        // Clear the cache and test with queryTargetEdgesForNode
+        cache.clear();
+        await BfEdgeClass.queryTargetEdgesForNode(
+          targetNode,
+          cache,
+        );
+
+        // If cache is properly used, some edge should be cached
+        assertEquals(
+          cache.size > 0,
+          true,
+          "Cache was not populated by queryTargetEdgesForNode",
+        );
       },
     );
   });
