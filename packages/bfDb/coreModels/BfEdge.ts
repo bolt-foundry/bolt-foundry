@@ -13,7 +13,6 @@ import type {
   BfNodeCache,
 } from "packages/bfDb/classes/BfNodeBase.ts";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { BfErrorNotImplemented } from "packages/BfError.ts";
 import type { BfGid } from "packages/bfDb/classes/BfNodeIds.ts";
 
 const _logger = getLogger(import.meta);
@@ -99,24 +98,58 @@ export class BfEdge<TProps extends BfEdgeProps = BfEdgeProps>
     ) as Promise<Array<InstanceType<typeof BfEdge<TProps>>>>;
   }
 
-  static queryTargetInstances<
-    TTargetProps extends BfNodeBaseProps,
-    TEdgeProps extends BfEdgeBaseProps,
+  static async queryTargetInstances<
     TTargetClass extends typeof BfNodeBase<TTargetProps>,
+    TEdgeProps extends BfEdgeBaseProps,
+    TTargetProps extends BfNodeBaseProps = BfNodeBaseProps,
   >(
-    _cv: BfCurrentViewer,
-    _TargetClass: TTargetClass,
-    _sourceId: BfGid,
-    _propsToQuery: Partial<TTargetProps>,
-    _edgePropsToQuery: Partial<TEdgeProps> = {},
+    cv: BfCurrentViewer,
+    TargetClass: TTargetClass,
+    sourceId: BfGid,
+    propsToQuery: Partial<TTargetProps> = {},
+    edgePropsToQuery: Partial<TEdgeProps> = {},
+    cache?: BfNodeCache,
   ): Promise<Array<InstanceType<TTargetClass>>> {
-    throw new BfErrorNotImplemented("Not implemented");
+    // Query edges that have this source ID
+    const edgeMetadata: Partial<BfMetadataEdge> = {
+      bfSid: sourceId,
+      className: this.name,
+    };
+
+    // Find all edges that connect from the source node with matching properties
+    const edges = await this.query(cv, edgeMetadata, edgePropsToQuery);
+
+    if (edges.length === 0) {
+      return [];
+    }
+
+    // Extract target IDs from the edges
+    const targetIds = edges.map((edge) => edge.metadata.bfTid);
+
+    // Query the target nodes by their IDs
+    return TargetClass.query(
+      cv,
+      { className: TargetClass.name },
+      propsToQuery,
+      targetIds,
+      cache,
+    );
   }
 
   static queryTargetEdgesForNode(
-    _node: BfNodeBase,
+    node: BfNodeBase,
   ): Promise<Array<InstanceType<typeof BfEdge>>> {
-    throw new BfErrorNotImplemented("Not implemented");
+    // Query edges where the provided node is the target
+    const metadataToQuery: Partial<BfMetadataEdge> = {
+      bfTid: node.metadata.bfGid,
+      className: this.name,
+    };
+
+    return this.query(
+      node.cv,
+      metadataToQuery,
+      {}, // No specific props filter
+    ) as Promise<Array<InstanceType<typeof BfEdge>>>;
   }
 
   constructor(

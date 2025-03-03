@@ -172,5 +172,126 @@ export function testBfEdgeBase<
         assertEquals(sourceEdges[1].props.role, role2);
       },
     );
+
+    await t.step(
+      "queryTargetInstances should return target nodes connected to a source node",
+      async () => {
+        // Create nodes for testing
+        const sourceNode1 = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Source Node 1 for Target Query",
+          },
+        );
+        const sourceNode2 = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Source Node 2 for Target Query",
+          },
+        );
+        const targetNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Target Node for Query",
+          },
+        );
+
+        // Create edges with different roles
+        const role1 = "target-role-1";
+        const role2 = "target-role-2";
+        await BfEdgeClass.createBetweenNodes(
+          mockCv,
+          sourceNode1,
+          targetNode,
+          role1,
+        );
+        await BfEdgeClass.createBetweenNodes(
+          mockCv,
+          sourceNode2,
+          targetNode,
+          role2,
+        );
+
+        // Test querying target instances without role filter
+        const targets = await BfEdgeClass.queryTargetInstances(
+          mockCv,
+          BfNodeInMemory,
+          sourceNode1.metadata.bfGid,
+          {},
+        );
+
+        assertEquals(targets.length, 1);
+        assertEquals(targets[0].metadata.bfGid, targetNode.metadata.bfGid);
+
+        // Test with edge properties filter (role)
+        const filteredTargets = await BfEdgeClass.queryTargetInstances(
+          mockCv,
+          BfNodeInMemory,
+          sourceNode1.metadata.bfGid,
+          {},
+          { role: role1 },
+        );
+
+        assertEquals(filteredTargets.length, 1);
+        assertEquals(
+          filteredTargets[0].metadata.bfGid,
+          targetNode.metadata.bfGid,
+        );
+      },
+    );
+
+    await t.step(
+      "queryTargetEdgesForNode should return edges where a node is the target",
+      async () => {
+        // Create nodes for testing
+        const targetNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Target Node for Edge Query",
+          },
+        );
+        const sourceNode1 = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Source Node 1",
+          },
+        );
+        const sourceNode2 = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Source Node 2",
+          },
+        );
+
+        // Create edges with different roles
+        const role1 = "target-role-1";
+        const role2 = "target-role-2";
+        await BfEdgeClass.createBetweenNodes(
+          mockCv,
+          sourceNode1,
+          targetNode,
+          role1,
+        );
+        await BfEdgeClass.createBetweenNodes(
+          mockCv,
+          sourceNode2,
+          targetNode,
+          role2,
+        );
+
+        // Test querying target edges
+        const targetEdges = await BfEdgeClass.queryTargetEdgesForNode(
+          targetNode,
+        );
+
+        assertEquals(targetEdges.length, 2);
+        assertEquals(targetEdges[0].metadata.bfSid, sourceNode1.metadata.bfGid);
+        assertEquals(targetEdges[0].metadata.bfTid, targetNode.metadata.bfGid);
+        assertEquals(targetEdges[0].props.role, role1);
+        assertEquals(targetEdges[1].metadata.bfSid, sourceNode2.metadata.bfGid);
+        assertEquals(targetEdges[1].metadata.bfTid, targetNode.metadata.bfGid);
+        assertEquals(targetEdges[1].props.role, role2);
+      },
+    );
   });
 }
