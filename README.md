@@ -1,16 +1,15 @@
 # Content Foundry: The Content Operating System
 
-> This is a preview of the project. Right now, we're focused on developer
-> experience, and engaging the community for early feedback. Our primary
-> objective is to lay out the vision, create the world's best developer
-> experience, and find people who want to help everyone tell their stories as
-> well as they can.
+> **Developer Experience First:** Content Foundry is building an open-source
+> platform with the best developer experience in mind. We're focused on making
+> it easier to contribute than to Wikipedia, while creating powerful tools for
+> content creators.
 
 ## What is Content Foundry?
 
-Content Foundry is an open-source platform designed to help creators tell their
-story across all platforms, including their own. Content Foundry has five
-pillars, each describing a step of the content creation process.
+Content Foundry is an open-source platform that helps creators tell compelling
+stories across all platforms. We provide an end-to-end solution that guides you
+through the entire content creation lifecycle with our five pillars:
 
 ### Personas
 

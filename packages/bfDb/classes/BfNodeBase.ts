@@ -4,8 +4,8 @@ import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import { getLogger } from "packages/logger.ts";
 import type { JSONValue } from "packages/bfDb/bfDb.ts";
-import type { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 import { BfErrorNotImplemented } from "packages/BfError.ts";
+import type { BfEdgeBase } from "packages/bfDb/classes/BfEdgeBase.ts";
 
 const logger = getLogger(import.meta);
 
@@ -20,45 +20,49 @@ export type BfMetadataBase = {
 };
 
 export type BfNodeCache<
-  TProps extends BfNodeBaseProps = DefaultProps,
+  TProps extends BfNodeBaseProps = BfNodeBaseProps,
   T extends typeof BfNodeBase<TProps> = typeof BfNodeBase,
 > = Map<
   BfGid | string,
   InstanceType<T>
 >;
-type DefaultProps = Record<string, never>;
 
 export class BfNodeBase<
-  TProps extends BfNodeBaseProps = DefaultProps,
+  TProps extends BfNodeBaseProps = BfNodeBaseProps,
   TMetadata extends BfMetadataBase = BfMetadataBase,
 > {
   __typename = this.constructor.name;
   private _metadata: TMetadata;
+  protected relatedEdge = "packages/bfDb/classes/BfEdgeBase.ts";
 
+  readonly _currentViewer: BfCurrentViewer;
   static generateSortValue() {
     return Date.now();
   }
 
   static generateMetadata<
-    TGenerationMetadata extends BfMetadataBase = BfMetadataBase,
+    TProps extends BfNodeBaseProps,
+    TMetadata extends BfMetadataBase,
+    TThis extends typeof BfNodeBase<TProps, TMetadata>,
   >(
+    this: TThis,
     cv: BfCurrentViewer,
-    metadata?: Partial<TGenerationMetadata>,
-  ): TGenerationMetadata {
+    metadata?: Partial<TMetadata>,
+  ): TMetadata {
     const bfGid = toBfGid(generateUUID());
     const defaults = {
       bfGid: bfGid,
       bfOid: cv.bfOid,
       className: this.name,
-    } as TGenerationMetadata;
-    return { ...defaults, ...metadata } as TGenerationMetadata;
+      sortValue: this.generateSortValue(),
+    } as TMetadata;
+    return { ...defaults, ...metadata } as TMetadata;
   }
 
   static findX<
     TProps extends BfNodeBaseProps,
     TThis extends typeof BfNodeBase<TProps>,
   >(
-    this: TThis,
     _cv: BfCurrentViewer,
     _id: BfGid,
     _cache?: BfNodeCache,
@@ -72,10 +76,10 @@ export class BfNodeBase<
   >(
     this: TThis,
     _cv: BfCurrentViewer,
-    _metadata: BfMetadataBase,
-    _props: TProps,
+    _metadata: Partial<BfMetadataBase>,
+    _props: Partial<TProps>,
     _bfGids: Array<BfGid>,
-    _cache: BfNodeCache,
+    _cache?: BfNodeCache,
   ): Promise<Array<InstanceType<TThis>>> {
     throw new BfErrorNotImplemented();
   }
@@ -137,14 +141,15 @@ export class BfNodeBase<
    * Don't use the constructor outside of BfNodeBase-ish classes please. Use create instead.
    */
   constructor(
-    protected _currentViewer: BfCurrentViewer,
+    currentViewer: BfCurrentViewer,
     protected _props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
     this._metadata = (this.constructor as typeof BfNodeBase).generateMetadata(
-      _currentViewer,
+      currentViewer,
       metadata,
     );
+    this._currentViewer = currentViewer;
   }
 
   get cv(): BfCurrentViewer {
@@ -164,7 +169,7 @@ export class BfNodeBase<
   }
 
   isDirty(): boolean {
-    return true;
+    return false;
   }
 
   toGraphql() {
@@ -197,14 +202,60 @@ export class BfNodeBase<
   load(): Promise<this> {
     throw new BfErrorNotImplemented();
   }
-  createTargetNode<
+  async createTargetNode<
     TProps extends BfNodeBaseProps,
-    TBfClass extends typeof BfNode<TProps>,
+    TTargetMetadata extends BfMetadataBase,
+    TBfClass extends typeof BfNodeBase<TProps, TTargetMetadata>,
   >(
-    _TargetBfClass: TBfClass,
-    _props: TProps,
-    _metadata?: BfMetadataBase,
+    TargetBfClass: TBfClass,
+    props: TProps,
+    metadata?: TTargetMetadata,
+    role: string | null = null,
   ): Promise<InstanceType<TBfClass>> {
+    logger.debug("createTargetNode called", {
+      targetClassName: TargetBfClass.name,
+      sourceId: this.metadata.bfGid,
+      role,
+    });
+
+    const targetNode = await TargetBfClass.__DANGEROUS__createUnattached(
+      this.cv,
+      props,
+      metadata,
+    );
+
+    const relatedEdgeNameWithTs = this.relatedEdge.split("/").pop() as string;
+    const relatedEdgeName = relatedEdgeNameWithTs.replace(".ts", "");
+    const bfEdgeImport = await import(this.relatedEdge);
+    const BfEdgeClass = bfEdgeImport[relatedEdgeName] as typeof BfEdgeBase;
+
+    BfEdgeClass.createBetweenNodes(this.cv, this, targetNode, role);
+    logger.debug("Edge created successfully", {
+      sourceId: this.metadata.bfGid,
+      targetId: targetNode.metadata.bfGid,
+      role,
+    });
+
+    return targetNode;
+  }
+
+  querySources<
+    TSourceProps extends BfNodeBaseProps,
+    TSourceClass extends typeof BfNodeBase<TSourceProps>,
+  >(
+    _SourceClass: TSourceClass,
+    _props?: Partial<TSourceProps>,
+  ): Promise<Array<InstanceType<TSourceClass>>> {
+    throw new BfErrorNotImplemented();
+  }
+
+  queryTargets<
+    TTargetProps extends BfNodeBaseProps,
+    TTargetClass extends typeof BfNodeBase<TTargetProps>,
+  >(
+    _TargetClass: TTargetClass,
+    _props?: Partial<TTargetProps>,
+  ): Promise<Array<InstanceType<TTargetClass>>> {
     throw new BfErrorNotImplemented();
   }
 

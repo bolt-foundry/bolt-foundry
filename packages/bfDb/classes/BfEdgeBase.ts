@@ -1,19 +1,20 @@
-// packages/bfDb/classes/BfEdgeBase.ts
-
 import {
   type BfMetadataBase,
   BfNodeBase,
   type BfNodeBaseProps,
+  type BfNodeCache,
 } from "packages/bfDb/classes/BfNodeBase.ts";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import type { BfGid } from "packages/bfDb/classes/BfNodeIds.ts";
 import { getLogger } from "packages/logger.ts";
+import { BfErrorNotImplemented } from "packages/BfError.ts";
+import type { BfMetadataEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
-const logger = getLogger(import.meta);
+const _logger = getLogger(import.meta);
 
-export type BfEdgeBaseProps = BfNodeBaseProps & {
+export type BfEdgeBaseProps = {
   role: string;
-};
+} & BfNodeBaseProps;
 
 export type BfMetadataEdgeBase = BfMetadataBase & {
   /** Source ID */
@@ -35,108 +36,122 @@ export class BfEdgeBase<
    * Creates an instance of BfEdgeBase.
    *
    * @param _currentViewer - The current viewer context
-   * @param _props - The edge properties
-   * @param metadata - Optional partial metadata for the edge
+   * @param _props - The edge properties including role information
+   * @param metadata - Optional partial metadata for the edge including source and target IDs
    */
   constructor(
-    protected override _currentViewer: BfCurrentViewer,
-    protected override _props: TProps,
+    currentViewer: BfCurrentViewer,
+    props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
-    super(_currentViewer, _props, metadata);
-  }
-
-  /**
-   * Get the source ID for this edge
-   */
-  get sourceId(): BfGid {
-    return this.metadata.bfSid;
-  }
-
-  /**
-   * Get the target ID for this edge
-   */
-  get targetId(): BfGid {
-    return this.metadata.bfTid;
-  }
-
-  /**
-   * Get the source class name for this edge
-   */
-  get sourceClassName(): string {
-    return this.metadata.bfSClassName;
-  }
-
-  /**
-   * Get the target class name for this edge
-   */
-  get targetClassName(): string {
-    return this.metadata.bfTClassName;
-  }
-
-  /**
-   * Get the role/label for this edge relationship, if any
-   */
-  get role(): string | undefined {
-    return this.props.role;
+    super(currentViewer, props, metadata);
   }
 
   /**
    * Factory method to create an edge between two nodes.
    * This uses a simpler approach without complex generics to avoid type errors.
+   *
+   * @param cv - The current viewer context
+   * @param sourceNode - The source node to connect from
+   * @param targetNode - The target node to connect to
+   * @param role - Optional role/label for the edge relationship
+   * @param additionalProps - Optional additional properties for the edge
+   * @returns A new BfEdgeBase instance representing the edge
    */
-  static createBetweenNodes(
+  static async createBetweenNodes(
     cv: BfCurrentViewer,
     sourceNode: BfNodeBase,
     targetNode: BfNodeBase,
-    role?: string,
-    additionalProps?: Record<string, unknown>,
-  ): BfEdgeBase {
-    logger.debug("BfEdgeBase.createBetweenNodes", {
-      sourceId: sourceNode.metadata.bfGid,
-      sourceClass: sourceNode.metadata.className,
-      targetId: targetNode.metadata.bfGid,
-      targetClass: targetNode.metadata.className,
-      role,
-    });
-
-    const partialMetadata: Partial<BfMetadataEdgeBase> = {
+    role: string | null = null,
+  ): Promise<BfEdgeBase> {
+    const metadata = {
+      bfSClassName: sourceNode.constructor.name,
       bfSid: sourceNode.metadata.bfGid,
-      bfSClassName: sourceNode.metadata.className,
+      bfTClassName: targetNode.constructor.name,
       bfTid: targetNode.metadata.bfGid,
-      bfTClassName: targetNode.metadata.className,
-    };
+    } as BfMetadataEdge;
 
-    // Combine the given props with the role
-    const edgeProps = {
-      ...(additionalProps || {}),
+    const newEdge = await this.__DANGEROUS__createUnattached(cv, {
       role,
-    } as BfEdgeBaseProps;
+    }, metadata);
 
-    // Using the concrete class directly for better type safety
-    return new BfEdgeBase(cv, edgeProps, partialMetadata);
+    return newEdge;
   }
 
   /**
-   * Override toString to include source and target information
+   * Queries source instances connected to a target node.
+   *
+   * @param cv - The current viewer context
+   * @param bfNode - The target node instance
+   * @param SourceClass - The class of the source nodes to query
+   * @param targetId - The ID of the target node
+   * @param propsToQuery - Optional properties to filter the query
+   * @returns Promise resolving to an array of source instances
    */
-  override toString() {
-    return `${this.constructor.name}#${this.metadata.bfGid} (${this.sourceClassName}#${this.sourceId} -> ${this.targetClassName}#${this.targetId})`;
+  static querySourceInstances<
+    TSourceClass extends typeof BfNodeBase<TSourceProps>,
+    TEdgeProps extends BfEdgeBaseProps,
+    TSourceProps extends BfNodeBaseProps,
+  >(
+    _cv: BfCurrentViewer,
+    _SourceClass: TSourceClass,
+    _targetId: BfGid,
+    _propsToQuery: Partial<TSourceProps> = {},
+    _edgePropsToQuery: Partial<TEdgeProps> = {},
+  ): Promise<Array<InstanceType<TSourceClass>>> {
+    throw new BfErrorNotImplemented("Not implemented");
   }
 
   /**
-   * Override toGraphql to include edge-specific fields
+   * Queries target instances connected to a source node.
+   *
+   * @param cv - The current viewer context
+   * @param bfNode - The source node instance
+   * @param TargetClass - The class of the target nodes to query
+   * @param sourceId - The ID of the source node
+   * @param propsToQuery - Optional properties to filter the query
+   * @param edgePropsToQuery - Optional edge properties to filter the query
+   * @returns Promise resolving to an array of target instances
    */
-  override toGraphql() {
-    const baseGraphql = super.toGraphql();
+  static queryTargetInstances<
+    TTargetProps extends BfNodeBaseProps,
+    TEdgeProps extends BfEdgeBaseProps,
+    TTargetClass extends typeof BfNodeBase<TTargetProps>,
+  >(
+    _cv: BfCurrentViewer,
+    _TargetClass: TTargetClass,
+    _sourceId: BfGid,
+    _propsToQuery: Partial<TTargetProps>,
+    _edgePropsToQuery: Partial<TEdgeProps> = {},
+    _cache?: BfNodeCache,
+  ): Promise<Array<InstanceType<TTargetClass>>> {
+    throw new BfErrorNotImplemented("Not implemented");
+  }
 
-    return {
-      ...baseGraphql,
-      sourceId: this.sourceId,
-      targetId: this.targetId,
-      sourceClassName: this.sourceClassName,
-      targetClassName: this.targetClassName,
-      role: this.role,
-    };
+  /**
+   * Queries all source edges connected to a node.
+   *
+   * @param node - The node whose source edges to query
+   * @param SourceClass - The class of the source nodes to filter by
+   * @returns Promise resolving to an array of edge instances
+   */
+  static querySourceEdgesForNode<TProps extends BfEdgeBaseProps>(
+    _node: BfNodeBase,
+  ): Promise<Array<InstanceType<typeof BfEdgeBase<TProps>>>> {
+    throw new BfErrorNotImplemented("Not implemented");
+  }
+
+  /**
+   * Queries all target edges connected to a node.
+   *
+   * @param node - The node whose target edges to query
+   * @param TargetClass - The class of the target nodes to filter by
+   * @returns Promise resolving to an array of edge instances
+   */
+  static queryTargetEdgesForNode(
+    _node: BfNodeBase,
+    _cache?: BfNodeCache,
+  ): Promise<Array<InstanceType<typeof BfEdgeBase>>> {
+    throw new BfErrorNotImplemented("Not implemented");
   }
 }

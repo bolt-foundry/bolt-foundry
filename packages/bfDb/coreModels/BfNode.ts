@@ -26,26 +26,34 @@ export type BfMetadataNode = BfMetadataBase & {
  */
 export class BfNode<
   TProps extends BfNodeBaseProps = BfNodeBaseProps,
-  TMetadata extends BfMetadataNode = BfMetadataNode,
+  TMetadata extends BfMetadataBase = BfMetadataNode,
 > extends BfNodeBase<TProps, TMetadata> {
   protected _serverProps: TProps;
   protected _clientProps: Partial<TProps> = {};
 
-  static override generateMetadata<TGenerationMetadata>(
+  static override generateMetadata<
+    TProps extends BfNodeBaseProps,
+    TMetadata extends BfMetadataBase,
+    TThis extends typeof BfNodeBase<TProps, TMetadata>,
+  >(
+    this: TThis,
     cv: BfCurrentViewer,
-    metadata?: Partial<TGenerationMetadata>,
-  ) {
+    metadata?: Partial<TMetadata>,
+  ): TMetadata {
     const bfGid = toBfGid(generateUUID());
-    const defaults = {
+    const baseDefaults: BfMetadataBase = {
       bfGid: bfGid,
       bfOid: cv.bfOid,
-      bfCid: cv.bfGid,
       className: this.name,
+      sortValue: this.generateSortValue(),
+    };
+    const nodeDefaults = {
+      ...baseDefaults,
+      bfCid: cv.bfGid,
       createdAt: new Date(),
       lastUpdated: new Date(),
-      sortValue: this.generateSortValue(),
-    } as TGenerationMetadata;
-    return { ...defaults, ...metadata } as TGenerationMetadata;
+    };
+    return { ...nodeDefaults, ...metadata } as unknown as TMetadata;
   }
 
   static override async findX<
@@ -84,7 +92,7 @@ export class BfNode<
     props?: Partial<TProps>,
     bfGids?: Array<BfGid>,
     cache?: BfNodeCache,
-  ): Promise<Array<InstanceType<TThis>>> {
+  ) {
     const items = await bfQueryItems(metadata, props, bfGids);
     return items.map((item) => {
       const instance = new this(cv, item.props as TProps, item.metadata);
@@ -94,11 +102,11 @@ export class BfNode<
   }
 
   constructor(
-    protected override _currentViewer: BfCurrentViewer,
+    currentViewer: BfCurrentViewer,
     protected override _props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
-    super(_currentViewer, _props, metadata);
+    super(currentViewer, _props, metadata);
     this._serverProps = _props;
   }
 
@@ -116,9 +124,9 @@ export class BfNode<
     });
   }
 
-  override async save() {
+  override async save<TMetadata extends BfMetadataNode>() {
     logger.debug(`Saving ${this}`, this.props, this.metadata);
-    await bfPutItem(this.props, this.metadata);
+    await bfPutItem(this.props, this.metadata as unknown as TMetadata);
     this._serverProps = this.props;
     this._clientProps = {};
     return this;
@@ -131,47 +139,5 @@ export class BfNode<
     const _item = await bfGetItem(this.cv.bfOid, this.metadata.bfGid);
     throw new BfErrorNotImplemented();
     // return this;
-  }
-
-  /**
-   * Create a new “Target Node” and automatically link it to `this` with a BfEdge row.
-   *
-   * By default, we store `role` in the Edge’s props, in case you need to label the relationship.
-   */
-  override async createTargetNode<
-    TTargetProps extends BfNodeBaseProps,
-    TTargetMetadata extends BfMetadataNode,
-    TTargetBfClass extends typeof BfNode<TTargetProps, TTargetMetadata>,
-  >(
-    TargetBfClass: TTargetBfClass,
-    props: TTargetProps,
-    metadata?: TTargetMetadata,
-    role?: string, // optional label for the relationship
-  ): Promise<InstanceType<TTargetBfClass>> {
-    logger.debug("createTargetNode called", {
-      targetClassName: TargetBfClass.name,
-      sourceId: this.metadata.bfGid,
-      role,
-    });
-
-    // 1) Create the new node (unattached).
-    const targetNode = await TargetBfClass.__DANGEROUS__createUnattached(
-      this.cv,
-      props,
-      metadata,
-    );
-
-    const { BfEdge } = await import("packages/bfDb/coreModels/BfEdge.ts");
-
-    // 2) Create the edge in bfdb
-    await BfEdge.createBetweenNodes(this.cv, this, targetNode, role);
-
-    logger.debug("Edge created successfully", {
-      sourceId: this.metadata.bfGid,
-      targetId: targetNode.metadata.bfGid,
-      role,
-    });
-
-    return targetNode as InstanceType<TTargetBfClass>;
   }
 }

@@ -21,10 +21,16 @@
   - [Before Committing Changes](#before-committing-changes)
   - [Dependency Management](#dependency-management)
 - [Code Quality](#code-quality)
+  - [Testing Approaches](#testing-approaches)
   - [Code Reviews](#code-reviews)
   - [Code Style Guidelines](#code-style-guidelines)
   - [Common Type Errors](#common-type-errors)
+- [Special Protocols](#special-protocols)
+  - [BFF Commit Protocol](#bff-commit-protocol)
+  - [BFF Agent Update Protocol](#bff-agent-update-protocol)
+  - [BFF Help Protocol](#bff-help-protocol)
 - [Best Practices](#best-practices)
+- [Test-Driven Development](#test-driven-development-tdd)
 
 ## Project Overview
 
@@ -132,6 +138,8 @@ advanced features while maintaining compatibility with Git.
 - `sl push` - Push changes to remote
 - `sl pull` - Pull changes from remote
 - `sl goto` - Switch to specific branch or commit
+- `sl goto prXXX` - Switch to a specific pull request branch (e.g.,
+  `sl goto pr316`)
 - `sl log` - View commit history
 - `sl web` - Start Sapling web interface
 - `sl diff` - Show changes in working directory
@@ -210,6 +218,29 @@ sl commit -m "Descriptive title
 - Ran Y test and confirmed Z outcome"
 ```
 
+To use a file for the commit message (useful for long, complex commit messages):
+
+```bash
+# Create a commit message file
+cat > build/commit-message.txt << 'EOF'
+Descriptive title
+
+## Summary
+- Change 1: Brief explanation of first change
+- Change 2: Brief explanation of second change
+
+## Test Plan
+- Verified X works as expected
+- Ran Y test and confirmed Z outcome
+EOF
+
+# Commit using the file content as the message
+sl commit -m "$(cat build/commit-message.txt)"
+```
+
+Note: Unlike Git, Sapling doesn't support the `-F` flag for reading commit
+messages from a file. Use the approach above instead.
+
 The key is to use line breaks and formatting to make your commit message
 readable.
 
@@ -244,145 +275,6 @@ Guidelines for splitting commits:
 - Make sure each commit can be understood on its own
 
 Example commit message:
-
-## Isograph
-
-Isograph is a key technology used in Content Foundry for data fetching and
-component rendering. It provides a type-safe way to declare data dependencies
-for React components and efficiently fetch that data from the GraphQL API.
-
-### What is Isograph?
-
-Isograph is a framework that integrates GraphQL with React components, allowing
-you to:
-
-1. Declare data requirements directly inside component definitions
-2. Automatically generate TypeScript types for your data
-3. Efficiently manage data fetching and caching
-4. Create reusable component fragments
-
-### How Isograph Works in Content Foundry
-
-In Content Foundry, Isograph components are defined using the `iso` function
-imported from the generated isograph module:
-
-```typescript
-import { iso } from "packages/app/__generated__/__isograph/iso.ts";
-
-export const MyComponent = iso(`
-  field TypeName.FieldName @component {
-    id
-    title
-    description
-    items {
-      id
-      name
-    }
-  }
-`)(function MyComponent({ data }) {
-  // data is typed based on the GraphQL fragment above
-  return <div>{data.title}</div>;
-});
-```
-
-The `iso` function takes a GraphQL fragment string that defines what data the
-component needs, and returns a higher-order function that wraps your component,
-providing the requested data via props.
-
-### Key Concepts
-
-#### Field Definitions
-
-Components declare their data needs using GraphQL field definitions:
-
-- `field TypeName.FieldName @component` - Creates a component field
-- `entrypoint TypeName.FieldName` - Creates an entry point for routing
-
-#### Component Structure
-
-Isograph components follow this pattern:
-
-1. Import the `iso` function
-2. Define the GraphQL fragment with fields needed
-3. Create a function component that receives the data
-4. Apply the iso HOC to the component
-
-#### Important Note on Isograph Component Usage
-
-One of the key benefits of Isograph is that you **don't need to explicitly
-import** components that are referenced in your GraphQL fragments. The Isograph
-system automatically makes these components available through the `data` prop.
-
-For example, if your GraphQL fragment includes a field like:
-
-```typescript
-// In ParentComponent.tsx
-export const ParentComponent = iso(`
-  field TypeName.ParentComponent @component {
-    childItems {
-      id
-      ChildComponent  // This references another Isograph component
-    }
-  }
-`)(function ParentComponent({ data }) {
-  return (
-    <div>
-      {data.childItems.map((item) => (
-        // The ChildComponent is automatically available as item.ChildComponent
-        <item.ChildComponent key={item.id} />
-      ))}
-    </div>
-  );
-});
-```
-
-The `ChildComponent` becomes accessible directly through the data object without
-explicit imports. This creates a tightly integrated system where the data
-structure and component structure align perfectly.
-
-#### Environment Setup
-
-Content Foundry sets up the Isograph environment in
-`packages/app/isographEnvironment.ts`:
-
-- Creates an Isograph store
-- Configures network requests to the GraphQL endpoint
-- Sets up caching
-
-### Development Workflow
-
-1. **Define Components**: Create components with their data requirements
-2. **Build**: Run `bff build` to generate Isograph types
-3. **Use Components**: Import and use the components in your app
-
-### Fragment Reader Components
-
-For dynamic component rendering, Content Foundry uses
-`BfIsographFragmentReader`:
-
-```typescript
-<BfIsographFragmentReader
-  fragmentReference={someFragmentReference}
-  networkRequestOptions={{
-    suspendIfInFlight: true,
-    throwOnNetworkError: true,
-  }}
-/>;
-```
-
-This utility component helps render Isograph fragments with proper error
-handling and loading states.
-
-### Common Isograph Patterns
-
-1. **Component Fields**: Use `field TypeName.ComponentName @component` for
-   reusable components
-2. **Entrypoints**: Use `entrypoint TypeName.EntrypointName` for route entry
-   points
-3. **Mutations**: Use `entrypoint Mutation.MutationName` for GraphQL mutations
-
-The Isograph compiler automatically generates TypeScript types and utilities in
-`packages/app/__generated__/__isograph/`.
 
 ```
 Fix content collection ID lookup and add BfGid type documentation
@@ -448,6 +340,25 @@ bff devTools
 
 ## Code Organization
 
+### Directory Structure Patterns
+
+Content Foundry follows specific patterns for organizing code files:
+
+- **Test files**: Place test files in a `__tests__` directory within the module
+  they are testing.
+  - Example: Tests for `packages/bfDb/classes/SomeClass.ts` should go in
+    `packages/bfDb/classes/__tests__/SomeClass.test.ts`
+- **Example files**: Place example files in a `__examples__` directory within
+  the module they exemplify.
+  - Example: Examples for `packages/bfDb/classes/SomeClass.ts` should go in
+    `packages/bfDb/classes/__examples__/SomeExampleFile.ts`
+- **Model classes**: Database models are in `packages/bfDb/models/`
+- **Core model classes**: Base classes for models are in
+  `packages/bfDb/coreModels/`
+
+This organization keeps related files together and makes it easier to find and
+maintain code.
+
 ### Front-end Architecture
 
 Content Foundry uses a component-based architecture with React:
@@ -456,6 +367,145 @@ Content Foundry uses a component-based architecture with React:
 - Design system components in `packages/bfDs/components/`
 - Isograph used for component data fetching
 - Router context for navigation
+
+### Isograph
+
+Isograph is a key technology used in Content Foundry for data fetching and
+component rendering. It provides a type-safe way to declare data dependencies
+for React components and efficiently fetch that data from the GraphQL API.
+
+#### What is Isograph?
+
+Isograph is a framework that integrates GraphQL with React components, allowing
+you to:
+
+1. Declare data requirements directly inside component definitions
+2. Automatically generate TypeScript types for your data
+3. Efficiently manage data fetching and caching
+4. Create reusable component fragments
+
+#### How Isograph Works in Content Foundry
+
+In Content Foundry, Isograph components are defined using the `iso` function
+imported from the generated isograph module:
+
+```typescript
+import { iso } from "packages/app/__generated__/__isograph/iso.ts";
+
+export const MyComponent = iso(`
+  field TypeName.FieldName @component {
+    id
+    title
+    description
+    items {
+      id
+      name
+    }
+  }
+`)(function MyComponent({ data }) {
+  // data is typed based on the GraphQL fragment above
+  return <div>{data.title}</div>;
+});
+```
+
+The `iso` function takes a GraphQL fragment string that defines what data the
+component needs, and returns a higher-order function that wraps your component,
+providing the requested data via props.
+
+#### Key Concepts
+
+##### Field Definitions
+
+Components declare their data needs using GraphQL field definitions:
+
+- `field TypeName.FieldName @component` - Creates a component field
+- `entrypoint TypeName.FieldName` - Creates an entry point for routing
+
+##### Component Structure
+
+Isograph components follow this pattern:
+
+1. Import the `iso` function
+2. Define the GraphQL fragment with fields needed
+3. Create a function component that receives the data
+4. Apply the iso HOC to the component
+
+##### Important Note on Isograph Component Usage
+
+One of the key benefits of Isograph is that you **don't need to explicitly
+import** components that are referenced in your GraphQL fragments. The Isograph
+system automatically makes these components available through the `data` prop.
+
+For example, if your GraphQL fragment includes a field like:
+
+```typescript
+// In ParentComponent.tsx
+export const ParentComponent = iso(`
+  field TypeName.ParentComponent @component {
+    childItems {
+      id
+      ChildComponent  // This references another Isograph component
+    }
+  }
+`)(function ParentComponent({ data }) {
+  return (
+    <div>
+      {data.childItems.map((item) => (
+        // The ChildComponent is automatically available as item.ChildComponent
+        <item.ChildComponent key={item.id} />
+      ))}
+    </div>
+  );
+});
+```
+
+The `ChildComponent` becomes accessible directly through the data object without
+explicit imports. This creates a tightly integrated system where the data
+structure and component structure align perfectly.
+
+#### Environment Setup
+
+Content Foundry sets up the Isograph environment in
+`packages/app/isographEnvironment.ts`:
+
+- Creates an Isograph store
+- Configures network requests to the GraphQL endpoint
+- Sets up caching
+
+#### Development Workflow
+
+1. **Define Components**: Create components with their data requirements
+2. **Build**: Run `bff build` to generate Isograph types
+3. **Use Components**: Import and use the components in your app
+
+#### Fragment Reader Components
+
+For dynamic component rendering, Content Foundry uses
+`BfIsographFragmentReader`:
+
+```typescript
+<BfIsographFragmentReader
+  fragmentReference={someFragmentReference}
+  networkRequestOptions={{
+    suspendIfInFlight: true,
+    throwOnNetworkError: true,
+  }}
+/>;
+```
+
+This utility component helps render Isograph fragments with proper error
+handling and loading states.
+
+#### Common Isograph Patterns
+
+1. **Component Fields**: Use `field TypeName.ComponentName @component` for
+   reusable components
+2. **Entrypoints**: Use `entrypoint TypeName.EntrypointName` for route entry
+   points
+3. **Mutations**: Use `entrypoint Mutation.MutationName` for GraphQL mutations
+
+The Isograph compiler automatically generates TypeScript types and utilities in
+`packages/app/__generated__/__isograph/`.
 
 ### GraphQL API
 
@@ -497,7 +547,7 @@ Key context methods:
 - `ctx.findCurrentUser()`: Get the current authenticated user
 - `ctx.login()`, `ctx.register()`: Authentication methods
 
-### Database Backends
+### Database Layer
 
 Content Foundry supports multiple database backends through an abstraction
 layer:
@@ -533,12 +583,51 @@ The database abstraction makes it easy to add new backend implementations:
 
 To get started with Content Foundry development:
 
-1. Start the development environment: `bff devTools`
-2. Access development tools:
+1. Authenticate with GitHub using the GitHub CLI:
+   ```bash
+   gh auth login
+   ```
+   - This will start an interactive authentication process
+   - You'll be prompted to choose how you want to authenticate (web browser,
+     token, etc.)
+   - This authentication is required for PR operations and other GitHub
+     integrations
+
+2. Start the development environment: `bff devTools`
+   - This will help you get logged in and set up your environment
+   - If you're not authenticated with GitHub, this command will also help you
+     log in
+   - It will display a GitHub device code that you can copy and use to complete
+     authentication
+
+3. Access development tools:
    - Web app: http://localhost:8000
    - Sapling web: http://localhost:3011
    - Jupyter: http://localhost:8888
    - Tools UI: http://localhost:9999
+
+### Finding Work Items
+
+The canonical way to find out what to work on is to look in the
+`content/documentation` folder:
+
+- `content/documentation/community/backlog/` contains upcoming features and
+  tasks
+- `content/documentation/community/changelog/` contains release notes and
+  updates
+- Project roadmaps and priorities are documented in these markdown files
+
+#### Setting Up Replit Assistant
+
+When working with this project, it's recommended to configure your Replit
+Assistant with the following custom instruction:
+
+```
+Before making changes, check agent.md which has a list of helpful tips for performing your tasks. If you learn something new that isn't listed in agent.md, ask the user if they'd like you to update agent.md with the new information.
+```
+
+This ensures the assistant will reference the documentation and help keep it
+up-to-date with new discoveries about the codebase.
 
 ### Common Tasks
 
@@ -547,7 +636,13 @@ To get started with Content Foundry development:
 - Format: `bff format` (alias: `bff f`)
 - Type check: `bff check [file_path]`
 - Test all: `bff test`
-- Run single test: `deno test -A path/to/test/file.test.ts`
+- Run single test: `bff t path/to/test/file.test.ts` (shorthand for
+  `deno test -A path/to/test/file.test.ts`)
+
+  > **IMPORTANT**: Always use `bff t` rather than raw `deno test` commands. The
+  > `bff t` command ensures consistent permission flags, environment variables,
+  > and test configuration. This prevents issues with permissions and improves
+  > test reliability across environments.
 - Development environment: `bff devTools`
 - Full CI check: `bff ci` (combines format, lint, check, test, build)
 
@@ -622,7 +717,7 @@ The project primarily uses Deno's built-in testing capabilities:
 
 - Standard syntax with `Deno.test("description", () => { ... })`
 - Assertions from `@std/assert` (not `@std/testing/asserts`)
-- Simple execution with `deno test` or `bff test`
+- Simple execution with `bff test` or `bff t`
 
 ```typescript
 // Example standard test
@@ -632,6 +727,122 @@ Deno.test("my test function", () => {
   assertEquals(1 + 1, 2);
 });
 ```
+
+#### Test Inheritance Pattern
+
+When testing classes that extend base classes (like `BfNodeBase`), follow the
+inheritance pattern in the tests:
+
+1. Base class tests (`BfNodeBaseTest.ts`) define common test behaviors
+2. Derived class tests extend or import from base tests and only implement
+   additional tests for unique functionality
+
+Example structure:
+
+```typescript
+// In BfNodeBaseTest.ts
+export function runBaseNodeTests(NodeClass, helpers) {
+  Deno.test("should implement common node behavior", async () => {
+    // Test base functionality
+  });
+}
+
+// In BfNodeOnDisk.test.ts
+import { runBaseNodeTests } from "./BfNodeBaseTest.ts";
+
+// Run the base tests first
+runBaseNodeTests(BfNodeOnDisk, diskHelpers);
+
+// Then add tests specific to BfNodeOnDisk
+Deno.test("BfNodeOnDisk should save to disk", async () => {
+  // Test disk-specific functionality
+});
+```
+
+This pattern ensures:
+
+- Test consistency across related classes
+- Proper coverage of inherited functionality
+- Focus on testing only the unique aspects in derived classes
+- Changes to base functionality only need updates in one place
+
+#### Test Inheritance Pattern
+
+When testing classes that extend base classes (like `BfNodeBase`), follow the
+inheritance pattern in the tests:
+
+1. Base class tests (`BfNodeBaseTest.ts`) define common test behaviors
+2. Derived class tests extend or import from base tests and only implement
+   additional tests for unique functionality
+
+Example structure:
+
+```typescript
+// In BfNodeBaseTest.ts
+export function runBaseNodeTests(NodeClass, helpers) {
+  Deno.test("should implement common node behavior", async () => {
+    // Test base functionality
+  });
+}
+
+// In BfNodeOnDisk.test.ts
+import { runBaseNodeTests } from "./BfNodeBaseTest.ts";
+
+// Run the base tests first
+runBaseNodeTests(BfNodeOnDisk, diskHelpers);
+
+// Then add tests specific to BfNodeOnDisk
+Deno.test("BfNodeOnDisk should save to disk", async () => {
+  // Test disk-specific functionality
+});
+```
+
+This pattern ensures:
+
+- Test consistency across related classes
+- Proper coverage of inherited functionality
+- Focus on testing only the unique aspects in derived classes
+- Changes to base functionality only need updates in one place
+
+#### Mocking Current Viewers in Tests
+
+When testing components that require a `BfCurrentViewer` instance, always use
+the proper factory methods from the `BfCurrentViewer` classes rather than custom
+helper functions like `getMockCurrentViewer()`:
+
+```typescript
+// Preferred method for tests - flexible unified method
+const mockCv = BfCurrentViewer.__DANGEROUS__createTestCurrentViewer(
+  import.meta, // Always pass import.meta
+  true, // true for logged in, false for logged out
+  { // Optional configuration
+    bfGid: "test-user-123", // Optional user ID
+    bfOid: "test-owner-123", // Optional owner ID
+  },
+);
+
+// For logged out viewer (anonymous user)
+const mockCv = BfCurrentViewerLoggedOut.createLoggedOut(import.meta);
+
+// For logged in viewer with email
+const mockLoggedInCv = BfCurrentViewerLoggedIn.__DANGEROUS__createFromEmail(
+  import.meta,
+  "test@example.com",
+);
+
+// For logged in viewer with specific IDs
+const mockCvWithIds = BfCurrentViewerLoggedIn.__DANGEROUS__createFromBfGid(
+  import.meta,
+  toBfGid("user-id"),
+  toBfGid("owner-id"),
+);
+```
+
+These factory methods ensure proper initialization of the current viewer objects
+with appropriate permissions and behavior matching the actual implementation.
+The `__DANGEROUS__createTestCurrentViewer` method is particularly useful for
+tests as it provides a unified interface for creating both logged-in and
+logged-out viewers with configurable IDs.
 
 ### Code Reviews
 
@@ -766,24 +977,28 @@ chaining operator (`?.`) to safely access properties or methods:
 
 ```typescript
 // PROBLEMATIC - TypeScript will warn about possible null/undefined
-<Component key={item.id} /> // Error: 'item' is possibly 'null'
+<Component key={item.id} />; // Error: 'item' is possibly 'null'
 
 // BETTER - Using conditional rendering with && and Using optional chaining operator
-{item && <Component key={item?.id} />}
+{
+  item && <Component key={item?.id} />;
+}
+```
 
-The optional chaining operator (`?.`) short-circuits if the value before it is `null` or `undefined`, returning `undefined` instead of throwing an error.
+The optional chaining operator (`?.`) short-circuits if the value before it is
+`null` or `undefined`, returning `undefined` instead of throwing an error.
 
 #### String vs BfGid Type Mismatch
 
 A common error when working with the Content Foundry database layer occurs when
 trying to use string IDs directly with collection caches or database lookups:
-```
 
+```
 TS2345 [ERROR]: Argument of type 'string' is not assignable to parameter of type
 'BfGid'. Type 'string' is not assignable to type '{ readonly [__nominal__type]:
 "BfGid"; }'.
+```
 
-````
 ##### Why This Happens
 
 Content Foundry uses a nominal typing system for IDs to prevent accidental
@@ -800,7 +1015,7 @@ const collection = collectionsCache.get("collection-id");
 
 // Correct - converts string to BfGid
 const collection = collectionsCache.get(toBfGid("collection-id"));
-````
+```
 
 ##### Content Collection ID Format
 
@@ -827,6 +1042,173 @@ const collection = await ctx.find(BfContentCollection, collectionId);
 For content collections specifically, ensure you're using the full ID pattern
 that includes the content path prefix.
 
+## Special Protocols
+
+This section documents special protocols that can be used with the assistant.
+These are prefixed with `!` to distinguish them from regular queries.
+
+### BFA Commit Protocol
+
+The BFA Commit process is split into two separate protocols:
+
+#### BFA Precommit Protocol
+
+When you send the message `!bfa precommit`, the assistant will:
+
+1. Delete the build folder
+2. Recreate the build folder with a blank .gitkeep folder inside of it
+3. Format your code with `bff f`
+4. Run the full CI checks with `bff ci` (format, lint, type check, test, build)
+5. Save the CI results to `build/ciresults.txt` for reference
+6. Generate a diff of your recent code changes
+7. Save the diff to `build/diff.txt` for review
+
+Example usage:
+
+```
+!bfa precommit
+```
+
+This protocol helps you review your changes before executing the actual commit.
+Unlike the previous version, it no longer automatically generates a commit
+message.
+
+#### BFA Commit Protocol
+
+When you send the message `!bfa commit`, the assistant will:
+
+1. Configure the Sapling user with
+   `sl config --user ui.username "Bff Bot <bot@contentfoundry.com>"`
+2. **CRITICAL: Read the diff from `build/diff.txt` (generated in the precommit
+   step)**
+   - **IMPORTANT: If `build/diff.txt` doesn't exist, stop immediately and inform
+     the user that they need to run `!bfa precommit` first**
+   - **DO NOT proceed with creating a commit message or any further steps if the
+     diff file is missing**
+   - **ALWAYS examine the contents of `build/diff.txt` first before making any
+     assumptions about the changes**
+   - **LOOK ONLY at files mentioned in the diff file, not files you think should
+     be changed**
+   - **DO NOT make code changes that aren't related to what's in the diff file**
+   - **DO NOT implement any functionality that isn't already modified in the
+     diff**
+   - Generate a commit message based on this diff, not by looking at the
+     codebase directly
+   - Store the generated message in `build/commit-message.txt`
+3. **Check test results in `build/ciresults.txt` to determine if tests are
+   failing**
+   - If `build/ciresults.txt` doesn't exist, inform the user but continue with
+     the commit process
+   - If tests are failing, note this in the commit message and prepare to submit
+     the PR as a draft
+4. Add all changed files to the staging area with `sl add .`
+5. Automatically run `sl commit` with the generated message from
+   `build/commit-message.txt`
+6. Push the commit by running `sl pr submit`
+   - If tests are failing, add the `--draft` flag: `sl pr submit --draft` to
+     submit as a draft PR
+7. Get the currently logged in GitHub user information by running
+   `gh api user > build/gh-user.json` to save the data to a JSON file
+8. Set the user back using `sl config --user ui.username` again, but with the
+   "name" from the JSON file, and the "login" as the email
+   "$LOGIN@noreply.githubusers.com"
+9. Delete the GitHub user information file to maintain privacy by running
+   `rm build/gh-user.json`
+
+Example usage:
+
+```
+!bfa commit
+```
+
+#### Common BFA Commit Mistakes to Avoid
+
+1. **Implementing unrelated code changes**: Only make changes directly related
+   to what's in the diff.
+2. **Assuming file contents**: Never assume what's in a file without checking
+   the diff first.
+3. **Misinterpreting the diff context**: Make sure you understand what changes
+   are actually being made.
+4. **Modifying the wrong files**: Only edit files that appear in the diff.
+5. **Implementing "todo" comments**: Unless explicitly changed in the diff,
+   don't implement functionality from todo comments.
+6. **Adding new features**: Unless the diff shows partial implementation of a
+   new feature, don't add new features.
+7. **Shell command composition**: Always separate shell commands properly. For
+   multi-line operations, use separate `<proposed_shell_command>` tags for each
+   logical command:
+   ```
+   # INCORRECT - This will try to run everything as a single command
+   <proposed_shell_command>
+   mkdir -p build
+   echo "Commit message" > build/commit-message.txt
+   </proposed_shell_command>
+
+   # CORRECT - Use separate command tags
+   <proposed_shell_command>
+   mkdir -p build
+   </proposed_shell_command>
+
+   <proposed_shell_command>
+   echo "Commit message" > build/commit-message.txt
+   </proposed_shell_command>
+   ```
+
+Always run `cat build/diff.txt` as your first command to understand the actual
+changes before proceeding with any implementation.
+
+### BFA Agent Update Protocol
+
+When you send the message `!bfa agent update`, the assistant will analyze the
+contents of the AGENT.md file and update it to improve clarity, organization,
+and consistency.
+
+Example usage:
+
+```
+!bfa agent update
+```
+
+The assistant will:
+
+1. Review the current AGENT.md document structure
+2. Improve formatting and organization for better readability
+3. Ensure consistent style throughout the document
+4. Update or clarify confusing sections
+5. Consolidate redundant information
+6. Ensure proper heading hierarchy and section flow
+
+This protocol is useful when documentation has grown organically and needs
+restructuring or when new information needs to be integrated cohesively with
+existing content.
+
+### BFA Help Protocol
+
+When you send the message `!bfa help`, the assistant will list and explain all
+available protocols that can be used with the assistant.
+
+Example usage:
+
+```
+!bfa help
+```
+
+The assistant will:
+
+1. Provide a complete list of all available !bfa protocols
+2. Include a brief description of what each protocol does
+3. Show examples of how to use each protocol
+
+Available protocols include:
+
+- `!bfa precommit` - Format code, run tests, and prepare for commit
+- `!bfa commit` - Execute the commit using the prepared diff
+- `!bfa agent update` - Update the AGENT.md file
+- `!bfa help` - Show this help information
+
+If you reply to the assistant's response with a specific protocol (e.g.,
+`!bfa commit-prepare`), the assistant will automatically execute that protocol.
+
 ## Best Practices
 
 1. **Use BFF commands** for common tasks
@@ -844,5 +1226,244 @@ that includes the content path prefix.
 10. **Use lexically sortable inheritance naming** for classes that implement
     interfaces or extend base classes. Start with the base class or interface
     name, followed by specifics, like `DatabaseBackendPostgres` instead of
-    `DatabaseBackendPostgres`. This makes imports and directory listings easier
+    `PostgresDatabaseBackend`. This makes imports and directory listings easier
     to scan and understand inheritance hierarchies.
+11. **Use static factory methods instead of constructors** for BfModels (BfNode,
+    BfEdge, etc.). Never use the `new` keyword directly with these classes.
+    Instead:
+    - For creating a new node:
+      `await BfMyNode.__DANGEROUS__createUnattached(cv, props, metadata)`
+    - For creating a node connected to an existing node:
+      `await existingNode.createTargetNode(BfMyNode, props, metadata, role)`
+    - For creating an edge between nodes:
+      `await BfEdge.createBetweenNodes(cv, sourceNode, targetNode, role)`
+    - For retrieving existing nodes: `await BfMyNode.find(cv, id)` or
+      `await BfMyNode.findX(cv, id)`
+
+    These factory methods ensure proper creation, validation, lifecycle
+    callbacks, and database consistency.
+
+## The Cult of Done Manifesto
+
+Content Foundry development embraces principles from the "Cult of Done
+Manifesto," created by Bre Pettis and Kio Stark in 2009. This philosophy aligns
+with our "Worse is Better" approach and Test-Driven Development methodology.
+
+### The 13 Principles
+
+1. **There are three states of being: Not knowing, action, and completion.**
+2. **Accept that everything is a draft.** It helps to get it done.
+3. **There is no editing stage.**
+4. **Pretending you know what you're doing is almost the same as knowing what
+   you are doing, so just accept that you know what you're doing even if you
+   don't and do it.**
+5. **Banish procrastination.** If you wait more than a week to get an idea done,
+   abandon it.
+6. **The point of being done is not to finish but to get other things done.**
+7. **Once you're done you can throw it away.**
+8. **Laugh at perfection.** It's boring and keeps you from being done.
+9. **People without dirty hands are wrong.** Doing something makes you right.
+10. **Failure counts as done.** So do mistakes.
+11. **Destruction is a variant of done.**
+12. **If you have an idea and publish it on the internet, that counts as a ghost
+    of done.**
+13. **Done is the engine of more.**
+
+### Application in Content Foundry Development
+
+In Content Foundry, we apply these principles through:
+
+- **Rapid iteration:** Getting a minimal viable implementation done first
+- **Continuous delivery:** Pushing small, incremental improvements regularly
+- **Learning by doing:** Gaining insights through implementation rather than
+  extended planning
+- **Embracing imperfection:** Accepting that all code is a draft that can be
+  improved
+- **Action over analysis:** Building and testing rather than over-analyzing
+- **Failure as progress:** Learning from mistakes and failed approaches
+
+This philosophy complements our "Worse is Better" approach by prioritizing
+simplicity, action, and iterative improvement over complex perfection.
+
+## Development Philosophies
+
+### Worse is Better
+
+The "Worse is Better" philosophy (also known as the "New Jersey style") is a
+software design approach that prioritizes simplicity in implementation over
+other attributes like correctness, consistency, and completeness. Originated by
+Richard P. Gabriel in his essay "Lisp: Good News, Bad News, How to Win Big,"
+this philosophy has been influential in many successful software systems.
+
+#### Core Principles
+
+1. **Simplicity**: The design must be simple, both in implementation and
+   interface. Simplicity of implementation is more important than simplicity of
+   interface.
+
+2. **Correctness**: The design must be correct in all observable aspects, but
+   it's better to be simple than to handle all possible edge cases.
+
+3. **Consistency**: The design should be consistent, but consistency can be
+   sacrificed for simplicity in exceptional cases.
+
+4. **Completeness**: The design must cover as many important situations as
+   practical, but completeness can be sacrificed in favor of simplicity.
+
+#### Why It Works
+
+The "Worse is Better" approach often leads to software that:
+
+- Is easier to implement and maintain
+- Gets released earlier and starts gathering real-world feedback sooner
+- Is more adaptable to changing requirements because of its simpler
+  implementation
+- Can be incrementally improved over time as real needs become clearer
+
+This contrasts with the "right thing" approach (sometimes called the
+"MIT/Stanford style"), which prioritizes correctness, consistency, and
+completeness over implementation simplicity.
+
+#### Application in Content Foundry
+
+In Content Foundry, we apply this principle by:
+
+- Starting with minimal viable implementations that solve the core problem
+- Releasing early and iterating based on feedback
+- Adding complexity only when justified by actual usage patterns
+- Favoring solutions that are simple to understand and maintain
+
+Remember that "Worse is Better" doesn't mean "bad is good" - it means that a
+simpler solution that works well enough is often superior to a complex "perfect"
+solution.
+
+### Worse is Better and Test-Driven Development
+
+The "Worse is Better" philosophy pairs naturally with Test-Driven Development,
+especially for backend systems. Here's why we use TDD to implement the "Worse is
+Better" approach:
+
+1. **Start Simple**: TDD forces you to write only what's needed to make tests
+   pass, discouraging over-engineering.
+
+2. **Incremental Complexity**: Both philosophies encourage starting with a
+   minimal implementation and adding complexity only as needed.
+
+3. **Prioritize Working Code**: "Worse is Better" values working code over
+   theoretical completeness, while TDD ensures your code works at every step.
+
+4. **Practical Problem Solving**: Both approaches focus on solving actual
+   problems rather than anticipated ones.
+
+5. **Refactor as You Go**: TDD's refactoring phase aligns with the "Worse is
+   Better" principle of improving simple solutions over time.
+
+By using TDD for backend development, we ensure that we're building systems that
+are simple, work correctly for their primary use cases, and can evolve as
+real-world requirements become clearer.
+
+## Test-Driven Development (TDD)
+
+Content Foundry encourages Test-Driven Development for creating robust and
+maintainable code. TDD follows a specific workflow cycle known as
+"Red-Green-Refactor":
+
+### TDD Workflow
+
+1. **Red**: Write a failing test that defines a function or improvements of a
+   function
+   - Write a test that defines how the code should behave
+   - Run the test to see it fail (it should fail because the functionality
+     doesn't exist yet)
+   - This validates that your test is actually testing something
+
+2. **Green**: Write the simplest code to make the test pass
+   - Focus on just making the test pass, not on perfect code
+   - The goal is to satisfy the requirements defined by the test
+   - Avoid optimizing at this stage
+
+3. **Refactor**: Clean up the code while ensuring tests still pass
+   - Improve the implementation without changing its behavior
+   - Eliminate code duplication, improve naming, etc.
+   - Run tests after each change to ensure functionality is preserved
+
+### Example TDD Process
+
+Here's a simple example of how TDD might be applied to a Content Foundry
+feature:
+
+```typescript
+// 1. RED: Write a failing test first
+Deno.test("BfEdgeInMemory should find edges by source node", async () => {
+  const mockCv = getMockCurrentViewer();
+  const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, { name: "Source" });
+  const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, { name: "Target" });
+
+  // Create an edge between nodes
+  await BfEdgeInMemory.createBetweenNodes(mockCv, sourceNode, targetNode, "test-role");
+
+  // Test the findBySource method (which doesn't exist yet)
+  const edges = await BfEdgeInMemory.findBySource(mockCv, sourceNode);
+
+  assertEquals(edges.length, 1);
+  assertEquals(edges[0].metadata.bfSid, sourceNode.metadata.bfGid);
+  assertEquals(edges[0].metadata.bfTid, targetNode.metadata.bfGid);
+});
+
+// 2. GREEN: Implement the minimum code to make the test pass
+static async findBySource(
+  cv: BfCurrentViewer,
+  sourceNode: BfNodeBase,
+): Promise<BfEdgeInMemory[]> {
+  const result: BfEdgeInMemory[] = [];
+
+  for (const edge of this.inMemoryEdges.values()) {
+    if (edge.metadata.bfSid === sourceNode.metadata.bfGid) {
+      result.push(edge);
+    }
+  }
+
+  return result;
+}
+
+// 3. REFACTOR: Improve the implementation while keeping tests passing
+static async findBySource(
+  cv: BfCurrentViewer,
+  sourceNode: BfNodeBase,
+  role?: string,
+): Promise<BfEdgeInMemory[]> {
+  return Array.from(this.inMemoryEdges.values()).filter(edge => {
+    const sourceMatches = edge.metadata.bfSid === sourceNode.metadata.bfGid;
+    return role ? (sourceMatches && edge.props.role === role) : sourceMatches;
+  });
+}
+```
+
+### Benefits of TDD in Content Foundry
+
+- **Clear requirements**: Tests document what the code is supposed to do
+- **Confidence in changes**: Existing tests catch regressions when modifying
+  code
+- **Design improvement**: Writing tests first encourages more modular, testable
+  code
+- **Focus on user needs**: Tests represent user requirements, keeping
+  development focused
+- **Documentation**: Tests serve as executable documentation showing how
+  components should work
+
+**It's important to build red tests by themselves initially. Don't try to skip
+steps.**
+
+### Running Tests
+
+Content Foundry provides several ways to run tests:
+
+- Run all tests: `bff test`
+- Run specific tests: `deno test -A packages/path/to/test.ts`
+- Test coverage: `bff testCoverage`
+
+When writing tests, remember to use the `@std/assert` module for assertions:
+
+```typescript
+import { assertEquals, assertThrows } from "@std/assert";
+```
