@@ -30,6 +30,8 @@
   - [BFF Agent Update Protocol](#bff-agent-update-protocol)
   - [BFF Help Protocol](#bff-help-protocol)
 - [Best Practices](#best-practices)
+- [Development Approach](#development-approach)
+  - [Understanding Before Implementing](#understanding-before-implementing)
 - [Test-Driven Development](#test-driven-development-tdd)
 
 ## Project Overview
@@ -1362,6 +1364,33 @@ By using TDD for backend development, we ensure that we're building systems that
 are simple, work correctly for their primary use cases, and can evolve as
 real-world requirements become clearer.
 
+## Development Approach
+
+### Understanding Before Implementing
+
+When working on feature requests or bug fixes, it's important to follow this
+approach:
+
+1. **Clarify the Request**: Before writing any code, ensure you fully understand
+   the problem or requirement.
+   - Rephrase the problem in your own words to confirm understanding
+   - Ask clarifying questions when the requirements are ambiguous
+   - Identify edge cases or potential challenges upfront
+
+2. **Propose an Approach**: Outline your planned solution before implementation.
+   - Describe the high-level approach you intend to take
+   - Explain the reasoning behind your approach
+   - Wait for the user's approval before proceeding with implementation
+
+3. **Implement Incrementally**: Once approved, build the solution in logical,
+   small steps.
+   - Explain what you're doing at each step
+   - If the solution evolves from the initial plan, explain why
+
+This approach prevents wasted effort implementing misunderstood requirements,
+ensures alignment between user expectations and the solution, and promotes
+thorough problem analysis.
+
 ## Test-Driven Development (TDD)
 
 Content Foundry encourages Test-Driven Development for creating robust and
@@ -1474,6 +1503,12 @@ Promise<BfEdgeInMemory[]> { const result: BfEdgeInMemory[] = [];
 
 for (const edge of this.inMemoryEdges.values()) { if (edge.metadata.bfSid ===
 sourceNode.metadata.bfGid) { result.push(edge); } }
+// 2. GREEN: Implement the minimum code to make the test pass static async
+findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, ):
+Promise<BfEdgeInMemory[]> { const result: BfEdgeInMemory[] = [];
+
+for (const edge of this.inMemoryEdges.values()) { if (edge.metadata.bfSid ===
+sourceNode.metadata.bfGid) { result.push(edge); } }
 
 return result; }
 
@@ -1484,6 +1519,16 @@ Array.from(this.inMemoryEdges.values()).filter(edge => { const sourceMatches =
 edge.metadata.bfSid === sourceNode.metadata.bfGid; return role ? (sourceMatches
 && edge.props.role === role) : sourceMatches; }); }
 
+return result; }
+
+// 3. REFACTOR: Improve the implementation while keeping tests passing static
+async findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, role?: string,
+): Promise<BfEdgeInMemory[]> { return
+Array.from(this.inMemoryEdges.values()).filter(edge => { const sourceMatches =
+edge.metadata.bfSid === sourceNode.metadata.bfGid; return role ? (sourceMatches
+&& edge.props.role === role) : sourceMatches; }); }
+
+````
 ````
 ### Benefits of TDD in Content Foundry
 
