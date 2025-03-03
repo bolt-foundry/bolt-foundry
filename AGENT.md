@@ -1081,6 +1081,10 @@ When you send the message `!bfa commit`, the assistant will:
    `sl config --user ui.username "Bff Bot <bot@contentfoundry.com>"`
 2. **CRITICAL: Read the diff from `build/diff.txt` (generated in the precommit
    step)**
+   - **IMPORTANT: If `build/diff.txt` doesn't exist, stop immediately and inform
+     the user that they need to run `!bfa precommit` first**
+   - **DO NOT proceed with creating a commit message or any further steps if the
+     diff file is missing**
    - **ALWAYS examine the contents of `build/diff.txt` first before making any
      assumptions about the changes**
    - **LOOK ONLY at files mentioned in the diff file, not files you think should
@@ -1093,6 +1097,8 @@ When you send the message `!bfa commit`, the assistant will:
    - Store the generated message in `build/commit-message.txt`
 3. **Check test results in `build/ciresults.txt` to determine if tests are
    failing**
+   - If `build/ciresults.txt` doesn't exist, inform the user but continue with
+     the commit process
    - If tests are failing, note this in the commit message and prepare to submit
      the PR as a draft
 4. Add all changed files to the staging area with `sl add .`
@@ -1236,6 +1242,48 @@ If you reply to the assistant's response with a specific protocol (e.g.,
 
     These factory methods ensure proper creation, validation, lifecycle
     callbacks, and database consistency.
+
+## The Cult of Done Manifesto
+
+Content Foundry development embraces principles from the "Cult of Done
+Manifesto," created by Bre Pettis and Kio Stark in 2009. This philosophy aligns
+with our "Worse is Better" approach and Test-Driven Development methodology.
+
+### The 13 Principles
+
+1. **There are three states of being: Not knowing, action, and completion.**
+2. **Accept that everything is a draft.** It helps to get it done.
+3. **There is no editing stage.**
+4. **Pretending you know what you're doing is almost the same as knowing what
+   you are doing, so just accept that you know what you're doing even if you
+   don't and do it.**
+5. **Banish procrastination.** If you wait more than a week to get an idea done,
+   abandon it.
+6. **The point of being done is not to finish but to get other things done.**
+7. **Once you're done you can throw it away.**
+8. **Laugh at perfection.** It's boring and keeps you from being done.
+9. **People without dirty hands are wrong.** Doing something makes you right.
+10. **Failure counts as done.** So do mistakes.
+11. **Destruction is a variant of done.**
+12. **If you have an idea and publish it on the internet, that counts as a ghost
+    of done.**
+13. **Done is the engine of more.**
+
+### Application in Content Foundry Development
+
+In Content Foundry, we apply these principles through:
+
+- **Rapid iteration:** Getting a minimal viable implementation done first
+- **Continuous delivery:** Pushing small, incremental improvements regularly
+- **Learning by doing:** Gaining insights through implementation rather than
+  extended planning
+- **Embracing imperfection:** Accepting that all code is a draft that can be
+  improved
+- **Action over analysis:** Building and testing rather than over-analyzing
+- **Failure as progress:** Learning from mistakes and failed approaches
+
+This philosophy complements our "Worse is Better" approach by prioritizing
+simplicity, action, and iterative improvement over complex perfection.
 
 ## Development Philosophies
 
