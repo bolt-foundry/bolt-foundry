@@ -1,14 +1,14 @@
 const palletteLight = {
-  primary: [255, 215, 0], // rgba(255, 215, 0, 1)
-  secondary: [34, 217, 229], // rgba(34, 217, 229, 1)
+  primary: [0, 176, 255], // rgba(0, 176, 255, 1) - Changed from gold to blue
+  secondary: [255, 105, 180], // rgba(255, 105, 180, 1) - Changed from cyan to hot pink
   tertiary: [11, 41, 75], // rgba(11, 41, 75, 1)
   tertiaryDark: [11, 41, 75], // rgba(11, 41, 75, 1)
-  fourthary: [238, 130, 238], // rgba(238, 130, 238, 1)
+  fourthary: [126, 192, 80], // rgba(126, 192, 80, 1) - Changed from violet to green
   negative: [248, 113, 113], // rgba(248, 113, 113, 1)
   // success: use 'secondary'
   text: [35, 42, 49], // rgba(35, 42, 49, 1)
   textMarketing: [46, 46, 46], // rgba(46, 46, 46, 1)
-  accentText: [19, 201, 212], // rgba(19, 201, 212, 1)
+  accentText: [255, 105, 180], // rgba(255, 105, 180, 1) - Match secondary color
   secondaryText: [168, 168, 168], // rgba(141, 147, 154, 1)
   background: [255, 255, 255], // rgba(255, 255, 255, 1)
   pageBackground: [252, 252, 252],
@@ -25,16 +25,16 @@ const constantColors = {
 };
 
 const palletteDark = {
-  primary: [255, 215, 0], // rgba(255, 215, 0, 1)
-  secondary: [34, 217, 229], // rgba(34, 217, 229, 1)
+  primary: [0, 176, 255], // rgba(0, 176, 255, 1) - Changed from gold to blue
+  secondary: [255, 105, 180], // rgba(255, 105, 180, 1) - Changed from cyan to hot pink
   tertiary: [255, 255, 255],
   tertiaryDark: [15, 16, 17],
-  fourthary: [238, 130, 238], // rgba(238, 130, 238, 1)
+  fourthary: [126, 192, 80], // rgba(126, 192, 80, 1) - Changed from violet to green
   negative: [248, 113, 113], // rgba(248, 113, 113, 1)
   // success: use 'secondary'
   text: [220, 220, 225],
   textMarketing: [230, 230, 235], // rgba(46, 46, 46, 1)
-  accentText: [19, 201, 212], // rgba(19, 201, 212, 1)
+  accentText: [255, 105, 180], // rgba(255, 105, 180, 1) - Match secondary color
   secondaryText: [141, 147, 154], // rgba(141, 147, 154, 1)
   background: [20, 21, 22],
   pageBackground: [24, 25, 26],
