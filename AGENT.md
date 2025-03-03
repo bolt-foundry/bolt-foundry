@@ -582,11 +582,24 @@ The database abstraction makes it easy to add new backend implementations:
 To get started with Content Foundry development:
 
 1. Start the development environment: `bff devTools`
+   - This will help you get logged in and set up your environment
 2. Access development tools:
    - Web app: http://localhost:8000
    - Sapling web: http://localhost:3011
    - Jupyter: http://localhost:8888
    - Tools UI: http://localhost:9999
+
+#### Setting Up Replit Assistant
+
+When working with this project, it's recommended to configure your Replit
+Assistant with the following custom instruction:
+
+```
+Before making changes, check agent.md which has a list of helpful tips for performing your tasks. If you learn something new that isn't listed in agent.md, ask the user if they'd like you to update agent.md with the new information.
+```
+
+This ensures the assistant will reference the documentation and help keep it
+up-to-date with new discoveries about the codebase.
 
 ### Common Tasks
 
