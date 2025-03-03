@@ -589,6 +589,17 @@ To get started with Content Foundry development:
    - Jupyter: http://localhost:8888
    - Tools UI: http://localhost:9999
 
+### Finding Work Items
+
+The canonical way to find out what to work on is to look in the
+`content/documentation` folder:
+
+- `content/documentation/community/backlog/` contains upcoming features and
+  tasks
+- `content/documentation/community/changelog/` contains release notes and
+  updates
+- Project roadmaps and priorities are documented in these markdown files
+
 #### Setting Up Replit Assistant
 
 When working with this project, it's recommended to configure your Replit
