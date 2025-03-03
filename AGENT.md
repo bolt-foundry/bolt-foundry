@@ -338,6 +338,25 @@ bff devTools
 
 ## Code Organization
 
+### Directory Structure Patterns
+
+Content Foundry follows specific patterns for organizing code files:
+
+- **Test files**: Place test files in a `__tests__` directory within the module
+  they are testing.
+  - Example: Tests for `packages/bfDb/classes/SomeClass.ts` should go in
+    `packages/bfDb/classes/__tests__/SomeClass.test.ts`
+- **Example files**: Place example files in a `__examples__` directory within
+  the module they exemplify.
+  - Example: Examples for `packages/bfDb/classes/SomeClass.ts` should go in
+    `packages/bfDb/classes/__examples__/SomeExampleFile.ts`
+- **Model classes**: Database models are in `packages/bfDb/models/`
+- **Core model classes**: Base classes for models are in
+  `packages/bfDb/coreModels/`
+
+This organization keeps related files together and makes it easier to find and
+maintain code.
+
 ### Front-end Architecture
 
 Content Foundry uses a component-based architecture with React:
@@ -909,9 +928,10 @@ When you send the message `!bfa commit`, the assistant will:
    - Generate a commit message based on this diff, not by looking at the
      codebase directly
    - Store the generated message in `build/commit-message.txt`
-3. Automatically run `sl commit` with the generated message from
+3. Add all changed files to the staging area with `sl add .`
+4. Automatically run `sl commit` with the generated message from
    `build/commit-message.txt`
-4. Push the commit by running `sl pr submit`
+5. Push the commit by running `sl pr submit`
 5. Get the currently logged in GitHub user information by running
    `gh api user > build/gh-user.json` to save the data to a JSON file
 6. Set the user back using `sl config --user ui.username` again, but with the
