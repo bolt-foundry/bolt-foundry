@@ -1376,6 +1376,11 @@ maintainable code. TDD follows a specific workflow cycle known as
    - Run the test to see it fail (it should fail because the functionality
      doesn't exist yet)
    - This validates that your test is actually testing something
+   - **IMPORTANT**: A red test should test the intended behavior (what you want
+     to happen), not the current implementation (what currently happens)
+   - For base classes with methods that throw "Not Implemented" errors, don't
+     write tests that verify the error—write tests that verify the desired
+     behavior subclasses should implement
 
 2. **Green**: Write the simplest code to make the test pass
    - Focus on just making the test pass, not on perfect code
@@ -1396,11 +1401,20 @@ feature:
 // 1. RED: Write a failing test first
 Deno.test("BfEdgeInMemory should find edges by source node", async () => {
   const mockCv = getMockCurrentViewer();
-  const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, { name: "Source" });
-  const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, { name: "Target" });
+  const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+    name: "Source",
+  });
+  const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+    name: "Target",
+  });
 
   // Create an edge between nodes
-  await BfEdgeInMemory.createBetweenNodes(mockCv, sourceNode, targetNode, "test-role");
+  await BfEdgeInMemory.createBetweenNodes(
+    mockCv,
+    sourceNode,
+    targetNode,
+    "test-role",
+  );
 
   // Test the findBySource method (which doesn't exist yet)
   const edges = await BfEdgeInMemory.findBySource(mockCv, sourceNode);
@@ -1410,35 +1424,67 @@ Deno.test("BfEdgeInMemory should find edges by source node", async () => {
   assertEquals(edges[0].metadata.bfTid, targetNode.metadata.bfGid);
 });
 
-// 2. GREEN: Implement the minimum code to make the test pass
-static async findBySource(
-  cv: BfCurrentViewer,
-  sourceNode: BfNodeBase,
-): Promise<BfEdgeInMemory[]> {
-  const result: BfEdgeInMemory[] = [];
+// Example - Common Pattern to Avoid: Testing Current Implementation Instead of Desired Behavior
+// INCORRECT - This test just verifies current implementation (error throwing)
+Deno.test("BfEdgeBase save method should throw NotImplemented error", async () => {
+  // Import the BfErrorNotImplemented class
+  const { BfErrorNotImplemented } = await import("packages/BfError.ts");
 
-  for (const edge of this.inMemoryEdges.values()) {
-    if (edge.metadata.bfSid === sourceNode.metadata.bfGid) {
-      result.push(edge);
-    }
-  }
+  // Create an edge
+  const edge = new BfEdgeBase();
 
-  return result;
-}
+  // Assert that calling save throws the correct error - THIS IS WRONG!
+  await assertThrows(() => edge.save(), BfErrorNotImplemented);
+});
 
-// 3. REFACTOR: Improve the implementation while keeping tests passing
-static async findBySource(
-  cv: BfCurrentViewer,
-  sourceNode: BfNodeBase,
-  role?: string,
-): Promise<BfEdgeInMemory[]> {
-  return Array.from(this.inMemoryEdges.values()).filter(edge => {
-    const sourceMatches = edge.metadata.bfSid === sourceNode.metadata.bfGid;
-    return role ? (sourceMatches && edge.props.role === role) : sourceMatches;
+// CORRECT - Test verifies desired behavior for concrete subclasses
+Deno.test("Concrete Edge subclasses should properly implement save method", async () => {
+  const mockCv = getMockCurrentViewer();
+  const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+    name: "Source",
   });
-}
+  const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+    name: "Target",
+  });
+
+  // Create an edge between nodes using the concrete subclass
+  const edge = await ConcreteEdgeClass.createBetweenNodes(
+    mockCv,
+    sourceNode,
+    targetNode,
+    "test-role",
+  );
+
+  // Test that save returns the edge instance (desired behavior)
+  const savedEdge = await edge.save();
+  assertEquals(
+    savedEdge,
+    edge,
+    "save() should return the edge instance (this)",
+  );
+
+  // Add additional assertions based on what the save method should actually do
+  // (e.g., verify edge was persisted in the database, has updated timestamps, etc.)
+});
 ```
 
+// 2. GREEN: Implement the minimum code to make the test pass static async
+findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, ):
+Promise<BfEdgeInMemory[]> { const result: BfEdgeInMemory[] = [];
+
+for (const edge of this.inMemoryEdges.values()) { if (edge.metadata.bfSid ===
+sourceNode.metadata.bfGid) { result.push(edge); } }
+
+return result; }
+
+// 3. REFACTOR: Improve the implementation while keeping tests passing static
+async findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, role?: string,
+): Promise<BfEdgeInMemory[]> { return
+Array.from(this.inMemoryEdges.values()).filter(edge => { const sourceMatches =
+edge.metadata.bfSid === sourceNode.metadata.bfGid; return role ? (sourceMatches
+&& edge.props.role === role) : sourceMatches; }); }
+
+````
 ### Benefits of TDD in Content Foundry
 
 - **Clear requirements**: Tests document what the code is supposed to do
@@ -1454,6 +1500,23 @@ static async findBySource(
 **It's important to build red tests by themselves initially. Don't try to skip
 steps.**
 
+### Testing Abstract Base Classes vs. Concrete Implementations
+
+When testing class hierarchies, follow these principles:
+
+1. **For abstract base classes (like `BfEdgeBase`)**:
+   - Test the contract/interface that subclasses should follow
+   - Test the common behavior that applies to all subclasses
+   - Don't write tests that simply verify "not implemented" errors in placeholder methods
+   - Instead, write tests that verify the proper behavior those methods should have when implemented
+
+2. **For concrete implementations (like `BfEdgeInMemory`)**:
+   - Run all the base class tests (using the inheritance pattern described earlier)
+   - Add tests for implementation-specific behavior
+   - Test that placeholder methods from the base class are properly implemented
+
+Remember that the goal of testing abstract base classes is to define the contract that concrete implementations must follow, not to verify that unimplemented methods throw errors.
+
 ### Running Tests
 
 Content Foundry provides several ways to run tests:
@@ -1466,4 +1529,4 @@ When writing tests, remember to use the `@std/assert` module for assertions:
 
 ```typescript
 import { assertEquals, assertThrows } from "@std/assert";
-```
+````
