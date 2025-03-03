@@ -71,7 +71,7 @@ async function runLintStep(useGithub: boolean): Promise<number> {
       isValidJson = true;
       logger.debug("Lint output is valid JSON");
     } catch (e) {
-      logger.error("Lint output is not valid JSON:", e.message);
+      logger.error("Lint output is not valid JSON:", e instanceof Error ? e.message : String(e));
       logger.debug("First 200 chars of output:", stdout.substring(0, 200));
     }
 
