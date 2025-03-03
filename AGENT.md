@@ -725,6 +725,44 @@ This pattern ensures:
 - Focus on testing only the unique aspects in derived classes
 - Changes to base functionality only need updates in one place
 
+#### Test Inheritance Pattern
+
+When testing classes that extend base classes (like `BfNodeBase`), follow the
+inheritance pattern in the tests:
+
+1. Base class tests (`BfNodeBaseTest.ts`) define common test behaviors
+2. Derived class tests extend or import from base tests and only implement
+   additional tests for unique functionality
+
+Example structure:
+
+```typescript
+// In BfNodeBaseTest.ts
+export function runBaseNodeTests(NodeClass, helpers) {
+  Deno.test("should implement common node behavior", async () => {
+    // Test base functionality
+  });
+}
+
+// In BfNodeOnDisk.test.ts
+import { runBaseNodeTests } from "./BfNodeBaseTest.ts";
+
+// Run the base tests first
+runBaseNodeTests(BfNodeOnDisk, diskHelpers);
+
+// Then add tests specific to BfNodeOnDisk
+Deno.test("BfNodeOnDisk should save to disk", async () => {
+  // Test disk-specific functionality
+});
+```
+
+This pattern ensures:
+
+- Test consistency across related classes
+- Proper coverage of inherited functionality
+- Focus on testing only the unique aspects in derived classes
+- Changes to base functionality only need updates in one place
+
 #### Mocking Current Viewers in Tests
 
 When testing components that require a `BfCurrentViewer` instance, always use
@@ -1049,6 +1087,25 @@ Example usage:
    don't implement functionality from todo comments.
 6. **Adding new features**: Unless the diff shows partial implementation of a
    new feature, don't add new features.
+7. **Shell command composition**: Always separate shell commands properly. For
+   multi-line operations, use separate `<proposed_shell_command>` tags for each
+   logical command:
+   ```
+   # INCORRECT - This will try to run everything as a single command
+   <proposed_shell_command>
+   mkdir -p build
+   echo "Commit message" > build/commit-message.txt
+   </proposed_shell_command>
+
+   # CORRECT - Use separate command tags
+   <proposed_shell_command>
+   mkdir -p build
+   </proposed_shell_command>
+
+   <proposed_shell_command>
+   echo "Commit message" > build/commit-message.txt
+   </proposed_shell_command>
+   ```
 
 Always run `cat build/diff.txt` as your first command to understand the actual
 changes before proceeding with any implementation.
