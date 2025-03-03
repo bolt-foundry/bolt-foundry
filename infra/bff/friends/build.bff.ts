@@ -16,6 +16,7 @@ const allowedEnvironmentVariables = [
   "DEBUG",
   "DENO_TRACE_PERMISSIONS",
   "FORCE_COLOR",
+  "FORCE_DB_BACKEND",
   "LOG_LEVEL",
   "NODE_ENV",
   "NODE_PG_FORCE_NATIVE",
@@ -29,6 +30,7 @@ const allowedEnvironmentVariables = [
   "REPL_HOME",
   "REPLIT_DEV_DOMAIN",
   "RPID",
+  "SQLITE_DB_PATH",
   "TEAMCITY_VERSION",
   "TERM",
   "TF_BUILD",
@@ -96,6 +98,7 @@ const denoCompilationCommand = [
   `--allow-env=${allowedEnvironmentVariables.join(",")}`,
   `--allow-read=${readableLocations.join(",")}`,
   `--allow-run=${allowedBinaries.join(",")}`,
+  "--allow-write=tmp",
   "packages/web/web.tsx",
 ];
 
