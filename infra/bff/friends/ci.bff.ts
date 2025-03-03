@@ -62,7 +62,24 @@ async function runLintStep(useGithub: boolean): Promise<number> {
 
   // If GitHub annotations mode, parse JSON output and emit annotations
   if (useGithub) {
-    parseDenoLintJsonOutput(stdout);
+    logger.debug(`Received lint output (${stdout.length} bytes)`);
+
+    // Try to determine if output is valid JSON
+    let isValidJson = false;
+    try {
+      JSON.parse(stdout);
+      isValidJson = true;
+      logger.debug("Lint output is valid JSON");
+    } catch (e) {
+      logger.error("Lint output is not valid JSON:", e.message);
+      logger.debug("First 200 chars of output:", stdout.substring(0, 200));
+    }
+
+    if (isValidJson) {
+      parseDenoLintJsonOutput(stdout);
+    } else {
+      logger.warn("Skipping JSON parsing for lint output - invalid JSON");
+    }
   }
   return errorCode;
 }
@@ -70,11 +87,46 @@ async function runLintStep(useGithub: boolean): Promise<number> {
 /** If `deno lint --json` was used, parse JSON and emit GH Annotations. */
 function parseDenoLintJsonOutput(jsonString: string) {
   try {
+    // Debug log the raw JSON to understand the structure
+    logger.debug(
+      "Raw lint JSON output sample (first 500 chars):",
+      jsonString.length > 500
+        ? jsonString.substring(0, 500) + "..."
+        : jsonString,
+    );
+
     const parsed = JSON.parse(jsonString); // shape: { diagnostics: [...], errors: [...] }
+
+    // Log the full structure of the first diagnostic and error (if any)
+    if (parsed.diagnostics?.length > 0) {
+      logger.debug(
+        "First diagnostic object structure:",
+        JSON.stringify(parsed.diagnostics[0], null, 2),
+      );
+    } else {
+      logger.debug("No diagnostics found in lint output");
+    }
+
+    if (parsed.errors?.length > 0) {
+      logger.debug(
+        "First error object structure:",
+        JSON.stringify(parsed.errors[0], null, 2),
+      );
+    } else {
+      logger.debug("No errors found in lint output");
+    }
+
     // 1) diagnostics
     for (const diag of parsed.diagnostics ?? []) {
-      const filePath = diag.location?.filename ?? "unknown.ts";
-      const start = diag.location?.range?.start;
+      // The filename might be in a different location in the object structure
+      // Try multiple possible locations where filename might be stored
+      const filePath = (diag.filename ||
+        diag.location?.filename ||
+        diag.file?.filename ||
+        diag.file ||
+        "unknown.ts").replace("file://", "");
+
+      const start = diag.location?.range?.start || diag.range?.start;
       const line = (typeof start?.line === "number")
         ? start.line + 1
         : undefined;
@@ -82,19 +134,35 @@ function parseDenoLintJsonOutput(jsonString: string) {
         ? start.character + 1
         : undefined;
       const message = diag.message ?? "Unknown lint problem";
+
+      logger.debug(
+        `Processing diagnostic: ${filePath}:${line}:${col} - ${
+          message.substring(0, 50)
+        }...`,
+      );
       logCI.debug(message, { file: filePath, line, col });
     }
+
     // 2) errors
     for (const err of parsed.errors ?? []) {
-      const filePath = err.location?.filename ?? "unknown.ts";
-      const start = err.location?.range?.start;
-      const line = (typeof start?.line === "number")
-        ? start.line + 1
-        : undefined;
+      const filePath = err.filename ||
+        err.location?.filename ||
+        err.file?.filename ||
+        err.file ||
+        "unknown.ts";
+
+      const start = err.location?.range?.start || err.range?.start;
+      const line = (typeof start?.line === "number") ? start.line : undefined;
       const col = (typeof start?.character === "number")
-        ? start.character + 1
+        ? start.character
         : undefined;
       const message = err.message ?? "Unknown lint error";
+
+      logger.debug(
+        `Processing error: ${filePath}:${line}:${col} - ${
+          message.substring(0, 50)
+        }...`,
+      );
       logCI.error(message, { file: filePath, line, col });
     }
   } catch (err) {
@@ -130,7 +198,14 @@ async function runFormatStep(useGithub: boolean): Promise<number> {
  * and so on, then logs GH annotations as warnings.
  */
 function parseDenoFmtOutput(fullOutput: string) {
+  // Debug log a sample of the output to understand structure
+  logger.debug(
+    "Format check output sample (first 500 chars):",
+    fullOutput.length > 500 ? fullOutput.substring(0, 500) + "..." : fullOutput,
+  );
+
   const lines = fullOutput.split("\n");
+  logger.debug(`Parsing ${lines.length} lines from format output`);
   let currentFile: string | undefined;
 
   for (const line of lines) {
@@ -138,6 +213,7 @@ function parseDenoFmtOutput(fullOutput: string) {
     const fromMatch = line.match(/^from\s+([^:]+):$/);
     if (fromMatch) {
       currentFile = fromMatch[1].trim();
+      logger.debug(`Found file reference: ${currentFile}`);
       continue;
     }
 
@@ -146,6 +222,7 @@ function parseDenoFmtOutput(fullOutput: string) {
     if (currentFile) {
       // check for blank line => done with that file
       if (line.trim() === "") {
+        logger.debug(`End of section for file: ${currentFile}`);
         currentFile = undefined;
         continue;
       }
@@ -154,16 +231,24 @@ function parseDenoFmtOutput(fullOutput: string) {
       if (lineMatch) {
         const lineNum = parseInt(lineMatch[1], 10);
         const snippet = lineMatch[2];
+        logger.debug(
+          `Found format issue at ${currentFile}:${lineNum} - ${
+            snippet.substring(0, 50)
+          }`,
+        );
         // You can produce a more descriptive message if you want
         // e.g. "File not formatted according to deno fmt!"
         logCI.warn(snippet, { file: currentFile, line: lineNum });
         continue;
+      } else {
+        logger.debug(`Unmatched line in file section: "${line}"`);
       }
     }
 
     // If we see `error: Found X not formatted files in Y files`
     // we'll mark that as an error annotation.
     if (line.includes("error: Found") && line.includes("not formatted files")) {
+      logger.debug(`Found summary error line: ${line}`);
       logCI.error(line.trim());
     }
   }
