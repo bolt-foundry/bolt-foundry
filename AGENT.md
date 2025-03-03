@@ -138,6 +138,9 @@ advanced features while maintaining compatibility with Git.
 - `sl push` - Push changes to remote
 - `sl pull` - Pull changes from remote
 - `sl goto` - Switch to specific branch or commit
+- `sl goto prXXX` - Switch to a specific pull request branch (e.g.,
+  `sl goto pr316`)
+- `sl goto prXXX --rebase` - Switch to a PR branch and rebase your current changes on top of it
 - `sl log` - View commit history
 - `sl web` - Start Sapling web interface
 - `sl diff` - Show changes in working directory
@@ -581,9 +584,24 @@ The database abstraction makes it easy to add new backend implementations:
 
 To get started with Content Foundry development:
 
-1. Start the development environment: `bff devTools`
+1. Authenticate with GitHub using the GitHub CLI:
+   ```bash
+   gh auth login
+   ```
+   - This will start an interactive authentication process
+   - You'll be prompted to choose how you want to authenticate (web browser,
+     token, etc.)
+   - This authentication is required for PR operations and other GitHub
+     integrations
+
+2. Start the development environment: `bff devTools`
    - This will help you get logged in and set up your environment
-2. Access development tools:
+   - If you're not authenticated with GitHub, this command will also help you
+     log in
+   - It will display a GitHub device code that you can copy and use to complete
+     authentication
+
+3. Access development tools:
    - Web app: http://localhost:8000
    - Sapling web: http://localhost:3011
    - Jupyter: http://localhost:8888
