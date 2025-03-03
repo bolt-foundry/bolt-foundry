@@ -338,6 +338,25 @@ bff devTools
 
 ## Code Organization
 
+### Directory Structure Patterns
+
+Content Foundry follows specific patterns for organizing code files:
+
+- **Test files**: Place test files in a `__tests__` directory within the module
+  they are testing.
+  - Example: Tests for `packages/bfDb/classes/SomeClass.ts` should go in
+    `packages/bfDb/classes/__tests__/SomeClass.test.ts`
+- **Example files**: Place example files in a `__examples__` directory within
+  the module they exemplify.
+  - Example: Examples for `packages/bfDb/classes/SomeClass.ts` should go in
+    `packages/bfDb/classes/__examples__/SomeExampleFile.ts`
+- **Model classes**: Database models are in `packages/bfDb/models/`
+- **Core model classes**: Base classes for models are in
+  `packages/bfDb/coreModels/`
+
+This organization keeps related files together and makes it easier to find and
+maintain code.
+
 ### Front-end Architecture
 
 Content Foundry uses a component-based architecture with React:
@@ -877,9 +896,10 @@ When you send the message `!bfa precommit`, the assistant will:
 1. Delete the build folder
 2. Recreate the build folder with a blank .gitkeep folder inside of it
 3. Format your code with `bff f`
-4. Run tests with `bff t`
-5. Generate a diff of your recent code changes
-6. Save the diff to `build/diff.txt` for review
+4. Run the full CI checks with `bff ci` (format, lint, type check, test, build)
+5. Save the test results to `build/testresults.txt` for reference
+6. Generate a diff of your recent code changes
+7. Save the diff to `build/diff.txt` for review
 
 Example usage:
 
@@ -909,15 +929,22 @@ When you send the message `!bfa commit`, the assistant will:
    - Generate a commit message based on this diff, not by looking at the
      codebase directly
    - Store the generated message in `build/commit-message.txt`
-3. Automatically run `sl commit` with the generated message from
+3. **Check test results in `build/testresults.txt` to determine if tests are
+   failing**
+   - If tests are failing, note this in the commit message and prepare to submit
+     the PR as a draft
+4. Add all changed files to the staging area with `sl add .`
+5. Automatically run `sl commit` with the generated message from
    `build/commit-message.txt`
-4. Push the commit by running `sl pr submit`
-5. Get the currently logged in GitHub user information by running
+6. Push the commit by running `sl pr submit`
+   - If tests are failing, add the `--draft` flag: `sl pr submit --draft` to
+     submit as a draft PR
+7. Get the currently logged in GitHub user information by running
    `gh api user > build/gh-user.json` to save the data to a JSON file
-6. Set the user back using `sl config --user ui.username` again, but with the
+8. Set the user back using `sl config --user ui.username` again, but with the
    "name" from the JSON file, and the "login" as the email
    "$LOGIN@noreply.githubusers.com"
-7. Delete the GitHub user information file to maintain privacy by running
+9. Delete the GitHub user information file to maintain privacy by running
    `rm build/gh-user.json`
 
 Example usage:
