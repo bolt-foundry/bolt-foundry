@@ -240,6 +240,38 @@ export abstract class BfCurrentViewer {
       toBfGid(bfOid),
     );
   }
+
+  static __DANGEROUS__createTestCurrentViewer(
+    importMeta: ImportMeta,
+    isLoggedIn: boolean = true,
+    options: {
+      bfGid?: string | BfGid;
+      bfOid?: string | BfGid;
+    } = {},
+  ) {
+    logger.debug(`Creating test current viewer, logged in: ${isLoggedIn}`);
+
+    if (isLoggedIn) {
+      const bfGid = options.bfGid
+        ? toBfGid(options.bfGid)
+        : toBfGid("test-user-id");
+      const bfOid = options.bfOid
+        ? toBfGid(options.bfOid)
+        : toBfGid("test-owner-id");
+      return BfCurrentViewerLoggedIn
+        .__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+          importMeta,
+          bfGid,
+          bfOid,
+        );
+    } else {
+      return BfCurrentViewerLoggedOut
+        .__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+          importMeta,
+        );
+    }
+  }
+
   clear() {
     this.getPosthogClient().then(({ backendClient }) =>
       backendClient?.shutdown()
