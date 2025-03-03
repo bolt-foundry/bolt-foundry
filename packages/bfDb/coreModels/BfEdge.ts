@@ -138,6 +138,7 @@ export class BfEdge<TProps extends BfEdgeProps = BfEdgeProps>
 
   static queryTargetEdgesForNode(
     node: BfNodeBase,
+    cache?: BfNodeCache,
   ): Promise<Array<InstanceType<typeof BfEdge>>> {
     // Query edges where the provided node is the target
     const metadataToQuery: Partial<BfMetadataEdge> = {
@@ -149,6 +150,8 @@ export class BfEdge<TProps extends BfEdgeProps = BfEdgeProps>
       node.cv,
       metadataToQuery,
       {}, // No specific props filter
+      undefined, // No specific IDs filter
+      cache, // Pass the cache to the query method
     ) as Promise<Array<InstanceType<typeof BfEdge>>>;
   }
 
