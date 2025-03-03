@@ -116,45 +116,75 @@ export function testBfNodeBase(BfNodeClass: typeof BfNodeBase) {
       const sortValue = BfNodeClass.generateSortValue();
       assertEquals(typeof sortValue, "number");
     });
-    
-    await t.step("createTargetNode should create a connected node", async () => {
-      // Create a source node
-      const sourceNode = await BfNodeClass.__DANGEROUS__createUnattached(mockCv, {
-        name: "Source Node",
-      });
-      
-      // Define a role for the connection
-      const role = "test-connection";
-      
-      // Create a target node connected to the source node
-      const targetNode = await sourceNode.createTargetNode(
-        BfNodeClass,
-        { name: "Target Node" },
-        undefined,
-        role
-      );
-      
-      // Verify target node was created with proper properties
-      assertExists(targetNode.metadata.bfGid, "Target node should have a global ID");
-      assertEquals(targetNode.props.name, "Target Node", "Target node should have the correct name");
-      
-      // Verify edge was created between nodes
-      // First, get the BfEdgeBase implementation class from the relatedEdge property
-      // Access relatedEdge through a getter method or use the edge class directly
-      const relatedEdgePath = "packages/bfDb/classes/BfEdgeBase.ts";
-      const relatedEdgeNameWithTs = relatedEdgePath.split("/").pop() as string;
-      const relatedEdgeName = relatedEdgeNameWithTs.replace(".ts", "");
-      const bfEdgeImport = await import(relatedEdgePath);
-      const BfEdgeClass = bfEdgeImport[relatedEdgeName];
-      
-      // Query edges from source to target
-      const edges = await BfEdgeClass.queryTargetEdgesForNode(sourceNode);
-      
-      // Verify an edge exists with the correct properties
-      assertEquals(edges.length, 1, "Should have one edge connecting the nodes");
-      assertEquals(edges[0].metadata.bfSid, sourceNode.metadata.bfGid, "Edge source should be source node");
-      assertEquals(edges[0].metadata.bfTid, targetNode.metadata.bfGid, "Edge target should be target node");
-      assertEquals(edges[0].props.role, role, "Edge should have the correct role");
-    });
+
+    await t.step(
+      "createTargetNode should create a connected node",
+      async () => {
+        // Create a source node
+        const sourceNode = await BfNodeClass.__DANGEROUS__createUnattached(
+          mockCv,
+          {
+            name: "Source Node",
+          },
+        );
+
+        // Define a role for the connection
+        const role = "test-connection";
+
+        // Create a target node connected to the source node
+        const targetNode = await sourceNode.createTargetNode(
+          BfNodeClass,
+          { name: "Target Node" },
+          undefined,
+          role,
+        );
+
+        // Verify target node was created with proper properties
+        assertExists(
+          targetNode.metadata.bfGid,
+          "Target node should have a global ID",
+        );
+        assertEquals(
+          targetNode.props.name,
+          "Target Node",
+          "Target node should have the correct name",
+        );
+
+        // Verify edge was created between nodes
+        // First, get the BfEdgeBase implementation class from the relatedEdge property
+        // Access relatedEdge through a getter method or use the edge class directly
+        const relatedEdgePath = "packages/bfDb/classes/BfEdgeBase.ts";
+        const relatedEdgeNameWithTs = relatedEdgePath.split("/")
+          .pop() as string;
+        const relatedEdgeName = relatedEdgeNameWithTs.replace(".ts", "");
+        const bfEdgeImport = await import(relatedEdgePath);
+        const BfEdgeClass = bfEdgeImport[relatedEdgeName];
+
+        // Query edges from source to target
+        const edges = await BfEdgeClass.queryTargetEdgesForNode(sourceNode);
+
+        // Verify an edge exists with the correct properties
+        assertEquals(
+          edges.length,
+          1,
+          "Should have one edge connecting the nodes",
+        );
+        assertEquals(
+          edges[0].metadata.bfSid,
+          sourceNode.metadata.bfGid,
+          "Edge source should be source node",
+        );
+        assertEquals(
+          edges[0].metadata.bfTid,
+          targetNode.metadata.bfGid,
+          "Edge target should be target node",
+        );
+        assertEquals(
+          edges[0].props.role,
+          role,
+          "Edge should have the correct role",
+        );
+      },
+    );
   });
 }

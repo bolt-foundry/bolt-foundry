@@ -30,6 +30,8 @@
   - [BFF Agent Update Protocol](#bff-agent-update-protocol)
   - [BFF Help Protocol](#bff-help-protocol)
 - [Best Practices](#best-practices)
+- [Development Approach](#development-approach)
+  - [Understanding Before Implementing](#understanding-before-implementing)
 - [Test-Driven Development](#test-driven-development-tdd)
 
 ## Project Overview
@@ -1362,6 +1364,33 @@ By using TDD for backend development, we ensure that we're building systems that
 are simple, work correctly for their primary use cases, and can evolve as
 real-world requirements become clearer.
 
+## Development Approach
+
+### Understanding Before Implementing
+
+When working on feature requests or bug fixes, it's important to follow this
+approach:
+
+1. **Clarify the Request**: Before writing any code, ensure you fully understand
+   the problem or requirement.
+   - Rephrase the problem in your own words to confirm understanding
+   - Ask clarifying questions when the requirements are ambiguous
+   - Identify edge cases or potential challenges upfront
+
+2. **Propose an Approach**: Outline your planned solution before implementation.
+   - Describe the high-level approach you intend to take
+   - Explain the reasoning behind your approach
+   - Wait for the user's approval before proceeding with implementation
+
+3. **Implement Incrementally**: Once approved, build the solution in logical,
+   small steps.
+   - Explain what you're doing at each step
+   - If the solution evolves from the initial plan, explain why
+
+This approach prevents wasted effort implementing misunderstood requirements,
+ensures alignment between user expectations and the solution, and promotes
+thorough problem analysis.
+
 ## Test-Driven Development (TDD)
 
 Content Foundry encourages Test-Driven Development for creating robust and
@@ -1376,11 +1405,11 @@ maintainable code. TDD follows a specific workflow cycle known as
    - Run the test to see it fail (it should fail because the functionality
      doesn't exist yet)
    - This validates that your test is actually testing something
-   - **IMPORTANT**: A red test should test the intended behavior (what you want to happen), 
-     not the current implementation (what currently happens)
-   - For base classes with methods that throw "Not Implemented" errors, don't write 
-     tests that verify the error—write tests that verify the desired behavior subclasses 
-     should implement
+   - **IMPORTANT**: A red test should test the intended behavior (what you want
+     to happen), not the current implementation (what currently happens)
+   - For base classes with methods that throw "Not Implemented" errors, don't
+     write tests that verify the error—write tests that verify the desired
+     behavior subclasses should implement
 
 2. **Green**: Write the simplest code to make the test pass
    - Focus on just making the test pass, not on perfect code
@@ -1401,11 +1430,20 @@ feature:
 // 1. RED: Write a failing test first
 Deno.test("BfEdgeInMemory should find edges by source node", async () => {
   const mockCv = getMockCurrentViewer();
-  const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, { name: "Source" });
-  const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, { name: "Target" });
+  const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+    name: "Source",
+  });
+  const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+    name: "Target",
+  });
 
   // Create an edge between nodes
-  await BfEdgeInMemory.createBetweenNodes(mockCv, sourceNode, targetNode, "test-role");
+  await BfEdgeInMemory.createBetweenNodes(
+    mockCv,
+    sourceNode,
+    targetNode,
+    "test-role",
+  );
 
   // Test the findBySource method (which doesn't exist yet)
   const edges = await BfEdgeInMemory.findBySource(mockCv, sourceNode);
@@ -1420,10 +1458,10 @@ Deno.test("BfEdgeInMemory should find edges by source node", async () => {
 Deno.test("BfEdgeBase save method should throw NotImplemented error", async () => {
   // Import the BfErrorNotImplemented class
   const { BfErrorNotImplemented } = await import("packages/BfError.ts");
-  
+
   // Create an edge
   const edge = new BfEdgeBase();
-  
+
   // Assert that calling save throws the correct error - THIS IS WRONG!
   await assertThrows(() => edge.save(), BfErrorNotImplemented);
 });
@@ -1431,50 +1469,51 @@ Deno.test("BfEdgeBase save method should throw NotImplemented error", async () =
 // CORRECT - Test verifies desired behavior for concrete subclasses
 Deno.test("Concrete Edge subclasses should properly implement save method", async () => {
   const mockCv = getMockCurrentViewer();
-  const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, { name: "Source" });
-  const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, { name: "Target" });
-  
+  const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+    name: "Source",
+  });
+  const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+    name: "Target",
+  });
+
   // Create an edge between nodes using the concrete subclass
-  const edge = await ConcreteEdgeClass.createBetweenNodes(mockCv, sourceNode, targetNode, "test-role");
-  
+  const edge = await ConcreteEdgeClass.createBetweenNodes(
+    mockCv,
+    sourceNode,
+    targetNode,
+    "test-role",
+  );
+
   // Test that save returns the edge instance (desired behavior)
   const savedEdge = await edge.save();
-  assertEquals(savedEdge, edge, "save() should return the edge instance (this)");
-  
+  assertEquals(
+    savedEdge,
+    edge,
+    "save() should return the edge instance (this)",
+  );
+
   // Add additional assertions based on what the save method should actually do
   // (e.g., verify edge was persisted in the database, has updated timestamps, etc.)
 });
 ```
 
-// 2. GREEN: Implement the minimum code to make the test pass
-static async findBySource(
-  cv: BfCurrentViewer,
-  sourceNode: BfNodeBase,
-): Promise<BfEdgeInMemory[]> {
-  const result: BfEdgeInMemory[] = [];
+// 2. GREEN: Implement the minimum code to make the test pass static async
+findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, ):
+Promise<BfEdgeInMemory[]> { const result: BfEdgeInMemory[] = [];
 
-  for (const edge of this.inMemoryEdges.values()) {
-    if (edge.metadata.bfSid === sourceNode.metadata.bfGid) {
-      result.push(edge);
-    }
-  }
+for (const edge of this.inMemoryEdges.values()) { if (edge.metadata.bfSid ===
+sourceNode.metadata.bfGid) { result.push(edge); } }
 
-  return result;
-}
+return result; }
 
-// 3. REFACTOR: Improve the implementation while keeping tests passing
-static async findBySource(
-  cv: BfCurrentViewer,
-  sourceNode: BfNodeBase,
-  role?: string,
-): Promise<BfEdgeInMemory[]> {
-  return Array.from(this.inMemoryEdges.values()).filter(edge => {
-    const sourceMatches = edge.metadata.bfSid === sourceNode.metadata.bfGid;
-    return role ? (sourceMatches && edge.props.role === role) : sourceMatches;
-  });
-}
-```
+// 3. REFACTOR: Improve the implementation while keeping tests passing static
+async findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, role?: string,
+): Promise<BfEdgeInMemory[]> { return
+Array.from(this.inMemoryEdges.values()).filter(edge => { const sourceMatches =
+edge.metadata.bfSid === sourceNode.metadata.bfGid; return role ? (sourceMatches
+&& edge.props.role === role) : sourceMatches; }); }
 
+````
 ### Benefits of TDD in Content Foundry
 
 - **Clear requirements**: Tests document what the code is supposed to do
@@ -1519,4 +1558,4 @@ When writing tests, remember to use the `@std/assert` module for assertions:
 
 ```typescript
 import { assertEquals, assertThrows } from "@std/assert";
-```
+````
