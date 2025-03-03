@@ -10,6 +10,7 @@ export const ContentCollection = iso(`
     items {
       ContentItem
       id
+      title
     }
   }
 `)(function ContentCollection({ data }) {
@@ -27,7 +28,7 @@ export const ContentCollection = iso(`
     );
   }
 
-  const _itemElements = items
+  const itemElements = items
     .map((item) => item && <item.ContentItem key={item.id} />)
     .filter(Boolean) as React.ReactNode[];
 
@@ -39,10 +40,11 @@ export const ContentCollection = iso(`
             <div className="content-items">
               {items.length > 0
                 ? (
-                  items.map((_item, index) => (
+                  items.map((item, index) => (
                     <div key={index} className="content-item">
-                      {/* <h3 className="content-item-title">{item?.title}</h3> */}
+                      <h3 className="content-item-title">{item?.title}</h3>
                       {/* <p className="content-item-body">{item?.body}</p> */}
+                      {item && <item.ContentItem key={item!.id} />}
                       <a
                         href=""
                         className="content-item-link"

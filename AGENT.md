@@ -338,6 +338,25 @@ bff devTools
 
 ## Code Organization
 
+### Directory Structure Patterns
+
+Content Foundry follows specific patterns for organizing code files:
+
+- **Test files**: Place test files in a `__tests__` directory within the module
+  they are testing.
+  - Example: Tests for `packages/bfDb/classes/SomeClass.ts` should go in
+    `packages/bfDb/classes/__tests__/SomeClass.test.ts`
+- **Example files**: Place example files in a `__examples__` directory within
+  the module they exemplify.
+  - Example: Examples for `packages/bfDb/classes/SomeClass.ts` should go in
+    `packages/bfDb/classes/__examples__/SomeExampleFile.ts`
+- **Model classes**: Database models are in `packages/bfDb/models/`
+- **Core model classes**: Base classes for models are in
+  `packages/bfDb/coreModels/`
+
+This organization keeps related files together and makes it easier to find and
+maintain code.
+
 ### Front-end Architecture
 
 Content Foundry uses a component-based architecture with React:

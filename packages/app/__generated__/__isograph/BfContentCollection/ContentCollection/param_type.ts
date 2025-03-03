@@ -9,6 +9,7 @@ export type BfContentCollection__ContentCollection__param = {
 Unique identifier for the resource
       */
       readonly id: string,
+      readonly title: (string | null),
     } | null)> | null),
   },
   readonly parameters: Record<PropertyKey, never>,

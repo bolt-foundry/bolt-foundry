@@ -12,6 +12,7 @@ export const ContentItem = iso(`
     <div className="content-item">
       <h2 className="content-item-title">{data?.title}</h2>
       {data?.body && <div className="content-item-body">{data?.body}</div>}
+      {data?.href ?? "no href"}
     </div>
   );
 });

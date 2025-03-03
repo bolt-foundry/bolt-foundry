@@ -33,6 +33,13 @@ const readerAst: ReaderAst<BfContentCollection__ContentCollection__param> = [
         arguments: null,
         isUpdatable: false,
       },
+      {
+        kind: "Scalar",
+        fieldName: "title",
+        alias: null,
+        arguments: null,
+        isUpdatable: false,
+      },
     ],
   },
 ];

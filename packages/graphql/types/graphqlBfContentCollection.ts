@@ -17,6 +17,7 @@ export const graphqlBfContentItemType = objectType({
     t.string("summary");
     t.string("cta");
     t.string("href");
+    t.string("modulePath");
   },
 });
 
