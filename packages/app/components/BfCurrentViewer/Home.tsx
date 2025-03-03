@@ -30,7 +30,7 @@ export const Home = iso(`
       <div className="loginBox">
         {collection && showExtendedContent
           ? <data.contentCollection.ContentCollection />
-          : <p>Coming soon.</p>}
+          : <p>Coming NEVER.</p>}
       </div>
     </div>
   );
