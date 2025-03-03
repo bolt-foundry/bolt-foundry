@@ -866,13 +866,13 @@ that includes the content path prefix.
 This section documents special protocols that can be used with the assistant.
 These are prefixed with `!` to distinguish them from regular queries.
 
-### BFF Commit Protocol
+### BFA Commit Protocol
 
-The BFF Commit process is split into two separate protocols:
+The BFA Commit process is split into two separate protocols:
 
-#### BFF Precommit Protocol
+#### BFA Precommit Protocol
 
-When you send the message `!bff precommit`, the assistant will:
+When you send the message `!bfa precommit`, the assistant will:
 
 1. Delete the build folder
 2. Recreate the build folder with a blank .gitkeep folder inside of it
@@ -884,16 +884,16 @@ When you send the message `!bff precommit`, the assistant will:
 Example usage:
 
 ```
-!bff precommit
+!bfa precommit
 ```
 
 This protocol helps you review your changes before executing the actual commit.
 Unlike the previous version, it no longer automatically generates a commit
 message.
 
-#### BFF Commit Protocol
+#### BFA Commit Protocol
 
-When you send the message `!bff commit`, the assistant will:
+When you send the message `!bfa commit`, the assistant will:
 
 1. Configure the Sapling user with
    `sl config --user ui.username "Bff Bot <bot@contentfoundry.com>"`
@@ -923,10 +923,10 @@ When you send the message `!bff commit`, the assistant will:
 Example usage:
 
 ```
-!bff commit
+!bfa commit
 ```
 
-#### Common BFF Commit Mistakes to Avoid
+#### Common BFA Commit Mistakes to Avoid
 
 1. **Implementing unrelated code changes**: Only make changes directly related
    to what's in the diff.
@@ -943,16 +943,16 @@ Example usage:
 Always run `cat build/diff.txt` as your first command to understand the actual
 changes before proceeding with any implementation.
 
-### BFF Agent Update Protocol
+### BFA Agent Update Protocol
 
-When you send the message `!bff agent update`, the assistant will analyze the
+When you send the message `!bfa agent update`, the assistant will analyze the
 contents of the AGENT.md file and update it to improve clarity, organization,
 and consistency.
 
 Example usage:
 
 ```
-!bff agent update
+!bfa agent update
 ```
 
 The assistant will:
@@ -968,32 +968,32 @@ This protocol is useful when documentation has grown organically and needs
 restructuring or when new information needs to be integrated cohesively with
 existing content.
 
-### BFF Help Protocol
+### BFA Help Protocol
 
-When you send the message `!bff help`, the assistant will list and explain all
+When you send the message `!bfa help`, the assistant will list and explain all
 available protocols that can be used with the assistant.
 
 Example usage:
 
 ```
-!bff help
+!bfa help
 ```
 
 The assistant will:
 
-1. Provide a complete list of all available !bff protocols
+1. Provide a complete list of all available !bfa protocols
 2. Include a brief description of what each protocol does
 3. Show examples of how to use each protocol
 
 Available protocols include:
 
-- `!bff precommit` - Format code, run tests, and prepare for commit
-- `!bff commit` - Execute the commit using the prepared diff
-- `!bff agent update` - Update the AGENT.md file
-- `!bff help` - Show this help information
+- `!bfa precommit` - Format code, run tests, and prepare for commit
+- `!bfa commit` - Execute the commit using the prepared diff
+- `!bfa agent update` - Update the AGENT.md file
+- `!bfa help` - Show this help information
 
 If you reply to the assistant's response with a specific protocol (e.g.,
-`!bff commit-prepare`), the assistant will automatically execute that protocol.
+`!bfa commit-prepare`), the assistant will automatically execute that protocol.
 
 ## Best Practices
 
