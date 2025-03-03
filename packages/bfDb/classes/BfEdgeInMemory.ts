@@ -6,6 +6,7 @@ import {
 import type {
   BfNodeBase,
   BfNodeBaseProps,
+  BfNodeCache,
 } from "packages/bfDb/classes/BfNodeBase.ts";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "packages/logger.ts";
@@ -211,6 +212,7 @@ export class BfEdgeInMemory<
     sourceId: BfGid,
     propsToQuery: Partial<TTargetProps> = {},
     edgePropsToQuery: Partial<TEdgeProps> = {},
+    cache?: BfNodeCache,
   ): Promise<Array<InstanceType<TTargetClass>>> {
     // Filter edges based on source ID and optionally by edge properties
     const matchingEdges = Array.from(this.inMemoryEdges.values()).filter(
@@ -240,7 +242,31 @@ export class BfEdgeInMemory<
 
     // Find the target nodes for each edge
     const targetPromises = Array.from(targetIds).map(async (targetId) => {
+      // Check if the node is already in the cache
+      const cachedNode = cache?.get(targetId);
+      if (cachedNode) {
+        // If we find it in the cache and it's the right type, use it
+        if (cachedNode instanceof TargetClass) {
+          // Filter by target node properties if specified
+          if (Object.keys(propsToQuery).length > 0) {
+            const matches = Object.entries(propsToQuery).every(
+              ([key, value]) => {
+                return (cachedNode.props as TTargetProps)[key] === value;
+              },
+            );
+            return matches ? cachedNode : null;
+          }
+          return cachedNode;
+        }
+      }
+
+      // If not in cache, retrieve from storage
       const targetNode = await TargetClass.find(cv, targetId);
+
+      // Add to cache if found
+      if (targetNode && cache) {
+        cache.set(targetId, targetNode);
+      }
 
       // Filter by target node properties if specified
       if (targetNode && Object.keys(propsToQuery).length > 0) {
@@ -266,11 +292,20 @@ export class BfEdgeInMemory<
    */
   static override queryTargetEdgesForNode(
     node: BfNodeBase,
+    cache?: BfNodeCache,
   ): Promise<Array<InstanceType<typeof BfEdgeInMemory>>> {
     // Filter edges where the given node is the target
     const edges = Array.from(this.inMemoryEdges.values()).filter(
       (edge) => edge.metadata.bfTid === node.metadata.bfGid,
     );
+
+    // Add edges to cache if cache is provided
+    // We'll use the edge's GID as the key
+    if (cache) {
+      for (const edge of edges) {
+        cache.set(edge.metadata.bfGid, edge);
+      }
+    }
 
     return Promise.resolve(edges);
   }
