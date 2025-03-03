@@ -190,4 +190,88 @@ export class BfEdgeInMemory<
     const sources = await Promise.all(sourcePromises);
     return sources.filter(Boolean) as Array<InstanceType<TSourceClass>>;
   }
+
+  /**
+   * Queries target instances connected to a source node.
+   *
+   * @param cv - The current viewer context
+   * @param TargetClass - The class of the target nodes to query
+   * @param sourceId - The ID of the source node
+   * @param propsToQuery - Optional properties to filter the query
+   * @param edgePropsToQuery - Optional edge properties to filter the query
+   * @returns Promise resolving to an array of target instances
+   */
+  static override async queryTargetInstances<
+    TTargetProps extends BfNodeBaseProps,
+    TEdgeProps extends BfEdgeBaseProps,
+    TTargetClass extends typeof BfNodeBase<TTargetProps>,
+  >(
+    cv: BfCurrentViewer,
+    TargetClass: TTargetClass,
+    sourceId: BfGid,
+    propsToQuery: Partial<TTargetProps> = {},
+    edgePropsToQuery: Partial<TEdgeProps> = {},
+  ): Promise<Array<InstanceType<TTargetClass>>> {
+    // Filter edges based on source ID and optionally by edge properties
+    const matchingEdges = Array.from(this.inMemoryEdges.values()).filter(
+      (edge) => {
+        // Match source ID
+        const sourceMatches = edge.metadata.bfSid === sourceId;
+        if (!sourceMatches) return false;
+
+        // Match target class name if specified
+        if (TargetClass && edge.metadata.bfTClassName !== TargetClass.name) {
+          return false;
+        }
+
+        // Match edge properties if specified
+        if (Object.keys(edgePropsToQuery).length > 0) {
+          return Object.entries(edgePropsToQuery).every(([key, value]) => {
+            return edge.props[key as keyof typeof edge.props] === value;
+          });
+        }
+
+        return true;
+      },
+    );
+
+    // Create a set of unique target IDs to prevent duplicates
+    const targetIds = new Set(matchingEdges.map((edge) => edge.metadata.bfTid));
+
+    // Find the target nodes for each edge
+    const targetPromises = Array.from(targetIds).map(async (targetId) => {
+      const targetNode = await TargetClass.find(cv, targetId);
+
+      // Filter by target node properties if specified
+      if (targetNode && Object.keys(propsToQuery).length > 0) {
+        const matches = Object.entries(propsToQuery).every(([key, value]) => {
+          return (targetNode.props as TTargetProps)[key] === value;
+        });
+        return matches ? targetNode : null;
+      }
+
+      return targetNode;
+    });
+
+    // Wait for all target nodes to be retrieved and filter out nulls
+    const targets = await Promise.all(targetPromises);
+    return targets.filter(Boolean) as Array<InstanceType<TTargetClass>>;
+  }
+
+  /**
+   * Queries edges where a node is the target.
+   *
+   * @param node - The target node to find edges for
+   * @returns Promise resolving to an array of edges where the node is the target
+   */
+  static override queryTargetEdgesForNode(
+    node: BfNodeBase,
+  ): Promise<Array<InstanceType<typeof BfEdgeInMemory>>> {
+    // Filter edges where the given node is the target
+    const edges = Array.from(this.inMemoryEdges.values()).filter(
+      (edge) => edge.metadata.bfTid === node.metadata.bfGid,
+    );
+
+    return Promise.resolve(edges);
+  }
 }
