@@ -917,6 +917,8 @@ When you send the message `!bff commit`, the assistant will:
 6. Set the user back using `sl config --user ui.username` again, but with the
    "name" from the JSON file, and the "login" as the email
    "$LOGIN@noreply.githubusers.com"
+7. Delete the GitHub user information file to maintain privacy by running
+   `rm build/gh-user.json`
 
 Example usage:
 
