@@ -1237,6 +1237,83 @@ If you reply to the assistant's response with a specific protocol (e.g.,
     These factory methods ensure proper creation, validation, lifecycle
     callbacks, and database consistency.
 
+## Development Philosophies
+
+### Worse is Better
+
+The "Worse is Better" philosophy (also known as the "New Jersey style") is a
+software design approach that prioritizes simplicity in implementation over
+other attributes like correctness, consistency, and completeness. Originated by
+Richard P. Gabriel in his essay "Lisp: Good News, Bad News, How to Win Big,"
+this philosophy has been influential in many successful software systems.
+
+#### Core Principles
+
+1. **Simplicity**: The design must be simple, both in implementation and
+   interface. Simplicity of implementation is more important than simplicity of
+   interface.
+
+2. **Correctness**: The design must be correct in all observable aspects, but
+   it's better to be simple than to handle all possible edge cases.
+
+3. **Consistency**: The design should be consistent, but consistency can be
+   sacrificed for simplicity in exceptional cases.
+
+4. **Completeness**: The design must cover as many important situations as
+   practical, but completeness can be sacrificed in favor of simplicity.
+
+#### Why It Works
+
+The "Worse is Better" approach often leads to software that:
+
+- Is easier to implement and maintain
+- Gets released earlier and starts gathering real-world feedback sooner
+- Is more adaptable to changing requirements because of its simpler
+  implementation
+- Can be incrementally improved over time as real needs become clearer
+
+This contrasts with the "right thing" approach (sometimes called the
+"MIT/Stanford style"), which prioritizes correctness, consistency, and
+completeness over implementation simplicity.
+
+#### Application in Content Foundry
+
+In Content Foundry, we apply this principle by:
+
+- Starting with minimal viable implementations that solve the core problem
+- Releasing early and iterating based on feedback
+- Adding complexity only when justified by actual usage patterns
+- Favoring solutions that are simple to understand and maintain
+
+Remember that "Worse is Better" doesn't mean "bad is good" - it means that a
+simpler solution that works well enough is often superior to a complex "perfect"
+solution.
+
+### Worse is Better and Test-Driven Development
+
+The "Worse is Better" philosophy pairs naturally with Test-Driven Development,
+especially for backend systems. Here's why we use TDD to implement the "Worse is
+Better" approach:
+
+1. **Start Simple**: TDD forces you to write only what's needed to make tests
+   pass, discouraging over-engineering.
+
+2. **Incremental Complexity**: Both philosophies encourage starting with a
+   minimal implementation and adding complexity only as needed.
+
+3. **Prioritize Working Code**: "Worse is Better" values working code over
+   theoretical completeness, while TDD ensures your code works at every step.
+
+4. **Practical Problem Solving**: Both approaches focus on solving actual
+   problems rather than anticipated ones.
+
+5. **Refactor as You Go**: TDD's refactoring phase aligns with the "Worse is
+   Better" principle of improving simple solutions over time.
+
+By using TDD for backend development, we ensure that we're building systems that
+are simple, work correctly for their primary use cases, and can evolve as
+real-world requirements become clearer.
+
 ## Test-Driven Development (TDD)
 
 Content Foundry encourages Test-Driven Development for creating robust and
