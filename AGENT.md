@@ -597,6 +597,11 @@ To get started with Content Foundry development:
 - Test all: `bff test`
 - Run single test: `bff t path/to/test/file.test.ts` (shorthand for
   `deno test -A path/to/test/file.test.ts`)
+
+  > **IMPORTANT**: Always use `bff t` rather than raw `deno test` commands. The
+  > `bff t` command ensures consistent permission flags, environment variables,
+  > and test configuration. This prevents issues with permissions and improves
+  > test reliability across environments.
 - Development environment: `bff devTools`
 - Full CI check: `bff ci` (combines format, lint, check, test, build)
 
@@ -671,7 +676,7 @@ The project primarily uses Deno's built-in testing capabilities:
 
 - Standard syntax with `Deno.test("description", () => { ... })`
 - Assertions from `@std/assert` (not `@std/testing/asserts`)
-- Simple execution with `deno test` or `bff test`
+- Simple execution with `bff test` or `bff t`
 
 ```typescript
 // Example standard test
@@ -681,6 +686,84 @@ Deno.test("my test function", () => {
   assertEquals(1 + 1, 2);
 });
 ```
+
+#### Test Inheritance Pattern
+
+When testing classes that extend base classes (like `BfNodeBase`), follow the
+inheritance pattern in the tests:
+
+1. Base class tests (`BfNodeBaseTest.ts`) define common test behaviors
+2. Derived class tests extend or import from base tests and only implement
+   additional tests for unique functionality
+
+Example structure:
+
+```typescript
+// In BfNodeBaseTest.ts
+export function runBaseNodeTests(NodeClass, helpers) {
+  Deno.test("should implement common node behavior", async () => {
+    // Test base functionality
+  });
+}
+
+// In BfNodeOnDisk.test.ts
+import { runBaseNodeTests } from "./BfNodeBaseTest.ts";
+
+// Run the base tests first
+runBaseNodeTests(BfNodeOnDisk, diskHelpers);
+
+// Then add tests specific to BfNodeOnDisk
+Deno.test("BfNodeOnDisk should save to disk", async () => {
+  // Test disk-specific functionality
+});
+```
+
+This pattern ensures:
+
+- Test consistency across related classes
+- Proper coverage of inherited functionality
+- Focus on testing only the unique aspects in derived classes
+- Changes to base functionality only need updates in one place
+
+#### Mocking Current Viewers in Tests
+
+When testing components that require a `BfCurrentViewer` instance, always use
+the proper factory methods from the `BfCurrentViewer` classes rather than custom
+helper functions like `getMockCurrentViewer()`:
+
+```typescript
+// Preferred method for tests - flexible unified method
+const mockCv = BfCurrentViewer.__DANGEROUS__createTestCurrentViewer(
+  import.meta, // Always pass import.meta
+  true, // true for logged in, false for logged out
+  { // Optional configuration
+    bfGid: "test-user-123", // Optional user ID
+    bfOid: "test-owner-123", // Optional owner ID
+  },
+);
+
+// For logged out viewer (anonymous user)
+const mockCv = BfCurrentViewerLoggedOut.createLoggedOut(import.meta);
+
+// For logged in viewer with email
+const mockLoggedInCv = BfCurrentViewerLoggedIn.__DANGEROUS__createFromEmail(
+  import.meta,
+  "test@example.com",
+);
+
+// For logged in viewer with specific IDs
+const mockCvWithIds = BfCurrentViewerLoggedIn.__DANGEROUS__createFromBfGid(
+  import.meta,
+  toBfGid("user-id"),
+  toBfGid("owner-id"),
+);
+```
+
+These factory methods ensure proper initialization of the current viewer objects
+with appropriate permissions and behavior matching the actual implementation.
+The `__DANGEROUS__createTestCurrentViewer` method is particularly useful for
+tests as it provides a unified interface for creating both logged-in and
+logged-out viewers with configurable IDs.
 
 ### Code Reviews
 
@@ -897,7 +980,7 @@ When you send the message `!bfa precommit`, the assistant will:
 2. Recreate the build folder with a blank .gitkeep folder inside of it
 3. Format your code with `bff f`
 4. Run the full CI checks with `bff ci` (format, lint, type check, test, build)
-5. Save the test results to `build/testresults.txt` for reference
+5. Save the CI results to `build/ciresults.txt` for reference
 6. Generate a diff of your recent code changes
 7. Save the diff to `build/diff.txt` for review
 
@@ -929,7 +1012,7 @@ When you send the message `!bfa commit`, the assistant will:
    - Generate a commit message based on this diff, not by looking at the
      codebase directly
    - Store the generated message in `build/commit-message.txt`
-3. **Check test results in `build/testresults.txt` to determine if tests are
+3. **Check test results in `build/ciresults.txt` to determine if tests are
    failing**
    - If tests are failing, note this in the commit message and prepare to submit
      the PR as a draft
