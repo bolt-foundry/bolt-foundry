@@ -18,6 +18,7 @@ export function printGitHubAnnotation(
 ) {
   let annotation = `::${type}`;
   if (file) annotation += ` file=${file}`;
+  // GitHub annotations are 1-indexed, ensure our numbers are as well
   if (typeof line === "number") annotation += `,line=${line}`;
   if (typeof col === "number") annotation += `,col=${col}`;
   annotation += `::${msg}`;
@@ -44,11 +45,19 @@ function normalizeFilePath(filename?: string): string {
 
   let out = filename.replace(/^file:\/\//, "");
   const workspace = Deno.env.get("GITHUB_WORKSPACE");
+  // In Replit, use the workspace directory structure
+  const replWorkspace = "/home/runner/workspace";
+  
   if (workspace && out.startsWith(workspace)) {
     // Remove leading slash after the workspace path, e.g. "/home/runner/work/... -> infra/bff/..."
     out = out.slice(workspace.length).replace(/^\/+/, "");
+  } else if (out.startsWith(replWorkspace)) {
+    // For Replit environments
+    out = out.slice(replWorkspace.length).replace(/^\/+/, "");
   }
-  return out || "unknown.ts";
+  
+  // Ensure we're not returning an empty string
+  return out || filename || "unknown.ts";
 }
 
 /**
