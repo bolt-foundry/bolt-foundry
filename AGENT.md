@@ -928,9 +928,10 @@ When you send the message `!bfa commit`, the assistant will:
    - Generate a commit message based on this diff, not by looking at the
      codebase directly
    - Store the generated message in `build/commit-message.txt`
-3. Automatically run `sl commit` with the generated message from
+3. Add all changed files to the staging area with `sl add .`
+4. Automatically run `sl commit` with the generated message from
    `build/commit-message.txt`
-4. Push the commit by running `sl pr submit`
+5. Push the commit by running `sl pr submit`
 5. Get the currently logged in GitHub user information by running
    `gh api user > build/gh-user.json` to save the data to a JSON file
 6. Set the user back using `sl config --user ui.username` again, but with the
