@@ -2,6 +2,7 @@ import {
   type BfMetadataBase,
   BfNodeBase,
   type BfNodeBaseProps,
+  BfNodeCache,
 } from "packages/bfDb/classes/BfNodeBase.ts";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import type { BfGid } from "packages/bfDb/classes/BfNodeIds.ts";
@@ -122,6 +123,7 @@ export class BfEdgeBase<
     _sourceId: BfGid,
     _propsToQuery: Partial<TTargetProps>,
     _edgePropsToQuery: Partial<TEdgeProps> = {},
+    _cache?: BfNodeCache,
   ): Promise<Array<InstanceType<TTargetClass>>> {
     throw new BfErrorNotImplemented("Not implemented");
   }
@@ -148,6 +150,7 @@ export class BfEdgeBase<
    */
   static queryTargetEdgesForNode(
     _node: BfNodeBase,
+    _cache?: BfNodeCache,
   ): Promise<Array<InstanceType<typeof BfEdgeBase>>> {
     throw new BfErrorNotImplemented("Not implemented");
   }
