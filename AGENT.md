@@ -1503,6 +1503,12 @@ Promise<BfEdgeInMemory[]> { const result: BfEdgeInMemory[] = [];
 
 for (const edge of this.inMemoryEdges.values()) { if (edge.metadata.bfSid ===
 sourceNode.metadata.bfGid) { result.push(edge); } }
+// 2. GREEN: Implement the minimum code to make the test pass static async
+findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, ):
+Promise<BfEdgeInMemory[]> { const result: BfEdgeInMemory[] = [];
+
+for (const edge of this.inMemoryEdges.values()) { if (edge.metadata.bfSid ===
+sourceNode.metadata.bfGid) { result.push(edge); } }
 
 return result; }
 
@@ -1513,6 +1519,16 @@ Array.from(this.inMemoryEdges.values()).filter(edge => { const sourceMatches =
 edge.metadata.bfSid === sourceNode.metadata.bfGid; return role ? (sourceMatches
 && edge.props.role === role) : sourceMatches; }); }
 
+return result; }
+
+// 3. REFACTOR: Improve the implementation while keeping tests passing static
+async findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, role?: string,
+): Promise<BfEdgeInMemory[]> { return
+Array.from(this.inMemoryEdges.values()).filter(edge => { const sourceMatches =
+edge.metadata.bfSid === sourceNode.metadata.bfGid; return role ? (sourceMatches
+&& edge.props.role === role) : sourceMatches; }); }
+
+````
 ````
 ### Benefits of TDD in Content Foundry
 
