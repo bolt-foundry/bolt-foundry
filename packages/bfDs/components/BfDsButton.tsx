@@ -9,11 +9,14 @@ import { RouterLink } from "packages/app/components/Router/RouterLink.tsx";
 import {
   BfDsTooltip,
   type BfDsTooltipJustification,
-  type BfDsTooltipMenu,
   type BfDsTooltipPosition,
 } from "packages/bfDs/components/BfDsTooltip.tsx";
 import { BfDsProgress } from "packages/bfDs/components/BfDsProgress.tsx";
 import { BfDsSpinner } from "packages/bfDs/components/BfDsSpinner.tsx";
+import {
+  BfDsTooltipMenu,
+  type BfDsTooltipMenuType,
+} from "packages/bfDs/components/BfDsTooltipMenu.tsx";
 
 // Types
 export type ButtonSizeType = "xlarge" | "large" | "medium" | "small";
@@ -64,8 +67,8 @@ export type ButtonType = {
   testId?: string; // used to identify the button in posthog
   text?: string | null;
   tooltip?: string | React.ReactNode;
-  tooltipMenu?: Array<BfDsTooltipMenu>;
-  tooltipMenuDropdown?: Array<BfDsTooltipMenu>;
+  tooltipMenu?: Array<BfDsTooltipMenuType>;
+  tooltipMenuDropdown?: Array<BfDsTooltipMenuType>;
   tooltipPosition?: BfDsTooltipPosition;
   tooltipJustification?: BfDsTooltipJustification;
   kind?: ButtonKind;
@@ -634,16 +637,27 @@ export function BfDsButton({
   }
 
   // Wrap with tooltip if needed
-  if (tooltip || tooltipMenu || tooltipMenuDropdown) {
-    return (
+  if (tooltip) {
+    wrappedButton = (
       <BfDsTooltip
-        menu={tooltipMenu ?? tooltipMenuDropdown}
         justification={tooltipJustification}
         position={tooltipPosition}
         text={tooltip}
       >
         {wrappedButton}
       </BfDsTooltip>
+    );
+  }
+
+  if (tooltipMenu || tooltipMenuDropdown) {
+    wrappedButton = (
+      <BfDsTooltipMenu
+        menu={tooltipMenu ?? tooltipMenuDropdown ?? []}
+        justification={tooltipJustification}
+        position={tooltipPosition}
+      >
+        {wrappedButton}
+      </BfDsTooltipMenu>
     );
   }
 
