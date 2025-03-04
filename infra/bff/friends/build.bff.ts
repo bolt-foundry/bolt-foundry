@@ -16,6 +16,7 @@ const allowedEnvironmentVariables = [
   "DATABASE_URL",
   "DEBUG",
   "DENO_TRACE_PERMISSIONS",
+  "ENABLE_DEBUG_LOGGER",
   "FORCE_COLOR",
   "FORCE_DB_BACKEND",
   "LOG_LEVEL",
