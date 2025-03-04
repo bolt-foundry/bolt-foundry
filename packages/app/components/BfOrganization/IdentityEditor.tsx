@@ -26,6 +26,26 @@ export const EntrypointTwitterIdeatorVoice = iso(`
     const [error, setError] = useState<string | null>(null);
     const showZip = false;
     const logger = getLogger(import.meta);
+
+    const handleSubmit = () => {
+      setError(null);
+      setIsInFlight(true);
+      commit({ handle: handle }, {
+        onError: () => {
+          setError("An error occurred.");
+          setIsInFlight(false);
+        },
+        onComplete: (createVoiceMutationData) => {
+          setIsInFlight(false);
+          setHandle("");
+          logger.debug(
+            "voice created successfully",
+            createVoiceMutationData,
+          );
+        },
+      });
+    };
+
     return (
       <div className="page">
         <div className="header">
@@ -42,58 +62,42 @@ export const EntrypointTwitterIdeatorVoice = iso(`
                   Paste your Twitter handle and we’ll get a feel for your
                   current voice.
                 </div>
-                <BfDsInput
-                  label="Twitter handle"
-                  placeholder="George_LeVitre"
-                  value={handle}
-                  onChange={(e) => setHandle(e.target.value)}
-                />
-                {showZip && (
-                  <>
-                    <div className="line-separator-container">
-                      <div className="line" />
-                      <div>OR</div>
-                      <div className="line" />
-                    </div>
-                    <div className="voice-section-text">
-                      Upload an archive of all your tweets. You can download on
-                      {" "}
-                      <a href="https://x.com/settings/download_your_data">
-                        x.com
-                      </a>
-                    </div>
-                    <BfDsDropzone
-                      accept="application/zip, .zip"
-                      onFileSelect={() => (logger.info("foo"))}
-                    />
-                  </>
-                )}
-                <BfDsButton
-                  disabled={handle.length === 0 || isInFlight}
-                  kind="primary"
-                  type="submit"
-                  showSpinner={isInFlight}
-                  text="Submit"
-                  xstyle={{ alignSelf: "flex-end" }}
-                  onClick={() => {
-                    setError(null);
-                    setIsInFlight(true);
-                    commit({ handle: handle }, {
-                      onError: () => {
-                        setError("An error occurred.");
-                        setIsInFlight(false);
-                      },
-                      onComplete: (createVoiceMutationData) => {
-                        setIsInFlight(false);
-                        setHandle("");
-                        logger.debug(
-                          "voice created successfully",
-                          createVoiceMutationData,
-                        );
-                      },
-                    });
-                  }}
-                />
+                <form onSubmit={handleSubmit}>
+                  <BfDsInput
+                    label="Twitter handle"
+                    placeholder="George_LeVitre"
+                    value={handle}
+                    onChange={(e) => setHandle(e.target.value)}
+                  />
+                  {showZip && (
+                    <>
+                      <div className="line-separator-container">
+                        <div className="line" />
+                        <div>OR</div>
+                        <div className="line" />
+                      </div>
+                      <div className="voice-section-text">
+                        Upload an archive of all your tweets. You can download
+                        on{" "}
+                        <a href="https://x.com/settings/download_your_data">
+                          x.com
+                        </a>
+                      </div>
+                      <BfDsDropzone
+                        accept="application/zip, .zip"
+                        onFileSelect={() => (logger.info("foo"))}
+                      />
+                    </>
+                  )}
+                  <BfDsButton
+                    disabled={handle.length === 0 || isInFlight}
+                    kind="primary"
+                    type="submit"
+                    showSpinner={isInFlight}
+                    text="Submit"
+                    xstyle={{ alignSelf: "flex-end" }}
+                  />
+                </form>
                 {error && (
                   <BfDsCallout kind="error" header="Error" body={error} />
                 )}

@@ -12,7 +12,9 @@ const queryText = 'query entrypointFormatterEditor  {\
       id,\
       __typename,\
       creation {\
+        draftBlog,\
         revisions {\
+          __typename,\
           explanation,\
           instructions,\
           original,\
@@ -77,11 +79,21 @@ const normalizationAst: NormalizationAst = {
               concreteType: "Creation",
               selections: [
                 {
+                  kind: "Scalar",
+                  fieldName: "draftBlog",
+                  arguments: null,
+                },
+                {
                   kind: "Linked",
                   fieldName: "revisions",
                   arguments: null,
                   concreteType: "Revisions",
                   selections: [
+                    {
+                      kind: "Scalar",
+                      fieldName: "__typename",
+                      arguments: null,
+                    },
                     {
                       kind: "Scalar",
                       fieldName: "explanation",

@@ -206,6 +206,14 @@
   box-sizing: border-box;
   overflow-y: auto;
 }
+.editor-actions {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: flex-end;
+  background: var(--alwaysDark);
+}
 
 
 /* Revisions */
@@ -628,10 +636,10 @@
 
 .revision-title {
   font-weight: bold;
+  cursor: pointer;
 }
 
-.revision-title-done {
-  font-weight: bold;
+.revision-title.done {
   color: var(--textSecondary);
 }
 

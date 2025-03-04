@@ -10,6 +10,40 @@ const readerAst: ReaderAst<BfOrganization__FormatterEditorPanel__param> = [
     arguments: null,
     isUpdatable: false,
   },
+  {
+    kind: "Linked",
+    fieldName: "creation",
+    alias: null,
+    arguments: null,
+    condition: null,
+    isUpdatable: false,
+    selections: [
+      {
+        kind: "Scalar",
+        fieldName: "draftBlog",
+        alias: null,
+        arguments: null,
+        isUpdatable: false,
+      },
+      {
+        kind: "Linked",
+        fieldName: "revisions",
+        alias: null,
+        arguments: null,
+        condition: null,
+        isUpdatable: false,
+        selections: [
+          {
+            kind: "Scalar",
+            fieldName: "__typename",
+            alias: null,
+            arguments: null,
+            isUpdatable: false,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const artifact: ComponentReaderArtifact<
