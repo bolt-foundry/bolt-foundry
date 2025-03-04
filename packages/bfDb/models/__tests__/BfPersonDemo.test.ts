@@ -3,7 +3,7 @@ import { testBfNodeBase } from "packages/bfDb/classes/__tests__/BfNodeBaseTest.t
 import { BfPersonDemo } from "packages/bfDb/models/BfPersonDemo.ts";
 import type { BfNode } from "packages/bfDb/coreModels/BfNode.ts";
 
-const logger = getLogger(import.meta);
+const _logger = getLogger(import.meta);
 
 // Run the standard node tests on our class
 testBfNodeBase(BfPersonDemo as typeof BfNode);

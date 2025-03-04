@@ -1,6 +1,5 @@
-import type { EagerReaderArtifact, ReaderAst } from '@isograph/react';
+import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@isograph/react';
 import { Mutation__LoginAsDemoPerson__param } from './param_type.ts';
-import { Mutation__LoginAsDemoPerson__output_type } from './output_type.ts';
 import { LoginAsDemoPersonMutation as resolver } from '../../../../mutations/LoginAsDemoPerson.tsx';
 
 const readerAst: ReaderAst<Mutation__LoginAsDemoPerson__param> = [
@@ -23,11 +22,11 @@ const readerAst: ReaderAst<Mutation__LoginAsDemoPerson__param> = [
   },
 ];
 
-const artifact: EagerReaderArtifact<
+const artifact: ComponentReaderArtifact<
   Mutation__LoginAsDemoPerson__param,
-  Mutation__LoginAsDemoPerson__output_type
+  ExtractSecondParam<typeof resolver>
 > = {
-  kind: "EagerReaderArtifact",
+  kind: "ComponentReaderArtifact",
   fieldName: "Mutation.LoginAsDemoPerson",
   resolver,
   readerAst,
