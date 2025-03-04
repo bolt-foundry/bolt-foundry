@@ -40,6 +40,47 @@ function isBrowser() {
   return typeof Deno === "undefined";
 }
 
+// Parse debug loggers from environment variable
+function getDebugLoggers(): string[] {
+  const debugLoggerPaths = getConfigurationVariable("ENABLE_DEBUG_LOGGER");
+
+  if (!debugLoggerPaths) {
+    return [];
+  }
+
+  // Split by comma, semicolon, or space
+  return debugLoggerPaths
+    .split(/[,;\s]+/)
+    .map((path) => path.trim())
+    .filter((path) => path.length > 0);
+}
+
+// Store the list of debug-enabled logger paths
+const debugLoggerPaths = getDebugLoggers();
+
+// Check if a logger should be set to debug level
+function shouldEnableDebugForLogger(loggerName: string): boolean {
+  if (debugLoggerPaths.length === 0) {
+    return false;
+  }
+
+  // Check if the logger name matches any pattern in the debug logger paths
+  return debugLoggerPaths.some((path) => {
+    // Exact match
+    if (path === loggerName) {
+      return true;
+    }
+
+    // Wildcard match (e.g., "packages/bfDb/*")
+    if (path.endsWith("/*") && loggerName.startsWith(path.slice(0, -2))) {
+      return true;
+    }
+
+    // Partial path match
+    return loggerName.includes(path);
+  });
+}
+
 if (!isBrowser()) {
   const defaultLogLevelString = getConfigurationVariable("LOG_LEVEL") ?? "INFO";
   const defaultLogLevel =
@@ -100,12 +141,21 @@ export function getLogger(importMeta: ImportMeta | string) {
 
   if (!loggerCache.has(loggerName)) {
     const newLogger = log.getLogger(loggerName);
+
+    // Set default log level first
     const defaultLogLevelString = getConfigurationVariable("LOG_LEVEL") ??
       "INFO";
     const defaultLogLevel =
       log.levels[defaultLogLevelString as keyof typeof log.levels];
     newLogger.setDefaultLevel(defaultLogLevel);
+
+    // Override with DEBUG level if this specific logger is enabled for debugging
+    if (shouldEnableDebugForLogger(loggerName)) {
+      newLogger.setLevel(log.levels.DEBUG);
+    }
+
     loggerCache.set(loggerName, newLogger);
   }
+
   return loggerCache.get(loggerName)!;
 }

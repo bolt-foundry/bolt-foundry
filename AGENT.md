@@ -721,6 +721,50 @@ development environments across different systems.
 
 ## Code Quality
 
+### Debugging with Logger Environment Variables
+
+Content Foundry uses a flexible logging system that can be controlled through
+environment variables:
+
+#### Global Log Level
+
+Set the default log level for all loggers with the `LOG_LEVEL` environment
+variable:
+
+```bash
+# Examples
+LOG_LEVEL=DEBUG bff t path/to/test.ts  # Set all loggers to DEBUG level
+LOG_LEVEL=TRACE bff t path/to/test.ts  # Set all loggers to TRACE level (most verbose)
+LOG_LEVEL=ERROR bff t path/to/test.ts  # Set all loggers to ERROR level (least verbose)
+```
+
+Available log levels (from most to least verbose):
+
+- TRACE
+- DEBUG
+- INFO (default if not specified)
+- WARN
+- ERROR
+
+#### Specific Logger Debug Mode
+
+Enable DEBUG level for specific loggers using the `ENABLE_DEBUG_LOGGER`
+environment variable:
+
+```bash
+# Enable DEBUG level for a single module
+ENABLE_DEBUG_LOGGER=packages/bfDb/coreModels/BfNode.ts bff t path/to/test.ts
+
+# Enable DEBUG for multiple modules (comma-separated)
+ENABLE_DEBUG_LOGGER=packages/bfDb/coreModels/BfNode.ts,packages/bfDb/bfDb.ts bff t path/to/test.ts
+
+# Enable DEBUG for all modules in a directory (wildcard)
+ENABLE_DEBUG_LOGGER=packages/bfDb/* bff t path/to/test.ts
+```
+
+This allows for targeted debugging without increasing verbosity across the
+entire application.
+
 ### Content Linting
 
 Content Foundry provides tools for linting markdown content files to ensure they

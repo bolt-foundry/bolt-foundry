@@ -8,9 +8,14 @@ import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import { type BfGid, toBfGid } from "packages/bfDb/classes/BfNodeIds.ts";
 import { BfErrorNotImplemented } from "packages/BfError.ts";
 import { getLogger } from "packages/logger.ts";
-import { bfGetItem, bfPutItem, bfQueryItems } from "packages/bfDb/bfDb.ts";
+import {
+  bfGetItem,
+  bfPutItem,
+  bfQueryItemsUnified,
+} from "packages/bfDb/bfDb.ts";
 import { BfErrorNodeNotFound } from "packages/bfDb/classes/BfErrorNode.ts";
 import { generateUUID } from "lib/generateUUID.ts";
+import type { BfEdgeBaseProps } from "packages/bfDb/classes/BfEdgeBase.ts";
 
 const logger = getLogger(import.meta);
 
@@ -27,7 +32,9 @@ export type BfMetadataNode = BfMetadataBase & {
 export class BfNode<
   TProps extends BfNodeBaseProps = BfNodeBaseProps,
   TMetadata extends BfMetadataBase = BfMetadataNode,
-> extends BfNodeBase<TProps, TMetadata> {
+  TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
+> extends BfNodeBase<TProps, TMetadata, TEdgeProps> {
+  override readonly relatedEdge: string = "packages/bfDb/coreModels/BfEdge.ts";
   protected _serverProps: TProps;
   protected _clientProps: Partial<TProps> = {};
 
@@ -92,8 +99,24 @@ export class BfNode<
     props?: Partial<TProps>,
     bfGids?: Array<BfGid>,
     cache?: BfNodeCache,
+    options: {
+      useSizeLimit?: boolean;
+      cursorValue?: number | string;
+      maxSizeBytes?: number;
+      batchSize?: number;
+      totalLimit?: number;
+      countOnly?: boolean;
+    } = {},
   ) {
-    const items = await bfQueryItems(metadata, props, bfGids);
+    const items = await bfQueryItemsUnified(
+      metadata,
+      props,
+      bfGids,
+      "ASC",
+      "sort_value",
+      options,
+    );
+
     return items.map((item) => {
       const instance = new this(cv, item.props as TProps, item.metadata);
       cache?.set(item.metadata.bfGid, instance);
@@ -135,9 +158,135 @@ export class BfNode<
   override delete(): Promise<boolean> {
     throw new BfErrorNotImplemented();
   }
+
   override async load(): Promise<this> {
     const _item = await bfGetItem(this.cv.bfOid, this.metadata.bfGid);
     throw new BfErrorNotImplemented();
     // return this;
+  }
+
+  override async queryTargets<
+    TTargetProps extends BfNodeBaseProps,
+    TTargetClass extends typeof BfNodeBase<TTargetProps>,
+  >(
+    TargetClass: TTargetClass,
+    props: Partial<TTargetProps> = {},
+    edgeProps: Partial<TEdgeProps> = {},
+    cache?: BfNodeCache,
+    options: {
+      useSizeLimit?: boolean;
+      cursorValue?: number | string;
+      maxSizeBytes?: number;
+      batchSize?: number;
+      totalLimit?: number;
+      countOnly?: boolean;
+    } = {},
+  ): Promise<Array<InstanceType<TTargetClass>>> {
+    logger.debug(
+      `queryTargets: ${this.constructor.name} -> ${TargetClass.name}`,
+      {
+        sourceId: this.metadata.bfGid,
+        targetClass: TargetClass.name,
+        props,
+        edgeProps,
+        options,
+      },
+    );
+
+    // Query for edges that connect from this node to targets of the specified class
+    const metadataQuery = {
+      bfSid: this.metadata.bfGid,
+      bfTClassName: TargetClass.name,
+    };
+    const propsQuery = Object.keys(edgeProps).length > 0 ? edgeProps : {};
+
+    // First, let's try to get an edge directly from the database to see if it exists
+    const relatedEdgeNameWithTs = this.relatedEdge.split("/").pop() as string;
+    const relatedEdgeName = relatedEdgeNameWithTs.replace(".ts", "");
+    logger.debug(
+      `Using edge class: ${relatedEdgeName} from path: ${this.relatedEdge}`,
+    );
+    logger.debug(
+      `Edge query metadataQuery:`,
+      JSON.stringify(metadataQuery, null, 2),
+    );
+    logger.debug(`Edge query propsQuery:`, JSON.stringify(propsQuery, null, 2));
+    logger.debug(
+      `Related edge class: ${this.relatedEdge}, derived edge name: ${relatedEdgeName}`,
+    );
+
+    // Load the edge creation log to understand what's happening
+    try {
+      const createEdgeLog = await bfQueryItemsUnified(
+        { className: relatedEdgeName },
+        {},
+        undefined,
+        "ASC",
+        "sort_value",
+      );
+      logger.debug(
+        `All ${relatedEdgeName} edges in system:`,
+        JSON.stringify(createEdgeLog.slice(0, 5), null, 2),
+      );
+    } catch (error) {
+      logger.error(`Error looking up all edges:`, error);
+    }
+
+    const edges = await bfQueryItemsUnified(
+      metadataQuery,
+      propsQuery,
+      undefined,
+      "ASC",
+      "sort_value",
+      options,
+    );
+
+    logger.debug(`Found ${edges.length} edges from ${this.metadata.bfGid}`);
+
+    if (edges.length === 0) {
+      // Debug why no edges were found
+      logger.debug(`No edges found, checking if edge was created properly`);
+
+      // Let's check if the edge exists at all with this source ID
+      const allEdgesFromSource = await bfQueryItemsUnified(
+        { bfSid: this.metadata.bfGid },
+        {},
+        undefined,
+        "ASC",
+        "sort_value",
+      );
+
+      logger.debug(
+        `Found ${allEdgesFromSource.length} edges with just source ID`,
+      );
+      if (allEdgesFromSource.length > 0) {
+        logger.debug(
+          `Edge exists with source ID but not with props filter. First edge:`,
+          JSON.stringify(allEdgesFromSource[0], null, 2),
+        );
+      }
+
+      return [];
+    }
+
+    // Get all target IDs from the edges and filter out any undefined values
+    const targetIds = edges.map((edge) => edge.metadata.bfTid).filter((
+      id,
+    ): id is BfGid => id !== undefined);
+
+    logger.debug(`Target IDs from edges:`, targetIds);
+
+    // Query for target nodes that match the given class and properties
+    const targetNodes = await TargetClass.query(
+      this.cv,
+      { className: TargetClass.name },
+      props,
+      targetIds,
+      cache,
+    );
+
+    logger.debug(`Found ${targetNodes.length} target nodes`);
+
+    return targetNodes as Array<InstanceType<TTargetClass>>;
   }
 }
