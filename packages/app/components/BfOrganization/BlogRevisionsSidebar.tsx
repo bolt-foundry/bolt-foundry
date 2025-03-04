@@ -1,5 +1,6 @@
 import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
+import { BfDsCopyButton } from "packages/bfDs/components/BfDsCopyButton.tsx";
 import { useState } from "react";
 import { BfDsTabs } from "packages/bfDs/components/BfDsTabs.tsx";
 import { BfDsCheckbox } from "packages/bfDs/components/BfDsCheckbox.tsx";
@@ -20,76 +21,82 @@ export const BlogRevisionsSidebar = iso(`
   function BlogRevisionsSidebar(
     { data },
   ) {
-    const [showExplanation, setShowExplanation] = useState(false);
-    const tabs = [{ name: "Tips" }, { name: "Suggestions" }];
+    const [showSuggestion, setShowSuggestion] = useState(false);
     return (
       <div className="flexColumn right-side-bar">
         <div className="revisions-container">
           {data?.creation?.revisions?.map((revision, _index) => {
-            const [checked, setChecked] = useState(false);
+            const [done, setDone] = useState(false);
             const [showExpanded, setShowExpanded] = useState(false);
-            const [selectedTab, setSelectedTab] = useState("Tips");
-
-            const handleCheck = () => {
-              setChecked(!checked);
+            const [hidden, setHidden] = useState(false);
+            const handleDone = () => {
+              setDone(!done);
               setShowExpanded(!showExpanded);
             };
+            if (hidden) {
+              return null;
+            }
             return (
               <div className="revision-item">
                 <div className="flexRow gapMedium">
-                  <BfDsCheckbox value={checked} onChange={handleCheck} />
-                  <div className="revision-title">
+                  <div
+                    className={done ? "revision-title-done" : "revision-title"}
+                  >
                     {revision?.revisionTitle ?? ""}
                   </div>
                   <BfDsButton
-                    iconLeft={showExpanded ? "arrowDown" : "arrowLeft"}
                     kind="overlay"
-                    onClick={() => {
-                      setShowExpanded(!showExpanded);
-                    }}
+                    iconLeft={showExpanded ? "arrowDown" : "arrowLeft"}
+                    onClick={() => setShowExpanded(!showExpanded)}
                   />
                 </div>
                 {showExpanded &&
                   (
                     <div className="revision-item">
-                      <div>{revision?.original}</div>
-                      <div className="flexRow">
-                        <BfDsTabs tabs={tabs} onTabSelected={setSelectedTab} />
+                      <div className="original-text">{revision?.original}</div>
+                      <div>{revision?.instructions}</div>
+                      <div className="flexRow alignItemsCenter">
+                        <div className="flexRow flex1" style={{gap: "8px"}}>
+                          <BfDsButton
+                            kind={done ? "success" : "secondary"}
+                            iconLeft="checkCircle"
+                            text="Done"
+                            onClick={handleDone}
+                          />
+                          <BfDsButton
+                            kind="outline"
+                            iconLeft="trash"
+                            text="Ignore"
+                            onClick={() => setHidden(true)}
+                          />
+                        </div>
+                        <BfDsButton
+                          kind={showSuggestion ? "filledSuccess" : "overlay"}
+                          iconLeft="sparkle"
+                          onClick={() => setShowSuggestion(!showSuggestion)}
+                        />
                       </div>
-                      {selectedTab === "Tips"
-                        ? <div>{revision?.instructions}</div>
-                        : (
-                          <div>
-                            {revision?.revision}
-                            {showExplanation
-                              ? (
-                                <>
-                                  <div className="suggestion-details">
-                                    <div className="suggestion-details-close">
-                                      <BfDsButton
-                                        kind="overlaySuccess"
-                                        size="medium"
-                                        iconLeft="exclamationCircle"
-                                        onClick={() =>
-                                          setShowExplanation(false)}
-                                      />
-                                    </div>
-                                    {revision?.explanation}
-                                  </div>
-                                </>
-                              )
-                              : (
-                                <div style={{ textAlign: "right" }}>
-                                  <BfDsButton
-                                    kind="overlay"
-                                    size="medium"
-                                    iconLeft="exclamationCircle"
-                                    onClick={() => setShowExplanation(true)}
-                                    xstyle={{ alignSelf: "flex-end" }}
-                                  />
-                                </div>
-                              )}
-                          </div>
+                      {showSuggestion &&
+                        (
+                          <>
+                            <div className="revision-box">
+                              {revision?.revision}
+                              <div className="flexRow alignItemsCenter" style={{justifyContent: "space-between"}}>
+                                <div style={{color: "var(--secondaryColor)"}}>Suggested change</div>
+                                <BfDsCopyButton
+                                  kind="filledSuccess"
+                                  buttonText="Copy"
+                                  textToCopy={revision?.revision ?? ""}
+                                />
+                              </div>
+                            </div>
+                            <div className="flexColumn">
+                              <div className="suggestion-details-explanation-title">
+                                Why this is better
+                              </div>
+                              {revision?.explanation}
+                            </div>
+                          </>
                         )}
                     </div>
                   )}
