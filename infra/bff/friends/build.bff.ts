@@ -4,6 +4,7 @@ import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/bff.ts";
 import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
 import { getLogger } from "packages/logger.ts";
+import { DeploymentEnvs } from "packages/web/web.tsx";
 
 const logger = getLogger(import.meta);
 
@@ -16,6 +17,7 @@ const allowedEnvironmentVariables = [
   "DEBUG",
   "DENO_TRACE_PERMISSIONS",
   "FORCE_COLOR",
+  "FORCE_DB_BACKEND",
   "LOG_LEVEL",
   "NODE_ENV",
   "NODE_PG_FORCE_NATIVE",
@@ -29,6 +31,7 @@ const allowedEnvironmentVariables = [
   "REPL_HOME",
   "REPLIT_DEV_DOMAIN",
   "RPID",
+  "SQLITE_DB_PATH",
   "TEAMCITY_VERSION",
   "TERM",
   "TF_BUILD",
@@ -83,9 +86,16 @@ const readableLocations = [
   "./",
 ];
 
-const allowedBinaries = [
-  "sl",
+const writableLocations = [
+  "$HOME/workspace/tmp",
+  "/tmp",
 ];
+
+const allowedBinaries = [];
+
+if (getConfigurationVariable("BF_ENV") === DeploymentEnvs.DEVELOPMENT) {
+  allowedBinaries.push("sl");
+}
 
 const denoCompilationCommand = [
   "deno",
@@ -95,6 +105,7 @@ const denoCompilationCommand = [
   `--allow-net=${allowedNetworkDestionations.join(",")}`,
   `--allow-env=${allowedEnvironmentVariables.join(",")}`,
   `--allow-read=${readableLocations.join(",")}`,
+  `--allow-write=${writableLocations.join(",")}`,
   `--allow-run=${allowedBinaries.join(",")}`,
   "packages/web/web.tsx",
 ];
