@@ -877,6 +877,37 @@ export function runBaseNodeTests(NodeClass, helpers) {
 import { runBaseNodeTests } from "./BfNodeBaseTest.ts";
 
 // Run the base tests first
+
+
+### Demo User Implementation
+
+The Content Foundry platform implements a demo user system that allows users to try the platform without providing personal information. Here's how it works:
+
+1. **Unique Demo Users**: Each demo user is unique with its own identity and organization. This is different from having a single shared demo account that everyone uses.
+
+2. **Implementation Strategy**: The `BfPersonDemo` class extends `BfPerson` and implements the unique demo user functionality by:
+   - Generating a unique identifier for each demo user
+   - Creating a personalized email with the format `demo+[unique-id]@contentfoundry.demo`
+   - Setting up a dedicated organization for each demo user
+
+3. **Demo Organization**: Each demo user gets their own organization with:
+   - A unique name based on the demo user's ID
+   - Specific restrictions (such as project limits, content item limits, expiration dates)
+   - Proper connections to the demo user via edges in the graph database
+
+4. **Demo User Creation**: The demo user is created through the GraphQL API mutation `LoginAsDemoPerson` which:
+   - Calls `BfPersonDemo.findOrCreateDemo(ctx.cv)` to create a unique demo instance
+   - Creates a logged-in viewer with the appropriate permissions
+   - Sets the current viewer context to the demo user
+
+5. **Restrictions**: Demo users have certain limitations compared to regular users:
+   - Limited number of projects/content items
+   - Time-based expiration
+   - Restricted access to certain premium features
+
+This approach maintains data isolation between users while still providing a seamless onboarding experience without requiring registration.
+
+
 runBaseNodeTests(BfNodeOnDisk, diskHelpers);
 
 // Then add tests specific to BfNodeOnDisk
