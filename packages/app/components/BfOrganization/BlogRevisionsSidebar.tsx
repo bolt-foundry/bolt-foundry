@@ -2,30 +2,31 @@ import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 import { BfDsCopyButton } from "packages/bfDs/components/BfDsCopyButton.tsx";
 import { useState } from "react";
+import { classnames } from "lib/classnames.ts";
 
 export const BlogRevisionsSidebar = iso(`
   field BfOrganization.BlogRevisionsSidebar @component {
-     creation {
-       revisions{
-         revisionTitle
-         original
-         instructions
-         revision
-         explanation
-       }
+    creation {
+      revisions{
+        revisionTitle
+        original
+        instructions
+        revision
+        explanation
      }
+    }
   }
 `)(
   function BlogRevisionsSidebar(
     { data },
   ) {
-    const [showSuggestion, setShowSuggestion] = useState(false);
     return (
       <div className="flexColumn right-side-bar">
         <div className="revisions-container">
           {data?.creation?.revisions?.map((revision, _index) => {
             const [done, setDone] = useState(false);
             const [showExpanded, setShowExpanded] = useState(false);
+            const [showSuggestion, setShowSuggestion] = useState(false);
             const [hidden, setHidden] = useState(false);
             const handleDone = () => {
               setDone(!done);
@@ -34,11 +35,19 @@ export const BlogRevisionsSidebar = iso(`
             if (hidden) {
               return null;
             }
+            const titleClasses = classnames([
+              "revision-title",
+              "flex1",
+              {
+                done,
+              },
+            ]);
             return (
               <div className="revision-item">
-                <div className="flexRow gapMedium">
+                <div className="flexRow gapMedium alignItemsCenter">
                   <div
-                    className={done ? "revision-title-done" : "revision-title"}
+                    className={titleClasses}
+                    onClick={() => setShowExpanded(!showExpanded)}
                   >
                     {revision?.revisionTitle ?? ""}
                   </div>
