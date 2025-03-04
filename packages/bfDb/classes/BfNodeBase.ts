@@ -5,7 +5,10 @@ import { generateUUID } from "lib/generateUUID.ts";
 import { getLogger } from "packages/logger.ts";
 import type { JSONValue } from "packages/bfDb/bfDb.ts";
 import { BfErrorNotImplemented } from "packages/BfError.ts";
-import type { BfEdgeBase } from "packages/bfDb/classes/BfEdgeBase.ts";
+import type {
+  BfEdgeBase,
+  BfEdgeBaseProps,
+} from "packages/bfDb/classes/BfEdgeBase.ts";
 
 const logger = getLogger(import.meta);
 
@@ -30,10 +33,11 @@ export type BfNodeCache<
 export class BfNodeBase<
   TProps extends BfNodeBaseProps = BfNodeBaseProps,
   TMetadata extends BfMetadataBase = BfMetadataBase,
+  TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
 > {
   __typename = this.constructor.name;
   private _metadata: TMetadata;
-  protected relatedEdge = "packages/bfDb/classes/BfEdgeBase.ts";
+  readonly relatedEdge: string = "packages/bfDb/classes/BfEdgeBase.ts";
 
   readonly _currentViewer: BfCurrentViewer;
   static generateSortValue() {
@@ -203,40 +207,53 @@ export class BfNodeBase<
     throw new BfErrorNotImplemented();
   }
   async createTargetNode<
-    TProps extends BfNodeBaseProps,
-    TTargetMetadata extends BfMetadataBase,
-    TBfClass extends typeof BfNodeBase<TProps, TTargetMetadata>,
+    TTargetProps extends BfNodeBaseProps,
+    TTargetClass extends typeof BfNodeBase<TTargetProps>,
   >(
-    TargetBfClass: TBfClass,
-    props: TProps,
-    metadata?: TTargetMetadata,
-    role: string | null = null,
-  ): Promise<InstanceType<TBfClass>> {
-    logger.debug("createTargetNode called", {
-      targetClassName: TargetBfClass.name,
-      sourceId: this.metadata.bfGid,
-      role,
-    });
+    TargetClass: TTargetClass,
+    targetProps: TTargetProps,
+    metadata?: Partial<BfMetadataBase>,
+    edgeProps: Partial<TEdgeProps> = {},
+  ): Promise<InstanceType<TTargetClass>> {
+    const logger = getLogger(import.meta);
+    logger.debug(
+      `Creating target node ${TargetClass.name} from ${this.constructor.name}`,
+    );
 
-    const targetNode = await TargetBfClass.__DANGEROUS__createUnattached(
+    // Create the target node
+    const targetNode = await TargetClass.__DANGEROUS__createUnattached(
       this.cv,
-      props,
+      targetProps,
       metadata,
     );
 
+    logger.debug(`Target node created with ID: ${targetNode.metadata.bfGid}`);
+
+    // Import the related edge class
     const relatedEdgeNameWithTs = this.relatedEdge.split("/").pop() as string;
     const relatedEdgeName = relatedEdgeNameWithTs.replace(".ts", "");
+    logger.debug(
+      `Using edge class: ${relatedEdgeName} from path: ${this.relatedEdge}`,
+    );
+
     const bfEdgeImport = await import(this.relatedEdge);
     const BfEdgeClass = bfEdgeImport[relatedEdgeName] as typeof BfEdgeBase;
 
-    BfEdgeClass.createBetweenNodes(this.cv, this, targetNode, role);
-    logger.debug("Edge created successfully", {
-      sourceId: this.metadata.bfGid,
-      targetId: targetNode.metadata.bfGid,
-      role,
-    });
+    // Create the edge between this node and the target node
+    logger.debug(`Creating edge with props:`, edgeProps);
+    const createdEdge = await BfEdgeClass.createBetweenNodes(
+      this.cv,
+      this,
+      targetNode,
+      edgeProps,
+    );
 
-    return targetNode;
+    logger.debug(
+      `Edge created: ${createdEdge.metadata.bfGid} from ${this.metadata.bfGid} to ${targetNode.metadata.bfGid} with props:`,
+      createdEdge.props,
+    );
+
+    return targetNode as InstanceType<TTargetClass>;
   }
 
   querySources<
@@ -249,14 +266,28 @@ export class BfNodeBase<
     throw new BfErrorNotImplemented();
   }
 
-  queryTargets<
+  async queryTargets<
     TTargetProps extends BfNodeBaseProps,
     TTargetClass extends typeof BfNodeBase<TTargetProps>,
   >(
-    _TargetClass: TTargetClass,
-    _props?: Partial<TTargetProps>,
+    TargetClass: TTargetClass,
+    props: Partial<TTargetProps> = {},
+    edgeProps: Partial<TEdgeProps> = {},
+    cache?: BfNodeCache,
   ): Promise<Array<InstanceType<TTargetClass>>> {
-    throw new BfErrorNotImplemented();
+    const relatedEdgeNameWithTs = this.relatedEdge.split("/").pop() as string;
+    const relatedEdgeName = relatedEdgeNameWithTs.replace(".ts", "");
+    const bfEdgeImport = await import(this.relatedEdge);
+    const BfEdgeClass = bfEdgeImport[relatedEdgeName] as typeof BfEdgeBase;
+
+    return BfEdgeClass.queryTargetInstances(
+      this.cv,
+      TargetClass,
+      this.metadata.bfGid,
+      props,
+      edgeProps,
+      cache,
+    );
   }
 
   /** CALLBACKS */

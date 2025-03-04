@@ -33,6 +33,35 @@ export class BfEdgeBase<
   TMetadata extends BfMetadataEdgeBase = BfMetadataEdgeBase,
 > extends BfNodeBase<TProps, TMetadata> {
   /**
+   * Generates metadata for an edge between two nodes
+   *
+   * @param cv - The current viewer context
+   * @param sourceNode - The source node to connect from
+   * @param targetNode - The target node to connect to
+   * @returns Edge metadata with source and target information
+   */
+  static generateEdgeMetadata<
+    TMetadata extends BfMetadataEdgeBase,
+  >(
+    cv: BfCurrentViewer,
+    sourceNode: BfNodeBase,
+    targetNode: BfNodeBase,
+    metadata?: Partial<TMetadata>,
+  ): TMetadata {
+    // First, get the base metadata from parent class
+    const baseMetadata = this.generateMetadata(cv, metadata);
+
+    // Then add edge-specific fields
+    return {
+      ...baseMetadata,
+      bfSClassName: sourceNode.constructor.name,
+      bfSid: sourceNode.metadata.bfGid,
+      bfTClassName: targetNode.constructor.name,
+      bfTid: targetNode.metadata.bfGid,
+    } as TMetadata;
+  }
+
+  /**
    * Creates an instance of BfEdgeBase.
    *
    * @param _currentViewer - The current viewer context
@@ -62,18 +91,20 @@ export class BfEdgeBase<
     cv: BfCurrentViewer,
     sourceNode: BfNodeBase,
     targetNode: BfNodeBase,
-    role: string | null = null,
+    edgeProps: Partial<BfEdgeBaseProps> = {},
   ): Promise<BfEdgeBase> {
-    const metadata = {
-      bfSClassName: sourceNode.constructor.name,
-      bfSid: sourceNode.metadata.bfGid,
-      bfTClassName: targetNode.constructor.name,
-      bfTid: targetNode.metadata.bfGid,
-    } as BfMetadataEdge;
+    const metadata = this.generateEdgeMetadata(cv, sourceNode, targetNode);
 
-    const newEdge = await this.__DANGEROUS__createUnattached(cv, {
-      role,
-    }, metadata);
+    const sanitizedEdgeProps = {
+      ...{},
+      ...edgeProps,
+    };
+
+    const newEdge = await this.__DANGEROUS__createUnattached(
+      cv,
+      sanitizedEdgeProps,
+      metadata,
+    );
 
     return newEdge;
   }

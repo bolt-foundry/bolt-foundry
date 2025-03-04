@@ -581,7 +581,10 @@ export class DatabaseBackendNeon implements DatabaseBackend {
           sql(`idx_bfdb_${index}`)
         } ON bfdb (${sql(index)})`;
       } catch (e) {
-        logger.warn(`Index creation for ${index} failed, may already exist`, e);
+        logger.debug(
+          `Index creation for ${index} failed, may already exist`,
+          e,
+        );
       }
     }
 

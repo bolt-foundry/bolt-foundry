@@ -170,6 +170,7 @@ export async function bfQueryItemsUnified<
     countOnly = false,
   } = options;
 
+  // More detailed debugging for input parameters
   logger.debug({
     metadataToQuery,
     propsToQuery,
@@ -182,10 +183,28 @@ export async function bfQueryItemsUnified<
     batchSize,
   });
 
+  // Debug the structure of metadataToQuery to find potential issues
+  logger.debug(
+    `metadataToQuery keys: ${Object.keys(metadataToQuery).join(", ")}`,
+  );
+  if ("props" in metadataToQuery) {
+    logger.debug(
+      `Found 'props' in metadataToQuery, this might cause issues. Props value: ${
+        JSON.stringify(metadataToQuery.props)
+      }`,
+    );
+  }
+
   const backend = await getBackend();
+  logger.debug(
+    `Using backend type for queryItemsUnified: ${backend.constructor.name}`,
+  );
 
   if (useSizeLimit) {
-    return await backend.queryItemsWithSizeLimit<TProps>(
+    logger.debug(
+      `Using size limit query with maxSizeBytes: ${maxSizeBytes}, batchSize: ${batchSize}`,
+    );
+    const results = await backend.queryItemsWithSizeLimit<TProps>(
       metadataToQuery,
       propsToQuery,
       bfGids,
@@ -195,6 +214,8 @@ export async function bfQueryItemsUnified<
       maxSizeBytes,
       batchSize,
     );
+    logger.debug(`Size-limited query returned ${results.length} results`);
+    return results;
   }
 
   // For count only or other special cases, we'll need more implementation
@@ -226,13 +247,28 @@ export async function bfQueryItemsUnified<
     return items.slice(0, totalLimit);
   }
 
-  return await backend.queryItems<TProps>(
+  const results = await backend.queryItems<TProps>(
     metadataToQuery,
     propsToQuery,
     bfGids,
     orderDirection,
     orderBy,
   );
+
+  logger.debug(`Standard query returned ${results.length} results`);
+  if (results.length === 0) {
+    logger.debug(`No results found. Query parameters: 
+      metadataToQuery: ${JSON.stringify(metadataToQuery)}
+      propsToQuery: ${JSON.stringify(propsToQuery)}
+      bfGids: ${bfGids ? JSON.stringify(bfGids) : "undefined"}
+    `);
+  } else {
+    logger.debug(
+      `First result metadata: ${JSON.stringify(results[0].metadata)}`,
+    );
+  }
+
+  return results;
 }
 
 export async function bfQueryItems<
@@ -251,14 +287,29 @@ export async function bfQueryItems<
     orderDirection,
     orderBy,
   });
+
   const backend = await getBackend();
-  return await backend.queryItems<TProps>(
+  logger.debug(`Using backend type: ${backend.constructor.name}`);
+
+  const results = await backend.queryItems<TProps>(
     metadataToQuery,
     propsToQuery,
     bfGids,
     orderDirection,
     orderBy,
   );
+
+  logger.debug(`Query results count: ${results.length}`);
+  if (results.length > 0) {
+    logger.debug(
+      `First result metadata: ${JSON.stringify(results[0].metadata)}`,
+    );
+    logger.debug(`First result props: ${JSON.stringify(results[0].props)}`);
+  } else {
+    logger.debug(`No results found for query`);
+  }
+
+  return results;
 }
 
 export async function bfQueryItemsWithSizeLimit<

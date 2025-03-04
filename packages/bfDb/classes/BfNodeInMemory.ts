@@ -24,6 +24,7 @@ export class BfNodeInMemory<
 > extends BfNodeBase<TProps, TMetadata> {
   // In-memory storage for nodes
   private static inMemoryNodes: Map<string, BfNodeInMemory> = new Map();
+  override readonly relatedEdge: string = "packages/bfDb/coreModels/BfEdge.ts";
 
   /**
    * Create a new node in memory

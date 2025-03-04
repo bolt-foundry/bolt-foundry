@@ -34,21 +34,66 @@ export function testBfEdgeBase<
     );
 
     await t.step(
+      "generateEdgeMetadata should create correct metadata for an edge",
+      () => {
+        const metadata = BfEdgeClass.generateEdgeMetadata(
+          mockCv,
+          sourceNode,
+          targetNode,
+        );
+
+        // Verify base metadata properties
+        assertEquals(
+          typeof metadata.bfGid,
+          "string",
+          "bfGid should be a string",
+        );
+        assertEquals(
+          metadata.className,
+          BfEdgeClass.name,
+          "className should match the edge class",
+        );
+
+        // Verify edge-specific metadata
+        assertEquals(
+          metadata.bfSid,
+          sourceNode.metadata.bfGid,
+          "Source ID should match source node's ID",
+        );
+        assertEquals(
+          metadata.bfTid,
+          targetNode.metadata.bfGid,
+          "Target ID should match target node's ID",
+        );
+        assertEquals(
+          metadata.bfSClassName,
+          sourceNode.constructor.name,
+          "Source class name should match",
+        );
+        assertEquals(
+          metadata.bfTClassName,
+          targetNode.constructor.name,
+          "Target class name should match",
+        );
+      },
+    );
+
+    await t.step(
       "createBetweenNodes should create an edge between two nodes",
       async () => {
-        const role = "test-role";
+        const edgeProps = { role: "test-role" };
         const edge = await BfEdgeClass.createBetweenNodes(
           mockCv,
           sourceNode,
           targetNode,
-          role,
+          edgeProps,
         );
 
         assertEquals(edge.metadata.bfSid, sourceNode.metadata.bfGid);
         assertEquals(edge.metadata.bfTid, targetNode.metadata.bfGid);
         assertEquals(edge.metadata.bfSClassName, sourceNode.metadata.className);
         assertEquals(edge.metadata.bfTClassName, targetNode.metadata.className);
-        assertEquals(edge.props.role, role);
+        assertEquals(edge.props.role, edgeProps.role);
       },
     );
 
@@ -76,19 +121,19 @@ export function testBfEdgeBase<
         );
 
         // Create edges with different roles
-        const role1 = "test-role-1";
-        const role2 = "test-role-2";
+        const edgeProps1 = { role: "test-role-1" };
+        const edgeProps2 = { role: "test-role-2" };
         await BfEdgeClass.createBetweenNodes(
           mockCv,
           sourceNode1,
           targetNode,
-          role1,
+          edgeProps1,
         );
         await BfEdgeClass.createBetweenNodes(
           mockCv,
           sourceNode2,
           targetNode,
-          role2,
+          edgeProps2,
         );
 
         // Test querying source instances without role filter
@@ -108,7 +153,7 @@ export function testBfEdgeBase<
           BfNodeInMemory,
           targetNode.metadata.bfGid,
           {},
-          { role: role1 },
+          { role: "test-role-1" },
         );
 
         assertEquals(filteredSources.length, 1);
@@ -143,19 +188,19 @@ export function testBfEdgeBase<
         );
 
         // Create edges with different roles
-        const role1 = "source-role-1";
-        const role2 = "source-role-2";
+        const edgeProps1 = { role: "source-role-1" };
+        const edgeProps2 = { role: "source-role-2" };
         await BfEdgeClass.createBetweenNodes(
           mockCv,
           sourceNode,
           targetNode1,
-          role1,
+          edgeProps1,
         );
         await BfEdgeClass.createBetweenNodes(
           mockCv,
           sourceNode,
           targetNode2,
-          role2,
+          edgeProps2,
         );
 
         // Test querying source edges
@@ -166,10 +211,10 @@ export function testBfEdgeBase<
         assertEquals(sourceEdges.length, 2);
         assertEquals(sourceEdges[0].metadata.bfSid, sourceNode.metadata.bfGid);
         assertEquals(sourceEdges[0].metadata.bfTid, targetNode1.metadata.bfGid);
-        assertEquals(sourceEdges[0].props.role, role1);
+        assertEquals(sourceEdges[0].props.role, "source-role-1");
         assertEquals(sourceEdges[1].metadata.bfSid, sourceNode.metadata.bfGid);
         assertEquals(sourceEdges[1].metadata.bfTid, targetNode2.metadata.bfGid);
-        assertEquals(sourceEdges[1].props.role, role2);
+        assertEquals(sourceEdges[1].props.role, "source-role-2");
       },
     );
 
@@ -197,19 +242,19 @@ export function testBfEdgeBase<
         );
 
         // Create edges with different roles
-        const role1 = "target-role-1";
-        const role2 = "target-role-2";
+        const edgeProps1 = { role: "target-role-1" };
+        const edgeProps2 = { role: "target-role-2" };
         await BfEdgeClass.createBetweenNodes(
           mockCv,
           sourceNode1,
           targetNode,
-          role1,
+          edgeProps1,
         );
         await BfEdgeClass.createBetweenNodes(
           mockCv,
           sourceNode2,
           targetNode,
-          role2,
+          edgeProps2,
         );
 
         // Test querying target instances without role filter
@@ -231,7 +276,7 @@ export function testBfEdgeBase<
           BfNodeInMemory,
           sourceNode1.metadata.bfGid,
           {},
-          { role: role1 },
+          { role: "target-role-1" },
           undefined, // No cache
         );
 
@@ -267,19 +312,19 @@ export function testBfEdgeBase<
         );
 
         // Create edges with different roles
-        const role1 = "target-role-1";
-        const role2 = "target-role-2";
+        const edgeProps1 = { role: "target-role-1" };
+        const edgeProps2 = { role: "target-role-2" };
         await BfEdgeClass.createBetweenNodes(
           mockCv,
           sourceNode1,
           targetNode,
-          role1,
+          edgeProps1,
         );
         await BfEdgeClass.createBetweenNodes(
           mockCv,
           sourceNode2,
           targetNode,
-          role2,
+          edgeProps2,
         );
 
         // Test querying target edges
@@ -291,10 +336,10 @@ export function testBfEdgeBase<
         assertEquals(targetEdges.length, 2);
         assertEquals(targetEdges[0].metadata.bfSid, sourceNode1.metadata.bfGid);
         assertEquals(targetEdges[0].metadata.bfTid, targetNode.metadata.bfGid);
-        assertEquals(targetEdges[0].props.role, role1);
+        assertEquals(targetEdges[0].props.role, "target-role-1");
         assertEquals(targetEdges[1].metadata.bfSid, sourceNode2.metadata.bfGid);
         assertEquals(targetEdges[1].metadata.bfTid, targetNode.metadata.bfGid);
-        assertEquals(targetEdges[1].props.role, role2);
+        assertEquals(targetEdges[1].props.role, "target-role-2");
       },
     );
 
@@ -316,12 +361,12 @@ export function testBfEdgeBase<
         );
 
         // Create an edge between them
-        const role = "cache-test-role";
+        const edgeProps = { role: "cache-test-role" };
         await BfEdgeClass.createBetweenNodes(
           mockCv,
           sourceNode,
           targetNode,
-          role,
+          edgeProps,
         );
 
         // Create a cache map to use for the test

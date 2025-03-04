@@ -3,9 +3,10 @@ import {
   BfNode,
 } from "packages/bfDb/coreModels/BfNode.ts";
 import { getLogger } from "packages/logger.ts";
-import type {
-  BfEdgeBaseProps,
-  BfMetadataEdgeBase,
+import {
+  BfEdgeBase,
+  type BfEdgeBaseProps,
+  type BfMetadataEdgeBase,
 } from "packages/bfDb/classes/BfEdgeBase.ts";
 import type {
   BfNodeBase,
@@ -14,6 +15,7 @@ import type {
 } from "packages/bfDb/classes/BfNodeBase.ts";
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import type { BfGid } from "packages/bfDb/classes/BfNodeIds.ts";
+import { bfQueryItems } from "packages/bfDb/bfDb.ts";
 
 const _logger = getLogger(import.meta);
 
@@ -24,24 +26,86 @@ export type BfMetadataEdge = BfMetadataNode & BfMetadataEdgeBase;
 
 export class BfEdge<TProps extends BfEdgeProps = BfEdgeProps>
   extends BfNode<TProps, BfMetadataEdge> {
-  static async createBetweenNodes<TReturnType extends BfEdge>(
+  /**
+   * Generates metadata for an edge between two nodes
+   *
+   * @param cv - The current viewer context
+   * @param sourceNode - The source node to connect from
+   * @param targetNode - The target node to connect to
+   * @returns Edge metadata with source and target information
+   */
+  static generateEdgeMetadata<
+    TMetadata extends BfMetadataEdgeBase,
+  >(
     cv: BfCurrentViewer,
     sourceNode: BfNodeBase,
     targetNode: BfNodeBase,
-    role: string | null = null,
-  ): Promise<TReturnType> {
-    const metadata = {
-      bfSClassName: sourceNode.constructor.name,
+    metadata?: Partial<TMetadata>,
+  ): TMetadata {
+    // Generate the base metadata
+    const baseMetadata = BfEdgeBase.generateEdgeMetadata(
+      cv,
+      sourceNode,
+      targetNode,
+      metadata,
+    );
+
+    // Override the className to be this class's name instead of BfEdgeBase
+    return {
+      ...baseMetadata,
+      className: this.name,
+    } as TMetadata;
+  }
+  static async createBetweenNodes<
+    TEdgeProps extends BfEdgeBaseProps,
+    TSourceProps extends BfNodeBaseProps,
+    TTargetProps extends BfNodeBaseProps,
+  >(
+    cv: BfCurrentViewer,
+    sourceNode: BfNodeBase<TSourceProps>,
+    targetNode: BfNodeBase<TTargetProps>,
+    props: Partial<TEdgeProps> = {},
+  ): Promise<InstanceType<typeof BfEdge<TEdgeProps>>> {
+    const logger = getLogger(import.meta);
+    logger.debug(
+      `Creating edge between ${sourceNode.constructor.name}(${sourceNode.metadata.bfGid}) -> ${targetNode.constructor.name}(${targetNode.metadata.bfGid})`,
+      { props },
+    );
+
+    // Generate metadata for the edge
+    const metadata = this.generateMetadata(cv, {
       bfSid: sourceNode.metadata.bfGid,
-      bfTClassName: targetNode.constructor.name,
       bfTid: targetNode.metadata.bfGid,
-    } as BfMetadataEdge;
+      bfSClassName: sourceNode.metadata.className,
+      bfTClassName: targetNode.metadata.className,
+    } as Partial<BfMetadataEdge>);
 
-    const newEdge = await this.__DANGEROUS__createUnattached(cv, {
-      role,
-    }, metadata);
+    logger.debug(`Generated edge metadata:`, metadata);
 
-    return newEdge as TReturnType;
+    // Create default props if none provided
+    const edgeProps = {
+      // Always have a role property
+      role: "default",
+      ...props,
+    } as unknown as TEdgeProps;
+
+    logger.debug(`Final edge props:`, edgeProps);
+
+    // Create the edge instance
+    const edgeInstance = new this(
+      cv,
+      edgeProps,
+      metadata,
+    ) as InstanceType<typeof BfEdge<TEdgeProps>>;
+
+    // Save the edge
+    logger.debug(`Saving edge to database`);
+    await edgeInstance.save<BfMetadataEdge>();
+    logger.debug(
+      `Edge saved successfully with ID: ${edgeInstance.metadata.bfGid}`,
+    );
+
+    return edgeInstance;
   }
 
   static async querySourceInstances<
