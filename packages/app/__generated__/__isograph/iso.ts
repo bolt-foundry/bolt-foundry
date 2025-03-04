@@ -245,7 +245,7 @@ export function iso<T>(
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Mutation.LoginAsDemoPerson', T>
-): IdentityWithParam<Mutation__LoginAsDemoPerson__param>;
+): IdentityWithParamComponent<Mutation__LoginAsDemoPerson__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Mutation.Login', T>
