@@ -34,10 +34,10 @@ export class BfEdgeInMemory<
    * @param cv - The current viewer context
    * @param sourceNode - The source node to connect from
    * @param targetNode - The target node to connect to
-   * @param role - Optional role/label for the edge relationship
+   * @param edgeProps - Optional properties for the edge relationship
    * @returns A new BfEdgeInMemory instance representing the edge
    */
-  static override async createBetweenNodes<
+  static override createBetweenNodes<
     T extends typeof BfEdgeInMemory = typeof BfEdgeInMemory,
     S extends BfNodeBase = BfNodeBase,
     U extends BfNodeBase = BfNodeBase,
@@ -46,27 +46,35 @@ export class BfEdgeInMemory<
     cv: BfCurrentViewer,
     sourceNode: S,
     targetNode: U,
-    role = "",
+    edgeProps: Partial<BfEdgeBaseProps> = {},
   ): Promise<InstanceType<T>> {
-    // Use the superclass implementation to create the edge
-    const edge = await super.createBetweenNodes(
+    // No need to check if edge already exists for in-memory implementation
+
+    // Create the edge properties
+    const props = {
+      role: edgeProps.role ?? "default",
+      ...edgeProps,
+    } as BfEdgeBaseProps;
+
+    // Create metadata for the edge
+    const metadata = BfEdgeBase.generateEdgeMetadata(
       cv,
       sourceNode,
       targetNode,
-      role,
-    ) as InstanceType<T>;
+    );
 
-    // Store the edge in memory using a composite key of source and target IDs
-    const key =
-      `${sourceNode.metadata.bfGid}-${targetNode.metadata.bfGid}-${role}`;
-    this.inMemoryEdges.set(key, edge as unknown as BfEdgeInMemory);
+    // Instantiate the edge
+    const edge = new this(cv, props, metadata) as InstanceType<T>;
 
-    return edge;
+    // Add to in-memory storage
+    this.inMemoryEdges.set(metadata.bfGid, edge as BfEdgeInMemory);
+
+    return Promise.resolve(edge);
   }
 
   override save(): Promise<this> {
-    // For in-memory implementation, just return this instance
-    // No persistence needed as everything is already in memory
+    const id = this.metadata.bfGid;
+    BfEdgeInMemory.inMemoryEdges.set(id, this);
     return Promise.resolve(this);
   }
 

@@ -116,5 +116,67 @@ export function testBfNodeBase(BfNodeClass: typeof BfNodeBase) {
       const sortValue = BfNodeClass.generateSortValue();
       assertEquals(typeof sortValue, "number");
     });
+
+    await t.step("queryTargets should retrieve target nodes", async () => {
+      // Create a source node
+      const sourceNode = await BfNodeClass.__DANGEROUS__createUnattached(
+        mockCv,
+        {
+          name: "Source Node for Query Test",
+        },
+      );
+
+      // Create a target node using createTargetNode pattern
+      const targetNode = await sourceNode.createTargetNode(
+        BfNodeClass,
+        {
+          name: "Target Node for Query Test",
+        },
+        undefined,
+        { role: "test-query-role" },
+      );
+
+      // Query for target nodes
+      const targetNodes = await sourceNode.queryTargets(
+        BfNodeClass,
+        {},
+        // edge props to query
+        { role: "test-query-role" },
+      );
+
+      // Verify query results
+      assertEquals(targetNodes.length, 1, "Should find one target node");
+      assertEquals(
+        targetNodes[0].metadata.bfGid,
+        targetNode.metadata.bfGid,
+        "Should find the correct target node",
+      );
+      assertEquals(
+        targetNodes[0].props.name,
+        "Target Node for Query Test",
+        "Target node should have correct name",
+      );
+
+      // Test querying with a cache
+      const cache = new Map();
+      const cachedTargets = await sourceNode.queryTargets(
+        BfNodeClass,
+        {},
+        { role: "test-query-role" },
+        cache,
+      );
+
+      // Verify cached query results
+      assertEquals(
+        cachedTargets.length,
+        1,
+        "Should find one target node with cache",
+      );
+      assertEquals(
+        cache.has(targetNode.metadata.bfGid),
+        true,
+        "Cache should contain the target node",
+      );
+    });
   });
 }
