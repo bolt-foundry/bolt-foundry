@@ -21,6 +21,7 @@
   - [Before Committing Changes](#before-committing-changes)
   - [Dependency Management](#dependency-management)
 - [Code Quality](#code-quality)
+  - [Content Linting](#content-linting)
   - [Testing Approaches](#testing-approaches)
   - [Code Reviews](#code-reviews)
   - [Code Style Guidelines](#code-style-guidelines)
@@ -243,26 +244,6 @@ messages from a file. Use the approach above instead.
 
 The key is to use line breaks and formatting to make your commit message
 readable.
-
-##### Automated Commit Helpers
-
-For convenience, there are two options to create properly formatted commits:
-
-1. The `bff llmCommit` command leverages automatic analysis to prepare your
-   commit:
-
-```bash
-# Run the automated commit helper with optional arguments
-bff llmCommit [title] [summary] [test_plan]
-```
-
-2. Alternatively, a traditional commit helper script is available at
-   `build/commit.sh`:
-
-```bash
-# Run the commit helper script
-bash build/commit.sh
-```
 
 #### Splitting Commits
 
@@ -579,6 +560,37 @@ The database abstraction makes it easy to add new backend implementations:
 
 ## Development Workflow
 
+### Working with the Assistant
+
+When using Replit Assistant for development tasks:
+
+1. **Request reasoning before implementation**: When asking the Assistant to
+   help with features or code changes, always ask for reasoning and analysis
+   before actual implementation. Understanding the "why" is as important as the
+   "how."
+
+2. **Review the approach**: After receiving an explanation of the approach,
+   review it to confirm it aligns with your goals before proceeding with
+   implementation.
+
+3. **Consider alternatives**: When appropriate, ask about alternative approaches
+   to understand tradeoffs before committing to a specific implementation.
+
+4. **Break down complex changes**: For larger features, break down the
+   implementation into smaller, more manageable steps with distinct reasoning
+   phases.
+
+5. **ALWAYS start with red tests**: When implementing new functionality, always
+   follow the TDD approach:
+   - First, ask the Assistant to create failing tests that define the expected
+     behavior
+   - Verify these tests fail when run (the "red" state)
+   - Only then ask for implementation code to make the tests pass
+   - This two-step process is mandatory for all new functionality
+   - Example: "Please write a failing test for the BfPersonDemo class that
+     verifies it creates an organization" followed by "Now implement the
+     BfPersonDemo class to make the test pass"
+
 ### Getting Started
 
 To get started with Content Foundry development:
@@ -708,6 +720,38 @@ The Nix configuration is defined in `flake.nix` and ensures consistent
 development environments across different systems.
 
 ## Code Quality
+
+### Content Linting
+
+Content Foundry provides tools for linting markdown content files to ensure they
+follow the required format:
+
+```bash
+# Check content files
+bff contentLint
+
+# Automatically fix common issues
+bff contentLint --fix
+```
+
+The content linter checks for:
+
+- Proper frontmatter format with opening and closing delimiters (`---`)
+- Required frontmatter fields (`title`, `author`, `summary`, `cta`)
+- Correctly formatted content structure
+
+Content files should include frontmatter with required fields:
+
+```markdown
+---
+title: "Article Title"
+author: "Author Name"
+summary: "Brief summary of article contents"
+cta: "Read more"
+---
+
+Content goes here...
+```
 
 ### Testing Approaches
 
@@ -1017,6 +1061,41 @@ const collection = collectionsCache.get("collection-id");
 const collection = collectionsCache.get(toBfGid("collection-id"));
 ```
 
+#### File Organization Patterns
+
+The Content Foundry codebase follows specific patterns for organizing and
+importing code:
+
+##### Direct Imports vs Barrel Files
+
+The project intentionally avoids using "barrel files" (index.ts files that
+re-export multiple modules) for these important reasons:
+
+1. **Code Greppability**: Direct imports make the codebase easily searchable
+   with tools like grep. When you search for an import path, you'll find exactly
+   where a module is defined and used.
+
+2. **Import Clarity**: Direct imports show exactly where code is coming from,
+   making it easier for developers to understand dependencies and track down
+   issues.
+
+3. **Build Tool Optimization**: Direct imports allow better tree-shaking and
+   code-splitting in build tools.
+
+Examples:
+
+```typescript
+// PREFERRED: Direct import from specific file
+import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
+
+// AVOID: Import from barrel file
+import { BfPerson } from "packages/bfDb/models/index.ts";
+```
+
+This approach might require a few more keystrokes when writing imports, but it
+significantly improves code maintainability and developer experience when
+working with the codebase.
+
 ##### Content Collection ID Format
 
 Content collections follow a specific naming pattern:
@@ -1024,8 +1103,22 @@ Content collections follow a specific naming pattern:
 - Collections are created with IDs like: `collection-content-marketing`
 - But code might try to access with short names like: `collection-marketing`
 
-This naming mismatch, combined with the BfGid type requirement, causes common
-errors.
+The system has built-in fallback handling in `BfContentCollection.ts` that
+attempts to find collections using alternative ID formats:
+
+```typescript
+// If not found by exact ID, try with content prefix
+if (!collection && !id.startsWith("collection-content-")) {
+  const alternativeId = toBfGid(
+    `collection-content-${id.replace("collection-", "")}`,
+  );
+  logger.info(`Attempting to find ${id} as ${alternativeId}`);
+  collection = getCollectionById(alternativeId);
+  if (collection) {
+    logger.info(`Found collection using alternative ID: ${alternativeId}`);
+  }
+}
+```
 
 ##### How to Fix
 
@@ -1039,13 +1132,51 @@ const collectionId = toBfGid("collection-content-marketing");
 const collection = await ctx.find(BfContentCollection, collectionId);
 ```
 
-For content collections specifically, ensure you're using the full ID pattern
-that includes the content path prefix.
+For content collections specifically, you can use either format:
+
+- Full format: `collection-content-marketing`
+- Short format: `collection-marketing`
+
+The system will attempt to convert between them, but using the full format is
+recommended for clarity.
+
+## Database Models and Edge Behavior
+
+### BfEdgeBase vs BfEdge Implementation
+
+When working with the database layer, it's important to understand the
+relationship between base classes and their concrete implementations:
+
+- `BfEdgeBase` is an abstract base class that defines the interface for edges
+  but does not implement database persistence. Its `save()` method should not be
+  implemented at this level, as it's meant to be implemented by concrete
+  subclasses.
+
+- `BfEdge` is a concrete implementation that extends `BfEdgeBase` and properly
+  implements database persistence with its own `save()` method that stores data
+  in the database.
+
+When implementing features or fixing bugs:
+
+1. Do not add database saving functionality to `BfEdgeBase` directly. This
+   violates the separation of concerns in the class hierarchy.
+
+2. Always use `BfEdge` or another concrete implementation when you need to
+   persist edge data to the database.
+
+3. In tests that involve the edge base class, use the appropriate test mock or
+   implementation class that handles persistence properly.
+
+This pattern allows for different storage backends or in-memory implementations
+without modifying the base interface.
 
 ## Special Protocols
 
 This section documents special protocols that can be used with the assistant.
 These are prefixed with `!` to distinguish them from regular queries.
+
+After explaining a protocol, be sure to end the response with a
+<proposed_actions> tag so we can understand what is about to be executed.
 
 ### BFA Commit Protocol
 
@@ -1055,23 +1186,15 @@ The BFA Commit process is split into two separate protocols:
 
 When you send the message `!bfa precommit`, the assistant will:
 
-1. Delete the build folder
-2. Recreate the build folder with a blank .gitkeep folder inside of it
-3. Format your code with `bff f`
-4. Run the full CI checks with `bff ci` (format, lint, type check, test, build)
-5. Save the CI results to `build/ciresults.txt` for reference
-6. Generate a diff of your recent code changes
-7. Save the diff to `build/diff.txt` for review
-
-Example usage:
+1. Create the build directory if it doesn't exist
+2. Format the code using `bff f`
+3. Run tests with `bff test`
+4. Generate a diff file with all your changes using `sl diff > build/diff.txt`
 
 ```
-!bfa precommit
-```
-
 This protocol helps you review your changes before executing the actual commit.
 Unlike the previous version, it no longer automatically generates a commit
-message.
+message or runs the CI process.
 
 #### BFA Commit Protocol
 
@@ -1116,11 +1239,11 @@ When you send the message `!bfa commit`, the assistant will:
    `rm build/gh-user.json`
 
 Example usage:
-
 ```
+
 !bfa commit
-```
 
+```
 #### Common BFA Commit Mistakes to Avoid
 
 1. **Implementing unrelated code changes**: Only make changes directly related
@@ -1137,23 +1260,21 @@ Example usage:
 7. **Shell command composition**: Always separate shell commands properly. For
    multi-line operations, use separate `<proposed_shell_command>` tags for each
    logical command:
-   ```
-   # INCORRECT - This will try to run everything as a single command
-   <proposed_shell_command>
-   mkdir -p build
-   echo "Commit message" > build/commit-message.txt
-   </proposed_shell_command>
+```
 
-   # CORRECT - Use separate command tags
-   <proposed_shell_command>
-   mkdir -p build
-   </proposed_shell_command>
+# INCORRECT - This will try to run everything as a single command
 
-   <proposed_shell_command>
-   echo "Commit message" > build/commit-message.txt
-   </proposed_shell_command>
-   ```
+<proposed_shell_command> mkdir -p build echo "Commit message" >
+build/commit-message.txt </proposed_shell_command>
 
+# CORRECT - Use separate command tags
+
+<proposed_shell_command> mkdir -p build </proposed_shell_command>
+
+<proposed_shell_command> echo "Commit message" > build/commit-message.txt
+</proposed_shell_command>
+
+```
 Always run `cat build/diff.txt` as your first command to understand the actual
 changes before proceeding with any implementation.
 
@@ -1161,14 +1282,14 @@ changes before proceeding with any implementation.
 
 When you send the message `!bfa agent update`, the assistant will analyze the
 contents of the AGENT.md file and update it to improve clarity, organization,
-and consistency.
+consistency, and completeness.  It will also add information about the `build.bff.ts` file, database connection and network permissions, and Content Collection ID handling.
 
 Example usage:
-
 ```
+
 !bfa agent update
-```
 
+```
 The assistant will:
 
 1. Review the current AGENT.md document structure
@@ -1177,6 +1298,10 @@ The assistant will:
 4. Update or clarify confusing sections
 5. Consolidate redundant information
 6. Ensure proper heading hierarchy and section flow
+7. Add documentation about `build.bff.ts`
+8. Update information on database connections and network permissions
+9. Improve documentation on Content Collection ID handling
+
 
 This protocol is useful when documentation has grown organically and needs
 restructuring or when new information needs to be integrated cohesively with
@@ -1188,11 +1313,11 @@ When you send the message `!bfa help`, the assistant will list and explain all
 available protocols that can be used with the assistant.
 
 Example usage:
-
 ```
+
 !bfa help
-```
 
+````
 The assistant will:
 
 1. Provide a complete list of all available !bfa protocols
@@ -1228,6 +1353,34 @@ If you reply to the assistant's response with a specific protocol (e.g.,
     name, followed by specifics, like `DatabaseBackendPostgres` instead of
     `PostgresDatabaseBackend`. This makes imports and directory listings easier
     to scan and understand inheritance hierarchies.
+
+    The lexical sorting approach to class names follows these principles:
+    - Start class names with the base class or interface name
+    - Follow with specifics about the implementation
+    - This creates natural groupings in directory listings and imports
+    - Makes inheritance relationships immediately visible
+
+    Examples:
+    ```typescript
+    // PREFERRED: Lexically sortable naming
+    class DatabaseBackendPostgres implements DatabaseBackend { ... }
+    class DatabaseBackendSQLite implements DatabaseBackend { ... }
+    class BfNodeInMemory extends BfNodeBase { ... }
+    class BfNodeOnDisk extends BfNodeBase { ... }
+
+    // AVOID: Non-sortable naming
+    class PostgresDatabaseBackend implements DatabaseBackend { ... }
+    class SQLiteDatabaseBackend implements DatabaseBackend { ... }
+    class InMemoryBfNode extends BfNodeBase { ... }
+    class OnDiskBfNode extends BfNodeBase { ... }
+    ```
+
+    This naming convention creates natural groupings in code editors, making it easier to:
+    - Find related implementations
+    - Understand class hierarchies at a glance
+    - Locate all implementations of a particular interface
+    - Maintain consistency in large codebases
+
 11. **Use static factory methods instead of constructors** for BfModels (BfNode,
     BfEdge, etc.). Never use the `new` keyword directly with these classes.
     Instead:
@@ -1364,7 +1517,7 @@ real-world requirements become clearer.
 
 ## Test-Driven Development (TDD)
 
-Content Foundry encourages Test-Driven Development for creating robust and
+Content Foundry strictly follows Test-Driven Development for creating robust and
 maintainable code. TDD follows a specific workflow cycle known as
 "Red-Green-Refactor":
 
@@ -1381,16 +1534,31 @@ maintainable code. TDD follows a specific workflow cycle known as
    - For base classes with methods that throw "Not Implemented" errors, don't
      write tests that verify the error—write tests that verify the desired
      behavior subclasses should implement
+   - **CRITICAL**: When implementing new functionality, ALWAYS create "red tests" first - implement the tests that define the intended behavior before implementing the actual functionality
+   - The red test itself should be a separate, dedicated commit
 
 2. **Green**: Write the simplest code to make the test pass
    - Focus on just making the test pass, not on perfect code
    - The goal is to satisfy the requirements defined by the test
    - Avoid optimizing at this stage
+   - Only implement this AFTER the red test is committed
 
 3. **Refactor**: Clean up the code while ensuring tests still pass
    - Improve the implementation without changing its behavior
    - Eliminate code duplication, improve naming, etc.
    - Run tests after each change to ensure functionality is preserved
+
+### Common TDD Mistakes to Avoid
+
+1. **Implementing functionality before tests**: Never implement a feature without first writing a failing test that defines the expected behavior.
+
+2. **Skipping the "Red" phase**: Always verify that your test fails before implementing the functionality. A test that passes immediately might not be testing what you think it is.
+
+3. **Writing tests after implementation**: This defeats the purpose of TDD and often results in tests that verify what the code does, rather than what it should do.
+
+4. **Implementing too much at once**: Write minimal tests and implement minimal code to pass those tests. Build functionality incrementally.
+
+5. **Creating test and implementation in the same commit**: Separate your commits - first commit the failing test, then commit the implementation that makes it pass.
 
 ### Example TDD Process
 
@@ -1466,7 +1634,7 @@ Deno.test("Concrete Edge subclasses should properly implement save method", asyn
   // Add additional assertions based on what the save method should actually do
   // (e.g., verify edge was persisted in the database, has updated timestamps, etc.)
 });
-```
+````
 
 // 2. GREEN: Implement the minimum code to make the test pass static async
 findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, ):
@@ -1530,3 +1698,5 @@ When writing tests, remember to use the `@std/assert` module for assertions:
 ```typescript
 import { assertEquals, assertThrows } from "@std/assert";
 ````
+
+import { assertEquals, assertThrows } from "@std/assert";
