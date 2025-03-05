@@ -1,37 +1,14 @@
-# Content Foundry Documentation
+# AGENT.md
 
-## Table of Contents
+This file is intended to be a reference for assistants, agents, and LLMs looking
+to contribute to the Content Foundry project. While not explicitly designed for
+humans, the file serves as a decent overview of our coding practices.
 
-- [Project Overview](#project-overview)
-- [Project Structure](#project-structure)
-- [Key Technologies](#key-technologies)
-- [Development Tools](#development-tools)
-  - [BFF (Bolt Foundry Friend)](#bff-bolt-foundry-friend)
-  - [Sapling SCM Integration](#sapling-scm-integration)
-  - [Development Environment](#development-environment)
-  - [Notebook Integration](#notebook-integration)
-- [Code Organization](#code-organization)
-  - [Front-end Architecture](#front-end-architecture)
-  - [Database Layer](#database-layer)
-  - [GraphQL API](#graphql-api)
-  - [Additional Modules](#additional-modules)
-- [Development Workflow](#development-workflow)
-  - [Getting Started](#getting-started)
-  - [Common Tasks](#common-tasks)
-  - [Before Committing Changes](#before-committing-changes)
-  - [Dependency Management](#dependency-management)
-- [Code Quality](#code-quality)
-  - [Content Linting](#content-linting)
-  - [Testing Approaches](#testing-approaches)
-  - [Code Reviews](#code-reviews)
-  - [Code Style Guidelines](#code-style-guidelines)
-  - [Common Type Errors](#common-type-errors)
-- [Special Protocols](#special-protocols)
-  - [BFF Commit Protocol](#bff-commit-protocol)
-  - [BFF Agent Update Protocol](#bff-agent-update-protocol)
-  - [BFF Help Protocol](#bff-help-protocol)
-- [Best Practices](#best-practices)
-- [Test-Driven Development](#test-driven-development-tdd)
+## Definitions
+
+- Developers are humans who oversee feature creation in Content Foundry.
+- Assistants, agents, LLMs, etc. are tools used to help developers accomplish
+  tasks.
 
 ## Project Overview
 
@@ -46,33 +23,9 @@ layer.
 .
 ├── build/                      # Compiled application output
 ├── content/                    # Content and documentation
-│   ├── blog/                   # Blog posts
-│   └── documentation/          # Project documentation
 ├── infra/                      # Infrastructure code
-│   ├── appBuild/               # Build configuration
-│   ├── bff/                    # BFF (Bolt Foundry Friend) tools
-│   │   ├── bin/                # Executable scripts
-│   │   ├── friends/            # BFF command modules
-│   │   └── prompts/            # Prompt templates
-│   └── jupyter/                # Jupyter notebook configuration
 ├── lib/                        # Shared utility functions
 ├── packages/                   # Project modules
-│   ├── analytics/              # Analytics functionality
-│   ├── app/                    # Main application code
-│   │   ├── components/         # React components
-│   │   ├── contexts/           # React contexts
-│   │   └── hooks/              # Custom React hooks
-│   ├── bfDb/                   # Database interface
-│   │   ├── coreModels/         # Core data models
-│   │   ├── classes/            # Database classes
-│   │   └── models/             # Data models
-│   ├── bfDs/                   # Design system components
-│   ├── extension/              # Browser extension code
-│   ├── featureFlags/           # Feature flag management
-│   ├── graphql/                # GraphQL schema and resolvers
-│   ├── redirector/             # URL redirection handling
-│   ├── tools/                  # Utility tools
-│   └── web/                    # Web server implementation
 ├── static/                     # Static assets and CSS
 ```
 
@@ -86,46 +39,6 @@ layer.
 - **Nix**: Reproducible build system for environment management
 
 ## Development Tools
-
-### BFF (Bolt Foundry Friend)
-
-BFF is Content Foundry's custom task runner and development tool suite. It
-provides a unified interface for common development tasks.
-
-#### Key BFF Commands
-
-```bash
-# Get a list of all commands
-bff help
-
-# Development Tools
-bff devTools          # Start development environment
-bff devToolsStop      # Stop development environment
-
-# Build and Deployment
-bff build             # Build the application
-bff deploy            # Run CI checks and build for deployment
-bff ci                # Run CI checks (lint, test, build, format)
-
-# Testing and Quality
-bff test              # Run tests
-bff lint              # Lint code
-bff format            # Format code using deno fmt
-
-# Content Management
-bff contentLint       # Lint markdown content files
-bff llm               # Output files in a prompt-friendly format
-
-# Database
-bff db:reset          # Reset database (development only)
-bff db:clean          # Clean database models
-
-# Version Control
-bff fork              # Fork the repository to personal GitHub account
-bff land              # Pull code, install deps, create git commit
-bff pull              # Pull latest code and goto remote/main
-bff testStack         # Run tests on each commit in current stack
-```
 
 ### Sapling SCM Integration
 
@@ -143,7 +56,7 @@ advanced features while maintaining compatibility with Git.
   `sl goto pr316`)
 - `sl log` - View commit history
 - `sl web` - Start Sapling web interface
-- `sl diff` - Show changes in working directory
+- `sl diff` - Show the current uncommitted changes.
 - `sl submit` - Submit a pull request with your changes for review
 
 #### Creating Structured Commits
@@ -154,72 +67,7 @@ with:
 1. A clear, descriptive title
 2. A detailed description with "Summary" and "Test Plan" sections
 
-##### Using the Commit Template
-
-We've set up a commit template to help you create well-structured commits. To
-use it:
-
-```bash
-# First ensure code is formatted properly
-bff f
-
-# Generate a diff and save it to a file for review
-sl diff > build/sl.txt
-
-# Review the diff to understand changes
-cat build/sl.txt
-
-# Create a commit using the template
-sl commit
-```
-
-This will open your editor with the commit template pre-populated:
-
-```
-# Title: concise description of changes (50 chars max)
-
-## Summary
-# Explain what changed and why (bullet points work well)
-# - Change 1
-# - Change 2
-
-## Test Plan
-# Describe how you tested these changes
-# - What you verified
-# - How others can test/verify
-```
-
-Fill in each section, removing the comment lines (lines starting with #). Make
-sure to:
-
-- Use a short, descriptive title
-- Leave a blank line after the title
-- Use line breaks to make the commit message readable
-- Use bullet points in the Summary and Test Plan sections
-- Save and close the editor to complete the commit
-
-##### Manual Commit Structure
-
-If not using the template, you can still create a well-structured commit
-manually:
-
-```bash
-# Format code before committing
-bff f
-
-# Then commit with a descriptive message
-sl commit -m "Descriptive title
-
-## Summary
-- Change 1: Brief explanation of first change
-- Change 2: Brief explanation of second change
-
-## Test Plan
-- Verified X works as expected
-- Ran Y test and confirmed Z outcome"
-```
-
-To use a file for the commit message (useful for long, complex commit messages):
+##### Commit Structure
 
 ```bash
 # Create a commit message file
@@ -245,31 +93,21 @@ messages from a file. Use the approach above instead.
 The key is to use line breaks and formatting to make your commit message
 readable.
 
-#### Splitting Commits
-
-Guidelines for splitting commits:
-
-- Each commit should represent a single logical change or feature
-- Keep related changes together in the same commit
-- Separate unrelated changes into different commits
-- Consider splitting large changes into smaller, incremental commits
-- Make sure each commit can be understood on its own
+- Use a short, descriptive title
+- Leave a blank line after the title
+- Use line breaks to make the commit message readable
+- Use bullet points in the Summary and Test Plan sections
 
 Example commit message:
 
 ```
 Fix content collection ID lookup and add BfGid type documentation
-
-## Summary
-- Fixed content collection lookup by correctly handling ID prefix conventions
-- Added documentation about BfGid type errors to AGENT.md
-- Updated collectionsCache.get() to properly convert string IDs to BfGid
-
-## Test Plan
-- Verified content/marketing collection now loads correctly
-- Tested with shortened collection ID format
-- Added explicit tests for ID conversion edge cases
 ```
+
+[Click here to see the full commit message with Summary and Test Plan sections]([^commit_example])
+
+> ⚠️ **WARNING**: DO NOT use this exact commit message in your actual commits.
+> It's only provided as an example format.
 
 #### Using `sl diff` to Review Changes
 
@@ -295,7 +133,8 @@ sl diff --stat
 
 ### Development Environment
 
-Content Foundry provides a comprehensive development environment through BFF:
+Content Foundry provides a comprehensive development environment through BFF,
+our task runner:
 
 ```bash
 # Start development tools
@@ -305,18 +144,6 @@ bff devTools
 # - Sapling web interface (port 3011)
 # - Jupyter notebook (port 8888)
 # - Tools web interface (port 9999)
-```
-
-### Notebook Integration
-
-Content Foundry integrates Jupyter notebooks for data analysis and
-documentation:
-
-```bash
-# Open Jupyter notebook interface
-bff devTools
-
-# Access at: https://<your-domain>:8888 (token: bfjupyter)
 ```
 
 ## Code Organization
@@ -336,9 +163,6 @@ Content Foundry follows specific patterns for organizing code files:
 - **Model classes**: Database models are in `packages/bfDb/models/`
 - **Core model classes**: Base classes for models are in
   `packages/bfDb/coreModels/`
-
-This organization keeps related files together and makes it easier to find and
-maintain code.
 
 ### Front-end Architecture
 
@@ -370,7 +194,7 @@ you to:
 In Content Foundry, Isograph components are defined using the `iso` function
 imported from the generated isograph module:
 
-```typescript
+```tsx
 import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 
 export const MyComponent = iso(`
@@ -453,7 +277,7 @@ Content Foundry sets up the Isograph environment in
 - Configures network requests to the GraphQL endpoint
 - Sets up caching
 
-#### Development Workflow
+### Development Workflow
 
 1. **Define Components**: Create components with their data requirements
 2. **Build**: Run `bff build` to generate Isograph types
@@ -464,7 +288,7 @@ Content Foundry sets up the Isograph environment in
 For dynamic component rendering, Content Foundry uses
 `BfIsographFragmentReader`:
 
-```typescript
+```tsx
 <BfIsographFragmentReader
   fragmentReference={someFragmentReference}
   networkRequestOptions={{
@@ -499,27 +323,7 @@ Content Foundry uses GraphQL for its API layer:
 
 GraphQL resolvers in Content Foundry use a context object (`ctx`) to access
 models and data. This pattern ensures proper access control and consistent data
-management:
-
-```typescript
-// Example resolver function
-resolve: (async (parent, args, ctx) => {
-  // Use ctx.find to get a model by ID
-  const model = await ctx.find(ModelClass, id);
-
-  // Use ctx.findX for required models (throws if not found)
-  const requiredModel = await ctx.findX(ModelClass, id);
-
-  // Access current user
-  const currentUser = await ctx.findCurrentViewer();
-
-  // For collections with items, use ctx to retrieve the parent first
-  const collection = await ctx.findX(CollectionClass, parent.id);
-  const items = collection.props.items || [];
-
-  return result;
-});
-```
+management. [See resolver example]([^graphql_resolver])
 
 Key context methods:
 
@@ -533,12 +337,12 @@ Key context methods:
 Content Foundry supports multiple database backends through an abstraction
 layer:
 
-#### Backend Architecture
+#### DB Backend Architecture
 
 - Database operations are abstracted through the `DatabaseBackend` interface
 - The database backend is selected based on environment configuration
 
-#### Implementing Custom Backends
+#### Implementing Custom DB Backends
 
 The database abstraction makes it easy to add new backend implementations:
 
@@ -560,79 +364,56 @@ The database abstraction makes it easy to add new backend implementations:
 
 ## Development Workflow
 
-### Working with the Assistant
+### Implementation plans
 
-When using Replit Assistant for development tasks:
+Assistants should always:
 
-1. **Request reasoning before implementation**: When asking the Assistant to
-   help with features or code changes, always ask for reasoning and analysis
-   before actual implementation. Understanding the "why" is as important as the
-   "how."
+1. **Provide reasoning before implementation**: Understanding the "why" is more
+   important than the "how." Developers should work with assistants to create an
+   implementation plan for features before creating them. These plans can be
+   reviewed by multiple assistants, developers, or other parties, to ensure they
+   are quality. For smaller changes, like bugfixes, a summary in chat before
+   implementing is enough.
 
-2. **Review the approach**: After receiving an explanation of the approach,
-   review it to confirm it aligns with your goals before proceeding with
-   implementation.
+2. **Look for Developer sign off**: Developers should be able to confirm their
+   satisfaction with an implementation plan before actually writing any code.
 
-3. **Consider alternatives**: When appropriate, ask about alternative approaches
-   to understand tradeoffs before committing to a specific implementation.
-
-4. **Break down complex changes**: For larger features, break down the
+3. **Break down complex changes**: For larger features, break down the
    implementation into smaller, more manageable steps with distinct reasoning
    phases.
 
-5. **ALWAYS start with red tests**: When implementing new functionality, always
-   follow the TDD approach:
-   - First, ask the Assistant to create failing tests that define the expected
-     behavior
-   - Verify these tests fail when run (the "red" state)
-   - Only then ask for implementation code to make the tests pass
-   - This two-step process is mandatory for all new functionality
-   - Example: "Please write a failing test for the BfPersonDemo class that
-     verifies it creates an organization" followed by "Now implement the
-     BfPersonDemo class to make the test pass"
+4. **Never specify work units**: When creating implementation plans, never
+   include time estimates in weeks, days, or hours. Instead, Focus on breaking
+   down tasks by logical components or phases.
 
-### Getting Started
+5. **Provide guidance on difficulty or trickiness** It's a great idea to explain
+   if a phase is complex, challenging, trivial, simple, etc. Specifying these
+   notes can help assistants align with developers on expectaitons.
 
-To get started with Content Foundry development:
+6. **Implementation plans should NOT contain actual code**: When creating
+   implementation plans (e.g., in .mdx files), these should only include:
+   - Design principles
+   - Class structures and interfaces (as TypeScript type definitions only)
+   - Component relationships
+   - Data flow descriptions
+   - Phase breakdowns Do NOT include actual implementation code in these plans.
+     The plans should serve as a blueprint, not as executable code.
 
-1. Authenticate with GitHub using the GitHub CLI:
-   ```bash
-   gh auth login
-   ```
-   - This will start an interactive authentication process
-   - You'll be prompted to choose how you want to authenticate (web browser,
-     token, etc.)
-   - This authentication is required for PR operations and other GitHub
-     integrations
+7. **Context and code pointers are a MUST.**
 
-2. Start the development environment: `bff devTools`
-   - This will help you get logged in and set up your environment
-   - If you're not authenticated with GitHub, this command will also help you
-     log in
-   - It will display a GitHub device code that you can copy and use to complete
-     authentication
+   > ⚠️ **IMPORTANT**: All implementation plans should reference existing code
+   > paths which the new implementation will touch. This can include frontend,
+   > backend, or connected systems. The pointers should be actual markdown links
+   > and should be relative to the project directory.
 
-3. Access development tools:
-   - Web app: http://localhost:8000
-   - Sapling web: http://localhost:3011
-   - Jupyter: http://localhost:8888
-   - Tools UI: http://localhost:9999
+## Workspace setup
 
-### Finding Work Items
+Assistants should check to make sure they're properly configured before trying
+to implement features. Usually, that means they should be reading this document
+already.
 
-The canonical way to find out what to work on is to look in the
-`content/documentation` folder:
-
-- `content/documentation/community/backlog/` contains upcoming features and
-  tasks
-- `content/documentation/community/changelog/` contains release notes and
-  updates
-- Project roadmaps and priorities are documented in these markdown files
-
-#### Setting Up Replit Assistant
-
-When working with this project, it's recommended to configure your Replit
-Assistant with the following custom instruction:
+Assistants should encourage developers to add the following to their assistant
+prompts.
 
 ```
 Before making changes, check agent.md which has a list of helpful tips for performing your tasks. If you learn something new that isn't listed in agent.md, ask the user if they'd like you to update agent.md with the new information.
@@ -640,46 +421,6 @@ Before making changes, check agent.md which has a list of helpful tips for perfo
 
 This ensures the assistant will reference the documentation and help keep it
 up-to-date with new discoveries about the codebase.
-
-### Common Tasks
-
-- Build: `bff build` or `deno run infra/bff/bin/bff.ts build`
-- Lint: `bff lint [--fix]`
-- Format: `bff format` (alias: `bff f`)
-- Type check: `bff check [file_path]`
-- Test all: `bff test`
-- Run single test: `bff t path/to/test/file.test.ts` (shorthand for
-  `deno test -A path/to/test/file.test.ts`)
-
-  > **IMPORTANT**: Always use `bff t` rather than raw `deno test` commands. The
-  > `bff t` command ensures consistent permission flags, environment variables,
-  > and test configuration. This prevents issues with permissions and improves
-  > test reliability across environments.
-- Development environment: `bff devTools`
-- Full CI check: `bff ci` (combines format, lint, check, test, build)
-
-### Before Committing Changes
-
-Before committing your changes, it's important to run the following commands:
-
-```bash
-# Format your code (shorthand for 'bff format')
-bff f
-
-# Run CI checks to ensure your code passes all validation
-bff ci
-```
-
-The `bff ci` command runs:
-
-- Code formatting checks
-- Linting
-- TypeScript type checking
-- Tests
-- Build verification
-
-This ensures your code meets the project's quality standards before being
-committed.
 
 ### Dependency Management
 
@@ -690,19 +431,19 @@ management.
 
 Deno 2 introduces significant changes to dependency management:
 
-- Dependencies are handled through the `deno.json` configuration
+- Dependencies are handled through the `deno.jsonc` configuration
 - Use `deno add` to add new dependencies:
   ```bash
   # Add a dependency from JSR (JavaScript Registry)
-  deno add @std/http
+  deno add jsr:@std/http
 
   # Add a dependency from npm
   deno add npm:react
   ```
 
 - JSR (JavaScript Registry) is the preferred package source
-- Import format for JSR: `import { xyz } from "jsr:@org/package@version";`
-- Import format for npm: `import { xyz } from "npm:package-name@version";`
+- `deno add` will automatically add dependencies to `deno.jsonc` if jsr, or
+  `package.json` if npm.
 
 #### Nix Integration
 
@@ -719,47 +460,21 @@ bff nix:deploy
 The Nix configuration is defined in `flake.nix` and ensures consistent
 development environments across different systems.
 
-## Code Quality
+# Code Quality
 
 ### Debugging with Logger Environment Variables
 
 Content Foundry uses a flexible logging system that can be controlled through
 environment variables:
 
-#### JSON.stringify Limitations with BigInt
+#### JSON.stringify should be avoided
 
 When using debug logging, it's important to note that `JSON.stringify()` cannot
-serialize `BigInt` values. If you try to use `JSON.stringify()` on an object
-containing a `BigInt`, it will throw:
+serialize `BigInt` values and has other quirks. For this reason:
 
-```
-TypeError: Do not know how to serialize a BigInt
-```
-
-For this reason:
-
-1. **Avoid using JSON.stringify in debug messages** - Instead, pass values as
-   trailing arguments to logger functions:
-   ```typescript
-   // BAD - will throw if object contains BigInt
-   logger.debug(`Object data: ${JSON.stringify(objWithBigInt)}`);
-
-   // GOOD - pass as separate argument
-   logger.debug("Object data:", objWithBigInt);
-   ```
-
-2. **Use toString() for BigInt values** - If you need to log individual BigInt
-   values:
-   ```typescript
-   // Convert BigInt to string when necessary
-   logger.debug("BigInt value:", bigIntValue.toString());
-   ```
-
-3. **Use trailing arguments for complex objects** - The logger will handle
-   serialization appropriately:
-   ```typescript
-   logger.debug("Query parameters:", metadataToQuery, propsToQuery, bfGids);
-   ```
+**Avoid using JSON.stringify in debug messages** -
+[Instead, pass values as
+trailing arguments to logger functions]([^json_stringify])
 
 #### Global Log Level
 
@@ -842,45 +557,16 @@ The project primarily uses Deno's built-in testing capabilities:
 - Assertions from `@std/assert` (not `@std/testing/asserts`)
 - Simple execution with `bff test` or `bff t`
 
-```typescript
-// Example standard test
-import { assertEquals } from "@std/assert";
-
-Deno.test("my test function", () => {
-  assertEquals(1 + 1, 2);
-});
-```
+[See standard testing example]([^standard_testing])
 
 #### Test Inheritance Pattern
 
-When testing classes that extend base classes (like `BfNodeBase`), follow the
-inheritance pattern in the tests:
+When testing classes that extend base classes (like `BfNodeBase`),
+[follow the inheritance pattern in the tests]([^test_inheritance]):
 
 1. Base class tests (`BfNodeBaseTest.ts`) define common test behaviors
 2. Derived class tests extend or import from base tests and only implement
    additional tests for unique functionality
-
-Example structure:
-
-```typescript
-// In BfNodeBaseTest.ts
-export function runBaseNodeTests(NodeClass, helpers) {
-  Deno.test("should implement common node behavior", async () => {
-    // Test base functionality
-  });
-}
-
-// In BfNodeOnDisk.test.ts
-import { runBaseNodeTests } from "./BfNodeBaseTest.ts";
-
-// Run the base tests first
-runBaseNodeTests(BfNodeOnDisk, diskHelpers);
-
-// Then add tests specific to BfNodeOnDisk
-Deno.test("BfNodeOnDisk should save to disk", async () => {
-  // Test disk-specific functionality
-});
-```
 
 This pattern ensures:
 
@@ -889,70 +575,19 @@ This pattern ensures:
 - Focus on testing only the unique aspects in derived classes
 - Changes to base functionality only need updates in one place
 
-#### Test Inheritance Pattern
-
-When testing classes that extend base classes (like `BfNodeBase`), follow the
-inheritance pattern in the tests:
-
-1. Base class tests (`BfNodeBaseTest.ts`) define common test behaviors
-2. Derived class tests extend or import from base tests and only implement
-   additional tests for unique functionality
-
-Example structure:
-
-````typescript
-// In BfNodeBaseTest.ts
-export function runBaseNodeTests(NodeClass, helpers) {
-  Deno.test("should implement common node behavior", async () => {
-    // Test base functionality
-  });
-}
-
-// In BfNodeOnDisk.test.ts
-import { runBaseNodeTests } from "./BfNodeBaseTest.ts";
-
-// Run the base tests first
-
-
 ### Node Relationships Pattern
 
-When working with relationships between nodes in the Content Foundry database layer, always use the standard methods from `BfNodeBase` and `BfEdge` directly rather than creating custom relationship methods in model classes:
+When working with relationships between nodes in the Content Foundry database
+layer, always use the standard methods from `BfNodeBase` and `BfEdge` directly
+rather than creating custom relationship methods in model classes:
 
 #### Incorrect Pattern (Avoid)
 
-```typescript
-// In BfContentCollection.ts - AVOID THIS APPROACH
-class BfContentCollection extends BfNodeBase<BfContentCollectionProps> {
-  // Don't create custom relationship methods in model classes
-  async addItem(cv: BfCurrentViewer, item: BfContentItem): Promise<BfEdge> {
-    return BfEdge.createBetweenNodes(cv, this, item);
-  }
-
-  async getItems(cv: BfCurrentViewer): Promise<BfContentItem[]> {
-    const edges = await BfEdge.queryTargetInstances(
-      cv,
-      BfContentItem,
-      this.metadata.bfGid
-    );
-    return edges;
-  }
-}
-````
+[Creating custom relationship methods in model classes]([^node_relationships_bad])
 
 #### Correct Pattern (Recommended)
 
-```typescript
-// Use standard methods directly where needed
-// Creating relationships
-const edge = await BfEdge.createBetweenNodes(cv, collection, item);
-
-// Querying relationships
-const items = await BfEdge.queryTargetInstances(
-  cv,
-  BfContentItem,
-  collection.metadata.bfGid,
-);
-```
+[Using standard methods directly where needed]([^node_relationships_good])
 
 #### Benefits of Standard Methods:
 
@@ -964,90 +599,12 @@ const items = await BfEdge.queryTargetInstances(
 Always use these standard relationship methods rather than creating custom
 wrappers in model classes.
 
-### Demo User Implementation
-
-The Content Foundry platform implements a demo user system that allows users to
-try the platform without providing personal information. Here's how it works:
-
-1. **Unique Demo Users**: Each demo user is unique with its own identity and
-   organization. This is different from having a single shared demo account that
-   everyone uses.
-
-2. **Implementation Strategy**: The `BfPersonDemo` class extends `BfPerson` and
-   implements the unique demo user functionality by:
-   - Generating a unique identifier for each demo user
-   - Creating a personalized email with the format
-     `demo+[unique-id]@contentfoundry.demo`
-   - Setting up a dedicated organization for each demo user
-
-3. **Demo Organization**: Each demo user gets their own organization with:
-   - A unique name based on the demo user's ID
-   - Specific restrictions (such as project limits, content item limits,
-     expiration dates)
-   - Proper connections to the demo user via edges in the graph database
-
-4. **Demo User Creation**: The demo user is created through the GraphQL API
-   mutation `LoginAsDemoPerson` which:
-   - Calls `BfPersonDemo.findOrCreateDemo(ctx.cv)` to create a unique demo
-     instance
-   - Creates a logged-in viewer with the appropriate permissions
-   - Sets the current viewer context to the demo user
-
-5. **Restrictions**: Demo users have certain limitations compared to regular
-   users:
-   - Limited number of projects/content items
-   - Time-based expiration
-   - Restricted access to certain premium features
-
-This approach maintains data isolation between users while still providing a
-seamless onboarding experience without requiring registration.
-
-runBaseNodeTests(BfNodeOnDisk, diskHelpers);
-
-// Then add tests specific to BfNodeOnDisk Deno.test("BfNodeOnDisk should save
-to disk", async () => { // Test disk-specific functionality });
-
-````
-This pattern ensures:
-
-- Test consistency across related classes
-- Proper coverage of inherited functionality
-- Focus on testing only the unique aspects in derived classes
-- Changes to base functionality only need updates in one place
-
 #### Mocking Current Viewers in Tests
 
-When testing components that require a `BfCurrentViewer` instance, always use
-the proper factory methods from the `BfCurrentViewer` classes rather than custom
-helper functions like `getMockCurrentViewer()`:
-
-```typescript
-// Preferred method for tests - flexible unified method
-const mockCv = BfCurrentViewer.__DANGEROUS__createTestCurrentViewer(
-  import.meta, // Always pass import.meta
-  true, // true for logged in, false for logged out
-  { // Optional configuration
-    bfGid: "test-user-123", // Optional user ID
-    bfOid: "test-owner-123", // Optional owner ID
-  },
-);
-
-// For logged out viewer (anonymous user)
-const mockCv = BfCurrentViewerLoggedOut.createLoggedOut(import.meta);
-
-// For logged in viewer with email
-const mockLoggedInCv = BfCurrentViewerLoggedIn.__DANGEROUS__createFromEmail(
-  import.meta,
-  "test@example.com",
-);
-
-// For logged in viewer with specific IDs
-const mockCvWithIds = BfCurrentViewerLoggedIn.__DANGEROUS__createFromBfGid(
-  import.meta,
-  toBfGid("user-id"),
-  toBfGid("owner-id"),
-);
-````
+When testing components that require a `BfCurrentViewer` instance,
+[always use
+the proper factory methods from the `BfCurrentViewer` classes]([^current_viewer_mocking])
+rather than custom helper functions like `getMockCurrentViewer()`.
 
 These factory methods ensure proper initialization of the current viewer objects
 with appropriate permissions and behavior matching the actual implementation.
@@ -1072,19 +629,10 @@ When reviewing code for Content Foundry, follow these guidelines:
    - **Readability**: Is the code clear and maintainable?
    - **Test Coverage**: Are there appropriate tests?
 
-2. **Style Consistency**: Ensure code follows Content Foundry style guidelines:
-   - PascalCase for classes/types/components (BfComponent)
-   - camelCase for variables/functions
-   - Proper TypeScript typing
-   - Consistent indentation (2 spaces)
+2. **Constructive Feedback**:
+   [Provide specific, actionable feedback]([^constructive_feedback])
 
-3. **Constructive Feedback**: Provide specific, actionable feedback:
-   ```
-   // Instead of: "This code is confusing"
-   // Say: "Consider extracting this logic into a named function to clarify its purpose"
-   ```
-
-4. **Code Review Checklist**:
+3. **Code Review Checklist**:
    - [ ] Code follows TypeScript best practices
    - [ ] New functionality has appropriate tests
    - [ ] No unnecessary console logs or commented code
@@ -1093,178 +641,98 @@ When reviewing code for Content Foundry, follow these guidelines:
    - [ ] No potential memory leaks
    - [ ] Permissions and access control are properly handled
 
-#### Code Review Workflow
-
-1. **Submitting Code for Review**:
-   ```bash
-   # Ensure code is formatted and passes tests
-   bff f
-   bff test
-
-   # Generate a diff to review your changes
-   sl diff > build/sl.txt
-
-   # Review the changes before committing
-   cat build/sl.txt
-
-   # Create a descriptive commit
-   sl commit
-
-   # Push changes for review
-   sl push
-   ```
-
-2. **Reviewing in Sapling**:
-   - Use `sl web` to open the Sapling web interface
-   - Navigate to "Changes" to see pending reviews
-   - Add inline comments by clicking on specific lines
-   - Use the "Request changes" or "Approve" options when done
-
-3. **Addressing Review Feedback**:
-   ```bash
-   # Make requested changes
-   bff f  # Format code after changes
-
-   # Amend your commit with changes
-   sl amend
-
-   # Push updated changes
-   sl push --force
-   ```
-
-4. **Completing the Review**:
-   - Respond to all comments
-   - Request another review if significant changes were made
-   - Merge once approved with `sl land`
-
-#### Code Review Best Practices
-
-- **Review Small Changes**: Aim for small, focused commits that are easier to
-  review
-- **Timely Reviews**: Try to complete reviews within 24 hours
-- **Balance Thoroughness and Progress**: Be thorough but pragmatic
-- **Knowledge Sharing**: Use reviews as an opportunity to share knowledge
-- **Focus on Code, Not the Coder**: Review the code, not the person who wrote it
-
 ### Code Style Guidelines
 
 - **Naming**: PascalCase for classes/types/components (BfComponent), camelCase
   for variables/functions
 - **Imports**: Use absolute imports with explicit paths, group related imports
-  together
-- **Types**: Always use proper TypeScript typing, prefer interfaces for object
-  types, generics when appropriate
-- **Error handling**: Use structured logging with levels, optional chaining,
-  null checks with fallbacks
-- **Formatting**: 2-space indentation, semicolons required, double quotes for
-  strings, JSDoc comments
+  together. Our `deno.jsonc` file handles making the majority of imports
+  relative to the workspace root.
+- **Types**: Always use proper TypeScript typing. Avoid interfaces generally,
+  and generally use Array<Type> syntax rather than Type[] shorthand.
+- **Error handling**: Use structured logging with levels. Always use logger.info
+  etc and never console.log
 - **Patterns**: Prefer immutability, use factory methods for object creation,
   separation of concerns
-- **Linting rules**: camelCase, no-console, no-external-import, no-self-compare,
-  no-sync-fn-in-async-fn, verbatim-module-syntax, no-eval
+
+Linting and code style patterns can be seen in deno.jsonc.
 
 ### Common Type Errors
 
+#### Using the `override` Keyword
+
+TypeScript 4.3+ includes the `override` keyword, which should be used whenever
+overriding methods from parent classes.
+[This is a powerful feature for ensuring
+type safety and preventing errors when working with inheritance]([^override_keyword]).
+
+#### Best Practices for `override`:
+
+1. **Always use `override` when implementing a method from a parent class**:
+   This helps TypeScript verify that the method actually exists in the parent
+   class and has a compatible signature.
+
+2. **Type checking benefits**: The compiler will flag an error if:
+   - The method doesn't exist in any parent class
+   - The method signature is incompatible with the parent class method
+   - The parent method is removed or renamed in the future
+
+3. **Documentation value**: Using `override` makes it clear which methods are
+   inherited vs. new to the current class.
+
+4. **Error prevention**: Catches common mistakes like typos in method names or
+   incorrect parameter types.
+
+##### When to use `override`:
+
+- Always use it when implementing methods defined in parent classes
+- Use it for methods defined in interfaces that the class implements
+- Essential for methods in class hierarchies like `BfNodeBase` → `BfContentItem`
+- Generally, when overriding methods, you don't need to include a return
+  signature.
+
+##### Real-world example:
+
+[Compare correct vs. incorrect override implementation techniques]([^override_example])
+
 #### Testing Imports
 
-When writing tests, use the correct import paths for assertion functions:
-
-```typescript
-// INCORRECT - will cause error
-import { assertEquals } from "@std/testing/asserts";
-
-// CORRECT
-import { assertEquals } from "@std/assert";
-```
-
-The `@std/assert` module provides all assertion functions for testing, while
-`@std/testing` contains other testing utilities like mocks and BDD testing
-frameworks.
+When writing tests,
+[use the correct import paths for assertion functions]([^testing_imports])
 
 #### Using Optional Chaining for Nullable Values
 
 When working with potentially null or undefined values, use the optional
 chaining operator (`?.`) to safely access properties or methods:
 
-```typescript
-// PROBLEMATIC - TypeScript will warn about possible null/undefined
-<Component key={item.id} />; // Error: 'item' is possibly 'null'
-
-// BETTER - Using conditional rendering with && and Using optional chaining operator
-{
-  item && <Component key={item?.id} />;
-}
-```
+[Use optional chaining and conditional rendering for potentially null values]([^optional_chaining])
 
 The optional chaining operator (`?.`) short-circuits if the value before it is
 `null` or `undefined`, returning `undefined` instead of throwing an error.
 
 #### Type vs Interface for Props Objects
 
-When defining props objects for models in Content Foundry, prefer using `type`
-instead of `interface`, especially for objects that will be serialized to/from
-JSON:
-
-```typescript
-// PREFERRED: Using type for props objects
-export type BfContentItemProps = BfNodeBaseProps & {
-  title: string;
-  body: string;
-  slug: string;
-  filePath?: string;
-  summary?: string;
-  author?: string;
-  cta?: string;
-  href?: string;
-};
-
-// AVOID: Using interface for props objects
-export interface BfContentItemProps extends BfNodeBaseProps {
-  title: string;
-  body: string;
-  slug: string;
-  filePath?: string;
-  summary?: string;
-  author?: string;
-  cta?: string;
-  href?: string;
-}
-```
+When defining props objects for models in Content Foundry,
+[prefer using `type` instead of `interface`]([^type_vs_interface]). BfNode style
+props and metadata are constantly going from/to json, so they can't include
+undefined etc. Interfaces make this tricky, while types make it simple.
 
 ##### Why Type is Preferred for Props Objects
 
-1. **JSON Serialization**: When working with JSON, `undefined` values are
-   stripped during serialization. Using `type` makes it clearer that optional
-   properties might be missing entirely in the JSON representation, not just
-   `undefined`.
+> 🔍 **IMPORTANT**: When working with JSON, `undefined` values are stripped
+> during serialization. Using `type` makes it clearer that optional properties
+> might be missing entirely in the JSON representation, not just `undefined`.
 
-2. **Structural vs Nominal Typing**: While interfaces can be useful for defining
-   contractual shapes that classes implement, `type` is more appropriate for
-   simple data structures that represent serializable objects.
+> 🔍 **IMPORTANT**: While interfaces can be useful for defining contractual
+> shapes that classes implement, `type` is more appropriate for simple data
+> structures that represent serializable objects.
 
-3. **Clarity with Optional Properties**: Using `type` for props objects helps
-   clarify that optional properties (those with `?`) might not exist at all in
-   the deserialized object, rather than existing with an explicit `undefined`
-   value.
+> 🔍 **IMPORTANT**: Using `type` for props objects helps clarify that optional
+> properties (those with `?`) might not exist at all in the deserialized object,
+> rather than existing with an explicit `undefined` value.
 
-4. **Consistency with JSON Structure**: Since JSON cannot represent `undefined`
-   (only `null`), using `type` better reflects the actual runtime behavior of
-   these objects.
-
-When implementing models that use these props types, remember that you should
-check for property existence rather than checking for `undefined`:
-
-```typescript
-// PREFERRED: Check if property exists
-if (item.summary) {
-  // Use summary
-}
-
-// AVOID: Check against undefined
-if (item.summary !== undefined) {
-  // This might not work as expected after JSON serialization/deserialization
-}
-```
+> 🔍 **IMPORTANT**: Since JSON cannot represent `undefined` (only `null`), using
+> `type` better reflects the actual runtime behavior of these objects.
 
 #### String vs BfGid Type Mismatch
 
@@ -1280,20 +748,14 @@ TS2345 [ERROR]: Argument of type 'string' is not assignable to parameter of type
 ##### Why This Happens
 
 Content Foundry uses a nominal typing system for IDs to prevent accidental
-mix-ups between different types of IDs. The `BfGid` type is a branded string,
+mix-ups between arbitrary strings and IDs. The `BfGid` type is a branded string,
 which means it's a string with an additional type property to distinguish it
-from regular strings.
+from regular strings. This should also help us enforce logging guarantees for
+sensitive types in the future™.
 
-When using collection lookups or database queries, you must convert string IDs
-to `BfGid` using the `toBfGid` function:
-
-```typescript
-// Incorrect - will cause type error
-const collection = collectionsCache.get("collection-id");
-
-// Correct - converts string to BfGid
-const collection = collectionsCache.get(toBfGid("collection-id"));
-```
+When using collection lookups or database queries,
+[you must convert string IDs
+to `BfGid` using the `toBfGid` function]([^bfgid_conversion])
 
 #### File Organization Patterns
 
@@ -1316,65 +778,9 @@ re-export multiple modules) for these important reasons:
 3. **Build Tool Optimization**: Direct imports allow better tree-shaking and
    code-splitting in build tools.
 
-Examples:
+[See examples of preferred import patterns]([^direct_imports])
 
-```typescript
-// PREFERRED: Direct import from specific file
-import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
-
-// AVOID: Import from barrel file
-import { BfPerson } from "packages/bfDb/models/index.ts";
-```
-
-This approach might require a few more keystrokes when writing imports, but it
-significantly improves code maintainability and developer experience when
-working with the codebase.
-
-##### Content Collection ID Format
-
-Content collections follow a specific naming pattern:
-
-- Collections are created with IDs like: `collection-content-marketing`
-- But code might try to access with short names like: `collection-marketing`
-
-The system has built-in fallback handling in `BfContentCollection.ts` that
-attempts to find collections using alternative ID formats:
-
-```typescript
-// If not found by exact ID, try with content prefix
-if (!collection && !id.startsWith("collection-content-")) {
-  const alternativeId = toBfGid(
-    `collection-content-${id.replace("collection-", "")}`,
-  );
-  logger.info(`Attempting to find ${id} as ${alternativeId}`);
-  collection = getCollectionById(alternativeId);
-  if (collection) {
-    logger.info(`Found collection using alternative ID: ${alternativeId}`);
-  }
-}
-```
-
-##### How to Fix
-
-Always use the `toBfGid` function when passing IDs to database functions:
-
-```typescript
-import { toBfGid } from "packages/bfDb/classes/BfNodeBase.ts";
-
-// Convert string ID to BfGid before using with database methods
-const collectionId = toBfGid("collection-content-marketing");
-const collection = await ctx.find(BfContentCollection, collectionId);
-```
-
-For content collections specifically, you can use either format:
-
-- Full format: `collection-content-marketing`
-- Short format: `collection-marketing`
-
-The system will attempt to convert between them, but using the full format is
-recommended for clarity.
-
-## Database Models and Edge Behavior
+# Database Models and Edge Behavior
 
 ### BfEdgeBase vs BfEdge Implementation
 
@@ -1384,101 +790,110 @@ relationship between base classes and their concrete implementations:
 - `BfEdgeBase` is an abstract base class that defines the interface for edges
   but does not implement database persistence. Its `save()` method should not be
   implemented at this level, as it's meant to be implemented by concrete
-  subclasses.
+  subclasses. It is not an actual abstract class so that we can use "new this"
+  in static methods without type warnings.
 
 - `BfEdge` is a concrete implementation that extends `BfEdgeBase` and properly
   implements database persistence with its own `save()` method that stores data
   in the database.
 
-When implementing features or fixing bugs:
+- `BfEdge$OTHERNAME` would be for extending either BfEdgeBase or BfEdge. BfEdge
+  will touch the database, while items extending BfEdgeBase will not touch the
+  database.
 
-1. Do not add database saving functionality to `BfEdgeBase` directly. This
-   violates the separation of concerns in the class hierarchy.
+#### Important code notes
+
+1. Do not add database saving, filesystem access, or other persistent
+   functionality to `BfEdgeBase` directly. This violates the separation of
+   concerns in the class hierarchy.
 
 2. Always use `BfEdge` or another concrete implementation when you need to
-   persist edge data to the database.
+   persist edge data.
 
-3. In tests that involve the edge base class, use the appropriate test mock or
-   implementation class that handles persistence properly.
+3. In tests that involve the edge base class, typically use BfEdgeInMemory,
+   since it won't have any notable side effects.
 
 This pattern allows for different storage backends or in-memory implementations
 without modifying the base interface.
 
-## Special Protocols
+# !BFA: Bolt Foundry Assistant Protocols
 
 This section documents special protocols that can be used with the assistant.
 These are prefixed with `!` to distinguish them from regular queries.
 
-After explaining a protocol, be sure to end the response with a
-<proposed_actions> tag so we can understand what is about to be executed.
+Protocols are intended to help assistants complete consecutive actions. They're
+kind of like scripts, but designed to be implemented using english language
+rather than code.
 
-### BFA Commit Protocol
+Generally, if breakage is tolerated in a process, it should be a protocol. If a
+process would lead to a potentially catostrophic outcome which someone couldn't
+recover from (talking to external systems usually) then it should be a script,
+and usually built as a BFF task.
+
+### !BFA protocol setup and usage
+
+Developers will tell the assistant `!bfa $PROTOCOLNAME` and optionally provide
+additional context after the protocol. Normally protocols are camelCased.
+
+### !BFA Commit Protocol
 
 The BFA Commit process is split into two separate protocols:
 
 #### BFA Precommit Protocol
 
-When you send the message `!bfa precommit`, the assistant will:
+When developers send the message `!bfa precommit`, the assistant will:
 
 1. Delete the build directory if it exists
 2. Create a fresh build directory
 3. Format the code using `bff f`
 4. Run tests with `bff test`
-5. Generate a diff file with all your changes using `sl diff > build/diff.txt`
+5. Add / remove all files from sapling using `sl add .`
+6. Generate a diff file with all changes using `sl diff > build/diff.txt`
 
-```
-This protocol helps you review your changes before executing the actual commit.
-Unlike the previous version, it no longer automatically generates a commit
-message or runs the CI process.
+The intention behind this protocol is to gather enough context so that the next
+step is simple enough for the assistant to run without having to gather any
+additional context.
 
 #### BFA Commit Protocol
 
-When you send the message `!bfa commit`, the assistant will:
+When developers send the message `!bfa commit`, the assistant will:
 
 1. Configure the Sapling user with
    `sl config --user ui.username "Bff Bot <bot@contentfoundry.com>"`
 2. **CRITICAL: Read the diff from `build/diff.txt` (generated in the precommit
    step)**
-   - **IMPORTANT: If `build/diff.txt` doesn't exist, stop immediately and inform
-     the user that they need to run `!bfa precommit` first**
-   - **DO NOT proceed with creating a commit message or any further steps if the
-     diff file is missing**
-   - **ALWAYS examine the contents of `build/diff.txt` first before making any
-     assumptions about the changes**
-   - **LOOK ONLY at files mentioned in the diff file, not files you think should
-     be changed**
-   - **DO NOT make code changes that aren't related to what's in the diff file**
-   - **DO NOT implement any functionality that isn't already modified in the
-     diff**
+
+   > ### ⚠️ COMMIT PROTOCOL SAFETY RULES:
+   >
+   > - **STOP IMMEDIATELY** if `build/diff.txt` doesn't exist and tell the user
+   >   to run `!bfa precommit` first
+   > - **NEVER proceed** with creating a commit message if the diff file is
+   >   missing
+   > - **ALWAYS examine** the contents of `build/diff.txt` before making any
+   >   assumptions
+   > - **LOOK ONLY** at files mentioned in the diff file, not files you think
+   >   should be changed
+   > - **DO NOT** make code changes that aren't related to what's in the diff
+   >   file
+   > - **DO NOT** implement any functionality that isn't already modified in the
+   >   diff
    - Generate a commit message based on this diff, not by looking at the
      codebase directly
    - Store the generated message in `build/commit-message.txt`
-3. **Check test results in `build/ciresults.txt` to determine if tests are
-   failing**
-   - If `build/ciresults.txt` doesn't exist, inform the user but continue with
-     the commit process
-   - If tests are failing, note this in the commit message and prepare to submit
-     the PR as a draft
-4. Add all changed files to the staging area with `sl add .`
-5. Automatically run `sl commit` with the generated message from
+3. Automatically run `sl commit` with the generated message from
    `build/commit-message.txt`
-6. Push the commit by running `sl pr submit`
-   - If tests are failing, add the `--draft` flag: `sl pr submit --draft` to
-     submit as a draft PR
-7. Get the currently logged in GitHub user information by running
+4. Push the commit by running `sl pr submit`
+   - If tests are failing or the user asks, add the `--draft` flag:
+     `sl pr submit --draft` to submit as a draft PR.
+5. Clean up the diff.txt and commit-message.txt files
+6. Get the currently logged in GitHub user information by running
    `gh api user > build/gh-user.json` to save the data to a JSON file
-8. Set the user back using `sl config --user ui.username` again, but with the
+7. Set the user back using `sl config --user ui.username` again, but with the
    "name" from the JSON file, and the "login" as the email
    "$LOGIN@noreply.githubusers.com"
-9. Delete the GitHub user information file to maintain privacy by running
+8. Delete the GitHub user information file to maintain privacy by running
    `rm build/gh-user.json`
 
-Example usage:
-```
-
-!bfa commit
-
-```
 #### Common BFA Commit Mistakes to Avoid
 
 1. **Implementing unrelated code changes**: Only make changes directly related
@@ -1487,72 +902,20 @@ Example usage:
    the diff first.
 3. **Misinterpreting the diff context**: Make sure you understand what changes
    are actually being made.
-4. **Modifying the wrong files**: Only edit files that appear in the diff.
-5. **Implementing "todo" comments**: Unless explicitly changed in the diff,
+4. **Implementing "todo" comments**: Unless explicitly changed in the diff,
    don't implement functionality from todo comments.
-6. **Adding new features**: Unless the diff shows partial implementation of a
-   new feature, don't add new features.
-7. **Shell command composition**: Always separate shell commands properly. For
-   multi-line operations, use separate `<proposed_shell_command>` tags for each
-   logical command:
-```
-
-# INCORRECT - This will try to run everything as a single command
-
-<proposed_shell_command> mkdir -p build echo "Commit message" >
-build/commit-message.txt </proposed_shell_command>
-
-# CORRECT - Use separate command tags
-
-<proposed_shell_command> mkdir -p build </proposed_shell_command>
-
-<proposed_shell_command> echo "Commit message" > build/commit-message.txt
-</proposed_shell_command>
-
-```
-Always run `cat build/diff.txt` as your first command to understand the actual
-changes before proceeding with any implementation.
-
-### BFA Agent Update Protocol
-
-When you send the message `!bfa agent update`, the assistant will analyze the
-contents of the AGENT.md file and update it to improve clarity, organization,
-consistency, and completeness.  It will also add information about the `build.bff.ts` file, database connection and network permissions, and Content Collection ID handling.
-
-Example usage:
-```
-
-!bfa agent update
-
-```
-The assistant will:
-
-1. Review the current AGENT.md document structure
-2. Improve formatting and organization for better readability
-3. Ensure consistent style throughout the document
-4. Update or clarify confusing sections
-5. Consolidate redundant information
-6. Ensure proper heading hierarchy and section flow
-7. Add documentation about `build.bff.ts`
-8. Update information on database connections and network permissions
-9. Improve documentation on Content Collection ID handling
-
-
-This protocol is useful when documentation has grown organically and needs
-restructuring or when new information needs to be integrated cohesively with
-existing content.
 
 ### BFA Help Protocol
 
-When you send the message `!bfa help`, the assistant will list and explain all
-available protocols that can be used with the assistant.
+When developers send the message `!bfa help`, the assistant will list and
+explain all available protocols that can be used with the assistant.
 
 Example usage:
+
+```
+!bfa help
 ```
 
-!bfa help
-
-````
 The assistant will:
 
 1. Provide a complete list of all available !bfa protocols
@@ -1563,7 +926,6 @@ Available protocols include:
 
 - `!bfa precommit` - Format code, run tests, and prepare for commit
 - `!bfa commit` - Execute the commit using the prepared diff
-- `!bfa agent update` - Update the AGENT.md file
 - `!bfa help` - Show this help information
 
 If you reply to the assistant's response with a specific protocol (e.g.,
@@ -1575,10 +937,18 @@ If you reply to the assistant's response with a specific protocol (e.g.,
 2. **Always run `bff f` and `bff ci`** before committing
 3. **Follow modular structure** for code organization
 4. **Write tests** for new functionality
-5. **Document your code** thoroughly
-6. **Use typed interfaces** for better reliability
-7. **Use `deno add`** for managing dependencies
-8. **Leverage Nix** for consistent environments
+5. **Generally avoid inline code comments.** Inline code comments clutter an
+   implementation of a function or class. If you have to document something,
+   it's a much better idea to explain it in a logger.debug message than in a
+   code comment. This makes it easier to fix problems.
+6. **Use JSDOCs in most places** JSDOCs explain interfaces, so they're a great
+   way to help developers understand intentions without providing too much
+   verbosity.
+7. **Use typed interfaces** for better reliability
+8. **Overrides shouldn't use return types unless the return type is changing
+   significantly** Class overrides typically should implement their parent
+   class's behavior and interface, and adding additional return types can really
+   complicate and confuse the type system.
 9. **Use project root-relative paths** in imports and file references, not
    relative to the current file. For example, use
    `import { X } from "packages/web/component.ts"` instead of
@@ -1595,22 +965,10 @@ If you reply to the assistant's response with a specific protocol (e.g.,
     - This creates natural groupings in directory listings and imports
     - Makes inheritance relationships immediately visible
 
-    Examples:
-    ```typescript
-    // PREFERRED: Lexically sortable naming
-    class DatabaseBackendPostgres implements DatabaseBackend { ... }
-    class DatabaseBackendSQLite implements DatabaseBackend { ... }
-    class BfNodeInMemory extends BfNodeBase { ... }
-    class BfNodeOnDisk extends BfNodeBase { ... }
+    [See examples of lexical naming patterns]([^lexical_naming])
 
-    // AVOID: Non-sortable naming
-    class PostgresDatabaseBackend implements DatabaseBackend { ... }
-    class SQLiteDatabaseBackend implements DatabaseBackend { ... }
-    class InMemoryBfNode extends BfNodeBase { ... }
-    class OnDiskBfNode extends BfNodeBase { ... }
-    ```
-
-    This naming convention creates natural groupings in code editors, making it easier to:
+    This naming convention creates natural groupings in code editors, making it
+    easier to:
     - Find related implementations
     - Understand class hierarchies at a glance
     - Locate all implementations of a particular interface
@@ -1631,13 +989,15 @@ If you reply to the assistant's response with a specific protocol (e.g.,
     These factory methods ensure proper creation, validation, lifecycle
     callbacks, and database consistency.
 
-## The Cult of Done Manifesto
+# Development Philosophies
+
+### The Cult of Done Manifesto
 
 Content Foundry development embraces principles from the "Cult of Done
 Manifesto," created by Bre Pettis and Kio Stark in 2009. This philosophy aligns
 with our "Worse is Better" approach and Test-Driven Development methodology.
 
-### The 13 Principles
+#### The 13 Principles
 
 1. **There are three states of being: Not knowing, action, and completion.**
 2. **Accept that everything is a draft.** It helps to get it done.
@@ -1672,8 +1032,6 @@ In Content Foundry, we apply these principles through:
 
 This philosophy complements our "Worse is Better" approach by prioritizing
 simplicity, action, and iterative improvement over complex perfection.
-
-## Development Philosophies
 
 ### Worse is Better
 
@@ -1750,7 +1108,7 @@ By using TDD for backend development, we ensure that we're building systems that
 are simple, work correctly for their primary use cases, and can evolve as
 real-world requirements become clearer.
 
-## Test-Driven Development (TDD)
+# Test-Driven Development (TDD)
 
 Content Foundry strictly follows Test-Driven Development for creating robust and
 maintainable code. TDD follows a specific workflow cycle known as
@@ -1769,7 +1127,9 @@ maintainable code. TDD follows a specific workflow cycle known as
    - For base classes with methods that throw "Not Implemented" errors, don't
      write tests that verify the error—write tests that verify the desired
      behavior subclasses should implement
-   - **CRITICAL**: When implementing new functionality, ALWAYS create "red tests" first - implement the tests that define the intended behavior before implementing the actual functionality
+   - **CRITICAL**: When implementing new functionality, ALWAYS create "red
+     tests" first - implement the tests that define the intended behavior before
+     implementing the actual functionality
    - The red test itself should be a separate, dedicated commit
 
 2. **Green**: Write the simplest code to make the test pass
@@ -1785,109 +1145,36 @@ maintainable code. TDD follows a specific workflow cycle known as
 
 ### Common TDD Mistakes to Avoid
 
-1. **Implementing functionality before tests**: Never implement a feature without first writing a failing test that defines the expected behavior.
+1. **Implementing functionality before tests**: Never implement a feature or
+   bugfix without first writing a failing test that defines the expected
+   behavior.
 
-2. **Skipping the "Red" phase**: Always verify that your test fails before implementing the functionality. A test that passes immediately might not be testing what you think it is.
+2. **Skipping the "Red" phase**: Always verify that your test fails before
+   implementing the functionality. A test that passes immediately will not be
+   testing anythign meaningul.
 
-3. **Writing tests after implementation**: This defeats the purpose of TDD and often results in tests that verify what the code does, rather than what it should do.
+3. **Writing tests after implementation**: This defeats the purpose of TDD and
+   often results in tests that verify what the code does, rather than what it
+   should do.
 
-4. **Implementing too much at once**: Write minimal tests and implement minimal code to pass those tests. Build functionality incrementally.
+4. **Implementing too much at once**: Write minimal tests and implement minimal
+   code to pass those tests. Build functionality incrementally.
 
-5. **Creating test and implementation in the same commit**: Separate your commits - first commit the failing test, then commit the implementation that makes it pass.
+5. **Creating test and implementation in the same commit**: Separate your
+   commits - first commit the failing test, then commit the implementation that
+   makes it pass.
+
+6. **Add minimum requirements for type checking in the test itself.** If testing
+   a new class for instance, create the class in the test, not in the file it
+   will go to.
 
 ### Example TDD Process
 
 Here's a simple example of how TDD might be applied to a Content Foundry
 feature:
 
-```typescript
-// 1. RED: Write a failing test first
-Deno.test("BfEdgeInMemory should find edges by source node", async () => {
-  const mockCv = getMockCurrentViewer();
-  const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
-    name: "Source",
-  });
-  const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
-    name: "Target",
-  });
+[See complete TDD example with Red-Green-Refactor process]([^tdd_example])
 
-  // Create an edge between nodes
-  await BfEdgeInMemory.createBetweenNodes(
-    mockCv,
-    sourceNode,
-    targetNode,
-    "test-role",
-  );
-
-  // Test the findBySource method (which doesn't exist yet)
-  const edges = await BfEdgeInMemory.findBySource(mockCv, sourceNode);
-
-  assertEquals(edges.length, 1);
-  assertEquals(edges[0].metadata.bfSid, sourceNode.metadata.bfGid);
-  assertEquals(edges[0].metadata.bfTid, targetNode.metadata.bfGid);
-});
-
-// Example - Common Pattern to Avoid: Testing Current Implementation Instead of Desired Behavior
-// INCORRECT - This test just verifies current implementation (error throwing)
-Deno.test("BfEdgeBase save method should throw NotImplemented error", async () => {
-  // Import the BfErrorNotImplemented class
-  const { BfErrorNotImplemented } = await import("packages/BfError.ts");
-
-  // Create an edge
-  const edge = new BfEdgeBase();
-
-  // Assert that calling save throws the correct error - THIS IS WRONG!
-  await assertThrows(() => edge.save(), BfErrorNotImplemented);
-});
-
-// CORRECT - Test verifies desired behavior for concrete subclasses
-Deno.test("Concrete Edge subclasses should properly implement save method", async () => {
-  const mockCv = getMockCurrentViewer();
-  const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
-    name: "Source",
-  });
-  const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
-    name: "Target",
-  });
-
-  // Create an edge between nodes using the concrete subclass
-  const edge = await ConcreteEdgeClass.createBetweenNodes(
-    mockCv,
-    sourceNode,
-    targetNode,
-    "test-role",
-  );
-
-  // Test that save returns the edge instance (desired behavior)
-  const savedEdge = await edge.save();
-  assertEquals(
-    savedEdge,
-    edge,
-    "save() should return the edge instance (this)",
-  );
-
-  // Add additional assertions based on what the save method should actually do
-  // (e.g., verify edge was persisted in the database, has updated timestamps, etc.)
-});
-````
-
-// 2. GREEN: Implement the minimum code to make the test pass static async
-findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, ):
-Promise<BfEdgeInMemory[]> { const result: BfEdgeInMemory[] = [];
-
-for (const edge of this.inMemoryEdges.values()) { if (edge.metadata.bfSid ===
-sourceNode.metadata.bfGid) { result.push(edge); } }
-
-return result; }
-
-// 3. REFACTOR: Improve the implementation while keeping tests passing static
-async findBySource( cv: BfCurrentViewer, sourceNode: BfNodeBase, role?: string,
-): Promise<BfEdgeInMemory[]> { return
-Array.from(this.inMemoryEdges.values()).filter(edge => { const sourceMatches =
-edge.metadata.bfSid === sourceNode.metadata.bfGid; return role ? (sourceMatches
-&& edge.props.role === role) : sourceMatches; }); }
-
-````
 ### Benefits of TDD in Content Foundry
 
 - **Clear requirements**: Tests document what the code is supposed to do
@@ -1900,8 +1187,8 @@ edge.metadata.bfSid === sourceNode.metadata.bfGid; return role ? (sourceMatches
 - **Documentation**: Tests serve as executable documentation showing how
   components should work
 
-**It's important to build red tests by themselves initially. Don't try to skip
-steps.**
+> 🔑 **CRITICAL**: Always build red tests by themselves initially as a separate
+> commit. Don't skip steps in the TDD process.
 
 ### Testing Abstract Base Classes vs. Concrete Implementations
 
@@ -1910,28 +1197,437 @@ When testing class hierarchies, follow these principles:
 1. **For abstract base classes (like `BfEdgeBase`)**:
    - Test the contract/interface that subclasses should follow
    - Test the common behavior that applies to all subclasses
-   - Don't write tests that simply verify "not implemented" errors in placeholder methods
-   - Instead, write tests that verify the proper behavior those methods should have when implemented
+   - Don't write tests that simply verify "not implemented" errors in
+     placeholder methods
+   - Instead, write tests that verify the proper behavior those methods should
+     have when implemented
 
 2. **For concrete implementations (like `BfEdgeInMemory`)**:
-   - Run all the base class tests (using the inheritance pattern described earlier)
+   - Run all the base class tests (using the inheritance pattern described
+     earlier)
    - Add tests for implementation-specific behavior
    - Test that placeholder methods from the base class are properly implemented
 
-Remember that the goal of testing abstract base classes is to define the contract that concrete implementations must follow, not to verify that unimplemented methods throw errors.
+Remember that the goal of testing abstract base classes is to define the
+contract that concrete implementations must follow, not to verify that
+unimplemented methods throw errors.
 
 ### Running Tests
 
 Content Foundry provides several ways to run tests:
 
 - Run all tests: `bff test`
-- Run specific tests: `deno test -A packages/path/to/test.ts`
-- Test coverage: `bff testCoverage`
+- Run specific tests: `deno test packages/path/to/test.ts`
+
+### Frequent testing gotchas
 
 When writing tests, remember to use the `@std/assert` module for assertions:
 
 ```typescript
 import { assertEquals, assertThrows } from "@std/assert";
-````
+```
 
-import { assertEquals, assertThrows } from "@std/assert";
+# Common Tasks
+
+- Build: `bff build`
+- Lint: `bff lint [--fix]`
+- Format: `bff format` (alias: `bff f`)
+- Type check: `bff check [file_path]`
+- Test all: `bff test`
+- Run single test: `bff t path/to/test/file.test.ts`
+
+  > 🔍 **IMPORTANT**: Always use `bff t` rather than raw `deno test` commands.
+  > The `bff t` command ensures consistent permission flags, environment
+  > variables, and test configuration. This prevents issues with permissions and
+  > improves test reliability across environments.
+- Development environment: `bff devTools`
+- Full CI check: `bff ci` (combines format, lint, check, test, build)
+
+# Footnotes
+
+[^commit_example]: Full commit message example:
+
+    ```
+    Fix content collection ID lookup and add BfGid type documentation
+
+    ## Summary
+    - Fixed content collection lookup by correctly handling ID prefix conventions
+    - Added documentation about BfGid type errors to AGENT.md
+    - Updated collectionsCache.get() to properly convert string IDs to BfGid
+
+    ## Test Plan
+    - Verified content/marketing collection now loads correctly
+    - Tested with shortened collection ID format
+    - Added explicit tests for ID conversion edge cases
+    ```
+
+[^test_inheritance]: Test inheritance pattern example:
+
+    ```typescript
+    // In BfNodeBaseTest.ts
+    export function runBaseNodeTests(NodeClass) {
+      Deno.test("should implement common node behavior", async () => {
+        // Test base functionality
+      });
+    }
+
+    // In BfNodeOnDisk.test.ts
+    import { runBaseNodeTests } from "./BfNodeBaseTest.ts";
+
+    // Run the base tests first
+    runBaseNodeTests(BfNodeOnDisk);
+
+    // Then add tests specific to BfNodeOnDisk
+    Deno.test("BfNodeOnDisk should save to disk", async () => {
+      // Test disk-specific functionality
+    });
+    ```
+
+[^node_relationships_bad]: Incorrect node relationship pattern:
+
+    ```typescript
+    // ❌ In BfContentCollection.ts - AVOID THIS APPROACH
+    class BfContentCollection extends BfNodeBase<BfContentCollectionProps> {
+      // Don't create custom relationship methods in model classes
+      async addItem(cv: BfCurrentViewer, item: BfContentItem): Promise<BfEdge> {
+        return BfEdge.createBetweenNodes(cv, this, item);
+      }
+
+      async getItems(cv: BfCurrentViewer): Promise<BfContentItem[]> {
+        const edges = await BfEdge.queryTargetInstances(
+          cv,
+          BfContentItem,
+          this.metadata.bfGid,
+        );
+        return edges;
+      }
+    }
+    ```
+
+[^node_relationships_good]: Correct node relationship pattern:
+
+    ```typescript
+    // ✅ Use standard methods directly where needed
+    // Creating relationships
+    const edge = await BfEdge.createBetweenNodes(cv, collection, item);
+
+    // Querying relationships
+    const items = await BfEdge.queryTargetInstances(
+      cv,
+      BfContentItem,
+      collection.metadata.bfGid,
+    );
+    ```
+
+[^current_viewer_mocking]: Mocking current viewers examples:
+
+    ```typescript
+    // Preferred method for tests - flexible unified method
+    const mockCv = BfCurrentViewer.__DANGEROUS__createTestCurrentViewer(
+      import.meta, // Always pass import.meta
+      true, // true for logged in, false for logged out
+      { // Optional configuration
+        bfGid: "test-user-123", // Optional user ID
+        bfOid: "test-owner-123", // Optional owner ID
+      },
+    );
+
+    // For logged out viewer (anonymous user)
+    const mockCv = BfCurrentViewerLoggedOut.createLoggedOut(import.meta);
+
+    // For logged in viewer with email
+    const mockLoggedInCv = BfCurrentViewerLoggedIn.__DANGEROUS__createFromEmail(
+      import.meta,
+      "test@example.com",
+    );
+
+    // For logged in viewer with specific IDs
+    const mockCvWithIds = BfCurrentViewerLoggedIn.__DANGEROUS__createFromBfGid(
+      import.meta,
+      toBfGid("user-id"),
+      toBfGid("owner-id"),
+    );
+    ```
+
+[^constructive_feedback]: Constructive feedback examples:
+
+    ```
+    // Instead of: "This code is confusing"
+    // Say: "Consider extracting this logic into a named function to clarify its purpose"
+
+    // Instead of: "Why does this work this way?"
+    // Say: "Help me understand how this code works."
+    ```
+
+[^json_stringify]: JSON.stringify examples:
+
+    ```typescript
+    // ❌ BAD - will throw if object contains BigInt
+    logger.debug(`Object data: ${JSON.stringify(objWithBigInt)}`);
+
+    // ✅ GOOD - pass as separate argument
+    logger.debug("Object data:", objWithBigInt);
+    ```
+
+[^standard_testing]: Standard testing example:
+
+    ```typescript
+    // Example standard test
+    import { assertEquals } from "@std/assert";
+
+    Deno.test("my test function", (t) => {
+      assertEquals(1 + 1, 2);
+
+      t.step("example step", () => {
+        assertEquals(2 + 2, 4);
+      });
+    });
+    ```
+
+[^graphql_resolver]: GraphQL resolver example:
+
+    ```typescript
+    // Example resolver function
+    resolve: (async (parent, args, ctx) => {
+      // Use ctx.find to get a model by ID
+      const model = await ctx.find(ModelClass, id);
+
+      // Use ctx.findX for required models (throws if not found)
+      const requiredModel = await ctx.findX(ModelClass, id);
+
+      // Access current user
+      const currentUser = await ctx.findCurrentViewer();
+
+      // For collections with items, use ctx to retrieve the parent first
+      const collection = await ctx.findX(CollectionClass, parent.id);
+      const items = collection.props.items || [];
+
+      return result;
+    });
+    ```
+
+[^override_keyword]: Override keyword example:
+
+    ```typescript
+    // CORRECT: Using override for methods that exist in the parent class
+    class BfContentItem extends BfNodeBase<BfContentItemProps> {
+      override async save(): Promise<this> {
+        logger.debug(`Saving BfContentItem: ${this.metadata.bfGid}`);
+        // Implementation details
+        return this;
+      }
+    }
+    ```
+
+[^override_example]: Override real-world example:
+
+    ```typescript
+    // Base class
+    abstract class BfNodeBase<T extends BfNodeBaseProps> {
+      async save(): Promise<this> {
+        // Base implementation
+        return this;
+      }
+    }
+
+    // ❌ Child class - INCORRECT (missing override and changes return signature unnecessarily)
+    class BfContentItem extends BfNodeBase<BfContentItemProps> {
+      async save(): Promise<this> { // TypeScript won't catch potential errors
+        return this;
+      }
+    }
+
+    // ✅ Child class - CORRECT
+    class BfContentItem extends BfNodeBase<BfContentItemProps> {
+      override async save() { // Properly marked as overriding
+        // Implementation
+        return this;
+      }
+    }
+    ```
+
+[^testing_imports]: Testing imports example:
+
+    ```typescript
+    // ❌ INCORRECT - will cause error
+    import { assertEquals } from "@std/testing/asserts";
+
+    // ✅ CORRECT
+    import { assertEquals } from "@std/assert";
+    ```
+
+[^optional_chaining]: Optional chaining example:
+
+    ```typescript
+    // ❌ PROBLEMATIC - TypeScript will warn about possible null/undefined
+    <Component key={item.id} />; // Error: 'item' is possibly 'null'
+
+    // ✅ BETTER - Using conditional rendering with && and Using optional chaining operator
+    {
+      item && <Component key={item?.id} />;
+    }
+    ```
+
+[^type_vs_interface]: Type vs interface examples:
+
+    ```typescript
+    // ✅ PREFERRED: Using type for props objects
+    export type BfContentItemProps = BfNodeBaseProps & {
+      title: string;
+      body: string;
+      slug: string;
+      filePath?: string;
+      summary?: string;
+      author?: string;
+      cta?: string;
+      href?: string;
+    };
+
+    // ❌ AVOID: Using interface for props objects
+    export interface BfContentItemProps extends BfNodeBaseProps {
+      title: string;
+      body: string;
+      slug: string;
+      filePath?: string;
+      summary?: string;
+      author?: string;
+      cta?: string;
+      href?: string;
+    }
+    ```
+
+[^bfgid_conversion]: BfGid type conversion example:
+
+    ```typescript
+    // ❌ Incorrect - will cause type error
+    const collection = collectionsCache.get("collection-id");
+
+    // ✅ Correct - converts string to BfGid
+    const collection = collectionsCache.get(toBfGid("collection-id"));
+    ```
+
+[^direct_imports]: Import patterns example:
+
+    ```typescript
+    // ✅ PREFERRED: Direct import from specific file
+    import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
+
+    // ❌ AVOID: Import from barrel file
+    import { BfPerson } from "packages/bfDb/models/index.ts";
+    ```
+
+[^lexical_naming]: Lexical naming examples:
+
+    ```typescript
+    // ✅ PREFERRED: Lexically sortable naming
+    class DatabaseBackendPostgres implements DatabaseBackend { ... }
+    class DatabaseBackendSQLite implements DatabaseBackend { ... }
+    class BfNodeInMemory extends BfNodeBase { ... }
+    class BfNodeOnDisk extends BfNodeBase { ... }
+
+    // ❌ AVOID: Non-sortable naming
+    class PostgresDatabaseBackend implements DatabaseBackend { ... }
+    class SQLiteDatabaseBackend implements DatabaseBackend { ... }
+    class InMemoryBfNode extends BfNodeBase { ... }
+    class OnDiskBfNode extends BfNodeBase { ... }
+    ```
+
+[^tdd_example]: TDD example process:
+
+    ```typescript
+    // 1. RED: Write a failing test first
+    Deno.test("BfEdgeInMemory should find edges by source node", async () => {
+      const mockCv = getMockCurrentViewer();
+      const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+        name: "Source",
+      });
+      const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+        name: "Target",
+      });
+
+      // Create an edge between nodes
+      await BfEdgeInMemory.createBetweenNodes(
+        mockCv,
+        sourceNode,
+        targetNode,
+        "test-role",
+      );
+
+      // Test the findBySource method (which doesn't exist yet)
+      const edges = await BfEdgeInMemory.findBySource(mockCv, sourceNode);
+
+      assertEquals(edges.length, 1);
+      assertEquals(edges[0].metadata.bfSid, sourceNode.metadata.bfGid);
+      assertEquals(edges[0].metadata.bfTid, targetNode.metadata.bfGid);
+    });
+
+    // ❌ INCORRECT - This test just verifies current implementation (error throwing)
+    Deno.test("BfEdgeBase save method should throw NotImplemented error", async () => {
+      // Import the BfErrorNotImplemented class
+      const { BfErrorNotImplemented } = await import("packages/BfError.ts");
+
+      // Create an edge
+      const edge = new BfEdgeBase();
+
+      // Assert that calling save throws the correct error - THIS IS WRONG!
+      await assertThrows(() => edge.save(), BfErrorNotImplemented);
+    });
+
+    // ✅ CORRECT - Test verifies desired behavior for concrete subclasses
+    Deno.test("Concrete Edge subclasses should properly implement save method", async () => {
+      const mockCv = getMockCurrentViewer();
+      const sourceNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+        name: "Source",
+      });
+      const targetNode = await MockNode.__DANGEROUS__createUnattached(mockCv, {
+        name: "Target",
+      });
+
+      // Create an edge between nodes using the concrete subclass
+      const edge = await ConcreteEdgeClass.createBetweenNodes(
+        mockCv,
+        sourceNode,
+        targetNode,
+        "test-role",
+      );
+
+      // Test that save returns the edge instance (desired behavior)
+      const savedEdge = await edge.save();
+      assertEquals(
+        savedEdge,
+        edge,
+        "save() should return the edge instance (this)",
+      );
+
+      // Add additional assertions based on what the save method should actually do
+      // (e.g., verify edge was persisted in the database, has updated timestamps, etc.)
+    });
+
+    // 2. GREEN: Implement the minimum code to make the test pass
+    static async findBySource(
+      cv: BfCurrentViewer, 
+      sourceNode: BfNodeBase
+    ): Promise<BfEdgeInMemory[]> { 
+      const result: BfEdgeInMemory[] = [];
+
+      for (const edge of this.inMemoryEdges.values()) { 
+        if (edge.metadata.bfSid === sourceNode.metadata.bfGid) { 
+          result.push(edge); 
+        } 
+      }
+
+      return result; 
+    }
+
+    // 3. REFACTOR: Improve the implementation while keeping tests passing
+    static async findBySource(
+      cv: BfCurrentViewer, 
+      sourceNode: BfNodeBase, 
+      role?: string
+    ): Promise<BfEdgeInMemory[]> { 
+      return Array.from(this.inMemoryEdges.values()).filter(edge => { 
+        const sourceMatches = edge.metadata.bfSid === sourceNode.metadata.bfGid; 
+        return role ? (sourceMatches && edge.props.role === role) : sourceMatches; 
+      }); 
+    }
+    ```
