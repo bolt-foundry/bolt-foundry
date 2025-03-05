@@ -5,8 +5,14 @@ import readerResolver from './resolver_reader.ts';
 const nestedRefetchQueries: RefetchQueryNormalizationArtifactWrapper[] = [];
 
 const queryText = 'mutation CreateVoice ($handle: String!) {\
-  createVoice____handle___v_handle: createVoice(handle: $handle) {\
-    __typename,\
+  createVoiceAgain____handle___v_handle: createVoiceAgain(handle: $handle) {\
+    id,\
+    identity {\
+      voice {\
+        voice,\
+        voiceSummary,\
+      },\
+    },\
   },\
 }';
 
@@ -15,19 +21,45 @@ const normalizationAst: NormalizationAst = {
   selections: [
     {
       kind: "Linked",
-      fieldName: "createVoice",
+      fieldName: "createVoiceAgain",
       arguments: [
         [
           "handle",
           { kind: "Variable", name: "handle" },
         ],
       ],
-      concreteType: "Voice",
+      concreteType: "BfOrganization",
       selections: [
         {
           kind: "Scalar",
-          fieldName: "__typename",
+          fieldName: "id",
           arguments: null,
+        },
+        {
+          kind: "Linked",
+          fieldName: "identity",
+          arguments: null,
+          concreteType: "BfOrganization_Identity",
+          selections: [
+            {
+              kind: "Linked",
+              fieldName: "voice",
+              arguments: null,
+              concreteType: "Voice",
+              selections: [
+                {
+                  kind: "Scalar",
+                  fieldName: "voice",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "voiceSummary",
+                  arguments: null,
+                },
+              ],
+            },
+          ],
         },
       ],
     },
