@@ -3,6 +3,7 @@ import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 import { BfDsCopyButton } from "packages/bfDs/components/BfDsCopyButton.tsx";
 import { useState } from "react";
 import { classnames } from "lib/classnames.ts";
+import { useEditor } from "packages/app/contexts/EditorContext.tsx";
 
 export const BlogRevisionsSidebar = iso(`
   field BfOrganization.BlogRevisionsSidebar @component {
@@ -20,6 +21,8 @@ export const BlogRevisionsSidebar = iso(`
   function BlogRevisionsSidebar(
     { data },
   ) {
+    const { highlightTextInEditor } = useEditor();
+    
     return (
       <div className="flexColumn right-side-bar">
         <div className="revisions-container">
@@ -47,20 +50,41 @@ export const BlogRevisionsSidebar = iso(`
                 <div className="flexRow gapMedium alignItemsCenter">
                   <div
                     className={titleClasses}
-                    onClick={() => setShowExpanded(!showExpanded)}
+                    onClick={() => {
+                      setShowExpanded(!showExpanded);
+                      // If the revision has an original text, highlight it in the editor
+                      if (revision?.original) {
+                        highlightTextInEditor(revision.original);
+                      }
+                    }}
                   >
                     {revision?.revisionTitle ?? ""}
                   </div>
                   <BfDsButton
                     kind="overlay"
                     iconLeft={showExpanded ? "arrowDown" : "arrowLeft"}
-                    onClick={() => setShowExpanded(!showExpanded)}
+                    onClick={() => {
+                      const newExpandState = !showExpanded;
+                      setShowExpanded(newExpandState);
+                      
+                      // If expanding and there's original text, highlight it in the editor
+                      if (newExpandState && revision?.original) {
+                        highlightTextInEditor(revision.original);
+                      }
+                    }}
                   />
                 </div>
                 {showExpanded &&
                   (
                     <div className="revision-item">
-                      <div className="original-text">{revision?.original}</div>
+                      <div 
+                        className="original-text"
+                        onClick={() => {
+                          if (revision?.original) {
+                            highlightTextInEditor(revision.original);
+                          }
+                        }}
+                      >{revision?.original}</div>
                       <div>{revision?.instructions}</div>
                       <div className="flexRow alignItemsCenter">
                         <div className="flexRow flex1" style={{ gap: "8px" }}>
