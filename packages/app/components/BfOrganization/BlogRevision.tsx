@@ -20,8 +20,12 @@ type Props = {
 
 export function BlogRevision({ revision }: Props) {
   const { highlightTextInEditor, unhighlightTextInEditor } = useEditor();
+  const [originalTextExpanded, setOriginalTextExpanded] = useState(false);
   const [done, setDone] = useState(false);
   const [showSuggestion, setShowSuggestion] = useState(false);
+  const [showSuggestionExplanation, setShowSuggestionExplanation] = useState(
+    false,
+  );
   const [hidden, setHidden] = useState(false);
   const listItemRef = useRef<BfDsListItemHandle>(null);
 
@@ -51,20 +55,78 @@ export function BlogRevision({ revision }: Props) {
       done,
     },
   ]);
+  const originalClasses = classnames([
+    "revision-item-original-text",
+    {
+      collapsed: !originalTextExpanded,
+    },
+  ]);
 
   const expandedContent = (
     <div className="revision-item">
       <div
-        className="original-text"
+        className="revision-item-original"
         onClick={() => {
+          setOriginalTextExpanded(!originalTextExpanded);
           if (revision?.original) {
             highlightTextInEditor(revision.original);
           }
         }}
       >
-        {revision?.original}
+        <div className="revision-item-small-title">Original text</div>
+        <div className={originalClasses}>
+          {revision?.original}
+        </div>
       </div>
-      <div>{revision?.instructions}</div>
+      {showSuggestion
+        ? (
+          <div>
+            <div className="revision-item-subtitle">Suggestion</div>
+            <div className="revision-box">
+              {revision?.revision}
+            </div>
+            <div className="flexRow gapMedium">
+              <div className="flex1">
+                <BfDsButton
+                  iconLeft={showSuggestionExplanation
+                    ? "infoCircleSolid"
+                    : "infoCircle"}
+                  kind={showSuggestionExplanation
+                    ? "filledSecondary"
+                    : "overlay"}
+                  onClick={() =>
+                    setShowSuggestionExplanation(!showSuggestionExplanation)}
+                  size="medium"
+                />
+              </div>
+              <div className="flexRow selfAlignEnd">
+                <BfDsCopyButton
+                  kind="filledSuccess"
+                  buttonText="Copy"
+                  textToCopy={revision?.revision ?? ""}
+                />
+              </div>
+            </div>
+            {showSuggestionExplanation && (
+              <div className="revision-item-explanation flexColumn">
+                <div className="suggestion-details-explanation-title">
+                  Why this is better
+                </div>
+                {revision?.explanation}
+              </div>
+            )}
+          </div>
+        )
+        : (
+          <div>
+            <div className="revision-item-subtitle">
+              How to make this better
+            </div>
+            <div className="revision-item-instruction">
+              {revision?.instructions}
+            </div>
+          </div>
+        )}
       <div className="flexRow alignItemsCenter">
         <div className="flexRow flex1" style={{ gap: "8px" }}>
           <BfDsButton
@@ -86,33 +148,6 @@ export function BlogRevision({ revision }: Props) {
           onClick={() => setShowSuggestion(!showSuggestion)}
         />
       </div>
-      {showSuggestion &&
-        (
-          <>
-            <div className="revision-box">
-              {revision?.revision}
-              <div
-                className="flexRow alignItemsCenter"
-                style={{ justifyContent: "space-between" }}
-              >
-                <div style={{ color: "var(--secondaryColor)" }}>
-                  Suggested change
-                </div>
-                <BfDsCopyButton
-                  kind="filledSuccess"
-                  buttonText="Copy"
-                  textToCopy={revision?.revision ?? ""}
-                />
-              </div>
-            </div>
-            <div className="flexColumn">
-              <div className="suggestion-details-explanation-title">
-                Why this is better
-              </div>
-              {revision?.explanation}
-            </div>
-          </>
-        )}
     </div>
   );
 

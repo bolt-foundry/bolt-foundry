@@ -620,22 +620,40 @@
 }
 
 /* REVISIONS  */
-.original-text {
-  background: var(--textSecondary015);
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
+.revision-item-original-text {
+  position: relative;
+  font-size: 0.8em;
+}
+.revision-item-original-text.collapsed {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.revision-item-instruction {
+  background: var(--background);
+  border: 1px solid var(--primaryColor015);
+  border-left: 4px solid var(--primaryColor);
+  padding: 4px 8px;
+  margin: 2px 0;
 }
 .revisions-container {
   max-width: 300px;
 }
 
 .revision-item-title {
-  font-weight: bold;
+  
 }
 
 .revision-item-title.done {
   color: var(--textSecondary);
+}
+
+.revision-item-subtitle {
+  font-weight: 500;
+}
+.revision-item-small-title {
+  font-weight: 500;
+  font-size: 0.9em;
 }
 
 .revision-item {
@@ -645,10 +663,20 @@
 }
 
 .revision-box {
-  border: 1px solid var(--secondaryColor);
-  border-radius: 10px;
-  padding: 8px;
+  background: var(--background);
+  border: 1px solid var(--secondaryColor015);
+  border-left: 4px solid var(--secondaryColor);
+  padding: 4px 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin: 2px 0 8px;
+}
+.revision-item-explanation {
+  font-size: 0.8em;
+  border: 1px solid var(--border);
+  background: var(--background);
+  padding: 8px;
+  border-radius: 8px;
+  margin: 8px 0;
 }
