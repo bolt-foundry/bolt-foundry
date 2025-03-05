@@ -10,6 +10,7 @@ import { Buffer } from "node:buffer";
 import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
 import jwt from "jsonwebtoken";
 import { getPosthogClient } from "lib/posthog.ts";
+import { generateUUID } from "lib/generateUUID.ts";
 
 const JWT_SECRET = Buffer.from("content-foundry-secret-key");
 const JWT_EXPIRES_IN = "1h";
@@ -170,16 +171,17 @@ export abstract class BfCurrentViewer {
   }
 
   static createForDemo(importMeta: ImportMeta, responseHeaders: Headers) {
-    const id = toBfGid("DEMO");
+    const uniqueId = generateUUID().substring(0, 8);
+    const demoId = toBfGid(`demo-user-${uniqueId}`);
 
     BfCurrentViewer.setLoginSuccessHeaders(
       responseHeaders,
-      id,
+      demoId,
     );
     return BfCurrentViewerLoggedIn.__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
       importMeta,
-      id,
-      id,
+      demoId,
+      demoId,
     );
   }
   static __DANGEROUS_USE_IN_SCRIPTS_ONLY__createOmni(importMeta: ImportMeta) {
