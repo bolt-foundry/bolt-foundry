@@ -11,6 +11,6 @@ export const LoggedInView = iso(`
   const { replace } = useRouter();
   useEffect(function LoggedInViewEffect() {
     replace("/twitter");
-  });
+  }, []);
   return <div></div>;
 });
