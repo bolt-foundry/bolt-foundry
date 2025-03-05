@@ -70,6 +70,5 @@ export async function getVoice(
   if (isValidJSON(choiceContent)) {
     responseObject = JSON.parse(choiceContent);
   }
-
   return responseObject;
 }

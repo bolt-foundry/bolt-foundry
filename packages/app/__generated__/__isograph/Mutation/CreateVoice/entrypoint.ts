@@ -5,7 +5,7 @@ import readerResolver from './resolver_reader.ts';
 const nestedRefetchQueries: RefetchQueryNormalizationArtifactWrapper[] = [];
 
 const queryText = 'mutation CreateVoice ($handle: String!) {\
-  createVoiceAgain____handle___v_handle: createVoiceAgain(handle: $handle) {\
+  createVoice____handle___v_handle: createVoice(handle: $handle) {\
     id,\
     identity {\
       voice {\
@@ -21,7 +21,7 @@ const normalizationAst: NormalizationAst = {
   selections: [
     {
       kind: "Linked",
-      fieldName: "createVoiceAgain",
+      fieldName: "createVoice",
       arguments: [
         [
           "handle",

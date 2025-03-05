@@ -7,7 +7,7 @@ import BfOrganization_Identity__EditIdentity__resolver_reader from '../../BfOrga
 const readerAst: ReaderAst<Mutation__CreateVoice__param> = [
   {
     kind: "Linked",
-    fieldName: "createVoiceAgain",
+    fieldName: "createVoice",
     alias: null,
     arguments: [
       [

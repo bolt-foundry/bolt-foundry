@@ -53,7 +53,7 @@ export const EditIdentity = iso(`
               type="submit"
               text="Looks Good"
               onClick={() => {
-                navigate("/twitter/compose");
+                navigate("/formatter/editor");
               }}
               xstyle={{ alignSelf: "flex-end" }}
             />

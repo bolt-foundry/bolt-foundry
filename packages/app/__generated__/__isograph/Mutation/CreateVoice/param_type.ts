@@ -3,7 +3,7 @@ import type { Mutation__CreateVoice__parameters } from './parameters_type.ts';
 
 export type Mutation__CreateVoice__param = {
   readonly data: {
-    readonly createVoiceAgain: ({
+    readonly createVoice: ({
       readonly identity: ({
         readonly EditIdentity: BfOrganization_Identity__EditIdentity__output_type,
       } | null),
