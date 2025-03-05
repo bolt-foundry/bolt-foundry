@@ -6,6 +6,7 @@ import { useMutation } from "packages/app/hooks/isographPrototypes/useMutation.t
 import reviseBlogMutation from "packages/app/__generated__/__isograph/Mutation/ReviseBlog/entrypoint.ts";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 import { BfDsCopyButton } from "packages/bfDs/components/BfDsCopyButton.tsx";
+import { useEditor } from "packages/app/contexts/EditorContext.tsx";
 const logger = getLogger(import.meta);
 
 export const FormatterEditorPanel = iso(`
@@ -25,6 +26,7 @@ export const FormatterEditorPanel = iso(`
     logger.info("FormatterEditorPanel", data.__typename);
     const [isInFlight, setIsInFlight] = useState(false);
     const [blogPost, setBlogPost] = useState(data?.creation?.draftBlog ?? "");
+    const { textareaRef } = useEditor();
     const { commit } = useMutation(reviseBlogMutation);
 
     const fullEditorStyle = {
@@ -36,15 +38,18 @@ export const FormatterEditorPanel = iso(`
       outline: "none",
       padding: 30,
     };
+    
     return (
       <div className="flex1 flexColumn">
         <BfDsTextArea
+          passedRef={textareaRef}
           onChange={(e) => {
             setBlogPost(e.target.value);
           }}
           value={blogPost}
           placeholder="TODO: Markdown editor"
           xstyle={fullEditorStyle}
+          id="formatter-editor-textarea" // Add an ID to make it easier to find
         />
         <div className="editor-actions flexRow gapMedium selfAlignEnd">
           <BfDsCopyButton kind="outlineDark" textToCopy={blogPost} />
