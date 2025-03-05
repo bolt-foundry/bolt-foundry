@@ -574,7 +574,6 @@ export async function bfCloseConnection(): Promise<void> {
   await closeBackend();
 }
 
-// Modify or add this function to the bfDb.ts file
 // This function ensures database operations are properly isolated,
 // especially useful for testing scenarios
 export async function withIsolatedDb<T>(
@@ -601,14 +600,37 @@ export async function withIsolatedDb<T>(
     // Make sure any existing connection is closed
     await bfCloseConnection();
 
+    // For tests, prefer using SQLite as the default backend
+    // if not explicitly specified otherwise
+    if (
+      !options.forceBackendType && !getConfigurationVariable("FORCE_DB_BACKEND")
+    ) {
+      logger.debug("Using SQLite for test isolation by default");
+      Deno.env.set("FORCE_DB_BACKEND", "sqlite");
+
+      // Generate a unique SQLite path for this test if not provided
+      if (!options.customDbPath) {
+        const uniqueDbPath = `tmp/test-db-test-${Date.now()}-${
+          Math.floor(Math.random() * 1000)
+        }.sqlite`;
+        logger.debug(`Using unique SQLite database: ${uniqueDbPath}`);
+        Deno.env.set("SQLITE_DB_PATH", uniqueDbPath);
+      }
+    }
+
     // Run the operation with fresh connection
     return await operation();
   } finally {
-    // Close the connection
-    await bfCloseConnection();
+    // Ensure connection is properly closed
+    try {
+      logger.debug("Closing database connection after isolated operation");
+      await bfCloseConnection();
+    } catch (error) {
+      logger.error("Error closing connection in withIsolatedDb:", error);
+    }
 
     // Restore original environment values
-    if (options.customDbPath) {
+    if (options.customDbPath || !originalDbPath) {
       if (originalDbPath) {
         Deno.env.set("SQLITE_DB_PATH", originalDbPath);
       } else {
@@ -616,7 +638,7 @@ export async function withIsolatedDb<T>(
       }
     }
 
-    if (options.forceBackendType) {
+    if (options.forceBackendType || !originalBackend) {
       if (originalBackend) {
         Deno.env.set("FORCE_DB_BACKEND", originalBackend);
       } else {
@@ -625,14 +647,36 @@ export async function withIsolatedDb<T>(
     }
 
     // If using a custom SQLite path, try to clean up the file
-    if (options.customDbPath && options.forceBackendType === "sqlite") {
+    const dbPath = options.customDbPath ||
+      (!options.forceBackendType
+        ? getConfigurationVariable("SQLITE_DB_PATH")
+        : null);
+
+    if (
+      dbPath &&
+      (!options.forceBackendType || options.forceBackendType === "sqlite")
+    ) {
       try {
-        await Deno.remove(options.customDbPath);
-        logger.debug(
-          `Removed temporary SQLite database: ${options.customDbPath}`,
-        );
-      } catch {
+        // Close any remaining connections before attempting to remove
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        try {
+          await Deno.remove(dbPath);
+          logger.debug(`Removed temporary SQLite database: ${dbPath}`);
+        } catch (_e) {
+          // Also try to remove the -shm and -wal files
+          try {
+            await Deno.remove(`${dbPath}-shm`);
+          } catch { /* ignore */ }
+          try {
+            await Deno.remove(`${dbPath}-wal`);
+          } catch { /* ignore */ }
+        }
+      } catch (error) {
         // Ignore errors if file doesn't exist or can't be removed
+        logger.debug(
+          `Could not remove SQLite database files: ${(error as Error).message}`,
+        );
       }
     }
   }
