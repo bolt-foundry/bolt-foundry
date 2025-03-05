@@ -657,3 +657,26 @@
   flex-direction: column;
   gap: 8px;
 }
+
+.original-text {
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.original-text:hover {
+  background-color: var(--fourtharyColor015);
+}
+
+.original-text:hover::after {
+  content: "Click to highlight in editor";
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8em;
+  color: var(--secondaryColor);
+  background-color: var(--background);
+  padding: 2px 5px;
+  border-radius: 3px;
+  opacity: 0.8;
+}

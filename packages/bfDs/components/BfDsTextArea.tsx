@@ -5,6 +5,7 @@ export type TextAreaProps = {
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
   label?: string;
   className?: string;
+  passedRef?: React.RefObject<HTMLTextAreaElement | null>;
   xstyle?: React.CSSProperties;
 } & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
@@ -39,10 +40,11 @@ export function BfDsTextArea(
     required,
     rows,
     xstyle,
+    passedRef,
     ...props
   }: TextAreaProps,
 ) {
-  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const textareaRef = passedRef ?? React.useRef<HTMLTextAreaElement>(null);
 
   React.useEffect(() => {
     const textarea = textareaRef.current;
