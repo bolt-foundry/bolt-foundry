@@ -900,7 +900,7 @@ inheritance pattern in the tests:
 
 Example structure:
 
-```typescript
+````typescript
 // In BfNodeBaseTest.ts
 export function runBaseNodeTests(NodeClass, helpers) {
   Deno.test("should implement common node behavior", async () => {
@@ -914,43 +914,100 @@ import { runBaseNodeTests } from "./BfNodeBaseTest.ts";
 // Run the base tests first
 
 
+### Node Relationships Pattern
+
+When working with relationships between nodes in the Content Foundry database layer, always use the standard methods from `BfNodeBase` and `BfEdge` directly rather than creating custom relationship methods in model classes:
+
+#### Incorrect Pattern (Avoid)
+
+```typescript
+// In BfContentCollection.ts - AVOID THIS APPROACH
+class BfContentCollection extends BfNodeBase<BfContentCollectionProps> {
+  // Don't create custom relationship methods in model classes
+  async addItem(cv: BfCurrentViewer, item: BfContentItem): Promise<BfEdge> {
+    return BfEdge.createBetweenNodes(cv, this, item);
+  }
+
+  async getItems(cv: BfCurrentViewer): Promise<BfContentItem[]> {
+    const edges = await BfEdge.queryTargetInstances(
+      cv,
+      BfContentItem,
+      this.metadata.bfGid
+    );
+    return edges;
+  }
+}
+````
+
+#### Correct Pattern (Recommended)
+
+```typescript
+// Use standard methods directly where needed
+// Creating relationships
+const edge = await BfEdge.createBetweenNodes(cv, collection, item);
+
+// Querying relationships
+const items = await BfEdge.queryTargetInstances(
+  cv,
+  BfContentItem,
+  collection.metadata.bfGid,
+);
+```
+
+#### Benefits of Standard Methods:
+
+1. **Consistency**: Uses the same pattern across the codebase
+2. **Maintainability**: Avoids code duplication in model classes
+3. **Flexibility**: Allows for more complex queries with standard parameters
+4. **Testing**: Easier to test with standard interfaces
+
+Always use these standard relationship methods rather than creating custom
+wrappers in model classes.
+
 ### Demo User Implementation
 
-The Content Foundry platform implements a demo user system that allows users to try the platform without providing personal information. Here's how it works:
+The Content Foundry platform implements a demo user system that allows users to
+try the platform without providing personal information. Here's how it works:
 
-1. **Unique Demo Users**: Each demo user is unique with its own identity and organization. This is different from having a single shared demo account that everyone uses.
+1. **Unique Demo Users**: Each demo user is unique with its own identity and
+   organization. This is different from having a single shared demo account that
+   everyone uses.
 
-2. **Implementation Strategy**: The `BfPersonDemo` class extends `BfPerson` and implements the unique demo user functionality by:
+2. **Implementation Strategy**: The `BfPersonDemo` class extends `BfPerson` and
+   implements the unique demo user functionality by:
    - Generating a unique identifier for each demo user
-   - Creating a personalized email with the format `demo+[unique-id]@contentfoundry.demo`
+   - Creating a personalized email with the format
+     `demo+[unique-id]@contentfoundry.demo`
    - Setting up a dedicated organization for each demo user
 
 3. **Demo Organization**: Each demo user gets their own organization with:
    - A unique name based on the demo user's ID
-   - Specific restrictions (such as project limits, content item limits, expiration dates)
+   - Specific restrictions (such as project limits, content item limits,
+     expiration dates)
    - Proper connections to the demo user via edges in the graph database
 
-4. **Demo User Creation**: The demo user is created through the GraphQL API mutation `LoginAsDemoPerson` which:
-   - Calls `BfPersonDemo.findOrCreateDemo(ctx.cv)` to create a unique demo instance
+4. **Demo User Creation**: The demo user is created through the GraphQL API
+   mutation `LoginAsDemoPerson` which:
+   - Calls `BfPersonDemo.findOrCreateDemo(ctx.cv)` to create a unique demo
+     instance
    - Creates a logged-in viewer with the appropriate permissions
    - Sets the current viewer context to the demo user
 
-5. **Restrictions**: Demo users have certain limitations compared to regular users:
+5. **Restrictions**: Demo users have certain limitations compared to regular
+   users:
    - Limited number of projects/content items
    - Time-based expiration
    - Restricted access to certain premium features
 
-This approach maintains data isolation between users while still providing a seamless onboarding experience without requiring registration.
-
+This approach maintains data isolation between users while still providing a
+seamless onboarding experience without requiring registration.
 
 runBaseNodeTests(BfNodeOnDisk, diskHelpers);
 
-// Then add tests specific to BfNodeOnDisk
-Deno.test("BfNodeOnDisk should save to disk", async () => {
-  // Test disk-specific functionality
-});
-```
+// Then add tests specific to BfNodeOnDisk Deno.test("BfNodeOnDisk should save
+to disk", async () => { // Test disk-specific functionality });
 
+````
 This pattern ensures:
 
 - Test consistency across related classes
@@ -990,7 +1047,7 @@ const mockCvWithIds = BfCurrentViewerLoggedIn.__DANGEROUS__createFromBfGid(
   toBfGid("user-id"),
   toBfGid("owner-id"),
 );
-```
+````
 
 These factory methods ensure proper initialization of the current viewer objects
 with appropriate permissions and behavior matching the actual implementation.
@@ -1141,6 +1198,73 @@ chaining operator (`?.`) to safely access properties or methods:
 
 The optional chaining operator (`?.`) short-circuits if the value before it is
 `null` or `undefined`, returning `undefined` instead of throwing an error.
+
+#### Type vs Interface for Props Objects
+
+When defining props objects for models in Content Foundry, prefer using `type`
+instead of `interface`, especially for objects that will be serialized to/from
+JSON:
+
+```typescript
+// PREFERRED: Using type for props objects
+export type BfContentItemProps = BfNodeBaseProps & {
+  title: string;
+  body: string;
+  slug: string;
+  filePath?: string;
+  summary?: string;
+  author?: string;
+  cta?: string;
+  href?: string;
+};
+
+// AVOID: Using interface for props objects
+export interface BfContentItemProps extends BfNodeBaseProps {
+  title: string;
+  body: string;
+  slug: string;
+  filePath?: string;
+  summary?: string;
+  author?: string;
+  cta?: string;
+  href?: string;
+}
+```
+
+##### Why Type is Preferred for Props Objects
+
+1. **JSON Serialization**: When working with JSON, `undefined` values are
+   stripped during serialization. Using `type` makes it clearer that optional
+   properties might be missing entirely in the JSON representation, not just
+   `undefined`.
+
+2. **Structural vs Nominal Typing**: While interfaces can be useful for defining
+   contractual shapes that classes implement, `type` is more appropriate for
+   simple data structures that represent serializable objects.
+
+3. **Clarity with Optional Properties**: Using `type` for props objects helps
+   clarify that optional properties (those with `?`) might not exist at all in
+   the deserialized object, rather than existing with an explicit `undefined`
+   value.
+
+4. **Consistency with JSON Structure**: Since JSON cannot represent `undefined`
+   (only `null`), using `type` better reflects the actual runtime behavior of
+   these objects.
+
+When implementing models that use these props types, remember that you should
+check for property existence rather than checking for `undefined`:
+
+```typescript
+// PREFERRED: Check if property exists
+if (item.summary) {
+  // Use summary
+}
+
+// AVOID: Check against undefined
+if (item.summary !== undefined) {
+  // This might not work as expected after JSON serialization/deserialization
+}
+```
 
 #### String vs BfGid Type Mismatch
 
