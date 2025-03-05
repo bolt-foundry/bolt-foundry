@@ -1,10 +1,18 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import {
+  forwardRef,
+  useContext,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useState,
+} from "react";
 import {
   BfDsIcon,
   type BfDsIconType,
 } from "packages/bfDs/components/BfDsIcon.tsx";
 import { classnames } from "lib/classnames.ts";
 import { BfDsToggle } from "packages/bfDs/components/BfDsToggle.tsx";
+import { ListItemExpandContext } from "packages/bfDs/components/BfDsList.tsx";
 
 export type BfDsListItemHandle = {
   setExpand: (value: boolean) => void;
@@ -49,11 +57,34 @@ export const BfDsListItem = forwardRef<BfDsListItemHandle, Props>(
     ref,
   ) => {
     const [expand, setExpand] = useState(false);
+    const itemId = useId(); // Generate a unique ID for this list item
+    const { mutuallyExclusive, activeItem, setActiveItem } = useContext(
+      ListItemExpandContext,
+    );
+
+    // Listen for changes in active item if we're in a mutually exclusive context
+    useEffect(() => {
+      if (mutuallyExclusive && expandedContent) {
+        // If this item is not the active item, collapse it
+        if (activeItem !== null && activeItem !== itemId && expand) {
+          setExpand(false);
+          expandCallback?.(false);
+        }
+      }
+    }, [activeItem, mutuallyExclusive, itemId, expandCallback]);
 
     useImperativeHandle(ref, () => ({
       setExpand: (value: boolean) => {
         setExpand(value);
         expandCallback?.(value);
+        // Update the context if we're in a mutually exclusive list
+        if (mutuallyExclusive && expandedContent) {
+          if (value) {
+            setActiveItem(itemId);
+          } else if (activeItem === itemId) {
+            setActiveItem(null);
+          }
+        }
       },
       isExpanded: () => expand,
     }));
@@ -62,11 +93,23 @@ export const BfDsListItem = forwardRef<BfDsListItemHandle, Props>(
       if ((e.target as HTMLElement).closest(".ignore-internal-click")) {
         return;
       }
-      const currendExpandedState = expand;
+      const currentExpandedState = expand;
+
       if (expandedContent) {
-        setExpand(!currendExpandedState);
-        expandCallback?.(!currendExpandedState);
+        const newExpandState = !currentExpandedState;
+        setExpand(newExpandState);
+        expandCallback?.(newExpandState);
+
+        // Handle mutually exclusive expanding
+        if (mutuallyExclusive) {
+          if (newExpandState) {
+            setActiveItem(itemId);
+          } else if (activeItem === itemId) {
+            setActiveItem(null);
+          }
+        }
       }
+
       if (onClick) {
         onClick();
       }
