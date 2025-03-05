@@ -5,7 +5,10 @@ import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 import { BfDsDropzone } from "packages/bfDs/components/BfDsDropzone.tsx";
 import { getLogger } from "packages/logger.ts";
 import { useMutation } from "packages/app/hooks/isographPrototypes/useMutation.tsx";
-import { useState } from "react";
+import { // @ts-types="react"
+  ReactEventHandler,
+  useState,
+} from "react";
 import createVoiceMutation from "packages/app/__generated__/__isograph/Mutation/CreateVoice/entrypoint.ts";
 import { BfDsCallout } from "packages/bfDs/components/BfDsCallout.tsx";
 
@@ -27,9 +30,11 @@ export const EntrypointTwitterIdeatorVoice = iso(`
     const showZip = false;
     const logger = getLogger(import.meta);
 
-    const handleSubmit = () => {
+    // @ts-expect-error k
+    const handleSubmit = (e) => {
       setError(null);
       setIsInFlight(true);
+      e.preventDefault();
       commit({ handle: handle }, {
         onError: () => {
           setError("An error occurred.");

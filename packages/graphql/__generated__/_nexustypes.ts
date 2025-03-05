@@ -307,6 +307,7 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     checkEmail: boolean | null; // Boolean
     createVoice: NexusGenRootTypes['Voice'] | null; // Voice
+    createVoiceAgain: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     getLoginOptions: NexusGenScalars['JSONString'] | null; // JSONString
     login: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginAsDemoPerson: NexusGenRootTypes['BfCurrentViewerLoggedIn'] | null; // BfCurrentViewerLoggedIn
@@ -492,6 +493,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     checkEmail: 'Boolean'
     createVoice: 'Voice'
+    createVoiceAgain: 'BfOrganization'
     getLoginOptions: 'JSONString'
     login: 'BfCurrentViewer'
     loginAsDemoPerson: 'BfCurrentViewerLoggedIn'
@@ -615,6 +617,9 @@ export interface NexusGenArgTypes {
       email: string; // String!
     }
     createVoice: { // args
+      handle: string; // String!
+    }
+    createVoiceAgain: { // args
       handle: string; // String!
     }
     getLoginOptions: { // args
