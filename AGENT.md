@@ -726,6 +726,41 @@ development environments across different systems.
 Content Foundry uses a flexible logging system that can be controlled through
 environment variables:
 
+#### JSON.stringify Limitations with BigInt
+
+When using debug logging, it's important to note that `JSON.stringify()` cannot
+serialize `BigInt` values. If you try to use `JSON.stringify()` on an object
+containing a `BigInt`, it will throw:
+
+```
+TypeError: Do not know how to serialize a BigInt
+```
+
+For this reason:
+
+1. **Avoid using JSON.stringify in debug messages** - Instead, pass values as
+   trailing arguments to logger functions:
+   ```typescript
+   // BAD - will throw if object contains BigInt
+   logger.debug(`Object data: ${JSON.stringify(objWithBigInt)}`);
+
+   // GOOD - pass as separate argument
+   logger.debug("Object data:", objWithBigInt);
+   ```
+
+2. **Use toString() for BigInt values** - If you need to log individual BigInt
+   values:
+   ```typescript
+   // Convert BigInt to string when necessary
+   logger.debug("BigInt value:", bigIntValue.toString());
+   ```
+
+3. **Use trailing arguments for complex objects** - The logger will handle
+   serialization appropriately:
+   ```typescript
+   logger.debug("Query parameters:", metadataToQuery, propsToQuery, bfGids);
+   ```
+
 #### Global Log Level
 
 Set the default log level for all loggers with the `LOG_LEVEL` environment
@@ -1261,10 +1296,11 @@ The BFA Commit process is split into two separate protocols:
 
 When you send the message `!bfa precommit`, the assistant will:
 
-1. Create the build directory if it doesn't exist
-2. Format the code using `bff f`
-3. Run tests with `bff test`
-4. Generate a diff file with all your changes using `sl diff > build/diff.txt`
+1. Delete the build directory if it exists
+2. Create a fresh build directory
+3. Format the code using `bff f`
+4. Run tests with `bff test`
+5. Generate a diff file with all your changes using `sl diff > build/diff.txt`
 
 ```
 This protocol helps you review your changes before executing the actual commit.

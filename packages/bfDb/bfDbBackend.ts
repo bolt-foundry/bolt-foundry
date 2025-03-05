@@ -48,7 +48,7 @@ export async function getBackend(): Promise<DatabaseBackend> {
     const forceBackend = getConfigurationVariable("FORCE_DB_BACKEND");
     const backendType = forceBackend ||
       (databaseUrl
-        ? getConfigurationVariable("DATABASE_BACKEND") ?? "pg"
+        ? getConfigurationVariable("DATABASE_BACKEND") ?? "neon"
         : "sqlite");
 
     logger.debug(`Creating database backend of type: ${backendType}`);

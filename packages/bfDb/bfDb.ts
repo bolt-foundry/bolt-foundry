@@ -257,15 +257,12 @@ export async function bfQueryItemsUnified<
 
   logger.debug(`Standard query returned ${results.length} results`);
   if (results.length === 0) {
-    logger.debug(`No results found. Query parameters: 
-      metadataToQuery: ${JSON.stringify(metadataToQuery)}
-      propsToQuery: ${JSON.stringify(propsToQuery)}
-      bfGids: ${bfGids ? JSON.stringify(bfGids) : "undefined"}
-    `);
+    logger.debug("No results found. Query parameters:");
+    logger.debug("metadataToQuery:", metadataToQuery);
+    logger.debug("propsToQuery:", propsToQuery);
+    logger.debug("bfGids:", bfGids || "undefined");
   } else {
-    logger.debug(
-      `First result metadata: ${JSON.stringify(results[0].metadata)}`,
-    );
+    logger.debug("First result metadata:", results[0].metadata);
   }
 
   return results;
@@ -301,10 +298,8 @@ export async function bfQueryItems<
 
   logger.debug(`Query results count: ${results.length}`);
   if (results.length > 0) {
-    logger.debug(
-      `First result metadata: ${JSON.stringify(results[0].metadata)}`,
-    );
-    logger.debug(`First result props: ${JSON.stringify(results[0].props)}`);
+    logger.debug("First result metadata:", results[0].metadata);
+    logger.debug("First result props:", results[0].props);
   } else {
     logger.debug(`No results found for query`);
   }
