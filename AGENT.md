@@ -1296,10 +1296,11 @@ The BFA Commit process is split into two separate protocols:
 
 When you send the message `!bfa precommit`, the assistant will:
 
-1. Create the build directory if it doesn't exist
-2. Format the code using `bff f`
-3. Run tests with `bff test`
-4. Generate a diff file with all your changes using `sl diff > build/diff.txt`
+1. Delete the build directory if it exists
+2. Create a fresh build directory
+3. Format the code using `bff f`
+4. Run tests with `bff test`
+5. Generate a diff file with all your changes using `sl diff > build/diff.txt`
 
 ```
 This protocol helps you review your changes before executing the actual commit.
