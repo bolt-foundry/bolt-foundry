@@ -32,7 +32,7 @@ type ContentItemFrontmatterProps = Partial<{
   title: string;
 }>;
 
-class BfContentCollection extends BfNodeBase<BfContentCollectionProps> {
+export class BfContentCollection extends BfNodeBase<BfContentCollectionProps> {
   private static _collectionsCache: Map<BfGid, BfContentCollection>;
 
   /**
@@ -392,5 +392,3 @@ class BfContentCollection extends BfNodeBase<BfContentCollectionProps> {
     return Promise.resolve(this);
   }
 }
-
-export { BfContentCollection };

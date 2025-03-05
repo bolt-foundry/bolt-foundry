@@ -35,13 +35,14 @@ export const graphqlBfContentCollectionType = objectType({
           toBfGid(parent.id),
         );
 
-        return collection.props.items.map((item) => {
-          return {
-            ...item,
-            id: "temporary",
-            __typename: "BfContentItem",
-          };
-        });
+        // Use standard method to query relationships
+        const items = await BfEdge.queryTargetInstances(
+          ctx.cv,
+          BfContentItem,
+          collection.metadata.bfGid
+        );
+        
+        return items.map(item => item.toGraphql());
       },
     });
   },
