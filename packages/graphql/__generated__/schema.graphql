@@ -170,10 +170,10 @@ type Mutation {
   getLoginOptions(email: String!): JSONString
   login(authResp: JSONString!, email: String!): BfCurrentViewer
   loginAsDemoPerson: BfCurrentViewerLoggedIn
-  makeTweets(tweet: String!): Creation
+  makeTweets(tweet: String!): BfOrganization
   register(attResp: JSONString!, email: String!): BfCurrentViewerLoggedIn
   registrationOptions(email: String!): JSONString
-  reviseBlog(blogPost: String!): Creation
+  reviseBlog(blogPost: String!): BfOrganization
   submitYcForm(formData: String, systemPrompt: String, taskPrompt: String): YCRecommendations
 }
 

@@ -6,7 +6,16 @@ const nestedRefetchQueries: RefetchQueryNormalizationArtifactWrapper[] = [];
 
 const queryText = 'mutation ReviseBlog ($blogPost: String!) {\
   reviseBlog____blogPost___v_blogPost: reviseBlog(blogPost: $blogPost) {\
-    __typename,\
+    id,\
+    creation {\
+      revisions {\
+        explanation,\
+        instructions,\
+        original,\
+        revision,\
+        revisionTitle,\
+      },\
+    },\
   },\
 }';
 
@@ -22,12 +31,53 @@ const normalizationAst: NormalizationAst = {
           { kind: "Variable", name: "blogPost" },
         ],
       ],
-      concreteType: "Creation",
+      concreteType: "BfOrganization",
       selections: [
         {
           kind: "Scalar",
-          fieldName: "__typename",
+          fieldName: "id",
           arguments: null,
+        },
+        {
+          kind: "Linked",
+          fieldName: "creation",
+          arguments: null,
+          concreteType: "Creation",
+          selections: [
+            {
+              kind: "Linked",
+              fieldName: "revisions",
+              arguments: null,
+              concreteType: "Revisions",
+              selections: [
+                {
+                  kind: "Scalar",
+                  fieldName: "explanation",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "instructions",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "original",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "revision",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "revisionTitle",
+                  arguments: null,
+                },
+              ],
+            },
+          ],
         },
       ],
     },

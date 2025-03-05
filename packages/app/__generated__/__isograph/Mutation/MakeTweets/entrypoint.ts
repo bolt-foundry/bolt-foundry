@@ -6,6 +6,7 @@ const nestedRefetchQueries: RefetchQueryNormalizationArtifactWrapper[] = [];
 
 const queryText = 'mutation MakeTweets ($tweet: String!) {\
   makeTweets____tweet___v_tweet: makeTweets(tweet: $tweet) {\
+    id,\
     __typename,\
   },\
 }';
@@ -22,8 +23,13 @@ const normalizationAst: NormalizationAst = {
           { kind: "Variable", name: "tweet" },
         ],
       ],
-      concreteType: "Creation",
+      concreteType: "BfOrganization",
       selections: [
+        {
+          kind: "Scalar",
+          fieldName: "id",
+          arguments: null,
+        },
         {
           kind: "Scalar",
           fieldName: "__typename",
