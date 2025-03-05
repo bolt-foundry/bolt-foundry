@@ -2,6 +2,7 @@ import type { EagerReaderArtifact, ReaderAst } from '@isograph/react';
 import { Mutation__ReviseBlog__param } from './param_type.ts';
 import { Mutation__ReviseBlog__output_type } from './output_type.ts';
 import { ReviseBlogMutation as resolver } from '../../../../mutations/ReviseBlog.ts';
+import BfOrganization__BlogRevisionsSidebar__resolver_reader from '../../BfOrganization/BlogRevisionsSidebar/resolver_reader.ts';
 
 const readerAst: ReaderAst<Mutation__ReviseBlog__param> = [
   {
@@ -18,11 +19,11 @@ const readerAst: ReaderAst<Mutation__ReviseBlog__param> = [
     isUpdatable: false,
     selections: [
       {
-        kind: "Scalar",
-        fieldName: "__typename",
-        alias: null,
+        kind: "Resolver",
+        alias: "BlogRevisionsSidebar",
         arguments: null,
-        isUpdatable: false,
+        readerArtifact: BfOrganization__BlogRevisionsSidebar__resolver_reader,
+        usedRefetchQueries: [],
       },
     ],
   },

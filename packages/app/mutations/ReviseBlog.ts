@@ -5,7 +5,7 @@ const logger = getLogger(import.meta);
 export const ReviseBlogMutation = iso(`
   field Mutation.ReviseBlog($blogPost: String!) {
     reviseBlog(blogPost: $blogPost){
-      __typename
+      BlogRevisionsSidebar
     }
   }
 `)(function ReviseBlog({ data }) {

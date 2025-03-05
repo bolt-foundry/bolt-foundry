@@ -176,7 +176,7 @@ export const makeTweetsMutation = mutationField("makeTweets", {
   args: {
     tweet: nonNull(stringArg()),
   },
-  type: "Creation",
+  type: graphqlBfOrganizationType,
   resolve: async (_, { tweet }, ctx) => {
     const org = await ctx.findOrganizationForCurrentViewer();
     if (!org) {
@@ -188,7 +188,7 @@ export const makeTweetsMutation = mutationField("makeTweets", {
       creation: response,
     };
     await org.save();
-    return response;
+    return org.toGraphql();
   },
 });
 
@@ -196,7 +196,7 @@ export const reviseBlogMutation = mutationField("reviseBlog", {
   args: {
     blogPost: nonNull(stringArg()),
   },
-  type: "Creation",
+  type: graphqlBfOrganizationType,
   resolve: async (_, { blogPost }, ctx) => {
     const org = await ctx.findOrganizationForCurrentViewer();
     if (!org) {
@@ -211,6 +211,6 @@ export const reviseBlogMutation = mutationField("reviseBlog", {
       creation: response,
     };
     await org.save();
-    return response;
+    return org.toGraphql();
   },
 });
