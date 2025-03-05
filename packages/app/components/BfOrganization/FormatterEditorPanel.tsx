@@ -5,11 +5,18 @@ import { useState } from "react";
 import { useMutation } from "packages/app/hooks/isographPrototypes/useMutation.tsx";
 import reviseBlogMutation from "packages/app/__generated__/__isograph/Mutation/ReviseBlog/entrypoint.ts";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
+import { BfDsCopyButton } from "packages/bfDs/components/BfDsCopyButton.tsx";
 const logger = getLogger(import.meta);
 
 export const FormatterEditorPanel = iso(`
   field BfOrganization.FormatterEditorPanel @component {
     __typename
+    creation {
+      draftBlog
+      revisions {
+        __typename
+      }
+    }
   }
 `)(
   function FormatterEditorPanel(
@@ -17,7 +24,7 @@ export const FormatterEditorPanel = iso(`
   ) {
     logger.info("FormatterEditorPanel", data.__typename);
     const [isInFlight, setIsInFlight] = useState(false);
-    const [blogPost, setBlogPost] = useState("");
+    const [blogPost, setBlogPost] = useState(data?.creation?.draftBlog ?? "");
     const { commit } = useMutation(reviseBlogMutation);
 
     const fullEditorStyle = {
@@ -39,9 +46,10 @@ export const FormatterEditorPanel = iso(`
           placeholder="TODO: Markdown editor"
           xstyle={fullEditorStyle}
         />
-        <div className="selfAlignEnd">
+        <div className="editor-actions flexRow gapMedium selfAlignEnd">
+          <BfDsCopyButton kind="outlineDark" textToCopy={blogPost} />
           <BfDsButton
-            kind="primary"
+            kind={data?.creation?.revisions ? "secondary" : "primary"}
             text="Get suggestions"
             onClick={() => {
               setIsInFlight(true);

@@ -208,9 +208,9 @@ export class BfNode<
     );
     logger.debug(
       `Edge query metadataQuery:`,
-      JSON.stringify(metadataQuery, null, 2),
+      metadataQuery,
     );
-    logger.debug(`Edge query propsQuery:`, JSON.stringify(propsQuery, null, 2));
+    logger.debug(`Edge query propsQuery:`, propsQuery);
     logger.debug(
       `Related edge class: ${this.relatedEdge}, derived edge name: ${relatedEdgeName}`,
     );
@@ -226,7 +226,7 @@ export class BfNode<
       );
       logger.debug(
         `All ${relatedEdgeName} edges in system:`,
-        JSON.stringify(createEdgeLog.slice(0, 5), null, 2),
+        createEdgeLog.slice(0, 5),
       );
     } catch (error) {
       logger.error(`Error looking up all edges:`, error);
@@ -262,7 +262,7 @@ export class BfNode<
       if (allEdgesFromSource.length > 0) {
         logger.debug(
           `Edge exists with source ID but not with props filter. First edge:`,
-          JSON.stringify(allEdgesFromSource[0], null, 2),
+          allEdgesFromSource[0],
         );
       }
 

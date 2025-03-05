@@ -2,7 +2,7 @@ import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 import { SubpageHeaderTitle } from "packages/app/components/Header/SubpageHeaderTitle.tsx";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 import { useState } from "react";
-import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
+// import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 
 export const FormatterSidebar = iso(`
   field BfOrganization.FormatterSidebar @component {
@@ -22,7 +22,7 @@ export const FormatterSidebar = iso(`
   function FormatterSidebar(
     { data },
   ) {
-    const { showModal } = useBfDs();
+    // const { showModal } = useBfDs();
     const [showVerboseVoice, setShowVerboseVoice] = useState(false);
 
     return (
@@ -42,12 +42,14 @@ export const FormatterSidebar = iso(`
           <div>
             <div className="instructions-header">
               <div className="flex1">Style</div>
-              <BfDsButton
+              {
+                /* <BfDsButton
                 kind="overlay"
                 iconLeft="pencil"
                 onClick={() => showModal("TODO: voice editor")}
                 size="medium"
-              />
+              /> */
+              }
               <BfDsButton
                 kind="overlay"
                 iconLeft={showVerboseVoice ? "arrowLeft" : "arrowDown"}

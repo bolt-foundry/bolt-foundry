@@ -2,7 +2,7 @@ import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 import { SubpageHeaderTitle } from "packages/app/components/Header/SubpageHeaderTitle.tsx";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 import { useState } from "react";
-import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
+// import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import { useRouter } from "packages/app/contexts/RouterContext.tsx";
 
 const steps = [
@@ -32,7 +32,7 @@ export const Sidebar = iso(`
     const routerProps = useRouter();
     const { currentPath, routeParams } = routerProps;
     const { researchSlug } = routeParams;
-    const { showModal } = useBfDs();
+    // const { showModal } = useBfDs();
     const [showVerboseVoice, setShowVerboseVoice] = useState(false);
     const showSteps = false;
     let currentStep = researchSlug ? 2 : 1;
@@ -57,12 +57,14 @@ export const Sidebar = iso(`
           <div>
             <div className="instructions-header">
               <div className="flex1">Style</div>
-              <BfDsButton
+              {
+                /* <BfDsButton
                 kind="overlay"
                 iconLeft="pencil"
                 onClick={() => showModal("TODO: voice editor")}
                 size="medium"
-              />
+              /> */
+              }
               <BfDsButton
                 kind="overlay"
                 iconLeft={showVerboseVoice ? "arrowLeft" : "arrowDown"}

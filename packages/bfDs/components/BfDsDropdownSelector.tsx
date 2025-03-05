@@ -1,9 +1,9 @@
 import * as React from "react";
 import type {
   BfDsTooltipJustification,
-  BfDsTooltipMenu,
   BfDsTooltipPosition,
 } from "packages/bfDs/components/BfDsTooltip.tsx";
+import type { BfDsTooltipMenuType } from "packages/bfDs/components/BfDsTooltipMenu.tsx";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 const { useEffect, useState } = React;
 
@@ -34,7 +34,7 @@ export function BfDsDropdownSelector(
     testId,
   }: Props,
 ) {
-  const [menu, setMenu] = useState<Array<BfDsTooltipMenu>>([]);
+  const [menu, setMenu] = useState<Array<BfDsTooltipMenuType>>([]);
 
   useEffect(() => {
     const newMenu = Object.entries(options).map(([option, optionValue]) => {
