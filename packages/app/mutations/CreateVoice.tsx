@@ -4,7 +4,7 @@ const logger = getLogger(import.meta);
 
 export const CreateVoiceMutation = iso(`
   field Mutation.CreateVoice($handle: String!) {
-    createVoiceAgain(handle: $handle){
+    createVoice(handle: $handle){
       identity {
         EditIdentity
       }

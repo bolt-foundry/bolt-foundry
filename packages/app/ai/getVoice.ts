@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { getLogger } from "packages/logger.ts";
 import { isValidJSON } from "lib/jsonUtils.ts";
-const _logger = getLogger(import.meta);
+const logger = getLogger(import.meta);
 
 const Schema = z.object({
   voiceSummary: z.string().describe(
@@ -70,6 +70,5 @@ export async function getVoice(
   if (isValidJSON(choiceContent)) {
     responseObject = JSON.parse(choiceContent);
   }
-
   return responseObject;
 }

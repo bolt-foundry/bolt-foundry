@@ -126,31 +126,6 @@ export const createVoiceMutation = mutationField("createVoice", {
   args: {
     handle: nonNull(stringArg()),
   },
-  type: "Voice",
-  resolve: async (_, { handle }, ctx) => {
-    const org = await ctx.findOrganizationForCurrentViewer();
-    if (!org) {
-      throw new Error("No organization found");
-    }
-    const voiceResponse = await getVoice(handle);
-    org.props = {
-      ...org.props,
-      identity: {
-        twitter: {
-          handle,
-        },
-        voice: voiceResponse,
-      },
-    };
-    await org.save();
-    return voiceResponse;
-  },
-});
-
-export const otherCreateVoiceMutation = mutationField("createVoiceAgain", {
-  args: {
-    handle: nonNull(stringArg()),
-  },
   type: graphqlBfOrganizationType,
   resolve: async (_, { handle }, ctx) => {
     const org = await ctx.findOrganizationForCurrentViewer();
