@@ -147,11 +147,36 @@ export const createVoiceMutation = mutationField("createVoice", {
   },
 });
 
+export const otherCreateVoiceMutation = mutationField("createVoiceAgain", {
+  args: {
+    handle: nonNull(stringArg()),
+  },
+  type: graphqlBfOrganizationType,
+  resolve: async (_, { handle }, ctx) => {
+    const org = await ctx.findOrganizationForCurrentViewer();
+    if (!org) {
+      throw new Error("No organization found");
+    }
+    const voiceResponse = await getVoice(handle);
+    org.props = {
+      ...org.props,
+      identity: {
+        twitter: {
+          handle,
+        },
+        voice: voiceResponse,
+      },
+    };
+    await org.save();
+    return org.toGraphql();
+  },
+});
+
 export const makeTweetsMutation = mutationField("makeTweets", {
   args: {
     tweet: nonNull(stringArg()),
   },
-  type: "Creation",
+  type: graphqlBfOrganizationType,
   resolve: async (_, { tweet }, ctx) => {
     const org = await ctx.findOrganizationForCurrentViewer();
     if (!org) {
@@ -163,7 +188,7 @@ export const makeTweetsMutation = mutationField("makeTweets", {
       creation: response,
     };
     await org.save();
-    return response;
+    return org.toGraphql();
   },
 });
 
@@ -171,7 +196,7 @@ export const reviseBlogMutation = mutationField("reviseBlog", {
   args: {
     blogPost: nonNull(stringArg()),
   },
-  type: "Creation",
+  type: graphqlBfOrganizationType,
   resolve: async (_, { blogPost }, ctx) => {
     const org = await ctx.findOrganizationForCurrentViewer();
     if (!org) {
@@ -186,6 +211,6 @@ export const reviseBlogMutation = mutationField("reviseBlog", {
       creation: response,
     };
     await org.save();
-    return response;
+    return org.toGraphql();
   },
 });

@@ -27,9 +27,11 @@ export const EntrypointTwitterIdeatorVoice = iso(`
     const showZip = false;
     const logger = getLogger(import.meta);
 
-    const handleSubmit = () => {
+    // @ts-expect-error k
+    const handleSubmit = (e) => {
       setError(null);
       setIsInFlight(true);
+      e.preventDefault();
       commit({ handle: handle }, {
         onError: () => {
           setError("An error occurred.");

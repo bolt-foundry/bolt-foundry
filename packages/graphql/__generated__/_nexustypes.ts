@@ -307,13 +307,14 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     checkEmail: boolean | null; // Boolean
     createVoice: NexusGenRootTypes['Voice'] | null; // Voice
+    createVoiceAgain: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     getLoginOptions: NexusGenScalars['JSONString'] | null; // JSONString
     login: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginAsDemoPerson: NexusGenRootTypes['BfCurrentViewerLoggedIn'] | null; // BfCurrentViewerLoggedIn
-    makeTweets: NexusGenRootTypes['Creation'] | null; // Creation
+    makeTweets: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     register: NexusGenRootTypes['BfCurrentViewerLoggedIn'] | null; // BfCurrentViewerLoggedIn
     registrationOptions: NexusGenScalars['JSONString'] | null; // JSONString
-    reviseBlog: NexusGenRootTypes['Creation'] | null; // Creation
+    reviseBlog: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     submitYcForm: NexusGenRootTypes['YCRecommendations'] | null; // YCRecommendations
   }
   PageInfo: { // field return type
@@ -492,13 +493,14 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     checkEmail: 'Boolean'
     createVoice: 'Voice'
+    createVoiceAgain: 'BfOrganization'
     getLoginOptions: 'JSONString'
     login: 'BfCurrentViewer'
     loginAsDemoPerson: 'BfCurrentViewerLoggedIn'
-    makeTweets: 'Creation'
+    makeTweets: 'BfOrganization'
     register: 'BfCurrentViewerLoggedIn'
     registrationOptions: 'JSONString'
-    reviseBlog: 'Creation'
+    reviseBlog: 'BfOrganization'
     submitYcForm: 'YCRecommendations'
   }
   PageInfo: { // field return type name
@@ -615,6 +617,9 @@ export interface NexusGenArgTypes {
       email: string; // String!
     }
     createVoice: { // args
+      handle: string; // String!
+    }
+    createVoiceAgain: { // args
       handle: string; // String!
     }
     getLoginOptions: { // args

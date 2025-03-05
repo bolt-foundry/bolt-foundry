@@ -11,7 +11,7 @@ Content Foundry is an open-source platform that helps creators tell compelling
 stories across all platforms. We provide an end-to-end solution that guides you
 through the entire content creation lifecycle with our five pillars:
 
-### Personas
+### Identity
 
 Take anecdotes, inspirations, ideas, user research, sales calls, and whatever
 information you have that relates to your brand and put it here. This serves as
@@ -45,7 +45,7 @@ We're not there yet, but here's what we do have.
 ### Replit-first Developer Experience
 
 The best way to get started with Content Foundry is to
-[head to our Replit app](https://replit.com/t/bolt-foundry/repls/Content-Foundry/view).
+[head to our Replit project](https://replit.com/t/bolt-foundry/repls/Content-Foundry/view).
 
 From there, you can fork (they call it remix now) our app into your own Replit
 account.
@@ -61,19 +61,20 @@ If you prefer to work locally, you'll need:
 Clone the repository, then run:
 
 ```bash
-# Install dependencies
-deno install
-
-# If you have Nix installed (recommended)
-bff nix  # Build the Nix environment
-
 # Start development tools
 bff devTools
 ```
 
+This will start various tools including:
+
+- Sapling web interface (port 3011)
+- Jupyter notebook (port 8888)
+- Tools web interface (port 9999)
+
 #### Dependencies
 
-We use Deno 2's built-in dependency management with `deno.jsonc`:
+Content Foundry uses Deno 2's built-in dependency management with both JSR and
+npm packages:
 
 ```bash
 # Add a dependency from JSR (JavaScript Registry)
@@ -83,13 +84,8 @@ deno add jsr:@std/http
 deno add npm:react
 ```
 
-Dependencies specified in `deno.jsonc` can be imported using bare specifiers:
-
-```typescript
-// In your code - use bare imports for dependencies mapped in deno.jsonc
-import { serve } from "@std/http";
-import { join } from "@std/path";
-```
+Our project uses both JSR packages and npm packages as specified in `deno.jsonc`
+and `package.json`.
 
 ### BFF (Bolt Foundry Friend)
 
@@ -97,12 +93,30 @@ Content Foundry uses BFF, our custom task runner to simplify common development
 tasks:
 
 - `bff build` - Build the project
-- `bff test` - Run tests
+- `bff test` or `bff t` - Run tests
+- `bff format` or `bff f` - Format code
 - `bff lint` - Lint code
-- `bff deploy` - Run CI checks and build for deployment
-- `bff devTools` - Start development tools (Sapling web interface, Jupyter
-  notebook, etc.)
+- `bff check` - Type check
+- `bff ci` - Run CI checks (format, lint, check, test, build)
+- `bff devTools` - Start development tools
 
 Run `bff help` to see all available commands.
 
-More details in our [quickstart guide](/content/documentation/quickstart.md).
+### Project Structure
+
+```
+.
+├── build/                      # Compiled application output
+├── content/                    # Content and documentation
+├── infra/                      # Infrastructure code
+├── lib/                        # Shared utility functions
+├── packages/                   # Project modules
+├── static/                     # Static assets and CSS
+```
+
+### Development Workflow
+
+For more details on contributing to Content Foundry, check out our
+[contributing guide](/content/documentation/community/contributing.md) and the
+[AGENT.md](AGENT.md) file which contains comprehensive documentation on our
+coding practices and workflows.

@@ -4,8 +4,10 @@ const logger = getLogger(import.meta);
 
 export const CreateVoiceMutation = iso(`
   field Mutation.CreateVoice($handle: String!) {
-    createVoice(handle: $handle){
-      __typename
+    createVoiceAgain(handle: $handle){
+      identity {
+        EditIdentity
+      }
     }
   }
 `)(function CreateVoice({ data }) {
