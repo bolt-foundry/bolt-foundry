@@ -202,7 +202,6 @@
   min-width: 250px;
   border-left: 1px solid var(--border);
   height: 100%;
-  padding: 20px;
   box-sizing: border-box;
   overflow-y: auto;
 }
@@ -628,18 +627,14 @@
   border: 1px solid var(--border);
 }
 .revisions-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 250px;
+  max-width: 300px;
 }
 
-.revision-title {
+.revision-item-title {
   font-weight: bold;
-  cursor: pointer;
 }
 
-.revision-title.done {
+.revision-item-title.done {
   color: var(--textSecondary);
 }
 
