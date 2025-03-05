@@ -1,8 +1,9 @@
 import { BfContentCollection } from "packages/bfDb/models/BfContentCollection.ts";
-import { objectType } from "nexus";
+import { idArg, nonNull, objectType } from "nexus";
 import { graphqlBfNode } from "packages/graphql/types/graphqlBfNode.ts";
 import { getLogger } from "packages/logger.ts";
 import { toBfGid } from "packages/bfDb/classes/BfNodeIds.ts";
+import { connectionFromArray } from "graphql-relay";
 
 const _logger = getLogger(import.meta);
 
@@ -26,22 +27,31 @@ export const graphqlBfContentCollectionType = objectType({
     t.implements(graphqlBfNode);
     t.string("title");
     t.string("description");
-    t.list.field("items", {
-      type: "BfContentItem",
-      resolve: async (parent, _args, ctx) => {
-        // Get the collection by parent ID using ctx
+    t.field("item", {
+      type: graphqlBfContentItemType,
+      args: {
+        id: nonNull(idArg()),
+      }
+    })
+    t.connectionField("items", {
+      type: graphqlBfContentItemType,
+      resolve: async (parent, args, ctx) => {
         const collection = await ctx.findX(
           BfContentCollection,
           toBfGid(parent.id),
         );
+        const examplePost = {
+          id: "example",
+          title: "Example Post",
+          body: "This is an example post",
+          slug: "example-post",
+          author: "Example Author",
+          summary: "This is an example summary",
+          cta: "This is an example cta",
+          href: "/blog/example-post",
+        }
 
-        return collection.props.items.map((item) => {
-          return {
-            ...item,
-            id: "temporary",
-            __typename: "BfContentItem",
-          };
-        });
+        return connectionFromArray([examplePost], args);
       },
     });
   },

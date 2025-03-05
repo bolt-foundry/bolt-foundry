@@ -1,13 +1,15 @@
 import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 import { use } from "react";
 import { getLogger } from "packages/logger.ts";
-const _logger = getLogger(import.meta);
+const logger = getLogger(import.meta);
 
 const loadingPromises = new Map<string, Promise<React.FC>>();
 
 function getComponent(
   path: string,
 ): Promise<React.FC> {
+  logger.setLevel(logger.levels.DEBUG)
+  logger.debug(`getComponent(${path})`);
   if (loadingPromises.has(path)) {
     return loadingPromises.get(path)!;
   }
@@ -42,7 +44,10 @@ export const BlogPostListItem = iso(`
     href
   }
 `)(function BlogPostListItem({ data }, { showContent }) {
+  logger.setLevel(logger.levels.DEBUG)
   const contentElement = useContent(data.href, showContent);
+  logger.debug(contentElement, data, showContent)
+  logger.resetLevel();
   return (
     <>
       <a
