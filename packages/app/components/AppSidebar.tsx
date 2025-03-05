@@ -11,22 +11,22 @@ const sidebarRoutes = [
     name: "Formatter",
     rootPath: "formatter",
   },
-  {
-    name: "Tweet ideator",
-    rootPath: "twitter",
-  },
+  // {
+  //   name: "Tweet ideator",
+  //   rootPath: "twitter",
+  // },
   {
     name: "Blog",
     rootPath: "blog",
   },
-  {
-    name: "FCP subtitles",
-    rootPath: "fcp",
-  },
-  {
-    name: "UI",
-    rootPath: "ui",
-  },
+  // {
+  //   name: "FCP subtitles",
+  //   rootPath: "fcp",
+  // },
+  // {
+  //   name: "UI",
+  //   rootPath: "ui",
+  // },
 ];
 
 export function AppSidebar({ children }: React.PropsWithChildren) {
