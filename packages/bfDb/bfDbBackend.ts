@@ -12,18 +12,35 @@ export async function closeBackend(): Promise<void> {
   if (cachedBackend) {
     logger.debug("Closing database backend connection");
     try {
+      // First attempt to close all connections
       await cachedBackend.close();
 
       // Important: clear the cached backend reference after closing
+      const oldBackend = cachedBackend;
       cachedBackend = null;
       backendPromise = null;
 
-      // Add a small delay to ensure connections are fully closed
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // Add a longer delay to ensure connections are fully closed
+      // This is especially important for Postgres connections
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Force garbage collection of the backend if possible
+      if (oldBackend && typeof oldBackend === "object") {
+        // Clear any potential circular references
+        for (const key in oldBackend) {
+          if (Object.prototype.hasOwnProperty.call(oldBackend, key)) {
+            // @ts-ignore: Dynamically clearing properties
+            oldBackend[key] = null;
+          }
+        }
+      }
 
       logger.debug("Database backend connection closed successfully");
     } catch (error) {
       logger.error("Error closing database backend:", error);
+      // Still clear the cached backend even if there's an error
+      cachedBackend = null;
+      backendPromise = null;
       throw error;
     }
   } else {
