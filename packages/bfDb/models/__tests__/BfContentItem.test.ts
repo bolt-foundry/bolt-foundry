@@ -180,17 +180,12 @@ Content with partial frontmatter`;
       { role: "content-item" },
     );
 
-    // Sort items by title to ensure consistent order for testing
-    contentItems.sort((a, b) => 
-      (a.props.title || "").localeCompare(b.props.title || "")
-    );
-
     // Verify we have 3 content items
     assertEquals(contentItems.length, 3);
 
     // Test content with full frontmatter
     const fullItem = contentItems.find(item => item.props.title === "Full Frontmatter");
-    assertExists(fullItem);
+    assertExists(fullItem, "Should have a content item with title 'Full Frontmatter'");
     assertEquals(fullItem.props.author, "Test Author");
     assertEquals(fullItem.props.summary, "This is a test summary");
     assertEquals(fullItem.props.cta, "Read more");
@@ -199,7 +194,7 @@ Content with partial frontmatter`;
 
     // Test content with partial frontmatter
     const partialItem = contentItems.find(item => item.props.title === "Partial Frontmatter");
-    assertExists(partialItem);
+    assertExists(partialItem, "Should have a content item with title 'Partial Frontmatter'");
     assertEquals(partialItem.props.author, undefined);
     assertEquals(partialItem.props.summary, undefined);
     assertEquals(partialItem.props.slug, "partial-frontmatter");
@@ -207,7 +202,7 @@ Content with partial frontmatter`;
 
     // Test content without frontmatter
     const noFrontmatterItem = contentItems.find(item => item.props.title === "test3");
-    assertExists(noFrontmatterItem);
+    assertExists(noFrontmatterItem, "Should have a content item with title 'test3'");
     assertEquals(noFrontmatterItem.props.body.trim(), "Content without any frontmatter");
     assertEquals(noFrontmatterItem.props.slug, "test3");
   } finally {

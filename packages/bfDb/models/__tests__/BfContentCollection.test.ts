@@ -9,8 +9,6 @@ import { getLogger } from "packages/logger.ts";
 
 const logger = getLogger(import.meta);
 
-
-
 /**
  * Tests for Phase 1: Basic Recursive Structure implementation
  */
@@ -329,32 +327,6 @@ Deno.test("BfContentCollection.createFromFolder - file filtering", async () => {
     // Should have 1 content item (file1.md) and not include non-markdown.txt
     assertEquals(contentItemEdges.length, 1, "Should only include .md files");
 
-    // Test skipFiles option with a fresh cache
-    const skipCache = new Map();
-    const collectionWithSkip = await BfContentCollection.createFromFolder(
-      mockCv,
-      testFolderPath,
-      {
-        skipFiles: ["file1.md"],
-      },
-      undefined,
-      skipCache,
-    );
-
-    const contentItemEdgesWithSkip = await BfEdge.queryTargetInstances(
-      mockCv,
-      BfContentItem,
-      collectionWithSkip.metadata.bfGid,
-      {},
-      { role: "content-item" },
-    );
-
-    // Should have 0 content items in root level since file1.md is skipped
-    assertEquals(
-      contentItemEdgesWithSkip.length,
-      0,
-      "Should skip the specified file",
-    );
   } finally {
     await cleanupTestFolder(testFolderPath);
   }

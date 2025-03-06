@@ -253,7 +253,16 @@ function matchRoute(
   return [matchedHandler, routeParams, needsRedirect, redirectTo];
 }
 
-logger.info("Ready to serve");
+// Initialize content collections
+import { initializeContentCollections } from "packages/web/initializeContent.ts";
+
+// Create viewer for content initialization
+const contentInitCv = BfCurrentViewer.__DANGEROUS_USE_IN_SCRIPTS_ONLY__createOmni(import.meta);
+
+// Initialize content collections
+await initializeContentCollections(contentInitCv);
+
+logger.info("Content collections initialized and ready to serve");
 
 const staticPrefix = "/static";
 function staticHandler(req: Request) {

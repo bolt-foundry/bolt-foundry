@@ -4,6 +4,7 @@ import { graphqlBfNode } from "packages/graphql/types/graphqlBfNode.ts";
 import { getLogger } from "packages/logger.ts";
 import { toBfGid } from "packages/bfDb/classes/BfNodeIds.ts";
 import { connectionFromArray } from "graphql-relay";
+import { BfContentItem } from "packages/bfDb/models/BfContentItem.ts";
 
 const _logger = getLogger(import.meta);
 
@@ -33,25 +34,31 @@ export const graphqlBfContentCollectionType = objectType({
         id: nonNull(idArg()),
       },
     });
+    // Connection field for content items (direct children only in Phase 1)
     t.connectionField("items", {
       type: graphqlBfContentItemType,
       resolve: async (parent, args, ctx) => {
-        const _collection = await ctx.findX(
+        const collection = await ctx.findX(
           BfContentCollection,
           toBfGid(parent.id),
         );
-        const examplePost = {
-          id: "example",
-          title: "Example Post",
-          body: "This is an example post",
-          slug: "example-post",
-          author: "Example Author",
-          summary: "This is an example summary",
-          cta: "This is an example cta",
-          href: "/blog/example-post",
-        };
 
-        return connectionFromArray([examplePost], args);
+        return collection.queryTargetsConnectionForGraphql(BfContentItem, args);
+      },
+    });
+
+    // Connection field for child collections (direct children only in Phase 1)
+    t.connectionField("childCollections", {
+      type: "BfContentCollection",
+      resolve: async (parent, args, ctx) => {
+        const collection = await ctx.findX(
+          BfContentCollection,
+          toBfGid(parent.id),
+        );
+        return collection.queryTargetsConnectionForGraphql(
+          BfContentCollection,
+          args,
+        );
       },
     });
   },
