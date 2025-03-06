@@ -101,6 +101,7 @@ if (getConfigurationVariable("BF_ENV") === DeploymentEnvs.DEVELOPMENT) {
 const denoCompilationCommand = [
   "deno",
   "compile",
+  "--no-check",
   "--output=build/",
   ...includableDirectories.map((dir) => `--include=${dir}`),
   `--allow-net=${allowedNetworkDestionations.join(",")}`,
