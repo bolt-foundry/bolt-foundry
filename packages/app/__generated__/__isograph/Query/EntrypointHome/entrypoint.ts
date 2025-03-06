@@ -13,11 +13,13 @@ const queryText = 'query EntrypointHome  {\
       id,\
       __typename,\
       items {\
-        id,\
-        __typename,\
-        body,\
-        href,\
-        title,\
+        nodes {\
+          id,\
+          __typename,\
+          body,\
+          href,\
+          title,\
+        },\
       },\
     },\
   },\
@@ -72,32 +74,40 @@ const normalizationAst: NormalizationAst = {
               kind: "Linked",
               fieldName: "items",
               arguments: null,
-              concreteType: "BfContentItem",
+              concreteType: "BfContentItemConnection",
               selections: [
                 {
-                  kind: "Scalar",
-                  fieldName: "id",
+                  kind: "Linked",
+                  fieldName: "nodes",
                   arguments: null,
-                },
-                {
-                  kind: "Scalar",
-                  fieldName: "__typename",
-                  arguments: null,
-                },
-                {
-                  kind: "Scalar",
-                  fieldName: "body",
-                  arguments: null,
-                },
-                {
-                  kind: "Scalar",
-                  fieldName: "href",
-                  arguments: null,
-                },
-                {
-                  kind: "Scalar",
-                  fieldName: "title",
-                  arguments: null,
+                  concreteType: "BfContentItem",
+                  selections: [
+                    {
+                      kind: "Scalar",
+                      fieldName: "id",
+                      arguments: null,
+                    },
+                    {
+                      kind: "Scalar",
+                      fieldName: "__typename",
+                      arguments: null,
+                    },
+                    {
+                      kind: "Scalar",
+                      fieldName: "body",
+                      arguments: null,
+                    },
+                    {
+                      kind: "Scalar",
+                      fieldName: "href",
+                      arguments: null,
+                    },
+                    {
+                      kind: "Scalar",
+                      fieldName: "title",
+                      arguments: null,
+                    },
+                  ],
                 },
               ],
             },
