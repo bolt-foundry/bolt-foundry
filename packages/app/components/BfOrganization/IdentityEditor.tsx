@@ -64,13 +64,15 @@ export const EntrypointTwitterIdeatorVoice = iso(`
                   Paste your Twitter handle and we’ll get a feel for your
                   current voice.
                 </div>
-                <form onSubmit={handleSubmit}>
-                  <BfDsInput
-                    label="Twitter handle"
-                    placeholder="George_LeVitre"
-                    value={handle}
-                    onChange={(e) => setHandle(e.target.value)}
-                  />
+                <form onSubmit={handleSubmit} className="flexRow gapMedium">
+                  <div className="flex1">
+                    <BfDsInput
+                      label="Twitter handle"
+                      placeholder="George_LeVitre"
+                      value={handle}
+                      onChange={(e) => setHandle(e.target.value)}
+                    />
+                  </div>
                   {showZip && (
                     <>
                       <div className="line-separator-container">
@@ -91,14 +93,16 @@ export const EntrypointTwitterIdeatorVoice = iso(`
                       />
                     </>
                   )}
-                  <BfDsButton
-                    disabled={handle.length === 0 || isInFlight}
-                    kind="primary"
-                    type="submit"
-                    showSpinner={isInFlight}
-                    text="Submit"
-                    xstyle={{ alignSelf: "flex-end" }}
-                  />
+                  <div className="selfAlignEnd">
+                    <BfDsButton
+                      disabled={handle.length === 0 || isInFlight}
+                      kind="primary"
+                      type="submit"
+                      showSpinner={isInFlight}
+                      text="Submit"
+                      xstyle={{ alignSelf: "flex-end" }}
+                    />
+                  </div>
                 </form>
                 {error && (
                   <BfDsCallout kind="error" header="Error" body={error} />
