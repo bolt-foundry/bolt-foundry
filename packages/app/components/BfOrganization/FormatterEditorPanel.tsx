@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 import { getLogger } from "packages/logger.ts";
-import { BfDsTextArea } from "packages/bfDs/components/BfDsTextArea.tsx";
+import { BfDsTextAreaContentEditable } from "packages/bfDs/components/BfDsTextAreaContentEditable.tsx";
 import { useMutation } from "packages/app/hooks/isographPrototypes/useMutation.tsx";
 import reviseBlogMutation from "packages/app/__generated__/__isograph/Mutation/ReviseBlog/entrypoint.ts";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
@@ -46,7 +46,7 @@ export const FormatterEditorPanel = iso(`
 
     return (
       <div className="flex1 flexColumn">
-        <BfDsTextArea
+        <BfDsTextAreaContentEditable
           passedRef={textareaRef}
           onChange={(e) => {
             setBlogPost(e.target.value);
