@@ -5,7 +5,7 @@ import type {
 } from "packages/bfDb/classes/BfEdgeBase.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import type { BfMetadataEdge } from "packages/bfDb/coreModels/BfEdge.ts";
-import { BfNodeInMemory } from "packages/bfDb/classes/BfNodeInMemory.ts";
+import { BfNodeInMemory } from "packages/bfDb/coreModels/BfNodeInMemory.ts";
 import { withIsolatedDb } from "packages/bfDb/bfDb.ts";
 
 export function testBfEdgeBase<
