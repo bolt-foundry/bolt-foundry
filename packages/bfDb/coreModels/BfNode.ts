@@ -11,11 +11,14 @@ import { getLogger } from "packages/logger.ts";
 import {
   bfGetItem,
   bfPutItem,
+  bfQueryItemsForGraphQLConnection,
   bfQueryItemsUnified,
+  JSONValue,
 } from "packages/bfDb/bfDb.ts";
 import { BfErrorNodeNotFound } from "packages/bfDb/classes/BfErrorNode.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import type { BfEdgeBaseProps } from "packages/bfDb/classes/BfEdgeBase.ts";
+import { Connection, ConnectionArguments } from "graphql-relay";
 
 const logger = getLogger(import.meta);
 
@@ -288,5 +291,122 @@ export class BfNode<
     logger.debug(`Found ${targetNodes.length} target nodes`);
 
     return targetNodes as Array<InstanceType<TTargetClass>>;
+  }
+
+  override async queryTargetsConnectionForGraphql<
+    TTargetProps extends BfNodeBaseProps,
+    TTargetClass extends typeof BfNodeBase<TTargetProps>,
+  >(
+    TargetClass: TTargetClass,
+    args: ConnectionArguments,
+    props: Partial<TTargetProps> = {},
+    edgeProps: Partial<Record<string, JSONValue>> = {},
+    cache?: BfNodeCache,
+  ): Promise<
+    Connection<ReturnType<InstanceType<TTargetClass>["toGraphql"]>> & {
+      count: number;
+    }
+  > {
+    logger.debug(
+      `queryTargetsConnectionForGraphql: ${this.constructor.name} -> ${TargetClass.name}`,
+      {
+        sourceId: this.metadata.bfGid,
+        targetClass: TargetClass.name,
+        connectionArgs: args,
+        props,
+        edgeProps,
+      },
+    );
+
+    // Set up the metadata query for edges that connect from this node to targets
+    const metadataQuery = {
+      bfSid: this.metadata.bfGid,
+      bfTClassName: TargetClass.name,
+    };
+
+    // Build edge property query if any edge properties were specified
+    const propsQuery = Object.keys(edgeProps).length > 0 ? edgeProps : {};
+
+    // Get the related edge name for debugging
+    const relatedEdgeNameWithTs = this.relatedEdge.split("/").pop() as string;
+    const relatedEdgeName = relatedEdgeNameWithTs.replace(".ts", "");
+    logger.debug(
+      `Using edge class: ${relatedEdgeName} for connection query`,
+      metadataQuery,
+      propsQuery,
+    );
+
+    // Query for edges using bfQueryItemsForGraphQLConnection which handles cursor-based pagination
+    const connection = await bfQueryItemsForGraphQLConnection(
+      metadataQuery,
+      propsQuery,
+      args,
+      [], // We don't filter by specific bfGids here as we're using metadataQuery
+    );
+
+    // Enhanced logging for debugging pagination issues
+    logger.debug(`Connection pagination info:`, {
+      hasNextPage: connection.pageInfo.hasNextPage,
+      hasPreviousPage: connection.pageInfo.hasPreviousPage,
+      startCursor: connection.pageInfo.startCursor,
+      endCursor: connection.pageInfo.endCursor,
+      edgesCount: connection.edges.length,
+      args: args
+    });
+
+    logger.debug(`Connection query found ${connection.edges.length} edges`);
+
+    // Convert DB items to GraphQL objects
+    const graphqlEdges = await Promise.all(
+      connection.edges.map(async (edge) => {
+        // Get the target node from the edge
+        const targetDbItem = edge.node;
+        const targetId = targetDbItem.metadata.bfTid;
+
+        if (!targetId) {
+          logger.warn(`Edge ${edge.node.metadata.bfGid} missing target ID`);
+          return null;
+        }
+
+        // Try to get the target node from cache first
+        let targetNode = cache?.get(targetId) as
+          | InstanceType<TTargetClass>
+          | undefined;
+
+        // If not in cache, instantiate the target node
+        if (!targetNode) {
+          targetNode = await TargetClass.findX(
+            this.cv,
+            targetId,
+            cache,
+          ) as InstanceType<TTargetClass>;
+        }
+
+        if (!targetNode) {
+          logger.warn(`Could not find target node ${targetId}`);
+          return null;
+        }
+
+        // Return the GraphQL-formatted edge
+        return {
+          cursor: edge.cursor,
+          node: targetNode.toGraphql(),
+        };
+      }),
+    );
+
+    // Filter out any null edges (where target node couldn't be found)
+    const validEdges = graphqlEdges.filter((
+      edge,
+    ): edge is NonNullable<typeof edge> => edge !== null);
+
+    logger.debug(`Returning connection with ${validEdges.length} valid edges`);
+
+    // Return the connection with GraphQL-formatted nodes
+    return {
+      edges: validEdges,
+      pageInfo: connection.pageInfo,
+      count: connection.count,
+    };
   }
 }

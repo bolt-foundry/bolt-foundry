@@ -32,14 +32,15 @@ export interface DatabaseBackend {
     orderBy?: string,
   ): Promise<Array<DbItem<TProps>>>;
   queryItemsWithSizeLimit<TProps extends Props = Props>(
-    metadataToQuery: Partial<BfMetadataNode | BfMetadataEdge>,
-    propsToQuery?: Partial<TProps>,
+    metadataToQuery: Partial<BfDbMetadata>,
+    propsToQuery: Partial<TProps>,
     bfGids?: Array<string>,
     orderDirection?: "ASC" | "DESC",
     orderBy?: string,
     cursorValue?: number | string,
     maxSizeBytes?: number,
     batchSize?: number,
+    cursorComparisonOperator?: ">" | "<" | ">=" | "<=",
   ): Promise<Array<DbItem<TProps>>>;
   queryAncestorsByClassName<TProps extends Props = Props>(
     bfOid: string,

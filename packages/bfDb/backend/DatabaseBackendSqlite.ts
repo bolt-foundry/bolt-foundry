@@ -403,6 +403,7 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
     cursorValue?: number | string,
     maxSizeBytes: number = 10 * 1024 * 1024, // 10MB in bytes
     batchSize: number = 4,
+    cursorComparisonOperator?: ">" | "<" | ">=" | "<=",
   ): Promise<Array<DbItem<TProps>>> {
     return this.queryItemsUnified(
       metadataToQuery,
@@ -415,6 +416,7 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
         cursorValue,
         maxSizeBytes,
         batchSize,
+        cursorComparisonOperator,
       },
     );
   }
@@ -451,6 +453,7 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       batchSize?: number;
       totalLimit?: number;
       countOnly?: boolean;
+      cursorComparisonOperator?: ">" | "<" | ">=" | "<=";
     } = {},
   ): Promise<Array<DbItem<TProps>>> {
     const {
@@ -460,6 +463,7 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       batchSize = 4,
       totalLimit,
       countOnly = false,
+      cursorComparisonOperator,
     } = options;
 
     logger.debug({
@@ -472,6 +476,7 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       cursorValue,
       maxSizeBytes,
       batchSize,
+      cursorComparisonOperator,
     });
 
     const metadataConditions: string[] = [];
@@ -578,13 +583,10 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       // Add cursor condition if needed
       let cursorCondition = "";
       if (cursorValue !== undefined) {
-        if (orderDirection === "ASC") {
-          variables.push(cursorValue);
-          cursorCondition = ` AND ${orderBy} > ?`;
-        } else {
-          variables.push(cursorValue);
-          cursorCondition = ` AND ${orderBy} < ?`;
-        }
+        // Use the provided comparison operator or default based on direction
+        const operator = cursorComparisonOperator || (orderDirection === "ASC" ? ">" : "<");
+        variables.push(cursorValue);
+        cursorCondition = ` AND ${orderBy} ${operator} ?`;
       }
 
       const allConditions = [
