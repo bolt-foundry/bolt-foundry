@@ -11,11 +11,14 @@ import { getLogger } from "packages/logger.ts";
 import {
   bfGetItem,
   bfPutItem,
+  bfQueryItemsForGraphQLConnection,
   bfQueryItemsUnified,
 } from "packages/bfDb/bfDb.ts";
 import { BfErrorNodeNotFound } from "packages/bfDb/classes/BfErrorNode.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import type { BfEdgeBaseProps } from "packages/bfDb/classes/BfEdgeBase.ts";
+import { BfMetadataNode } from "packages/bfDb/coreModels/BfNode.ts";
+import type { Connection, ConnectionArguments } from "graphql-relay";
 
 const logger = getLogger(import.meta);
 
@@ -288,5 +291,91 @@ export class BfNode<
     logger.debug(`Found ${targetNodes.length} target nodes`);
 
     return targetNodes as Array<InstanceType<TTargetClass>>;
+  }
+
+  override async queryTargetsConnectionForGraphql<
+    TTargetProps extends BfNodeBaseProps,
+    TTargetClass extends typeof BfNodeBase<TTargetProps>,
+  >(
+    TargetClass: TTargetClass,
+    args: ConnectionArguments,
+    props: Partial<TTargetProps> = {},
+    edgeProps: Partial<TEdgeProps> = {},
+    cache?: BfNodeCache,
+  ): Promise<
+    Connection<ReturnType<InstanceType<TTargetClass>["toGraphql"]>> & {
+      count: number;
+    }
+  > {
+    logger.debug(
+      `queryTargetsConnectionForGraphql: ${this.constructor.name} -> ${TargetClass.name}`,
+      { sourceId: this.metadata.bfGid, targetClass: TargetClass.name, args },
+    );
+
+    // Build edge metadata query for relationships
+    const metadataQuery = {
+      bfSid: this.metadata.bfGid,
+      bfTClassName: TargetClass.name,
+    };
+
+    // Build props query from edgeProps if provided
+    const propsQuery = Object.keys(edgeProps).length > 0 ? edgeProps : {};
+
+    // Use bfQueryItemsForGraphQLConnection to handle cursor-based pagination efficiently at DB level
+    const connection = await bfQueryItemsForGraphQLConnection(
+      metadataQuery,
+      propsQuery,
+      args,
+      [], // No explicit bfGids filter needed as we're filtering by bfSid already
+    );
+
+    // Once we have the paginated edges from the database, we need to:
+    // 1. Get the target IDs from these edges
+    // 2. Query for the actual target node instances
+    // 3. Convert each node to its GraphQL representation
+    // 4. Structure everything in Relay connection format
+
+    // Extract target IDs from the edges
+    const targetIds = connection.edges.map(
+      (edge) => (edge.node.metadata.bfTid as BfGid)
+    );
+
+    // Query for target nodes
+    const targetNodes = await TargetClass.query(
+      this.cv,
+      { className: TargetClass.name },
+      props,
+      targetIds,
+      cache,
+    );
+
+    // Create a map of target nodes by ID for efficient lookup
+    const targetNodesMap = new Map(
+      targetNodes.map((node) => [node.metadata.bfGid, node]),
+    );
+
+    // Transform the connection to use actual node instances
+    const transformedEdges = connection.edges.map((edge) => {
+      const targetNode = targetNodesMap.get(
+        edge.node.metadata.bfTid ?? "" as BfGid,
+      );
+      if (!targetNode) {
+        logger.error(
+          `Target node with ID ${edge.node.metadata.bfTid} not found`,
+        );
+        return null;
+      }
+      return {
+        cursor: edge.cursor,
+        node: targetNode.toGraphql(),
+      };
+    }).filter((edge) => edge !== null);
+
+    // Return the connection with transformed edges
+    return {
+      edges: transformedEdges,
+      pageInfo: connection.pageInfo,
+      count: connection.count,
+    };
   }
 }
