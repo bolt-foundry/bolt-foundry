@@ -13,6 +13,7 @@ const allowedEnvironmentVariables = [
   "BF_ENV",
   "CI",
   "COLORTERM",
+  "DATABASE_BACKEND",
   "DATABASE_URL",
   "DEBUG",
   "DENO_TRACE_PERMISSIONS",

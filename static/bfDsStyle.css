@@ -328,6 +328,7 @@ li.breadcrumb-item:not(:first-of-type)::before {
 }
 .list.bottomSeparator .list-item {
   border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
 }
 .list.bottomSeparator .list-item:last-child {
   border-bottom: none;
@@ -355,22 +356,24 @@ li.breadcrumb-item:not(:first-of-type)::before {
 .list-item {
   padding: 6px 20px;
   position: relative;
-  border-radius: 8px;
-}
-.list-item.clickable {
-  cursor: pointer;
-}
-.list-item.clickable:hover {
-  background-color: var(--secondaryColor015);
-}
-.list-item.isHighlighted {
-  background-color: var(--secondaryColor030);
 }
 .list-item-row {
   display: flex;
   flex-direction: row;
   gap: 8px;
   align-items: center;
+  border-radius: 8px;
+  margin: -6px;
+  padding: 6px;
+}
+.list-item-row.clickable {
+  cursor: pointer;
+}
+.list-item-row.clickable:hover {
+  background-color: var(--secondaryColor015);
+}
+.list-item-row.isHighlighted {
+  background-color: var(--secondaryColor030);
 }
 .list-item-main {
   flex: 1;
@@ -388,6 +391,9 @@ li.breadcrumb-item:not(:first-of-type)::before {
   display: flex;
   flex-direction: row;
   gap: 4px;
+}
+.list-item-expanded {
+  margin-top: 12px;
 }
 
 .statusDot {

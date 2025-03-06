@@ -200,8 +200,7 @@ scalar JSONString
 
 type Mutation {
   checkEmail(email: String!): Boolean
-  createVoice(handle: String!): Voice
-  createVoiceAgain(handle: String!): BfOrganization
+  createVoice(handle: String!): BfOrganization
   getLoginOptions(email: String!): JSONString
   login(authResp: JSONString!, email: String!): BfCurrentViewer
   loginAsDemoPerson: BfCurrentViewerLoggedIn
