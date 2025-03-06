@@ -10,7 +10,6 @@ export const LoggedOutView = iso(`
   }
 `)(function LoggedOutView({ data }) {
   const shouldRenderDemoButton = useFeatureFlagEnabled("enable_demo_button");
-  const shouldRenderLoginForm = useFeatureFlagEnabled("enable_login_form");
   return (
     <div className="appPage flexCenter">
       <div className="appHeader">
@@ -24,9 +23,7 @@ export const LoggedOutView = iso(`
         </div>
       </div>
       <div className="loginBox">
-        <p>Applying to YC? Try out our YC application reviewer.</p>
         {shouldRenderDemoButton && <data.DemoButton />}
-        {shouldRenderLoginForm && <data.LoginAndRegisterForm />}
       </div>
     </div>
   );

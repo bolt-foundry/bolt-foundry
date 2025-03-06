@@ -32,44 +32,51 @@ export const FormatterSidebar = iso(`
             Formatter
           </SubpageHeaderTitle>
         </div>
-        <div className="user-card">
-          <div>
-            <div className="bold">X user</div>
-            <div>@{data.identity?.twitter?.handle}</div>
+        <div className="flex1">
+          <div className="user-card">
+            <div>
+              <div className="bold">X user</div>
+              <div>@{data.identity?.twitter?.handle}</div>
+            </div>
           </div>
-        </div>
-        <div className="flexColumn instructions">
-          <div>
-            <div className="instructions-header">
-              <div className="flex1">Style</div>
-              {
-                /* <BfDsButton
+          <div className="flexColumn instructions">
+            <div>
+              <div className="instructions-header">
+                <div className="flex1">Style</div>
+                {
+                  /* <BfDsButton
                 kind="overlay"
                 iconLeft="pencil"
                 onClick={() => showModal("TODO: voice editor")}
                 size="medium"
               /> */
-              }
-              <BfDsButton
-                kind="overlay"
-                iconLeft={showVerboseVoice ? "arrowLeft" : "arrowDown"}
-                onClick={() => setShowVerboseVoice(!showVerboseVoice)}
-                size="medium"
-              />
+                }
+                <BfDsButton
+                  kind="overlay"
+                  iconLeft={showVerboseVoice ? "arrowLeft" : "arrowDown"}
+                  onClick={() => setShowVerboseVoice(!showVerboseVoice)}
+                  size="medium"
+                />
+              </div>
+              {showVerboseVoice
+                ? (
+                  <div>
+                    {data.identity?.voice?.voice}
+                  </div>
+                )
+                : (
+                  <div>
+                    {data.identity?.voice?.voiceSummary}
+                  </div>
+                )}
             </div>
-            {showVerboseVoice
-              ? (
-                <div>
-                  {data.identity?.voice?.voice}
-                </div>
-              )
-              : (
-                <div>
-                  {data.identity?.voice?.voiceSummary}
-                </div>
-              )}
           </div>
         </div>
+        <BfDsButton
+          kind="overlay"
+          text="Logout"
+          onClick={() => globalThis.location.pathname = "/logout"}
+        />
       </div>
     );
   },
