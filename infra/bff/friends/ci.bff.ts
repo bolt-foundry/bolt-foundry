@@ -285,7 +285,22 @@ async function runTestStep(useGithub: boolean): Promise<number> {
 }
 
 // ----------------------------------------------------------------------------
-// 5. Install step
+// 5. Type check step
+// ----------------------------------------------------------------------------
+
+async function runTypecheckStep(useGithub: boolean): Promise<number> {
+  logger.info("Running deno check for type checking");
+  const { code } = await runShellCommandWithOutput(
+    ["deno", "check", "packages/**/*.ts", "packages/**/*.tsx"],
+    {},
+    /* useSpinner */ true,
+    /* silent */ useGithub,
+  );
+  return code;
+}
+
+// ----------------------------------------------------------------------------
+// 6. Install step
 // ----------------------------------------------------------------------------
 
 async function runInstallStep(useGithub: boolean): Promise<number> {
@@ -324,8 +339,12 @@ async function ciCommand(options: string[]) {
   // 5) Format check
   const fmtResult = await runFormatStep(useGithub);
 
+  // 6) Type check
+  const typecheckResult = await runTypecheckStep(useGithub);
+
   const hasErrors = Boolean(
-    installResult || buildResult || lintResult || testResult || fmtResult,
+    installResult || buildResult || lintResult || testResult || fmtResult ||
+      typecheckResult,
   );
 
   logger.info("\n📊 CI Checks Summary:");
@@ -334,6 +353,7 @@ async function ciCommand(options: string[]) {
   logger.info(`Lint:      ${lintResult === 0 ? "✅" : "❌"}`);
   logger.info(`Test:      ${testResult === 0 ? "✅" : "❌"}`);
   logger.info(`Format:    ${fmtResult === 0 ? "✅" : "❌"}`);
+  logger.info(`TypeCheck: ${typecheckResult === 0 ? "✅" : "❌"}`);
 
   if (hasErrors) {
     logCI.error("CI checks failed");
