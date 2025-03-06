@@ -1,5 +1,5 @@
 import { testBfNodeBase } from "packages/bfDb/classes/__tests__/BfNodeBaseTest.ts";
-import { BfNodeInMemory } from "packages/bfDb/classes/BfNodeInMemory.ts";
+import { BfNodeInMemory } from "packages/bfDb/coreModels/BfNodeInMemory.ts";
 
 testBfNodeBase(BfNodeInMemory);
 import { withIsolatedDb } from "packages/bfDb/bfDb.ts";
