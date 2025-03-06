@@ -20,6 +20,10 @@ const queryText = 'query EntrypointHome  {\
         title,\
       },\
     },\
+    ... on BfCurrentViewerLoggedOut {\
+      id,\
+      __typename,\
+    },\
   },\
 }';
 
@@ -100,6 +104,22 @@ const normalizationAst: NormalizationAst = {
                   arguments: null,
                 },
               ],
+            },
+          ],
+        },
+        {
+          kind: "InlineFragment",
+          type: "BfCurrentViewerLoggedOut",
+          selections: [
+            {
+              kind: "Scalar",
+              fieldName: "id",
+              arguments: null,
+            },
+            {
+              kind: "Scalar",
+              fieldName: "__typename",
+              arguments: null,
             },
           ],
         },

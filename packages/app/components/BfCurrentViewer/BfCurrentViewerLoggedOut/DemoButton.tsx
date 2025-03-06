@@ -21,7 +21,7 @@ export const DemoButton = iso(`
     loginAsDemoPerson({}, {
       onComplete: (data) => {
         logger.debug("Got demo login response", data);
-        globalThis.location.reload();
+        globalThis.location.pathname = "/formatter/voice";
         setIsInFlight(false);
       },
     });
