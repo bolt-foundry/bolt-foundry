@@ -332,6 +332,23 @@ Key context methods:
 - `ctx.findCurrentUser()`: Get the current authenticated user
 - `ctx.login()`, `ctx.register()`: Authentication methods
 
+### Routing Patterns: IDs vs. Slugs
+
+A core principle in Content Foundry's URL and routing structure is: **"IDs are
+for computers, slugs are for humans"**. This means:
+
+- Internal operations like database lookups use system-generated IDs (`BfGid`
+  types)
+- User-facing URLs use human-readable slugs (e.g., `/blog/my-post-title`)
+- Dynamic routes should prefer slug parameters over ID parameters when intended
+  for end users
+- The system handles mapping between slugs and IDs internally
+
+This approach creates more memorable and SEO-friendly URLs while maintaining the
+performance and reliability of ID-based lookups in the backend. When designing
+new routes or features, consider whether the URL component is primarily for
+human or computer consumption and choose the appropriate format.
+
 ### Database Layer
 
 Content Foundry supports multiple database backends through an abstraction
@@ -743,8 +760,6 @@ trying to use string IDs directly with collection caches or database lookups:
 TS2345 [ERROR]: Argument of type 'string' is not assignable to parameter of type
 'BfGid'. Type 'string' is not assignable to type '{ readonly [__nominal__type]:
 "BfGid"; }'.
-```
-
 ##### Why This Happens
 
 Content Foundry uses a nominal typing system for IDs to prevent accidental
@@ -911,11 +926,11 @@ When developers send the message `!bfa help`, the assistant will list and
 explain all available protocols that can be used with the assistant.
 
 Example usage:
-
 ```
+
 !bfa help
-```
 
+````
 The assistant will:
 
 1. Provide a complete list of all available !bfa protocols
@@ -1225,7 +1240,7 @@ When writing tests, remember to use the `@std/assert` module for assertions:
 
 ```typescript
 import { assertEquals, assertThrows } from "@std/assert";
-```
+````
 
 # Common Tasks
 

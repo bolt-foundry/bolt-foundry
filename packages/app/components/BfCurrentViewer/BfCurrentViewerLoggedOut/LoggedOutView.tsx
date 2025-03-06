@@ -24,9 +24,9 @@ export const LoggedOutView = iso(`
         </div>
       </div>
       <div className="loginBox">
-        <p>Applying to YC? Try out our YC application reviewer.</p>
+        {/* <p>Applying to YC? Try out our YC application reviewer.</p> */}
         {shouldRenderDemoButton && <data.DemoButton />}
-        {shouldRenderLoginForm && <data.LoginAndRegisterForm />}
+        {/* {shouldRenderLoginForm && <data.LoginAndRegisterForm />} */}
       </div>
     </div>
   );

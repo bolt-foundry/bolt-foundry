@@ -9,6 +9,7 @@ import type {
   BfEdgeBase,
   BfEdgeBaseProps,
 } from "packages/bfDb/classes/BfEdgeBase.ts";
+import type { Connection, ConnectionArguments } from "graphql-relay";
 
 const logger = getLogger(import.meta);
 
@@ -288,6 +289,24 @@ export class BfNodeBase<
       edgeProps,
       cache,
     );
+  }
+
+  /**
+   * Query target nodes as a GraphQL connection with cursor-based pagination
+   * This method provides a standardized interface for implementing GraphQL connections
+   * following the Relay specification
+   */
+  queryTargetsConnectionForGraphql<
+    TTargetProps extends BfNodeBaseProps,
+    TTargetClass extends typeof BfNodeBase<TTargetProps>,
+  >(
+    _TargetClass: TTargetClass,
+    _args: ConnectionArguments,
+    _props: Partial<TTargetProps> = {},
+    _edgeProps: Partial<Record<string, JSONValue>> = {},
+    _cache?: BfNodeCache,
+  ): Promise<Connection<ReturnType<InstanceType<TTargetClass>["toGraphql"]>>> {
+    throw new BfErrorNotImplemented();
   }
 
   /** CALLBACKS */
