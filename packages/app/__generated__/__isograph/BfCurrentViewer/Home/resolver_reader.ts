@@ -2,6 +2,8 @@ import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@iso
 import { BfCurrentViewer__Home__param } from './param_type.ts';
 import { Home as resolver } from '../../../../components/BfCurrentViewer/Home.tsx';
 import BfContentCollection__ContentCollection__resolver_reader from '../../BfContentCollection/ContentCollection/resolver_reader.ts';
+import BfCurrentViewerLoggedOut__DemoButton__resolver_reader from '../../BfCurrentViewerLoggedOut/DemoButton/resolver_reader.ts';
+import BfCurrentViewerLoggedOut__asBfCurrentViewerLoggedOut__resolver_reader from '../../BfCurrentViewerLoggedOut/asBfCurrentViewerLoggedOut/resolver_reader.ts';
 
 const readerAst: ReaderAst<BfCurrentViewer__Home__param> = [
   {
@@ -29,6 +31,23 @@ const readerAst: ReaderAst<BfCurrentViewer__Home__param> = [
         alias: "ContentCollection",
         arguments: null,
         readerArtifact: BfContentCollection__ContentCollection__resolver_reader,
+        usedRefetchQueries: [],
+      },
+    ],
+  },
+  {
+    kind: "Linked",
+    fieldName: "asBfCurrentViewerLoggedOut",
+    alias: null,
+    arguments: null,
+    condition: BfCurrentViewerLoggedOut__asBfCurrentViewerLoggedOut__resolver_reader,
+    isUpdatable: false,
+    selections: [
+      {
+        kind: "Resolver",
+        alias: "DemoButton",
+        arguments: null,
+        readerArtifact: BfCurrentViewerLoggedOut__DemoButton__resolver_reader,
         usedRefetchQueries: [],
       },
     ],
