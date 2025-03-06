@@ -9,7 +9,7 @@ import type {
   BfEdgeBase,
   BfEdgeBaseProps,
 } from "packages/bfDb/classes/BfEdgeBase.ts";
-import { Connection, ConnectionArguments } from "graphql-relay";
+import type { Connection, ConnectionArguments } from "graphql-relay";
 
 const logger = getLogger(import.meta);
 
@@ -296,15 +296,15 @@ export class BfNodeBase<
    * This method provides a standardized interface for implementing GraphQL connections
    * following the Relay specification
    */
-  async queryTargetsConnectionForGraphql<
+  queryTargetsConnectionForGraphql<
     TTargetProps extends BfNodeBaseProps,
     TTargetClass extends typeof BfNodeBase<TTargetProps>,
   >(
-    TargetClass: TTargetClass,
-    args: ConnectionArguments,
-    props: Partial<TTargetProps> = {},
-    edgeProps: Partial<Record<string, JSONValue>> = {},
-    cache?: BfNodeCache,
+    _TargetClass: TTargetClass,
+    _args: ConnectionArguments,
+    _props: Partial<TTargetProps> = {},
+    _edgeProps: Partial<Record<string, JSONValue>> = {},
+    _cache?: BfNodeCache,
   ): Promise<Connection<ReturnType<InstanceType<TTargetClass>["toGraphql"]>>> {
     throw new BfErrorNotImplemented();
   }
