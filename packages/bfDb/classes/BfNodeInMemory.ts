@@ -10,7 +10,7 @@ import type { BfGid } from "packages/bfDb/classes/BfNodeIds.ts";
 import { getLogger } from "packages/logger.ts";
 import { connectionFromArray } from "graphql-relay";
 import type { Connection, ConnectionArguments } from "graphql-relay";
-import { BfEdgeBaseProps } from "packages/bfDb/classes/BfEdgeBase.ts";
+import type { BfEdgeBaseProps } from "packages/bfDb/classes/BfEdgeBase.ts";
 
 const logger = getLogger(import.meta);
 
