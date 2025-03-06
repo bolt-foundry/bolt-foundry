@@ -19,15 +19,39 @@ type Props = {
 };
 
 export function BlogRevision({ revision }: Props) {
-  const { highlightTextInEditor, unhighlightTextInEditor } = useEditor();
+  const {
+    highlightTextInEditor,
+    unhighlightTextInEditor,
+    replaceTextInEditor,
+  } = useEditor();
   const [originalTextExpanded, setOriginalTextExpanded] = useState(false);
   const [done, setDone] = useState(false);
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [showSuggestionExplanation, setShowSuggestionExplanation] = useState(
     false,
   );
+  const [searchText, setSearchText] = useState<string | null>(
+    revision?.original ?? null,
+  );
   const [hidden, setHidden] = useState(false);
   const listItemRef = useRef<BfDsListItemHandle>(null);
+
+  const handleHighlight = () => {
+    if (searchText) {
+      highlightTextInEditor(searchText);
+    }
+  };
+  const handleReplaceText = () => {
+    if (searchText) {
+      if (searchText === revision?.revision && revision?.original) {
+        replaceTextInEditor(searchText, revision.original);
+        setSearchText(revision.original);
+      } else if (revision?.revision) {
+        replaceTextInEditor(searchText, revision.revision);
+        setSearchText(revision.revision);
+      }
+    }
+  };
 
   const handleDone = () => {
     setDone(!done);
@@ -36,12 +60,11 @@ export function BlogRevision({ revision }: Props) {
       listItemRef.current?.setExpand(false);
     }
   };
+
   const handleExpanding = (newExpandingState?: boolean) => {
     // If the revision has an original text, highlight it in the editor
     if (newExpandingState) {
-      if (revision?.original) {
-        highlightTextInEditor(revision.original);
-      }
+      handleHighlight();
     } else {
       unhighlightTextInEditor();
     }
@@ -68,9 +91,7 @@ export function BlogRevision({ revision }: Props) {
         className="revision-item-original"
         onClick={() => {
           setOriginalTextExpanded(!originalTextExpanded);
-          if (revision?.original) {
-            highlightTextInEditor(revision.original);
-          }
+          handleHighlight();
         }}
       >
         <div className="revision-item-small-title">Original text</div>
@@ -99,11 +120,20 @@ export function BlogRevision({ revision }: Props) {
                   size="medium"
                 />
               </div>
-              <div className="flexRow selfAlignEnd">
+              <div className="flexRow gapMedium selfAlignEnd">
                 <BfDsCopyButton
-                  kind="filledSuccess"
+                  kind="outlineSuccess"
                   buttonText="Copy"
                   textToCopy={revision?.revision ?? ""}
+                />
+                <BfDsButton
+                  kind={searchText && searchText !== revision?.revision
+                    ? "success"
+                    : "secondary"}
+                  text={searchText && searchText !== revision?.revision
+                    ? "Replace"
+                    : "Revert"}
+                  onClick={handleReplaceText}
                 />
               </div>
             </div>
