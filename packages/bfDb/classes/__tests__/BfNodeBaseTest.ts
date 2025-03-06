@@ -129,59 +129,145 @@ export function testBfNodeBase(BfNodeClass: typeof BfNodeBase) {
             name: "Source Node for Query Test",
           },
         );
-
-        // Create a target node using createTargetNode pattern
-        const targetNode = await sourceNode.createTargetNode(
-          BfNodeClass,
-          {
-            name: "Target Node for Query Test",
-          },
-          undefined,
-          { role: "test-query-role" },
-        );
-
-        // Query for target nodes
-        const targetNodes = await sourceNode.queryTargets(
-          BfNodeClass,
-          {},
-          // edge props to query
-          { role: "test-query-role" },
-        );
-
-        // Verify query results
-        assertEquals(targetNodes.length, 1, "Should find one target node");
-        assertEquals(
-          targetNodes[0].metadata.bfGid,
-          targetNode.metadata.bfGid,
-          "Should find the correct target node",
-        );
-        assertEquals(
-          targetNodes[0].props.name,
-          "Target Node for Query Test",
-          "Target node should have correct name",
-        );
-
-        // Test querying with a cache
-        const cache = new Map();
-        const cachedTargets = await sourceNode.queryTargets(
-          BfNodeClass,
-          {},
-          { role: "test-query-role" },
-          cache,
-        );
-
-        // Verify cached query results
-        assertEquals(
-          cachedTargets.length,
-          1,
-          "Should find one target node with cache",
-        );
-        assertEquals(
-          cache.has(targetNode.metadata.bfGid),
-          true,
-          "Cache should contain the target node",
-        );
       });
+
+      await t.step(
+        "queryTargetsConnectionForGraphql should return a connection with pagination",
+        async () => {
+          // Create a source node
+          const sourceNode = await BfNodeClass.__DANGEROUS__createUnattached(
+            mockCv,
+            {
+              name: "Source Node for Connection Test",
+            },
+          );
+
+          // Create multiple target nodes and edges for testing pagination
+          const targetNodes = [];
+          for (let i = 0; i < 5; i++) {
+            const targetNode = await BfNodeClass.__DANGEROUS__createUnattached(
+              mockCv,
+              {
+                name: `Target Node ${i} for Connection Test`,
+              },
+            );
+            targetNodes.push(targetNode);
+
+            // Create an edge between source and target
+            await sourceNode.createTargetNode(
+              BfNodeClass,
+              { name: `Edge Target ${i}` },
+              undefined,
+              { role: `test-role-${i}` },
+            );
+          }
+
+          // Test with first/after pagination
+          const firstConnection = await sourceNode
+            .queryTargetsConnectionForGraphql(
+              BfNodeClass,
+              { first: 2 },
+            );
+
+          // Connection should have all expected properties
+          assertExists(firstConnection.edges, "Connection should have edges");
+          assertExists(
+            firstConnection.pageInfo,
+            "Connection should have pageInfo",
+          );
+          assertEquals(
+            firstConnection.edges.length,
+            2,
+            "Should return 2 edges when first: 2 is specified",
+          );
+          assertEquals(
+            firstConnection.pageInfo.hasNextPage,
+            true,
+            "Should have next page when more results exist",
+          );
+
+          // If we have edges, test cursor-based pagination
+          if (firstConnection.edges.length > 0) {
+            const cursor =
+              firstConnection.edges[firstConnection.edges.length - 1].cursor;
+
+            // Get the next page using the cursor
+            const secondConnection = await sourceNode
+              .queryTargetsConnectionForGraphql(
+                BfNodeClass,
+                { first: 2, after: cursor },
+              );
+
+            assertExists(
+              secondConnection.edges,
+              "Connection should have edges",
+            );
+            assertEquals(
+              secondConnection.edges.length,
+              2,
+              "Should return 2 more edges",
+            );
+            assertEquals(
+              secondConnection.edges[0].node.id !==
+                firstConnection.edges[0].node.id,
+              true,
+              "Second page should have different nodes than first page",
+            );
+          }
+        },
+      );
+
+      // Create a target node using createTargetNode pattern
+      const targetNode = await sourceNode.createTargetNode(
+        BfNodeClass,
+        {
+          name: "Target Node for Query Test",
+        },
+        undefined,
+        { role: "test-query-role" },
+      );
+
+      // Query for target nodes
+      const targetNodes = await sourceNode.queryTargets(
+        BfNodeClass,
+        {},
+        // edge props to query
+        { role: "test-query-role" },
+      );
+
+      // Verify query results
+      assertEquals(targetNodes.length, 1, "Should find one target node");
+      assertEquals(
+        targetNodes[0].metadata.bfGid,
+        targetNode.metadata.bfGid,
+        "Should find the correct target node",
+      );
+      assertEquals(
+        targetNodes[0].props.name,
+        "Target Node for Query Test",
+        "Target node should have correct name",
+      );
+
+      // Test querying with a cache
+      const cache = new Map();
+      const cachedTargets = await sourceNode.queryTargets(
+        BfNodeClass,
+        {},
+        { role: "test-query-role" },
+        cache,
+      );
+
+      // Verify cached query results
+      assertEquals(
+        cachedTargets.length,
+        1,
+        "Should find one target node with cache",
+      );
+      assertEquals(
+        cache.has(targetNode.metadata.bfGid),
+        true,
+        "Cache should contain the target node",
+      );
     });
   });
 }

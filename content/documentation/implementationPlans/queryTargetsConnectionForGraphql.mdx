@@ -1,0 +1,134 @@
+---
+title: "Implementation Plan: queryTargetsConnectionForGraphql"
+author: "Replit Assistant"
+summary: "Plan for adding a GraphQL connection query method to BfNodeBase"
+cta: "Read more"
+---
+
+# Implementation Plan: queryTargetsConnectionForGraphql for BfNodeBase
+
+## Overview
+
+This implementation plan outlines the approach for adding a
+`queryTargetsConnectionForGraphql` method to the `BfNodeBase` class, with
+concrete implementation in the `BfNode` class. This method will enable efficient
+GraphQL Relay-style connections for target nodes, providing consistent
+cursor-based pagination capabilities across the GraphQL API.
+
+## Background
+
+The Content Foundry platform currently has a `queryTargets` method in
+`BfNodeBase` that returns an array of target node instances. While this works
+for simple queries, it doesn't support the GraphQL Connection pattern which is
+essential for:
+
+1. Standardized pagination with cursor-based navigation
+   (first/after/last/before)
+2. Consistent edge data structure
+3. Connection metadata (count, pageInfo)
+
+Looking at existing code in `packages/bfDb/bfDb.ts`, we can see the
+`bfQueryItemsForGraphQLConnection` function which implements proper cursor-based
+pagination for GraphQL connections. This approach is more efficient than using
+`connectionFromArray` from graphql-relay, as it performs pagination at the
+database level rather than in memory.
+
+## Technical Design
+
+### Architecture
+
+The implementation will follow the BfNodeBase/BfNode pattern in the codebase:
+
+1. `BfNodeBase` will define the abstract method with a "not implemented" default
+2. `BfNode` will provide the concrete implementation using database-level
+   pagination
+
+### Method Signature in BfNodeBase
+
+```typescript
+async queryTargetsConnectionForGraphql<
+  TTargetProps extends BfNodeBaseProps,
+  TTargetClass extends typeof BfNodeBase<TTargetProps>,
+>(
+  TargetClass: TTargetClass,
+  args: ConnectionArguments,
+  props: Partial<TTargetProps> = {},
+  edgeProps: Partial<TEdgeProps> = {},
+  cache?: BfNodeCache,
+): Promise<Connection<ReturnType<InstanceType<TTargetClass>['toGraphql']>>> {
+  throw new BfErrorNotImplemented();
+}
+```
+
+### Implementation Approach in BfNode
+
+The implementation in BfNode will:
+
+1. Build metadata and props queries for the edge relationship
+2. Use `bfQueryItemsForGraphQLConnection` from bfDb.ts to get a cursor-based
+   paginated connection
+3. Map the returned database items to GraphQL-formatted target instances
+4. Return a properly structured connection object
+
+## Implementation Details
+
+### BfNodeBase Implementation (Abstract)
+
+The abstract base class will throw a "not implemented" error, consistent with
+other abstract methods.
+
+### BfNode Implementation (Concrete)
+
+The implementation will leverage the existing `bfQueryItemsForGraphQLConnection`
+function which handles cursor-based pagination at the database level. This will
+be more efficient than the initial approach of using `connectionFromArray` as it
+avoids retrieving all items before pagination.
+
+Key steps:
+
+1. Build edge metadata query with source ID and target class name
+2. Pass connection arguments directly to database layer
+3. Transform result nodes to their GraphQL representation
+4. Return structured connection object with count and pageInfo
+
+## Integration with GraphQL Schema
+
+This method will enable GraphQL schema types to define connection fields that
+follow the Relay connection specification. Resolvers will be able to call this
+method directly to implement connection fields.
+
+## Considerations
+
+1. **Performance**: Using cursor-based pagination at the database level is much
+   more efficient than retrieving all results first.
+
+2. **Edge Data**: The connection includes edge metadata, which allows passing
+   relationship data between nodes.
+
+3. **Cache Usage**: The implementation should properly use and update the node
+   cache.
+
+4. **Type Safety**: Ensure proper typing for GraphQL connections.
+
+## Testing Strategy
+
+1. Test the BfNodeBase implementation to ensure it throws the correct error
+2. Test the BfNode implementation with:
+   - Different pagination parameters (first, after, last, before)
+   - Various numbers of connected nodes
+   - Edge cases (empty results, invalid cursors)
+   - Cache functionality
+3. Integration tests with GraphQL resolvers
+
+## Testing Strategy
+
+1. Test with a mock in-memory implementation
+2. Test with different pagination parameters (first, after, last, before)
+3. Test edge cases (empty results, invalid cursors)
+4. Integration tests with GraphQL resolvers
+
+## Conclusion
+
+Adding `queryTargetsConnectionForGraphql` to `BfNodeBase` will standardize how
+we implement connections in our GraphQL API, making it easier to add pagination
+to new and existing queries while maintaining a consistent interface.
