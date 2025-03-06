@@ -335,28 +335,6 @@ class BfContentCollection extends BfNodeBase<BfContentCollectionProps> {
   }
 
   /**
-   * Find a content collection by slug
-   */
-  static async findBySlug(
-    cv: BfCurrentViewer,
-    slug: string,
-  ): Promise<BfContentCollection | null> {
-    logger.info(`Looking for collection with slug: ${slug}`);
-    const collectionsCache = await this.getCollectionsCache(cv);
-
-    for (const collection of collectionsCache.values()) {
-      logger.info(`Checking collection slug: ${collection.props.slug}`);
-      if (collection.props.slug === slug) {
-        logger.info(`Found collection with slug: ${slug}`);
-        return collection;
-      }
-    }
-
-    logger.info(`No collection found with slug: ${slug}`);
-    return null;
-  }
-
-  /**
    * Query all content collections
    */
   static override async query<
@@ -365,21 +343,6 @@ class BfContentCollection extends BfNodeBase<BfContentCollectionProps> {
   >(cv: BfCurrentViewer): Promise<Array<T>> {
     const collectionsCache = await this.getCollectionsCache(cv);
     return Array.from(collectionsCache.values()) as unknown as Array<T>;
-  }
-
-  /**
-   * Get content items for this collection
-   */
-  getContentItems(): BfContentItemProps[] {
-    return this.props.items || [];
-  }
-
-  /**
-   * Get a specific content item by slug
-   */
-  getContentItem(slug: string): BfContentItemProps | null {
-    const items = this.getContentItems();
-    return items.find((item) => item.slug === slug) || null;
   }
 
   override save() {
