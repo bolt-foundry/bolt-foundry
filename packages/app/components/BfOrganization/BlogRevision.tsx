@@ -19,11 +19,39 @@ type Props = {
 };
 
 export function BlogRevision({ revision }: Props) {
-  const { highlightTextInEditor, unhighlightTextInEditor } = useEditor();
+  const {
+    highlightTextInEditor,
+    unhighlightTextInEditor,
+    replaceTextInEditor,
+  } = useEditor();
+  const [originalTextExpanded, setOriginalTextExpanded] = useState(false);
   const [done, setDone] = useState(false);
   const [showSuggestion, setShowSuggestion] = useState(false);
+  const [showSuggestionExplanation, setShowSuggestionExplanation] = useState(
+    false,
+  );
+  const [searchText, setSearchText] = useState<string | null>(
+    revision?.original ?? null,
+  );
   const [hidden, setHidden] = useState(false);
   const listItemRef = useRef<BfDsListItemHandle>(null);
+
+  const handleHighlight = () => {
+    if (searchText) {
+      highlightTextInEditor(searchText);
+    }
+  };
+  const handleReplaceText = () => {
+    if (searchText) {
+      if (searchText === revision?.revision && revision?.original) {
+        replaceTextInEditor(searchText, revision.original);
+        setSearchText(revision.original);
+      } else if (revision?.revision) {
+        replaceTextInEditor(searchText, revision.revision);
+        setSearchText(revision.revision);
+      }
+    }
+  };
 
   const handleDone = () => {
     setDone(!done);
@@ -32,12 +60,11 @@ export function BlogRevision({ revision }: Props) {
       listItemRef.current?.setExpand(false);
     }
   };
+
   const handleExpanding = (newExpandingState?: boolean) => {
     // If the revision has an original text, highlight it in the editor
     if (newExpandingState) {
-      if (revision?.original) {
-        highlightTextInEditor(revision.original);
-      }
+      handleHighlight();
     } else {
       unhighlightTextInEditor();
     }
@@ -51,20 +78,85 @@ export function BlogRevision({ revision }: Props) {
       done,
     },
   ]);
+  const originalClasses = classnames([
+    "revision-item-original-text",
+    {
+      collapsed: !originalTextExpanded,
+    },
+  ]);
 
   const expandedContent = (
     <div className="revision-item">
       <div
-        className="original-text"
+        className="revision-item-original"
         onClick={() => {
-          if (revision?.original) {
-            highlightTextInEditor(revision.original);
-          }
+          setOriginalTextExpanded(!originalTextExpanded);
+          handleHighlight();
         }}
       >
-        {revision?.original}
+        <div className="revision-item-small-title">Original text</div>
+        <div className={originalClasses}>
+          {revision?.original}
+        </div>
       </div>
-      <div>{revision?.instructions}</div>
+      {showSuggestion
+        ? (
+          <div>
+            <div className="revision-item-subtitle">Suggestion</div>
+            <div className="revision-box">
+              {revision?.revision}
+            </div>
+            <div className="flexRow gapMedium">
+              <div className="flex1">
+                <BfDsButton
+                  iconLeft={showSuggestionExplanation
+                    ? "infoCircleSolid"
+                    : "infoCircle"}
+                  kind={showSuggestionExplanation
+                    ? "filledSecondary"
+                    : "overlay"}
+                  onClick={() =>
+                    setShowSuggestionExplanation(!showSuggestionExplanation)}
+                  size="medium"
+                />
+              </div>
+              <div className="flexRow gapMedium selfAlignEnd">
+                <BfDsCopyButton
+                  kind="outlineSuccess"
+                  buttonText="Copy"
+                  textToCopy={revision?.revision ?? ""}
+                />
+                <BfDsButton
+                  kind={searchText && searchText !== revision?.revision
+                    ? "success"
+                    : "secondary"}
+                  text={searchText && searchText !== revision?.revision
+                    ? "Replace"
+                    : "Revert"}
+                  onClick={handleReplaceText}
+                />
+              </div>
+            </div>
+            {showSuggestionExplanation && (
+              <div className="revision-item-explanation flexColumn">
+                <div className="suggestion-details-explanation-title">
+                  Why this is better
+                </div>
+                {revision?.explanation}
+              </div>
+            )}
+          </div>
+        )
+        : (
+          <div>
+            <div className="revision-item-subtitle">
+              How to make this better
+            </div>
+            <div className="revision-item-instruction">
+              {revision?.instructions}
+            </div>
+          </div>
+        )}
       <div className="flexRow alignItemsCenter">
         <div className="flexRow flex1" style={{ gap: "8px" }}>
           <BfDsButton
@@ -86,33 +178,6 @@ export function BlogRevision({ revision }: Props) {
           onClick={() => setShowSuggestion(!showSuggestion)}
         />
       </div>
-      {showSuggestion &&
-        (
-          <>
-            <div className="revision-box">
-              {revision?.revision}
-              <div
-                className="flexRow alignItemsCenter"
-                style={{ justifyContent: "space-between" }}
-              >
-                <div style={{ color: "var(--secondaryColor)" }}>
-                  Suggested change
-                </div>
-                <BfDsCopyButton
-                  kind="filledSuccess"
-                  buttonText="Copy"
-                  textToCopy={revision?.revision ?? ""}
-                />
-              </div>
-            </div>
-            <div className="flexColumn">
-              <div className="suggestion-details-explanation-title">
-                Why this is better
-              </div>
-              {revision?.explanation}
-            </div>
-          </>
-        )}
     </div>
   );
 

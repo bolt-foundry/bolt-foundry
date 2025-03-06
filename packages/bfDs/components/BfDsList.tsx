@@ -11,13 +11,32 @@ type Props = {
   defaultCollapsed?: boolean;
   header?: string;
   separator?: boolean;
+  mutuallyExclusive?: boolean;
 };
 
+// Context for handling mutually exclusive expanding
+export const ListItemExpandContext = React.createContext<{
+  mutuallyExclusive: boolean;
+  activeItem: string | null;
+  setActiveItem: (id: string | null) => void;
+}>({
+  mutuallyExclusive: false,
+  activeItem: null,
+  setActiveItem: () => {},
+});
+
 export function BfDsList(
-  { children, collapsible, defaultCollapsed, header, separator }:
-    React.PropsWithChildren<Props>,
+  {
+    children,
+    collapsible,
+    defaultCollapsed,
+    header,
+    separator,
+    mutuallyExclusive = false,
+  }: React.PropsWithChildren<Props>,
 ) {
   const [collapsed, setCollapsed] = React.useState(defaultCollapsed ?? false);
+  const [activeItem, setActiveItem] = React.useState<string | null>(null);
   if (collapsible && !header) {
     throw new BfError(
       "BfDsList: A header is required when collapsible is true.",
@@ -58,12 +77,23 @@ export function BfDsList(
           )}
         </div>
       )}
-      {showContent && children}
+      <ListItemExpandContext.Provider
+        value={{ mutuallyExclusive, activeItem, setActiveItem }}
+      >
+        {showContent && children}
+      </ListItemExpandContext.Provider>
     </div>
   );
 }
 
 export function Example() {
+  const expandStyle = {
+    border: "1px solid var(--border)",
+    borderRadius: 8,
+    padding: "8px 12px",
+    background: "var(--alwaysDark)",
+    color: "var(--alwaysLight)",
+  };
   return (
     <div className="flexColumn gapLarge">
       <BfDsList header="List header">
@@ -99,6 +129,27 @@ export function Example() {
         <BfDsListItem content="Item 1" />
         <BfDsListItem content="Item 2" />
         <BfDsListItem content="Item 3" />
+      </BfDsList>
+      <BfDsList
+        header="Mutually Exclusive Expanding"
+        mutuallyExclusive
+      >
+        <BfDsListItem
+          content="Expandable Item 1"
+          expandedContent={<div style={expandStyle}>Content for Item 1</div>}
+        />
+        <BfDsListItem
+          content="Expandable Item 2"
+          expandedContent={<div style={expandStyle}>Content for Item 2</div>}
+        />
+        <BfDsListItem
+          content="Expandable Item 3"
+          expandedContent={<div style={expandStyle}>Content for Item 3</div>}
+        />
+        <BfDsListItem
+          content="Expandable Item 4"
+          expandedContent={<div style={expandStyle}>Content for Item 4</div>}
+        />
       </BfDsList>
     </div>
   );

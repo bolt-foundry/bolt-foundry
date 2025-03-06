@@ -1,7 +1,7 @@
+import { useEffect, useState } from "react";
 import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 import { getLogger } from "packages/logger.ts";
 import { BfDsTextArea } from "packages/bfDs/components/BfDsTextArea.tsx";
-import { useState } from "react";
 import { useMutation } from "packages/app/hooks/isographPrototypes/useMutation.tsx";
 import reviseBlogMutation from "packages/app/__generated__/__isograph/Mutation/ReviseBlog/entrypoint.ts";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
@@ -25,9 +25,14 @@ export const FormatterEditorPanel = iso(`
   ) {
     logger.info("FormatterEditorPanel", data.__typename);
     const [isInFlight, setIsInFlight] = useState(false);
-    const [blogPost, setBlogPost] = useState(data?.creation?.draftBlog ?? "");
-    const { textareaRef } = useEditor();
+    const { blogPost, setBlogPost, textareaRef } = useEditor();
     const { commit } = useMutation(reviseBlogMutation);
+
+    useEffect(() => {
+      if (data?.creation?.draftBlog) {
+        setBlogPost(data?.creation?.draftBlog);
+      }
+    }, [data?.creation?.draftBlog]);
 
     const fullEditorStyle = {
       flex: 1,

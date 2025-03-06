@@ -21,7 +21,7 @@ export const BlogRevisionsSidebar = iso(`
     return (
       <div className="flexColumn right-side-bar">
         <div className="revisions-container">
-          <BfDsList separator>
+          <BfDsList separator mutuallyExclusive>
             {data?.creation?.revisions?.map((revision, index) => (
               <BlogRevision revision={revision} key={index} />
             ))}
