@@ -8,6 +8,9 @@ import {
 import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import type { BfGid } from "packages/bfDb/classes/BfNodeIds.ts";
 import { getLogger } from "packages/logger.ts";
+import { connectionFromArray } from "graphql-relay";
+import type { Connection, ConnectionArguments } from "graphql-relay";
+import { BfEdgeBaseProps } from "packages/bfDb/classes/BfEdgeBase.ts";
 
 const logger = getLogger(import.meta);
 
@@ -185,5 +188,33 @@ export class BfNodeInMemory<
    */
   static clearInMemoryNodes(): void {
     this.inMemoryNodes.clear();
+  }
+
+  /**
+   * Queries targets and returns a GraphQL connection
+   */
+  override async queryTargetsConnectionForGraphql<
+    TTargetProps extends BfNodeBaseProps,
+    TTargetClass extends typeof BfNodeBase<TTargetProps>,
+  >(
+    TargetClass: TTargetClass,
+    args: ConnectionArguments,
+    props: Partial<TTargetProps> = {},
+    edgeProps: Partial<BfEdgeBaseProps> = {},
+    cache?: BfNodeCache,
+  ): Promise<Connection<ReturnType<InstanceType<TTargetClass>['toGraphql']>>> {
+    // Query target nodes using the existing queryTargets method
+    const targets = await this.queryTargets(
+      TargetClass,
+      props,
+      edgeProps,
+      cache,
+    );
+    
+    // Convert nodes to their GraphQL representation
+    const graphqlNodes = targets.map(node => node.toGraphql());
+    
+    // Use connectionFromArray to create a GraphQL connection
+    return connectionFromArray(graphqlNodes, args) as Connection<ReturnType<InstanceType<TTargetClass>['toGraphql']>>;
   }
 }
