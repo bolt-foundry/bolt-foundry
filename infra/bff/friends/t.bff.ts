@@ -5,9 +5,14 @@ import { getLogger } from "packages/logger.ts";
 const logger = getLogger(import.meta);
 
 export async function tCommand(options: string[]): Promise<number> {
-  logger.info("Running tests via 't' command...");
+  logger.info("Running tests via 't' command with --no-check flag...");
 
-  // Simply pass all arguments to the test command
+  // Add --no-check flag by default if it's not already included
+  if (!options.includes("--no-check")) {
+    options = ["--no-check", ...options];
+  }
+
+  // Pass all arguments to the test command
   const result = await runShellCommand(["bff", "test", ...options]);
 
   return result;
