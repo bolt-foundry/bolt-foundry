@@ -20,18 +20,28 @@ const readerAst: ReaderAst<BfContentCollection__ContentCollection__param> = [
     isUpdatable: false,
     selections: [
       {
-        kind: "Resolver",
-        alias: "ContentItem",
-        arguments: null,
-        readerArtifact: BfContentItem__ContentItem__resolver_reader,
-        usedRefetchQueries: [],
-      },
-      {
-        kind: "Scalar",
-        fieldName: "id",
+        kind: "Linked",
+        fieldName: "nodes",
         alias: null,
         arguments: null,
+        condition: null,
         isUpdatable: false,
+        selections: [
+          {
+            kind: "Resolver",
+            alias: "ContentItem",
+            arguments: null,
+            readerArtifact: BfContentItem__ContentItem__resolver_reader,
+            usedRefetchQueries: [],
+          },
+          {
+            kind: "Scalar",
+            fieldName: "id",
+            alias: null,
+            arguments: null,
+            isUpdatable: false,
+          },
+        ],
       },
     ],
   },

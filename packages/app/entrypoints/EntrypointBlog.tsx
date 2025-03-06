@@ -3,10 +3,9 @@ import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 export const EntrypointBlog = iso(`
   field Query.EntrypointBlog {
     me {
-      blog {
-        name
+      contentCollection(slug: "blog") {
+        ContentCollection
       }
-      Blog
     }
   }
 `)(function EntrypointBlog({ data }) {
@@ -14,7 +13,7 @@ export const EntrypointBlog = iso(`
   const DefaultBody = () => "coming soon";
 
   return {
-    Body: data?.me?.Blog ?? DefaultBody,
+    Body: data?.me?.contentCollection?.ContentCollection ?? DefaultBody,
     title: data?.me?.blog?.name ?? title,
   };
 });
