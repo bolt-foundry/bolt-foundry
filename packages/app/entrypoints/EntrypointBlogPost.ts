@@ -4,15 +4,8 @@ import { getLogger } from "packages/logger.ts";
 const logger = getLogger(import.meta);
 
 export const EntrypointBlogPost = iso(`
-  field Query.EntrypointBlogPost($slug: ID) {
-    me {
-      blog {
-        post(id: $slug) {
-          __typename
-          BlogPostListItem
-        }
-      }
-    }
+  field Query.EntrypointBlogPost {
+    __typename
   }
 `)(function EntrypointBlogPost({ data }) {
   const Body = data?.me?.blog?.post?.BlogPostListItem ?? (() => "nope");
