@@ -155,6 +155,7 @@ export async function bfQueryItemsUnified<
   options: {
     useSizeLimit?: boolean;
     cursorValue?: number | string;
+    cursorComparisonOperator?: ">" | "<" | ">=" | "<=";
     maxSizeBytes?: number;
     batchSize?: number;
     totalLimit?: number;
@@ -164,6 +165,7 @@ export async function bfQueryItemsUnified<
   const {
     useSizeLimit = false,
     cursorValue,
+    cursorComparisonOperator,
     maxSizeBytes = 10 * 1024 * 1024, // 10MB in bytes
     batchSize = 4,
     totalLimit,
@@ -213,6 +215,7 @@ export async function bfQueryItemsUnified<
       cursorValue,
       maxSizeBytes,
       batchSize,
+      cursorComparisonOperator,
     );
     logger.debug(`Size-limited query returned ${results.length} results`);
     return results;
@@ -463,20 +466,43 @@ export async function bfQueryItemsForGraphQLConnection<
   let orderDirection: "ASC" | "DESC" = "ASC";
   let cursorValue: number | undefined;
   let limit: number = 10;
-
+  let comparisonOperator: ">" | "<" | ">=" | "<=" = ">";
+  
   if (first != undefined) {
     orderDirection = "ASC";
     limit = first + 1; // Fetch one extra for next page check
     if (after) {
       cursorValue = cursorToSortValue(after);
+      comparisonOperator = ">"; // Get items AFTER this cursor (exclusive)
     }
   } else if (last != undefined) {
     orderDirection = "DESC";
     limit = last + 1; // Fetch one extra for previous page check
     if (before) {
       cursorValue = cursorToSortValue(before);
+      comparisonOperator = "<"; // Get items BEFORE this cursor (exclusive)
     }
   }
+
+  logger.debug(`Pagination query setup:`, {
+    first, 
+    last, 
+    after, 
+    before, 
+    orderDirection, 
+    cursorValue,
+    comparisonOperator,
+    limit
+  });
+
+  // Enhanced query with explicit cursor handling
+  const queryOptions = {
+    useSizeLimit: false,
+    cursorValue,
+    cursorComparisonOperator: comparisonOperator, // Pass the comparison operator
+    batchSize: 4,
+    totalLimit: limit,
+  };
 
   const results = await bfQueryItemsUnified(
     metadata,
@@ -484,12 +510,7 @@ export async function bfQueryItemsForGraphQLConnection<
     bfGids,
     orderDirection,
     "sort_value",
-    {
-      useSizeLimit: false,
-      cursorValue,
-      batchSize: 4,
-      totalLimit: limit,
-    },
+    queryOptions,
   );
 
   const edges: Array<Edge<DbItem<TProps>>> = results.map((
