@@ -1,4 +1,5 @@
 import { iso } from "packages/app/__generated__/__isograph/iso.ts";
+import { marked } from "marked";
 
 export const ContentItem = iso(`
   field BfContentItem.ContentItem @component {
@@ -12,7 +13,7 @@ export const ContentItem = iso(`
     <div className="content-item">
       {data?.body && (
         <div className="content-item-body">
-          <pre>{data?.body}</pre>
+          <div dangerouslySetInnerHTML={{__html: marked.parse(data.body)}} />
         </div>
       )}
     </div>
