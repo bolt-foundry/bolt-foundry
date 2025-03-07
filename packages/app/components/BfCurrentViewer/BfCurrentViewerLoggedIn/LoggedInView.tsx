@@ -10,7 +10,7 @@ export const LoggedInView = iso(`
 `)(function LoggedInView() {
   const { replace } = useRouter();
   useEffect(function LoggedInViewEffect() {
-    replace("/twitter");
+    replace("/formatter");
   }, []);
   return <div></div>;
 });

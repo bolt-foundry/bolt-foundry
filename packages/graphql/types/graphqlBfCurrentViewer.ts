@@ -15,9 +15,7 @@ import {
 } from "packages/graphql/types/graphqlJSONScalar.ts";
 import type { RegistrationResponseJSON } from "@simplewebauthn/server";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { graphqlBfBlogType } from "packages/graphql/types/graphqlBfBlog.ts";
-import { BfBlog } from "packages/bfDb/models/BfBlog.ts";
-import { type BfGid, toBfGid } from "packages/bfDb/classes/BfNodeIds.ts";
+import { toBfGid } from "packages/bfDb/classes/BfNodeIds.ts";
 import { graphqlBfOrganizationType } from "packages/graphql/types/graphqlBfOrganization.ts";
 import { graphqlBfContentCollectionType } from "packages/graphql/types/graphqlBfContentCollection.ts";
 import { BfContentCollection } from "packages/bfDb/models/BfContentCollection.ts";
@@ -27,13 +25,7 @@ export const graphqlBfCurrentViewerType = interfaceType({
   name: "BfCurrentViewer",
   definition(t) {
     t.implements(graphqlNode);
-    t.field("blog", {
-      type: graphqlBfBlogType,
-      resolve: async (_parent, _args, ctx) => {
-        const blog = await ctx.findX(BfBlog, "the-blog" as BfGid);
-        return blog.toGraphql();
-      },
-    });
+
     t.field("organization", {
       type: graphqlBfOrganizationType,
       resolve: async (_parent, _args, ctx) => {
@@ -47,12 +39,12 @@ export const graphqlBfCurrentViewerType = interfaceType({
     t.field("contentCollection", {
       type: graphqlBfContentCollectionType,
       args: {
-        slug: stringArg(),
+        slug: nonNull(stringArg()),
       },
       resolve: async (_parent, args, ctx) => {
         const { slug = "default" } = args;
 
-        const id = toBfGid(`collection-${slug}`);
+        const id = toBfGid(slug);
         const collection = await ctx.find(BfContentCollection, id);
         return collection?.toGraphql();
       },

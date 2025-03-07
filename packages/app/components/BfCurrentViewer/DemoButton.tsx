@@ -9,7 +9,7 @@ import { useState } from "react";
 const logger = getLogger(import.meta);
 
 export const DemoButton = iso(`
-  field BfCurrentViewerLoggedOut.DemoButton @component {
+  field BfCurrentViewer.DemoButton @component {
     __typename
   }
 `)(function DemoButton() {
@@ -21,7 +21,7 @@ export const DemoButton = iso(`
     loginAsDemoPerson({}, {
       onComplete: (data) => {
         logger.debug("Got demo login response", data);
-        globalThis.location.reload();
+        globalThis.location.pathname = "/formatter/voice";
         setIsInFlight(false);
       },
     });

@@ -1,7 +1,9 @@
 import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@isograph/react';
 import { BfCurrentViewer__Home__param } from './param_type.ts';
 import { Home as resolver } from '../../../../components/BfCurrentViewer/Home.tsx';
-import BfContentCollection__ContentCollection__resolver_reader from '../../BfContentCollection/ContentCollection/resolver_reader.ts';
+import BfContentItem__ContentItem__resolver_reader from '../../BfContentItem/ContentItem/resolver_reader.ts';
+import BfCurrentViewer__DemoButton__resolver_reader from '../../BfCurrentViewer/DemoButton/resolver_reader.ts';
+import BfCurrentViewerLoggedOut__asBfCurrentViewerLoggedOut__resolver_reader from '../../BfCurrentViewerLoggedOut/asBfCurrentViewerLoggedOut/resolver_reader.ts';
 
 const readerAst: ReaderAst<BfCurrentViewer__Home__param> = [
   {
@@ -18,17 +20,49 @@ const readerAst: ReaderAst<BfCurrentViewer__Home__param> = [
     arguments: [
       [
         "slug",
-        { kind: "String", value: "marketing" },
+        { kind: "String", value: "bf:///content/marketing" },
       ],
     ],
     condition: null,
     isUpdatable: false,
     selections: [
       {
+        kind: "Linked",
+        fieldName: "item",
+        alias: null,
+        arguments: [
+          [
+            "id",
+            { kind: "String", value: "bf:///content/marketing/show-hn.md" },
+          ],
+        ],
+        condition: null,
+        isUpdatable: false,
+        selections: [
+          {
+            kind: "Resolver",
+            alias: "ContentItem",
+            arguments: null,
+            readerArtifact: BfContentItem__ContentItem__resolver_reader,
+            usedRefetchQueries: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    kind: "Linked",
+    fieldName: "asBfCurrentViewerLoggedOut",
+    alias: null,
+    arguments: null,
+    condition: BfCurrentViewerLoggedOut__asBfCurrentViewerLoggedOut__resolver_reader,
+    isUpdatable: false,
+    selections: [
+      {
         kind: "Resolver",
-        alias: "ContentCollection",
+        alias: "DemoButton",
         arguments: null,
-        readerArtifact: BfContentCollection__ContentCollection__resolver_reader,
+        readerArtifact: BfCurrentViewer__DemoButton__resolver_reader,
         usedRefetchQueries: [],
       },
     ],

@@ -52,34 +52,74 @@ export const FormatterEditorPanel = iso(`
             setBlogPost(e.target.value);
           }}
           value={blogPost}
-          placeholder="TODO: Markdown editor"
+          placeholder="Type or paste your blog post here... (or submit empty to use a sample post)"
           xstyle={fullEditorStyle}
-          id="formatter-editor-textarea" // Add an ID to make it easier to find
+          id="formatter-editor-textarea"
         />
         <div className="editor-actions flexRow gapMedium selfAlignEnd">
           <BfDsCopyButton kind="outlineDark" textToCopy={blogPost} />
-          <BfDsButton
-            kind={data?.creation?.revisions ? "secondary" : "primary"}
-            text="Get suggestions"
-            onClick={() => {
-              setIsInFlight(true);
-              commit({ blogPost: blogPost }, {
-                onError: () => {
-                  logger.error("An error occurred.");
-                },
-                onComplete: (reviseBlogMutationData) => {
-                  setIsInFlight(false);
-                  logger.debug(
-                    "blog created successfully",
-                    reviseBlogMutationData,
-                  );
-                },
-              });
-            }}
-            showSpinner={isInFlight}
-          />
+          {blogPost.length > 0
+            ? (
+              <BfDsButton
+                kind={data?.creation?.revisions ? "secondary" : "primary"}
+                text="Get suggestions"
+                onClick={() => {
+                  setIsInFlight(true);
+                  commit({ blogPost: blogPost }, {
+                    onError: () => {
+                      logger.error("An error occurred.");
+                    },
+                    onComplete: (reviseBlogMutationData) => {
+                      setIsInFlight(false);
+                      logger.debug(
+                        "blog created successfully",
+                        reviseBlogMutationData,
+                      );
+                    },
+                  });
+                }}
+                showSpinner={isInFlight}
+              />
+            )
+            : (
+              <BfDsButton
+                kind={data?.creation?.revisions ? "secondary" : "primary"}
+                text="Get suggestions with demo post"
+                onClick={() => {
+                  setBlogPost(demoBlog);
+                  setIsInFlight(true);
+                  commit({ blogPost: demoBlog }, {
+                    onError: () => {
+                      logger.error("An error occurred.");
+                    },
+                    onComplete: (reviseBlogMutationData) => {
+                      setIsInFlight(false);
+                      logger.debug(
+                        "blog created successfully",
+                        reviseBlogMutationData,
+                      );
+                    },
+                  });
+                }}
+                showSpinner={isInFlight}
+              />
+            )}
         </div>
       </div>
     );
   },
 );
+
+const demoBlog = `
+**"Why My Cat is My Personal Trainer (and I’m Too Scared to Quit)"**  
+
+Let’s be real: cats are basically tiny, furry dictators. Mine, Whiskers, has taken her reign to a whole new level by becoming my personal trainer. I didn’t sign up for this, but here we are. Every time I attempt a sit-up, she parks herself directly in front of me, tail flicking, staring me down like, *“Is that all you’ve got, human?”* It’s both motivating and deeply humiliating.  
+
+Forget expensive gym memberships or trendy fitness apps—Whiskers has me on a rigorous routine. Squats? Oh, you mean “reaching for the treats on the top shelf” reps. She’s got me doing at least 20 a day, and if I slack off, she just knocks something breakable off the counter. Cardio? That’s her “chase the laser pointer” game, which is basically HIIT because she expects me to sprint around the house like a maniac.  
+
+And don’t even get me started on her yoga skills. Whiskers is a natural at downward cat, and she judges my form relentlessly. I’ll be mid-pose, trying to channel my inner zen, and she’ll saunter over, plop down on my mat, and stretch out like, *“This is how it’s done, amateur.”*  
+
+The best part? She doesn’t believe in rest days. If I dare to lounge on the couch for too long, she’s there, pawing at my face or biting my toes until I get up and “earn my keep.” Honestly, I’ve never been more active—or more terrified. Who needs a personal trainer when you have a furry drill sergeant who doubles as a cuddle bug?  
+
+So, if you see me limping around the neighborhood, just know it’s not some intense CrossFit class. It’s Whiskers’ world, and I’m just living in it. :feet::muscle: #CatFitnessGoals #SendHelp
+`;

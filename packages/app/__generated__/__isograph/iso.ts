@@ -1,12 +1,13 @@
 import type { IsographEntrypoint } from '@isograph/react';
 import { type BfBlog__BlogPostList__param } from './BfBlog/BlogPostList/param_type.ts';
 import { type BfBlogPost__BlogPostListItem__param } from './BfBlogPost/BlogPostListItem/param_type.ts';
+import { type BfBlogPost__BlogPostPermalinkPage__param } from './BfBlogPost/BlogPostPermalinkPage/param_type.ts';
+import { type BfBlogPost__BlogPostTitleForHeader__param } from './BfBlogPost/BlogPostTitleForHeader/param_type.ts';
 import { type BfContentCollection__ContentCollection__param } from './BfContentCollection/ContentCollection/param_type.ts';
 import { type BfContentItem__ContentItem__param } from './BfContentItem/ContentItem/param_type.ts';
-import { type BfCurrentViewer__Blog__param } from './BfCurrentViewer/Blog/param_type.ts';
+import { type BfCurrentViewer__DemoButton__param } from './BfCurrentViewer/DemoButton/param_type.ts';
 import { type BfCurrentViewer__Home__param } from './BfCurrentViewer/Home/param_type.ts';
 import { type BfCurrentViewerLoggedIn__LoggedInView__param } from './BfCurrentViewerLoggedIn/LoggedInView/param_type.ts';
-import { type BfCurrentViewerLoggedOut__DemoButton__param } from './BfCurrentViewerLoggedOut/DemoButton/param_type.ts';
 import { type BfCurrentViewerLoggedOut__LoggedOutView__param } from './BfCurrentViewerLoggedOut/LoggedOutView/param_type.ts';
 import { type BfCurrentViewerLoggedOut__LoginAndRegisterForm__param } from './BfCurrentViewerLoggedOut/LoginAndRegisterForm/param_type.ts';
 import { type BfCurrentViewerLoggedOut__LoginButton__param } from './BfCurrentViewerLoggedOut/LoginButton/param_type.ts';
@@ -132,6 +133,14 @@ export function iso<T>(
 ): IdentityWithParamComponent<BfBlogPost__BlogPostListItem__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field BfBlogPost.BlogPostPermalinkPage', T>
+): IdentityWithParamComponent<BfBlogPost__BlogPostPermalinkPage__param>;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field BfBlogPost.BlogPostTitleForHeader', T>
+): IdentityWithParam<BfBlogPost__BlogPostTitleForHeader__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field BfContentCollection.ContentCollection', T>
 ): IdentityWithParamComponent<BfContentCollection__ContentCollection__param>;
 
@@ -140,8 +149,8 @@ export function iso<T>(
 ): IdentityWithParamComponent<BfContentItem__ContentItem__param>;
 
 export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field BfCurrentViewer.Blog', T>
-): IdentityWithParamComponent<BfCurrentViewer__Blog__param>;
+  param: T & MatchesWhitespaceAndString<'field BfCurrentViewer.DemoButton', T>
+): IdentityWithParamComponent<BfCurrentViewer__DemoButton__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field BfCurrentViewer.Home', T>
@@ -150,10 +159,6 @@ export function iso<T>(
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field BfCurrentViewerLoggedIn.LoggedInView', T>
 ): IdentityWithParamComponent<BfCurrentViewerLoggedIn__LoggedInView__param>;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field BfCurrentViewerLoggedOut.DemoButton', T>
-): IdentityWithParamComponent<BfCurrentViewerLoggedOut__DemoButton__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field BfCurrentViewerLoggedOut.LoggedOutView', T>
