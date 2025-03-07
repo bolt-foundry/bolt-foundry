@@ -8,18 +8,15 @@ const queryText = 'query EntrypointBlog  {\
   me {\
     __typename,\
     id,\
-    blog {\
+    contentCollection____slug___s_blog: contentCollection(slug: "blog") {\
       id,\
       __typename,\
-      name,\
-      posts {\
+      items {\
         nodes {\
           id,\
           __typename,\
-          author,\
-          cta,\
+          body,\
           href,\
-          summary,\
           title,\
         },\
       },\
@@ -48,9 +45,14 @@ const normalizationAst: NormalizationAst = {
         },
         {
           kind: "Linked",
-          fieldName: "blog",
-          arguments: null,
-          concreteType: "BfBlog",
+          fieldName: "contentCollection",
+          arguments: [
+            [
+              "slug",
+              { kind: "String", value: "blog" },
+            ],
+          ],
+          concreteType: "BfContentCollection",
           selections: [
             {
               kind: "Scalar",
@@ -63,21 +65,16 @@ const normalizationAst: NormalizationAst = {
               arguments: null,
             },
             {
-              kind: "Scalar",
-              fieldName: "name",
-              arguments: null,
-            },
-            {
               kind: "Linked",
-              fieldName: "posts",
+              fieldName: "items",
               arguments: null,
-              concreteType: "BfBlogPostConnection",
+              concreteType: "BfContentItemConnection",
               selections: [
                 {
                   kind: "Linked",
                   fieldName: "nodes",
                   arguments: null,
-                  concreteType: "BfBlogPost",
+                  concreteType: "BfContentItem",
                   selections: [
                     {
                       kind: "Scalar",
@@ -91,22 +88,12 @@ const normalizationAst: NormalizationAst = {
                     },
                     {
                       kind: "Scalar",
-                      fieldName: "author",
-                      arguments: null,
-                    },
-                    {
-                      kind: "Scalar",
-                      fieldName: "cta",
+                      fieldName: "body",
                       arguments: null,
                     },
                     {
                       kind: "Scalar",
                       fieldName: "href",
-                      arguments: null,
-                    },
-                    {
-                      kind: "Scalar",
-                      fieldName: "summary",
                       arguments: null,
                     },
                     {
