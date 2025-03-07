@@ -9,19 +9,6 @@ const queryText = 'query EntrypointHome  {\
     __typename,\
     id,\
     __typename,\
-    contentCollection____slug___s_marketing: contentCollection(slug: "marketing") {\
-      id,\
-      __typename,\
-      items {\
-        nodes {\
-          id,\
-          __typename,\
-          body,\
-          href,\
-          title,\
-        },\
-      },\
-    },\
     ... on BfCurrentViewerLoggedOut {\
       id,\
       __typename,\
@@ -52,70 +39,6 @@ const normalizationAst: NormalizationAst = {
           kind: "Scalar",
           fieldName: "__typename",
           arguments: null,
-        },
-        {
-          kind: "Linked",
-          fieldName: "contentCollection",
-          arguments: [
-            [
-              "slug",
-              { kind: "String", value: "marketing" },
-            ],
-          ],
-          concreteType: "BfContentCollection",
-          selections: [
-            {
-              kind: "Scalar",
-              fieldName: "id",
-              arguments: null,
-            },
-            {
-              kind: "Scalar",
-              fieldName: "__typename",
-              arguments: null,
-            },
-            {
-              kind: "Linked",
-              fieldName: "items",
-              arguments: null,
-              concreteType: "BfContentItemConnection",
-              selections: [
-                {
-                  kind: "Linked",
-                  fieldName: "nodes",
-                  arguments: null,
-                  concreteType: "BfContentItem",
-                  selections: [
-                    {
-                      kind: "Scalar",
-                      fieldName: "id",
-                      arguments: null,
-                    },
-                    {
-                      kind: "Scalar",
-                      fieldName: "__typename",
-                      arguments: null,
-                    },
-                    {
-                      kind: "Scalar",
-                      fieldName: "body",
-                      arguments: null,
-                    },
-                    {
-                      kind: "Scalar",
-                      fieldName: "href",
-                      arguments: null,
-                    },
-                    {
-                      kind: "Scalar",
-                      fieldName: "title",
-                      arguments: null,
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
         },
         {
           kind: "InlineFragment",

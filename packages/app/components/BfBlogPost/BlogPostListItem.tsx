@@ -8,7 +8,6 @@ const loadingPromises = new Map<string, Promise<React.FC>>();
 function getComponent(
   path: string,
 ): Promise<React.FC> {
-  logger.setLevel(logger.levels.DEBUG);
   logger.debug(`getComponent(${path})`);
   if (loadingPromises.has(path)) {
     return loadingPromises.get(path)!;
@@ -44,10 +43,8 @@ export const BlogPostListItem = iso(`
     href
   }
 `)(function BlogPostListItem({ data }, { showContent }) {
-  logger.setLevel(logger.levels.DEBUG);
   const contentElement = useContent(data.href, showContent);
   logger.debug(contentElement, data, showContent);
-  logger.resetLevel();
   return (
     <>
       <a
