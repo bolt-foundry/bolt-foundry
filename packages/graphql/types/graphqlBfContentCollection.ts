@@ -32,8 +32,11 @@ export const graphqlBfContentCollectionType = objectType({
       args: {
         id: nonNull(idArg()),
       },
+      resolve: async (parent, { id }, ctx) => {
+        const collection = await ctx.findX(BfContentCollection, toBfGid(parent.id));
+        return item;
+      },
     });
-    // Connection field for content items (direct children only in Phase 1)
     t.connectionField("items", {
       type: graphqlBfContentItemType,
       resolve: async (parent, args, ctx) => {
@@ -46,7 +49,6 @@ export const graphqlBfContentCollectionType = objectType({
       },
     });
 
-    // Connection field for child collections (direct children only in Phase 1)
     t.connectionField("childCollections", {
       type: "BfContentCollection",
       resolve: async (parent, args, ctx) => {
