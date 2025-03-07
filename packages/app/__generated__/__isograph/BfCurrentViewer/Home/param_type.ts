@@ -11,7 +11,7 @@ export type BfCurrentViewer__Home__param = {
 A client pointer for the BfCurrentViewerLoggedOut type.
     */
     readonly asBfCurrentViewerLoggedOut: ({
-      readonly DemoButton: BfCurrentViewerLoggedOut__DemoButton__output_type,
+      readonly DemoButton: BfCurrentViewer__DemoButton__output_type,
     } | null),
   },
   readonly parameters: Record<PropertyKey, never>,
