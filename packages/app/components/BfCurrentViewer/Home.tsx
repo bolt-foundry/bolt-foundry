@@ -23,6 +23,7 @@ export const Home = iso(`
 
   return (
     <>
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
       <div className="appPage flexCenter">
         <div className="appHeader">
           <div className="appHeaderCenter">
