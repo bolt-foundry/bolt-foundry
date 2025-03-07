@@ -1,7 +1,7 @@
 import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@isograph/react';
 import { BfCurrentViewer__Home__param } from './param_type.ts';
 import { Home as resolver } from '../../../../components/BfCurrentViewer/Home.tsx';
-import BfContentCollection__ContentCollection__resolver_reader from '../../BfContentCollection/ContentCollection/resolver_reader.ts';
+import BfContentItem__ContentItem__resolver_reader from '../../BfContentItem/ContentItem/resolver_reader.ts';
 import BfCurrentViewer__DemoButton__resolver_reader from '../../BfCurrentViewer/DemoButton/resolver_reader.ts';
 import BfCurrentViewerLoggedOut__asBfCurrentViewerLoggedOut__resolver_reader from '../../BfCurrentViewerLoggedOut/asBfCurrentViewerLoggedOut/resolver_reader.ts';
 
