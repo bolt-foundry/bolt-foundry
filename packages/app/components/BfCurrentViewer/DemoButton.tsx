@@ -9,7 +9,7 @@ import { useState } from "react";
 const logger = getLogger(import.meta);
 
 export const DemoButton = iso(`
-  field BfCurrentViewerLoggedOut.DemoButton @component {
+  field BfCurrentViewer.DemoButton @component {
     __typename
   }
 `)(function DemoButton() {

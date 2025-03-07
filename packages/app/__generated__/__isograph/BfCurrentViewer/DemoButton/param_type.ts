@@ -1,5 +1,5 @@
 
-export type BfCurrentViewerLoggedOut__DemoButton__param = {
+export type BfCurrentViewer__DemoButton__param = {
   readonly data: {
     readonly __typename: string,
   },
