@@ -2,7 +2,7 @@ import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@iso
 import { BfCurrentViewer__Home__param } from './param_type.ts';
 import { Home as resolver } from '../../../../components/BfCurrentViewer/Home.tsx';
 import BfContentItem__ContentItem__resolver_reader from '../../BfContentItem/ContentItem/resolver_reader.ts';
-import BfCurrentViewerLoggedOut__DemoButton__resolver_reader from '../../BfCurrentViewerLoggedOut/DemoButton/resolver_reader.ts';
+import BfCurrentViewer__DemoButton__resolver_reader from '../../BfCurrentViewer/DemoButton/resolver_reader.ts';
 import BfCurrentViewerLoggedOut__asBfCurrentViewerLoggedOut__resolver_reader from '../../BfCurrentViewerLoggedOut/asBfCurrentViewerLoggedOut/resolver_reader.ts';
 
 const readerAst: ReaderAst<BfCurrentViewer__Home__param> = [
@@ -62,7 +62,7 @@ const readerAst: ReaderAst<BfCurrentViewer__Home__param> = [
         kind: "Resolver",
         alias: "DemoButton",
         arguments: null,
-        readerArtifact: BfCurrentViewerLoggedOut__DemoButton__resolver_reader,
+        readerArtifact: BfCurrentViewer__DemoButton__resolver_reader,
         usedRefetchQueries: [],
       },
     ],
