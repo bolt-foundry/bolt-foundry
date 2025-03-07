@@ -222,15 +222,19 @@ export class BfEdgeInMemory<
     edgePropsToQuery: Partial<TEdgeProps> = {},
     cache?: BfNodeCache,
   ): Promise<Array<InstanceType<TTargetClass>>> {
-    logger.setLevel(logger.levels.DEBUG);
     logger.debug(`All in-memory edges: ${this.inMemoryEdges.size}`);
     for (const [key, edge] of this.inMemoryEdges.entries()) {
-      logger.debug(`Edge ${key}: source=${edge.metadata.bfSid}, target=${edge.metadata.bfTid}, role=${edge.props.role}`);
+      logger.debug(
+        `Edge ${key}: source=${edge.metadata.bfSid}, target=${edge.metadata.bfTid}, role=${edge.props.role}`,
+      );
     }
 
     // Log the query parameters
-    logger.debug(`Querying targets with sourceId=${sourceId}, targetClass=${TargetClass.name}, edgeProps=${JSON.stringify(edgePropsToQuery)}`);
-    logger.resetLevel();
+    logger.debug(
+      `Querying targets with sourceId=${sourceId}, targetClass=${TargetClass.name}, edgeProps=${
+        JSON.stringify(edgePropsToQuery)
+      }`,
+    );
     // Filter edges based on source ID and optionally by edge properties
     const matchingEdges = Array.from(this.inMemoryEdges.values()).filter(
       (edge) => {

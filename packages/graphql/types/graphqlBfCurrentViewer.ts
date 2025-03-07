@@ -39,12 +39,12 @@ export const graphqlBfCurrentViewerType = interfaceType({
     t.field("contentCollection", {
       type: graphqlBfContentCollectionType,
       args: {
-        slug: stringArg(),
+        slug: nonNull(stringArg()),
       },
       resolve: async (_parent, args, ctx) => {
         const { slug = "default" } = args;
 
-        const id = toBfGid(`collection-${slug}`);
+        const id = toBfGid(slug);
         const collection = await ctx.find(BfContentCollection, id);
         return collection?.toGraphql();
       },
