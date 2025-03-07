@@ -1,352 +1,353 @@
-import type {
-  BfNodeBase,
-  BfNodeBaseProps,
-  BfNodeCache,
-} from "packages/bfDb/classes/BfNodeBase.ts";
-import type { BfGid } from "packages/bfDb/classes/BfNodeIds.ts";
-import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { walk } from "@std/fs/walk";
-import { BfErrorNodeNotFound } from "packages/bfDb/classes/BfErrorNode.ts";
-import { getLogger } from "packages/logger.ts";
-import { toBfGid } from "packages/bfDb/classes/BfNodeIds.ts";
-import { exists } from "@std/fs/exists";
-import { extractYaml } from "@std/front-matter";
 import { BfNodeInMemory } from "packages/bfDb/coreModels/BfNodeInMemory.ts";
+import {
+  BfContentItem,
+  type BfContentItemProps,
+} from "packages/bfDb/models/BfContentItem.ts";
+import type { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
+import type { BfNodeCache } from "packages/bfDb/classes/BfNodeBase.ts";
+import { getLogger } from "packages/logger.ts";
+import { basename, extname, join } from "@std/path";
+import { pathToBfGid } from "packages/bfDb/utils/pathUtils.ts";
+import { safeExtractFrontmatter } from "packages/bfDb/utils/contentUtils.ts";
+import { BfEdge } from "packages/bfDb/coreModels/BfEdge.ts";
 
 const logger = getLogger(import.meta);
 
-export type BfContentItemProps = {
-  title: string;
-  body: string;
-  slug: string;
-  filePath?: string;
-};
-
-export type BfContentCollectionProps = BfNodeBaseProps & {
+/**
+ * Properties for BfContentCollection
+ */
+export type BfContentCollectionProps = {
   name: string;
   slug: string;
-  description: string;
-  items: BfContentItemProps[];
+  description?: string | null;
+  filePath?: string | null;
 };
 
-type ContentItemFrontmatterProps = Partial<{
-  title: string;
-}>;
-
-class BfContentCollection extends BfNodeInMemory<BfContentCollectionProps> {
-  private static _collectionsCache: Map<BfGid, BfContentCollection>;
-
+/**
+ * BfContentCollection: Represents a collection of content items organized in a hierarchy
+ * This class provides recursive folder scanning capabilities to build content structures
+ */
+export class BfContentCollection
+  extends BfNodeInMemory<BfContentCollectionProps> {
   /**
-   * Scans the content directory and builds collections based on folder structure
+   * Creates a BfContentCollection from a folder on disk, recursively processing
+   * all nested folders and files
+   *
+   * @param cv Current viewer for permission context
+   * @param folderPath Path to the folder to scan
+   * @param options Optional configuration options
+   * @param parentCollection Optional parent collection for nesting
+   * @param cache Optional node cache for better performance
+   * @returns The created BfContentCollection
    */
-  private static async scanContentDirectory(
-    _cv: BfCurrentViewer,
-  ): Promise<Map<string, BfContentCollectionProps>> {
-    const collections = new Map<string, BfContentCollectionProps>();
-    const contentBasePath = "content";
+  static async createFromFolder(
+    cv: BfCurrentViewer,
+    folderPath: string,
+    options: {
+      name?: string;
+      slug?: string;
+      description?: string;
+      maxDepth?: number;
+      fileExts?: string[];
+      skipFolders?: string[];
+      skipFiles?: string[];
+    } = {},
+    parentCollection?: BfContentCollection,
+    cache?: BfNodeCache,
+  ): Promise<BfContentCollection> {
+    logger.debug(
+      `Creating collection from folder: ${folderPath}`,
+      options,
+      Deno.cwd(),
+    );
 
-    logger.info(`Scanning content directory: ${contentBasePath}`);
+    // Generate an ID based on the folder path
+    const bfGid = pathToBfGid(folderPath.replace(Deno.cwd(), "bf://"));
 
-    // Check if content directory exists
-    if (!await exists(contentBasePath)) {
-      logger.warn("Content directory not found at:", contentBasePath);
-      return collections;
+    // Create a name from the directory name if not provided
+    const name = options.name || basename(folderPath);
+
+    // Create a slug from the name if not provided
+    const slug = options.slug || name.toLowerCase().replace(/\s+/g, "-");
+
+    const description = options.description ?? null;
+
+    // Create the collection
+    const collection = await this.__DANGEROUS__createUnattached(
+      cv,
+      {
+        name,
+        slug,
+        description,
+        filePath: folderPath,
+      },
+      { bfGid },
+      cache,
+    );
+
+    logger.debug(
+      `Created collection: ${collection.metadata.bfGid} for ${folderPath}`,
+    );
+
+    // Process files in the directory
+    this._processDirectoryFiles(
+      cv,
+      collection,
+      folderPath,
+      {
+        fileExts: options.fileExts,
+        skipFiles: options.skipFiles,
+      },
+      cache,
+    );
+
+    // Process subdirectories if maxDepth allows
+    const currentDepth = parentCollection ? 1 : 0;
+    if (options.maxDepth === undefined || currentDepth < options.maxDepth) {
+      await this._processSubdirectories(
+        cv,
+        collection,
+        folderPath,
+        {
+          maxDepth: options.maxDepth,
+          skipFolders: options.skipFolders,
+          fileExts: options.fileExts,
+          skipFiles: options.skipFiles,
+        },
+        cache,
+      );
     }
 
-    // Create a map of folder paths to collection objects
+    // Create edge relationship with parent if provided
+    if (parentCollection) {
+      await BfEdge.createBetweenNodes(
+        cv,
+        parentCollection,
+        collection,
+        { role: "child-collection" },
+      );
+    }
+
+    return collection;
+  }
+
+  /**
+   * Process files in a directory and add them as content items
+   *
+   * @param cv Current viewer for permission context
+   * @param collection Parent collection to add items to
+   * @param dirPath Directory path to process
+   * @param options Processing options
+   * @param cache Node cache
+   */
+  private static async _processDirectoryFiles(
+    cv: BfCurrentViewer,
+    collection: BfContentCollection,
+    dirPath: string,
+    options: {
+      fileExts?: string[];
+      skipFiles?: string[];
+    },
+    cache?: BfNodeCache,
+  ): Promise<void> {
+    logger.debug(`Processing files in directory: ${dirPath}`);
+
     try {
-      logger.info("Starting first pass: identifying directories");
-      // First pass: identify all directories that will become collections
-      for await (
-        const entry of walk(contentBasePath, {
-          includeFiles: false,
-          includeDirs: true,
-          maxDepth: 2,
-        })
-      ) {
-        logger.info(`Found directory: ${entry.path}`);
-        if (entry.isDirectory && entry.path !== contentBasePath) {
-          const relativePath = entry.path;
-          const slug = relativePath;
-          const name = relativePath.split("/").pop() || "Unknown";
-
-          logger.info(
-            `Creating collection for directory: ${relativePath} with slug: ${slug}`,
-          );
-          collections.set(slug, {
-            name: name.charAt(0).toUpperCase() + name.slice(1),
-            slug,
-            description: `Content from ${relativePath}`,
-            items: [],
-          });
-        }
-      }
-
-      // Second pass: scan for MDX/MD files to add as items to their respective collections
-      logger.info("Starting second pass: scanning for MDX/MD files");
-      // Check specifically if marketing directory exists and make sure it creates a collection
-      if (await exists("content/marketing")) {
-        logger.info(
-          "Marketing directory exists. Ensuring marketing collection is created",
-        );
-        if (!collections.has("content/marketing")) {
-          logger.info("Creating marketing collection manually");
-          collections.set("content/marketing", {
-            name: "Marketing",
-            slug: "content/marketing",
-            description: "Content from marketing",
-            items: [],
-          });
-        }
-      } else {
-        logger.warn("Marketing directory does not exist!");
-      }
-
-      for await (
-        const entry of walk(contentBasePath, {
-          includeDirs: false,
-          exts: [".mdx", ".md"],
-        })
-      ) {
+      // Read directory entries
+      const entries = [];
+      for await (const entry of Deno.readDir(dirPath)) {
         if (entry.isFile) {
-          const filePath = entry.path;
-          const parts = filePath.split("/");
-          parts.pop(); // Remove filename
+          entries.push(entry);
+        }
+      }
 
-          const dirPath = parts.join("/");
-          logger.info(`Processing file: ${filePath} in directory: ${dirPath}`);
-          const fileContent = await Deno.readTextFile(filePath);
+      // Filter and process files
+      for (const entry of entries) {
+        const filePath = join(dirPath, entry.name);
 
-          let title = entry.name.replace(/\.(mdx|md)$/, "");
-          let frontMatter = {} as ContentItemFrontmatterProps;
+        // Skip files based on skipFiles option
+        if (options.skipFiles && options.skipFiles.includes(entry.name)) {
+          logger.debug(`Skipping file (in skipFiles list): ${entry.name}`);
+          continue;
+        }
 
-          try {
-            // Check if the content has frontmatter (starts with ---)
-            let body = fileContent;
-            let attrs = {};
-
-            if (fileContent.trim().startsWith("---")) {
-              try {
-                const extracted = extractYaml(fileContent);
-                attrs = extracted.attrs || {};
-                body = extracted.body || fileContent;
-              } catch (frontmatterErr) {
-                logger.warn(
-                  `Malformed front matter in ${filePath}, using fallback`,
-                  frontmatterErr,
-                );
-                // Continue with empty attrs and original content as body
-              }
-            } else {
-              logger.info(
-                `No front matter found in ${filePath}, using fallback metadata`,
-              );
-              // No frontmatter - continue with empty attrs and original content as body
-            }
-
-            frontMatter = attrs as ContentItemFrontmatterProps;
-            title = frontMatter.title || title;
-
-            // Add this file as an item to its collection
-            if (collections.has(dirPath)) {
-              const collection = collections.get(dirPath)!;
-              logger.info(
-                `Found collection for ${dirPath}, adding item: ${entry.name}`,
-              );
-
-              // Special case for content/marketing - only include home.mdx
-              if (
-                dirPath === "content/marketing" && entry.name !== "home.mdx"
-              ) {
-                logger.info(
-                  `Skipping non-home.mdx file in marketing directory: ${entry.name}`,
-                );
-                continue;
-              }
-
-              collection.items.push({
-                title,
-                body: body.slice(0, 300) + (body.length > 300 ? "..." : ""),
-                slug: entry.name.replace(/\.(mdx|md)$/, ""),
-                filePath: entry.path,
-              });
-            }
-          } catch (err) {
-            logger.warn(`Failed to process content file ${filePath}:`, err);
-
-            // Still add the file to the collection with default values
-            if (collections.has(dirPath)) {
-              const collection = collections.get(dirPath)!;
-
-              // Special case for content/marketing - only include home.mdx
-              if (
-                dirPath === "content/marketing" && entry.name !== "home.mdx"
-              ) {
-                continue;
-              }
-
-              collection.items.push({
-                title: entry.name.replace(/\.(mdx|md)$/, ""),
-                body:
-                  "Content could not be processed. This may be due to malformed content.",
-                slug: entry.name.replace(/\.(mdx|md)$/, ""),
-                filePath: entry.path,
-              });
-
-              logger.info(`Added ${filePath} with fallback content`);
-            }
+        // Skip files not matching file extensions if specified
+        if (options.fileExts && options.fileExts.length > 0) {
+          const fileExt = extname(entry.name).toLowerCase();
+          if (!options.fileExts.includes(fileExt)) {
+            logger.debug(
+              `Skipping file (extension not in fileExts): ${entry.name}`,
+            );
+            continue;
           }
         }
-      }
-    } catch (err) {
-      logger.error("Error scanning content directory:", err);
-    }
 
-    return collections;
+        // Create content item
+        await this._createContentItem(cv, collection, filePath, cache);
+      }
+    } catch (error) {
+      logger.error(`Error processing directory files: ${dirPath}`, error);
+      throw error;
+    }
   }
 
   /**
-   * Get or initialize the collections cache
+   * Create a content item from a file
+   *
+   * @param cv Current viewer for permission context
+   * @param collection Parent collection to add item to
+   * @param filePath File path to process
+   * @param cache Node cache
+   * @returns Created content item
    */
-  static async getCollectionsCache(
+  private static async _createContentItem(
     cv: BfCurrentViewer,
-  ): Promise<Map<BfGid, BfContentCollection>> {
-    if (this._collectionsCache) {
-      logger.info("Using existing collections cache");
-      // Output all cached collections for debugging
-      for (const [id, collection] of this._collectionsCache.entries()) {
-        logger.info(`Cached collection: ${id}, slug: ${collection.props.slug}`);
-      }
-      return this._collectionsCache;
-    }
+    collection: BfContentCollection,
+    filePath: string,
+    cache?: BfNodeCache,
+  ): Promise<BfContentItem> {
+    logger.debug(`Creating content item from file: ${filePath}`);
 
-    logger.info("Initializing collections cache");
-    // Initialize the cache
-    this._collectionsCache = new Map();
+    try {
+      // Read file content
+      const fileContent = await Deno.readTextFile(filePath);
 
-    // Scan content directory to build collections
-    const collectionData = await this.scanContentDirectory(cv);
+      // Extract frontmatter if present
+      const { attrs, body } = safeExtractFrontmatter(fileContent);
 
-    logger.info(`Found ${collectionData.size} collections from directory scan`);
-    // Log all found collections
-    for (const [slug, data] of collectionData.entries()) {
-      logger.info(`Found collection: ${slug} with ${data.items.length} items`);
-    }
+      // Generate ID based on file path
+      const bfGid = pathToBfGid(filePath);
 
-    // Create collection objects and add to cache
-    for (const [slug, data] of collectionData.entries()) {
-      const collectionId = toBfGid(`collection-${slug.replace(/\//g, "-")}`);
-      logger.info(
-        `Creating content collection with id: ${collectionId}, slug: ${slug}`,
-      );
+      // Create content item properties
+      const fileName = basename(filePath);
+      const fileNameWithoutExt = fileName.replace(/\.[^/.]+$/, "");
 
-      const collection = await this.__DANGEROUS__createUnattached(
+      const contentItemProps: BfContentItemProps = {
+        // Use frontmatter title if available, otherwise use filename
+        title: attrs.title || fileNameWithoutExt,
+        body: body,
+        // Use frontmatter slug if available, otherwise generate from title or filename
+        slug: attrs.slug ||
+          (attrs.title
+            ? attrs.title.toLowerCase().replace(/\s+/g, "-")
+            : fileNameWithoutExt.toLowerCase()),
+        filePath: filePath,
+        author: attrs.author,
+        summary: attrs.summary,
+        cta: attrs.cta,
+      };
+
+      // Create the content item
+      const contentItem = await BfContentItem.__DANGEROUS__createUnattached(
         cv,
-        data,
-        { bfGid: collectionId },
+        contentItemProps,
+        { bfGid },
+        cache,
       );
 
-      this._collectionsCache.set(collectionId, collection);
-    }
-
-    // If no collections were found, add a default one
-    if (this._collectionsCache.size === 0) {
-      logger.info("No collections found, creating default collection");
-      const defaultId = toBfGid("collection-default");
-      const defaultCollection = await this.__DANGEROUS__createUnattached(
+      // Create edge relationship between collection and content item
+      await BfEdge.createBetweenNodes(
         cv,
-        {
-          name: "Default Collection",
-          slug: "default",
-          description: "Default content collection",
-          items: [
-            {
-              title: "Default Content Item",
-              body:
-                "This is a default content item that appears when no specific collection is requested.",
-              slug: "default-item",
-            },
-          ],
-        },
-        { bfGid: defaultId },
+        collection,
+        contentItem,
+        { role: "content-item" },
       );
 
-      this._collectionsCache.set(defaultId, defaultCollection);
-    }
+      logger.debug(
+        `Created content item: ${contentItem.metadata.bfGid} for ${filePath}`,
+      );
 
-    // Log all cached collections after initialization
-    logger.info(
-      `Cache initialized with ${this._collectionsCache.size} collections:`,
-    );
-    for (const [id, collection] of this._collectionsCache.entries()) {
-      logger.info(`Cached collection: ${id}, slug: ${collection.props.slug}`);
+      return contentItem as BfContentItem;
+    } catch (error) {
+      logger.error(`Error creating content item for: ${filePath}`, error);
+      throw error;
     }
-
-    return this._collectionsCache;
   }
 
   /**
-   * Find a content collection by ID
+   * Process subdirectories and create child collections
+   *
+   * @param cv Current viewer for permission context
+   * @param parentCollection Parent collection to add child collections to
+   * @param dirPath Directory path to process
+   * @param options Processing options
+   * @param cache Node cache
    */
-  static override async findX<
-    TProps extends BfNodeBaseProps,
-    T extends BfNodeBase<TProps>,
-  >(
-    _cv: BfCurrentViewer,
-    id: BfGid,
-    _cache?: BfNodeCache,
-  ): Promise<T> {
-    const collectionsCache = await this.getCollectionsCache(_cv);
+  private static async _processSubdirectories(
+    cv: BfCurrentViewer,
+    parentCollection: BfContentCollection,
+    dirPath: string,
+    options: {
+      maxDepth?: number;
+      skipFolders?: string[];
+      fileExts?: string[];
+      skipFiles?: string[];
+    },
+    cache?: BfNodeCache,
+  ): Promise<void> {
+    logger.debug(`Processing subdirectories in: ${dirPath}`);
 
-    // Try direct lookup first
-    const collection = collectionsCache.get(id);
-    if (collection) {
-      return collection as unknown as T;
-    }
-
-    // Handle short names: if "collection-marketing", try "collection-content-marketing"
-    const idStr = id.toString();
-    if (
-      idStr.startsWith("collection-") &&
-      !idStr.startsWith("collection-content-")
-    ) {
-      // Extract the part after "collection-"
-      const shortName = idStr.substring("collection-".length);
-      const alternativeId = toBfGid(`collection-content-${shortName}`);
-      logger.info(
-        `Attempting to find ${idStr} as ${alternativeId}`,
-      );
-
-      const alternativeCollection = collectionsCache.get(alternativeId);
-      if (alternativeCollection) {
-        logger.info(`Found collection using alternative ID: ${alternativeId}`);
-        return alternativeCollection as unknown as T;
+    try {
+      // Read directory entries
+      const entries = [];
+      for await (const entry of Deno.readDir(dirPath)) {
+        if (entry.isDirectory) {
+          entries.push(entry);
+        }
       }
-    }
 
-    // Debug: Log all available collections
-    logger.info(`Collection not found: ${id}. Available collections:`);
-    for (const [cachedId, cachedCollection] of collectionsCache.entries()) {
-      logger.info(
-        `Available collection: ${cachedId}, slug: ${cachedCollection.props.slug}`,
-      );
-    }
+      // Process each subdirectory
+      for (const entry of entries) {
+        const subDirPath = join(dirPath, entry.name);
 
-    throw new BfErrorNodeNotFound();
+        // Skip directories based on skipFolders option
+        if (options.skipFolders && options.skipFolders.includes(entry.name)) {
+          logger.debug(
+            `Skipping directory (in skipFolders list): ${entry.name}`,
+          );
+          continue;
+        }
+
+        // Create a child collection recursively
+        const nextDepth = options.maxDepth !== undefined
+          ? options.maxDepth - 1
+          : undefined;
+
+        await this.createFromFolder(
+          cv,
+          subDirPath,
+          {
+            name: entry.name,
+            slug: entry.name.toLowerCase().replace(/\s+/g, "-"),
+            maxDepth: nextDepth,
+            fileExts: options.fileExts,
+            skipFiles: options.skipFiles,
+            skipFolders: options.skipFolders,
+          },
+          parentCollection,
+          cache,
+        );
+      }
+    } catch (error) {
+      logger.error(`Error processing subdirectories: ${dirPath}`, error);
+      throw error;
+    }
   }
-
   /**
-   * Query all content collections
+   * Converts the content collection to a GraphQL representation
    */
-  static override async query<
-    TProps extends BfNodeBaseProps,
-    T extends BfNodeBase<TProps>,
-  >(cv: BfCurrentViewer): Promise<Array<T>> {
-    const collectionsCache = await this.getCollectionsCache(cv);
-    return Array.from(collectionsCache.values()) as unknown as Array<T>;
-  }
+  override toGraphql() {
+    // Get the base GraphQL representation from parent
+    const baseGraphql = super.toGraphql();
 
-  // BfNodeInMemory already provides implementations for save/delete/load methods
+    // Add derived properties
+    return {
+      ...baseGraphql,
+      // Add properties needed for GraphQL
+      title: this.props.name,
+      description: this.props.description || null,
+      slug: this.props.slug,
+      filePath: this.props.filePath || null,
+    };
+  }
 }
-
-export { BfContentCollection };
