@@ -10,8 +10,11 @@ export const ContentItem = iso(`
 `)(function ContentItem({ data }) {
   return (
     <div className="content-item">
-      <h2 className="content-item-title">{data?.title}</h2>
-      {data?.body && <div className="content-item-body">{data?.body}</div>}
+      {data?.body && (
+        <div className="content-item-body">
+          <pre>{data?.body}</pre>
+        </div>
+      )}
     </div>
   );
 });
