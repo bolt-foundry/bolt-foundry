@@ -680,3 +680,8 @@
   border-radius: 8px;
   margin: 8px 0;
 }
+
+/* CONTENT */
+.content-item {
+  padding: 14px;
+}
