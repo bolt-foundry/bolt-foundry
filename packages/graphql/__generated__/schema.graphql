@@ -66,6 +66,19 @@ type BfBlogPostEdge {
 }
 
 type BfContentCollection implements BfNode & Node {
+  childCollections(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+  ): BfContentCollectionConnection
   description: String
 
   """Unique identifier for the resource"""
@@ -85,6 +98,31 @@ type BfContentCollection implements BfNode & Node {
     last: Int
   ): BfContentItemConnection
   title: String
+}
+
+type BfContentCollectionConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [BfContentCollectionEdge]
+
+  """Flattened list of BfContentCollection type"""
+  nodes: [BfContentCollection]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type BfContentCollectionEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: BfContentCollection
 }
 
 type BfContentItem implements BfNode & Node {
@@ -126,7 +164,7 @@ type BfContentItemEdge {
 }
 
 interface BfCurrentViewer implements Node {
-  contentCollection(slug: String): BfContentCollection
+  contentCollection(slug: String!): BfContentCollection
 
   """Unique identifier for the resource"""
   id: ID!
@@ -134,7 +172,7 @@ interface BfCurrentViewer implements Node {
 }
 
 type BfCurrentViewerLoggedIn implements BfCurrentViewer & Node {
-  contentCollection(slug: String): BfContentCollection
+  contentCollection(slug: String!): BfContentCollection
 
   """Unique identifier for the resource"""
   id: ID!
@@ -142,7 +180,7 @@ type BfCurrentViewerLoggedIn implements BfCurrentViewer & Node {
 }
 
 type BfCurrentViewerLoggedOut implements BfCurrentViewer & Node {
-  contentCollection(slug: String): BfContentCollection
+  contentCollection(slug: String!): BfContentCollection
 
   """Unique identifier for the resource"""
   id: ID!

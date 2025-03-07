@@ -89,6 +89,16 @@ export interface NexusGenObjects {
     item?: NexusGenRootTypes['BfContentItem'] | null; // BfContentItem
     title?: string | null; // String
   }
+  BfContentCollectionConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['BfContentCollectionEdge'] | null> | null; // [BfContentCollectionEdge]
+    nodes?: Array<NexusGenRootTypes['BfContentCollection'] | null> | null; // [BfContentCollection]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfContentCollectionEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['BfContentCollection'] | null; // BfContentCollection
+  }
   BfContentItem: { // root type
     author?: string | null; // String
     body?: string | null; // String
@@ -260,11 +270,22 @@ export interface NexusGenFieldTypes {
     node: NexusGenRootTypes['BfBlogPost'] | null; // BfBlogPost
   }
   BfContentCollection: { // field return type
+    childCollections: NexusGenRootTypes['BfContentCollectionConnection'] | null; // BfContentCollectionConnection
     description: string | null; // String
     id: string; // ID!
     item: NexusGenRootTypes['BfContentItem'] | null; // BfContentItem
     items: NexusGenRootTypes['BfContentItemConnection'] | null; // BfContentItemConnection
     title: string | null; // String
+  }
+  BfContentCollectionConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['BfContentCollectionEdge'] | null> | null; // [BfContentCollectionEdge]
+    nodes: Array<NexusGenRootTypes['BfContentCollection'] | null> | null; // [BfContentCollection]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  BfContentCollectionEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['BfContentCollection'] | null; // BfContentCollection
   }
   BfContentItem: { // field return type
     author: string | null; // String
@@ -453,11 +474,22 @@ export interface NexusGenFieldTypeNames {
     node: 'BfBlogPost'
   }
   BfContentCollection: { // field return type name
+    childCollections: 'BfContentCollectionConnection'
     description: 'String'
     id: 'ID'
     item: 'BfContentItem'
     items: 'BfContentItemConnection'
     title: 'String'
+  }
+  BfContentCollectionConnection: { // field return type name
+    count: 'Int'
+    edges: 'BfContentCollectionEdge'
+    nodes: 'BfContentCollection'
+    pageInfo: 'PageInfo'
+  }
+  BfContentCollectionEdge: { // field return type name
+    cursor: 'String'
+    node: 'BfContentCollection'
   }
   BfContentItem: { // field return type name
     author: 'String'
@@ -628,6 +660,12 @@ export interface NexusGenArgTypes {
     }
   }
   BfContentCollection: {
+    childCollections: { // args
+      after?: string | null; // String
+      before?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+    }
     item: { // args
       id: string; // ID!
     }
@@ -640,12 +678,12 @@ export interface NexusGenArgTypes {
   }
   BfCurrentViewerLoggedIn: {
     contentCollection: { // args
-      slug?: string | null; // String
+      slug: string; // String!
     }
   }
   BfCurrentViewerLoggedOut: {
     contentCollection: { // args
-      slug?: string | null; // String
+      slug: string; // String!
     }
   }
   Mutation: {
@@ -688,7 +726,7 @@ export interface NexusGenArgTypes {
   }
   BfCurrentViewer: {
     contentCollection: { // args
-      slug?: string | null; // String
+      slug: string; // String!
     }
   }
 }
