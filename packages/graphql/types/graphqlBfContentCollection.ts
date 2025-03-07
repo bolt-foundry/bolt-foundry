@@ -32,8 +32,15 @@ export const graphqlBfContentCollectionType = objectType({
       args: {
         id: nonNull(idArg()),
       },
+      resolve: async (_parent, { id }, ctx) => {
+        // const collection = await ctx.findX(BfContentCollection, toBfGid(parent.id));
+        // const item = await ctx.findTargetX(collection, BfContentItem, toBfGid(id)));
+
+        // #techdebt b/c we haven't yet implemented queryTargets on the context, so any item on any collection will return. 🤷
+        const item = await ctx.findX(BfContentItem, toBfGid(id));
+        return item.toGraphql();
+      },
     });
-    // Connection field for content items (direct children only in Phase 1)
     t.connectionField("items", {
       type: graphqlBfContentItemType,
       resolve: async (parent, args, ctx) => {
@@ -46,7 +53,6 @@ export const graphqlBfContentCollectionType = objectType({
       },
     });
 
-    // Connection field for child collections (direct children only in Phase 1)
     t.connectionField("childCollections", {
       type: "BfContentCollection",
       resolve: async (parent, args, ctx) => {
