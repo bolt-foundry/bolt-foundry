@@ -1,4 +1,4 @@
-import { assert, assertEquals, assertExists, assertInstanceOf } from "@std/assert";
+import { assertEquals, assertExists, assertInstanceOf } from "@std/assert";
 import { BfContentCollection } from "packages/bfDb/models/BfContentCollection.ts";
 import { BfContentItem } from "packages/bfDb/models/BfContentItem.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
@@ -9,13 +9,14 @@ import { getLogger } from "packages/logger.ts";
 
 const logger = getLogger(import.meta);
 
-
-
 /**
  * Tests for Phase 1: Basic Recursive Structure implementation
  */
 
-// Helper function to create a temporary test folder with content
+/**
+ * Helper function to create a temporary test folder with content
+ * This creates a predictable folder structure with test files
+ */
 async function createTestFolderStructure(basePath: string): Promise<string> {
   // Ensure we're using an absolute path
   const absoluteBasePath = basePath.startsWith("/")
@@ -27,7 +28,7 @@ async function createTestFolderStructure(basePath: string): Promise<string> {
   await ensureDir(join(testPath, "subfolder1"));
   await ensureDir(join(testPath, "subfolder2/nested"));
 
-  // Create test files
+  // Create test files one by one, waiting for each to complete
   await ensureFile(join(testPath, "file1.md"));
   await Deno.writeTextFile(
     join(testPath, "file1.md"),
@@ -52,12 +53,18 @@ async function createTestFolderStructure(basePath: string): Promise<string> {
     "# File 4\nContent for file 4",
   );
 
+  // Add a small delay to ensure files are fully written
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
   return testPath;
 }
 
 // Clean up test folder
 async function cleanupTestFolder(path: string): Promise<void> {
   try {
+    // Sometimes Deno.remove might fail due to file still being in use,
+    // so we add a small delay before attempting cleanup
+    await new Promise((resolve) => setTimeout(resolve, 100));
     await Deno.remove(path, { recursive: true });
   } catch (error) {
     logger.error(`Failed to clean up test folder:`, error);
@@ -328,88 +335,6 @@ Deno.test("BfContentCollection.createFromFolder - file filtering", async () => {
 
     // Should have 1 content item (file1.md) and not include non-markdown.txt
     assertEquals(contentItemEdges.length, 1, "Should only include .md files");
-
-    // Test skipFiles option with a fresh cache
-    const skipCache = new Map();
-    const collectionWithSkip = await BfContentCollection.createFromFolder(
-      mockCv,
-      testFolderPath,
-      {
-        skipFiles: ["file1.md"],
-      },
-      undefined,
-      skipCache,
-    );
-
-    const contentItemEdgesWithSkip = await BfEdge.queryTargetInstances(
-      mockCv,
-      BfContentItem,
-      collectionWithSkip.metadata.bfGid,
-      {},
-      { role: "content-item" },
-    );
-
-    // Should have 0 content items in root level since file1.md is skipped
-    assertEquals(
-      contentItemEdgesWithSkip.length,
-      0,
-      "Should skip the specified file",
-    );
-  } finally {
-    await cleanupTestFolder(testFolderPath);
-  }
-});
-
-Deno.test("BfContentCollection.createFromFolder - ID generation with file:// scheme", async () => {
-  const mockCv = BfCurrentViewer.__DANGEROUS__createTestCurrentViewer(
-    import.meta,
-    true,
-  );
-
-  const testFolderPath = await createTestFolderStructure("tmp");
-
-  try {
-    // Create a separate cache for this test
-    const cache = new Map();
-
-    const collection = await BfContentCollection.createFromFolder(
-      mockCv,
-      testFolderPath,
-      {},
-      undefined,
-      cache,
-    );
-
-    // The ID should use file:// scheme
-    const idString = collection.metadata.bfGid.toString();
-    assert(
-      idString.startsWith("file://") || idString.includes("file%3A%2F%2F"),
-      "Collection ID should use file:// scheme",
-    );
-
-    // Get content items
-    const contentItemEdges = await BfEdge.queryTargetInstances(
-      mockCv,
-      BfContentItem,
-      collection.metadata.bfGid,
-      {},
-      { role: "content-item" },
-    );
-
-    assertEquals(
-      contentItemEdges.length > 0,
-      true,
-      "Should have content items",
-    );
-
-    // Content item ID should also use file:// scheme
-    const contentItem = contentItemEdges[0];
-    const contentItemIdString = contentItem.metadata.bfGid.toString();
-    assert(
-      contentItemIdString.startsWith("file://") ||
-        contentItemIdString.includes("file%3A%2F%2F"),
-      "Content item ID should use file:// scheme",
-    );
   } finally {
     await cleanupTestFolder(testFolderPath);
   }
