@@ -5,7 +5,9 @@ export type BfCurrentViewer__Home__param = {
   readonly data: {
     readonly __typename: string,
     readonly contentCollection: ({
-      readonly ContentCollection: BfContentCollection__ContentCollection__output_type,
+      readonly item: ({
+        readonly ContentItem: BfContentItem__ContentItem__output_type,
+      } | null),
     } | null),
     /**
 A client pointer for the BfCurrentViewerLoggedOut type.

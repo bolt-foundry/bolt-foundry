@@ -20,18 +20,33 @@ const readerAst: ReaderAst<BfCurrentViewer__Home__param> = [
     arguments: [
       [
         "slug",
-        { kind: "String", value: "marketing" },
+        { kind: "String", value: "bf:///content/marketing" },
       ],
     ],
     condition: null,
     isUpdatable: false,
     selections: [
       {
-        kind: "Resolver",
-        alias: "ContentCollection",
-        arguments: null,
-        readerArtifact: BfContentCollection__ContentCollection__resolver_reader,
-        usedRefetchQueries: [],
+        kind: "Linked",
+        fieldName: "item",
+        alias: null,
+        arguments: [
+          [
+            "id",
+            { kind: "String", value: "bf:///content/marketing/show-hn.md" },
+          ],
+        ],
+        condition: null,
+        isUpdatable: false,
+        selections: [
+          {
+            kind: "Resolver",
+            alias: "ContentItem",
+            arguments: null,
+            readerArtifact: BfContentItem__ContentItem__resolver_reader,
+            usedRefetchQueries: [],
+          },
+        ],
       },
     ],
   },
