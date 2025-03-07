@@ -25,7 +25,8 @@
     "react/jsx-runtime": "npm:react/jsx-runtime",
     "content/": "./content/",
     "build/content/": "./build/content/",
-    "static/": "./static/"
+    "static/": "./static/",
+    "tmp/": "./tmp/"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

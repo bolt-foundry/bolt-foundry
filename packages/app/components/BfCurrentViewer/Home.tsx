@@ -7,9 +7,11 @@ import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 export const Home = iso(`
   field BfCurrentViewer.Home @component {
     __typename
-    contentCollection(slug: "marketing") {
-      ContentCollection
-    }
+    # contentCollection(slug: "content/marketing") {
+    #   item(slug: "content/marketing/home") {
+    #     ContentItem
+    #   }
+    # }
     asBfCurrentViewerLoggedOut {
      DemoButton
     }
@@ -18,7 +20,7 @@ export const Home = iso(`
   // Extract content items from the data
   const { navigate } = useRouter();
   const demoButton = data?.asBfCurrentViewerLoggedOut?.DemoButton;
-  const collection = data?.contentCollection;
+  const ContentItem = data?.contentCollection?.item?.ContentItem;
   const showExtendedContent = useFeatureFlagEnabled("show_extended_content");
 
   return (
@@ -46,9 +48,9 @@ export const Home = iso(`
               />
             )}
 
-          {collection && showExtendedContent
-            ? <data.contentCollection.ContentCollection />
-            : <p>Coming soon.</p>}
+          {ContentItem && showExtendedContent
+            ? <ContentItem />
+            : <p>We're buliding something.</p>}
         </div>
       </div>
     </>

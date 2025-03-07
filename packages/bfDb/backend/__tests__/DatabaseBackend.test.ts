@@ -261,15 +261,6 @@ Deno.test("bfDb - query items", async () => {
       }
     }
 
-    // Check all nodes in the database to help debug
-    const allNodes = await bfQueryItems<Props>({}, {});
-    logger.info(`Total nodes in database: ${allNodes.length}`);
-    for (const node of allNodes) {
-      logger.info(
-        `Found node: className=${node.metadata.className}, bfGid=${node.metadata.bfGid}`,
-      );
-    }
-
     // Test query by metadata
     const results1 = await bfQueryItems<Props>(
       { className: "TestQueryNode" },
