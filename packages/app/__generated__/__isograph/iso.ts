@@ -5,9 +5,9 @@ import { type BfBlogPost__BlogPostPermalinkPage__param } from './BfBlogPost/Blog
 import { type BfBlogPost__BlogPostTitleForHeader__param } from './BfBlogPost/BlogPostTitleForHeader/param_type.ts';
 import { type BfContentCollection__ContentCollection__param } from './BfContentCollection/ContentCollection/param_type.ts';
 import { type BfContentItem__ContentItem__param } from './BfContentItem/ContentItem/param_type.ts';
+import { type BfCurrentViewer__DemoButton__param } from './BfCurrentViewer/DemoButton/param_type.ts';
 import { type BfCurrentViewer__Home__param } from './BfCurrentViewer/Home/param_type.ts';
 import { type BfCurrentViewerLoggedIn__LoggedInView__param } from './BfCurrentViewerLoggedIn/LoggedInView/param_type.ts';
-import { type BfCurrentViewerLoggedOut__DemoButton__param } from './BfCurrentViewerLoggedOut/DemoButton/param_type.ts';
 import { type BfCurrentViewerLoggedOut__LoggedOutView__param } from './BfCurrentViewerLoggedOut/LoggedOutView/param_type.ts';
 import { type BfCurrentViewerLoggedOut__LoginAndRegisterForm__param } from './BfCurrentViewerLoggedOut/LoginAndRegisterForm/param_type.ts';
 import { type BfCurrentViewerLoggedOut__LoginButton__param } from './BfCurrentViewerLoggedOut/LoginButton/param_type.ts';
@@ -149,16 +149,16 @@ export function iso<T>(
 ): IdentityWithParamComponent<BfContentItem__ContentItem__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field BfCurrentViewer.DemoButton', T>
+): IdentityWithParamComponent<BfCurrentViewer__DemoButton__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field BfCurrentViewer.Home', T>
 ): IdentityWithParamComponent<BfCurrentViewer__Home__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field BfCurrentViewerLoggedIn.LoggedInView', T>
 ): IdentityWithParamComponent<BfCurrentViewerLoggedIn__LoggedInView__param>;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field BfCurrentViewerLoggedOut.DemoButton', T>
-): IdentityWithParamComponent<BfCurrentViewerLoggedOut__DemoButton__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field BfCurrentViewerLoggedOut.LoggedOutView', T>

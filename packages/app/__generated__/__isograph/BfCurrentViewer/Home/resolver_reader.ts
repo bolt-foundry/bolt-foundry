@@ -47,7 +47,7 @@ const readerAst: ReaderAst<BfCurrentViewer__Home__param> = [
         kind: "Resolver",
         alias: "DemoButton",
         arguments: null,
-        readerArtifact: BfCurrentViewerLoggedOut__DemoButton__resolver_reader,
+        readerArtifact: BfCurrentViewer__DemoButton__resolver_reader,
         usedRefetchQueries: [],
       },
     ],
