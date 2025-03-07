@@ -86,7 +86,6 @@ export interface NexusGenObjects {
   BfContentCollection: { // root type
     description?: string | null; // String
     id: string; // ID!
-    item?: NexusGenRootTypes['BfContentItem'] | null; // BfContentItem
     title?: string | null; // String
   }
   BfContentCollectionConnection: { // root type
