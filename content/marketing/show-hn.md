@@ -3,12 +3,12 @@
 Hey HN! We're building an open-source CMS designed to help creators with every
 part of the content production pipeline.
 
-We're showing our tiny first step: A tool designed to take in a Twitter
-username and produce an "identity card" based on it. We expect to use an
-approach similar to [Constitutional AI] with an explicit focus on repeatability,
-testability, and verification of an "identity card." We think this approach could
-be used to create finetuning examples for training changes, or serve as
-inference time insight for LLMs, or most likely a combination of the two.
+We're showing our tiny first step: A tool designed to take in a Twitter username
+and produce an "identity card" based on it. We expect to use an approach similar
+to [Constitutional AI] with an explicit focus on repeatability, testability, and
+verification of an "identity card." We think this approach could be used to
+create finetuning examples for training changes, or serve as inference time
+insight for LLMs, or most likely a combination of the two.
 
 The tooling we're showing today is extremely simplistic (and the AI is frankly
 bad) but this is intentional. Right now, we're more focused on showing the dev
@@ -60,8 +60,8 @@ exploring.
    For us, the benefit is we can colocate not only fragments, but avoid Fragment
    spreads, passing around state, etc. It's possible to reason about a file /
    component completely in isolation, more than we've found with Relay. Its "I
-   have no graphql experience" onboarding process is the best we've seen
-   thus far.
+   have no graphql experience" onboarding process is the best we've seen thus
+   far.
 
 2. [Replit] is better known as a "tinkerer's tool," but we've been using it as a
    production grade replacement IDE, hosting platform, and development tooling
