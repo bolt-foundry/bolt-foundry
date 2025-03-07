@@ -1,14 +1,15 @@
 import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 import { CfLogo } from "packages/app/resources/CfLogo.tsx";
-import { useFeatureFlagEnabled } from "packages/app/hooks/useFeatureFlagHooks.ts";
 import { useRouter } from "packages/app/contexts/RouterContext.tsx";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 
 export const Home = iso(`
   field BfCurrentViewer.Home @component {
     __typename
-    contentCollection(slug: "marketing") {
-      ContentCollection
+    contentCollection(slug: "bf:///content/marketing") {
+      item(id: "bf:///content/marketing/show-hn.md") {
+        ContentItem
+      }
     }
     asBfCurrentViewerLoggedOut {
      DemoButton
@@ -18,8 +19,7 @@ export const Home = iso(`
   // Extract content items from the data
   const { navigate } = useRouter();
   const demoButton = data?.asBfCurrentViewerLoggedOut?.DemoButton;
-  const collection = data?.contentCollection;
-  const showExtendedContent = useFeatureFlagEnabled("show_extended_content");
+  const ContentItem = data?.contentCollection?.item?.ContentItem;
 
   return (
     <>
@@ -46,9 +46,7 @@ export const Home = iso(`
               />
             )}
 
-          {collection && showExtendedContent
-            ? <data.contentCollection.ContentCollection />
-            : <p>Coming soon.</p>}
+          {ContentItem ? <ContentItem /> : <p>We're buliding something.</p>}
         </div>
       </div>
     </>
