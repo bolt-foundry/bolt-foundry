@@ -9,17 +9,14 @@ const queryText = 'query EntrypointHome  {\
     __typename,\
     id,\
     __typename,\
-    contentCollection____slug___s_marketing: contentCollection(slug: "marketing") {\
+    contentCollection____slug___s_bf____content_marketing: contentCollection(slug: "bf:///content/marketing") {\
       id,\
-      __typename,\
-      items {\
-        nodes {\
-          id,\
-          __typename,\
-          body,\
-          href,\
-          title,\
-        },\
+      item____id___s_bf____content_marketing_show_hn_md: item(id: "bf:///content/marketing/show-hn.md") {\
+        id,\
+        __typename,\
+        body,\
+        href,\
+        title,\
       },\
     },\
     ... on BfCurrentViewerLoggedOut {\
@@ -59,7 +56,7 @@ const normalizationAst: NormalizationAst = {
           arguments: [
             [
               "slug",
-              { kind: "String", value: "marketing" },
+              { kind: "String", value: "bf:///content/marketing" },
             ],
           ],
           concreteType: "BfContentCollection",
@@ -70,48 +67,40 @@ const normalizationAst: NormalizationAst = {
               arguments: null,
             },
             {
-              kind: "Scalar",
-              fieldName: "__typename",
-              arguments: null,
-            },
-            {
               kind: "Linked",
-              fieldName: "items",
-              arguments: null,
-              concreteType: "BfContentItemConnection",
+              fieldName: "item",
+              arguments: [
+                [
+                  "id",
+                  { kind: "String", value: "bf:///content/marketing/show-hn.md" },
+                ],
+              ],
+              concreteType: "BfContentItem",
               selections: [
                 {
-                  kind: "Linked",
-                  fieldName: "nodes",
+                  kind: "Scalar",
+                  fieldName: "id",
                   arguments: null,
-                  concreteType: "BfContentItem",
-                  selections: [
-                    {
-                      kind: "Scalar",
-                      fieldName: "id",
-                      arguments: null,
-                    },
-                    {
-                      kind: "Scalar",
-                      fieldName: "__typename",
-                      arguments: null,
-                    },
-                    {
-                      kind: "Scalar",
-                      fieldName: "body",
-                      arguments: null,
-                    },
-                    {
-                      kind: "Scalar",
-                      fieldName: "href",
-                      arguments: null,
-                    },
-                    {
-                      kind: "Scalar",
-                      fieldName: "title",
-                      arguments: null,
-                    },
-                  ],
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "__typename",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "body",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "href",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "title",
+                  arguments: null,
                 },
               ],
             },
