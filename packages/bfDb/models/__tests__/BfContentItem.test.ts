@@ -1,4 +1,9 @@
-import { assert, assertEquals, assertExists, assertInstanceOf } from "@std/assert";
+import {
+  assert,
+  assertEquals,
+  assertExists,
+  assertInstanceOf,
+} from "@std/assert";
 import { BfContentItem } from "packages/bfDb/models/BfContentItem.ts";
 import { BfContentCollection } from "packages/bfDb/models/BfContentCollection.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
@@ -10,7 +15,11 @@ import { getLogger } from "packages/logger.ts";
 const logger = getLogger(import.meta);
 
 // Helper function to create a temporary test file with content
-async function createTestFile(basePath: string, fileName: string, content: string): Promise<string> {
+async function createTestFile(
+  basePath: string,
+  fileName: string,
+  content: string,
+): Promise<string> {
   const absoluteBasePath = basePath.startsWith("/")
     ? basePath
     : join(Deno.cwd(), basePath);
@@ -72,7 +81,10 @@ This is the body of the test content.`;
     assertExists(contentItem);
     assertInstanceOf(contentItem, BfContentItem);
     assertEquals(contentItem.props.title, "Test Content Item");
-    assertEquals(contentItem.props.body, "This is the body of the test content.");
+    assertEquals(
+      contentItem.props.body,
+      "This is the body of the test content.",
+    );
     assertEquals(contentItem.props.slug, "test-content-item");
     assertEquals(contentItem.props.author, "Test Author");
     assertEquals(contentItem.props.summary, "This is a test summary");
@@ -112,7 +124,7 @@ This is the body of the test content.`;
     // Test with BfContentCollection.createFromFolder
     const testCollection = await BfContentCollection.createFromFolder(
       mockCv,
-      testDir
+      testDir,
     );
 
     // Query for content items in the collection created from folder
@@ -158,17 +170,27 @@ Content with partial frontmatter`;
 
   const contentWithoutFrontmatter = `Content without any frontmatter`;
 
-  const testDir = await createTestFile("tmp", "test1.md", contentWithFullFrontmatter);
+  const testDir = await createTestFile(
+    "tmp",
+    "test1.md",
+    contentWithFullFrontmatter,
+  );
   await ensureFile(join(testDir, "test2.md"));
-  await Deno.writeTextFile(join(testDir, "test2.md"), contentWithPartialFrontmatter);
+  await Deno.writeTextFile(
+    join(testDir, "test2.md"),
+    contentWithPartialFrontmatter,
+  );
   await ensureFile(join(testDir, "test3.md"));
-  await Deno.writeTextFile(join(testDir, "test3.md"), contentWithoutFrontmatter);
+  await Deno.writeTextFile(
+    join(testDir, "test3.md"),
+    contentWithoutFrontmatter,
+  );
 
   try {
     // Create collection from folder
     const collection = await BfContentCollection.createFromFolder(
       mockCv,
-      testDir
+      testDir,
     );
 
     // Query for content items
@@ -180,17 +202,17 @@ Content with partial frontmatter`;
       { role: "content-item" },
     );
 
-    // Sort items by title to ensure consistent order for testing
-    contentItems.sort((a, b) => 
-      (a.props.title || "").localeCompare(b.props.title || "")
-    );
-
     // Verify we have 3 content items
     assertEquals(contentItems.length, 3);
 
     // Test content with full frontmatter
-    const fullItem = contentItems.find(item => item.props.title === "Full Frontmatter");
-    assertExists(fullItem);
+    const fullItem = contentItems.find((item) =>
+      item.props.title === "Full Frontmatter"
+    );
+    assertExists(
+      fullItem,
+      "Should have a content item with title 'Full Frontmatter'",
+    );
     assertEquals(fullItem.props.author, "Test Author");
     assertEquals(fullItem.props.summary, "This is a test summary");
     assertEquals(fullItem.props.cta, "Read more");
@@ -198,17 +220,33 @@ Content with partial frontmatter`;
     assertEquals(fullItem.props.body.trim(), "Content with full frontmatter");
 
     // Test content with partial frontmatter
-    const partialItem = contentItems.find(item => item.props.title === "Partial Frontmatter");
-    assertExists(partialItem);
+    const partialItem = contentItems.find((item) =>
+      item.props.title === "Partial Frontmatter"
+    );
+    assertExists(
+      partialItem,
+      "Should have a content item with title 'Partial Frontmatter'",
+    );
     assertEquals(partialItem.props.author, undefined);
     assertEquals(partialItem.props.summary, undefined);
     assertEquals(partialItem.props.slug, "partial-frontmatter");
-    assertEquals(partialItem.props.body.trim(), "Content with partial frontmatter");
+    assertEquals(
+      partialItem.props.body.trim(),
+      "Content with partial frontmatter",
+    );
 
     // Test content without frontmatter
-    const noFrontmatterItem = contentItems.find(item => item.props.title === "test3");
-    assertExists(noFrontmatterItem);
-    assertEquals(noFrontmatterItem.props.body.trim(), "Content without any frontmatter");
+    const noFrontmatterItem = contentItems.find((item) =>
+      item.props.title === "test3"
+    );
+    assertExists(
+      noFrontmatterItem,
+      "Should have a content item with title 'test3'",
+    );
+    assertEquals(
+      noFrontmatterItem.props.body.trim(),
+      "Content without any frontmatter",
+    );
     assertEquals(noFrontmatterItem.props.slug, "test3");
   } finally {
     await cleanupTestFolder(testDir);

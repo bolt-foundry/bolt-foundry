@@ -1,5 +1,6 @@
 import { extractYaml } from "@std/front-matter";
 import { getLogger } from "packages/logger.ts";
+import type { BfContentItemProps } from "packages/bfDb/models/BfContentItem.ts";
 
 const logger = getLogger(import.meta);
 
@@ -7,7 +8,7 @@ const logger = getLogger(import.meta);
  * Safely extracts YAML frontmatter from a content string
  * Falls back gracefully if frontmatter is missing or malformed
  */
-export function safeExtractFrontmatter<T>(
+export function safeExtractFrontmatter<T = BfContentItemProps>(
   content: string,
   defaultValues: Partial<T> = {},
 ): { attrs: Partial<T>; body: string } {
@@ -19,7 +20,7 @@ export function safeExtractFrontmatter<T>(
 
   // No content or doesn't start with frontmatter delimiter
   if (!content || !content.trim().startsWith("---")) {
-    logger.info("Content has no frontmatter, using defaults");
+    logger.debug("Content has no frontmatter, using defaults");
     return result;
   }
 
