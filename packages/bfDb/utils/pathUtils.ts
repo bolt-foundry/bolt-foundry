@@ -7,8 +7,9 @@ import { type BfGid, toBfGid } from "packages/bfDb/classes/BfNodeIds.ts";
  * Automatically handles relative paths by converting to absolute
  */
 export function pathToBfGid(path: string): BfGid {
-  // Convert relative paths to absolute paths
-  return toBfGid(path);
+  // Convert absolute paths to bf://$RELATIVEPATH
+
+  return toBfGid(path.replace(Deno.cwd(), "bf://"));
 }
 
 /**
