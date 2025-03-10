@@ -107,7 +107,7 @@ export async function getBackend(): Promise<DatabaseBackend> {
 
       // Initialize the database schema
       await cachedBackend.initialize();
-      logger.info(`Database backend of type ${backendType} initialized`);
+      logger.debug(`Database backend of type ${backendType} initialized`);
 
       return cachedBackend;
     } catch (error) {

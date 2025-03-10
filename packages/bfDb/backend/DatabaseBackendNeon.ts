@@ -588,7 +588,7 @@ export class DatabaseBackendNeon implements DatabaseBackend {
       }
     }
 
-    logger.info("Database schema initialized");
+    logger.debug("Database schema initialized");
   }
 
   /**
