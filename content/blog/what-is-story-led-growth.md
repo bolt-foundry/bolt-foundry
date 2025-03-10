@@ -1,15 +1,12 @@
 ---
-CTA: "We're a team focused on helping companies implement story-led growth. Get in touch!"
-published: "Mon Dec 09 2024 00:00:00 GMT+0000 (Coordinated Universal Time)"
-updated: "Mon Jan 27 2025 00:00:00 GMT+0000 (Coordinated Universal Time)"
-image: "static/assets/blog/images/silhouette.avif"
-summary: "If you tell your story well, marketing will be natural. If you don't, you have to pay for performance"
-author: "Randall Bennett"
-title: "Untitled"
-cta: "Read more"
+CTA: We're a team focused on helping companies implement story-led growth. Get in touch!
+published:
+updated:
+image: static/assets/blog/images/silhouette.avif
+summary: If you tell your story well, marketing will be natural. If you don't, you have to pay for performance
+author: Randall Bennett
+title: "Story-led growth: Focus on customers, not marketing"
 ---
-
-# Story-led growth: Focus on customers, not marketing
 
 > I grew up with a cartoon idea of a very successful businessman (in the cartoon
 > it was always a man): a rapacious, cigar-smoking, table-thumping guy in his
