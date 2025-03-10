@@ -246,7 +246,6 @@ type Mutation {
   register(attResp: JSONString!, email: String!): BfCurrentViewerLoggedIn
   registrationOptions(email: String!): JSONString
   reviseBlog(blogPost: String!): BfOrganization
-  submitYcForm(formData: String, systemPrompt: String, taskPrompt: String): YCRecommendations
 }
 
 interface Node {

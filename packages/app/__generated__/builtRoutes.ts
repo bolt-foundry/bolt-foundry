@@ -15,7 +15,6 @@ iso(`entrypoint Mutation.MakeTweets`)
 iso(`entrypoint Mutation.Register`)
 iso(`entrypoint Mutation.RegistrationOptions`)
 iso(`entrypoint Mutation.ReviseBlog`)
-iso(`entrypoint Mutation.SubmitYcForm`)
 iso(`entrypoint Query.EntrypointBlogPost`)
 iso(`entrypoint Query.EntrypointBlog`)
 iso(`entrypoint Query.EntrypointContentFoundryApp`)
@@ -54,7 +53,6 @@ import makeTweets from "packages/app/__generated__/__isograph/Mutation/MakeTweet
 import register from "packages/app/__generated__/__isograph/Mutation/Register/entrypoint.ts"
 import registrationOptions from "packages/app/__generated__/__isograph/Mutation/RegistrationOptions/entrypoint.ts"
 import reviseBlog from "packages/app/__generated__/__isograph/Mutation/ReviseBlog/entrypoint.ts"
-import submitYcForm from "packages/app/__generated__/__isograph/Mutation/SubmitYcForm/entrypoint.ts"
 
 export {checkEmail};
 export {createVoice};
@@ -79,4 +77,3 @@ export {makeTweets};
 export {register};
 export {registrationOptions};
 export {reviseBlog};
-export {submitYcForm};
