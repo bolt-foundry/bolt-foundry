@@ -1,3 +1,8 @@
+---
+published_at:
+title:
+---
+
 ## Replit's agent
 
 ## Replit's assistant
