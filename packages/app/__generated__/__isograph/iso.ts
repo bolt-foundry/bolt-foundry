@@ -36,7 +36,6 @@ import { type Mutation__MakeTweets__param } from './Mutation/MakeTweets/param_ty
 import { type Mutation__Register__param } from './Mutation/Register/param_type.ts';
 import { type Mutation__RegistrationOptions__param } from './Mutation/RegistrationOptions/param_type.ts';
 import { type Mutation__ReviseBlog__param } from './Mutation/ReviseBlog/param_type.ts';
-import { type Mutation__SubmitYcForm__param } from './Mutation/SubmitYcForm/param_type.ts';
 import { type Query__EntrypointBlogPost__param } from './Query/EntrypointBlogPost/param_type.ts';
 import { type Query__EntrypointBlog__param } from './Query/EntrypointBlog/param_type.ts';
 import { type Query__EntrypointContentFoundryApp__param } from './Query/EntrypointContentFoundryApp/param_type.ts';
@@ -60,7 +59,6 @@ import entrypoint_Mutation__MakeTweets from '../__isograph/Mutation/MakeTweets/e
 import entrypoint_Mutation__Register from '../__isograph/Mutation/Register/entrypoint.ts';
 import entrypoint_Mutation__RegistrationOptions from '../__isograph/Mutation/RegistrationOptions/entrypoint.ts';
 import entrypoint_Mutation__ReviseBlog from '../__isograph/Mutation/ReviseBlog/entrypoint.ts';
-import entrypoint_Mutation__SubmitYcForm from '../__isograph/Mutation/SubmitYcForm/entrypoint.ts';
 import entrypoint_Query__EntrypointBlogPost from '../__isograph/Query/EntrypointBlogPost/entrypoint.ts';
 import entrypoint_Query__EntrypointBlog from '../__isograph/Query/EntrypointBlog/entrypoint.ts';
 import entrypoint_Query__EntrypointContentFoundryApp from '../__isograph/Query/EntrypointContentFoundryApp/entrypoint.ts';
@@ -273,10 +271,6 @@ export function iso<T>(
 ): IdentityWithParam<Mutation__ReviseBlog__param>;
 
 export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field Mutation.SubmitYcForm', T>
-): IdentityWithParam<Mutation__SubmitYcForm__param>;
-
-export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.EntrypointBlogPost', T>
 ): IdentityWithParam<Query__EntrypointBlogPost__param>;
 
@@ -369,10 +363,6 @@ export function iso<T>(
 ): typeof entrypoint_Mutation__ReviseBlog;
 
 export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'entrypoint Mutation.SubmitYcForm', T>
-): typeof entrypoint_Mutation__SubmitYcForm;
-
-export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointBlogPost', T>
 ): typeof entrypoint_Query__EntrypointBlogPost;
 
@@ -452,8 +442,6 @@ export function iso(isographLiteralText: string):
       return entrypoint_Mutation__RegistrationOptions;
     case 'entrypoint Mutation.ReviseBlog':
       return entrypoint_Mutation__ReviseBlog;
-    case 'entrypoint Mutation.SubmitYcForm':
-      return entrypoint_Mutation__SubmitYcForm;
     case 'entrypoint Query.EntrypointBlogPost':
       return entrypoint_Query__EntrypointBlogPost;
     case 'entrypoint Query.EntrypointBlog':
