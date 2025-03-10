@@ -354,7 +354,6 @@ export interface NexusGenFieldTypes {
     register: NexusGenRootTypes['BfCurrentViewerLoggedIn'] | null; // BfCurrentViewerLoggedIn
     registrationOptions: NexusGenScalars['JSONString'] | null; // JSONString
     reviseBlog: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
-    submitYcForm: NexusGenRootTypes['YCRecommendations'] | null; // YCRecommendations
   }
   PageInfo: { // field return type
     endCursor: string | null; // String
@@ -558,7 +557,6 @@ export interface NexusGenFieldTypeNames {
     register: 'BfCurrentViewerLoggedIn'
     registrationOptions: 'JSONString'
     reviseBlog: 'BfOrganization'
-    submitYcForm: 'YCRecommendations'
   }
   PageInfo: { // field return type name
     endCursor: 'String'
@@ -711,11 +709,6 @@ export interface NexusGenArgTypes {
     }
     reviseBlog: { // args
       blogPost: string; // String!
-    }
-    submitYcForm: { // args
-      formData?: string | null; // String
-      systemPrompt?: string | null; // String
-      taskPrompt?: string | null; // String
     }
   }
   Query: {
