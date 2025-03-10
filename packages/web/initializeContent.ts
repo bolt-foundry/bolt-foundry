@@ -11,7 +11,7 @@ const logger = getLogger(import.meta);
 export async function initializeContentCollections(
   cv: BfCurrentViewer,
 ): Promise<void> {
-  logger.info("Initializing content collections...");
+  logger.debug("Initializing content collections...");
 
   try {
     // Define the content directory paths to initialize
@@ -39,7 +39,7 @@ export async function initializeContentCollections(
       logger.debug(`Initialized content collection for: ${dir}`);
     }
 
-    logger.info("Content collections initialized successfully");
+    logger.debug("Content collections initialized successfully");
   } catch (error) {
     logger.error("Error initializing content collections:", error);
     throw error;

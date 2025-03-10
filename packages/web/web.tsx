@@ -260,9 +260,7 @@ const contentInitCv = BfCurrentViewer
   .__DANGEROUS_USE_IN_SCRIPTS_ONLY__createOmni(import.meta);
 
 // Initialize content collections
-await initializeContentCollections(contentInitCv);
-
-logger.info("Content collections initialized and ready to serve");
+const contentPromise = initializeContentCollections(contentInitCv);
 
 const staticPrefix = "/static";
 function staticHandler(req: Request) {
@@ -301,6 +299,8 @@ if (import.meta.main) {
           const redirectUrl = new URL(redirectTo, req.url);
           return Response.redirect(redirectUrl, 301);
         }
+
+        await contentPromise;
 
         res = await handler(req, routeParams);
 
