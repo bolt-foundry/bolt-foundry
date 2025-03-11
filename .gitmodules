@@ -1,0 +1,3 @@
+[submodule "content/contentfoundry.com"]
+	path = content/contentfoundry.com
+	url = https://github.com/content-foundry/contentfoundry.com.git
