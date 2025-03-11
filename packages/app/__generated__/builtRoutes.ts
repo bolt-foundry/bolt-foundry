@@ -16,6 +16,7 @@ iso(`entrypoint Mutation.Register`)
 iso(`entrypoint Mutation.RegistrationOptions`)
 iso(`entrypoint Mutation.ReviseBlog`)
 iso(`entrypoint Mutation.SubmitYcForm`)
+iso(`entrypoint Query.EntrypointBigLittleTechAi`)
 iso(`entrypoint Query.EntrypointBlogPost`)
 iso(`entrypoint Query.EntrypointBlog`)
 iso(`entrypoint Query.EntrypointContentFoundryApp`)
@@ -33,6 +34,7 @@ iso(`entrypoint Query.entrypointTwitterIdeatorResearch`)
 
 import checkEmail from "packages/app/__generated__/__isograph/Mutation/CheckEmail/entrypoint.ts"
 import createVoice from "packages/app/__generated__/__isograph/Mutation/CreateVoice/entrypoint.ts"
+import entrypointBigLittleTechAi from "packages/app/__generated__/__isograph/Query/EntrypointBigLittleTechAi/entrypoint.ts"
 import entrypointBlog from "packages/app/__generated__/__isograph/Query/EntrypointBlog/entrypoint.ts"
 import entrypointBlogPost from "packages/app/__generated__/__isograph/Query/EntrypointBlogPost/entrypoint.ts"
 import entrypointContentFoundryApp from "packages/app/__generated__/__isograph/Query/EntrypointContentFoundryApp/entrypoint.ts"
@@ -58,6 +60,7 @@ import submitYcForm from "packages/app/__generated__/__isograph/Mutation/SubmitY
 
 export {checkEmail};
 export {createVoice};
+export {entrypointBigLittleTechAi};
 export {entrypointBlogPost};
 export {entrypointBlog};
 export {entrypointContentFoundryApp};
