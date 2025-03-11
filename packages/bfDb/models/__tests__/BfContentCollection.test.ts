@@ -1,4 +1,9 @@
-import { assertEquals, assertExists, assertInstanceOf } from "@std/assert";
+import {
+  assert,
+  assertEquals,
+  assertExists,
+  assertInstanceOf,
+} from "@std/assert";
 import { BfContentCollection } from "packages/bfDb/models/BfContentCollection.ts";
 import { BfContentItem } from "packages/bfDb/models/BfContentItem.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
@@ -335,6 +340,94 @@ Deno.test("BfContentCollection.createFromFolder - file filtering", async () => {
 
     // Should have 1 content item (file1.md) and not include non-markdown.txt
     assertEquals(contentItemEdges.length, 1, "Should only include .md files");
+  } finally {
+    await cleanupTestFolder(testFolderPath);
+  }
+});
+
+Deno.test("BfContentCollection.createFromFolder - should skip dotfiles", async () => {
+  const mockCv = BfCurrentViewer.__DANGEROUS__createTestCurrentViewer(
+    import.meta,
+    true,
+  );
+
+  const testFolderPath = await createTestFolderStructure("tmp");
+
+  try {
+    // Create dotfiles that should be skipped
+    await ensureFile(join(testFolderPath, ".hidden-file.txt"));
+    await Deno.writeTextFile(
+      join(testFolderPath, ".hidden-file.txt"),
+      "This is a hidden file that should be skipped",
+    );
+
+    // Create a hidden directory with a file inside
+    await ensureDir(join(testFolderPath, ".hidden-dir"));
+    await ensureFile(
+      join(testFolderPath, ".hidden-dir", "file-in-hidden-dir.md"),
+    );
+    await Deno.writeTextFile(
+      join(testFolderPath, ".hidden-dir", "file-in-hidden-dir.md"),
+      "# This file is inside a hidden directory and should be skipped",
+    );
+
+    // Create a separate cache for this test
+    const cache = new Map();
+
+    // Test with collection creation
+    const collection = await BfContentCollection.createFromFolder(
+      mockCv,
+      testFolderPath,
+      {},
+      undefined,
+      cache,
+    );
+
+    // Get content items in the root collection - should not include hidden files
+    const contentItemEdges = await BfEdge.queryTargetInstances(
+      mockCv,
+      BfContentItem,
+      collection.metadata.bfGid,
+      {},
+      { role: "content-item" },
+    );
+
+    // Should have 1 content item (file1.md) and not include .hidden-file.txt
+    assertEquals(
+      contentItemEdges.length,
+      1,
+      "Should only include visible files, not dotfiles",
+    );
+
+    // Get child collections - should not include hidden directories
+    const childCollections = await BfEdge.queryTargetInstances(
+      mockCv,
+      BfContentCollection,
+      collection.metadata.bfGid,
+      {},
+      { role: "child-collection" },
+    );
+
+    // Should have 2 child collections (subfolder1, subfolder2) and not include .hidden-dir
+    assertEquals(
+      childCollections.length,
+      2,
+      "Should only include visible directories, not dot directories",
+    );
+
+    // Verify the names of the collections to ensure .hidden-dir is not included
+    const collectionNames = childCollections.map((c) =>
+      c.props.name.toLowerCase()
+    );
+    assert(
+      !collectionNames.includes(".hidden-dir"),
+      "Hidden directory should not be included",
+    );
+    assert(
+      collectionNames.includes("subfolder1") &&
+        collectionNames.includes("subfolder2"),
+      "Regular folders should be included",
+    );
   } finally {
     await cleanupTestFolder(testFolderPath);
   }
