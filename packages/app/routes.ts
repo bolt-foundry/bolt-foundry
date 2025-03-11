@@ -36,6 +36,7 @@ import {
   entrypointFormatter,
   entrypointFormatterEditor,
   entrypointFormatterVoice,
+  entrypointBigLittleTechAi,
   entrypointHome,
   entrypointTwitterIdeator,
   entrypointTwitterIdeatorCompose,
@@ -45,7 +46,6 @@ import {
 } from "packages/app/__generated__/builtRoutes.ts";
 import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
 
-// @ts-ignore this errors only at lsp side, not compile side?
 export const loggedInAppRoutes = new Map<string, IsographRoute>([
   ["/formatter", entrypointFormatter],
   ["/formatter/editor/:editorSlug?", entrypointFormatterEditor],
@@ -60,12 +60,12 @@ export const loggedInAppRoutes = new Map<string, IsographRoute>([
   ["/twitter/compose", entrypointTwitterIdeatorCompose],
 ]);
 
-// @ts-ignore this errors only at lsp side, not compile side?
 export const isographAppRoutes = new Map<string, IsographRoute>([
   ["/", entrypointHome],
   ["/login", entrypointContentFoundryApp],
   ["/blog/:slug", entrypointBlogPost],
   ["/blog", entrypointBlog],
+  ["/biglittletech.ai", entrypointBigLittleTechAi],
   ...loggedInAppRoutes,
 ]);
 

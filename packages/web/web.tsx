@@ -277,13 +277,37 @@ function staticHandler(req: Request) {
 // Use the port from environment or default 8000
 const port = Number(Deno.env.get("WEB_PORT") ?? 8000);
 
+async function handleDomains(req: Request) {
+  const reqUrl = new URL(req.url);
+  const domain = Deno.env.get("SERVE_PROJECT") ?? reqUrl.hostname;
+  if (domain === "biglittletech.ai") {
+    const pathWithParams = `/biglittletech.ai`;
+    logger.setLevel(logger.levels.DEBUG)
+    logger.debug(routes, routes.get(pathWithParams));
+    logger.resetLevel();
+    const [handler, routeParams, needsRedirect, redirectTo] = matchRoute(
+      pathWithParams,
+    );
+    return await handler(req, routeParams);
+  }
+  return null;
+}
+
 if (import.meta.main) {
   Deno.serve({ port }, async (req) => {
+    let res;
+    
     const incomingUrl = new URL(req.url);
     const timer = performance.now();
     const resHeaders = new Headers();
+    res = await handleDomains(req);
+    if (res) {
+      return res;
+    }
     using cv = BfCurrentViewer.createFromRequest(import.meta, req, resHeaders);
-    let res;
+    
+
+    
 
     if (incomingUrl.pathname.startsWith(staticPrefix)) {
       res = await staticHandler(req);
