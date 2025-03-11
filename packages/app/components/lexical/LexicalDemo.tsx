@@ -32,6 +32,7 @@ import {
   parseAllowedFontSize,
 } from "packages/app/components/lexical/styleConfig.ts";
 import TreeViewPlugin from "packages/app/components/lexical/plugins/TreeViewPlugin.tsx";
+import { ContentFoundryPlugin } from "packages/app/components/lexical/plugins/ContentFoundryPlugin.tsx";
 
 const placeholder = "Enter some rich text...";
 
@@ -166,6 +167,7 @@ export function Editor() {
           />
           <HistoryPlugin />
           <AutoFocusPlugin />
+          <ContentFoundryPlugin />
           <TreeViewPlugin />
         </div>
       </div>
