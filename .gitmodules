@@ -1,3 +1,9 @@
 [submodule "content/contentfoundry.com"]
 	path = content/contentfoundry.com
 	url = https://github.com/content-foundry/contentfoundry.com.git
+[submodule "content/biglittletech.ai"]
+	path = content/biglittletech.ai
+	url = https://github.com/content-foundry/biglittletech.ai.git
+[submodule "content/randallb.com"]
+	path = content/randallb.com
+	url = https://github.com/randallb/randallb.com.git
