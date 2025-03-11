@@ -165,6 +165,12 @@ export class BfContentCollection
       for (const entry of entries) {
         const filePath = join(dirPath, entry.name);
 
+        // Skip dotfiles (files starting with a dot)
+        if (entry.name.startsWith('.')) {
+          logger.debug(`Skipping dotfile: ${entry.name}`);
+          continue;
+        }
+
         // Skip files based on skipFiles option
         if (options.skipFiles && options.skipFiles.includes(entry.name)) {
           logger.debug(`Skipping file (in skipFiles list): ${entry.name}`);
@@ -299,6 +305,12 @@ export class BfContentCollection
       // Process each subdirectory
       for (const entry of entries) {
         const subDirPath = join(dirPath, entry.name);
+        
+        // Skip dotfolders (directories starting with a dot)
+        if (entry.name.startsWith('.')) {
+          logger.debug(`Skipping dotfolder: ${entry.name}`);
+          continue;
+        }
 
         // Skip directories based on skipFolders option
         if (options.skipFolders && options.skipFolders.includes(entry.name)) {
