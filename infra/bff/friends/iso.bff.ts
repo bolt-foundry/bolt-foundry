@@ -25,7 +25,14 @@ export async function isoCommand(options: string[]): Promise<number> {
     if (options.includes("--verbose")) {
       options = options.filter((opt) => opt !== "--verbose");
       const { stdout, stderr, code } = await runShellCommandWithOutput(
-        ["deno", "run", "-A", "npm:@isograph/compiler", ...options],
+        [
+          "deno",
+          "run",
+          "--no-check",
+          "-A",
+          "npm:@isograph/compiler",
+          ...options,
+        ],
       );
 
       if (stdout) logger.info(stdout);

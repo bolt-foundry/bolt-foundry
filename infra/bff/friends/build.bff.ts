@@ -33,6 +33,7 @@ const allowedEnvironmentVariables = [
   "REPL_HOME",
   "REPLIT_DEV_DOMAIN",
   "RPID",
+  "SERVE_PROJECT",
   "SQLITE_DB_PATH",
   "TEAMCITY_VERSION",
   "TERM",
