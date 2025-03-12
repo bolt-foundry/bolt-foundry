@@ -1,0 +1,6 @@
+
+export enum DeploymentEnvs {
+  DEVELOPMENT = "DEVELOPMENT",
+  STAGING = "STAGING",
+  PRODUCTION = "PRODUCTION",
+}
