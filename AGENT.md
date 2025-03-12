@@ -423,6 +423,9 @@ Assistants should always:
    > backend, or connected systems. The pointers should be actual markdown links
    > and should be relative to the project directory.
 
+8. **Any classes, complex data flows, etc. should go in an "appendix" section at
+   the bottom.**
+
 ## Workspace setup
 
 Assistants should check to make sure they're properly configured before trying
@@ -660,6 +663,9 @@ When reviewing code for Content Foundry, follow these guidelines:
 
 ### Code Style Guidelines
 
+- **Programming Paradigm**: Prefer functional approaches to code over
+  object-oriented programming (OOP) except when modeling data. Use pure
+  functions, avoid unnecessary classes, and minimize side effects.
 - **Naming**: PascalCase for classes/types/components (BfComponent), camelCase
   for variables/functions
 - **Imports**: Use absolute imports with explicit paths, group related imports
@@ -776,6 +782,15 @@ to `BfGid` using the `toBfGid` function]([^bfgid_conversion])
 
 The Content Foundry codebase follows specific patterns for organizing and
 importing code:
+
+##### Main Module Files
+
+Always name the main file of a module after its parent directory, rather than using "index.ts":
+
+- **Preferred**: `routes/routes.ts` (matches the directory name)
+- **Avoid**: `routes/index.ts` (generic name that doesn't indicate purpose)
+
+This approach improves code discoverability and makes it easier to trace module boundaries in the codebase. When you see an import like `import { Router } from "packages/web/routes/routes.ts"`, you immediately know which file to look for.
 
 ##### Direct Imports vs Barrel Files
 
