@@ -1,0 +1,306 @@
+/* 
+ * Content Foundry Design System - Base CSS
+ */
+
+/* CSS Reset & Base Styles */
+:root {
+  /* Color Variables */
+  --cf-primary: #01162f;
+  --cf-secondary: #18cfdb;
+  --cf-accent: #e478e4;
+  --cf-text: #333333;
+  --cf-text-light: #666666;
+  --cf-background: #ffffff;
+  --cf-background-alt: #f5f7fa;
+  --cf-border: #e0e4e8;
+
+  /* Alpha variations */
+  --cf-primary-015: rgba(1, 22, 47, 0.15);
+  --cf-secondary-015: rgba(24, 207, 219, 0.15);
+  --cf-accent-015: rgba(228, 120, 228, 0.15);
+
+  /* Typography */
+  --cf-font-family:
+    "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --cf-heading-font:
+    "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+
+  /* Gradients */
+  --cf-gradient: linear-gradient(135deg, var(--cf-secondary), var(--cf-accent));
+}
+
+/* Base styling */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--cf-font-family);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--cf-text);
+  background-color: var(--cf-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--cf-heading-font);
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--cf-primary);
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 1.25rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--cf-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--cf-accent);
+  text-decoration: underline;
+}
+
+/* Layout Utilities */
+.cf-container {
+  width: 100%;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1200px;
+}
+
+.cf-section {
+  padding: 3rem 0;
+}
+
+/* Flexbox utilities */
+.cf-flex {
+  display: flex;
+}
+
+.cf-flex-column {
+  flex-direction: column;
+}
+
+.cf-flex-wrap {
+  flex-wrap: wrap;
+}
+
+.cf-justify-center {
+  justify-content: center;
+}
+
+.cf-justify-between {
+  justify-content: space-between;
+}
+
+.cf-align-center {
+  align-items: center;
+}
+
+/* Grid system */
+.cf-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-gap: 1rem;
+}
+
+/* Spacing utilities */
+.cf-mt-1 {
+  margin-top: 0.25rem;
+}
+.cf-mt-2 {
+  margin-top: 0.5rem;
+}
+.cf-mt-3 {
+  margin-top: 1rem;
+}
+.cf-mt-4 {
+  margin-top: 1.5rem;
+}
+.cf-mt-5 {
+  margin-top: 3rem;
+}
+
+.cf-mb-1 {
+  margin-bottom: 0.25rem;
+}
+.cf-mb-2 {
+  margin-bottom: 0.5rem;
+}
+.cf-mb-3 {
+  margin-bottom: 1rem;
+}
+.cf-mb-4 {
+  margin-bottom: 1.5rem;
+}
+.cf-mb-5 {
+  margin-bottom: 3rem;
+}
+
+.cf-p-1 {
+  padding: 0.25rem;
+}
+.cf-p-2 {
+  padding: 0.5rem;
+}
+.cf-p-3 {
+  padding: 1rem;
+}
+.cf-p-4 {
+  padding: 1.5rem;
+}
+.cf-p-5 {
+  padding: 3rem;
+}
+
+/* Components */
+.cf-card {
+  background-color: var(--cf-background);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.cf-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--cf-secondary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cf-button:hover {
+  background-color: var(--cf-accent);
+}
+
+.cf-button--outline {
+  background-color: transparent;
+  border: 1px solid var(--cf-secondary);
+  color: var(--cf-secondary);
+}
+
+.cf-button--outline:hover {
+  background-color: var(--cf-secondary-015);
+}
+
+/* Header */
+.cf-header {
+  background: var(--cf-background);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 0;
+}
+
+/* Hero section */
+.cf-hero {
+  background: var(--cf-gradient);
+  color: white;
+  padding: 4rem 0;
+  text-align: center;
+}
+
+.cf-hero h1 {
+  color: white;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.cf-hero p {
+  font-size: 1.25rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.9;
+}
+
+/* Footer */
+.cf-footer {
+  background-color: var(--cf-primary);
+  color: white;
+  padding: 3rem 0;
+}
+
+.cf-footer a {
+  color: var(--cf-secondary);
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  .cf-hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .cf-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 12px;
+  }
+
+  .cf-hero h1 {
+    font-size: 2rem;
+  }
+
+  .cf-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .cf-container {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+  }
+}
