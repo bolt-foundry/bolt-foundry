@@ -4,7 +4,7 @@ import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/bff.ts";
 import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
 import { getLogger } from "packages/logger.ts";
-import { DeploymentEnvs } from "packages/web/web.tsx";
+import { DeploymentEnvs } from "packages/app/constants/deploymentEnvs.ts";
 
 const logger = getLogger(import.meta);
 
