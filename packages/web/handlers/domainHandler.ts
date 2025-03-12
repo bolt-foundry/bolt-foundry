@@ -46,7 +46,9 @@ export async function handleDomains(
 
   if (availableDomains.has(domain)) {
     logger.info(`Handling request for domain: ${domain}`);
-    return new Response(domain);
+    const contentUrl = new URL(import.meta.resolve(`content/${domain}/page.md`));
+    const text = await Deno.readTextFile(contentUrl);
+    return new Response(text);
   }
 
   return null;
