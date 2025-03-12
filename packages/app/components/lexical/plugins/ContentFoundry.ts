@@ -10,23 +10,24 @@ import type {LexicalEditor} from 'lexical';
 
 import {useEffect, useState} from 'react';
 
-export type Comment = {
+export type Example = {
   author: string;
   content: string;
   deleted: boolean;
   id: string;
   timeStamp: number;
-  type: 'comment';
+  type: 'example';
+  validity: "valid" | "invalid";
 };
 
 export type Thread = {
-  comments: Array<Comment>;
+  examples: Array<Example>;
   id: string;
   quote: string;
   type: 'thread';
 };
 
-export type Comments = Array<Thread | Comment>;
+export type Examples = Array<Thread | Example>;
 
 function createUID(): string {
   return Math.random()
@@ -35,30 +36,32 @@ function createUID(): string {
     .slice(0, 5);
 }
 
-export function createComment(
+export function createExample(
   content: string,
+  validity: "valid" | "invalid" = "valid",
   author: string,
   id?: string,
   timeStamp?: number,
   deleted?: boolean,
-): Comment {
+): Example {
   return {
     author,
     content,
     deleted: deleted === undefined ? false : deleted,
     id: id === undefined ? createUID() : id,
     timeStamp: timeStamp === undefined ? performance.now() : timeStamp,
-    type: 'comment',
+    type: 'example',
+    validity,
   };
 }
 
 export function createThread(
   quote: string,
-  comments: Array<Comment>,
+  examples: Array<Example>,
   id?: string,
 ): Thread {
   return {
-    comments,
+    examples,
     id: id === undefined ? createUID() : id,
     quote,
     type: 'thread',
@@ -67,103 +70,104 @@ export function createThread(
 
 function cloneThread(thread: Thread): Thread {
   return {
-    comments: Array.from(thread.comments),
+    examples: Array.from(thread.examples),
     id: thread.id,
     quote: thread.quote,
     type: 'thread',
   };
 }
 
-function markDeleted(comment: Comment): Comment {
+function markDeleted(example: Example): Example {
   return {
-    author: comment.author,
-    content: '[Deleted Comment]',
+    author: example.author,
+    content: '[Deleted example]',
     deleted: true,
-    id: comment.id,
-    timeStamp: comment.timeStamp,
-    type: 'comment',
+    id: example.id,
+    timeStamp: example.timeStamp,
+    type: 'example',
+    validity: example.validity,
   };
 }
 
-function triggerOnChange(commentStore: CommentStore): void {
-  const listeners = commentStore._changeListeners;
+function triggerOnChange(exampleStore: ExampleStore): void {
+  const listeners = exampleStore._changeListeners;
   for (const listener of listeners) {
     listener();
   }
 }
 
-export class CommentStore {
+export class ExampleStore {
   _editor: LexicalEditor;
-  _comments: Comments;
+  _examples: Examples;
   _changeListeners: Set<() => void>;
 
   constructor(editor: LexicalEditor) {
-    this._comments = [];
+    this._examples = [];
     this._editor = editor;
     this._changeListeners = new Set();
   }
 
-  getComments(): Comments {
-    return this._comments;
+  getExamples(): Examples {
+    return this._examples;
   }
 
-  addComment(
-    commentOrThread: Comment | Thread,
+  addExample(
+    exampleOrThread: Example | Thread,
     thread?: Thread,
     offset?: number,
   ): void {
-    const nextComments = Array.from(this._comments);
+    const nextExamples = Array.from(this._examples);
 
-    if (thread !== undefined && commentOrThread.type === 'comment') {
-      for (let i = 0; i < nextComments.length; i++) {
-        const comment = nextComments[i];
-        if (comment.type === 'thread' && comment.id === thread.id) {
-          const newThread = cloneThread(comment);
-          nextComments.splice(i, 1, newThread);
+    if (thread !== undefined && exampleOrThread.type === 'example') {
+      for (let i = 0; i < nextExamples.length; i++) {
+        const example = nextExamples[i];
+        if (example.type === 'thread' && example.id === thread.id) {
+          const newThread = cloneThread(example);
+          nextExamples.splice(i, 1, newThread);
           const insertOffset =
-            offset !== undefined ? offset : newThread.comments.length;
-          newThread.comments.splice(insertOffset, 0, commentOrThread);
+            offset !== undefined ? offset : newThread.examples.length;
+          newThread.examples.splice(insertOffset, 0, exampleOrThread);
           break;
         }
       }
     } else {
-      const insertOffset = offset !== undefined ? offset : nextComments.length;
-      nextComments.splice(insertOffset, 0, commentOrThread);
+      const insertOffset = offset !== undefined ? offset : nextExamples.length;
+      nextExamples.splice(insertOffset, 0, exampleOrThread);
     }
-    this._comments = nextComments;
+    this._examples = nextExamples;
     triggerOnChange(this);
   }
 
-  deleteCommentOrThread(
-    commentOrThread: Comment | Thread,
+  deleteExampleOrThread(
+    exampleOrThread: Example | Thread,
     thread?: Thread,
-  ): {markedComment: Comment; index: number} | null {
-    const nextComments = Array.from(this._comments);
-    let commentIndex: number | null = null;
+  ): {markedExample: Example; index: number} | null {
+    const nextExamples = Array.from(this._examples);
+    let exampleIndex: number | null = null;
 
     if (thread !== undefined) {
-      for (let i = 0; i < nextComments.length; i++) {
-        const nextComment = nextComments[i];
-        if (nextComment.type === 'thread' && nextComment.id === thread.id) {
-          const newThread = cloneThread(nextComment);
-          nextComments.splice(i, 1, newThread);
-          const threadComments = newThread.comments;
-          commentIndex = threadComments.indexOf(commentOrThread as Comment);
-          threadComments.splice(commentIndex, 1);
+      for (let i = 0; i < nextExamples.length; i++) {
+        const nextExample = nextExamples[i];
+        if (nextExample.type === 'thread' && nextExample.id === thread.id) {
+          const newThread = cloneThread(nextExample);
+          nextExamples.splice(i, 1, newThread);
+          const threadExamples = newThread.examples;
+          exampleIndex = threadExamples.indexOf(exampleOrThread as Example);
+          threadExamples.splice(exampleIndex, 1);
           break;
         }
       }
     } else {
-      commentIndex = nextComments.indexOf(commentOrThread);
-      nextComments.splice(commentIndex, 1);
+      exampleIndex = nextExamples.indexOf(exampleOrThread);
+      nextExamples.splice(exampleIndex, 1);
     }
-    this._comments = nextComments;
+    this._examples = nextExamples;
     triggerOnChange(this);
 
-    if (commentOrThread.type === 'comment') {
+    if (exampleOrThread.type === 'example') {
       return {
-        index: commentIndex as number,
-        markedComment: markDeleted(commentOrThread as Comment),
+        index: exampleIndex as number,
+        markedExample: markDeleted(exampleOrThread as Example),
       };
     }
 
@@ -179,16 +183,16 @@ export class CommentStore {
   }
 }
 
-export function useCommentStore(commentStore: CommentStore): Comments {
-  const [comments, setComments] = useState<Comments>(
-    commentStore.getComments(),
+export function useExampleStore(exampleStore: ExampleStore): Examples {
+  const [examples, setExamples] = useState<Examples>(
+    exampleStore.getExamples(),
   );
 
   useEffect(() => {
-    return commentStore.registerOnChange(() => {
-      setComments(commentStore.getComments());
+    return exampleStore.registerOnChange(() => {
+      setExamples(exampleStore.getExamples());
     });
-  }, [commentStore]);
+  }, [exampleStore]);
 
-  return comments;
+  return examples;
 }
