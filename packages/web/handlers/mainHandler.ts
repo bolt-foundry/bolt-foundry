@@ -1,8 +1,8 @@
 import { getLogger } from "packages/logger.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { handleDomains } from "./domainHandler.ts";
-import { handleMatchedRoute } from "./requestHandler.ts";
-import { serveStaticFiles } from "./staticHandler.ts";
+import { handleDomains } from "packages/web/handlers/domainHandler.ts";
+import { handleMatchedRoute } from "packages/web/handlers/requestHandler.ts";
+import { serveStaticFiles } from "packages/web/handlers/staticHandler.ts";
 import type { Handler } from "packages/web/web.tsx";
 
 const logger = getLogger(import.meta);
