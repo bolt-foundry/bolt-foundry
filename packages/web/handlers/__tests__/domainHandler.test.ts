@@ -16,6 +16,9 @@ const originalReadDir = Deno.readDir;
 // Mock Deno.readTextFile
 const originalReadTextFile = Deno.readTextFile;
 
+// Mock Deno.stat
+const originalStat = Deno.stat;
+
 function mockReadDirWithDomains(domainNames: string[]) {
   return () => {
     const mockEntries = domainNames.map((name) => ({
@@ -201,5 +204,59 @@ Deno.test("handleDomains - should handle non-domain directories", async () => {
   } finally {
     // Restore original Deno.readDir
     Deno.readDir = originalReadDir;
+  }
+});
+
+Deno.test("handleDomains - should handle static files for domain", async () => {
+  // Arrange
+  try {
+    // Override Deno.readDir to return domain directories
+    Deno.readDir = mockReadDirWithDomains(["example.com"]);
+
+    // Mock the stat function to simulate the _static directory existing
+    Deno.stat = (path: string | URL): Promise<Deno.FileInfo> => {
+      const pathString = path instanceof URL ? path.pathname : path;
+      if (pathString === "content/example.com/_static") {
+        return Promise.resolve({
+          isFile: false,
+          isDirectory: true,
+          isSymlink: false,
+          size: 0,
+          mtime: null,
+          atime: null,
+          birthtime: null,
+          ctime: null,
+          isBlockDevice: false,
+          isCharDevice: false,
+          isFifo: false,
+          isSocket: false,
+          dev: 0,
+          ino: 0,
+          mode: 0,
+          nlink: 0,
+          uid: 0,
+          gid: 0,
+          rdev: 0,
+          blksize: 0,
+          blocks: 0,
+        });
+      }
+      return Promise.reject(new Deno.errors.NotFound());
+    };
+
+    // Create a request for a static file under a domain
+    const req = new Request("https://example.com/_static/style.css");
+
+    // We can't fully test the serveDir functionality here, but we can check
+    // that our handler attempts to serve the file
+    // Act
+    const result = await handleDomains(req);
+
+    // Assert
+    assert(result instanceof Response, `Expected Response, got ${result}`);
+  } finally {
+    // Restore original functions
+    Deno.readDir = originalReadDir;
+    Deno.stat = originalStat;
   }
 });
