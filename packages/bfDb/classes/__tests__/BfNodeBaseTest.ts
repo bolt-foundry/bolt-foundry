@@ -1,11 +1,13 @@
-import { assertEquals, assertExists } from "@std/assert";
+import { assertEquals, assertExists, assertRejects } from "@std/assert";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
 import type { BfNodeBase } from "packages/bfDb/classes/BfNodeBase.ts";
 import { getLogger } from "packages/logger.ts";
+import { BfErrorNodeNotFound } from "packages/bfDb/classes/BfErrorNode.ts";
 
 const _logger = getLogger(import.meta);
 
 import { withIsolatedDb } from "packages/bfDb/bfDb.ts";
+import { toBfGid } from "packages/bfDb/classes/BfNodeIds.ts";
 
 export function testBfNodeBase(BfNodeClass: typeof BfNodeBase) {
   Deno.test(`BfNodeBase test suite: ${BfNodeClass.name}`, async (t) => {
@@ -120,6 +122,34 @@ export function testBfNodeBase(BfNodeClass: typeof BfNodeBase) {
         const sortValue = BfNodeClass.generateSortValue();
         assertEquals(typeof sortValue, "number");
       });
+
+      await t.step(
+        "findX should throw BfErrorNodeNotFound when node doesn't exist",
+        async () => {
+          const nonExistentId = toBfGid("non-existent-id");
+          await assertRejects(
+            async () => {
+              await BfNodeClass.findX(mockCv, nonExistentId);
+            },
+            BfErrorNodeNotFound,
+            undefined,
+            "findX should throw BfErrorNodeNotFound for non-existent nodes",
+          );
+        },
+      );
+
+      await t.step(
+        "find should return null when node doesn't exist",
+        async () => {
+          const nonExistentId = toBfGid("non-existent-id");
+          const result = await BfNodeClass.find(mockCv, nonExistentId);
+          assertEquals(
+            result,
+            null,
+            "find should return null for non-existent nodes",
+          );
+        },
+      );
 
       await t.step("queryTargets should retrieve target nodes", async () => {
         // Create a source node
