@@ -1,6 +1,6 @@
 import { getLogger } from "packages/logger.ts";
 import type { Handler } from "packages/web/web.tsx";
-import { matchRoute } from "./requestHandler.ts";
+import { matchRoute } from "packages/web/handlers/requestHandler.ts";
 
 const logger = getLogger(import.meta);
 
@@ -16,10 +16,6 @@ export async function handleDomains(
 
   if (domain === "biglittletech.ai") {
     const pathWithParams = `/biglittletech.ai`;
-    logger.setLevel(logger.levels.DEBUG);
-    logger.debug(routes, routes.get(pathWithParams));
-    logger.resetLevel();
-
     const [handler, routeParams] = matchRoute(
       pathWithParams,
       routes,
