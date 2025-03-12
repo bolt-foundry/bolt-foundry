@@ -65,7 +65,7 @@ export const isographAppRoutes = new Map<string, IsographRoute>([
   ["/login", entrypointContentFoundryApp],
   ["/blog/:slug", entrypointBlogPost],
   ["/blog", entrypointBlog],
-  ["/biglittletech.ai", entrypointBigLittleTechAi],
+  ["/domains/:slug", entrypointBigLittleTechAi],
   ...loggedInAppRoutes,
 ]);
 

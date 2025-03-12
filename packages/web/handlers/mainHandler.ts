@@ -23,7 +23,7 @@ export async function handleRequest(
   const resHeaders = new Headers();
 
   // Check domain-specific routing first
-  res = await handleDomains(req, routes);
+  res = await handleDomains(req);
   if (res) {
     return res;
   }
