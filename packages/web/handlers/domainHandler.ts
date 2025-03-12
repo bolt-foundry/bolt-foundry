@@ -1,4 +1,6 @@
 import { getLogger } from "packages/logger.ts";
+import type { Handler } from "packages/web/web.tsx";
+import { matchRoute } from "packages/web/handlers/requestHandler.ts";
 
 const logger = getLogger(import.meta);
 
@@ -39,10 +41,19 @@ export async function handleDomains(
   req: Request,
 ): Promise<Response | null> {
   const reqUrl = new URL(req.url);
-  const domain = Deno.env.get("FORCE_DOMAIN") ?? reqUrl.hostname;
+  const domain = Deno.env.get("SERVE_PROJECT") ?? reqUrl.hostname;
 
   // Get available domains from content directory
   const availableDomains = await getAvailableDomains();
+
+  if (availableDomains.has(domain)) {
+    logger.info(`Handling request for domain: ${domain}`);
+    const pathWithParams = `/${domain}`;
+    const [handler, routeParams] = matchRoute(
+      pathWithParams,
+      routes,
+      () => new Response("Not found™", { status: 404 }),
+    );
 
   if (availableDomains.has(domain)) {
     logger.info(`Handling request for domain: ${domain}`);
