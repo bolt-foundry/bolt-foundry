@@ -9,6 +9,13 @@ import { getLogger } from "packages/logger.ts";
 
 const logger = getLogger(import.meta);
 
+// Default patterns to ignore
+const DEFAULT_IGNORE_PATTERNS = [
+  "node_modules",
+  ".git",
+  "__generated__", // Ignore generated directories
+];
+
 interface LlmOptions {
   paths: string[];
   extensions: string[];
@@ -400,9 +407,13 @@ function shouldIgnore(
   ignorePatterns: string[],
   _ignoreFilesOnly: boolean,
 ): boolean {
-  for (const pattern of ignorePatterns) {
+  // Combine user-provided patterns with defaults
+  const patternsToCheck = [...DEFAULT_IGNORE_PATTERNS, ...ignorePatterns];
+  
+  for (const pattern of patternsToCheck) {
     const reg = globToRegExp(pattern, { extended: true, globstar: true });
-    if (reg.test(basename(filePath))) {
+    // Check both basename and if the path contains the pattern (for directories like __generated__)
+    if (reg.test(basename(filePath)) || filePath.includes(`/${pattern}/`)) {
       return true;
     }
   }
