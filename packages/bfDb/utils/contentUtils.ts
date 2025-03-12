@@ -31,7 +31,7 @@ export function safeExtractFrontmatter<T = BfContentItemProps>(
       body: extracted.body || "",
     };
   } catch (err) {
-    logger.warn("Failed to parse frontmatter, using defaults:", err);
+    logger.debug("Failed to parse frontmatter, using defaults:", err);
 
     // Try to extract the body at least (everything after the second ---)
     const secondDelimiterIndex = content.indexOf("---", 3);
