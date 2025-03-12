@@ -1,4 +1,3 @@
-
 export enum DeploymentEnvs {
   DEVELOPMENT = "DEVELOPMENT",
   STAGING = "STAGING",

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useLazyReference, useResult } from "@isograph/react";
 import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";

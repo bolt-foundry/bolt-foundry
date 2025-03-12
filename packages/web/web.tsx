@@ -1,20 +1,15 @@
 #! /usr/bin/env -S deno run --allow-net=localhost:8000 --allow-env
 
 import { serveDir } from "@std/http";
-import { appRoutes, isographAppRoutes } from "packages/app/routes.ts";
-import { graphQLHandler } from "packages/graphql/graphqlServer.ts";
 import { getLogger } from "packages/logger.ts";
-import { matchRouteWithParams } from "packages/app/contexts/RouterContext.tsx";
 import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
 import { BfCurrentViewer } from "packages/bfDb/classes/BfCurrentViewer.ts";
-import { initializeContentCollections } from "packages/web/initializeContent.ts";
 import { DeploymentEnvs } from "packages/app/constants/deploymentEnvs.ts";
-import {
-  handleAppRoute,
-  handleIsographRoute,
-  handleAssemblyAI,
-  handleLogout
-} from "packages/web/handlers/routeHandlers.ts";
+import { initializeContentCollections } from "packages/web/initializeContent.ts";
+import { registerAppRoutes } from "packages/web/routes/appRoutes.ts";
+import { registerIsographRoutes } from "packages/web/routes/isographRoutes.ts";
+import { handleMatchedRoute } from "packages/web/handlers/requestHandler.ts";
+import { serveStaticFiles } from "packages/web/handlers/staticHandler.ts";
 
 const logger = getLogger(import.meta);
 
@@ -23,66 +18,53 @@ export type Handler = (
   routeParams: Record<string, string>,
 ) => Promise<Response> | Response;
 
+// Initialize routes map
 const routes = new Map<string, Handler>();
 
-// Optionally remove UI route from non-dev environments
-if (getConfigurationVariable("BF_ENV") !== DeploymentEnvs.DEVELOPMENT) {
-  appRoutes.delete("/ui");
+// Register all routes
+function registerAllRoutes() {
+  // Register standard app routes
+  registerAppRoutes(routes);
+
+  // Register isograph routes
+  registerIsographRoutes(routes);
+
+  // Register special routes from handlers/specialRoutes.ts
+  registerSpecialRoutes(routes);
 }
 
-// Register each app route in the routes Map
-for (const entry of appRoutes.entries()) {
-  const [path] = entry;
-  routes.set(path, async function AppRoute(request, routeParams) {
-    return await handleAppRoute(request, routeParams, path);
+import { graphQLHandler } from "packages/graphql/graphqlServer.ts";
+import {
+  handleAssemblyAI,
+  handleLogout,
+} from "packages/web/handlers/routeHandlers.ts";
+// Register special routes (GraphQL, static files, etc.)
+function registerSpecialRoutes(routes: Map<string, Handler>) {
+  // Import special route handlers
+
+  // Serve static files
+  routes.set("/static/:filename+", function staticHandler(req) {
+    return serveDir(req, {
+      headers: [
+        "Cache-Control: public, must-revalidate",
+        "ETag: true",
+      ],
+    });
   });
+
+  // GraphQL handler
+  routes.set("/graphql", graphQLHandler);
+
+  // AssemblyAI handler
+  routes.set("/assemblyai", handleAssemblyAI);
+
+  // Simple logout route that clears cookies
+  routes.set("/logout", handleLogout);
 }
-
-// Register isograph routes
-for (const [path, entrypoint] of isographAppRoutes.entries()) {
-  logger.debug(`Registering ${path}`, entrypoint);
-  routes.set(path, async function AppRoute(request, routeParams) {
-    return await handleIsographRoute(request, routeParams, path, entrypoint);
-  });
-}
-
-// Serve static files
-routes.set("/static/:filename+", function staticHandler(req) {
-  return serveDir(req, {
-    headers: [
-      "Cache-Control: public, must-revalidate",
-      "ETag: true",
-    ],
-  });
-});
-
-// GraphQL handler
-routes.set("/graphql", graphQLHandler);
-
-// AssemblyAI handler
-routes.set("/assemblyai", handleAssemblyAI);
-
-// Simple logout route that clears cookies
-routes.set("/logout", handleLogout);
 
 // Fallback default route
 function defaultRoute() {
   return new Response("Not found™", { status: 404 });
-}
-
-/**
- * If there's a mismatch in trailing slash (e.g. user typed "/foo" but route is "/foo/"),
- * `matchRouteWithParams` sets `needsRedirect=true` and `redirectTo="/foo/"`.
- */
-function matchRoute(
-  pathWithParams: string,
-): [Handler, Record<string, string>, boolean, string?] {
-  const match = matchRouteWithParams(pathWithParams);
-  const matchedHandler = routes.get(match.pathTemplate) || defaultRoute;
-  const routeParams = match.routeParams;
-  const needsRedirect = match.needsRedirect;
-  const redirectTo = match.redirectTo;
-  return [matchedHandler, routeParams, needsRedirect, redirectTo];
 }
 
 // Initialize content collections
@@ -92,16 +74,7 @@ const contentInitCv = BfCurrentViewer
 // Initialize content collections
 const contentPromise = initializeContentCollections(contentInitCv);
 
-const staticPrefix = "/static";
-function staticHandler(req: Request) {
-  return serveDir(req, {
-    headers: [
-      "Cache-Control: public, must-revalidate",
-      "ETag: true",
-    ],
-  });
-}
-
+// Handle domain-specific routing
 async function handleDomains(req: Request) {
   const reqUrl = new URL(req.url);
   const domain = Deno.env.get("SERVE_PROJECT") ?? reqUrl.hostname;
@@ -118,71 +91,84 @@ async function handleDomains(req: Request) {
   return null;
 }
 
+// Main request handler
+async function handleRequest(req: Request): Promise<Response> {
+  let res;
+
+  const incomingUrl = new URL(req.url);
+  const timer = performance.now();
+  const resHeaders = new Headers();
+
+  // Check domain-specific routing first
+  res = await handleDomains(req);
+  if (res) {
+    return res;
+  }
+
+  // Create current viewer
+  using cv = BfCurrentViewer.createFromRequest(import.meta, req, resHeaders);
+
+  const staticPrefix = "/static";
+  if (incomingUrl.pathname.startsWith(staticPrefix)) {
+    res = await serveStaticFiles(req);
+  } else {
+    try {
+      // Keep the query string, so we pass "pathname + search" to matchRoute
+      const pathWithParams = incomingUrl.pathname + incomingUrl.search;
+
+      // Wait for content to be initialized
+      await contentPromise;
+
+      // Handle the route
+      res = await handleMatchedRoute(req, pathWithParams, routes, defaultRoute);
+    } catch (err) {
+      logger.error("Error handling request:", err);
+      res = new Response("Internal Server Error", { status: 500 });
+    }
+  }
+
+  // Log request timing and details
+  const perf = performance.now() - timer;
+  const perfInMs = Math.round(perf);
+  logger.info(
+    `[${
+      new Date().toISOString()
+    }] [${req.method}] ${res.status} ${incomingUrl} ${
+      req.headers.get("content-type") ?? ""
+    } (${perfInMs}ms) - ${cv}`,
+  );
+
+  // Add any headers from the current viewer
+  resHeaders.forEach((value, key) => {
+    res.headers.set(key, value);
+  });
+
+  return res;
+}
+
+// Register all routes
+registerAllRoutes();
+
 // Use the port from environment or default 8000
 const port = Number(Deno.env.get("WEB_PORT") ?? 8000);
 
+// Start the server if this is the main module
 if (import.meta.main) {
-  Deno.serve({ port }, async (req) => {
-    let res;
+  Deno.serve({ port }, handleRequest);
+}
 
-    const incomingUrl = new URL(req.url);
-    const timer = performance.now();
-    const resHeaders = new Headers();
-    res = await handleDomains(req);
-    if (res) {
-      return res;
-    }
-    using cv = BfCurrentViewer.createFromRequest(import.meta, req, resHeaders);
-
-    if (incomingUrl.pathname.startsWith(staticPrefix)) {
-      res = await staticHandler(req);
-    } else {
-      try {
-        // Keep the query string, so we pass "pathname + search" to matchRoute
-        const pathWithParams = incomingUrl.pathname + incomingUrl.search;
-        const [handler, routeParams, needsRedirect, redirectTo] = matchRoute(
-          pathWithParams,
-        );
-
-        if (needsRedirect && redirectTo) {
-          // Canonicalize trailing slash mismatch with a permanent redirect
-          // (could use 302 if you prefer)
-          const redirectUrl = new URL(redirectTo, req.url);
-          return Response.redirect(redirectUrl, 301);
-        }
-
-        await contentPromise;
-
-        res = await handler(req, routeParams);
-
-        // Optionally set security headers, etc.
-        // if (getConfigurationVariable("BF_ENV") !== DeploymentEnvs.DEVELOPMENT) {
-        //   res.headers.set("X-Frame-Options", "DENY");
-        //   res.headers.set(
-        //     "Content-Security-Policy",
-        //     "frame-ancestors 'self' replit.dev",
-        //   );
-        // }
-      } catch (err) {
-        logger.error("Error handling request:", err);
-        res = new Response("Internal Server Error", { status: 500 });
-      }
-    }
-
-    const perf = performance.now() - timer;
-    const perfInMs = Math.round(perf);
-    logger.info(
-      `[${
-        new Date().toISOString()
-      }] [${req.method}] ${res.status} ${incomingUrl} ${
-        req.headers.get("content-type") ?? ""
-      } (${perfInMs}ms) - ${cv}`,
-    );
-
-    // resHeaders.forEach((value, key) => {
-    //   res.headers.set(key, value);
-    // });
-
-    return res;
-  });
+import { matchRouteWithParams } from "packages/app/contexts/RouterContext.tsx";
+/**
+ * If there's a mismatch in trailing slash (e.g. user typed "/foo" but route is "/foo/"),
+ * `matchRouteWithParams` sets `needsRedirect=true` and `redirectTo="/foo/"`.
+ */
+function matchRoute(
+  pathWithParams: string,
+): [Handler, Record<string, string>, boolean, string?] {
+  const match = matchRouteWithParams(pathWithParams);
+  const matchedHandler = routes.get(match.pathTemplate) || defaultRoute;
+  const routeParams = match.routeParams;
+  const needsRedirect = match.needsRedirect;
+  const redirectTo = match.redirectTo;
+  return [matchedHandler, routeParams, needsRedirect, redirectTo];
 }
