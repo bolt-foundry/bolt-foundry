@@ -113,8 +113,10 @@ export class BfNodeBase<
     } catch (e) {
       if (e instanceof BfErrorNodeNotFound) {
         // skip
+        logger.debug(`Node not found: ${id}`);
+      } else {
+        throw e;
       }
-      throw e;
     }
     return null;
   }
