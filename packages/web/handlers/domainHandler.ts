@@ -10,7 +10,7 @@ const logger = getLogger(import.meta);
  */
 async function getAvailableDomains(): Promise<Set<string>> {
   const domains = new Set<string>();
-
+  
   try {
     // Scan content directory for domain folders
     for await (const entry of Deno.readDir("content")) {
@@ -21,7 +21,7 @@ async function getAvailableDomains(): Promise<Set<string>> {
         }
       }
     }
-
+    
     if (domains.size === 0) {
       logger.warn("No domains found in content directory");
     } else {
@@ -30,7 +30,7 @@ async function getAvailableDomains(): Promise<Set<string>> {
   } catch (error) {
     logger.error("Error reading content directories:", error);
   }
-
+  
   return domains;
 }
 
@@ -39,24 +39,16 @@ async function getAvailableDomains(): Promise<Set<string>> {
  */
 export async function handleDomains(
   req: Request,
-  routes: Map<string, Handler>,
 ): Promise<Response | null> {
   const reqUrl = new URL(req.url);
-  const domain = Deno.env.get("SERVE_PROJECT") ?? reqUrl.hostname;
-
+  const domain = Deno.env.get("FORCE_DOMAIN") ?? reqUrl.hostname;
+  
   // Get available domains from content directory
   const availableDomains = await getAvailableDomains();
-
+  
   if (availableDomains.has(domain)) {
     logger.info(`Handling request for domain: ${domain}`);
-    const pathWithParams = `/${domain}`;
-    const [handler, routeParams] = matchRoute(
-      pathWithParams,
-      routes,
-      () => new Response("Not found™", { status: 404 }),
-    );
-
-    return await handler(req, routeParams);
+    return new Response(domain)
   }
 
   return null;
