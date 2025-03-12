@@ -46,8 +46,7 @@
   "include": [
     "infra",
     "lib",
-    "packages",
-    "content"
+    "packages"
   ],
   "exclude": [
     ".cache",
@@ -55,6 +54,7 @@
     ".direnv",
     ".git",
     "build",
+    "content",
     "static",
     "**/__TEMPLATE__.*"
   ],

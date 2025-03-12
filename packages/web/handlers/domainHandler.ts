@@ -39,24 +39,16 @@ async function getAvailableDomains(): Promise<Set<string>> {
  */
 export async function handleDomains(
   req: Request,
-  routes: Map<string, Handler>,
 ): Promise<Response | null> {
   const reqUrl = new URL(req.url);
-  const domain = Deno.env.get("SERVE_PROJECT") ?? reqUrl.hostname;
+  const domain = Deno.env.get("FORCE_DOMAIN") ?? reqUrl.hostname;
 
   // Get available domains from content directory
   const availableDomains = await getAvailableDomains();
 
   if (availableDomains.has(domain)) {
     logger.info(`Handling request for domain: ${domain}`);
-    const pathWithParams = `/${domain}`;
-    const [handler, routeParams] = matchRoute(
-      pathWithParams,
-      routes,
-      () => new Response("Not found™", { status: 404 }),
-    );
-
-    return await handler(req, routeParams);
+    return new Response(domain);
   }
 
   return null;
