@@ -294,7 +294,7 @@ const remoteHandler = async ([target, specificFolder]: Array<string>) => {
       logger.info(`Successfully mounted ${dirName}`);
       return true;
     } catch (error) {
-      logger.error(`Failed to mount ${dirName}: ${error.message}`);
+      logger.error(`Failed to mount ${dirName}: ${(error as Error).message}`);
       return false;
     }
   }
