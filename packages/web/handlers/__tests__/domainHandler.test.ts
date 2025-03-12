@@ -1,6 +1,12 @@
-import { assertEquals } from "@std/assert";
+import { assert, assertEquals } from "@std/assert";
 import { handleDomains } from "packages/web/handlers/domainHandler.ts";
+import { getLogger } from "packages/logger.ts";
 
+const logger = getLogger(import.meta);
+
+if (Deno.env.get("FORCE_DOMAIN")) {
+  logger.warn("FORCE_DOMAIN is set. Tests will probably fail.")
+}
 // Mock Deno.env
 const originalEnv = Deno.env.get;
 
@@ -30,14 +36,21 @@ function mockReadDirWithDomains(domainNames: string[]) {
 // Mock content file reading
 function mockReadTextFile(mockContents: Record<string, string>) {
   return (path: string | URL): Promise<string> => {
+    logger.debug(`Reading ${path}`);
     // Convert path to a string if it's a URL
-    const pathString = path instanceof URL ? path.pathname : path;
+    const pathString = path instanceof URL ? path.pathname : path.toString();
+
     // Check if we have mock content for this path
     for (const [domainName, content] of Object.entries(mockContents)) {
-      if (pathString.includes(`content/${domainName}/page.md`)) {
+      if (
+        pathString.includes(`${domainName}/page.md`) ||
+        pathString.includes(`content/${domainName}/page.md`)
+      ) {
+        logger.info(`Found mock content for ${pathString}`, content)
         return Promise.resolve(content);
       }
     }
+
     throw new Error(`File not found: ${pathString}`);
   };
 }
@@ -74,18 +87,18 @@ Deno.test("handleDomains - should handle existing domain", async () => {
     });
 
     // Create a request for example.com domain
-    const req = new Request("https://example.com/some-path");
+    const req = new Request("https://example.com");
 
     // Act
     const result = await handleDomains(req);
 
     // Assert
-    assertEquals(result instanceof Response, true);
+    assert(result instanceof Response, `Expected Response, got ${result}`);
     if (result) {
       const text = await result.text();
       assertEquals(
         text,
-        "# Example.com\nThis is the example.com page content.",
+        "<h1>Example.com</h1>\n<p>This is the example.com page content.</p>",
       );
     }
   } finally {
@@ -118,12 +131,12 @@ Deno.test("handleDomains - should use FORCE_DOMAIN env var if available", async 
     const result = await handleDomains(req);
 
     // Assert
-    assertEquals(result instanceof Response, true);
+    assert(result instanceof Response, `Expected Response, got ${result}`);
     if (result) {
       const text = await result.text();
       assertEquals(
         text,
-        "# Forced Domain\nThis is the forced example.com page content.",
+        "<h1>Forced Domain</h1>\n<p>This is the forced example.com page content.</p>",
       );
     }
   } finally {
@@ -150,16 +163,16 @@ Deno.test("handleDomains - should handle dynamically discovered domains", async 
     });
 
     // Create a request for dynamically discovered domain
-    const req = new Request("https://test.org/some-path");
+    const req = new Request("https://test.org");
 
     // Act
     const result = await handleDomains(req);
 
     // Assert
-    assertEquals(result instanceof Response, true);
+    assert(result instanceof Response, `Expected Response, got ${result}`);
     if (result) {
       const text = await result.text();
-      assertEquals(text, "# Test.org\nDynamically discovered domain content.");
+      assertEquals(text, "<h1>Test.org</h1>\n<p>Dynamically discovered domain content.</p>");
     }
   } finally {
     // Restore original functions
