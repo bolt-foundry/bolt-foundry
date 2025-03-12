@@ -1,4 +1,8 @@
 import { getLogger } from "packages/logger.ts";
+import { compile } from "@mdx-js/mdx";
+import { renderToReadableStream } from "react-dom/server";
+import React from "react";
+import { safeExtractFrontmatter } from "packages/bfDb/utils/contentUtils.ts";
 
 const logger = getLogger(import.meta);
 
@@ -43,14 +47,30 @@ export async function handleDomains(
 
   // Get available domains from content directory
   const availableDomains = await getAvailableDomains();
-
+  logger.info(`trying to handle request for`, domain);
   if (availableDomains.has(domain)) {
     logger.info(`Handling request for domain: ${domain}`);
     const contentUrl = new URL(
       import.meta.resolve(`content/${domain}/page.md`),
     );
     const text = await Deno.readTextFile(contentUrl);
-    return new Response(text);
+    const { body } = safeExtractFrontmatter(text);
+    const rendered = await compile(body);
+    const compiledLocation = await Deno.makeTempFile({
+      prefix: `${domain}-page`,
+      suffix: "tsx",
+    });
+    await Deno.writeTextFile(
+      compiledLocation,
+      String(rendered),
+    );
+    const { default: Content } = await import(compiledLocation.toString());
+    const stream = await renderToReadableStream(React.createElement(Content));
+    return new Response(stream, {
+      headers: {
+        "content-type": "text/html",
+      },
+    });
   }
 
   return null;
