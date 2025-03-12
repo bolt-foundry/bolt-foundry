@@ -1,3 +1,4 @@
+
 import { assertEquals } from "@std/assert";
 import { handleDomains } from "packages/web/handlers/domainHandler.ts";
 
@@ -6,6 +7,9 @@ const originalEnv = Deno.env.get;
 
 // Mock Deno.readDir
 const originalReadDir = Deno.readDir;
+
+// Mock Deno.readTextFile
+const originalReadTextFile = Deno.readTextFile;
 
 function mockReadDirWithDomains(domainNames: string[]) {
   return () => {
@@ -21,6 +25,21 @@ function mockReadDirWithDomains(domainNames: string[]) {
         yield entry;
       }
     })();
+  };
+}
+
+// Mock content file reading
+function mockReadTextFile(mockContents: Record<string, string>) {
+  return (path: string | URL): Promise<string> => {
+    // Convert path to a string if it's a URL
+    const pathString = path instanceof URL ? path.pathname : path;
+    // Check if we have mock content for this path
+    for (const [domainName, content] of Object.entries(mockContents)) {
+      if (pathString.includes(`content/${domainName}/page.md`)) {
+        return Promise.resolve(content);
+      }
+    }
+    throw new Error(`File not found: ${pathString}`);
   };
 }
 
@@ -49,6 +68,11 @@ Deno.test("handleDomains - should handle existing domain", async () => {
   try {
     // Override Deno.readDir to return example domains
     Deno.readDir = mockReadDirWithDomains(["example.com", "test.org"]);
+    
+    // Mock readTextFile to return content for the domain's page.md
+    Deno.readTextFile = mockReadTextFile({
+      "example.com": "# Example.com\nThis is the example.com page content."
+    });
 
     // Create a request for example.com domain
     const req = new Request("https://example.com/some-path");
@@ -60,11 +84,12 @@ Deno.test("handleDomains - should handle existing domain", async () => {
     assertEquals(result instanceof Response, true);
     if (result) {
       const text = await result.text();
-      assertEquals(text, "example.com");
+      assertEquals(text, "# Example.com\nThis is the example.com page content.");
     }
   } finally {
-    // Restore original Deno.readDir
+    // Restore original functions
     Deno.readDir = originalReadDir;
+    Deno.readTextFile = originalReadTextFile;
   }
 });
 
@@ -77,6 +102,11 @@ Deno.test("handleDomains - should use FORCE_DOMAIN env var if available", async 
 
     // Override Deno.readDir to return example domains
     Deno.readDir = mockReadDirWithDomains(["example.com", "test.org"]);
+    
+    // Mock readTextFile to return content for the forced domain's page.md
+    Deno.readTextFile = mockReadTextFile({
+      "example.com": "# Forced Domain\nThis is the forced example.com page content."
+    });
 
     // Create a request with any domain (should be overridden by FORCE_DOMAIN)
     const req = new Request("https://some-other-domain.com/some-path");
@@ -88,12 +118,13 @@ Deno.test("handleDomains - should use FORCE_DOMAIN env var if available", async 
     assertEquals(result instanceof Response, true);
     if (result) {
       const text = await result.text();
-      assertEquals(text, "example.com");
+      assertEquals(text, "# Forced Domain\nThis is the forced example.com page content.");
     }
   } finally {
-    // Restore original environment and Deno.readDir
+    // Restore original environment and functions
     Deno.env.get = originalEnv;
     Deno.readDir = originalReadDir;
+    Deno.readTextFile = originalReadTextFile;
   }
 });
 
@@ -106,6 +137,11 @@ Deno.test("handleDomains - should handle dynamically discovered domains", async 
       "test.org",
       "blog", // Not a domain (doesn't contain a dot)
     ]);
+    
+    // Mock readTextFile to return content for the domain's page.md
+    Deno.readTextFile = mockReadTextFile({
+      "test.org": "# Test.org\nDynamically discovered domain content."
+    });
 
     // Create a request for dynamically discovered domain
     const req = new Request("https://test.org/some-path");
@@ -117,11 +153,12 @@ Deno.test("handleDomains - should handle dynamically discovered domains", async 
     assertEquals(result instanceof Response, true);
     if (result) {
       const text = await result.text();
-      assertEquals(text, "test.org");
+      assertEquals(text, "# Test.org\nDynamically discovered domain content.");
     }
   } finally {
-    // Restore original Deno.readDir
+    // Restore original functions
     Deno.readDir = originalReadDir;
+    Deno.readTextFile = originalReadTextFile;
   }
 });
 
