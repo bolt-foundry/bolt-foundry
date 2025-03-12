@@ -9,16 +9,16 @@ import { getLogger } from "packages/logger.ts";
 const logger = getLogger(import.meta);
 
 async function copyContentFiles() {
-//   const contentDir = "content";
+  //   const contentDir = "content";
   const buildDir = "build/content";
 
-//   // Ensure build directory exists
+  //   // Ensure build directory exists
   await ensureDir(buildDir);
 
-//   // Walk through content directory
-//   for await (const entry of Deno.readDir(contentDir)) {
-//     await processEntry(entry, contentDir, buildDir);
-//   }
+  //   // Walk through content directory
+  //   for await (const entry of Deno.readDir(contentDir)) {
+  //     await processEntry(entry, contentDir, buildDir);
+  //   }
 }
 
 // async function processEntry(
