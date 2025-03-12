@@ -47,7 +47,7 @@ export async function handleDomains(
 
   // Get available domains from content directory
   const availableDomains = await getAvailableDomains();
-
+  logger.info(`trying to handle request for`, domain);
   if (availableDomains.has(domain)) {
     logger.info(`Handling request for domain: ${domain}`);
     const contentUrl = new URL(
