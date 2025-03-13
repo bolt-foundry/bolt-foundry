@@ -15,7 +15,8 @@ humans, the file serves as a decent overview of our coding practices.
 Content Foundry is an open-source platform designed to help creators tell their
 stories effectively across various platforms. The application uses modern web
 technologies with Deno as the runtime, React for the UI, and GraphQL for the API
-layer.
+layer. The application is compiled and served as a standalone Deno executable,
+allowing for simple deployment without additional runtime dependencies.
 
 ## Project Structure
 
@@ -441,6 +442,20 @@ Before making changes, check agent.md which has a list of helpful tips for perfo
 
 This ensures the assistant will reference the documentation and help keep it
 up-to-date with new discoveries about the codebase.
+
+### Application Build and Deployment
+
+Content Foundry is compiled into a standalone executable using Deno's compilation
+capabilities. This provides several advantages:
+
+1. **Self-contained deployment**: The entire application is bundled into a single binary
+2. **No runtime dependencies**: No need to install Deno on production servers
+3. **Improved startup time**: Faster cold starts compared to interpreted execution
+4. **Simplified deployment**: Just copy and run the executable
+
+The compilation process happens during `bff build` and creates executables in the `build/` 
+directory. The compilation command includes necessary permissions for network, file system, 
+and environment variables access.
 
 ### Dependency Management
 
