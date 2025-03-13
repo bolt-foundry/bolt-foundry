@@ -14,7 +14,6 @@ export const Home = iso(`
   // Extract content items from the data
   const { navigate } = useRouter();
   const demoButton = data?.asBfCurrentViewerLoggedOut?.DemoButton;
-  const ContentItem = data?.contentCollection?.item?.ContentItem;
 
   return (
     <>
@@ -45,7 +44,7 @@ export const Home = iso(`
               />
             )}
 
-          {ContentItem ? <ContentItem /> : <p>We're buliding something.</p>}
+          <p>We're buliding something.</p>
         </div>
       </div>
     </>
