@@ -15,7 +15,7 @@ export async function initializeContentCollections(
 
   try {
     // Define the base content directory path
-    const contentBasePath = join(Deno.cwd(), "content");
+    const contentBasePath = "./content"
 
     // Check if the content directory exists
     try {
