@@ -1,5 +1,3 @@
-// Modified version of infra/bff/friends/build.bff.ts
-
 import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/bff.ts";
 import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
@@ -79,19 +77,22 @@ if (DATABASE_STRING) {
 
 const includableDirectories = [
   "packages",
-  "content",
-  "build/content",
+  // "content",
+  // "build/content",
   "static",
 ];
 
 const readableLocations = [
-  "$HOME/workspace",
-  "./",
+  "/tmp",
+  "static/",
+  "tmp/",
+  "content/",
 ];
 
 const writableLocations = [
-  "$HOME/workspace/tmp",
   "/tmp",
+  "tmp",
+  "content",
 ];
 
 const allowedBinaries = [];
@@ -111,7 +112,6 @@ const denoCompilationCommand = [
   `--allow-read=${readableLocations.join(",")}`,
   `--allow-write=${writableLocations.join(",")}`,
   `--allow-run=${allowedBinaries.join(",")}`,
-  "--allow-write=tmp",
   "packages/web/web.tsx",
 ];
 

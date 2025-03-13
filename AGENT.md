@@ -445,17 +445,19 @@ up-to-date with new discoveries about the codebase.
 
 ### Application Build and Deployment
 
-Content Foundry is compiled into a standalone executable using Deno's compilation
-capabilities. This provides several advantages:
+Content Foundry is compiled into a standalone executable using Deno's
+compilation capabilities. This provides several advantages:
 
-1. **Self-contained deployment**: The entire application is bundled into a single binary
+1. **Self-contained deployment**: The entire application is bundled into a
+   single binary
 2. **No runtime dependencies**: No need to install Deno on production servers
-3. **Improved startup time**: Faster cold starts compared to interpreted execution
+3. **Improved startup time**: Faster cold starts compared to interpreted
+   execution
 4. **Simplified deployment**: Just copy and run the executable
 
-The compilation process happens during `bff build` and creates executables in the `build/` 
-directory. The compilation command includes necessary permissions for network, file system, 
-and environment variables access.
+The compilation process happens during `bff build` and creates executables in
+the `build/` directory. The compilation command includes necessary permissions
+for network, file system, and environment variables access.
 
 ### Dependency Management
 
