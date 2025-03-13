@@ -4,17 +4,59 @@ import { getLogger } from "packages/logger.ts";
 
 const logger = getLogger(import.meta);
 
+// Add a helper function to set up and tear down tests
+interface TestSetupOptions {
+  mockDomains?: string[];
+  mockContents?: Record<string, string>;
+  forceDomain?: string | null;
+}
+
+function setupTest(options: TestSetupOptions = {}) {
+  const originals = {
+    env: Deno.env.get,
+    readDir: Deno.readDir,
+    readTextFile: Deno.readTextFile,
+    stat: Deno.stat,
+  };
+
+  // Mock environment
+  if (options.forceDomain !== undefined) {
+    Deno.env.get = (key) => {
+      if (key === "FORCE_DOMAIN") return options.forceDomain || undefined;
+      if (key === "TEST_ENVIRONMENT") return "true";
+      return originals.env(key);
+    };
+  } else {
+    Deno.env.get = (key: string): string | undefined => {
+      if (key === "FORCE_DOMAIN") return undefined; // explicitly return undefined instead of null
+      if (key === "TEST_ENVIRONMENT") return "true";
+      return originals.env(key);
+    };
+  }
+
+  // Mock readDir
+  if (options.mockDomains) {
+    Deno.readDir = mockReadDirWithDomains(options.mockDomains);
+  }
+
+  // Mock readTextFile
+  if (options.mockContents) {
+    Deno.readTextFile = mockReadTextFile(options.mockContents);
+  }
+
+  return {
+    teardown: () => {
+      Deno.env.get = originals.env;
+      Deno.readDir = originals.readDir;
+      Deno.readTextFile = originals.readTextFile;
+      Deno.stat = originals.stat;
+    },
+  };
+}
+
 if (Deno.env.get("FORCE_DOMAIN")) {
   logger.warn("FORCE_DOMAIN is set. Tests will probably fail.");
 }
-// Mock Deno.env
-const originalEnv = Deno.env.get;
-
-// Mock Deno.readDir
-const originalReadDir = Deno.readDir;
-
-// Mock Deno.readTextFile
-const originalReadTextFile = Deno.readTextFile;
 
 function mockReadDirWithDomains(domainNames: string[]) {
   return () => {
@@ -57,10 +99,11 @@ function mockReadTextFile(mockContents: Record<string, string>) {
 
 Deno.test("handleDomains - should return null for non-existent domain", async () => {
   // Arrange
-  try {
-    // Override Deno.readDir to return example domains
-    Deno.readDir = mockReadDirWithDomains(["example.com", "test.org"]);
+  const { teardown } = setupTest({
+    mockDomains: ["example.com", "test.org"],
+  });
 
+  try {
     // Create a request with a domain that doesn't exist in our mock content
     const req = new Request("https://nonexistent.com/some-path");
 
@@ -70,23 +113,22 @@ Deno.test("handleDomains - should return null for non-existent domain", async ()
     // Assert
     assertEquals(result, null);
   } finally {
-    // Restore original Deno.readDir
-    Deno.readDir = originalReadDir;
+    teardown();
   }
 });
 
 Deno.test("handleDomains - should handle existing domain", async () => {
   // Arrange
+  const mockContent = "# Example.com\nThis is the example.com page content.";
+  const { teardown } = setupTest({
+    mockDomains: ["example.com", "test.org"],
+    mockContents: {
+      "example.com": mockContent,
+    },
+  });
+
   try {
-    // Override Deno.readDir to return example domains
-    Deno.readDir = mockReadDirWithDomains(["example.com", "test.org"]);
-
-    // Mock readTextFile to return content for the domain's page.md
-    Deno.readTextFile = mockReadTextFile({
-      "example.com": "# Example.com\nThis is the example.com page content.",
-    });
-
-    // Create a request for example.com domain
+    // Create a request for example.com domain - using the URL that matches our mock domain
     const req = new Request("https://example.com");
 
     // Act
@@ -96,34 +138,41 @@ Deno.test("handleDomains - should handle existing domain", async () => {
     assert(result instanceof Response, `Expected Response, got ${result}`);
     if (result) {
       const text = await result.text();
-      assertEquals(
-        text,
-        "<h1>Example.com</h1>\n<p>This is the example.com page content.</p>",
+      assert(
+        text.includes("<!DOCTYPE html>"),
+        "Response should contain DOCTYPE",
+      );
+      assert(
+        text.includes('<link rel="stylesheet" href="/_static/base.css">'),
+        "Response should contain stylesheet link",
+      );
+      assert(
+        text.includes("<h1>Example.com</h1>"),
+        "Response should contain the expected heading",
+      );
+      assert(
+        text.includes("<p>This is the example.com page content.</p>"),
+        "Response should contain the expected paragraph",
       );
     }
   } finally {
-    // Restore original functions
-    Deno.readDir = originalReadDir;
-    Deno.readTextFile = originalReadTextFile;
+    teardown();
   }
 });
 
 Deno.test("handleDomains - should use FORCE_DOMAIN env var if available", async () => {
   // Arrange
+  const mockContent =
+    "# Forced Domain\nThis is the forced example.com page content.";
+  const { teardown } = setupTest({
+    mockDomains: ["example.com", "test.org"],
+    mockContents: {
+      "example.com": mockContent,
+    },
+    forceDomain: "example.com",
+  });
+
   try {
-    // Mock env var
-    Deno.env.get = (key) =>
-      key === "FORCE_DOMAIN" ? "example.com" : originalEnv(key);
-
-    // Override Deno.readDir to return example domains
-    Deno.readDir = mockReadDirWithDomains(["example.com", "test.org"]);
-
-    // Mock readTextFile to return content for the forced domain's page.md
-    Deno.readTextFile = mockReadTextFile({
-      "example.com":
-        "# Forced Domain\nThis is the forced example.com page content.",
-    });
-
     // Create a request with any domain (should be overridden by FORCE_DOMAIN)
     const req = new Request("https://some-other-domain.com/some-path");
 
@@ -134,34 +183,43 @@ Deno.test("handleDomains - should use FORCE_DOMAIN env var if available", async 
     assert(result instanceof Response, `Expected Response, got ${result}`);
     if (result) {
       const text = await result.text();
-      assertEquals(
-        text,
-        "<h1>Forced Domain</h1>\n<p>This is the forced example.com page content.</p>",
+      assert(
+        text.includes("<!DOCTYPE html>"),
+        "Response should contain DOCTYPE",
+      );
+      assert(
+        text.includes('<link rel="stylesheet" href="/_static/base.css">'),
+        "Response should contain stylesheet link",
+      );
+      assert(
+        text.includes("<h1>Forced Domain</h1>"),
+        "Response should contain the expected heading",
+      );
+      assert(
+        text.includes("<p>This is the forced example.com page content.</p>"),
+        "Response should contain the expected paragraph",
       );
     }
   } finally {
-    // Restore original environment and functions
-    Deno.env.get = originalEnv;
-    Deno.readDir = originalReadDir;
-    Deno.readTextFile = originalReadTextFile;
+    teardown();
   }
 });
 
 Deno.test("handleDomains - should handle dynamically discovered domains", async () => {
   // Arrange
-  try {
-    // Override Deno.readDir to return domain-like directories
-    Deno.readDir = mockReadDirWithDomains([
+  const mockContent = "# Test.org\nDynamically discovered domain content.";
+  const { teardown } = setupTest({
+    mockDomains: [
       "example.com",
       "test.org",
       "blog", // Not a domain (doesn't contain a dot)
-    ]);
+    ],
+    mockContents: {
+      "test.org": mockContent,
+    },
+  });
 
-    // Mock readTextFile to return content for the domain's page.md
-    Deno.readTextFile = mockReadTextFile({
-      "test.org": "# Test.org\nDynamically discovered domain content.",
-    });
-
+  try {
     // Create a request for dynamically discovered domain
     const req = new Request("https://test.org");
 
@@ -172,24 +230,35 @@ Deno.test("handleDomains - should handle dynamically discovered domains", async 
     assert(result instanceof Response, `Expected Response, got ${result}`);
     if (result) {
       const text = await result.text();
-      assertEquals(
-        text,
-        "<h1>Test.org</h1>\n<p>Dynamically discovered domain content.</p>",
+      assert(
+        text.includes("<!DOCTYPE html>"),
+        "Response should contain DOCTYPE",
+      );
+      assert(
+        text.includes('<link rel="stylesheet" href="/_static/base.css">'),
+        "Response should contain stylesheet link",
+      );
+      assert(
+        text.includes("<h1>Test.org</h1>"),
+        "Response should contain the expected heading",
+      );
+      assert(
+        text.includes("<p>Dynamically discovered domain content.</p>"),
+        "Response should contain the expected paragraph",
       );
     }
   } finally {
-    // Restore original functions
-    Deno.readDir = originalReadDir;
-    Deno.readTextFile = originalReadTextFile;
+    teardown();
   }
 });
 
 Deno.test("handleDomains - should handle non-domain directories", async () => {
   // Arrange
-  try {
-    // Override Deno.readDir to only include non-domain directories
-    Deno.readDir = mockReadDirWithDomains(["blog", "docs", "assets"]);
+  const { teardown } = setupTest({
+    mockDomains: ["blog", "docs", "assets"],
+  });
 
+  try {
     // Create a request for a non-domain path
     const req = new Request("https://example.com/some-path");
 
@@ -199,7 +268,59 @@ Deno.test("handleDomains - should handle non-domain directories", async () => {
     // Assert
     assertEquals(result, null);
   } finally {
-    // Restore original Deno.readDir
-    Deno.readDir = originalReadDir;
+    teardown();
+  }
+});
+
+Deno.test("handleDomains - should handle static files for domain", async () => {
+  // Arrange
+  const { teardown } = setupTest({
+    mockDomains: ["example.com"],
+  });
+
+  try {
+    // Mock the stat function to simulate the _static directory existing
+    Deno.stat = (path: string | URL): Promise<Deno.FileInfo> => {
+      const pathString = path instanceof URL ? path.pathname : path.toString();
+      if (pathString === "content/example.com") {
+        return Promise.resolve({
+          isFile: false,
+          isDirectory: true,
+          isSymlink: false,
+          size: 0,
+          mtime: null,
+          atime: null,
+          birthtime: null,
+          ctime: null,
+          isBlockDevice: false,
+          isCharDevice: false,
+          isFifo: false,
+          isSocket: false,
+          dev: 0,
+          ino: 0,
+          mode: 0,
+          nlink: 0,
+          uid: 0,
+          gid: 0,
+          rdev: 0,
+          blksize: 0,
+          blocks: 0,
+        });
+      }
+      return Promise.reject(new Deno.errors.NotFound());
+    };
+
+    // Create a request for a static file under a domain
+    const req = new Request("https://example.com/_static/style.css");
+
+    // We shouldn't fully test the serveDir functionality here, but we can check
+    // that our handler attempts to serve the file
+    // Act
+    const result = await handleDomains(req);
+
+    // Assert
+    assert(result instanceof Response, `Expected Response, got ${result}`);
+  } finally {
+    teardown();
   }
 });
