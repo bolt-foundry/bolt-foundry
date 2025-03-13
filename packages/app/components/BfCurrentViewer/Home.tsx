@@ -6,11 +6,6 @@ import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 export const Home = iso(`
   field BfCurrentViewer.Home @component {
     __typename
-    contentCollection(slug: "bf:///content/marketing") {
-      item(id: "bf:///content/marketing/show-hn.md") {
-        ContentItem
-      }
-    }
     asBfCurrentViewerLoggedOut {
      DemoButton
     }
