@@ -46,7 +46,8 @@
   "include": [
     "infra",
     "lib",
-    "packages"
+    "packages",
+    "sites"
   ],
   "exclude": [
     ".cache",
@@ -87,5 +88,6 @@
     "path": "./deno.lock"
   },
   "nodeModulesDir": "manual",
+  "workspace": ["packages/contentFoundry", "sites/internal.contentfoundry.us"],
   "vendor": true
 }
