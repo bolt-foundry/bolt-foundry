@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "cf-admin": "./cf-admin/cfAdmin.ts"
+  }
+}

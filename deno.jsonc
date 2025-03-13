@@ -87,5 +87,6 @@
     "path": "./deno.lock"
   },
   "nodeModulesDir": "manual",
+  "workspace": ["packages/cfAdmin", "content/internal.contentfoundry.us"]
   "vendor": true
 }
