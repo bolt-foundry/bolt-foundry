@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "content-foundry": "./content-foundry/content-foundry.ts"
+  }
+}

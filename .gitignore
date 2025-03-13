@@ -15,3 +15,4 @@ vendor
 .config/sapling
 tmp/*
 !**/.gitkeep
+*.cfsock
