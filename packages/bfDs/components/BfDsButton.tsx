@@ -41,7 +41,17 @@ export type ButtonKind =
   | "overlayAlert"
   | "overlaySuccess"
   | "accent"
-  | "gradientOverlay";
+  | "gradientOverlay"
+  | "custom";
+
+type ButtonCustomSettings = {
+  color?: string;
+  colorHover?: string;
+  backgroundColor?: string;
+  backgroundColorHover?: string;
+  borderColor?: string;
+  borderColorHover?: string;
+} | undefined;
 
 export type ButtonType = {
   xstyle?: {
@@ -75,6 +85,7 @@ export type ButtonType = {
   tooltipPosition?: BfDsTooltipPosition;
   tooltipJustification?: BfDsTooltipJustification;
   kind?: ButtonKind;
+  customSettings?: ButtonCustomSettings;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const baseStyles: Record<string, React.CSSProperties> = {
@@ -200,6 +211,7 @@ const getButtonStyle = (
   hover: boolean,
   isIconButton: boolean,
   xstyle?: React.CSSProperties,
+  customSettings?: ButtonCustomSettings,
 ): React.CSSProperties => {
   // Base style creator based on button type
   const baseStyleCreator = isIconButton
@@ -400,6 +412,29 @@ const getButtonStyle = (
         };
       }
       return baseStyle;
+    case "custom":
+      if (!customSettings) {
+        return baseStyle;
+      }
+      return {
+        ...baseStyle,
+        backgroundColor: customSettings.backgroundColor
+          ? hover
+            ? customSettings.backgroundColorHover ??
+              customSettings.backgroundColor
+            : customSettings.backgroundColor
+          : baseStyle.backgroundColor,
+        color: customSettings.color
+          ? hover
+            ? customSettings.colorHover ?? customSettings.color
+            : customSettings.color
+          : baseStyle.color,
+        borderColor: customSettings.borderColor
+          ? hover
+            ? customSettings.borderColorHover ?? customSettings.borderColor
+            : customSettings.borderColor
+          : baseStyle.color,
+      };
     default:
       return baseStyle;
   }
@@ -411,18 +446,22 @@ const ButtonSpinner = ({
   size,
   progress,
   isIconButton,
+  customSettings,
 }: {
   kind: ButtonKind;
   size: ButtonSizeType;
   progress?: number;
   isIconButton: boolean;
+  customSettings: ButtonCustomSettings;
 }) => {
   if (isIconButton) {
     const iconSize = iconButtonSizes[size].width;
     const backgroundColor = (hover: boolean) =>
-      getButtonStyle(kind, size, hover, true).backgroundColor as string;
+      getButtonStyle(kind, size, hover, true, undefined, customSettings)
+        .backgroundColor as string;
     const spinnerColor = (hover: boolean) =>
-      getButtonStyle(kind, size, hover, true).color as string;
+      getButtonStyle(kind, size, hover, true, undefined, customSettings)
+        .color as string;
 
     return (
       <div style={baseStyles.iconSpinner}>
@@ -447,9 +486,11 @@ const ButtonSpinner = ({
   }
 
   const buttonBg = (hover: boolean) =>
-    getButtonStyle(kind, size, hover, false).backgroundColor as string;
+    getButtonStyle(kind, size, hover, false, undefined, customSettings)
+      .backgroundColor as string;
   const buttonColor = (hover: boolean) =>
-    getButtonStyle(kind, size, hover, false).color as string;
+    getButtonStyle(kind, size, hover, false, undefined, customSettings)
+      .color as string;
 
   return (
     <div style={baseStyles.iconStyle}>
@@ -501,17 +542,26 @@ const DropdownArrow = ({
   hover,
   size,
   iconColor,
+  customSettings,
 }: {
   isIconButton: boolean;
   kind: ButtonKind;
   hover: boolean;
   size: ButtonSizeType;
   iconColor: string;
+  customSettings: ButtonCustomSettings;
 }) => {
   const style = isIconButton
     ? {
       ...baseStyles.dropdownArrowIconButton,
-      backgroundColor: getButtonStyle(kind, size, hover, isIconButton)
+      backgroundColor: getButtonStyle(
+        kind,
+        size,
+        hover,
+        isIconButton,
+        undefined,
+        customSettings,
+      )
         .borderColor as string,
     }
     : baseStyles.dropdownArrow;
@@ -547,6 +597,7 @@ export function BfDsButton({
   tooltipJustification = "center",
   kind = "primary",
   type = "button",
+  customSettings,
   role: passedRole,
   ...props
 }: ButtonType) {
@@ -555,7 +606,14 @@ export function BfDsButton({
   const isIconButton = !text && !subtext;
 
   // Get the appropriate color for icons based on button style
-  const buttonStyle = getButtonStyle(kind, size, hover, isIconButton, xstyle);
+  const buttonStyle = getButtonStyle(
+    kind,
+    size,
+    hover,
+    isIconButton,
+    xstyle,
+    customSettings,
+  );
   const iconColor = buttonStyle.color as string;
 
   // Determine if spinner should be shown
@@ -581,6 +639,7 @@ export function BfDsButton({
           size={size}
           progress={progress}
           isIconButton
+          customSettings={customSettings}
         />
       )}
 
@@ -591,6 +650,7 @@ export function BfDsButton({
             size={size}
             progress={progress}
             isIconButton={false}
+            customSettings={customSettings}
           />
         )
         : (
@@ -626,6 +686,7 @@ export function BfDsButton({
           hover={hover}
           size={size}
           iconColor={iconColor}
+          customSettings={customSettings}
         />
       )}
     </>
