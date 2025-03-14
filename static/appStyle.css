@@ -1576,17 +1576,17 @@ i.justify-align {
   outline: 2px solid rgb(60, 132, 244);
 }
 
-.CommentEditorTheme__paragraph {
+.ExampleEditorTheme__paragraph {
   margin: 0;
   position: 'relative';
 }
 
 
 /**
- * Comment style
+ * Example style
  */
 
-.CommentPlugin_AddCommentBox {
+.ContentFoundryPlugin_AddExampleBox {
   display: block;
   position: fixed;
   border-radius: 20px;
@@ -1597,7 +1597,7 @@ i.justify-align {
   z-index: 10;
 }
 
-.CommentPlugin_AddCommentBox_button {
+.ContentFoundryPlugin_AddExampleBox_button {
   border-radius: 20px;
   border: 0;
   background: none;
@@ -1610,11 +1610,11 @@ i.justify-align {
   cursor: pointer;
 }
 
-.CommentPlugin_AddCommentBox_button:hover {
+.ContentFoundryPlugin_AddExampleBox_button:hover {
   background-color: #f6f6f6;
 }
 
-i.add-comment {
+i.add-example {
   background-size: contain;
   display: inline-block;
   height: 20px;
@@ -1623,7 +1623,7 @@ i.add-comment {
   background-image: url(../images/icons/chat-left-text.svg);
 }
 
-.CommentPlugin_CommentInputBox {
+.ContentFoundryPlugin_ExampleInputBox {
   display: block;
   position: fixed;
   width: 250px;
@@ -1636,7 +1636,7 @@ i.add-comment {
   top: 0;
 }
 
-.CommentPlugin_CommentInputBox::before {
+.ContentFoundryPlugin_ExampleInputBox::before {
   content: '';
   position: absolute;
   width: 0;
@@ -1664,28 +1664,28 @@ i.add-comment {
   }
 }
 
-.CommentPlugin_CommentInputBox_Buttons {
+.ContentFoundryPlugin_ExampleInputBox_Buttons {
   display: flex;
   flex-direction: row;
   padding: 0 10px 10px 10px;
   gap: 10px;
 }
 
-.CommentPlugin_CommentInputBox_Button {
+.ContentFoundryPlugin_ExampleInputBox_Button {
   flex: 1;
 }
 
-.CommentPlugin_CommentInputBox_Button.primary {
+.ContentFoundryPlugin_ExampleInputBox_Button.primary {
   background-color: rgb(66, 135, 245);
   font-weight: bold;
   color: #fff;
 }
 
-.CommentPlugin_CommentInputBox_Button.primary:hover {
+.ContentFoundryPlugin_ExampleInputBox_Button.primary:hover {
   background-color: rgb(53, 114, 211);
 }
 
-.CommentPlugin_CommentInputBox_Button[disabled] {
+.ContentFoundryPlugin_ExampleInputBox_Button[disabled] {
   background-color: #eee;
   opacity: 0.5;
   cursor: not-allowed;
@@ -1693,18 +1693,18 @@ i.add-comment {
   color: #444;
 }
 
-.CommentPlugin_CommentInputBox_Button[disabled]:hover {
+.ContentFoundryPlugin_ExampleInputBox_Button[disabled]:hover {
   opacity: 0.5;
   background-color: #eee;
 }
 
-.CommentPlugin_CommentInputBox_EditorContainer {
+.ContentFoundryPlugin_ExampleInputBox_EditorContainer {
   position: relative;
   margin: 10px;
   border-radius: 5px;
 }
 
-.CommentPlugin_CommentInputBox_Editor {
+.ContentFoundryPlugin_ExampleInputBox_Editor {
   position: relative;
   border: 1px solid #ccc;
   background-color: #fff;
@@ -1716,11 +1716,11 @@ i.add-comment {
   min-height: 80px;
 }
 
-.CommentPlugin_CommentInputBox_Editor:focus {
+.ContentFoundryPlugin_ExampleInputBox_Editor:focus {
   outline: 1px solid rgb(66, 135, 245);
 }
 
-.CommentPlugin_ShowCommentsButton {
+.ContentFoundryPlugin_ShowExamplesButton {
   position: fixed;
   top: 10px;
   right: 10px;
@@ -1728,26 +1728,26 @@ i.add-comment {
   border-radius: 10px;
 }
 
-i.comments {
+i.examples {
   background-size: contain;
   display: inline-block;
   height: 20px;
   width: 20px;
   vertical-align: -10px;
-  background-image: url(../images/icons/comments.svg);
+  background-image: url(../images/icons/examples.svg);
   opacity: 0.5;
   transition: opacity 0.2s linear;
 }
 
-.CommentPlugin_ShowCommentsButton:hover i.comments {
+.ContentFoundryPlugin_ShowExamplesButton:hover i.examples {
   opacity: 1;
 }
 
-.CommentPlugin_ShowCommentsButton.active {
+.ContentFoundryPlugin_ShowExamplesButton.active {
   background-color: #ccc;
 }
 
-.CommentPlugin_CommentsPanel {
+.ContentFoundryPlugin_ExamplesPanel {
   position: fixed;
   right: 0;
   width: 300px;
@@ -1756,11 +1756,11 @@ i.comments {
   background-color: #fff;
   border-top-left-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  animation: show-comments 0.2s ease;
+  animation: show-examples 0.2s ease;
   z-index: 25;
 }
 
-@keyframes show-comments {
+@keyframes show-examples {
   0% {
     opacity: 0;
     transform: translateX(300px);
@@ -1771,7 +1771,7 @@ i.comments {
   }
 }
 
-.CommentPlugin_CommentsPanel_Heading {
+.ContentFoundryPlugin_ExamplesPanel_Heading {
   padding-left: 15px;
   padding-top: 10px;
   margin: 0;
@@ -1784,7 +1784,7 @@ i.comments {
   overflow: hidden;
 }
 
-.CommentPlugin_CommentsPanel_Editor {
+.ContentFoundryPlugin_ExamplesPanel_Editor {
   position: relative;
   border: 1px solid #ccc;
   background-color: #fff;
@@ -1796,21 +1796,21 @@ i.comments {
   min-height: 20px;
 }
 
-.CommentPlugin_CommentsPanel_Editor::before {
+.ContentFoundryPlugin_ExamplesPanel_Editor::before {
   content: '';
   width: 30px;
   height: 20px;
   float: right;
 }
 
-.CommentPlugin_CommentsPanel_SendButton {
+.ContentFoundryPlugin_ExamplesPanel_SendButton {
   position: absolute;
   right: 10px;
   top: 8px;
   background: none;
 }
 
-.CommentPlugin_CommentsPanel_SendButton:hover {
+.ContentFoundryPlugin_ExamplesPanel_SendButton:hover {
   background: none;
 }
 
@@ -1825,22 +1825,22 @@ i.send {
   transition: opacity 0.2s linear;
 }
 
-.CommentPlugin_CommentsPanel_SendButton:hover i.send {
+.ContentFoundryPlugin_ExamplesPanel_SendButton:hover i.send {
   opacity: 1;
   filter: invert(45%) sepia(98%) saturate(2299%) hue-rotate(201deg)
     brightness(100%) contrast(92%);
 }
 
-.CommentPlugin_CommentsPanel_SendButton[disabled] i.send {
+.ContentFoundryPlugin_ExamplesPanel_SendButton[disabled] i.send {
   opacity: 0.3;
 }
 
-.CommentPlugin_CommentsPanel_SendButton:hover[disabled] i.send {
+.ContentFoundryPlugin_ExamplesPanel_SendButton:hover[disabled] i.send {
   opacity: 0.3;
   filter: none;
 }
 
-.CommentPlugin_CommentsPanel_Empty {
+.ContentFoundryPlugin_ExamplesPanel_Empty {
   color: #777;
   font-size: 15px;
   text-align: center;
@@ -1851,7 +1851,7 @@ i.send {
   width: 100%;
 }
 
-.CommentPlugin_CommentsPanel_List {
+.ContentFoundryPlugin_ExamplesPanel_List {
   padding: 0;
   list-style-type: none;
   margin: 0;
@@ -1862,7 +1862,7 @@ i.send {
   overflow-y: auto;
 }
 
-.CommentPlugin_CommentsPanel_List_Comment {
+.ContentFoundryPlugin_ExamplesPanel_List_Example {
   padding: 15px 0 15px 15px;
   margin: 0;
   font-size: 14px;
@@ -1870,32 +1870,32 @@ i.send {
   transition: all 0.2s linear;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread.active
-  .CommentPlugin_CommentsPanel_List_Comment:hover {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread.active
+  .ContentFoundryPlugin_ExamplesPanel_List_Example:hover {
   background-color: inherit;
 }
 
-.CommentPlugin_CommentsPanel_List_Comment p {
+.ContentFoundryPlugin_ExamplesPanel_List_Example p {
   margin: 0;
   color: #444;
 }
 
-.CommentPlugin_CommentsPanel_List_Details {
+.ContentFoundryPlugin_ExamplesPanel_List_Details {
   color: #444;
   padding-bottom: 5px;
   vertical-align: top;
 }
 
-.CommentPlugin_CommentsPanel_List_Comment_Author {
+.ContentFoundryPlugin_ExamplesPanel_List_Example_Author {
   font-weight: bold;
   padding-right: 5px;
 }
 
-.CommentPlugin_CommentsPanel_List_Comment_Time {
+.ContentFoundryPlugin_ExamplesPanel_List_Example_Time {
   color: #999;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread {
   padding: 0 0 0 0;
   margin: 0;
   border-top: 1px solid #eee;
@@ -1905,37 +1905,37 @@ i.send {
   border-left: 0 solid #eee;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread:first-child,
-.CommentPlugin_CommentsPanel_List_Thread
-  + .CommentPlugin_CommentsPanel_List_Thread {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread:first-child,
+.ContentFoundryPlugin_ExamplesPanel_List_Thread
+  + .ContentFoundryPlugin_ExamplesPanel_List_Thread {
   border-top: none;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread.interactive {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread.interactive {
   cursor: pointer;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread.interactive:hover {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread.interactive:hover {
   background-color: #fafafa;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread.active {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread.active {
   background-color: #fafafa;
   border-left: 15px solid #eee;
   cursor: inherit;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread_QuoteBox {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread_QuoteBox {
   padding-top: 10px;
   color: #ccc;
   display: block;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread_Quote {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread_Quote {
   margin: 0px 10px 0 10px;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread_Quote span {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread_Quote span {
   color: #222;
   background-color: rgba(255, 212, 0, 0.4);
   padding: 1px;
@@ -1944,36 +1944,36 @@ i.send {
   font-weight: bold;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread_Comments {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples {
   padding-left: 10px;
   list-style-type: none;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread_Comments
-  .CommentPlugin_CommentsPanel_List_Comment:first-child {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples
+  .ContentFoundryPlugin_ExamplesPanel_List_Example:first-child {
   border: none;
   margin-left: 0;
   padding-left: 5px;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread_Comments
-  .CommentPlugin_CommentsPanel_List_Comment:first-child.CommentPlugin_CommentsPanel_List_Comment:last-child {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples
+  .ContentFoundryPlugin_ExamplesPanel_List_Example:first-child.ContentFoundryPlugin_ExamplesPanel_List_Example:last-child {
   padding-bottom: 5px;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread_Comments
-  .CommentPlugin_CommentsPanel_List_Comment {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples
+  .ContentFoundryPlugin_ExamplesPanel_List_Example {
   padding-left: 10px;
   border-left: 5px solid #eee;
   margin-left: 5px;
 }
 
-.CommentPlugin_CommentsPanel_List_Thread_Editor {
+.ContentFoundryPlugin_ExamplesPanel_List_Thread_Editor {
   position: relative;
   padding-top: 1px;
 }
 
-.CommentPlugin_CommentsPanel_List_DeleteButton {
+.ContentFoundryPlugin_ExamplesPanel_List_DeleteButton {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -1983,22 +1983,22 @@ i.send {
   opacity: 0;
 }
 
-.CommentPlugin_CommentsPanel_DeletedComment,
-.CommentPlugin_CommentsPanel_List_Comment:hover
-  .CommentPlugin_CommentsPanel_List_DeleteButton,
-.CommentPlugin_CommentsPanel_List_Thread_QuoteBox:hover
-  .CommentPlugin_CommentsPanel_List_DeleteButton {
+.ContentFoundryPlugin_ExamplesPanel_DeletedExample,
+.ContentFoundryPlugin_ExamplesPanel_List_Example:hover
+  .ContentFoundryPlugin_ExamplesPanel_List_DeleteButton,
+.ContentFoundryPlugin_ExamplesPanel_List_Thread_QuoteBox:hover
+  .ContentFoundryPlugin_ExamplesPanel_List_DeleteButton {
   opacity: 0.5;
 }
 
-.CommentPlugin_CommentsPanel_List_DeleteButton:hover {
+.ContentFoundryPlugin_ExamplesPanel_List_DeleteButton:hover {
   background-color: transparent;
   opacity: 1;
   filter: invert(45%) sepia(98%) saturate(2299%) hue-rotate(201deg)
     brightness(100%) contrast(92%);
 }
 
-.CommentPlugin_CommentsPanel_List_DeleteButton i.delete {
+.ContentFoundryPlugin_ExamplesPanel_List_DeleteButton i.delete {
   background-size: contain;
   position: absolute;
   left: 5px;

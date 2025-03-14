@@ -11,7 +11,7 @@ import baseTheme from "packages/app/components/lexical/themes/PlaygroundEditorTh
 
 const theme: EditorThemeClasses = {
   ...baseTheme,
-  paragraph: "CommentEditorTheme__paragraph",
+  paragraph: "ExampleEditorTheme__paragraph",
 };
 
 export default theme;

@@ -24,7 +24,7 @@ import {
   TextNode,
 } from "lexical";
 
-import CommentEditorTheme from "packages/app/components/lexical/themes/CommentEditorTheme.ts";
+import ExampleEditorTheme from "packages/app/components/lexical/themes/ExampleEditorTheme.ts";
 import ToolbarPlugin from "packages/app/components/lexical/plugins/ToolbarPlugin.tsx";
 import {
   parseAllowedColor,
@@ -144,7 +144,7 @@ const editorConfig = {
   onError(error: Error) {
     throw error;
   },
-  theme: CommentEditorTheme,
+  theme: ExampleEditorTheme,
 };
 
 export function Editor() {
