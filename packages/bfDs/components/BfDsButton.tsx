@@ -22,27 +22,27 @@ import {
 export type ButtonSizeType = "xlarge" | "large" | "medium" | "small";
 
 export type ButtonKind =
-  | "primary"
-  | "secondary"
+  | "accent"
   | "alert"
-  | "success"
+  | "custom"
   | "filled"
+  | "filledAlert"
   | "filledPrimaryLight"
   | "filledSecondary"
-  | "filledAlert"
   | "filledSuccess"
+  | "gradientOverlay"
   | "outline"
-  | "outlinePrimary"
-  | "outlineDark"
   | "outlineAlert"
+  | "outlineDark"
+  | "outlinePrimary"
   | "outlineSuccess"
   | "overlay"
-  | "overlayDark"
   | "overlayAlert"
+  | "overlayDark"
   | "overlaySuccess"
-  | "accent"
-  | "gradientOverlay"
-  | "custom";
+  | "primary"
+  | "secondary"
+  | "success";
 
 type ButtonCustomSettings = {
   color?: string;
@@ -204,14 +204,25 @@ const createBaseIconButtonStyle = (
   ...xstyle,
 });
 
+type ButtonStyle = {
+  kind: ButtonKind;
+  size: ButtonSizeType;
+  hover: boolean;
+  isIconButton: boolean;
+  xstyle?: React.CSSProperties;
+  customSettings?: ButtonCustomSettings;
+};
+
 // Button style generator function
 const getButtonStyle = (
-  kind: ButtonKind,
-  size: ButtonSizeType,
-  hover: boolean,
-  isIconButton: boolean,
-  xstyle?: React.CSSProperties,
-  customSettings?: ButtonCustomSettings,
+  {
+    kind,
+    size,
+    hover,
+    isIconButton,
+    xstyle,
+    customSettings,
+  }: ButtonStyle,
 ): React.CSSProperties => {
   // Base style creator based on button type
   const baseStyleCreator = isIconButton
@@ -457,10 +468,10 @@ const ButtonSpinner = ({
   if (isIconButton) {
     const iconSize = iconButtonSizes[size].width;
     const backgroundColor = (hover: boolean) =>
-      getButtonStyle(kind, size, hover, true, undefined, customSettings)
+      getButtonStyle({ kind, size, hover, isIconButton: true, customSettings })
         .backgroundColor as string;
     const spinnerColor = (hover: boolean) =>
-      getButtonStyle(kind, size, hover, true, undefined, customSettings)
+      getButtonStyle({ kind, size, hover, isIconButton: true, customSettings })
         .color as string;
 
     return (
@@ -486,10 +497,10 @@ const ButtonSpinner = ({
   }
 
   const buttonBg = (hover: boolean) =>
-    getButtonStyle(kind, size, hover, false, undefined, customSettings)
+    getButtonStyle({ kind, size, hover, isIconButton: false, customSettings })
       .backgroundColor as string;
   const buttonColor = (hover: boolean) =>
-    getButtonStyle(kind, size, hover, false, undefined, customSettings)
+    getButtonStyle({ kind, size, hover, isIconButton: false, customSettings })
       .color as string;
 
   return (
@@ -555,12 +566,7 @@ const DropdownArrow = ({
     ? {
       ...baseStyles.dropdownArrowIconButton,
       backgroundColor: getButtonStyle(
-        kind,
-        size,
-        hover,
-        isIconButton,
-        undefined,
-        customSettings,
+        { kind, size, hover, isIconButton, customSettings },
       )
         .borderColor as string,
     }
@@ -607,12 +613,7 @@ export function BfDsButton({
 
   // Get the appropriate color for icons based on button style
   const buttonStyle = getButtonStyle(
-    kind,
-    size,
-    hover,
-    isIconButton,
-    xstyle,
-    customSettings,
+    { kind, size, hover, isIconButton, xstyle, customSettings },
   );
   const iconColor = buttonStyle.color as string;
 
