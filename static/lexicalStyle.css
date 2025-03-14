@@ -885,38 +885,7 @@ i.justify-align {
 .ContentFoundryPlugin_AddExampleBox {
   display: block;
   position: fixed;
-  border-radius: 20px;
-  background-color: white;
-  width: 40px;
-  height: 60px;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
   z-index: 10;
-}
-
-.ContentFoundryPlugin_AddExampleBox_button {
-  border-radius: 20px;
-  border: 0;
-  background: none;
-  width: 40px;
-  height: 60px;
-  position: relative;
-  position: absolute;
-  top: 0;
-  left: 0;
-  cursor: pointer;
-}
-
-.ContentFoundryPlugin_AddExampleBox_button:hover {
-  background-color: #f6f6f6;
-}
-
-i.add-example {
-  background-size: contain;
-  display: inline-block;
-  height: 20px;
-  width: 20px;
-  vertical-align: -10px;
-  background-image: url(../images/icons/chat-left-text.svg);
 }
 
 .ContentFoundryPlugin_ExampleInputBox {
@@ -925,7 +894,7 @@ i.add-example {
   width: 250px;
   min-height: 80px;
   background-color: #fff;
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
   border-radius: 5px;
   z-index: 24;
   animation: show-input-box 0.4s ease;
@@ -961,37 +930,7 @@ i.add-example {
 }
 
 .ContentFoundryPlugin_ExampleInputBox_Buttons {
-  display: flex;
-  flex-direction: row;
-  padding: 0 10px 10px 10px;
-  gap: 10px;
-}
-
-.ContentFoundryPlugin_ExampleInputBox_Button {
-  flex: 1;
-}
-
-.ContentFoundryPlugin_ExampleInputBox_Button.primary {
-  background-color: rgb(66, 135, 245);
-  font-weight: bold;
-  color: #fff;
-}
-
-.ContentFoundryPlugin_ExampleInputBox_Button.primary:hover {
-  background-color: rgb(53, 114, 211);
-}
-
-.ContentFoundryPlugin_ExampleInputBox_Button[disabled] {
-  background-color: #eee;
-  opacity: 0.5;
-  cursor: not-allowed;
-  font-weight: normal;
-  color: #444;
-}
-
-.ContentFoundryPlugin_ExampleInputBox_Button[disabled]:hover {
-  opacity: 0.5;
-  background-color: #eee;
+  padding: 8px 12px;
 }
 
 .ContentFoundryPlugin_ExampleInputBox_EditorContainer {

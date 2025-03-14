@@ -77,11 +77,9 @@ const logger = getLogger(import.meta);
 export const INSERT_INLINE_COMMAND: LexicalCommand<void> = createCommand();
 
 function AddExampleBox({
-  anchorKey,
   editor,
   onAddExample,
 }: {
-  anchorKey: NodeKey;
   editor: LexicalEditor;
   onAddExample: () => void;
 }): JSX.Element {
@@ -89,16 +87,15 @@ function AddExampleBox({
 
   const updatePosition = useCallback(() => {
     const boxElem = boxRef.current;
-    const rootElement = editor.getRootElement();
-    const anchorElement = editor.getElementByKey(anchorKey);
+    const selection = globalThis.getSelection();
 
-    if (boxElem !== null && rootElement !== null && anchorElement !== null) {
-      const { right } = rootElement.getBoundingClientRect();
-      const { top } = anchorElement.getBoundingClientRect();
-      boxElem.style.left = `${right - 20}px`;
-      boxElem.style.top = `${top - 30}px`;
+    if (boxElem !== null && selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+      boxElem.style.left = `${rect.right + 2}px`;
+      boxElem.style.top = `${rect.top - 10}px`;
     }
-  }, [anchorKey, editor]);
+  }, []);
 
   useEffect(() => {
     globalThis.addEventListener("resize", updatePosition);
@@ -110,11 +107,16 @@ function AddExampleBox({
 
   useLayoutEffect(() => {
     updatePosition();
-  }, [anchorKey, editor, updatePosition]);
+  }, [editor, updatePosition]);
 
   return (
     <div className="ContentFoundryPlugin_AddExampleBox" ref={boxRef}>
-      <BfDsButton kind="overlay" iconLeft="plus" onClick={onAddExample} />
+      <BfDsButton
+        shadow
+        kind="filledSuccess"
+        iconLeft="plus"
+        onClick={onAddExample}
+      />
     </div>
   );
 }
@@ -438,20 +440,20 @@ function ExampleInputBox({
         onChange={setRating}
         xclass="justifyContentCenter"
       />
-      <div className="ContentFoundryPlugin_ExampleInputBox_Buttons">
-        <Button
-          onClick={cancelAddExample}
-          className="ContentFoundryPlugin_ExampleInputBox_Button"
-        >
-          Cancel
-        </Button>
-        <Button
+      <div className="flexRow gapMedium ContentFoundryPlugin_ExampleInputBox_Buttons">
+        <div className="flex1">
+          <BfDsButton
+            kind="outline"
+            onClick={cancelAddExample}
+            text="Cancel"
+          />
+        </div>
+        <BfDsButton
+          iconLeft="plus"
           onClick={submitExample}
           disabled={!canSubmit}
-          className="ContentFoundryPlugin_ExampleInputBox_Button primary"
-        >
-          Example
-        </Button>
+          text="Example"
+        />
       </div>
     </div>
   );
@@ -861,13 +863,37 @@ export function ContentFoundryPlugin(): JSX.Element {
   const markNodeMap = useMemo<Map<string, Set<NodeKey>>>(() => {
     return new Map();
   }, []);
-  const [activeAnchorKey, setActiveAnchorKey] = useState<NodeKey | null>();
   const [activeIDs, setActiveIDs] = useState<Array<string>>([]);
   const [showExampleInput, setShowExampleInput] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
+  const [showAddBox, setShowAddBox] = useState(false);
+  const selectionTimeout = useRef<number | null>(null);
 
   useEffect(() => {
     setIsInDom(true);
+
+    const handleSelection = () => {
+      if (selectionTimeout.current) {
+        clearTimeout(selectionTimeout.current);
+      }
+
+      selectionTimeout.current = setTimeout(() => {
+        const selection = globalThis.getSelection();
+        if (selection && selection.toString().trim()) {
+          setShowAddBox(true);
+        } else {
+          setShowAddBox(false);
+        }
+      }, 200) as unknown as number;
+    };
+
+    document.addEventListener("mouseup", handleSelection);
+    return () => {
+      document.removeEventListener("mouseup", handleSelection);
+      if (selectionTimeout.current) {
+        clearTimeout(selectionTimeout.current);
+      }
+    };
   }, []);
 
   const cancelAddExample = useCallback(() => {
@@ -1033,7 +1059,6 @@ export function ContentFoundryPlugin(): JSX.Element {
         editorState.read(() => {
           const selection = $getSelection();
           let hasActiveIds = false;
-          let hasAnchorKey = false;
 
           if ($isRangeSelection(selection)) {
             const anchorNode = selection.anchor.getNode();
@@ -1047,19 +1072,12 @@ export function ContentFoundryPlugin(): JSX.Element {
                 setActiveIDs(exampleIDs);
                 hasActiveIds = true;
               }
-              if (!selection.isCollapsed()) {
-                setActiveAnchorKey(anchorNode.getKey());
-                hasAnchorKey = true;
-              }
             }
           }
           if (!hasActiveIds) {
             setActiveIDs((_activeIds) =>
               _activeIds.length === 0 ? _activeIds : []
             );
-          }
-          if (!hasAnchorKey) {
-            setActiveAnchorKey(null);
           }
         });
         if (!tags.has("collaboration")) {
@@ -1097,17 +1115,13 @@ export function ContentFoundryPlugin(): JSX.Element {
             />,
             document.body,
           )}
-        {activeAnchorKey !== null &&
-          activeAnchorKey !== undefined &&
-          !showExampleInput &&
-          createPortal(
-            <AddExampleBox
-              anchorKey={activeAnchorKey}
-              editor={editor}
-              onAddExample={onAddExample}
-            />,
-            document.body,
-          )}
+        {showAddBox && !showExampleInput && createPortal(
+          <AddExampleBox
+            editor={editor}
+            onAddExample={onAddExample}
+          />,
+          document.body,
+        )}
         {createPortal(
           <Button
             className={`ContentFoundryPlugin_ShowExamplesButton ${
