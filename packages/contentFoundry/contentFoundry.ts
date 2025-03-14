@@ -38,6 +38,7 @@ export function contentFoundry(
     function contentFoundryHandler(
       _req: Request,
     ): Response | Promise<Response> {
+      logger.info(`request!`);
       return new Response("Hello World");
     },
   ];

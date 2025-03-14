@@ -87,12 +87,14 @@ const readableLocations = [
   "static/",
   "tmp/",
   "content/",
+  "sites",
 ];
 
 const writableLocations = [
   "/tmp",
   "tmp",
   "content",
+  "sites",
 ];
 
 const allowedBinaries = [];
