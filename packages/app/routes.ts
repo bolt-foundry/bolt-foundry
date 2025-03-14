@@ -1,6 +1,6 @@
 import { PageUIDemo } from "packages/app/pages/PageUIDemo.tsx";
 import { FinalCutProXML } from "packages/tools/FinalCutProXML.tsx";
-import { Editor as LexicalDemo } from "packages/app/components/lexical/LexicalDemo.tsx";
+import { EditorPage as LexicalDemo } from "packages/app/components/lexical/LexicalDemo.tsx";
 
 function fileHandlerFactory(url: string) {
   return function FileHandler() {
