@@ -27,15 +27,18 @@ export type ButtonKind =
   | "alert"
   | "success"
   | "filled"
+  | "filledPrimaryLight"
   | "filledSecondary"
   | "filledAlert"
   | "filledSuccess"
   | "outline"
+  | "outlinePrimary"
   | "outlineDark"
   | "outlineAlert"
   | "outlineSuccess"
   | "overlay"
   | "overlayDark"
+  | "overlayAlert"
   | "overlaySuccess"
   | "accent"
   | "gradientOverlay";
@@ -265,6 +268,22 @@ const getButtonStyle = (
       return {
         ...baseStyle,
       };
+    case "filledPrimaryLight":
+      if (isIconButton) {
+        return {
+          ...baseStyle,
+          backgroundColor: hover
+            ? "var(--primaryButtonHover)"
+            : "var(--primaryButton)",
+          borderColor: hover
+            ? "var(--primaryButtonHover)"
+            : "var(--primaryButton)",
+          color: "var(--textOnSuccess)",
+        };
+      }
+      return {
+        ...baseStyle,
+      };
     case "filledSecondary":
       return {
         ...baseStyle,
@@ -298,6 +317,13 @@ const getButtonStyle = (
         borderColor: hover
           ? "var(--secondaryButton)"
           : "var(--secondaryButtonHover)",
+      };
+    case "outlinePrimary":
+      return {
+        ...baseStyle,
+        backgroundColor: hover ? "var(--outlineHover)" : "var(--background)",
+        color: hover ? "var(--primaryButtonHover)" : "var(--primaryButton)",
+        borderColor: hover ? "var(--primaryButtonHover)" : "var(--background)",
       };
     case "outlineDark":
       return {
@@ -335,6 +361,13 @@ const getButtonStyle = (
         backgroundColor: hover ? "var(--outlineDarkHover)" : "transparent",
         color: "var(--background)",
         borderColor: hover ? "var(--outlineDarkHover)" : "transparent",
+      };
+    case "overlayAlert":
+      return {
+        ...baseStyle,
+        backgroundColor: hover ? "var(--outlineHover)" : "transparent",
+        color: "var(--alert)",
+        borderColor: hover ? "var(--outlineHover)" : "transparent",
       };
     case "overlaySuccess":
       return {
