@@ -33,6 +33,7 @@ import {
 import TreeViewPlugin from "packages/app/components/lexical/plugins/TreeViewPlugin.tsx";
 import { ContentFoundryPlugin } from "packages/app/components/lexical/plugins/ContentFoundryPlugin.tsx";
 import { MarkNode } from "@lexical/mark";
+import { SubpageHeaderTitle } from "packages/app/components/Header/SubpageHeaderTitle.tsx";
 
 const placeholder = "Enter some rich text...";
 
@@ -150,13 +151,13 @@ const editorConfig = {
 export function Editor() {
   return (
     <LexicalComposer initialConfig={editorConfig}>
-      <div className="editor-container">
+      <div className="flex1 flexColumn full-editor-container">
         <ToolbarPlugin />
-        <div className="editor-inner">
+        <div className="flex1 flexColumn editor-inner">
           <RichTextPlugin
             contentEditable={
               <ContentEditable
-                className="editor-input"
+                className="flex1 editor-input"
                 aria-placeholder={placeholder}
                 placeholder={
                   <div className="editor-placeholder">{placeholder}</div>
@@ -168,9 +169,31 @@ export function Editor() {
           <HistoryPlugin />
           <AutoFocusPlugin />
           <ContentFoundryPlugin />
-          <TreeViewPlugin />
         </div>
+        <TreeViewPlugin />
       </div>
     </LexicalComposer>
+  );
+}
+
+export function EditorPage() {
+  return (
+    <div className="flexRow editor-container">
+      {/* Sidebar */}
+      <div className="flexColumn left-side-bar">
+        <div className="sidebar-header">
+          <SubpageHeaderTitle>
+            Voice editor
+          </SubpageHeaderTitle>
+        </div>
+      </div>
+      {/* Editor */}
+      <Editor />
+      {/* Right sidebar */}
+      <div className="flexColumn right-side-bar">
+        <div className="sessions-container">
+        </div>
+      </div>
+    </div>
   );
 }
