@@ -24,8 +24,7 @@ import {
   TextNode,
 } from "lexical";
 
-import { ContentFoundryNode } from "packages/app/components/lexical/nodes/ContentFoundryNode.tsx";
-import ExampleTheme from "packages/app/components/lexical/ExampleTheme.ts";
+import CommentEditorTheme from "packages/app/components/lexical/themes/CommentEditorTheme.ts";
 import ToolbarPlugin from "packages/app/components/lexical/plugins/ToolbarPlugin.tsx";
 import {
   parseAllowedColor,
@@ -33,6 +32,7 @@ import {
 } from "packages/app/components/lexical/styleConfig.ts";
 import TreeViewPlugin from "packages/app/components/lexical/plugins/TreeViewPlugin.tsx";
 import { ContentFoundryPlugin } from "packages/app/components/lexical/plugins/ContentFoundryPlugin.tsx";
+import { MarkNode } from "@lexical/mark";
 
 const placeholder = "Enter some rich text...";
 
@@ -140,11 +140,11 @@ const editorConfig = {
     import: constructImportMap(),
   },
   namespace: "Voice editor",
-  nodes: [ParagraphNode, TextNode, ContentFoundryNode],
+  nodes: [ParagraphNode, TextNode, MarkNode],
   onError(error: Error) {
     throw error;
   },
-  theme: ExampleTheme,
+  theme: CommentEditorTheme,
 };
 
 export function Editor() {
