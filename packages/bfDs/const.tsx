@@ -1,4 +1,4 @@
-const palletteLight = {
+const paletteLight = {
   primary: [255, 215, 0], // rgba(255, 215, 0, 1)
   secondary: [34, 217, 229], // rgba(34, 217, 229, 1)
   tertiary: [11, 41, 75], // rgba(11, 41, 75, 1)
@@ -20,10 +20,10 @@ const palletteLight = {
 const constantColors = {
   lightText: [230, 230, 235], // rgba(230, 230, 235, 1)
   alwaysWhite: [255, 255, 255], // rgba(255, 255, 255, 1)
-  alwaysDark: palletteLight.text,
+  alwaysDark: paletteLight.text,
 };
 
-const palletteDark = {
+const paletteDark = {
   primary: [255, 215, 0], // rgba(255, 215, 0, 1)
   secondary: [34, 217, 229], // rgba(34, 217, 229, 1)
   tertiary: [255, 255, 255],
@@ -50,7 +50,7 @@ function caplitalize(word: string) {
     word.slice(1);
 }
 
-function mixPallette(
+function mixPalette(
   color: number[] | undefined,
   mixColor: number[] | undefined = undefined,
   mixColorPercent: number | undefined = 0.5,
@@ -103,10 +103,10 @@ function createMixSet(
 ) {
   const capName = caplitalize(mixName);
   const mixSet = {
-    [`${colorName}Mix020${capName}`]: mixPallette(colorArr, mixArr, 0.2),
-    [`${colorName}Mix040${capName}`]: mixPallette(colorArr, mixArr, 0.4),
-    [`${colorName}Mix060${capName}`]: mixPallette(colorArr, mixArr, 0.6),
-    [`${colorName}Mix080${capName}`]: mixPallette(colorArr, mixArr, 0.8),
+    [`${colorName}Mix020${capName}`]: mixPalette(colorArr, mixArr, 0.2),
+    [`${colorName}Mix040${capName}`]: mixPalette(colorArr, mixArr, 0.4),
+    [`${colorName}Mix060${capName}`]: mixPalette(colorArr, mixArr, 0.6),
+    [`${colorName}Mix080${capName}`]: mixPalette(colorArr, mixArr, 0.8),
   };
   return Object.entries(mixSet).reduce((runningObj, [key, arr]) => {
     return {
@@ -117,82 +117,82 @@ function createMixSet(
 }
 
 function generateColors(dark = false) {
-  const pallette = dark ? palletteDark : palletteLight;
+  const palette = dark ? paletteDark : paletteLight;
   const adjustment = dark ? -defaultAdjustment : defaultAdjustment;
   return {
-    ...createSet("primaryColor", pallette.primary, adjustment),
-    ...createSet("secondaryColor", pallette.secondary, adjustment),
-    ...createSet("tertiaryColor", pallette.tertiary, adjustment),
-    ...createSet("fourtharyColor", pallette.fourthary, adjustment),
-    tertiaryColorDark: color(pallette.tertiaryDark),
+    ...createSet("primaryColor", palette.primary, adjustment),
+    ...createSet("secondaryColor", palette.secondary, adjustment),
+    ...createSet("tertiaryColor", palette.tertiary, adjustment),
+    ...createSet("fourtharyColor", palette.fourthary, adjustment),
+    tertiaryColorDark: color(palette.tertiaryDark),
     alwaysWhite: color(constantColors.alwaysWhite),
     alwaysDark: color(constantColors.alwaysDark),
     alwaysLight: color(constantColors.lightText),
-    logoBolt: color(pallette.primary),
-    logoFoundry: color(pallette.secondary),
-    primaryButton: color(pallette.primary),
-    primaryButtonHover: color(pallette.primary, -adjustment),
-    secondaryButton: color(pallette.background, -adjustment * 2),
-    secondaryButtonHover: color(pallette.background, -adjustment * 3),
-    secondaryButtonBackground: color(pallette.background, -adjustment * 12),
+    logoBolt: color(palette.primary),
+    logoFoundry: color(palette.secondary),
+    primaryButton: color(palette.primary),
+    primaryButtonHover: color(palette.primary, -adjustment),
+    secondaryButton: color(palette.background, -adjustment * 2),
+    secondaryButtonHover: color(palette.background, -adjustment * 3),
+    secondaryButtonBackground: color(palette.background, -adjustment * 12),
     secondaryButtonBackgroundHover: color(
-      pallette.background,
+      palette.background,
       -adjustment * 14,
     ),
-    accentButton: color(pallette.fourthary),
-    accentButtonHover: color(pallette.fourthary, -adjustment),
+    accentButton: color(palette.fourthary),
+    accentButtonHover: color(palette.fourthary, -adjustment),
     sidebarText: color(constantColors.lightText),
-    outlineHover: color(pallette.background, -adjustment),
-    outlineDark: color(pallette.secondaryText, null, 0.2),
-    outlineDarkHover: color(pallette.secondaryText, null, 0.4),
-    ...createSet("alert", pallette.negative, adjustment),
-    success: color(pallette.secondary),
-    successHover: color(pallette.secondary, -adjustment),
-    background: color(pallette.background),
-    backgroundAlert: color(pallette.negative, -adjustment * 20),
-    backgroundIcon: color(pallette.background, -adjustment),
-    backgroundIconHover: color(pallette.background, -adjustment * 2),
-    itemDarkHovered: color(pallette.background, -adjustment * 2, 0.1),
-    ...createSet("text", pallette.text, adjustment),
-    textMarketing: color(pallette.textMarketing),
-    ...createSet("textSecondary", pallette.secondaryText, adjustment),
-    textLight: color(pallette.secondaryText, adjustment * 4),
-    textOnPrimary: color(pallette.tertiaryDark),
-    textOnSecondary: color(pallette.text),
-    textOnAccent: color(pallette.background),
-    textOnSuccess: color(pallette.background),
-    textOnAlert: color(pallette.background),
-    textOnBackground: color(pallette.text),
-    textOnDark: color(pallette.background),
-    border: color(pallette.border),
-    borderDark: color(pallette.border, -adjustment * 2),
-    pageBackground: color(pallette.pageBackground),
-    pageBackgroundTransparent: color(pallette.pageBackground, null, 0.97), // used with backdropFilter
-    menuBackground: color(pallette.menuBackground),
-    menuBackgroundHover: color(pallette.menuBackground, -adjustment),
+    outlineHover: color(palette.background, -adjustment),
+    outlineDark: color(palette.secondaryText, null, 0.2),
+    outlineDarkHover: color(palette.secondaryText, null, 0.4),
+    ...createSet("alert", palette.negative, adjustment),
+    success: color(palette.secondary),
+    successHover: color(palette.secondary, -adjustment),
+    background: color(palette.background),
+    backgroundAlert: color(palette.negative, -adjustment * 20),
+    backgroundIcon: color(palette.background, -adjustment),
+    backgroundIconHover: color(palette.background, -adjustment * 2),
+    itemDarkHovered: color(palette.background, -adjustment * 2, 0.1),
+    ...createSet("text", palette.text, adjustment),
+    textMarketing: color(palette.textMarketing),
+    ...createSet("textSecondary", palette.secondaryText, adjustment),
+    textLight: color(palette.secondaryText, adjustment * 4),
+    textOnPrimary: color(palette.tertiaryDark),
+    textOnSecondary: color(palette.text),
+    textOnAccent: color(palette.background),
+    textOnSuccess: color(palette.background),
+    textOnAlert: color(palette.background),
+    textOnBackground: color(palette.text),
+    textOnDark: color(palette.background),
+    border: color(palette.border),
+    borderDark: color(palette.border, -adjustment * 2),
+    pageBackground: color(palette.pageBackground),
+    pageBackgroundTransparent: color(palette.pageBackground, null, 0.97), // used with backdropFilter
+    menuBackground: color(palette.menuBackground),
+    menuBackgroundHover: color(palette.menuBackground, -adjustment),
     marketingBackground: `black linear-gradient(125deg, ${
-      color(pallette.tertiaryDark, 0, 0.5)
-    }, ${color(pallette.fourthary, 0, 0.4)})`,
+      color(palette.tertiaryDark, 0, 0.5)
+    }, ${color(palette.fourthary, 0, 0.4)})`,
     marketingGradient: `linear-gradient(in oklch 90deg, ${
-      color(pallette.secondary)
-    }, ${color(pallette.fourthary)})`,
+      color(palette.secondary)
+    }, ${color(palette.fourthary)})`,
     marketingBackgroundSecondary: `black linear-gradient(in oklch 125deg, ${
-      color(pallette.tertiaryDark, 0, 0.5)
-    }, ${color(pallette.secondary, 0, 0.8)})`,
+      color(palette.tertiaryDark, 0, 0.5)
+    }, ${color(palette.secondary, 0, 0.8)})`,
     marketingBackgroundFourthary: `black linear-gradient(in oklch 125deg, ${
-      color(pallette.tertiaryDark, 0, 0.5)
-    }, ${color(pallette.fourthary, 0, 0.8)})`,
-    transparentGray: color(pallette.secondaryText, 0, 0.1),
-    transparentSecondary: color(pallette.secondary, 0, 0.2),
-    transparentBackground: color(pallette.background, 0, 0.97),
-    transparentDark: color(pallette.tertiaryDark, 0, 0.95),
-    glimmerBackground: color(pallette.glimmerBackground),
-    glimmer: color(pallette.glimmer),
+      color(palette.tertiaryDark, 0, 0.5)
+    }, ${color(palette.fourthary, 0, 0.8)})`,
+    transparentGray: color(palette.secondaryText, 0, 0.1),
+    transparentSecondary: color(palette.secondary, 0, 0.2),
+    transparentBackground: color(palette.background, 0, 0.97),
+    transparentDark: color(palette.tertiaryDark, 0, 0.95),
+    glimmerBackground: color(palette.glimmerBackground),
+    glimmer: color(palette.glimmer),
     ...createMixSet(
       "primary",
       "alert",
-      pallette.primary,
-      pallette.negative,
+      palette.primary,
+      palette.negative,
       adjustment,
     ),
   };
