@@ -228,25 +228,89 @@ function Rating({ value, onChange, xclass = "" }: {
         size="medium"
       />
       <BfDsButton
-        kind={value === -2 ? "filledAlert" : "outlineAlert"}
+        kind="custom"
+        customSettings={value === -2
+          ? {
+            backgroundColor: "var(--primaryMix080Alert)",
+            backgroundColorHover: "var(--primaryMix080AlertHover)",
+            borderColor: "var(--primaryMix080Alert)",
+            borderColorHover: "var(--primaryMix080AlertHover)",
+            color: "var(--textOnAlert)",
+          }
+          : {
+            backgroundColor: "var(--background)",
+            backgroundColorHover: "var(--outlineHover)",
+            color: "var(--primaryMix080Alert)",
+            colorHover: "var(--primaryMix080AlertHover)",
+            borderColor: "var(--background)",
+            borderColorHover: "var(--primaryMix080AlertHover)",
+          }}
         iconLeft="star2ThirdNegative"
         onClick={() => onChange(-2)}
         size="medium"
       />
       <BfDsButton
-        kind={value === -1 ? "filledAlert" : "outlineAlert"}
+        kind="custom"
+        customSettings={value === -1
+          ? {
+            backgroundColor: "var(--primaryMix060Alert)",
+            backgroundColorHover: "var(--primaryMix060AlertHover)",
+            borderColor: "var(--primaryMix060Alert)",
+            borderColorHover: "var(--primaryMix060AlertHover)",
+            color: "var(--textOnAlert)",
+          }
+          : {
+            backgroundColor: "var(--background)",
+            backgroundColorHover: "var(--outlineHover)",
+            color: "var(--primaryMix060Alert)",
+            colorHover: "var(--primaryMix060AlertHover)",
+            borderColor: "var(--background)",
+            borderColorHover: "var(--primaryMix060AlertHover)",
+          }}
         iconLeft="star1ThirdNegative"
         onClick={() => onChange(-1)}
         size="medium"
       />
       <BfDsButton
-        kind={value === 1 ? "filledPrimaryLight" : "outlinePrimary"}
+        kind="custom"
+        customSettings={value === 1
+          ? {
+            backgroundColor: "var(--primaryMix040Alert)",
+            backgroundColorHover: "var(--primaryMix040AlertHover)",
+            borderColor: "var(--primaryMix040Alert)",
+            borderColorHover: "var(--primaryMix040AlertHover)",
+            color: "var(--textOnAlert)",
+          }
+          : {
+            backgroundColor: "var(--background)",
+            backgroundColorHover: "var(--outlineHover)",
+            color: "var(--primaryMix040Alert)",
+            colorHover: "var(--primaryMix040AlertHover)",
+            borderColor: "var(--background)",
+            borderColorHover: "var(--primaryMix040AlertHover)",
+          }}
         iconLeft="star1ThirdPositive"
         onClick={() => onChange(1)}
         size="medium"
       />
       <BfDsButton
-        kind={value === 2 ? "filledPrimaryLight" : "outlinePrimary"}
+        kind="custom"
+        customSettings={value === 2
+          ? {
+            backgroundColor: "var(--primaryMix020Alert)",
+            backgroundColorHover: "var(--primaryMix020AlertHover)",
+            borderColor: "var(--primaryMix020Alert)",
+            borderColorHover: "var(--primaryMix020AlertHover)",
+            color: "var(--textOnAlert)",
+          }
+          : {
+            backgroundColor: "var(--background)",
+            backgroundColorHover: "var(--outlineHover)",
+            color: "var(--primaryMix020Alert)",
+            colorHover: "var(--primaryMix020AlertHover)",
+            borderColor: "var(--background)",
+            borderColorHover: "var(--primaryMix020AlertHover)",
+          }}
         iconLeft="star2ThirdPositive"
         onClick={() => onChange(2)}
         size="medium"
@@ -534,37 +598,51 @@ function ExamplesPanelListExample({
 
   logger.info("Showing example", example);
 
-  const liClasses = classnames([
-    "flexRow",
-    "gapMedium",
-    "alignItemsCenter",
-    "ContentFoundryPlugin_ExamplesPanel_List_Example",
-    example.rating > 0
-      ? "ContentFoundryPlugin_ExamplesPanel_List_Example_Valid"
-      : "ContentFoundryPlugin_ExamplesPanel_List_Example_Invalid",
-  ]);
-
   let starIcon = "starSolid";
+  let backgroundColor = "var(--background)";
+  let starBgColor = "var(--border)";
   switch (example.rating) {
+    case -3:
+      backgroundColor = "var(--alert015)";
+      starBgColor = "var(--alert)";
+      break;
     case -2:
       starIcon = "star2ThirdNegative";
+      backgroundColor = "var(--primaryMix080Alert015)";
+      starBgColor = "var(--primaryMix080Alert)";
       break;
     case -1:
       starIcon = "star1ThirdNegative";
+      backgroundColor = "var(--primaryMix060Alert015)";
+      starBgColor = "var(--primaryMix060Alert)";
       break;
     case 1:
       starIcon = "star1ThirdPositive";
+      backgroundColor = "var(--primaryMix040Alert015)";
+      starBgColor = "var(--primaryMix040Alert)";
       break;
     case 2:
       starIcon = "star2ThirdPositive";
+      backgroundColor = "var(--primaryMix020Alert015)";
+      starBgColor = "var(--primaryMix020Alert)";
+      break;
+    case 3:
+      backgroundColor = "var(--primaryColor015)";
+      starBgColor = "var(--primaryColor)";
       break;
     default:
       break;
   }
 
   return (
-    <li className={liClasses}>
-      <div className="star flexRow flexCenter">
+    <li
+      className="flexRow gapMedium alignItemsCenter ContentFoundryPlugin_ExamplesPanel_List_Example"
+      style={{ backgroundColor }}
+    >
+      <div
+        className="star flexRow flexCenter"
+        style={{ backgroundColor: starBgColor }}
+      >
         <BfDsIcon
           color="var(--background)"
           name={starIcon as BfDsIconType}
@@ -577,8 +655,8 @@ function ExamplesPanelListExample({
       {!example.deleted && (
         <>
           <BfDsButton
-            kind="overlayAlert"
             iconLeft="trash"
+            kind="overlayAlert"
             onClick={() => {
               showModal(
                 "Delete Example",
@@ -703,7 +781,7 @@ function ExamplesPanelList({
                 </blockquote>
                 <BfDsButton
                   iconLeft="trash"
-                  kind="outlineAlert"
+                  kind="overlayAlert"
                   onClick={() => {
                     showModal(
                       "Delete Thread",

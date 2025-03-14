@@ -45,6 +45,22 @@ const palletteDark = {
 
 const defaultAdjustment = 10;
 
+function caplitalize(word: string) {
+  return word.charAt(0).toUpperCase() +
+    word.slice(1);
+}
+
+function mixPallette(
+  color: number[] | undefined,
+  mixColor: number[] | undefined = undefined,
+  mixColorPercent: number | undefined = 0.5,
+) {
+  if (!color || !mixColor) return [255, 0, 0, 1];
+  return color.map((c, index) =>
+    Math.round(c * (1 - mixColorPercent) + mixColor[index] * mixColorPercent)
+  );
+}
+
 function color(
   color: number[] | undefined,
   adjust: number | null = 0,
@@ -76,6 +92,28 @@ function createSet(name: string, colorArr: number[], adjustment: number) {
     [`${name}060`]: color(colorArr, null, 0.60),
     [`${name}Hover`]: color(colorArr, -adjustment),
   };
+}
+
+function createMixSet(
+  colorName: string,
+  mixName: string,
+  colorArr: number[],
+  mixArr: number[],
+  adjustment: number,
+) {
+  const capName = caplitalize(mixName);
+  const mixSet = {
+    [`${colorName}Mix020${capName}`]: mixPallette(colorArr, mixArr, 0.2),
+    [`${colorName}Mix040${capName}`]: mixPallette(colorArr, mixArr, 0.4),
+    [`${colorName}Mix060${capName}`]: mixPallette(colorArr, mixArr, 0.6),
+    [`${colorName}Mix080${capName}`]: mixPallette(colorArr, mixArr, 0.8),
+  };
+  return Object.entries(mixSet).reduce((runningObj, [key, arr]) => {
+    return {
+      ...runningObj,
+      ...createSet(key, arr, adjustment),
+    };
+  }, {});
 }
 
 function generateColors(dark = false) {
@@ -150,6 +188,13 @@ function generateColors(dark = false) {
     transparentDark: color(pallette.tertiaryDark, 0, 0.95),
     glimmerBackground: color(pallette.glimmerBackground),
     glimmer: color(pallette.glimmer),
+    ...createMixSet(
+      "primary",
+      "alert",
+      pallette.primary,
+      pallette.negative,
+      adjustment,
+    ),
   };
 }
 
