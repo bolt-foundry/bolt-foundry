@@ -111,6 +111,9 @@ a.dark:visited {
 .alignItemsCenter {
   align-items: center;
 }
+.justifyContentCenter {
+  justify-content: center;
+}
 .selfAlignEnd {
   align-self: end;
 }

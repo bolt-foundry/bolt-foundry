@@ -66,6 +66,12 @@ import Button from "packages/app/components/lexical/ui/Button.tsx";
 import ContentEditable from "packages/app/components/lexical/ui/ContentEditable.tsx";
 import Placeholder from "packages/app/components/lexical/ui/Placeholder.tsx";
 import { getLogger } from "packages/logger.ts";
+import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
+import { classnames } from "lib/classnames.ts";
+import {
+  BfDsIcon,
+  type BfDsIconType,
+} from "packages/bfDs/components/BfDsIcon.tsx";
 const logger = getLogger(import.meta);
 
 export const INSERT_INLINE_COMMAND: LexicalCommand<void> = createCommand();
@@ -108,13 +114,7 @@ function AddExampleBox({
 
   return (
     <div className="ContentFoundryPlugin_AddExampleBox" ref={boxRef}>
-      <button
-        type="button"
-        className="ContentFoundryPlugin_AddExampleBox_button"
-        onClick={onAddExample}
-      >
-        <i className="icon add-example" />
-      </button>
+      <BfDsButton kind="overlay" iconLeft="plus" onClick={onAddExample} />
     </div>
   );
 }
@@ -162,7 +162,7 @@ function PlainTextEditor({
   onEscape,
   onChange,
   editorRef,
-  placeholder = "Type a example...",
+  placeholder = "Type an example...",
 }: {
   autoFocus?: boolean;
   className?: string;
@@ -172,7 +172,7 @@ function PlainTextEditor({
   placeholder?: string;
 }) {
   const initialConfig = {
-    namespace: "Exampleing",
+    namespace: "Exampling",
     nodes: [],
     onError: (error: Error) => {
       throw error;
@@ -214,6 +214,53 @@ function useOnChange(
   );
 }
 
+function Rating({ value, onChange, xclass = "" }: {
+  value: number;
+  onChange: (rating: number) => void;
+  xclass?: string;
+}) {
+  return (
+    <div className={`flex1 flexRow mediumGap ${xclass}`}>
+      <BfDsButton
+        kind={value === -3 ? "filledAlert" : "outlineAlert"}
+        iconLeft="starSolid"
+        onClick={() => onChange(-3)}
+        size="medium"
+      />
+      <BfDsButton
+        kind={value === -2 ? "filledAlert" : "outlineAlert"}
+        iconLeft="star2ThirdNegative"
+        onClick={() => onChange(-2)}
+        size="medium"
+      />
+      <BfDsButton
+        kind={value === -1 ? "filledAlert" : "outlineAlert"}
+        iconLeft="star1ThirdNegative"
+        onClick={() => onChange(-1)}
+        size="medium"
+      />
+      <BfDsButton
+        kind={value === 1 ? "filledPrimaryLight" : "outlinePrimary"}
+        iconLeft="star1ThirdPositive"
+        onClick={() => onChange(1)}
+        size="medium"
+      />
+      <BfDsButton
+        kind={value === 2 ? "filledPrimaryLight" : "outlinePrimary"}
+        iconLeft="star2ThirdPositive"
+        onClick={() => onChange(2)}
+        size="medium"
+      />
+      <BfDsButton
+        kind={value === 3 ? "filledPrimaryLight" : "outlinePrimary"}
+        iconLeft="starSolid"
+        onClick={() => onChange(3)}
+        size="medium"
+      />
+    </div>
+  );
+}
+
 function ExampleInputBox({
   editor,
   cancelAddExample,
@@ -227,6 +274,7 @@ function ExampleInputBox({
   ) => void;
 }) {
   const [content, setContent] = useState("");
+  const [rating, setRating] = useState(3);
   const [canSubmit, setCanSubmit] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
   const selectionState = useMemo(
@@ -329,7 +377,7 @@ function ExampleInputBox({
         quote = quote.slice(0, 99) + "…";
       }
       submitAddExample(
-        createThread(quote, [createExample(content, "valid", "{AUTHOR NAME}")]),
+        createThread(quote, [createExample(content, rating, "{AUTHOR NAME}")]),
         true,
       );
     }
@@ -343,6 +391,11 @@ function ExampleInputBox({
         className="ContentFoundryPlugin_ExampleInputBox_Editor"
         onEscape={onEscape}
         onChange={onChange}
+      />
+      <Rating
+        value={rating}
+        onChange={setRating}
+        xclass="justifyContentCenter"
       />
       <div className="ContentFoundryPlugin_ExampleInputBox_Buttons">
         <Button
@@ -378,6 +431,7 @@ function ExamplesComposer({
   thread?: Thread;
 }) {
   const [content, setContent] = useState("");
+  const [rating, setRating] = useState(3);
   const [canSubmit, setCanSubmit] = useState(false);
   const editorRef = useRef<LexicalEditor>(null);
 
@@ -386,7 +440,7 @@ function ExamplesComposer({
   const submitExample = () => {
     if (canSubmit) {
       submitAddExample(
-        createExample(content, "valid", "{AUTHOR NAME}"),
+        createExample(content, rating, "{AUTHOR NAME}"),
         false,
         thread,
       );
@@ -409,13 +463,15 @@ function ExamplesComposer({
         editorRef={editorRef}
         placeholder={placeholder}
       />
-      <Button
-        className="ContentFoundryPlugin_ExamplesPanel_SendButton"
-        onClick={submitExample}
-        disabled={!canSubmit}
-      >
-        <i className="send" />
-      </Button>
+      <div className="flexRow mediumGap alignItemsCenter">
+        <Rating value={rating} onChange={setRating} />
+        <BfDsButton
+          kind="secondary"
+          text="Submit"
+          disabled={!canSubmit}
+          onClick={submitExample}
+        />
+      </div>
     </>
   );
 }
@@ -474,33 +530,57 @@ function ExamplesPanelListExample({
   ) => void;
   rtf: Intl.RelativeTimeFormat;
   thread?: Thread;
-}): JSX.Element {
-  const seconds = Math.round((example.timeStamp - performance.now()) / 1000);
-  const minutes = Math.round(seconds / 60);
+}): JSX.Element | null {
   const [modal, showModal] = useModal();
+  if (example.deleted) return null;
 
   logger.info("Showing example", example);
 
+  const liClasses = classnames([
+    "flexRow",
+    "gapMedium",
+    "alignItemsCenter",
+    "ContentFoundryPlugin_ExamplesPanel_List_Example",
+    example.rating > 0
+      ? "ContentFoundryPlugin_ExamplesPanel_List_Example_Valid"
+      : "ContentFoundryPlugin_ExamplesPanel_List_Example_Invalid",
+  ]);
+
+  let starIcon = "starSolid";
+  switch (example.rating) {
+    case -2:
+      starIcon = "star2ThirdNegative";
+      break;
+    case -1:
+      starIcon = "star1ThirdNegative";
+      break;
+    case 1:
+      starIcon = "star1ThirdPositive";
+      break;
+    case 2:
+      starIcon = "star2ThirdPositive";
+      break;
+    default:
+      break;
+  }
+
   return (
-    <li className="ContentFoundryPlugin_ExamplesPanel_List_Example">
-      <div className="ContentFoundryPlugin_ExamplesPanel_List_Details">
-        <span className="ContentFoundryPlugin_ExamplesPanel_List_Example_Author">
-          {example.author}
-        </span>
-        <span className="ContentFoundryPlugin_ExamplesPanel_List_Example_Time">
-          · {seconds > -10 ? "Just now" : rtf.format(minutes, "minute")}
-        </span>
+    <li className={liClasses}>
+      <div className="star flexRow flexCenter">
+        <BfDsIcon
+          color="var(--background)"
+          name={starIcon as BfDsIconType}
+          size={12}
+        />
       </div>
-      <p
-        className={example.deleted
-          ? "ContentFoundryPlugin_ExamplesPanel_DeletedExample"
-          : ""}
-      >
+      <div className="flex1 ContentFoundryPlugin_ExamplesPanel_List_Details">
         {example.content}
-      </p>
+      </div>
       {!example.deleted && (
         <>
-          <Button
+          <BfDsButton
+            kind="overlayAlert"
+            iconLeft="trash"
             onClick={() => {
               showModal(
                 "Delete Example",
@@ -514,10 +594,8 @@ function ExamplesPanelListExample({
                 ),
               );
             }}
-            className="ContentFoundryPlugin_ExamplesPanel_List_DeleteButton"
-          >
-            <i className="delete" />
-          </Button>
+            size="medium"
+          />
           {modal}
         </>
       )}
@@ -605,22 +683,38 @@ function ExamplesPanelList({
             }
           };
 
+          const liClasses = classnames([
+            "ContentFoundryPlugin_ExamplesPanel_List_Thread",
+            {
+              interactive: markNodeMap.has(id),
+              active: activeIDs.indexOf(id) > -1,
+            },
+          ]);
+          const quoteClasses = classnames([
+            "ContentFoundryPlugin_ExamplesPanel_List_Thread_QuoteBox",
+            "flexRow",
+            "gapMedium",
+            "alignItemsCenter",
+          ]);
+
           return (
-            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
             <li
               key={id}
               onClick={handleClickThread}
-              className={`ContentFoundryPlugin_ExamplesPanel_List_Thread ${
-                markNodeMap.has(id) ? "interactive" : ""
-              } ${activeIDs.indexOf(id) === -1 ? "" : "active"}`}
+              className={liClasses}
             >
-              <div className="ContentFoundryPlugin_ExamplesPanel_List_Thread_QuoteBox">
-                <blockquote className="ContentFoundryPlugin_ExamplesPanel_List_Thread_Quote">
-                  {"> "}
+              <div className={quoteClasses}>
+                <blockquote className="flex1 ContentFoundryPlugin_ExamplesPanel_List_Thread_Quote">
+                  <BfDsIcon
+                    color="var(--textSecondary)"
+                    name="arrowRight"
+                    size={12}
+                  />
                   <span>{exampleOrThread.quote}</span>
                 </blockquote>
-                {/* INTRODUCE DELETE THREAD HERE*/}
-                <Button
+                <BfDsButton
+                  iconLeft="trash"
+                  kind="outlineAlert"
                   onClick={() => {
                     showModal(
                       "Delete Thread",
@@ -633,10 +727,8 @@ function ExamplesPanelList({
                       ),
                     );
                   }}
-                  className="ContentFoundryPlugin_ExamplesPanel_List_DeleteButton"
-                >
-                  <i className="delete" />
-                </Button>
+                  size="medium"
+                />
                 {modal}
               </div>
               <ul className="ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples">
@@ -654,7 +746,7 @@ function ExamplesPanelList({
                 <ExamplesComposer
                   submitAddExample={submitAddExample}
                   thread={exampleOrThread}
-                  placeholder="Reply to example..."
+                  placeholder="Add a new example..."
                 />
               </div>
             </li>
