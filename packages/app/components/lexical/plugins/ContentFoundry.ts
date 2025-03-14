@@ -16,7 +16,7 @@ export type Example = {
   id: string;
   timeStamp: number;
   type: "example";
-  validity: "valid" | "invalid";
+  rating: number;
 };
 
 export type Thread = {
@@ -37,7 +37,7 @@ function createUID(): string {
 
 export function createExample(
   content: string,
-  validity: "valid" | "invalid" = "valid",
+  rating: number = 3,
   author: string,
   id?: string,
   timeStamp?: number,
@@ -50,7 +50,7 @@ export function createExample(
     id: id === undefined ? createUID() : id,
     timeStamp: timeStamp === undefined ? performance.now() : timeStamp,
     type: "example",
-    validity,
+    rating,
   };
 }
 
@@ -84,7 +84,7 @@ function markDeleted(example: Example): Example {
     id: example.id,
     timeStamp: example.timeStamp,
     type: "example",
-    validity: example.validity,
+    rating: example.rating,
   };
 }
 

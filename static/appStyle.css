@@ -1803,17 +1803,6 @@ i.examples {
   float: right;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_SendButton {
-  position: absolute;
-  right: 10px;
-  top: 8px;
-  background: none;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_SendButton:hover {
-  background: none;
-}
-
 i.send {
   background-size: contain;
   display: inline-block;
@@ -1823,21 +1812,6 @@ i.send {
   background-image: url(../images/icons/send.svg);
   opacity: 0.5;
   transition: opacity 0.2s linear;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_SendButton:hover i.send {
-  opacity: 1;
-  filter: invert(45%) sepia(98%) saturate(2299%) hue-rotate(201deg)
-    brightness(100%) contrast(92%);
-}
-
-.ContentFoundryPlugin_ExamplesPanel_SendButton[disabled] i.send {
-  opacity: 0.3;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_SendButton:hover[disabled] i.send {
-  opacity: 0.3;
-  filter: none;
 }
 
 .ContentFoundryPlugin_ExamplesPanel_Empty {
@@ -1863,46 +1837,40 @@ i.send {
 }
 
 .ContentFoundryPlugin_ExamplesPanel_List_Example {
-  padding: 15px 0 15px 15px;
-  margin: 0;
   font-size: 14px;
-  position: relative;
-  transition: all 0.2s linear;
+  border-radius: 6px 0 0 6px;
+  margin-bottom: 2px;
 }
-
-.ContentFoundryPlugin_ExamplesPanel_List_Thread.active
-  .ContentFoundryPlugin_ExamplesPanel_List_Example:hover {
-  background-color: inherit;
+.ContentFoundryPlugin_ExamplesPanel_List_Example .star {
+  align-self: stretch;
+  padding: 2px;
+  border-radius: 6px 0 0 6px;
 }
-
-.ContentFoundryPlugin_ExamplesPanel_List_Example p {
-  margin: 0;
-  color: #444;
+.ContentFoundryPlugin_ExamplesPanel_List_Example_Valid {
+  background: var(--primaryColor015);
+}
+.ContentFoundryPlugin_ExamplesPanel_List_Example_Valid .star {
+  background: var(--primaryColor);
+}
+.ContentFoundryPlugin_ExamplesPanel_List_Example_Invalid {
+  background: var(--alert015);
+}
+.ContentFoundryPlugin_ExamplesPanel_List_Example_Invalid .star {
+  background: var(--alert);
 }
 
 .ContentFoundryPlugin_ExamplesPanel_List_Details {
-  color: #444;
-  padding-bottom: 5px;
-  vertical-align: top;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_List_Example_Author {
-  font-weight: bold;
-  padding-right: 5px;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_List_Example_Time {
-  color: #999;
+  padding: 4px 0;
 }
 
 .ContentFoundryPlugin_ExamplesPanel_List_Thread {
   padding: 0 0 0 0;
   margin: 0;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   position: relative;
   transition: all 0.2s linear;
-  border-left: 0 solid #eee;
+  border-left: 0 solid var(--border);
 }
 
 .ContentFoundryPlugin_ExamplesPanel_List_Thread:first-child,
@@ -1927,21 +1895,10 @@ i.send {
 
 .ContentFoundryPlugin_ExamplesPanel_List_Thread_QuoteBox {
   padding-top: 10px;
-  color: #ccc;
-  display: block;
 }
 
 .ContentFoundryPlugin_ExamplesPanel_List_Thread_Quote {
-  margin: 0px 10px 0 10px;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_List_Thread_Quote span {
-  color: #222;
-  background-color: rgba(255, 212, 0, 0.4);
-  padding: 1px;
-  line-height: 1.4;
-  display: inline;
-  font-weight: bold;
+  margin: 0px 12px;
 }
 
 .ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples {
@@ -1949,63 +1906,7 @@ i.send {
   list-style-type: none;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples
-  .ContentFoundryPlugin_ExamplesPanel_List_Example:first-child {
-  border: none;
-  margin-left: 0;
-  padding-left: 5px;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples
-  .ContentFoundryPlugin_ExamplesPanel_List_Example:first-child.ContentFoundryPlugin_ExamplesPanel_List_Example:last-child {
-  padding-bottom: 5px;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples
-  .ContentFoundryPlugin_ExamplesPanel_List_Example {
-  padding-left: 10px;
-  border-left: 5px solid #eee;
-  margin-left: 5px;
-}
-
 .ContentFoundryPlugin_ExamplesPanel_List_Thread_Editor {
   position: relative;
   padding-top: 1px;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_List_DeleteButton {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 30px;
-  height: 30px;
-  background-color: transparent;
-  opacity: 0;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_DeletedExample,
-.ContentFoundryPlugin_ExamplesPanel_List_Example:hover
-  .ContentFoundryPlugin_ExamplesPanel_List_DeleteButton,
-.ContentFoundryPlugin_ExamplesPanel_List_Thread_QuoteBox:hover
-  .ContentFoundryPlugin_ExamplesPanel_List_DeleteButton {
-  opacity: 0.5;
-}
-
-.ContentFoundryPlugin_ExamplesPanel_List_DeleteButton:hover {
-  background-color: transparent;
-  opacity: 1;
-  filter: invert(45%) sepia(98%) saturate(2299%) hue-rotate(201deg)
-    brightness(100%) contrast(92%);
-}
-
-.ContentFoundryPlugin_ExamplesPanel_List_DeleteButton i.delete {
-  background-size: contain;
-  position: absolute;
-  left: 5px;
-  top: 5px;
-  height: 15px;
-  width: 15px;
-  vertical-align: -10px;
-  background-image: url(../images/icons/trash3.svg);
-  transition: opacity 0.2s linear;
 }
