@@ -130,7 +130,6 @@ const baseStyles: Record<string, React.CSSProperties> = {
   },
   shadow: {
     boxShadow: "0 5px 10px rgba(0,0,0,.15)",
-    borderRadius: 6,
   },
 };
 
