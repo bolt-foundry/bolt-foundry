@@ -52,30 +52,32 @@ import { createPortal } from "react-dom";
 import useLayoutEffect from "packages/app/components/lexical/hooks/useLayoutEffect.tsx";
 
 import {
-  type Comment,
-  type Comments,
-  CommentStore,
-  createComment,
+  createExample,
   createThread,
+  type Example,
+  type Examples,
+  ExampleStore,
   type Thread,
-  useCommentStore,
+  useExampleStore,
 } from "packages/app/components/lexical/plugins/ContentFoundry.ts";
 import useModal from "packages/app/components/lexical/hooks/useModal.tsx";
-import CommentEditorTheme from "packages/app/components/lexical/themes/CommentEditorTheme.ts";
+import ExampleEditorTheme from "packages/app/components/lexical/themes/ExampleEditorTheme.ts";
 import Button from "packages/app/components/lexical/ui/Button.tsx";
 import ContentEditable from "packages/app/components/lexical/ui/ContentEditable.tsx";
 import Placeholder from "packages/app/components/lexical/ui/Placeholder.tsx";
+import { getLogger } from "packages/logger.ts";
+const logger = getLogger(import.meta);
 
 export const INSERT_INLINE_COMMAND: LexicalCommand<void> = createCommand();
 
-function AddCommentBox({
+function AddExampleBox({
   anchorKey,
   editor,
-  onAddComment,
+  onAddExample,
 }: {
   anchorKey: NodeKey;
   editor: LexicalEditor;
-  onAddComment: () => void;
+  onAddExample: () => void;
 }): JSX.Element {
   const boxRef = useRef<HTMLDivElement>(null);
 
@@ -105,13 +107,13 @@ function AddCommentBox({
   }, [anchorKey, editor, updatePosition]);
 
   return (
-    <div className="CommentPlugin_AddCommentBox" ref={boxRef}>
+    <div className="ContentFoundryPlugin_AddExampleBox" ref={boxRef}>
       <button
         type="button"
-        className="CommentPlugin_AddCommentBox_button"
-        onClick={onAddComment}
+        className="ContentFoundryPlugin_AddExampleBox_button"
+        onClick={onAddExample}
       >
-        <i className="icon add-comment" />
+        <i className="icon add-example" />
       </button>
     </div>
   );
@@ -160,7 +162,7 @@ function PlainTextEditor({
   onEscape,
   onChange,
   editorRef,
-  placeholder = "Type a comment...",
+  placeholder = "Type a example...",
 }: {
   autoFocus?: boolean;
   className?: string;
@@ -170,17 +172,17 @@ function PlainTextEditor({
   placeholder?: string;
 }) {
   const initialConfig = {
-    namespace: "Commenting",
+    namespace: "Exampleing",
     nodes: [],
     onError: (error: Error) => {
       throw error;
     },
-    theme: CommentEditorTheme,
+    theme: ExampleEditorTheme,
   };
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="CommentPlugin_CommentInputBox_EditorContainer">
+      <div className="ContentFoundryPlugin_ExampleInputBox_EditorContainer">
         <PlainTextPlugin
           contentEditable={<ContentEditable className={className} />}
           ErrorBoundary={() => <div>An error occurred.</div>}
@@ -212,16 +214,16 @@ function useOnChange(
   );
 }
 
-function CommentInputBox({
+function ExampleInputBox({
   editor,
-  cancelAddComment,
-  submitAddComment,
+  cancelAddExample,
+  submitAddExample,
 }: {
-  cancelAddComment: () => void;
+  cancelAddExample: () => void;
   editor: LexicalEditor;
-  submitAddComment: (
-    commentOrThread: Comment | Thread,
-    isInlineComment: boolean,
+  submitAddExample: (
+    exampleOrThread: Example | Thread,
+    isInlineExample: boolean,
   ) => void;
 }) {
   const [content, setContent] = useState("");
@@ -313,11 +315,11 @@ function CommentInputBox({
 
   const onEscape = (event: KeyboardEvent): boolean => {
     event.preventDefault();
-    cancelAddComment();
+    cancelAddExample();
     return true;
   };
 
-  const submitComment = () => {
+  const submitExample = () => {
     if (canSubmit) {
       let quote = editor.getEditorState().read(() => {
         const selection = $getSelection();
@@ -326,8 +328,8 @@ function CommentInputBox({
       if (quote.length > 100) {
         quote = quote.slice(0, 99) + "…";
       }
-      submitAddComment(
-        createThread(quote, [createComment(content, "{AUTHOR NAME}")]),
+      submitAddExample(
+        createThread(quote, [createExample(content, "valid", "{AUTHOR NAME}")]),
         true,
       );
     }
@@ -336,40 +338,40 @@ function CommentInputBox({
   const onChange = useOnChange(setContent, setCanSubmit);
 
   return (
-    <div className="CommentPlugin_CommentInputBox" ref={boxRef}>
+    <div className="ContentFoundryPlugin_ExampleInputBox" ref={boxRef}>
       <PlainTextEditor
-        className="CommentPlugin_CommentInputBox_Editor"
+        className="ContentFoundryPlugin_ExampleInputBox_Editor"
         onEscape={onEscape}
         onChange={onChange}
       />
-      <div className="CommentPlugin_CommentInputBox_Buttons">
+      <div className="ContentFoundryPlugin_ExampleInputBox_Buttons">
         <Button
-          onClick={cancelAddComment}
-          className="CommentPlugin_CommentInputBox_Button"
+          onClick={cancelAddExample}
+          className="ContentFoundryPlugin_ExampleInputBox_Button"
         >
           Cancel
         </Button>
         <Button
-          onClick={submitComment}
+          onClick={submitExample}
           disabled={!canSubmit}
-          className="CommentPlugin_CommentInputBox_Button primary"
+          className="ContentFoundryPlugin_ExampleInputBox_Button primary"
         >
-          Comment
+          Example
         </Button>
       </div>
     </div>
   );
 }
 
-function CommentsComposer({
-  submitAddComment,
+function ExamplesComposer({
+  submitAddExample,
   thread,
   placeholder,
 }: {
   placeholder?: string;
-  submitAddComment: (
-    commentOrThread: Comment,
-    isInlineComment: boolean,
+  submitAddExample: (
+    exampleOrThread: Example,
+    isInlineExample: boolean,
     // eslint-disable-next-line no-shadow
     thread?: Thread,
   ) => void;
@@ -381,9 +383,13 @@ function CommentsComposer({
 
   const onChange = useOnChange(setContent, setCanSubmit);
 
-  const submitComment = () => {
+  const submitExample = () => {
     if (canSubmit) {
-      submitAddComment(createComment(content, "{AUTHOR NAME}"), false, thread);
+      submitAddExample(
+        createExample(content, "valid", "{AUTHOR NAME}"),
+        false,
+        thread,
+      );
       const editor = editorRef.current;
       if (editor !== null) {
         editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
@@ -394,7 +400,7 @@ function CommentsComposer({
   return (
     <>
       <PlainTextEditor
-        className="CommentPlugin_CommentsPanel_Editor"
+        className="ContentFoundryPlugin_ExamplesPanel_Editor"
         autoFocus={false}
         onEscape={() => {
           return true;
@@ -404,8 +410,8 @@ function CommentsComposer({
         placeholder={placeholder}
       />
       <Button
-        className="CommentPlugin_CommentsPanel_SendButton"
-        onClick={submitComment}
+        className="ContentFoundryPlugin_ExamplesPanel_SendButton"
+        onClick={submitExample}
         disabled={!canSubmit}
       >
         <i className="send" />
@@ -414,16 +420,16 @@ function CommentsComposer({
   );
 }
 
-function ShowDeleteCommentOrThreadDialog({
-  commentOrThread,
-  deleteCommentOrThread,
+function ShowDeleteExampleOrThreadDialog({
+  exampleOrThread,
+  deleteExampleOrThread,
   onClose,
   thread = undefined,
 }: {
-  commentOrThread: Comment | Thread;
+  exampleOrThread: Example | Thread;
 
-  deleteCommentOrThread: (
-    comment: Comment | Thread,
+  deleteExampleOrThread: (
+    example: Example | Thread,
     // eslint-disable-next-line no-shadow
     thread?: Thread,
   ) => void;
@@ -432,11 +438,11 @@ function ShowDeleteCommentOrThreadDialog({
 }): JSX.Element {
   return (
     <>
-      Are you sure you want to delete this {commentOrThread.type}?
+      Are you sure you want to delete this {exampleOrThread.type}?
       <div className="Modal__content">
         <Button
           onClick={() => {
-            deleteCommentOrThread(commentOrThread, thread);
+            deleteExampleOrThread(exampleOrThread, thread);
             onClose();
           }}
         >
@@ -454,59 +460,61 @@ function ShowDeleteCommentOrThreadDialog({
   );
 }
 
-function CommentsPanelListComment({
-  comment,
-  deleteComment,
+function ExamplesPanelListExample({
+  example,
+  deleteExample,
   thread,
   rtf,
 }: {
-  comment: Comment;
-  deleteComment: (
-    commentOrThread: Comment | Thread,
+  example: Example;
+  deleteExample: (
+    exampleOrThread: Example | Thread,
     // eslint-disable-next-line no-shadow
     thread?: Thread,
   ) => void;
   rtf: Intl.RelativeTimeFormat;
   thread?: Thread;
 }): JSX.Element {
-  const seconds = Math.round((comment.timeStamp - performance.now()) / 1000);
+  const seconds = Math.round((example.timeStamp - performance.now()) / 1000);
   const minutes = Math.round(seconds / 60);
   const [modal, showModal] = useModal();
 
+  logger.info("Showing example", example);
+
   return (
-    <li className="CommentPlugin_CommentsPanel_List_Comment">
-      <div className="CommentPlugin_CommentsPanel_List_Details">
-        <span className="CommentPlugin_CommentsPanel_List_Comment_Author">
-          {comment.author}
+    <li className="ContentFoundryPlugin_ExamplesPanel_List_Example">
+      <div className="ContentFoundryPlugin_ExamplesPanel_List_Details">
+        <span className="ContentFoundryPlugin_ExamplesPanel_List_Example_Author">
+          {example.author}
         </span>
-        <span className="CommentPlugin_CommentsPanel_List_Comment_Time">
+        <span className="ContentFoundryPlugin_ExamplesPanel_List_Example_Time">
           · {seconds > -10 ? "Just now" : rtf.format(minutes, "minute")}
         </span>
       </div>
       <p
-        className={comment.deleted
-          ? "CommentPlugin_CommentsPanel_DeletedComment"
+        className={example.deleted
+          ? "ContentFoundryPlugin_ExamplesPanel_DeletedExample"
           : ""}
       >
-        {comment.content}
+        {example.content}
       </p>
-      {!comment.deleted && (
+      {!example.deleted && (
         <>
           <Button
             onClick={() => {
               showModal(
-                "Delete Comment",
+                "Delete Example",
                 (onClose) => (
-                  <ShowDeleteCommentOrThreadDialog
-                    commentOrThread={comment}
-                    deleteCommentOrThread={deleteComment}
+                  <ShowDeleteExampleOrThreadDialog
+                    exampleOrThread={example}
+                    deleteExampleOrThread={deleteExample}
                     thread={thread}
                     onClose={onClose}
                   />
                 ),
               );
             }}
-            className="CommentPlugin_CommentsPanel_List_DeleteButton"
+            className="ContentFoundryPlugin_ExamplesPanel_List_DeleteButton"
           >
             <i className="delete" />
           </Button>
@@ -517,25 +525,25 @@ function CommentsPanelListComment({
   );
 }
 
-function CommentsPanelList({
+function ExamplesPanelList({
   activeIDs,
-  comments,
-  deleteCommentOrThread,
+  examples,
+  deleteExampleOrThread,
   listRef,
-  submitAddComment,
+  submitAddExample,
   markNodeMap,
 }: {
   activeIDs: Array<string>;
-  comments: Comments;
-  deleteCommentOrThread: (
-    commentOrThread: Comment | Thread,
+  examples: Examples;
+  deleteExampleOrThread: (
+    exampleOrThread: Example | Thread,
     thread?: Thread,
   ) => void;
   listRef: { current: null | HTMLUListElement };
   markNodeMap: Map<string, Set<NodeKey>>;
-  submitAddComment: (
-    commentOrThread: Comment | Thread,
-    isInlineComment: boolean,
+  submitAddExample: (
+    exampleOrThread: Example | Thread,
+    isInlineExample: boolean,
     thread?: Thread,
   ) => void;
 }): JSX.Element {
@@ -564,10 +572,10 @@ function CommentsPanelList({
   }, [counter]);
 
   return (
-    <ul className="CommentPlugin_CommentsPanel_List" ref={listRef}>
-      {comments.map((commentOrThread) => {
-        const id = commentOrThread.id;
-        if (commentOrThread.type === "thread") {
+    <ul className="ContentFoundryPlugin_ExamplesPanel_List" ref={listRef}>
+      {examples.map((exampleOrThread) => {
+        const id = exampleOrThread.id;
+        if (exampleOrThread.type === "thread") {
           const handleClickThread = () => {
             const markNodeKeys = markNodeMap.get(id);
             if (
@@ -602,14 +610,14 @@ function CommentsPanelList({
             <li
               key={id}
               onClick={handleClickThread}
-              className={`CommentPlugin_CommentsPanel_List_Thread ${
+              className={`ContentFoundryPlugin_ExamplesPanel_List_Thread ${
                 markNodeMap.has(id) ? "interactive" : ""
               } ${activeIDs.indexOf(id) === -1 ? "" : "active"}`}
             >
-              <div className="CommentPlugin_CommentsPanel_List_Thread_QuoteBox">
-                <blockquote className="CommentPlugin_CommentsPanel_List_Thread_Quote">
+              <div className="ContentFoundryPlugin_ExamplesPanel_List_Thread_QuoteBox">
+                <blockquote className="ContentFoundryPlugin_ExamplesPanel_List_Thread_Quote">
                   {"> "}
-                  <span>{commentOrThread.quote}</span>
+                  <span>{exampleOrThread.quote}</span>
                 </blockquote>
                 {/* INTRODUCE DELETE THREAD HERE*/}
                 <Button
@@ -617,46 +625,46 @@ function CommentsPanelList({
                     showModal(
                       "Delete Thread",
                       (onClose) => (
-                        <ShowDeleteCommentOrThreadDialog
-                          commentOrThread={commentOrThread}
-                          deleteCommentOrThread={deleteCommentOrThread}
+                        <ShowDeleteExampleOrThreadDialog
+                          exampleOrThread={exampleOrThread}
+                          deleteExampleOrThread={deleteExampleOrThread}
                           onClose={onClose}
                         />
                       ),
                     );
                   }}
-                  className="CommentPlugin_CommentsPanel_List_DeleteButton"
+                  className="ContentFoundryPlugin_ExamplesPanel_List_DeleteButton"
                 >
                   <i className="delete" />
                 </Button>
                 {modal}
               </div>
-              <ul className="CommentPlugin_CommentsPanel_List_Thread_Comments">
-                {commentOrThread.comments.map((comment) => (
-                  <CommentsPanelListComment
-                    key={comment.id}
-                    comment={comment}
-                    deleteComment={deleteCommentOrThread}
-                    thread={commentOrThread}
+              <ul className="ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples">
+                {exampleOrThread.examples.map((example) => (
+                  <ExamplesPanelListExample
+                    key={example.id}
+                    example={example}
+                    deleteExample={deleteExampleOrThread}
+                    thread={exampleOrThread}
                     rtf={rtf}
                   />
                 ))}
               </ul>
-              <div className="CommentPlugin_CommentsPanel_List_Thread_Editor">
-                <CommentsComposer
-                  submitAddComment={submitAddComment}
-                  thread={commentOrThread}
-                  placeholder="Reply to comment..."
+              <div className="ContentFoundryPlugin_ExamplesPanel_List_Thread_Editor">
+                <ExamplesComposer
+                  submitAddExample={submitAddExample}
+                  thread={exampleOrThread}
+                  placeholder="Reply to example..."
                 />
               </div>
             </li>
           );
         }
         return (
-          <CommentsPanelListComment
+          <ExamplesPanelListExample
             key={id}
-            comment={commentOrThread}
-            deleteComment={deleteCommentOrThread}
+            example={exampleOrThread}
+            deleteExample={deleteExampleOrThread}
             rtf={rtf}
           />
         );
@@ -665,41 +673,45 @@ function CommentsPanelList({
   );
 }
 
-function CommentsPanel({
+function ExamplesPanel({
   activeIDs,
-  deleteCommentOrThread,
-  comments,
-  submitAddComment,
+  deleteExampleOrThread,
+  examples,
+  submitAddExample,
   markNodeMap,
 }: {
   activeIDs: Array<string>;
-  comments: Comments;
-  deleteCommentOrThread: (
-    commentOrThread: Comment | Thread,
+  examples: Examples;
+  deleteExampleOrThread: (
+    exampleOrThread: Example | Thread,
     thread?: Thread,
   ) => void;
   markNodeMap: Map<string, Set<NodeKey>>;
-  submitAddComment: (
-    commentOrThread: Comment | Thread,
-    isInlineComment: boolean,
+  submitAddExample: (
+    exampleOrThread: Example | Thread,
+    isInlineExample: boolean,
     thread?: Thread,
   ) => void;
 }): JSX.Element {
   const listRef = useRef<HTMLUListElement>(null);
-  const isEmpty = comments.length === 0;
+  const isEmpty = examples.length === 0;
 
   return (
-    <div className="CommentPlugin_CommentsPanel">
-      <h2 className="CommentPlugin_CommentsPanel_Heading">Comments</h2>
+    <div className="ContentFoundryPlugin_ExamplesPanel">
+      <h2 className="ContentFoundryPlugin_ExamplesPanel_Heading">Examples</h2>
       {isEmpty
-        ? <div className="CommentPlugin_CommentsPanel_Empty">No Comments</div>
+        ? (
+          <div className="ContentFoundryPlugin_ExamplesPanel_Empty">
+            No Examples
+          </div>
+        )
         : (
-          <CommentsPanelList
+          <ExamplesPanelList
             activeIDs={activeIDs}
-            comments={comments}
-            deleteCommentOrThread={deleteCommentOrThread}
+            examples={examples}
+            deleteExampleOrThread={deleteExampleOrThread}
             listRef={listRef}
-            submitAddComment={submitAddComment}
+            submitAddExample={submitAddExample}
             markNodeMap={markNodeMap}
           />
         )}
@@ -710,21 +722,21 @@ function CommentsPanel({
 export function ContentFoundryPlugin(): JSX.Element {
   const [isInDom, setIsInDom] = useState(false);
   const [editor] = useLexicalComposerContext();
-  const commentStore = useMemo(() => new CommentStore(editor), [editor]);
-  const comments = useCommentStore(commentStore);
+  const exampleStore = useMemo(() => new ExampleStore(editor), [editor]);
+  const examples = useExampleStore(exampleStore);
   const markNodeMap = useMemo<Map<string, Set<NodeKey>>>(() => {
     return new Map();
   }, []);
   const [activeAnchorKey, setActiveAnchorKey] = useState<NodeKey | null>();
   const [activeIDs, setActiveIDs] = useState<Array<string>>([]);
-  const [showCommentInput, setShowCommentInput] = useState(false);
-  const [showComments, setShowComments] = useState(false);
+  const [showExampleInput, setShowExampleInput] = useState(false);
+  const [showExamples, setShowExamples] = useState(false);
 
   useEffect(() => {
     setIsInDom(true);
   }, []);
 
-  const cancelAddComment = useCallback(() => {
+  const cancelAddExample = useCallback(() => {
     editor.update(() => {
       const selection = $getSelection();
       // Restore selection
@@ -732,23 +744,23 @@ export function ContentFoundryPlugin(): JSX.Element {
         selection.dirty = true;
       }
     });
-    setShowCommentInput(false);
+    setShowExampleInput(false);
   }, [editor]);
 
-  const deleteCommentOrThread = useCallback(
-    (comment: Comment | Thread, thread?: Thread) => {
-      if (comment.type === "comment") {
-        const deletionInfo = commentStore.deleteCommentOrThread(
-          comment,
+  const deleteExampleOrThread = useCallback(
+    (example: Example | Thread, thread?: Thread) => {
+      if (example.type === "example") {
+        const deletionInfo = exampleStore.deleteExampleOrThread(
+          example,
           thread,
         );
         if (!deletionInfo) return;
-        const { markedComment, index } = deletionInfo;
-        commentStore.addComment(markedComment, thread, index);
+        const { markedExample, index } = deletionInfo;
+        exampleStore.addExample(markedExample, thread, index);
       } else {
-        commentStore.deleteCommentOrThread(comment);
+        exampleStore.deleteExampleOrThread(example);
         // Remove ids from associated marks
-        const id = thread !== undefined ? thread.id : comment.id;
+        const id = thread !== undefined ? thread.id : example.id;
         const markNodeKeys = markNodeMap.get(id);
         if (markNodeKeys !== undefined) {
           // Do async to avoid causing a React infinite loop
@@ -768,24 +780,24 @@ export function ContentFoundryPlugin(): JSX.Element {
         }
       }
     },
-    [commentStore, editor, markNodeMap],
+    [exampleStore, editor, markNodeMap],
   );
 
-  const submitAddComment = useCallback(
+  const submitAddExample = useCallback(
     (
-      commentOrThread: Comment | Thread,
-      isInlineComment: boolean,
+      exampleOrThread: Example | Thread,
+      isInlineExample: boolean,
       thread?: Thread,
     ) => {
-      commentStore.addComment(commentOrThread, thread);
-      if (isInlineComment) {
+      exampleStore.addExample(exampleOrThread, thread);
+      if (isInlineExample) {
         editor.update(() => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
             const focus = selection.focus;
             const anchor = selection.anchor;
             const isBackward = selection.isBackward();
-            const id = commentOrThread.id;
+            const id = exampleOrThread.id;
 
             // Wrap content in a MarkNode
             $wrapSelectionInMarkNode(selection, isBackward, id);
@@ -798,10 +810,10 @@ export function ContentFoundryPlugin(): JSX.Element {
             }
           }
         });
-        setShowCommentInput(false);
+        setShowExampleInput(false);
       }
     },
-    [commentStore, editor],
+    [exampleStore, editor],
   );
 
   useEffect(() => {
@@ -815,7 +827,7 @@ export function ContentFoundryPlugin(): JSX.Element {
           if (elem !== null) {
             elem.classList.add("selected");
             changedElems.push(elem);
-            setShowComments(true);
+            setShowExamples(true);
           }
         }
       }
@@ -893,12 +905,12 @@ export function ContentFoundryPlugin(): JSX.Element {
             const anchorNode = selection.anchor.getNode();
 
             if ($isTextNode(anchorNode)) {
-              const commentIDs = $getMarkIDs(
+              const exampleIDs = $getMarkIDs(
                 anchorNode,
                 selection.anchor.offset,
               );
-              if (commentIDs !== null) {
-                setActiveIDs(commentIDs);
+              if (exampleIDs !== null) {
+                setActiveIDs(exampleIDs);
                 hasActiveIds = true;
               }
               if (!selection.isCollapsed()) {
@@ -917,7 +929,7 @@ export function ContentFoundryPlugin(): JSX.Element {
           }
         });
         if (!tags.has("collaboration")) {
-          setShowCommentInput(false);
+          setShowExampleInput(false);
         }
       }),
       editor.registerCommand(
@@ -927,7 +939,7 @@ export function ContentFoundryPlugin(): JSX.Element {
           if (domSelection !== null) {
             domSelection.removeAllRanges();
           }
-          setShowCommentInput(true);
+          setShowExampleInput(true);
           return true;
         },
         COMMAND_PRIORITY_EDITOR,
@@ -935,51 +947,51 @@ export function ContentFoundryPlugin(): JSX.Element {
     );
   }, [editor, markNodeMap]);
 
-  const onAddComment = () => {
+  const onAddExample = () => {
     editor.dispatchCommand(INSERT_INLINE_COMMAND, undefined);
   };
 
   return isInDom
     ? (
       <>
-        {showCommentInput &&
+        {showExampleInput &&
           createPortal(
-            <CommentInputBox
+            <ExampleInputBox
               editor={editor}
-              cancelAddComment={cancelAddComment}
-              submitAddComment={submitAddComment}
+              cancelAddExample={cancelAddExample}
+              submitAddExample={submitAddExample}
             />,
             document.body,
           )}
         {activeAnchorKey !== null &&
           activeAnchorKey !== undefined &&
-          !showCommentInput &&
+          !showExampleInput &&
           createPortal(
-            <AddCommentBox
+            <AddExampleBox
               anchorKey={activeAnchorKey}
               editor={editor}
-              onAddComment={onAddComment}
+              onAddExample={onAddExample}
             />,
             document.body,
           )}
         {createPortal(
           <Button
-            className={`CommentPlugin_ShowCommentsButton ${
-              showComments ? "active" : ""
+            className={`ContentFoundryPlugin_ShowExamplesButton ${
+              showExamples ? "active" : ""
             }`}
-            onClick={() => setShowComments(!showComments)}
-            title={showComments ? "Hide Comments" : "Show Comments"}
+            onClick={() => setShowExamples(!showExamples)}
+            title={showExamples ? "Hide Examples" : "Show Examples"}
           >
-            <i className="comments" />
+            <i className="examples" />
           </Button>,
           document.body,
         )}
-        {showComments &&
+        {showExamples &&
           createPortal(
-            <CommentsPanel
-              comments={comments}
-              submitAddComment={submitAddComment}
-              deleteCommentOrThread={deleteCommentOrThread}
+            <ExamplesPanel
+              examples={examples}
+              submitAddExample={submitAddExample}
+              deleteExampleOrThread={deleteExampleOrThread}
               activeIDs={activeIDs}
               markNodeMap={markNodeMap}
             />,
