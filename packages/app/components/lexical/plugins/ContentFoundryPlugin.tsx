@@ -219,6 +219,43 @@ function Rating({ value, onChange, xclass = "" }: {
   onChange: (rating: number) => void;
   xclass?: string;
 }) {
+  const getButtonSettings = useCallback((level: number) => {
+    let mixNumber;
+    switch (level) {
+      case -2:
+        mixNumber = "080";
+        break;
+      case -1:
+        mixNumber = "060";
+        break;
+      case 1:
+        mixNumber = "040";
+        break;
+      case 2:
+        mixNumber = "020";
+        break;
+      default:
+        break;
+    }
+    if (value === level) {
+      return {
+        backgroundColor: `var(--primaryMix${mixNumber}Alert)`,
+        backgroundColorHover: `var(--primaryMix${mixNumber}AlertHover)`,
+        borderColor: `var(--primaryMix${mixNumber}Alert)`,
+        borderColorHover: `var(--primaryMix${mixNumber}AlertHover)`,
+        color: "var(--textOnAlert)",
+      };
+    }
+    return {
+      backgroundColor: "var(--background)",
+      backgroundColorHover: "var(--outlineHover)",
+      color: `var(--primaryMix${mixNumber}Alert)`,
+      colorHover: `var(--primaryMix${mixNumber}AlertHover)`,
+      borderColor: "var(--background)",
+      borderColorHover: `var(--primaryMix${mixNumber}AlertHover)`,
+    };
+  }, [value]);
+
   return (
     <div className={`flex1 flexRow mediumGap ${xclass}`}>
       <BfDsButton
@@ -229,88 +266,28 @@ function Rating({ value, onChange, xclass = "" }: {
       />
       <BfDsButton
         kind="custom"
-        customSettings={value === -2
-          ? {
-            backgroundColor: "var(--primaryMix080Alert)",
-            backgroundColorHover: "var(--primaryMix080AlertHover)",
-            borderColor: "var(--primaryMix080Alert)",
-            borderColorHover: "var(--primaryMix080AlertHover)",
-            color: "var(--textOnAlert)",
-          }
-          : {
-            backgroundColor: "var(--background)",
-            backgroundColorHover: "var(--outlineHover)",
-            color: "var(--primaryMix080Alert)",
-            colorHover: "var(--primaryMix080AlertHover)",
-            borderColor: "var(--background)",
-            borderColorHover: "var(--primaryMix080AlertHover)",
-          }}
+        customSettings={getButtonSettings(-2)}
         iconLeft="star2ThirdNegative"
         onClick={() => onChange(-2)}
         size="medium"
       />
       <BfDsButton
         kind="custom"
-        customSettings={value === -1
-          ? {
-            backgroundColor: "var(--primaryMix060Alert)",
-            backgroundColorHover: "var(--primaryMix060AlertHover)",
-            borderColor: "var(--primaryMix060Alert)",
-            borderColorHover: "var(--primaryMix060AlertHover)",
-            color: "var(--textOnAlert)",
-          }
-          : {
-            backgroundColor: "var(--background)",
-            backgroundColorHover: "var(--outlineHover)",
-            color: "var(--primaryMix060Alert)",
-            colorHover: "var(--primaryMix060AlertHover)",
-            borderColor: "var(--background)",
-            borderColorHover: "var(--primaryMix060AlertHover)",
-          }}
+        customSettings={getButtonSettings(-1)}
         iconLeft="star1ThirdNegative"
         onClick={() => onChange(-1)}
         size="medium"
       />
       <BfDsButton
         kind="custom"
-        customSettings={value === 1
-          ? {
-            backgroundColor: "var(--primaryMix040Alert)",
-            backgroundColorHover: "var(--primaryMix040AlertHover)",
-            borderColor: "var(--primaryMix040Alert)",
-            borderColorHover: "var(--primaryMix040AlertHover)",
-            color: "var(--textOnAlert)",
-          }
-          : {
-            backgroundColor: "var(--background)",
-            backgroundColorHover: "var(--outlineHover)",
-            color: "var(--primaryMix040Alert)",
-            colorHover: "var(--primaryMix040AlertHover)",
-            borderColor: "var(--background)",
-            borderColorHover: "var(--primaryMix040AlertHover)",
-          }}
+        customSettings={getButtonSettings(1)}
         iconLeft="star1ThirdPositive"
         onClick={() => onChange(1)}
         size="medium"
       />
       <BfDsButton
         kind="custom"
-        customSettings={value === 2
-          ? {
-            backgroundColor: "var(--primaryMix020Alert)",
-            backgroundColorHover: "var(--primaryMix020AlertHover)",
-            borderColor: "var(--primaryMix020Alert)",
-            borderColorHover: "var(--primaryMix020AlertHover)",
-            color: "var(--textOnAlert)",
-          }
-          : {
-            backgroundColor: "var(--background)",
-            backgroundColorHover: "var(--outlineHover)",
-            color: "var(--primaryMix020Alert)",
-            colorHover: "var(--primaryMix020AlertHover)",
-            borderColor: "var(--background)",
-            borderColorHover: "var(--primaryMix020AlertHover)",
-          }}
+        customSettings={getButtonSettings(2)}
         iconLeft="star2ThirdPositive"
         onClick={() => onChange(2)}
         size="medium"
