@@ -1846,18 +1846,6 @@ i.send {
   padding: 2px;
   border-radius: 6px 0 0 6px;
 }
-.ContentFoundryPlugin_ExamplesPanel_List_Example_Valid {
-  background: var(--primaryColor015);
-}
-.ContentFoundryPlugin_ExamplesPanel_List_Example_Valid .star {
-  background: var(--primaryColor);
-}
-.ContentFoundryPlugin_ExamplesPanel_List_Example_Invalid {
-  background: var(--alert015);
-}
-.ContentFoundryPlugin_ExamplesPanel_List_Example_Invalid .star {
-  background: var(--alert);
-}
 
 .ContentFoundryPlugin_ExamplesPanel_List_Details {
   padding: 4px 0;
