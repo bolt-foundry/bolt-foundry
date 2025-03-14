@@ -110,27 +110,28 @@ export async function handleDomains(
     const contentUrl = new URL(
       import.meta.resolve(`content/${domain}/page.md`),
     );
-    const text = await Deno.readTextFile(contentUrl);
-    const { body } = safeExtractFrontmatter(text);
-    const rendered = await compile(body);
-    const compiledLocation = await Deno.makeTempFile({
-      prefix: `${domain}-page`,
-      suffix: "tsx",
-    });
-    await Deno.writeTextFile(
-      compiledLocation,
-      String(rendered),
-    );
-    const { default: Content } = await import(compiledLocation.toString());
+    try {
+      const text = await Deno.readTextFile(contentUrl);
+      const { body } = safeExtractFrontmatter(text);
+      const rendered = await compile(body);
+      const compiledLocation = await Deno.makeTempFile({
+        prefix: `${domain}-page`,
+        suffix: "tsx",
+      });
+      await Deno.writeTextFile(
+        compiledLocation,
+        String(rendered),
+      );
+      const { default: Content } = await import(compiledLocation.toString());
 
-    // Create full HTML with stylesheet link
-    const htmlStream = await renderToReadableStream(
-      React.createElement(Content),
-    );
-    const htmlContent = await new Response(htmlStream).text();
+      // Create full HTML with stylesheet link
+      const htmlStream = await renderToReadableStream(
+        React.createElement(Content),
+      );
+      const htmlContent = await new Response(htmlStream).text();
 
-    // Create complete HTML with proper doctype and stylesheet link
-    const completeHtml = `<!DOCTYPE html>
+      // Create complete HTML with proper doctype and stylesheet link
+      const completeHtml = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -142,11 +143,14 @@ export async function handleDomains(
 </body>
 </html>`;
 
-    return new Response(completeHtml, {
-      headers: {
-        "content-type": "text/html",
-      },
-    });
+      return new Response(completeHtml, {
+        headers: {
+          "content-type": "text/html",
+        },
+      });
+    } catch {
+      // lol
+    }
   }
 
   return null;
