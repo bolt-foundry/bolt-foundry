@@ -7,3 +7,6 @@
 [submodule "content/randallb.com"]
 	path = sites/randallb.com
 	url = https://github.com/randallb/randallb.com.git
+[submodule "thirdParty/llama.cpp"]
+	path = thirdParty/llama.cpp
+	url = https://github.com/ggml-org/llama.cpp.git
