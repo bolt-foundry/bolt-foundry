@@ -52,16 +52,16 @@ import { createPortal } from "react-dom";
 import useLayoutEffect from "packages/app/components/lexical/hooks/useLayoutEffect.tsx";
 
 import {
-  createExample,
+  createSample,
   createThread,
-  type Example,
-  type Examples,
-  ExampleStore,
+  type Sample,
+  type Samples,
+  SampleStore,
   type Thread,
-  useExampleStore,
+  useSampleStore,
 } from "packages/app/components/lexical/plugins/ContentFoundry.ts";
 import useModal from "packages/app/components/lexical/hooks/useModal.tsx";
-import ExampleEditorTheme from "packages/app/components/lexical/themes/ExampleEditorTheme.ts";
+import SampleEditorTheme from "packages/app/components/lexical/themes/SampleEditorTheme.ts";
 import Button from "packages/app/components/lexical/ui/Button.tsx";
 import ContentEditable from "packages/app/components/lexical/ui/ContentEditable.tsx";
 import Placeholder from "packages/app/components/lexical/ui/Placeholder.tsx";
@@ -76,12 +76,12 @@ const logger = getLogger(import.meta);
 
 export const INSERT_INLINE_COMMAND: LexicalCommand<void> = createCommand();
 
-function AddExampleBox({
+function AddSampleBox({
   editor,
-  onAddExample,
+  onAddSample,
 }: {
   editor: LexicalEditor;
-  onAddExample: () => void;
+  onAddSample: () => void;
 }): JSX.Element {
   const boxRef = useRef<HTMLDivElement>(null);
 
@@ -110,12 +110,12 @@ function AddExampleBox({
   }, [editor, updatePosition]);
 
   return (
-    <div className="ContentFoundryPlugin_AddExampleBox" ref={boxRef}>
+    <div className="ContentFoundryPlugin_AddSampleBox" ref={boxRef}>
       <BfDsButton
         shadow
         kind="filledSuccess"
         iconLeft="plus"
-        onClick={onAddExample}
+        onClick={onAddSample}
       />
     </div>
   );
@@ -164,7 +164,7 @@ function PlainTextEditor({
   onEscape,
   onChange,
   editorRef,
-  placeholder = "Type an example...",
+  placeholder = "Type a sample...",
 }: {
   autoFocus?: boolean;
   className?: string;
@@ -179,12 +179,12 @@ function PlainTextEditor({
     onError: (error: Error) => {
       throw error;
     },
-    theme: ExampleEditorTheme,
+    theme: SampleEditorTheme,
   };
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="ContentFoundryPlugin_ExampleInputBox_EditorContainer">
+      <div className="ContentFoundryPlugin_SampleInputBox_EditorContainer">
         <PlainTextPlugin
           contentEditable={<ContentEditable className={className} />}
           ErrorBoundary={() => <div>An error occurred.</div>}
@@ -304,16 +304,16 @@ function Rating({ value, onChange, xclass = "" }: {
   );
 }
 
-function ExampleInputBox({
+function SampleInputBox({
   editor,
-  cancelAddExample,
-  submitAddExample,
+  cancelAddSample,
+  submitAddSample,
 }: {
-  cancelAddExample: () => void;
+  cancelAddSample: () => void;
   editor: LexicalEditor;
-  submitAddExample: (
-    exampleOrThread: Example | Thread,
-    isInlineExample: boolean,
+  submitAddSample: (
+    sampleOrThread: Sample | Thread,
+    isInlineSample: boolean,
   ) => void;
 }) {
   const [content, setContent] = useState("");
@@ -406,11 +406,11 @@ function ExampleInputBox({
 
   const onEscape = (event: KeyboardEvent): boolean => {
     event.preventDefault();
-    cancelAddExample();
+    cancelAddSample();
     return true;
   };
 
-  const submitExample = () => {
+  const submitSample = () => {
     if (canSubmit) {
       let quote = editor.getEditorState().read(() => {
         const selection = $getSelection();
@@ -419,8 +419,8 @@ function ExampleInputBox({
       if (quote.length > 100) {
         quote = quote.slice(0, 99) + "…";
       }
-      submitAddExample(
-        createThread(quote, [createExample(content, rating, "{AUTHOR NAME}")]),
+      submitAddSample(
+        createThread(quote, [createSample(content, rating, "{AUTHOR NAME}")]),
         true,
       );
     }
@@ -429,9 +429,9 @@ function ExampleInputBox({
   const onChange = useOnChange(setContent, setCanSubmit);
 
   return (
-    <div className="ContentFoundryPlugin_ExampleInputBox" ref={boxRef}>
+    <div className="ContentFoundryPlugin_SampleInputBox" ref={boxRef}>
       <PlainTextEditor
-        className="ContentFoundryPlugin_ExampleInputBox_Editor"
+        className="ContentFoundryPlugin_SampleInputBox_Editor"
         onEscape={onEscape}
         onChange={onChange}
       />
@@ -440,34 +440,34 @@ function ExampleInputBox({
         onChange={setRating}
         xclass="justifyContentCenter"
       />
-      <div className="flexRow gapMedium ContentFoundryPlugin_ExampleInputBox_Buttons">
+      <div className="flexRow gapMedium ContentFoundryPlugin_SampleInputBox_Buttons">
         <div className="flex1">
           <BfDsButton
             kind="outline"
-            onClick={cancelAddExample}
+            onClick={cancelAddSample}
             text="Cancel"
           />
         </div>
         <BfDsButton
           iconLeft="plus"
-          onClick={submitExample}
+          onClick={submitSample}
           disabled={!canSubmit}
-          text="Example"
+          text="Sample"
         />
       </div>
     </div>
   );
 }
 
-function ExamplesComposer({
-  submitAddExample,
+function SamplesComposer({
+  submitAddSample,
   thread,
   placeholder,
 }: {
   placeholder?: string;
-  submitAddExample: (
-    exampleOrThread: Example,
-    isInlineExample: boolean,
+  submitAddSample: (
+    sampleOrThread: Sample,
+    isInlineSample: boolean,
     // eslint-disable-next-line no-shadow
     thread?: Thread,
   ) => void;
@@ -480,10 +480,10 @@ function ExamplesComposer({
 
   const onChange = useOnChange(setContent, setCanSubmit);
 
-  const submitExample = () => {
+  const submitSample = () => {
     if (canSubmit) {
-      submitAddExample(
-        createExample(content, rating, "{AUTHOR NAME}"),
+      submitAddSample(
+        createSample(content, rating, "{AUTHOR NAME}"),
         false,
         thread,
       );
@@ -497,7 +497,7 @@ function ExamplesComposer({
   return (
     <>
       <PlainTextEditor
-        className="ContentFoundryPlugin_ExamplesPanel_Editor"
+        className="ContentFoundryPlugin_SamplesPanel_Editor"
         autoFocus={false}
         onEscape={() => {
           return true;
@@ -512,23 +512,23 @@ function ExamplesComposer({
           kind="secondary"
           text="Submit"
           disabled={!canSubmit}
-          onClick={submitExample}
+          onClick={submitSample}
         />
       </div>
     </>
   );
 }
 
-function ShowDeleteExampleOrThreadDialog({
-  exampleOrThread,
-  deleteExampleOrThread,
+function ShowDeleteSampleOrThreadDialog({
+  sampleOrThread,
+  deleteSampleOrThread,
   onClose,
   thread = undefined,
 }: {
-  exampleOrThread: Example | Thread;
+  sampleOrThread: Sample | Thread;
 
-  deleteExampleOrThread: (
-    example: Example | Thread,
+  deleteSampleOrThread: (
+    sample: Sample | Thread,
     // eslint-disable-next-line no-shadow
     thread?: Thread,
   ) => void;
@@ -537,11 +537,11 @@ function ShowDeleteExampleOrThreadDialog({
 }): JSX.Element {
   return (
     <>
-      Are you sure you want to delete this {exampleOrThread.type}?
+      Are you sure you want to delete this {sampleOrThread.type}?
       <div className="Modal__content">
         <Button
           onClick={() => {
-            deleteExampleOrThread(exampleOrThread, thread);
+            deleteSampleOrThread(sampleOrThread, thread);
             onClose();
           }}
         >
@@ -559,28 +559,28 @@ function ShowDeleteExampleOrThreadDialog({
   );
 }
 
-function ExamplesPanelListExample({
-  example,
-  deleteExample,
+function SamplesPanelListSample({
+  sample,
+  deleteSample,
   thread,
 }: {
-  example: Example;
-  deleteExample: (
-    exampleOrThread: Example | Thread,
+  sample: Sample;
+  deleteSample: (
+    sampleOrThread: Sample | Thread,
     // eslint-disable-next-line no-shadow
     thread?: Thread,
   ) => void;
   thread?: Thread;
 }): JSX.Element | null {
   const [modal, showModal] = useModal();
-  if (example.deleted) return null;
+  if (sample.deleted) return null;
 
-  logger.info("Showing example", example);
+  logger.info("Showing sample", sample);
 
   let starIcon = "starSolid";
   let backgroundColor = "var(--background)";
   let starBgColor = "var(--border)";
-  switch (example.rating) {
+  switch (sample.rating) {
     case -3:
       backgroundColor = "var(--alert015)";
       starBgColor = "var(--alert)";
@@ -615,7 +615,7 @@ function ExamplesPanelListExample({
 
   return (
     <li
-      className="flexRow gapMedium alignItemsCenter ContentFoundryPlugin_ExamplesPanel_List_Example"
+      className="flexRow gapMedium alignItemsCenter ContentFoundryPlugin_SamplesPanel_List_Sample"
       style={{ backgroundColor }}
     >
       <div
@@ -628,21 +628,21 @@ function ExamplesPanelListExample({
           size={12}
         />
       </div>
-      <div className="flex1 ContentFoundryPlugin_ExamplesPanel_List_Details">
-        {example.content}
+      <div className="flex1 ContentFoundryPlugin_SamplesPanel_List_Details">
+        {sample.content}
       </div>
-      {!example.deleted && (
+      {!sample.deleted && (
         <>
           <BfDsButton
             iconLeft="trash"
             kind="overlayAlert"
             onClick={() => {
               showModal(
-                "Delete Example",
+                "Delete Sample",
                 (onClose) => (
-                  <ShowDeleteExampleOrThreadDialog
-                    exampleOrThread={example}
-                    deleteExampleOrThread={deleteExample}
+                  <ShowDeleteSampleOrThreadDialog
+                    sampleOrThread={sample}
+                    deleteSampleOrThread={deleteSample}
                     thread={thread}
                     onClose={onClose}
                   />
@@ -658,23 +658,23 @@ function ExamplesPanelListExample({
   );
 }
 
-function ExamplesPanelList({
+function SamplesPanelList({
   activeIDs,
-  examples,
-  deleteExampleOrThread,
-  submitAddExample,
+  samples,
+  deleteSampleOrThread,
+  submitAddSample,
   markNodeMap,
 }: {
   activeIDs: Array<string>;
-  examples: Examples;
-  deleteExampleOrThread: (
-    exampleOrThread: Example | Thread,
+  samples: Samples;
+  deleteSampleOrThread: (
+    sampleOrThread: Sample | Thread,
     thread?: Thread,
   ) => void;
   markNodeMap: Map<string, Set<NodeKey>>;
-  submitAddExample: (
-    exampleOrThread: Example | Thread,
-    isInlineExample: boolean,
+  submitAddSample: (
+    sampleOrThread: Sample | Thread,
+    isInlineSample: boolean,
     thread?: Thread,
   ) => void;
 }): JSX.Element {
@@ -694,10 +694,10 @@ function ExamplesPanelList({
   }, [counter]);
 
   return (
-    <ul className="ContentFoundryPlugin_ExamplesPanel_List">
-      {examples.map((exampleOrThread) => {
-        const id = exampleOrThread.id;
-        if (exampleOrThread.type === "thread") {
+    <ul className="ContentFoundryPlugin_SamplesPanel_List">
+      {samples.map((sampleOrThread) => {
+        const id = sampleOrThread.id;
+        if (sampleOrThread.type === "thread") {
           const handleClickThread = () => {
             const markNodeKeys = markNodeMap.get(id);
             if (
@@ -728,13 +728,13 @@ function ExamplesPanelList({
           };
 
           const liClasses = classnames([
-            "ContentFoundryPlugin_ExamplesPanel_List_Thread",
+            "ContentFoundryPlugin_SamplesPanel_List_Thread",
             {
               active: activeIDs.indexOf(id) > -1,
             },
           ]);
           const quoteClasses = classnames([
-            "ContentFoundryPlugin_ExamplesPanel_List_Thread_QuoteBox",
+            "ContentFoundryPlugin_SamplesPanel_List_Thread_QuoteBox",
             "flexRow",
             "gapMedium",
             "alignItemsCenter",
@@ -747,13 +747,13 @@ function ExamplesPanelList({
               className={liClasses}
             >
               <div className={quoteClasses}>
-                <blockquote className="flex1 ContentFoundryPlugin_ExamplesPanel_List_Thread_Quote">
+                <blockquote className="flex1 ContentFoundryPlugin_SamplesPanel_List_Thread_Quote">
                   <BfDsIcon
                     color="var(--textSecondary)"
                     name="arrowRight"
                     size={12}
                   />
-                  <span>{exampleOrThread.quote}</span>
+                  <span>{sampleOrThread.quote}</span>
                 </blockquote>
                 <BfDsButton
                   iconLeft="trash"
@@ -762,9 +762,9 @@ function ExamplesPanelList({
                     showModal(
                       "Delete Thread",
                       (onClose) => (
-                        <ShowDeleteExampleOrThreadDialog
-                          exampleOrThread={exampleOrThread}
-                          deleteExampleOrThread={deleteExampleOrThread}
+                        <ShowDeleteSampleOrThreadDialog
+                          sampleOrThread={sampleOrThread}
+                          deleteSampleOrThread={deleteSampleOrThread}
                           onClose={onClose}
                         />
                       ),
@@ -774,31 +774,31 @@ function ExamplesPanelList({
                 />
                 {modal}
               </div>
-              <ul className="ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples">
-                {exampleOrThread.examples.map((example) => (
-                  <ExamplesPanelListExample
-                    key={example.id}
-                    example={example}
-                    deleteExample={deleteExampleOrThread}
-                    thread={exampleOrThread}
+              <ul className="ContentFoundryPlugin_SamplesPanel_List_Thread_Samples">
+                {sampleOrThread.samples.map((sample) => (
+                  <SamplesPanelListSample
+                    key={sample.id}
+                    sample={sample}
+                    deleteSample={deleteSampleOrThread}
+                    thread={sampleOrThread}
                   />
                 ))}
               </ul>
-              <div className="ContentFoundryPlugin_ExamplesPanel_List_Thread_Editor">
-                <ExamplesComposer
-                  submitAddExample={submitAddExample}
-                  thread={exampleOrThread}
-                  placeholder="Add a new example..."
+              <div className="ContentFoundryPlugin_SamplesPanel_List_Thread_Editor">
+                <SamplesComposer
+                  submitAddSample={submitAddSample}
+                  thread={sampleOrThread}
+                  placeholder="Add a new sample..."
                 />
               </div>
             </li>
           );
         }
         return (
-          <ExamplesPanelListExample
+          <SamplesPanelListSample
             key={id}
-            example={exampleOrThread}
-            deleteExample={deleteExampleOrThread}
+            sample={sampleOrThread}
+            deleteSample={deleteSampleOrThread}
           />
         );
       })}
@@ -809,13 +809,13 @@ function ExamplesPanelList({
 export function ContentFoundryPlugin(): JSX.Element {
   const [isInDom, setIsInDom] = useState(false);
   const [editor] = useLexicalComposerContext();
-  const exampleStore = useMemo(() => new ExampleStore(editor), [editor]);
-  const examples = useExampleStore(exampleStore);
+  const sampleStore = useMemo(() => new SampleStore(editor), [editor]);
+  const samples = useSampleStore(sampleStore);
   const markNodeMap = useMemo<Map<string, Set<NodeKey>>>(() => {
     return new Map();
   }, []);
   const [activeIDs, setActiveIDs] = useState<Array<string>>([]);
-  const [showExampleInput, setShowExampleInput] = useState(false);
+  const [showSampleInput, setShowSampleInput] = useState(false);
   const [showAddBox, setShowAddBox] = useState(false);
   const selectionTimeout = useRef<number | null>(null);
 
@@ -846,7 +846,7 @@ export function ContentFoundryPlugin(): JSX.Element {
     };
   }, []);
 
-  const cancelAddExample = useCallback(() => {
+  const cancelAddSample = useCallback(() => {
     editor.update(() => {
       const selection = $getSelection();
       // Restore selection
@@ -854,23 +854,23 @@ export function ContentFoundryPlugin(): JSX.Element {
         selection.dirty = true;
       }
     });
-    setShowExampleInput(false);
+    setShowSampleInput(false);
   }, [editor]);
 
-  const deleteExampleOrThread = useCallback(
-    (example: Example | Thread, thread?: Thread) => {
-      if (example.type === "example") {
-        const deletionInfo = exampleStore.deleteExampleOrThread(
-          example,
+  const deleteSampleOrThread = useCallback(
+    (sample: Sample | Thread, thread?: Thread) => {
+      if (sample.type === "sample") {
+        const deletionInfo = sampleStore.deleteSampleOrThread(
+          sample,
           thread,
         );
         if (!deletionInfo) return;
-        const { markedExample, index } = deletionInfo;
-        exampleStore.addExample(markedExample, thread, index);
+        const { markedSample, index } = deletionInfo;
+        sampleStore.addSample(markedSample, thread, index);
       } else {
-        exampleStore.deleteExampleOrThread(example);
+        sampleStore.deleteSampleOrThread(sample);
         // Remove ids from associated marks
-        const id = thread !== undefined ? thread.id : example.id;
+        const id = thread !== undefined ? thread.id : sample.id;
         const markNodeKeys = markNodeMap.get(id);
         if (markNodeKeys !== undefined) {
           // Do async to avoid causing a React infinite loop
@@ -890,24 +890,24 @@ export function ContentFoundryPlugin(): JSX.Element {
         }
       }
     },
-    [exampleStore, editor, markNodeMap],
+    [sampleStore, editor, markNodeMap],
   );
 
-  const submitAddExample = useCallback(
+  const submitAddSample = useCallback(
     (
-      exampleOrThread: Example | Thread,
-      isInlineExample: boolean,
+      sampleOrThread: Sample | Thread,
+      isInlineSample: boolean,
       thread?: Thread,
     ) => {
-      exampleStore.addExample(exampleOrThread, thread);
-      if (isInlineExample) {
+      sampleStore.addSample(sampleOrThread, thread);
+      if (isInlineSample) {
         editor.update(() => {
           const selection = $getSelection();
           if ($isRangeSelection(selection)) {
             const focus = selection.focus;
             const anchor = selection.anchor;
             const isBackward = selection.isBackward();
-            const id = exampleOrThread.id;
+            const id = sampleOrThread.id;
 
             // Wrap content in a MarkNode
             $wrapSelectionInMarkNode(selection, isBackward, id);
@@ -920,10 +920,10 @@ export function ContentFoundryPlugin(): JSX.Element {
             }
           }
         });
-        setShowExampleInput(false);
+        setShowSampleInput(false);
       }
     },
-    [exampleStore, editor],
+    [sampleStore, editor],
   );
 
   useEffect(() => {
@@ -1013,12 +1013,12 @@ export function ContentFoundryPlugin(): JSX.Element {
             const anchorNode = selection.anchor.getNode();
 
             if ($isTextNode(anchorNode)) {
-              const exampleIDs = $getMarkIDs(
+              const sampleIDs = $getMarkIDs(
                 anchorNode,
                 selection.anchor.offset,
               );
-              if (exampleIDs !== null) {
-                setActiveIDs(exampleIDs);
+              if (sampleIDs !== null) {
+                setActiveIDs(sampleIDs);
                 hasActiveIds = true;
               }
             }
@@ -1030,7 +1030,7 @@ export function ContentFoundryPlugin(): JSX.Element {
           }
         });
         if (!tags.has("collaboration")) {
-          setShowExampleInput(false);
+          setShowSampleInput(false);
         }
       }),
       editor.registerCommand(
@@ -1040,7 +1040,7 @@ export function ContentFoundryPlugin(): JSX.Element {
           if (domSelection !== null) {
             domSelection.removeAllRanges();
           }
-          setShowExampleInput(true);
+          setShowSampleInput(true);
           return true;
         },
         COMMAND_PRIORITY_EDITOR,
@@ -1048,38 +1048,38 @@ export function ContentFoundryPlugin(): JSX.Element {
     );
   }, [editor, markNodeMap]);
 
-  const onAddExample = () => {
+  const onAddSample = () => {
     editor.dispatchCommand(INSERT_INLINE_COMMAND, undefined);
   };
 
   return isInDom
     ? (
       <>
-        {showExampleInput &&
+        {showSampleInput &&
           createPortal(
-            <ExampleInputBox
+            <SampleInputBox
               editor={editor}
-              cancelAddExample={cancelAddExample}
-              submitAddExample={submitAddExample}
+              cancelAddSample={cancelAddSample}
+              submitAddSample={submitAddSample}
             />,
             document.body,
           )}
-        {showAddBox && !showExampleInput && createPortal(
-          <AddExampleBox
+        {showAddBox && !showSampleInput && createPortal(
+          <AddSampleBox
             editor={editor}
-            onAddExample={onAddExample}
+            onAddSample={onAddSample}
           />,
           document.body,
         )}
         {createPortal(
-          <ExamplesPanelList
-            examples={examples}
-            submitAddExample={submitAddExample}
-            deleteExampleOrThread={deleteExampleOrThread}
+          <SamplesPanelList
+            samples={samples}
+            submitAddSample={submitAddSample}
+            deleteSampleOrThread={deleteSampleOrThread}
             activeIDs={activeIDs}
             markNodeMap={markNodeMap}
           />,
-          document.getElementById("examplesPortal") as Element,
+          document.getElementById("samplesPortal") as Element,
         )}
       </>
     )
