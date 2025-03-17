@@ -24,7 +24,7 @@ import {
   TextNode,
 } from "lexical";
 
-import ExampleEditorTheme from "packages/app/components/lexical/themes/ExampleEditorTheme.ts";
+import SampleEditorTheme from "packages/app/components/lexical/themes/SampleEditorTheme.ts";
 import ToolbarPlugin from "packages/app/components/lexical/plugins/ToolbarPlugin.tsx";
 import {
   parseAllowedColor,
@@ -145,7 +145,7 @@ const editorConfig = {
   onError(error: Error) {
     throw error;
   },
-  theme: ExampleEditorTheme,
+  theme: SampleEditorTheme,
 };
 
 export function Editor() {
@@ -191,8 +191,8 @@ export function EditorPage() {
       <Editor />
       {/* Right sidebar */}
       <div className="flexColumn right-side-bar">
-        <div className="sessions-container" id="examplesPortal">
-          {/* Examples get portal'd here */}
+        <div className="sessions-container" id="samplesPortal">
+          {/* Samples get portal'd here */}
         </div>
       </div>
     </div>

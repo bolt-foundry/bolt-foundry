@@ -872,23 +872,23 @@ i.justify-align {
   outline: 2px solid rgb(60, 132, 244);
 }
 
-.ExampleEditorTheme__paragraph {
+.SampleEditorTheme__paragraph {
   margin: 0;
   position: relative;
 }
 
 
 /**
- * Example style
+ * Sample style
  */
 
-.ContentFoundryPlugin_AddExampleBox {
+ .ContentFoundryPlugin_AddSampleBox {
   display: block;
   position: fixed;
   z-index: 10;
 }
 
-.ContentFoundryPlugin_ExampleInputBox {
+.ContentFoundryPlugin_SampleInputBox {
   display: block;
   position: fixed;
   width: 250px;
@@ -901,7 +901,7 @@ i.justify-align {
   top: 0;
 }
 
-.ContentFoundryPlugin_ExampleInputBox::before {
+.ContentFoundryPlugin_SampleInputBox::before {
   content: '';
   position: absolute;
   width: 0;
@@ -929,17 +929,17 @@ i.justify-align {
   }
 }
 
-.ContentFoundryPlugin_ExampleInputBox_Buttons {
+.ContentFoundryPlugin_SampleInputBox_Buttons {
   padding: 8px 12px;
 }
 
-.ContentFoundryPlugin_ExampleInputBox_EditorContainer {
+.ContentFoundryPlugin_SampleInputBox_EditorContainer {
   position: relative;
   margin: 10px;
   border-radius: 5px;
 }
 
-.ContentFoundryPlugin_ExampleInputBox_Editor {
+.ContentFoundryPlugin_SampleInputBox_Editor {
   position: relative;
   border: 1px solid #ccc;
   background-color: #fff;
@@ -951,11 +951,11 @@ i.justify-align {
   min-height: 80px;
 }
 
-.ContentFoundryPlugin_ExampleInputBox_Editor:focus {
+.ContentFoundryPlugin_SampleInputBox_Editor:focus {
   outline: 1px solid rgb(66, 135, 245);
 }
 
-.ContentFoundryPlugin_ExamplesPanel_Heading {
+.ContentFoundryPlugin_SamplesPanel_Heading {
   padding-left: 15px;
   padding-top: 10px;
   margin: 0;
@@ -968,7 +968,7 @@ i.justify-align {
   overflow: hidden;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_Editor {
+.ContentFoundryPlugin_SamplesPanel_Editor {
   position: relative;
   border: 1px solid #ccc;
   background-color: #fff;
@@ -980,7 +980,7 @@ i.justify-align {
   min-height: 20px;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_Editor::before {
+.ContentFoundryPlugin_SamplesPanel_Editor::before {
   content: '';
   width: 30px;
   height: 20px;
@@ -998,7 +998,7 @@ i.send {
   transition: opacity 0.2s linear;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_Empty {
+.ContentFoundryPlugin_SamplesPanel_Empty {
   color: #777;
   font-size: 15px;
   text-align: center;
@@ -1009,7 +1009,7 @@ i.send {
   width: 100%;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List {
+.ContentFoundryPlugin_SamplesPanel_List {
   padding: 0;
   list-style-type: none;
   margin: 0;
@@ -1018,22 +1018,22 @@ i.send {
   overflow-y: auto;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List_Example {
+.ContentFoundryPlugin_SamplesPanel_List_Sample {
   font-size: 14px;
   border-radius: 6px 0 0 6px;
   margin-bottom: 2px;
 }
-.ContentFoundryPlugin_ExamplesPanel_List_Example .star {
+.ContentFoundryPlugin_SamplesPanel_List_Sample .star {
   align-self: stretch;
   padding: 2px;
   border-radius: 6px 0 0 6px;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List_Details {
+.ContentFoundryPlugin_SamplesPanel_List_Details {
   padding: 4px 0;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List_Thread {
+.ContentFoundryPlugin_SamplesPanel_List_Thread {
   padding: 0 0 0 0;
   margin: 0;
   border-top: 1px solid var(--border);
@@ -1043,33 +1043,33 @@ i.send {
   border-left: 0 solid var(--border);
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List_Thread:first-child,
-.ContentFoundryPlugin_ExamplesPanel_List_Thread
-  + .ContentFoundryPlugin_ExamplesPanel_List_Thread {
+.ContentFoundryPlugin_SamplesPanel_List_Thread:first-child,
+.ContentFoundryPlugin_SamplesPanel_List_Thread
+  + .ContentFoundryPlugin_SamplesPanel_List_Thread {
   border-top: none;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List_Thread {
+.ContentFoundryPlugin_SamplesPanel_List_Thread {
   display: none;
 }
-.ContentFoundryPlugin_ExamplesPanel_List_Thread.active {
+.ContentFoundryPlugin_SamplesPanel_List_Thread.active {
   display: block;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List_Thread_QuoteBox {
+.ContentFoundryPlugin_SamplesPanel_List_Thread_QuoteBox {
   padding-top: 10px;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List_Thread_Quote {
+.ContentFoundryPlugin_SamplesPanel_List_Thread_Quote {
   margin: 0px 12px;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List_Thread_Examples {
+.ContentFoundryPlugin_SamplesPanel_List_Thread_Samples {
   padding-left: 10px;
   list-style-type: none;
 }
 
-.ContentFoundryPlugin_ExamplesPanel_List_Thread_Editor {
+.ContentFoundryPlugin_SamplesPanel_List_Thread_Editor {
   position: relative;
   padding-top: 1px;
 }

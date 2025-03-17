@@ -9,24 +9,24 @@ import type { LexicalEditor } from "lexical";
 
 import { useEffect, useState } from "react";
 
-export type Example = {
+export type Sample = {
   author: string;
   content: string;
   deleted: boolean;
   id: string;
   timeStamp: number;
-  type: "example";
+  type: "sample";
   rating: number;
 };
 
 export type Thread = {
-  examples: Array<Example>;
+  samples: Array<Sample>;
   id: string;
   quote: string;
   type: "thread";
 };
 
-export type Examples = Array<Thread | Example>;
+export type Samples = Array<Thread | Sample>;
 
 function createUID(): string {
   return Math.random()
@@ -35,32 +35,32 @@ function createUID(): string {
     .slice(0, 5);
 }
 
-export function createExample(
+export function createSample(
   content: string,
   rating: number = 3,
   author: string,
   id?: string,
   timeStamp?: number,
   deleted?: boolean,
-): Example {
+): Sample {
   return {
     author,
     content,
     deleted: deleted === undefined ? false : deleted,
     id: id === undefined ? createUID() : id,
     timeStamp: timeStamp === undefined ? performance.now() : timeStamp,
-    type: "example",
+    type: "sample",
     rating,
   };
 }
 
 export function createThread(
   quote: string,
-  examples: Array<Example>,
+  samples: Array<Sample>,
   id?: string,
 ): Thread {
   return {
-    examples,
+    samples,
     id: id === undefined ? createUID() : id,
     quote,
     type: "thread",
@@ -69,105 +69,105 @@ export function createThread(
 
 function cloneThread(thread: Thread): Thread {
   return {
-    examples: Array.from(thread.examples),
+    samples: Array.from(thread.samples),
     id: thread.id,
     quote: thread.quote,
     type: "thread",
   };
 }
 
-function markDeleted(example: Example): Example {
+function markDeleted(sample: Sample): Sample {
   return {
-    author: example.author,
-    content: "[Deleted example]",
+    author: sample.author,
+    content: "[Deleted sample]",
     deleted: true,
-    id: example.id,
-    timeStamp: example.timeStamp,
-    type: "example",
-    rating: example.rating,
+    id: sample.id,
+    timeStamp: sample.timeStamp,
+    type: "sample",
+    rating: sample.rating,
   };
 }
 
-function triggerOnChange(exampleStore: ExampleStore): void {
-  const listeners = exampleStore._changeListeners;
+function triggerOnChange(sampleStore: SampleStore): void {
+  const listeners = sampleStore._changeListeners;
   for (const listener of listeners) {
     listener();
   }
 }
 
-export class ExampleStore {
+export class SampleStore {
   _editor: LexicalEditor;
-  _examples: Examples;
+  _samples: Samples;
   _changeListeners: Set<() => void>;
 
   constructor(editor: LexicalEditor) {
-    this._examples = [];
+    this._samples = [];
     this._editor = editor;
     this._changeListeners = new Set();
   }
 
-  getExamples(): Examples {
-    return this._examples;
+  getSamples(): Samples {
+    return this._samples;
   }
 
-  addExample(
-    exampleOrThread: Example | Thread,
+  addSample(
+    sampleOrThread: Sample | Thread,
     thread?: Thread,
     offset?: number,
   ): void {
-    const nextExamples = Array.from(this._examples);
+    const nextSamples = Array.from(this._samples);
 
-    if (thread !== undefined && exampleOrThread.type === "example") {
-      for (let i = 0; i < nextExamples.length; i++) {
-        const example = nextExamples[i];
-        if (example.type === "thread" && example.id === thread.id) {
-          const newThread = cloneThread(example);
-          nextExamples.splice(i, 1, newThread);
+    if (thread !== undefined && sampleOrThread.type === "sample") {
+      for (let i = 0; i < nextSamples.length; i++) {
+        const sample = nextSamples[i];
+        if (sample.type === "thread" && sample.id === thread.id) {
+          const newThread = cloneThread(sample);
+          nextSamples.splice(i, 1, newThread);
           const insertOffset = offset !== undefined
             ? offset
-            : newThread.examples.length;
-          newThread.examples.splice(insertOffset, 0, exampleOrThread);
+            : newThread.samples.length;
+          newThread.samples.splice(insertOffset, 0, sampleOrThread);
           break;
         }
       }
     } else {
-      const insertOffset = offset !== undefined ? offset : nextExamples.length;
-      nextExamples.splice(insertOffset, 0, exampleOrThread);
+      const insertOffset = offset !== undefined ? offset : nextSamples.length;
+      nextSamples.splice(insertOffset, 0, sampleOrThread);
     }
-    this._examples = nextExamples;
+    this._samples = nextSamples;
     triggerOnChange(this);
   }
 
-  deleteExampleOrThread(
-    exampleOrThread: Example | Thread,
+  deleteSampleOrThread(
+    sampleOrThread: Sample | Thread,
     thread?: Thread,
-  ): { markedExample: Example; index: number } | null {
-    const nextExamples = Array.from(this._examples);
-    let exampleIndex: number | null = null;
+  ): { markedSample: Sample; index: number } | null {
+    const nextSamples = Array.from(this._samples);
+    let sampleIndex: number | null = null;
 
     if (thread !== undefined) {
-      for (let i = 0; i < nextExamples.length; i++) {
-        const nextExample = nextExamples[i];
-        if (nextExample.type === "thread" && nextExample.id === thread.id) {
-          const newThread = cloneThread(nextExample);
-          nextExamples.splice(i, 1, newThread);
-          const threadExamples = newThread.examples;
-          exampleIndex = threadExamples.indexOf(exampleOrThread as Example);
-          threadExamples.splice(exampleIndex, 1);
+      for (let i = 0; i < nextSamples.length; i++) {
+        const nextSample = nextSamples[i];
+        if (nextSample.type === "thread" && nextSample.id === thread.id) {
+          const newThread = cloneThread(nextSample);
+          nextSamples.splice(i, 1, newThread);
+          const threadSamples = newThread.samples;
+          sampleIndex = threadSamples.indexOf(sampleOrThread as Sample);
+          threadSamples.splice(sampleIndex, 1);
           break;
         }
       }
     } else {
-      exampleIndex = nextExamples.indexOf(exampleOrThread);
-      nextExamples.splice(exampleIndex, 1);
+      sampleIndex = nextSamples.indexOf(sampleOrThread);
+      nextSamples.splice(sampleIndex, 1);
     }
-    this._examples = nextExamples;
+    this._samples = nextSamples;
     triggerOnChange(this);
 
-    if (exampleOrThread.type === "example") {
+    if (sampleOrThread.type === "sample") {
       return {
-        index: exampleIndex as number,
-        markedExample: markDeleted(exampleOrThread as Example),
+        index: sampleIndex as number,
+        markedSample: markDeleted(sampleOrThread as Sample),
       };
     }
 
@@ -183,16 +183,16 @@ export class ExampleStore {
   }
 }
 
-export function useExampleStore(exampleStore: ExampleStore): Examples {
-  const [examples, setExamples] = useState<Examples>(
-    exampleStore.getExamples(),
+export function useSampleStore(sampleStore: SampleStore): Samples {
+  const [samples, setSamples] = useState<Samples>(
+    sampleStore.getSamples(),
   );
 
   useEffect(() => {
-    return exampleStore.registerOnChange(() => {
-      setExamples(exampleStore.getExamples());
+    return sampleStore.registerOnChange(() => {
+      setSamples(sampleStore.getSamples());
     });
-  }, [exampleStore]);
+  }, [sampleStore]);
 
-  return examples;
+  return samples;
 }
