@@ -262,43 +262,49 @@ function Rating({ value, onChange, xclass = "" }: {
     <div className={`flex1 flexRow mediumGap ${xclass}`}>
       <BfDsButton
         kind={value === -3 ? "filledAlert" : "outlineAlert"}
-        iconLeft="starSolid"
+        textIconLeft="-3"
         onClick={() => onChange(-3)}
         size="medium"
+        tooltip="Sample of what not to do"
       />
       <BfDsButton
         kind="custom"
         customSettings={getButtonSettings(-2)}
-        iconLeft="star2ThirdNegative"
+        textIconLeft="-2"
         onClick={() => onChange(-2)}
         size="medium"
+        tooltip="Sample of what not to do"
       />
       <BfDsButton
         kind="custom"
         customSettings={getButtonSettings(-1)}
-        iconLeft="star1ThirdNegative"
+        textIconLeft="-1"
         onClick={() => onChange(-1)}
         size="medium"
+        tooltip="Sample of what not to do"
       />
       <BfDsButton
         kind="custom"
         customSettings={getButtonSettings(1)}
-        iconLeft="star1ThirdPositive"
+        textIconLeft="1"
         onClick={() => onChange(1)}
         size="medium"
+        tooltip="Sample of what to do"
       />
       <BfDsButton
         kind="custom"
         customSettings={getButtonSettings(2)}
-        iconLeft="star2ThirdPositive"
+        textIconLeft="2"
         onClick={() => onChange(2)}
         size="medium"
+        tooltip="Sample of what to do"
       />
       <BfDsButton
         kind={value === 3 ? "filledPrimaryLight" : "outlinePrimary"}
-        iconLeft="starSolid"
+        textIconLeft="3"
         onClick={() => onChange(3)}
         size="medium"
+        tooltip="Sample of what to do"
       />
     </div>
   );
@@ -577,37 +583,39 @@ function SamplesPanelListSample({
 
   logger.info("Showing sample", sample);
 
-  let starIcon = "starSolid";
+  let rating = "0";
   let backgroundColor = "var(--background)";
-  let starBgColor = "var(--border)";
+  let ratingBgColor = "var(--border)";
   switch (sample.rating) {
     case -3:
+      rating = "-3";
       backgroundColor = "var(--alert015)";
-      starBgColor = "var(--alert)";
+      ratingBgColor = "var(--alert)";
       break;
     case -2:
-      starIcon = "star2ThirdNegative";
+      rating = "-2";
       backgroundColor = "var(--primaryMix080Alert015)";
-      starBgColor = "var(--primaryMix080Alert)";
+      ratingBgColor = "var(--primaryMix080Alert)";
       break;
     case -1:
-      starIcon = "star1ThirdNegative";
+      rating = "-1";
       backgroundColor = "var(--primaryMix060Alert015)";
-      starBgColor = "var(--primaryMix060Alert)";
+      ratingBgColor = "var(--primaryMix060Alert)";
       break;
     case 1:
-      starIcon = "star1ThirdPositive";
+      rating = "1";
       backgroundColor = "var(--primaryMix040Alert015)";
-      starBgColor = "var(--primaryMix040Alert)";
+      ratingBgColor = "var(--primaryMix040Alert)";
       break;
     case 2:
-      starIcon = "star2ThirdPositive";
+      rating = "2";
       backgroundColor = "var(--primaryMix020Alert015)";
-      starBgColor = "var(--primaryMix020Alert)";
+      ratingBgColor = "var(--primaryMix020Alert)";
       break;
     case 3:
+      rating = "3";
       backgroundColor = "var(--primaryColor015)";
-      starBgColor = "var(--primaryColor)";
+      ratingBgColor = "var(--primaryColor)";
       break;
     default:
       break;
@@ -619,14 +627,10 @@ function SamplesPanelListSample({
       style={{ backgroundColor }}
     >
       <div
-        className="star flexRow flexCenter"
-        style={{ backgroundColor: starBgColor }}
+        className="rating flexRow flexCenter"
+        style={{ backgroundColor: ratingBgColor }}
       >
-        <BfDsIcon
-          color="var(--background)"
-          name={starIcon as BfDsIconType}
-          size={12}
-        />
+        {rating}
       </div>
       <div className="flex1 ContentFoundryPlugin_SamplesPanel_List_Details">
         {sample.content}
