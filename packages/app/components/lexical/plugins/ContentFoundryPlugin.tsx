@@ -662,7 +662,6 @@ function ExamplesPanelList({
   activeIDs,
   examples,
   deleteExampleOrThread,
-  listRef,
   submitAddExample,
   markNodeMap,
 }: {
@@ -672,7 +671,6 @@ function ExamplesPanelList({
     exampleOrThread: Example | Thread,
     thread?: Thread,
   ) => void;
-  listRef: { current: null | HTMLUListElement };
   markNodeMap: Map<string, Set<NodeKey>>;
   submitAddExample: (
     exampleOrThread: Example | Thread,
@@ -696,7 +694,7 @@ function ExamplesPanelList({
   }, [counter]);
 
   return (
-    <ul className="ContentFoundryPlugin_ExamplesPanel_List" ref={listRef}>
+    <ul className="ContentFoundryPlugin_ExamplesPanel_List">
       {examples.map((exampleOrThread) => {
         const id = exampleOrThread.id;
         if (exampleOrThread.type === "thread") {
@@ -732,7 +730,6 @@ function ExamplesPanelList({
           const liClasses = classnames([
             "ContentFoundryPlugin_ExamplesPanel_List_Thread",
             {
-              interactive: markNodeMap.has(id),
               active: activeIDs.indexOf(id) > -1,
             },
           ]);
@@ -809,52 +806,6 @@ function ExamplesPanelList({
   );
 }
 
-function ExamplesPanel({
-  activeIDs,
-  deleteExampleOrThread,
-  examples,
-  submitAddExample,
-  markNodeMap,
-}: {
-  activeIDs: Array<string>;
-  examples: Examples;
-  deleteExampleOrThread: (
-    exampleOrThread: Example | Thread,
-    thread?: Thread,
-  ) => void;
-  markNodeMap: Map<string, Set<NodeKey>>;
-  submitAddExample: (
-    exampleOrThread: Example | Thread,
-    isInlineExample: boolean,
-    thread?: Thread,
-  ) => void;
-}): JSX.Element {
-  const listRef = useRef<HTMLUListElement>(null);
-  const isEmpty = examples.length === 0;
-
-  return (
-    <div className="ContentFoundryPlugin_ExamplesPanel">
-      <h2 className="ContentFoundryPlugin_ExamplesPanel_Heading">Examples</h2>
-      {isEmpty
-        ? (
-          <div className="ContentFoundryPlugin_ExamplesPanel_Empty">
-            No Examples
-          </div>
-        )
-        : (
-          <ExamplesPanelList
-            activeIDs={activeIDs}
-            examples={examples}
-            deleteExampleOrThread={deleteExampleOrThread}
-            listRef={listRef}
-            submitAddExample={submitAddExample}
-            markNodeMap={markNodeMap}
-          />
-        )}
-    </div>
-  );
-}
-
 export function ContentFoundryPlugin(): JSX.Element {
   const [isInDom, setIsInDom] = useState(false);
   const [editor] = useLexicalComposerContext();
@@ -865,7 +816,6 @@ export function ContentFoundryPlugin(): JSX.Element {
   }, []);
   const [activeIDs, setActiveIDs] = useState<Array<string>>([]);
   const [showExampleInput, setShowExampleInput] = useState(false);
-  const [showExamples, setShowExamples] = useState(false);
   const [showAddBox, setShowAddBox] = useState(false);
   const selectionTimeout = useRef<number | null>(null);
 
@@ -987,7 +937,6 @@ export function ContentFoundryPlugin(): JSX.Element {
           if (elem !== null) {
             elem.classList.add("selected");
             changedElems.push(elem);
-            setShowExamples(true);
           }
         }
       }
@@ -1123,28 +1072,15 @@ export function ContentFoundryPlugin(): JSX.Element {
           document.body,
         )}
         {createPortal(
-          <Button
-            className={`ContentFoundryPlugin_ShowExamplesButton ${
-              showExamples ? "active" : ""
-            }`}
-            onClick={() => setShowExamples(!showExamples)}
-            title={showExamples ? "Hide Examples" : "Show Examples"}
-          >
-            <i className="examples" />
-          </Button>,
-          document.body,
+          <ExamplesPanelList
+            examples={examples}
+            submitAddExample={submitAddExample}
+            deleteExampleOrThread={deleteExampleOrThread}
+            activeIDs={activeIDs}
+            markNodeMap={markNodeMap}
+          />,
+          document.getElementById("examplesPortal") as Element,
         )}
-        {showExamples &&
-          createPortal(
-            <ExamplesPanel
-              examples={examples}
-              submitAddExample={submitAddExample}
-              deleteExampleOrThread={deleteExampleOrThread}
-              activeIDs={activeIDs}
-              markNodeMap={markNodeMap}
-            />,
-            document.body,
-          )}
       </>
     )
     : <div>Not in dom</div>;

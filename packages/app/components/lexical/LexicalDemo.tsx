@@ -191,7 +191,8 @@ export function EditorPage() {
       <Editor />
       {/* Right sidebar */}
       <div className="flexColumn right-side-bar">
-        <div className="sessions-container">
+        <div className="sessions-container" id="examplesPortal">
+          {/* Examples get portal'd here */}
         </div>
       </div>
     </div>
