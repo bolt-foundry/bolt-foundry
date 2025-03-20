@@ -38,7 +38,7 @@ jobs:
           echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
           echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
-          echo "PATH=/usr/bin:/bin:${{ env.INFRA_BIN_PATH }}:$PATH" >> $GITHUB_ENV
+
 
       - name: Debug environment
         run: |
@@ -46,7 +46,7 @@ jobs:
           env | grep -E "DATABASE_URL|REPL_HOME|BF_ENV"
 
       - name: Add infra bin to PATH
-        run: echo "/home/runner/work/content-foundry/content-foundry/infra/bin" >> $GITHUB_PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
 
       - name: Run CI in nix
         run: |
