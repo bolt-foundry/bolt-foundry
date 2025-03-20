@@ -46,6 +46,7 @@
   "include": [
     "infra",
     "lib",
+    "documentation",
     "packages",
     "sites"
   ],
@@ -55,7 +56,6 @@
     ".direnv",
     ".git",
     "build",
-    "content",
     "static",
     "**/__TEMPLATE__.*"
   ],
@@ -65,7 +65,6 @@
     ],
     "rules": {
       "include": [
-        "camelCase",
         "no-console",
         "no-external-import",
         "no-self-compare",
@@ -88,6 +87,5 @@
     "path": "./deno.lock"
   },
   "nodeModulesDir": "manual",
-  "workspace": ["packages/contentFoundry", "sites/internal.contentfoundry.us"],
   "vendor": true
 }
