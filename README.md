@@ -1,38 +1,22 @@
-# Content Foundry: The Content Operating System
+# Bolt Foundry: Reliable LLM Systems
 
-> **Developer Experience First:** Content Foundry is building an open-source
-> platform with the best developer experience in mind. We're focused on making
-> it easier to contribute than to Wikipedia, while creating powerful tools for
-> content creators.
+> **Developer Experience First:** Bolt Foundry is building an open-source
+> platform for creating reliable, testable, and verifiable LLM systems. We focus on
+> making AI implementations that are robust and predictable.
 
-## What is Content Foundry?
+## What is Bolt Foundry?
 
-Content Foundry is an open-source platform that helps creators tell compelling
-stories across all platforms. We provide an end-to-end solution that guides you
-through the entire content creation lifecycle with our five pillars:
+Bolt Foundry is an open-source platform that helps developers build reliable LLM
+systems through our Identity Card approach. An Identity Card represents a verified,
+tested unit of LLM functionality that can be composed into larger systems.
 
-### Identity
+### Core Features
 
-Take anecdotes, inspirations, ideas, user research, sales calls, and whatever
-information you have that relates to your brand and put it here. This serves as
-origin material for the rest of the process.
-
-### Research
-
-Figure out what you should say before you say it. Come up with sketches,
-outlines or other ideas for tweets, posts, videos, etc.
-
-### Creation
-
-Write your content with AI-assistance that maintains your unique voice.
-
-### Distribution
-
-Get your content where it needs to go efficiently and effectively.
-
-### Analytics
-
-Learn what works with your audience, and feed it back into the process.
+- **Identity Cards**: Testable units of LLM functionality with built-in verification
+- **Test-Driven LLMs**: Comprehensive testing framework for LLM behaviors
+- **Composable Systems**: Build complex LLM applications from verified components
+- **Versioning & Tracking**: Monitor and version your LLM system's behavior
+- **Performance Analysis**: Measure and optimize your LLM implementation
 
 ---
 
