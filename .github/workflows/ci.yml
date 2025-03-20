@@ -27,6 +27,8 @@ jobs:
           with open(os.environ["GITHUB_ENV"], "a") as f:
               for key, value in env_data.items():
                   f.write(f"{key}={value}\n")
+          # Skipping PATH key
+          env_data.pop('PATH', None)
           EOF
 
       - name: Set environment variables
@@ -38,7 +40,6 @@ jobs:
           echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
           echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
-          echo "PATH=/usr/bin:/bin:${{ env.INFRA_BIN_PATH }}:$PATH" >> $GITHUB_ENV
 
       - name: Debug environment
         run: |
