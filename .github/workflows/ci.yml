@@ -26,9 +26,8 @@ jobs:
           env_data = data.get("env", {})
           with open(os.environ["GITHUB_ENV"], "a") as f:
               for key, value in env_data.items():
-                  f.write(f"{key}={value}\n")
-          # Skipping PATH key
-          env_data.pop('PATH', None)
+                  if key != "PATH":
+                      f.write(f"{key}={value}\n")
           EOF
 
       - name: Set environment variables
@@ -40,14 +39,11 @@ jobs:
           echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
           echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
-
+          echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
       - name: Debug environment
         run: |
           echo "Environment variables in job:"
           env | grep -E "DATABASE_URL|REPL_HOME|BF_ENV"
-
-      - name: Add infra bin to PATH
-        run: echo "/home/runner/work/content-foundry/content-foundry/infra/bin" >> $GITHUB_PATH
 
       - name: Run CI in nix
         run: |
