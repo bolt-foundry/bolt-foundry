@@ -45,6 +45,11 @@
     "npm:@isograph/compiler@0.0.0-main-1fad6d74": "0.0.0-main-1fad6d74",
     "npm:@isograph/react@0.0.0-main-1fad6d74": "0.0.0-main-1fad6d74_react@19.0.0",
     "npm:@levischuck/tiny-cbor@~0.2.2": "0.2.2",
+    "npm:@lexical/mark@0.27.2": "0.27.2",
+    "npm:@lexical/react@0.27.2": "0.27.2_react@19.0.0_react-dom@19.0.0__react@19.0.0",
+    "npm:@lexical/selection@~0.27.2": "0.27.2",
+    "npm:@lexical/text@0.27.2": "0.27.2",
+    "npm:@lexical/utils@0.27.2": "0.27.2",
     "npm:@mdx-js/esbuild@^3.1.0": "3.1.0_esbuild@0.24.2",
     "npm:@mdx-js/mdx@^3.1.0": "3.1.0",
     "npm:@neondatabase/serverless@~0.10.4": "0.10.4",
@@ -69,6 +74,7 @@
     "npm:graphql-yoga@^5.10.10": "5.10.10_graphql@16.10.0",
     "npm:graphql@^16.10.0": "16.10.0",
     "npm:jsonwebtoken@^9.0.2": "9.0.2",
+    "npm:lexical@0.27.2": "0.27.2",
     "npm:loglevel-plugin-prefix@~0.8.4": "0.8.4",
     "npm:loglevel@^1.9.2": "1.9.2",
     "npm:marked@^15.0.7": "15.0.7",
@@ -619,6 +625,193 @@
     },
     "@levischuck/tiny-cbor@0.2.2": {
       "integrity": "sha512-f5CnPw997Y2GQ8FAvtuVVC19FX8mwNNC+1XJcIi16n/LTJifKO6QBgGLgN3YEmqtGMk17SKSuoWES3imJVxAVw=="
+    },
+    "@lexical/clipboard@0.27.2": {
+      "integrity": "sha512-rfnFYf8P0081IvPOJjE7fWJE+d/dz0Xdsw83uizY5X6HaLXFB/Qy1MrzEqWZnYnOpgi1snAuolZ5Rbg83SIlYA==",
+      "dependencies": [
+        "@lexical/html",
+        "@lexical/list",
+        "@lexical/selection",
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/code@0.27.2": {
+      "integrity": "sha512-GoTy57CYoXvP1N+E9ptCJ47LQCAu67K/HQsjg0NmmtNbWlInk6Sa2V4pM1KePp6JAQapGpIlCoEyC3/KkrQ55g==",
+      "dependencies": [
+        "@lexical/utils",
+        "lexical",
+        "prismjs"
+      ]
+    },
+    "@lexical/devtools-core@0.27.2_react@19.0.0_react-dom@19.0.0__react@19.0.0": {
+      "integrity": "sha512-LAI7j9roS2i/lV/6Z4AAx2+EVOEnMVzLZFB6aQfSjRbZ9lzA8S17743OJUHRXyTvBWc5520ihhBybO0EfjTagw==",
+      "dependencies": [
+        "@lexical/html",
+        "@lexical/link",
+        "@lexical/mark",
+        "@lexical/table",
+        "@lexical/utils",
+        "lexical",
+        "react",
+        "react-dom"
+      ]
+    },
+    "@lexical/dragon@0.27.2": {
+      "integrity": "sha512-0xI98esvgtJpVLJUADtvJ/yKk4kFFrn2h7GgzvihLXeVe+O149DONFSarB9yguDyvHUblKtfjB2BcJaeOIpouQ==",
+      "dependencies": [
+        "lexical"
+      ]
+    },
+    "@lexical/hashtag@0.27.2": {
+      "integrity": "sha512-BBwMT3rz/TlZZ6ZjkP5+Yj86ffufiktOBwry7kPDUqOMyTuTFEE58cmd4SXiYEs7yifrC6TenRmFZgBui7xpmQ==",
+      "dependencies": [
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/history@0.27.2": {
+      "integrity": "sha512-5CihqjvlmXuiLZYpKZMfYISpVSSpUrs3jpC5XK0kAv0etUWyf2/JzY0BLfD2kb7x/tOrU7O+WptNNyl5WL3N5A==",
+      "dependencies": [
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/html@0.27.2": {
+      "integrity": "sha512-6kPvrTxAE39jUhnbYMCenHVHXTlew9sBprniQu5iZSszMfcn/SDkqmHWi8//fhiLlcAa/p0vRDxaBYoQQf0r9A==",
+      "dependencies": [
+        "@lexical/selection",
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/link@0.27.2": {
+      "integrity": "sha512-t+tMr1aEwy67D4+GU6XX78Dxllyu3xebYAlB5ANpnv0oV8PSxT8h6aHHVwj0a55a89NnSPTzpBhqtX0QO374+A==",
+      "dependencies": [
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/list@0.27.2": {
+      "integrity": "sha512-jE7e95ttO26Xtt322dnUwWSG7QgeAfBg3Ghyjd8ByGI5O5wmMgMgb3NCiSSRPBWOpt6PEeD5s5KjQKfMUCCuHQ==",
+      "dependencies": [
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/mark@0.27.2": {
+      "integrity": "sha512-6rTwfVuuFeiTy6MU8yY3nyBOe2KtcB1lL0zg8ygIRjSYsV2+HAVAUesDFnaCUHJ1qimj9pJB8fW+GU2ur8uGvQ==",
+      "dependencies": [
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/markdown@0.27.2": {
+      "integrity": "sha512-XbM/G0CPoH2BUAuKSRS5L2pAU1kreZDOH0Eh4DR2sLzosM48ZyRktgKAUwHItQPQ/in5hkH3Xd5D4RAtYWhKUA==",
+      "dependencies": [
+        "@lexical/code",
+        "@lexical/link",
+        "@lexical/list",
+        "@lexical/rich-text",
+        "@lexical/text",
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/offset@0.27.2": {
+      "integrity": "sha512-li+NxLeU2IW7JKOr8pheS/7aGlU8sKThPEKDtM20d0drvMAo03ebu5X/wxmy1e4zWKbpH3dll/ocE+gGV9DcLA==",
+      "dependencies": [
+        "lexical"
+      ]
+    },
+    "@lexical/overflow@0.27.2": {
+      "integrity": "sha512-vkKrZyes4/r73wH/t+X0HEsol4A9yxzALAnx8vyXCnw2s8zklQFi5ccf3fkwPG6cSKDl+zAO0elmSjhxOp5JfQ==",
+      "dependencies": [
+        "lexical"
+      ]
+    },
+    "@lexical/plain-text@0.27.2": {
+      "integrity": "sha512-/EygmUMFsH9WVkXl1/IwKJfJJAQy2pnxPx+bYz97hTXqh9CHkzn0N81gxjquRAPZkemoE7UoZsAbaw07BH+8hA==",
+      "dependencies": [
+        "@lexical/clipboard",
+        "@lexical/selection",
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/react@0.27.2_react@19.0.0_react-dom@19.0.0__react@19.0.0": {
+      "integrity": "sha512-azfF9kQ/LM47Gn0vV5xMkD2viEiAxmgRQQsDv8gOZcZY4CWtRth/uehW8nchmD4xIgK63LLjGRjYhShTufy0XA==",
+      "dependencies": [
+        "@lexical/clipboard",
+        "@lexical/code",
+        "@lexical/devtools-core",
+        "@lexical/dragon",
+        "@lexical/hashtag",
+        "@lexical/history",
+        "@lexical/link",
+        "@lexical/list",
+        "@lexical/mark",
+        "@lexical/markdown",
+        "@lexical/overflow",
+        "@lexical/plain-text",
+        "@lexical/rich-text",
+        "@lexical/selection",
+        "@lexical/table",
+        "@lexical/text",
+        "@lexical/utils",
+        "@lexical/yjs",
+        "lexical",
+        "react",
+        "react-dom",
+        "react-error-boundary"
+      ]
+    },
+    "@lexical/rich-text@0.27.2": {
+      "integrity": "sha512-naWwPNbEJAue/R0pmZwqnTVkv3V2rzgzz+C6/J5tMOvN1Osth8OL3UD6K8NQX8rjdnXe4soVoH8XsNhU0Jv10w==",
+      "dependencies": [
+        "@lexical/clipboard",
+        "@lexical/selection",
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/selection@0.27.2": {
+      "integrity": "sha512-9AJOfw1zMQ3PqGpovEuy6NjfWck/9KzxNPzXoGRZlJRvPexgZirentPWRhLHF3DMtnOML1+GCpj+5LOAYN2XbQ==",
+      "dependencies": [
+        "lexical"
+      ]
+    },
+    "@lexical/table@0.27.2": {
+      "integrity": "sha512-6G3jj7EyweviX3/AEZOr/XBTIQN5QCkJcg1Zw3I9Ga0F+CCDM5aeJWRv4hultP1nOz1xtYCDnezhaPV1Gef9dA==",
+      "dependencies": [
+        "@lexical/clipboard",
+        "@lexical/utils",
+        "lexical"
+      ]
+    },
+    "@lexical/text@0.27.2": {
+      "integrity": "sha512-Rx61l/Cbz2GGwZvtp56PMGB35X+VnZYhRlLJdZhQ+XTYbRmCTAh50mBcS3FzZrziq8vn07yEN/9FVb8HGTyN1A==",
+      "dependencies": [
+        "lexical"
+      ]
+    },
+    "@lexical/utils@0.27.2": {
+      "integrity": "sha512-tCEuKL5IXiJ12ZN/Ej37Q7PhcBntekLeQbGiYO4sgIAnR9qI6yYgVH7b1CC+Tf06UapUXjIDG0Uh5/u0W1+kOQ==",
+      "dependencies": [
+        "@lexical/list",
+        "@lexical/selection",
+        "@lexical/table",
+        "lexical"
+      ]
+    },
+    "@lexical/yjs@0.27.2_yjs@13.6.24": {
+      "integrity": "sha512-+twxPJNwN9VOe20dMKDbBfdZWCiTVM7RrezNZ984o8bJVx6dW80yM96zEyyQp1pmgi60lOYunKWD1B5/74Dq/w==",
+      "dependencies": [
+        "@lexical/offset",
+        "@lexical/selection",
+        "lexical",
+        "yjs"
+      ]
     },
     "@marijn/find-cluster-break@1.0.2": {
       "integrity": "sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g=="
@@ -1712,6 +1905,9 @@
     "is-potential-custom-element-name@1.0.1": {
       "integrity": "sha512-bCYeRA2rVibKZd+s2625gGnGF/t7DSqDs4dP7CrLA1m7jKWz6pps0LpYLJN8Q64HtmPKJ1hrN3nzPNKFEKOUiQ=="
     },
+    "isomorphic.js@0.2.5": {
+      "integrity": "sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw=="
+    },
     "iterall@1.3.0": {
       "integrity": "sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg=="
     },
@@ -1772,6 +1968,15 @@
       "dependencies": [
         "jwa",
         "safe-buffer"
+      ]
+    },
+    "lexical@0.27.2": {
+      "integrity": "sha512-R255V+4VBqZmSMWeuMrCNHJZd3L+qBkYYFrxkiO3FLg/36HatZLUdZLRYx+fOMWeSddo0DP9EVl0GTZzNb7v0w=="
+    },
+    "lib0@0.2.99": {
+      "integrity": "sha512-vwztYuUf1uf/1zQxfzRfO5yzfNKhTtgOByCruuiQQxWQXnPb8Itaube5ylofcV0oM0aKal9Mv+S1s1Ky0UYP1w==",
+      "dependencies": [
+        "isomorphic.js"
       ]
     },
     "lodash.includes@4.3.0": {
@@ -2406,6 +2611,9 @@
     "preact@10.26.2": {
       "integrity": "sha512-0gNmv4qpS9HaN3+40CLBAnKe0ZfyE4ZWo5xKlC1rVrr0ckkEvJvAQqKaHANdFKsGstoxrY4AItZ7kZSGVoVjgg=="
     },
+    "prismjs@1.30.0": {
+      "integrity": "sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw=="
+    },
     "property-information@6.5.0": {
       "integrity": "sha512-PgTgs/BlvHxOu8QuEN7wi5A0OmXaBcHpmCSTehcs6Uuu9IkDIEo13Hy7n898RHfrQ49vKCoGeWZSaAK01nwVig=="
     },
@@ -2456,6 +2664,13 @@
       "dependencies": [
         "react",
         "scheduler"
+      ]
+    },
+    "react-error-boundary@3.1.4_react@19.0.0": {
+      "integrity": "sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==",
+      "dependencies": [
+        "@babel/runtime@7.26.0",
+        "react"
       ]
     },
     "react@19.0.0": {
@@ -2816,6 +3031,12 @@
     "xtend@4.0.2": {
       "integrity": "sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ=="
     },
+    "yjs@13.6.24": {
+      "integrity": "sha512-xn/pYLTZa3uD1uDG8lpxfLRo5SR/rp0frdASOl2a71aYNvUXdWcLtVL91s2y7j+Q8ppmjZ9H3jsGVgoFMbT2VA==",
+      "dependencies": [
+        "lib0"
+      ]
+    },
     "zod@3.24.1": {
       "integrity": "sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A=="
     },
@@ -2898,6 +3119,11 @@
         "npm:@hyperdx/deno@^0.0.4",
         "npm:@isograph/compiler@0.0.0-main-1fad6d74",
         "npm:@isograph/react@0.0.0-main-1fad6d74",
+        "npm:@lexical/mark@0.27.2",
+        "npm:@lexical/react@0.27.2",
+        "npm:@lexical/selection@~0.27.2",
+        "npm:@lexical/text@0.27.2",
+        "npm:@lexical/utils@0.27.2",
         "npm:@mdx-js/esbuild@^3.1.0",
         "npm:@mdx-js/mdx@^3.1.0",
         "npm:@neondatabase/serverless@~0.10.4",
@@ -2916,6 +3142,7 @@
         "npm:graphql-yoga@^5.10.10",
         "npm:graphql@^16.10.0",
         "npm:jsonwebtoken@^9.0.2",
+        "npm:lexical@0.27.2",
         "npm:loglevel-plugin-prefix@~0.8.4",
         "npm:loglevel@^1.9.2",
         "npm:marked@^15.0.7",
