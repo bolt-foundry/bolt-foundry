@@ -79,6 +79,7 @@ export type ButtonType = {
   subtext?: string;
   testId?: string; // used to identify the button in posthog
   text?: string | null;
+  textIconLeft?: string | null;
   tooltip?: string | React.ReactNode;
   tooltipMenu?: Array<BfDsTooltipMenuType>;
   tooltipMenuDropdown?: Array<BfDsTooltipMenuType>;
@@ -595,6 +596,7 @@ export function BfDsButton({
   subtext,
   testId,
   text,
+  textIconLeft,
   tooltip,
   tooltipMenu,
   tooltipMenuDropdown,
@@ -654,16 +656,29 @@ export function BfDsButton({
           />
         )
         : (
-          iconLeft && (
-            <div style={baseStyles.iconStyle}>
-              <ButtonIcon
-                name={iconLeft}
-                color={iconColor}
-                size={iconSizes[size]}
-                progress={progress}
-              />
-            </div>
-          )
+          <>
+            {iconLeft && (
+              <div style={baseStyles.iconStyle}>
+                <ButtonIcon
+                  name={iconLeft as BfDsIconType}
+                  color={iconColor}
+                  size={iconSizes[size]}
+                  progress={progress}
+                />
+              </div>
+            )}
+            {textIconLeft && (
+              <div
+                className="textIcon"
+                style={{
+                  color: iconColor,
+                  fontSize: iconSizes[size] + 6,
+                }}
+              >
+                {textIconLeft}
+              </div>
+            )}
+          </>
         )}
 
       {!isIconButton && (

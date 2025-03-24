@@ -68,10 +68,7 @@ import Placeholder from "packages/app/components/lexical/ui/Placeholder.tsx";
 import { getLogger } from "packages/logger.ts";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 import { classnames } from "lib/classnames.ts";
-import {
-  BfDsIcon,
-  type BfDsIconType,
-} from "packages/bfDs/components/BfDsIcon.tsx";
+import { BfDsIcon } from "packages/bfDs/components/BfDsIcon.tsx";
 const logger = getLogger(import.meta);
 
 export const INSERT_INLINE_COMMAND: LexicalCommand<void> = createCommand();
@@ -241,20 +238,20 @@ function Rating({ value, onChange, xclass = "" }: {
     }
     if (value === level) {
       return {
-        backgroundColor: `var(--primaryMix${mixNumber}Alert)`,
-        backgroundColorHover: `var(--primaryMix${mixNumber}AlertHover)`,
-        borderColor: `var(--primaryMix${mixNumber}Alert)`,
-        borderColorHover: `var(--primaryMix${mixNumber}AlertHover)`,
+        backgroundColor: `var(--secondaryMix${mixNumber}Alert)`,
+        backgroundColorHover: `var(--secondaryMix${mixNumber}AlertHover)`,
+        borderColor: `var(--secondaryMix${mixNumber}Alert)`,
+        borderColorHover: `var(--secondaryMix${mixNumber}AlertHover)`,
         color: "var(--textOnAlert)",
       };
     }
     return {
       backgroundColor: "var(--background)",
       backgroundColorHover: "var(--outlineHover)",
-      color: `var(--primaryMix${mixNumber}Alert)`,
-      colorHover: `var(--primaryMix${mixNumber}AlertHover)`,
+      color: `var(--secondaryMix${mixNumber}Alert)`,
+      colorHover: `var(--secondaryMix${mixNumber}AlertHover)`,
       borderColor: "var(--background)",
-      borderColorHover: `var(--primaryMix${mixNumber}AlertHover)`,
+      borderColorHover: `var(--secondaryMix${mixNumber}AlertHover)`,
     };
   }, [value]);
 
@@ -262,43 +259,49 @@ function Rating({ value, onChange, xclass = "" }: {
     <div className={`flex1 flexRow mediumGap ${xclass}`}>
       <BfDsButton
         kind={value === -3 ? "filledAlert" : "outlineAlert"}
-        iconLeft="starSolid"
+        textIconLeft="-3"
         onClick={() => onChange(-3)}
         size="medium"
+        tooltip="Sample of what not to do"
       />
       <BfDsButton
         kind="custom"
         customSettings={getButtonSettings(-2)}
-        iconLeft="star2ThirdNegative"
+        textIconLeft="-2"
         onClick={() => onChange(-2)}
         size="medium"
+        tooltip="Sample of what not to do"
       />
       <BfDsButton
         kind="custom"
         customSettings={getButtonSettings(-1)}
-        iconLeft="star1ThirdNegative"
+        textIconLeft="-1"
         onClick={() => onChange(-1)}
         size="medium"
+        tooltip="Sample of what not to do"
       />
       <BfDsButton
         kind="custom"
         customSettings={getButtonSettings(1)}
-        iconLeft="star1ThirdPositive"
+        textIconLeft="1"
         onClick={() => onChange(1)}
         size="medium"
+        tooltip="Sample of what to do"
       />
       <BfDsButton
         kind="custom"
         customSettings={getButtonSettings(2)}
-        iconLeft="star2ThirdPositive"
+        textIconLeft="2"
         onClick={() => onChange(2)}
         size="medium"
+        tooltip="Sample of what to do"
       />
       <BfDsButton
-        kind={value === 3 ? "filledPrimaryLight" : "outlinePrimary"}
-        iconLeft="starSolid"
+        kind={value === 3 ? "filledSuccess" : "outlineSuccess"}
+        textIconLeft="3"
         onClick={() => onChange(3)}
         size="medium"
+        tooltip="Sample of what to do"
       />
     </div>
   );
@@ -577,37 +580,39 @@ function SamplesPanelListSample({
 
   logger.info("Showing sample", sample);
 
-  let starIcon = "starSolid";
+  let rating = "0";
   let backgroundColor = "var(--background)";
-  let starBgColor = "var(--border)";
+  let ratingBgColor = "var(--border)";
   switch (sample.rating) {
     case -3:
+      rating = "-3";
       backgroundColor = "var(--alert015)";
-      starBgColor = "var(--alert)";
+      ratingBgColor = "var(--alert)";
       break;
     case -2:
-      starIcon = "star2ThirdNegative";
-      backgroundColor = "var(--primaryMix080Alert015)";
-      starBgColor = "var(--primaryMix080Alert)";
+      rating = "-2";
+      backgroundColor = "var(--secondaryMix080Alert015)";
+      ratingBgColor = "var(--secondaryMix080Alert)";
       break;
     case -1:
-      starIcon = "star1ThirdNegative";
-      backgroundColor = "var(--primaryMix060Alert015)";
-      starBgColor = "var(--primaryMix060Alert)";
+      rating = "-1";
+      backgroundColor = "var(--secondaryMix060Alert015)";
+      ratingBgColor = "var(--secondaryMix060Alert)";
       break;
     case 1:
-      starIcon = "star1ThirdPositive";
-      backgroundColor = "var(--primaryMix040Alert015)";
-      starBgColor = "var(--primaryMix040Alert)";
+      rating = "1";
+      backgroundColor = "var(--secondaryMix040Alert015)";
+      ratingBgColor = "var(--secondaryMix040Alert)";
       break;
     case 2:
-      starIcon = "star2ThirdPositive";
-      backgroundColor = "var(--primaryMix020Alert015)";
-      starBgColor = "var(--primaryMix020Alert)";
+      rating = "2";
+      backgroundColor = "var(--secondaryMix020Alert015)";
+      ratingBgColor = "var(--secondaryMix020Alert)";
       break;
     case 3:
-      backgroundColor = "var(--primaryColor015)";
-      starBgColor = "var(--primaryColor)";
+      rating = "3";
+      backgroundColor = "var(--secondaryColor015)";
+      ratingBgColor = "var(--secondaryColor)";
       break;
     default:
       break;
@@ -619,14 +624,10 @@ function SamplesPanelListSample({
       style={{ backgroundColor }}
     >
       <div
-        className="star flexRow flexCenter"
-        style={{ backgroundColor: starBgColor }}
+        className="rating flexRow flexCenter"
+        style={{ backgroundColor: ratingBgColor }}
       >
-        <BfDsIcon
-          color="var(--background)"
-          name={starIcon as BfDsIconType}
-          size={12}
-        />
+        {rating}
       </div>
       <div className="flex1 ContentFoundryPlugin_SamplesPanel_List_Details">
         {sample.content}

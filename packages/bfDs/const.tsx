@@ -189,9 +189,9 @@ function generateColors(dark = false) {
     glimmerBackground: color(palette.glimmerBackground),
     glimmer: color(palette.glimmer),
     ...createMixSet(
-      "primary",
+      "secondary",
       "alert",
-      palette.primary,
+      palette.secondary,
       palette.negative,
       adjustment,
     ),
