@@ -68,10 +68,7 @@ import Placeholder from "packages/app/components/lexical/ui/Placeholder.tsx";
 import { getLogger } from "packages/logger.ts";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 import { classnames } from "lib/classnames.ts";
-import {
-  BfDsIcon,
-  type BfDsIconType,
-} from "packages/bfDs/components/BfDsIcon.tsx";
+import { BfDsIcon } from "packages/bfDs/components/BfDsIcon.tsx";
 const logger = getLogger(import.meta);
 
 export const INSERT_INLINE_COMMAND: LexicalCommand<void> = createCommand();
