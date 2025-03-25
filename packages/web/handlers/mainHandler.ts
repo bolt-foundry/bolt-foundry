@@ -17,40 +17,47 @@ export async function handleRequest(
   defaultRoute: () => Response,
   contentPromise: Promise<unknown>,
 ): Promise<Response> {
-  let res;
+  let res: Response | null;
 
   const incomingUrl = new URL(req.url);
   const timer = performance.now();
   const resHeaders = new Headers();
+  // Create current viewer
+  using cv = BfCurrentViewer.createFromRequest(import.meta, req, resHeaders);
+
   if (incomingUrl.pathname.startsWith("/api")) {
     res = await bfLlmRouter(req);
   }
 
   // Check domain-specific routing first
   res ??= await handleDomains(req);
-  if (res) {
-    return res;
-  }
+  if (!res) {
+    const staticPrefix = "/static";
+    if (incomingUrl.pathname.startsWith(staticPrefix)) {
+      res = await serveStaticFiles(req);
+    } else {
+      try {
+        // Keep the query string, so we pass "pathname + search" to matchRoute
+        const pathWithParams = incomingUrl.pathname + incomingUrl.search;
 
-  // Create current viewer
-  using cv = BfCurrentViewer.createFromRequest(import.meta, req, resHeaders);
+        // Wait for content to be initialized
+        await contentPromise;
 
-  const staticPrefix = "/static";
-  if (incomingUrl.pathname.startsWith(staticPrefix)) {
-    res = await serveStaticFiles(req);
-  } else {
-    try {
-      // Keep the query string, so we pass "pathname + search" to matchRoute
-      const pathWithParams = incomingUrl.pathname + incomingUrl.search;
-
-      // Wait for content to be initialized
-      await contentPromise;
-
-      // Handle the route
-      res = await handleMatchedRoute(req, pathWithParams, routes, defaultRoute);
-    } catch (err) {
-      logger.error("Error handling request:", err);
-      res = new Response("Internal Server Error", { status: 500 });
+        // Handle the route
+        res = await handleMatchedRoute(
+          req,
+          pathWithParams,
+          routes,
+          defaultRoute,
+        );
+        // Add any headers from the current viewer
+        resHeaders.forEach((value, key) => {
+          res?.headers.set(key, value);
+        });
+      } catch (err) {
+        logger.error("Error handling request:", err);
+        res = new Response("Internal Server Error", { status: 500 });
+      }
     }
   }
 
@@ -64,11 +71,6 @@ export async function handleRequest(
       req.headers.get("content-type") ?? ""
     } (${perfInMs}ms) - ${cv}`,
   );
-
-  // Add any headers from the current viewer
-  resHeaders.forEach((value, key) => {
-    res.headers.set(key, value);
-  });
 
   return res;
 }
