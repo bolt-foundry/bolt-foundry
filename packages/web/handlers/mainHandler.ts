@@ -4,6 +4,7 @@ import { handleDomains } from "packages/web/handlers/domainHandler.ts";
 import { handleMatchedRoute } from "packages/web/handlers/requestHandler.ts";
 import { serveStaticFiles } from "packages/web/handlers/staticHandler.ts";
 import type { Handler } from "packages/web/web.tsx";
+import { bfLlmRouter } from "packages/bfLlmRouter/bfLlmRouter.ts";
 
 const logger = getLogger(import.meta);
 
@@ -21,9 +22,12 @@ export async function handleRequest(
   const incomingUrl = new URL(req.url);
   const timer = performance.now();
   const resHeaders = new Headers();
+  if (incomingUrl.pathname.startsWith("/api")) {
+    res = await bfLlmRouter(req);
+  }
 
   // Check domain-specific routing first
-  res = await handleDomains(req);
+  res ??= await handleDomains(req);
   if (res) {
     return res;
   }
