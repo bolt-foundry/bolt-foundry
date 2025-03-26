@@ -53,48 +53,78 @@
 }
 
 .appPage {
-  height: 100vh;
-  background: var(--pageBackground) url(/static/assets/images/bf-symbol-angle-right_bw.jpg) no-repeat 0% 100% / auto 110%;
-  background-blend-mode: multiply;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--background);
+  overflow-y: auto;
+  /* background: var(--pageBackground) url(/static/assets/images/bf-symbol-angle-right_bw.jpg) no-repeat 0% 100% / auto 110%;
+  background-blend-mode: multiply; */
 }
 .appHeader {
-  padding: 12px;
-}
-.appHeaderCenter {
+  padding: 14px 30px;
+  width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 4px;
-}
-.appHeaderWelcomer {
-  font-size: 24px;
+  box-sizing: border-box;
 }
 .appHeaderLogo {
-  width: 100%;
-  max-width: 450px;
+  height: 22px;
+  aspect-ratio: 330 / 40;
 }
 
-.loginBox {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 12px;
+.appCta {
   width: 100%;
-  max-width: 450px;
-  margin: 0 auto;
+  max-width: 400px;
+  margin: 20px auto;
+  box-sizing: border-box;
+}
+.appCta .text {
+  font-family: var(--marketingFontFamily);
+  font-size: 32px;
+  margin-bottom: 20px;
+  line-height: 1;
 }
 
 .videoPlayer {
+  position: relative;
+  flex: 1;
+}
+.videoPlayer video,
+.videoPlayer .videoPlayerButtonsContainer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  min-height: 350px;
+  max-height: 100%;
   width: 100%;
+  object-fit: contain;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.videoPlayer .videoPlayerButtonsContainer {
   aspect-ratio: 16 / 9;
-  background: #424242;
-  color: white;
-  border-radius: 6px;
+  transition: 500ms opacity ease;
+  opacity: 0;
+}
+.videoPlayerButtonsContainer.active {
+  opacity: 1;
+}
+
+.videoPlayerButtons {
+  position: absolute;
+  top: 70%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
   justify-content: center;
-}/* ContentOS */
+  align-items: center;
+  gap: 12px;
+  width: calc(100% - 40px);
+}
+
+/* ContentOS */
 .page {
   height: 100vh;
   display: flex;
