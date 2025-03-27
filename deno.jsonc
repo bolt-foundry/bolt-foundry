@@ -1,6 +1,7 @@
 {
   "unstable": ["temporal", "webgpu"],
   "imports": {
+    "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
     "@denosaurs/python": "jsr:@denosaurs/python@^0.4.4",
     "@iso": "./packages/app/__generated__/__isograph/iso.ts",
     "@iso/": "./packages/app/__generated__/__isograph/",
@@ -26,7 +27,11 @@
     "content/": "./content/",
     "build/content/": "./build/content/",
     "static/": "./static/",
-    "tmp/": "./tmp/"
+    "tmp/": "./tmp/",
+
+    "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
+    "@bolt-foundry/logger": "./packages/logger/logger.ts",
+    "packages/logger.ts": "./packages/logger/logger.ts"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
@@ -86,6 +91,7 @@
   "lock": {
     "path": "./deno.lock"
   },
+  "workspace": ["packages/bolt-foundry"],
   "nodeModulesDir": "manual",
   "vendor": true
 }
