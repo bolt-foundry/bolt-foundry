@@ -32,7 +32,8 @@ export function connectToOpenAi(openAiApiKey: string) {
           const body = JSON.parse(modifiedOptions.body);
 
           // Update the model to gpt-3.5-turbo
-          body.model = "gpt-3.5-turbo";
+          body.model =
+            "ft:gpt-3.5-turbo-0125:content-foundry:bolt-foundry-prototype:BFjXcsqr";
 
           // Stringify the body back
           modifiedOptions.body = JSON.stringify(body);
