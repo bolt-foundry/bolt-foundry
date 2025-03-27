@@ -774,7 +774,11 @@
   font-family: var( --marketingFontFamily);
   font-size: 42px;
   line-height: 1;
-  margin: 0.8em 0 0.2em;
+  margin: 0.8em 0 0;
+}
+
+.plinko-controls-text {
+  margin-bottom: 0.6em;
 }
 
 .temperature {

@@ -1,13 +1,10 @@
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Matter from "matter-js";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 import { BfDsIcon } from "packages/bfDs/components/BfDsIcon.tsx";
 import { paletteForPlinko } from "packages/bfDs/const.tsx";
 import { BfDsSpinner } from "packages/bfDs/components/BfDsSpinner.tsx";
 import { classnames } from "lib/classnames.ts";
-import { getLogger } from "packages/logger.ts";
-
-const logger = getLogger(import.meta);
 
 // Game configuration
 const GAME_CONFIG = {
@@ -514,12 +511,14 @@ export function Plinko() {
     <div className="plinko">
       <div className="plinko-controls">
         <h2>Prompt</h2>
-        <div>
+        <div className="plinko-controls-text">
           Drag the puck left and right,<br />
           then click anywhere to drop
         </div>
         <h2>Temperature</h2>
-        <div>Use arrows to adjust temperature</div>
+        <div className="plinko-controls-text">
+          Use arrows to adjust temperature
+        </div>
         <div className="flexRow gapMedium alignItemsCenter">
           <BfDsButton
             kind="outlineAccent"
@@ -540,6 +539,9 @@ export function Plinko() {
           />
         </div>
         <h2>Context size</h2>
+        <div className="plinko-controls-text">
+          Choose the number of pucks to drop
+        </div>
         <div className="flexRow gapMedium">
           <BfDsButton
             kind={numBalls === 1 ? "filledAccent" : "secondary"}
@@ -567,6 +569,9 @@ export function Plinko() {
           />
         </div>
         <h2>Fine tuning</h2>
+        <div className="plinko-controls-text">
+          Fine tuning helps focus the puck's path
+        </div>
         <BfDsButton
           kind={fineTuned ? "success" : "outlineSuccess"}
           onClick={() => {
@@ -608,10 +613,16 @@ export function Plinko() {
         ref={sceneRef}
         onClick={(e) => {
           // Only drop if we didn't click on the puck
-          if (!(e.target as HTMLElement).classList.contains("plinko-puck")) {
+          let element = e.target as HTMLElement;
+          while (element) {
+            if (element.classList.contains("plinko-puck")) {
+              return;
+            }
+            element = element.parentElement;
+          }
             dropBall();
           }
-        }}
+        }
         style={{
           width: `${GAME_CONFIG.width}px`,
           height: `${GAME_CONFIG.height}px`,
