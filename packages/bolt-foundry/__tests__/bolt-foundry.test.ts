@@ -1,38 +1,40 @@
 import { assertEquals, assertExists } from "@std/assert";
-import { createFoundry } from "../bolt-foundry.ts";
-import { createMockOpenAi, MockOpenAi } from "./utils/mock-openai.ts";
+import { connectToOpenAi } from "../bolt-foundry.ts";
+import { createMockOpenAi } from "./utils/mock-openai.ts";
 
 Deno.test("createFoundry should properly integrate with OpenAI client", async () => {
   // Setup a mock fetch to capture the request
   let capturedUrl: string | null = null;
   let capturedOptions: RequestInit | null = null;
 
-  const mockFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+  const mockFetch = (input: RequestInfo | URL, init?: RequestInit) => {
     capturedUrl = input.toString();
     capturedOptions = init || {};
 
     // Return a mock response similar to what OpenAI would return
-    return new Response(
-      JSON.stringify({
-        id: "mock-id",
-        object: "chat.completion",
-        created: Date.now(),
-        model: "gpt-3.5-turbo",
-        choices: [
-          {
-            index: 0,
-            message: {
-              role: "assistant",
-              content: "Mock response text",
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "mock-id",
+          object: "chat.completion",
+          created: Date.now(),
+          model: "gpt-3.5-turbo",
+          choices: [
+            {
+              index: 0,
+              message: {
+                role: "assistant",
+                content: "Mock response text",
+              },
+              finish_reason: "stop",
             },
-            finish_reason: "stop",
-          },
-        ],
-      }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      },
+          ],
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      ),
     );
   };
 
@@ -43,7 +45,7 @@ Deno.test("createFoundry should properly integrate with OpenAI client", async ()
   try {
     // Create a MockOpenAi instance with our createFoundry wrapper
     const openai = createMockOpenAi({
-      fetch: createFoundry("test-api-key"),
+      fetch: connectToOpenAi("test-api-key"),
     });
 
     // Make a request
@@ -82,14 +84,16 @@ Deno.test("createFoundry should not modify non-OpenAI requests", async () => {
   let capturedUrl: string | null = null;
   let capturedOptions: RequestInit | null = null;
 
-  const mockFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+  const mockFetch = (input: RequestInfo | URL, init?: RequestInit) => {
     capturedUrl = input.toString();
     capturedOptions = init || {};
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return Promise.resolve(
+      new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
   };
 
   // Replace global fetch
@@ -98,7 +102,7 @@ Deno.test("createFoundry should not modify non-OpenAI requests", async () => {
 
   try {
     // Get the wrapper
-    const wrapper = createFoundry("test-api-key");
+    const wrapper = connectToOpenAi("test-api-key");
 
     // Make a non-OpenAI request
     const originalBody = { data: "test data" };

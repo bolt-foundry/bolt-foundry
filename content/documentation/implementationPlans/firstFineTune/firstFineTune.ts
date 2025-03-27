@@ -1,10 +1,10 @@
-import { createFoundry } from "@bolt-foundry/bolt-foundry";
+import { connectToOpenAi } from "@bolt-foundry/bolt-foundry";
 import OpenAi from "@openai/openai";
 import { getLogger } from "packages/logger.ts";
 const logger = getLogger(import.meta);
 
 export const openai = new OpenAi({
-  fetch: createFoundry(Deno.env.get("OPENAI_API_KEY")),
+  fetch: connectToOpenAi(Deno.env.get("OPENAI_API_KEY")),
 });
 
 // Hello world completion function
