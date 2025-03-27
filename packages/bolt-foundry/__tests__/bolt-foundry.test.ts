@@ -79,6 +79,50 @@ Deno.test("createFoundry should properly integrate with OpenAI client", async ()
   }
 });
 
+Deno.test("createFoundry should not modify FormData requests to OpenAI", async () => {
+  // Setup a mock fetch to capture the request
+  let capturedUrl: string | null = null;
+  let capturedOptions: RequestInit | null = null;
+
+  const mockFetch = (input: RequestInfo | URL, init?: RequestInit) => {
+    capturedUrl = input.toString();
+    capturedOptions = init || {};
+    return Promise.resolve(new Response(JSON.stringify({ success: true })));
+  };
+
+  // Replace global fetch
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = mockFetch as typeof fetch;
+
+  try {
+    // Create a wrapper
+    const wrapper = connectToOpenAi("test-api-key");
+
+    // Create FormData request
+    const formData = new FormData();
+    formData.append("file", new Blob(["test content"]), "test.jsonl");
+    formData.append("purpose", "fine-tune");
+
+    await wrapper("https://api.openai.com/v1/files", {
+      method: "POST",
+      body: formData,
+    });
+
+    // Verify URL
+    assertEquals(capturedUrl, "https://api.openai.com/v1/files");
+
+    // Verify body is still FormData
+    assertEquals(capturedOptions!.body instanceof FormData, true);
+
+    // Verify authorization header was added
+    const headers = capturedOptions!.headers as Record<string, string>;
+    assertEquals(headers.authorization, "Bearer test-api-key");
+  } finally {
+    // Restore original fetch
+    globalThis.fetch = originalFetch;
+  }
+});
+
 Deno.test("createFoundry should not modify non-OpenAI requests", async () => {
   // Setup a mock fetch to capture the request
   let capturedUrl: string | null = null;
