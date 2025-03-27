@@ -22,6 +22,7 @@ export class MockOpenAi {
   // Public API structure mirroring OpenAI SDK
   chat: {
     completions: {
+      // deno-lint-ignore no-explicit-any
       create: (params: any) => Promise<any>;
     };
   };
@@ -29,6 +30,7 @@ export class MockOpenAi {
   /**
    * Handle chat completion requests
    */
+      // deno-lint-ignore no-explicit-any
   async createChatCompletion(params: any): Promise<any> {
     logger.debug("Mock chat completion called with params:", params);
 
