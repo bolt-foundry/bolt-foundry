@@ -30,7 +30,7 @@ export class MockOpenAi {
   /**
    * Handle chat completion requests
    */
-      // deno-lint-ignore no-explicit-any
+  // deno-lint-ignore no-explicit-any
   async createChatCompletion(params: any): Promise<any> {
     logger.debug("Mock chat completion called with params:", params);
 
