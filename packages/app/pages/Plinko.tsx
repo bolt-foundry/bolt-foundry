@@ -87,6 +87,7 @@ export function Plinko() {
   const [isLoading, setIsLoading] = useState(true);
   const [score, setScore] = useState(0);
   const [ballStartX, setBallStartX] = useState(GAME_CONFIG.width / 2);
+  const [temp, setTemp] = useState(0.8);
   const [numBalls, setNumBalls] = useState(1);
   const [ballsInPlay, setBallsInPlay] = useState(0);
   const [fineTuned, setFineTuned] = useState(false);
@@ -98,6 +99,11 @@ export function Plinko() {
 
   const [isLeftPressed, setIsLeftPressed] = useState(false);
   const [isRightPressed, setIsRightPressed] = useState(false);
+  const [isDownPressed, setIsDownPressed] = useState(false);
+  const [isUpPressed, setIsUpPressed] = useState(false);
+  const [isFPressed, setIsFPressed] = useState(false);
+  const [isDeletePressed, setIsDeletePressed] = useState(false);
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
 
   const moveLeft = () => {
     setBallStartX((prev) => Math.max(20, prev - 20));
@@ -107,18 +113,101 @@ export function Plinko() {
     setBallStartX((prev) => Math.min(GAME_CONFIG.width - 20, prev + 20));
   };
 
+  const decreaseTemp = () => {
+    setTemp((prev) => Math.round(Math.max(0, prev - 0.1) * 10) / 10);
+  };
+
+  const increaseTemp = () => {
+    setTemp((prev) => Math.round(Math.min(1, prev + 0.1) * 10) / 10);
+  };
+
+  const setContext = (direction: "up" | "down") => {
+    let nextNumBalls;
+    let prevNumBalls;
+    switch (numBalls) {
+      case 1:
+        nextNumBalls = 3;
+        prevNumBalls = 10;
+        break;
+      case 3:
+        nextNumBalls = 10;
+        prevNumBalls = 1;
+        break;
+      default: // 10
+        nextNumBalls = 1;
+        prevNumBalls = 3;
+    }
+    if (direction === "up") {
+      return setNumBalls(nextNumBalls);
+    }
+    setNumBalls(prevNumBalls);
+  };
+
   useEffect(() => {
-    if (!isLeftPressed && !isRightPressed) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        if (e.metaKey) {
+          e.preventDefault();
+          moveLeft();
+        } else {
+          setIsLeftPressed(true);
+        }
+      }
+      if (e.key === "ArrowRight") {
+        if (e.metaKey) {
+          e.preventDefault();
+          moveRight();
+        } else {
+          setIsRightPressed(true);
+        }
+      }
+      if (e.key === "ArrowDown") setIsDownPressed(true);
+      if (e.key === "ArrowUp") setIsUpPressed(true);
+      if (e.key === "f") setIsFPressed(true);
+      if (e.key === "Delete" || e.key === "Backspace") setIsDeletePressed(true);
+      if (e.key === " ") setIsSpacePressed(true);
+    };
+
+    const handleKeyUp = () => {
+      // Reset all key states on any key up
+      setIsLeftPressed(false);
+      setIsRightPressed(false);
+      setIsDownPressed(false);
+      setIsUpPressed(false);
+      setIsFPressed(false);
+      setIsDeletePressed(false);
+      setIsSpacePressed(false);
+    };
+
+    globalThis.addEventListener("keydown", handleKeyDown);
+    globalThis.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      globalThis.removeEventListener("keydown", handleKeyDown);
+      globalThis.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      !isLeftPressed && !isRightPressed && !isDownPressed && !isUpPressed &&
+      !isFPressed && !isDeletePressed && !isSpacePressed
+    ) return;
 
     // Immediate move
-    if (isLeftPressed) moveLeft();
-    if (isRightPressed) moveRight();
+    if (isLeftPressed) decreaseTemp();
+    if (isRightPressed) increaseTemp();
+    if (isDownPressed) setContext("down");
+    if (isUpPressed) setContext("up");
+    if (isFPressed) setFineTuned((prev) => !prev);
+    if (isDeletePressed) clearBalls();
+    if (isSpacePressed) dropBall();
 
     let intervalId: number;
     const timeoutId = setTimeout(() => {
       intervalId = setInterval(() => {
-        if (isLeftPressed) moveLeft();
-        if (isRightPressed) moveRight();
+        if (isLeftPressed) decreaseTemp();
+        if (isRightPressed) increaseTemp();
       }, 100);
     }, 300);
 
@@ -126,7 +215,15 @@ export function Plinko() {
       clearTimeout(timeoutId);
       clearInterval(intervalId);
     };
-  }, [isLeftPressed, isRightPressed]);
+  }, [
+    isLeftPressed,
+    isRightPressed,
+    isDownPressed,
+    isUpPressed,
+    isFPressed,
+    isDeletePressed,
+    isSpacePressed,
+  ]);
 
   useEffect(() => {
     if (!engineRef.current) return;
@@ -337,7 +434,7 @@ export function Plinko() {
         30,
         GAME_CONFIG.ballSize,
         {
-          restitution: 0.8,
+          restitution: temp,
           friction: 0.05,
           density: 0.001,
           label: `ball-${i}`,
@@ -377,6 +474,33 @@ export function Plinko() {
     setScore(0);
   };
 
+  const handleDragPuck = (e: MouseEvent) => {
+    const startX = e.clientX;
+    const startPuckX = ballStartX;
+    let hasMoved = false;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      hasMoved = true;
+      const dx = e.clientX - startX;
+      const newX = Math.min(
+        Math.max(20, startPuckX + dx),
+        GAME_CONFIG.width - 20,
+      );
+      setBallStartX(newX);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      if (!hasMoved) {
+        dropBall();
+      }
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
+
   const middleIndex = Math.floor((binsLinePositions.length - 1) / 2);
 
   const plinkoSceneFade = classnames([
@@ -389,28 +513,30 @@ export function Plinko() {
   return (
     <div className="plinko">
       <div className="plinko-controls">
-        <h2>
-          Adjust prompt<br />or temperature
-        </h2>
-        <div className="flexRow gapMedium">
+        <h2>Prompt</h2>
+        <div>
+          Drag the puck left and right,<br />
+          then click anywhere to drop
+        </div>
+        <h2>Temperature</h2>
+        <div>Use arrows to adjust temperature</div>
+        <div className="flexRow gapMedium alignItemsCenter">
           <BfDsButton
             kind="outlineAccent"
             onMouseDown={() => setIsLeftPressed(true)}
             onMouseUp={() => setIsLeftPressed(false)}
             onMouseLeave={() => setIsLeftPressed(false)}
             iconLeft="arrowLeft"
+            shadow={isLeftPressed}
           />
-          <BfDsButton
-            kind="accent"
-            onClick={dropBall}
-            text="Drop"
-          />
+          <div className="temperature">{temp}</div>
           <BfDsButton
             kind="outlineAccent"
             onMouseDown={() => setIsRightPressed(true)}
             onMouseUp={() => setIsRightPressed(false)}
             onMouseLeave={() => setIsRightPressed(false)}
             iconRight="arrowRight"
+            shadow={isRightPressed}
           />
         </div>
         <h2>Context size</h2>
@@ -421,6 +547,7 @@ export function Plinko() {
               setNumBalls(1);
             }}
             textIconLeft="1"
+            shadow={(isUpPressed || isDownPressed) && numBalls === 1}
           />
           <BfDsButton
             kind={numBalls === 3 ? "filledAccent" : "secondary"}
@@ -428,6 +555,7 @@ export function Plinko() {
               setNumBalls(3);
             }}
             textIconLeft="3"
+            shadow={(isUpPressed || isDownPressed) && numBalls === 3}
           />
           <BfDsButton
             kind={numBalls === 10 ? "filledAccent" : "secondary"}
@@ -435,6 +563,7 @@ export function Plinko() {
               setNumBalls(10);
             }}
             textIconLeft="10"
+            shadow={(isUpPressed || isDownPressed) && numBalls === 10}
           />
         </div>
         <h2>Fine tuning</h2>
@@ -445,15 +574,24 @@ export function Plinko() {
             setFineTuned(!fineTuned);
           }}
           text={fineTuned ? "Remove fine tuning" : "Add fine tuning"}
+          shadow={isFPressed}
         />
         <div style={{ marginTop: 28 }}>
+          <div className="plinko-stat">
+            <div className="plinko-stat-header">Pucks</div>
+            <div>{ballsInPlay}</div>
+          </div>
           <div className="plinko-stat">
             <div className="plinko-stat-header">Score</div>
             <div>{score}</div>
           </div>
           <div className="plinko-stat">
-            <div className="plinko-stat-header">Pucks</div>
-            <div>{ballsInPlay}</div>
+            <div className="plinko-stat-header">Average</div>
+            <div>
+              {ballsInPlay > 0
+                ? Math.round(score / ballsInPlay * 10) / 10
+                : "--"}
+            </div>
           </div>
           <BfDsButton
             kind="outlineAlert"
@@ -461,13 +599,19 @@ export function Plinko() {
             onClick={clearBalls}
             size="medium"
             text="Clear"
+            shadow={isDeletePressed}
           />
         </div>
       </div>
       <div
         className={plinkoSceneFade}
         ref={sceneRef}
-        onClick={dropBall}
+        onClick={(e) => {
+          // Only drop if we didn't click on the puck
+          if (!(e.target as HTMLElement).classList.contains("plinko-puck")) {
+            dropBall();
+          }
+        }}
         style={{
           width: `${GAME_CONFIG.width}px`,
           height: `${GAME_CONFIG.height}px`,
@@ -682,6 +826,7 @@ export function Plinko() {
               height: `${GAME_CONFIG.ballSize * 2}px`,
               backgroundColor: `rgba(${colors.pink}, 0.25)`,
             }}
+            onMouseDown={(e) => handleDragPuck(e.nativeEvent)}
           />
         </div>
       </div>
