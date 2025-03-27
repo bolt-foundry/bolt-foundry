@@ -3,6 +3,7 @@ import { iso } from "packages/app/__generated__/__isograph/iso.ts";
 import { BfLogo } from "packages/bfDs/static/BfLogo.tsx";
 import { useRouter } from "packages/app/contexts/RouterContext.tsx";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
+import { Plinko } from "packages/app/pages/Plinko.tsx";
 import { classnames } from "lib/classnames.ts";
 import { getLogger } from "packages/logger.ts";
 
@@ -18,6 +19,7 @@ export const Home = iso(`
 `)(function Home({ data }) {
   const [shouldPlay, setShouldPlay] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
+  const [playPlinko, setPlayPlinko] = useState(false);
   const { navigate } = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const loggedOut = data?.asBfCurrentViewerLoggedOut;
@@ -26,7 +28,7 @@ export const Home = iso(`
     const video = videoRef.current;
     if (!video) return;
 
-    if (shouldPlay) {
+    if (shouldPlay || !playPlinko) {
       video.currentTime = 0;
       const playPromise = video.play();
       if (playPromise !== undefined) {
@@ -39,7 +41,7 @@ export const Home = iso(`
           });
       }
     }
-  }, [shouldPlay]);
+  }, [shouldPlay, playPlinko]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -100,35 +102,43 @@ export const Home = iso(`
           </div>
           <BfDsButton text="Join the waitlist" onClick={joinWaitlist} />
         </div>
-
-        <div className="videoPlayer">
-          <video autoPlay muted ref={videoRef}>
-            <source
-              src="/static/assets/videos/plinko_4k.mp4"
-              type="video/mp4"
-              media="(min-width: 2000px)"
-            />
-            <source
-              src="/static/assets/videos/plinko_hd.mp4"
-              type="video/mp4"
-              media="(min-width: 1000px)"
-            />
-            <source
-              src="/static/assets/videos/plinko_720.mp4"
-              type="video/mp4"
-            />
-          </video>
-          <div className={videoContainerClasses}>
-            <div className="videoPlayerButtons">
-              <BfDsButton
-                iconLeft="back"
-                kind="outline"
-                text="Replay"
-                onClick={() => setShouldPlay(true)}
+        {playPlinko ? <Plinko /> : (
+          <div className="videoPlayer">
+            <video autoPlay muted ref={videoRef}>
+              <source
+                src="/static/assets/videos/plinko_4k.mp4"
+                type="video/mp4"
+                media="(min-width: 2000px)"
               />
-              <BfDsButton text="Join the waitlist" onClick={joinWaitlist} />
+              <source
+                src="/static/assets/videos/plinko_hd.mp4"
+                type="video/mp4"
+                media="(min-width: 1000px)"
+              />
+              <source
+                src="/static/assets/videos/plinko_720.mp4"
+                type="video/mp4"
+              />
+            </video>
+            <div className={videoContainerClasses}>
+              <div className="videoPlayerButtons">
+                <BfDsButton
+                  iconLeft="back"
+                  kind="outline"
+                  text="Replay"
+                  onClick={() => setShouldPlay(true)}
+                />
+                <BfDsButton text="Join the waitlist" onClick={joinWaitlist} />
+              </div>
             </div>
           </div>
+        )}
+        <div className="appFooter">
+          <BfDsButton
+            kind="outline"
+            text={playPlinko ? "Watch the video" : "Play the game"}
+            onClick={() => setPlayPlinko(!playPlinko)}
+          />
         </div>
       </div>
     </>
