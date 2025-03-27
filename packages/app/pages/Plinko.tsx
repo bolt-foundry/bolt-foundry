@@ -687,11 +687,13 @@ export function Plinko() {
                 left: binsLinePositions[
                   middleIndex - 2
                 ],
-                width: binsLinePositions[
-                  middleIndex - 1
-                ] - binsLinePositions[
-                  middleIndex - 2
-                ],
+                width: middleIndex > 0
+                  ? binsLinePositions[
+                    middleIndex - 1
+                  ] - binsLinePositions[
+                    middleIndex - 2
+                  ]
+                  : 0,
               }}
             >
               <div>
@@ -709,11 +711,13 @@ export function Plinko() {
                 left: binsLinePositions[
                   middleIndex - 1
                 ],
-                width: binsLinePositions[
-                  middleIndex
-                ] - binsLinePositions[
-                  middleIndex - 1
-                ],
+                width: middleIndex > 0
+                  ? binsLinePositions[
+                    middleIndex
+                  ] - binsLinePositions[
+                    middleIndex - 1
+                  ]
+                  : 0,
               }}
             >
               <div>
@@ -736,11 +740,13 @@ export function Plinko() {
               style={{
                 height: GAME_CONFIG.binHeight,
                 left: binsLinePositions[middleIndex],
-                width: binsLinePositions[
-                  middleIndex + 1
-                ] - binsLinePositions[
-                  middleIndex
-                ],
+                width: middleIndex > 0
+                  ? binsLinePositions[
+                    middleIndex + 1
+                  ] - binsLinePositions[
+                    middleIndex
+                  ]
+                  : 0,
               }}
             >
               <div>
@@ -772,11 +778,13 @@ export function Plinko() {
                 left: binsLinePositions[
                   middleIndex + 1
                 ],
-                width: binsLinePositions[
-                  middleIndex + 2
-                ] - binsLinePositions[
-                  middleIndex + 1
-                ],
+                width: middleIndex > 0
+                  ? binsLinePositions[
+                    middleIndex + 2
+                  ] - binsLinePositions[
+                    middleIndex + 1
+                  ]
+                  : 0,
               }}
             >
               <div>
@@ -799,11 +807,13 @@ export function Plinko() {
               style={{
                 height: GAME_CONFIG.binHeight,
                 left: binsLinePositions[middleIndex + 2],
-                width: binsLinePositions[
-                  middleIndex + 3
-                ] - binsLinePositions[
-                  middleIndex + 2
-                ],
+                width: middleIndex > 0
+                  ? binsLinePositions[
+                    middleIndex + 3
+                  ] - binsLinePositions[
+                    middleIndex + 2
+                  ]
+                  : 0,
               }}
             >
               <div>
@@ -827,7 +837,9 @@ export function Plinko() {
               backgroundColor: `rgba(${colors.pink}, 0.25)`,
             }}
             onMouseDown={(e) => handleDragPuck(e.nativeEvent)}
-          />
+          >
+            <BfDsIcon name="arrowsLeftRight" color="var(--fourtharyColor)" />
+          </div>
         </div>
       </div>
     </div>
