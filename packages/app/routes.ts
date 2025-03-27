@@ -1,6 +1,7 @@
 import { PageUIDemo } from "packages/app/pages/PageUIDemo.tsx";
 import { FinalCutProXML } from "packages/tools/FinalCutProXML.tsx";
 import { EditorPage as LexicalDemo } from "packages/app/components/lexical/LexicalDemo.tsx";
+import { Plinko } from "packages/app/pages/Plinko.tsx";
 
 function fileHandlerFactory(url: string) {
   return function FileHandler() {
@@ -22,6 +23,7 @@ export const appRoutes: RouteMap = new Map([
   ["/ui", { Component: PageUIDemo }],
   ["/fcp", { Component: FinalCutProXML }],
   ["/justin", { Component: LexicalDemo }],
+  ["/plinko", { Component: Plinko }],
 ]);
 
 export type IsographRoute = BfIsographEntrypoint;
