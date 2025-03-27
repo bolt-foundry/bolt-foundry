@@ -26,12 +26,14 @@ export type ButtonKind =
   | "alert"
   | "custom"
   | "filled"
+  | "filledAccent"
   | "filledAlert"
   | "filledPrimaryLight"
   | "filledSecondary"
   | "filledSuccess"
   | "gradientOverlay"
   | "outline"
+  | "outlineAccent"
   | "outlineAlert"
   | "outlineDark"
   | "outlinePrimary"
@@ -318,6 +320,17 @@ const getButtonStyle = (
           ? "var(--secondaryButtonBackgroundHover)"
           : "var(--secondaryButtonBackground)",
       };
+    case "filledAccent":
+      return {
+        ...baseStyle,
+        backgroundColor: hover
+          ? "var(--fourtharyColorHover)"
+          : "var(--fourtharyColor)",
+        borderColor: hover
+          ? "var(--fourtharyColorHover)"
+          : "var(--fourtharyColor)",
+        color: "var(--textOnAccent)",
+      };
     case "filledAlert":
       return {
         ...baseStyle,
@@ -356,6 +369,13 @@ const getButtonStyle = (
           : "var(--outlineDark)",
         color: "var(--background)",
         borderColor: hover ? "var(--outlineDarkHover)" : "var(--outlineDark)",
+      };
+    case "outlineAccent":
+      return {
+        ...baseStyle,
+        backgroundColor: hover ? "var(--outlineHover)" : "var(--background)",
+        color: hover ? "var(--fourtharyColorHover)" : "var(--fourtharyColor)",
+        borderColor: hover ? "var(--fourtharyColorHover)" : "var(--background)",
       };
     case "outlineAlert":
       return {

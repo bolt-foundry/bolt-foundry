@@ -1,31 +1,76 @@
-import { useEffect, useRef, useState } from "react";
+import { // @ts-types="react"
+  CSSProperties,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Matter from "matter-js";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
-import { BfDsButtonGroup } from "packages/bfDs/components/BfDsButtonGroup.tsx";
 import { BfDsIcon } from "packages/bfDs/components/BfDsIcon.tsx";
 
 // Game configuration
 const GAME_CONFIG = {
   width: 600,
-  height: 600,
+  height: 640,
   pegRows: 6,
   pegsPerRow: 7,
   pegSpacing: 85,
-  startY: 80,
-  ballSize: 15,
-  pegSize: 8,
-  binHeight: 80,
+  pegVerticalSpacing: 80,
+  startY: 120,
+  ballSize: 17,
+  pegSize: 10,
+  binHeight: 65,
   scoreMultiplier: 1,
+  promptHeight: 65,
+  modelPadding: 10,
+  containerGap: 15,
+};
+
+const colors = {
+  yellow: "255, 215, 0",
+  blue: "34, 217, 229",
+  pink: "238, 130, 238",
+  transparent: "0, 0, 0, 0",
+};
+
+// Visual container configuration
+const CONTAINERS_CONFIG = {
+  prompt: {
+    backgroundColor: `rgba(${colors.pink}, 0.05)`,
+    borderColor: `rgba(${colors.pink}, 0.15)`,
+    borderWidth: "2px",
+    borderRadius: "30px",
+    height: GAME_CONFIG.promptHeight,
+  },
+  model: {
+    backgroundColor: `rgba(${colors.blue}, 0.05)`,
+    borderColor: `rgba(${colors.blue}, 0.15)`,
+    borderWidth: "2px",
+    borderRadius: "30px",
+    height: GAME_CONFIG.height -
+      GAME_CONFIG.promptHeight -
+      GAME_CONFIG.containerGap -
+      GAME_CONFIG.binHeight - GAME_CONFIG.containerGap,
+  },
+  output: {
+    backgroundColor: `rgba(${colors.yellow}, 0.08)`,
+    borderColor: `rgba(${colors.yellow}, 0.20)`,
+    borderWidth: "2px",
+    borderRadius: "30px",
+    height: GAME_CONFIG.binHeight,
+  },
 };
 
 // Calculate bins based on pegs per row
+// const pointsArray = Array(GAME_CONFIG.pegsPerRow).fill(0).map((_, i) => {
+//   const mid = Math.floor(GAME_CONFIG.pegsPerRow / 2);
+//   const distance = Math.abs(i - mid);
+//   return (mid - distance + 1) * 25 * GAME_CONFIG.scoreMultiplier;
+// });
+const pointsArray = [0, 1, 2, 3, 2, 1, 0];
 const BINS_CONFIG = {
   count: GAME_CONFIG.pegsPerRow,
-  points: Array(GAME_CONFIG.pegsPerRow).fill(0).map((_, i) => {
-    const mid = Math.floor(GAME_CONFIG.pegsPerRow / 2);
-    const distance = Math.abs(i - mid);
-    return (mid - distance + 1) * 25 * GAME_CONFIG.scoreMultiplier;
-  }),
+  points: pointsArray,
 };
 
 export function Plinko() {
@@ -34,6 +79,7 @@ export function Plinko() {
   const [numBalls, setNumBalls] = useState(1);
   const [numBallsLeft, setNumBallsLeft] = useState(numBalls);
   const [fineTuned, setFineTuned] = useState(false);
+  const [binsLinePositions, setBinsLinePositions] = useState<number[]>([]);
   const sceneRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<Matter.Engine>();
   const renderRef = useRef<Matter.Render>();
@@ -187,7 +233,7 @@ export function Plinko() {
         width: GAME_CONFIG.width,
         height: GAME_CONFIG.height,
         wireframes: false,
-        background: "rgba(35, 42, 49, 1)",
+        background: `rgba(${colors.transparent})`,
       },
     });
     renderRef.current = render;
@@ -197,9 +243,11 @@ export function Plinko() {
 
     // Add scoring bins
     const bins = [];
+    const binsLinePositions = [];
     const binWidth = GAME_CONFIG.width / BINS_CONFIG.count;
 
     for (let i = 0; i <= BINS_CONFIG.count; i++) {
+      binsLinePositions.push(i * binWidth);
       bins.push(
         Bodies.rectangle(
           i * binWidth,
@@ -209,11 +257,12 @@ export function Plinko() {
           {
             isStatic: true,
             label: `bin-${BINS_CONFIG.points[i]}`,
-            render: { fillStyle: "rgba(230, 230, 235, 1)" },
+            render: { fillStyle: `rgba(${colors.yellow}, 0)` },
           },
         ),
       );
     }
+    setBinsLinePositions(binsLinePositions);
 
     // Create walls
     const walls = [
@@ -222,18 +271,24 @@ export function Plinko() {
         GAME_CONFIG.height,
         GAME_CONFIG.width,
         10,
-        { isStatic: true, render: { fillStyle: "rgba(230, 230, 235, 1)" } },
+        {
+          isStatic: true,
+          render: { fillStyle: `rgba(${colors.transparent})` },
+        },
       ), // bottom
       Bodies.rectangle(0, GAME_CONFIG.height / 2, 10, GAME_CONFIG.height, {
         isStatic: true,
-        render: { fillStyle: "rgba(230, 230, 235, 1)" },
+        render: { fillStyle: `rgba(${colors.transparent})` },
       }), // left
       Bodies.rectangle(
         GAME_CONFIG.width,
         GAME_CONFIG.height / 2,
         10,
         GAME_CONFIG.height,
-        { isStatic: true, render: { fillStyle: "rgba(230, 230, 235, 1)" } },
+        {
+          isStatic: true,
+          render: { fillStyle: `rgba(${colors.transparent})` },
+        },
       ), // right
     ];
 
@@ -246,14 +301,14 @@ export function Plinko() {
 
       for (let col = 0; col < numCols; col++) {
         const x = startX + col * GAME_CONFIG.pegSpacing;
-        const y = row * GAME_CONFIG.pegSpacing + GAME_CONFIG.startY;
+        const y = row * GAME_CONFIG.pegVerticalSpacing + GAME_CONFIG.startY;
         const peg = Bodies.circle(
           x,
           y,
           GAME_CONFIG.pegSize,
           {
             isStatic: true,
-            render: { fillStyle: "rgba(34, 217, 229, 1)" },
+            render: { fillStyle: `rgba(${colors.blue}, 1)` },
             label: `peg-${row}-${col}`,
           },
         );
@@ -291,7 +346,7 @@ export function Plinko() {
           density: 0.001,
           label: `ball-${i}`,
           render: {
-            fillStyle: "rgba(248, 113, 113, 1)",
+            fillStyle: `rgba(${colors.pink}, 1)`,
             // sprite: {
             //   texture: "/static/assets/images/puck.jpg",
             // },
@@ -334,47 +389,78 @@ export function Plinko() {
     });
   };
 
+  const baseStyle: CSSProperties = {
+    position: "absolute",
+    left: 0,
+    width: "100%",
+    zIndex: 1,
+    pointerEvents: "none",
+    boxSizing: "border-box",
+  };
+
+  const middleIndex = Math.floor((binsLinePositions.length - 1) / 2);
+
   return (
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         minHeight: "100vh",
+        background: "var(--background)",
       }}
     >
-      <div style={{ marginBottom: "16px" }}>
-        <BfDsButtonGroup
-          buttons={[
-            <BfDsButton
-              key="1"
-              onMouseDown={() => setIsLeftPressed(true)}
-              onMouseUp={() => setIsLeftPressed(false)}
-              onMouseLeave={() => setIsLeftPressed(false)}
-              text="<"
-            />,
-            <BfDsButton
-              key="2"
-              onClick={dropBall}
-              text="Drop"
-            />,
-            <BfDsButton
-              key="3"
-              onMouseDown={() => setIsRightPressed(true)}
-              onMouseUp={() => setIsRightPressed(false)}
-              onMouseLeave={() => setIsRightPressed(false)}
-              text=">"
-            />,
-          ]}
-        />
-        <BfDsButton
-          kind={numBalls > 1 ? "success" : "secondary"}
-          onClick={() => {
-            setNumBalls(numBalls > 1 ? 1 : 10);
-          }}
-          text={numBalls > 1 ? "Simplify context" : "Add to context"}
-        />
+      <div className="plinko-controls">
+        <h2>
+          Adjust prompt<br />or temperature
+        </h2>
+        <div className="flexRow gapMedium">
+          <BfDsButton
+            kind="outlineAccent"
+            onMouseDown={() => setIsLeftPressed(true)}
+            onMouseUp={() => setIsLeftPressed(false)}
+            onMouseLeave={() => setIsLeftPressed(false)}
+            iconLeft="arrowLeft"
+          />
+          <BfDsButton
+            kind="accent"
+            onClick={dropBall}
+            text="Drop"
+          />
+          <BfDsButton
+            kind="outlineAccent"
+            onMouseDown={() => setIsRightPressed(true)}
+            onMouseUp={() => setIsRightPressed(false)}
+            onMouseLeave={() => setIsRightPressed(false)}
+            iconRight="arrowRight"
+          />
+        </div>
+        <h2>Context size</h2>
+        <div className="flexRow gapMedium">
+          <BfDsButton
+            kind={numBalls === 1 ? "filledAccent" : "secondary"}
+            onClick={() => {
+              setNumBalls(1);
+            }}
+            textIconLeft="1"
+          />
+          <BfDsButton
+            kind={numBalls === 3 ? "filledAccent" : "secondary"}
+            onClick={() => {
+              setNumBalls(3);
+            }}
+            textIconLeft="3"
+          />
+          <BfDsButton
+            kind={numBalls === 10 ? "filledAccent" : "secondary"}
+            onClick={() => {
+              setNumBalls(10);
+            }}
+            textIconLeft="10"
+          />
+        </div>
+        <h2>Fine tuning</h2>
         <BfDsButton
           kind={fineTuned ? "success" : "secondary"}
           onClick={() => {
@@ -383,15 +469,19 @@ export function Plinko() {
           }}
           text={fineTuned ? "Revert fine tuning" : "Fine tune model"}
         />
-        <span>Score: {score}</span>
-        <BfDsButton
-          kind="outlineAlert"
-          iconLeft="cross"
-          onClick={clearBalls}
-          size="medium"
-        />
+        <div style={{ marginTop: 28 }}>
+          <div>Score: {score}</div>
+          <BfDsButton
+            kind="outlineAlert"
+            iconLeft="cross"
+            onClick={clearBalls}
+            size="medium"
+            text="Clear"
+          />
+        </div>
       </div>
       <div
+        className="plinko-scene"
         ref={sceneRef}
         onClick={dropBall}
         style={{
@@ -399,26 +489,244 @@ export function Plinko() {
           position: "relative",
           width: `${GAME_CONFIG.width}px`,
           height: `${GAME_CONFIG.height}px`,
+          marginRight: 75,
         }}
       >
+        {/* Prompt container */}
+        <div
+          style={{
+            ...baseStyle,
+            top: 0,
+            height: CONTAINERS_CONFIG.prompt.height,
+            backgroundColor: CONTAINERS_CONFIG.prompt.backgroundColor,
+            borderRadius: CONTAINERS_CONFIG.prompt.borderRadius,
+            border:
+              `${CONTAINERS_CONFIG.prompt.borderWidth} solid ${CONTAINERS_CONFIG.prompt.borderColor}`,
+          }}
+        >
+          <div
+            className="sideTitle"
+            style={{
+              color: `rgba(${colors.pink}, 1)`,
+            }}
+          >
+            Prompt
+          </div>
+        </div>
+
+        {/* Model container */}
+        <div
+          style={{
+            ...baseStyle,
+            top: CONTAINERS_CONFIG.prompt.height + GAME_CONFIG.containerGap,
+            height: CONTAINERS_CONFIG.model.height,
+            backgroundColor: CONTAINERS_CONFIG.model.backgroundColor,
+            borderRadius: CONTAINERS_CONFIG.model.borderRadius,
+            border:
+              `${CONTAINERS_CONFIG.model.borderWidth} solid ${CONTAINERS_CONFIG.model.borderColor}`,
+          }}
+        >
+          <div
+            className="sideTitle"
+            style={{
+              color: `rgba(${colors.blue}, 1)`,
+            }}
+          >
+            Model
+          </div>
+        </div>
+
+        {/* Output container */}
+        <div
+          style={{
+            ...baseStyle,
+            bottom: 0,
+            height: CONTAINERS_CONFIG.output.height,
+            backgroundColor: CONTAINERS_CONFIG.output.backgroundColor,
+            borderRadius: CONTAINERS_CONFIG.output.borderRadius,
+            border:
+              `${CONTAINERS_CONFIG.output.borderWidth} solid ${CONTAINERS_CONFIG.output.borderColor}`,
+          }}
+        >
+          {/* Lines */}
+          {binsLinePositions.map((position, index) => {
+            // don't render first and last line
+            if (index === 0 || index === binsLinePositions.length - 1) return;
+            return (
+              <div
+                key={index}
+                style={{
+                  position: "absolute",
+                  left: position - 2,
+                  top: 4,
+                  width: 4,
+                  height: "calc(100% - 8px)",
+                  backgroundColor: `rgba(${colors.yellow}, 0.85)`,
+                  borderRadius: 4,
+                }}
+              />
+            );
+          })}
+          {/* Stars */}
+          <div
+            className="starBox star1"
+            style={{
+              height: GAME_CONFIG.binHeight,
+              left: binsLinePositions[
+                middleIndex - 2
+              ],
+              width: binsLinePositions[
+                middleIndex - 1
+              ] - binsLinePositions[
+                middleIndex - 2
+              ],
+            }}
+          >
+            <div>
+              <BfDsIcon
+                name="starSolid"
+                color={`rgba(${colors.yellow}, 1)`}
+                size={32}
+              />
+            </div>
+          </div>
+          <div
+            className="starBox star2"
+            style={{
+              height: GAME_CONFIG.binHeight,
+              left: binsLinePositions[
+                middleIndex - 1
+              ],
+              width: binsLinePositions[
+                middleIndex
+              ] - binsLinePositions[
+                middleIndex - 1
+              ],
+            }}
+          >
+            <div>
+              <BfDsIcon
+                name="starSolid"
+                color={`rgba(${colors.yellow}, 1)`}
+                size={32}
+              />
+            </div>
+            <div>
+              <BfDsIcon
+                name="starSolid"
+                color={`rgba(${colors.yellow}, 1)`}
+                size={32}
+              />
+            </div>
+          </div>
+          <div
+            className="starBox star3"
+            style={{
+              height: GAME_CONFIG.binHeight,
+              left: binsLinePositions[middleIndex],
+              width: binsLinePositions[
+                middleIndex + 1
+              ] - binsLinePositions[
+                middleIndex
+              ],
+            }}
+          >
+            <div>
+              <BfDsIcon
+                name="starSolid"
+                color={`rgba(${colors.yellow}, 1)`}
+                size={32}
+              />
+            </div>
+            <div>
+              <BfDsIcon
+                name="starSolid"
+                color={`rgba(${colors.yellow}, 1)`}
+                size={32}
+              />
+            </div>
+            <div>
+              <BfDsIcon
+                name="starSolid"
+                color={`rgba(${colors.yellow}, 1)`}
+                size={32}
+              />
+            </div>
+          </div>
+          <div
+            className="starBox star2"
+            style={{
+              height: GAME_CONFIG.binHeight,
+              left: binsLinePositions[
+                middleIndex + 1
+              ],
+              width: binsLinePositions[
+                middleIndex + 2
+              ] - binsLinePositions[
+                middleIndex + 1
+              ],
+            }}
+          >
+            <div>
+              <BfDsIcon
+                name="starSolid"
+                color={`rgba(${colors.yellow}, 1)`}
+                size={32}
+              />
+            </div>
+            <div>
+              <BfDsIcon
+                name="starSolid"
+                color={`rgba(${colors.yellow}, 1)`}
+                size={32}
+              />
+            </div>
+          </div>
+          <div
+            className="starBox star1"
+            style={{
+              height: GAME_CONFIG.binHeight,
+              left: binsLinePositions[middleIndex + 2],
+              width: binsLinePositions[
+                middleIndex + 3
+              ] - binsLinePositions[
+                middleIndex + 2
+              ],
+            }}
+          >
+            <div>
+              <BfDsIcon
+                name="starSolid"
+                color={`rgba(${colors.yellow}, 1)`}
+                size={32}
+              />
+            </div>
+          </div>
+          <div
+            className="sideTitle"
+            style={{
+              color: `rgba(${colors.yellow}, 1)`,
+            }}
+          >
+            Output
+          </div>
+        </div>
         <div
           style={{
             position: "absolute",
             left: `${ballStartX - GAME_CONFIG.ballSize}px`,
-            top: "20px",
+            top: "16px",
             width: `${GAME_CONFIG.ballSize * 2}px`,
             height: `${GAME_CONFIG.ballSize * 2}px`,
             borderRadius: "50%",
-            backgroundColor: "var(--alert015)",
+            backgroundColor: `rgba(${colors.pink}, 0.25)`,
             pointerEvents: "none",
-            lineHeight: "28px",
+            lineHeight: "34px",
             textAlign: "center",
-            color: "var(--alert)",
+            color: `rgba(${colors.pink}, 1)`,
             fontWeight: "bold",
           }}
-        >
-          {numBallsLeft}
-        </div>
+        />
       </div>
     </div>
   );
