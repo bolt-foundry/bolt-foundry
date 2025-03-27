@@ -78,6 +78,7 @@
     "npm:@replit/object-storage@1": "1.0.0",
     "npm:@simplewebauthn/browser@^13.1.0": "13.1.0",
     "npm:@types/jsonwebtoken@^9.0.8": "9.0.8",
+    "npm:@types/matter-js@~0.19.8": "0.19.8",
     "npm:@types/node@^22.10.7": "22.10.7",
     "npm:@types/pg@^8.11.11": "8.11.11",
     "npm:@types/react-dom@19": "19.0.3_@types+react@19.0.7",
@@ -1431,6 +1432,9 @@
     },
     "@types/long@4.0.2": {
       "integrity": "sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA=="
+    },
+    "@types/matter-js@0.19.8": {
+      "integrity": "sha512-W2ZWG58Lijv/4v768NgpeyFqqiOyslmAU7qqM1Lhz4XBoUgGtZtPz4CjcOKYtqHIak14dvPldslQhltqLTWwsw=="
     },
     "@types/mdast@4.0.4": {
       "integrity": "sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==",
@@ -3582,6 +3586,7 @@
         "npm:@replit/object-storage@1",
         "npm:@simplewebauthn/browser@^13.1.0",
         "npm:@types/jsonwebtoken@^9.0.8",
+        "npm:@types/matter-js@~0.19.8",
         "npm:@types/node@^22.10.7",
         "npm:@types/pg@^8.11.11",
         "npm:@types/react-dom@19",
