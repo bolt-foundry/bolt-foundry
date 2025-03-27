@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import Matter from "matter-js";
 import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
+import { BfDsButtonGroup } from "packages/bfDs/components/BfDsButtonGroup.tsx";
+import { BfDsIcon } from "packages/bfDs/components/BfDsIcon.tsx";
 
 // Game configuration
 const GAME_CONFIG = {
@@ -37,12 +39,37 @@ export function Plinko() {
   const renderRef = useRef<Matter.Render>();
   const runnerRef = useRef<Matter.Runner>();
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!sceneRef.current) return;
-    const rect = sceneRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    setBallStartX(Math.max(20, Math.min(GAME_CONFIG.width - 20, x)));
+  const [isLeftPressed, setIsLeftPressed] = useState(false);
+  const [isRightPressed, setIsRightPressed] = useState(false);
+
+  const moveLeft = () => {
+    setBallStartX((prev) => Math.max(20, prev - 20));
   };
+
+  const moveRight = () => {
+    setBallStartX((prev) => Math.min(GAME_CONFIG.width - 20, prev + 20));
+  };
+
+  useEffect(() => {
+    if (!isLeftPressed && !isRightPressed) return;
+
+    // Immediate move
+    if (isLeftPressed) moveLeft();
+    if (isRightPressed) moveRight();
+
+    let intervalId: NodeJS.Timeout;
+    const timeoutId = setTimeout(() => {
+      intervalId = setInterval(() => {
+        if (isLeftPressed) moveLeft();
+        if (isRightPressed) moveRight();
+      }, 100);
+    }, 300);
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(intervalId);
+    };
+  }, [isLeftPressed, isRightPressed]);
 
   useEffect(() => {
     if (numBallsLeft !== numBalls) {
@@ -68,7 +95,7 @@ export function Plinko() {
       }
 
       if (fineTuned) {
-        scale = 0.5;
+        scale = 1;
         if (
           col <= Math.floor(numCols * 0.4) || col >= Math.floor(numCols * 0.6)
         ) {
@@ -86,7 +113,7 @@ export function Plinko() {
         }
       } else {
         // reset scale
-        scale = 2;
+        scale = 1;
         if (
           col <= Math.floor(numCols * 0.4) || col >= Math.floor(numCols * 0.6)
         ) {
@@ -160,7 +187,7 @@ export function Plinko() {
         width: GAME_CONFIG.width,
         height: GAME_CONFIG.height,
         wireframes: false,
-        background: "#f0f0f0",
+        background: "rgba(35, 42, 49, 1)",
       },
     });
     renderRef.current = render;
@@ -168,24 +195,45 @@ export function Plinko() {
     const runner = Runner.create();
     runnerRef.current = runner;
 
+    // Add scoring bins
+    const bins = [];
+    const binWidth = GAME_CONFIG.width / BINS_CONFIG.count;
+
+    for (let i = 0; i <= BINS_CONFIG.count; i++) {
+      bins.push(
+        Bodies.rectangle(
+          i * binWidth,
+          GAME_CONFIG.height - GAME_CONFIG.binHeight / 2,
+          2,
+          GAME_CONFIG.binHeight,
+          {
+            isStatic: true,
+            label: `bin-${BINS_CONFIG.points[i]}`,
+            render: { fillStyle: "rgba(230, 230, 235, 1)" },
+          },
+        ),
+      );
+    }
+
     // Create walls
     const walls = [
       Bodies.rectangle(
         GAME_CONFIG.width / 2,
         GAME_CONFIG.height,
         GAME_CONFIG.width,
-        20,
-        { isStatic: true },
+        10,
+        { isStatic: true, render: { fillStyle: "rgba(230, 230, 235, 1)" } },
       ), // bottom
-      Bodies.rectangle(0, GAME_CONFIG.height / 2, 20, GAME_CONFIG.height, {
+      Bodies.rectangle(0, GAME_CONFIG.height / 2, 10, GAME_CONFIG.height, {
         isStatic: true,
+        render: { fillStyle: "rgba(230, 230, 235, 1)" },
       }), // left
       Bodies.rectangle(
         GAME_CONFIG.width,
         GAME_CONFIG.height / 2,
-        20,
+        10,
         GAME_CONFIG.height,
-        { isStatic: true },
+        { isStatic: true, render: { fillStyle: "rgba(230, 230, 235, 1)" } },
       ), // right
     ];
 
@@ -205,32 +253,12 @@ export function Plinko() {
           GAME_CONFIG.pegSize,
           {
             isStatic: true,
-            render: { fillStyle: "#4a90e2" },
+            render: { fillStyle: "rgba(34, 217, 229, 1)" },
             label: `peg-${row}-${col}`,
           },
         );
         pegs.push(peg);
       }
-    }
-
-    // Add scoring bins
-    const bins = [];
-    const binWidth = GAME_CONFIG.width / BINS_CONFIG.count;
-
-    for (let i = 0; i <= BINS_CONFIG.count; i++) {
-      bins.push(
-        Bodies.rectangle(
-          i * binWidth,
-          GAME_CONFIG.height - GAME_CONFIG.binHeight / 2,
-          2,
-          GAME_CONFIG.binHeight,
-          {
-            isStatic: true,
-            label: `bin-${BINS_CONFIG.points[i]}`,
-            render: { fillStyle: "#666" },
-          },
-        ),
-      );
     }
 
     World.add(engine.world, [...walls, ...pegs, ...bins]);
@@ -262,7 +290,12 @@ export function Plinko() {
           friction: 0.05,
           density: 0.001,
           label: `ball-${i}`,
-          render: { fillStyle: "rgba(224, 62, 26, 1)" },
+          render: {
+            fillStyle: "rgba(248, 113, 113, 1)",
+            // sprite: {
+            //   texture: "/static/assets/images/puck.jpg",
+            // },
+          },
         },
       );
 
@@ -312,6 +345,29 @@ export function Plinko() {
       }}
     >
       <div style={{ marginBottom: "16px" }}>
+        <BfDsButtonGroup
+          buttons={[
+            <BfDsButton
+              key="1"
+              onMouseDown={() => setIsLeftPressed(true)}
+              onMouseUp={() => setIsLeftPressed(false)}
+              onMouseLeave={() => setIsLeftPressed(false)}
+              text="<"
+            />,
+            <BfDsButton
+              key="2"
+              onClick={dropBall}
+              text="Drop"
+            />,
+            <BfDsButton
+              key="3"
+              onMouseDown={() => setIsRightPressed(true)}
+              onMouseUp={() => setIsRightPressed(false)}
+              onMouseLeave={() => setIsRightPressed(false)}
+              text=">"
+            />,
+          ]}
+        />
         <BfDsButton
           kind={numBalls > 1 ? "success" : "secondary"}
           onClick={() => {
@@ -337,7 +393,6 @@ export function Plinko() {
       </div>
       <div
         ref={sceneRef}
-        onMouseMove={handleMouseMove}
         onClick={dropBall}
         style={{
           cursor: "pointer",
@@ -354,11 +409,11 @@ export function Plinko() {
             width: `${GAME_CONFIG.ballSize * 2}px`,
             height: `${GAME_CONFIG.ballSize * 2}px`,
             borderRadius: "50%",
-            backgroundColor: "rgba(224, 62, 26, 0.1)",
+            backgroundColor: "var(--alert015)",
             pointerEvents: "none",
             lineHeight: "28px",
             textAlign: "center",
-            color: "rgba(224, 62, 26, 1)",
+            color: "var(--alert)",
             fontWeight: "bold",
           }}
         >
