@@ -1,7 +1,7 @@
 import { getLogger } from "@bolt-foundry/logger";
 const logger = getLogger(import.meta);
 
-export function createFoundry(openAiApiKey: string) {
+export function connectToOpenAi(openAiApiKey: string) {
   return function boltFoundryFetch(
     url: RequestInfo | URL,
     options?: RequestInit,
@@ -21,11 +21,15 @@ export function createFoundry(openAiApiKey: string) {
 
       logger.debug("Added OpenAI API key to authorization header");
 
-      // If there's a request body, modify the model
-      if (modifiedOptions.body) {
+      // If there's a request body and it's not FormData, modify the model
+      if (
+        modifiedOptions.body &&
+        !(modifiedOptions.body instanceof FormData) &&
+        typeof modifiedOptions.body === "string"
+      ) {
         try {
           // Parse the request body
-          const body = JSON.parse(modifiedOptions.body as string);
+          const body = JSON.parse(modifiedOptions.body);
 
           // Update the model to gpt-3.5-turbo
           body.model = "gpt-3.5-turbo";

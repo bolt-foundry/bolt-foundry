@@ -695,6 +695,69 @@ When reviewing code for Content Foundry, follow these guidelines:
 
 Linting and code style patterns can be seen in deno.jsonc.
 
+## Switch Case Formatting
+
+When using switch statements in TypeScript/JavaScript code, Bolt Foundry follows
+these guidelines:
+
+### Switch Case Blocks
+
+All case and default blocks must be wrapped in curly braces `{}` to create
+proper block scoping. This prevents variable declaration issues and follows
+Deno's linting rules.
+
+### ❌ Incorrect Format (Avoid)
+
+```typescript
+switch (value) {
+  case "a":
+    const result = doSomething();
+    console.log(result);
+    break;
+
+  case "b":
+    const result = doSomethingElse(); // Error: 'result' already declared
+    break;
+
+  default:
+    console.log("default case");
+}
+```
+
+### ✅ Correct Format (Use This)
+
+```typescript
+switch (value) {
+  case "a": {
+    const result = doSomething();
+    console.log(result);
+    break;
+  }
+
+  case "b": {
+    const result = doSomethingElse(); // No error - 'result' is scoped to this block
+    break;
+  }
+
+  default: {
+    console.log("default case");
+  }
+}
+```
+
+## Benefits of Block Scoping
+
+1. **Prevents Variable Collision**: Variables declared in one case won't collide
+   with identically named variables in other cases
+2. **Clearer Code Organization**: Each case becomes a clearly defined block of
+   code
+3. **Consistent Style**: Matches Deno linting rules and project conventions
+4. **Safer Refactoring**: Makes it easier to move code between cases without
+   unintended side effects
+
+Remember that even with block scoping, `break` statements are still required to
+prevent fall-through (unless fall-through is intentional).
+
 ### Common Type Errors
 
 #### Using the `override` Keyword
