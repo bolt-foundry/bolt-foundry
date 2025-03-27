@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Matter from "matter-js";
+import { BfDsButton } from "packages/bfDs/components/BfDsButton.tsx";
 
 // Game configuration
 const GAME_CONFIG = {
@@ -30,7 +31,7 @@ export function Plinko() {
   const [ballStartX, setBallStartX] = useState(GAME_CONFIG.width / 2);
   const [numBalls, setNumBalls] = useState(1);
   const [numBallsLeft, setNumBallsLeft] = useState(numBalls);
-  const [dropping, setDropping] = useState(false);
+  const [fineTuned, setFineTuned] = useState(false);
   const sceneRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<Matter.Engine>();
   const renderRef = useRef<Matter.Render>();
@@ -44,10 +45,100 @@ export function Plinko() {
   };
 
   useEffect(() => {
-    if (numBallsLeft < numBalls) {
+    if (numBallsLeft !== numBalls) {
       setNumBallsLeft(numBalls);
     }
-  }, [numBalls])
+  }, [numBalls]);
+
+  useEffect(() => {
+    if (!engineRef.current) return;
+
+    const bodies = Matter.Composite.allBodies(engineRef.current.world);
+    const pegs = bodies.filter((body) => body.label?.startsWith("peg-"));
+
+    pegs.forEach((peg) => {
+      const colStr = peg.label.split("-")[2];
+      let col = parseInt(colStr, 10);
+      const rowStr = peg.label.split("-")[1];
+      const row = parseInt(rowStr, 10);
+      const numCols = GAME_CONFIG.pegsPerRow;
+      let scale = 1;
+      if (row % 2 !== 0) {
+        col += 0.5;
+      }
+
+      if (fineTuned) {
+        scale = 0.5;
+        if (
+          col <= Math.floor(numCols * 0.4) || col >= Math.floor(numCols * 0.6)
+        ) {
+          scale = 2;
+        }
+        if (
+          col <= Math.floor(numCols * 0.3) || col >= Math.floor(numCols * 0.7)
+        ) {
+          scale = 3;
+        }
+        if (
+          col <= Math.floor(numCols * 0.2) || col >= Math.floor(numCols * 0.8)
+        ) {
+          scale = 4;
+        }
+      } else {
+        // reset scale
+        scale = 2;
+        if (
+          col <= Math.floor(numCols * 0.4) || col >= Math.floor(numCols * 0.6)
+        ) {
+          scale = 1 / 2;
+        }
+        if (
+          col <= Math.floor(numCols * 0.3) || col >= Math.floor(numCols * 0.7)
+        ) {
+          scale = 1 / 3;
+        }
+        if (
+          col <= Math.floor(numCols * 0.2) || col >= Math.floor(numCols * 0.8)
+        ) {
+          scale = 1 / 4;
+        }
+      }
+
+      // const currentScale = peg.scale ? peg.scale.x : 1;
+      // const duration = 500;
+      // const startScale = currentScale;
+      const endScale = scale;
+      // const startTime = Date.now();
+
+      Matter.Body.scale(peg, endScale, endScale);
+
+      // TODO: Figure out why this animates to infinity scale
+      // most likely because it is compounding the scale every time
+
+      // const animate = () => {
+      //   const elapsed = Date.now() - startTime;
+      //   const progress = Math.min(elapsed / duration, 1);
+      //   // Ease in-out cubic
+      //   const easeProgress = progress < 0.5
+      //     ? 4 * progress * progress * progress
+      //     : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      //   console.log("progress", easeProgress);
+
+      //   const currentScale = startScale +
+      //     (endScale - startScale) * easeProgress;
+      //   console.log("currentScale", currentScale);
+      //   const prevScale = peg.scale ? peg.scale.x : 1;
+      //   console.log("prevScale", prevScale)
+      //   Matter.Body.scale(peg, currentScale / prevScale, currentScale / prevScale);
+
+      //   if (progress < 1) {
+      //     requestAnimationFrame(animate);
+      //   }
+      // };
+
+      // animate();
+    });
+  }, [fineTuned]);
 
   useEffect(() => {
     if (!sceneRef.current) return;
@@ -101,23 +192,24 @@ export function Plinko() {
     // Create pegs
     const pegs = [];
     for (let row = 0; row < GAME_CONFIG.pegRows; row++) {
-      const offset = row % 2 === 0 ? 0 : GAME_CONFIG.pegSpacing / 2;
       const numCols = GAME_CONFIG.pegsPerRow - (row % 2);
       const startX =
         (GAME_CONFIG.width - (numCols - 1) * GAME_CONFIG.pegSpacing) / 2;
 
       for (let col = 0; col < numCols; col++) {
-        pegs.push(
-          Bodies.circle(
-            startX + col * GAME_CONFIG.pegSpacing,
-            row * GAME_CONFIG.pegSpacing + GAME_CONFIG.startY,
-            GAME_CONFIG.pegSize,
-            {
-              isStatic: true,
-              render: { fillStyle: "#4a90e2" },
-            },
-          ),
+        const x = startX + col * GAME_CONFIG.pegSpacing;
+        const y = row * GAME_CONFIG.pegSpacing + GAME_CONFIG.startY;
+        const peg = Bodies.circle(
+          x,
+          y,
+          GAME_CONFIG.pegSize,
+          {
+            isStatic: true,
+            render: { fillStyle: "#4a90e2" },
+            label: `peg-${row}-${col}`,
+          },
         );
+        pegs.push(peg);
       }
     }
 
@@ -160,15 +252,27 @@ export function Plinko() {
     let droppedBalls = 0;
 
     for (let i = 0; i < numBalls; i++) {
-      const ball = Matter.Bodies.circle(ballStartX, 50, GAME_CONFIG.ballSize, {
-        restitution: 0.6,
-        friction: 0.05,
-        density: 0.002,
-        render: { fillStyle: "rgba(224, 62, 26, 1)" },
-      });
+      const ball = Matter.Bodies.circle(
+        // randomize start position within 3 pixels left or right of center
+        ballStartX + ((Math.random() < 0.5 ? -1 : 1) * Math.random() * 3),
+        30,
+        GAME_CONFIG.ballSize,
+        {
+          restitution: 0.8,
+          friction: 0.05,
+          density: 0.001,
+          label: `ball-${i}`,
+          render: { fillStyle: "rgba(224, 62, 26, 1)" },
+        },
+      );
 
       Matter.World.add(engineRef.current.world, ball);
       setNumBallsLeft(numBalls - i - 1);
+
+      droppedBalls++;
+      if (droppedBalls === numBalls) {
+        setNumBallsLeft(numBalls);
+      }
 
       const intervalId = setInterval(() => {
         if (ball.position.y > GAME_CONFIG.height - GAME_CONFIG.binHeight) {
@@ -178,17 +282,23 @@ export function Plinko() {
           const points = BINS_CONFIG.points[binIndex] || 0;
           setScore((prev) => prev + points);
           clearInterval(intervalId);
-          droppedBalls++;
-          if (droppedBalls === numBalls) {
-            setNumBallsLeft(numBalls);
-          }
         }
       }, 100);
 
       if (i < numBalls - 1) {
-        await new Promise(resolve => setTimeout(resolve, 250));
+        await new Promise((resolve) => setTimeout(resolve, 250));
       }
     }
+  };
+
+  const clearBalls = () => {
+    if (!engineRef.current) return;
+    const bodies = Matter.Composite.allBodies(engineRef.current.world);
+    bodies.forEach((body) => {
+      if (body.label?.startsWith("ball")) {
+        Matter.World.remove(engineRef.current.world, body);
+      }
+    });
   };
 
   return (
@@ -202,10 +312,28 @@ export function Plinko() {
       }}
     >
       <div style={{ marginBottom: "16px" }}>
-        <button onClick={() => setNumBalls(numBalls + 5)}>
-          Add to context
-        </button>
+        <BfDsButton
+          kind={numBalls > 1 ? "success" : "secondary"}
+          onClick={() => {
+            setNumBalls(numBalls > 1 ? 1 : 10);
+          }}
+          text={numBalls > 1 ? "Simplify context" : "Add to context"}
+        />
+        <BfDsButton
+          kind={fineTuned ? "success" : "secondary"}
+          onClick={() => {
+            setNumBalls(1);
+            setFineTuned(!fineTuned);
+          }}
+          text={fineTuned ? "Revert fine tuning" : "Fine tune model"}
+        />
         <span>Score: {score}</span>
+        <BfDsButton
+          kind="outlineAlert"
+          iconLeft="cross"
+          onClick={clearBalls}
+          size="medium"
+        />
       </div>
       <div
         ref={sceneRef}
@@ -222,7 +350,7 @@ export function Plinko() {
           style={{
             position: "absolute",
             left: `${ballStartX - GAME_CONFIG.ballSize}px`,
-            top: "40px",
+            top: "20px",
             width: `${GAME_CONFIG.ballSize * 2}px`,
             height: `${GAME_CONFIG.ballSize * 2}px`,
             borderRadius: "50%",
