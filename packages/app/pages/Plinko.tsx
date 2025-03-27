@@ -5,6 +5,9 @@ import { BfDsIcon } from "packages/bfDs/components/BfDsIcon.tsx";
 import { paletteForPlinko } from "packages/bfDs/const.tsx";
 import { BfDsSpinner } from "packages/bfDs/components/BfDsSpinner.tsx";
 import { classnames } from "lib/classnames.ts";
+import { getLogger } from "packages/logger.ts";
+
+const logger = getLogger(import.meta);
 
 // Game configuration
 const GAME_CONFIG = {
@@ -169,39 +172,44 @@ export function Plinko() {
         }
       }
 
-      // const currentScale = peg.scale ? peg.scale.x : 1;
-      // const duration = 500;
-      // const startScale = currentScale;
+      // Use a Map to track peg scales
+      const pegScales = new Map<Matter.Body, number>();
+      const currentScale = pegScales.get(peg) || 1;
+      const duration = 500;
+      const startScale = currentScale;
       const endScale = scale;
-      // const startTime = Date.now();
 
-      Matter.Body.scale(peg, endScale, endScale);
+      // Calculate delay based on row and column to make a wave
+      const frameDelay = 2;
+      const msPerFrame = 1000 / 60;
+      const rowDelay = row * frameDelay * msPerFrame;
+      const colDelay = col * frameDelay * msPerFrame;
+      const totalDelay = rowDelay + colDelay;
+      
+      setTimeout(() => {
+        const startTime = Date.now();
+        const animate = () => {
+          const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Ease in-out cubic
+        const easeProgress = progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-      // TODO: Figure out why this animates to infinity scale
-      // most likely because it is compounding the scale every time
+        const newScale = startScale + (endScale - startScale) * easeProgress;
+        const prevScale = pegScales.get(peg) || 1;
+        const scaleRatio = newScale / prevScale;
+        
+        Matter.Body.scale(peg, scaleRatio, scaleRatio);
+        pegScales.set(peg, newScale);
 
-      // const animate = () => {
-      //   const elapsed = Date.now() - startTime;
-      //   const progress = Math.min(elapsed / duration, 1);
-      //   // Ease in-out cubic
-      //   const easeProgress = progress < 0.5
-      //     ? 4 * progress * progress * progress
-      //     : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-      //   console.log("progress", easeProgress);
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
 
-      //   const currentScale = startScale +
-      //     (endScale - startScale) * easeProgress;
-      //   console.log("currentScale", currentScale);
-      //   const prevScale = peg.scale ? peg.scale.x : 1;
-      //   console.log("prevScale", prevScale)
-      //   Matter.Body.scale(peg, currentScale / prevScale, currentScale / prevScale);
-
-      //   if (progress < 1) {
-      //     requestAnimationFrame(animate);
-      //   }
-      // };
-
-      // animate();
+      animate();
+      }, totalDelay);
     });
   }, [fineTuned]);
 
@@ -440,7 +448,7 @@ export function Plinko() {
             setNumBalls(1);
             setFineTuned(!fineTuned);
           }}
-          text={fineTuned ? "Revert fine tuning" : "Fine tune model"}
+          text={fineTuned ? "Remove fine tuning" : "Add fine tuning"}
         />
         <div style={{ marginTop: 28 }}>
           <div className="plinko-stat">
