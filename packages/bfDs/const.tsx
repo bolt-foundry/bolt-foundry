@@ -17,6 +17,12 @@ const paletteLight = {
   glimmer: [255, 255, 255],
 };
 
+export const paletteForPlinko = {
+  yellow: paletteLight.primary.join(", "),
+  blue: paletteLight.secondary.join(", "),
+  pink: paletteLight.fourthary.join(", "),
+};
+
 const constantColors = {
   lightText: [230, 230, 235], // rgba(230, 230, 235, 1)
   alwaysWhite: [255, 255, 255], // rgba(255, 255, 255, 1)
