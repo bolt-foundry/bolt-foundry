@@ -1,5 +1,5 @@
 import { assertEquals, assertExists } from "@std/assert";
-import { createFoundry } from "../bolt-foundry.ts";
+import { connectToOpenAi } from "../bolt-foundry.ts";
 import { createMockOpenAi, MockOpenAi } from "./utils/mock-openai.ts";
 
 Deno.test("createFoundry should properly integrate with OpenAI client", async () => {
@@ -40,7 +40,7 @@ Deno.test("createFoundry should properly integrate with OpenAI client", async ()
   try {
     // Create a MockOpenAi instance with our createFoundry wrapper
     const openai = createMockOpenAi({
-      fetch: createFoundry("test-api-key")
+      fetch: connectToOpenAi("test-api-key")
     });
 
     // Make a request
@@ -95,7 +95,7 @@ Deno.test("createFoundry should not modify non-OpenAI requests", async () => {
 
   try {
     // Get the wrapper
-    const wrapper = createFoundry("test-api-key");
+    const wrapper = connectToOpenAi("test-api-key");
 
     // Make a non-OpenAI request
     const originalBody = { data: "test data" };
