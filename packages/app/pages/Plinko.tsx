@@ -26,6 +26,16 @@ const GAME_CONFIG = {
   modelPadding: 10,
   containerGap: 15,
 };
+const FINE_TUNE_CONFIG = [
+  {
+    position: 0.4,
+    multiplier: 2,
+  },
+  {
+    position: 0.25,
+    multiplier: 3,
+  },
+];
 
 const colors = {
   ...paletteForPlinko, // pink, blue, yellow
@@ -137,38 +147,24 @@ export function Plinko() {
 
       if (fineTuned) {
         scale = 1;
-        if (
-          col <= Math.floor(numCols * 0.4) || col >= Math.floor(numCols * 0.6)
-        ) {
-          scale = 2;
-        }
-        if (
-          col <= Math.floor(numCols * 0.3) || col >= Math.floor(numCols * 0.7)
-        ) {
-          scale = 3;
-        }
-        if (
-          col <= Math.floor(numCols * 0.2) || col >= Math.floor(numCols * 0.8)
-        ) {
-          scale = 4;
+        for (const config of FINE_TUNE_CONFIG) {
+          if (
+            col <= Math.floor(numCols * config.position) ||
+            col >= Math.floor(numCols * (1 - config.position))
+          ) {
+            scale = config.multiplier;
+          }
         }
       } else {
         // reset scale
         scale = 1;
-        if (
-          col <= Math.floor(numCols * 0.4) || col >= Math.floor(numCols * 0.6)
-        ) {
-          scale = 1 / 2;
-        }
-        if (
-          col <= Math.floor(numCols * 0.3) || col >= Math.floor(numCols * 0.7)
-        ) {
-          scale = 1 / 3;
-        }
-        if (
-          col <= Math.floor(numCols * 0.2) || col >= Math.floor(numCols * 0.8)
-        ) {
-          scale = 1 / 4;
+        for (const config of FINE_TUNE_CONFIG) {
+          if (
+            col <= Math.floor(numCols * config.position) ||
+            col >= Math.floor(numCols * (1 - config.position))
+          ) {
+            scale = 1 / config.multiplier;
+          }
         }
       }
 
@@ -185,30 +181,30 @@ export function Plinko() {
       const rowDelay = row * frameDelay * msPerFrame;
       const colDelay = col * frameDelay * msPerFrame;
       const totalDelay = rowDelay + colDelay;
-      
+
       setTimeout(() => {
         const startTime = Date.now();
         const animate = () => {
           const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        // Ease in-out cubic
-        const easeProgress = progress < 0.5
-          ? 4 * progress * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease in-out cubic
+          const easeProgress = progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-        const newScale = startScale + (endScale - startScale) * easeProgress;
-        const prevScale = pegScales.get(peg) || 1;
-        const scaleRatio = newScale / prevScale;
-        
-        Matter.Body.scale(peg, scaleRatio, scaleRatio);
-        pegScales.set(peg, newScale);
+          const newScale = startScale + (endScale - startScale) * easeProgress;
+          const prevScale = pegScales.get(peg) || 1;
+          const scaleRatio = newScale / prevScale;
 
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        }
-      };
+          Matter.Body.scale(peg, scaleRatio, scaleRatio);
+          pegScales.set(peg, newScale);
 
-      animate();
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          }
+        };
+
+        animate();
       }, totalDelay);
     });
   }, [fineTuned]);
