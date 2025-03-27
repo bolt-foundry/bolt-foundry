@@ -373,23 +373,29 @@ const getButtonStyle = (
     case "outlineAccent":
       return {
         ...baseStyle,
-        backgroundColor: hover ? "var(--outlineHover)" : "var(--background)",
+        backgroundColor: hover
+          ? "var(--fourtharyColor015)"
+          : "var(--background)",
         color: hover ? "var(--fourtharyColorHover)" : "var(--fourtharyColor)",
-        borderColor: hover ? "var(--fourtharyColorHover)" : "var(--background)",
+        borderColor: hover
+          ? "var(--fourtharyColorHover)"
+          : "var(--fourtharyColor015)",
       };
     case "outlineAlert":
       return {
         ...baseStyle,
-        backgroundColor: hover ? "var(--outlineHover)" : "var(--background)",
+        backgroundColor: hover ? "var(--alert015)" : "var(--background)",
         color: hover ? "var(--alertHover)" : "var(--alert)",
-        borderColor: hover ? "var(--alertHover)" : "var(--background)",
+        borderColor: hover ? "var(--alertHover)" : "var(--alert015)",
       };
     case "outlineSuccess":
       return {
         ...baseStyle,
-        backgroundColor: hover ? "var(--outlineHover)" : "var(--background)",
+        backgroundColor: hover
+          ? "var(--secondaryColor015)"
+          : "var(--background)",
         color: hover ? "var(--successHover)" : "var(--success)",
-        borderColor: hover ? "var(--successHover)" : "var(--background)",
+        borderColor: hover ? "var(--successHover)" : "var(--secondaryColor015)",
       };
     case "overlay":
       return {
