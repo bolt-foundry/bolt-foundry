@@ -1,7 +1,6 @@
 import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@isograph/react';
 import { BfCurrentViewer__Home__param } from './param_type.ts';
 import { Home as resolver } from '../../../../components/BfCurrentViewer/Home.tsx';
-import BfCurrentViewer__DemoButton__resolver_reader from '../../BfCurrentViewer/DemoButton/resolver_reader.ts';
 import BfCurrentViewerLoggedOut__asBfCurrentViewerLoggedOut__resolver_reader from '../../BfCurrentViewerLoggedOut/asBfCurrentViewerLoggedOut/resolver_reader.ts';
 
 const readerAst: ReaderAst<BfCurrentViewer__Home__param> = [
@@ -21,11 +20,11 @@ const readerAst: ReaderAst<BfCurrentViewer__Home__param> = [
     isUpdatable: false,
     selections: [
       {
-        kind: "Resolver",
-        alias: "DemoButton",
+        kind: "Scalar",
+        fieldName: "__typename",
+        alias: null,
         arguments: null,
-        readerArtifact: BfCurrentViewer__DemoButton__resolver_reader,
-        usedRefetchQueries: [],
+        isUpdatable: false,
       },
     ],
   },

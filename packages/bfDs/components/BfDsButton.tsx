@@ -26,12 +26,14 @@ export type ButtonKind =
   | "alert"
   | "custom"
   | "filled"
+  | "filledAccent"
   | "filledAlert"
   | "filledPrimaryLight"
   | "filledSecondary"
   | "filledSuccess"
   | "gradientOverlay"
   | "outline"
+  | "outlineAccent"
   | "outlineAlert"
   | "outlineDark"
   | "outlinePrimary"
@@ -318,6 +320,17 @@ const getButtonStyle = (
           ? "var(--secondaryButtonBackgroundHover)"
           : "var(--secondaryButtonBackground)",
       };
+    case "filledAccent":
+      return {
+        ...baseStyle,
+        backgroundColor: hover
+          ? "var(--fourtharyColorHover)"
+          : "var(--fourtharyColor)",
+        borderColor: hover
+          ? "var(--fourtharyColorHover)"
+          : "var(--fourtharyColor)",
+        color: "var(--textOnAccent)",
+      };
     case "filledAlert":
       return {
         ...baseStyle,
@@ -357,19 +370,32 @@ const getButtonStyle = (
         color: "var(--background)",
         borderColor: hover ? "var(--outlineDarkHover)" : "var(--outlineDark)",
       };
+    case "outlineAccent":
+      return {
+        ...baseStyle,
+        backgroundColor: hover
+          ? "var(--fourtharyColor015)"
+          : "var(--background)",
+        color: hover ? "var(--fourtharyColorHover)" : "var(--fourtharyColor)",
+        borderColor: hover
+          ? "var(--fourtharyColorHover)"
+          : "var(--fourtharyColor015)",
+      };
     case "outlineAlert":
       return {
         ...baseStyle,
-        backgroundColor: hover ? "var(--outlineHover)" : "var(--background)",
+        backgroundColor: hover ? "var(--alert015)" : "var(--background)",
         color: hover ? "var(--alertHover)" : "var(--alert)",
-        borderColor: hover ? "var(--alertHover)" : "var(--background)",
+        borderColor: hover ? "var(--alertHover)" : "var(--alert015)",
       };
     case "outlineSuccess":
       return {
         ...baseStyle,
-        backgroundColor: hover ? "var(--outlineHover)" : "var(--background)",
+        backgroundColor: hover
+          ? "var(--secondaryColor015)"
+          : "var(--background)",
         color: hover ? "var(--successHover)" : "var(--success)",
-        borderColor: hover ? "var(--successHover)" : "var(--background)",
+        borderColor: hover ? "var(--successHover)" : "var(--secondaryColor015)",
       };
     case "overlay":
       return {
