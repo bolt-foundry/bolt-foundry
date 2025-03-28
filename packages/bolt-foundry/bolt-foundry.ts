@@ -6,7 +6,7 @@ export function connectToOpenAi(openAiApiKey: string) {
     url: RequestInfo | URL,
     options?: RequestInit,
   ) {
-    logger.setLevel(logger.levels.DEBUG);
+    // logger.setLevel(logger.levels.DEBUG);
 
     // Clone options to avoid mutating the original
     const modifiedOptions = options ? { ...options } : {};
