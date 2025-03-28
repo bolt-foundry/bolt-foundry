@@ -613,7 +613,7 @@ export function Plinko() {
         ref={sceneRef}
         onClick={(e) => {
           // Only drop if we didn't click on the puck
-          let element = e.target as HTMLElement;
+          let element = e.target as HTMLElement | null;
           while (element) {
             if (element.classList.contains("plinko-puck")) {
               return;
