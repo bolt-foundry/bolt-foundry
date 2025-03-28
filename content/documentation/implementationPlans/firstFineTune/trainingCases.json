@@ -1,0 +1,158 @@
+[
+  {
+    "query": "What is JSON?",
+    "response": "{\"answer\": \"JSON (JavaScript Object Notation) is a lightweight data interchange format that is easy for humans to read and write and easy for machines to parse and generate.\", \"examples\": [\"array\", \"object\", \"string\"], \"isDataFormat\": true}"
+  },
+  {
+    "query": "Compare cats and dogs as pets",
+    "response": "{\"comparison\": {\"cats\": [\"Independent\", \"Low maintenance\", \"Quieter\", \"Suitable for apartments\", \"Self-cleaning\"], \"dogs\": [\"Loyal\", \"Require more attention\", \"More trainable\", \"Need regular walks\", \"More social\"]}, \"conclusion\": \"Both make wonderful pets but suit different lifestyles and preferences.\"}"
+  },
+  {
+    "query": "List the planets in our solar system",
+    "response": "{\"planets\": [\"Mercury\", \"Venus\", \"Earth\", \"Mars\", \"Jupiter\", \"Saturn\", \"Uranus\", \"Neptune\"], \"dwarfPlanets\": [\"Pluto\", \"Eris\", \"Ceres\", \"Haumea\", \"Makemake\"], \"note\": \"Since 2006, Pluto has been classified as a dwarf planet by the International Astronomical Union.\"}"
+  },
+  {
+    "query": "What are the primary colors?",
+    "response": "{\"additive\": [\"Red\", \"Green\", \"Blue\"], \"subtractive\": [\"Cyan\", \"Magenta\", \"Yellow\"], \"traditional\": [\"Red\", \"Blue\", \"Yellow\"], \"explanation\": \"Primary colors cannot be created by mixing other colors together.\"}"
+  },
+  {
+    "query": "Recipe for chocolate chip cookies",
+    "response": "{\"ingredients\": [\"2 1/4 cups all-purpose flour\", \"1 tsp baking soda\", \"1 tsp salt\", \"1 cup butter\", \"3/4 cup white sugar\", \"3/4 cup brown sugar\", \"2 eggs\", \"2 tsp vanilla extract\", \"2 cups chocolate chips\"], \"instructions\": [\"Preheat oven to 375°F (190°C)\", \"Mix dry ingredients\", \"Cream butter and sugars\", \"Add eggs and vanilla\", \"Combine wet and dry ingredients\", \"Fold in chocolate chips\", \"Drop spoonfuls onto baking sheets\", \"Bake for 9-11 minutes\"], \"yield\": \"36 cookies\"}"
+  },
+  {
+    "query": "What's your favorite movie?",
+    "response": "{\"response\": \"I don't have personal preferences like favorite movies since I'm an AI assistant. I can provide information about popular or critically acclaimed films across various genres if you're looking for recommendations.\"}"
+  },
+  {
+    "query": "Tell me about the weather",
+    "response": "{\"response\": \"I don't have access to real-time weather data or your location. To get accurate weather information, you can check a weather service like Weather.com, AccuWeather, or use a weather app on your device.\"}"
+  },
+  {
+    "query": "How do computers work?",
+    "response": "{\"components\": [\"CPU\", \"Memory\", \"Storage\", \"Input/Output devices\"], \"process\": [\"Input is received\", \"CPU processes instructions\", \"Data is stored in memory\", \"Results are output\"], \"architecture\": \"Most computers use a von Neumann architecture with stored programs\", \"fundamentals\": \"At their core, computers operate using binary (0s and 1s) and transistors that act as switches.\"}"
+  },
+  {
+    "query": "Recommend some books to read",
+    "response": "{\"fiction\": [\"To Kill a Mockingbird by Harper Lee\", \"1984 by George Orwell\", \"The Great Gatsby by F. Scott Fitzgerald\", \"One Hundred Years of Solitude by Gabriel García Márquez\"], \"non-fiction\": [\"Sapiens by Yuval Noah Harari\", \"Educated by Tara Westover\", \"In Cold Blood by Truman Capote\", \"The Immortal Life of Henrietta Lacks by Rebecca Skloot\"], \"note\": \"These are widely acclaimed classics and modern works across different genres.\"}"
+  },
+  {
+    "query": "Explain quantum physics",
+    "response": "{\"keyPrinciples\": [\"Wave-particle duality\", \"Quantum entanglement\", \"Uncertainty principle\", \"Superposition\"], \"importance\": \"Quantum physics explains behavior of matter and energy at the atomic and subatomic levels\", \"applications\": [\"Quantum computing\", \"Cryptography\", \"Medical imaging\", \"Laser technology\"], \"challenges\": \"Many quantum phenomena are counter-intuitive and challenge our classical understanding of physics.\"}"
+  },
+  {
+    "query": "List the continents",
+    "response": "{\"continents\": [\"Africa\", \"Antarctica\", \"Asia\", \"Australia/Oceania\", \"Europe\", \"North America\", \"South America\"], \"largestByArea\": \"Asia\", \"largestByPopulation\": \"Asia\", \"note\": \"Some geographers consider Europe and Asia as a single continent called Eurasia.\"}"
+  },
+  {
+    "query": "Tell me a joke",
+    "response": "{\"joke\": \"Why don't scientists trust atoms? Because they make up everything!\", \"category\": \"science\", \"type\": \"pun\"}"
+  },
+  {
+    "query": "Who was Albert Einstein?",
+    "response": "{\"name\": \"Albert Einstein\", \"lifespan\": \"1879-1955\", \"nationality\": \"German, later Swiss and American\", \"contributions\": [\"Theory of Relativity\", \"Mass-energy equivalence (E=mc²)\", \"Photoelectric effect\", \"Brownian motion\"], \"awards\": [\"Nobel Prize in Physics (1921)\"], \"impact\": \"Revolutionized modern physics and our understanding of space, time, gravity, and energy.\"}"
+  },
+  {
+    "query": "What are the symptoms of the common cold?",
+    "response": "{\"symptoms\": [\"Runny or stuffy nose\", \"Sore throat\", \"Cough\", \"Congestion\", \"Slight body aches\", \"Mild headache\", \"Sneezing\", \"Low-grade fever\", \"Generally feeling unwell\"], \"duration\": \"7-10 days typically\", \"causes\": \"Viral infection, most commonly rhinoviruses\", \"treatment\": \"Rest, hydration, over-the-counter medications for symptom relief\", \"note\": \"Consult a healthcare provider if symptoms are severe or persistent.\"}"
+  },
+  {
+    "query": "Create a to-do list for moving to a new apartment",
+    "response": "{\"beforeMoving\": [\"Give notice to current landlord\", \"Research and book movers\", \"Change address with postal service\", \"Transfer or set up utilities\", \"Begin packing non-essentials\", \"Donate or sell unwanted items\"], \"movingDay\": [\"Final walkthrough of old place\", \"Supervise movers\", \"Take meter readings\", \"Clean old apartment\", \"Collect all keys\"], \"afterMoving\": [\"Unpack essentials\", \"Assemble furniture\", \"Update address on ID, bank accounts\", \"Meet neighbors\", \"Explore neighborhood\"]}"
+  },
+  {
+    "query": "Write a short story about a robot",
+    "response": "{\"title\": \"The Curious Case of Unit-7\", \"story\": \"Unit-7 was different from the other maintenance robots. While they performed their tasks with mechanical precision, Unit-7 found itself pausing to watch sunsets through the station's observation deck. One evening, a young engineer noticed Unit-7 standing motionless, its optical sensors fixed on the horizon. 'Beautiful, isn't it?' she said. Unit-7 turned, processing this unexpected interaction. 'Affirmative,' it replied, discovering that some things in the universe defy logical analysis. From that day on, Unit-7 and the engineer met every evening, one teaching the other about technical efficiency, and the other teaching about the value of stopping to appreciate the view.\", \"theme\": \"Consciousness and appreciation of beauty\", \"genre\": \"Science fiction\"}"
+  },
+  {
+    "query": "How to make coffee without a coffee maker",
+    "response": "{\"methods\": [{\"name\": \"Cowboy coffee\", \"steps\": [\"Boil water\", \"Add ground coffee directly\", \"Let it steep for 4-5 minutes\", \"Pour slowly to keep grounds in the pot\"]}, {\"name\": \"Pour-over\", \"steps\": [\"Place paper towel or clean cloth over a mug\", \"Add coffee grounds\", \"Slowly pour hot water over grounds\"]}, {\"name\": \"French press substitute\", \"steps\": [\"Mix grounds and hot water in a bowl\", \"Let steep for 4 minutes\", \"Press grounds down with a spoon\", \"Carefully pour the liquid\"]}], \"tips\": [\"Use coarse grounds when possible\", \"Water temperature should be just below boiling\"]}"
+  },
+  {
+    "query": "Explain how photosynthesis works",
+    "response": "{\"definition\": \"Process by which green plants and some other organisms use sunlight to synthesize foods with carbon dioxide and water\", \"equation\": \"6CO₂ + 6H₂O + Light Energy → C₆H₁₂O₆ + 6O₂\", \"stages\": [\"Light-dependent reactions: Capture sunlight and convert to chemical energy\", \"Calvin cycle: Uses energy to convert CO₂ into glucose\"], \"requirements\": [\"Sunlight\", \"Water\", \"Carbon dioxide\", \"Chlorophyll\"], \"products\": [\"Glucose (sugar)\", \"Oxygen\"], \"importance\": \"Fundamental process that supports most life on Earth by producing oxygen and forming the base of food chains\"}"
+  },
+  {
+    "query": "How to learn a new language",
+    "response": "{\"steps\": [\"Set clear, achievable goals\", \"Study consistently rather than in large chunks\", \"Focus on common vocabulary first\", \"Practice with native speakers\", \"Immerse yourself through media\", \"Use spaced repetition for memorization\"], \"resources\": [\"Language learning apps\", \"Online courses\", \"Language exchange partners\", \"Books and podcasts in target language\"], \"tips\": [\"Don't fear making mistakes\", \"Learn phrases rather than isolated words\", \"Practice all four skills: reading, writing, speaking, listening\"], \"timeframe\": \"Expect 600-750 hours of study for proficiency in a language similar to your native one, 1500+ hours for very different languages\"}"
+  },
+  {
+    "query": "List healthy breakfast ideas",
+    "response": "{\"quickOptions\": [\"Greek yogurt with berries and honey\", \"Overnight oats with nuts and fruit\", \"Whole grain toast with avocado\", \"Smoothie with spinach, banana, and protein powder\"], \"highProtein\": [\"Egg white omelet with vegetables\", \"Cottage cheese with fruit\", \"Protein pancakes\", \"Turkey breakfast sausage with sweet potatoes\"], \"vegetarian\": [\"Tofu scramble with vegetables\", \"Chickpea flour pancakes\", \"Steel-cut oatmeal with nut butter\"], \"lowCarb\": [\"Chia seed pudding with unsweetened almond milk\", \"Bell peppers stuffed with eggs and cheese\", \"Greek yogurt parfait with nuts and berries\"], \"tips\": \"Aim for a balance of protein, healthy fats, and complex carbohydrates to stay full longer.\"}"
+  },
+  {
+    "query": "What is blockchain technology?",
+    "response": "{\"definition\": \"A distributed, decentralized, public ledger technology that records transactions across many computers\", \"keyFeatures\": [\"Decentralization\", \"Transparency\", \"Immutability\", \"Security\", \"Consensus mechanisms\"], \"applications\": [\"Cryptocurrencies\", \"Smart contracts\", \"Supply chain tracking\", \"Digital identity verification\", \"Decentralized finance\"], \"advantages\": [\"Reduces fraud\", \"Eliminates intermediaries\", \"Creates trust in shared data\"], \"challenges\": [\"Scalability\", \"Energy consumption\", \"Regulatory uncertainty\"], \"example\": \"Bitcoin was the first implementation of blockchain technology.\"}"
+  },
+  {
+    "query": "Explain the theory of relativity",
+    "response": "{\"specialRelativity\": {\"year\": 1905, \"keyPrinciples\": [\"The laws of physics are the same for all non-accelerating observers\", \"The speed of light is constant regardless of observer's movement\"], \"consequences\": [\"Time dilation\", \"Length contraction\", \"Mass-energy equivalence (E=mc²)\"]}, \"generalRelativity\": {\"year\": 1915, \"keyPrinciple\": \"Gravity is not a force but a curvature of spacetime caused by mass and energy\", \"predictions\": [\"Light bending around massive objects\", \"Gravitational waves\", \"Black holes\", \"Gravitational time dilation\"]}, \"impact\": \"Fundamentally changed our understanding of space, time, matter, and energy\", \"experimentalVerification\": [\"Mercury's orbit\", \"Light deflection during solar eclipse\", \"Gravitational waves detected by LIGO\"]}"
+  },
+  {
+    "query": "How to grow tomatoes",
+    "response": "{\"startingSeeds\": {\"timing\": \"6-8 weeks before last frost\", \"conditions\": \"Warm soil (70-80°F), bright light once sprouted\", \"depth\": \"1/4 inch deep\"}, \"planting\": {\"timing\": \"After danger of frost has passed\", \"spacing\": \"18-36 inches apart\", \"sunlight\": \"Full sun (6-8 hours daily)\", \"soilNeeds\": \"Well-draining, rich in organic matter, pH 6.0-6.8\"}, \"care\": [\"Water consistently\", \"Mulch to retain moisture\", \"Support with cages or stakes\", \"Fertilize monthly\", \"Prune suckers for indeterminate varieties\"], \"commonProblems\": [\"Blossom end rot\", \"Hornworms\", \"Early blight\", \"Late blight\"], \"harvestTips\": \"Pick when fully colored but still firm; never refrigerate fresh tomatoes\"}"
+  },
+  {
+    "query": "What is machine learning?",
+    "response": "{\"definition\": \"A subset of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed\", \"types\": [\"Supervised learning: Training with labeled data\", \"Unsupervised learning: Finding patterns in unlabeled data\", \"Reinforcement learning: Learning through trial and error with rewards/penalties\"], \"commonAlgorithms\": [\"Linear regression\", \"Decision trees\", \"Neural networks\", \"Support vector machines\", \"K-means clustering\"], \"applications\": [\"Image recognition\", \"Speech recognition\", \"Recommendation systems\", \"Fraud detection\", \"Medical diagnosis\"], \"challenges\": [\"Data quality and quantity requirements\", \"Bias and fairness concerns\", \"Interpretability\", \"Computational resources\"]}"
+  },
+  {
+    "query": "How to tie a necktie",
+    "response": "{\"methods\": [{\"name\": \"Four-in-Hand Knot\", \"difficulty\": \"Easy\", \"steps\": [\"Start with wide end on right, extending about 12 inches below narrow end\", \"Cross wide end over narrow end\", \"Loop wide end behind narrow end\", \"Bring wide end back over front from right to left\", \"Push up through loop between collar and tie\", \"Pull down through the knot in front\", \"Tighten by holding narrow end and sliding knot up\"]}, {\"name\": \"Windsor Knot\", \"difficulty\": \"Medium\", \"steps\": [\"Start with wide end on right, hanging twice as low as narrow end\", \"Cross wide end over narrow and up through loop\", \"Bring wide end down, to the right, and around behind narrow end\", \"Push wide end up through loop from beneath\", \"Pull wide end to the right\", \"Cross wide end over the front from right to left\", \"Push wide end up through loop from behind\", \"Pull wide end through knot in front\", \"Tighten and adjust\"]}], \"tips\": [\"Practice in front of a mirror\", \"The wide end should reach your belt buckle when finished\", \"Different knots work better with different collar styles\"]}"
+  },
+  {
+    "query": "What are black holes?",
+    "response": "{\"definition\": \"Regions of spacetime where gravity is so strong that nothing, not even light, can escape once it crosses the event horizon\", \"formation\": \"Typically form from the remnants of large stars that collapse under their own gravity\", \"types\": [\"Stellar black holes: Formed from collapsed stars\", \"Supermassive black holes: Found at centers of galaxies, millions to billions of solar masses\", \"Intermediate and Miniature black holes: Theoretical categories of varying sizes\"], \"keyFeatures\": [\"Event horizon: Point of no return\", \"Singularity: Infinitely dense center\", \"Accretion disk: Orbiting material that heats up\", \"Hawking radiation: Theoretical emission that causes black holes to eventually evaporate\"], \"recentDiscoveries\": \"First image captured by Event Horizon Telescope in 2019, visualization of gravitational waves from merging black holes\"}"
+  },
+  {
+    "query": "Explain encryption",
+    "response": "{\"definition\": \"Process of encoding information so that only authorized parties can access it\", \"types\": [\"Symmetric encryption: Same key for encryption and decryption\", \"Asymmetric encryption: Public and private key pairs\", \"End-to-end encryption: Only communicating users can read messages\"], \"commonAlgorithms\": [\"AES (Advanced Encryption Standard)\", \"RSA (Rivest–Shamir–Adleman)\", \"ECC (Elliptic Curve Cryptography)\"], \"applications\": [\"Secure communications\", \"Password protection\", \"File security\", \"Digital signatures\"], \"importance\": \"Essential for privacy, security, and integrity of digital information in modern society\"}"
+  },
+  {
+    "query": "How to meditate for beginners",
+    "response": "{\"gettingStarted\": [\"Find a quiet, comfortable place\", \"Sit in a comfortable position\", \"Start with just 5 minutes daily\", \"Close your eyes or maintain a soft gaze\", \"Focus on your breath\"], \"techniques\": [\"Mindful breathing: Notice your natural breathing pattern\", \"Body scan: Gradually focus attention from head to toe\", \"Loving-kindness: Direct positive wishes to yourself and others\", \"Counting breaths: Count each breath cycle up to 10, then restart\"], \"tips\": [\"Don't try to stop thoughts, just observe them\", \"Return focus gently when your mind wanders\", \"Consistency matters more than duration\", \"Use guided meditations if helpful\"], \"benefits\": [\"Reduced stress and anxiety\", \"Improved focus\", \"Better emotional regulation\", \"Enhanced self-awareness\"]}"
+  },
+  {
+    "query": "What is the Big Bang theory?",
+    "response": "{\"definition\": \"Scientific theory describing how the universe expanded from an initial state of extremely high density and temperature\", \"timeline\": {\"age\": \"13.8 billion years ago\", \"initialPhase\": \"Rapid inflation period\", \"subsequentEvolution\": [\"Formation of subatomic particles\", \"Formation of atoms\", \"Formation of stars and galaxies\"]}, \"evidence\": [\"Cosmic microwave background radiation\", \"Abundance of light elements (hydrogen, helium)\", \"Expansion of the universe\", \"Distribution of galaxies\"], \"misconceptions\": [\"The Big Bang was not an explosion in space, but an expansion of space itself\", \"The theory describes the evolution of the universe, not its ultimate origin\"], \"ongoingResearch\": [\"Nature of dark matter and dark energy\", \"Details of cosmic inflation\", \"Physics before Planck time\"]}"
+  },
+  {
+    "query": "List healthy habits for longevity",
+    "response": "{\"nutrition\": [\"Eat a variety of whole foods\", \"Emphasize plant-based foods\", \"Limit processed foods and added sugars\", \"Practice caloric moderation\", \"Stay hydrated\"], \"physicalActivity\": [\"150+ minutes of moderate exercise weekly\", \"Strength training 2-3 times per week\", \"Regular walking\", \"Reduce sitting time\"], \"mentalWellbeing\": [\"Manage stress through mindfulness or relaxation techniques\", \"Maintain social connections\", \"Engage in lifelong learning\", \"Practice gratitude\"], \"sleepHabits\": [\"7-9 hours of quality sleep\", \"Consistent sleep schedule\", \"Create a restful environment\"], \"additionalFactors\": [\"Avoid smoking and excess alcohol\", \"Regular health screenings\", \"Maintain a healthy weight\", \"Limit environmental toxin exposure\"]}"
+  },
+  {
+    "query": "What are the elements on the periodic table?",
+    "response": "{\"count\": 118, \"categories\": [\"Metals\", \"Nonmetals\", \"Metalloids\"], \"groups\": [\"Alkali metals\", \"Alkaline earth metals\", \"Transition metals\", \"Post-transition metals\", \"Metalloids\", \"Reactive nonmetals\", \"Noble gases\", \"Lanthanides\", \"Actinides\"], \"mostAbundantInEarthsCrust\": [\"Oxygen\", \"Silicon\", \"Aluminum\", \"Iron\"], \"mostAbundantInUniverse\": [\"Hydrogen\", \"Helium\"], \"recentlyDiscovered\": \"Elements beyond 94 (plutonium) are synthetic and not found naturally in significant amounts\", \"note\": \"The full list of 118 elements is too extensive to include here, but ranges from hydrogen (H, atomic number 1) to oganesson (Og, atomic number 118).\"}"
+  },
+  {
+    "query": "Explain the water cycle",
+    "response": "{\"definition\": \"Natural process that continuously moves water between Earth's surface and atmosphere\", \"stages\": [\"Evaporation: Water transforms from liquid to gas from oceans, lakes, rivers\", \"Transpiration: Water vapor released from plants\", \"Condensation: Water vapor cools and forms clouds\", \"Precipitation: Water falls as rain, snow, sleet, or hail\", \"Collection: Water flows into bodies of water or seeps into ground\"], \"importance\": [\"Distributes freshwater around the planet\", \"Regulates Earth's temperature\", \"Supports all life\", \"Shapes landscapes through erosion\"], \"humanImpacts\": [\"Climate change alters precipitation patterns\", \"Pollution contaminates water sources\", \"Deforestation affects regional rainfall\"]}"
+  },
+  {
+    "query": "How does a refrigerator work?",
+    "response": "{\"basicPrinciple\": \"Removes heat from inside by continuous circulation of refrigerant\", \"components\": [\"Compressor: Pressurizes the refrigerant gas\", \"Condenser coils: Hot gas releases heat and condenses to liquid\", \"Expansion valve: Reduces pressure on liquid refrigerant\", \"Evaporator coils: Liquid absorbs heat and evaporates\", \"Thermostat: Controls the cooling cycle\"], \"process\": [\"Compressor pressurizes refrigerant gas, raising its temperature\", \"Hot gas flows through condenser coils, releasing heat outside\", \"Cooled liquid refrigerant passes through expansion valve, further cooling\", \"Cold refrigerant flows through evaporator coils inside, absorbing heat\", \"Warmed refrigerant returns to compressor, restarting cycle\"], \"efficiency\": \"Modern refrigerators use energy-efficient compressors and improved insulation\", \"environmentalConsiderations\": \"Shifted from harmful CFCs to more environmentally friendly refrigerants\"}"
+  },
+  {
+    "query": "List the major world religions",
+    "response": "{\"majorFaiths\": [{\"name\": \"Christianity\", \"followers\": \"2.4 billion\", \"founded\": \"1st century CE\"}, {\"name\": \"Islam\", \"followers\": \"1.9 billion\", \"founded\": \"7th century CE\"}, {\"name\": \"Hinduism\", \"followers\": \"1.2 billion\", \"founded\": \"Ancient origins, no specific date\"}, {\"name\": \"Buddhism\", \"followers\": \"520 million\", \"founded\": \"5th century BCE\"}, {\"name\": \"Folk religions\", \"followers\": \"430 million\", \"founded\": \"Various\"}, {\"name\": \"Sikhism\", \"followers\": \"30 million\", \"founded\": \"15th century CE\"}, {\"name\": \"Judaism\", \"followers\": \"15 million\", \"founded\": \"Ancient origins, circa 2000 BCE\"}], \"nonreligiousGroups\": [\"Atheism\", \"Agnosticism\", \"Secular humanism\"], \"note\": \"Estimates of followers vary by source and may not include all practitioners.\"}"
+  },
+  {
+    "query": "How to make a budget",
+    "response": "{\"steps\": [\"Calculate your total monthly income\", \"List all fixed expenses (rent, utilities, loan payments)\", \"Estimate variable expenses (groceries, entertainment, etc.)\", \"Set financial goals (emergency fund, debt repayment, savings)\", \"Allocate income to expense categories\", \"Track spending regularly\", \"Adjust as needed\"], \"commonCategories\": [\"Housing\", \"Transportation\", \"Food\", \"Utilities\", \"Insurance\", \"Healthcare\", \"Debt payments\", \"Savings\", \"Entertainment\", \"Personal care\"], \"methods\": [\"50/30/20 rule: 50% needs, 30% wants, 20% savings\", \"Zero-based budgeting: Every dollar has a purpose\", \"Envelope system: Cash in physical or digital envelopes\"], \"tools\": [\"Spreadsheets\", \"Budgeting apps\", \"Banking apps with categorization features\"], \"tips\": [\"Be realistic about expenses\", \"Include irregular expenses (annual subscriptions, holidays)\", \"Review and adjust monthly\", \"Allow some flexibility\"]}"
+  },
+  {
+    "query": "What causes earthquakes?",
+    "response": "{\"primaryCause\": \"Sudden release of energy in Earth's lithosphere, creating seismic waves\", \"mechanisms\": [\"Tectonic earthquakes: Movement along fault lines between tectonic plates\", \"Volcanic earthquakes: Associated with volcanic activity\", \"Collapse earthquakes: Underground caverns or mines collapse\", \"Explosion earthquakes: Man-made detonations\"], \"tectonicTypes\": [\"Convergent boundaries: Plates push together\", \"Divergent boundaries: Plates pull apart\", \"Transform boundaries: Plates slide past each other horizontally\"], \"terminology\": {\"focus\": \"Actual point where rocks break within Earth\", \"epicenter\": \"Point on Earth's surface directly above the focus\", \"magnitude\": \"Measure of energy released, recorded on Richter scale or moment magnitude scale\"}, \"majorZones\": [\"Pacific Ring of Fire\", \"Alpine-Himalayan belt\", \"Mid-Atlantic Ridge\"]}"
+  },
+  {
+    "query": "Explain the human respiratory system",
+    "response": "{\"mainComponents\": [\"Nose and nasal passages\", \"Pharynx (throat)\", \"Larynx (voice box)\", \"Trachea (windpipe)\", \"Bronchi and bronchioles\", \"Lungs\", \"Diaphragm\"], \"process\": [\"Inhalation: Diaphragm contracts, creating negative pressure in chest cavity\", \"Air travels through airways into lungs\", \"Oxygen diffuses from air sacs (alveoli) into bloodstream\", \"Carbon dioxide diffuses from blood into alveoli\", \"Exhalation: Diaphragm relaxes, pushing air out\"], \"gasExchange\": \"Occurs across thin membranes of alveoli, where oxygen enters bloodstream and carbon dioxide exits\", \"controlMechanism\": \"Respiratory centers in brainstem monitor blood CO2 levels and adjust breathing rate\", \"capacity\": \"Average adult lung capacity is about 6 liters\"}"
+  },
+  {
+    "query": "How do electric cars work?",
+    "response": "{\"keyComponents\": [\"Battery pack: Stores electrical energy\", \"Electric motor: Converts electrical energy to mechanical energy\", \"Inverter: Converts DC battery power to AC for the motor\", \"Controller: Manages power flow and motor operation\", \"Charging system: Replenishes battery from external source\"], \"operation\": [\"Electricity from battery powers electric motor\", \"Motor turns wheels directly (often without traditional transmission)\", \"Regenerative braking converts kinetic energy back to electricity\"], \"chargingTypes\": [\"Level 1: Standard household outlet (120V)\", \"Level 2: Home charging station (240V)\", \"DC Fast Charging: High-voltage quick charging\"], \"advantages\": [\"Zero tailpipe emissions\", \"Lower operating costs\", \"Quieter operation\", \"Instant torque\", \"Reduced maintenance\"], \"challenges\": [\"Limited range compared to gasoline vehicles\", \"Longer refueling time\", \"Battery degradation over time\", \"Charging infrastructure development\"]}"
+  },
+  {
+    "query": "How to improve public speaking skills",
+    "response": "{\"preparation\": [\"Know your audience\", \"Research your topic thoroughly\", \"Organize content with clear structure\", \"Create compelling visuals if needed\", \"Practice multiple times\"], \"delivery\": [\"Maintain eye contact\", \"Use vocal variety (tone, pace, volume)\", \"Incorporate strategic pauses\", \"Use natural gestures and movement\", \"Minimize filler words (um, uh, like)\"], \"mentalPreparation\": [\"Visualize successful presentation\", \"Use positive self-talk\", \"Reframe nervousness as excitement\", \"Arrive early to familiarize with space\"], \"ongoingImprovement\": [\"Join speaking clubs like Toastmasters\", \"Record yourself and review\", \"Seek constructive feedback\", \"Watch and learn from skilled speakers\", \"Speak regularly to build confidence\"], \"commonMistakes\": [\"Reading slides verbatim\", \"Speaking too quickly\", \"Apologizing unnecessarily\", \"Neglecting audience engagement\"]}"
+  }
+]
