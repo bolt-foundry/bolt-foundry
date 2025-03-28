@@ -34,7 +34,7 @@ type UseModalOptions = {
 export type BfDsContextType = {
   showModal: (
     content: ReactNode,
-    ref?: React.RefObject<ModalHandles>,
+    ref?: React.RefObject<ModalHandles | null>,
     options?: UseModalOptions,
   ) => () => void;
   showToast: (message: ReactNode, options?: UseToastOptions) => void;
