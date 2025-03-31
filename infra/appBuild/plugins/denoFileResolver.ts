@@ -1,5 +1,5 @@
 import type * as esbuild from "esbuild";
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
