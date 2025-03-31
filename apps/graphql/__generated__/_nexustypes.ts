@@ -152,6 +152,10 @@ export interface NexusGenObjects {
   Distribution: { // root type
     tbd?: string | null; // String
   }
+  JoinWaitlistResponse: { // root type
+    message?: string | null; // String
+    success?: boolean | null; // Boolean
+  }
   Mutation: {};
   PageInfo: { // root type
     endCursor?: string | null; // String
@@ -344,10 +348,15 @@ export interface NexusGenFieldTypes {
   Distribution: { // field return type
     tbd: string | null; // String
   }
+  JoinWaitlistResponse: { // field return type
+    message: string | null; // String
+    success: boolean | null; // Boolean
+  }
   Mutation: { // field return type
     checkEmail: boolean | null; // Boolean
     createVoice: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     getLoginOptions: NexusGenScalars['JSONString'] | null; // JSONString
+    joinWaitlist: NexusGenRootTypes['JoinWaitlistResponse'] | null; // JoinWaitlistResponse
     login: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
     loginAsDemoPerson: NexusGenRootTypes['BfCurrentViewerLoggedIn'] | null; // BfCurrentViewerLoggedIn
     makeTweets: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
@@ -547,10 +556,15 @@ export interface NexusGenFieldTypeNames {
   Distribution: { // field return type name
     tbd: 'String'
   }
+  JoinWaitlistResponse: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
   Mutation: { // field return type name
     checkEmail: 'Boolean'
     createVoice: 'BfOrganization'
     getLoginOptions: 'JSONString'
+    joinWaitlist: 'JoinWaitlistResponse'
     login: 'BfCurrentViewer'
     loginAsDemoPerson: 'BfCurrentViewerLoggedIn'
     makeTweets: 'BfOrganization'
@@ -692,6 +706,11 @@ export interface NexusGenArgTypes {
     }
     getLoginOptions: { // args
       email: string; // String!
+    }
+    joinWaitlist: { // args
+      company?: string | null; // String
+      email?: string | null; // String
+      name?: string | null; // String
     }
     login: { // args
       authResp: NexusGenScalars['JSONString']; // JSONString!
