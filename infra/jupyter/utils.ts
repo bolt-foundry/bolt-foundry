@@ -1,4 +1,4 @@
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import * as OriginalReact from "react";
 import * as ReactDOMServer from "react-dom/server";
 import { BaseComponent } from "infra/jupyter/BaseComponent.tsx";

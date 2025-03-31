@@ -1,8 +1,8 @@
 #!/usr/bin/env -S deno run -A
 
 import * as esbuild from "esbuild";
-import { getLogger } from "packages/logger.ts";
-import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
+import { getLogger } from "packages/logger/logger.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 import { denoFileResolver } from "./plugins/denoFileResolver.ts";
 import { contentPathRewriter } from "./plugins/contentPathRewriter.ts";
@@ -35,10 +35,7 @@ const defaultOptions: esbuild.BuildOptions = {
   treeShaking: true,
 
   entryPoints: [
-    "packages/app/ClientRoot.tsx",
-    "content/**/*.md",
-    "content/**/*.mdx",
-    "content/**/*.ipynb",
+    "apps/boltFoundry/ClientRoot.tsx",
   ],
   external: [
     "posthog-node",

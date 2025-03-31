@@ -153,22 +153,21 @@ Content Foundry follows specific patterns for organizing code files:
 
 - **Test files**: Place test files in a `__tests__` directory within the module
   they are testing.
-  - Example: Tests for `packages/bfDb/classes/SomeClass.ts` should go in
-    `packages/bfDb/classes/__tests__/SomeClass.test.ts`
+  - Example: Tests for `apps/bfDb/classes/SomeClass.ts` should go in
+    `apps/bfDb/classes/__tests__/SomeClass.test.ts`
 - **Example files**: Place example files in a `__examples__` directory within
   the module they exemplify.
-  - Example: Examples for `packages/bfDb/classes/SomeClass.ts` should go in
-    `packages/bfDb/classes/__examples__/SomeExampleFile.ts`
-- **Model classes**: Database models are in `packages/bfDb/models/`
-- **Core model classes**: Base classes for models are in
-  `packages/bfDb/coreModels/`
+  - Example: Examples for `apps/bfDb/classes/SomeClass.ts` should go in
+    `apps/bfDb/classes/__examples__/SomeExampleFile.ts`
+- **Model classes**: Database models are in `apps/bfDb/models/`
+- **Core model classes**: Base classes for models are in `apps/bfDb/coreModels/`
 
 ### Front-end Architecture
 
 Content Foundry uses a component-based architecture with React:
 
-- Components are in `packages/app/components/`
-- Design system components in `packages/bfDs/components/`
+- Components are in `apps/boltFoundry/components/`
+- Design system components in `apps/bfDs/components/`
 - Isograph used for component data fetching
 - Router context for navigation
 
@@ -194,7 +193,7 @@ In Content Foundry, Isograph components are defined using the `iso` function
 imported from the generated isograph module:
 
 ```tsx
-import { iso } from "packages/app/__generated__/__isograph/iso.ts";
+import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
 
 export const MyComponent = iso(`
   field TypeName.FieldName @component {
@@ -270,7 +269,7 @@ structure and component structure align perfectly.
 #### Environment Setup
 
 Content Foundry sets up the Isograph environment in
-`packages/app/isographEnvironment.ts`:
+`apps/boltFoundry/isographEnvironment.ts`:
 
 - Creates an Isograph store
 - Configures network requests to the GraphQL endpoint
@@ -309,14 +308,14 @@ handling and loading states.
 3. **Mutations**: Use `entrypoint Mutation.MutationName` for GraphQL mutations
 
 The Isograph compiler automatically generates TypeScript types and utilities in
-`packages/app/__generated__/__isograph/`.
+`apps/boltFoundry/__generated__/__isograph/`.
 
 ### GraphQL API
 
 Content Foundry uses GraphQL for its API layer:
 
-- Schema is defined in `packages/graphql/types/`
-- Generated schema available at `packages/graphql/__generated__/schema.graphql`
+- Schema is defined in `apps/graphql/types/`
+- Generated schema available at `apps/graphql/__generated__/schema.graphql`
 
 #### Context Usage in Resolvers
 
@@ -368,15 +367,15 @@ The database abstraction makes it easy to add new backend implementations:
 
 ### Additional Modules
 
-- **Feature Flags**: Feature toggle system in `packages/featureFlags/` for
-  controlled feature rollouts
+- **Feature Flags**: Feature toggle system in `apps/boltFoundry/featureFlags/`
+  for controlled feature rollouts
 - **Analytics**: Custom analytics implementation in `packages/analytics/`
-- **Error Handling**: Centralized error handling via `packages/BfError.ts`
+- **Error Handling**: Centralized error handling via `infra/BfError.ts`
 - **Configuration**: Environment-based configuration in
-  `packages/getConfigurationVariable.ts`
-- **Logging**: Structured logging system in `packages/logger.ts`
+  `@bolt-foundry/get-configuration-var`
+- **Logging**: Structured logging system in `packages/logger/logger.ts`
 - **Tools**: Developer tools in `packages/tools/`
-- **Web Server**: Web server implementation in `packages/web/`
+- **Web Server**: Web server implementation in `apps/web/`
 
 ## Development Workflow
 
@@ -538,13 +537,13 @@ environment variable:
 
 ```bash
 # Enable DEBUG level for a single module
-ENABLE_DEBUG_LOGGER=packages/bfDb/coreModels/BfNode.ts bff t path/to/test.ts
+ENABLE_DEBUG_LOGGER=apps/bfDb/coreModels/BfNode.ts bff t path/to/test.ts
 
 # Enable DEBUG for multiple modules (comma-separated)
-ENABLE_DEBUG_LOGGER=packages/bfDb/coreModels/BfNode.ts,packages/bfDb/bfDb.ts bff t path/to/test.ts
+ENABLE_DEBUG_LOGGER=apps/bfDb/coreModels/BfNode.ts,apps/bfDb/bfDb.ts bff t path/to/test.ts
 
 # Enable DEBUG for all modules in a directory (wildcard)
-ENABLE_DEBUG_LOGGER=packages/bfDb/* bff t path/to/test.ts
+ENABLE_DEBUG_LOGGER=apps/bfDb/* bff t path/to/test.ts
 ```
 
 This allows for targeted debugging without increasing verbosity across the
@@ -868,7 +867,7 @@ Always name the main file of a module after its parent directory, rather than us
 - **Preferred**: `routes/routes.ts` (matches the directory name)
 - **Avoid**: `routes/index.ts` (generic name that doesn't indicate purpose)
 
-This approach improves code discoverability and makes it easier to trace module boundaries in the codebase. When you see an import like `import { Router } from "packages/web/routes/routes.ts"`, you immediately know which file to look for.
+This approach improves code discoverability and makes it easier to trace module boundaries in the codebase. When you see an import like `import { Router } from "apps/web/routes/routes.ts"`, you immediately know which file to look for.
 
 ##### Direct Imports vs Barrel Files
 
@@ -1059,7 +1058,7 @@ If you reply to the assistant's response with a specific protocol (e.g.,
    complicate and confuse the type system.
 9. **Use project root-relative paths** in imports and file references, not
    relative to the current file. For example, use
-   `import { X } from "packages/web/component.ts"` instead of
+   `import { X } from "apps/web/component.ts"` instead of
    `import { X } from "../web/component.ts"`.
 10. **Use lexically sortable inheritance naming** for classes that implement
     interfaces or extend base classes. Start with the base class or interface
@@ -1618,10 +1617,10 @@ import { assertEquals, assertThrows } from "@std/assert";
 
     ```typescript
     // ✅ PREFERRED: Direct import from specific file
-    import { BfPerson } from "packages/bfDb/models/BfPerson.ts";
+    import { BfPerson } from "apps/bfDb/models/BfPerson.ts";
 
     // ❌ AVOID: Import from barrel file
-    import { BfPerson } from "packages/bfDb/models/index.ts";
+    import { BfPerson } from "apps/bfDb/models/index.ts";
     ```
 
 [^lexical_naming]: Lexical naming examples:
@@ -1672,7 +1671,7 @@ import { assertEquals, assertThrows } from "@std/assert";
     // ❌ INCORRECT - This test just verifies current implementation (error throwing)
     Deno.test("BfEdgeBase save method should throw NotImplemented error", async () => {
       // Import the BfErrorNotImplemented class
-      const { BfErrorNotImplemented } = await import("packages/BfError.ts");
+      const { BfErrorNotImplemented } = await import("infra/BfError.ts");
 
       // Create an edge
       const edge = new BfEdgeBase();

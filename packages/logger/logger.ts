@@ -1,8 +1,7 @@
-// File: packages/logger.ts
 import log from "loglevel";
 import chalk from "chalk";
 import logLevelPrefixPlugin from "loglevel-plugin-prefix";
-import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 chalk.level = 3;
 
 log.setDefaultLevel(log.levels.INFO);
@@ -71,7 +70,7 @@ function shouldEnableDebugForLogger(loggerName: string): boolean {
       return true;
     }
 
-    // Wildcard match (e.g., "packages/bfDb/*")
+    // Wildcard match (e.g., "apps/bfDb/*")
     if (path.endsWith("/*") && loggerName.startsWith(path.slice(0, -2))) {
       return true;
     }
@@ -122,7 +121,7 @@ if (!isBrowser()) {
 
 const loggerCache = new Map<string, log.Logger>();
 
-export function getLogger(importMeta: ImportMeta | string) {
+export function getLogger(importMeta: ImportMeta | string): log.Logger {
   let loggerName: string;
 
   if (typeof importMeta === "string") {

@@ -1,7 +1,7 @@
 import { getLogger } from "@bolt-foundry/logger";
 const logger = getLogger(import.meta);
 
-export function connectToOpenAi(openAiApiKey: string) {
+export function connectToOpenAi(openAiApiKey: string): typeof fetch {
   return function boltFoundryFetch(
     url: RequestInfo | URL,
     options?: RequestInit,

@@ -5,7 +5,7 @@ import { walk } from "@std/fs/walk";
 import { basename, dirname, extname, join } from "@std/path";
 import { globToRegExp } from "@std/path";
 import { exists } from "@std/fs/exists";
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

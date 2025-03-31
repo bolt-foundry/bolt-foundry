@@ -1,5 +1,5 @@
 import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import {
   runShellCommand,
   runShellCommandWithOutput,
