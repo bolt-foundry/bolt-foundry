@@ -9,6 +9,7 @@ export * from "apps/graphql/types/graphqlBfNode.ts";
 export * from "apps/graphql/types/graphqlBfOrganization.ts";
 export * from "apps/graphql/types/graphqlBfPerson.ts";
 export * from "apps/graphql/types/graphqlJSONScalar.ts";
+export * from "apps/graphql/types/graphqlJoinWaitlist.ts";
 export * from "apps/graphql/types/graphqlRecommendation.ts";
 
 

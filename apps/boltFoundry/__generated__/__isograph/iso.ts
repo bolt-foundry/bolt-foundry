@@ -30,6 +30,7 @@ import { type BfOrganization_Research__Topic__param } from './BfOrganization_Res
 import { type Mutation__CheckEmail__param } from './Mutation/CheckEmail/param_type.ts';
 import { type Mutation__CreateVoice__param } from './Mutation/CreateVoice/param_type.ts';
 import { type Mutation__GetLoginOptions__param } from './Mutation/GetLoginOptions/param_type.ts';
+import { type Mutation__JoinWaitlist__param } from './Mutation/JoinWaitlist/param_type.ts';
 import { type Mutation__LoginAsDemoPerson__param } from './Mutation/LoginAsDemoPerson/param_type.ts';
 import { type Mutation__Login__param } from './Mutation/Login/param_type.ts';
 import { type Mutation__MakeTweets__param } from './Mutation/MakeTweets/param_type.ts';
@@ -54,6 +55,7 @@ import { type Query__entrypointTwitterIdeatorResearch__param } from './Query/ent
 import entrypoint_Mutation__CheckEmail from '../__isograph/Mutation/CheckEmail/entrypoint.ts';
 import entrypoint_Mutation__CreateVoice from '../__isograph/Mutation/CreateVoice/entrypoint.ts';
 import entrypoint_Mutation__GetLoginOptions from '../__isograph/Mutation/GetLoginOptions/entrypoint.ts';
+import entrypoint_Mutation__JoinWaitlist from '../__isograph/Mutation/JoinWaitlist/entrypoint.ts';
 import entrypoint_Mutation__LoginAsDemoPerson from '../__isograph/Mutation/LoginAsDemoPerson/entrypoint.ts';
 import entrypoint_Mutation__Login from '../__isograph/Mutation/Login/entrypoint.ts';
 import entrypoint_Mutation__MakeTweets from '../__isograph/Mutation/MakeTweets/entrypoint.ts';
@@ -249,6 +251,10 @@ export function iso<T>(
 ): IdentityWithParam<Mutation__GetLoginOptions__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Mutation.JoinWaitlist', T>
+): IdentityWithParam<Mutation__JoinWaitlist__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Mutation.LoginAsDemoPerson', T>
 ): IdentityWithParamComponent<Mutation__LoginAsDemoPerson__param>;
 
@@ -343,6 +349,10 @@ export function iso<T>(
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Mutation.GetLoginOptions', T>
 ): typeof entrypoint_Mutation__GetLoginOptions;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'entrypoint Mutation.JoinWaitlist', T>
+): typeof entrypoint_Mutation__JoinWaitlist;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Mutation.LoginAsDemoPerson', T>
@@ -440,6 +450,8 @@ export function iso(isographLiteralText: string):
       return entrypoint_Mutation__CreateVoice;
     case 'entrypoint Mutation.GetLoginOptions':
       return entrypoint_Mutation__GetLoginOptions;
+    case 'entrypoint Mutation.JoinWaitlist':
+      return entrypoint_Mutation__JoinWaitlist;
     case 'entrypoint Mutation.LoginAsDemoPerson':
       return entrypoint_Mutation__LoginAsDemoPerson;
     case 'entrypoint Mutation.Login':
