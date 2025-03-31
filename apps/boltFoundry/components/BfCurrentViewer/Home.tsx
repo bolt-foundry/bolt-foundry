@@ -12,7 +12,7 @@ import { BfDsFormSubmitButton } from "apps/bfDs/components/BfDsForm/BfDsFormSubm
 import { useBfDs } from "apps/bfDs/hooks/useBfDs.tsx";
 import type { ModalHandles } from "apps/bfDs/components/BfDsModal.tsx";
 import { useMutation } from "apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
-// import joinWaitlistMutation from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
+import joinWaitlistMutation from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
 
 const logger = getLogger(import.meta);
 
