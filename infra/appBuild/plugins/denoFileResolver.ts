@@ -1,5 +1,5 @@
 import type * as esbuild from "esbuild";
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -7,7 +7,7 @@ export const denoFileResolver: esbuild.Plugin = {
   name: "deno-file-resolver",
   setup(build) {
     build.onResolve(
-      { filter: /\.(ts|js|tsx|jsx|md|mdx|ipynb)$/ },
+      { filter: /^(?:@bolt-foundry.*|\S+\.(?:ts|js|tsx|jsx|md|mdx|ipynb))$/ },
       async (args) => {
         if (args.kind === "entry-point") return;
 

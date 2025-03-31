@@ -1,6 +1,6 @@
 // infra/bff/friends/githubAnnotations.ts
 
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { runShellCommandWithOutput } from "infra/bff/shellBase.ts";
 
 const logger = getLogger(import.meta);

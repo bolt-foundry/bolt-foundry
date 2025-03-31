@@ -1,7 +1,7 @@
 #! /usr/bin/env -S deno run -A
 
 import { friendMap } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { dirname, join } from "@std/path";
 
 const logger = getLogger(import.meta);

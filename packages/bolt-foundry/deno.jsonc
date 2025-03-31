@@ -1,5 +1,10 @@
 {
+  "name": "@bolt-foundry/bolt-foundry",
+  "version": "0.0.0-dev.0",
+  "exports": {
+    "./bolt-foundry.ts": "./bolt-foundry.ts"
+  },
   "imports": {
-    "@deno/dnt": "jsr:@deno/dnt@^0.41.3"
+    "@bolt-foundry/logger": "jsr:@bolt-foundry/logger@^0.0.0-dev.0"
   }
 }

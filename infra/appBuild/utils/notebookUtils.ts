@@ -1,4 +1,4 @@
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const _logger = getLogger(import.meta);
 

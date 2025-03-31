@@ -1,7 +1,7 @@
-import type { Handler } from "packages/web/web.tsx";
-import { getLogger } from "packages/logger.ts";
-import { BfError } from "packages/BfError.ts";
-import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
+import type { Handler } from "apps/web/web.tsx";
+import { getLogger } from "packages/logger/logger.ts";
+import { BfError } from "infra/BfError.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 const logger = getLogger(import.meta);
 
 export function addTools(routes: Map<string, Handler>) {

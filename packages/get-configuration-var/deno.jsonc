@@ -1,0 +1,7 @@
+{
+  "name": "@bolt-foundry/get-configuration-var",
+  "version": "0.0.0-dev.0",
+  "exports": {
+    ".": "./get-configuration-var.ts"
+  }
+}

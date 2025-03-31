@@ -1,8 +1,8 @@
 import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/bff.ts";
-import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
-import { getLogger } from "packages/logger.ts";
-import { DeploymentEnvs } from "packages/app/constants/deploymentEnvs.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
+import { getLogger } from "packages/logger/logger.ts";
+import { DeploymentEnvs } from "infra/constants/deploymentEnvs.ts";
 
 const logger = getLogger(import.meta);
 
@@ -112,7 +112,7 @@ const denoCompilationCommand = [
   `--allow-read=${readableLocations.join(",")}`,
   `--allow-write=${writableLocations.join(",")}`,
   `--allow-run=${allowedBinaries.join(",")}`,
-  "packages/web/web.tsx",
+  "apps/web/web.tsx",
 ];
 
 export async function build([waitForFail]: Array<string>): Promise<number> {
@@ -142,7 +142,7 @@ export async function build([waitForFail]: Array<string>): Promise<number> {
     return contentResult;
   }
 
-  const result = await runShellCommand(["./packages/graphql/graphqlServer.ts"]);
+  const result = await runShellCommand(["./apps/graphql/graphqlServer.ts"]);
   if (result) return result;
   if (result && waitForFail) {
     return new Promise((_, reject) => {
@@ -152,7 +152,7 @@ export async function build([waitForFail]: Array<string>): Promise<number> {
 
   const isographResult = await runShellCommand(
     ["deno", "run", "-A", "npm:@isograph/compiler"],
-    "packages/app",
+    "apps/boltFoundry",
   );
 
   if (isographResult && waitForFail) {
