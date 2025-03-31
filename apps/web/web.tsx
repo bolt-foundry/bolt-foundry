@@ -19,7 +19,7 @@ const routes = registerAllRoutes();
 
 // Main request handler wrapper
 async function handleRequestWrapper(req: Request): Promise<Response> {
-  return await handleRequest(req, routes, defaultRoute, contentPromise);
+  return await handleRequest(req, routes, defaultRoute);
 }
 
 // Use the port from environment or default 8000

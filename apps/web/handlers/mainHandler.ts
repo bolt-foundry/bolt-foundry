@@ -14,7 +14,6 @@ export async function handleRequest(
   req: Request,
   routes: Map<string, Handler>,
   defaultRoute: () => Response,
-  contentPromise: Promise<unknown>,
 ): Promise<Response> {
   let res: Response | null;
 
@@ -34,9 +33,6 @@ export async function handleRequest(
       try {
         // Keep the query string, so we pass "pathname + search" to matchRoute
         const pathWithParams = incomingUrl.pathname + incomingUrl.search;
-
-        // Wait for content to be initialized
-        await contentPromise;
 
         // Handle the route
         res = await handleMatchedRoute(
