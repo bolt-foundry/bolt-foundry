@@ -37,6 +37,7 @@ const allowedEnvironmentVariables = [
   "TERM",
   "TF_BUILD",
   "USER",
+  "WAITLIST_API_KEY",
   "WEB_PORT",
   "WS_NO_BUFFER_UTIL",
 ];
@@ -52,6 +53,7 @@ const DEFAULT_NETWORK_DESTINATIONS = [
   "openrouter.ai",
   "api.openai.com",
   "app.posthog.com",
+  "bf-cms.replit.app:443",
 ];
 
 const allowedNetworkDestionations = [...DEFAULT_NETWORK_DESTINATIONS];
