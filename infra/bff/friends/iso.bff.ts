@@ -17,8 +17,8 @@ const logger = getLogger(import.meta);
 export async function isoCommand(options: string[]): Promise<number> {
   logger.info("Running isograph compiler...");
 
-  // Default working directory is packages/app where the isograph config lives
-  const workingDir = "packages/app";
+  // Default working directory is apps/boltFoundry where the isograph config lives
+  const workingDir = "apps/boltFoundry";
 
   try {
     // When called directly, provide more verbose output
