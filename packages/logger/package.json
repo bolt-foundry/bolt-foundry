@@ -1,0 +1,6 @@
+{
+  "name": "@bolt-foundry/logger",
+  "version": "0.0.1",
+  "main": "logger.ts",
+  "type": "module"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@bolt-foundry/bolt-foundry",
+  "version": "0.0.1",
+  "main": "bolt-foundry.ts",
+  "type": "module",
+  "dependencies": {
+    "posthog-node": "^4.11.1"
+  }
+}
