@@ -3,8 +3,8 @@ import {
   __DANGEROUSLY_DESTROY_THE_DATABASE__,
   cleanModelsExcept,
   upsertBfDb,
-} from "packages/bfDb/bfDbUtils.ts";
-import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
+} from "apps/bfDb/bfDbUtils.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 export async function dbReset(): Promise<number> {
   if (getConfigurationVariable("BF_ENV") === "DEVELOPMENT") {

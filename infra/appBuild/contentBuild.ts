@@ -2,7 +2,7 @@
 
 import { ensureDir } from "@std/fs";
 // import { dirname, extname, join } from "@std/path";
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 // import { compile } from "@mdx-js/mdx";
 // import { processNotebookContent } from "infra/appBuild/utils/notebookUtils.ts";
 

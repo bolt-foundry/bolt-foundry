@@ -1,6 +1,8 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@bolt-foundry/get-configuration-var@0.0.0-dev.0": "0.0.0-dev.0",
+    "jsr:@bolt-foundry/logger@^0.0.0-dev.0": "0.0.0-dev.0",
     "jsr:@david/code-block-writer@^13.0.2": "13.0.3",
     "jsr:@deno/cache-dir@~0.10.3": "0.10.3",
     "jsr:@deno/dnt@~0.41.3": "0.41.3",
@@ -109,6 +111,17 @@
     "npm:zod@^3.24.1": "3.24.1"
   },
   "jsr": {
+    "@bolt-foundry/get-configuration-var@0.0.0-dev.0": {
+      "integrity": "04ec312462ae6f0f6ed85e82fb444d18a8782754ecd2d920a4947fffb0435a58"
+    },
+    "@bolt-foundry/logger@0.0.0-dev.0": {
+      "integrity": "57e26fe743ce4a78c52efc786da1f3f2008d5cc0f2544ff36609cf9f0aeb6eba",
+      "dependencies": [
+        "npm:chalk",
+        "npm:loglevel",
+        "npm:loglevel-plugin-prefix"
+      ]
+    },
     "@david/code-block-writer@13.0.3": {
       "integrity": "f98c77d320f5957899a61bfb7a9bead7c6d83ad1515daee92dbacc861e13bb7f"
     },
@@ -3617,7 +3630,15 @@
     "members": {
       "packages/bolt-foundry": {
         "dependencies": [
-          "jsr:@deno/dnt@~0.41.3"
+          "jsr:@bolt-foundry/logger@^0.0.0-dev.0"
+        ]
+      },
+      "packages/logger": {
+        "dependencies": [
+          "jsr:@bolt-foundry/get-configuration-var@0.0.0-dev.0",
+          "npm:chalk@^5.4.1",
+          "npm:loglevel-plugin-prefix@~0.8.4",
+          "npm:loglevel@^1.9.2"
         ]
       }
     }

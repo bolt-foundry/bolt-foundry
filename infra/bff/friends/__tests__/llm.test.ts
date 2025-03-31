@@ -3,7 +3,7 @@ import { assert, assertStringIncludes } from "@std/assert";
 import { join } from "@std/path";
 import { emptyDir } from "@std/fs";
 import { llm } from "infra/bff/friends/llm.bff.ts";
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 async function runLlmAndCapture(args: string[]): Promise<string[]> {
   const bffLlmLogger = getLogger(
