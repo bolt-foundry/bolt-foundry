@@ -93,9 +93,9 @@ export const Home = iso(`
           </div>,
         );
       },
-      onComplete: (joinWaitlistResponseData) => {
-        if (!joinWaitlistResponseData.success) {
-          logger.error(joinWaitlistResponseData.message);
+      onComplete: ({joinWaitlist}) => {
+        if (!joinWaitlist.success) {
+          logger.error(joinWaitlist.message);
           return showModal(
             <div>
               <h3>Oops!</h3>

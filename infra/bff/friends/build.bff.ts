@@ -53,6 +53,7 @@ const DEFAULT_NETWORK_DESTINATIONS = [
   "openrouter.ai",
   "api.openai.com",
   "app.posthog.com",
+  "bf-cms.replit.app:443",
 ];
 
 const allowedNetworkDestionations = [...DEFAULT_NETWORK_DESTINATIONS];
