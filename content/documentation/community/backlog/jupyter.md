@@ -1,2 +1,0 @@
-- [ ] add error boundary to html rendering
-- [ ] make an esbuild loader

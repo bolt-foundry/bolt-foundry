@@ -1,9 +1,9 @@
 import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 import { extractYaml } from "@std/front-matter";
 import { walk } from "@std/fs";
 import { join } from "@std/path";
-import type { JSONValue } from "packages/bfDb/bfDb.ts";
+import type { JSONValue } from "apps/bfDb/bfDb.ts";
 
 const logger = getLogger(import.meta);
 

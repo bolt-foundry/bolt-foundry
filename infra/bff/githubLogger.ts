@@ -1,5 +1,5 @@
 // File: infra/bff/githubLogger.ts
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 export interface GithubAnnotationMeta {
   file?: string;
