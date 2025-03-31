@@ -11,6 +11,8 @@ import { BfDsFormTextInput } from "packages/bfDs/components/BfDsForm/BfDsFormTex
 import { BfDsFormSubmitButton } from "packages/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
 import { useBfDs } from "packages/bfDs/hooks/useBfDs.tsx";
 import type { ModalHandles } from "packages/bfDs/components/BfDsModal.tsx";
+import { useMutation } from "packages/app/hooks/isographPrototypes/useMutation.tsx";
+import joinWaitlistMutation from "packages/app/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
 
 const logger = getLogger(import.meta);
 
@@ -28,6 +30,7 @@ export const Home = iso(`
     }
   }
 `)(function Home({ data }) {
+  const { commit } = useMutation(joinWaitlistMutation);
   const { showModal } = useBfDs();
   const modalRef = useRef<ModalHandles>(null);
   const [shouldPlay, setShouldPlay] = useState(false);
@@ -79,23 +82,21 @@ export const Home = iso(`
 
   function submitWaitlistForm(value: WaitlistFormData) {
     setSubmitting(true);
-    // TODO move to graphql
-    fetch("https://bf-cms.replit.app/api/contacts", {
-      method: "POST",
-      headers: {
-        "x-api-key": "josh9IS%the2BEST*and@EVERYONE7knows$IT",
-        "Content-Type": "application/json",
+    commit({ name: value.name, email: value.email, company: value.company }, {
+      onError: (error) => {
+        logger.error("Error joining waitlist", error);
+        return showModal(
+          <div>
+            <h3>Oops!</h3>
+            There was an error... email{" "}
+            <a href="mailto:dan@boltfoundry.com">Dan</a>{" "}
+            and we'll get in touch.
+          </div>,
+        );
       },
-      body: JSON.stringify({
-        name: value.name,
-        email: value.email,
-        company: value.company,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success === false) {
-          logger.error(data.message);
+      onComplete: (joinWaitlistResponseData) => {
+        if (!joinWaitlistResponseData.success) {
+          logger.error(joinWaitlistResponseData.message);
           return showModal(
             <div>
               <h3>Oops!</h3>
@@ -106,16 +107,8 @@ export const Home = iso(`
           );
         }
         modalRef.current?.closeModal();
-      })
-      .catch((_error) =>
-        showModal(
-          <div>
-            <h3>Oops!</h3>
-            There was an error... email{" "}
-            <a href="mailto:dan@boltfoundry.com">Dan</a> and we'll get in touch.
-          </div>,
-        )
-      );
+      }
+    })
   }
 
   const initialFormData = {
