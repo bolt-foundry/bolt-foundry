@@ -104,6 +104,7 @@
     "npm:openai@*": "4.79.1_zod@3.24.1",
     "npm:pg@^8.13.3": "8.13.3",
     "npm:posthog-js@^1.223.5": "1.223.5_@rrweb+types@2.0.0-alpha.17",
+    "npm:posthog-node@^4.11.1": "4.11.1",
     "npm:posthog-node@^4.7.0": "4.7.0",
     "npm:react-dom@19": "19.0.0_react@19.0.0",
     "npm:react@*": "19.0.0",
@@ -3004,6 +3005,12 @@
         "web-vitals@4.2.4"
       ]
     },
+    "posthog-node@4.11.1": {
+      "integrity": "sha512-Hdby0Rq2K1rzjHxQdUmFBEP2UqAR/tY4d0WbNp7GxkYUK0YZvAD15MkeorSo4b8X7zgosHfQJVRxGx0HWSYPBA==",
+      "dependencies": [
+        "axios"
+      ]
+    },
     "posthog-node@4.7.0": {
       "integrity": "sha512-RgdUKSW8MfMOkjUa8cYVqWndNjPePNuuxlGbrZC6z1WRBsVc6TdGl8caidmC10RW8mu/BOfmrGbP4cRTo2jARg==",
       "dependencies": [
@@ -3631,7 +3638,12 @@
       "packages/bolt-foundry": {
         "dependencies": [
           "jsr:@bolt-foundry/logger@^0.0.0-dev.0"
-        ]
+        ],
+        "packageJson": {
+          "dependencies": [
+            "npm:posthog-node@^4.11.1"
+          ]
+        }
       },
       "packages/logger": {
         "dependencies": [
