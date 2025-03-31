@@ -236,10 +236,16 @@ A scalar that only accepts a valid JSON string. It returns the same valid JSON s
 """
 scalar JSONString
 
+type JoinWaitlistResponse {
+  message: String
+  success: Boolean
+}
+
 type Mutation {
   checkEmail(email: String!): Boolean
   createVoice(handle: String!): BfOrganization
   getLoginOptions(email: String!): JSONString
+  joinWaitlist(company: String, email: String, name: String): JoinWaitlistResponse
   login(authResp: JSONString!, email: String!): BfCurrentViewer
   loginAsDemoPerson: BfCurrentViewerLoggedIn
   makeTweets(tweet: String!): BfOrganization

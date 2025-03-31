@@ -9,6 +9,7 @@ export type RouteEntrypoint = {
 iso(`entrypoint Mutation.CheckEmail`)
 iso(`entrypoint Mutation.CreateVoice`)
 iso(`entrypoint Mutation.GetLoginOptions`)
+iso(`entrypoint Mutation.JoinWaitlist`)
 iso(`entrypoint Mutation.LoginAsDemoPerson`)
 iso(`entrypoint Mutation.Login`)
 iso(`entrypoint Mutation.MakeTweets`)
@@ -50,6 +51,7 @@ import entrypointTwitterIdeatorVoice from "packages/app/__generated__/__isograph
 import entrypointTwitterIdeatorWorkshop from "packages/app/__generated__/__isograph/Query/EntrypointTwitterIdeatorWorkshop/entrypoint.ts"
 import entrypointTwitterIdeatorWorkshopPermalink from "packages/app/__generated__/__isograph/Query/EntrypointTwitterIdeatorWorkshopPermalink/entrypoint.ts"
 import getLoginOptions from "packages/app/__generated__/__isograph/Mutation/GetLoginOptions/entrypoint.ts"
+import joinWaitlist from "packages/app/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts"
 import login from "packages/app/__generated__/__isograph/Mutation/Login/entrypoint.ts"
 import loginAsDemoPerson from "packages/app/__generated__/__isograph/Mutation/LoginAsDemoPerson/entrypoint.ts"
 import makeTweets from "packages/app/__generated__/__isograph/Mutation/MakeTweets/entrypoint.ts"
@@ -76,6 +78,7 @@ export {entrypointTwitterIdeatorWorkshopPermalink};
 export {entrypointTwitterIdeatorWorkshop};
 export {entrypointTwitterIdeator};
 export {getLoginOptions};
+export {joinWaitlist};
 export {loginAsDemoPerson};
 export {login};
 export {makeTweets};
