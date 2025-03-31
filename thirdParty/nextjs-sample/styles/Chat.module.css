@@ -1,0 +1,38 @@
+
+.chat {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.chat form {
+  display: flex;
+  gap: 1rem;
+}
+
+.chat input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.chat button {
+  padding: 0.5rem 1rem;
+  background: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.chat button:disabled {
+  background: #ccc;
+}
+
+.response {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
