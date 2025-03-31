@@ -37,6 +37,7 @@ const allowedEnvironmentVariables = [
   "TERM",
   "TF_BUILD",
   "USER",
+  "WAITLIST_API_KEY",
   "WEB_PORT",
   "WS_NO_BUFFER_UTIL",
 ];
