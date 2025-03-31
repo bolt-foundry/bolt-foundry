@@ -1,8 +1,6 @@
 #! /usr/bin/env -S deno run --allow-net=localhost:8000 --allow-env
 
 import { getLogger } from "packages/logger/logger.ts";
-import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
-import { initializeContentCollections } from "apps/web/initializeContent.ts";
 import {
   defaultRoute,
   registerAllRoutes,
@@ -18,13 +16,6 @@ export type Handler = (
 
 // Register all routes
 const routes = registerAllRoutes();
-
-// Initialize content collections
-const contentInitCv = BfCurrentViewer
-  .__DANGEROUS_USE_IN_SCRIPTS_ONLY__createOmni(import.meta);
-
-// Initialize content collections
-const contentPromise = initializeContentCollections(contentInitCv);
 
 // Main request handler wrapper
 async function handleRequestWrapper(req: Request): Promise<Response> {
