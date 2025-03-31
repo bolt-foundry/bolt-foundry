@@ -2,7 +2,7 @@
 
 import { register } from "infra/bff/bff.ts";
 import { runShellCommand } from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

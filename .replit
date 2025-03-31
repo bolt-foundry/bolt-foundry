@@ -120,7 +120,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "chmod +x ./packages/web/tools.tsx && ./packages/web/tools.tsx"
+args = "chmod +x ./apps/web/tools.tsx && ./apps/web/tools.tsx"
 waitForPort = 9999
 
 [[workflows.workflow]]

@@ -4,7 +4,7 @@ import {
   runShellCommand,
   runShellCommandWithOutput,
 } from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -90,7 +90,7 @@ async function stopSapling() {
 async function startTools() {
   logger.info("Starting Tools...");
   try {
-    const cmd = ["./packages/web/tools.tsx"];
+    const cmd = ["./apps/web/tools.tsx"];
     await runShellCommand(cmd);
     logger.info("Tools started successfully");
     return 0;

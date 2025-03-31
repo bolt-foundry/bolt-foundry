@@ -1,6 +1,6 @@
 import OpenAI from "@openai/openai";
-import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
-import { getLogger } from "packages/logger.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
+import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

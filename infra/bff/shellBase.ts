@@ -1,7 +1,7 @@
 // File: infra/bff/shellBase.ts
 
-import { getLogger } from "packages/logger.ts";
-import { getConfigurationVariable } from "packages/getConfigurationVariable.ts";
+import { getLogger } from "packages/logger/logger.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { register } from "infra/bff/bff.ts";
 import startSpinner from "lib/terminalSpinner.ts";
 
