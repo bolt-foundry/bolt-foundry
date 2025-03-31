@@ -133,6 +133,10 @@ task = "shell.exec"
 args = "bff restartLsp"
 
 [[ports]]
+localPort = 3000
+externalPort = 3002
+
+[[ports]]
 localPort = 3011
 externalPort = 3001
 
