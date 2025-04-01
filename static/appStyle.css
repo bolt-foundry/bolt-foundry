@@ -92,6 +92,7 @@
   font-family: var(--marketingFontFamily);
   font-size: 32px;
   line-height: 1;
+  text-align: center;
 }
 
 .videoPlayer {
@@ -121,6 +122,9 @@
 @media (max-width: 600px), (max-height: 600px) and (orientation: landscape) {
   .videoPlayer video {
     padding: 0;
+  }
+  .videoPlayerButtons {
+    top: 60%;
   }
 }
 
