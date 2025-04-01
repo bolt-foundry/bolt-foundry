@@ -65,10 +65,10 @@ export const Home = iso(`
     if (!video) return;
 
     const handleTimeUpdate = () => {
-      if (video.currentTime < 35 && showButtons) {
+      if (video.currentTime < 35) {
         setShowButtons(false);
       }
-      if (video.currentTime >= 35 && !showButtons) {
+      if (video.currentTime >= 35) {
         setShowButtons(true);
       }
     };
@@ -172,49 +172,75 @@ export const Home = iso(`
           )}
         </div>
 
-        <div className="appCta">
+        <div className="appCta row-column">
           <div className="text">
             Model fine tuning that improves quality and cuts costs.
           </div>
           <BfDsButton text="Join the waitlist" onClick={joinWaitlist} />
         </div>
         {playPlinko ? <Plinko /> : (
-          <div className="videoPlayer">
-            <video autoPlay muted ref={videoRef}>
-              <source
-                src="/static/assets/videos/plinko_4k.mp4"
-                type="video/mp4"
-                media="(min-width: 2000px)"
-              />
-              <source
-                src="/static/assets/videos/plinko_hd.mp4"
-                type="video/mp4"
-                media="(min-width: 1000px)"
-              />
-              <source
-                src="/static/assets/videos/plinko_720.mp4"
-                type="video/mp4"
-              />
-            </video>
-            <div className={videoContainerClasses}>
-              <div className="videoPlayerButtons">
-                <BfDsButton
-                  iconLeft="back"
-                  kind="outline"
-                  text="Replay"
-                  onClick={() => setShouldPlay(true)}
+          <div className="flex1">
+            <div className="videoPlayer">
+              <video
+                autoPlay
+                muted
+                playsInline
+                webkit-playsinline="true"
+                preload="auto"
+                x-webkit-airplay="allow"
+                ref={videoRef}
+                onLoadedMetadata={(e) => {
+                  const video = e.target as HTMLVideoElement;
+                  video.play().catch((error) => {
+                    logger.error("Error playing video:", error);
+                  });
+                }}
+                onClick={() => {
+                  const video = videoRef.current;
+                  if (!video) return;
+                  if (video.paused) {
+                    video.play();
+                  }
+                }}
+              >
+                <source
+                  src="/static/assets/videos/plinko_4k.mp4"
+                  type="video/mp4"
+                  media="(min-width: 2000px)"
                 />
-                <BfDsButton text="Join the waitlist" onClick={joinWaitlist} />
+                <source
+                  src="/static/assets/videos/plinko_hd.mp4"
+                  type="video/mp4"
+                  media="(min-width: 1000px)"
+                />
+                <source
+                  src="/static/assets/videos/plinko_720.mp4"
+                  type="video/mp4"
+                />
+              </video>
+              <div className={videoContainerClasses}>
+                <div className="videoPlayerButtons">
+                  <BfDsButton
+                    iconLeft="back"
+                    kind="outline"
+                    text="Replay"
+                    onClick={() => setShouldPlay(true)}
+                  />
+                  <BfDsButton text="Join the waitlist" onClick={joinWaitlist} />
+                </div>
               </div>
             </div>
           </div>
         )}
-        <div className="appFooter">
+        <div className="appFooter mobile-hide">
           <BfDsButton
             kind="outline"
             text={playPlinko ? "Watch the video" : "Play the game"}
             onClick={() => setPlayPlinko(!playPlinko)}
           />
+        </div>
+        <div className="appFooter mobile-show">
+          Play the game in your desktop browser.
         </div>
       </div>
     </>
