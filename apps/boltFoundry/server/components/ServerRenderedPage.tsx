@@ -58,7 +58,7 @@ export function ServerRenderedPage(
         />
         <script
           type="module"
-          src="/static/build/apps/boltFoundry/ClientRoot.js"
+          src="/static/build/ClientRoot.js"
         />
       </head>
       <body>
