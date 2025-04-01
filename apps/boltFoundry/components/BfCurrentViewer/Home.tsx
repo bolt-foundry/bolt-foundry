@@ -47,6 +47,7 @@ export const Home = iso(`
 
     if (shouldPlay || !playPlinko) {
       video.currentTime = 0;
+      setShowButtons(false);
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise
