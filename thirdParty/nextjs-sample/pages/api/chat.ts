@@ -1,7 +1,13 @@
 
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { connectToOpenAi } from "@bolt-foundry/bolt-foundry";
+
+
+const openai = createOpenAI({
+  fetch: connectToOpenAi(process.env.OPENAI_API_KEY, process.env.POSTHOG_API_KEY_FOR_NEXT),
+})
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,6 +24,7 @@ export default async function handler(
       model: openai('gpt-3.5-turbo'),
       prompt: message,
       maxTokens: 500,
+      
     });
 
     res.status(200).json({ 
