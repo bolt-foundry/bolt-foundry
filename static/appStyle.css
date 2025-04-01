@@ -6,7 +6,7 @@
 .App {
   display: flex;
   flex-direction: row;
-  height: 100vh;
+  height: 100dvh;
 }
 .AppSidebar {
   width: 250px;
@@ -77,6 +77,7 @@
 
 .appFooter {
   padding: 20px;
+  text-align: center;
 }
 
 .appCta {
@@ -95,27 +96,32 @@
 
 .videoPlayer {
   position: relative;
-  flex: 1;
 }
 .videoPlayer video,
 .videoPlayer .videoPlayerButtonsContainer {
-  position: absolute;
-  left: 0;
-  top: 0;
   min-height: 350px;
-  max-height: 100%;
   width: 100%;
-  object-fit: contain;
   padding: 20px;
   box-sizing: border-box;
 }
 .videoPlayer .videoPlayerButtonsContainer {
-  aspect-ratio: 16 / 9;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
   transition: 500ms opacity ease;
   opacity: 0;
 }
 .videoPlayerButtonsContainer.active {
+  pointer-events: all;
   opacity: 1;
+}
+
+@media (max-width: 600px), (max-height: 600px) and (orientation: landscape) {
+  .videoPlayer video {
+    padding: 0;
+  }
 }
 
 .videoPlayerButtons {
@@ -126,7 +132,7 @@
   justify-content: center;
   align-items: center;
   gap: 12px;
-  width: calc(100% - 40px);
+  width: calc(100vw - 40px);
 }
 
 /* ContentOS */
