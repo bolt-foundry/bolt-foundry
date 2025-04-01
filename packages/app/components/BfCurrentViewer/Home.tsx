@@ -44,6 +44,7 @@ export const Home = iso(`
 
     if (shouldPlay || !playPlinko) {
       video.currentTime = 0;
+      setShowButtons(false);
       const playPromise = video.play();
       if (playPromise !== undefined) {
         playPromise
@@ -180,7 +181,7 @@ export const Home = iso(`
           )}
         </div>
 
-        <div className="appCta">
+        <div className="appCta row-column">
           <div className="text">
             Model fine tuning that improves quality and cuts costs.
           </div>
@@ -188,7 +189,28 @@ export const Home = iso(`
         </div>
         {playPlinko ? <Plinko /> : (
           <div className="videoPlayer">
-            <video autoPlay muted ref={videoRef}>
+            <video
+              autoPlay
+              muted
+              playsInline
+              webkit-playsinline="true"
+              preload="auto"
+              x-webkit-airplay="allow"
+              ref={videoRef}
+              onLoadedMetadata={(e) => {
+                const video = e.target as HTMLVideoElement;
+                video.play().catch((error) => {
+                  logger.error("Error playing video:", error);
+                });
+              }}
+              onClick={() => {
+                const video = videoRef.current;
+                if (!video) return;
+                if (video.paused) {
+                  video.play();
+                }
+              }}
+            >
               <source
                 src="/static/assets/videos/plinko_4k.mp4"
                 type="video/mp4"
@@ -217,12 +239,15 @@ export const Home = iso(`
             </div>
           </div>
         )}
-        <div className="appFooter">
+        <div className="appFooter mobile-hide">
           <BfDsButton
             kind="outline"
             text={playPlinko ? "Watch the video" : "Play the game"}
             onClick={() => setPlayPlinko(!playPlinko)}
           />
+        </div>
+        <div className="appFooter mobile-show">
+          Play the game in your desktop browser.
         </div>
       </div>
     </>

@@ -148,7 +148,7 @@ a.dark:visited {
   justify-content: flex-start;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 600px), (max-height: 600px) and (orientation: landscape) {
   /* These styles will apply when the viewport width is 600px or less */
   .mobile-show {
     display: initial;
