@@ -97,6 +97,8 @@
 
 .videoPlayer {
   position: relative;
+  max-width: 60rem;
+  margin: 0 auto;
 }
 .videoPlayer video,
 .videoPlayer .videoPlayerButtonsContainer {
@@ -119,15 +121,6 @@
   opacity: 1;
 }
 
-@media (max-width: 600px), (max-height: 600px) and (orientation: landscape) {
-  .videoPlayer video {
-    padding: 0;
-  }
-  .videoPlayerButtons {
-    top: 60%;
-  }
-}
-
 .videoPlayerButtons {
   position: absolute;
   top: 70%;
@@ -136,8 +129,19 @@
   justify-content: center;
   align-items: center;
   gap: 12px;
-  width: calc(100vw - 40px);
+  width: calc(100% - 40px);
 }
+
+@media (max-width: 600px), (max-height: 600px) and (orientation: landscape) {
+  .videoPlayer video {
+    padding: 0;
+  }
+  .videoPlayerButtons {
+    width: calc(100vw - 40px);
+    top: 60%;
+  }
+}
+
 
 /* ContentOS */
 .page {
