@@ -63,12 +63,12 @@
     ".git",
     "build",
     "static",
-    "**/__TEMPLATE__.*",
-    "thirdParty"
+    "**/__TEMPLATE__.*"
   ],
   "lint": {
     "exclude": [
-      "**/__generated__/**"
+      "**/__generated__/**",
+      "thirdParty"
     ],
     "rules": {
       "include": [
@@ -86,7 +86,8 @@
       "**/__generated__/**",
       "**/*.json",
       "**/*.ipynb",
-      "**/.ipynb_checkpoints"
+      "**/.ipynb_checkpoints",
+      "thirdParty"
     ]
   },
 
@@ -96,7 +97,8 @@
   "workspace": [
     "packages/bolt-foundry",
     "packages/logger",
-    "packages/get-configuration-var"
+    "packages/get-configuration-var",
+    "thirdParty/nextjs-sample"
   ],
   "nodeModulesDir": "manual",
   "vendor": true

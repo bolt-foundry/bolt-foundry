@@ -132,6 +132,16 @@ author = 33272860
 task = "shell.exec"
 args = "bff restartLsp"
 
+
+[[workflows.workflow]]
+name = "Start next.js app"
+mode = "sequential"
+author = 33272860
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd thirdParty/nextjs-sample/ && npm run dev"
+
 [[ports]]
 localPort = 3000
 externalPort = 3002
