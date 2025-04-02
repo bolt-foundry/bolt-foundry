@@ -16,7 +16,6 @@ import type {
 } from "@simplewebauthn/server";
 import { BfOrganization } from "apps/bfDb/models/BfOrganization.ts";
 import { getPosthogClient } from "lib/posthog.ts";
-import { BfPersonDemo } from "apps/bfDb/models/BfPersonDemo.ts";
 
 const logger = getLogger(import.meta);
 
@@ -60,7 +59,6 @@ export type Context = {
   ): Promise<BfPerson>;
   getRequestHeader(name: string): string | null;
   getResponseHeaders(): Headers;
-  loginDemoUser(): Promise<BfPersonDemo>;
   findOrganizationForCurrentViewer(): Promise<BfOrganization | null>;
 };
 
@@ -74,15 +72,6 @@ export async function createContext(request: Request): Promise<Context> {
     responseHeaders,
   );
   logger.debug("Current viewer created");
-
-  async function loginDemoUser() {
-    currentViewer = BfCurrentViewer.createForDemo(
-      import.meta,
-      responseHeaders,
-    );
-    const person = await BfPersonDemo.registerDemoPerson(currentViewer);
-    return person;
-  }
 
   async function login(email: string, options: AuthenticationResponseJSON) {
     logger.debug("Logging in user");
@@ -190,7 +179,6 @@ export async function createContext(request: Request): Promise<Context> {
 
     login,
     register,
-    loginDemoUser,
 
     async findOrganizationForCurrentViewer() {
       const orgs = await BfOrganization.query(
