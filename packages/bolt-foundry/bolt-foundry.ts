@@ -32,7 +32,7 @@ export function connectToOpenAi(openAiApiKey: string): typeof fetch {
           const body = JSON.parse(modifiedOptions.body);
 
           // Update the model to gpt-3.5-turbo
-          body.model = "gpt-3.5-turbo";
+          // body.model = "gpt-3.5-turbo";
 
           // Stringify the body back
           modifiedOptions.body = JSON.stringify(body);
