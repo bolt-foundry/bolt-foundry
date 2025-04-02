@@ -1,7 +1,8 @@
 {
   description = "Nix flake referencing replit.nix";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    # nix flake metadata nixpkgs/release-24.11 --json | jq ".revision"
+    nixpkgs.url = "github:NixOS/nixpkgs/26e168479fdc7a75fe55e457e713d8b5f794606a";
     flake-utils.url = "github:numtide/flake-utils";
   };
   outputs = { self, nixpkgs, flake-utils, ... }:
