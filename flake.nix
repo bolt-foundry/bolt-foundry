@@ -1,7 +1,8 @@
 {
   description = "Nix flake referencing replit.nix";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    # Pin nixpkgs to a specific commit hash instead of the channel
+    nixpkgs.url = "github:NixOS/nixpkgs/26e168479fdc7a75fe55e457e713d8b5f794606a"; # Commit with Python 3.12.7
     flake-utils.url = "github:numtide/flake-utils";
   };
   outputs = { self, nixpkgs, flake-utils, ... }:
