@@ -1,10 +1,4 @@
 import type { IsographEntrypoint } from '@isograph/react';
-import { type BfBlog__BlogPostList__param } from './BfBlog/BlogPostList/param_type.ts';
-import { type BfBlogPost__BlogPostListItem__param } from './BfBlogPost/BlogPostListItem/param_type.ts';
-import { type BfBlogPost__BlogPostPermalinkPage__param } from './BfBlogPost/BlogPostPermalinkPage/param_type.ts';
-import { type BfBlogPost__BlogPostTitleForHeader__param } from './BfBlogPost/BlogPostTitleForHeader/param_type.ts';
-import { type BfContentCollection__ContentCollection__param } from './BfContentCollection/ContentCollection/param_type.ts';
-import { type BfContentItem__ContentItem__param } from './BfContentItem/ContentItem/param_type.ts';
 import { type BfCurrentViewer__DemoButton__param } from './BfCurrentViewer/DemoButton/param_type.ts';
 import { type BfCurrentViewer__Home__param } from './BfCurrentViewer/Home/param_type.ts';
 import { type BfCurrentViewerLoggedIn__LoggedInView__param } from './BfCurrentViewerLoggedIn/LoggedInView/param_type.ts';
@@ -37,9 +31,6 @@ import { type Mutation__MakeTweets__param } from './Mutation/MakeTweets/param_ty
 import { type Mutation__Register__param } from './Mutation/Register/param_type.ts';
 import { type Mutation__RegistrationOptions__param } from './Mutation/RegistrationOptions/param_type.ts';
 import { type Mutation__ReviseBlog__param } from './Mutation/ReviseBlog/param_type.ts';
-import { type Query__EntrypointBigLittleTechAi__param } from './Query/EntrypointBigLittleTechAi/param_type.ts';
-import { type Query__EntrypointBlogPost__param } from './Query/EntrypointBlogPost/param_type.ts';
-import { type Query__EntrypointBlog__param } from './Query/EntrypointBlog/param_type.ts';
 import { type Query__EntrypointContentFoundryApp__param } from './Query/EntrypointContentFoundryApp/param_type.ts';
 import { type Query__EntrypointFormatterVoice__param } from './Query/EntrypointFormatterVoice/param_type.ts';
 import { type Query__EntrypointFormatter__param } from './Query/EntrypointFormatter/param_type.ts';
@@ -62,9 +53,6 @@ import entrypoint_Mutation__MakeTweets from '../__isograph/Mutation/MakeTweets/e
 import entrypoint_Mutation__Register from '../__isograph/Mutation/Register/entrypoint.ts';
 import entrypoint_Mutation__RegistrationOptions from '../__isograph/Mutation/RegistrationOptions/entrypoint.ts';
 import entrypoint_Mutation__ReviseBlog from '../__isograph/Mutation/ReviseBlog/entrypoint.ts';
-import entrypoint_Query__EntrypointBigLittleTechAi from '../__isograph/Query/EntrypointBigLittleTechAi/entrypoint.ts';
-import entrypoint_Query__EntrypointBlogPost from '../__isograph/Query/EntrypointBlogPost/entrypoint.ts';
-import entrypoint_Query__EntrypointBlog from '../__isograph/Query/EntrypointBlog/entrypoint.ts';
 import entrypoint_Query__EntrypointContentFoundryApp from '../__isograph/Query/EntrypointContentFoundryApp/entrypoint.ts';
 import entrypoint_Query__EntrypointFormatterVoice from '../__isograph/Query/EntrypointFormatterVoice/entrypoint.ts';
 import entrypoint_Query__EntrypointFormatter from '../__isograph/Query/EntrypointFormatter/entrypoint.ts';
@@ -125,30 +113,6 @@ type MatchesWhitespaceAndString<
   TString extends string,
   T
 > = Whitespace<T> extends `${TString}${string}` ? T : never;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field BfBlog.BlogPostList', T>
-): IdentityWithParamComponent<BfBlog__BlogPostList__param>;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field BfBlogPost.BlogPostListItem', T>
-): IdentityWithParamComponent<BfBlogPost__BlogPostListItem__param>;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field BfBlogPost.BlogPostPermalinkPage', T>
-): IdentityWithParamComponent<BfBlogPost__BlogPostPermalinkPage__param>;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field BfBlogPost.BlogPostTitleForHeader', T>
-): IdentityWithParam<BfBlogPost__BlogPostTitleForHeader__param>;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field BfContentCollection.ContentCollection', T>
-): IdentityWithParamComponent<BfContentCollection__ContentCollection__param>;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field BfContentItem.ContentItem', T>
-): IdentityWithParamComponent<BfContentItem__ContentItem__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field BfCurrentViewer.DemoButton', T>
@@ -279,18 +243,6 @@ export function iso<T>(
 ): IdentityWithParam<Mutation__ReviseBlog__param>;
 
 export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field Query.EntrypointBigLittleTechAi', T>
-): IdentityWithParam<Query__EntrypointBigLittleTechAi__param>;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field Query.EntrypointBlogPost', T>
-): IdentityWithParam<Query__EntrypointBlogPost__param>;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field Query.EntrypointBlog', T>
-): IdentityWithParam<Query__EntrypointBlog__param>;
-
-export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.EntrypointContentFoundryApp', T>
 ): IdentityWithParam<Query__EntrypointContentFoundryApp__param>;
 
@@ -379,18 +331,6 @@ export function iso<T>(
 ): typeof entrypoint_Mutation__ReviseBlog;
 
 export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointBigLittleTechAi', T>
-): typeof entrypoint_Query__EntrypointBigLittleTechAi;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointBlogPost', T>
-): typeof entrypoint_Query__EntrypointBlogPost;
-
-export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointBlog', T>
-): typeof entrypoint_Query__EntrypointBlog;
-
-export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointContentFoundryApp', T>
 ): typeof entrypoint_Query__EntrypointContentFoundryApp;
 
@@ -464,12 +404,6 @@ export function iso(isographLiteralText: string):
       return entrypoint_Mutation__RegistrationOptions;
     case 'entrypoint Mutation.ReviseBlog':
       return entrypoint_Mutation__ReviseBlog;
-    case 'entrypoint Query.EntrypointBigLittleTechAi':
-      return entrypoint_Query__EntrypointBigLittleTechAi;
-    case 'entrypoint Query.EntrypointBlogPost':
-      return entrypoint_Query__EntrypointBlogPost;
-    case 'entrypoint Query.EntrypointBlog':
-      return entrypoint_Query__EntrypointBlog;
     case 'entrypoint Query.EntrypointContentFoundryApp':
       return entrypoint_Query__EntrypointContentFoundryApp;
     case 'entrypoint Query.EntrypointFormatterVoice':
