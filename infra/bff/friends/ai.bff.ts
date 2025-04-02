@@ -227,8 +227,18 @@ ${diffOutput}
 
       // Ask if user wants to submit a pull request
       logger.info("\nDo you want to submit a pull request? (y/n)");
-      await Deno.stdin.read(buffer);
-      const submitPrAnswer = decoder.decode(buffer).toLowerCase();
+
+      // Create a more robust way to read input
+      const submitPrAnswer = await new Promise<string>((resolve) => {
+        const buf = new Uint8Array(1);
+        Deno.stdin.setRaw(true);
+        Deno.stdin.read(buf).then(() => {
+          const answer = decoder.decode(buf).toLowerCase();
+          Deno.stdin.setRaw(false);
+          logger.info(`Input: ${answer}`); // Echo input
+          resolve(answer);
+        });
+      });
 
       if (submitPrAnswer === "y") {
         logger.info("Submitting pull request...");
@@ -433,8 +443,18 @@ ${combinedDiff}
 
       // Ask if user wants to submit a pull request
       logger.info("\nDo you want to submit a pull request? (y/n)");
-      await Deno.stdin.read(buffer);
-      const submitPrAnswer = decoder.decode(buffer).toLowerCase();
+
+      // Create a more robust way to read input
+      const submitPrAnswer = await new Promise<string>((resolve) => {
+        const buf = new Uint8Array(1);
+        Deno.stdin.setRaw(true);
+        Deno.stdin.read(buf).then(() => {
+          const answer = decoder.decode(buf).toLowerCase();
+          Deno.stdin.setRaw(false);
+          logger.info(`Input: ${answer}`); // Echo input
+          resolve(answer);
+        });
+      });
 
       if (submitPrAnswer === "y") {
         logger.info("Submitting pull request...");
