@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // 👇 This is the key bit
+  transpilePackages: ["@bolt-foundry/bolt-foundry", "@bolt-foundry/logger", "@bolt-foundry/get-configuration-var"],
+
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
 };

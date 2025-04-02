@@ -20,6 +20,8 @@ export async function checkCommand(options: string[]): Promise<number> {
       "infra/**/*.tsx",
       "packages/**/*.ts",
       "packages/**/*.tsx",
+      "apps/**/*.ts",
+      "apps/**/*.tsx",
     );
   }
 
