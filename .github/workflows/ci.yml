@@ -12,37 +12,98 @@ jobs:
 
       - uses: cachix/install-nix-action@v25
         with:
-          nix_path: nixpkgs=channel:nixos-24_11
+          nix_path: nixpkgs=channel:stable-24_11
 
-      - name: Parse .replit env and export to GitHub Actions
+      - name: Parse .replit file and set environment variables
         run: |
-          sudo apt-get update && sudo apt-get install -y python3-pip
-          pip3 install toml
+          # Parse the .replit file using grep and sed
+          echo "Parsing .replit file..."
 
-          python3 << 'EOF'
-          import toml
-          import os
-          data = toml.load(".replit")
-          env_data = data.get("env", {})
-          with open(os.environ["GITHUB_ENV"], "a") as f:
-              for key, value in env_data.items():
-                  if key != "PATH":
-                      f.write(f"{key}={value}\n")
-          EOF
+          # Extract [env] section content
+          env_section=$(sed -n '/^\[env\]/,/^\[/p' .replit | grep -v '^\[' | grep -v '^#' | grep '=')
 
-      - name: Set environment variables
+          # Process each line in the env section
+          echo "Setting environment variables from .replit [env] section:"
+          while IFS= read -r line; do
+            # Skip empty lines and comments
+            if [[ -z "$line" || "$line" =~ ^# ]]; then
+              continue
+            fi
+
+            # Extract variable name and value
+            if [[ "$line" =~ ([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*(.*) ]]; then
+              var_name="${BASH_REMATCH[1]}"
+              var_value="${BASH_REMATCH[2]}"
+
+              # Remove quotes if present
+              var_value="${var_value#\"}"
+              var_value="${var_value%\"}"
+
+              # Replace $REPL_HOME with $GITHUB_WORKSPACE
+              var_value="${var_value//\$REPL_HOME/$GITHUB_WORKSPACE}"
+
+              # Skip PATH as we'll handle it separately
+              if [[ "$var_name" != "PATH" ]]; then
+                echo "Setting $var_name=$var_value"
+                echo "$var_name=$var_value" >> $GITHUB_ENV
+              fi
+            fi
+          done <<< "$env_section"
+
+          # Handle PATH separately to avoid overriding the existing PATH
+          if grep -q 'PATH[[:space:]]*=' .replit; then
+            path_addition=$(grep 'PATH[[:space:]]*=' .replit | sed 's/PATH[[:space:]]*=[[:space:]]*//' | sed 's/"//g')
+            path_addition="${path_addition//\$REPL_HOME/$GITHUB_WORKSPACE}"
+            path_addition="${path_addition//\$PATH/}"
+            echo "Adding to PATH: $path_addition"
+            echo "$path_addition" >> $GITHUB_PATH
+          fi
+
+      - name: Set secrets as environment variables
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
           echo "ASSEMBLY_AI_KEY=${{ secrets.ASSEMBLY_AI_KEY }}" >> $GITHUB_ENV
           echo "OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}" >> $GITHUB_ENV
           echo "OPEN_ROUTER_API_KEY=${{ secrets.OPEN_ROUTER_API_KEY }}" >> $GITHUB_ENV
           echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
-          echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
-          echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
+          echo "OTEL_EXPORTER_OTLP_HEADERS=authorization=${{ secrets.HYPERDX_INGESTION_KEY }}" >> $GITHUB_ENV
+          echo "OTEL_EXPORTER_OTLP_ENDPOINT=https://in-otel.hyperdx.io" >> $GITHUB_ENV
+          echo "OTEL_SERVICE_NAME=CONTENT_FOUNDRY" >> $GITHUB_ENV
 
-      - name: Run CI in nix
+      - name: Setup Nix development environment
         run: |
-          nix develop . --impure --command bash -c "
+          # Check nix version
+          nix --version
+
+          # Make the infra/bin directory executable
+          mkdir -p $GITHUB_WORKSPACE/infra/bin
+          chmod -R +x $GITHUB_WORKSPACE/infra/bin
+
+          # Use the flake.nix to enter the development shell
+          nix develop --impure --command bash -c "
+            echo 'Nix development environment activated successfully'
+            # Install necessary environment tools if needed
+          "
+
+      - name: Install deno
+        run: |
+          # Ensure deno is installed and available in the PATH
+          nix develop --impure --command bash -c "
+            deno --version || echo 'Deno not found in environment'
+          "
+
+      - name: Run CI in nix environment
+        run: |
+          nix develop --impure --command bash -c "
+            # Verify bff tool is available
+            if [ -f \"$GITHUB_WORKSPACE/infra/bin/bff\" ]; then
+              echo \"Found bff tool at $GITHUB_WORKSPACE/infra/bin/bff\"
+              chmod +x $GITHUB_WORKSPACE/infra/bin/bff
+            else
+              echo \"bff tool not found in infra/bin directory. Checking PATH...\"
+              which bff || echo \"bff command not found in PATH\"
+            fi
+
+            # Run the CI command
             bff ci -g
           "
