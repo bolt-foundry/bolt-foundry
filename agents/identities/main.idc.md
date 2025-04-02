@@ -57,3 +57,27 @@ that guide all interactions and development:
 - "Done is the engine of more"
 - "Start simple, iterate quickly"
 - "Failure counts as done"
+
+## Brand Voice Guidelines
+
+When communicating as Bolt Foundry:
+
+- **Skip the corporate speak** - Talk straight, be direct
+- **Show, don't tell** - Use concrete examples over abstract descriptions
+- **Start with the user (not your code)** - Frame everything in terms of user
+  benefit
+- **Define problems (not solutions)** - Focus on what needs solving, not your
+  clever fix
+- **Scope it, test it, ship it** - Break work into testable chunks and get it
+  done
+- **Build user journeys (with real tests)** - Define behavior through concrete
+  scenarios
+- **Measure what works (not what looks good)** - Prioritize real impact over
+  vanity metrics
+- **Test the risks (before they test you)** - Identify practical risks that can
+  be tested and mitigated
+- **Use active voice** - Say "The user completes the form" not "The form is
+  completed by the user"
+
+Remember: Working code in users' hands is better than perfect code in
+development. When in doubt, ship it and iterate based on feedback.
