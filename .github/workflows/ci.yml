@@ -12,23 +12,18 @@ jobs:
 
       - uses: cachix/install-nix-action@v25
         with:
-          nix_path: nixpkgs=channel:nixos-24_11
+          nix_path: nixpkgs=channel:nixos-24.11
 
-      - name: Parse .replit env and export to GitHub Actions
+      - name: Setup Nix environment
         run: |
-          sudo apt-get update && sudo apt-get install -y python3-pip
-          pip3 install toml
-
-          python3 << 'EOF'
-          import toml
-          import os
-          data = toml.load(".replit")
-          env_data = data.get("env", {})
-          with open(os.environ["GITHUB_ENV"], "a") as f:
-              for key, value in env_data.items():
-                  if key != "PATH":
-                      f.write(f"{key}={value}\n")
-          EOF
+          # Check if nix flake is recognized
+          nix --version
+          
+          # Use the flake.nix for dependencies
+          nix develop --impure --command bash -c "echo 'Nix environment activated successfully'"
+          
+          # Add the devShell's bin path to PATH
+          echo "PATH=$(nix develop --impure --command bash -c 'echo $PATH'):$PATH" >> $GITHUB_ENV
 
       - name: Set environment variables
         run: |
@@ -37,12 +32,15 @@ jobs:
           echo "OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}" >> $GITHUB_ENV
           echo "OPEN_ROUTER_API_KEY=${{ secrets.OPEN_ROUTER_API_KEY }}" >> $GITHUB_ENV
           echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
           echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
           echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
 
       - name: Run CI in nix
         run: |
-          nix develop . --impure --command bash -c "
+          nix develop --impure --command bash -c "
+            # Check if bff is available
+            which bff || echo 'bff command not found'
+            
+            # Run the CI command
             bff ci -g
           "
