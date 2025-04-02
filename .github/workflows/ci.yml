@@ -10,39 +10,154 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Use Nix with the exact same commit as specified in replit.nix
       - uses: cachix/install-nix-action@v25
         with:
-          nix_path: nixpkgs=channel:nixos-24_11
+          # Note: Use nix_path correctly - needs to be a correct path with no spaces
+          nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/482ffc541c8ffb8d2d09018dba09667d8d2e5e7f.tar.gz
 
+      # Parse .replit file for environment variables
       - name: Parse .replit env and export to GitHub Actions
         run: |
-          sudo apt-get update && sudo apt-get install -y python3-pip
-          pip3 install toml
+          # Extract environment variables from [env] section
+          env_section=$(sed -n '/^\[env\]/,/^\[/p' .replit | grep -v '^\[' | grep -v '^#' | grep '=')
 
-          python3 << 'EOF'
-          import toml
-          import os
-          data = toml.load(".replit")
-          env_data = data.get("env", {})
-          with open(os.environ["GITHUB_ENV"], "a") as f:
-              for key, value in env_data.items():
-                  if key != "PATH":
-                      f.write(f"{key}={value}\n")
-          EOF
+          # Process each variable
+          echo "Setting environment variables from .replit [env] section"
+          while IFS= read -r line; do
+            # Skip empty lines and comments
+            if [[ -z "$line" || "$line" =~ ^# ]]; then
+              continue
+            fi
 
-      - name: Set environment variables
+            # Extract variable name and value
+            if [[ "$line" =~ ([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*(.*) ]]; then
+              var_name="${BASH_REMATCH[1]}"
+              var_value="${BASH_REMATCH[2]}"
+
+              # Clean up value (remove quotes, etc.)
+              var_value=$(echo "$var_value" | sed 's/^"\(.*\)"$/\1/' | sed "s/^'\(.*\)'$/\1/")
+
+              # Replace Replit variables with GitHub equivalents
+              var_value="${var_value//\$REPL_HOME/$GITHUB_WORKSPACE}"
+
+              # Skip PATH as we'll handle it separately
+              if [[ "$var_name" != "PATH" ]]; then
+                echo "Setting $var_name=$var_value"
+                echo "$var_name=$var_value" >> $GITHUB_ENV
+              fi
+            fi
+          done <<< "$env_section"
+
+          # Extract PATH adjustments
+          if grep -q 'PATH[[:space:]]*=' .replit; then
+            path_addition=$(grep 'PATH[[:space:]]*=' .replit | sed 's/PATH[[:space:]]*=[[:space:]]*//' | sed 's/"//g')
+            path_addition="${path_addition//\$REPL_HOME/$GITHUB_WORKSPACE}"
+            path_addition="${path_addition//\$PATH/:}"
+            echo "Adding to PATH: $path_addition"
+            echo "$path_addition" >> $GITHUB_PATH
+          fi
+
+      # Set secrets as environment variables
+      - name: Set secrets as environment variables
         run: |
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
           echo "ASSEMBLY_AI_KEY=${{ secrets.ASSEMBLY_AI_KEY }}" >> $GITHUB_ENV
           echo "OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}" >> $GITHUB_ENV
           echo "OPEN_ROUTER_API_KEY=${{ secrets.OPEN_ROUTER_API_KEY }}" >> $GITHUB_ENV
           echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
-          echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
-          echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
+          echo "OTEL_EXPORTER_OTLP_HEADERS=authorization=${{ secrets.HYPERDX_INGESTION_KEY }}" >> $GITHUB_ENV
+          echo "OTEL_EXPORTER_OTLP_ENDPOINT=https://in-otel.hyperdx.io" >> $GITHUB_ENV
+          echo "OTEL_SERVICE_NAME=CONTENT_FOUNDRY" >> $GITHUB_ENV
 
+      # Verify Nix is properly configured
+      - name: Verify Nix configuration
+        run: |
+          echo "Nix version:"
+          nix --version
+
+          echo "Nix path:"
+          nix-instantiate --eval -E 'builtins.nixPath'
+
+          echo "Testing Nix import:"
+          nix-instantiate --eval -E '(import <nixpkgs> {}).lib.version' || echo "Failed to import nixpkgs"
+
+      # Setup and use Nix environment based on replit.nix
+      - name: Setup and use Nix environment with direct import
+        run: |
+          # Ensure infra/bin directory exists and is executable
+          mkdir -p $GITHUB_WORKSPACE/infra/bin
+          chmod -R +x $GITHUB_WORKSPACE/infra/bin
+
+          # Extract commit hash from replit.nix
+          NIXPKGS_COMMIT=$(grep -o '[0-9a-f]\{40\}' replit.nix | head -1)
+          echo "Using Nixpkgs commit: $NIXPKGS_COMMIT"
+
+          # Import and use environment from replit.nix directly using the full URL
+          echo "Loading dependencies from replit.nix..."
+          nix-shell --run "echo 'Nix environment loaded successfully'" -E "
+            let
+              nixpkgsPath = builtins.fetchTarball {
+                url = \"https://github.com/NixOS/nixpkgs/archive/${NIXPKGS_COMMIT}.tar.gz\";
+              };
+              pkgs = import nixpkgsPath {};
+              replit = import ./replit.nix { 
+                inherit pkgs; 
+                system = builtins.currentSystem;
+              };
+            in
+              pkgs.mkShell {
+                buildInputs = replit.deps;
+              }
+          "
+
+          # List available tools for debugging
+          nix-shell --run "python --version || echo 'Python not found'" -E "
+            let
+              nixpkgsPath = builtins.fetchTarball {
+                url = \"https://github.com/NixOS/nixpkgs/archive/${NIXPKGS_COMMIT}.tar.gz\";
+              };
+              pkgs = import nixpkgsPath {};
+              replit = import ./replit.nix { 
+                inherit pkgs; 
+                system = builtins.currentSystem;
+              };
+            in
+              pkgs.mkShell {
+                buildInputs = replit.deps;
+              }
+          "
+
+      # Run CI command
       - name: Run CI in nix
         run: |
-          nix develop . --impure --command bash -c "
-            bff ci -g
+          # Extract commit hash from replit.nix
+          NIXPKGS_COMMIT=$(grep -o '[0-9a-f]\{40\}' replit.nix | head -1)
+
+          nix-shell --run "
+            # Check if bff is available
+            if [ -f \"$GITHUB_WORKSPACE/infra/bin/bff\" ]; then
+              echo \"Found bff tool at $GITHUB_WORKSPACE/infra/bin/bff\"
+              chmod +x $GITHUB_WORKSPACE/infra/bin/bff
+
+              # Run the CI command
+              bff ci -g
+            else
+              echo \"bff tool not found in infra/bin directory. Checking PATH...\"
+              which bff && bff ci -g || echo \"bff command not found in PATH\"
+            fi
+          " -E "
+            let
+              nixpkgsPath = builtins.fetchTarball {
+                url = \"https://github.com/NixOS/nixpkgs/archive/${NIXPKGS_COMMIT}.tar.gz\";
+              };
+              pkgs = import nixpkgsPath {};
+              replit = import ./replit.nix { 
+                inherit pkgs; 
+                system = builtins.currentSystem;
+              };
+            in
+              pkgs.mkShell {
+                buildInputs = replit.deps;
+              }
           "
