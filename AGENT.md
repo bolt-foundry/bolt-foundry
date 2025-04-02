@@ -42,9 +42,11 @@ structured data management, unit testing, and streamlined development processes.
 - **Purpose**: Provide actionable workflows, protocols, and best practices.
 - **Content**: Implementation plans, testing protocols, commit guidelines,
   coding standards.
-- **Where to Find**: `agents/`, notably cards such as "Commit Protocol Card.md,"
-  "Implementation Planning Protocol Card.md," and "Test-Driven Development
-  Protocol Card.md"
+- **File Format**: Stored as `.bhc.md` files (Behavior Card Markdown)
+- **Where to Find**: `agents/behaviors/`, notably cards such as "coding.bhc.md,"
+  "implementation-plans.bhc.md," "project-plans.bhc.md," and "tdd.bhc.md"
+- **How to Use**: Reference these cards when implementing features, planning
+  projects, or following development workflows
 
 ## Best Places for AI Agents to Find Information
 

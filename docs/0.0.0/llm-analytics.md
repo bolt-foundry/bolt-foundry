@@ -4,7 +4,7 @@
 
 ### Why This Project Matters
 
-Developers flying blind with LLM calls waste money and deliver worse
+Developers are flying blind with LLM calls waste money and deliver worse
 experiences. Right now, they copy-paste logs into spreadsheets or rely on gut
 feel to understand what's happening. They use Vercel's AI SDK to call various
 LLM providers but can't see which models perform best for which tasks or how
