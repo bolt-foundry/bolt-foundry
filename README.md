@@ -15,6 +15,8 @@ systems.
 
 - **Identity Cards**: Testable units of LLM functionality with built-in
   verification
+- **Behavior Cards**: Actionable protocols and best practices for implementing
+  LLM systems
 - **Test-Driven LLMs**: Comprehensive testing framework for LLM behaviors
 - **Composable Systems**: Build complex LLM applications from verified
   components
