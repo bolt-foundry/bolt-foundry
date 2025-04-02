@@ -45,7 +45,7 @@ Deno.test("createFoundry should properly integrate with OpenAI client", async ()
   try {
     // Create a MockOpenAi instance with our createFoundry wrapper
     const openai = createMockOpenAi({
-      fetch: connectToOpenAi("test-api-key"),
+      fetch: connectToOpenAi("test-api-key", "test-posthog-api-key"),
     });
 
     // Make a request
@@ -96,7 +96,7 @@ Deno.test("createFoundry should not modify FormData requests to OpenAI", async (
 
   try {
     // Create a wrapper
-    const wrapper = connectToOpenAi("test-api-key");
+    const wrapper = connectToOpenAi("test-api-key", "test-posthog-key");
 
     // Create FormData request
     const formData = new FormData();
@@ -146,7 +146,7 @@ Deno.test("createFoundry should not modify non-OpenAI requests", async () => {
 
   try {
     // Get the wrapper
-    const wrapper = connectToOpenAi("test-api-key");
+    const wrapper = connectToOpenAi("test-api-key", "test-posthog-key");
 
     // Make a non-OpenAI request
     const originalBody = { data: "test data" };
