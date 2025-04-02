@@ -43,7 +43,6 @@ export async function aiAmend(_args: string[]): Promise<number> {
 
   // Check for OpenAI API key
   const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
-  const posthogApiKey = Deno.env.get("POSTHOG_API_KEY") || "dummy-key";
 
   if (!openaiApiKey) {
     logger.error("OPENAI_API_KEY environment variable is not set");
@@ -165,7 +164,7 @@ export async function aiAmend(_args: string[]): Promise<number> {
   }
 
   // 6. Connect to OpenAI and create a custom fetch
-  const openAiFetch = connectToOpenAi(openaiApiKey, posthogApiKey);
+  const openAiFetch = connectToOpenAi(openaiApiKey);
 
   // 7. Prepare the prompt to send to OpenAI
   const prompt = `
