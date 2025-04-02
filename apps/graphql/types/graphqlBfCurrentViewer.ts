@@ -15,10 +15,7 @@ import {
 } from "apps/graphql/types/graphqlJSONScalar.ts";
 import type { RegistrationResponseJSON } from "@simplewebauthn/server";
 import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
-import { toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 import { graphqlBfOrganizationType } from "apps/graphql/types/graphqlBfOrganization.ts";
-import { graphqlBfContentCollectionType } from "apps/graphql/types/graphqlBfContentCollection.ts";
-import { BfContentCollection } from "apps/bfDb/models/BfContentCollection.ts";
 const logger = getLogger(import.meta);
 
 export const graphqlBfCurrentViewerType = interfaceType({
@@ -34,19 +31,6 @@ export const graphqlBfCurrentViewerType = interfaceType({
           throw new Error("No organization found for current viewer");
         }
         return org.toGraphql();
-      },
-    });
-    t.field("contentCollection", {
-      type: graphqlBfContentCollectionType,
-      args: {
-        slug: nonNull(stringArg()),
-      },
-      resolve: async (_parent, args, ctx) => {
-        const { slug = "default" } = args;
-
-        const id = toBfGid(slug);
-        const collection = await ctx.find(BfContentCollection, id);
-        return collection?.toGraphql();
       },
     });
   },
