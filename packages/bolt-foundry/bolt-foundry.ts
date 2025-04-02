@@ -1,50 +1,25 @@
-import { getLogger } from "@bolt-foundry/logger";
+
+import { getLogger } from "packages/logger/logger.ts";
+
 const logger = getLogger(import.meta);
 
-export function connectToOpenAi(openAiApiKey: string): typeof fetch {
-  return function boltFoundryFetch(
-    url: RequestInfo | URL,
-    options?: RequestInit,
-  ) {
-    logger.setLevel(logger.levels.DEBUG);
-
-    // Clone options to avoid mutating the original
-    const modifiedOptions = options ? { ...options } : {};
-
-    // Check if this is an OpenAI API request
-    if (url.toString().includes("api.openai.com")) {
-      // Add Authorization header with API key
-      modifiedOptions.headers = {
-        ...modifiedOptions.headers,
-        "authorization": `Bearer ${openAiApiKey}`,
-      };
-
-      logger.debug("Added OpenAI API key to authorization header");
-
-      // If there's a request body and it's not FormData, modify the model
-      if (
-        modifiedOptions.body &&
-        !(modifiedOptions.body instanceof FormData) &&
-        typeof modifiedOptions.body === "string"
-      ) {
-        try {
-          // Parse the request body
-          const body = JSON.parse(modifiedOptions.body);
-
-          // Update the model to gpt-3.5-turbo
-          body.model = "gpt-3.5-turbo";
-
-          // Stringify the body back
-          modifiedOptions.body = JSON.stringify(body);
-
-          logger.debug(`Modified request to use model: gpt-3.5-turbo`);
-        } catch (error) {
-          logger.error("Error parsing request body:", error);
-        }
-      }
-    }
-
-    logger.debug(`Fetching ${url}`, options, modifiedOptions);
-    return fetch(url, modifiedOptions);
+/**
+ * Creates a wrapped fetch function that doesn't modify any behavior.
+ * This is a minimal implementation with no functionality.
+ * 
+ * @param openAiApiKey - The OpenAI API key (unused)
+ * @param posthogApiKey - The PostHog API key (unused)
+ * @returns A wrapped fetch function that just passes through to the original fetch
+ */
+export function connectToOpenAi(
+  openAiApiKey: string,
+  posthogApiKey: string,
+): typeof fetch {
+  // Just return a simple pass-through implementation
+  return async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    // Log the call
+    logger.debug("Bolt Foundry fetch called (no-op implementation)");
+    // Pass through to the original fetch without modification
+    return fetch(input, init);
   };
 }
