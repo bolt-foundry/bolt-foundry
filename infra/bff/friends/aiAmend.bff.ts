@@ -202,7 +202,7 @@ ${combinedDiff}
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-3.5-turbo", // This will be overridden by bolt-foundry
+          model: "gpt-4o", // This will be overridden by bolt-foundry
           messages: [
             {
               role: "user",
