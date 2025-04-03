@@ -1,14 +1,15 @@
-# Desks: Persistent Video Conferencing App
+# Desks: Persistent Video Conferencing App for iPad
 
 ## Start With the User (Not Your Code)
 
 ### User Goals
 
-- Join persistent conference spaces with colleagues (video on, audio off by
-  default)
-- See all participants in the conference space
+- Join persistent conference spaces with colleagues on iPad (video on, audio off
+  by default)
+- See all participants in the conference space on a dedicated iPad screen
 - Request direct conversations with specific participants via "knock" feature
 - Receive and respond to conversation requests from others
+- Maintain ambient presence while working on other devices
 
 ### User Journeys
 
@@ -42,11 +43,12 @@
 ### Minimum Lovable Product (MLP)
 
 - **Core Features**:
-  - Persistent video room powered by Daily.co
+  - Persistent video room powered by Daily.co optimized for iPad
   - Default video-on, audio-off state for all participants
   - User list with online status
-  - Tap-to-request conversation feature
-  - Notification and accept/decline UI for requests
+  - Touch-optimized tap-to-request conversation feature
+  - iPad-friendly notification and accept/decline UI for requests
+  - Design optimized for iPad landscape orientation
 
 ### Out of Scope (for initial release)
 
@@ -54,7 +56,8 @@
 - Recording functionality
 - Multiple rooms or spaces
 - Custom room appearance/branding
-- Mobile app (web-first approach)
+- Native iOS app (web app approach for iPad)
+- Phone-sized mobile support (iPad-focused)
 
 ### Success Metrics
 
@@ -71,16 +74,19 @@
 - Create new route in `apps/internalbf/routes`
 - Use Replit's private deployment infrastructure for authentication
 - Daily.co API integration for video connection
-- Build minimal UI layout with participant grid using BfDs components
+- Build minimal UI layout with iPad-optimized participant grid using BfDs
+  components
+- Implement responsive design for iPad screen dimensions and orientations
 
 ### Phase 2: Core Functionality (Moderate)
 
 - Implement default state (video on, audio off)
-- Create participant list with status indicators using BfDsPill and
-  BfDsPillStatus
+- Create touch-friendly participant list with status indicators using BfDsPill
+  and BfDsPillStatus
 - Build room persistence with GraphQL integration
 - Add new model in `apps/bfDb/models`
 - Write tests for connection states and video/audio defaults
+- Test and optimize for iPad Safari browser
 
 ### Phase 3: "Door Knock" Feature (Challenging)
 
@@ -110,31 +116,40 @@
 - **Frontend**: React with Isograph integration
 - **Backend**: Deno (existing app infrastructure)
 - **Video API**: Daily.co
-- **Styling**: Existing BfDs design system
+- **Styling**: Existing BfDs design system with iPad landscape-specific
+  adjustments
 - **State Management**: React Context API + Hooks
 - **API Layer**: GraphQL with existing schema extension
 - **Deployment**: Replit
+- **Target Platform**: iPad web browsers (primarily Safari) in landscape
+  orientation
+- **Responsive Framework**: Custom media queries for iPad landscape dimensions
 
 ## Test Plan
 
 Our tests define behavior, not implementation:
 
 1. **Video Connection Test**:
-   - Red: Write tests for user appearance with correct default settings
-   - Green: Implement basic video connection
-   - Refactor: Improve connection reliability
+   - Red: Write tests for user appearance with correct default settings on iPad
+   - Green: Implement basic video connection optimized for iPad
+   - Refactor: Improve connection reliability and bandwidth management
 
 2. **"Knock" Feature Test**:
    - Red: Write tests for notification delivery and permission changes
-   - Green: Implement basic notification system with BfDsToast
-   - Refactor: Improve UX and response time
+   - Green: Implement touch-friendly notification system with BfDsToast
+   - Refactor: Improve UX and response time for iPad touchscreen
 
-3. **Performance Test**:
+3. **iPad-Specific Tests**:
+   - Red: Write tests for layout in landscape orientation
+   - Green: Implement design optimized for iPad landscape
+   - Refactor: Optimize touch targets and interactions for iPad landscape usage
+
+4. **Performance Test**:
    - Red: Write tests for system with 10+ simultaneous users
    - Green: Implement basic multi-user support
    - Refactor: Optimize for larger groups
 
-4. **Cross-Browser Testing**:
+5. **Cross-Browser Testing**:
    - Red: Write tests for functionality in major browsers
    - Green: Fix critical browser compatibility issues
    - Refactor: Standardize cross-browser behavior
@@ -142,24 +157,31 @@ Our tests define behavior, not implementation:
 ## Risk Assessment
 
 1. **Technical Risk**: Daily.co API limitations or changes
-   - _Test First_: Build test suite for API dependencies
-   - _Start Simple_: Begin with minimal API usage
-   - _Iterate Quickly_: Adapt as we learn API constraints
+   - _Test First_: Build test suite for API dependencies on iPad Safari
+   - _Start Simple_: Begin with minimal API usage optimized for mobile bandwidth
+   - _Iterate Quickly_: Adapt as we learn API constraints on iPad
 
-2. **User Adoption Risk**: Users might find interface confusing
-   - _Test First_: User testing with paper prototypes
-   - _Start Simple_: Begin with minimal UI
-   - _Iterate Quickly_: Refine based on user feedback
+2. **User Adoption Risk**: Users might find iPad interface confusing
+   - _Test First_: User testing with iPad prototypes
+   - _Start Simple_: Begin with minimal touch-friendly UI
+   - _Iterate Quickly_: Refine based on iPad user feedback
 
 3. **Privacy Concerns**: Always-on video might make some users uncomfortable
-   - _Test First_: Interview potential users about privacy concerns
-   - _Start Simple_: Include basic privacy controls
+   - _Test First_: Interview potential iPad users about privacy concerns
+   - _Start Simple_: Include basic privacy controls with easy touch access
    - _Iterate Quickly_: Add more granular controls as needed
 
-4. **Performance Issues**: Video quality with many participants
-   - _Test First_: Load testing with simulated connections
+4. **Performance Issues**: Video quality with many participants on iPad
+   - _Test First_: Load testing with simulated connections on iPad
    - _Start Simple_: Optimize for small teams first
-   - _Iterate Quickly_: Scale up as we solve performance challenges
+   - _Iterate Quickly_: Scale up as we solve iPad-specific performance
+     challenges
+
+5. **iPad-Specific Risks**: Battery life and heat generation during extended
+   video calls
+   - _Test First_: Measure battery drain during extended usage
+   - _Start Simple_: Implement power-saving features
+   - _Iterate Quickly_: Optimize video processing for iPad efficiency
 
 Remember: Failure counts as done. This plan prioritizes building a simple but
 effective solution focused on real user needs, testing at each step, and getting
