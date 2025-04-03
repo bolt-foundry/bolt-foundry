@@ -9,6 +9,9 @@ import { connectToOpenAi } from "packages/bolt-foundry/bolt-foundry.ts";
 
 const logger = getLogger(import.meta);
 
+/**
+ * Runs pre-commit checks (format, lint, type check)
+ */
 async function runPreCommitChecks(): Promise<boolean> {
   // First, run format to ensure code is properly formatted
   logger.info("Running code formatter first...");
@@ -40,6 +43,9 @@ async function runPreCommitChecks(): Promise<boolean> {
   return true;
 }
 
+/**
+ * Configures Sapling with GitHub user information
+ */
 async function configureGitHubUser(): Promise<void> {
   try {
     logger.info("Checking GitHub user information...");
@@ -79,6 +85,9 @@ async function configureGitHubUser(): Promise<void> {
   }
 }
 
+/**
+ * Ensures all changes are tracked with Sapling
+ */
 async function trackChanges(): Promise<boolean> {
   // Track all changes with sl add and sl remove
   logger.info("Tracking changes with sl add and sl remove");
@@ -100,20 +109,24 @@ async function trackChanges(): Promise<boolean> {
   return true;
 }
 
-export async function aiCommit(_args: string[]): Promise<number> {
-  logger.info("Running ai:commit to generate commit message with OpenAI...");
+/**
+ * Helper function to get a simple y/n input from the user
+ */
+async function getYesNoInput(promptMessage: string): Promise<boolean> {
+  logger.info(promptMessage + " (y/n)");
 
-  // Run initial checks and setup
-  if (!await runPreCommitChecks()) return 1;
+  const decoder = new TextDecoder();
+  const buffer = new Uint8Array(1);
+  await Deno.stdin.read(buffer);
+  const answer = decoder.decode(buffer).toLowerCase();
 
-  // Check for OpenAI API key
-  const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!openaiApiKey) {
-    logger.error("OPENAI_API_KEY environment variable is not set");
-    return 1;
-  }
+  return answer === "y";
+}
 
-  // Check if user is logged into GitHub
+/**
+ * Ensures the user is authenticated with GitHub
+ */
+async function ensureGitHubAuth(): Promise<boolean> {
   logger.info("Checking GitHub authentication status...");
   const { code: authCode } = await runShellCommandWithOutput(
     ["gh", "auth", "status"],
@@ -130,7 +143,7 @@ export async function aiCommit(_args: string[]): Promise<number> {
 
     if (loginResult !== 0) {
       logger.error("GitHub authentication failed");
-      return 1;
+      return false;
     }
 
     logger.info("Successfully authenticated with GitHub");
@@ -138,37 +151,110 @@ export async function aiCommit(_args: string[]): Promise<number> {
     logger.info("GitHub authentication verified");
   }
 
-  // Configure GitHub user
-  await configureGitHubUser();
+  return true;
+}
 
-  // Track all changes
-  if (!await trackChanges()) return 1;
+/**
+ * Checks for required API keys
+ */
+function checkRequiredApiKeys(): boolean {
+  const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!openaiApiKey) {
+    logger.error("OPENAI_API_KEY environment variable is not set");
+    return false;
+  }
+  return true;
+}
 
-  // Generate diff file
-  logger.info("Generating diff file");
-  const { stdout: diffOutput, code: diffCode } =
-    await runShellCommandWithOutput(
-      ["sl", "diff"],
-      {},
-      true,
-      true,
-    );
+/**
+ * Submits a pull request if the user wants to
+ */
+async function offerPullRequest(): Promise<number> {
+  const shouldSubmitPr = await getYesNoInput(
+    "\nDo you want to submit a pull request?",
+  );
 
-  if (diffCode !== 0) {
-    logger.error("Failed to generate diff");
-    return diffCode;
+  if (shouldSubmitPr) {
+    logger.info("Submitting pull request...");
+    const submitResult = await runShellCommand([
+      "sl",
+      "submit",
+    ]);
+
+    if (submitResult !== 0) {
+      logger.error("Failed to submit pull request");
+      return submitResult;
+    }
+
+    logger.info("Pull request submitted successfully!");
+  } else {
+    logger.info("Pull request submission skipped.");
   }
 
-  if (!diffOutput.trim()) {
-    logger.warn("No changes detected in diff");
-    return 0;
+  return 0;
+}
+
+/**
+ * Creates an AI-generated commit with the specified message
+ */
+async function createCommit(title: string, message: string): Promise<number> {
+  logger.info("Creating commit...");
+  const commitResult = await runShellCommand([
+    "sl",
+    "commit",
+    "-m",
+    `${title}\n\n${message}`,
+  ]);
+
+  if (commitResult !== 0) {
+    logger.error("Failed to create commit");
+    return commitResult;
+  }
+
+  logger.info("Commit created successfully!");
+  return 0;
+}
+
+/**
+ * Amends the current commit with the specified message
+ */
+async function amendCommit(title: string, message: string): Promise<number> {
+  logger.info("Amending commit...");
+  const amendResult = await runShellCommand([
+    "sl",
+    "commit",
+    "--amend",
+    "-m",
+    title + "\n\n" + message,
+  ]);
+
+  if (amendResult !== 0) {
+    logger.error("Failed to amend commit");
+    return amendResult;
+  }
+
+  logger.info("Commit amended successfully!");
+  return 0;
+}
+
+/**
+ * Generates an AI commit message based on diff output
+ */
+async function generateCommitMessage(
+  diffOutput: string,
+  existingMessage?: string,
+): Promise<{ title: string; message: string } | null> {
+  // Check for OpenAI API key
+  const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!openaiApiKey) {
+    return null;
   }
 
   // Connect to OpenAI and create a custom fetch
   const openAiFetch = connectToOpenAi(openaiApiKey);
 
   // Prepare the prompt to send to OpenAI
-  const prompt = `
+  let prompt = `
 I need you to analyze the following git diff and create:
 1. A concise but descriptive commit title (one line, max 72 chars)
 2. A detailed commit message that explains what changed and why
@@ -177,15 +263,42 @@ I need you to analyze the following git diff and create:
 Format your response EXACTLY like this, with no extra text:
 TITLE: <commit title>
 
-SUMMARY:
+## SUMMARY
 <summary of changes>
 
-TEST PLAN:
+## TEST PLAN
 <test plan>
 
 Here is the diff:
 ${diffOutput}
 `;
+
+  // Add existing message for amend operation
+  if (existingMessage) {
+    prompt = `
+I need you to analyze the following git diff and the existing commit message, then create:
+1. A concise but descriptive commit title (one line, max 72 chars)
+2. A detailed commit message that explains what changed and why
+3. A brief test plan section
+
+Take into account the existing commit message when generating the new one.
+
+Format your response EXACTLY like this, with no extra text:
+TITLE: <commit title>
+
+## SUMMARY
+<summary of changes>
+
+## TEST PLAN
+<test plan>
+
+Here is the existing commit message:
+${existingMessage}
+
+Here is the combined diff (including both committed and uncommitted changes):
+${diffOutput}
+`;
+  }
 
   // Send to OpenAI and get response
   logger.info("Sending diff to OpenAI...");
@@ -198,7 +311,7 @@ ${diffOutput}
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-4o",
+          model: "gpt-4o", // This may be overridden by bolt-foundry
           messages: [
             {
               role: "user",
@@ -221,75 +334,66 @@ ${diffOutput}
     // Extract everything after TITLE line for the commit message
     const message = aiResponse.replace(/TITLE: .*\n/, "").trim();
 
-    // Display the generated commit message
-    logger.info("OpenAI generated the following commit message:");
-    logger.info(`\n${title}\n\n${message}`);
-
-    // Ask user if they want to commit with this message
-    logger.info("\nDo you want to commit with this message? (y/n)");
-
-    const decoder = new TextDecoder();
-    const buffer = new Uint8Array(1);
-    await Deno.stdin.read(buffer);
-    const answer = decoder.decode(buffer).toLowerCase();
-
-    if (answer === "y") {
-      // Create the commit
-      logger.info("Creating commit...");
-      const commitResult = await runShellCommand([
-        "sl",
-        "commit",
-        "-m",
-        `${title}\n\n${message}`,
-      ]);
-
-      if (commitResult !== 0) {
-        logger.error("Failed to create commit");
-        return commitResult;
-      }
-
-      logger.info("Commit created successfully!");
-
-      // Ask if user wants to submit a pull request
-      logger.info("\nDo you want to submit a pull request? (y/n)");
-
-      // Create a more robust way to read input
-      const submitPrAnswer = await new Promise<string>((resolve) => {
-        const buf = new Uint8Array(1);
-        Deno.stdin.setRaw(true);
-        Deno.stdin.read(buf).then(() => {
-          const answer = decoder.decode(buf).toLowerCase();
-          Deno.stdin.setRaw(false);
-          logger.info(`Input: ${answer}`); // Echo input
-          resolve(answer);
-        });
-      });
-
-      if (submitPrAnswer === "y") {
-        logger.info("Submitting pull request...");
-        const submitResult = await runShellCommand([
-          "sl",
-          "submit",
-        ]);
-
-        if (submitResult !== 0) {
-          logger.error("Failed to submit pull request");
-          return submitResult;
-        }
-
-        logger.info("Pull request submitted successfully!");
-      } else {
-        logger.info("Pull request submission skipped.");
-      }
-
-      return 0;
-    } else {
-      logger.info("Commit cancelled.");
-      return 0;
-    }
+    return { title, message };
   } catch (error) {
     logger.error("Error communicating with OpenAI:", error);
-    return 1;
+    return null;
+  }
+}
+
+export async function aiCommit(_args: string[]): Promise<number> {
+  logger.info("Running ai:commit to generate commit message with OpenAI...");
+
+  // Run initial checks
+  if (!await runPreCommitChecks()) return 1;
+  if (!checkRequiredApiKeys()) return 1;
+  if (!await ensureGitHubAuth()) return 1;
+  await configureGitHubUser();
+  if (!await trackChanges()) return 1;
+
+  // Generate diff file
+  logger.info("Generating diff file");
+  const { stdout: diffOutput, code: diffCode } =
+    await runShellCommandWithOutput(
+      ["sl", "diff"],
+      {},
+      true,
+      true,
+    );
+
+  if (diffCode !== 0) {
+    logger.error("Failed to generate diff");
+    return diffCode;
+  }
+
+  if (!diffOutput.trim()) {
+    logger.warn("No changes detected in diff");
+    return 0;
+  }
+
+  // Generate commit message
+  const result = await generateCommitMessage(diffOutput);
+  if (!result) return 1;
+
+  const { title, message } = result;
+
+  // Display the generated commit message
+  logger.info("OpenAI generated the following commit message:");
+  logger.info(`\n${title}\n\n${message}`);
+
+  // Ask user if they want to commit with this message
+  const shouldCommit = await getYesNoInput(
+    "\nDo you want to commit with this message?",
+  );
+
+  if (shouldCommit) {
+    const commitResult = await createCommit(title, message);
+    if (commitResult !== 0) return commitResult;
+
+    return await offerPullRequest();
+  } else {
+    logger.info("Commit cancelled.");
+    return 0;
   }
 }
 
@@ -298,42 +402,10 @@ export async function aiAmend(_args: string[]): Promise<number> {
     "Running ai:amend to amend previous commit with AI-generated message...",
   );
 
-  // Run initial checks and setup
+  // Run initial checks
   if (!await runPreCommitChecks()) return 1;
-
-  // Check for OpenAI API key
-  const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!openaiApiKey) {
-    logger.error("OPENAI_API_KEY environment variable is not set");
-    return 1;
-  }
-
-  // Check if user is logged into GitHub
-  logger.info("Checking GitHub authentication status...");
-  const { code: authCode } = await runShellCommandWithOutput(
-    ["gh", "auth", "status"],
-    {},
-    true,
-    false,
-  );
-
-  if (authCode !== 0) {
-    logger.info("Not logged into GitHub. Starting GitHub authentication...");
-    logger.info("Please follow the prompts to authenticate with GitHub.");
-
-    const loginResult = await runShellCommand(["gh", "auth", "login"]);
-
-    if (loginResult !== 0) {
-      logger.error("GitHub authentication failed");
-      return 1;
-    }
-
-    logger.info("Successfully authenticated with GitHub");
-  } else {
-    logger.info("GitHub authentication verified");
-  }
-
-  // Configure GitHub user
+  if (!checkRequiredApiKeys()) return 1;
+  if (!await ensureGitHubAuth()) return 1;
   await configureGitHubUser();
 
   // 1. Get the current commit message
@@ -398,139 +470,32 @@ export async function aiAmend(_args: string[]): Promise<number> {
     return 0;
   }
 
-  // 6. Connect to OpenAI and create a custom fetch
-  const openAiFetch = connectToOpenAi(openaiApiKey);
+  // Generate commit message
+  const result = await generateCommitMessage(
+    combinedDiff,
+    currentCommitMessage,
+  );
+  if (!result) return 1;
 
-  // 7. Prepare the prompt to send to OpenAI
-  const prompt = `
-I need you to analyze the following git diff and the existing commit message, then create:
-1. A concise but descriptive commit title (one line, max 72 chars)
-2. A detailed commit message that explains what changed and why
-3. A brief test plan section
+  const { title, message } = result;
 
-Take into account the existing commit message when generating the new one.
+  // Display the generated commit message
+  logger.info("OpenAI generated the following commit message:");
+  logger.info(`\n${title}\n\n${message}`);
 
-Format your response EXACTLY like this, with no extra text:
-TITLE: <commit title>
+  // Ask user if they want to amend with this message
+  const shouldAmend = await getYesNoInput(
+    "\nDo you want to amend with this message?",
+  );
 
-## SUMMARY
-<summary of changes>
+  if (shouldAmend) {
+    const amendResult = await amendCommit(title, message);
+    if (amendResult !== 0) return amendResult;
 
-## TEST PLAN
-<test plan>
-
-Here is the existing commit message:
-${currentCommitMessage}
-
-Here is the combined diff (including both committed and uncommitted changes):
-${combinedDiff}
-`;
-
-  // 8. Send to OpenAI and get response
-  logger.info("Sending combined diff to OpenAI...");
-  try {
-    const response = await openAiFetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-4o", // This will be overridden by bolt-foundry
-          messages: [
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          temperature: 0.7,
-          max_tokens: 1024,
-        }),
-      },
-    );
-
-    const result = await response.json();
-    const aiResponse = result.choices[0].message.content.trim();
-
-    // 9. Parse response into title and message
-    const titleMatch = aiResponse.match(/TITLE: (.*)/);
-    const title = titleMatch ? titleMatch[1].trim() : "Automated commit";
-
-    // Extract everything after TITLE line for the commit message
-    const message = aiResponse.replace(/TITLE: .*\n/, "").trim();
-
-    // 10. Display the generated commit message
-    logger.info("OpenAI generated the following commit message:");
-    logger.info(`\n${title}\n\n${message}`);
-
-    // 11. Ask user if they want to amend with this message
-    logger.info("\nDo you want to amend with this message? (y/n)");
-
-    const decoder = new TextDecoder();
-    const buffer = new Uint8Array(1);
-    await Deno.stdin.read(buffer);
-    const answer = decoder.decode(buffer).toLowerCase();
-
-    if (answer === "y") {
-      // 12. Amend the commit, including any uncommitted changes
-      logger.info("Amending commit...");
-      // Ensure proper escaping of the commit message
-      const amendResult = await runShellCommand([
-        "sl",
-        "commit",
-        "--amend",
-        "-m",
-        title + "\n\n" + message,
-      ]);
-
-      if (amendResult !== 0) {
-        logger.error("Failed to amend commit");
-        return amendResult;
-      }
-
-      logger.info("Commit amended successfully!");
-
-      // Ask if user wants to submit a pull request
-      logger.info("\nDo you want to submit a pull request? (y/n)");
-
-      // Create a more robust way to read input
-      const submitPrAnswer = await new Promise<string>((resolve) => {
-        const buf = new Uint8Array(1);
-        Deno.stdin.setRaw(true);
-        Deno.stdin.read(buf).then(() => {
-          const answer = decoder.decode(buf).toLowerCase();
-          Deno.stdin.setRaw(false);
-          logger.info(`Input: ${answer}`); // Echo input
-          resolve(answer);
-        });
-      });
-
-      if (submitPrAnswer === "y") {
-        logger.info("Submitting pull request...");
-        const submitResult = await runShellCommand([
-          "sl",
-          "submit",
-        ]);
-
-        if (submitResult !== 0) {
-          logger.error("Failed to submit pull request");
-          return submitResult;
-        }
-
-        logger.info("Pull request submitted successfully!");
-      } else {
-        logger.info("Pull request submission skipped.");
-      }
-
-      return 0;
-    } else {
-      logger.info("Amend cancelled.");
-      return 0;
-    }
-  } catch (error) {
-    logger.error("Error communicating with OpenAI:", error);
-    return 1;
+    return await offerPullRequest();
+  } else {
+    logger.info("Amend cancelled.");
+    return 0;
   }
 }
 
