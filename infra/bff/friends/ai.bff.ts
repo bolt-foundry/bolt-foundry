@@ -113,6 +113,31 @@ export async function aiCommit(_args: string[]): Promise<number> {
     return 1;
   }
 
+  // Check if user is logged into GitHub
+  logger.info("Checking GitHub authentication status...");
+  const { code: authCode } = await runShellCommandWithOutput(
+    ["gh", "auth", "status"],
+    {},
+    true,
+    false,
+  );
+
+  if (authCode !== 0) {
+    logger.info("Not logged into GitHub. Starting GitHub authentication...");
+    logger.info("Please follow the prompts to authenticate with GitHub.");
+
+    const loginResult = await runShellCommand(["gh", "auth", "login"]);
+
+    if (loginResult !== 0) {
+      logger.error("GitHub authentication failed");
+      return 1;
+    }
+
+    logger.info("Successfully authenticated with GitHub");
+  } else {
+    logger.info("GitHub authentication verified");
+  }
+
   // Configure GitHub user
   await configureGitHubUser();
 
@@ -281,6 +306,31 @@ export async function aiAmend(_args: string[]): Promise<number> {
   if (!openaiApiKey) {
     logger.error("OPENAI_API_KEY environment variable is not set");
     return 1;
+  }
+
+  // Check if user is logged into GitHub
+  logger.info("Checking GitHub authentication status...");
+  const { code: authCode } = await runShellCommandWithOutput(
+    ["gh", "auth", "status"],
+    {},
+    true,
+    false,
+  );
+
+  if (authCode !== 0) {
+    logger.info("Not logged into GitHub. Starting GitHub authentication...");
+    logger.info("Please follow the prompts to authenticate with GitHub.");
+
+    const loginResult = await runShellCommand(["gh", "auth", "login"]);
+
+    if (loginResult !== 0) {
+      logger.error("GitHub authentication failed");
+      return 1;
+    }
+
+    logger.info("Successfully authenticated with GitHub");
+  } else {
+    logger.info("GitHub authentication verified");
   }
 
   // Configure GitHub user
