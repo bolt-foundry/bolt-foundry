@@ -54,7 +54,9 @@
     "lib",
     "documentation",
     "packages",
-    "sites"
+    "sites",
+    "docs",
+    "agents"
   ],
   "exclude": [
     ".cache",
