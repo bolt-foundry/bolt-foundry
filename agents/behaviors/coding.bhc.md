@@ -7,6 +7,13 @@ When writing code, follow these organizational patterns:
   exemplify
 - Database models belong in `apps/bfDb/models/`
 - Core model classes belong in `apps/bfDb/coreModels/`
+- Each app follows a similar directory structure to the main boltFoundry app:
+  - `components/` - UI components for the app
+  - `contexts/` - React contexts
+  - `hooks/` - Custom React hooks
+  - `utils/` - Utility functions
+  - `entrypoints/` - Isograph entrypoints
+  - `__generated__/` - Generated code files
 
 ## Type System
 
