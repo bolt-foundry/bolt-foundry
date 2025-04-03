@@ -205,6 +205,21 @@ export const Home = iso(`
                 }}
               >
                 <source
+                  src="/static/assets/videos/plinko-mobile_720.mp4"
+                  type="video/mp4"
+                  media="(orientation: portrait) and (max-width: 400px)"
+                />
+                <source
+                  src="/static/assets/videos/plinko-mobile_HD.mp4"
+                  type="video/mp4"
+                  media="(orientation: portrait) and (max-width: 800px)"
+                />
+                <source
+                  src="/static/assets/videos/plinko_720.mp4"
+                  type="video/mp4"
+                  media="(orientation: landscape) and (max-width: 800px)"
+                />
+                <source
                   src="/static/assets/videos/plinko_4k.mp4"
                   type="video/mp4"
                   media="(min-width: 2000px)"
