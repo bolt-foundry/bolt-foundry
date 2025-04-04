@@ -2,7 +2,7 @@ import { assertEquals, assertExists } from "@std/assert";
 import { connectToOpenAi } from "../bolt-foundry.ts";
 import { createMockOpenAi } from "./utils/mock-openai.ts";
 
-Deno.test("createFoundry should properly integrate with OpenAI client", async () => {
+Deno.test("connectToOpenAi should properly integrate with OpenAI client", async () => {
   // Setup a mock fetch to capture the request
   let capturedUrl: string | null = null;
   let capturedOptions: RequestInit | null = null;
@@ -43,14 +43,16 @@ Deno.test("createFoundry should properly integrate with OpenAI client", async ()
   globalThis.fetch = mockFetch as typeof fetch;
 
   try {
-    // Create a MockOpenAi instance with our createFoundry wrapper
+    // Create a MockOpenAi instance with our connectToOpenAi wrapper
     const openai = createMockOpenAi({
-      fetch: connectToOpenAi("test-api-key"),
+      fetch: connectToOpenAi({
+        openAiApiKey: "test-api-key",
+      }),
     });
 
     // Make a request
     const completion = await openai.chat.completions.create({
-      model: "gpt-4", // This should be modified to gpt-3.5-turbo by createFoundry
+      model: "gpt-4", // This should be modified to gpt-3.5-turbo by connectToOpenAi
       messages: [
         {
           role: "user",
@@ -79,7 +81,7 @@ Deno.test("createFoundry should properly integrate with OpenAI client", async ()
   }
 });
 
-Deno.test("createFoundry should not modify FormData requests to OpenAI", async () => {
+Deno.test("connectToOpenAi should not modify FormData requests to OpenAI", async () => {
   // Setup a mock fetch to capture the request
   let capturedUrl: string | null = null;
   let capturedOptions: RequestInit | null = null;
@@ -96,7 +98,9 @@ Deno.test("createFoundry should not modify FormData requests to OpenAI", async (
 
   try {
     // Create a wrapper
-    const wrapper = connectToOpenAi("test-api-key");
+    const wrapper = connectToOpenAi({
+      openAiApiKey: "test-api-key",
+    });
 
     // Create FormData request
     const formData = new FormData();
@@ -123,7 +127,7 @@ Deno.test("createFoundry should not modify FormData requests to OpenAI", async (
   }
 });
 
-Deno.test("createFoundry should not modify non-OpenAI requests", async () => {
+Deno.test("connectToOpenAi should not modify non-OpenAI requests", async () => {
   // Setup a mock fetch to capture the request
   let capturedUrl: string | null = null;
   let capturedOptions: RequestInit | null = null;
@@ -146,7 +150,9 @@ Deno.test("createFoundry should not modify non-OpenAI requests", async () => {
 
   try {
     // Get the wrapper
-    const wrapper = connectToOpenAi("test-api-key");
+    const wrapper = connectToOpenAi({
+      openAiApiKey: "test-api-key",
+    });
 
     // Make a non-OpenAI request
     const originalBody = { data: "test data" };
