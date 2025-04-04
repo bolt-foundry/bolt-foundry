@@ -5,7 +5,7 @@ import {
   runShellCommandWithOutput,
 } from "infra/bff/shellBase.ts";
 import { getLogger } from "packages/logger/logger.ts";
-import { connectToOpenAi } from "packages/bolt-foundry/bolt-foundry.ts";
+import { createOpenAIFetch } from "packages/bolt-foundry/bolt-foundry.ts";
 
 const logger = getLogger(import.meta);
 
@@ -271,7 +271,7 @@ async function generateCommitMessage(
   }
 
   // Connect to OpenAI and create a custom fetch
-  const openAiFetch = connectToOpenAi({
+  const openAiFetch = createOpenAIFetch({
     openAiApiKey: openaiApiKey,
   });
 

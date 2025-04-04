@@ -1,10 +1,14 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { useChat } from "ai/react";
 import styles from "../styles/Home.module.css";
-import Chat from "../components/Chat";
 
 const Home: NextPage = () => {
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
+
   return (
     <div className={styles.container}>
       <Head>
@@ -14,13 +18,60 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>AI Chat Demo</h1>
-        <Chat />
+        <h1 className={styles.title}>Welcome to Next.js on Replit!</h1>
+        
+        <div className={styles.grid}>
+          <Link href="/chat" className={styles.card}>
+            <h2>Streaming Chat &rarr;</h2>
+            <p>Chat with AI using streaming responses</p>
+          </Link>
+          
+          <Link href="/regular-chat" className={styles.card}>
+            <h2>Regular Chat &rarr;</h2>
+            <p>Chat with AI using regular (non-streaming) responses</p>
+          </Link>
+        </div>
 
-        <p className={styles.description}>
-          Get started by editing{" "}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
+        <div className={styles.chatBox}>
+          <div className={styles.messages}>
+            {messages.length === 0 && (
+              <div className={styles.emptyState}>
+                <p>Ask me anything...</p>
+              </div>
+            )}
+            {messages.map(message => (
+              <div 
+                key={message.id} 
+                className={`${styles.message} ${
+                  message.role === 'user' ? styles.userMessage : styles.aiMessage
+                }`}
+              >
+                {message.content}
+              </div>
+            ))}
+          </div>
+          <form onSubmit={handleSubmit} className={styles.inputForm}>
+            <input
+              className={styles.chatInput}
+              value={input}
+              onChange={handleInputChange}
+              placeholder="Type your message..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
+                }
+              }}
+            />
+            <button 
+              type="submit" 
+              className={styles.sendButton}
+              disabled={isLoading || input.trim() === ''}
+            >
+              {isLoading ? 'Thinking...' : 'Send'}
+            </button>
+          </form>
+        </div>
 
         <div className={styles.grid}>
           <a href="https://nextjs.org/docs" className={styles.card}>
@@ -39,6 +90,11 @@ const Home: NextPage = () => {
           >
             <h2>Examples &rarr;</h2>
             <p>Discover and deploy boilerplate example Next.js projects.</p>
+          </a>
+          
+          <a href="/chat" className={styles.card}>
+            <h2>AI Chat &rarr;</h2>
+            <p>Chat with an AI assistant powered by OpenAI.</p>
           </a>
 
           <a
