@@ -7,8 +7,8 @@ these guidelines to ensure clear progression and accountability.
 
 - Create version-specific project plan documents in project-specific docs
   directories
-- Use semantic versioning (0.0.X) for each project version (0.0.0 for initial,
-  0.0.1 for first release, etc.)
+- Use semantic versioning (0.x) for each project version (0.1 for initial, 0.2
+  for first release, etc.)
 - Store version documents in version-specific subdirectories
 - Structure: `apps/[project]/docs/[version]/[project-plan].md`
 
@@ -25,12 +25,12 @@ these guidelines to ensure clear progression and accountability.
 apps/project-name/
   └── docs/
       ├── project-name-project-plan.md  (Overall plan)
-      ├── 0.0.0/
-      │   └── version-0.0.0-project-plan.md   (Discovery version)
-      ├── 0.0.1/
-      │   └── version-0.0.1-project-plan.md   (MVP version)
-      └── 0.0.2/
-          └── version-0.0.2-project-plan.md   (Enhancement version)
+      ├── 0.1/
+      │   └── version-0.1-project-plan.md   (Discovery version)
+      ├── 0.2/
+      │   └── version-0.2-project-plan.md   (MVP version)
+      └── 0.3/
+          └── version-0.3-project-plan.md   (Enhancement version)
 ```
 
 ## Project Plan Continuity
@@ -47,7 +47,7 @@ apps/project-name/
 ```markdown
 # [Project] Project Plan
 
-**Version:** 0.0.0 (Initial) **Date:** [YYYY-MM-DD]
+**Version:** 0.1 (Initial) **Date:** [YYYY-MM-DD]
 
 ## Project Purpose
 
@@ -55,17 +55,17 @@ Brief explanation of the project's business goals and user needs
 
 ## Project Versions Overview
 
-1. **Version 0.0.0: [Name]**
+1. **Version 0.1: [Name]**
    - Key objectives
    - Primary deliverables
    - Timeline estimate
 
-2. **Version 0.0.1: [Name]**
+2. **Version 0.2: [Name]**
    - Key objectives
    - Primary deliverables
    - Timeline estimate
 
-3. **Version 0.0.2: [Name]**
+3. **Version 0.3: [Name]**
    - Key objectives
    - Primary deliverables
    - Timeline estimate
@@ -89,12 +89,12 @@ Known risks and mitigation strategies
 
 ## Version-Specific Plan Template
 
-**File: `apps/[project]/docs/[version]/version-[0.0.X]-project-plan.md`**
+**File: `apps/[project]/docs/[version]/version-[0.x]-project-plan.md`**
 
 ```markdown
-# [Project] Version [0.0.X] Project Plan
+# [Project] Version [0.x] Project Plan
 
-**Version:** [0.0.X] **Date:** [YYYY-MM-DD]
+**Version:** [0.x] **Date:** [YYYY-MM-DD]
 
 ## Version Summary
 
@@ -155,11 +155,10 @@ The "Desks" project follows this pattern with its versioned approach:
 
 - `apps/desks/docs/desks-project-plan.md` (Overall project vision and
   versioning)
-- `apps/desks/docs/0.0.0/version-0.0.0-discovery-plan.md` (Initial version with
+- `apps/desks/docs/0.1/version-0.1-discovery-plan.md` (Initial version with
   research focus)
-- `apps/desks/docs/0.0.1/version-0.0.1-mvp-plan.md` (Core functionality
-  development)
-- `apps/desks/docs/0.0.2/version-0.0.2-enhancement-plan.md` (Refinement and
+- `apps/desks/docs/0.2/version-0.2-mvp-plan.md` (Core functionality development)
+- `apps/desks/docs/0.3/version-0.3-enhancement-plan.md` (Refinement and
   additional features)
 
 Remember: Each version should deliver measurable value while building toward the

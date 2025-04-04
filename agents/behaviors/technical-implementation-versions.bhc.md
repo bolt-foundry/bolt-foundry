@@ -6,15 +6,15 @@ documentation with these guidelines:
 ## Version-Based Documentation
 
 - Create implementation version documents in project-specific docs directories
-- Use semantic versioning (0.0.X) for each implementation version
+- Use semantic versioning (0.x) for each implementation version
 - Store version documents in version-specific subdirectories
 - Structure: `apps/[project]/docs/[version]/[implementation-plan].md`
 
 ## Version Organization
 
 - Each implementation version should be documented in its own file
-- Version numbering should follow semantic versioning (0.0.0 for initial, 0.0.1
-  for first release, 0.0.2 for iterative improvements)
+- Version numbering should follow semantic versioning (0.1 for initial, 0.2 for
+  first release, 0.3 for iterative improvements)
 - Include clear version information in filenames and document headers
 - Link between version documents to show progression
 
@@ -24,11 +24,11 @@ documentation with these guidelines:
 apps/project-name/
   └── docs/
       ├── project-plan.md
-      ├── 0.0.0/
+      ├── 0.1/
       │   └── initial-implementation-plan.md
-      ├── 0.0.1/
+      ├── 0.2/
       │   └── version-2-implementation-plan.md
-      └── 0.0.2/
+      └── 0.3/
           └── version-3-implementation-plan.md
 ```
 
@@ -48,7 +48,7 @@ Each version document should include:
 ```markdown
 # [Project] Implementation Plan - Version [X]
 
-**Version:** [0.0.X] **Date:** [YYYY-MM-DD]
+**Version:** [0.x] **Date:** [YYYY-MM-DD]
 
 ## Version Summary
 
@@ -82,11 +82,9 @@ Approach for validating this version's implementation
 The "Desks" project follows this pattern with its implementation versions:
 
 - `apps/desks/docs/desks-project-plan.md` (Overall project plan)
-- `apps/desks/docs/0.0.0/README.md` (Initial implementation, version 0.0.0)
-- `apps/desks/docs/0.0.1/desks-version-0.0.1-implementation-plan.md` (Version
-  0.0.1)
-- `apps/desks/docs/0.0.2/desks-version-0.0.2-implementation-plan.md` (Version
-  0.0.2)
+- `apps/desks/docs/0.1/README.md` (Initial implementation, version 0.1)
+- `apps/desks/docs/0.2/desks-version-0.2-implementation-plan.md` (Version 0.2)
+- `apps/desks/docs/0.3/desks-version-0.3-implementation-plan.md` (Version 0.3)
 
 This structured approach ensures:
 
