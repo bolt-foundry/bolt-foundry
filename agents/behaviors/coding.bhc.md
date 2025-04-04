@@ -15,20 +15,34 @@ When writing code, follow these organizational patterns:
   - `entrypoints/` - Isograph entrypoints
   - `__generated__/` - Generated code files
 
-## Type System
+## Programming Paradigms
 
-- Prefer `type` over `interface` for props objects
+We support both object-oriented and functional programming approaches. Choose
+the most appropriate paradigm for your specific use case:
+
+### Functional Style Guidelines
+
+- Prefer pure functions without side effects
+- Use immutable data structures whenever possible
+- Leverage function composition over inheritance
+- Utilize higher-order functions for reusable logic
+- Consider using the pipe/flow pattern for data transformations
+- Avoid hidden state and mutations within functions
+
+### Object-Oriented Style Guidelines
+
 - Use the `override` keyword for inherited methods
 - Use nominal typing for IDs (BfGid)
 - Convert string IDs to `BfGid` using the `toBfGid` function
-
-## Class Structure
-
-- Use lexically sortable naming conventions
-  - Start class names with the base class or interface name
-  - Follow with specifics about the implementation
 - Prefer static factory methods over constructors for BfModels
 - Do not use the `new` keyword directly with BfNode, BfEdge, etc.
+
+## Type System
+
+- Prefer `type` over `interface` for props objects and data structures
+- Use exhaustive discriminated unions for type-safe pattern matching
+- Consider using branded types for type safety with primitives
+- Leverage TypeScript's inference capabilities when appropriate
 
 ## File Organization
 
