@@ -1,7 +1,7 @@
 import log from "loglevel";
 import chalk from "chalk";
 import logLevelPrefixPlugin from "loglevel-plugin-prefix";
-import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
+import { getConfigurationVariable } from "../get-configuration-var/get-configuration-var.ts";
 chalk.level = 3;
 
 log.setDefaultLevel(log.levels.INFO);

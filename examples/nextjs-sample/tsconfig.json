@@ -16,7 +16,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "target": "ES2017"
+    "target": "ES2017",
+    "baseUrl": ".",
+    "paths": {
+      "@bolt-foundry/bolt-foundry": ["../../packages/bolt-foundry/bolt-foundry.ts"],
+      "@bolt-foundry/logger": ["../../packages/logger/logger.ts"],
+      "@bolt-foundry/get-configuration-var": ["../../packages/get-configuration-var/get-configuration-var.ts"]
+    }
   },
   "include": [
     "next-env.d.ts",

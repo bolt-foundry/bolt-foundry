@@ -61,15 +61,8 @@
   border-radius: 5px;
   padding: 0.75rem;
   font-size: 1.1rem;
-  font-family:
-    Menlo,
-    Monaco,
-    Lucida Console,
-    Liberation Mono,
-    DejaVu Sans Mono,
-    Bitstream Vera Sans Mono,
-    Courier New,
-    monospace;
+  font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
+    Bitstream Vera Sans Mono, Courier New, monospace;
 }
 
 .grid {
@@ -115,9 +108,98 @@
   margin-left: 0.2rem;
 }
 
+.chatBox {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px 0 40px 0;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.messages {
+  height: 300px;
+  overflow-y: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.emptyState {
+  text-align: center;
+  color: #888;
+  margin-top: 100px;
+}
+
+.message {
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
+
+.userMessage {
+  align-self: flex-end;
+  background-color: #0070f3;
+  color: white;
+  border-bottom-right-radius: 2px;
+}
+
+.aiMessage {
+  align-self: flex-start;
+  background-color: #f1f1f1;
+  color: #333;
+  border-bottom-left-radius: 2px;
+}
+
+.inputForm {
+  display: flex;
+  border-top: 1px solid #eaeaea;
+  padding: 10px;
+  background-color: white;
+}
+
+.chatInput {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  outline: none;
+}
+
+.chatInput:focus {
+  border-color: #0070f3;
+}
+
+.sendButton {
+  margin-left: 5px;
+  padding: 0 15px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.sendButton:hover {
+  background-color: #005bb5;
+}
+
+.sendButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 @media (max-width: 600px) {
   .grid {
     width: 100%;
     flex-direction: column;
+  }
+  
+  .message {
+    max-width: 90%;
   }
 }

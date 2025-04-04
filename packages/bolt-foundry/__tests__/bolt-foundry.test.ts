@@ -1,8 +1,8 @@
 import { assertEquals, assertExists } from "@std/assert";
-import { connectToOpenAi } from "../bolt-foundry.ts";
+import { createOpenAIFetch } from "../bolt-foundry.ts";
 import { createMockOpenAi } from "./utils/mock-openai.ts";
 
-Deno.test("connectToOpenAi should properly integrate with OpenAI client", async () => {
+Deno.test("createOpenAIFetch should properly integrate with OpenAI client", async () => {
   // Setup a mock fetch to capture the request
   let capturedUrl: string | null = null;
   let capturedOptions: RequestInit | null = null;
@@ -43,16 +43,16 @@ Deno.test("connectToOpenAi should properly integrate with OpenAI client", async 
   globalThis.fetch = mockFetch as typeof fetch;
 
   try {
-    // Create a MockOpenAi instance with our connectToOpenAi wrapper
+    // Create a MockOpenAi instance with our createOpenAIFetch wrapper
     const openai = createMockOpenAi({
-      fetch: connectToOpenAi({
+      fetch: createOpenAIFetch({
         openAiApiKey: "test-api-key",
       }),
     });
 
     // Make a request
     const completion = await openai.chat.completions.create({
-      model: "gpt-4", // This should be modified to gpt-3.5-turbo by connectToOpenAi
+      model: "gpt-4", // This should be modified to gpt-3.5-turbo by createOpenAIFetch
       messages: [
         {
           role: "user",
@@ -64,9 +64,12 @@ Deno.test("connectToOpenAi should properly integrate with OpenAI client", async 
     // Verify the request was sent to the correct endpoint
     assertEquals(capturedUrl, "https://api.openai.com/v1/chat/completions");
 
-    // Verify the authorization header was added
+    // Verify the Authorization header was added with correct capitalization
     const headers = capturedOptions!.headers as Record<string, string>;
-    assertEquals(headers.authorization, "Bearer test-api-key");
+    assertEquals(headers.Authorization, "Bearer test-api-key");
+
+    // Verify that lowercase 'authorization' is not used
+    assertEquals(headers.authorization, undefined);
 
     // Verify the model was modified in the request body
     // const body = JSON.parse(capturedOptions!.body as string);
@@ -81,7 +84,7 @@ Deno.test("connectToOpenAi should properly integrate with OpenAI client", async 
   }
 });
 
-Deno.test("connectToOpenAi should not modify FormData requests to OpenAI", async () => {
+Deno.test("createOpenAIFetch should not modify FormData requests to OpenAI", async () => {
   // Setup a mock fetch to capture the request
   let capturedUrl: string | null = null;
   let capturedOptions: RequestInit | null = null;
@@ -98,7 +101,7 @@ Deno.test("connectToOpenAi should not modify FormData requests to OpenAI", async
 
   try {
     // Create a wrapper
-    const wrapper = connectToOpenAi({
+    const wrapper = createOpenAIFetch({
       openAiApiKey: "test-api-key",
     });
 
@@ -118,16 +121,19 @@ Deno.test("connectToOpenAi should not modify FormData requests to OpenAI", async
     // Verify body is still FormData
     assertEquals(capturedOptions!.body instanceof FormData, true);
 
-    // Verify authorization header was added
+    // Verify Authorization header was added with correct capitalization
     const headers = capturedOptions!.headers as Record<string, string>;
-    assertEquals(headers.authorization, "Bearer test-api-key");
+    assertEquals(headers.Authorization, "Bearer test-api-key");
+
+    // Verify that lowercase 'authorization' is not used
+    assertEquals(headers.authorization, undefined);
   } finally {
     // Restore original fetch
     globalThis.fetch = originalFetch;
   }
 });
 
-Deno.test("connectToOpenAi should not modify non-OpenAI requests", async () => {
+Deno.test("createOpenAIFetch should not modify non-OpenAI requests", async () => {
   // Setup a mock fetch to capture the request
   let capturedUrl: string | null = null;
   let capturedOptions: RequestInit | null = null;
@@ -150,7 +156,7 @@ Deno.test("connectToOpenAi should not modify non-OpenAI requests", async () => {
 
   try {
     // Get the wrapper
-    const wrapper = connectToOpenAi({
+    const wrapper = createOpenAIFetch({
       openAiApiKey: "test-api-key",
     });
 
@@ -169,8 +175,9 @@ Deno.test("connectToOpenAi should not modify non-OpenAI requests", async () => {
     const body = JSON.parse(capturedOptions!.body as string);
     assertEquals(body, originalBody);
 
-    // Verify no authorization header was added
+    // Verify no Authorization header was added (with either capitalization)
     const headers = capturedOptions!.headers as Record<string, string>;
+    assertEquals(headers.Authorization, undefined);
     assertEquals(headers.authorization, undefined);
   } finally {
     // Restore original fetch

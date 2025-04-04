@@ -1,5 +1,5 @@
 import { assertEquals, assertExists } from "@std/assert";
-import { createOpenAiFetch } from "../bolt-foundry.ts";
+import { createOpenAIFetch } from "../bolt-foundry.ts";
 import { createMockOpenAi } from "./utils/mock-openai.ts";
 
 // Mock for PostHog
@@ -25,7 +25,7 @@ Deno.test("Manual LLM event capture with metadata", async () => {
   };
 
   // Create OpenAI fetch with PostHog
-  const openAiFetch = createOpenAiFetch({
+  const openAiFetch = createOpenAIFetch({
     openAiApiKey: "test-api-key",
     posthogClient: mockPostHog,
   });
@@ -108,7 +108,7 @@ Deno.test("PostHog integration should track OpenAI API calls", async () => {
 
   try {
     // Create an OpenAI wrapper with PostHog analytics
-    const openAiFetch = createOpenAiFetch({
+    const openAiFetch = createOpenAIFetch({
       openAiApiKey: "test-api-key",
       posthogClient: mockPostHog,
     });
@@ -133,7 +133,7 @@ Deno.test("PostHog integration should track OpenAI API calls", async () => {
       };
 
       // Create OpenAI fetch with PostHog
-      const openAiFetch = createOpenAiFetch({
+      const openAiFetch = createOpenAIFetch({
         openAiApiKey: "test-api-key",
         posthogClient: mockPostHog,
       });
@@ -277,7 +277,7 @@ Deno.test("Analytics should track token usage and response time", async () => {
 
   try {
     // Create an OpenAI wrapper with PostHog analytics
-    const openAiFetch = createOpenAiFetch({
+    const openAiFetch = createOpenAIFetch({
       openAiApiKey: "test-api-key",
       posthogClient: mockPostHog,
     });
@@ -325,7 +325,7 @@ Deno.test("Track LLM error with PostHog AI format", async () => {
   };
 
   // Create OpenAI fetch with PostHog
-  const openAiFetch = createOpenAiFetch({
+  const openAiFetch = createOpenAIFetch({
     openAiApiKey: "test-api-key",
     posthogClient: mockPostHog,
   });
@@ -424,7 +424,7 @@ Deno.test("Should work with PostHog API key instead of client", async () => {
 
   try {
     // Create an OpenAI wrapper with PostHog API key
-    const openAiFetch = createOpenAiFetch({
+    const openAiFetch = createOpenAIFetch({
       openAiApiKey: "test-api-key",
       posthogApiKey: "test-posthog-key",
       posthogHost: "https://app.posthog.com",
