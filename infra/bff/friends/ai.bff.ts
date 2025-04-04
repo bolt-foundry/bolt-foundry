@@ -271,7 +271,9 @@ async function generateCommitMessage(
   }
 
   // Connect to OpenAI and create a custom fetch
-  const openAiFetch = connectToOpenAi(openaiApiKey);
+  const openAiFetch = connectToOpenAi({
+    openAiApiKey: openaiApiKey,
+  });
 
   // Prepare the prompt to send to OpenAI
   let prompt = `
