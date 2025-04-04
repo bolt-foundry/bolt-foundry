@@ -4,27 +4,25 @@ This package provides utilities for working with the Bolt Foundry platform.
 
 ## Features
 
-### `createFoundry`
+### `createOpenAiFetch`
 
-A fetch wrapper that modifies OpenAI API requests to include authentication and
-model override.
-
-### `createMockOpenAi`
-
-Creates a mock OpenAI client for testing without making real API calls.
+A fetch wrapper that adds authentication and logging for OpenAI API requests.
 
 ## Usage
 
-### With real OpenAI
+### With OpenAI SDK
 
 ```typescript
-import { createFoundry } from "@bolt-foundry/bolt-foundry";
-import OpenAi from "@openai/openai";
+import { createOpenAiFetch } from "@bolt-foundry/bolt-foundry";
+import OpenAI from "openai";
 
-const openai = new OpenAi({
-  fetch: createFoundry(Deno.env.get("OPENAI_API_KEY")),
+// Create OpenAI instance with our custom fetch
+const openai = new OpenAI({
+  apiKey: "your-api-key-here", // This can be undefined if using fetch wrapper
+  fetch: createOpenAiFetch(process.env.OPENAI_API_KEY),
 });
 
+// Now use the OpenAI client as normal
 const completion = await openai.chat.completions.create({
   model: "gpt-3.5-turbo",
   messages: [
@@ -40,7 +38,34 @@ const completion = await openai.chat.completions.create({
 });
 ```
 
-### With mock OpenAI
+### Integration with NextJS App
+
+Instead of overriding the global fetch function, you can integrate the wrapper
+directly in your API handlers or where you initialize the OpenAI client:
+
+```typescript
+// pages/api/chat.ts or similar
+import { createOpenAiFetch } from "@bolt-foundry/bolt-foundry";
+import { OpenAI } from "openai";
+
+export default async function handler(req, res) {
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    fetch: createOpenAiFetch(process.env.OPENAI_API_KEY),
+  });
+
+  const response = await openai.chat.completions.create({
+    // your configuration
+  });
+
+  res.status(200).json(response);
+}
+```
+
+This approach ensures that only OpenAI API calls are intercepted, while other
+fetch calls remain unaffected.
+
+### For Testing
 
 ```typescript
 import { createMockOpenAi } from "@bolt-foundry/bolt-foundry/mock-openai";
