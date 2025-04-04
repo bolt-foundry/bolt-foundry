@@ -115,6 +115,7 @@
     "npm:openai@^4.91.1": "4.91.1_zod@3.24.1",
     "npm:pg@^8.13.3": "8.13.3",
     "npm:posthog-js@^1.223.5": "1.223.5_@rrweb+types@2.0.0-alpha.17",
+    "npm:posthog-node@^3.1.2": "3.6.3",
     "npm:posthog-node@^4.7.0": "4.7.0",
     "npm:react-dom@19": "19.0.0_react@19.0.0",
     "npm:react-textarea-autosize@^8.5.9": "8.5.9_react@19.0.0",
@@ -4730,6 +4731,13 @@
         "web-vitals@4.2.4"
       ]
     },
+    "posthog-node@3.6.3": {
+      "integrity": "sha512-JB+ei0LkwE+rKHyW5z79Nd1jUaGxU6TvkfjFqY9vQaHxU5aU8dRl0UUaEmZdZbHwjp3WmXCBQQRNyimwbNQfCw==",
+      "dependencies": [
+        "axios",
+        "rusha"
+      ]
+    },
     "posthog-node@4.7.0": {
       "integrity": "sha512-RgdUKSW8MfMOkjUa8cYVqWndNjPePNuuxlGbrZC6z1WRBsVc6TdGl8caidmC10RW8mu/BOfmrGbP4cRTo2jARg==",
       "dependencies": [
@@ -5019,6 +5027,9 @@
       "dependencies": [
         "queue-microtask"
       ]
+    },
+    "rusha@0.8.14": {
+      "integrity": "sha512-cLgakCUf6PedEu15t8kbsjnwIFFR2D4RfL+W3iWFJ4iac7z4B0ZI8fxy4R3J956kAI68HclCFGL8MPoUVC3qVA=="
     },
     "safe-array-concat@1.1.3": {
       "integrity": "sha512-AURm5f0jYEOydBj7VQlVvDrjeFgthDdEF5H1dP+6mNpoXOMo1quQqJ4wvJDyRZ9+pO3kGWoOdmV08cSv2aJV6Q==",
@@ -5898,7 +5909,12 @@
       "packages/bolt-foundry": {
         "dependencies": [
           "jsr:@bolt-foundry/logger@^0.0.0-dev.0"
-        ]
+        ],
+        "packageJson": {
+          "dependencies": [
+            "npm:posthog-node@^3.1.2"
+          ]
+        }
       },
       "packages/logger": {
         "dependencies": [
