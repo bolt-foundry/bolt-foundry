@@ -15,7 +15,7 @@ structure and version tracking across project lifecycle.
 
 ## Version-Based Documentation Structure
 
-- Use semantic versioning (0.0.X) for organizing implementation phases
+- Use semantic versioning (0.x) for organizing implementation phases
 - Create version-specific subdirectories for each implementation phase
 - Store detailed implementation documents in their respective version
   directories
@@ -29,15 +29,15 @@ apps/project-name/
   └── docs/
       ├── project-name-project-plan.md       (Overall project vision)
       ├── project-name-implementation-plan.md (High-level implementation strategy)
-      ├── 0.0.0/
-      │   ├── version-0.0.0-implementation-plan.md (Initial version details)
-      │   └── supporting-documents/                (Research, diagrams, etc.)
-      ├── 0.0.1/
-      │   ├── version-0.0.1-implementation-plan.md (Second version details)
-      │   └── technical-specifications.md          (Detailed specs for this version)
-      └── 0.0.2/
-          ├── version-0.0.2-implementation-plan.md (Third version details)
-          └── architecture-decisions.md            (Design decisions for this version)
+      ├── 0.1/
+      │   ├── version-0.1-implementation-plan.md (Initial version details)
+      │   └── supporting-documents/              (Research, diagrams, etc.)
+      ├── 0.2/
+      │   ├── version-0.2-implementation-plan.md (Second version details)
+      │   └── technical-specifications.md        (Detailed specs for this version)
+      └── 0.3/
+          ├── version-0.3-implementation-plan.md (Third version details)
+          └── architecture-decisions.md          (Design decisions for this version)
 ```
 
 ## Document Relationship
@@ -81,16 +81,16 @@ Each version document at
 - Components and implementation details
 - Integration points with existing systems
 - Testing strategy for this version's deliverables
-- Changes from previous versions (for version 0.0.1+)
+- Changes from previous versions (for version 0.2+)
 
 ## Version Numbering Strategy
 
-- **0.0.0**: Initial implementation phase (foundation)
-- **0.0.1**: Second implementation phase (core functionality)
-- **0.0.2**: Third implementation phase (enhancement)
-- **0.0.X**: Additional implementation phases as needed
-- **0.1.0**: Beta release with complete core functionality
-- **1.0.0**: Production release
+- **0.1**: Initial implementation phase (foundation)
+- **0.2**: Second implementation phase (core functionality)
+- **0.3**: Third implementation phase (enhancement)
+- **0.x**: Additional implementation phases as needed
+- **0.9**: Beta release with complete core functionality
+- **1.0**: Production release
 
 ## Naming Conventions
 
@@ -115,11 +115,11 @@ The "Desks" project follows this pattern with its documentation structure:
 - `apps/desks/docs/desks-project-plan.md` (Vision and user-focused goals)
 - `apps/desks/docs/desks-implementation-plan.md` (Technical strategy across
   versions)
-- `apps/desks/docs/0.0.0/README.md` (Initial version implementation details)
-- `apps/desks/docs/0.0.1/desks-version-0.0.1-implementation-plan.md` (Version
-  0.0.1 details)
-- `apps/desks/docs/0.0.2/desks-version-0.0.2-implementation-plan.md` (Version
-  0.0.2 details)
+- `apps/desks/docs/0.1/README.md` (Initial version implementation details)
+- `apps/desks/docs/0.2/desks-version-0.2-implementation-plan.md` (Version 0.2
+  details)
+- `apps/desks/docs/0.3/desks-version-0.3-implementation-plan.md` (Version 0.3
+  details)
 
 This structured approach ensures:
 
