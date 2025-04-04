@@ -21,7 +21,8 @@ action-oriented approach:
 
 ## Scope It, Test It, Ship It
 
-- Break work into iterative, testable chunks
+- Break work into iterative, testable versions using semantic versioning (0.1
+  for initial, 0.2 for first release, etc.)
 - Define what makes a Minimum Lovable Product (MLP)
 - Use active voice for all scope definitions
 - Clearly state what's out of scope
@@ -70,3 +71,7 @@ needs that can be tested and verified. It should reflect our belief that
 "Failure counts as done" and that quick cycles of improvement beat big-bang
 releases. Working code in users' hands is better than perfect code in
 development. When in doubt, ship it and iterate based on feedback.
+
+Note: Project stages should be referred to as "versions" rather than "phases"
+and follow semantic versioning principles (0.1 for initial implementation, 0.2
+for first release, 0.3 for iterative improvements, etc.).
