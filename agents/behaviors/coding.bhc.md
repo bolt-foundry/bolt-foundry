@@ -15,20 +15,66 @@ When writing code, follow these organizational patterns:
   - `entrypoints/` - Isograph entrypoints
   - `__generated__/` - Generated code files
 
-## Type System
+## Programming Paradigms
 
-- Prefer `type` over `interface` for props objects
+We support both object-oriented and functional programming approaches, choosing
+the most appropriate paradigm for each specific use case:
+
+### When to Use Object-Oriented Programming
+
+Object-oriented programming is primarily used in our bfDb system and is ideal
+for:
+
+- **Domain modeling**: When creating classes that represent database entities
+  (BfNode, BfEdge)
+- **Inheritance hierarchies**: When implementing shared behavior across related
+  models
+- **Relationship modeling**: When expressing connections between entities
+  (source/target nodes)
+- **Encapsulation**: When you need to bundle data with the methods that operate
+  on that data
+- **Factory patterns**: When creating instances through controlled
+  initialization paths
+- **Polymorphic behavior**: When different implementations share the same
+  interface
+
+### Object-Oriented Style Guidelines
+
 - Use the `override` keyword for inherited methods
 - Use nominal typing for IDs (BfGid)
 - Convert string IDs to `BfGid` using the `toBfGid` function
-
-## Class Structure
-
-- Use lexically sortable naming conventions
-  - Start class names with the base class or interface name
-  - Follow with specifics about the implementation
 - Prefer static factory methods over constructors for BfModels
+- Use class inheritance for core models (inheriting from BfNodeBase, BfEdgeBase)
+- Implement required abstract methods from base classes
 - Do not use the `new` keyword directly with BfNode, BfEdge, etc.
+- Use protected properties for internal state that subclasses may need
+
+### When to Use Functional Programming
+
+Functional programming is preferred for most other areas of the codebase,
+particularly:
+
+- **Data transformations**: When processing or mapping data without side effects
+- **UI components**: When creating React components and hooks
+- **Utility functions**: When creating reusable, pure functions
+- **API services**: When building interfaces to external systems
+- **State management**: When using immutable patterns for application state
+
+### Functional Style Guidelines
+
+- Prefer pure functions without side effects
+- Use immutable data structures whenever possible
+- Leverage function composition over inheritance
+- Utilize higher-order functions for reusable logic
+- Consider using the pipe/flow pattern for data transformations
+- Avoid hidden state and mutations within functions
+
+## Type System
+
+- Prefer `type` over `interface` for props objects and data structures
+- Use exhaustive discriminated unions for type-safe pattern matching
+- Consider using branded types for type safety with primitives
+- Leverage TypeScript's inference capabilities when appropriate
 
 ## File Organization
 
