@@ -1,6 +1,6 @@
 # Bolt Foundry library
 
-**Version:** 0.0.0 (Initial) **Date:** 2025-04-04
+**Version:** 0.1 (Initial) **Date:** 2025-04-04
 
 ## Project Purpose
 
@@ -11,17 +11,17 @@ helping improve performance and reduce costs.
 
 ## Project Versions Overview
 
-1. **Version 0.0: Foundation**
+1. **Version 0.1: Foundation**
    - Set up a basic NextJS application with chat functionality as a sample
    - Implement library to replace the default fetch call in the Vercel AI SDK
    - Add logging capabilities to console using our logger
 
-2. **Version 0.1: Analytics Integration**
+2. **Version 0.2: Analytics Integration**
    - Add PostHog event capture functionality
    - Implement proper event tracking for AI interactions
    - Create dashboards for visualizing usage data
 
-3. **Version 0.2: Experimentation Framework**
+3. **Version 0.3: Experimentation Framework**
    - Set up framework for running A/B tests comparing different LLM calls
    - Build comparison reporting tools
    - Add cost tracking features
