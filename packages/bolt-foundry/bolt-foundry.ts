@@ -1,7 +1,14 @@
 import { getLogger } from "@bolt-foundry/logger";
 const logger = getLogger(import.meta);
 
-export function connectToOpenAi(openAiApiKey: string): typeof fetch {
+/**
+ * Creates a fetch wrapper specifically for OpenAI API calls that adds
+ * authentication and optional logging.
+ *
+ * @param openAiApiKey The OpenAI API key to use for authentication
+ * @returns A fetch wrapper function that can be passed to OpenAI client
+ */
+export function createOpenAiFetch(openAiApiKey: string): typeof fetch {
   return function boltFoundryFetch(
     url: RequestInfo | URL,
     options?: RequestInit,
@@ -21,7 +28,7 @@ export function connectToOpenAi(openAiApiKey: string): typeof fetch {
 
       logger.debug("Added OpenAI API key to authorization header");
 
-      // If there's a request body and it's not FormData, modify the model
+      // If there's a request body and it's not FormData, log it for debugging
       if (
         modifiedOptions.body &&
         !(modifiedOptions.body instanceof FormData) &&
@@ -31,20 +38,24 @@ export function connectToOpenAi(openAiApiKey: string): typeof fetch {
           // Parse the request body
           const body = JSON.parse(modifiedOptions.body);
 
-          // Update the model to gpt-3.5-turbo
-          // body.model = "gpt-3.5-turbo";
+          logger.debug(
+            `OpenAI API request to ${url.toString()} with model: ${
+              body.model || "unknown"
+            }`,
+          );
 
-          // Stringify the body back
+          // Don't modify the model - just keep the original
           modifiedOptions.body = JSON.stringify(body);
-
-          logger.debug(`Modified request to use model: gpt-3.5-turbo`);
         } catch (error) {
           logger.error("Error parsing request body:", error);
         }
       }
     }
 
-    logger.debug(`Fetching ${url}`, options, modifiedOptions);
+    logger.debug(`Fetching ${url}`, { method: options?.method });
     return fetch(url, modifiedOptions);
   };
 }
+
+// For backward compatibility
+export const connectToOpenAi = createOpenAiFetch;
