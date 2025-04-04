@@ -7,6 +7,7 @@ import { createOpenAIFetch } from "@bolt-foundry/bolt-foundry"
 const openai = createOpenAI({
   fetch: createOpenAIFetch({
     openAiApiKey: process.env.OPENAI_API_KEY,
+    posthogApiKey: process.env.POSTHOG_NEXTJS_API_KEY,
   })
 });
 

@@ -4,8 +4,12 @@ import { createMockOpenAi } from "./utils/mock-openai.ts";
 
 // Mock for PostHog
 const mockPostHogCapture = {
-  capture: (eventName: string, properties: Record<string, unknown>) => {
-    return { eventName, properties };
+  capture: (
+    eventName: string,
+    distinctId: string,
+    properties: Record<string, unknown>,
+  ) => {
+    return { eventName, distinctId, properties };
   },
 };
 
@@ -17,10 +21,14 @@ Deno.test("Manual LLM event capture with metadata", async () => {
   // Create a mock PostHog client
   const mockPostHog = {
     ...mockPostHogCapture,
-    capture: (eventName: string, properties: Record<string, unknown>) => {
+    capture: (
+      eventName: string,
+      distinctId: string,
+      properties: Record<string, unknown>,
+    ) => {
       capturedEventName = eventName;
       capturedProperties = properties;
-      return mockPostHogCapture.capture(eventName, properties);
+      return mockPostHogCapture.capture(eventName, distinctId, properties);
     },
   };
 
@@ -38,7 +46,7 @@ Deno.test("Manual LLM event capture with metadata", async () => {
     temperature: 0.7,
     max_tokens: 100,
     user_id: "test-user",
-    session_id: "test-session",
+    conversation_id: "test-conversation-id",
     message_id: "test-message-id",
   };
 
@@ -99,10 +107,14 @@ Deno.test("PostHog integration should track OpenAI API calls", async () => {
   // Create a mock PostHog client
   const mockPostHog = {
     ...mockPostHogCapture,
-    capture: (eventName: string, properties: Record<string, unknown>) => {
+    capture: (
+      eventName: string,
+      distinctId: string,
+      properties: Record<string, unknown>,
+    ) => {
       analyticsEventCaptured = true;
       analyticsProperties = properties;
-      return mockPostHogCapture.capture(eventName, properties);
+      return mockPostHogCapture.capture(eventName, distinctId, properties);
     },
   };
 
@@ -125,10 +137,14 @@ Deno.test("PostHog integration should track OpenAI API calls", async () => {
       // Create a mock PostHog client
       const mockPostHog = {
         ...mockPostHogCapture,
-        capture: (eventName: string, properties: Record<string, unknown>) => {
+        capture: (
+          eventName: string,
+          distinctId: string,
+          properties: Record<string, unknown>,
+        ) => {
           capturedEventName = eventName;
           capturedProperties = properties;
-          return mockPostHogCapture.capture(eventName, properties);
+          return mockPostHogCapture.capture(eventName, distinctId, properties);
         },
       };
 
@@ -162,6 +178,8 @@ Deno.test("PostHog integration should track OpenAI API calls", async () => {
         $ai_http_status: 200,
         $ai_base_url: "https://api.openai.com/v1",
         $ai_is_error: false,
+        conversation_id: "abc123",
+        paid: true,
       });
 
       // Verify event was captured with the right properties
@@ -171,8 +189,9 @@ Deno.test("PostHog integration should track OpenAI API calls", async () => {
       assertEquals(capturedProperties.$ai_input_tokens, 50);
       assertEquals(capturedProperties.$ai_output_tokens, 100);
       assertEquals(capturedProperties.$ai_latency, 1.23);
-      assertExists(capturedProperties.$ai_trace_id);
       assertEquals(capturedProperties.$ai_trace_id, "trace-123456");
+      assertEquals(capturedProperties.conversation_id, "abc123");
+      assertEquals(capturedProperties.paid, true);
 
       // Check that input and output are properly captured
       assertExists(capturedProperties.$ai_input);
@@ -209,7 +228,7 @@ Deno.test("PostHog integration should track OpenAI API calls", async () => {
 
     // Verify analytics was captured
     assertEquals(analyticsEventCaptured, true);
-    assertExists(analyticsProperties.model);
+    assertExists(analyticsProperties.$ai_model);
     assertExists(analyticsProperties.timestamp);
     assertEquals(analyticsProperties.endpoint, "chat.completions");
   } finally {
@@ -268,10 +287,14 @@ Deno.test("Analytics should track token usage and response time", async () => {
   // Create a mock PostHog client
   const mockPostHog = {
     ...mockPostHogCapture,
-    capture: (eventName: string, properties: Record<string, unknown>) => {
+    capture: (
+      eventName: string,
+      distinctId: string,
+      properties: Record<string, unknown>,
+    ) => {
       analyticsEventCaptured = true;
       analyticsProperties = properties;
-      return mockPostHogCapture.capture(eventName, properties);
+      return mockPostHogCapture.capture(eventName, distinctId, properties);
     },
   };
 
@@ -300,8 +323,8 @@ Deno.test("Analytics should track token usage and response time", async () => {
 
     // Verify token usage was captured
     assertEquals(analyticsEventCaptured, true);
-    assertExists(analyticsProperties.prompt_tokens);
-    assertExists(analyticsProperties.completion_tokens);
+    assertExists(analyticsProperties.$ai_input_tokens);
+    assertExists(analyticsProperties.$ai_output_tokens);
     assertExists(analyticsProperties.total_tokens);
     assertExists(analyticsProperties.response_time_ms);
   } finally {
@@ -317,10 +340,14 @@ Deno.test("Track LLM error with PostHog AI format", async () => {
   // Create a mock PostHog client
   const mockPostHog = {
     ...mockPostHogCapture,
-    capture: (eventName: string, properties: Record<string, unknown>) => {
+    capture: (
+      eventName: string,
+      distinctId: string,
+      properties: Record<string, unknown>,
+    ) => {
       capturedEventName = eventName;
       capturedProperties = properties;
-      return mockPostHogCapture.capture(eventName, properties);
+      return mockPostHogCapture.capture(eventName, distinctId, properties);
     },
   };
 
@@ -349,6 +376,7 @@ Deno.test("Track LLM error with PostHog AI format", async () => {
     $ai_base_url: "https://api.openai.com/v1",
     $ai_is_error: true,
     $ai_error: errorMessage,
+    conversation_id: "error-conversation-789",
   });
 
   // Verify event was captured with the right properties
@@ -358,7 +386,8 @@ Deno.test("Track LLM error with PostHog AI format", async () => {
   assertEquals(capturedProperties.$ai_http_status, 429);
   assertEquals(capturedProperties.$ai_is_error, true);
   assertEquals(capturedProperties.$ai_error, errorMessage);
-  assertExists(capturedProperties.$ai_trace_id);
+  assertEquals(capturedProperties.$ai_trace_id, "error-trace-789");
+  assertEquals(capturedProperties.conversation_id, "error-conversation-789");
 });
 
 Deno.test("Should work with PostHog API key instead of client", async () => {
@@ -458,8 +487,52 @@ Deno.test("Should work with PostHog API key instead of client", async () => {
     // Verify that PostHog request included the API key
     const posthogUrl = capturedUrls.find((url) => url.includes("posthog"));
     if (posthogUrl) {
+      // Check that we're using the correct endpoint
+      assertEquals(
+        posthogUrl.includes("/capture/"),
+        true,
+        "Should use the /capture/ endpoint",
+      );
+
       const body = JSON.parse(capturedOptions[posthogUrl].body as string);
       assertEquals(body.api_key, "test-posthog-key");
+      assertEquals(
+        typeof body.distinct_id,
+        "string",
+        "Should have a distinct_id",
+      );
+      assertEquals(typeof body.timestamp, "string", "Should have a timestamp");
+      assertEquals(typeof body.event, "string", "Should have an event name");
+
+      // Check LLM observability specific properties if this is an AI event
+      if (body.event === "$ai_generation") {
+        assertExists(
+          body.properties.$ai_model,
+          "Should have $ai_model property",
+        );
+        assertExists(
+          body.properties.$ai_provider,
+          "Should have $ai_provider property",
+        );
+        if (!body.properties.$ai_is_error) {
+          assertExists(
+            body.properties.$ai_input,
+            "Should have $ai_input property",
+          );
+          assertExists(
+            body.properties.$ai_input_tokens,
+            "Should have $ai_input_tokens property",
+          );
+          assertExists(
+            body.properties.$ai_output_tokens,
+            "Should have $ai_output_tokens property",
+          );
+        }
+        assertExists(
+          body.properties.$ai_latency,
+          "Should have $ai_latency property",
+        );
+      }
     }
   } finally {
     // Restore original fetch
