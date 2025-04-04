@@ -345,6 +345,10 @@ ${diffOutput}
     );
 
     const result = await response.json();
+    if (!result.choices) {
+      logger.error("OpenAI API response did not contain choices", result);
+      return null;
+    }
     const aiResponse = result.choices[0].message.content.trim();
 
     // Parse response into title and message
