@@ -1,10 +1,9 @@
-
-import { useState } from 'react';
-import styles from '../styles/Chat.module.css';
+import { useState } from "react";
+import styles from "../styles/Chat.module.css";
 
 export default function Chat() {
-  const [message, setMessage] = useState('');
-  const [response, setResponse] = useState('');
+  const [message, setMessage] = useState("");
+  const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -12,17 +11,17 @@ export default function Chat() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),
       });
-      
+
       const data = await res.json();
       // Extract the text content from the response object
       setResponse(data.response.text || JSON.stringify(data.response));
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
@@ -39,7 +38,7 @@ export default function Chat() {
           disabled={loading}
         />
         <button type="submit" disabled={loading}>
-          {loading ? 'Sending...' : 'Send'}
+          {loading ? "Sending..." : "Send"}
         </button>
       </form>
       {response && (

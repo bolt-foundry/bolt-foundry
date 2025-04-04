@@ -66,7 +66,8 @@
     "build",
     "static",
     "**/__TEMPLATE__.*",
-    "thirdParty"
+    "thirdParty",
+    "examples"
   ],
   "lint": {
     "exclude": [
@@ -98,7 +99,8 @@
   "workspace": [
     "packages/bolt-foundry",
     "packages/logger",
-    "packages/get-configuration-var"
+    "packages/get-configuration-var",
+    "examples/nextjs-sample"
   ],
   "nodeModulesDir": "manual",
   "vendor": true
