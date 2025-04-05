@@ -152,19 +152,7 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
       posthogClient.capture({
         event: "$ai_generation",
         distinctId: "bolt-foundry",
-        properties: {
-          "$ai_provider": "openai",
-          "$ai_model": requestBody?.model || "unknown",
-          "$ai_input_tokens": responseBody?.usage?.prompt_tokens || 0,
-          "$ai_output_tokens": responseBody?.usage?.completion_tokens || 0,
-          "$ai_total_tokens": responseBody?.usage?.total_tokens || 0,
-          "$ai_latency": 0, // Fixed value for test consistency
-          "$ai_response_id": responseBody?.id || "unknown",
-          "$ai_model_parameters": {
-            "temperature": requestBody?.temperature,
-            "max_tokens": requestBody?.max_tokens,
-          },
-        },
+        properties: properties,
       });
 
       logger.debug(`Tracked LLM event: ${endpoint}`, {
