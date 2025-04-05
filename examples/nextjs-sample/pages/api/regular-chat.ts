@@ -1,45 +1,45 @@
+import { NextApiRequest, NextApiResponse } from 'next';
+import { createOpenAIFetch } from '../../../../packages/bolt-foundry/bolt-foundry';
 
-import { createOpenAI } from '@ai-sdk/openai';
-import { generateText } from 'ai';
-import { createOpenAIFetch } from "@bolt-foundry/bolt-foundry"
-
-
-const openai = createOpenAI({
-  fetch: createOpenAIFetch({
-    openAiApiKey: process.env.OPENAI_API_KEY,
-    posthogApiKey: process.env.POSTHOG_NEXTJS_API_KEY,
-  })
+// Create enhanced fetch with analytics tracking
+const openAiFetch = createOpenAIFetch({
+  openAiApiKey: process.env.OPENAI_API_KEY || '',
+  posthogApiKey: process.env.POSTHOG_NEXTJS_API_KEY || '',
 });
 
-export default async function handler(req, res) {
-  if (!process.env.OPENAI_API_KEY) {
-    return res.status(500).json({
-      error: {
-        message: "OpenAI API key not configured",
-      }
-    });
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    // In Next.js API routes, req.body is already parsed
     const { messages } = req.body;
 
-    // Use generateText instead of streamText for non-streaming responses
-    const result = await generateText({
-      model: openai('gpt-3.5-turbo'),
-      messages,
+    // Make request to OpenAI API using the enhanced fetch from bolt-foundry
+    const response = await openAiFetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages,
+        temperature: 0.7,
+        max_tokens: 500
+      })
     });
 
-    // Return the complete response
-    return res.status(200).json({
-      content: result.text,
-    });
-  } catch(error) {
-    console.error(`Error with OpenAI API request: ${error.message}`);
-    return res.status(500).json({
-      error: {
-        message: 'An error occurred during your request.',
-      }
-    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || 'Failed to fetch from OpenAI');
+    }
+
+    const data = await response.json();
+    const assistantResponse = data.choices[0].message.content;
+
+    return res.status(200).json({ content: assistantResponse });
+  } catch (error: any) {
+    console.error('Error in chat API:', error);
+    return res.status(500).json({ error: error.message || 'Failed to process request' });
   }
 }
