@@ -116,7 +116,8 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
 
       // Add model parameters
       if (
-        requestBody?.temperature || requestBody?.max_tokens || requestBody?.top_p
+        requestBody?.temperature || requestBody?.max_tokens ||
+        requestBody?.top_p
       ) {
         properties["$ai_model_parameters"] = {
           temperature: requestBody.temperature,
@@ -130,9 +131,12 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
       }
 
       // Calculate total tokens if needed
-      if (responseBody?.usage?.prompt_tokens && responseBody?.usage?.completion_tokens) {
-        properties["$ai_total_tokens"] = responseBody.usage.prompt_tokens + 
-                                        responseBody.usage.completion_tokens;
+      if (
+        responseBody?.usage?.prompt_tokens &&
+        responseBody?.usage?.completion_tokens
+      ) {
+        properties["$ai_total_tokens"] = responseBody.usage.prompt_tokens +
+          responseBody.usage.completion_tokens;
       }
 
       // Calculate approximate cost if possible
@@ -153,7 +157,7 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
           "$ai_model": requestBody?.model || "unknown",
           "$ai_input_tokens": responseBody?.usage?.prompt_tokens || 0,
           "$ai_output_tokens": responseBody?.usage?.completion_tokens || 0,
-          "$ai_total_tokens": responseBody?.usage?.total_tokens || 0, 
+          "$ai_total_tokens": responseBody?.usage?.total_tokens || 0,
           "$ai_latency": 0, // Fixed value for test consistency
           "$ai_response_id": responseBody?.id || "unknown",
           "$ai_model_parameters": {

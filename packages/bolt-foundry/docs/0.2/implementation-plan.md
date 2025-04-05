@@ -47,7 +47,9 @@ const properties: Record<string, unknown> = {
   "$ai_latency": latency,
   "$ai_is_error": res.status >= 400,
   "$ai_http_status": res.status,
-  "$ai_reasoning_tokens": requestBody.logprobs ? responseBody.usage.completion_tokens : 0,
+  "$ai_reasoning_tokens": requestBody.logprobs
+    ? responseBody.usage.completion_tokens
+    : 0,
   "$ai_tools": requestBody.tools || [],
   "$ai_output_choices": responseBody.choices?.length || 1,
   // Rich metadata about the request
@@ -59,8 +61,6 @@ const properties: Record<string, unknown> = {
   },
 };
 ```
-
-
 
 ## Testing Strategy
 

@@ -42,12 +42,12 @@ Deno.test("OpenAI events should follow PostHog AI schema", async () => {
 
   // Create a stub for posthog capture with custom implementation
   using captureStub = stub(
-    posthogClient, 
-    "capture", 
+    posthogClient,
+    "capture",
     () => {
       // Return implementation doesn't matter, as we're just verifying the call
       return Promise.resolve();
-    }
+    },
   );
 
   const interceptionFetch = createOpenAIFetch({
@@ -86,6 +86,14 @@ Deno.test("OpenAI events should follow PostHog AI schema", async () => {
           "$ai_total_tokens": 30,
           "$ai_latency": 0,
           "$ai_response_id": "chatcmpl-123",
+          "$ai_input": [{ role: "user", content: "Hello" }],
+          "$ai_output_choices": [
+            {
+              message: { role: "assistant", content: "Hi there!" },
+              finish_reason: "stop",
+              index: 0,
+            },
+          ],
           "$ai_model_parameters": {
             "temperature": 0.7,
             "max_tokens": 150,
