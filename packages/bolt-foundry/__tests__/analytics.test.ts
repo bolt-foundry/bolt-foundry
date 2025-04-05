@@ -27,6 +27,20 @@ Deno.test("OpenAI events should follow PostHog AI schema", async () => {
     ],
   };
 
+  // Create a consistent timer to ensure deterministic latency values
+  let currentTime = 1000;
+  using _dateNowStub = stub(
+    Date,
+    "now",
+    () => {
+      // First call returns start time, second call returns end time
+      const time = currentTime;
+      // Simulate exactly 3ms passed
+      currentTime += 3;
+      return time;
+    },
+  );
+
   // Create a stub for global fetch that returns a proper Response with the mockResponse
   using _fetchStub = stub(
     globalThis,
@@ -72,7 +86,7 @@ Deno.test("OpenAI events should follow PostHog AI schema", async () => {
   // Assert - Check that required AI schema properties are present and correctly formatted
   assertSpyCalls(captureStub, 1);
 
-  // Validate the event name - only check the specific fields we want to verify
+  // Validate the full event structure including fixed latency value
   assertSpyCall(captureStub, 0, {
     args: [
       {
@@ -84,7 +98,7 @@ Deno.test("OpenAI events should follow PostHog AI schema", async () => {
           "$ai_input_tokens": 10,
           "$ai_output_tokens": 20,
           "$ai_total_tokens": 30,
-          "$ai_latency": 0,
+          "$ai_latency": 0.003, // Now we can test the exact value because we've mocked Date.now()
           "$ai_response_id": "chatcmpl-123",
           "$ai_input": [{ role: "user", content: "Hello" }],
           "$ai_output_choices": [
@@ -97,7 +111,12 @@ Deno.test("OpenAI events should follow PostHog AI schema", async () => {
           "$ai_model_parameters": {
             "temperature": 0.7,
             "max_tokens": 150,
+            "top_p": undefined,
           },
+          "$ai_base_url": "https://api.openai.com/v1",
+          "$ai_cost": 0.00005,
+          "$ai_http_status": 200,
+          "$ai_is_error": false,
         },
       },
     ],
