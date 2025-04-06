@@ -129,6 +129,19 @@ export async function land(): Promise<number> {
     return addResult;
   }
 
+  // Run CI checks before committing
+  logger.info("Running CI checks before committing...");
+  const ciResult = await runShellCommand([
+    "bff",
+    "ci",
+  ]);
+
+  if (ciResult !== 0) {
+    logger.error("CI checks failed, aborting commit");
+    return ciResult;
+  }
+  logger.info("CI checks passed, proceeding with commit");
+
   // Create git commit with sapling commits and hash
   logger.info("Creating git commit...");
   const fullCommitMsg =
