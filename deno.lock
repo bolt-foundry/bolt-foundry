@@ -1,6 +1,7 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@b-fuze/deno-dom@~0.1.49": "0.1.49",
     "jsr:@bolt-foundry/get-configuration-var@0.0.0-dev.0": "0.0.0-dev.0",
     "jsr:@bolt-foundry/logger@^0.0.0-dev.0": "0.0.0-dev.0",
     "jsr:@david/code-block-writer@^13.0.2": "13.0.3",
@@ -126,6 +127,9 @@
     "npm:zod@^3.24.1": "3.24.1"
   },
   "jsr": {
+    "@b-fuze/deno-dom@0.1.49": {
+      "integrity": "45c40175fdd1e74ab2d4b54c4fdaabbad6e5b76ee28df12a48e076b3fa7901a9"
+    },
     "@bolt-foundry/get-configuration-var@0.0.0-dev.0": {
       "integrity": "04ec312462ae6f0f6ed85e82fb444d18a8782754ecd2d920a4947fffb0435a58"
     },
@@ -5821,6 +5825,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@b-fuze/deno-dom@~0.1.49",
       "jsr:@deno/dnt@~0.41.3",
       "jsr:@denosaurs/python@~0.4.4",
       "jsr:@luca/esbuild-deno-loader@~0.11.1",
