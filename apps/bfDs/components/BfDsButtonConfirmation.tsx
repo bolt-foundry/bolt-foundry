@@ -41,17 +41,21 @@ type Props = {
   showSpinner?: boolean;
   size?: ButtonSizeType;
   testId?: string; // for identifying the element in posthog
+  text?: string; // Button text
 };
 
 export function BfDsButtonConfirmation({
-  icon,
+  icon = "trash",
   iconSelected = icon,
   onConfirm,
   // onCancel,
   showSpinner = false,
   size = "large",
   testId,
-}: Props) {
+  text,
+  children,
+  ...otherProps
+}: Props & { children?: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
   const [showConfirmation, setShowConfirmation] = React.useState(false);
 
   const handleConfirm = () => {
@@ -81,30 +85,44 @@ export function BfDsButtonConfirmation({
       break;
   }
   return (
-    <div className="confirmationBase" style={styles.confirmationBase}>
+    <div
+      className="confirmationBase"
+      style={styles.confirmationBase}
+      data-testid="confirmation-container"
+      data-confirmation-visible={showConfirmation ? "true" : "false"}
+    >
       <BfDsButton
         iconLeft={icon}
+        text={text || (typeof children === 'string' ? children : undefined)}
         kind="alert"
         onClick={() => setShowConfirmation(true)}
         size={size}
         testId={testId}
-      />
+        data-testid="confirmation-trigger"
+        data-size={size}
+      >
+        {typeof children !== 'string' ? children : null}
+      </BfDsButton>
       {showConfirmation && (
         <div style={styles.confirmation}>
           <BfDsButton
             iconLeft="back"
+            text="Cancel"
             kind="success"
             onClick={() => setShowConfirmation(false)}
             size={size}
             testId={`${testId}-cancel`}
+            data-testid="cancel-button"
           />
           <BfDsButton
             iconLeft="check"
+            text="Confirm"
             kind="alert"
             onClick={handleConfirm}
             showSpinner={showSpinner}
             size={size}
             testId={`${testId}-confirm`}
+            data-testid="confirm-button"
           />
           <div
             style={{
@@ -114,6 +132,7 @@ export function BfDsButtonConfirmation({
             }}
             onClick={() => setShowConfirmation(false)}
             data-bf-testid={`${testId}-cancel-icon`}
+            data-testid="cancel-icon"
           >
             <BfDsIcon
               name={iconSelected}
