@@ -1,6 +1,7 @@
 {
   "unstable": ["temporal", "webgpu"],
   "imports": {
+    "@b-fuze/deno-dom": "jsr:@b-fuze/deno-dom@^0.1.49",
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
     "@denosaurs/python": "jsr:@denosaurs/python@^0.4.4",
     "@iso": "./apps/boltFoundry/__generated__/__isograph/iso.ts",
