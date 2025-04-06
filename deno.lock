@@ -5886,6 +5886,13 @@
       ]
     },
     "members": {
+      "apps/desks": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@daily-co/daily-js@0.77"
+          ]
+        }
+      },
       "examples/nextjs-sample": {
         "packageJson": {
           "dependencies": [

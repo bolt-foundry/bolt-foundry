@@ -1,0 +1,10 @@
+{
+  "name": "@bolt-foundry/desks",
+  "version": "0.1.0",
+  "description": "Persistent video communication space for iPad",
+  "main": "desks.ts",
+  "type": "module",
+  "dependencies": {
+    "@daily-co/daily-js": "^0.77.0"
+  }
+}
