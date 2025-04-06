@@ -1,5 +1,6 @@
 # UI Component Testing Project Plan
 
+
 ## Project Purpose
 
 To implement a comprehensive UI component testing strategy that aligns with Bolt
