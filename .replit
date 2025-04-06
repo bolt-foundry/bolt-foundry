@@ -20,7 +20,7 @@ lint = true
 config = "./deno.jsonc"
 
 [workflows]
-runButton = "Run for development"
+runButton = "Run InternalBF"
 
 [[workflows.workflow]]
 name = "BFF build and run"
@@ -140,6 +140,15 @@ author = 33272860
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd examples/nextjs-sample && npm run dev"
+
+[[workflows.workflow]]
+name = "Run InternalBF"
+author = 33272860
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "deno run --allow-net --allow-env apps/internalbf/internalbf.ts"
 
 [[ports]]
 localPort = 3000
