@@ -1,3 +1,7 @@
+# Desks Implementation Plan - Version 0.3
+
+**Version:** 0.3
+
 ### 1. Knock Request Database Models (Moderate)
 
 **File**: `apps/desks/bfdb/DeskKnockRequest.ts`

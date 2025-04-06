@@ -1,3 +1,7 @@
+# Desks Implementation Plan - Version 0.2
+
+**Version:** 0.2
+
 ### 4. Isograph Schema Extensions (Challenging)
 
 **File**: `apps/graphql/types/graphqlDesks.ts`
