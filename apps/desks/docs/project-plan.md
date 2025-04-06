@@ -68,7 +68,17 @@
 
 ## Implementation Phases
 
-### Phase 1: Foundation (Simple)
+### Phase 0: Hello World (v0.1) (Simple)
+
+- Create minimal implementation that integrates with internalbf
+- Add a `/desks` route to internalbf app
+- Set up basic HTML page with Desks branding and version information
+- Create request handler for Desks in the internalbf app
+- Implement a proper directory structure following Bolt Foundry standards
+- No functionality implemented beyond displaying a welcome page
+- Purpose is to establish the integration pattern with internalbf app
+
+### Phase 1: Foundation (v0.2) (Simple)
 
 - Set up Deno project structure using existing infrastructure
 - Create new route in `apps/internalbf/routes`
@@ -78,7 +88,7 @@
   components
 - Implement responsive design for iPad screen dimensions and orientations
 
-### Phase 2: Core Functionality (Moderate)
+### Phase 2: Core Functionality (v0.3) (Moderate)
 
 - Implement default state (video on, audio off)
 - Create touch-friendly participant list with status indicators using BfDsPill
@@ -88,7 +98,7 @@
 - Write tests for connection states and video/audio defaults
 - Test and optimize for iPad Safari browser
 
-### Phase 3: "Door Knock" Feature (Challenging)
+### Phase 3: "Door Knock" Feature (v0.4) (Challenging)
 
 - Develop request notification system using BfDsToast
 - Create UI for sending/receiving requests with BfDsModal

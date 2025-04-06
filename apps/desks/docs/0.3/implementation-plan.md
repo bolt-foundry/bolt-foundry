@@ -1,94 +1,43 @@
-# Desks Implementation Plan - Version 0.3
+# Desks Implementation Plan - Version 0.2
 
-**Version:** 0.3
+**Version:** 0.2
 
-### 1. Knock Request Database Models (Moderate)
+### 4. Isograph Schema Extensions (Challenging)
 
-**File**: `apps/desks/bfdb/DeskKnockRequest.ts`
+**File**: `apps/graphql/types/graphqlDesks.ts`
 
-**Purpose**: Define database models for storing and managing knock requests
-
-**Technical Specifications**:
-
-- Create BfNode class for DeskKnockRequest
-- Implement methods for creating, updating, and resolving requests
-- Design appropriate validation for request state transitions
-- Include timestamps for request lifecycle management
-
-**Model Implementation**:
-
-```typescript
-// Basic structure, not actual implementation code
-class DeskKnockRequest extends BfNodeBase {
-  static readonly TYPE = "DeskKnockRequest";
-
-  static async createKnockRequest(
-    context: GraphQLContext,
-    fromParticipantId: string,
-    toParticipantId: string,
-    message?: string,
-  ): Promise<DeskKnockRequest> {
-    // Implementation details
-  }
-
-  async updateStatus(
-    context: GraphQLContext,
-    status: KnockRequestStatus,
-  ): Promise<void> {
-    // Implementation details
-  }
-}
-
-enum KnockRequestStatus {
-  PENDING = "PENDING",
-  ACCEPTED = "ACCEPTED",
-  DECLINED = "DECLINED",
-  EXPIRED = "EXPIRED",
-  CANCELED = "CANCELED",
-}
-```
-
-### 2. GraphQL Schema Extensions for Knock Requests (Moderate)
-
-**File**: `apps/desks/graphql/KnockRequestTypes.ts`
-
-**Purpose**: Define GraphQL types and operations for knock requests
+**Purpose**: Extend GraphQL schema with Desks-specific types and queries
 
 **Technical Specifications**:
 
-- Add GraphQL types for KnockRequest and related enums
-- Create mutations for creating and responding to knock requests
-- Implement subscriptions for real-time notifications
-- Include proper error handling for edge cases
+- Define GraphQL types for Desk, DeskParticipant, and DeskSettings
+- Create queries for fetching desk data and participant information
+- Define mutations for updating participant settings
+- Integrate with existing GraphQL schema
 
 **Schema Extensions**:
 
 ```graphql
-type KnockRequest {
+type Desk {
   id: ID!
-  fromParticipant: DeskParticipant!
-  toParticipant: DeskParticipant!
-  status: KnockRequestStatus!
-  message: String
+  name: String!
+  participants: [DeskParticipant!]!
   createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
-enum KnockRequestStatus {
-  PENDING
-  ACCEPTED
-  DECLINED
-  EXPIRED
-  CANCELED
+type DeskParticipant {
+  id: ID!
+  person: BfPerson!
+  videoEnabled: Boolean!
+  audioEnabled: Boolean!
+  status: ParticipantStatus!
+  joinedAt: DateTime!
 }
 
-type Mutation {
-  createKnockRequest(input: CreateKnockRequestInput!): CreateKnockRequestPayload!
-  updateKnockRequestStatus(input: UpdateKnockRequestStatusInput!): UpdateKnockRequestStatusPayload!
-}
-
-type Subscription {
-  knockRequestReceived: KnockRequest!
-  knockRequestUpdated: KnockRequest!
+enum ParticipantStatus {
+  AVAILABLE
+  BUSY
+  AWAY
+  DO_NOT_DISTURB
 }
 ```

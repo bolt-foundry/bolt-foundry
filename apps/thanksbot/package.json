@@ -1,0 +1,12 @@
+
+{
+  "name": "@bolt-foundry/thanksbot",
+  "version": "0.1.0",
+  "description": "Discord bot for tracking thank-you messages",
+  "main": "thanksbot.ts",
+  "type": "module",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "@notionhq/client": "^2.2.14"
+  }
+}
