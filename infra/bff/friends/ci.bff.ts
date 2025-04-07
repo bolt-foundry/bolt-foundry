@@ -274,12 +274,41 @@ async function runBuildStep(useGithub: boolean): Promise<number> {
 // ----------------------------------------------------------------------------
 
 async function runTestStep(useGithub: boolean): Promise<number> {
-  logger.info("Running deno test -A");
+  logger.info("Running tests...");
+  const testArgs = [
+    "deno",
+    "test",
+    "-A",
+  ];
+
+  const envVars = {
+    "DENO_WEBGPU": "0",
+  };
+
   const { code } = await runShellCommandWithOutput(
-    ["bff", "test", "--no-check"],
+    testArgs,
+    envVars,
+    true,
+    useGithub,
+  );
+  return code;
+}
+
+async function runE2ETestStep(useGithub: boolean): Promise<number> {
+  logger.info("Running E2E tests...");
+
+  // We'll use the BFF e2e command that's already implemented
+  const e2eArgs = [
+    "bff",
+    "e2e",
+    "--build", // Build the app before running tests
+  ];
+
+  const { code } = await runShellCommandWithOutput(
+    e2eArgs,
     {},
-    /* useSpinner */ true,
-    /* silent */ useGithub,
+    true,
+    useGithub,
   );
   return code;
 }
@@ -333,17 +362,21 @@ async function ciCommand(options: string[]) {
   // 3) Lint (with or without JSON mode)
   const lintResult = await runLintStep(useGithub);
 
-  // 4) Test
+  // 4) Unit Test
   const testResult = await runTestStep(useGithub);
 
-  // 5) Format check
+  // 5) E2E Test
+  const e2eTestResult = await runE2ETestStep(useGithub);
+
+  // 6) Format check
   const fmtResult = await runFormatStep(useGithub);
 
-  // 6) Type check
+  // 7) Type check
   const typecheckResult = await runTypecheckStep(useGithub);
 
   const hasErrors = Boolean(
-    installResult || buildResult || lintResult || testResult || fmtResult ||
+    installResult || buildResult || lintResult || testResult || e2eTestResult ||
+      fmtResult ||
       typecheckResult,
   );
 
@@ -352,6 +385,7 @@ async function ciCommand(options: string[]) {
   logger.info(`Build:     ${buildResult === 0 ? "✅" : "❌"}`);
   logger.info(`Lint:      ${lintResult === 0 ? "✅" : "❌"}`);
   logger.info(`Test:      ${testResult === 0 ? "✅" : "❌"}`);
+  logger.info(`E2E Test:  ${e2eTestResult === 0 ? "✅" : "❌"}`);
   logger.info(`Format:    ${fmtResult === 0 ? "✅" : "❌"}`);
   logger.info(`TypeCheck: ${typecheckResult === 0 ? "✅" : "❌"}`);
 
