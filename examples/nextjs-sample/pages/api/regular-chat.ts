@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createOpenAIFetch } from '../../../../packages/bolt-foundry/bolt-foundry';
+import { createOpenAIFetch } from '@bolt-foundry/bolt-foundry';
 
 // Create enhanced fetch with analytics tracking
 const openAiFetch = createOpenAIFetch({
