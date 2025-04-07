@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.7",
+    "@bolt-foundry/bolt-foundry": "file:../../packages/bolt-foundry/npm",
     "ai": "^4.3.0",
     "next": "^15.2.3",
     "openai": "^4.91.1",

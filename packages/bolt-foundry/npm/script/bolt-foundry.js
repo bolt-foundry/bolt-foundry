@@ -1,42 +1,64 @@
-// import { getLogger } from "@bolt-foundry/logger";
-import type { PostHog } from "posthog-node";
+"use strict";
+var __createBinding = (this && this.__createBinding) ||
+  (Object.create
+    ? (function (o, m, k, k2) {
+      if (k2 === undefined) k2 = k;
+      var desc = Object.getOwnPropertyDescriptor(m, k);
+      if (
+        !desc ||
+        ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)
+      ) {
+        desc = {
+          enumerable: true,
+          get: function () {
+            return m[k];
+          },
+        };
+      }
+      Object.defineProperty(o, k2, desc);
+    })
+    : (function (o, m, k, k2) {
+      if (k2 === undefined) k2 = k;
+      o[k2] = m[k];
+    }));
+var __setModuleDefault = (this && this.__setModuleDefault) ||
+  (Object.create
+    ? (function (o, v) {
+      Object.defineProperty(o, "default", { enumerable: true, value: v });
+    })
+    : function (o, v) {
+      o["default"] = v;
+    });
+var __importStar = (this && this.__importStar) || function (mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) {
+    for (var k in mod) {
+      if (
+        k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)
+      ) __createBinding(result, mod, k);
+    }
+  }
+  __setModuleDefault(result, mod);
+  return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createOpenAIFetch = createOpenAIFetch;
 // const logger = getLogger("bolt-foundry");
 // logger.setLevel(logger.levels.DEBUG);
 const logger = console;
-
-/**
- * Options for OpenAI API configuration
- */
-export type OpenAiOptions = {
-  /**
-   * The OpenAI API key to use for authentication
-   */
-  openAiApiKey: string;
-  /**
-   * Optional PostHog client for analytics tracking
-   */
-  posthogClient?: PostHog;
-  /**
-   * Optional PostHog API key (alternative to providing a client)
-   */
-  posthogApiKey?: string;
-  /**
-   * Optional PostHog host URL (defaults to app.posthog.com)
-   */
-  posthogHost?: string;
-};
-
 /**
  * Creates a wrapped fetch function that adds necessary headers and handles OpenAI API requests.
  * This implementation adds authentication headers, preserves FormData requests, and tracks analytics.
  */
-export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
-  let posthogClient: PostHog | undefined = options.posthogClient;
-
-  async function trackLlmEvent(req: Request, res: Response, startTime: number) {
+function createOpenAIFetch(options) {
+  let posthogClient = options.posthogClient;
+  async function trackLlmEvent(req, res, startTime) {
     // Initialize PostHog client if API key is provided and client isn't
     if (!posthogClient && options.posthogApiKey) {
-      const { PostHog } = await import("posthog-node");
+      const { PostHog } = await Promise.resolve().then(() =>
+        __importStar(require("posthog-node"))
+      );
       posthogClient = new PostHog(options.posthogApiKey, {
         host: options.posthogHost,
       });
@@ -46,7 +68,6 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
       logger.warn("PostHog client not available, skipping LLM event tracking");
       return;
     }
-
     try {
       const now = Date.now();
       const latency = (now - startTime) / 1000; // Convert to seconds for PostHog
@@ -56,12 +77,10 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
       const endpoint = parts.length > 1
         ? parts.slice(1).join(".")
         : (parts[0] || url);
-
       // Clone the request to read its body without modifying the original
       const requestClone = req.clone();
       let requestBody;
       let responseBody;
-
       // Get the request body if possible
       if (requestClone.body) {
         try {
@@ -71,7 +90,6 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
           logger.debug("Could not parse request body", e);
         }
       }
-
       // Get the response body if possible
       try {
         const responseClone = res.clone();
@@ -80,41 +98,33 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
       } catch (e) {
         logger.debug("Could not parse response body", e);
       }
-
       // Prepare properties according to PostHog LLM observability schema
-      const properties: Record<string, unknown> = {
+      const properties = {
         "$ai_provider": "openai",
         "$ai_latency": latency,
         "$ai_http_status": res.status,
         "$ai_base_url": "https://api.openai.com/v1",
         "$ai_is_error": res.status >= 400,
       };
-
       // Add error information if applicable
       if (res.status >= 400 && responseBody?.error) {
         properties["$ai_error"] = responseBody.error;
       }
-
       // Add model information if available
       if (requestBody?.model) {
         properties["$ai_model"] = requestBody.model;
       }
-
       // For chat completions
       properties["$ai_input"] = requestBody?.messages;
-
       if (responseBody?.usage?.prompt_tokens) {
         properties["$ai_input_tokens"] = responseBody.usage.prompt_tokens;
       }
-
       if (responseBody?.usage?.completion_tokens) {
         properties["$ai_output_tokens"] = responseBody.usage.completion_tokens;
       }
-
       if (responseBody?.choices) {
         properties["$ai_output_choices"] = responseBody.choices;
       }
-
       // Add model parameters
       if (
         requestBody?.temperature || requestBody?.max_tokens ||
@@ -126,11 +136,9 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
           top_p: requestBody.top_p,
         };
       }
-
       if (responseBody?.id) {
         properties["$ai_response_id"] = responseBody.id;
       }
-
       // Calculate total tokens if needed
       if (
         responseBody?.usage?.prompt_tokens &&
@@ -139,7 +147,6 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
         properties["$ai_total_tokens"] = responseBody.usage.prompt_tokens +
           responseBody.usage.completion_tokens;
       }
-
       // Calculate approximate cost if possible
       if (requestBody?.model && responseBody?.usage) {
         // This is a simplified calculation and should be improved with actual pricing
@@ -149,13 +156,11 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
           responseBody.usage.completion_tokens || 0,
         );
       }
-
       posthogClient.capture({
         event: "$ai_generation",
         distinctId: "bolt-foundry",
         properties: properties,
       });
-
       logger.debug(`Tracked LLM event: ${endpoint}`, {
         latency,
         status: res.status,
@@ -164,41 +169,27 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
       logger.error(`Error tracking LLM event`, error);
     }
   }
-
   // Helper function to calculate approximate LLM cost
-  function calculateLlmCost(
-    model: string,
-    inputTokens: number,
-    outputTokens: number,
-  ): number {
-    const pricing: Record<string, { input: number; output: number }> = {
+  function calculateLlmCost(model, inputTokens, outputTokens) {
+    const pricing = {
       "gpt-4o": { input: 0.0025, output: 0.010 },
       "gpt-3.5-turbo": { input: 0.0010, output: 0.0020 },
     };
-
     // Default to gpt-3.5-turbo pricing if model not found
     const modelPricing = pricing[model] || pricing["gpt-3.5-turbo"];
-
     const inputCost = (inputTokens / 1000) * modelPricing.input;
     const outputCost = (outputTokens / 1000) * modelPricing.output;
-
     return inputCost + outputCost;
   }
   // Enhanced fetch function with analytics
-  async function enhancedFetch(
-    input: RequestInfo | URL,
-    init?: RequestInit,
-  ): Promise<Response> {
+  async function enhancedFetch(input, init) {
     const url = input.toString();
     const startTime = Date.now();
-
     // Only add auth headers and track analytics for OpenAI API requests
     if (url.includes("api.openai.com")) {
       logger.debug(`Bolt Foundry intercepting OpenAI request: ${url}`);
-
       // Create a new init object to avoid modifying the original
       const newInit = { ...init };
-
       // Handle headers differently based on their type
       if (init?.headers) {
         // If headers is already a Headers object
@@ -219,7 +210,6 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
           Authorization: `Bearer ${options.openAiApiKey}`,
         };
       }
-
       logger.debug("Added authorization header to OpenAI request");
       const clonedReq = new Request(input, newInit);
       const response = await fetch(input, newInit);
@@ -227,11 +217,9 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
       await trackLlmEvent(clonedReq, clonedRes, startTime);
       return response;
     }
-
     // For non-OpenAI requests, pass through without modification
     logger.debug(`Bolt Foundry passing through request: ${url}`);
     return fetch(input, init);
   }
-
   return enhancedFetch;
 }

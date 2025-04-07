@@ -1,10 +1,12 @@
 {
   "name": "@bolt-foundry/bolt-foundry",
   "version": "0.0.0-dev.0",
+  "description": "Bolt Foundry is a library for building AI-powered applications.",
+  "license": "MIT",
   "exports": {
     "./bolt-foundry.ts": "./bolt-foundry.ts"
   },
   "imports": {
-    "@bolt-foundry/logger": "jsr:@bolt-foundry/logger@^0.0.0-dev.0"
+    "posthog-node": "npm:posthog-node@^4.11.2"
   }
 }
