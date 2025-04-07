@@ -1,4 +1,3 @@
-
 # E2E Testing Implementation Plan - Version 0.1
 
 **Version:** 0.1 **Date:** 2023-07-10

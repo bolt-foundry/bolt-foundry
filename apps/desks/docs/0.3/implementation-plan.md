@@ -1,15 +1,17 @@
-
 # Desks Implementation Plan - Version 0.3
 
 **Version:** 0.3 **Date:** 2023-09-20
 
 ## Version Summary
 
-Version 0.3 focuses on enhancing the Desks feature with "knock requests" functionality, allowing users to request to join ongoing desk sessions, similar to knocking on a door in real life.
+Version 0.3 focuses on enhancing the Desks feature with "knock requests"
+functionality, allowing users to request to join ongoing desk sessions, similar
+to knocking on a door in real life.
 
 ## Changes From Previous Version
 
-Version 0.2 established the core Desks functionality including participant management and real-time status updates. Version 0.3 builds on this by:
+Version 0.2 established the core Desks functionality including participant
+management and real-time status updates. Version 0.3 builds on this by:
 
 1. Adding knock request functionality for desk access
 2. Implementing notifications for request management
@@ -143,7 +145,8 @@ type Subscription {
 
 ## Integration Points
 
-- **Database Layer**: New models for knock requests integrated with existing desk models
+- **Database Layer**: New models for knock requests integrated with existing
+  desk models
 - **GraphQL API**: Extended schema with new types and operations
 - **UI Components**: Knock request components integrated with desk UI
 - **Notification System**: Integration with existing notification architecture
@@ -170,11 +173,11 @@ type Subscription {
 
 ## Risk Assessment
 
-| Risk | Severity | Likelihood | Mitigation |
-|------|----------|------------|------------|
-| Notification reliability | High | Medium | Add retry logic and pending state management |
-| User experience clarity | Medium | Medium | User testing and iterative improvements |
-| Request spam potential | Medium | Low | Implement rate limiting for knock requests |
+| Risk                     | Severity | Likelihood | Mitigation                                   |
+| ------------------------ | -------- | ---------- | -------------------------------------------- |
+| Notification reliability | High     | Medium     | Add retry logic and pending state management |
+| User experience clarity  | Medium   | Medium     | User testing and iterative improvements      |
+| Request spam potential   | Medium   | Low        | Implement rate limiting for knock requests   |
 
 ## Next Steps for Version 0.4
 
