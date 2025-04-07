@@ -10,6 +10,6 @@ export const JoinWaitlistMutation = iso(`
     }
   }
 `)(function JoinWaitlist({ data }) {
-  logger.info("joinWaitlistMutation", data);
+  logger.debug("joinWaitlistMutation", data);
   return data;
 });
