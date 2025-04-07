@@ -132,6 +132,15 @@ author = 33272860
 task = "shell.exec"
 args = "bff restartLsp"
 
+[[workflows.workflow]]
+name = "Run contacts cms"
+author = 33417482
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd apps/contacts; npm run dev"
+
 [[ports]]
 localPort = 3000
 externalPort = 3002
