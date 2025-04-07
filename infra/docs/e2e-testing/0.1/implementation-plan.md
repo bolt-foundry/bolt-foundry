@@ -135,7 +135,7 @@ functionality.
 // Example test for login flow
 // infra/testing/e2e/tests/authentication.test.ts
 
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals } from "@std/testing/asserts.ts";
 import { setupE2ETest, teardownE2ETest } from "../e2e-testing.ts";
 import { LoginPage } from "../pages/LoginPage.ts";
 import { HomePage } from "../pages/HomePage.ts";
