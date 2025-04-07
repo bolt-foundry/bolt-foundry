@@ -43,8 +43,29 @@ export async function e2eCommand(args: string[]): Promise<number> {
 
     // Wait a moment for the server to start
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    const paths = ["apps", "infra", "lib", "packages", "util", "sites"];
-    const pathsStrings = paths.map((path) => `${path}/**/*.test.e2e.ts`);
+
+    // Determine which tests to run
+    let testPaths: string[] = [];
+    // Extract flags that should be passed to Deno test
+    const denoTestFlags: string[] = args.filter((arg) =>
+      arg.startsWith("--") &&
+      arg !== "--build" && arg !== "-b"
+    );
+    // Get non-flag arguments which could be paths
+    const nonFlagArgs = args.filter((arg) =>
+      !arg.startsWith("--") && !arg.startsWith("-")
+    );
+
+    // If a specific path is provided, use that instead of the standard paths
+    if (nonFlagArgs.length > 0) {
+      testPaths = nonFlagArgs;
+      logger.info(`Running specific test(s): ${testPaths.join(", ")}`);
+    } else {
+      // Use standard paths
+      const paths = ["apps", "infra", "lib", "packages", "util", "sites"];
+      testPaths = paths.map((path) => `${path}/**/*.test.e2e.ts`);
+      logger.info("Running all e2e tests");
+    }
 
     try {
       // Run the e2e tests with sanitization disabled
@@ -59,7 +80,8 @@ export async function e2eCommand(args: string[]): Promise<number> {
           "--allow-read",
           "--allow-write",
           "--no-check",
-          ...pathsStrings,
+          ...denoTestFlags,
+          ...testPaths,
         ],
         stdout: "inherit",
         stderr: "inherit",
