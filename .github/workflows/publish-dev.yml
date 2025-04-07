@@ -159,7 +159,7 @@ jobs:
             bff ci -g
             cd packages/bolt-foundry
             # Update version in deno.jsonc
-          deno run -A --unstable --eval "
+          deno eval -A "
             const denoJsonc = JSON.parse(Deno.readTextFileSync('./deno.json'));
             denoJsonc.version = `${denoJsonc.version}-dev.${{ env.sha_short }}`;
             Deno.writeTextFileSync('./deno.json', JSON.stringify(denoJsonc, null, 2));
