@@ -99,6 +99,40 @@ Follow these best practices consistently:
 - Type check with `bff check [file_path]`
 - Test with `bff test` or `bff t path/to/test/file.test.ts`
 
+## Process Execution
+
+### Deno.Command (Preferred)
+
+Use `Deno.Command` for process execution in Deno 2+:
+
+```typescript
+// Creating a command
+const command = new Deno.Command("deno", {
+  args: ["test", "--allow-net"],
+  stdout: "piped",
+  stderr: "piped",
+});
+
+// Spawning the process
+const process = command.spawn();
+
+// Waiting for completion and getting status
+const status = await process.status;
+
+// Checking success
+if (status.success) {
+  console.log("Process completed successfully");
+}
+
+// Killing a process if needed
+process.kill();
+
+// For output, you can use:
+const output = await process.output(); // Includes stdout, stderr, and status
+```
+
+Avoid using `Deno.run()` as it's deprecated in Deno 2+.
+
 ## Code Quality
 
 - Avoid inline code comments, preferring logger.debug messages
