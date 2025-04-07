@@ -54,7 +54,9 @@
     "lib",
     "documentation",
     "packages",
-    "sites"
+    "sites",
+    "docs",
+    "agents"
   ],
   "exclude": [
     ".cache",
@@ -96,7 +98,8 @@
   "workspace": [
     "packages/bolt-foundry",
     "packages/logger",
-    "packages/get-configuration-var"
+    "packages/get-configuration-var",
+    "apps/contacts"
   ],
   "nodeModulesDir": "manual",
   "vendor": true
