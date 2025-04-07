@@ -15,7 +15,9 @@ documentation with these guidelines:
 - Each implementation version should be documented in its own file
 - Version numbering should follow semantic versioning (0.1 for initial, 0.2 for
   first release, 0.3 for iterative improvements)
-- Include clear version information in filenames and document headers
+- Include clear version information in document headers
+- Store implementation plans in version folders with consistent naming
+  (implementation-plan.md)
 - Link between version documents to show progression
 
 ### Directory Structure Example
@@ -25,11 +27,11 @@ apps/project-name/
   └── docs/
       ├── project-plan.md
       ├── 0.1/
-      │   └── initial-implementation-plan.md
+      │   └── implementation-plan.md
       ├── 0.2/
-      │   └── version-2-implementation-plan.md
+      │   └── implementation-plan.md
       └── 0.3/
-          └── version-3-implementation-plan.md
+          └── implementation-plan.md
 ```
 
 ## Documentation Continuity
@@ -43,7 +45,7 @@ apps/project-name/
 
 Each version document should include:
 
-**File: `apps/[project]/docs/[version]/[version]-implementation-plan.md`**
+**File: `apps/[project]/docs/[version]/implementation-plan.md`**
 
 ```markdown
 # [Project] Implementation Plan - Version [X]
@@ -83,8 +85,8 @@ The "Desks" project follows this pattern with its implementation versions:
 
 - `apps/desks/docs/desks-project-plan.md` (Overall project plan)
 - `apps/desks/docs/0.1/README.md` (Initial implementation, version 0.1)
-- `apps/desks/docs/0.2/desks-version-0.2-implementation-plan.md` (Version 0.2)
-- `apps/desks/docs/0.3/desks-version-0.3-implementation-plan.md` (Version 0.3)
+- `apps/desks/docs/0.2/implementation-plan.md` (Version 0.2)
+- `apps/desks/docs/0.3/implementation-plan.md` (Version 0.3)
 
 This structured approach ensures:
 
