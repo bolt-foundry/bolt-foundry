@@ -684,7 +684,7 @@ export function BfDsButton({
         : (
           <>
             {iconLeft && (
-              <div style={baseStyles.iconStyle}>
+              <div className="bfds-button-icon" style={baseStyles.iconStyle}>
                 <ButtonIcon
                   name={iconLeft as BfDsIconType}
                   color={iconColor}
@@ -708,14 +708,14 @@ export function BfDsButton({
         )}
 
       {!isIconButton && (
-        <div style={baseStyles.textStyle}>
+        <div className="bfds-button-text" style={baseStyles.textStyle}>
           <div>{text}</div>
           {subtext && <div style={{ fontSize: "0.7em" }}>{subtext}</div>}
         </div>
       )}
 
       {iconRight && (
-        <div style={baseStyles.iconStyle}>
+        <div className="bfds-button-icon-right" style={baseStyles.iconStyle}>
           <BfDsIcon name={iconRight} color={iconColor} size={iconSizes[size]} />
         </div>
       )}
