@@ -15,7 +15,9 @@ documentation with these guidelines:
 - Each implementation version should be documented in its own file
 - Version numbering should follow semantic versioning (0.1 for initial, 0.2 for
   first release, 0.3 for iterative improvements)
-- Include clear version information in filenames and document headers
+- Include clear version information in document headers
+- Store implementation plans in version folders with consistent naming
+  (implementation-plan.md)
 - Link between version documents to show progression
 
 ### Directory Structure Example
