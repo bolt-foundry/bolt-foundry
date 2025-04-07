@@ -7,7 +7,11 @@ const logger = getLogger(import.meta);
 export async function testCommand(options: string[]): Promise<number> {
   logger.info("Running tests...");
 
-  const testArgs = ["deno", "test", "-A"];
+  const paths = ["apps", "infra", "lib", "packages", "util", "sites"];
+  const pathsStrings = paths.map((path) => `${path}/**/*.test.{ts,tsx}`);
+
+
+  const testArgs = ["deno", "test", "-A", ...pathsStrings];
 
   // Allow passing specific test files or additional arguments
   if (options.length > 0) {
