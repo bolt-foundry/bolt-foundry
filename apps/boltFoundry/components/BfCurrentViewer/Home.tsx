@@ -36,7 +36,6 @@ export const Home = iso(`
   const [shouldPlay, setShouldPlay] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
   const [playPlinko, setPlayPlinko] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const { navigate } = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const loggedOut = data?.asBfCurrentViewerLoggedOut;
@@ -81,67 +80,77 @@ export const Home = iso(`
     };
   }, [showButtons]);
 
-  function submitWaitlistForm(value: WaitlistFormData) {
-    setSubmitting(true);
-    commit({ name: value.name, email: value.email, company: value.company }, {
-      onError: () => {
-        logger.error("Error joining waitlist");
-        return showModal(
-          <div>
-            <h3>Oops!</h3>
-            There was an error... email{" "}
-            <a href="mailto:dan@boltfoundry.com">Dan</a> and we'll get in touch.
-          </div>,
-        );
-      },
-      onComplete: ({ joinWaitlist }) => {
-        if (!joinWaitlist.success) {
-          logger.error(joinWaitlist.message);
-          return showModal(
-            <div>
-              <h3>Oops!</h3>
-              There was an error... email{" "}
-              <a href="mailto:dan@boltfoundry.com">Dan</a>{" "}
-              and we'll get in touch.
-            </div>,
-          );
-        }
-        modalRef.current?.closeModal();
-      },
-    });
-  }
-
-  const initialFormData = {
-    name: "",
-    email: "",
-    company: "",
-  };
-
   const joinWaitlist = () => {
-    showModal(
-      <div>
-        <h3>Join the waitlist</h3>
-        <div style={{ marginBottom: 12 }}>We're happy to have you here.</div>
-        <BfDsForm
-          initialData={initialFormData}
-          onSubmit={submitWaitlistForm}
-          xstyle={{
-            display: "flex",
-            gap: 8,
-            flexDirection: "column",
-          }}
-        >
-          <BfDsFormTextInput id="name" title="What is your name?" />
-          <BfDsFormTextInput id="email" title="What is your email?" />
-          <BfDsFormTextInput
-            id="company"
-            title="Where do you work?"
-          />
-          <BfDsFormSubmitButton text="Submit" showSpinner={submitting} />
-        </BfDsForm>
-      </div>,
-      modalRef,
-    );
+    const initialFormData = {
+      name: "",
+      email: "",
+      company: "",
+    };
+
+    const WaitlistForm = () => {
+      const [formSubmitting, setFormSubmitting] = useState(false);
+      const [error, setError] = useState(false);
+
+      function submitWaitlistForm(value: WaitlistFormData) {
+        setFormSubmitting(true);
+        commit(
+          { name: value.name, email: value.email, company: value.company },
+          {
+            onError: () => {
+              logger.error("Error joining waitlist");
+              setError(true);
+              setFormSubmitting(false);
+            },
+            onComplete: ({ joinWaitlist }) => {
+              if (!joinWaitlist.success) {
+                logger.error(joinWaitlist.message);
+                setError(true);
+              }
+              modalRef.current?.closeModal();
+              setFormSubmitting(false);
+            },
+          },
+        );
+      }
+
+      return (
+        <div>
+          <h3>Join the waitlist</h3>
+          <div style={{ marginBottom: 12 }}>We're happy to have you here.</div>
+          <BfDsForm
+            initialData={initialFormData}
+            onSubmit={submitWaitlistForm}
+            xstyle={{
+              display: "flex",
+              gap: 8,
+              flexDirection: "column",
+            }}
+          >
+            <BfDsFormTextInput id="name" title="What is your name?" />
+            <BfDsFormTextInput id="email" title="What is your email?" />
+            <BfDsFormTextInput
+              id="company"
+              title="Where do you work?"
+            />
+            <BfDsFormSubmitButton
+              disabled={formSubmitting}
+              text="Submit"
+              showSpinner={formSubmitting}
+            />
+            {error && (
+              <div>
+                <h3>Oops!</h3>
+                There was an error... email{" "}
+                <a href="mailto:dan@boltfoundry.com">Dan</a>{" "}
+                and we'll get in touch.
+              </div>
+            )}
+          </BfDsForm>
+        </div>
+      );
+    };
+
+    showModal(<WaitlistForm />, modalRef);
   };
 
   const videoContainerClasses = classnames([
