@@ -119,6 +119,14 @@ jobs:
             bff ci -g
           "
 
+      - name: Upload test screenshots
+        uses: actions/upload-artifact@v4
+        if: always() # Run even if previous steps failed
+        with:
+          name: e2e-screenshots-${{ github.run_id }}
+          path: ${{ github.workspace }}/tmp/screenshots/
+          retention-days: 5
+
       # Optional: Collect and upload build outputs
       - name: Cache build outputs
         uses: actions/cache@v4
