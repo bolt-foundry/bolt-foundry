@@ -7,6 +7,7 @@ channel = "stable-24_11"
 
 [deployment]
 deploymentTarget = "cloudrun"
+build = ["sh", "-c", "ls -la build"]
 # build = ["sh", "-c", "bff build"]
 run = ["sh", "-c", "WEB_PORT=9999 ./build/web"]
 
@@ -140,6 +141,15 @@ author = 33272860
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd examples/nextjs-sample && npm run dev"
+
+[[workflows.workflow]]
+name = "Run E2E Tests"
+author = 33272860
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bff e2e --build"
 
 [[ports]]
 localPort = 3000
