@@ -151,14 +151,20 @@ jobs:
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Update version
+      - name: Update version in deno.jsonc and npm
         run: |
           cd $GITHUB_WORKSPACE
           # Use the cached profile for the development shell
           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
             bff ci -g
-            cd packages/bolt-foundry/npm
-            npm version 0.0.0-dev.${{ env.sha_short }} --no-git-tag-version
+            cd packages/bolt-foundry
+            # Update version in deno.jsonc
+            deno run -A --unstable -e "
+              const denoJsonc = JSON.parse(Deno.readTextFileSync('./deno.json'));
+              denoJsonc.version = `${denoJsonc.version}-dev.${{ env.sha_short }}`;
+              Deno.writeTextFileSync('./deno.json', JSON.stringify(denoJsonc, null, 2));
+              console.log(`Updated deno.json version to `${denoJsonc.version}-dev.${{ env.sha_short }}`);
+            "
           "
 
       - name: Build package

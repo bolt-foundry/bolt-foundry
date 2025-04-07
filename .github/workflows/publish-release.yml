@@ -37,10 +37,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Update version
+      - name: Update version in deno.jsonc and npm
         run: |
-          cd packages/bolt-foundry/npm
-          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+          cd packages/bolt-foundry
+          # Update version in deno.jsonc
+          deno run -A --unstable -e "
+            const denoJsonc = JSON.parse(Deno.readTextFileSync('./deno.json'));
+            denoJsonc.version = '${{ github.event.inputs.version }}';
+            Deno.writeTextFileSync('./deno.json', JSON.stringify(denoJsonc, null, 2));
+            console.log('Updated deno.json version to ${{ github.event.inputs.version }}');
+          "
 
       - name: Build package
         run: |
