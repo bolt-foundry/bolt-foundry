@@ -110,6 +110,13 @@ jobs:
           # Build the dev shell into a profile
           nix develop . --impure --profile /tmp/nix-shell-cache/profile
 
+      # Install Chromium for E2E tests
+      - name: Install Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+          which chromium-browser || which chromium
+
       # Run the CI command using the cached development shell profile
       - name: Run CI in nix
         run: |
