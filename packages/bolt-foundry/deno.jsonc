@@ -5,6 +5,7 @@
     "./bolt-foundry.ts": "./bolt-foundry.ts"
   },
   "imports": {
+    "posthog-node": "npm:posthog-node@^4.11.2",
     "@bolt-foundry/logger": "jsr:@bolt-foundry/logger@^0.0.0-dev.0"
   }
 }

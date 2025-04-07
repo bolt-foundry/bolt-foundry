@@ -47,6 +47,8 @@
     "jsr:@std/http@^1.0.12": "1.0.12",
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "jsr:@std/io@0.223": "0.223.0",
+    "jsr:@std/json@1": "1.0.1",
+    "jsr:@std/jsonc@^1.0.1": "1.0.1",
     "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/net@^1.0.4": "1.0.4",
     "jsr:@std/path@0.213.1": "0.213.1",
@@ -124,7 +126,7 @@
     "npm:openai@^4.91.1": "4.91.1_zod@3.24.1",
     "npm:pg@^8.13.3": "8.13.3",
     "npm:posthog-js@^1.223.5": "1.223.5_@rrweb+types@2.0.0-alpha.17",
-    "npm:posthog-node@^3.1.2": "3.6.3",
+    "npm:posthog-node@^4.11.2": "4.11.2",
     "npm:posthog-node@^4.7.0": "4.7.0",
     "npm:puppeteer-core@^24.6.0": "24.6.0_devtools-protocol@0.0.1425554",
     "npm:react-dom@19": "19.0.0_react@19.0.0",
@@ -350,6 +352,15 @@
       "dependencies": [
         "jsr:@std/assert@0.223",
         "jsr:@std/bytes@0.223"
+      ]
+    },
+    "@std/json@1.0.1": {
+      "integrity": "1f0f70737e8827f9acca086282e903677bc1bb0c8ffcd1f21bca60039563049f"
+    },
+    "@std/jsonc@1.0.1": {
+      "integrity": "6b36956e2a7cbb08ca5ad7fbec72e661e6217c202f348496ea88747636710dda",
+      "dependencies": [
+        "jsr:@std/json"
       ]
     },
     "@std/media-types@1.1.0": {
@@ -2441,6 +2452,14 @@
     },
     "axios@1.8.1": {
       "integrity": "sha512-NN+fvwH/kV01dYUQ3PTOZns4LWtWhOFCAhQ/pHb88WQ1hNe5V/dvFwc4VJcDL11LT9xSX0QtsR8sWUuyOuOq7g==",
+      "dependencies": [
+        "follow-redirects",
+        "form-data@4.0.1",
+        "proxy-from-env"
+      ]
+    },
+    "axios@1.8.4": {
+      "integrity": "sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==",
       "dependencies": [
         "follow-redirects",
         "form-data@4.0.1",
@@ -5027,17 +5046,16 @@
         "web-vitals@4.2.4"
       ]
     },
-    "posthog-node@3.6.3": {
-      "integrity": "sha512-JB+ei0LkwE+rKHyW5z79Nd1jUaGxU6TvkfjFqY9vQaHxU5aU8dRl0UUaEmZdZbHwjp3WmXCBQQRNyimwbNQfCw==",
+    "posthog-node@4.11.2": {
+      "integrity": "sha512-zzXCzatMyXcDdvcSJFoCV1lA+5LkT2f7dt1vj6I4S6QGUWlRMMu8krApseUY4/E8m2rhQlmR8BZU/2xXcgS7XQ==",
       "dependencies": [
-        "axios",
-        "rusha"
+        "axios@1.8.4"
       ]
     },
     "posthog-node@4.7.0": {
       "integrity": "sha512-RgdUKSW8MfMOkjUa8cYVqWndNjPePNuuxlGbrZC6z1WRBsVc6TdGl8caidmC10RW8mu/BOfmrGbP4cRTo2jARg==",
       "dependencies": [
-        "axios"
+        "axios@1.8.1"
       ]
     },
     "preact@10.26.2": {
@@ -5360,9 +5378,6 @@
       "dependencies": [
         "queue-microtask"
       ]
-    },
-    "rusha@0.8.14": {
-      "integrity": "sha512-cLgakCUf6PedEu15t8kbsjnwIFFR2D4RfL+W3iWFJ4iac7z4B0ZI8fxy4R3J956kAI68HclCFGL8MPoUVC3qVA=="
     },
     "safe-array-concat@1.1.3": {
       "integrity": "sha512-AURm5f0jYEOydBj7VQlVvDrjeFgthDdEF5H1dP+6mNpoXOMo1quQqJ4wvJDyRZ9+pO3kGWoOdmV08cSv2aJV6Q==",
@@ -6308,6 +6323,7 @@
       "jsr:@std/front-matter@^1.0.5",
       "jsr:@std/fs@^1.0.10",
       "jsr:@std/http@^1.0.12",
+      "jsr:@std/jsonc@^1.0.1",
       "jsr:@std/path@^1.0.8",
       "jsr:@std/testing@^1.0.9",
       "npm:@types/react@19",
@@ -6386,13 +6402,9 @@
       },
       "packages/bolt-foundry": {
         "dependencies": [
-          "jsr:@bolt-foundry/logger@^0.0.0-dev.0"
-        ],
-        "packageJson": {
-          "dependencies": [
-            "npm:posthog-node@^3.1.2"
-          ]
-        }
+          "jsr:@bolt-foundry/logger@^0.0.0-dev.0",
+          "npm:posthog-node@^4.11.2"
+        ]
       },
       "packages/logger": {
         "dependencies": [

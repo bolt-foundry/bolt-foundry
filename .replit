@@ -160,6 +160,51 @@ mode = "sequential"
 task = "shell.exec"
 args = "bff e2e"
 
+[[workflows.workflow]]
+name = "PackageBuild"
+author = 33272860
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "deno run -A infra/packageBuild/packageBuild.ts"
+
+[[workflows.workflow]]
+name = "Run Package Build"
+author = 33272860
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "deno run -A infra/packageBuild/packageBuild.ts"
+
+[[workflows.workflow]]
+name = "Build Packages"
+author = 33272860
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "deno run -A infra/packageBuild/packageBuild.ts"
+
+[[workflows.workflow]]
+name = "Test PackageBuild"
+author = 33272860
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "deno test -A infra/packageBuild/__tests__/packageBuild.test.ts"
+
+[[workflows.workflow]]
+name = "PackageBuild (no npmrc)"
+author = 33272860
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "deno run -A infra/packageBuild/packageBuild.ts --skip-npmrc"
+
 [[ports]]
 localPort = 3000
 externalPort = 3002
