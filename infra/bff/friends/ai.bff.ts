@@ -263,6 +263,7 @@ async function amendCommit(title: string, message: string): Promise<number> {
 async function generateCommitMessage(
   diffOutput: string,
   existingMessage?: string,
+  suggestion?: string,
 ): Promise<{ title: string; message: string } | null> {
   // Check for OpenAI API key
   const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
@@ -295,6 +296,31 @@ Here is the diff:
 ${diffOutput}
 `;
 
+  // Add user suggestion if provided
+  if (suggestion) {
+    prompt = `
+I need you to analyze the following git diff and create:
+1. A concise but descriptive commit title (one line, max 72 chars)
+2. A detailed commit message that explains what changed and why
+3. A brief test plan section
+
+Consider this suggestion from the user about what the commit is about:
+"${suggestion}"
+
+Format your response EXACTLY like this, with no extra text:
+TITLE: <commit title>
+
+## SUMMARY
+<summary of changes>
+
+## TEST PLAN
+<test plan>
+
+Here is the diff:
+${diffOutput}
+`;
+  }
+
   // Add existing message for amend operation
   if (existingMessage) {
     prompt = `
@@ -304,6 +330,11 @@ I need you to analyze the following git diff and the existing commit message, th
 3. A brief test plan section
 
 Take into account the existing commit message when generating the new one.
+${
+      suggestion
+        ? `\nAlso consider this suggestion from the user about what the commit is about: "${suggestion}"`
+        : ""
+    }
 
 Format your response EXACTLY like this, with no extra text:
 TITLE: <commit title>
@@ -367,8 +398,14 @@ ${diffOutput}
   }
 }
 
-export async function aiCommit(_args: string[]): Promise<number> {
+export async function aiCommit(args: string[]): Promise<number> {
   logger.info("Running ai:commit to generate commit message with OpenAI...");
+
+  // Extract the user's suggestion if provided
+  const suggestion = args.join(" ").trim();
+  if (suggestion) {
+    logger.info(`Using suggestion: "${suggestion}"`);
+  }
 
   // Run initial checks
   if (!await runPreCommitChecks()) return 1;
@@ -397,8 +434,8 @@ export async function aiCommit(_args: string[]): Promise<number> {
     return 0;
   }
 
-  // Generate commit message
-  const result = await generateCommitMessage(diffOutput);
+  // Generate commit message with suggestion if provided
+  const result = await generateCommitMessage(diffOutput, undefined, suggestion);
   if (!result) return 1;
 
   const { title, message } = result;
@@ -423,10 +460,16 @@ export async function aiCommit(_args: string[]): Promise<number> {
   }
 }
 
-export async function aiAmend(_args: string[]): Promise<number> {
+export async function aiAmend(args: string[]): Promise<number> {
   logger.info(
     "Running ai:amend to amend previous commit with AI-generated message...",
   );
+
+  // Extract the user's suggestion if provided
+  const suggestion = args.join(" ").trim();
+  if (suggestion) {
+    logger.info(`Using suggestion: "${suggestion}"`);
+  }
 
   // Run initial checks
   if (!await runPreCommitChecks()) return 1;
@@ -500,6 +543,7 @@ export async function aiAmend(_args: string[]): Promise<number> {
   const result = await generateCommitMessage(
     combinedDiff,
     currentCommitMessage,
+    suggestion,
   );
   if (!result) return 1;
 
@@ -527,12 +571,12 @@ export async function aiAmend(_args: string[]): Promise<number> {
 
 register(
   "ai:commit",
-  "Generate commit message with OpenAI based on current changes",
+  "Generate commit message with OpenAI based on current changes. Optional: add text to suggest context for the commit.",
   aiCommit,
 );
 
 register(
   "ai:amend",
-  "Amend previous commit with an AI-generated message based on the commit's changes",
+  "Amend previous commit with an AI-generated message based on the commit's changes. Optional: add text to suggest context for the commit.",
   aiAmend,
 );
