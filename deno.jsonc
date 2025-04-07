@@ -103,7 +103,8 @@
     "packages/bolt-foundry",
     "packages/logger",
     "packages/get-configuration-var",
-    "examples/nextjs-sample"
+    "examples/nextjs-sample",
+    "apps/contacts"
   ],
   "nodeModulesDir": "manual",
   "vendor": true
