@@ -9,7 +9,9 @@ jobs:
   build-and-publish:
     name: bff ci
     runs-on: ubuntu-latest
-    # Use plain ubuntu rather than a nix container for better GitHub Actions compatibility
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Install Nix
         uses: cachix/install-nix-action@v22
@@ -187,3 +189,5 @@ jobs:
           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
             deno publish
           "
+        env:
+          DENO_AUTH_TOKENS: true
