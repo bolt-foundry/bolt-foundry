@@ -151,20 +151,38 @@ jobs:
 
       - name: Update version
         run: |
-          cd packages/bolt-foundry/npm
-          npm version 0.0.0-dev.${{ env.sha_short }} --no-git-tag-version
+          cd $GITHUB_WORKSPACE
+          # Use the cached profile for the development shell
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+            bff ci -g
+            cd packages/bolt-foundry/npm
+            npm version 0.0.0-dev.${{ env.sha_short }} --no-git-tag-version
+          "
 
       - name: Build package
         run: |
-          cd packages/bolt-foundry
-          deno run -A bin/dnt.ts
+          cd $GITHUB_WORKSPACE
+          # Use the cached profile for the development shell
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+            cd packages/bolt-foundry
+            deno run -A bin/dnt.ts
+          "
 
       - name: Publish to npm
         run: |
-          cd packages/bolt-foundry/npm
-          npm publish --access public --tag dev
+          cd $GITHUB_WORKSPACE
+          # Use the cached profile for the development shell
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+            cd packages/bolt-foundry/npm
+            npm publish --access public --tag dev
+          "
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish package to jsr
-        run: deno publish
+        run: |
+          cd $GITHUB_WORKSPACE
+          # Use the cached profile for the development shell
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+            deno publish
+          "
