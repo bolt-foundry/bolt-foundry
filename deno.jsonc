@@ -70,7 +70,9 @@
     "**/__TEMPLATE__.*",
     "**/*.disabled.*",
     "thirdParty",
-    "examples"
+    "examples",
+    "**/npm",
+    "node_modules"
   ],
   "lint": {
     "exclude": [

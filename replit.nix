@@ -14,7 +14,7 @@ in
     pkgs.gh
     pkgs.python311Packages.tiktoken
     unstablePkgs.deno
-    pkgs.nodejs_22
+    pkgs.nodejs_20
     pkgs.chromium
   ];
 }
