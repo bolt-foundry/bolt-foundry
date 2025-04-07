@@ -1,0 +1,21 @@
+{
+  "name": "@bolt-foundry/logger",
+  "version": "0.0.1",
+  "description": "Bolt Foundry logger package",
+  "main": "logger.ts",
+  "module": "logger.js",
+  "types": "logger.d.ts",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/bolt-foundry.git",
+    "directory": "packages/logger"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "loglevel": "^1.9.2",
+    "loglevel-plugin-prefix": "^0.8.4",
+    "@bolt-foundry/get-configuration-var": "npm:@jsr/bolt-foundry__get-configuration-var@0.0.0-dev.0"
+  }
+}

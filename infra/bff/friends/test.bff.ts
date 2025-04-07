@@ -7,13 +7,25 @@ const logger = getLogger(import.meta);
 export async function testCommand(options: string[]): Promise<number> {
   logger.info("Running tests...");
 
-  const paths = ["apps", "infra", "lib", "packages", "util", "sites"];
-  const pathsStrings = paths.map((path) => `${path}/**/*.test.ts`);
-  const pathsStringsX = paths.map((path) => `${path}/**/*.test.tsx`);
+  let testArgs: string[] = ["deno", "test", "-A", "--no-check"];
 
-  const testArgs = ["deno", "test", "-A", ...pathsStrings, ...pathsStringsX];
+  // If a specific path is provided, use that instead of the standard paths
+  if (options.length > 0 && !options[0].startsWith("--")) {
+    // First argument is a path
+    const specificPath = options[0];
+    testArgs.push(specificPath);
 
-  // Allow passing specific test files or additional arguments
+    // Remove the path from options
+    options = options.slice(1);
+  } else {
+    // Use standard paths
+    const paths = ["apps", "infra", "lib", "packages", "util", "sites"];
+    const pathsStrings = paths.map((path) => `${path}/**/*.test.ts`);
+    const pathsStringsX = paths.map((path) => `${path}/**/*.test.tsx`);
+    testArgs.push(...pathsStrings, ...pathsStringsX);
+  }
+
+  // Add remaining options/flags
   if (options.length > 0) {
     testArgs.push(...options);
   }
@@ -31,6 +43,12 @@ export async function testCommand(options: string[]): Promise<number> {
 
 register(
   "test",
+  "Run project tests",
+  testCommand,
+);
+
+register(
+  "t",
   "Run project tests",
   testCommand,
 );
