@@ -76,7 +76,7 @@ Deno.test("BfDsCheckbox renders with different sizes", () => {
 
   // The main checkbox container
   const checkboxContainer = doc?.querySelector("div[data-bf-testid]") ||
-    doc?.querySelector("input[type='checkbox']").parentElement;
+    doc?.querySelector("input[type='checkbox']")?.parentElement;
   assertExists(checkboxContainer, "Checkbox container should exist");
 
   // Look for the icon - BfDsIcon is rendered with the appropriate size
