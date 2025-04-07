@@ -28,7 +28,7 @@ jobs:
 
       # Restore Nix store cache
       - name: Restore nix store cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: nix-cache
         with:
           path: |
@@ -118,6 +118,14 @@ jobs:
           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
             bff ci -g
           "
+
+      - name: Upload test screenshots
+        uses: actions/upload-artifact@v4
+        if: always() # Run even if previous steps failed
+        with:
+          name: e2e-screenshots-${{ github.run_id }}
+          path: ${{ github.workspace }}/tmp/screenshots/
+          retention-days: 5
 
       # Optional: Collect and upload build outputs
       - name: Cache build outputs
