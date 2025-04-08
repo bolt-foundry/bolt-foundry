@@ -32,10 +32,18 @@ import {
 import {
   ChevronDown,
   ChevronUp,
+  MoreVertical,
   RefreshCw,
   Search,
   UserRound,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -394,62 +402,77 @@ export function ContactTable(
                           {contact.contacted ? "Contacted" : "Not Contacted"}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right space-x-2">
-                        {contact.contacted
-                          ? (
-                            <Button
-                              variant="link"
-                              className="text-indigo-600 hover:text-indigo-900"
-                              onClick={() =>
-                                toggleContactStatus.mutate({
-                                  id: contact.id,
-                                  contacted: false,
-                                })}
-                              disabled={toggleContactStatus.isPending}
-                            >
-                              Mark Pending
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreVertical className="h-4 w-4" />
+                              <span className="sr-only">Open menu</span>
                             </Button>
-                          )
-                          : (
-                            <Button
-                              variant="link"
-                              className="text-indigo-600 hover:text-indigo-900"
-                              onClick={() => sendEmail.mutate(contact)}
-                              disabled={sendEmail.isPending}
-                            >
-                              Send Email
-                            </Button>
-                          )}
-
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="link"
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              Delete
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will permanently delete the contact for
-                                {" "}
-                                {contact.name}. This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => deleteContact.mutate(contact.id)}
-                                className="bg-red-500 hover:bg-red-600"
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            {contact.contacted ? (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  toggleContactStatus.mutate({
+                                    id: contact.id,
+                                    contacted: false,
+                                  })}
+                                disabled={toggleContactStatus.isPending}
                               >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                                Mark Pending
+                              </DropdownMenuItem>
+                            ) : (
+                              <>
+                                <DropdownMenuItem
+                                  onClick={() => sendEmail.mutate(contact)}
+                                  disabled={sendEmail.isPending}
+                                >
+                                  Send Welcome Email
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    toggleContactStatus.mutate({
+                                      id: contact.id,
+                                      contacted: true,
+                                    })}
+                                  disabled={toggleContactStatus.isPending}
+                                >
+                                  Mark Contacted
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                            <DropdownMenuSeparator />
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <DropdownMenuItem
+                                  className="text-red-600"
+                                  onSelect={(e) => e.preventDefault()}
+                                >
+                                  Delete
+                                </DropdownMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This will permanently delete the contact for {contact.name}.
+                                    This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => deleteContact.mutate(contact.id)}
+                                    className="bg-red-500 hover:bg-red-600"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))}
