@@ -10,7 +10,9 @@ export async function testCommand(options: string[]): Promise<number> {
   const paths = ["apps", "infra", "lib", "packages", "util", "sites"];
   const pathsStrings = paths.map((path) => `${path}/**/*.test.ts`);
   const pathsStringsX = paths.map((path) => `${path}/**/*.test.tsx`);
-  const runnablePaths = options.length > 0 ? options : [...pathsStrings, ...pathsStringsX]
+  const runnablePaths = options.length > 0
+    ? options
+    : [...pathsStrings, ...pathsStringsX];
   const testArgs = ["deno", "test", "-A", ...runnablePaths];
 
   // Allow passing specific test files or additional arguments
@@ -34,7 +36,6 @@ register(
   "Run project tests",
   testCommand,
 );
-
 
 register(
   "t",
