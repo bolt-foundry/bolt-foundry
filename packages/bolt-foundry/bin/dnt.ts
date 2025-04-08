@@ -3,11 +3,16 @@
 import { build, emptyDir } from "@deno/dnt";
 import denoJson from "../deno.json" with { type: "json" };
 
-await emptyDir("./npm");
+const outDir = import.meta.resolve("../npm").replace("file://", "");
+const entryPoints = [
+  import.meta.resolve("../bolt-foundry.ts").replace("file://", ""),
+];
+
+await emptyDir(outDir);
 
 await build({
-  entryPoints: ["./bolt-foundry.ts"],
-  outDir: "./npm",
+  entryPoints,
+  outDir,
   shims: {
     deno: true,
   },
