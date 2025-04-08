@@ -136,14 +136,14 @@ jobs:
             echo \"Updated deno.json version to \${CURRENT_VERSION}-dev.${sha_short}\"
           "
 
-      - name: Build package
-        run: |
-          cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            cd packages/bolt-foundry
-            deno run -A bin/dnt.ts
-          "
+      # - name: Build package
+      #   run: |
+      #     cd $GITHUB_WORKSPACE
+      #     # Use the cached profile for the development shell
+      #     nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+      #       cd packages/bolt-foundry
+      #       deno run -A bin/dnt.ts
+      # "
 
       - name: Publish to npm
         run: |
@@ -157,12 +157,12 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish package to jsr
-        run: |
-          cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            deno publish --allow-dirty
-          "
-        env:
-          DENO_AUTH_TOKENS: true
+      # - name: Publish package to jsr
+      #   run: |
+      #     cd $GITHUB_WORKSPACE
+      #     # Use the cached profile for the development shell
+      #     nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+      #       deno publish --allow-dirty
+      #     "
+      #   env:
+      #     DENO_AUTH_TOKENS: true
