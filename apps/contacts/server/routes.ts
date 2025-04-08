@@ -101,11 +101,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
               `Successfully sent waitlist welcome email to ${newContact.email}`,
             );
 
-            // Mark the contact as contacted
-            await storage.updateContact(newContact.id, { contacted: true });
-            console.log(`Updated contact ${newContact.id} to contacted=true`);
+            // Mark the contact as contacted and set emailSentAt
+            await storage.updateContact(newContact.id, { 
+              contacted: true,
+              emailSentAt: new Date()
+            });
+            console.log(`Updated contact ${newContact.id} to contacted=true and set emailSentAt`);
 
-            // Refresh the contact data to include the updated contacted status
+            // Refresh the contact data to include the updated status
             const updatedContact = await storage.getContact(newContact.id);
             if (updatedContact) {
               console.log(
@@ -389,6 +392,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const emailSent = await sendWaitlistWelcomeEmail(
         contact.email,
         contact.name,
+        true // Skip enabled check for manual sending
       );
 
       if (!emailSent) {
@@ -403,22 +407,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(
         `Successfully sent waitlist welcome email to ${contact.email}`,
       );
-
-      // Mark the contact as contacted
-      const updatedContact = await storage.updateContact(id, {
-        contacted: true,
-      });
-      if (!updatedContact) {
-        console.error(
-          `Failed to update contact ${id} - database operation returned no data`,
-        );
-        return res.status(500).json({
-          message: "Database operation failed to return updated contact",
-        });
-      }
+      // Update contact with email sent timestamp
+      await storage.updateContact(id, { contacted: true, emailSentAt: new Date() });
 
       console.log(`Successfully updated contact ${id} to contacted=true`);
-      return res.status(200).json(updatedContact);
+      return res.status(200).json(await storage.getContact(id)); //return updated contact
     } catch (error) {
       console.error("Error sending email to contact:", error);
       return res.status(500).json({
