@@ -161,7 +161,7 @@ jobs:
           cd $GITHUB_WORKSPACE
           # Use the cached profile for the development shell
           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            deno publish
+            deno publish --allow-dirty
           "
         env:
           DENO_AUTH_TOKENS: true
