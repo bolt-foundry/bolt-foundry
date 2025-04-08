@@ -7,9 +7,8 @@ channel = "stable-24_11"
 
 [deployment]
 deploymentTarget = "cloudrun"
-build = ["sh", "-c", "ls -la build"]
-# build = ["sh", "-c", "bff build"]
-run = ["sh", "-c", "WEB_PORT=9999 ./build/web"]
+run = ["sh", "-c", "cd apps/contacts; npm run start"]
+build = ["sh", "-c", "cd apps/contacts; npm run build"]
 
 [languages.deno]
 pattern = "**/*.{ts,js,tsx,jsx,json,jsonc,md,mdx}"
@@ -179,7 +178,7 @@ externalPort = 3001
 
 [[ports]]
 localPort = 5000
-externalPort = 5000
+externalPort = 80
 
 [[ports]]
 localPort = 8000
