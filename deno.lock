@@ -191,7 +191,6 @@
     "npm:nodemailer@^6.10.0": "6.10.0",
     "npm:notebookjs@~0.8.3": "0.8.3",
     "npm:openai@*": "4.79.1_zod@3.24.1",
-    "npm:openai@^4.91.1": "4.91.1_zod@3.24.1",
     "npm:passport-local@1": "1.0.0",
     "npm:passport@0.7": "0.7.0",
     "npm:pg@^8.13.3": "8.13.3",
@@ -7191,19 +7190,6 @@
         "zod"
       ]
     },
-    "openai@4.91.1_zod@3.24.1": {
-      "integrity": "sha512-DbjrR0hIMQFbxz8+3qBsfPJnh3+I/skPgoSlT7f9eiZuhGBUissPQULNgx6gHNkLoZ3uS0uYS6eXPUdtg4nHzw==",
-      "dependencies": [
-        "@types/node@18.19.71",
-        "@types/node-fetch",
-        "abort-controller",
-        "agentkeepalive",
-        "form-data-encoder",
-        "formdata-node",
-        "node-fetch",
-        "zod"
-      ]
-    },
     "optionator@0.9.4": {
       "integrity": "sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==",
       "dependencies": [
@@ -9303,6 +9289,7 @@
         "npm:matter-js@0.20",
         "npm:nexus@^1.3.0",
         "npm:notebookjs@~0.8.3",
+        "npm:openai@^4.92.1",
         "npm:pg@^8.13.3",
         "npm:posthog-js@^1.223.5",
         "npm:posthog-node@^4.7.0",
@@ -9416,6 +9403,7 @@
         "packageJson": {
           "dependencies": [
             "npm:@ai-sdk/openai@^1.3.7",
+            "npm:@bolt-foundry/bolt-foundry@0.0.0-dev.0281c4c",
             "npm:@types/node@^22.13.11",
             "npm:@types/react-dom@^19.0.4",
             "npm:@types/react@^19.0.12",
@@ -9423,7 +9411,7 @@
             "npm:eslint-config-next@^15.2.3",
             "npm:eslint@^9.23.0",
             "npm:next@^15.2.3",
-            "npm:openai@^4.91.1",
+            "npm:openai@^4.92.1",
             "npm:react-dom@19",
             "npm:react-textarea-autosize@^8.5.9",
             "npm:react@19",

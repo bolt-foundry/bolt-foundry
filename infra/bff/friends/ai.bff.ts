@@ -5,8 +5,14 @@ import {
   runShellCommandWithOutput,
 } from "infra/bff/shellBase.ts";
 import { getLogger } from "packages/logger/logger.ts";
-import { createOpenAIFetch } from "packages/bolt-foundry/bolt-foundry.ts";
-
+import { connectBoltFoundry } from "packages/bolt-foundry/bolt-foundry.ts";
+import { OpenAI } from "@openai/openai";
+// Create OpenAI client with Bolt Foundry integration
+const posthogApiKey = Deno.env.get("POSTHOG_API_KEY");
+const client = new OpenAI({
+  apiKey: Deno.env.get("OPENAI_API_KEY"),
+  fetch: connectBoltFoundry(posthogApiKey),
+});
 const logger = getLogger(import.meta);
 
 /**
@@ -271,13 +277,9 @@ async function generateCommitMessage(
     return null;
   }
 
-  // Connect to OpenAI and create a custom fetch
-  const openAiFetch = createOpenAIFetch({
-    openAiApiKey: openaiApiKey,
-  });
-
-  // Prepare the prompt to send to OpenAI
-  let prompt = `
+  try {
+    // Prepare the prompt to send to OpenAI
+    let userPrompt = `
 I need you to analyze the following git diff and create:
 1. A concise but descriptive commit title (one line, max 72 chars)
 2. A detailed commit message that explains what changed and why
@@ -296,9 +298,9 @@ Here is the diff:
 ${diffOutput}
 `;
 
-  // Add user suggestion if provided
-  if (suggestion) {
-    prompt = `
+    // Add user suggestion if provided
+    if (suggestion) {
+      userPrompt = `
 I need you to analyze the following git diff and create:
 1. A concise but descriptive commit title (one line, max 72 chars)
 2. A detailed commit message that explains what changed and why
@@ -319,11 +321,11 @@ TITLE: <commit title>
 Here is the diff:
 ${diffOutput}
 `;
-  }
+    }
 
-  // Add existing message for amend operation
-  if (existingMessage) {
-    prompt = `
+    // Add existing message for amend operation
+    if (existingMessage) {
+      userPrompt = `
 I need you to analyze the following git diff and the existing commit message, then create:
 1. A concise but descriptive commit title (one line, max 72 chars)
 2. A detailed commit message that explains what changed and why
@@ -331,10 +333,10 @@ I need you to analyze the following git diff and the existing commit message, th
 
 Take into account the existing commit message when generating the new one.
 ${
-      suggestion
-        ? `\nAlso consider this suggestion from the user about what the commit is about: "${suggestion}"`
-        : ""
-    }
+        suggestion
+          ? `\nAlso consider this suggestion from the user about what the commit is about: "${suggestion}"`
+          : ""
+      }
 
 Format your response EXACTLY like this, with no extra text:
 TITLE: <commit title>
@@ -351,38 +353,23 @@ ${existingMessage}
 Here is the combined diff (including both committed and uncommitted changes):
 ${diffOutput}
 `;
-  }
-
-  // Send to OpenAI and get response
-  logger.info("Sending diff to OpenAI...");
-  try {
-    const response = await openAiFetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-4o", // This may be overridden by bolt-foundry
-          messages: [
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          temperature: 0.7,
-          max_tokens: 1024,
-        }),
-      },
-    );
-
-    const result = await response.json();
-    if (!result.choices) {
-      logger.error("OpenAI API response did not contain choices", result);
-      return null;
     }
-    const aiResponse = result.choices[0].message.content.trim();
+
+    // Send to OpenAI and get response using the SDK
+    logger.info("Sending diff to OpenAI...");
+    const response = await client.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "user",
+          content: userPrompt,
+        },
+      ],
+      temperature: 0.7,
+      max_tokens: 1024,
+    });
+
+    const aiResponse = response.choices[0].message.content.trim();
 
     // Parse response into title and message
     const titleMatch = aiResponse.match(/TITLE: (.*)/);
