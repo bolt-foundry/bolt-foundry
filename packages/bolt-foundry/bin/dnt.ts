@@ -33,3 +33,24 @@ await build({
     },
   },
 });
+
+// Read the generated package.json
+const pkgJson = JSON.parse(await Deno.readTextFile(`${outDir}/package.json`));
+
+// Update the paths to include the src directory
+pkgJson.main = pkgJson.main.replace("./script/", "./script/src/");
+pkgJson.module = pkgJson.module.replace("./esm/", "./esm/src/");
+pkgJson.exports["."].import = pkgJson.exports["."].import.replace(
+  "./esm/",
+  "./esm/src/",
+);
+pkgJson.exports["."].require = pkgJson.exports["."].require.replace(
+  "./script/",
+  "./script/src/",
+);
+
+// Write the modified package.json back to the file
+await Deno.writeTextFile(
+  `${outDir}/package.json`,
+  JSON.stringify(pkgJson, null, 2),
+);
