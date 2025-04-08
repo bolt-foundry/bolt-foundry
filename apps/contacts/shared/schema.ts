@@ -53,6 +53,7 @@ export const contacts = pgTable("contacts", {
   email: text("email").notNull(),
   company: text("company").notNull(),
   contacted: boolean("contacted").notNull().default(false),
+  emailSentAt: timestamp("email_sent_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

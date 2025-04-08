@@ -9,11 +9,14 @@ interface EmailActivityProps {
 
 export function EmailActivity({ contacts }: EmailActivityProps) {
   // Get recent contacted contacts (last 5)
-  const recentlyContacted = [...contacts]
-    .filter((contact) => contact.contacted)
-    .sort((a, b) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )
+  // Get recently emailed contacts by looking at timestamps
+const recentlyContacted = [...contacts]
+    .filter((contact) => contact.contacted && contact.emailSentAt)
+    .sort((a, b) => {
+      const bTime = b.emailSentAt ? new Date(b.emailSentAt).getTime() : 0;
+      const aTime = a.emailSentAt ? new Date(a.emailSentAt).getTime() : 0;
+      return bTime - aTime;
+    })
     .slice(0, 5);
 
   // Format date to readable string
