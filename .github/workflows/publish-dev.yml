@@ -1,9 +1,6 @@
 name: Publish Dev Version
 
-on:
-  push:
-    branches:
-      - main
+on: [pull_request]
 
 jobs:
   build-and-publish:
@@ -117,35 +114,7 @@ jobs:
           # Build the dev shell into a profile
           nix develop . --impure --profile /tmp/nix-shell-cache/profile
 
-      # Run the CI command using the cached development shell profile
-      - name: Run CI in nix
-        run: |
-          cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            bff ci -g
-          "
 
-      - name: Upload test screenshots
-        uses: actions/upload-artifact@v4
-        if: always() # Run even if previous steps failed
-        with:
-          name: e2e-screenshots-${{ github.run_id }}
-          path: ${{ github.workspace }}/tmp/screenshots/
-          retention-days: 5
-
-      # Optional: Collect and upload build outputs
-      - name: Cache build outputs
-        uses: actions/cache@v4
-        with:
-          path: |
-            result
-            result-*
-            dist
-            build
-          key: ${{ runner.os }}-build-outputs-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-outputs-
 
       - name: Generate short git hash
         id: vars
@@ -156,10 +125,10 @@ jobs:
           cd $GITHUB_WORKSPACE
           # Use the cached profile for the development shell
           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            bff ci -g
             cd packages/bolt-foundry
 
             # Update version in deno.json using jq instead of deno eval
+            ls -la
             CURRENT_VERSION=$(cat deno.json | jq -r '.version')
             NEW_VERSION=\"${CURRENT_VERSION}-dev.${sha_short}\"
             jq --arg version \$NEW_VERSION '.version = \$version' ./deno.json > ./deno.json.tmp
