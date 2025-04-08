@@ -5,45 +5,21 @@ import type { PostHog } from "posthog-node";
 const logger = console;
 
 /**
- * Options for OpenAI API configuration
- */
-export type OpenAiOptions = {
-  /**
-   * The OpenAI API key to use for authentication
-   */
-  openAiApiKey: string;
-  /**
-   * Optional PostHog client for analytics tracking
-   */
-  posthogClient?: PostHog;
-  /**
-   * Optional PostHog API key (alternative to providing a client)
-   */
-  posthogApiKey?: string;
-  /**
-   * Optional PostHog host URL (defaults to app.posthog.com)
-   */
-  posthogHost?: string;
-};
-
-/**
  * Creates a wrapped fetch function that adds necessary headers and handles OpenAI API requests.
  * This implementation adds authentication headers, preserves FormData requests, and tracks analytics.
  */
-export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
-  let posthogClient: PostHog | undefined = options.posthogClient;
+export function connectBoltFoundry(bfApiKey?: string): typeof fetch {
+  let posthogClient: PostHog;
 
   async function trackLlmEvent(req: Request, res: Response, startTime: number) {
     // Initialize PostHog client if API key is provided and client isn't
-    if (!posthogClient && options.posthogApiKey) {
+    if (!posthogClient && bfApiKey) {
       const { PostHog } = await import("posthog-node");
-      posthogClient = new PostHog(options.posthogApiKey, {
-        host: options.posthogHost,
-      });
+      posthogClient = new PostHog(bfApiKey);
     }
     // Ensure PostHog client is available
     if (!posthogClient) {
-      logger.warn("PostHog client not available, skipping LLM event tracking");
+      logger.warn("Api client not available, skipping LLM event tracking");
       return;
     }
 
@@ -196,35 +172,11 @@ export function createOpenAIFetch(options: OpenAiOptions): typeof fetch {
     if (url.includes("api.openai.com")) {
       logger.debug(`Bolt Foundry intercepting OpenAI request: ${url}`);
 
-      // Create a new init object to avoid modifying the original
-      const newInit = { ...init };
-
-      // Handle headers differently based on their type
-      if (init?.headers) {
-        // If headers is already a Headers object
-        if (init.headers instanceof Headers) {
-          const headers = new Headers(init.headers);
-          headers.set("Authorization", `Bearer ${options.openAiApiKey}`);
-          newInit.headers = headers;
-        } // If headers is a plain object
-        else if (typeof init.headers === "object") {
-          newInit.headers = {
-            ...init.headers,
-            Authorization: `Bearer ${options.openAiApiKey}`,
-          };
-        }
-      } else {
-        // No headers provided, create new ones
-        newInit.headers = {
-          Authorization: `Bearer ${options.openAiApiKey}`,
-        };
-      }
-
       logger.debug("Added authorization header to OpenAI request");
-      const clonedReq = new Request(input, newInit);
-      const response = await fetch(input, newInit);
+      const clonedReq = new Request(input, init);
+      const response = await fetch(input, init);
       const clonedRes = response.clone();
-      await trackLlmEvent(clonedReq, clonedRes, startTime);
+      setTimeout(() => trackLlmEvent(clonedReq, clonedRes, startTime), 0);
       return response;
     }
 

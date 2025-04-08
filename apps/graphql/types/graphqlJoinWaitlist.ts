@@ -37,7 +37,7 @@ export const joinWaitlistMutation = mutationField("joinWaitlist", {
       }
 
       const joinWaitlistResponse = await fetch(
-        "https://bf-cms.replit.app/api/contacts",
+        "https://bf-contacts.replit.app/api/contacts",
         {
           method: "POST",
           headers: {
