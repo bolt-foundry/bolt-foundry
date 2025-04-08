@@ -23,5 +23,8 @@ await build({
       type: "git",
       url: "git+https://github.com/bolt-foundry/bolt-foundry.git",
     },
+    dependencies: {
+      "posthog-node": "^4.11.2",
+    },
   },
 });
