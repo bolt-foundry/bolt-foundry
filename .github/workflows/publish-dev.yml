@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+    - 'packages/**'
+  workflow_dispatch:
 
 jobs:
   build-and-publish:
@@ -135,15 +138,14 @@ jobs:
             mv ./deno.json.tmp ./deno.json
             echo \"Updated deno.json version to \${CURRENT_VERSION}-dev.${sha_short}\"
           "
-
-      # - name: Build package
-      #   run: |
-      #     cd $GITHUB_WORKSPACE
-      #     # Use the cached profile for the development shell
-      #     nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-      #       cd packages/bolt-foundry
-      #       deno run -A bin/dnt.ts
-      # "
+      - name: Build package
+        run: |
+          cd $GITHUB_WORKSPACE
+          # Use the cached profile for the development shell
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+            cd packages/bolt-foundry
+            deno run -A bin/dnt.ts
+      "
 
       - name: Publish to npm
         run: |
