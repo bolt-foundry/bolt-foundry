@@ -649,10 +649,11 @@ Co-Founder, Bolt Foundry`;
 export async function sendWaitlistWelcomeEmail(
   email: string,
   name: string,
+  skipEnabledCheck: boolean = false,
 ): Promise<boolean> {
   try {
     // Get current settings or create default
-    const isEnabled = await isWaitlistEmailEnabled();
+    const isEnabled = skipEnabledCheck || await isWaitlistEmailEnabled();
 
     if (!isEnabled) {
       log(
