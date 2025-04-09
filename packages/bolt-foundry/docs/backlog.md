@@ -94,6 +94,37 @@ more comprehensive insights.
 **Why aren't we working on this yet?** Need to solidify the OpenAI
 implementation first before expanding to other providers.
 
+### OpenAI Threads API Support
+
+**Priority**: Medium **Type**: Feature Enhancement **Complexity**: Moderate
+**Target Version**: 0.3
+
+**Description**: Implement support for OpenAI's Threads API to enable stateful,
+multi-turn conversations with improved context management.
+
+**Justification**: The Threads API provides a more efficient way to manage
+conversation state and context, reducing token usage and improving the quality
+of multi-turn interactions. This would enhance applications that rely on
+conversational AI capabilities.
+
+**Dependencies**:
+
+- Existing OpenAI API integration
+- Thread state management implementation
+- Conversation history tracking
+
+**Acceptance Criteria**:
+
+- Seamless creation and management of conversation threads
+- Ability to retrieve and continue existing conversations
+- Context window optimization using thread-based approach
+- Analytics tracking specific to thread-based interactions
+- Backward compatibility with non-threaded API calls
+
+**Why aren't we working on this yet?** Need to complete core analytics
+functionality for basic API calls first and establish patterns for stateful
+interactions.
+
 ## Technical Debt
 
 ### Refactor Token Counting Logic
