@@ -55,7 +55,9 @@ Deno.test("createOpenAIFetch should properly integrate with OpenAI client", asyn
         content: "Hello, world!",
       },
     ],
-  });
+
+    user: "test-user-id",
+  }, createBfMetadata({ store: false }));
 
   // Verify response
   assertEquals(completion.choices[0].message.role, "assistant");

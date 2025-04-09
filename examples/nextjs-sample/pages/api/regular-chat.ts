@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { connectBoltFoundry } from '@bolt-foundry/bolt-foundry-next';
+import { connectBoltFoundry } from '@bolt-foundry/bolt-foundry';
 import OpenAI from "openai";
 const client = new OpenAI({
   fetch: connectBoltFoundry(process.env.POSTHOG_NEXTJS_API_KEY)
@@ -17,6 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const response = await client.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: messages,
+      
     })
     
     const assistantResponse = response.choices[0].message.content;
