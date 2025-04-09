@@ -372,9 +372,14 @@ function stopContinuousMemoryLogging(): void {
   }
 }
 
-export async function build([waitForFail]: Array<string>): Promise<number> {
-  logMemoryUsage("build start");
-  startContinuousMemoryLogging();
+export async function build(args: Array<string>): Promise<number> {
+  const waitForFail = args.includes("--slow-exit");
+  const debug = args.includes("--debug");
+
+  if (debug) {
+    logMemoryUsage("build start");
+    startContinuousMemoryLogging();
+  }
 
   await Deno.remove("build", { recursive: true }).catch(() => {
     // Ignore errors if directory doesn't exist
@@ -388,29 +393,29 @@ export async function build([waitForFail]: Array<string>): Promise<number> {
   await Deno.mkdir("static/build", { recursive: true });
   await Deno.writeFile("static/build/.gitkeep", new Uint8Array());
 
-  logMemoryUsage("before routes build");
+  if (debug) logMemoryUsage("before routes build");
   const routesBuildResult = await runShellCommand([
     "./infra/appBuild/routesBuild.ts",
   ]);
-  logMemoryUsage("after routes build");
+  if (debug) logMemoryUsage("after routes build");
 
   if (routesBuildResult !== 0) {
     return routesBuildResult;
   }
 
-  logMemoryUsage("before content build");
+  if (debug) logMemoryUsage("before content build");
   const contentResult = await runShellCommand([
     "./infra/appBuild/contentBuild.ts",
   ]);
-  logMemoryUsage("after content build");
+  if (debug) logMemoryUsage("after content build");
 
   if (contentResult !== 0) {
     return contentResult;
   }
 
-  logMemoryUsage("before graphql server");
+  if (debug) logMemoryUsage("before graphql server");
   const result = await runShellCommand(["./apps/graphql/graphqlServer.ts"]);
-  logMemoryUsage("after graphql server");
+  if (debug) logMemoryUsage("after graphql server");
 
   if (result) return result;
   if (result && waitForFail) {
@@ -419,12 +424,12 @@ export async function build([waitForFail]: Array<string>): Promise<number> {
     });
   }
 
-  logMemoryUsage("before isograph compiler");
+  if (debug) logMemoryUsage("before isograph compiler");
   const isographResult = await runShellCommand(
     ["deno", "run", "-A", "npm:@isograph/compiler"],
     "apps/boltFoundry",
   );
-  logMemoryUsage("after isograph compiler");
+  if (debug) logMemoryUsage("after isograph compiler");
 
   if (isographResult && waitForFail) {
     return new Promise((_, reject) => {
@@ -432,11 +437,11 @@ export async function build([waitForFail]: Array<string>): Promise<number> {
     });
   }
 
-  logMemoryUsage("before final compilation");
+  if (debug) logMemoryUsage("before final compilation");
   const denoCompile = runShellCommand(denoCompilationCommand);
   const jsCompile = runShellCommand(["./infra/appBuild/appBuild.ts"]);
   const [denoResult, jsResult] = await Promise.all([denoCompile, jsCompile]);
-  logMemoryUsage("after final compilation");
+  if (debug) logMemoryUsage("after final compilation");
 
   if ((denoResult || jsResult) && waitForFail) {
     return new Promise((_, reject) => {
@@ -444,9 +449,20 @@ export async function build([waitForFail]: Array<string>): Promise<number> {
     });
   }
 
-  logMemoryUsage("build complete");
-  stopContinuousMemoryLogging();
+  if (debug) {
+    logMemoryUsage("build complete");
+    stopContinuousMemoryLogging();
+  } else {
+    // Just make sure we stop the logging if it was started
+    if (memoryLoggingInterval !== null) {
+      stopContinuousMemoryLogging();
+    }
+  }
   return denoResult || jsResult;
 }
 
-register("build", "Builds the current project", build);
+register(
+  "build",
+  "Builds the current project. Use --debug to show memory and system stats, --slow-exit to wait on failure.",
+  build,
+);
