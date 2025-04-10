@@ -410,7 +410,7 @@ export async function sendVerificationEmail(
   token: string,
 ): Promise<boolean> {
   // Determine the base URL for verification links
-  let baseUrl = "http://localhost:5000";
+  let baseUrl = "http://localhost:9999";
 
   // First try Replit domain for production
   if (process.env.REPLIT_DOMAINS) {

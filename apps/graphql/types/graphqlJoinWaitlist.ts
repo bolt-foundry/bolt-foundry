@@ -36,8 +36,13 @@ export const joinWaitlistMutation = mutationField("joinWaitlist", {
         };
       }
 
+      const slug = Deno.env.get("REPL_SLUG");
+      const baseUrl = Deno.env.get("NODE_ENV") === "production"
+        ? `https://${slug}.replit.app`
+        : "http://localhost:8000";
+
       const joinWaitlistResponse = await fetch(
-        "https://bf-contacts.replit.app/api/contacts",
+        `${baseUrl}/contacts-cms`,
         {
           method: "POST",
           headers: {
