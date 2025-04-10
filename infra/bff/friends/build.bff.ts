@@ -29,6 +29,7 @@ const allowedEnvironmentVariables = [
   "POSTHOG_API_KEY",
   "POSTHOG_HOST",
   "REPL_HOME",
+  "REPL_SLUG",
   "REPLIT_DEV_DOMAIN",
   "RPID",
   "FORCE_DOMAIN",
