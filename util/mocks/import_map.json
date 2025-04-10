@@ -1,0 +1,7 @@
+
+{
+  "imports": {
+    "posthog-node": "./posthog-node.ts",
+    "mock-mock": "./mock-mock.ts"
+  }
+}
