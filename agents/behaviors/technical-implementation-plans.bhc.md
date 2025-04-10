@@ -13,10 +13,10 @@ guidelines:
 
 ## Technical Specifications
 
-- Define clear API signatures and interfaces
-- Use TypeScript type definitions to express contracts
-- Include data flow diagrams for complex interactions
-- Document state management approaches
+- [ ] Define clear API signatures and interfaces
+- [ ] Use TypeScript type definitions to express contracts
+- [ ] Include data flow diagrams for complex interactions
+- [ ] Document state management approaches
 
 ### Example API Signature Format
 
