@@ -10,8 +10,8 @@ package to the backend collector.
 
 ## Technical Goals
 
-- [ ] Move PostHog analytics logic from bolt-foundry frontend package to collector
-  backend
+- [ ] Move PostHog analytics logic from bolt-foundry frontend package to
+      collector backend
 - [ ] Implement a basic interceptor for OpenAI SDK calls
 - [ ] Create a mirror authentication system using PostHog API keys
 - [ ] Build the initial data collection pipeline
@@ -24,9 +24,10 @@ package to the backend collector.
 - **Purpose**: Capture OpenAI SDK calls and responses without modifying client
   code
 - **Technical Specifications**:
-  - [ ] Create new server modeled after web/web.tsx called collector/collector.ts
-  - [ ] Implement request/response capture pattern from an openai call (completions
-    for now)
+  - [ ] Create new server modeled after web/web.tsx called
+        collector/collector.ts
+  - [ ] Implement request/response capture pattern from an openai call
+        (completions for now)
   - [x] Ensure no openai keys are accidentally captured or logged.
 
 ### 2. PostHog Integration (Complexity: Simple)
@@ -40,11 +41,11 @@ package to the backend collector.
 
 - **Technical Specifications**:
   - [ ] Modify bolt-foundry package to intercept OpenAI API calls and send to
-    collector endpoint
-  - [ ] Create configuration options in bolt-foundry package to specify collector
-    URL
+        collector endpoint
+  - [ ] Create configuration options in bolt-foundry package to specify
+        collector URL
   - [ ] Implement fallback behavior to ensure API calls continue working if
-    collector is unavailable
+        collector is unavailable
 
 ## Integration Points
 
@@ -56,7 +57,8 @@ package to the backend collector.
   collector backend
 - **Migration Strategy**:
   - [ ] Update bolt-foundry configuration to support redirecting to collector
-  - [ ] Ensure the openai calls never fail even if our collector is not available
+  - [ ] Ensure the openai calls never fail even if our collector is not
+        available
 
 ## Out of scope
 
@@ -79,13 +81,13 @@ package to the backend collector.
 Version 0.1 will be considered successful when:
 
 1. [ ] PostHog logic is successfully moved from frontend to collector backend
-2. [ ] OpenAI API calls hit the posthog api from the collector backend instead of
-   the user's bolt-foundry package hitting posthog directly
+2. [ ] OpenAI API calls hit the posthog api from the collector backend instead
+       of the user's bolt-foundry package hitting posthog directly
 3. [ ] Integration with bolt-foundry package is seamless
 
 ## Next Steps for Version 0.2
 
--  Create our own API key generation and management system
--  Implement identity and behavior card building functionality
--  Add metadata injection capabilities for request control
--  Build more sophisticated analytics for API usage patterns
+- Create our own API key generation and management system
+- Implement identity and behavior card building functionality
+- Add metadata injection capabilities for request control
+- Build more sophisticated analytics for API usage patterns
