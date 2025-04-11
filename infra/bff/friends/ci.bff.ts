@@ -56,8 +56,7 @@ async function runLintStep(useGithub: boolean): Promise<number> {
   const { code: errorCode, stdout } = await runShellCommandWithOutput(
     cmdArray,
     {},
-    /* useSpinner */ true,
-    /* silent */ useGithub, // or "false" if you still want logs
+    /* useSpinner */ true
   );
 
   // If GitHub annotations mode, parse JSON output and emit annotations
@@ -179,8 +178,7 @@ async function runFormatStep(useGithub: boolean): Promise<number> {
   const { code, stdout } = await runShellCommandWithOutput(
     ["deno", "fmt", "--check"],
     {},
-    /* useSpinner */ true,
-    /* silent */ useGithub,
+    /* useSpinner */ true
   );
 
   // If GitHub annotations mode, parse the text output
@@ -263,8 +261,7 @@ async function runBuildStep(useGithub: boolean): Promise<number> {
   const { code } = await runShellCommandWithOutput(
     ["bff", "build"],
     {},
-    /* useSpinner */ true,
-    /* silent */ useGithub,
+    /* useSpinner */ true
   );
   return code;
 }
@@ -292,7 +289,7 @@ async function runTestStep(_useGithub: boolean): Promise<number> {
   return code;
 }
 
-async function runE2ETestStep(useGithub: boolean): Promise<number> {
+async function runE2ETestStep(_useGithub: boolean): Promise<number> {
   logger.info("Running E2E tests...");
 
   // We'll use the BFF e2e command that's already implemented
@@ -304,8 +301,7 @@ async function runE2ETestStep(useGithub: boolean): Promise<number> {
   const { code } = await runShellCommandWithOutput(
     e2eArgs,
     {},
-    true,
-    useGithub,
+    true
   );
   return code;
 }
@@ -319,8 +315,7 @@ async function runTypecheckStep(useGithub: boolean): Promise<number> {
   const { code } = await runShellCommandWithOutput(
     ["deno", "check", "packages/**/*.ts", "packages/**/*.tsx"],
     {},
-    /* useSpinner */ true,
-    /* silent */ useGithub,
+    /* useSpinner */ true
   );
   return code;
 }
@@ -336,8 +331,7 @@ async function runInstallStep(useGithub: boolean): Promise<number> {
   const { code } = await runShellCommandWithOutput(
     ["deno", "install"],
     {},
-    true,
-    useGithub,
+    true
   );
   return code;
 }
