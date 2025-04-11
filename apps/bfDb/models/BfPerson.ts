@@ -90,7 +90,7 @@ export class BfPerson extends BfNode<BfPersonProps> {
 
     const userName = person.props.name;
     const result = await generateRegistrationOptions({
-      rpName: "Content Foundry",
+      rpName: "Bolt Foundry",
       rpID,
       userName,
       userID, // Make sure we pass userID so the authenticator knows who we're registering

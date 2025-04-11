@@ -12,6 +12,6 @@ export const EntrypointHome = iso(`
 `)(function EntrypointHome({ data }) {
   const Body = data?.me?.Home;
   logger.debug("dataer", data);
-  const title = "Content Foundry: The Content Operating System.";
+  const title = "Bolt Foundry: The Content Operating System.";
   return { Body, title };
 });
