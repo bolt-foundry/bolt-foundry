@@ -7,13 +7,19 @@ import {
 import { getLogger } from "packages/logger/logger.ts";
 import { connectBoltFoundry } from "packages/bolt-foundry/bolt-foundry.ts";
 import { OpenAI } from "@openai/openai";
-// Create OpenAI client with Bolt Foundry integration
-const posthogApiKey = Deno.env.get("POSTHOG_API_KEY");
-const client = new OpenAI({
-  apiKey: Deno.env.get("OPENAI_API_KEY"),
-  fetch: connectBoltFoundry(posthogApiKey),
-});
+
 const logger = getLogger(import.meta);
+
+/**
+ * Creates and returns a new OpenAI client instance
+ */
+function getOpenAIClient(): OpenAI {
+  const posthogApiKey = Deno.env.get("POSTHOG_API_KEY");
+  return new OpenAI({
+    apiKey: Deno.env.get("OPENAI_API_KEY"),
+    fetch: connectBoltFoundry(posthogApiKey),
+  });
+}
 
 /**
  * Runs pre-commit checks (format, lint, type check)
@@ -355,8 +361,9 @@ ${diffOutput}
 `;
     }
 
-    // Send to OpenAI and get response using the SDK
+    // Create an OpenAI client and send to OpenAI
     logger.info("Sending diff to OpenAI...");
+    const client = getOpenAIClient();
     const response = await client.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -369,7 +376,7 @@ ${diffOutput}
       max_tokens: 1024,
     });
 
-    const aiResponse = response.choices[0].message.content.trim();
+    const aiResponse = response.choices[0].message.content?.trim() ?? "";
 
     // Parse response into title and message
     const titleMatch = aiResponse.match(/TITLE: (.*)/);

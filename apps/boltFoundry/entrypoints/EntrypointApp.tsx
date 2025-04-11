@@ -17,5 +17,5 @@ export const EntrypointContentFoundryApp = iso(`
   if (Body == null) {
     throw new Error("No Body found");
   }
-  return { Body, title: "Content Foundry" };
+  return { Body, title: "Bolt Foundry" };
 });

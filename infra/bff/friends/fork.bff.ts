@@ -8,7 +8,7 @@ import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 export async function fork(): Promise<number> {
-  logger.info("Forking Content Foundry repository...");
+  logger.info("Forking Bolt Foundry repository...");
 
   // 1. Check GitHub auth status first
   const { stdout: authStatus } = await runShellCommandWithOutput([
@@ -137,6 +137,6 @@ export async function fork(): Promise<number> {
 
 register(
   "fork",
-  "Fork the Content Foundry repository to your personal GitHub account",
+  "Fork the Bolt Foundry repository to your personal GitHub account",
   fork,
 );
