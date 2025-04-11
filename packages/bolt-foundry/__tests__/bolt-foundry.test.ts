@@ -1,48 +1,50 @@
+#! /usr/bin/env -S bff test
 import { assert, assertEquals, assertExists } from "@std/assert";
 import { assertSpyCalls, stub } from "@std/testing/mock";
 import { connectBoltFoundry } from "@bolt-foundry/bolt-foundry";
-import { OpenAI } from "@openai/openai";
+import { getLogger } from "packages/logger/logger.ts";
+
+const _logger = getLogger(import.meta);
+
+// Import the mocked OpenAI class
+import { OpenAI } from "util/mocks/openai.ts";
 
 Deno.test("createOpenAIFetch should properly integrate with OpenAI client", async () => {
-  // Create a mock response similar to what OpenAI would return
-  const mockResponse = {
-    id: "mock-id",
-    object: "chat.completion",
-    created: Date.now(),
-    model: "gpt-3.5-turbo",
-    usage: {
-      prompt_tokens: 10,
-      completion_tokens: 20,
-      total_tokens: 30,
-    },
-    choices: [
-      {
-        index: 0,
-        message: {
-          role: "assistant",
-          content: "Mock response text",
-        },
-        finish_reason: "stop",
-      },
-    ],
-  };
-
-  // Create a stub for global fetch that returns the mock response
+  // Create a stub for the fetch function that will be passed to the OpenAI client
   using fetchStub = stub(
     globalThis,
     "fetch",
-    () =>
-      Promise.resolve(
-        new Response(
-          JSON.stringify(mockResponse),
-          { status: 200, headers: { "Content-Type": "application/json" } },
-        ),
+    () => Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: `mock-completion-${Date.now()}`,
+          object: "chat.completion",
+          created: Date.now(),
+          model: "gpt-4",
+          usage: {
+            prompt_tokens: 20,
+            completion_tokens: 30,
+            total_tokens: 50,
+          },
+          choices: [
+            {
+              index: 0,
+              message: {
+                role: "assistant",
+                content: "This is a mock response from the gpt-4 model.",
+              },
+              finish_reason: "stop",
+            },
+          ],
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
       ),
+    ),
   );
 
   // Create an OpenAI client with our custom fetch function
   const openai = new OpenAI({
-    apiKey: "test-api-key",
+    apiKey: "valid-api-key", // Using a key that will be accepted by the mock
     fetch: connectBoltFoundry("test-bf-key"),
   });
 

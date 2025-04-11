@@ -7,6 +7,10 @@ const logger = getLogger(import.meta);
 export async function e2eCommand(args: string[]): Promise<number> {
   logger.info("Starting e2e tests");
 
+  let serverProcess: Deno.ChildProcess | undefined;
+  let testProcess: Deno.ChildProcess | undefined;
+  let testStatus: Deno.CommandStatus | undefined;
+
   try {
     // Create a unique run ID based on timestamp
     const runId = new Date().toISOString().replace(/[:.]/g, "-");
@@ -39,7 +43,7 @@ export async function e2eCommand(args: string[]): Promise<number> {
       stderr: "piped",
     });
 
-    const serverProcess = serverCommand.spawn();
+    serverProcess = serverCommand.spawn();
 
     // Wait a moment for the server to start
     await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -69,54 +73,45 @@ export async function e2eCommand(args: string[]): Promise<number> {
         },
       });
 
-      const testProcess = testCommand.spawn();
-      const testStatus = await testProcess.status;
+      testProcess = testCommand.spawn();
+      testStatus = await testProcess.status;
 
       // Display screenshot location information
       logger.info(`Screenshots were saved to: ${runSpecificDir}`);
 
-      try {
-        // Use asynchronous readDir instead of readDirSync
-        const screenshotFiles = [];
-        for await (const entry of Deno.readDir(runSpecificDir)) {
-          if (entry.isFile && entry.name.endsWith(".png")) {
-            screenshotFiles.push(entry);
-          }
+      // Use asynchronous readDir instead of readDirSync
+      const screenshotFiles = [];
+      for await (const entry of Deno.readDir(runSpecificDir)) {
+        if (entry.isFile && entry.name.endsWith(".png")) {
+          screenshotFiles.push(entry);
         }
-
-        // Sort and display screenshots
-        screenshotFiles
-          .sort((a, b) => {
-            // Sort by timestamp in filename
-            return b.name.localeCompare(a.name);
-          })
-          .slice(0, 10) // Show only the last 10 screenshots
-          .forEach((file) => {
-            logger.info(`- ${file.name}`);
-          });
-
-        if (screenshotFiles.length > 0) {
-          logger.info(`Latest screenshots:`);
-        }
-      } catch (error) {
-        logger.warn(`Could not list screenshots: ${(error as Error).message}`);
       }
 
-      if (!testStatus.success) {
-        logger.error(`E2E tests failed with code ${testStatus.code}`);
-        return testStatus.code;
+      // Sort and display screenshots
+      screenshotFiles
+        .sort((a, b) => {
+          // Sort by timestamp in filename
+          return b.name.localeCompare(a.name);
+        })
+        .slice(0, 10) // Show only the last 10 screenshots
+        .forEach((file) => {
+          logger.info(`- ${file.name}`);
+        });
+
+      if (screenshotFiles.length > 0) {
+        logger.info(`Latest screenshots:`);
       }
-
-      logger.info("E2E tests completed successfully");
-      return 0;
-    } finally {
-      // Clean up the server process
-      logger.info("Shutting down server process...");
-      serverProcess.kill("SIGTERM");
-
-      // Give time for resources to clean up
-      await new Promise((resolve) => setTimeout(resolve, 500));
+    } catch (error) {
+      logger.warn(`Could not list screenshots: ${(error as Error).message}`);
     }
+
+    if (!testStatus?.success) {
+      logger.error(`E2E tests failed with code ${testStatus?.code}`);
+      return testStatus?.code ?? 1;
+    }
+
+    logger.info("E2E tests completed successfully");
+    return 0;
   } catch (error) {
     logger.error(`E2E tests failed: ${(error as Error).message}`);
     return 1;

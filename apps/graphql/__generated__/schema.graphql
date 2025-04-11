@@ -3,10 +3,6 @@
 ### Do not make changes to this file directly
 
 
-type Analytics {
-  tbd: String
-}
-
 interface BfCurrentViewer implements Node {
   """Unique identifier for the resource"""
   id: ID!
@@ -31,40 +27,14 @@ interface BfNode implements Node {
 }
 
 type BfOrganization implements BfNode & Node {
-  analytics: Analytics
-  creation: Creation
-  distribution: Distribution
-
   """Unique identifier for the resource"""
   id: ID!
-  identity: BfOrganization_Identity
-  research: BfOrganization_Research
-}
-
-type BfOrganization_Identity {
-  twitter: Twitter
-  voice: Voice
-}
-
-type BfOrganization_Research {
-  topics: [ResearchTopic]
 }
 
 type BfPerson implements BfNode & Node {
   """Unique identifier for the resource"""
   id: ID!
   name: String
-}
-
-type Creation {
-  draftBlog: String
-  originalText: String
-  revisions: [Revisions]
-  suggestions: [Suggestion]
-}
-
-type Distribution {
-  tbd: String
 }
 
 scalar JSON
@@ -80,16 +50,7 @@ type JoinWaitlistResponse {
 }
 
 type Mutation {
-  checkEmail(email: String!): Boolean
-  createVoice(handle: String!): BfOrganization
-  getLoginOptions(email: String!): JSONString
   joinWaitlist(company: String, email: String, name: String): JoinWaitlistResponse
-  login(authResp: JSONString!, email: String!): BfCurrentViewer
-  loginAsDemoPerson: BfCurrentViewerLoggedIn
-  makeTweets(tweet: String!): BfOrganization
-  register(attResp: JSONString!, email: String!): BfCurrentViewerLoggedIn
-  registrationOptions(email: String!): JSONString
-  reviseBlog(blogPost: String!): BfOrganization
 }
 
 interface Node {
@@ -100,111 +61,4 @@ interface Node {
 type Query {
   bfNode(id: ID): BfNode
   me: BfCurrentViewer
-}
-
-type RecommendationItem {
-  confidence: Float
-  explanation: String
-  recommendedText: String
-  sourceText: String
-}
-
-type Recommendations {
-  """A list of recommendations"""
-  recommendations: [RecommendationItem]
-}
-
-type ResearchEntry {
-  name: String
-  summary: String
-  type: String
-  url: String
-}
-
-type ResearchTopic {
-  entries: [ResearchEntry]
-  name: String
-}
-
-type Revisions {
-  explanation: String
-  instructions: String
-  original: String
-  revision: String
-  revisionTitle: String
-}
-
-type Suggestion {
-  explanation: String
-  tweet: String
-}
-
-type Twitter {
-  handle: String
-  imgUrl: String
-  name: String
-}
-
-type Voice {
-  voice: String
-  voiceSummary: String
-}
-
-type YCRecommendationItem {
-  confidence: Float
-  explanation: String
-  revision: String
-}
-
-type YCRecommendations {
-  """A list of recommendations"""
-  companySummary: YCRecommendationItem
-
-  """A list of recommendations"""
-  competitors: YCRecommendationItem
-
-  """A list of recommendations"""
-  equityBreakdown: YCRecommendationItem
-
-  """A list of recommendations"""
-  investmentsReceived: YCRecommendationItem
-
-  """A list of recommendations"""
-  locationDecision: YCRecommendationItem
-
-  """A list of recommendations"""
-  moneyMaking: YCRecommendationItem
-
-  """A list of recommendations"""
-  otherIdeas: YCRecommendationItem
-
-  """A list of recommendations"""
-  otherIncubators: YCRecommendationItem
-
-  """A list of recommendations"""
-  previousApplicationChange: YCRecommendationItem
-
-  """A list of recommendations"""
-  productSummary: YCRecommendationItem
-
-  """A list of recommendations"""
-  progress: YCRecommendationItem
-
-  """A list of recommendations"""
-  reasonForApplying: YCRecommendationItem
-
-  """A list of recommendations"""
-  reasonForProductChoice: YCRecommendationItem
-
-  """A list of recommendations"""
-  revenueSource: YCRecommendationItem
-
-  """A list of recommendations"""
-  techStack: YCRecommendationItem
-
-  """A list of recommendations"""
-  whoToldYou: YCRecommendationItem
-
-  """A list of recommendations"""
-  workLengthHistory: YCRecommendationItem
 }

@@ -14,6 +14,7 @@
     "@std/front-matter": "jsr:@std/front-matter@^1.0.5",
     "@std/fs": "jsr:@std/fs@^1.0.10",
     "@std/http": "jsr:@std/http@^1.0.12",
+    "@std/jsonc": "jsr:@std/jsonc@^1.0.1",
     "@std/path": "jsr:@std/path@^1.0.8",
     "@std/testing": "jsr:@std/testing@^1.0.9",
     "sqlite": "node:sqlite",
@@ -106,7 +107,8 @@
     "packages/logger",
     "packages/get-configuration-var",
     "examples/nextjs-sample",
-    "apps/contacts"
+    "apps/contacts",
+    "util/mocks"
   ],
   "nodeModulesDir": "manual",
   "vendor": true

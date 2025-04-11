@@ -19,3 +19,4 @@ tmp/*
 **/.next/**
 .upm
 **/npm
+test_deno.jsonc

@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "posthog-node": "./posthog-node.ts",
+    "@openai/openai": "./openai.ts",
+    "mock-mock": "./mock-mock.ts"
+  }
+}

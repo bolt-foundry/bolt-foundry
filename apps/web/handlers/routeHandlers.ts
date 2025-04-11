@@ -81,10 +81,9 @@ export async function handleIsographRoute(
   const reqUrl = new URL(request.url);
   const initialPath = reqUrl.pathname;
   const queryParams = Object.fromEntries(reqUrl.searchParams.entries());
-  const isographServerEnvironment = await getIsographEnvironment(request);
+  const isographServerEnvironment = getIsographEnvironment(request);
   using cv = BfCurrentViewer.createFromRequest(import.meta, request);
-  const ph = await cv.getPosthogClient();
-  const featureFlags = await ph.backendClient?.getAllFlags(cv.bfGid);
+  const featureFlags = {};
 
   const clientEnvironment = {
     initialPath,

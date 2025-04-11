@@ -57,9 +57,6 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
-  Analytics: { // root type
-    tbd?: string | null; // String
-  }
   BfCurrentViewerLoggedIn: { // root type
     id: string; // ID!
   }
@@ -67,32 +64,11 @@ export interface NexusGenObjects {
     id: string; // ID!
   }
   BfOrganization: { // root type
-    analytics?: NexusGenRootTypes['Analytics'] | null; // Analytics
-    creation?: NexusGenRootTypes['Creation'] | null; // Creation
-    distribution?: NexusGenRootTypes['Distribution'] | null; // Distribution
     id: string; // ID!
-    identity?: NexusGenRootTypes['BfOrganization_Identity'] | null; // BfOrganization_Identity
-    research?: NexusGenRootTypes['BfOrganization_Research'] | null; // BfOrganization_Research
-  }
-  BfOrganization_Identity: { // root type
-    twitter?: NexusGenRootTypes['Twitter'] | null; // Twitter
-    voice?: NexusGenRootTypes['Voice'] | null; // Voice
-  }
-  BfOrganization_Research: { // root type
-    topics?: Array<NexusGenRootTypes['ResearchTopic'] | null> | null; // [ResearchTopic]
   }
   BfPerson: { // root type
     id: string; // ID!
     name?: string | null; // String
-  }
-  Creation: { // root type
-    draftBlog?: string | null; // String
-    originalText?: string | null; // String
-    revisions?: Array<NexusGenRootTypes['Revisions'] | null> | null; // [Revisions]
-    suggestions?: Array<NexusGenRootTypes['Suggestion'] | null> | null; // [Suggestion]
-  }
-  Distribution: { // root type
-    tbd?: string | null; // String
   }
   JoinWaitlistResponse: { // root type
     message?: string | null; // String
@@ -100,69 +76,6 @@ export interface NexusGenObjects {
   }
   Mutation: {};
   Query: {};
-  RecommendationItem: { // root type
-    confidence?: number | null; // Float
-    explanation?: string | null; // String
-    recommendedText?: string | null; // String
-    sourceText?: string | null; // String
-  }
-  Recommendations: { // root type
-    recommendations?: Array<NexusGenRootTypes['RecommendationItem'] | null> | null; // [RecommendationItem]
-  }
-  ResearchEntry: { // root type
-    name?: string | null; // String
-    summary?: string | null; // String
-    type?: string | null; // String
-    url?: string | null; // String
-  }
-  ResearchTopic: { // root type
-    entries?: Array<NexusGenRootTypes['ResearchEntry'] | null> | null; // [ResearchEntry]
-    name?: string | null; // String
-  }
-  Revisions: { // root type
-    explanation?: string | null; // String
-    instructions?: string | null; // String
-    original?: string | null; // String
-    revision?: string | null; // String
-    revisionTitle?: string | null; // String
-  }
-  Suggestion: { // root type
-    explanation?: string | null; // String
-    tweet?: string | null; // String
-  }
-  Twitter: { // root type
-    handle?: string | null; // String
-    imgUrl?: string | null; // String
-    name?: string | null; // String
-  }
-  Voice: { // root type
-    voice?: string | null; // String
-    voiceSummary?: string | null; // String
-  }
-  YCRecommendationItem: { // root type
-    confidence?: number | null; // Float
-    explanation?: string | null; // String
-    revision?: string | null; // String
-  }
-  YCRecommendations: { // root type
-    companySummary?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    competitors?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    equityBreakdown?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    investmentsReceived?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    locationDecision?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    moneyMaking?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    otherIdeas?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    otherIncubators?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    previousApplicationChange?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    productSummary?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    progress?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    reasonForApplying?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    reasonForProductChoice?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    revenueSource?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    techStack?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    whoToldYou?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    workLengthHistory?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-  }
 }
 
 export interface NexusGenInterfaces {
@@ -179,9 +92,6 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
-  Analytics: { // field return type
-    tbd: string | null; // String
-  }
   BfCurrentViewerLoggedIn: { // field return type
     id: string; // ID!
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
@@ -191,115 +101,22 @@ export interface NexusGenFieldTypes {
     organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
   }
   BfOrganization: { // field return type
-    analytics: NexusGenRootTypes['Analytics'] | null; // Analytics
-    creation: NexusGenRootTypes['Creation'] | null; // Creation
-    distribution: NexusGenRootTypes['Distribution'] | null; // Distribution
     id: string; // ID!
-    identity: NexusGenRootTypes['BfOrganization_Identity'] | null; // BfOrganization_Identity
-    research: NexusGenRootTypes['BfOrganization_Research'] | null; // BfOrganization_Research
-  }
-  BfOrganization_Identity: { // field return type
-    twitter: NexusGenRootTypes['Twitter'] | null; // Twitter
-    voice: NexusGenRootTypes['Voice'] | null; // Voice
-  }
-  BfOrganization_Research: { // field return type
-    topics: Array<NexusGenRootTypes['ResearchTopic'] | null> | null; // [ResearchTopic]
   }
   BfPerson: { // field return type
     id: string; // ID!
     name: string | null; // String
-  }
-  Creation: { // field return type
-    draftBlog: string | null; // String
-    originalText: string | null; // String
-    revisions: Array<NexusGenRootTypes['Revisions'] | null> | null; // [Revisions]
-    suggestions: Array<NexusGenRootTypes['Suggestion'] | null> | null; // [Suggestion]
-  }
-  Distribution: { // field return type
-    tbd: string | null; // String
   }
   JoinWaitlistResponse: { // field return type
     message: string | null; // String
     success: boolean | null; // Boolean
   }
   Mutation: { // field return type
-    checkEmail: boolean | null; // Boolean
-    createVoice: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
-    getLoginOptions: NexusGenScalars['JSONString'] | null; // JSONString
     joinWaitlist: NexusGenRootTypes['JoinWaitlistResponse'] | null; // JoinWaitlistResponse
-    login: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
-    loginAsDemoPerson: NexusGenRootTypes['BfCurrentViewerLoggedIn'] | null; // BfCurrentViewerLoggedIn
-    makeTweets: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
-    register: NexusGenRootTypes['BfCurrentViewerLoggedIn'] | null; // BfCurrentViewerLoggedIn
-    registrationOptions: NexusGenScalars['JSONString'] | null; // JSONString
-    reviseBlog: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
   }
   Query: { // field return type
     bfNode: NexusGenRootTypes['BfNode'] | null; // BfNode
     me: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
-  }
-  RecommendationItem: { // field return type
-    confidence: number | null; // Float
-    explanation: string | null; // String
-    recommendedText: string | null; // String
-    sourceText: string | null; // String
-  }
-  Recommendations: { // field return type
-    recommendations: Array<NexusGenRootTypes['RecommendationItem'] | null> | null; // [RecommendationItem]
-  }
-  ResearchEntry: { // field return type
-    name: string | null; // String
-    summary: string | null; // String
-    type: string | null; // String
-    url: string | null; // String
-  }
-  ResearchTopic: { // field return type
-    entries: Array<NexusGenRootTypes['ResearchEntry'] | null> | null; // [ResearchEntry]
-    name: string | null; // String
-  }
-  Revisions: { // field return type
-    explanation: string | null; // String
-    instructions: string | null; // String
-    original: string | null; // String
-    revision: string | null; // String
-    revisionTitle: string | null; // String
-  }
-  Suggestion: { // field return type
-    explanation: string | null; // String
-    tweet: string | null; // String
-  }
-  Twitter: { // field return type
-    handle: string | null; // String
-    imgUrl: string | null; // String
-    name: string | null; // String
-  }
-  Voice: { // field return type
-    voice: string | null; // String
-    voiceSummary: string | null; // String
-  }
-  YCRecommendationItem: { // field return type
-    confidence: number | null; // Float
-    explanation: string | null; // String
-    revision: string | null; // String
-  }
-  YCRecommendations: { // field return type
-    companySummary: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    competitors: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    equityBreakdown: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    investmentsReceived: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    locationDecision: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    moneyMaking: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    otherIdeas: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    otherIncubators: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    previousApplicationChange: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    productSummary: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    progress: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    reasonForApplying: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    reasonForProductChoice: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    revenueSource: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    techStack: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    whoToldYou: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    workLengthHistory: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
   }
   BfCurrentViewer: { // field return type
     id: string; // ID!
@@ -314,9 +131,6 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
-  Analytics: { // field return type name
-    tbd: 'String'
-  }
   BfCurrentViewerLoggedIn: { // field return type name
     id: 'ID'
     organization: 'BfOrganization'
@@ -326,115 +140,22 @@ export interface NexusGenFieldTypeNames {
     organization: 'BfOrganization'
   }
   BfOrganization: { // field return type name
-    analytics: 'Analytics'
-    creation: 'Creation'
-    distribution: 'Distribution'
     id: 'ID'
-    identity: 'BfOrganization_Identity'
-    research: 'BfOrganization_Research'
-  }
-  BfOrganization_Identity: { // field return type name
-    twitter: 'Twitter'
-    voice: 'Voice'
-  }
-  BfOrganization_Research: { // field return type name
-    topics: 'ResearchTopic'
   }
   BfPerson: { // field return type name
     id: 'ID'
     name: 'String'
-  }
-  Creation: { // field return type name
-    draftBlog: 'String'
-    originalText: 'String'
-    revisions: 'Revisions'
-    suggestions: 'Suggestion'
-  }
-  Distribution: { // field return type name
-    tbd: 'String'
   }
   JoinWaitlistResponse: { // field return type name
     message: 'String'
     success: 'Boolean'
   }
   Mutation: { // field return type name
-    checkEmail: 'Boolean'
-    createVoice: 'BfOrganization'
-    getLoginOptions: 'JSONString'
     joinWaitlist: 'JoinWaitlistResponse'
-    login: 'BfCurrentViewer'
-    loginAsDemoPerson: 'BfCurrentViewerLoggedIn'
-    makeTweets: 'BfOrganization'
-    register: 'BfCurrentViewerLoggedIn'
-    registrationOptions: 'JSONString'
-    reviseBlog: 'BfOrganization'
   }
   Query: { // field return type name
     bfNode: 'BfNode'
     me: 'BfCurrentViewer'
-  }
-  RecommendationItem: { // field return type name
-    confidence: 'Float'
-    explanation: 'String'
-    recommendedText: 'String'
-    sourceText: 'String'
-  }
-  Recommendations: { // field return type name
-    recommendations: 'RecommendationItem'
-  }
-  ResearchEntry: { // field return type name
-    name: 'String'
-    summary: 'String'
-    type: 'String'
-    url: 'String'
-  }
-  ResearchTopic: { // field return type name
-    entries: 'ResearchEntry'
-    name: 'String'
-  }
-  Revisions: { // field return type name
-    explanation: 'String'
-    instructions: 'String'
-    original: 'String'
-    revision: 'String'
-    revisionTitle: 'String'
-  }
-  Suggestion: { // field return type name
-    explanation: 'String'
-    tweet: 'String'
-  }
-  Twitter: { // field return type name
-    handle: 'String'
-    imgUrl: 'String'
-    name: 'String'
-  }
-  Voice: { // field return type name
-    voice: 'String'
-    voiceSummary: 'String'
-  }
-  YCRecommendationItem: { // field return type name
-    confidence: 'Float'
-    explanation: 'String'
-    revision: 'String'
-  }
-  YCRecommendations: { // field return type name
-    companySummary: 'YCRecommendationItem'
-    competitors: 'YCRecommendationItem'
-    equityBreakdown: 'YCRecommendationItem'
-    investmentsReceived: 'YCRecommendationItem'
-    locationDecision: 'YCRecommendationItem'
-    moneyMaking: 'YCRecommendationItem'
-    otherIdeas: 'YCRecommendationItem'
-    otherIncubators: 'YCRecommendationItem'
-    previousApplicationChange: 'YCRecommendationItem'
-    productSummary: 'YCRecommendationItem'
-    progress: 'YCRecommendationItem'
-    reasonForApplying: 'YCRecommendationItem'
-    reasonForProductChoice: 'YCRecommendationItem'
-    revenueSource: 'YCRecommendationItem'
-    techStack: 'YCRecommendationItem'
-    whoToldYou: 'YCRecommendationItem'
-    workLengthHistory: 'YCRecommendationItem'
   }
   BfCurrentViewer: { // field return type name
     id: 'ID'
@@ -450,36 +171,10 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
-    checkEmail: { // args
-      email: string; // String!
-    }
-    createVoice: { // args
-      handle: string; // String!
-    }
-    getLoginOptions: { // args
-      email: string; // String!
-    }
     joinWaitlist: { // args
       company?: string | null; // String
       email?: string | null; // String
       name?: string | null; // String
-    }
-    login: { // args
-      authResp: NexusGenScalars['JSONString']; // JSONString!
-      email: string; // String!
-    }
-    makeTweets: { // args
-      tweet: string; // String!
-    }
-    register: { // args
-      attResp: NexusGenScalars['JSONString']; // JSONString!
-      email: string; // String!
-    }
-    registrationOptions: { // args
-      email: string; // String!
-    }
-    reviseBlog: { // args
-      blogPost: string; // String!
     }
   }
   Query: {

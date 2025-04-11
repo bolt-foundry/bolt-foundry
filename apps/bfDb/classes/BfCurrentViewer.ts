@@ -9,7 +9,6 @@ import type {
 import { Buffer } from "node:buffer";
 import { BfPerson } from "apps/bfDb/models/BfPerson.ts";
 import jwt from "jsonwebtoken";
-import { getPosthogClient } from "lib/posthog.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 
 const JWT_SECRET = Buffer.from("content-foundry-secret-key");
@@ -275,9 +274,6 @@ export abstract class BfCurrentViewer {
   }
 
   clear() {
-    this.getPosthogClient().then(({ backendClient }) =>
-      backendClient?.shutdown()
-    );
   }
 
   protected constructor(
@@ -302,9 +298,6 @@ export abstract class BfCurrentViewer {
     return false;
   }
 
-  getPosthogClient() {
-    return getPosthogClient(this.bfGid);
-  }
   [Symbol.dispose]() {
     this.clear();
   }

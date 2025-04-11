@@ -15,7 +15,6 @@ import type {
   RegistrationResponseJSON,
 } from "@simplewebauthn/server";
 import { BfOrganization } from "apps/bfDb/models/BfOrganization.ts";
-import { getPosthogClient } from "lib/posthog.ts";
 
 const logger = getLogger(import.meta);
 
@@ -49,14 +48,6 @@ export type Context = {
     id: BfGid,
   ): Promise<InstanceType<TClass>>;
   findCurrentUser(): Promise<BfPerson | null>;
-  login(
-    email: string,
-    options: AuthenticationResponseJSON,
-  ): Promise<BfCurrentViewer>;
-  register(
-    registrationResponse: RegistrationResponseJSON,
-    email: string,
-  ): Promise<BfPerson>;
   getRequestHeader(name: string): string | null;
   getResponseHeaders(): Headers;
   findOrganizationForCurrentViewer(): Promise<BfOrganization | null>;
@@ -176,10 +167,6 @@ export async function createContext(request: Request): Promise<Context> {
       );
       return currentViewerPerson;
     },
-
-    login,
-    register,
-
     async findOrganizationForCurrentViewer() {
       const orgs = await BfOrganization.query(
         currentViewer,
@@ -188,18 +175,6 @@ export async function createContext(request: Request): Promise<Context> {
       return orgs[0];
     },
   };
-
-  if (currentViewer.isLoggedIn) {
-    const { backendClient } = await getPosthogClient();
-    if (backendClient) {
-      backendClient.identify({
-        distinctId: currentViewer.bfGid,
-        properties: {
-          isLoggedIn: true,
-        },
-      });
-    }
-  }
 
   return ctx;
 }

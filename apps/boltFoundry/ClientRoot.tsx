@@ -8,7 +8,6 @@ import { BfDsProvider } from "apps/bfDs/contexts/BfDsContext.tsx";
 import { ErrorBoundary } from "apps/boltFoundry/components/ErrorBoundary.tsx";
 import { getLogger } from "packages/logger/logger.ts";
 import { AppSidebar } from "apps/boltFoundry/components/AppSidebar.tsx";
-import { getPosthogClient } from "lib/posthog.ts";
 const logger = getLogger(import.meta);
 
 export function ClientRoot(
@@ -31,7 +30,6 @@ export function ClientRoot(
 }
 
 export async function rehydrate(props: ServerProps) {
-  await getPosthogClient(props.personBfGid, props.featureFlags);
   const root = document.querySelector("#root");
   if (root) {
     logger.debug("rehydrating root", root, props);
