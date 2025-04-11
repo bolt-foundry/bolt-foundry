@@ -1,8 +1,34 @@
-# Test-Driven Development Protocol
+# Test-Driven Development
 
-This behavior card defines the test-driven development (TDD) workflow for the
-Bolt Foundry project, with special focus on using Deno's native testing
-capabilities.
+## The TDD Cycle
+
+All new features and significant code changes should follow this TDD cycle:
+
+1. **Red**: Write a failing test that defines the expected behavior
+2. **Green**: Implement the minimum code needed to make the test pass
+3. **Refactor**: Improve the implementation while keeping the tests passing
+
+## Test Organization
+
+- Place tests in `__tests__` directories, co-located with the code being tested
+- Do not use `tests` directories (use `__tests__` instead)
+- Follow this naming pattern: `[filename].test.ts` or `[filename].test.tsx`
+- Example: For `packages/logger/logger.ts`, tests should be in
+  `packages/logger/__tests__/logger.test.ts`
+
+## Test File Organization
+
+Each test file should be organized as follows:
+
+1. **Setup**: Import dependencies and set up test fixtures
+2. **Test Cases**: Grouped by functionality using Deno's `Deno.test` function
+3. **Teardown**: Clean up resources as needed
+
+## Testing Tools
+
+- Use Deno's native testing tools for unit and integration tests
+- Use assertions from `https://deno.land/std/testing/asserts.ts`
+- For UI components, use DOM testing tools
 
 ## Purpose
 
@@ -105,15 +131,51 @@ Follow this workflow when implementing new features or fixing bugs:
 
 ### Unit Tests
 
-- Test individual functions, methods, or small components
-- Mock dependencies to isolate the unit being tested
-- Should be fast and deterministic
+- Test individual functions, methods, and classes in isolation
+- Use mocks or stubs for dependencies
+- Focus on input/output relationships and edge cases
 
 ### Integration Tests
 
-- Test how components work together
-- May involve database connections or API calls
-- Use the `--allow-net` and other permissions as needed
+- Right now we don't typically create integration tests. For anything
+requiring integration tests, we opt for e2e tests.
+
+### E2E Tests
+
+- Test complete user workflows
+- End with `.test.e2e.ts` suffix
+- Focus on critical user paths
+
+## Mock Guidelines
+
+- Only mock what is necessary (external services, complex dependencies)
+- Keep mocks as simple as possible
+- Verify mocks are called with expected arguments
+
+## Example Unit Test
+
+```typescript
+// packages/util/__tests__/example.test.ts
+import { assertEquals } from "@testing/assert";
+import { sum } from "../utils.ts";
+
+Deno.test("sum adds two numbers correctly", () => {
+  assertEquals(sum(2, 3), 5);
+  assertEquals(sum(-1, 1), 0);
+  assertEquals(sum(0, 0), 0);
+});
+```
+
+## Test Review Checklist
+
+
+Remember: In TDD, failure counts as done. It's better to have a simple working
+solution with good tests than a complex perfect solution that's difficult to
+verify.
+
+- Test individual functions, methods, or small components
+- Mock dependencies to isolate the unit being tested
+- Should be fast and deterministic
 
 ### E2E Tests
 
@@ -131,42 +193,3 @@ Follow this workflow when implementing new features or fixing bugs:
 6. **Test edge cases** - Include error conditions and boundary values
 7. **Clean up after tests** - Restore the system to its original state
 
-## Example
-
-```typescript
-#!/usr/bin/env -S bff test
-// __tests__/sanitize.test.ts
-import { assertEquals } from "https://deno.land/std/testing/mod.ts";
-import { sanitizePayload } from "../utils/sanitize.ts";
-
-Deno.test("sanitizePayload removes API keys from request body", () => {
-  const payload = {
-    model: "gpt-4",
-    messages: [{ role: "user", content: "Hello" }],
-    api_key: "sk-1234567890abcdef",
-  };
-
-  const sanitized = sanitizePayload(payload);
-
-  assertEquals(sanitized.api_key, "[REDACTED]");
-  assertEquals(sanitized.model, "gpt-4");
-  assertEquals(sanitized.messages[0].content, "Hello");
-});
-
-Deno.test("sanitizePayload handles nested API keys", () => {
-  const payload = {
-    request: {
-      headers: {
-        Authorization: "Bearer sk-1234567890abcdef",
-      },
-    },
-  };
-
-  const sanitized = sanitizePayload(payload);
-
-  assertEquals(sanitized.request.headers.Authorization, "Bearer [REDACTED]");
-});
-```
-
-By following this protocol, we ensure consistent, high-quality testing across
-the Bolt Foundry codebase.
