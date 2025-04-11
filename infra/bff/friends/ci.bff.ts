@@ -305,7 +305,7 @@ async function runE2ETestStep(useGithub: boolean): Promise<number> {
     e2eArgs,
     {},
     true,
-    useGithub,
+    false,
   );
   return code;
 }
