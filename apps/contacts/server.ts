@@ -4,7 +4,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 const app = express();
-const port = Number(Deno.env.get("PORT") ?? 5000);
+const port = Number(Deno.env.get("PORT") ?? 9999);
 
 app.use(express.json());
 app.use(passport.initialize());

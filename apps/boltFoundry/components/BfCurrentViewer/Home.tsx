@@ -105,6 +105,7 @@ export const Home = iso(`
               if (!joinWaitlist.success) {
                 logger.error(joinWaitlist.message);
                 setError(true);
+                return;
               }
               modalRef.current?.closeModal();
               setFormSubmitting(false);
