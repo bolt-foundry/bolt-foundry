@@ -2,11 +2,16 @@
 
 import { getLogger } from "packages/logger/logger.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
+import type discord from "discord.js";
+import { DMChannel, type Message, NewsChannel, TextChannel } from "discord.js";
 
 const logger = getLogger(import.meta);
 
-// Get port from environment variable or use 5000 as default
-const port = Number(Deno.env.get("PORT") ?? 5000);
+// Get port from environment variable or use 9999 as default
+const port = Number(Deno.env.get("PORT") ?? 9999);
+
+// Discord client instance
+let client: discord.Client | null = null;
 
 // ThanksBot specific dependencies
 async function setupThanksBot() {
@@ -31,6 +36,14 @@ async function setupThanksBot() {
     return;
   }
 
+  // Type guard function to check if a channel is text-based
+  function isTextBasedChannel(
+    channel: unknown,
+  ): channel is TextChannel | DMChannel | NewsChannel {
+    return channel instanceof TextChannel || channel instanceof DMChannel ||
+      channel instanceof NewsChannel;
+  }
+
   try {
     // Dynamic import for Discord.js
     const { default: discord } = await import("discord.js");
@@ -49,13 +62,13 @@ async function setupThanksBot() {
     );
 
     // Create Discord client
-    const client = new discord.Client({ intents });
+    client = new discord.Client({ intents });
 
     client.once("ready", () => {
-      logger.info(`We have logged in as ${client.user?.tag}`);
+      logger.info(`We have logged in as ${client?.user?.tag}`);
     });
 
-    client.on("messageCreate", async (message) => {
+    client.on("messageCreate", async (message: Message) => {
       // Ignore messages from the bot itself
       if (message.author.bot) return;
 
@@ -70,7 +83,11 @@ async function setupThanksBot() {
             "`#thanks @someone for your reason`\n\n" +
             "Example:\n" +
             "`#thanks @User for being awesome!`";
-          await message.channel.send(usageMessage);
+          if (isTextBasedChannel(message.channel)) {
+            await message.channel.send(usageMessage);
+          } else {
+            logger.error("Channel is not a text-based channel.");
+          }
           return;
         }
 
@@ -81,7 +98,7 @@ async function setupThanksBot() {
 
         try {
           // fetch the user from the guild to get their name
-          const thankedUser = await client.users.fetch(thankedUserId);
+          const thankedUser = await client?.users.fetch(thankedUserId);
 
           // Create an entry in Notion
           await notion.pages.create({
@@ -97,7 +114,7 @@ async function setupThanksBot() {
               "To (discord)": {
                 rich_text: [{
                   text: {
-                    content: thankedUser.username,
+                    content: thankedUser?.username ?? "unknown",
                   },
                 }],
               },
@@ -135,11 +152,62 @@ async function setupThanksBot() {
 }
 
 // Simple request handler
-function handleRequest(req: Request): Response {
+async function handleRequest(req: Request): Promise<Response> {
   logger.info(`[${new Date().toISOString()}] [${req.method}] ${req.url}`);
-  return new Response("Hello World", {
+
+  // Check Contacts CMS API status
+  let contactsApiStatus = "offline";
+  try {
+    const response = await fetch("https://bf-contacts.replit.app/api/health", {
+      method: "GET",
+    });
+    if (response.ok) {
+      contactsApiStatus = "online";
+    }
+  } catch (error) {
+    logger.error("Error checking Contacts CMS API status:", error);
+  }
+
+  const html = `
+    <!DOCTYPE html>
+    <meta charset="utf-8">
+    <html>
+      <head>
+        <title>Internal BF Pages</title>
+        <style>
+          body { font-family: system-ui; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+          .card { border: 1px solid #ddd; padding: 20px; margin: 20px 0; border-radius: 8px; }
+          .status { display: inline-block; padding: 4px 8px; border-radius: 4px; }
+          .status.online { background: #e2f5e6; color: #0a5921; }
+          .status.offline { background: #fee2e2; color: #991b1b; }
+        </style>
+      </head>
+      <body>
+        <h1>Internal BF Pages</h1>
+        
+        <div class="card">
+          <h3>Contacts CMS</h3>
+          <div class="status ${contactsApiStatus}">
+            API ${contactsApiStatus}
+          </div>
+          <p>Internal CMS for managing contacts and communications</p>
+          <a href="https://bf-contacts.replit.app" target="_blank">Visit Contacts CMS →</a>
+        </div>
+
+        <div class="card">
+          <h3>ThanksBot Status</h3>
+          <div class="status ${client?.isReady() ? "online" : "offline"}">
+            ${client?.isReady() ? "Online" : "Offline"}
+          </div>
+          <p>Discord bot for tracking thanks messages</p>
+        </div>
+      </body>
+    </html>
+  `;
+
+  return new Response(html, {
     status: 200,
-    headers: { "Content-Type": "text/plain" },
+    headers: { "Content-Type": "text/html" },
   });
 }
 

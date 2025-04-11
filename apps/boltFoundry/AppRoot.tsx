@@ -62,7 +62,7 @@ export function AppRoot() {
 AppRoot.HeaderComponent = function AppRootHeaderComponent() {
   return (
     <HeaderTitle>
-      Content Foundry
+      Bolt Foundry
     </HeaderTitle>
   );
 };
