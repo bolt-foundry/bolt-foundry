@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assert, assertEquals } from "@std/assert";
 import {
   navigateTo,
   setupE2ETest,
@@ -25,6 +25,11 @@ Deno.test("Home page loads successfully", async () => {
     // Check if the page contains expected content
     const bodyText = await context.page.evaluate(() =>
       document.body.textContent
+    );
+
+    assert(
+      title.includes("Bolt Foundry"),
+      "Page title should include 'Bolt Foundry'",
     );
 
     // Basic assertion to verify the page loaded successfully
