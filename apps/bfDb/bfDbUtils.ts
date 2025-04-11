@@ -91,7 +91,7 @@ export async function upsertBfDb() {
   // if (!(await BfOrganization.find(omniCv, toBfOid(BF_INTERNAL_ORG_NAME)))) {
   //   logger.info("Creating internal org");
   //   await BfOrganization.__DANGEROUS__createUnattached(omniCv, {
-  //     name: "Content Foundry internal",
+  //     name: "Bolt Foundry internal",
   //     domainName: "contentfoundry.com",
   //   }, {
   //     bfGid: toBfGid(BF_INTERNAL_ORG_NAME),
