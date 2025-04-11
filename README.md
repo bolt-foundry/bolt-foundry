@@ -28,12 +28,12 @@ systems.
 ## Developer Experience
 
 We want to create the best developer experience possible. We want it to be
-simpler to contribute to Content Foundry than it is to contribute to Wikipedia.
+simpler to contribute to Bolt Foundry than it is to contribute to Wikipedia.
 We're not there yet, but here's what we do have.
 
 ### Replit-first Developer Experience
 
-The best way to get started with Content Foundry is to
+The best way to get started with Bolt Foundry is to
 [head to our Replit project](https://replit.com/t/bolt-foundry/repls/Content-Foundry/view).
 
 From there, you can fork (they call it remix now) our app into your own Replit
@@ -62,7 +62,7 @@ This will start various tools including:
 
 #### Dependencies
 
-Content Foundry uses Deno 2's built-in dependency management with both JSR and
+Bolt Foundry uses Deno 2's built-in dependency management with both JSR and
 npm packages:
 
 ```bash
@@ -78,7 +78,7 @@ and `package.json`.
 
 ### BFF (Bolt Foundry Friend)
 
-Content Foundry uses BFF, our custom task runner to simplify common development
+Bolt Foundry uses BFF, our custom task runner to simplify common development
 tasks:
 
 - `bff build` - Build the project
@@ -105,7 +105,7 @@ Run `bff help` to see all available commands.
 
 ### Development Workflow
 
-For more details on contributing to Content Foundry, check out our
+For more details on contributing to Bolt Foundry, check out our
 [contributing guide](/content/documentation/community/contributing.md) and the
 [AGENT.md](AGENT.md) file which contains comprehensive documentation on our
 coding practices and workflows.
