@@ -152,25 +152,25 @@ async function setupThanksBot() {
 }
 
 // Simple request handler
-function handleRequest(req: Request): Response {
+async function handleRequest(req: Request): Promise<Response> {
   logger.info(`[${new Date().toISOString()}] [${req.method}] ${req.url}`);
 
   // Check Contacts CMS API status
   let contactsApiStatus = "offline";
   try {
-    fetch("https://bf-contacts.replit.app/api/health", {
+    const response = await fetch("https://bf-contacts.replit.app/api/health", {
       method: "GET",
-    }).then((response) => {
-      if (response.ok) {
-        contactsApiStatus = "online";
-      }
     });
+    if (response.ok) {
+      contactsApiStatus = "online";
+    }
   } catch (error) {
     logger.error("Error checking Contacts CMS API status:", error);
   }
 
   const html = `
     <!DOCTYPE html>
+    <meta charset="utf-8">
     <html>
       <head>
         <title>Internal BF Pages</title>
