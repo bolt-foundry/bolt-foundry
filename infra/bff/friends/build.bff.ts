@@ -438,6 +438,16 @@ export async function build(args: Array<string>): Promise<number> {
     });
   }
 
+  //Added DNT command here.
+  if (debug) logMemoryUsage("before DNT");
+  const dntResult = await runShellCommand(["deno", "run", "-A", "packages/bolt-foundry/bin/dnt.ts"]);
+  if (dntResult !== 0) {
+    logger.error("DNT build failed");
+    return dntResult;
+  }
+  if (debug) logMemoryUsage("after DNT");
+
+
   if (debug) logMemoryUsage("before final compilation");
   const denoCompile = runShellCommand(denoCompilationCommand);
   const jsCompile = runShellCommand(["./infra/appBuild/appBuild.ts"]);

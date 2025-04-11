@@ -292,20 +292,20 @@ async function runTestStep(_useGithub: boolean): Promise<number> {
   return code;
 }
 
-async function runE2ETestStep(useGithub: boolean): Promise<number> {
+async function runE2ETestStep(): Promise<number> {
   logger.info("Running E2E tests...");
 
   // We'll use the BFF e2e command that's already implemented
   const e2eArgs = [
     "bff",
     "e2e",
+    "--no-build"
   ];
 
   const { code } = await runShellCommandWithOutput(
     e2eArgs,
     {},
     true,
-    useGithub,
   );
   return code;
 }
@@ -314,13 +314,12 @@ async function runE2ETestStep(useGithub: boolean): Promise<number> {
 // 5. Type check step
 // ----------------------------------------------------------------------------
 
-async function runTypecheckStep(useGithub: boolean): Promise<number> {
+async function runTypecheckStep(): Promise<number> {
   logger.info("Running deno check for type checking");
   const { code } = await runShellCommandWithOutput(
     ["deno", "check", "packages/**/*.ts", "packages/**/*.tsx"],
     {},
     /* useSpinner */ true,
-    /* silent */ useGithub,
   );
   return code;
 }
@@ -363,13 +362,13 @@ async function ciCommand(options: string[]) {
   const testResult = await runTestStep(useGithub);
 
   // 5) E2E Test
-  const e2eTestResult = await runE2ETestStep(useGithub);
+  const e2eTestResult = await runE2ETestStep();
 
   // 6) Format check
   const fmtResult = await runFormatStep(useGithub);
 
   // 7) Type check
-  const typecheckResult = await runTypecheckStep(useGithub);
+  const typecheckResult = await runTypecheckStep();
 
   const hasErrors = Boolean(
     installResult || buildResult || lintResult || testResult || e2eTestResult ||
