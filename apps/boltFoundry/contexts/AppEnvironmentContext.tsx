@@ -6,18 +6,13 @@ import {
 // import AppStateProvider from "packages/client/contexts/AppStateContext.tsx";
 // import { featureFlags, featureVariants } from "packages/features/list.ts";
 
-import { PostHogProvider } from "posthog-js/react";
-
-// import { RelayEnvironmentProvider } from "react-relay";
 import * as React from "react";
 import {
   type IsographEnvironment,
   IsographEnvironmentProvider,
 } from "@isograph/react";
-// import type { Environment } from "relay-runtime";
 import { getEnvironment } from "apps/boltFoundry/isographEnvironment.ts";
 import { getLogger } from "packages/logger/logger.ts";
-import { getCurrentClients } from "lib/posthog.ts";
 
 const logger = getLogger(import.meta);
 
@@ -48,7 +43,6 @@ export function AppEnvironmentProvider(
     queryParams,
     initialPath,
     isographServerEnvironment,
-    personBfGid,
     ...appEnvironment
   }: React.PropsWithChildren<ServerProps>,
 ) {
@@ -60,24 +54,18 @@ export function AppEnvironmentProvider(
     isographServerEnvironment,
     IsographEnvironmentProvider,
   );
-  const { frontendClient, backendClient } = React.useMemo(getCurrentClients, [
-    personBfGid,
-  ]);
-  const posthog = frontendClient ?? backendClient;
 
   return (
     <AppEnvironmentContext.Provider value={appEnvironment}>
-      <PostHogProvider client={posthog}>
-        <IsographEnvironmentProvider environment={isographEnvironment}>
-          <RouterProvider
-            routeParams={routeParams}
-            queryParams={queryParams}
-            initialPath={initialPath}
-          >
-            {children}
-          </RouterProvider>
-        </IsographEnvironmentProvider>
-      </PostHogProvider>
+      <IsographEnvironmentProvider environment={isographEnvironment}>
+        <RouterProvider
+          routeParams={routeParams}
+          queryParams={queryParams}
+          initialPath={initialPath}
+        >
+          {children}
+        </RouterProvider>
+      </IsographEnvironmentProvider>
     </AppEnvironmentContext.Provider>
   );
 }
