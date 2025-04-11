@@ -299,6 +299,7 @@ async function runE2ETestStep(): Promise<number> {
   const e2eArgs = [
     "bff",
     "e2e",
+    "--no-build"
   ];
 
   const { code } = await runShellCommandWithOutput(
