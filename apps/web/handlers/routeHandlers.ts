@@ -7,7 +7,6 @@ import { ClientRoot } from "apps/boltFoundry/ClientRoot.tsx";
 import { getIsographEnvironment } from "apps/boltFoundry/server/isographEnvironment.ts";
 import type { ServerProps } from "apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
 import { getLogger } from "packages/logger/logger.ts";
-import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { getIsographHeaderComponent } from "apps/boltFoundry/components/IsographHeader.tsx";
 import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
@@ -82,9 +81,7 @@ export async function handleIsographRoute(
   const initialPath = reqUrl.pathname;
   const queryParams = Object.fromEntries(reqUrl.searchParams.entries());
   const isographServerEnvironment = await getIsographEnvironment(request);
-  using cv = BfCurrentViewer.createFromRequest(import.meta, request);
-  const ph = await cv.getPosthogClient();
-  const featureFlags = await ph.backendClient?.getAllFlags(cv.bfGid);
+  const featureFlags = {};
 
   const clientEnvironment = {
     initialPath,
