@@ -7,6 +7,10 @@ const logger = getLogger(import.meta);
 export async function e2eCommand(args: string[]): Promise<number> {
   logger.info("Starting e2e tests");
 
+  let serverProcess: Deno.ChildProcess | undefined;
+  let testProcess: Deno.ChildProcess | undefined;
+  let testStatus: Deno.CommandStatus | undefined;
+
   try {
     // Create a unique run ID based on timestamp
     const runId = new Date().toISOString().replace(/[:.]/g, "-");
@@ -26,23 +30,52 @@ export async function e2eCommand(args: string[]): Promise<number> {
       );
     }
 
-    // Check if we need to build first
-    if (args.includes("--build") || args.includes("-b")) {
-      logger.info("Building application...");
-      await runShellCommand(["bff", "build"]);
+    // Check if port is in use function
+    const checkPort = async (port: number): Promise<boolean> => {
+      try {
+        const client = await Deno.connect({ hostname: "127.0.0.1", port });
+        client.close();
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    // Check if web server is already running on port 8000
+    const isServerRunning = await checkPort(8000);
+
+    if (isServerRunning) {
+      logger.info(
+        "Web server is already running on port 8000, skipping build and using existing instance",
+      );
+    } else {
+      // Build by default, skip if --no-build flag is provided
+      if (!args.includes("--no-build")) {
+        logger.info("Building application...");
+        await runShellCommand(["bff", "build"]);
+      } else {
+        logger.info("Skipping build step (--no-build flag provided)");
+      }
+
+      // Start the web server in the background
+      logger.info("Starting web server...");
+      const serverCommand = new Deno.Command("./build/web", {
+        stdout: "piped",
+        stderr: "piped",
+      });
+
+      serverProcess = serverCommand.spawn();
     }
 
-    // Start the web server in the background
-    logger.info("Starting web server...");
-    const serverCommand = new Deno.Command("./build/web", {
-      stdout: "piped",
-      stderr: "piped",
-    });
+    // Wait for the server to be available on port 8000
+    logger.info("Waiting for web server to be ready on port 8000...");
 
-    const serverProcess = serverCommand.spawn();
+    const serverReady = await checkPort(8000);
 
-    // Wait a moment for the server to start
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    if (!serverReady) {
+      return 1;
+    }
+
     const paths = ["apps", "infra", "lib", "packages", "util", "sites"];
     const pathsStrings = paths.map((path) => `${path}/**/*.test.e2e.ts`);
 
@@ -69,57 +102,61 @@ export async function e2eCommand(args: string[]): Promise<number> {
         },
       });
 
-      const testProcess = testCommand.spawn();
-      const testStatus = await testProcess.status;
+      testProcess = testCommand.spawn();
+      testStatus = await testProcess.status;
 
       // Display screenshot location information
       logger.info(`Screenshots were saved to: ${runSpecificDir}`);
 
-      try {
-        // Use asynchronous readDir instead of readDirSync
-        const screenshotFiles = [];
-        for await (const entry of Deno.readDir(runSpecificDir)) {
-          if (entry.isFile && entry.name.endsWith(".png")) {
-            screenshotFiles.push(entry);
-          }
+      // Use asynchronous readDir instead of readDirSync
+      const screenshotFiles = [];
+      for await (const entry of Deno.readDir(runSpecificDir)) {
+        if (entry.isFile && entry.name.endsWith(".png")) {
+          screenshotFiles.push(entry);
         }
-
-        // Sort and display screenshots
-        screenshotFiles
-          .sort((a, b) => {
-            // Sort by timestamp in filename
-            return b.name.localeCompare(a.name);
-          })
-          .slice(0, 10) // Show only the last 10 screenshots
-          .forEach((file) => {
-            logger.info(`- ${file.name}`);
-          });
-
-        if (screenshotFiles.length > 0) {
-          logger.info(`Latest screenshots:`);
-        }
-      } catch (error) {
-        logger.warn(`Could not list screenshots: ${(error as Error).message}`);
       }
 
-      if (!testStatus.success) {
-        logger.error(`E2E tests failed with code ${testStatus.code}`);
-        return testStatus.code;
+      // Sort and display screenshots
+      screenshotFiles
+        .sort((a, b) => {
+          // Sort by timestamp in filename
+          return b.name.localeCompare(a.name);
+        })
+        .slice(0, 10) // Show only the last 10 screenshots
+        .forEach((file) => {
+          logger.info(`- ${file.name}`);
+        });
+
+      if (screenshotFiles.length > 0) {
+        logger.info(`Latest screenshots:`);
       }
-
-      logger.info("E2E tests completed successfully");
-      return 0;
-    } finally {
-      // Clean up the server process
-      logger.info("Shutting down server process...");
-      serverProcess.kill("SIGTERM");
-
-      // Give time for resources to clean up
-      await new Promise((resolve) => setTimeout(resolve, 500));
+    } catch (error) {
+      logger.warn(`Could not list screenshots: ${(error as Error).message}`);
     }
+
+    if (!testStatus?.success) {
+      logger.error(`E2E tests failed with code ${testStatus?.code}`);
+      return testStatus?.code ?? 1;
+    }
+
+    logger.info("E2E tests completed successfully");
+    return 0;
   } catch (error) {
     logger.error(`E2E tests failed: ${(error as Error).message}`);
     return 1;
+  } finally {
+    // Clean up server process
+    if (serverProcess) {
+      try {
+        logger.info("Shutting down web server...");
+        serverProcess.kill("SIGTERM");
+        logger.info("Web server stopped");
+      } catch (error) {
+        logger.warn(
+          `Error shutting down web server: ${(error as Error).message}`,
+        );
+      }
+    }
   }
 }
 

@@ -62,8 +62,8 @@ This will start various tools including:
 
 #### Dependencies
 
-Bolt Foundry uses Deno 2's built-in dependency management with both JSR and
-npm packages:
+Bolt Foundry uses Deno 2's built-in dependency management with both JSR and npm
+packages:
 
 ```bash
 # Add a dependency from JSR (JavaScript Registry)
