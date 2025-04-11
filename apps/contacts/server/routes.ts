@@ -26,6 +26,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API Routes prefix
   const apiRouter = express.Router();
 
+  // Health check endpoint (not protected)
+  app.get("/api/health", (req: Request, res: Response) => {
+    res.json({ status: "healthy" });
+  });
+
   // Endpoint to get API key for frontend (not protected)
   app.get("/api/config", (req: Request, res: Response) => {
     res.json({
