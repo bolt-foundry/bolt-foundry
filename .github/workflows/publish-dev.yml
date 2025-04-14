@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-publish:
-    name: bff ci
+    name: Build and Publish Dev Version
     runs-on: ubuntu-latest
     permissions:
       id-token: write
