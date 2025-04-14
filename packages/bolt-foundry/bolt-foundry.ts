@@ -1,7 +1,35 @@
 // import { getLogger } from "@bolt-foundry/logger";
 // const logger = getLogger("bolt-foundry");
+
+import type { OpenAI } from "@openai/openai";
+
 // logger.setLevel(logger.levels.DEBUG);
 const logger = console;
+
+export type OpenAIRequestBody =
+  | OpenAI.ChatCompletionCreateParams
+  | OpenAI.CompletionCreateParams
+  | undefined;
+
+export type OpenAIResponseBody =
+  | OpenAI.ChatCompletion
+  | OpenAI.Completion;
+
+export type TelemetryData = {
+  timestamp: string;
+  duration: number;
+  request: {
+    url: string;
+    method: string;
+    headers: Record<string, string>;
+    body: OpenAIRequestBody;
+  };
+  response: {
+    status: number;
+    headers: Record<string, string>;
+    body: OpenAIResponseBody;
+  };
+};
 
 /**
  * Creates a wrapped fetch function that adds necessary headers and handles OpenAI API requests.
@@ -30,11 +58,11 @@ export function connectBoltFoundry(bfApiKey?: string): typeof fetch {
       setTimeout(async () => {
         try {
           // Extract request data
-          let requestBody;
+          let requestBody: OpenAIRequestBody | undefined;
           if (clonedReq.body) {
             try {
               const requestData = await clonedReq.clone().text();
-              requestBody = JSON.parse(requestData);
+              requestBody = JSON.parse(requestData) as OpenAIRequestBody;
             } catch (e) {
               logger.debug("Could not parse request body", e);
             }
@@ -65,7 +93,7 @@ export function connectBoltFoundry(bfApiKey?: string): typeof fetch {
           });
 
           // Prepare telemetry payload
-          const telemetryData = {
+          const telemetryData: TelemetryData = {
             timestamp: new Date().toISOString(),
             duration: Date.now() - startTime,
             request: {
