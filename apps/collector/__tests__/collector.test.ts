@@ -1,6 +1,6 @@
 #!/usr/bin/env -S bff test
 
-import { assertEquals, assertExists } from "@std/assert";
+import { assertEquals } from "@std/assert";
 import { handleCollectorRequest } from "../collector.ts";
 
 /**
