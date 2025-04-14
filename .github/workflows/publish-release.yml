@@ -51,7 +51,7 @@ jobs:
       - name: Build package
         run: |
           cd packages/bolt-foundry
-          deno run -A bin/dnt.ts
+          deno run -A bin/build.ts
 
       - name: Publish to npm
         run: |

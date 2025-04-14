@@ -42,7 +42,7 @@
     "openai": "^4.92.1",
     "pg": "^8.13.3",
     "posthog-js": "^1.223.5",
-    "posthog-node": "^4.7.0",
+    "posthog-node": "^4.11.3",
     "puppeteer-core": "^24.6.0",
     "react": "npm:react@^19.0",
     "react-dom": "^19.0",
