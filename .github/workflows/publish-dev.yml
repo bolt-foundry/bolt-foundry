@@ -144,7 +144,7 @@ jobs:
           # Use the cached profile for the development shell
           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
             cd packages/bolt-foundry
-            deno run -A bin/dnt.ts
+            deno run -A bin/build.ts
           "
 
       - name: Publish to npm

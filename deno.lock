@@ -199,7 +199,7 @@
     "npm:postcss@^8.4.47": "8.5.3",
     "npm:posthog-js@^1.223.5": "1.223.5_@rrweb+types@2.0.0-alpha.17",
     "npm:posthog-node@^4.11.2": "4.11.2",
-    "npm:posthog-node@^4.7.0": "4.7.0",
+    "npm:posthog-node@^4.11.3": "4.11.3",
     "npm:puppeteer-core@^24.6.0": "24.6.0_devtools-protocol@0.0.1425554",
     "npm:react-day-picker@^8.10.1": "8.10.1_date-fns@3.6.0_react@18.3.1",
     "npm:react-dom@19": "19.0.0_react@19.0.0",
@@ -3201,7 +3201,7 @@
       "integrity": "sha512-Jqt8aAuGIpWGa15ZorTWI46q9gbaIdQFA21HIPQQl60rCjzAko75l3D1z7EyjFrNr4MfQ0StusivWh8Rjh10Cg==",
       "dependencies": [
         "@sendgrid/helpers",
-        "axios@1.8.4"
+        "axios"
       ]
     },
     "@sendgrid/helpers@8.0.0": {
@@ -4134,14 +4134,6 @@
     },
     "axe-core@4.10.3": {
       "integrity": "sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg=="
-    },
-    "axios@1.8.1": {
-      "integrity": "sha512-NN+fvwH/kV01dYUQ3PTOZns4LWtWhOFCAhQ/pHb88WQ1hNe5V/dvFwc4VJcDL11LT9xSX0QtsR8sWUuyOuOq7g==",
-      "dependencies": [
-        "follow-redirects",
-        "form-data@4.0.1",
-        "proxy-from-env"
-      ]
     },
     "axios@1.8.4": {
       "integrity": "sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==",
@@ -7526,13 +7518,13 @@
     "posthog-node@4.11.2": {
       "integrity": "sha512-zzXCzatMyXcDdvcSJFoCV1lA+5LkT2f7dt1vj6I4S6QGUWlRMMu8krApseUY4/E8m2rhQlmR8BZU/2xXcgS7XQ==",
       "dependencies": [
-        "axios@1.8.4"
+        "axios"
       ]
     },
-    "posthog-node@4.7.0": {
-      "integrity": "sha512-RgdUKSW8MfMOkjUa8cYVqWndNjPePNuuxlGbrZC6z1WRBsVc6TdGl8caidmC10RW8mu/BOfmrGbP4cRTo2jARg==",
+    "posthog-node@4.11.3": {
+      "integrity": "sha512-Ye7d9ZJX1reWP9084Gm9+O7NnvlW7LnbU09GzlsSdD0HzGTfxeKTQZsl9h1+CDHhfvpdWJRm8uc91/aDmXzaCA==",
       "dependencies": [
-        "axios@1.8.1"
+        "axios"
       ]
     },
     "preact@10.26.2": {
@@ -9314,7 +9306,7 @@
         "npm:openai@^4.92.1",
         "npm:pg@^8.13.3",
         "npm:posthog-js@^1.223.5",
-        "npm:posthog-node@^4.7.0",
+        "npm:posthog-node@^4.11.3",
         "npm:puppeteer-core@^24.6.0",
         "npm:react-dom@19",
         "npm:react@19",
@@ -9441,11 +9433,6 @@
             "npm:typescript@^5.8.2"
           ]
         }
-      },
-      "packages/bolt-foundry": {
-        "dependencies": [
-          "npm:posthog-node@^4.11.2"
-        ]
       },
       "packages/logger": {
         "dependencies": [
