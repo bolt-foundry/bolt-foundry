@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff test
+
 import { assert, assertEquals, assertExists } from "@std/assert";
 import { assertSpyCalls, stub } from "@std/testing/mock";
 import { connectBoltFoundry } from "@bolt-foundry/bolt-foundry";
@@ -28,7 +30,7 @@ Deno.test("createOpenAIFetch should properly integrate with OpenAI client", asyn
   };
 
   // Create a stub for global fetch that returns the mock response
-  using fetchStub = stub(
+  const fetchStub = stub(
     globalThis,
     "fetch",
     () =>
