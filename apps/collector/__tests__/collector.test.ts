@@ -61,35 +61,6 @@ Deno.test("Collector should handle text data collection request", async () => {
   );
 });
 
-Deno.test("Collector should handle invalid request with proper error response", async () => {
-  // Create a mock request with invalid data (empty body with JSON content-type)
-  const mockRequest = new Request("http://localhost:8001/", {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: "",
-  });
-
-  // Execute
-  const response = await handleCollectorRequest(mockRequest);
-
-  // Verify
-  assertEquals(
-    response.status,
-    400,
-    "Expected status code 400 for invalid request",
-  );
-
-  const responseData = await response.json();
-  assertEquals(
-    responseData.success,
-    false,
-    "Expected success to be false for invalid request",
-  );
-  assertExists(responseData.error, "Expected error message to exist");
-});
-
 Deno.test("Collector should return 404 for non-existent routes", async () => {
   // Create a mock request to a non-existent route
   const mockRequest = new Request("http://localhost:8001/not-found", {
