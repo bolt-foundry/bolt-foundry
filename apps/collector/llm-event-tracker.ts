@@ -3,58 +3,44 @@ import { PostHog } from "posthog-node";
 
 const logger = getLogger(import.meta);
 
+import type { TelemetryData } from "packages/bolt-foundry/bolt-foundry.ts";
+
 /**
  * Logs LLM-related events to console and sends data to PostHog
- * @param req The intercepted request
- * @param res The response from the OpenAI API
- * @param startTime The timestamp when the request started
+ * @param telemetryData The serialized telemetry data containing request, response and duration
  * @param apiKeyOrPostHogClient Either a PostHog API key or a PostHog client instance
  */
 export async function trackLlmEvent(
-  req: Request,
-  res: Response,
-  startTime: number,
+  telemetryData: TelemetryData,
   apiKeyOrPostHogClient?: string | PostHog,
 ): Promise<void> {
   try {
-    const now = Date.now();
-    const latency = (now - startTime) / 1000; // Convert to seconds
-    const url = req.url.toString();
+    const { request: requestData, response: responseData, duration } =
+      telemetryData;
+
+    const latency = duration / 1000; // Convert to seconds
+    const url = requestData.url;
     const urlPath = url.split("api.openai.com")[1] || "";
     const parts = urlPath.split("/").filter(Boolean);
     const endpoint = parts.length > 1
       ? parts.slice(1).join(".")
       : (parts[0] || url);
 
-    // Clone the request to read its body without modifying the original
-    const requestClone = req.clone();
-    let requestBody;
-    let responseBody;
+    // Get data from the serialized request and response
+    const requestBody = requestData.body;
+    const responseBody = responseData.body;
 
-    // Get the request body if possible
-    if (requestClone.body) {
-      try {
-        const requestData = await requestClone.text();
-        requestBody = JSON.parse(requestData);
-      } catch (e) {
-        logger.debug("Could not parse request body", e);
-      }
-    }
-
-    // Get the response body if possible
-    try {
-      const responseClone = res.clone();
-      const responseData = await responseClone.text();
-      responseBody = JSON.parse(responseData);
-    } catch (e) {
-      logger.debug("Could not parse response body", e);
-    }
+    // Check if response is a successful completion (not an error)
+    const isSuccessfulResponse = responseData.status < 400 &&
+      "usage" in responseBody &&
+      responseBody.usage !== undefined;
 
     // Calculate total tokens if available
     let totalTokens = 0;
     if (
-      responseBody?.usage?.prompt_tokens &&
-      responseBody?.usage?.completion_tokens
+      isSuccessfulResponse &&
+      responseBody.usage?.prompt_tokens &&
+      responseBody.usage?.completion_tokens
     ) {
       totalTokens = responseBody.usage.prompt_tokens +
         responseBody.usage.completion_tokens;
@@ -62,7 +48,7 @@ export async function trackLlmEvent(
 
     // Calculate approximate cost if possible
     let cost = 0;
-    if (requestBody?.model && responseBody?.usage) {
+    if (requestBody?.model && isSuccessfulResponse && responseBody.usage) {
       cost = calculateLlmCost(
         requestBody.model,
         responseBody.usage.prompt_tokens || 0,
@@ -74,21 +60,13 @@ export async function trackLlmEvent(
     logger.info(`LLM request to ${endpoint}`, {
       model: requestBody?.model,
       latency: latency.toFixed(2) + "s",
-      status: res.status,
+      status: responseData.status,
       prompt_tokens: responseBody?.usage?.prompt_tokens,
       completion_tokens: responseBody?.usage?.completion_tokens,
       total_tokens: totalTokens,
       cost: cost.toFixed(6),
-      success: res.status < 400,
+      success: responseData.status < 400,
     });
-
-    if (res.status >= 400 && responseBody?.error) {
-      logger.error(
-        `LLM request error: ${
-          responseBody.error.message || JSON.stringify(responseBody.error)
-        }`,
-      );
-    }
 
     // Send telemetry using PostHog
     try {
@@ -119,6 +97,11 @@ export async function trackLlmEvent(
       // This is simplified; in production you'd want a more robust ID strategy
       const distinctId = `llm_${requestBody?.model || "unknown"}_${Date.now()}`;
 
+      // Check if response is a successful completion (not an error)
+      const isSuccessfulResponse = responseData.status < 400 &&
+        "usage" in responseBody &&
+        responseBody.usage !== undefined;
+
       // Prepare PostHog event with proper AI properties following PostHog conventions
       client.capture({
         distinctId,
@@ -127,23 +110,24 @@ export async function trackLlmEvent(
           // PostHog AI schema properties
           "$ai_provider": "openai",
           "$ai_model": requestBody?.model,
-          "$ai_input_tokens": responseBody?.usage?.prompt_tokens,
-          "$ai_output_tokens": responseBody?.usage?.completion_tokens,
+          "$ai_input_tokens": isSuccessfulResponse
+            ? responseBody.usage?.prompt_tokens
+            : undefined,
+          "$ai_output_tokens": isSuccessfulResponse
+            ? responseBody.usage?.completion_tokens
+            : undefined,
           "$ai_total_tokens": totalTokens,
           "$ai_latency": latency,
-          "$ai_response_id": responseBody?.id,
-          "$ai_is_error": res.status >= 400,
-          "$ai_http_status": res.status,
+          "$ai_response_id": isSuccessfulResponse ? responseBody.id : undefined,
+          "$ai_is_error": responseData.status >= 400,
+          "$ai_http_status": responseData.status,
 
           // Custom properties
           "url": url,
           "endpoint": endpoint,
           "timestamp": new Date().toISOString(),
           "cost": cost,
-          "success": res.status < 400,
-          "input_content": requestBody?.messages
-            ? JSON.stringify(requestBody.messages)
-            : undefined,
+          "success": responseData.status < 400,
           "model_parameters": {
             temperature: requestBody?.temperature,
             max_tokens: requestBody?.max_tokens,
