@@ -14,14 +14,17 @@ function registerCollectorRoutes(): Map<string, Handler> {
   routes.set("/", async function collectHandler(req) {
     try {
       const contentType = req.headers.get("content-type");
+      const bfApiKey = req.headers.get("x-bf-api-key");
+      const isBfRequest = contentType?.includes("application/json") && bfApiKey;
       let payload;
 
-      if (contentType?.includes("application/json")) {
+      if (isBfRequest) {
         payload = await req.json();
-        logger.info("Received data:", payload);
+        logger.info("Received Bolt Foundry request for ", bfApiKey);
+        logger.debug("Received data:", payload);
       } else {
         payload = await req.text();
-        logger.info("Received text data");
+        logger.debug("Received text data");
       }
 
       return new Response(JSON.stringify({ success: true }), {
