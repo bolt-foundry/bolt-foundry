@@ -1,15 +1,20 @@
 import { getLogger } from "@bolt-foundry/logger";
+import { PostHog } from "posthog-node";
 
 const logger = getLogger(import.meta);
 
 /**
- * Logs LLM-related events to console and sends data to i.bltfdy.co
+ * Logs LLM-related events to console and sends data to PostHog
+ * @param req The intercepted request
+ * @param res The response from the OpenAI API
+ * @param startTime The timestamp when the request started
+ * @param apiKeyOrPostHogClient Either a PostHog API key or a PostHog client instance
  */
 export async function trackLlmEvent(
   req: Request,
   res: Response,
   startTime: number,
-  bfApiKey?: string,
+  apiKeyOrPostHogClient?: string | PostHog,
 ): Promise<void> {
   try {
     const now = Date.now();
@@ -85,36 +90,73 @@ export async function trackLlmEvent(
       );
     }
 
-    // Send telemetry to i.bltfdy.co
+    // Send telemetry using PostHog
     try {
-      const telemetryData = {
-        url,
-        timestamp: new Date().toISOString(),
-        latency,
-        model: requestBody?.model,
-        status: res.status,
-        tokens: {
-          prompt: responseBody?.usage?.prompt_tokens,
-          completion: responseBody?.usage?.completion_tokens,
-          total: totalTokens,
-        },
-        cost,
-        success: res.status < 400,
-      };
+      // Initialize or use existing PostHog client
+      let client: PostHog;
 
-      // Fire and forget - don't wait for response
-      fetch("https://i.bltfdy.co/api/collect", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-BF-API-Key": bfApiKey || "anonymous",
+      if (
+        typeof apiKeyOrPostHogClient === "object" &&
+        apiKeyOrPostHogClient !== null
+      ) {
+        // Use the provided PostHog client instance
+        client = apiKeyOrPostHogClient;
+      } else {
+        // Initialize a new PostHog client with the provided API key or default
+        client = new PostHog(
+          typeof apiKeyOrPostHogClient === "string"
+            ? apiKeyOrPostHogClient
+            : "phc_anonymous",
+          {
+            host: "https://i.bltfdy.co", // PostHog instance URL
+            flushAt: 1, // Send event immediately
+            flushInterval: 0, // Disable automatic flushing
+          },
+        );
+      }
+
+      // Generate a consistent distinct ID based on some properties of the request
+      // This is simplified; in production you'd want a more robust ID strategy
+      const distinctId = `llm_${requestBody?.model || "unknown"}_${Date.now()}`;
+
+      // Prepare PostHog event with proper AI properties following PostHog conventions
+      client.capture({
+        distinctId,
+        event: "llm_api_request",
+        properties: {
+          // PostHog AI schema properties
+          "$ai_provider": "openai",
+          "$ai_model": requestBody?.model,
+          "$ai_input_tokens": responseBody?.usage?.prompt_tokens,
+          "$ai_output_tokens": responseBody?.usage?.completion_tokens,
+          "$ai_total_tokens": totalTokens,
+          "$ai_latency": latency,
+          "$ai_response_id": responseBody?.id,
+          "$ai_is_error": res.status >= 400,
+          "$ai_http_status": res.status,
+
+          // Custom properties
+          "url": url,
+          "endpoint": endpoint,
+          "timestamp": new Date().toISOString(),
+          "cost": cost,
+          "success": res.status < 400,
+          "input_content": requestBody?.messages
+            ? JSON.stringify(requestBody.messages)
+            : undefined,
+          "model_parameters": {
+            temperature: requestBody?.temperature,
+            max_tokens: requestBody?.max_tokens,
+            top_p: requestBody?.top_p,
+          },
         },
-        body: JSON.stringify(telemetryData),
-      }).catch((e) => {
-        logger.debug("Failed to send telemetry to i.bltfdy.co", e);
       });
+
+      // Flush events to ensure they're sent immediately
+      await client.flush();
+      logger.debug("Sent telemetry to PostHog");
     } catch (error) {
-      logger.debug("Error sending telemetry", error);
+      logger.debug("Error sending telemetry to PostHog", error);
     }
   } catch (error) {
     logger.error(`Error logging LLM event`, error);

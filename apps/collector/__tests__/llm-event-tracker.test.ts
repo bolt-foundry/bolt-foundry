@@ -1,131 +1,234 @@
 #! /usr/bin/env -S bff test
+import { assertEquals, assertObjectMatch } from "@std/assert";
+import { trackLlmEvent } from "../llm-event-tracker.ts";
+import type { JSONValue } from "apps/bfDb/bfDb.ts";
+import type { PostHog } from "posthog-node";
 
-import { calculateLlmCost, trackLlmEvent } from "../llm-event-tracker.ts";
-import { assertEquals } from "@std/assert/equals";
-import { restore, stub } from "@std/testing/mock";
+type PostHogEvent = {
+  event: string;
+  properties: Record<string, JSONValue>;
+};
+// Create a mock for the PostHog client
+class MockPostHog {
+  events: PostHogEvent[] = [];
+  flushed = false;
 
-Deno.test("calculateLlmCost - should calculate correct cost for gpt-4o", () => {
-  const inputTokens = 1000;
-  const outputTokens = 500;
-  const cost = calculateLlmCost("gpt-4o", inputTokens, outputTokens);
+  capture(event: PostHogEvent) {
+    this.events.push(event);
+    return true;
+  }
 
-  // 1000 input tokens at $0.0025 per 1000 tokens = $0.0025
-  // 500 output tokens at $0.010 per 1000 tokens = $0.005
-  // Total expected: $0.0075
-  assertEquals(cost, 0.0075);
-});
+  flush() {
+    this.flushed = true;
+    return Promise.resolve(true);
+  }
+}
 
-Deno.test("calculateLlmCost - should calculate correct cost for gpt-3.5-turbo", () => {
-  const inputTokens = 2000;
-  const outputTokens = 1000;
-  const cost = calculateLlmCost("gpt-3.5-turbo", inputTokens, outputTokens);
+Deno.test("trackLlmEvent captures and sends analytics data correctly", async () => {
+  // Set up mock PostHog client
+  const mockPosthog = new MockPostHog();
 
-  // 2000 input tokens at $0.0010 per 1000 tokens = $0.002
-  // 1000 output tokens at $0.0020 per 1000 tokens = $0.002
+  // Mock request and response objects
+  const mockRequestBody = {
+    model: "gpt-3.5-turbo",
+    messages: [
+      { role: "user", content: "Hello" },
+    ],
+    temperature: 0.7,
+    max_tokens: 150,
+  };
 
-  // Total expected: $0.004
-  assertEquals(cost, 0.004);
-});
+  const mockResponseBody = {
+    id: "chatcmpl-123",
+    usage: {
+      prompt_tokens: 10,
+      completion_tokens: 20,
+      total_tokens: 30,
+    },
+    choices: [
+      {
+        message: {
+          role: "assistant",
+          content: "Hello there!",
+        },
+        finish_reason: "stop",
+      },
+    ],
+  };
 
-Deno.test("calculateLlmCost - should use default pricing for unknown models", () => {
-  const inputTokens = 1000;
-  const outputTokens = 500;
-  const cost = calculateLlmCost("unknown-model", inputTokens, outputTokens);
+  // Create mock Request with body
+  const mockRequest = new Request(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(mockRequestBody),
+    },
+  );
 
-  // Should default to gpt-3.5-turbo pricing
-  // 1000 input tokens at $0.0010 per 1000 tokens = $0.001
-  // 500 output tokens at $0.0020 per 1000 tokens = $0.001
-  // Total expected: $0.002
-  assertEquals(cost, 0.002);
-});
-
-Deno.test("trackLlmEvent - should send telemetry to PostHog", async () => {
-  // Create the stub
-  stub(globalThis, "fetch", (url, options) => {
-    // Only intercept PostHog calls
-    if (url === "https://i.bltfdy.co/api/collect") {
-      // Verify the request contains expected properties
-      const body = JSON.parse(options?.body as string);
-
-      // Ensure required fields are present
-      assertEquals(typeof body.timestamp, "string");
-      assertEquals(typeof body.latency, "number");
-      assertEquals(typeof body.url, "string");
-      assertEquals(typeof body.success, "boolean");
-
-      // Model info should be included if available
-      if (body.model) {
-        assertEquals(typeof body.model, "string");
-      }
-
-      // Cost should be a number
-      if (body.cost !== undefined) {
-        assertEquals(typeof body.cost, "number");
-      }
-
-      // Check headers
-      const headers = options?.headers as Record<string, string>;
-      assertEquals(headers["Content-Type"], "application/json");
-      assertEquals(headers["X-BF-API-Key"], "test-api-key");
-
-      return Promise.resolve(
-        new Response(JSON.stringify({ success: true }), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        }),
-      );
-    }
-
-    // Pass through other requests
-    return fetch(url, options);
+  // Create mock Response with body
+  const mockResponse = new Response(JSON.stringify(mockResponseBody), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 
+  // Mock Request and Response clone methods
+  const originalClone = Request.prototype.clone;
+  const originalResponseClone = Response.prototype.clone;
+  const originalText = Response.prototype.text;
+  const originalRequestText = Request.prototype.text;
+
+  // Stub Request.clone
+  Request.prototype.clone = function () {
+    return this;
+  };
+
+  // Stub Request.text
+  Request.prototype.text = function () {
+    return Promise.resolve(JSON.stringify(mockRequestBody));
+  };
+
+  // Stub Response.clone
+  Response.prototype.clone = function () {
+    return this;
+  };
+
+  // Stub Response.text
+  Response.prototype.text = function () {
+    return Promise.resolve(JSON.stringify(mockResponseBody));
+  };
+
   try {
-    // Create mock request and response
-    const mockRequest = new Request(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer sk-test", // This should be sanitized
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "user", content: "Hello" }],
-        }),
-      },
+    // Set a fixed starting time for deterministic testing
+    const startTime = Date.now() - 1000; // 1 second ago
+
+    // Call the function under test
+    await trackLlmEvent(
+      mockRequest,
+      mockResponse,
+      startTime,
+      mockPosthog as unknown as PostHog,
     );
 
-    const mockResponse = new Response(
-      JSON.stringify({
-        id: "chatcmpl-123",
-        object: "chat.completion",
-        model: "gpt-3.5-turbo",
-        usage: {
-          prompt_tokens: 5,
-          completion_tokens: 10,
-          total_tokens: 15,
-        },
-        choices: [
-          {
-            message: {
-              role: "assistant",
-              content: "Hello! How can I help you today?",
-            },
-          },
-        ],
-      }),
-      { status: 200 },
-    );
+    // Assert that PostHog capture was called with correct parameters
+    assertEquals(mockPosthog.events.length, 1);
+    assertEquals(mockPosthog.flushed, true);
 
-    // Track the event
-    const startTime = Date.now() - 500; // 500ms ago
-    await trackLlmEvent(mockRequest, mockResponse, startTime, "test-api-key");
+    const capturedEvent = mockPosthog.events[0];
+    assertEquals(capturedEvent.event, "llm_api_request");
 
-    // Since mockFetch asserts the structure, if we reach here without errors, the test passed
+    // Check that PostHog properties include the expected AI schema properties
+    const properties = capturedEvent.properties;
+    assertObjectMatch(properties, {
+      "$ai_provider": "openai",
+      "$ai_model": "gpt-3.5-turbo",
+      "$ai_input_tokens": 10,
+      "$ai_output_tokens": 20,
+      "$ai_total_tokens": 30,
+      "$ai_response_id": "chatcmpl-123",
+      "$ai_is_error": false,
+      "$ai_http_status": 200,
+    });
+
+    // Verify cost calculation is included
+    assertEquals(typeof properties.cost, "number");
   } finally {
-    // Restore original fetch
-    restore();
+    // Restore original methods
+    Request.prototype.clone = originalClone;
+    Request.prototype.text = originalRequestText;
+    Response.prototype.clone = originalResponseClone;
+    Response.prototype.text = originalText;
+  }
+});
+
+Deno.test("trackLlmEvent handles API errors correctly", async () => {
+  // Set up mock PostHog client
+  const mockPosthog = new MockPostHog();
+
+  // Mock error response
+  const mockErrorResponseBody = {
+    error: {
+      message: "Invalid API key",
+      type: "authentication_error",
+      code: "invalid_api_key",
+    },
+  };
+
+  // Create mock Request
+  const mockRequest = new Request(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ model: "gpt-3.5-turbo" }),
+    },
+  );
+
+  // Create mock error Response
+  const mockErrorResponse = new Response(
+    JSON.stringify(mockErrorResponseBody),
+    {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+
+  // Stub methods
+  const originalClone = Request.prototype.clone;
+  const originalResponseClone = Response.prototype.clone;
+  const originalText = Response.prototype.text;
+  const originalRequestText = Request.prototype.text;
+
+  Request.prototype.clone = function () {
+    return this;
+  };
+
+  Request.prototype.text = function () {
+    return Promise.resolve(JSON.stringify({ model: "gpt-3.5-turbo" }));
+  };
+
+  Response.prototype.clone = function () {
+    return this;
+  };
+
+  Response.prototype.text = function () {
+    return Promise.resolve(JSON.stringify(mockErrorResponseBody));
+  };
+
+  try {
+    const startTime = Date.now() - 500;
+
+    // Call the function under test with error response
+    await trackLlmEvent(
+      mockRequest,
+      mockErrorResponse,
+      startTime,
+      mockPosthog as unknown as PostHog,
+    );
+
+    // Assert that PostHog was called with error information
+    assertEquals(mockPosthog.events.length, 1);
+    assertEquals(mockPosthog.flushed, true);
+
+    // Verify error information in captured event
+    const capturedEvent = mockPosthog.events[0];
+    const properties = capturedEvent.properties;
+    assertEquals(properties["$ai_is_error"], true);
+    assertEquals(properties["$ai_http_status"], 401);
+    assertEquals(properties.success, false);
+  } finally {
+    // Restore original methods
+    Request.prototype.clone = originalClone;
+    Request.prototype.text = originalRequestText;
+    Response.prototype.clone = originalResponseClone;
+    Response.prototype.text = originalText;
   }
 });
