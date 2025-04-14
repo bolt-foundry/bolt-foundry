@@ -178,6 +178,15 @@ mode = "parallel"
 task = "shell.exec"
 args = "deno run --allow-net --allow-env apps/internalbf/internalbf.ts"
 
+[[workflows.workflow]]
+name = "Run Collector"
+author = 33272860
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "chmod +x ./apps/collector/collector.ts && ./apps/collector/collector.ts"
+
 [[ports]]
 localPort = 3000
 externalPort = 3002
@@ -192,6 +201,10 @@ externalPort = 5000
 
 [[ports]]
 localPort = 8000
+
+[[ports]]
+localPort = 8001
+externalPort = 3003
 
 [[ports]]
 localPort = 8888
@@ -223,4 +236,5 @@ OTEL_EXPORTER_OTLP_HEADERS="authorization=$HYPERDX_INGESTION_KEY"
 OTEL_EXPORTER_OTLP_ENDPOINT="https://in-otel.hyperdx.io"
 OTEL_SERVICE_NAME="CONTENT_FOUNDRY"
 BF_ENV="DEVELOPMENT"
+APPS_COLLECTOR_PORT="8001"
 # FORCE_DOMAIN="biglittletech.ai"

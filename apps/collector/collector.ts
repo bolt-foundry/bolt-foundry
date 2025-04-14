@@ -1,0 +1,69 @@
+#! /usr/bin/env -S deno run --allow-net=0.0.0.0:8001 --allow-env
+
+import { getLogger } from "packages/logger/logger.ts";
+import type { Handler } from "apps/web/web.tsx";
+import { handleRequest } from "apps/web/handlers/mainHandler.ts";
+
+const logger = getLogger(import.meta);
+
+// Define routes for the collector service
+function registerCollectorRoutes(): Map<string, Handler> {
+  const routes = new Map<string, Handler>();
+
+  // API endpoint for collecting data
+  routes.set("/", async function collectHandler(req) {
+    try {
+      const contentType = req.headers.get("content-type");
+      let payload;
+
+      if (contentType?.includes("application/json")) {
+        payload = await req.json();
+        logger.info("Received data:", payload);
+      } else {
+        payload = await req.text();
+        logger.info("Received text data");
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { "content-type": "application/json" },
+      });
+    } catch (err) {
+      logger.error("Error processing collect request:", err);
+      return new Response(
+        JSON.stringify({ success: false, error: (err as Error).message }),
+        {
+          status: 400,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    }
+  });
+
+  return routes;
+}
+
+// Default route handler for 404s
+function defaultCollectorRoute(): Response {
+  return new Response("Collector endpoint not found", { status: 404 });
+}
+
+// Main request handler wrapper
+async function handleCollectorRequest(req: Request): Promise<Response> {
+  const routes = registerCollectorRoutes();
+  return await handleRequest(req, routes, defaultCollectorRoute);
+}
+
+// Use a different port from the web service
+const port = Number(Deno.env.get("COLLECTOR_PORT") ?? 8001);
+
+// Start the server if this is the main module
+if (import.meta.main) {
+  logger.info(`Starting Collector service on port ${port}...`);
+  Deno.serve({ port }, handleCollectorRequest);
+}
+
+export {
+  defaultCollectorRoute,
+  handleCollectorRequest,
+  registerCollectorRoutes,
+};
