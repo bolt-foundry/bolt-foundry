@@ -20,3 +20,4 @@ tmp/*
 .upm
 **/npm
 .replit.local.toml
+generated-icon.png
