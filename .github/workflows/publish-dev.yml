@@ -161,8 +161,7 @@ jobs:
           cd $GITHUB_WORKSPACE
           # Use the cached profile for the development shell
           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            cd packages/bolt-foundry
-            deno run -A bin/build.ts
+            deno run -A packages/bolt-foundry/bin/build.ts
           "
 
       - name: Publish to npm
