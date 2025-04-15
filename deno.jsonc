@@ -1,6 +1,10 @@
 {
   "unstable": ["temporal", "webgpu"],
   "imports": {
+    "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
+    "@bolt-foundry/logger": "./packages/logger/logger.ts",
+    "@bolt-foundry/get-configuration-var": "./packages/get-configuration-var/get-configuration-var.ts",
+
     "@b-fuze/deno-dom": "jsr:@b-fuze/deno-dom@^0.1.49",
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
     "@denosaurs/python": "jsr:@denosaurs/python@^0.4.4",
@@ -29,11 +33,7 @@
     "content/": "./content/",
     "build/content/": "./build/content/",
     "static/": "./static/",
-    "tmp/": "./tmp/",
-
-    "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
-    "@bolt-foundry/logger": "./packages/logger/logger.ts",
-    "@bolt-foundry/get-configuration-var": "./packages/get-configuration-var/get-configuration-var.ts"
+    "tmp/": "./tmp/"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

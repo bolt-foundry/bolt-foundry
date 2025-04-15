@@ -3,13 +3,23 @@
 import { getLogger } from "packages/logger/logger.ts";
 import type { Handler } from "apps/web/web.tsx";
 import { handleRequest } from "apps/web/handlers/mainHandler.ts";
+import { PostHog } from "posthog-node";
+import { trackLlmEvent } from "apps/collector/llm-event-tracker.ts";
 
 const logger = getLogger(import.meta);
+
+function getCurrentViewerApiKey() {
+  return Deno.env.get("APPS_COLLECTOR_STANIFY_POSTHOG_API_KEY") ?? "anon";
+}
 
 // Define routes for the collector service
 function registerCollectorRoutes(): Map<string, Handler> {
   const routes = new Map<string, Handler>();
-
+  let appPosthog: PostHog | null = null;
+  const appPosthogApiKey = Deno.env.get("APPS_COLLECTOR_POSTHOG_API_KEY");
+  if (appPosthogApiKey) {
+    appPosthog = new PostHog(appPosthogApiKey);
+  }
   // API endpoint for collecting data
   routes.set("/", async function collectHandler(req) {
     try {
@@ -19,9 +29,16 @@ function registerCollectorRoutes(): Map<string, Handler> {
       let payload;
 
       if (isBfRequest) {
+        const userPosthog = new PostHog(bfApiKey);
         payload = await req.json();
         logger.info("Received Bolt Foundry request for ", bfApiKey);
         logger.debug("Received data:", payload);
+        const currentViewerApiKey = getCurrentViewerApiKey();
+        appPosthog?.capture({
+          distinctId: currentViewerApiKey,
+          event: "collector:ingest",
+        });
+        await trackLlmEvent(payload, userPosthog);
       } else {
         payload = await req.text();
         logger.debug("Received text data");
