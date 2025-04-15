@@ -19,3 +19,4 @@ tmp/*
 **/.next/**
 .upm
 **/npm
+.replit.local.toml
