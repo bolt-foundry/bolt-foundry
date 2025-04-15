@@ -1,0 +1,89 @@
+#! /usr/bin/env -S deno run --allow-net=0.0.0.0:8001 --allow-env
+
+import { getLogger } from "packages/logger/logger.ts";
+import type { Handler } from "apps/web/web.tsx";
+import { handleRequest } from "apps/web/handlers/mainHandler.ts";
+import { PostHog } from "posthog-node";
+import { trackLlmEvent } from "apps/collector/llm-event-tracker.ts";
+
+const logger = getLogger(import.meta);
+
+function getCurrentViewerApiKey() {
+  return Deno.env.get("APPS_COLLECTOR_STANIFY_POSTHOG_API_KEY") ?? "anon";
+}
+
+// Define routes for the collector service
+function registerCollectorRoutes(): Map<string, Handler> {
+  const routes = new Map<string, Handler>();
+  let appPosthog: PostHog | null = null;
+  const appPosthogApiKey = Deno.env.get("APPS_COLLECTOR_POSTHOG_API_KEY");
+  if (appPosthogApiKey) {
+    appPosthog = new PostHog(appPosthogApiKey);
+  }
+  // API endpoint for collecting data
+  routes.set("/", async function collectHandler(req) {
+    try {
+      const contentType = req.headers.get("content-type");
+      const bfApiKey = req.headers.get("x-bf-api-key");
+      const isBfRequest = contentType?.includes("application/json") && bfApiKey;
+      let payload;
+
+      if (isBfRequest) {
+        const userPosthog = new PostHog(bfApiKey);
+        payload = await req.json();
+        logger.info("Received Bolt Foundry request for ", bfApiKey);
+        logger.debug("Received data:", payload);
+        const currentViewerApiKey = getCurrentViewerApiKey();
+        appPosthog?.capture({
+          distinctId: currentViewerApiKey,
+          event: "collector:ingest",
+        });
+        await trackLlmEvent(payload, userPosthog);
+      } else {
+        payload = await req.text();
+        logger.debug("Received text data");
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { "content-type": "application/json" },
+      });
+    } catch (err) {
+      logger.error("Error processing collect request:", err);
+      return new Response(
+        JSON.stringify({ success: false, error: (err as Error).message }),
+        {
+          status: 400,
+          headers: { "content-type": "application/json" },
+        },
+      );
+    }
+  });
+
+  return routes;
+}
+
+// Default route handler for 404s
+function defaultCollectorRoute(): Response {
+  return new Response("Collector endpoint not found", { status: 404 });
+}
+
+// Main request handler wrapper
+async function handleCollectorRequest(req: Request): Promise<Response> {
+  const routes = registerCollectorRoutes();
+  return await handleRequest(req, routes, defaultCollectorRoute);
+}
+
+// Use a different port from the web service
+const port = Number(Deno.env.get("COLLECTOR_PORT") ?? 8001);
+
+// Start the server if this is the main module
+if (import.meta.main) {
+  logger.info(`Starting Collector service on port ${port}...`);
+  Deno.serve({ port }, handleCollectorRequest);
+}
+
+export {
+  defaultCollectorRoute,
+  handleCollectorRequest,
+  registerCollectorRoutes,
+};

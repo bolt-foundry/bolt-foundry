@@ -19,3 +19,5 @@ tmp/*
 **/.next/**
 .upm
 **/npm
+.replit.local.toml
+generated-icon.png

@@ -7,14 +7,11 @@
     "jsr:@deno/cache-dir@~0.10.3": "0.10.3",
     "jsr:@deno/dnt@~0.41.3": "0.41.3",
     "jsr:@deno/graph@~0.73.1": "0.73.1",
-    "jsr:@denosaurs/plug@1": "1.0.6",
     "jsr:@denosaurs/plug@1.0.3": "1.0.3",
-    "jsr:@denosaurs/python@~0.4.4": "0.4.4",
     "jsr:@luca/esbuild-deno-loader@~0.11.1": "0.11.1",
     "jsr:@openai/openai@^4.78.1": "4.79.1",
     "jsr:@simplewebauthn/browser@^13.1.0": "13.1.0",
     "jsr:@simplewebauthn/server@^13.1.1": "13.1.1",
-    "jsr:@std/assert@0.221": "0.221.0",
     "jsr:@std/assert@0.223": "0.223.0",
     "jsr:@std/assert@0.226": "0.226.0",
     "jsr:@std/assert@^1.0.10": "1.0.11",
@@ -24,19 +21,17 @@
     "jsr:@std/bytes@0.223": "0.223.0",
     "jsr:@std/bytes@^1.0.2": "1.0.4",
     "jsr:@std/cli@^1.0.8": "1.0.10",
+    "jsr:@std/collections@^1.0.10": "1.0.10",
     "jsr:@std/collections@^1.0.9": "1.0.10",
     "jsr:@std/data-structures@^1.0.6": "1.0.6",
     "jsr:@std/encoding@0.213.1": "0.213.1",
-    "jsr:@std/encoding@0.221": "0.221.0",
     "jsr:@std/encoding@^1.0.5": "1.0.6",
     "jsr:@std/fmt@0.213.1": "0.213.1",
-    "jsr:@std/fmt@0.221": "0.221.0",
     "jsr:@std/fmt@0.223": "0.223.0",
     "jsr:@std/fmt@1": "1.0.4",
     "jsr:@std/fmt@^1.0.3": "1.0.4",
     "jsr:@std/front-matter@^1.0.5": "1.0.5",
     "jsr:@std/fs@0.213.1": "0.213.1",
-    "jsr:@std/fs@0.221": "0.221.0",
     "jsr:@std/fs@0.223": "0.223.0",
     "jsr:@std/fs@1": "1.0.10",
     "jsr:@std/fs@^1.0.10": "1.0.10",
@@ -49,7 +44,6 @@
     "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/net@^1.0.4": "1.0.4",
     "jsr:@std/path@0.213.1": "0.213.1",
-    "jsr:@std/path@0.221": "0.221.0",
     "jsr:@std/path@0.223": "0.223.0",
     "jsr:@std/path@1": "1.0.8",
     "jsr:@std/path@1.0.0-rc.1": "1.0.0-rc.1",
@@ -60,6 +54,7 @@
     "jsr:@std/streams@^1.0.8": "1.0.8",
     "jsr:@std/testing@^1.0.9": "1.0.9",
     "jsr:@std/toml@^1.0.1": "1.0.2",
+    "jsr:@std/toml@^1.0.4": "1.0.4",
     "jsr:@std/yaml@^1.0.5": "1.0.5",
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
@@ -199,7 +194,7 @@
     "npm:postcss@^8.4.47": "8.5.3",
     "npm:posthog-js@^1.223.5": "1.223.5_@rrweb+types@2.0.0-alpha.17",
     "npm:posthog-node@^4.11.2": "4.11.2",
-    "npm:posthog-node@^4.7.0": "4.7.0",
+    "npm:posthog-node@^4.11.3": "4.11.3",
     "npm:puppeteer-core@^24.6.0": "24.6.0_devtools-protocol@0.0.1425554",
     "npm:react-day-picker@^8.10.1": "8.10.1_date-fns@3.6.0_react@18.3.1",
     "npm:react-dom@19": "19.0.0_react@19.0.0",
@@ -231,7 +226,7 @@
     "@b-fuze/deno-dom@0.1.49": {
       "integrity": "45c40175fdd1e74ab2d4b54c4fdaabbad6e5b76ee28df12a48e076b3fa7901a9",
       "dependencies": [
-        "jsr:@denosaurs/plug@1.0.3"
+        "jsr:@denosaurs/plug"
       ]
     },
     "@bolt-foundry/get-configuration-var@0.0.0-dev.0": {
@@ -273,24 +268,6 @@
         "jsr:@std/path@0.213.1"
       ]
     },
-    "@denosaurs/plug@1.0.6": {
-      "integrity": "6cf5b9daba7799837b9ffbe89f3450510f588fafef8115ddab1ff0be9cb7c1a7",
-      "dependencies": [
-        "jsr:@std/encoding@0.221",
-        "jsr:@std/fmt@0.221",
-        "jsr:@std/fs@0.221",
-        "jsr:@std/path@0.221"
-      ]
-    },
-    "@denosaurs/python@0.4.4": {
-      "integrity": "0eca587ac3a60ed5bce73ac9612126de39d7c26b0a98c03044838fd94aba812f",
-      "dependencies": [
-        "jsr:@denosaurs/plug@1",
-        "jsr:@std/fmt@1",
-        "jsr:@std/fs@1",
-        "jsr:@std/path@1"
-      ]
-    },
     "@luca/esbuild-deno-loader@0.11.1": {
       "integrity": "dc020d16d75b591f679f6b9288b10f38bdb4f24345edb2f5732affa1d9885267",
       "dependencies": [
@@ -319,9 +296,6 @@
     },
     "@std/assert@0.213.1": {
       "integrity": "24c28178b30c8e0782c18e8e94ea72b16282207569cdd10ffb9d1d26f2edebfe"
-    },
-    "@std/assert@0.221.0": {
-      "integrity": "a5f1aa6e7909dbea271754fd4ab3f4e687aeff4873b4cef9a320af813adb489a"
     },
     "@std/assert@0.223.0": {
       "integrity": "eb8d6d879d76e1cc431205bd346ed4d88dc051c6366365b1af47034b0670be24"
@@ -356,17 +330,11 @@
     "@std/encoding@0.213.1": {
       "integrity": "fcbb6928713dde941a18ca5db88ca1544d0755ec8fb20fe61e2dc8144b390c62"
     },
-    "@std/encoding@0.221.0": {
-      "integrity": "d1dd76ef0dc5d14088411e6dc1dede53bf8308c95d1537df1214c97137208e45"
-    },
     "@std/encoding@1.0.6": {
       "integrity": "ca87122c196e8831737d9547acf001766618e78cd8c33920776c7f5885546069"
     },
     "@std/fmt@0.213.1": {
       "integrity": "a06d31777566d874b9c856c10244ac3e6b660bdec4c82506cd46be052a1082c3"
-    },
-    "@std/fmt@0.221.0": {
-      "integrity": "379fed69bdd9731110f26b9085aeb740606b20428ce6af31ef6bd45ef8efa62a"
     },
     "@std/fmt@0.223.0": {
       "integrity": "6deb37794127dfc7d7bded2586b9fc6f5d50e62a8134846608baf71ffc1a5208"
@@ -377,7 +345,7 @@
     "@std/front-matter@1.0.5": {
       "integrity": "abddc64030a33eb5bc524b8c73e7c417cea09177aaeb4abf75a56b540c4b6e60",
       "dependencies": [
-        "jsr:@std/toml",
+        "jsr:@std/toml@^1.0.1",
         "jsr:@std/yaml"
       ]
     },
@@ -386,13 +354,6 @@
       "dependencies": [
         "jsr:@std/assert@~0.213.1",
         "jsr:@std/path@~0.213.1"
-      ]
-    },
-    "@std/fs@0.221.0": {
-      "integrity": "028044450299de8ed5a716ade4e6d524399f035513b85913794f4e81f07da286",
-      "dependencies": [
-        "jsr:@std/assert@0.221",
-        "jsr:@std/path@0.221"
       ]
     },
     "@std/fs@0.223.0": {
@@ -448,12 +409,6 @@
         "jsr:@std/assert@~0.213.1"
       ]
     },
-    "@std/path@0.221.0": {
-      "integrity": "0a36f6b17314ef653a3a1649740cc8db51b25a133ecfe838f20b79a56ebe0095",
-      "dependencies": [
-        "jsr:@std/assert@0.221"
-      ]
-    },
     "@std/path@0.223.0": {
       "integrity": "593963402d7e6597f5a6e620931661053572c982fc014000459edc1f93cc3989",
       "dependencies": [
@@ -489,7 +444,13 @@
     "@std/toml@1.0.2": {
       "integrity": "5892ba489c5b512265a384238a8fe8dddbbb9498b4b210ef1b9f0336a423a39b",
       "dependencies": [
-        "jsr:@std/collections"
+        "jsr:@std/collections@^1.0.9"
+      ]
+    },
+    "@std/toml@1.0.4": {
+      "integrity": "8781e687d04c8fbe246b9c5714be01925792a94d943462c33777675ab557cff1",
+      "dependencies": [
+        "jsr:@std/collections@^1.0.10"
       ]
     },
     "@std/yaml@1.0.5": {
@@ -3201,7 +3162,7 @@
       "integrity": "sha512-Jqt8aAuGIpWGa15ZorTWI46q9gbaIdQFA21HIPQQl60rCjzAko75l3D1z7EyjFrNr4MfQ0StusivWh8Rjh10Cg==",
       "dependencies": [
         "@sendgrid/helpers",
-        "axios@1.8.4"
+        "axios"
       ]
     },
     "@sendgrid/helpers@8.0.0": {
@@ -4134,14 +4095,6 @@
     },
     "axe-core@4.10.3": {
       "integrity": "sha512-Xm7bpRXnDSX2YE2YFfBk2FnF0ep6tmG7xPh8iHee8MIcrgq762Nkce856dYtJYLkuIoYZvGfTs/PbZhideTcEg=="
-    },
-    "axios@1.8.1": {
-      "integrity": "sha512-NN+fvwH/kV01dYUQ3PTOZns4LWtWhOFCAhQ/pHb88WQ1hNe5V/dvFwc4VJcDL11LT9xSX0QtsR8sWUuyOuOq7g==",
-      "dependencies": [
-        "follow-redirects",
-        "form-data@4.0.1",
-        "proxy-from-env"
-      ]
     },
     "axios@1.8.4": {
       "integrity": "sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==",
@@ -7526,13 +7479,13 @@
     "posthog-node@4.11.2": {
       "integrity": "sha512-zzXCzatMyXcDdvcSJFoCV1lA+5LkT2f7dt1vj6I4S6QGUWlRMMu8krApseUY4/E8m2rhQlmR8BZU/2xXcgS7XQ==",
       "dependencies": [
-        "axios@1.8.4"
+        "axios"
       ]
     },
-    "posthog-node@4.7.0": {
-      "integrity": "sha512-RgdUKSW8MfMOkjUa8cYVqWndNjPePNuuxlGbrZC6z1WRBsVc6TdGl8caidmC10RW8mu/BOfmrGbP4cRTo2jARg==",
+    "posthog-node@4.11.3": {
+      "integrity": "sha512-Ye7d9ZJX1reWP9084Gm9+O7NnvlW7LnbU09GzlsSdD0HzGTfxeKTQZsl9h1+CDHhfvpdWJRm8uc91/aDmXzaCA==",
       "dependencies": [
-        "axios@1.8.1"
+        "axios"
       ]
     },
     "preact@10.26.2": {
@@ -9256,7 +9209,6 @@
     "dependencies": [
       "jsr:@b-fuze/deno-dom@~0.1.49",
       "jsr:@deno/dnt@~0.41.3",
-      "jsr:@denosaurs/python@~0.4.4",
       "jsr:@luca/esbuild-deno-loader@~0.11.1",
       "jsr:@openai/openai@^4.78.1",
       "jsr:@simplewebauthn/browser@^13.1.0",
@@ -9267,6 +9219,7 @@
       "jsr:@std/http@^1.0.12",
       "jsr:@std/path@^1.0.8",
       "jsr:@std/testing@^1.0.9",
+      "jsr:@std/toml@^1.0.4",
       "npm:@types/react@19",
       "npm:react@*"
     ],
@@ -9314,7 +9267,7 @@
         "npm:openai@^4.92.1",
         "npm:pg@^8.13.3",
         "npm:posthog-js@^1.223.5",
-        "npm:posthog-node@^4.7.0",
+        "npm:posthog-node@^4.11.3",
         "npm:puppeteer-core@^24.6.0",
         "npm:react-dom@19",
         "npm:react@19",
@@ -9441,11 +9394,6 @@
             "npm:typescript@^5.8.2"
           ]
         }
-      },
-      "packages/bolt-foundry": {
-        "dependencies": [
-          "npm:posthog-node@^4.11.2"
-        ]
       },
       "packages/logger": {
         "dependencies": [

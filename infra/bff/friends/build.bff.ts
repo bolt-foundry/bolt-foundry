@@ -394,6 +394,22 @@ export async function build(args: Array<string>): Promise<number> {
   await Deno.mkdir("static/build", { recursive: true });
   await Deno.writeFile("static/build/.gitkeep", new Uint8Array());
 
+  // Build bolt-foundry package
+  if (debug) logMemoryUsage("before bolt-foundry package build");
+  logger.info("Building bolt-foundry package...");
+  const boltFoundryBuildResult = await runShellCommand([
+    "deno",
+    "run",
+    "-A",
+    "packages/bolt-foundry/bin/build.ts",
+  ]);
+  if (debug) logMemoryUsage("after bolt-foundry package build");
+
+  if (boltFoundryBuildResult !== 0) {
+    logger.error("Failed to build bolt-foundry package");
+    return boltFoundryBuildResult;
+  }
+
   if (debug) logMemoryUsage("before routes build");
   const routesBuildResult = await runShellCommand([
     "./infra/appBuild/routesBuild.ts",

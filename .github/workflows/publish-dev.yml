@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-publish:
-    name: bff ci
+    name: Build and Publish Dev Version
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -49,6 +49,24 @@ jobs:
           key: ${{ runner.os }}-nix-store-${{ hashFiles('**/*.nix', 'flake.lock') }}
           restore-keys: |
             ${{ runner.os }}-nix-store-
+
+      # Cache node_modules and vendor directories
+      - name: Cache node_modules and vendor folders
+        uses: actions/cache@v4
+        id: dependency-cache
+        with:
+          path: |
+            node_modules
+            */*/node_modules
+            */*/*/node_modules
+            vendor
+            */*/vendor
+            */*/*/vendor
+            ~/.npm
+            packages/bolt-foundry/npm/node_modules
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/package.json', 'package-lock.json', 'package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
 
       # Parse .replit env using pure bash
       - name: Parse .replit env and export to GitHub Actions
@@ -143,8 +161,7 @@ jobs:
           cd $GITHUB_WORKSPACE
           # Use the cached profile for the development shell
           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            cd packages/bolt-foundry
-            deno run -A bin/dnt.ts
+            deno run -A packages/bolt-foundry/bin/build.ts
           "
 
       - name: Publish to npm
