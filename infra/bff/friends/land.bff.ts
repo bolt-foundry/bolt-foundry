@@ -1,3 +1,4 @@
+import { parse as parseToml, stringify as stringifyToml } from "@std/toml";
 import { register } from "infra/bff/bff.ts";
 import {
   runShellCommand,
@@ -147,8 +148,117 @@ export async function land(): Promise<number> {
     return commitResult;
   }
 
+  // Check for .replit.local.toml file and merge with .replit if it exists
+  logger.info("Checking for .replit.local.toml file...");
+  const replitLocalExists = await exists(".replit.local.toml");
+
+  if (replitLocalExists) {
+    logger.info(".replit.local.toml file found, merging with .replit file...");
+    try {
+      const replitLocalContent = await Deno.readTextFile(".replit.local.toml");
+      const replitContent = await Deno.readTextFile(".replit");
+
+      // Parse both TOML files
+      const replitLocalData = parseToml(replitLocalContent);
+      const replitData = parseToml(replitContent);
+
+      // Deep merge the TOML objects
+      const mergedData = deepMergeToml(replitData, replitLocalData);
+
+      // Convert back to TOML string
+      const mergedContent = stringifyToml(mergedData);
+
+      await Deno.writeTextFile(".replit", mergedContent);
+      logger.info("Successfully merged .replit.local with .replit");
+    } catch (error) {
+      logger.error("Error merging .replit.local with .replit:", error);
+      // Continue with the process even if the merge fails
+    }
+  } else {
+    logger.info("No .replit.local.toml file found, skipping merge step.");
+  }
+
   logger.info("Successfully landed changes!");
   return 0;
+}
+
+// Import exists function from Deno standard library
+import { exists } from "@std/fs/exists";
+
+/**
+ * Deep merge two TOML objects
+ * @param target Base TOML object
+ * @param source TOML object to merge in
+ * @returns Merged TOML object
+ */
+function deepMergeToml(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>,
+): Record<string, unknown> {
+  const output = { ...target };
+
+  for (const key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      if (
+        isObject(source[key]) &&
+        key in target &&
+        isObject(target[key])
+      ) {
+        // If both properties are objects, recursively merge them
+        output[key] = deepMergeToml(
+          target[key] as Record<string, unknown>,
+          source[key] as Record<string, unknown>,
+        );
+      } else if (
+        Array.isArray(source[key]) &&
+        key in target &&
+        Array.isArray(target[key])
+      ) {
+        // For workflow arrays, we want to append new workflows but not duplicate
+        if (key === "workflows") {
+          const targetWorkflows = target[key] as Array<unknown>;
+          const sourceWorkflows = source[key] as Array<unknown>;
+          // Create a new array with unique workflows
+          output[key] = [...targetWorkflows];
+
+          // Add workflows from source that don't exist in target
+          for (const workflow of sourceWorkflows) {
+            if (typeof workflow === "object" && workflow !== null) {
+              const workflowName = (workflow as Record<string, unknown>).name;
+              // Check if this workflow already exists in the target
+              const exists = (targetWorkflows as Array<Record<string, unknown>>)
+                .some(
+                  (tw) => tw.name === workflowName,
+                );
+              if (!exists) {
+                (output[key] as Array<unknown>).push(workflow);
+              }
+            }
+          }
+        } else {
+          // For other arrays, append unique items
+          output[key] = [
+            ...new Set([
+              ...(target[key] as Array<unknown>),
+              ...(source[key] as Array<unknown>),
+            ]),
+          ];
+        }
+      } else {
+        // Otherwise, just overwrite with the source value
+        output[key] = source[key];
+      }
+    }
+  }
+
+  return output;
+}
+
+/**
+ * Check if value is an object
+ */
+function isObject(item: unknown): item is Record<string, unknown> {
+  return item !== null && typeof item === "object" && !Array.isArray(item);
 }
 
 register(
