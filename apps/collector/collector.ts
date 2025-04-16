@@ -1,4 +1,4 @@
-#! /usr/bin/env -S deno run --allow-net=0.0.0.0:8001 --allow-env
+#! /usr/bin/env -S deno run --allow-net=0.0.0.0,us.i.posthog.com --allow-env --watch
 
 import { getLogger } from "packages/logger/logger.ts";
 import type { Handler } from "apps/web/web.tsx";
@@ -22,14 +22,17 @@ function registerCollectorRoutes(): Map<string, Handler> {
   }
   // API endpoint for collecting data
   routes.set("/", async function collectHandler(req) {
+    logger.info("Received collect request");
     try {
       const contentType = req.headers.get("content-type");
       const bfApiKey = req.headers.get("x-bf-api-key");
       const isBfRequest = contentType?.includes("application/json") && bfApiKey;
       let payload;
+      let userPosthog: PostHog | null = null;
 
       if (isBfRequest) {
-        const userPosthog = new PostHog(bfApiKey);
+        const posthogApiKey = bfApiKey?.replace("bf+", "");
+        userPosthog = new PostHog(posthogApiKey);
         payload = await req.json();
         logger.info("Received Bolt Foundry request for ", bfApiKey);
         logger.debug("Received data:", payload);
@@ -43,6 +46,8 @@ function registerCollectorRoutes(): Map<string, Handler> {
         payload = await req.text();
         logger.debug("Received text data");
       }
+
+      await Promise.all([appPosthog?.flush(), userPosthog?.flush()]);
 
       return new Response(JSON.stringify({ success: true }), {
         headers: { "content-type": "application/json" },

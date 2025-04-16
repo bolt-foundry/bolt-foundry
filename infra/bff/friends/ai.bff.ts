@@ -7,11 +7,10 @@ import {
 import { getLogger } from "packages/logger/logger.ts";
 import { connectBoltFoundry } from "packages/bolt-foundry/bolt-foundry.ts";
 import { OpenAI } from "@openai/openai";
-// Create OpenAI client with Bolt Foundry integration
-const posthogApiKey = Deno.env.get("POSTHOG_API_KEY");
+const posthogApiKey = Deno.env.get("APPS_INTERNALBF_POSTHOG_API_KEY");
 const client = new OpenAI({
   apiKey: Deno.env.get("OPENAI_API_KEY"),
-  fetch: connectBoltFoundry(posthogApiKey),
+  fetch: connectBoltFoundry(`bf+${posthogApiKey}`, "https://i.bltfdy.co/"),
 });
 const logger = getLogger(import.meta);
 
