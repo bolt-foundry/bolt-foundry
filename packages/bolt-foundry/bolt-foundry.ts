@@ -1,23 +1,51 @@
-// import { getLogger } from "@bolt-foundry/logger";
-// const logger = getLogger("bolt-foundry");
-
 import type { OpenAI } from "@openai/openai";
 
-// logger.setLevel(logger.levels.DEBUG);
-const logger = console;
+let logger = console;
+const enableLogging = false;
+if (!enableLogging) {
+  logger = {
+    ...console,
+    debug: (..._args: unknown[]) => {},
+    warn: (..._args: unknown[]) => {},
+    error: (..._args: unknown[]) => {},
+    info: (..._args: unknown[]) => {},
+  };
+}
 
 export type OpenAIRequestBody =
   | OpenAI.ChatCompletionCreateParams
   | OpenAI.CompletionCreateParams
+  | OpenAI.EmbeddingCreateParams
+  | OpenAI.ImageGenerateParams
+  | OpenAI.ImageEditParams
+  | OpenAI.ImageCreateVariationParams
+  | OpenAI.ModerationCreateParams
+  | OpenAI.BatchCreateParams
+  | OpenAI.UploadCreateParams
+  | OpenAI.UploadCompleteParams
+  | OpenAI.FileCreateParams
   | undefined;
 
 export type OpenAIResponseBody =
   | OpenAI.ChatCompletion
-  | OpenAI.Completion;
+  | OpenAI.Completion
+  | OpenAI.CreateEmbeddingResponse
+  | OpenAI.ImagesResponse
+  | OpenAI.ModerationCreateResponse
+  | OpenAI.Batch
+  | OpenAI.Upload
+  | OpenAI.FileObject
+  | OpenAI.FileDeleted
+  | OpenAI.Model
+  | OpenAI.ModelDeleted;
 
 export type TelemetryData = {
   timestamp: string;
   duration: number;
+  provider: string;
+  providerApiVersion: string;
+  sessionId?: string;
+  userId?: string;
   request: {
     url: string;
     method: string;
@@ -32,10 +60,41 @@ export type TelemetryData = {
 };
 
 /**
+ * Extract API version from URL path
+ * @param url The API URL
+ * @returns The API version (e.g., "v1")
+ */
+function extractApiVersion(url: string): string {
+  const versionMatch = url.match(/\/v(\d+)/);
+  return versionMatch ? `v${versionMatch[1]}` : "v1"; // Default to v1 if not found
+}
+
+/**
+ * Determine the API provider from the URL
+ * @param url The API URL
+ * @returns The provider name (e.g., "openai", "anthropic")
+ */
+function determineProvider(url: string): string {
+  if (url.includes("api.openai.com")) return "openai";
+  if (url.includes("api.anthropic.com")) return "anthropic";
+  if (url.includes("api.mistral.ai")) return "mistral";
+  // Add more providers as needed
+  return "unknown";
+}
+
+/**
  * Creates a wrapped fetch function that adds necessary headers and handles OpenAI API requests.
  * This implementation adds authentication headers, preserves FormData requests, and tracks analytics.
  */
-export function connectBoltFoundry(bfApiKey?: string): typeof fetch {
+export function connectBoltFoundry(
+  bfApiKey?: string,
+  collectorEndpoint: string = Deno.env.get("BFF_COLLECTOR_ENDPOINT") ??
+    "https://i.bltfdy.co/",
+  options?: {
+    sessionId?: string;
+    userId?: string;
+  },
+): typeof fetch {
   async function enhancedFetch(
     input: RequestInfo | URL,
     init?: RequestInit,
@@ -43,14 +102,15 @@ export function connectBoltFoundry(bfApiKey?: string): typeof fetch {
     const url = input.toString();
     const startTime = Date.now();
 
-    // Only track analytics for OpenAI API requests
-    if (url.includes("api.openai.com")) {
-      logger.debug(`Bolt Foundry intercepting OpenAI request: ${url}`);
+    // Only track analytics for API requests we care about
+    const provider = determineProvider(url);
+    if (provider !== "unknown") {
+      logger.debug(`Bolt Foundry intercepting ${provider} request: ${url}`);
 
       // Clone the request to analyze later
       const clonedReq = new Request(input, init);
 
-      // Send the original request to OpenAI
+      // Send the original request to the API
       const response = await fetch(input, init);
       const clonedRes = response.clone();
 
@@ -92,10 +152,18 @@ export function connectBoltFoundry(bfApiKey?: string): typeof fetch {
             responseHeaders[key] = value;
           });
 
+          // Extract API version
+          const apiVersion = extractApiVersion(url);
+
           // Prepare telemetry payload
           const telemetryData: TelemetryData = {
             timestamp: new Date().toISOString(),
             duration: Date.now() - startTime,
+            provider: provider,
+            providerApiVersion: apiVersion,
+            // Include session and user IDs if provided
+            ...(options?.sessionId && { sessionId: options.sessionId }),
+            ...(options?.userId && { userId: options.userId }),
             request: {
               url,
               method: clonedReq.method,
@@ -111,7 +179,7 @@ export function connectBoltFoundry(bfApiKey?: string): typeof fetch {
 
           // Send to collector
           if (bfApiKey) {
-            await fetch("https://i.bltfdy.co/", {
+            await fetch(collectorEndpoint, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -119,7 +187,7 @@ export function connectBoltFoundry(bfApiKey?: string): typeof fetch {
               },
               body: JSON.stringify(telemetryData),
             });
-            logger.debug("Sent telemetry to i.bltfdy.co");
+            logger.debug(`Sent telemetry to ${collectorEndpoint}`);
           } else {
             logger.warn("No BF API key provided, skipping telemetry");
           }
@@ -131,7 +199,7 @@ export function connectBoltFoundry(bfApiKey?: string): typeof fetch {
       return response;
     }
 
-    // For non-OpenAI requests, pass through without modification
+    // For non-tracked requests, pass through without modification
     return fetch(input, init);
   }
 

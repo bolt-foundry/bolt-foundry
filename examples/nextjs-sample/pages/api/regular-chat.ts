@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectBoltFoundry } from '@bolt-foundry/bolt-foundry-next';
 import OpenAI from "openai";
 const client = new OpenAI({
-  fetch: connectBoltFoundry(process.env.EXAMPLES_NEXTJS_SAMPLE_POSTHOG_NEXTJS_API_KEY)
+  fetch: connectBoltFoundry(`bf+${process.env.EXAMPLES_NEXTJS_SAMPLE_POSTHOG_NEXTJS_API_KEY}`)
 });
 
 
