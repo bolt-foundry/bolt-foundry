@@ -1,34 +1,48 @@
-// Temporary stub — just enough for imports to compile.
-// Real implementation will track an active adapter and expose get()/register().
+// apps/bfDb/storage/AdapterRegistry.ts
+// =================================================
+// Storage Adapter Registry — concrete implementation
+// =================================================
+
+import type { DatabaseBackend } from "../backend/DatabaseBackend.ts";
+
+// Alias: moving forward we’ll refer to all adapters through this name.
+export type IBackendAdapter = DatabaseBackend;
 
 /**
- * Generic contract every backend adapter must fulfil.
- * For now we alias the existing DatabaseBackend interface so we don't
- * break any imports while refactoring.
+ * Holds the singleton BackendAdapter selected for this process.
+ * Tests can swap adapters by calling `register()`; production code should
+ * register exactly once during startup (e.g. in bfDb.ts).
  */
-export type IBackendAdapter =
-  import("../backend/DatabaseBackend.ts").DatabaseBackend;
-
 export class AdapterRegistry {
-  // We intentionally start with `null` so tests that call `get()` without
-  // registering will throw — giving us a clear red state.
   private static _active: IBackendAdapter | null = null;
 
+  /**
+   * Registers an adapter instance for the current runtime.
+   * If an adapter has already been registered and it's different, we throw —
+   * preventing accidental double‑registration in production. Tests may reset
+   * via `clear()` between suites.
+   */
   static register(adapter: IBackendAdapter) {
+    if (this._active && this._active !== adapter) {
+      throw new Error("AdapterRegistry: adapter already registered");
+    }
     this._active = adapter;
   }
 
   /**
-   * Returns the currently‑active adapter or throws if none registered.
-   * Keeping the throw ensures existing tests fail until we wire up
-   * the correct adapter in each suite.
+   * Returns the active adapter. Throws if none registered so that tests stay
+   * red until an adapter is explicitly set.
    */
   static get(): IBackendAdapter {
-    throw new Error("AdapterRegistry.get(): no adapter registered yet (stub)");
-    // return this._active!;  // <- real impl will return and maybe throw
+    if (!this._active) {
+      throw new Error("AdapterRegistry.get(): no adapter registered");
+    }
+    return this._active;
   }
 
-  /** Test helper to clear registry between suites */
+  /**
+   * Test helper – resets registry to pristine state.
+   */
   static clear() {
     this._active = null;
   }
