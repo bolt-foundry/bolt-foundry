@@ -368,7 +368,7 @@ ${diffOutput}
       max_tokens: 1024,
     });
 
-    const aiResponse = response.choices[0].message.content.trim();
+    const aiResponse = response.choices?.[0]?.message?.content?.trim() || "";
 
     // Parse response into title and message
     const titleMatch = aiResponse.match(/TITLE: (.*)/);
@@ -426,17 +426,40 @@ export async function aiCommit(args: string[]): Promise<number> {
 
   const { title, message } = result;
 
-  // Display the generated commit message
-  logger.info("OpenAI generated the following commit message:");
-  logger.info(`\n${title}\n\n${message}`);
+  // Write the generated commit message to a temporary file in the project's tmp directory
+  logger.info("OpenAI generated a commit message, opening in editor...");
+  const tmpDir = "tmp";
+  const tmpFileName = `commit_message_${Date.now()}.txt`;
+  const tmpFile = `${tmpDir}/${tmpFileName}`;
+  const fullMessage = `${title}\n\n${message}`;
+  await Deno.writeTextFile(tmpFile, fullMessage);
+
+  // Open the file in the editor
+  const editor = Deno.env.get("EDITOR") || "code";
+  await runShellCommand([editor, tmpFile]);
 
   // Ask user if they want to commit with this message
   const shouldCommit = await getYesNoInput(
-    "\nDo you want to commit with this message?",
+    "\nDo you want to commit with your edited message?",
   );
 
+  // Read the edited message after the editor closes
+  const editedMessage = await Deno.readTextFile(tmpFile);
+
+  // Extract title (first line) and message (rest of the text)
+  const lines = editedMessage.split("\n");
+  const editedTitle = lines[0];
+  const editedBody = lines.slice(1).join("\n").trim();
+
+  try {
+    // Clean up the temporary file
+    await Deno.remove(tmpFile);
+  } catch (error) {
+    logger.warn(`Failed to delete temporary file ${tmpFile}: ${error}`);
+  }
+
   if (shouldCommit) {
-    const commitResult = await createCommit(title, message);
+    const commitResult = await createCommit(editedTitle, editedBody);
     if (commitResult !== 0) return commitResult;
 
     return await offerPullRequest();
