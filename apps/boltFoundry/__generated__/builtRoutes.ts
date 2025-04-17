@@ -7,70 +7,37 @@ export type RouteEntrypoint = {
 };
 
 iso(`entrypoint Mutation.CheckEmail`)
-iso(`entrypoint Mutation.CreateVoice`)
 iso(`entrypoint Mutation.GetLoginOptions`)
 iso(`entrypoint Mutation.JoinWaitlist`)
 iso(`entrypoint Mutation.LoginAsDemoPerson`)
 iso(`entrypoint Mutation.Login`)
-iso(`entrypoint Mutation.MakeTweets`)
 iso(`entrypoint Mutation.Register`)
 iso(`entrypoint Mutation.RegistrationOptions`)
-iso(`entrypoint Mutation.ReviseBlog`)
 iso(`entrypoint Query.EntrypointContentFoundryApp`)
-iso(`entrypoint Query.EntrypointFormatterVoice`)
-iso(`entrypoint Query.EntrypointFormatter`)
 iso(`entrypoint Query.EntrypointHome`)
-iso(`entrypoint Query.EntrypointTwitterIdeatorCompose`)
-iso(`entrypoint Query.EntrypointTwitterIdeatorVoice`)
 iso(`entrypoint Query.EntrypointTwitterIdeatorWorkshopPermalink`)
-iso(`entrypoint Query.EntrypointTwitterIdeatorWorkshop`)
-iso(`entrypoint Query.EntrypointTwitterIdeator`)
-iso(`entrypoint Query.entrypointFormatterEditor`)
 iso(`entrypoint Query.entrypointTwitterIdeatorResearchPermalink`)
-iso(`entrypoint Query.entrypointTwitterIdeatorResearch`)
 
 import checkEmail from "apps/boltFoundry/__generated__/__isograph/Mutation/CheckEmail/entrypoint.ts"
-import createVoice from "apps/boltFoundry/__generated__/__isograph/Mutation/CreateVoice/entrypoint.ts"
 import entrypointContentFoundryApp from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointContentFoundryApp/entrypoint.ts"
-import entrypointFormatter from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointFormatter/entrypoint.ts"
-import entrypointFormatterEditor from "apps/boltFoundry/__generated__/__isograph/Query/entrypointFormatterEditor/entrypoint.ts"
-import entrypointFormatterVoice from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointFormatterVoice/entrypoint.ts"
 import entrypointHome from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointHome/entrypoint.ts"
-import entrypointTwitterIdeator from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointTwitterIdeator/entrypoint.ts"
-import entrypointTwitterIdeatorCompose from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointTwitterIdeatorCompose/entrypoint.ts"
-import entrypointTwitterIdeatorResearch from "apps/boltFoundry/__generated__/__isograph/Query/entrypointTwitterIdeatorResearch/entrypoint.ts"
 import entrypointTwitterIdeatorResearchPermalink from "apps/boltFoundry/__generated__/__isograph/Query/entrypointTwitterIdeatorResearchPermalink/entrypoint.ts"
-import entrypointTwitterIdeatorVoice from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointTwitterIdeatorVoice/entrypoint.ts"
-import entrypointTwitterIdeatorWorkshop from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointTwitterIdeatorWorkshop/entrypoint.ts"
 import entrypointTwitterIdeatorWorkshopPermalink from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointTwitterIdeatorWorkshopPermalink/entrypoint.ts"
 import getLoginOptions from "apps/boltFoundry/__generated__/__isograph/Mutation/GetLoginOptions/entrypoint.ts"
 import joinWaitlist from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts"
 import login from "apps/boltFoundry/__generated__/__isograph/Mutation/Login/entrypoint.ts"
 import loginAsDemoPerson from "apps/boltFoundry/__generated__/__isograph/Mutation/LoginAsDemoPerson/entrypoint.ts"
-import makeTweets from "apps/boltFoundry/__generated__/__isograph/Mutation/MakeTweets/entrypoint.ts"
 import register from "apps/boltFoundry/__generated__/__isograph/Mutation/Register/entrypoint.ts"
 import registrationOptions from "apps/boltFoundry/__generated__/__isograph/Mutation/RegistrationOptions/entrypoint.ts"
-import reviseBlog from "apps/boltFoundry/__generated__/__isograph/Mutation/ReviseBlog/entrypoint.ts"
 
 export {checkEmail};
-export {createVoice};
 export {entrypointContentFoundryApp};
-export {entrypointFormatterEditor};
-export {entrypointFormatterVoice};
-export {entrypointFormatter};
 export {entrypointHome};
-export {entrypointTwitterIdeatorCompose};
 export {entrypointTwitterIdeatorResearchPermalink};
-export {entrypointTwitterIdeatorResearch};
-export {entrypointTwitterIdeatorVoice};
 export {entrypointTwitterIdeatorWorkshopPermalink};
-export {entrypointTwitterIdeatorWorkshop};
-export {entrypointTwitterIdeator};
 export {getLoginOptions};
 export {joinWaitlist};
 export {loginAsDemoPerson};
 export {login};
-export {makeTweets};
 export {register};
 export {registrationOptions};
-export {reviseBlog};
