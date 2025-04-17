@@ -237,13 +237,8 @@ function deepMergeToml(
             }
           }
         } else {
-          // For other arrays, append unique items
-          output[key] = [
-            ...new Set([
-              ...(target[key] as Array<unknown>),
-              ...(source[key] as Array<unknown>),
-            ]),
-          ];
+          // Don't merge any arrays - just use the source value
+          output[key] = source[key];
         }
       } else {
         // Otherwise, just overwrite with the source value
