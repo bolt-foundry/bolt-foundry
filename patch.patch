@@ -1,0 +1,84 @@
+diff --git a/apps/bfDb/storage/storage.ts b/apps/bfDb/storage/storage.ts
+new file mode 100644
+index 0000000..4d3dc3e
+--- /dev/null
++++ b/apps/bfDb/storage/storage.ts
+@@
++// Temporary façade that forwards to the existing bfDb helpers.
++// Later we’ll swap this to return an adapter selected at runtime.
++
++import {
++  bfGetItem,
++  bfPutItem,
++  bfQueryItemsUnified as bfQueryItems,
++  bfDeleteItem,
++  bfCloseConnection,
++  type Props,
++  type DbItem,
++} from "apps/bfDb/bfDb.ts";
++import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
++
++export const storage = {
++  async initialize() {},
++
++  async get<T extends Props>(bfOid: BfGid, bfGid: BfGid) {
++    return bfGetItem<T>(bfOid, bfGid);
++  },
++
++  async put<T extends Props>(props: T, metadata: Record<string, unknown>) {
++    await bfPutItem(props, metadata);
++  },
++
++  async query<T extends Props>(
++    metadata: Record<string, unknown>,
++    props: Partial<T> = {},
++    bfGids?: BfGid[],
++    order: "ASC" | "DESC" = "ASC",
++    orderBy: string | null = null,
++    options: Record<string, unknown> = {},
++  ): Promise<DbItem<T>[]> {
++    // Preserve full signature for now so existing callers compile.
++    // deno‑lint‑ignore no-explicit-any
++    // @ts-ignore
++    return bfQueryItems(metadata, props, bfGids, order, orderBy, options);
++  },
++
++  async delete(bfOid: BfGid, bfGid: BfGid) {
++    await bfDeleteItem(bfOid, bfGid);
++  },
++
++  async close() {
++    await bfCloseConnection();
++  },
++} as const;
++
++export type StorageFacade = typeof storage;
++
+diff --git a/apps/bfDb/coreModels/BfNode.ts b/apps/bfDb/coreModels/BfNode.ts
+index 9f5b4e1..5d2e30b 100644
+--- a/apps/bfDb/coreModels/BfNode.ts
++++ b/apps/bfDb/coreModels/BfNode.ts
+@@
+-import { bfGetItem, bfPutItem, bfQueryItemsUnified } from "apps/bfDb/bfDb.ts";
++import { storage } from "apps/bfDb/storage/storage.ts";
+@@   static override async findX<
+-    const itemFromDb = await bfGetItem(cv.bfOid, id);
++    const itemFromDb = await storage.get(cv.bfOid, id);
+@@   static override async query<
+-    const items = await bfQueryItemsUnified(
++    const items = await storage.query(
+@@   override async save<TMetadata extends BfMetadataNode>() {
+-    await bfPutItem(this.props, this.metadata as unknown as TMetadata);
++    await storage.put(this.props, this.metadata as unknown as TMetadata);
+@@   override async load(): Promise<this> {
+-    const _item = await bfGetItem(this.cv.bfOid, this.metadata.bfGid);
++    const _item = await storage.get(this.cv.bfOid, this.metadata.bfGid);
+@@   override async queryTargets<
+-    const createEdgeLog = await bfQueryItemsUnified(
++    const createEdgeLog = await storage.query(
+@@   override async queryTargets<
+-    const edges = await bfQueryItemsUnified(
++    const edges = await storage.query(
+@@   override async queryTargets<
+-      const allEdgesFromSource = await bfQueryItemsUnified(
++      const allEdgesFromSource = await storage.query(
