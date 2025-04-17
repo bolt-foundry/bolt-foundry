@@ -132,23 +132,8 @@ export async function land(): Promise<number> {
 
   logger.info("Proceeding with commit");
 
-  // Create git commit with sapling commits and hash
-  logger.info("Creating git commit...");
-  const fullCommitMsg =
-    `${commitMsg.trim()}\n\nSapling-Hash: ${currentSaplingHash}`;
-  const commitResult = await runShellCommand([
-    "git",
-    "commit",
-    "-m",
-    fullCommitMsg,
-  ]);
-
-  if (commitResult !== 0) {
-    logger.error("Failed to create git commit");
-    return commitResult;
-  }
-
-  // Check for .replit.local.toml file and merge with .replit if it exists
+  // First check for .replit.local.toml file and merge with .replit if it exists
+  // Do this before git commit so it happens regardless of commit success/failure
   logger.info("Checking for .replit.local.toml file...");
   const replitLocalExists = await exists(".replit.local.toml");
 
@@ -176,6 +161,22 @@ export async function land(): Promise<number> {
     }
   } else {
     logger.info("No .replit.local.toml file found, skipping merge step.");
+  }
+
+  // Create git commit with sapling commits and hash
+  logger.info("Creating git commit...");
+  const fullCommitMsg =
+    `${commitMsg.trim()}\n\nSapling-Hash: ${currentSaplingHash}`;
+  const commitResult = await runShellCommand([
+    "git",
+    "commit",
+    "-m",
+    fullCommitMsg,
+  ]);
+
+  if (commitResult !== 0) {
+    logger.error("Failed to create git commit");
+    return commitResult;
   }
 
   logger.info("Successfully landed changes!");
@@ -236,13 +237,8 @@ function deepMergeToml(
             }
           }
         } else {
-          // For other arrays, append unique items
-          output[key] = [
-            ...new Set([
-              ...(target[key] as Array<unknown>),
-              ...(source[key] as Array<unknown>),
-            ]),
-          ];
+          // Don't merge any arrays - just use the source value
+          output[key] = source[key];
         }
       } else {
         // Otherwise, just overwrite with the source value

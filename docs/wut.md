@@ -6,6 +6,18 @@ At Bolt Foundry, we use the term **samples** instead of "examples" when
 referring to instances of LLM behavior or output. Samples represent concrete
 instances of an LLM's capabilities that can be tested, verified, and reused.
 
+## Cards
+
+Cards are simply a document that:
+
+1. A title
+2. A summary
+3. A hierarchical set of rules that are typically only 1-2 levels great
+
+The intention is for both humans and machines to understand them, and reference
+them directly and point samples to them to reinforce and disambiguate specific
+principles.
+
 ## Identity Card vs Constitution
 
 We use **Identity Card** to define the core essence and characteristics of an
