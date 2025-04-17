@@ -1,9 +1,6 @@
-import { mutationField, nonNull, objectType, stringArg } from "nexus";
+import { objectType } from "nexus";
 import { graphqlBfNode } from "apps/graphql/types/graphqlBfNode.ts";
 import { getLogger } from "packages/logger/logger.ts";
-import { getVoice } from "apps/boltFoundry/ai/getVoice.ts";
-import { makeTweets } from "apps/boltFoundry/ai/makeTweets.ts";
-import { reviseBlog } from "apps/boltFoundry/ai/reviseBlog.ts";
 
 const _logger = getLogger(import.meta);
 
@@ -119,73 +116,5 @@ export const graphqlBfOrganizationType = objectType({
     t.field("analytics", {
       type: graphqlAnalyticsType,
     });
-  },
-});
-
-export const createVoiceMutation = mutationField("createVoice", {
-  args: {
-    handle: nonNull(stringArg()),
-  },
-  type: graphqlBfOrganizationType,
-  resolve: async (_, { handle }, ctx) => {
-    const org = await ctx.findOrganizationForCurrentViewer();
-    if (!org) {
-      throw new Error("No organization found");
-    }
-    const voiceResponse = await getVoice(handle);
-    org.props = {
-      ...org.props,
-      identity: {
-        twitter: {
-          handle,
-        },
-        voice: voiceResponse,
-      },
-    };
-    await org.save();
-    return org.toGraphql();
-  },
-});
-
-export const makeTweetsMutation = mutationField("makeTweets", {
-  args: {
-    tweet: nonNull(stringArg()),
-  },
-  type: graphqlBfOrganizationType,
-  resolve: async (_, { tweet }, ctx) => {
-    const org = await ctx.findOrganizationForCurrentViewer();
-    if (!org) {
-      throw new Error("No organization found");
-    }
-    const response = await makeTweets(tweet, org.props.identity?.voice?.voice);
-    org.props = {
-      ...org.props,
-      creation: response,
-    };
-    await org.save();
-    return org.toGraphql();
-  },
-});
-
-export const reviseBlogMutation = mutationField("reviseBlog", {
-  args: {
-    blogPost: nonNull(stringArg()),
-  },
-  type: graphqlBfOrganizationType,
-  resolve: async (_, { blogPost }, ctx) => {
-    const org = await ctx.findOrganizationForCurrentViewer();
-    if (!org) {
-      throw new Error("No organization found");
-    }
-    const response = await reviseBlog(
-      blogPost,
-      org.props.identity?.voice?.voice,
-    );
-    org.props = {
-      ...org.props,
-      creation: response,
-    };
-    await org.save();
-    return org.toGraphql();
   },
 });
