@@ -1,8 +1,8 @@
 #! /usr/bin/env -S bff test
 import { assertEquals, assertExists } from "@std/assert";
-import { storage } from "../storage.ts";
-import { AdapterRegistry } from "../AdapterRegistry.ts";
-import { InMemoryAdapter } from "../InMemoryAdapter.ts";
+import { storage } from "apps/bfDb/storage/storage.ts";
+import { AdapterRegistry } from "apps/bfDb/storage/AdapterRegistry.ts";
+import { InMemoryAdapter } from "apps/bfDb/storage/InMemoryAdapter.ts";
 import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 
 Deno.test("storage facade auto‑registers default adapter", async () => {
