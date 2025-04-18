@@ -43,7 +43,7 @@ export class BfNodeBase<
   TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
 > {
   __typename = this.constructor.name;
-  private _metadata: TMetadata;
+  protected _metadata: TMetadata;
   readonly relatedEdge: string = "apps/bfDb/classes/BfEdgeBase.ts";
 
   readonly _currentViewer: BfCurrentViewer;

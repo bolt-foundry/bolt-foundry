@@ -155,9 +155,14 @@ export class BfNode<
   }
 
   override async load(): Promise<this> {
-    const _item = await storage.get(this.cv.bfOid, this.metadata.bfGid);
-    throw new BfErrorNotImplemented();
-    // return this;
+    const item = await storage.get(this.cv.bfOid, this.metadata.bfGid);
+    if (!item) {
+      throw new BfErrorNodeNotFound();
+    }
+    this._props = item.props as TProps;
+    this._savedProps = this._props;
+    this._metadata = item.metadata as unknown as TMetadata;
+    return this;
   }
 
   override async queryTargets<
