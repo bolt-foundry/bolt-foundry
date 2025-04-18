@@ -1,28 +1,48 @@
-import {
-  bfCloseConnection,
-  bfDeleteItem,
-  bfGetItem,
-  bfPutItem,
-  bfQueryItemsUnified as bfQueryItems,
-  type DbItem,
-  type Props,
-} from "apps/bfDb/bfDb.ts";
+// apps/bfDb/storage/storage.ts
+// ---------------------------------------------------------------------------
+// Unified storage façade that delegates **all** operations to the active
+// backend adapter retrieved from `AdapterRegistry`.  A default adapter is
+// auto‑registered (via `registerDefaultAdapter`) if nothing is present.
+// ---------------------------------------------------------------------------
+
+import { AdapterRegistry } from "./AdapterRegistry.ts";
+import { registerDefaultAdapter } from "./registerDefaultAdapter.ts";
+
 import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
 import type { BfMetadataNode } from "apps/bfDb/coreModels/BfNode.ts";
 import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
 
-export const storage = {
-  async initialize() {},
+/**
+ * Ensures an adapter is available and returns it.
+ * `registerDefaultAdapter()` is idempotent and fast, so calling on every
+ * access keeps the API simple while retaining testability.
+ */
+function adapter() {
+  registerDefaultAdapter();
+  return AdapterRegistry.get();
+}
 
+export const storage = {
+  // ---- lifecycle -------------------------------------------------------
+  initialize() {
+    return Promise.resolve(adapter().initialize());
+  },
+
+  close() {
+    return Promise.resolve(adapter().close());
+  },
+
+  // ---- CRUD ------------------------------------------------------------
   get<T extends Props>(bfOid: BfGid, bfGid: BfGid) {
-    return bfGetItem<T>(bfOid, bfGid);
+    return adapter().getItem<T>(bfOid, bfGid);
   },
 
   async put<T extends Props, M extends BfMetadataNode | BfMetadataEdge>(
     props: T,
     metadata: M,
   ) {
-    await bfPutItem(props, metadata);
+    await adapter().putItem<T>(props, metadata);
   },
 
   query<T extends Props>(
@@ -31,16 +51,21 @@ export const storage = {
     bfGids?: BfGid[],
     order: "ASC" | "DESC" = "ASC",
     orderBy?: string,
-    options: Record<string, unknown> = {},
+    // legacy `options` arg retained for backward‑compat but ignored here
+    _options: Record<string, unknown> = {},
   ): Promise<DbItem<T>[]> {
-    return bfQueryItems(metadata, props, bfGids, order, orderBy, options);
+    // Current DatabaseBackend interface ignores order/orderBy; we pass them so
+    // the signature is future‑proof once those params are respected.
+    return adapter().queryItems<T>(
+      metadata,
+      props,
+      bfGids?.map(String),
+      order,
+      orderBy,
+    );
   },
 
   async delete(bfOid: BfGid, bfGid: BfGid) {
-    await bfDeleteItem(bfOid, bfGid);
-  },
-
-  async close() {
-    await bfCloseConnection();
+    await adapter().deleteItem(bfOid, bfGid);
   },
 } as const;
