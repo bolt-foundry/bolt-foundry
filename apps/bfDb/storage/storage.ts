@@ -1,4 +1,3 @@
-// apps/bfDb/storage/storage.ts
 // ---------------------------------------------------------------------------
 // Unified storage façade that delegates **all** operations to the active
 // backend adapter retrieved from `AdapterRegistry`.  A default adapter is
