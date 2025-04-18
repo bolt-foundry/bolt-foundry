@@ -8,7 +8,7 @@ import type { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 import { BfErrorNotImplemented } from "infra/BfError.ts";
 import { getLogger } from "packages/logger/logger.ts";
-import { bfGetItem, bfPutItem, bfQueryItemsUnified } from "apps/bfDb/bfDb.ts";
+import { storage } from "apps/bfDb/storage/storage.ts";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorNode.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import type { BfEdgeBaseProps } from "apps/bfDb/classes/BfEdgeBase.ts";
@@ -73,7 +73,7 @@ export class BfNode<
     if (itemFromCache) {
       return itemFromCache as InstanceType<TThis>;
     }
-    const itemFromDb = await bfGetItem(cv.bfOid, id);
+    const itemFromDb = await storage.get(cv.bfOid, id);
     logger.debug(itemFromDb);
     if (!itemFromDb) {
       logger.debug("couldn't find item", cv.bfOid, id);
@@ -104,7 +104,7 @@ export class BfNode<
       countOnly?: boolean;
     } = {},
   ) {
-    const items = await bfQueryItemsUnified(
+    const items = await storage.query(
       metadata,
       props,
       bfGids,
@@ -145,7 +145,7 @@ export class BfNode<
 
   override async save<TMetadata extends BfMetadataNode>() {
     logger.debug(`Saving ${this}`, this.props, this.metadata);
-    await bfPutItem(this.props, this.metadata as unknown as TMetadata);
+    await storage.put(this.props, this.metadata as unknown as TMetadata);
     this._serverProps = this.props;
     this._clientProps = {};
     return this;
@@ -156,7 +156,7 @@ export class BfNode<
   }
 
   override async load(): Promise<this> {
-    const _item = await bfGetItem(this.cv.bfOid, this.metadata.bfGid);
+    const _item = await storage.get(this.cv.bfOid, this.metadata.bfGid);
     throw new BfErrorNotImplemented();
     // return this;
   }
@@ -213,7 +213,7 @@ export class BfNode<
 
     // Load the edge creation log to understand what's happening
     try {
-      const createEdgeLog = await bfQueryItemsUnified(
+      const createEdgeLog = await storage.query(
         { className: relatedEdgeName },
         {},
         undefined,
@@ -228,7 +228,7 @@ export class BfNode<
       logger.error(`Error looking up all edges:`, error);
     }
 
-    const edges = await bfQueryItemsUnified(
+    const edges = await storage.query(
       metadataQuery,
       propsQuery,
       undefined,
@@ -244,7 +244,7 @@ export class BfNode<
       logger.debug(`No edges found, checking if edge was created properly`);
 
       // Let's check if the edge exists at all with this source ID
-      const allEdgesFromSource = await bfQueryItemsUnified(
+      const allEdgesFromSource = await storage.query(
         { bfSid: this.metadata.bfGid },
         {},
         undefined,
