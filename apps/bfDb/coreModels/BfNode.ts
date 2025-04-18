@@ -31,8 +31,8 @@ export class BfNode<
   TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
 > extends BfNodeBase<TProps, TMetadata, TEdgeProps> {
   override readonly relatedEdge: string = "apps/bfDb/coreModels/BfEdge.ts";
-  protected _serverProps: TProps;
-  protected _clientProps: Partial<TProps> = {};
+  protected _savedProps: TProps;
+  protected override _props: TProps;
 
   static override generateMetadata<
     TProps extends BfNodeBaseProps,
@@ -122,32 +122,30 @@ export class BfNode<
 
   constructor(
     currentViewer: BfCurrentViewer,
-    protected override _props: TProps,
+    _props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
     super(currentViewer, _props, metadata);
-    this._serverProps = _props;
+    this._savedProps = _props;
+    this._props = { ..._props };
   }
 
   override get props(): TProps {
-    return { ...this._serverProps, ...this._clientProps };
+    return this._props;
   }
 
-  override set props(props: Partial<TProps>) {
-    this._clientProps = props;
+  override set props(newProps: Partial<TProps>) {
+    this._props = { ...this._props, ...newProps };
   }
 
   override isDirty() {
-    return Object.keys(this._clientProps).some((key) => {
-      return this._clientProps[key] !== this._serverProps[key];
-    });
+    return JSON.stringify(this._props) !== JSON.stringify(this._savedProps);
   }
 
   override async save<TMetadata extends BfMetadataNode>() {
     logger.debug(`Saving ${this}`, this.props, this.metadata);
     await storage.put(this.props, this.metadata as unknown as TMetadata);
-    this._serverProps = this.props;
-    this._clientProps = {};
+    this._savedProps = this._props;
     return this;
   }
 
