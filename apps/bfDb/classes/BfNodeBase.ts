@@ -1,4 +1,9 @@
 import { generateNodeMetadata } from "apps/bfDb/utils/metadata.ts";
+import {
+  connectionFromNodes,
+  type GraphqlNode,
+  toGraphqlFromNode,
+} from "../graphql/helpers.ts";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorNode.ts";
 import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 import type { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
@@ -177,21 +182,8 @@ export class BfNodeBase<
     return false;
   }
 
-  toGraphql() {
-    const descriptors = Object.getOwnPropertyDescriptors(this);
-    const skippedKeys = ["metadata", "cv", "props"];
-    const getters = Object.entries(descriptors)
-      .filter(([key, descriptor]) =>
-        typeof descriptor.get === "function" && !skippedKeys.includes(key)
-      )
-      .map(([key]) => [key, this[key as keyof this]]);
-
-    return {
-      ...this.props,
-      ...Object.fromEntries(getters),
-      id: this.metadata.bfGid,
-      __typename: this.__typename,
-    };
+  toGraphql(): GraphqlNode {
+    return toGraphqlFromNode(this as unknown as BfNodeBase);
   }
 
   toString() {
@@ -296,17 +288,24 @@ export class BfNodeBase<
    * This method provides a standardized interface for implementing GraphQL connections
    * following the Relay specification
    */
-  queryTargetsConnectionForGraphql<
+  async queryTargetsConnectionForGraphql<
     TTargetProps extends BfNodeBaseProps,
     TTargetClass extends typeof BfNodeBase<TTargetProps>,
   >(
-    _TargetClass: TTargetClass,
-    _args: ConnectionArguments,
-    _props: Partial<TTargetProps> = {},
-    _edgeProps: Partial<Record<string, JSONValue>> = {},
-    _cache?: BfNodeCache,
-  ): Promise<Connection<ReturnType<InstanceType<TTargetClass>["toGraphql"]>>> {
-    throw new BfErrorNotImplemented();
+    TargetClass: TTargetClass,
+    args: ConnectionArguments,
+    props: Partial<TTargetProps> = {},
+    edgeProps: Partial<TEdgeProps> = {},
+    cache?: BfNodeCache,
+  ): Promise<Connection<GraphqlNode>> {
+    const targets = await this.queryTargets(
+      TargetClass,
+      props,
+      edgeProps,
+      cache,
+    );
+    const gNodes = targets.map((n) => n.toGraphql());
+    return connectionFromNodes(gNodes, args);
   }
 
   /** CALLBACKS */
