@@ -33,31 +33,11 @@ export type RouteEntrypoint = {
 
 import {
   entrypointContentFoundryApp,
-  entrypointFormatter,
-  entrypointFormatterEditor,
-  entrypointFormatterVoice,
   entrypointHome,
-  entrypointTwitterIdeator,
-  entrypointTwitterIdeatorCompose,
-  entrypointTwitterIdeatorResearch,
-  entrypointTwitterIdeatorVoice,
-  entrypointTwitterIdeatorWorkshop,
 } from "apps/boltFoundry/__generated__/builtRoutes.ts";
 import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
 
-export const loggedInAppRoutes = new Map<string, IsographRoute>([
-  ["/formatter", entrypointFormatter],
-  ["/formatter/editor/:editorSlug?", entrypointFormatterEditor],
-  ["/formatter/voice", entrypointFormatterVoice],
-  ["/twitter", entrypointTwitterIdeator],
-  ["/twitter/voice", entrypointTwitterIdeatorVoice],
-  ["/twitter/research/:researchSlug?", entrypointTwitterIdeatorResearch],
-  [
-    "/twitter/workshopping/:workshoppingSlug?",
-    entrypointTwitterIdeatorWorkshop,
-  ],
-  ["/twitter/compose", entrypointTwitterIdeatorCompose],
-]);
+export const loggedInAppRoutes = new Map<string, IsographRoute>([]);
 
 export const isographAppRoutes = new Map<string, IsographRoute>([
   ["/", entrypointHome],
