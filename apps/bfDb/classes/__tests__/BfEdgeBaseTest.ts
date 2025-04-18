@@ -7,9 +7,9 @@ import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
 import { BfNodeInMemory } from "apps/bfDb/coreModels/BfNodeInMemory.ts";
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
-// import { AdapterRegistry } from "apps/bfDb/storage/AdapterRegistry.ts";
-// import { InMemoryAdapter } from "apps/bfDb/storage/InMemoryAdapter.ts";
-// AdapterRegistry.register(new InMemoryAdapter());
+import { AdapterRegistry } from "apps/bfDb/storage/AdapterRegistry.ts";
+import { InMemoryAdapter } from "apps/bfDb/storage/InMemoryAdapter.ts";
+AdapterRegistry.register(new InMemoryAdapter());
 
 export function testBfEdgeBase<
   TEdgeProps extends BfEdgeBaseProps,
