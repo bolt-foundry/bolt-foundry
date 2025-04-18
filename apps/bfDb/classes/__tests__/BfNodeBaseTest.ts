@@ -3,6 +3,9 @@ import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import type { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorNode.ts";
+// import { AdapterRegistry } from "apps/bfDb/storage/AdapterRegistry.ts";
+// import { InMemoryAdapter } from "apps/bfDb/storage/InMemoryAdapter.ts";
+// AdapterRegistry.register(new InMemoryAdapter());
 
 const _logger = getLogger(import.meta);
 
