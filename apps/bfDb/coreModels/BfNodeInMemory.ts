@@ -8,8 +8,12 @@ import {
 import type { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 import { getLogger } from "packages/logger/logger.ts";
-import { connectionFromArray } from "graphql-relay";
-import type { Connection, ConnectionArguments } from "graphql-relay";
+import {
+  type Connection,
+  type ConnectionArguments,
+  connectionFromArray,
+} from "graphql-relay";
+import type { GraphqlNode } from "apps/bfDb/graphql/helpers.ts";
 import type { BfEdgeBaseProps } from "apps/bfDb/classes/BfEdgeBase.ts";
 
 const logger = getLogger(import.meta);
@@ -18,180 +22,157 @@ export type BfNodeInMemoryProps = BfNodeBaseProps;
 export type BfMetadataNodeInMemory = BfMetadataBase;
 
 /**
- * BfNodeInMemory: In-memory implementation of BfNodeBase
- * Provides a simple in-memory storage for nodes with basic CRUD operations
+ * Simple in‑memory implementation of `BfNodeBase`.
+ * The static generics mirror the base‑class signatures so the compiler
+ * recognises the overrides as compatible.
  */
 export class BfNodeInMemory<
   TProps extends BfNodeInMemoryProps = BfNodeInMemoryProps,
   TMetadata extends BfMetadataNodeInMemory = BfMetadataNodeInMemory,
 > extends BfNodeBase<TProps, TMetadata> {
-  // In-memory storage for nodes
+  /** per‑class in‑memory store */
   private static inMemoryNodes: Map<string, BfNodeInMemory> = new Map();
+
   override readonly relatedEdge: string = "apps/bfDb/coreModels/BfEdge.ts";
 
+  /* ------------------------------------------------------------------ */
+  /*  Base‑class static overrides                                       */
+  /* ------------------------------------------------------------------ */
+
   /**
-   * Create a new node in memory
+   * Create – without persistence side‑effects – a detached node instance.
+   * Mirrors the base‑class generic signature so TypeScript accepts the
+   * override.
    */
   static override async __DANGEROUS__createUnattached<
     TProps extends BfNodeBaseProps,
     TMetadata extends BfMetadataBase,
-    TReturnable extends typeof BfNodeBase<TProps, TMetadata>,
+    TThis extends typeof BfNodeBase<TProps, TMetadata>,
   >(
+    this: TThis,
     cv: BfCurrentViewer,
     props: TProps,
-    metadata?: Partial<TMetadata>,
+    metadata: Partial<TMetadata> = {},
     cache?: BfNodeCache,
-  ) {
-    const newNode = new this(cv, props, metadata) as InstanceType<TReturnable>;
+  ): Promise<InstanceType<TThis>> {
+    // `this` is the concrete subclass constructor that called us
+    const NewCtor = this as unknown as {
+      new (
+        cv: BfCurrentViewer,
+        props: TProps,
+        metadata?: Partial<TMetadata>,
+      ): InstanceType<TThis>;
+    };
+
+    const newNode = new NewCtor(cv, props, metadata);
+
     await newNode.beforeCreate();
     await newNode.save();
     await newNode.afterCreate();
-    logger.debug(`Created ${newNode}`);
-    cache?.set(newNode.metadata.bfGid, newNode);
 
-    // Store in the static map
-    this.inMemoryNodes.set(
+    cache?.set(newNode.metadata.bfGid, newNode);
+    (this as unknown as typeof BfNodeInMemory).inMemoryNodes.set(
       newNode.metadata.bfGid,
-      newNode,
+      newNode as unknown as BfNodeInMemory,
     );
 
+    logger.debug(`Created ${newNode}`);
     return newNode;
   }
 
   /**
-   * Find a node by ID (throws error if not found)
+   * Lookup by GID – must conform exactly to the base signature.
    */
   static override findX<
     TProps extends BfNodeBaseProps,
-    TReturnable extends typeof BfNodeBase<TProps>,
+    TThis extends typeof BfNodeBase<TProps>,
   >(
+    this: TThis,
     _cv: BfCurrentViewer,
     id: BfGid,
     cache?: BfNodeCache,
-  ) {
-    // Check cache first
-    const cachedItem = cache?.get(id);
-    if (cachedItem) {
-      return Promise.resolve(cachedItem) as Promise<InstanceType<TReturnable>>;
-    }
+  ): Promise<InstanceType<TThis>> {
+    const cached = cache?.get(id) as InstanceType<TThis> | undefined;
+    if (cached) return Promise.resolve(cached);
 
-    // Look up in the in-memory store
-    const node = this.inMemoryNodes.get(id);
+    const node = (this as unknown as typeof BfNodeInMemory).inMemoryNodes.get(
+      id,
+    );
+    if (!node) throw new BfErrorNodeNotFound(`Node with ID ${id} not found`);
 
-    if (!node) {
-      throw new BfErrorNodeNotFound(`Node with ID ${id} not found`);
-    }
-
-    if (cache) {
-      cache.set(id, node);
-    }
-
-    return Promise.resolve(node) as Promise<InstanceType<TReturnable>>;
+    const typedNode = node as unknown as InstanceType<TThis>;
+    cache?.set(id, typedNode);
+    return Promise.resolve(typedNode);
   }
 
   /**
-   * Query nodes based on metadata, props, or IDs
+   * Basic filter query across the in‑memory store.
    */
   static override query<
     TProps extends BfNodeBaseProps,
-    TReturnable extends typeof BfNodeBase<TProps>,
+    TThis extends typeof BfNodeBase<TProps>,
   >(
+    this: TThis,
     _cv: BfCurrentViewer,
     metadata: Partial<BfMetadataBase> = {},
     props: Partial<TProps> = {},
     bfGids: Array<BfGid> = [],
     cache?: BfNodeCache,
-  ) {
-    const result: Array<InstanceType<TReturnable>> = [];
+  ): Promise<Array<InstanceType<TThis>>> {
+    const results: Array<InstanceType<TThis>> = [];
 
-    for (const node of this.inMemoryNodes.values()) {
-      // Skip if not the correct class type
-      if (node.constructor.name !== this.name) {
-        continue;
-      }
+    for (
+      const node of (this as unknown as typeof BfNodeInMemory).inMemoryNodes
+        .values()
+    ) {
+      if (node.constructor.name !== this.name) continue;
+      if (bfGids.length && !bfGids.includes(node.metadata.bfGid)) continue;
 
-      // Filter by GIDs if provided
-      if (bfGids.length > 0 && !bfGids.includes(node.metadata.bfGid)) {
-        continue;
-      }
+      // metadata filter
+      const metaOk = Object.entries(metadata).every(
+        ([k, v]) => (node.metadata as Record<string, unknown>)[k] === v,
+      );
+      if (!metaOk) continue;
 
-      // Filter by metadata if provided
-      const metadataMatches = Object.entries(metadata).every(([key, value]) => {
-        return node.metadata[key as keyof typeof node.metadata] === value;
-      });
+      // props filter
+      const propsOk = Object.entries(props).every(
+        ([k, v]) => (node.props as Record<string, unknown>)[k] === v,
+      );
+      if (!propsOk) continue;
 
-      if (!metadataMatches) {
-        continue;
-      }
-
-      // Filter by props if provided
-      const propsMatches = Object.entries(props).every(([key, value]) => {
-        return node.props[key as keyof typeof node.props] === value;
-      });
-
-      if (!propsMatches) {
-        continue;
-      }
-
-      // Add to result
-      result.push(node as InstanceType<TReturnable>);
-
-      // Add to cache if provided
-      if (cache) {
-        cache.set(node.metadata.bfGid, node as InstanceType<TReturnable>);
-      }
+      const typedNode = node as unknown as InstanceType<TThis>;
+      results.push(typedNode);
+      cache?.set(node.metadata.bfGid, typedNode);
     }
 
-    return Promise.resolve(result as Array<InstanceType<TReturnable>>);
+    return Promise.resolve(results);
   }
 
-  /**
-   * Save the node to memory
-   */
+  /* ------------------------------------------------------------------ */
+  /*  Instance methods                                                  */
+  /* ------------------------------------------------------------------ */
+
   override save(): Promise<this> {
-    // Store in the static map
-    (this.constructor as typeof BfNodeInMemory).inMemoryNodes.set(
+    (this.constructor as unknown as typeof BfNodeInMemory).inMemoryNodes.set(
       this.metadata.bfGid,
       this as unknown as BfNodeInMemory,
     );
     return Promise.resolve(this);
   }
 
-  /**
-   * Delete the node from memory
-   */
   override delete(): Promise<boolean> {
-    const result = (this.constructor as typeof BfNodeInMemory).inMemoryNodes
-      .delete(
-        this.metadata.bfGid,
-      );
-    return Promise.resolve(result);
+    const removed = (this.constructor as unknown as typeof BfNodeInMemory)
+      .inMemoryNodes.delete(this.metadata.bfGid);
+    return Promise.resolve(removed);
   }
 
-  /**
-   * Load the node from memory (no-op for in-memory implementation)
-   */
   override load(): Promise<this> {
-    // For in-memory implementation, nothing needs to be loaded
+    // no‑op – everything is already in memory
     return Promise.resolve(this);
   }
 
   /**
-   * Gets all in-memory nodes
-   */
-  static getAllInMemoryNodes(): BfNodeInMemory[] {
-    return Array.from(this.inMemoryNodes.values());
-  }
-
-  /**
-   * Clears all in-memory nodes
-   */
-  static clearInMemoryNodes(): void {
-    this.inMemoryNodes.clear();
-  }
-
-  /**
-   * Queries targets and returns a GraphQL connection
+   * Convenience: query targets and expose as a Relay connection.
    */
   override async queryTargetsConnectionForGraphql<
     TTargetProps extends BfNodeBaseProps,
@@ -202,21 +183,26 @@ export class BfNodeInMemory<
     props: Partial<TTargetProps> = {},
     edgeProps: Partial<BfEdgeBaseProps> = {},
     cache?: BfNodeCache,
-  ): Promise<Connection<ReturnType<InstanceType<TTargetClass>["toGraphql"]>>> {
-    // Query target nodes using the existing queryTargets method
+  ): Promise<Connection<GraphqlNode>> {
     const targets = await this.queryTargets(
       TargetClass,
       props,
       edgeProps,
       cache,
     );
+    const gnodes = targets.map((n) => n.toGraphql());
+    return connectionFromArray(gnodes, args) as Connection<GraphqlNode>;
+  }
 
-    // Convert nodes to their GraphQL representation
-    const graphqlNodes = targets.map((node) => node.toGraphql());
+  /* ------------------------------------------------------------------ */
+  /*  Test helpers                                                      */
+  /* ------------------------------------------------------------------ */
 
-    // Use connectionFromArray to create a GraphQL connection
-    return connectionFromArray(graphqlNodes, args) as Connection<
-      ReturnType<InstanceType<TTargetClass>["toGraphql"]>
-    >;
+  static getAllInMemoryNodes(): BfNodeInMemory[] {
+    return Array.from(this.inMemoryNodes.values());
+  }
+
+  static clearInMemoryNodes(): void {
+    this.inMemoryNodes.clear();
   }
 }
