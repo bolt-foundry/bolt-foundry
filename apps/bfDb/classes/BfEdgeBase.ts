@@ -1,3 +1,4 @@
+import { generateEdgeMetadata } from "apps/bfDb/utils/metadata.ts";
 import {
   type BfMetadataBase,
   BfNodeBase,
@@ -39,25 +40,14 @@ export class BfEdgeBase<
    * @param targetNode - The target node to connect to
    * @returns Edge metadata with source and target information
    */
-  static generateEdgeMetadata<
-    TMetadata extends BfMetadataEdgeBase,
-  >(
+  static generateEdgeMetadata<TMetadata extends BfMetadataEdgeBase>(
     cv: BfCurrentViewer,
     sourceNode: BfNodeBase,
     targetNode: BfNodeBase,
-    metadata?: Partial<TMetadata>,
+    metadata: Partial<TMetadata> = {},
   ): TMetadata {
-    // First, get the base metadata from parent class
-    const baseMetadata = this.generateMetadata(cv, metadata);
-
-    // Then add edge-specific fields
-    return {
-      ...baseMetadata,
-      bfSClassName: sourceNode.constructor.name,
-      bfSid: sourceNode.metadata.bfGid,
-      bfTClassName: targetNode.constructor.name,
-      bfTid: targetNode.metadata.bfGid,
-    } as TMetadata;
+    const base = generateEdgeMetadata(cv, sourceNode, targetNode, metadata);
+    return { ...base, className: this.name } as TMetadata;
   }
 
   /**

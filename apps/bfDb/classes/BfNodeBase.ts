@@ -1,7 +1,7 @@
+import { generateNodeMetadata } from "apps/bfDb/utils/metadata.ts";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorNode.ts";
-import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 import type { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
-import { generateUUID } from "lib/generateUUID.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import type { JSONValue } from "apps/bfDb/bfDb.ts";
 import { BfErrorNotImplemented } from "infra/BfError.ts";
@@ -52,16 +52,14 @@ export class BfNodeBase<
   >(
     this: TThis,
     cv: BfCurrentViewer,
-    metadata?: Partial<TMetadata>,
+    metadata: Partial<TMetadata> = {},
   ): TMetadata {
-    const bfGid = toBfGid(generateUUID());
-    const defaults = {
-      bfGid: bfGid,
-      bfOid: cv.bfOid,
-      className: this.name,
+    // delegate to the new util and override sortValue so subclasses
+    // can customise it via generateSortValue()
+    return generateNodeMetadata(cv, this.name, {
       sortValue: this.generateSortValue(),
-    } as TMetadata;
-    return { ...defaults, ...metadata } as TMetadata;
+      ...metadata,
+    }) as TMetadata;
   }
 
   static findX<
