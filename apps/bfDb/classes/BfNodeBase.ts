@@ -26,6 +26,7 @@ export type BfMetadataBase = {
   bfOid: BfGid;
   className: string;
   sortValue: number;
+  lastUpdated?: Date;
 };
 
 export type BfNodeCache<

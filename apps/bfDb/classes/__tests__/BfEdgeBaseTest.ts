@@ -5,7 +5,7 @@ import type {
 } from "apps/bfDb/classes/BfEdgeBase.ts";
 import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
-import { BfNodeInMemory } from "apps/bfDb/coreModels/BfNodeInMemory.ts";
+import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
 import { AdapterRegistry } from "apps/bfDb/storage/AdapterRegistry.ts";
 import { InMemoryAdapter } from "apps/bfDb/storage/InMemoryAdapter.ts";
@@ -26,13 +26,13 @@ export function testBfEdgeBase<
           "test",
         );
 
-      const sourceNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+      const sourceNode = await BfNode.__DANGEROUS__createUnattached(
         mockCv,
         {
           name: "Source Node",
         },
       );
-      const targetNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+      const targetNode = await BfNode.__DANGEROUS__createUnattached(
         mockCv,
         {
           name: "Target Node",
@@ -113,21 +113,21 @@ export function testBfEdgeBase<
         "querySourceInstances should return source nodes connected to a target node",
         async () => {
           // Create nodes for testing
-          const sourceNode1 = await BfNodeInMemory
+          const sourceNode1 = await BfNode
             .__DANGEROUS__createUnattached(
               mockCv,
               {
                 name: "Source Node 1",
               },
             );
-          const sourceNode2 = await BfNodeInMemory
+          const sourceNode2 = await BfNode
             .__DANGEROUS__createUnattached(
               mockCv,
               {
                 name: "Source Node 2",
               },
             );
-          const targetNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          const targetNode = await BfNode.__DANGEROUS__createUnattached(
             mockCv,
             {
               name: "Target Node for Query",
@@ -153,7 +153,7 @@ export function testBfEdgeBase<
           // Test querying source instances without role filter
           const sources = await BfEdgeClass.querySourceInstances(
             mockCv,
-            BfNodeInMemory,
+            BfNode,
             targetNode.metadata.bfGid,
           );
 
@@ -170,7 +170,7 @@ export function testBfEdgeBase<
           // Test with edge properties filter (role)
           const filteredSources = await BfEdgeClass.querySourceInstances(
             mockCv,
-            BfNodeInMemory,
+            BfNode,
             targetNode.metadata.bfGid,
             {},
             { role: "test-role-1" },
@@ -188,20 +188,20 @@ export function testBfEdgeBase<
         "querySourceEdgesForNode should return edges where a node is the source",
         async () => {
           // Create nodes for testing
-          const sourceNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          const sourceNode = await BfNode.__DANGEROUS__createUnattached(
             mockCv,
             {
               name: "Source Node for Edge Query",
             },
           );
-          const targetNode1 = await BfNodeInMemory
+          const targetNode1 = await BfNode
             .__DANGEROUS__createUnattached(
               mockCv,
               {
                 name: "Target Node 1",
               },
             );
-          const targetNode2 = await BfNodeInMemory
+          const targetNode2 = await BfNode
             .__DANGEROUS__createUnattached(
               mockCv,
               {
@@ -256,21 +256,21 @@ export function testBfEdgeBase<
         "queryTargetInstances should return target nodes connected to a source node",
         async () => {
           // Create nodes for testing
-          const sourceNode1 = await BfNodeInMemory
+          const sourceNode1 = await BfNode
             .__DANGEROUS__createUnattached(
               mockCv,
               {
                 name: "Source Node 1 for Target Query",
               },
             );
-          const sourceNode2 = await BfNodeInMemory
+          const sourceNode2 = await BfNode
             .__DANGEROUS__createUnattached(
               mockCv,
               {
                 name: "Source Node 2 for Target Query",
               },
             );
-          const targetNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          const targetNode = await BfNode.__DANGEROUS__createUnattached(
             mockCv,
             {
               name: "Target Node for Query",
@@ -296,7 +296,7 @@ export function testBfEdgeBase<
           // Test querying target instances without role filter
           const targets = await BfEdgeClass.queryTargetInstances(
             mockCv,
-            BfNodeInMemory,
+            BfNode,
             sourceNode1.metadata.bfGid,
             {},
             {}, // No edge props filter
@@ -312,7 +312,7 @@ export function testBfEdgeBase<
           // Test with edge properties filter (role)
           const filteredTargets = await BfEdgeClass.queryTargetInstances(
             mockCv,
-            BfNodeInMemory,
+            BfNode,
             sourceNode1.metadata.bfGid,
             {},
             { role: "target-role-1" },
@@ -331,20 +331,20 @@ export function testBfEdgeBase<
         "queryTargetEdgesForNode should return edges where a node is the target",
         async () => {
           // Create nodes for testing
-          const targetNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          const targetNode = await BfNode.__DANGEROUS__createUnattached(
             mockCv,
             {
               name: "Target Node for Edge Query",
             },
           );
-          const sourceNode1 = await BfNodeInMemory
+          const sourceNode1 = await BfNode
             .__DANGEROUS__createUnattached(
               mockCv,
               {
                 name: "Source Node 1",
               },
             );
-          const sourceNode2 = await BfNodeInMemory
+          const sourceNode2 = await BfNode
             .__DANGEROUS__createUnattached(
               mockCv,
               {
@@ -400,13 +400,13 @@ export function testBfEdgeBase<
         "cache is used for queryTarget methods",
         async () => {
           // Create a test node
-          const sourceNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          const sourceNode = await BfNode.__DANGEROUS__createUnattached(
             mockCv,
             {
               name: "Source Node for Cache Test",
             },
           );
-          const targetNode = await BfNodeInMemory.__DANGEROUS__createUnattached(
+          const targetNode = await BfNode.__DANGEROUS__createUnattached(
             mockCv,
             {
               name: "Target Node for Cache Test",
@@ -432,7 +432,7 @@ export function testBfEdgeBase<
           // Test cache with queryTargetInstances
           await BfEdgeClass.queryTargetInstances(
             mockCv,
-            BfNodeInMemory,
+            BfNode,
             sourceNode.metadata.bfGid,
             {},
             {},

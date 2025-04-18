@@ -143,6 +143,7 @@ export class BfNode<
   }
 
   override async save<TMetadata extends BfMetadataNode>() {
+    this.metadata.lastUpdated = new Date();
     logger.debug(`Saving ${this}`, this.props, this.metadata);
     await storage.put(this.props, this.metadata as unknown as TMetadata);
     this._savedProps = this._props;
