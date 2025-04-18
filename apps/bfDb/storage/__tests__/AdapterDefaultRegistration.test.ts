@@ -11,7 +11,9 @@ import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
 import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { AdapterRegistry } from "apps/bfDb/storage/AdapterRegistry.ts";
+import { registerDefaultAdapter } from "apps/bfDb/storage/registerDefaultAdapter.ts";
 
+registerDefaultAdapter();
 // Simple dummy node model for the test
 class TestNode extends BfNode<{ name: string }> {}
 
