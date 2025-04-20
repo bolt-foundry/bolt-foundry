@@ -18,6 +18,7 @@ export function BfDsFormTextInput(
       label={title}
       type="text"
       name={id}
+      id={`bfDsFormInput-${id}`}
       // @ts-ignore: TODO @george, need to figure out typing
       value={data[id] ?? ""}
       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>

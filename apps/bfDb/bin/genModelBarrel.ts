@@ -3,7 +3,7 @@
 import { relative } from "@std/path";
 import { getLogger } from "packages/logger/logger.ts";
 
-const logger = getLogger(import.meta)
+const logger = getLogger(import.meta);
 
 const MODELS_DIR = new URL("../models/", import.meta.url);
 const OUT_PATH = new URL(
