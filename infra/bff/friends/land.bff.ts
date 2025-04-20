@@ -86,11 +86,12 @@ export async function land(): Promise<number> {
     return installResult;
   }
 
-  // Build BFF
-  logger.info("Building BFF...");
+  // Build BFF with bolt-foundry package
+  logger.info("Building BFF with bolt-foundry package...");
   const buildResult = await runShellCommand([
     "bff",
     "build",
+    "--include-bolt-foundry",
   ]);
 
   if (buildResult !== 0) {
