@@ -1,6 +1,6 @@
 import type { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
 import type { BfEdgeBase } from "apps/bfDb/classes/BfEdgeBase.ts";
-import type { Context } from "apps/bfDb/graphql/graphqlContext.ts";
+import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 
 export type GqlScalar = "id" | "string" | "int" | "float" | "boolean" | "json";
 
@@ -19,7 +19,7 @@ export type FieldSpec = {
   resolver?: (
     src: BfNodeBase,
     args: unknown,
-    ctx: Context,
+    ctx: BfGraphqlContext,
   ) => unknown | Promise<unknown>;
 };
 
@@ -188,7 +188,7 @@ export type CustomMutation = {
   resolver: (
     src: InstanceType<typeof BfNodeBase>,
     args: Record<string, unknown>,
-    ctx: Context,
+    ctx: BfGraphqlContext,
   ) => unknown | Promise<unknown>;
 };
 
