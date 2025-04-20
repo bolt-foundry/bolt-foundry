@@ -1,5 +1,6 @@
 #! /usr/bin/env -S bff test
-import { defineGqlNode, Direction } from "apps/bfDb/graphql/builder.ts";
+
+import { defineGqlNode, Direction } from "apps/bfDb/graphql/builder/builder.ts"; // adjust path
 import { assertEquals, assertExists } from "@std/assert";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 
@@ -18,7 +19,6 @@ Deno.test("defineGqlNode – full DSL", () => {
     relation.many.in("followers", () => BfNode);
     relation.one.in("likedByViewer", () => BfNode);
 
-    // — mutations —
     mutation.update()
       .delete()
       .custom(
