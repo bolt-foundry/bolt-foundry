@@ -6,19 +6,16 @@
 interface BfCurrentViewer implements Node {
   """Unique identifier for the resource"""
   id: ID!
-  organization: BfOrganization
 }
 
 type BfCurrentViewerLoggedIn implements BfCurrentViewer & Node {
   """Unique identifier for the resource"""
   id: ID!
-  organization: BfOrganization
 }
 
 type BfCurrentViewerLoggedOut implements BfCurrentViewer & Node {
   """Unique identifier for the resource"""
   id: ID!
-  organization: BfOrganization
 }
 
 interface BfNode implements Node {
@@ -26,37 +23,13 @@ interface BfNode implements Node {
   id: ID!
 }
 
-type BfOrganization implements BfNode & Node {
-  """Unique identifier for the resource"""
-  id: ID!
-}
-
-type BfPerson implements BfNode & Node {
-  """Unique identifier for the resource"""
-  id: ID!
-  name: String
-}
-
-scalar JSON
-
-"""
-A scalar that only accepts a valid JSON string. It returns the same valid JSON string on output.
-"""
-scalar JSONString
-
 type JoinWaitlistResponse {
   message: String
   success: Boolean
 }
 
 type Mutation {
-  checkEmail(email: String!): Boolean
-  getLoginOptions(email: String!): JSONString
   joinWaitlist(company: String, email: String, name: String): JoinWaitlistResponse
-  login(authResp: JSONString!, email: String!): BfCurrentViewer
-  loginAsDemoPerson: BfCurrentViewerLoggedIn
-  register(attResp: JSONString!, email: String!): BfCurrentViewerLoggedIn
-  registrationOptions(email: String!): JSONString
 }
 
 interface Node {

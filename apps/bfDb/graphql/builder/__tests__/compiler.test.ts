@@ -16,13 +16,13 @@ type Props = { name: string };
 
 /** Dummy node classes with GraphQL specs */
 class TestA extends BfNode<Props> {
-  static gqlSpec = defineGqlNode((field) => {
+  static override gqlSpec = defineGqlNode((field) => {
     field.string("name");
   });
 }
 
 class TestB extends BfNode<Props> {
-  static gqlSpec = defineGqlNode((field) => {
+  static override gqlSpec = defineGqlNode((field) => {
     field.string("name");
   });
 }

@@ -6,38 +6,11 @@ export type RouteEntrypoint = {
   title: string;
 };
 
-iso(`entrypoint Mutation.CheckEmail`)
-iso(`entrypoint Mutation.GetLoginOptions`)
 iso(`entrypoint Mutation.JoinWaitlist`)
-iso(`entrypoint Mutation.LoginAsDemoPerson`)
-iso(`entrypoint Mutation.Login`)
-iso(`entrypoint Mutation.Register`)
-iso(`entrypoint Mutation.RegistrationOptions`)
-iso(`entrypoint Query.EntrypointContentFoundryApp`)
 iso(`entrypoint Query.EntrypointHome`)
-iso(`entrypoint Query.EntrypointTwitterIdeatorWorkshopPermalink`)
-iso(`entrypoint Query.entrypointTwitterIdeatorResearchPermalink`)
 
-import checkEmail from "apps/boltFoundry/__generated__/__isograph/Mutation/CheckEmail/entrypoint.ts"
-import entrypointContentFoundryApp from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointContentFoundryApp/entrypoint.ts"
 import entrypointHome from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointHome/entrypoint.ts"
-import entrypointTwitterIdeatorResearchPermalink from "apps/boltFoundry/__generated__/__isograph/Query/entrypointTwitterIdeatorResearchPermalink/entrypoint.ts"
-import entrypointTwitterIdeatorWorkshopPermalink from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointTwitterIdeatorWorkshopPermalink/entrypoint.ts"
-import getLoginOptions from "apps/boltFoundry/__generated__/__isograph/Mutation/GetLoginOptions/entrypoint.ts"
 import joinWaitlist from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts"
-import login from "apps/boltFoundry/__generated__/__isograph/Mutation/Login/entrypoint.ts"
-import loginAsDemoPerson from "apps/boltFoundry/__generated__/__isograph/Mutation/LoginAsDemoPerson/entrypoint.ts"
-import register from "apps/boltFoundry/__generated__/__isograph/Mutation/Register/entrypoint.ts"
-import registrationOptions from "apps/boltFoundry/__generated__/__isograph/Mutation/RegistrationOptions/entrypoint.ts"
 
-export {checkEmail};
-export {entrypointContentFoundryApp};
 export {entrypointHome};
-export {entrypointTwitterIdeatorResearchPermalink};
-export {entrypointTwitterIdeatorWorkshopPermalink};
-export {getLoginOptions};
 export {joinWaitlist};
-export {loginAsDemoPerson};
-export {login};
-export {register};
-export {registrationOptions};
