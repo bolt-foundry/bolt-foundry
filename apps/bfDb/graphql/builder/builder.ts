@@ -9,6 +9,8 @@ export enum Direction {
   IN = "IN",
 }
 
+export type GqlNodeSpec = ReturnType<typeof defineGqlNode>;
+
 /* ------------------------------------------------------------------
    Field & Relation specs
    ------------------------------------------------------------------ */

@@ -17,7 +17,7 @@ type Props = {
 
 export class BfOrganization extends BfNode<Props> {
   /** GraphQL specification for this node */
-  static gqlSpec = defineGqlNode((field, _relation, mutation) => {
+  static override gqlSpec = defineGqlNode((field, _relation, mutation) => {
     /* -------------------- fields -------------------- */
     field.string("name");
     field.json("settings");
