@@ -117,7 +117,7 @@ class DeskParticipant extends BfNodeBase {
 
 ### 4. Isograph Schema Extensions (Challenging)
 
-**File**: `apps/graphql/types/graphqlDesks.ts`
+**File**: `apps/bfDb/graphql/types/graphqlDesks.ts`
 
 **Purpose**: Extend GraphQL schema with Desks-specific types and queries
 

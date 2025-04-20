@@ -90,7 +90,8 @@ states using Isograph
 - Video grid layout component in `apps/desks/components/VideoGrid.tsx`
 - Isograph entrypoint and fragment definitions in
   `apps/desks/entrypoints/EntrypointDesks.ts`
-- GraphQL schema extensions for Desks in `apps/graphql/types/graphqlDesks.ts`
+- GraphQL schema extensions for Desks in
+  `apps/bfDb/graphql/types/graphqlDesks.ts`
 - Audio/video default settings controller integrated with Isograph
 
 **File Naming Conventions**:

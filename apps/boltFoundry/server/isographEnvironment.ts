@@ -3,9 +3,9 @@ import {
   createIsographStore,
 } from "@isograph/react";
 // import { getContextFromRequest } from "apps/bfDb/getCurrentViewer.ts";
-import { yoga } from "apps/graphql/graphqlServer.ts";
+import { yoga } from "apps/bfDb/graphql/graphqlServer.ts";
 import { getLogger } from "packages/logger/logger.ts";
-import { createContext } from "apps/graphql/graphqlContext.ts";
+import { createContext } from "apps/bfDb/graphql/graphqlContext.ts";
 const logger = getLogger(import.meta);
 
 export function getIsographEnvironment(request: Request) {

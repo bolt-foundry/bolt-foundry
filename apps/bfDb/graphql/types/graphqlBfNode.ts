@@ -11,7 +11,7 @@ import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 //   queryField,
 //   stringArg,
 //   subscriptionField,
-// } from "apps/graphql/deps.ts";
+// } from "apps/bfDb/graphql/deps.ts";
 // import { toBfGid } from "apps/bfDb/classes/BfBaseModelIdTypes.ts";
 // import { getLogger } from "packages/logger/logger.ts";
 

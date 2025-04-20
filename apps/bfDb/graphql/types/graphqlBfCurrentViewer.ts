@@ -7,15 +7,15 @@ import {
   queryField,
   stringArg,
 } from "nexus";
-import { graphqlNode } from "apps/graphql/types/graphqlBfNode.ts";
+import { graphqlNode } from "apps/bfDb/graphql/types/graphqlBfNode.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { BfPerson } from "apps/bfDb/models/BfPerson.ts";
 import {
   graphqlJSONStringScalarType,
-} from "apps/graphql/types/graphqlJSONScalar.ts";
+} from "apps/bfDb/graphql/types/graphqlJSONScalar.ts";
 import type { RegistrationResponseJSON } from "@simplewebauthn/server";
 import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
-import { graphqlBfOrganizationType } from "apps/graphql/types/graphqlBfOrganization.ts";
+import { graphqlBfOrganizationType } from "apps/bfDb/graphql/types/graphqlBfOrganization.ts";
 const logger = getLogger(import.meta);
 
 export const graphqlBfCurrentViewerType = interfaceType({

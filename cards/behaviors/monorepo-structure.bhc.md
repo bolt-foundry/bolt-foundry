@@ -104,7 +104,7 @@ The BoltFoundry repo follows this structure with specific apps like:
 - `apps/boltFoundry/`: Main React application
 - `apps/bfDb/`: Database models and utilities
 - `apps/bfDs/`: UI components (design system)
-- `apps/graphql/`: GraphQL schema and resolvers
+- `apps/bfDb/graphql/`: GraphQL schema and resolvers
 - `apps/web/`: Web server and routing
 
 The monorepo approach enables:
