@@ -1,8 +1,4 @@
-import {
-  interfaceType,
-  objectType,
-  queryField,
-} from "nexus";
+import { interfaceType, objectType, queryField } from "nexus";
 import { graphqlNode } from "apps/bfDb/graphql/types/graphqlBfNode.ts";
 import { getLogger } from "packages/logger/logger.ts";
 const _logger = getLogger(import.meta);
@@ -34,4 +30,3 @@ export const graphqlBfCurrentViewerQueryType = queryField("me", {
     return ctx.getCvForGraphql();
   },
 });
-
