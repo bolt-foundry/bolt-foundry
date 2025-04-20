@@ -15,6 +15,10 @@ import type {
   BfEdgeBaseProps,
 } from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { Connection, ConnectionArguments } from "graphql-relay";
+import {
+  defineGqlNode,
+  type GqlNodeSpec,
+} from "apps/bfDb/graphql/builder/builder.ts";
 
 const logger = getLogger(import.meta);
 
@@ -47,6 +51,9 @@ export class BfNodeBase<
   readonly relatedEdge: string = "apps/bfDb/classes/BfEdgeBase.ts";
 
   readonly _currentViewer: BfCurrentViewer;
+  static gqlSpec?: GqlNodeSpec;
+  static defineGqlNode = defineGqlNode;
+
   static generateSortValue() {
     return Date.now();
   }

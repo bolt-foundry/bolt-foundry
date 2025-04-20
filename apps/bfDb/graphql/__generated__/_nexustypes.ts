@@ -6,23 +6,12 @@
  */
 
 
-import type { BfGraphqlContext } from "./../graphqlContext.ts"
+import type { Context } from "./../graphqlContext.ts"
 import type { GraphqlBfNode, GraphqlNode } from "./../types/graphqlBfNode.ts"
 import type { core, connectionPluginCore } from "nexus"
-declare global {
-  interface NexusGenCustomInputMethods<TypeName extends string> {
-    /**
-     * A scalar that only accepts a valid JSON string. It returns the same valid JSON string on output.
-     */
-    jsonString<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "JSONString";
-  }
-}
+
 declare global {
   interface NexusGenCustomOutputMethods<TypeName extends string> {
-    /**
-     * A scalar that only accepts a valid JSON string. It returns the same valid JSON string on output.
-     */
-    jsonString<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "JSONString";
     /**
      * Adds a Relay-style connection to the type, with numerous options for configuration
      *
@@ -52,8 +41,6 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
-  JSON: any
-  JSONString: any
 }
 
 export interface NexusGenObjects {
@@ -62,13 +49,6 @@ export interface NexusGenObjects {
   }
   BfCurrentViewerLoggedOut: { // root type
     id: string; // ID!
-  }
-  BfOrganization: { // root type
-    id: string; // ID!
-  }
-  BfPerson: { // root type
-    id: string; // ID!
-    name?: string | null; // String
   }
   JoinWaitlistResponse: { // root type
     message?: string | null; // String
@@ -127,31 +107,16 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 export interface NexusGenFieldTypes {
   BfCurrentViewerLoggedIn: { // field return type
     id: string; // ID!
-    organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
   }
   BfCurrentViewerLoggedOut: { // field return type
     id: string; // ID!
-    organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
-  }
-  BfOrganization: { // field return type
-    id: string; // ID!
-  }
-  BfPerson: { // field return type
-    id: string; // ID!
-    name: string | null; // String
   }
   JoinWaitlistResponse: { // field return type
     message: string | null; // String
     success: boolean | null; // Boolean
   }
   Mutation: { // field return type
-    checkEmail: boolean | null; // Boolean
-    getLoginOptions: NexusGenScalars['JSONString'] | null; // JSONString
     joinWaitlist: NexusGenRootTypes['JoinWaitlistResponse'] | null; // JoinWaitlistResponse
-    login: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
-    loginAsDemoPerson: NexusGenRootTypes['BfCurrentViewerLoggedIn'] | null; // BfCurrentViewerLoggedIn
-    register: NexusGenRootTypes['BfCurrentViewerLoggedIn'] | null; // BfCurrentViewerLoggedIn
-    registrationOptions: NexusGenScalars['JSONString'] | null; // JSONString
   }
   Query: { // field return type
     bfNode: NexusGenRootTypes['BfNode'] | null; // BfNode
@@ -192,7 +157,6 @@ export interface NexusGenFieldTypes {
   }
   BfCurrentViewer: { // field return type
     id: string; // ID!
-    organization: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
   }
   BfNode: { // field return type
     id: string; // ID!
@@ -205,31 +169,16 @@ export interface NexusGenFieldTypes {
 export interface NexusGenFieldTypeNames {
   BfCurrentViewerLoggedIn: { // field return type name
     id: 'ID'
-    organization: 'BfOrganization'
   }
   BfCurrentViewerLoggedOut: { // field return type name
     id: 'ID'
-    organization: 'BfOrganization'
-  }
-  BfOrganization: { // field return type name
-    id: 'ID'
-  }
-  BfPerson: { // field return type name
-    id: 'ID'
-    name: 'String'
   }
   JoinWaitlistResponse: { // field return type name
     message: 'String'
     success: 'Boolean'
   }
   Mutation: { // field return type name
-    checkEmail: 'Boolean'
-    getLoginOptions: 'JSONString'
     joinWaitlist: 'JoinWaitlistResponse'
-    login: 'BfCurrentViewer'
-    loginAsDemoPerson: 'BfCurrentViewerLoggedIn'
-    register: 'BfCurrentViewerLoggedIn'
-    registrationOptions: 'JSONString'
   }
   Query: { // field return type name
     bfNode: 'BfNode'
@@ -270,7 +219,6 @@ export interface NexusGenFieldTypeNames {
   }
   BfCurrentViewer: { // field return type name
     id: 'ID'
-    organization: 'BfOrganization'
   }
   BfNode: { // field return type name
     id: 'ID'
@@ -282,27 +230,10 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
-    checkEmail: { // args
-      email: string; // String!
-    }
-    getLoginOptions: { // args
-      email: string; // String!
-    }
     joinWaitlist: { // args
       company?: string | null; // String
       email?: string | null; // String
       name?: string | null; // String
-    }
-    login: { // args
-      authResp: NexusGenScalars['JSONString']; // JSONString!
-      email: string; // String!
-    }
-    register: { // args
-      attResp: NexusGenScalars['JSONString']; // JSONString!
-      email: string; // String!
-    }
-    registrationOptions: { // args
-      email: string; // String!
     }
   }
   Query: {
@@ -314,15 +245,12 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   BfCurrentViewer: "BfCurrentViewerLoggedIn" | "BfCurrentViewerLoggedOut"
-  BfNode: "BfOrganization" | "BfPerson"
-  Node: "BfCurrentViewerLoggedIn" | "BfCurrentViewerLoggedOut" | "BfOrganization" | "BfPerson"
+  Node: "BfCurrentViewerLoggedIn" | "BfCurrentViewerLoggedOut"
 }
 
 export interface NexusGenTypeInterfaces {
   BfCurrentViewerLoggedIn: "BfCurrentViewer" | "Node"
   BfCurrentViewerLoggedOut: "BfCurrentViewer" | "Node"
-  BfOrganization: "BfNode" | "Node"
-  BfPerson: "BfNode" | "Node"
   BfCurrentViewer: "Node"
   BfNode: "Node"
 }
