@@ -4,7 +4,7 @@ import { defineGqlNode } from "apps/bfDb/graphql/builder/builder.ts";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { makeSchema } from "nexus";
 import { printSchema } from "graphql";
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { assertStringIncludes, assertEquals } from "@std/assert";
 
 /** Build an SDL string from the compiled Nexus types */
 function sdlOf(types: Array<unknown>): string {
@@ -16,13 +16,13 @@ type Props = { name: string };
 
 /** Dummy node classes with GraphQL specs */
 class TestA extends BfNode<Props> {
-  static gqlSpec = defineGqlNode((field) => {
+  static override gqlSpec = defineGqlNode((field) => {
     field.string("name");
   });
 }
 
 class TestB extends BfNode<Props> {
-  static gqlSpec = defineGqlNode((field) => {
+  static override gqlSpec = defineGqlNode((field) => {
     field.string("name");
   });
 }
