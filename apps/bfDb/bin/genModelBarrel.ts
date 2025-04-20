@@ -1,12 +1,15 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write
 
 import { relative } from "@std/path";
+import { getLogger } from "packages/logger/logger.ts";
 
 const MODELS_DIR = new URL("../models/", import.meta.url);
 const OUT_PATH = new URL(
   "../models/__generated__/modelClassesList.ts",
   import.meta.url,
 );
+
+const logger = getLogger(import.meta);
 
 // Collect every .ts file in the models directory (top‑level only).
 const exportLines: string[] = [];
@@ -30,4 +33,4 @@ await Deno.mkdir(new URL("../models/__generated__", import.meta.url), {
 });
 await Deno.writeTextFile(OUT_PATH, fileContent);
 
-console.log(`✅  wrote ${relative(Deno.cwd(), OUT_PATH.pathname)}`);
+logger.info(`✅  wrote ${relative(Deno.cwd(), OUT_PATH.pathname)}`);

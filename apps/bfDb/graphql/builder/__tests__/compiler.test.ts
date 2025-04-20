@@ -4,7 +4,7 @@ import { defineGqlNode } from "apps/bfDb/graphql/builder/builder.ts";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { makeSchema } from "nexus";
 import { printSchema } from "graphql";
-import { assertStringIncludes, assertEquals } from "@std/assert";
+import { assertEquals, assertStringIncludes } from "@std/assert";
 
 /** Build an SDL string from the compiled Nexus types */
 function sdlOf(types: Array<unknown>): string {
