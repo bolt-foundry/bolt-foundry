@@ -9,12 +9,6 @@ import type {
   BfNodeBaseProps,
 } from "apps/bfDb/classes/BfNodeBase.ts";
 import type { BfMetadataNode, BfNode } from "apps/bfDb/coreModels/BfNode.ts";
-import { BfPerson } from "apps/bfDb/models/BfPerson.ts";
-import type {
-  AuthenticationResponseJSON,
-  RegistrationResponseJSON,
-} from "@simplewebauthn/server";
-import { BfOrganization } from "apps/bfDb/models/BfOrganization.ts";
 
 const logger = getLogger(import.meta);
 
@@ -47,18 +41,8 @@ export type BfGraphqlContext = {
     BfClass: TClass,
     id: BfGid,
   ): Promise<InstanceType<TClass>>;
-  findCurrentUser(): Promise<BfPerson | null>;
-  login(
-    email: string,
-    options: AuthenticationResponseJSON,
-  ): Promise<BfCurrentViewer>;
-  register(
-    registrationResponse: RegistrationResponseJSON,
-    email: string,
-  ): Promise<BfPerson>;
   getRequestHeader(name: string): string | null;
   getResponseHeaders(): Headers;
-  findOrganizationForCurrentViewer(): Promise<BfOrganization | null>;
 };
 
 export async function createContext(
@@ -67,40 +51,12 @@ export async function createContext(
   logger.debug("Creating new context");
   const cache = new Map<string, Map<BfGid, BfNodeBase>>();
   const responseHeaders = new Headers();
-  let currentViewer = BfCurrentViewer.createFromRequest(
+  const currentViewer = BfCurrentViewer.createFromRequest(
     import.meta,
     request,
     responseHeaders,
   );
   logger.debug("Current viewer created");
-
-  async function login(email: string, options: AuthenticationResponseJSON) {
-    logger.debug("Logging in user");
-    currentViewer = await BfCurrentViewer.createFromLoginOptions(
-      import.meta,
-      email,
-      options,
-      responseHeaders,
-    );
-    logger.debug("User logged in successfully");
-    return currentViewer;
-  }
-
-  async function register(
-    registrationResponse: RegistrationResponseJSON,
-    email: string,
-  ) {
-    logger.debug("Registering user");
-    currentViewer = await BfCurrentViewer.createFromRegistrationResponse(
-      import.meta,
-      registrationResponse,
-      email,
-      responseHeaders,
-    );
-    const person = await BfPerson.register(registrationResponse, email);
-    logger.debug("User registered successfully");
-    return person;
-  }
 
   logger.debug("context Creating");
   const ctx: BfGraphqlContext = {
@@ -169,24 +125,6 @@ export async function createContext(
         cache.get(BfClass.name),
       );
       return item as InstanceType<typeof BfClass>;
-    },
-
-    async findCurrentUser() {
-      const currentViewerPerson = await BfPerson.findCurrentViewer(
-        currentViewer,
-      );
-      return currentViewerPerson;
-    },
-
-    login,
-    register,
-
-    async findOrganizationForCurrentViewer() {
-      const orgs = await BfOrganization.query(
-        currentViewer,
-        { bfCid: currentViewer.bfGid },
-      );
-      return orgs[0];
     },
   };
 
