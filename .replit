@@ -217,9 +217,6 @@ externalPort = 80
 [objectStorage]
 defaultBucketID = "replit-objstore-8028c9e1-a66e-4994-abdc-12c7efcd4d02"
 
-[extension]
-isExtension = true
-
 [env]
 HISTFILE = "$REPL_HOME/.cache/bash_history"
 HISTCONTROL = "ignoredups"
