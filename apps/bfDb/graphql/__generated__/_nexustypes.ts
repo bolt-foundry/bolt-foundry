@@ -6,7 +6,7 @@
  */
 
 
-import type { Context } from "./../graphqlContext.ts"
+import type { BfGraphqlContext } from "./../graphqlContext.ts"
 import type { GraphqlBfNode, GraphqlNode } from "./../types/graphqlBfNode.ts"
 import type { core, connectionPluginCore } from "nexus"
 declare global {
