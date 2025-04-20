@@ -12,12 +12,13 @@ const _logger = getLogger(import.meta);
 type Props = {
   name: string;
   /** JSON object containing the organization's settings */
-  settings: JSONValue;
+  settings: JSONValue
 };
+
 
 export class BfOrganization extends BfNode<Props> {
   /** GraphQL specification for this node */
-  static gqlSpec = defineGqlNode((field, _relation, mutation) => {
+  static override gqlSpec = defineGqlNode((field, _relation, mutation) => {
     /* -------------------- fields -------------------- */
     field.string("name");
     field.json("settings");
