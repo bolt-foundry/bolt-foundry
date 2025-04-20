@@ -1,15 +1,9 @@
 import { getLogger } from "packages/logger/logger.ts";
 import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
-import type {
-  AuthenticationResponseJSON,
-  RegistrationResponseJSON,
-  WebAuthnCredential,
-} from "@simplewebauthn/server";
+import type { WebAuthnCredential } from "@simplewebauthn/server";
 // deno-lint-ignore no-external-import
 import { Buffer } from "node:buffer";
-import { BfPerson } from "apps/bfDb/models/BfPerson.ts";
 import jwt from "jsonwebtoken";
-import { generateUUID } from "lib/generateUUID.ts";
 
 const JWT_SECRET = Buffer.from("content-foundry-secret-key");
 const JWT_EXPIRES_IN = "1h";
@@ -141,48 +135,6 @@ export abstract class BfCurrentViewer {
     );
   }
 
-  static async createFromLoginOptions(
-    importMeta: ImportMeta,
-    email: string,
-    options: AuthenticationResponseJSON,
-    responseHeaders: Headers,
-  ) {
-    return await BfCurrentViewerLoggedIn.createFromLoginOptions(
-      importMeta,
-      email,
-      options,
-      responseHeaders,
-    );
-  }
-
-  static async createFromRegistrationResponse(
-    importMeta: ImportMeta,
-    registrationResponseJSON: RegistrationResponseJSON,
-    email: string,
-    responseHeaders: Headers,
-  ) {
-    return await BfCurrentViewerLoggedIn.createFromRegistrationResponse(
-      importMeta,
-      registrationResponseJSON,
-      email,
-      responseHeaders,
-    );
-  }
-
-  static createForDemo(importMeta: ImportMeta, responseHeaders: Headers) {
-    const uniqueId = generateUUID().substring(0, 8);
-    const demoId = toBfGid(`demo-user-${uniqueId}`);
-
-    BfCurrentViewer.setLoginSuccessHeaders(
-      responseHeaders,
-      demoId,
-    );
-    return BfCurrentViewerLoggedIn.__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
-      importMeta,
-      demoId,
-      demoId,
-    );
-  }
   static __DANGEROUS_USE_IN_SCRIPTS_ONLY__createOmni(importMeta: ImportMeta) {
     logger.warn(`Creating omnivc from: ${importMeta.url}`);
     return BfCurrentViewer__DANGEROUS__OMNI__
@@ -327,72 +279,6 @@ class BfCurrentViewerLoggedIn extends BfCurrentViewer {
     return new this(creator, bfGid, bfOid);
   }
 
-  static override async createFromLoginOptions(
-    creator: ImportMeta,
-    email: string,
-    response: AuthenticationResponseJSON,
-    responseHeaders: Headers,
-  ) {
-    const cv = BfCurrentViewer
-      .__DANGEROUS_USE_IN_REGISTRATION_ONLY__createCvForRegistration(
-        creator,
-        email,
-      );
-    const person = await BfPerson.verifyLogin(cv, email, response);
-
-    if (!person) {
-      responseHeaders.set(
-        "Set-Cookie",
-        "bfgat=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0",
-      );
-      responseHeaders.set(
-        "Set-Cookie",
-        "bfgrt=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0",
-      );
-      return BfCurrentViewerLoggedOut
-        .__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(creator);
-    }
-    const nextCv = new this(
-      creator,
-      person.metadata.bfGid,
-      person.metadata.bfOid,
-    );
-    BfCurrentViewer.setLoginSuccessHeaders(
-      responseHeaders,
-      person.metadata.bfGid,
-    );
-    return nextCv;
-  }
-  static override async createFromRegistrationResponse(
-    creator: ImportMeta,
-    registrationResponseJSON: RegistrationResponseJSON,
-    email: string,
-    responseHeaders: Headers,
-  ) {
-    const bfGid = toBfGid(email);
-
-    const person = await BfPerson.register(registrationResponseJSON, email);
-
-    if (!person) {
-      responseHeaders.set(
-        "Set-Cookie",
-        "bfgat=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0",
-      );
-      responseHeaders.set(
-        "Set-Cookie",
-        "bfgrt=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0",
-      );
-      return BfCurrentViewerLoggedOut
-        .__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(creator);
-    }
-    const nextCv = new this(
-      creator,
-      person.metadata.bfGid,
-      person.metadata.bfOid,
-    );
-    BfCurrentViewer.setLoginSuccessHeaders(responseHeaders, bfGid);
-    return nextCv;
-  }
   override get isLoggedIn(): boolean {
     return true;
   }
