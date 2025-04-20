@@ -13,6 +13,13 @@ export async function e2eCommand(args: string[]): Promise<number> {
     const screenshotBaseDir = `${Deno.cwd()}/tmp/screenshots`;
     const runSpecificDir = `${screenshotBaseDir}/${runId}`;
 
+    // Parse arguments
+    const buildFlag = args.includes("--build") || args.includes("-b");
+    // Remove flags from args
+    const filteredArgs = args.filter((arg) => !arg.startsWith("-"));
+    // The first non-flag argument is treated as a test file path
+    const testFilePath = filteredArgs.length > 0 ? filteredArgs[0] : null;
+
     // Create the run-specific screenshot directory
     try {
       await Deno.mkdir(runSpecificDir, { recursive: true });
@@ -27,7 +34,7 @@ export async function e2eCommand(args: string[]): Promise<number> {
     }
 
     // Check if we need to build first
-    if (args.includes("--build") || args.includes("-b")) {
+    if (buildFlag) {
       logger.info("Building application...");
       await runShellCommand(["bff", "build"]);
     }
@@ -43,12 +50,22 @@ export async function e2eCommand(args: string[]): Promise<number> {
 
     // Wait a moment for the server to start
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    const paths = ["apps", "infra", "lib", "packages", "util", "sites"];
-    const pathsStrings = paths.map((path) => `${path}/**/*.test.e2e.ts`);
+
+    // Determine test paths
+    let testPaths: string[];
+    if (testFilePath) {
+      // If a specific test file is provided, use it directly
+      logger.info(`Running specific test file: ${testFilePath}`);
+      testPaths = [testFilePath];
+    } else {
+      // Otherwise, use all e2e test files
+      const paths = ["apps", "infra", "lib", "packages", "util", "sites"];
+      testPaths = paths.map((path) => `${path}/**/*.test.e2e.ts`);
+      logger.info("Running all e2e tests");
+    }
 
     try {
-      // Run the e2e tests with sanitization disabled
-      logger.info("Running e2e tests...");
+      // Run the e2e tests
       const testCommand = new Deno.Command("deno", {
         args: [
           "test",
@@ -59,7 +76,7 @@ export async function e2eCommand(args: string[]): Promise<number> {
           "--allow-read",
           "--allow-write",
           "--no-check",
-          ...pathsStrings,
+          ...testPaths,
         ],
         stdout: "inherit",
         stderr: "inherit",
@@ -125,6 +142,6 @@ export async function e2eCommand(args: string[]): Promise<number> {
 
 register(
   "e2e",
-  "Run end-to-end tests",
+  "Run end-to-end tests. Optionally specify a test file path.",
   e2eCommand,
 );
