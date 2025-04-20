@@ -119,6 +119,7 @@ export const Home = iso(`
           <h3>Join the waitlist</h3>
           <div style={{ marginBottom: 12 }}>We're happy to have you here.</div>
           <BfDsForm
+            testId="waitlist-form"
             initialData={initialFormData}
             onSubmit={submitWaitlistForm}
             xstyle={{
@@ -134,6 +135,7 @@ export const Home = iso(`
               title="Where do you work?"
             />
             <BfDsFormSubmitButton
+              testId="waitlist-submit"
               disabled={formSubmitting}
               text="Submit"
               showSpinner={formSubmitting}
