@@ -1,6 +1,6 @@
 import { objectType } from "nexus";
 import { getLogger } from "packages/logger/logger.ts";
-import { graphqlBfNode } from "apps/graphql/types/graphqlBfNode.ts";
+import { graphqlBfNode } from "apps/bfDb/graphql/types/graphqlBfNode.ts";
 
 const _logger = getLogger(import.meta);
 

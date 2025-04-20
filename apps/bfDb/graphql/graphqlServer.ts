@@ -3,8 +3,8 @@
 import { connectionPlugin, makeSchema } from "nexus";
 import { createYoga } from "graphql-yoga";
 
-import * as types from "apps/graphql/__generated__/graphqlTypesList.ts";
-import { createContext } from "apps/graphql/graphqlContext.ts";
+import * as types from "apps/bfDb/graphql/__generated__/graphqlTypesList.ts";
+import { createContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { SchemaConfig } from "nexus/dist/builder.js";
 import { getLogger } from "packages/logger/logger.ts";
 
@@ -55,13 +55,13 @@ export const graphQLHandler = async (req: Request) => {
 };
 
 function makeNameThing(fileName: string) {
-  return `export * from "apps/graphql/types/${fileName}";\n`;
+  return `export * from "apps/bfDb/graphql/types/${fileName}";\n`;
 }
 
 if (import.meta.main) {
   logger.info("Building GraphQL schema...");
   const files = Deno.readDir(
-    new URL(import.meta.resolve("apps/graphql/types")),
+    new URL(import.meta.resolve("apps/bfDb/graphql/types")),
   );
   const nextTypes = [];
 
@@ -88,7 +88,7 @@ ${nextTypes.map(makeNameThing).join("")}
   );
 
   const types = await import(
-    "apps/graphql/__generated__/graphqlTypesList.ts"
+    "apps/bfDb/graphql/__generated__/graphqlTypesList.ts"
   );
 
   makeSchema({
@@ -112,11 +112,11 @@ ${nextTypes.map(makeNameThing).join("")}
     },
     outputs: {
       schema: new URL(
-        import.meta.resolve(`apps/graphql/__generated__/schema.graphql`),
+        import.meta.resolve(`apps/bfDb/graphql/__generated__/schema.graphql`),
       )
         .pathname,
       typegen: new URL(
-        import.meta.resolve(`apps/graphql/__generated__/_nexustypes.ts`),
+        import.meta.resolve(`apps/bfDb/graphql/__generated__/_nexustypes.ts`),
       )
         .pathname,
     },

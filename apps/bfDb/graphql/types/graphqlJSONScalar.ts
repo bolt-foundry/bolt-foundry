@@ -1,4 +1,4 @@
-// apps/graphql/scalars/JSONScalar.ts
+// apps/bfDb/graphql/scalars/JSONScalar.ts
 import { scalarType } from "nexus";
 import GraphQLJSON from "graphql-type-json";
 

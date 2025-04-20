@@ -2,7 +2,7 @@
 {
   "$schema": "../../node_modules/@isograph/compiler/isograph-config-schema.json",
   "project_root": ".",
-  "schema": "../graphql/__generated__/schema.graphql",
+  "schema": "../bfDb/graphql/__generated__/schema.graphql",
   "artifact_directory": "./__generated__",
 
   "options": {

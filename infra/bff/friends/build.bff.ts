@@ -431,7 +431,9 @@ export async function build(args: Array<string>): Promise<number> {
   }
 
   if (debug) logMemoryUsage("before graphql server");
-  const result = await runShellCommand(["./apps/graphql/graphqlServer.ts"]);
+  const result = await runShellCommand([
+    "./apps/bfDb/graphql/graphqlServer.ts",
+  ]);
   if (debug) logMemoryUsage("after graphql server");
 
   if (result) return result;

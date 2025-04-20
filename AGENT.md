@@ -22,7 +22,7 @@ structured data management, unit testing, and streamlined development processes.
 - **apps/bfDb**: Database models and utilities
 - **apps/bfDs**: UI components (design system)
 - **apps/boltFoundry**: Main React frontend application
-- **apps/graphql**: GraphQL schema and resolvers
+- **apps/bfDb/graphql**: GraphQL schema and resolvers
 - **apps/web**: Web server and routing implementation
 - **agents/**: AI agent definitions (Identity and Behavior cards)
 - **infra/bff**: CLI tooling for building, testing, and development workflows
@@ -54,7 +54,7 @@ structured data management, unit testing, and streamlined development processes.
   code organization, development tools, testing, and debugging practices.
 - **Identity & Behavior Cards (`agents/`)**: Essential for understanding the
   project and executing tasks effectively.
-- **GraphQL Schema (`apps/graphql`)**: Defines API interactions and data
+- **GraphQL Schema (`apps/bfDb/graphql`)**: Defines API interactions and data
   relationships.
 - **Design System (`apps/bfDs`)**: Clarifies frontend component usage and UI
   patterns.
