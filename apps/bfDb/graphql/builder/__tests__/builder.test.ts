@@ -1,5 +1,5 @@
 #! /usr/bin/env -S bff test
-import { defineGqlNode, Direction } from "apps/bfDb/graphql/builder.ts"; // adjust path
+import { defineGqlNode, Direction } from "apps/bfDb/graphql/builder/builder.ts"; // adjust path
 import { assertEquals, assertExists } from "@std/assert";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 
