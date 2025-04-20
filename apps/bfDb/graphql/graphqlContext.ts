@@ -18,7 +18,7 @@ import { BfOrganization } from "apps/bfDb/models/BfOrganization.ts";
 
 const logger = getLogger(import.meta);
 
-export type Context = {
+export type BfGraphqlContext = {
   [Symbol.dispose]: () => void;
   getCvForGraphql(): {
     __typename: CurrentViewerTypenames;
@@ -61,7 +61,9 @@ export type Context = {
   findOrganizationForCurrentViewer(): Promise<BfOrganization | null>;
 };
 
-export async function createContext(request: Request): Promise<Context> {
+export async function createContext(
+  request: Request,
+): Promise<BfGraphqlContext> {
   logger.debug("Creating new context");
   const cache = new Map<string, Map<BfGid, BfNodeBase>>();
   const responseHeaders = new Headers();
@@ -101,7 +103,7 @@ export async function createContext(request: Request): Promise<Context> {
   }
 
   logger.debug("context Creating");
-  const ctx: Context = {
+  const ctx: BfGraphqlContext = {
     [Symbol.dispose]() {
       logger.debug("Starting context disposal");
       cache.clear();
