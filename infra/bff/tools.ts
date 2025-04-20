@@ -31,6 +31,26 @@ export function addTools(routes: Map<string, Handler>) {
     });
   });
 
+  routes.set("/tools", async () => {
+    const { stdout } =
+      await (new Deno.Command("sl", { args: ["web", "--json", "--no-open"] }))
+        .output();
+    const stdoutText = new TextDecoder().decode(stdout);
+    const json = JSON.parse(stdoutText);
+    const token = json.token;
+    if (!token) {
+      throw new BfError("Sapling token not found");
+    }
+    return new Response(null, {
+      status: 302,
+      headers: {
+        location: `https://${
+          getConfigurationVariable("REPLIT_DEV_DOMAIN")
+        }:3001/?token=${token.trim()}&cwd=%2Fhome%2Frunner%2Fworkspace`,
+      },
+    });
+  });
+
   routes.set("/tools/sapling-open", async () => {
     const { stdout } =
       await (new Deno.Command("sl", { args: ["web", "--json", "--no-open"] }))
