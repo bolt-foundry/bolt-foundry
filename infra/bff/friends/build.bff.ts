@@ -377,6 +377,7 @@ function stopContinuousMemoryLogging(): void {
 export async function build(args: Array<string>): Promise<number> {
   const waitForFail = args.includes("--slow-exit");
   const debug = args.includes("--debug");
+  const includeBoltFoundry = args.includes("--include-bolt-foundry");
 
   if (debug) {
     logMemoryUsage("build start");
@@ -395,20 +396,26 @@ export async function build(args: Array<string>): Promise<number> {
   await Deno.mkdir("static/build", { recursive: true });
   await Deno.writeFile("static/build/.gitkeep", new Uint8Array());
 
-  // Build bolt-foundry package
-  if (debug) logMemoryUsage("before bolt-foundry package build");
-  logger.info("Building bolt-foundry package...");
-  const boltFoundryBuildResult = await runShellCommand([
-    "deno",
-    "run",
-    "-A",
-    "packages/bolt-foundry/bin/build.ts",
-  ]);
-  if (debug) logMemoryUsage("after bolt-foundry package build");
+  // Build bolt-foundry package only if explicitly requested
+  if (includeBoltFoundry) {
+    if (debug) logMemoryUsage("before bolt-foundry package build");
+    logger.info("Building bolt-foundry package...");
+    const boltFoundryBuildResult = await runShellCommand([
+      "deno",
+      "run",
+      "-A",
+      "packages/bolt-foundry/bin/build.ts",
+    ]);
+    if (debug) logMemoryUsage("after bolt-foundry package build");
 
-  if (boltFoundryBuildResult !== 0) {
-    logger.error("Failed to build bolt-foundry package");
-    return boltFoundryBuildResult;
+    if (boltFoundryBuildResult !== 0) {
+      logger.error("Failed to build bolt-foundry package");
+      return boltFoundryBuildResult;
+    }
+  } else {
+    logger.info(
+      "Skipping bolt-foundry package build (use --include-bolt-foundry to build it)",
+    );
   }
 
   if (debug) logMemoryUsage("before routes build");

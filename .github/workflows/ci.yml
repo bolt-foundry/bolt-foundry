@@ -133,7 +133,7 @@ jobs:
           cd $GITHUB_WORKSPACE
           # Use the cached profile for the development shell
           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            bff ci -g
+            bff ci -g --include-bolt-foundry
           "
 
       - name: Upload test screenshots

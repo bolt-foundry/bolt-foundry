@@ -258,10 +258,18 @@ function parseDenoFmtOutput(fullOutput: string) {
 // 3. Build step
 // ----------------------------------------------------------------------------
 
-async function runBuildStep(useGithub: boolean): Promise<number> {
+async function runBuildStep(
+  useGithub: boolean,
+  args: string[],
+): Promise<number> {
   logger.info("Running bff build");
+  // Include bolt-foundry in CI builds if the flag is passed
+  const buildArgs = args.includes("--include-bolt-foundry")
+    ? ["bff", "build", "--include-bolt-foundry"]
+    : ["bff", "build"];
+
   const { code } = await runShellCommandWithOutput(
-    ["bff", "build"],
+    buildArgs,
     {},
     /* useSpinner */ true,
     /* silent */ useGithub,
@@ -354,7 +362,7 @@ async function ciCommand(options: string[]) {
   const installResult = await runInstallStep(useGithub);
 
   // 2) Build step
-  const buildResult = await runBuildStep(useGithub);
+  const buildResult = await runBuildStep(useGithub, options);
 
   // 3) Lint (with or without JSON mode)
   const lintResult = await runLintStep(useGithub);
