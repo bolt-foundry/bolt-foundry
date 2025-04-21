@@ -1,5 +1,5 @@
-import type { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
-import type { BfEdgeBase } from "apps/bfDb/classes/BfEdgeBase.ts";
+import type { BfMetadataBase, BfNodeBase, BfNodeBaseProps } from "apps/bfDb/classes/BfNodeBase.ts";
+import type { BfEdgeBase, BfEdgeBaseProps } from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 
 export type GqlScalar = "id" | "string" | "int" | "float" | "boolean" | "json";
@@ -28,6 +28,17 @@ export type RelationSpec = {
   edge?: () => typeof BfEdgeBase;
   direction: Direction;
 };
+
+export type AnyBfNodeCtor =
+  // ───── constructor ───────────────────────────────────────────────
+  & (abstract new (
+    // deno-lint-ignore no-explicit-any -- generic node props
+    ...args: any[]
+  ) => BfNodeBase<
+    BfNodeBaseProps,
+    BfMetadataBase,
+    BfEdgeBaseProps
+  >);
 
 type AddFieldFn = <
   Name extends string,
@@ -109,7 +120,7 @@ type AddRelationFn<_M extends boolean, _D extends Direction> = <
   Name extends string,
 >(
   name: Name,
-  target: () => typeof BfNodeBase,
+  target: () => AnyBfNodeCtor,
   opts?: Partial<Omit<RelationSpec, "target" | "many" | "direction">>,
 ) => RelationBuilder;
 
@@ -176,7 +187,7 @@ export type CustomMutation = {
   name: string;
   args: Record<string, GqlScalar>;
   resolver: (
-    src: InstanceType<typeof BfNodeBase>,
+    src: InstanceType<AnyBfNodeCtor>,
     args: Record<string, unknown>,
     ctx: BfGraphqlContext,
   ) => unknown | Promise<unknown>;
@@ -184,7 +195,7 @@ export type CustomMutation = {
 
 export type MutationSpec = {
   createdBy?: {
-    parent: () => typeof BfNodeBase;
+    parent: () => AnyBfNodeCtor;
     relation?: string;
     name?: string;
   };
@@ -199,7 +210,7 @@ function buildMutation() {
   };
   return {
     createdBy(
-      parent: () => typeof BfNodeBase,
+      parent: () => AnyBfNodeCtor,
       opts: Partial<{ relation: string; name: string }> = {},
     ) {
       spec.createdBy = { parent, ...opts };
