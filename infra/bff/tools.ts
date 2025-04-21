@@ -31,7 +31,19 @@ export function addTools(routes: Map<string, Handler>) {
     });
   });
 
-  routes.set("/tools", async () => {
+  routes.set("/tools", async (req) => {
+    const searchParams = new URLSearchParams(new URL(req.url).search);
+    const tool = searchParams.get("tool");
+    if (tool === "graphiql") {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          location: `https://${
+            getConfigurationVariable("REPLIT_DEV_DOMAIN")
+          }/graphql`,
+        },
+      });
+    }
     const { stdout } =
       await (new Deno.Command("sl", { args: ["web", "--json", "--no-open"] }))
         .output();
