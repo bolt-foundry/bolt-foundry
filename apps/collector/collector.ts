@@ -34,7 +34,7 @@ function registerCollectorRoutes(): Map<string, Handler> {
         logger.debug("Received data:", payload);
         appPosthog?.capture({
           distinctId: bfApiKey,
-          event: "collector:ingest",
+          event: "sample collected",
         });
         await trackLlmEvent(payload, userPosthog);
       } else {
