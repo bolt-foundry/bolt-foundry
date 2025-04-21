@@ -7,3 +7,9 @@ export class BfErrorNodeNotFound extends BfErrorNode {
     super(message);
   }
 }
+
+export class BfErrorOrganizationNotAllowed extends BfErrorNode {
+  constructor(message = "Organization not allowed") {
+    super(message);
+  }
+}
