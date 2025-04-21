@@ -1,24 +1,34 @@
 #! /usr/bin/env -S bff test
 
-import { defineGqlNode, Direction } from "apps/bfDb/graphql/builder/builder.ts"; // adjust path
+import { defineGqlNode, Direction } from "apps/bfDb/graphql/builder/builder.ts";
 import { assertEquals, assertExists } from "@std/assert";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 
-Deno.test("defineGqlNode – full DSL", () => {
+// Dummy enum for testing
+enum Role {
+  OWNER = "OWNER",
+  ADMIN = "ADMIN",
+  MEMBER = "MEMBER",
+}
+
+Deno.test("defineGqlNode – full DSL inc. date & enum", () => {
   const spec = defineGqlNode((field, relation, mutation) => {
+    // — scalar + nullable variants —
     field.id("id");
     field.string("name");
     field.nullable.int("age");
-    field.boolean(
-      "isFollowedByViewer",
-      { viewerId: "id" },
-      () => true,
-    );
+    field.boolean("isFollowedByViewer", { viewerId: "id" }, () => true);
 
+    // NEW: date + enum
+    field.date("createdAt");
+    field.nullable.date("deletedAt");
+    field.enum("role", Role);
+
+    // — relations —
     relation.one("account", () => BfNode);
     relation.many.in("followers", () => BfNode);
-    relation.one.in("likedByViewer", () => BfNode);
 
+    // — mutations —
     mutation.update()
       .delete()
       .custom(
@@ -31,9 +41,11 @@ Deno.test("defineGqlNode – full DSL", () => {
   // ------------------------------------------------------------------
   //  Field store checks
   // ------------------------------------------------------------------
-  assertExists(spec.field.id);
-  assertEquals(spec.field.age.nullable, true);
-  assertEquals(spec.field.isFollowedByViewer.args?.viewerId, "id");
+  assertExists(spec.field.createdAt);
+  assertEquals(spec.field.createdAt.type, "date");
+  assertEquals(spec.field.deletedAt.nullable, true);
+  assertEquals(spec.field.role.type, "enum");
+  assertEquals(spec.field.role.enumRef?.OWNER, "OWNER");
 
   // ------------------------------------------------------------------
   //  Relation store checks

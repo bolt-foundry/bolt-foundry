@@ -5,14 +5,19 @@ import type { JSONValue } from "apps/bfDb/bfDb.ts";
 
 const _logger = getLogger(import.meta);
 
-type Props = {
+export type BfOrganizationProps = {
+  /** Human‑readable organization name */
   name: string;
-  settings: JSONValue;
+  /** Primary GoogleWorkspace domain (e.g. "acme.com") */
+  domain: string;
+  /** Misc settings blob (feature flags, billing, etc.) */
+  settings?: JSONValue;
 };
 
-export class BfOrganization extends BfNode<Props> {
+export class BfOrganization extends BfNode<BfOrganizationProps> {
   static override gqlSpec = defineGqlNode((field, _relation, mutation) => {
     field.string("name");
+    field.string("domain");
     field.json("settings");
 
     mutation.update();

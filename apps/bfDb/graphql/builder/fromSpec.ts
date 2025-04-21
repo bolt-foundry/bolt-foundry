@@ -1,6 +1,11 @@
+// apps/bfDb/graphql/builder/fromSpec.ts
+// -----------------------------------------------------------------------------
+// Nexus compiler for the builder DSL – now with `date` scalar & `enum` support.
+// -----------------------------------------------------------------------------
 import {
   arg,
   booleanArg,
+  enumType,
   floatArg,
   idArg,
   intArg,
@@ -27,6 +32,9 @@ type GqlNodeSpec = {
   mutation: MutationSpec;
 };
 
+// ------------------------------------------------------------------
+//  Scalar handling
+// ------------------------------------------------------------------
 const scalarMap: Record<GqlScalar, string> = {
   id: "ID",
   string: "String",
@@ -34,8 +42,10 @@ const scalarMap: Record<GqlScalar, string> = {
   float: "Float",
   boolean: "Boolean",
   json: "JSON",
+  date: "Date", // NEW
 };
 
+// JSON scalar (existing)
 let jsonScalarRegistered = false;
 let jsonScalarDef: unknown;
 function ensureJsonScalar(): unknown {
@@ -50,6 +60,22 @@ function ensureJsonScalar(): unknown {
   return jsonScalarDef;
 }
 
+// Date scalar (ISO‑8601 DateTime → JS Date)
+let dateScalarRegistered = false;
+let dateScalarDef: unknown;
+function ensureDateScalar(): unknown {
+  if (dateScalarRegistered) return dateScalarDef;
+  dateScalarDef = scalarType({
+    name: "Date",
+    description: "ISO‑8601 DateTime serialized as a string",
+    serialize: (v) => (v instanceof Date ? v.toISOString() : v),
+    parseValue: (v) => (typeof v === "string" ? new Date(v) : v),
+    asNexusMethod: "date",
+  });
+  dateScalarRegistered = true;
+  return dateScalarDef;
+}
+
 function toNexusArg(scalar: GqlScalar) {
   switch (scalar) {
     case "id":
@@ -62,19 +88,40 @@ function toNexusArg(scalar: GqlScalar) {
       return booleanArg();
     case "json":
       return arg({ type: "JSON" });
+    case "date":
+      return arg({ type: "Date" });
     case "string":
     default:
       return stringArg();
   }
 }
 
+// ------------------------------------------------------------------
+//  Field helpers
+// ------------------------------------------------------------------
+const enumRegistry = new Map<string, unknown>();
+
+function addEnumField<TName extends string>(
+  t: ObjectDefinitionBlock<TName>,
+  nodeName: string,
+  fieldName: string,
+  spec: FieldSpec,
+): void {
+  const enumName = `${nodeName}_${fieldName}_Enum`;
+  if (spec.nullable) {
+    t.field(fieldName, { type: enumName });
+  } else {
+    t.nonNull.field(fieldName, { type: enumName });
+  }
+}
+
 function addScalarField<TName extends string>(
   t: ObjectDefinitionBlock<TName>,
-  name: string,
+  fieldName: string,
   spec: FieldSpec,
 ): void {
   const options: NexusOutputFieldConfig<TName, string> = {
-    type: scalarMap[spec.type],
+    type: scalarMap[spec.type as GqlScalar],
   };
 
   if (spec.args) {
@@ -93,9 +140,9 @@ function addScalarField<TName extends string>(
   }
 
   if (spec.nullable) {
-    t.field(name, options);
+    t.field(fieldName, options);
   } else {
-    t.nonNull.field(name, options);
+    t.nonNull.field(fieldName, options);
   }
 }
 
@@ -119,6 +166,9 @@ function addRelationField<TName extends string>(
   }
 }
 
+// ------------------------------------------------------------------
+//  Mutation helpers (unchanged)
+// ------------------------------------------------------------------
 function buildMutationObject(nodeName: string, mutation: MutationSpec) {
   return objectType({
     name: "Mutation",
@@ -150,7 +200,7 @@ function buildMutationObject(nodeName: string, mutation: MutationSpec) {
           resolve: (
             _root: unknown,
             resolverArgs: Record<string, unknown>,
-            ctx: unknown,
+            ctx: BfGraphqlContext,
           ) => cm.resolver({} as never, resolverArgs, ctx as BfGraphqlContext),
         });
       }
@@ -158,19 +208,49 @@ function buildMutationObject(nodeName: string, mutation: MutationSpec) {
   });
 }
 
+// ------------------------------------------------------------------
+//  Main compiler export
+// ------------------------------------------------------------------
 export function specToNexusObject(name: string, spec: GqlNodeSpec) {
-  const definitions: Array<unknown> = [];
+  const definitions: unknown[] = [];
 
-  if (Object.values(spec.field).some((f) => f.type === "json")) {
-    const jsonDef = ensureJsonScalar();
-    if (jsonDef) definitions.push(jsonDef);
+  // --------------------------------------------------------------
+  // 1. Pre‑register scalars used by this node
+  // --------------------------------------------------------------
+  const usesJson = Object.values(spec.field).some((f) => f.type === "json");
+  const usesDate = Object.values(spec.field).some((f) => f.type === "date");
+  if (usesJson) definitions.push(ensureJsonScalar());
+  if (usesDate) definitions.push(ensureDateScalar());
+
+  // --------------------------------------------------------------
+  // 2. Register enum types before schema generation
+  // --------------------------------------------------------------
+  for (const [fname, fspec] of Object.entries(spec.field)) {
+    if (fspec.type === "enum") {
+      const enumName = `${name}_${fname}_Enum`;
+      if (!enumRegistry.has(enumName)) {
+        const enumDef = enumType({
+          name: enumName,
+          members: fspec.enumRef as Record<string, string | number>,
+        });
+        enumRegistry.set(enumName, enumDef);
+        definitions.push(enumDef);
+      }
+    }
   }
 
+  // --------------------------------------------------------------
+  // 3. Create the main object type
+  // --------------------------------------------------------------
   const nodeObject = objectType({
     name,
     definition(t: ObjectDefinitionBlock<typeof name>) {
       for (const [fname, fspec] of Object.entries(spec.field)) {
-        addScalarField(t, fname, fspec);
+        if (fspec.type === "enum") {
+          addEnumField(t, name, fname, fspec);
+        } else {
+          addScalarField(t, fname, fspec);
+        }
       }
       for (const [rname, rspec] of Object.entries(spec.relation ?? {})) {
         addRelationField(t, rname, rspec);
@@ -179,6 +259,9 @@ export function specToNexusObject(name: string, spec: GqlNodeSpec) {
   });
   definitions.push(nodeObject);
 
+  // --------------------------------------------------------------
+  // 4. Append mutation helpers if any
+  // --------------------------------------------------------------
   if (
     spec.mutation.standard.update ||
     spec.mutation.standard.delete ||
