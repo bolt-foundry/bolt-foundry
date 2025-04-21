@@ -49,11 +49,11 @@ implement the resolver logic.
 
 - **GraphQL**: single mutation `loginWithGoogle(token: String!): AuthPayload`.
 
-- **Backend**: verify ID‑token signature & audience **and ensure the `hd`
-  (hosted‑domain) claim exists and is _not_ `gmail.com`** (i.e. only
-  Google Workspace), then create/fetch `BfPerson` and issue JWT session
-  cookie.`** (i.e. only Google Workspace), then create/fetch`BfPerson` and issue
-  JWT session cookie.
+- **Backend**: verify ID‑token signature & audience and ensure the ****`hd`****
+  (hosted‑domain) claim exists and is _****not****_ ****`gmail.com`**** (i.e.
+  only Google Workspace), then create/fetch `BfPerson` and issue JWT session
+  **`cookie.`** (i.e. only Google Workspace), then create/fetch`BfPerson\` and
+  issue JWT session cookie.
 
 ## 4 Work Breakdown (Backend → Frontend)
 
@@ -93,7 +93,18 @@ implement the resolver logic.
 3. **Entrypoint & Router**
    - `loginEntrypoint.ts` prefetches `me`.
    - Add `"/login"` to `isographAppRoutes`.
-4. **Mutation success handler**
+   - **Add ****`/logout`**** route**:
+     ```ts
+     appRoutes.set("/logout", (req) => {
+       // update to clear the cookie
+     });
+     ```
+     The action clears the `bf_session` cookie, invalidates the store (viewer
+     becomes LoggedOut), and redirects to home.
+4. **Mutation success handler**\*\*
+   - `loginEntrypoint.ts` prefetches `me`.
+   - Add `"/login"` to `isographAppRoutes`.
+5. **Mutation success handler**
 
 ```ts
 commit({ token }, {
