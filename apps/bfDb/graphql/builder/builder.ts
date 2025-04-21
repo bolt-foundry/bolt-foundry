@@ -1,5 +1,12 @@
-import type { BfMetadataBase, BfNodeBase, BfNodeBaseProps } from "apps/bfDb/classes/BfNodeBase.ts";
-import type { BfEdgeBase, BfEdgeBaseProps } from "apps/bfDb/classes/BfEdgeBase.ts";
+import type {
+  BfMetadataBase,
+  BfNodeBase,
+  BfNodeBaseProps,
+} from "apps/bfDb/classes/BfNodeBase.ts";
+import type {
+  BfEdgeBase,
+  BfEdgeBaseProps,
+} from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 
 export type GqlScalar = "id" | "string" | "int" | "float" | "boolean" | "json";
@@ -23,22 +30,17 @@ export type FieldSpec = {
 };
 
 export type RelationSpec = {
-  target: () => typeof BfNodeBase;
+  target: () => AnyBfNodeCtor;
   many: boolean;
   edge?: () => typeof BfEdgeBase;
   direction: Direction;
 };
 
-export type AnyBfNodeCtor =
-  // ───── constructor ───────────────────────────────────────────────
-  & (abstract new (
-    // deno-lint-ignore no-explicit-any -- generic node props
-    ...args: any[]
-  ) => BfNodeBase<
-    BfNodeBaseProps,
-    BfMetadataBase,
-    BfEdgeBaseProps
-  >);
+export type AnyBfNodeCtor<
+  TProps extends BfNodeBaseProps = BfNodeBaseProps,
+  TMetadata extends BfMetadataBase = BfMetadataBase,
+  TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
+> = typeof BfNodeBase<TProps, TMetadata, TEdgeProps>;
 
 type AddFieldFn = <
   Name extends string,

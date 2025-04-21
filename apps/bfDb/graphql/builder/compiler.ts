@@ -1,11 +1,8 @@
 import { specToNexusObject } from "apps/bfDb/graphql/builder/fromSpec.ts";
-import type {
-  BfNodeBase,
-  BfNodeBaseProps,
-} from "apps/bfDb/classes/BfNodeBase.ts";
+import type { AnyBfNodeCtor } from "apps/bfDb/graphql/builder/builder.ts";
 
-export function compileNodeSpecs<TProps extends BfNodeBaseProps>(
-  nodeClasses: Array<typeof BfNodeBase<TProps> & { gqlSpec?: unknown }>,
+export function compileNodeSpecs(
+  nodeClasses: Array<AnyBfNodeCtor>,
 ): Array<unknown> {
   const collected: unknown[] = [];
   const seenNames = new Set<string>();
