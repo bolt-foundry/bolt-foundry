@@ -429,7 +429,7 @@ export async function aiCommit(args: string[]): Promise<number> {
   // Write the generated commit message to a temporary file in the project's tmp directory
   logger.info("OpenAI generated a commit message, opening in editor...");
   const tmpDir = "tmp";
-  const tmpFileName = `commit_message_${Date.now()}.txt`;
+  const tmpFileName = `commit_message_${Date.now()}.md`;
   const tmpFile = `${tmpDir}/${tmpFileName}`;
   const fullMessage = `${title}\n\n${message}`;
   await Deno.writeTextFile(tmpFile, fullMessage);
