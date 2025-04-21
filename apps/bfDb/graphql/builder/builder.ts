@@ -8,7 +8,6 @@ import type {
   BfEdgeBaseProps,
 } from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
-import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 
 // Scalar primitives supported directly by GraphQL / Nexus
 export type GqlScalar =
@@ -43,12 +42,21 @@ export type FieldSpec = {
   ) => unknown | Promise<unknown>;
 };
 
-export type AnyBfNodeCtor = abstract new (
-  // #techdebt
-  // deno-lint-ignore no-explicit-any
-  ...args: any[]
-) => BfNodeBase<BfNodeBaseProps, BfMetadataBase, BfEdgeBaseProps>;
-
+export type AnyBfNodeCtor =
+  // ───── constructor ───────────────────────────────────────────────
+  & (abstract new (
+    // deno-lint-ignore no-explicit-any -- generic node props
+    ...args: any[]
+  ) => BfNodeBase<
+    BfNodeBaseProps,
+    BfMetadataBase,
+    BfEdgeBaseProps
+  >)
+  // ───── + static members we care about ────────────────────────────
+  & {
+    /** GraphQL spec produced by defineGqlNode (omitted on pure TS helpers) */
+    gqlSpec?: GqlNodeSpec;
+  };
 
 export type RelationSpec = {
   target: () => AnyBfNodeCtor;
