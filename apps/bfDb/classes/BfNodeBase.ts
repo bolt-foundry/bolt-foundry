@@ -19,6 +19,7 @@ import {
   defineGqlNode,
   type GqlNodeSpec,
 } from "apps/bfDb/graphql/builder/builder.ts";
+import { generateUUID } from "lib/generateUUID.ts";
 
 const logger = getLogger(import.meta);
 
@@ -47,12 +48,50 @@ export class BfNodeBase<
   TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
 > {
   __typename = this.constructor.name;
+  private _id?: string;
+
+  get id(): string {
+    return this._id ?? (this._id = generateUUID());
+  }
+
   protected _metadata: TMetadata;
   readonly relatedEdge: string = "apps/bfDb/classes/BfEdgeBase.ts";
 
   readonly _currentViewer: BfCurrentViewer;
-  static gqlSpec?: GqlNodeSpec;
-  static defineGqlNode = defineGqlNode;
+  static gqlSpec?: GqlNodeSpec | null;
+  static defineGqlNode(
+    ...args: Parameters<typeof defineGqlNode>
+  ): ReturnType<typeof defineGqlNode> | null {
+    const defOrNull = args[0] as (typeof args)[0] | null;
+    if (defOrNull === null) {
+      this.gqlSpec = null;
+      return null;
+    }
+
+    const parent = Object.getPrototypeOf(this) as typeof BfNodeBase;
+
+    if (typeof defOrNull === "function") {
+      const spec = defineGqlNode(defOrNull);
+
+      // Ensure 'implements' is an array
+      spec.implements = spec.implements ?? [];
+
+      // Include parent's spec if available
+      if (parent?.gqlSpec) {
+        spec.implements.push(parent.gqlSpec);
+      }
+
+      this.gqlSpec = spec;
+      return spec;
+    }
+
+    // Inherit gqlSpec from parent if not explicitly defined
+    if (!this.gqlSpec && parent?.gqlSpec) {
+      this.gqlSpec = parent.gqlSpec;
+    }
+
+    return this.gqlSpec ?? null;
+  }
 
   static generateSortValue() {
     return Date.now();
@@ -67,8 +106,6 @@ export class BfNodeBase<
     cv: BfCurrentViewer,
     metadata: Partial<TMetadata> = {},
   ): TMetadata {
-    // delegate to the new util and override sortValue so subclasses
-    // can customise it via generateSortValue()
     return generateNodeMetadata(cv, this.name, {
       sortValue: this.generateSortValue(),
       ...metadata,
@@ -123,7 +160,6 @@ export class BfNodeBase<
       }
     } catch (e) {
       if (e instanceof BfErrorNodeNotFound) {
-        // skip
         logger.debug(`Node not found: ${id}`);
       } else {
         throw e;
@@ -155,9 +191,6 @@ export class BfNodeBase<
     return newNode;
   }
 
-  /**
-   * Don't use the constructor outside of BfNodeBase-ish classes please. Use create instead.
-   */
   constructor(
     currentViewer: BfCurrentViewer,
     protected _props: TProps,
@@ -207,6 +240,7 @@ export class BfNodeBase<
   load(): Promise<this> {
     throw new BfErrorNotImplemented();
   }
+
   async createTargetNode<
     TTargetProps extends BfNodeBaseProps,
     TTargetClass extends typeof BfNodeBase<TTargetProps>,
@@ -221,7 +255,6 @@ export class BfNodeBase<
       `Creating target node ${TargetClass.name} from ${this.constructor.name}`,
     );
 
-    // Create the target node
     const targetNode = await TargetClass.__DANGEROUS__createUnattached(
       this.cv,
       targetProps,
@@ -230,7 +263,6 @@ export class BfNodeBase<
 
     logger.debug(`Target node created with ID: ${targetNode.metadata.bfGid}`);
 
-    // Import the related edge class
     const relatedEdgeNameWithTs = this.relatedEdge.split("/").pop() as string;
     const relatedEdgeName = relatedEdgeNameWithTs.replace(".ts", "");
     logger.debug(
@@ -240,7 +272,6 @@ export class BfNodeBase<
     const bfEdgeImport = await import(this.relatedEdge);
     const BfEdgeClass = bfEdgeImport[relatedEdgeName] as typeof BfEdgeBase;
 
-    // Create the edge between this node and the target node
     logger.debug(`Creating edge with props:`, edgeProps);
     const createdEdge = await BfEdgeClass.createBetweenNodes(
       this.cv,
@@ -291,11 +322,6 @@ export class BfNodeBase<
     );
   }
 
-  /**
-   * Query target nodes as a GraphQL connection with cursor-based pagination
-   * This method provides a standardized interface for implementing GraphQL connections
-   * following the Relay specification
-   */
   async queryTargetsConnectionForGraphql<
     TTargetProps extends BfNodeBaseProps,
     TTargetClass extends typeof BfNodeBase<TTargetProps>,
@@ -316,25 +342,6 @@ export class BfNodeBase<
     return connectionFromNodes(gNodes, args);
   }
 
-  /** CALLBACKS */
-
   beforeCreate(): Promise<void> | void {}
-
-  // beforeDelete(): Promise<void> | void {}
-
-  // beforeLoad(): Promise<void> | void {}
-
-  // beforeUpdate(): Promise<void> | void {}
-
   afterCreate(): Promise<void> | void {}
-
-  // afterUpdate(): Promise<void> | void {}
-
-  // afterDelete(): Promise<void> | void {}
-
-  // validateSave(): Promise<void> | void {}
-
-  // validatePermissions(): Promise<void> | void {}
-
-  /** /CALLBACKS */
 }

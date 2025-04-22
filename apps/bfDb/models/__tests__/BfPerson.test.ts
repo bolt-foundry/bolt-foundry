@@ -1,9 +1,5 @@
 #! /usr/bin/env -S bff test
 
-// -----------------------------------------------------------------------------
-// @ts-nocheck – Red test
-// -----------------------------------------------------------------------------
-
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
 import { assertEquals, assertExists, assertRejects } from "@std/assert";
 import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";

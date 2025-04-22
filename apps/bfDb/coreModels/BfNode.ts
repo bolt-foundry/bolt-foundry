@@ -33,6 +33,13 @@ export class BfNode<
   override readonly relatedEdge: string = "apps/bfDb/coreModels/BfEdge.ts";
   protected _savedProps: TProps;
   protected override _props: TProps;
+  static override gqlSpec = this.defineGqlNode((field) => {
+    field.id("id");
+  });
+
+  override get id(): string {
+    return this.metadata.bfGid;
+  }
 
   static override generateMetadata<
     TProps extends BfNodeBaseProps,
