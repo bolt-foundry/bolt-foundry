@@ -3,10 +3,6 @@
 ### Do not make changes to this file directly
 
 
-type AuthRoot {
-  ok: String!
-}
-
 interface BfCurrentViewer implements Node {
   """Unique identifier for the resource"""
   id: ID!
@@ -47,9 +43,8 @@ type JoinWaitlistResponse {
 
 type Mutation {
   joinWaitlist(company: String, email: String, name: String): JoinWaitlistResponse
-  loginWithGoogleAuthRoot(token: String): String
-  updateBfOrganization(id: ID): Boolean
-  updateBfPerson(id: ID): Boolean
+  updateBfOrganization(id: ID, params: JSON): Boolean
+  updateBfPerson(id: ID, params: JSON): Boolean
 }
 
 interface Node {
