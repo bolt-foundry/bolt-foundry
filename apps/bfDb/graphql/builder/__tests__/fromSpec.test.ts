@@ -1,14 +1,15 @@
 #! /usr/bin/env -S bff test
 
 import { defineGqlNode } from "apps/bfDb/graphql/builder/builder.ts";
-import { specToNexusObject } from "apps/bfDb/graphql/builder/fromSpec.ts";
+import { specsToNexusDefs } from "apps/bfDb/graphql/builder/fromSpec.ts";
 import { makeSchema } from "nexus";
 import { printSchema } from "graphql";
 import { assertStringIncludes } from "@std/assert";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
+import { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
 
 /** Build an SDL string for one or more Nexus object types */
-function sdlOf(...types: Array<ReturnType<typeof specToNexusObject>>): string {
+function sdlOf(...types: Array<ReturnType<typeof specsToNexusDefs>>): string {
   const schema = makeSchema({ types });
   return printSchema(schema);
 }
@@ -20,7 +21,7 @@ Deno.test("specToNexusObject – maps scalar fields", () => {
     field.nullable.int("age");
   });
 
-  const Dummy = specToNexusObject("Dummy", spec);
+  const Dummy = specsToNexusDefs({ "Dummy": spec });
   const sdl = sdlOf(Dummy);
 
   assertStringIncludes(sdl, "type Dummy");
@@ -38,7 +39,7 @@ Deno.test("specToNexusObject – maps field args & resolvers", () => {
     );
   });
 
-  const DummyArgs = specToNexusObject("DummyArgs", spec);
+  const DummyArgs = specsToNexusDefs({ "DummyArgs": spec });
   const sdl = sdlOf(DummyArgs);
 
   assertStringIncludes(sdl, "isFollowedByViewer(viewerId: ID): Boolean!");
@@ -49,7 +50,7 @@ Deno.test("specToNexusObject – maps one & many relations", () => {
   const TargetSpec = defineGqlNode((field) => {
     field.id("id");
   });
-  const TargetType = specToNexusObject("BfNode", TargetSpec);
+  const TargetType = specsToNexusDefs({ "BfNode": TargetSpec });
 
   const spec = defineGqlNode((field, relation, _mutation) => {
     field.id("id");
@@ -57,7 +58,7 @@ Deno.test("specToNexusObject – maps one & many relations", () => {
     relation.many("followers", () => BfNode);
   });
 
-  const Dummy = specToNexusObject("RelDummy", spec);
+  const Dummy = specsToNexusDefs({ "RelDummy": spec });
   const sdl = sdlOf(Dummy, TargetType);
 
   /* Expectation examples (actual SDL may vary slightly once implemented):
@@ -74,7 +75,7 @@ Deno.test("specToNexusObject – respects nullable list & element nullability", 
     // suppose builder.nullable.json("tags") would become [JSON]
     field.nullable.json("tags");
   });
-  const Dummy = specToNexusObject("NullableDummy", spec);
+  const Dummy = specsToNexusDefs({ "NullableDummy": spec });
   const sdl = sdlOf(Dummy);
 
   // We at least ensure field appears nullable
@@ -96,7 +97,7 @@ Deno.test("specToNexusObject – maps standard & custom mutations", () => {
       });
   });
 
-  const Dummy = specToNexusObject("MutDummy", spec);
+  const Dummy = specsToNexusDefs({ "MutDummy": spec });
   const sdl = sdlOf(Dummy);
 
   // Root mutation type should include at least these placeholders once implemented
@@ -104,4 +105,28 @@ Deno.test("specToNexusObject – maps standard & custom mutations", () => {
   assertStringIncludes(sdl, "updateMutDummy");
   assertStringIncludes(sdl, "deleteMutDummy");
   assertStringIncludes(sdl, "greetMutDummy");
+});
+
+Deno.test("fromSpec should preserve implements chain", () => {
+  class BaseNode extends BfNodeBase {
+    static override gqlSpec = this.defineGqlNode((field) => {
+      field.string("baseField");
+    });
+  }
+
+  class SubNode extends BaseNode {
+    static override gqlSpec = this.defineGqlNode((field) => {
+      field.string("subField");
+    });
+  }
+
+  // 🟢  One call that contains *both* specs
+  const types = specsToNexusDefs({
+    BaseNode: BaseNode.gqlSpec!,
+    SubNode: SubNode.gqlSpec!,
+  });
+
+  const sdl = sdlOf(types);
+
+  assertStringIncludes(sdl, "type SubNode implements BaseNode");
 });
