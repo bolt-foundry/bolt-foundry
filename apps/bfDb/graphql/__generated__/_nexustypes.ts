@@ -50,7 +50,6 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
-  AuthRoot: {};
   BfCurrentViewerLoggedIn: { // root type
     id: string; // ID!
   }
@@ -88,9 +87,6 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
-  AuthRoot: { // field return type
-    ok: string; // String!
-  }
   BfCurrentViewerLoggedIn: { // field return type
     id: string; // ID!
   }
@@ -112,7 +108,6 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinWaitlistResponse'] | null; // JoinWaitlistResponse
-    loginWithGoogleAuthRoot: string | null; // String
     updateBfOrganization: boolean | null; // Boolean
     updateBfPerson: boolean | null; // Boolean
   }
@@ -132,9 +127,6 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
-  AuthRoot: { // field return type name
-    ok: 'String'
-  }
   BfCurrentViewerLoggedIn: { // field return type name
     id: 'ID'
   }
@@ -156,7 +148,6 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     joinWaitlist: 'JoinWaitlistResponse'
-    loginWithGoogleAuthRoot: 'String'
     updateBfOrganization: 'Boolean'
     updateBfPerson: 'Boolean'
   }
@@ -182,14 +173,13 @@ export interface NexusGenArgTypes {
       email?: string | null; // String
       name?: string | null; // String
     }
-    loginWithGoogleAuthRoot: { // args
-      token?: string | null; // String
-    }
     updateBfOrganization: { // args
       id?: string | null; // ID
+      params?: NexusGenScalars['JSON'] | null; // JSON
     }
     updateBfPerson: { // args
       id?: string | null; // ID
+      params?: NexusGenScalars['JSON'] | null; // JSON
     }
   }
   Query: {

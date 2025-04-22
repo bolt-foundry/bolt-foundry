@@ -89,11 +89,11 @@ Deno.test("specToNexusObject – maps standard & custom mutations", () => {
     mutation
       .update()
       .delete()
-      .custom(
-        "greet",
-        { to: "string" },
-        (_src, { to }) => `hi ${to}`,
-      );
+      .custom("greet", {
+        args: (a) => a.string("to"),
+        returns: (r) => r.string(),
+        resolve: (_src, { to }) => `hi ${to}`,
+      });
   });
 
   const Dummy = specToNexusObject("MutDummy", spec);

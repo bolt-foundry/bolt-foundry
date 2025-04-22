@@ -15,13 +15,15 @@ import type {
   MutationSpec,
   RelationSpec,
 } from "./builder.ts";
-import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type {
   NexusOutputFieldConfig,
   ObjectDefinitionBlock,
 } from "nexus/dist/core.js";
 
-/** Subset of the builder spec we transform */
+/* -------------------------------------------------------------------------- */
+/*  Sub‑types & helpers                                                       */
+/* -------------------------------------------------------------------------- */
+
 type GqlNodeSpec = {
   field: Record<string, FieldSpec>;
   relation: Record<string, RelationSpec>;
@@ -37,9 +39,7 @@ const scalarMap: Record<GqlScalar, string> = {
   json: "JSON",
 };
 
-// -----------------------------------------------------------------------------
-//  Utility: register JSON scalar once
-// -----------------------------------------------------------------------------
+// ensure JSON scalar only once ------------------------------------------------
 let jsonScalarRegistered = false;
 let jsonScalarDef: unknown;
 function ensureJsonScalar(): unknown {
@@ -54,9 +54,10 @@ function ensureJsonScalar(): unknown {
   return jsonScalarDef;
 }
 
-// -----------------------------------------------------------------------------
-//  Helpers – args, scalar/rel fields
-// -----------------------------------------------------------------------------
+/* -------------------------------------------------------------------------- */
+/*  Helpers – arguments, scalar fields, relations                              */
+/* -------------------------------------------------------------------------- */
+
 function toNexusArg(scalar: GqlScalar) {
   switch (scalar) {
     case "id":
@@ -92,8 +93,8 @@ function addScalarField<TName extends string>(
     }
     options.args = args;
   }
-  if (spec.resolver) {
-    options.resolve = spec.resolver as NexusOutputFieldConfig<
+  if (spec.resolve) {
+    options.resolve = spec.resolve as NexusOutputFieldConfig<
       TName,
       string
     >["resolve"];
@@ -116,7 +117,7 @@ function addRelationField<TName extends string>(
     const target = spec.target();
     if (target?.name) targetName = target.name as string;
   } catch {
-    /* ignore – falls back to generic BfNode */
+    /* ignore – fallback to generic */
   }
 
   if (spec.many) {
@@ -126,18 +127,22 @@ function addRelationField<TName extends string>(
   }
 }
 
-// -----------------------------------------------------------------------------
-//  Helper – emit mutationField objects instead of a new Mutation type
-// -----------------------------------------------------------------------------
+/* -------------------------------------------------------------------------- */
+/*  Mutations – convert builder spec → mutationField objs                      */
+/* -------------------------------------------------------------------------- */
+
 function buildMutationFields(nodeName: string, mutation: MutationSpec) {
   const defs: unknown[] = [];
 
-  // ── standard mutations ───────────────────────────────────────────────
+  // standard mutations --------------------------------------------------------
   if (mutation.standard.update) {
     defs.push(
       mutationField(`update${nodeName}`, {
         type: "Boolean",
-        args: { id: idArg() },
+        args: {
+          id: idArg(),
+          params: arg({ type: "JSON" }),
+        },
         resolve: () => true,
       }),
     );
@@ -146,29 +151,30 @@ function buildMutationFields(nodeName: string, mutation: MutationSpec) {
     defs.push(
       mutationField(`delete${nodeName}`, {
         type: "Boolean",
-        args: { id: idArg() },
+        args: {
+          id: idArg(),
+          params: arg({ type: "JSON" }),
+        },
         resolve: () => true,
       }),
     );
   }
 
-  // ── custom mutations ─────────────────────────────────────────────────
+  // custom mutations ----------------------------------------------------------
   for (const cm of mutation.customs) {
-    const fieldName = `${cm.name}${nodeName}`;
-    type MutArgDef = ReturnType<typeof idArg>;
-    const args: Record<string, MutArgDef> = {};
-    for (const [argName, scalar] of Object.entries(cm.args)) {
-      args[argName] = toNexusArg(scalar as GqlScalar) as MutArgDef;
+    const argsCfg: Record<string, ReturnType<typeof idArg>> = {};
+    for (const [argName, argScalar] of Object.entries(cm.args)) {
+      argsCfg[argName] = toNexusArg(argScalar as GqlScalar) as ReturnType<
+        typeof idArg
+      >;
     }
+
     defs.push(
-      mutationField(fieldName, {
-        type: "String",
-        args,
-        resolve: (
-          _root,
-          resolverArgs: Record<string, unknown>,
-          ctx: unknown,
-        ) => cm.resolver({} as never, resolverArgs, ctx as BfGraphqlContext),
+      mutationField(`${cm.name}${nodeName}`, {
+        type: "JSON", // generic opaque payload – concrete types could be generated later
+        args: argsCfg,
+        // deno-lint-ignore no-explicit-any
+        resolve: cm.resolve as any,
       }),
     );
   }
@@ -176,41 +182,28 @@ function buildMutationFields(nodeName: string, mutation: MutationSpec) {
   return defs;
 }
 
-// -----------------------------------------------------------------------------
-//  Main transformer
-// -----------------------------------------------------------------------------
-export function specToNexusObject(name: string, spec: GqlNodeSpec) {
-  const definitions: unknown[] = [];
+/* -------------------------------------------------------------------------- */
+/*  Main – convert a GqlNodeSpec to Nexus object & mutation fields             */
+/* -------------------------------------------------------------------------- */
 
-  // JSON scalar only needs to be registered once
-  if (Object.values(spec.field).some((f) => f.type === "json")) {
-    const jsonDef = ensureJsonScalar();
-    if (jsonDef) definitions.push(jsonDef);
-  }
+export function specToNexusObject(nodeName: string, spec: GqlNodeSpec) {
+  ensureJsonScalar();
 
-  // ── core object type ─────────────────────────────────────────────────
-  definitions.push(
-    objectType({
-      name,
-      definition(t: ObjectDefinitionBlock<typeof name>) {
-        for (const [fname, fspec] of Object.entries(spec.field)) {
-          addScalarField(t, fname, fspec);
-        }
-        for (const [rname, rspec] of Object.entries(spec.relation ?? {})) {
-          addRelationField(t, rname, rspec);
-        }
-      },
-    }),
-  );
+  const nodeType = objectType({
+    name: nodeName,
+    definition(t) {
+      // scalar fields
+      for (const [fieldName, fieldSpec] of Object.entries(spec.field)) {
+        addScalarField(t, fieldName, fieldSpec);
+      }
+      // relations
+      for (const [relName, relSpec] of Object.entries(spec.relation)) {
+        addRelationField(t, relName, relSpec);
+      }
+    },
+  });
 
-  // ── mutation fields (if any) ─────────────────────────────────────────
-  if (
-    spec.mutation.standard.update ||
-    spec.mutation.standard.delete ||
-    spec.mutation.customs.length
-  ) {
-    definitions.push(...buildMutationFields(name, spec.mutation));
-  }
+  const mutationDefs = buildMutationFields(nodeName, spec.mutation);
 
-  return definitions.length === 1 ? definitions[0] : definitions;
+  return [nodeType, ...mutationDefs, ensureJsonScalar()];
 }
