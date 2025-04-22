@@ -193,7 +193,10 @@ Deno.test("child gqlSpec implements parent's gqlSpec as interface", () => {
   const spec = (ChildNode as typeof BfNodeBase).gqlSpec;
   assertExists(spec, "Child should define its own gqlSpec");
   assertExists(spec.implements, "Child spec should implement parent interface");
-  assertEquals(spec.implements?.[0], (ParentNode as typeof BfNodeBase).gqlSpec);
+  assertEquals(
+    spec.implements?.[0],
+    (ParentNode as typeof BfNodeBase).__typename,
+  );
 });
 
 Deno.test("subclass setting gqlSpec = null disables GraphQL", () => {
@@ -228,11 +231,10 @@ Deno.test("Subclass gqlSpec should implement parent class", () => {
   }
 
   const spec = SubNode.gqlSpec;
-  const parentSpec = BaseNode.gqlSpec;
 
   logger.debug("Spec implements:", spec?.implements);
 
-  const implementsParent = spec?.implements?.includes(parentSpec);
+  const implementsParent = spec?.implements?.includes(BaseNode.__typename);
   assert(
     implementsParent,
     "Subclass should include parent spec in 'implements'",
