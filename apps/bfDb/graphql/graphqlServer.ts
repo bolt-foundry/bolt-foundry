@@ -11,8 +11,12 @@ import { loadModelTypes } from "apps/bfDb/graphql/builder/loadSpecs.ts";
 
 const logger = getLogger(import.meta);
 
+const rootsList = await import(
+  "apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts"
+);
+
 const schemaOptions: SchemaConfig = {
-  types: { ...loadModelTypes(), ...oldTypes },
+  types: { ...loadModelTypes(), ...oldTypes, ...rootsList },
   features: {
     abstractTypeStrategies: {
       __typename: true,
@@ -88,13 +92,13 @@ ${nextTypes.map(makeNameThing).join("")}
     fileString,
   );
 
-  const types = await import(
+  const typesList = await import(
     "apps/bfDb/graphql/__generated__/graphqlTypesList.ts"
   );
 
   makeSchema({
     ...schemaOptions,
-    types,
+    types: { ...schemaOptions.types, ...typesList },
     contextType: {
       module: import.meta.resolve("./graphqlContext.ts").replace("file://", ""),
       export: "Context",

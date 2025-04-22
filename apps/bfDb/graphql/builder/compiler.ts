@@ -1,32 +1,29 @@
 import { specToNexusObject } from "apps/bfDb/graphql/builder/fromSpec.ts";
-import type { AnyBfNodeCtor } from "apps/bfDb/graphql/builder/builder.ts";
+import type { GqlNodeSpec } from "apps/bfDb/graphql/builder/builder.ts";
 
-export function compileNodeSpecs(
-  nodeClasses: Array<AnyBfNodeCtor>,
-): Array<unknown> {
+export function compileSpecs(
+  specs: Record<string, GqlNodeSpec | undefined>,
+): unknown[] {
   const collected: unknown[] = [];
-  const seenNames = new Set<string>();
+  const seen = new Set<string>();
 
-  const add = (def: unknown) => {
+  function add(def: unknown) {
     const name = (def as { name?: string }).name;
-    if (typeof name === "string") {
-      if (seenNames.has(name)) return; // already registered – skip duplicate
-      seenNames.add(name);
-    }
-    collected.push(def);
-  };
 
-  for (const NodeClass of nodeClasses) {
-    const spec = NodeClass.gqlSpec;
+    // allow multiple Mutation type defs so their fields merge
+    const isRootMutation = name === "Mutation";
+
+    if (typeof name === "string" && seen.has(name) && !isRootMutation) return;
+
+    if (typeof name === "string") seen.add(name);
+    collected.push(def);
+  }
+
+  for (const [typeName, spec] of Object.entries(specs)) {
     if (!spec) continue; // nothing to compile
 
-    const result = specToNexusObject(NodeClass.name, spec as never);
-
-    if (Array.isArray(result)) {
-      for (const def of result) add(def);
-    } else {
-      add(result);
-    }
+    const res = specToNexusObject(typeName, spec);
+    Array.isArray(res) ? res.forEach(add) : add(res);
   }
 
   return collected;
