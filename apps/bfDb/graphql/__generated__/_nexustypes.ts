@@ -9,9 +9,14 @@
 import type { Context } from "./../graphqlContext.ts"
 import type { GraphqlBfNode, GraphqlNode } from "./../types/graphqlBfNode.ts"
 import type { core, connectionPluginCore } from "nexus"
-
+declare global {
+  interface NexusGenCustomInputMethods<TypeName extends string> {
+    json<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "JSON";
+  }
+}
 declare global {
   interface NexusGenCustomOutputMethods<TypeName extends string> {
+    json<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "JSON";
     /**
      * Adds a Relay-style connection to the type, with numerous options for configuration
      *
@@ -41,14 +46,25 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  JSON: any
 }
 
 export interface NexusGenObjects {
+  AuthRoot: {};
   BfCurrentViewerLoggedIn: { // root type
     id: string; // ID!
   }
   BfCurrentViewerLoggedOut: { // root type
     id: string; // ID!
+  }
+  BfOrganization: { // root type
+    name: string; // String!
+    person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
+    settings: NexusGenScalars['JSON']; // JSON!
+  }
+  BfPerson: { // root type
+    email: string; // String!
+    name: string; // String!
   }
   JoinWaitlistResponse: { // root type
     message?: string | null; // String
@@ -56,39 +72,6 @@ export interface NexusGenObjects {
   }
   Mutation: {};
   Query: {};
-  RecommendationItem: { // root type
-    confidence?: number | null; // Float
-    explanation?: string | null; // String
-    recommendedText?: string | null; // String
-    sourceText?: string | null; // String
-  }
-  Recommendations: { // root type
-    recommendations?: Array<NexusGenRootTypes['RecommendationItem'] | null> | null; // [RecommendationItem]
-  }
-  YCRecommendationItem: { // root type
-    confidence?: number | null; // Float
-    explanation?: string | null; // String
-    revision?: string | null; // String
-  }
-  YCRecommendations: { // root type
-    companySummary?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    competitors?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    equityBreakdown?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    investmentsReceived?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    locationDecision?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    moneyMaking?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    otherIdeas?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    otherIncubators?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    previousApplicationChange?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    productSummary?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    progress?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    reasonForApplying?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    reasonForProductChoice?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    revenueSource?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    techStack?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    whoToldYou?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    workLengthHistory?: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-  }
 }
 
 export interface NexusGenInterfaces {
@@ -105,11 +88,23 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  AuthRoot: { // field return type
+    ok: string; // String!
+  }
   BfCurrentViewerLoggedIn: { // field return type
     id: string; // ID!
   }
   BfCurrentViewerLoggedOut: { // field return type
     id: string; // ID!
+  }
+  BfOrganization: { // field return type
+    name: string; // String!
+    person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
+    settings: NexusGenScalars['JSON']; // JSON!
+  }
+  BfPerson: { // field return type
+    email: string; // String!
+    name: string; // String!
   }
   JoinWaitlistResponse: { // field return type
     message: string | null; // String
@@ -117,43 +112,13 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinWaitlistResponse'] | null; // JoinWaitlistResponse
+    loginWithGoogleAuthRoot: string | null; // String
+    updateBfOrganization: boolean | null; // Boolean
+    updateBfPerson: boolean | null; // Boolean
   }
   Query: { // field return type
     bfNode: NexusGenRootTypes['BfNode'] | null; // BfNode
     me: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
-  }
-  RecommendationItem: { // field return type
-    confidence: number | null; // Float
-    explanation: string | null; // String
-    recommendedText: string | null; // String
-    sourceText: string | null; // String
-  }
-  Recommendations: { // field return type
-    recommendations: Array<NexusGenRootTypes['RecommendationItem'] | null> | null; // [RecommendationItem]
-  }
-  YCRecommendationItem: { // field return type
-    confidence: number | null; // Float
-    explanation: string | null; // String
-    revision: string | null; // String
-  }
-  YCRecommendations: { // field return type
-    companySummary: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    competitors: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    equityBreakdown: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    investmentsReceived: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    locationDecision: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    moneyMaking: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    otherIdeas: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    otherIncubators: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    previousApplicationChange: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    productSummary: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    progress: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    reasonForApplying: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    reasonForProductChoice: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    revenueSource: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    techStack: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    whoToldYou: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
-    workLengthHistory: NexusGenRootTypes['YCRecommendationItem'] | null; // YCRecommendationItem
   }
   BfCurrentViewer: { // field return type
     id: string; // ID!
@@ -167,11 +132,23 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  AuthRoot: { // field return type name
+    ok: 'String'
+  }
   BfCurrentViewerLoggedIn: { // field return type name
     id: 'ID'
   }
   BfCurrentViewerLoggedOut: { // field return type name
     id: 'ID'
+  }
+  BfOrganization: { // field return type name
+    name: 'String'
+    person: 'BfPerson'
+    settings: 'JSON'
+  }
+  BfPerson: { // field return type name
+    email: 'String'
+    name: 'String'
   }
   JoinWaitlistResponse: { // field return type name
     message: 'String'
@@ -179,43 +156,13 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     joinWaitlist: 'JoinWaitlistResponse'
+    loginWithGoogleAuthRoot: 'String'
+    updateBfOrganization: 'Boolean'
+    updateBfPerson: 'Boolean'
   }
   Query: { // field return type name
     bfNode: 'BfNode'
     me: 'BfCurrentViewer'
-  }
-  RecommendationItem: { // field return type name
-    confidence: 'Float'
-    explanation: 'String'
-    recommendedText: 'String'
-    sourceText: 'String'
-  }
-  Recommendations: { // field return type name
-    recommendations: 'RecommendationItem'
-  }
-  YCRecommendationItem: { // field return type name
-    confidence: 'Float'
-    explanation: 'String'
-    revision: 'String'
-  }
-  YCRecommendations: { // field return type name
-    companySummary: 'YCRecommendationItem'
-    competitors: 'YCRecommendationItem'
-    equityBreakdown: 'YCRecommendationItem'
-    investmentsReceived: 'YCRecommendationItem'
-    locationDecision: 'YCRecommendationItem'
-    moneyMaking: 'YCRecommendationItem'
-    otherIdeas: 'YCRecommendationItem'
-    otherIncubators: 'YCRecommendationItem'
-    previousApplicationChange: 'YCRecommendationItem'
-    productSummary: 'YCRecommendationItem'
-    progress: 'YCRecommendationItem'
-    reasonForApplying: 'YCRecommendationItem'
-    reasonForProductChoice: 'YCRecommendationItem'
-    revenueSource: 'YCRecommendationItem'
-    techStack: 'YCRecommendationItem'
-    whoToldYou: 'YCRecommendationItem'
-    workLengthHistory: 'YCRecommendationItem'
   }
   BfCurrentViewer: { // field return type name
     id: 'ID'
@@ -234,6 +181,15 @@ export interface NexusGenArgTypes {
       company?: string | null; // String
       email?: string | null; // String
       name?: string | null; // String
+    }
+    loginWithGoogleAuthRoot: { // args
+      token?: string | null; // String
+    }
+    updateBfOrganization: { // args
+      id?: string | null; // ID
+    }
+    updateBfPerson: { // args
+      id?: string | null; // ID
     }
   }
   Query: {

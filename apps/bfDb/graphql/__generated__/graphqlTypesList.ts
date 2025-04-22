@@ -5,7 +5,6 @@
 export * from "apps/bfDb/graphql/types/graphqlBfCurrentViewer.ts";
 export * from "apps/bfDb/graphql/types/graphqlBfNode.ts";
 export * from "apps/bfDb/graphql/types/graphqlJoinWaitlist.ts";
-export * from "apps/bfDb/graphql/types/graphqlRecommendation.ts";
 
 
 /* you're welcome. */

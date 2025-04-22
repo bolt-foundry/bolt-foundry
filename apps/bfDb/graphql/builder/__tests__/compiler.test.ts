@@ -1,5 +1,5 @@
 #!/usr/bin/env -S bff test
-import { compileNodeSpecs } from "apps/bfDb/graphql/builder/compiler.ts";
+import { compileSpecs } from "apps/bfDb/graphql/builder/compiler.ts";
 import { defineGqlNode } from "apps/bfDb/graphql/builder/builder.ts";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { makeSchema } from "nexus";
@@ -27,8 +27,12 @@ class TestB extends BfNode<Props> {
   });
 }
 
-Deno.test("compileNodeSpecs – generates Nexus object types for each node class", () => {
-  const types = compileNodeSpecs([TestA, TestB]);
+Deno.test("compileSpecs – generates Nexus object types for each node class", () => {
+  // compileSpecs now expects a { typeName: spec } map, not an array of classes
+  const types = compileSpecs({
+    TestA: TestA.gqlSpec,
+    TestB: TestB.gqlSpec,
+  });
 
   // 1. Should return one definition per node class (arrays flattened)
   assertEquals(types.length, 2);

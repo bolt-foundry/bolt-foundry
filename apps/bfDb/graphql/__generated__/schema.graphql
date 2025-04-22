@@ -3,6 +3,10 @@
 ### Do not make changes to this file directly
 
 
+type AuthRoot {
+  ok: String!
+}
+
 interface BfCurrentViewer implements Node {
   """Unique identifier for the resource"""
   id: ID!
@@ -23,6 +27,19 @@ interface BfNode implements Node {
   id: ID!
 }
 
+type BfOrganization {
+  name: String!
+  person: [BfPerson!]!
+  settings: JSON!
+}
+
+type BfPerson {
+  email: String!
+  name: String!
+}
+
+scalar JSON
+
 type JoinWaitlistResponse {
   message: String
   success: Boolean
@@ -30,6 +47,9 @@ type JoinWaitlistResponse {
 
 type Mutation {
   joinWaitlist(company: String, email: String, name: String): JoinWaitlistResponse
+  loginWithGoogleAuthRoot(token: String): String
+  updateBfOrganization(id: ID): Boolean
+  updateBfPerson(id: ID): Boolean
 }
 
 interface Node {
@@ -40,75 +60,4 @@ interface Node {
 type Query {
   bfNode(id: ID): BfNode
   me: BfCurrentViewer
-}
-
-type RecommendationItem {
-  confidence: Float
-  explanation: String
-  recommendedText: String
-  sourceText: String
-}
-
-type Recommendations {
-  """A list of recommendations"""
-  recommendations: [RecommendationItem]
-}
-
-type YCRecommendationItem {
-  confidence: Float
-  explanation: String
-  revision: String
-}
-
-type YCRecommendations {
-  """A list of recommendations"""
-  companySummary: YCRecommendationItem
-
-  """A list of recommendations"""
-  competitors: YCRecommendationItem
-
-  """A list of recommendations"""
-  equityBreakdown: YCRecommendationItem
-
-  """A list of recommendations"""
-  investmentsReceived: YCRecommendationItem
-
-  """A list of recommendations"""
-  locationDecision: YCRecommendationItem
-
-  """A list of recommendations"""
-  moneyMaking: YCRecommendationItem
-
-  """A list of recommendations"""
-  otherIdeas: YCRecommendationItem
-
-  """A list of recommendations"""
-  otherIncubators: YCRecommendationItem
-
-  """A list of recommendations"""
-  previousApplicationChange: YCRecommendationItem
-
-  """A list of recommendations"""
-  productSummary: YCRecommendationItem
-
-  """A list of recommendations"""
-  progress: YCRecommendationItem
-
-  """A list of recommendations"""
-  reasonForApplying: YCRecommendationItem
-
-  """A list of recommendations"""
-  reasonForProductChoice: YCRecommendationItem
-
-  """A list of recommendations"""
-  revenueSource: YCRecommendationItem
-
-  """A list of recommendations"""
-  techStack: YCRecommendationItem
-
-  """A list of recommendations"""
-  whoToldYou: YCRecommendationItem
-
-  """A list of recommendations"""
-  workLengthHistory: YCRecommendationItem
 }
