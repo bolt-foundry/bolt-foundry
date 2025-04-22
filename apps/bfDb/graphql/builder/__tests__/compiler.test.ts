@@ -34,8 +34,8 @@ Deno.test("compileSpecs – generates Nexus object types for each node class", (
     TestB: TestB.gqlSpec,
   });
 
-  // 1. Should return one definition per node class (arrays flattened)
-  assertEquals(types.length, 2);
+  // 1. Should return one definition per node class (arrays flattened) and includes the json spec
+  assertEquals(types.length, 3);
 
   // 2. SDL should contain both object definitions and their fields
   const sdl = sdlOf(types);
