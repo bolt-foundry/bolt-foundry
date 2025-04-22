@@ -463,7 +463,7 @@ export function defineGqlNode(
     relation: ReturnType<typeof buildRelation>,
     mutation: ReturnType<typeof buildMutation>,
   ) => void,
-) {
+): GqlNodeSpec {
   const fields: Record<string, FieldSpec> = {};
   const relations: Record<string, RelationSpec> = {};
   const mutationBuilder = buildMutation();
@@ -474,7 +474,12 @@ export function defineGqlNode(
     field: fields,
     relation: relations,
     mutation: mutationBuilder._build(),
-  } as const;
+  };
 }
 
-export type GqlNodeSpec = ReturnType<typeof defineGqlNode>;
+export type GqlNodeSpec = {
+  field: Record<string, FieldSpec>;
+  relation: Record<string, RelationSpec>;
+  mutation: MutationSpec;
+  implements?: Array<GqlNodeSpec>;
+};
