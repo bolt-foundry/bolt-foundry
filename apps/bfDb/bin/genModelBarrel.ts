@@ -57,3 +57,18 @@ await generateBarrel({
   ),
   importPath: (f) => `apps/bfDb/graphql/roots/${f}`,
 });
+
+await generateBarrel({
+  dir: new URL("../classes/", import.meta.url),
+  out: new URL("../classes/__generated__/classesList.ts", import.meta.url),
+  importPath: (f) => `apps/bfDb/classes/${f}`,
+});
+
+await generateBarrel({
+  dir: new URL("../coreModels/", import.meta.url),
+  out: new URL(
+    "../coreModels/__generated__/coreModelClassesList.ts",
+    import.meta.url,
+  ),
+  importPath: (f) => `apps/bfDb/coreModels/${f}`,
+});

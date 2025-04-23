@@ -1,14 +1,12 @@
+// deno-lint-ignore-file no-explicit-any
 import {
   arg,
-  booleanArg,
-  floatArg,
   idArg,
-  intArg,
   interfaceType,
   mutationField,
+  nonNull,
   objectType,
   scalarType,
-  stringArg,
 } from "nexus";
 import type {
   FieldSpec,
@@ -31,12 +29,30 @@ const _logger = getLogger(import.meta);
 
 const scalarMap: Record<GqlScalar, string> = {
   id: "ID",
+  BfGID: "BfGID",
   string: "String",
   int: "Int",
   float: "Float",
   boolean: "Boolean",
   json: "JSON",
 };
+
+/* ------------------------------------------------------------------ */
+/*  Custom BfGID scalar (placeholder passthrough implementation)       */
+/* ------------------------------------------------------------------ */
+let bfGidScalarRegistered = false;
+let bfGidScalarDef: unknown;
+function ensureBfGidScalar(): unknown {
+  if (bfGidScalarRegistered) return bfGidScalarDef;
+  bfGidScalarDef = scalarType({
+    name: "BfGID",
+    serialize: (v) => v,
+    parseValue: (v) => v,
+    asNexusMethod: "bfGid",
+  });
+  bfGidScalarRegistered = true;
+  return bfGidScalarDef;
+}
 
 let jsonScalarRegistered = false;
 let jsonScalarDef: unknown;
@@ -52,22 +68,21 @@ function ensureJsonScalar(): unknown {
   return jsonScalarDef;
 }
 
-function toNexusArg(scalar: GqlScalar) {
-  switch (scalar) {
-    case "id":
-      return idArg();
-    case "int":
-      return intArg();
-    case "float":
-      return floatArg();
-    case "boolean":
-      return booleanArg();
-    case "json":
-      return arg({ type: "JSON" });
-    case "string":
-    default:
-      return stringArg();
-  }
+function toNexusArg(
+  spec: GqlScalar | { type: GqlScalar; nullable?: boolean },
+) {
+  // ── 1. Normalise input ────────────────────────────────────────────
+  const scalar = typeof spec === "string" ? spec : spec.type;
+  const nullable = typeof spec === "string" ? false : spec.nullable ?? true;
+
+  if (scalar === "json") ensureJsonScalar();
+  if (scalar === "BfGID") ensureBfGidScalar();
+
+  // ── 2. Map to GraphQL & wrap in nonNull() if needed ───────────────
+  const baseType = scalarMap[scalar] ?? scalar;
+  const wrapped = nullable ? baseType : nonNull(baseType);
+
+  return arg({ type: wrapped });
 }
 
 function addScalarField<TName extends string>(
@@ -80,8 +95,8 @@ function addScalarField<TName extends string>(
   };
   if (spec.args) {
     const args: Record<string, ReturnType<typeof idArg>> = {};
-    for (const [argName, argScalar] of Object.entries(spec.args)) {
-      args[argName] = toNexusArg(argScalar as GqlScalar);
+    for (const [argName, argSpec] of Object.entries(spec.args)) {
+      args[argName] = toNexusArg(argSpec);
     }
     options.args = args;
   }
@@ -147,14 +162,62 @@ function buildMutationFields(nodeName: string, mutation: MutationSpec) {
   }
 
   for (const cm of mutation.customs) {
+    /* ────────────────────────────────────────────────────────────────
+     * Emit a concrete payload object so linked-field selections work
+     * (fixes Isograph "scalar selected as linked field" error).
+     * ──────────────────────────────────────────────────────────────── */
+
+    /* 0.  Does this custom mutation have a concrete output spec? */
+    const outputFields = cm.output ?? {}; // ← the builder puts fields here
+    const hasConcretePayload = Object.keys(outputFields).length > 0;
+
+    /* 1.  If so, create a Nexus object that mirrors those fields ------ */
+    let payloadName = "JSON"; // default / fallback
+
+    if (hasConcretePayload) {
+      const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
+      payloadName = `${cap(cm.name)}${nodeName}Payload`;
+
+      defs.push(
+        objectType({
+          name: payloadName,
+          definition(t) {
+            // `t` is an ObjectDefinitionBlock; we need the DefBlock union.
+            // A single cast keeps the helpers happy without touching runtime.
+            const def = t as any;
+
+            for (const [fname, fspec] of Object.entries(outputFields)) {
+              /* ── recognise scalar shorthand ─────────────────────────────── */
+              const isScalar = typeof fspec === "string" || // "boolean", "string", …
+                (typeof fspec === "object" && // long-form scalar / list
+                  fspec &&
+                  ("scalarType" in fspec ||
+                    (fspec as any).kind === "scalar" ||
+                    "type" in fspec));
+
+              if (isScalar) {
+                const specObj = typeof fspec === "string"
+                  ? { type: fspec, nullable: false } // normalise shorthand
+                  : (fspec as any);
+                addScalarField(def, fname, specObj);
+              } else {
+                addRelationField(def, fname, fspec as any);
+              }
+            }
+          },
+        }),
+      );
+    }
+
+    /* 2.  Mutation field (payloadName is either the new type or "JSON") */
     const argsCfg: Record<string, ReturnType<typeof idArg>> = {};
-    for (const [argName, argScalar] of Object.entries(cm.args)) {
-      argsCfg[argName] = toNexusArg(argScalar as GqlScalar);
+    for (const [argName, argSpec] of Object.entries(cm.args)) {
+      argsCfg[argName] = toNexusArg(argSpec);
     }
 
     defs.push(
       mutationField(`${cm.name}${nodeName}`, {
-        type: "JSON",
+        type: payloadName, // concrete payload or JSON fallback
         args: argsCfg,
         resolve: cm.resolve,
       }),
@@ -195,12 +258,47 @@ export function specsToNexusDefs(
 
   const allDefs: unknown[] = [];
 
+  /* ------------------------------------------------------------------ */
+  /*  Helper: synthesise fields for stub interfaces                      */
+  /* ------------------------------------------------------------------ */
+
+  function buildInterfaceFields(iface: string) {
+    const mergedFields: Record<string, FieldSpec> = {};
+    const mergedRelations: Record<string, RelationSpec> = {};
+
+    // collect every spec that declares `implements iface` and merge its
+    // scalar + relation definitions. The simple Object.assign()‑merge is
+    // sufficient because field names must be unique across the graph.
+    for (const s of Object.values(specs)) {
+      if (s?.implements?.includes(iface)) {
+        Object.assign(mergedFields, s.field);
+        Object.assign(mergedRelations, s.relation);
+      }
+    }
+
+    return { mergedFields, mergedRelations };
+  }
+
   for (const iface of interfaceNames) {
     if (!(iface in specs)) {
+      const { mergedFields, mergedRelations } = buildInterfaceFields(iface);
+
       allDefs.push(
         interfaceType({
           name: iface,
-          definition() {},
+          definition(t) {
+            // DefBlock union lets us reuse the same helpers as for objects.
+            const def = t as any;
+
+            for (const [fname, fspec] of Object.entries(mergedFields)) {
+              addScalarField(def, fname, fspec);
+            }
+
+            for (const [rname, rspec] of Object.entries(mergedRelations)) {
+              addRelationField(def, rname, rspec as any);
+            }
+          },
+          resolveType: (v) => (v as { __typename?: string }).__typename,
         }),
       );
     }
@@ -210,12 +308,31 @@ export function specsToNexusDefs(
   for (const [nodeName, spec] of Object.entries(specs)) {
     const isInterface = interfaceNames.has(nodeName);
 
+    /* ── Pure-mutation nodes (no fields, no relations) ────────────────
+       Don't create an empty object type – it would be invalid SDL.
+       We still add the mutation fields so the class works as a root
+       "namespace" for mutations only. */
+    const hasFields = Object.keys(spec.field).length > 0;
+    const hasRelations = Object.keys(spec.relation).length > 0;
+    if (!isInterface && !hasFields && !hasRelations) {
+      allDefs.push(...buildMutationFields(nodeName, spec.mutation));
+      continue; // ⟵ skip objectType()
+    }
+
     const definition = (t: DefBlock<string>) => {
+      /* ------------------------------------------------------------------
+       *  Block type is  *either* ObjectDefinitionBlock or
+       *  InterfaceDefinitionBlock.  The structural parts we use are
+       *  common to both, so cast once to silence the protected-member
+       *  mismatch that TS complains about.
+       * ------------------------------------------------------------------ */
+      const def = t as any;
+
       for (const [fname, fspec] of Object.entries(spec.field)) {
-        addScalarField(t, fname, fspec);
+        addScalarField(def, fname, fspec);
       }
       for (const [rname, rspec] of Object.entries(spec.relation)) {
-        addRelationField(t, rname, rspec);
+        addRelationField(def, rname, rspec as any);
       }
 
       // Original implements
@@ -246,6 +363,24 @@ export function specsToNexusDefs(
     }
   }
 
+  /* ------------------------------------------------------------------
+   *  Always register the JSON scalar (args & mutations rely on it).
+   *  Register the custom BfGID scalar **only** when at least one field
+   *  in the compiled specs uses it; otherwise we bloat the type list and
+   *  break expectations like the compileSpecs test.
+   * ------------------------------------------------------------------ */
+
   allDefs.push(ensureJsonScalar());
+
+  const needsBfGid = Object.values(specs).some((spec) =>
+    Object.values(spec.field).some((f) =>
+      (typeof f === "string" && f === "BfGID") ||
+      (typeof f === "object" && (f as FieldSpec).type === "BfGID")
+    )
+  );
+
+  if (needsBfGid) {
+    allDefs.push(ensureBfGidScalar());
+  }
   return allDefs;
 }

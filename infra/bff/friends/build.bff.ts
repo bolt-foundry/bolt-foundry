@@ -9,6 +9,7 @@ const logger = getLogger(import.meta);
 const allowedEnvironmentVariables = [
   "ASSEMBLY_AI_KEY",
   "BF_ENV",
+  "BF_JWT_SECRET",
   "CI",
   "COLORTERM",
   "DATABASE_BACKEND",
@@ -426,6 +427,16 @@ export async function build(args: Array<string>): Promise<number> {
 
   if (routesBuildResult !== 0) {
     return routesBuildResult;
+  }
+
+  if (debug) logMemoryUsage("before model barrel generation");
+  const genModelBarrelResult = await runShellCommand([
+    "./apps/bfDb/bin/genModelBarrel.ts",
+  ]);
+  if (debug) logMemoryUsage("after model barrel generation");
+
+  if (genModelBarrelResult !== 0) {
+    return genModelBarrelResult;
   }
 
   if (debug) logMemoryUsage("before content build");

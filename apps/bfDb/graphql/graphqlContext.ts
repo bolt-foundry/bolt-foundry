@@ -78,8 +78,9 @@ export async function createContext(
     },
     // responseHeaders,
 
+    /** Return the actual CurrentViewer instance */
     getCvForGraphql() {
-      return currentViewer.toGraphql();
+      return currentViewer; // instead of the hand-rolled POJO
     },
 
     async createTargetNode<

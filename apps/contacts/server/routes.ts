@@ -76,6 +76,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("Validating contact data");
       const validatedData = insertContactSchema.parse(req.body);
+      
+      // Check for dry run mode (email ending with .dryrun@example.com)
+      const isDryRun = validatedData.email && 
+        /\.dryrun@example\.com$/.test(validatedData.email);
+      
+      if (isDryRun) {
+        console.log("Dry run detected - skipping database save");
+        // Return a simulated response without saving to database
+        return res.status(200).json({
+          id: 0,
+          name: validatedData.name,
+          email: validatedData.email,
+          company: validatedData.company || null,
+          notes: validatedData.notes || null,
+          contacted: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          emailSentAt: null,
+          dryRun: true
+        });
+      }
 
       console.log(
         "Creating new contact with data:",

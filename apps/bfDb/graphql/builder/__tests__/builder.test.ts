@@ -240,3 +240,43 @@ Deno.test("Subclass gqlSpec should implement parent class", () => {
     "Subclass should include parent spec in 'implements'",
   );
 });
+
+Deno.test("BfNodeBase.id is ID and BfNode.id is BfGID", () => {
+  /* ------------------------------------------------------------------ *
+   * 1.  BfNodeBase must define an id: ID!                               *
+   * ------------------------------------------------------------------ */
+  const baseSpec = BfNodeBase.gqlSpec;
+  assertExists(baseSpec, "BfNodeBase is missing gqlSpec");
+  assertExists(
+    baseSpec?.field?.id,
+    "`id` field missing from BfNodeBase GraphQL spec",
+  );
+  assertEquals(
+    baseSpec!.field.id.type,
+    "id", // maps to GraphQL scalar `ID`
+    "BfNodeBase.id should have scalar type ID",
+  );
+
+  /* ------------------------------------------------------------------ *
+   * 2.  BfNode must                                                  *
+   *     a) implement the interface, and                               *
+   *     b) expose id: BfGID!                                          *
+   * ------------------------------------------------------------------ */
+  const nodeSpec = BfNode.gqlSpec;
+  assertExists(nodeSpec, "BfNode is missing gqlSpec");
+
+  assert(
+    nodeSpec!.implements?.includes(BfNodeBase.__typename),
+    "BfNode must implement BfNodeBase",
+  );
+
+  assertExists(
+    nodeSpec!.field?.id,
+    "`id` field missing from BfNode GraphQL spec",
+  );
+  assertEquals(
+    nodeSpec!.field.id.type,
+    "BfGID", // the custom scalar you’ll register
+    "BfNode.id should have scalar type BfGID",
+  );
+});

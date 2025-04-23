@@ -10,10 +10,10 @@ export function compileSpecs(
   function add(def: unknown) {
     const name = (def as { name?: string }).name;
 
-    // allow multiple Mutation type defs so their fields merge
-    const isRootMutation = name === "Mutation";
+    // allow multiple Query *and* Mutation type defs so their fields merge
+    const isRoot = name === "Mutation" || name === "Query";
 
-    if (typeof name === "string" && seen.has(name) && !isRootMutation) return;
+    if (typeof name === "string" && seen.has(name) && !isRoot) return;
 
     if (typeof name === "string") seen.add(name);
     collected.push(def);

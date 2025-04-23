@@ -1,4 +1,5 @@
-export type GqlScalar = "id" | "string" | "int" | "float" | "boolean" | "json";
+import { GqlScalar } from "./builder.ts";
+export { GqlScalar };
 
 export interface ArgBuilder {
   id(name: string): ArgBuilder;

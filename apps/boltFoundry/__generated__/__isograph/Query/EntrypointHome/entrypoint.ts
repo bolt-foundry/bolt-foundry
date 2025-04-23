@@ -7,12 +7,6 @@ const nestedRefetchQueries: RefetchQueryNormalizationArtifactWrapper[] = [];
 const queryText = 'query EntrypointHome  {\
   me {\
     __typename,\
-    id,\
-    __typename,\
-    ... on BfCurrentViewerLoggedOut {\
-      id,\
-      __typename,\
-    },\
   },\
 }';
 
@@ -23,38 +17,12 @@ const normalizationAst: NormalizationAst = {
       kind: "Linked",
       fieldName: "me",
       arguments: null,
-      concreteType: null,
+      concreteType: "CurrentViewer",
       selections: [
         {
           kind: "Scalar",
           fieldName: "__typename",
           arguments: null,
-        },
-        {
-          kind: "Scalar",
-          fieldName: "id",
-          arguments: null,
-        },
-        {
-          kind: "Scalar",
-          fieldName: "__typename",
-          arguments: null,
-        },
-        {
-          kind: "InlineFragment",
-          type: "BfCurrentViewerLoggedOut",
-          selections: [
-            {
-              kind: "Scalar",
-              fieldName: "id",
-              arguments: null,
-            },
-            {
-              kind: "Scalar",
-              fieldName: "__typename",
-              arguments: null,
-            },
-          ],
         },
       ],
     },
