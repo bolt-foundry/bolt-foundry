@@ -3,33 +3,15 @@
 ### Do not make changes to this file directly
 
 
-interface BfCurrentViewer implements Node {
-  """Unique identifier for the resource"""
-  id: ID!
-}
+interface BfNode
 
-type BfCurrentViewerLoggedIn implements BfCurrentViewer & Node {
-  """Unique identifier for the resource"""
-  id: ID!
-}
-
-type BfCurrentViewerLoggedOut implements BfCurrentViewer & Node {
-  """Unique identifier for the resource"""
-  id: ID!
-}
-
-interface BfNode implements Node {
-  """Unique identifier for the resource"""
-  id: ID!
-}
-
-type BfOrganization {
+type BfOrganization implements BfNode {
   name: String!
   person: [BfPerson!]!
   settings: JSON!
 }
 
-type BfPerson {
+type BfPerson implements BfNode {
   email: String!
   name: String!
 }
@@ -47,12 +29,6 @@ type Mutation {
   updateBfPerson(id: ID, params: JSON): Boolean
 }
 
-interface Node {
-  """Unique identifier for the resource"""
-  id: ID!
-}
-
 type Query {
-  bfNode(id: ID): BfNode
-  me: BfCurrentViewer
+  ok: Boolean!
 }
