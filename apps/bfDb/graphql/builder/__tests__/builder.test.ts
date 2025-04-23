@@ -9,7 +9,7 @@ import {
   assertStringIncludes,
 } from "@std/assert";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
-import { specToNexusObject } from "apps/bfDb/graphql/builder/fromSpec.ts";
+import { specsToNexusDefs } from "apps/bfDb/graphql/builder/fromSpec.ts";
 import { makeSchema } from "nexus";
 import { printSchema } from "graphql";
 import { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
@@ -147,14 +147,14 @@ Deno.test("defineGqlNode – rich returns DSL with order‑agnostic nullable/lis
 /*  SDL checks for the standard update helper                                 */
 /* -------------------------------------------------------------------------- */
 
-Deno.test("specToNexusObject – update mutation args", () => {
+Deno.test("specsToNexusDefs – update mutation args", () => {
   const spec = defineGqlNode((field, _rel, mutation) => {
     field.id("id");
     field.string("name");
     mutation.update();
   });
 
-  const Dummy = specToNexusObject("UpdDummy", spec);
+  const Dummy = specsToNexusDefs({ "UpdDummy": spec });
   const schema = makeSchema({ types: [Dummy] });
   const sdl = printSchema(schema);
 
@@ -193,7 +193,10 @@ Deno.test("child gqlSpec implements parent's gqlSpec as interface", () => {
   const spec = (ChildNode as typeof BfNodeBase).gqlSpec;
   assertExists(spec, "Child should define its own gqlSpec");
   assertExists(spec.implements, "Child spec should implement parent interface");
-  assertEquals(spec.implements?.[0], (ParentNode as typeof BfNodeBase).gqlSpec);
+  assertEquals(
+    spec.implements?.[0],
+    (ParentNode as typeof BfNodeBase).__typename,
+  );
 });
 
 Deno.test("subclass setting gqlSpec = null disables GraphQL", () => {
@@ -228,11 +231,10 @@ Deno.test("Subclass gqlSpec should implement parent class", () => {
   }
 
   const spec = SubNode.gqlSpec;
-  const parentSpec = BaseNode.gqlSpec;
 
   logger.debug("Spec implements:", spec?.implements);
 
-  const implementsParent = spec?.implements?.includes(parentSpec);
+  const implementsParent = spec?.implements?.includes(BaseNode.__typename);
   assert(
     implementsParent,
     "Subclass should include parent spec in 'implements'",
