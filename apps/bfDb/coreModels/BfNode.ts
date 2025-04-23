@@ -33,9 +33,20 @@ export class BfNode<
   override readonly relatedEdge: string = "apps/bfDb/coreModels/BfEdge.ts";
   protected _savedProps: TProps;
   protected override _props: TProps;
-  static override gqlSpec = this.defineGqlNode((field) => {
-    field.id("id");
-  });
+  /** GraphQL spec:
+   * – still *implements* BfNodeBase
+   * – but the concrete type of `id` is upgraded to the custom `BfGID` scalar
+   */
+  static override gqlSpec = (() => {
+    const spec = this.defineGqlNode((field) => {
+      field.id("id"); // start with the normal helper
+    });
+    // mutate the generated spec so the type is our custom scalar
+    if (spec?.field?.id) {
+      (spec.field.id as { type: string }).type = "BfGID";
+    }
+    return spec;
+  })();
 
   override get id(): string {
     return this.metadata.bfGid;

@@ -3,7 +3,30 @@
 ### Do not make changes to this file directly
 
 
-interface BfNode
+type BfEdge implements BfNodeBase {
+  id: BfGID!
+  isLoggedIn: Boolean!
+  organization: BfOrganization!
+  person: BfPerson!
+}
+
+type BfEdgeBase implements GraphQLObjectBase {
+  id: ID!
+}
+
+scalar BfGID
+
+interface BfNode {
+  name: String!
+  person: [BfPerson!]!
+  settings: JSON!
+}
+
+interface BfNodeBase {
+  isLoggedIn: Boolean!
+  organization: BfOrganization!
+  person: BfPerson!
+}
 
 type BfOrganization implements BfNode {
   name: String!
@@ -14,21 +37,45 @@ type BfOrganization implements BfNode {
 type BfPerson implements BfNode {
   email: String!
   name: String!
+  person: [BfPerson!]!
+  settings: JSON!
+}
+
+type CurrentViewer implements BfNodeBase {
+  isLoggedIn: Boolean!
+  organization: BfOrganization!
+  person: BfPerson!
+}
+
+type CurrentViewerLoggedIn implements BfNodeBase {
+  isLoggedIn: Boolean!
+  organization: BfOrganization!
+  person: BfPerson!
+}
+
+type CurrentViewerLoggedOut implements BfNodeBase {
+  isLoggedIn: Boolean!
+  organization: BfOrganization!
+  person: BfPerson!
+}
+
+interface GraphQLObjectBase {
+  id: ID!
 }
 
 scalar JSON
 
-type JoinWaitlistResponse {
-  message: String
-  success: Boolean
+type JoinWaitlistPayload {
+  message: String!
+  success: Boolean!
 }
 
 type Mutation {
-  joinWaitlist(company: String, email: String, name: String): JoinWaitlistResponse
+  joinWaitlist(company: String!, email: String!, name: String!): JoinWaitlistPayload
   updateBfOrganization(id: ID, params: JSON): Boolean
   updateBfPerson(id: ID, params: JSON): Boolean
 }
 
 type Query {
-  ok: Boolean!
+  me: CurrentViewer!
 }

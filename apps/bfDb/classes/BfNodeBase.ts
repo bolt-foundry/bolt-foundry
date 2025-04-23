@@ -17,9 +17,9 @@ import type {
 import type { Connection, ConnectionArguments } from "graphql-relay";
 import {
   defineGqlNode,
-  type GqlNodeSpec,
 } from "apps/bfDb/graphql/builder/builder.ts";
 import { generateUUID } from "lib/generateUUID.ts";
+import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 
 const logger = getLogger(import.meta);
 
@@ -46,15 +46,16 @@ export class BfNodeBase<
   TProps extends BfNodeBaseProps = BfNodeBaseProps,
   TMetadata extends BfMetadataBase = BfMetadataBase,
   TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
-> {
-  static get __typename() {
+> extends GraphQLObjectBase {
+  static override get __typename() {
     return this.name;
   }
-  readonly __typename = (this.constructor as typeof BfNodeBase).__typename;
+  override readonly __typename =
+    (this.constructor as typeof BfNodeBase).__typename;
 
   private _id?: string;
 
-  get id(): string {
+  override get id(): string {
     return this._id ?? (this._id = generateUUID());
   }
 
@@ -62,8 +63,10 @@ export class BfNodeBase<
   readonly relatedEdge: string = "apps/bfDb/classes/BfEdgeBase.ts";
 
   readonly _currentViewer: BfCurrentViewer;
-  static gqlSpec?: GqlNodeSpec | null;
-  static defineGqlNode(
+  static override gqlSpec = this.defineGqlNode((t) => {
+    t.id("id");
+  });
+  static override defineGqlNode(
     ...args: Parameters<typeof defineGqlNode>
   ): ReturnType<typeof defineGqlNode> | null {
     const defOrNull = args[0] as (typeof args)[0] | null;
@@ -202,6 +205,7 @@ export class BfNodeBase<
     protected _props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
+    super();
     this._metadata = (this.constructor as typeof BfNodeBase).generateMetadata(
       currentViewer,
       metadata,
@@ -233,7 +237,7 @@ export class BfNodeBase<
     return toGraphqlFromNode(this as unknown as BfNodeBase);
   }
 
-  toString() {
+  override toString() {
     return `${this.constructor.name}#${this.metadata.bfGid}⚡️${this.metadata.bfOid}`;
   }
 

@@ -1,5 +1,5 @@
 import type { IsographEntrypoint } from '@isograph/react';
-import { type BfCurrentViewer__Home__param } from './BfCurrentViewer/Home/param_type.ts';
+import { type CurrentViewer__Home__param } from './CurrentViewer/Home/param_type.ts';
 import { type Mutation__JoinWaitlist__param } from './Mutation/JoinWaitlist/param_type.ts';
 import { type Query__EntrypointHome__param } from './Query/EntrypointHome/param_type.ts';
 import entrypoint_Mutation__JoinWaitlist from '../__isograph/Mutation/JoinWaitlist/entrypoint.ts';
@@ -54,8 +54,8 @@ type MatchesWhitespaceAndString<
 > = Whitespace<T> extends `${TString}${string}` ? T : never;
 
 export function iso<T>(
-  param: T & MatchesWhitespaceAndString<'field BfCurrentViewer.Home', T>
-): IdentityWithParamComponent<BfCurrentViewer__Home__param>;
+  param: T & MatchesWhitespaceAndString<'field CurrentViewer.Home', T>
+): IdentityWithParamComponent<CurrentViewer__Home__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Mutation.JoinWaitlist', T>

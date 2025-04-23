@@ -6,10 +6,10 @@ import type {
   BfNodeBaseProps,
 } from "apps/bfDb/classes/BfNodeBase.ts";
 import type {
-  BfEdgeBase,
   BfEdgeBaseProps,
 } from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
+import type { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 
 /* -------------------------------------------------------------------------- */
 /*  Scalars & helpers                                                         */
@@ -17,6 +17,7 @@ import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 
 export type GqlScalar =
   | "id"
+  | "BfGID"
   | "string"
   | "int"
   | "float"
@@ -45,7 +46,7 @@ export type AnyBfNodeCtor<
 export interface FieldSpec {
   type: GqlScalar;
   nullable: boolean;
-  args?: Record<string, GqlScalar>;
+  args?: Record<string, ArgSpec>;
   resolve?: (
     src: BfNodeBase,
     args: unknown,
@@ -54,21 +55,48 @@ export interface FieldSpec {
 }
 
 function collectArgs(fn?: (a: ArgBuilder) => unknown | void):
-  | Record<string, GqlScalar>
+  | Record<string, ArgSpec>
   | undefined {
   if (!fn) return undefined;
-  const store: Record<string, GqlScalar> = {};
-  const b: ArgBuilder = {
-    id: (n) => (store[n] = "id", b),
-    string: (n) => (store[n] = "string", b),
-    int: (n) => (store[n] = "int", b),
-    float: (n) => (store[n] = "float", b),
-    boolean: (n) => (store[n] = "boolean", b),
-    json: (n) => (store[n] = "json", b),
+  const store: Record<string, ArgSpec> = {};
+
+  function add(type: GqlScalar, nullable = false) {
+    return (name: string) => (store[name] = { type, nullable }, proxy);
+  }
+
+  const base = {
+    id: add("id"),
+    string: add("string"),
+    int: add("int"),
+    float: add("float"),
+    boolean: add("boolean"),
+    json: add("json"),
   } as const;
-  fn(b);
+
+  let flagNullable = false;
+  const proxy: ArgBuilder = new Proxy(base as ArgBuilder, {
+    get(t, prop, recv) {
+      if (prop === "nullable") {
+        flagNullable = true; // next scalar call uses nullable = true
+        return proxy;
+      }
+      // on every scalar call we read and immediately reset the flag
+      if (prop in t) {
+        const fn = (t as any)[prop];
+        return (name: string) => {
+          const res = fn(name, flagNullable);
+          flagNullable = false;
+          return res;
+        };
+      }
+      return Reflect.get(t, prop, recv);
+    },
+  });
+
+  fn(proxy);
   return store;
 }
+type ArgSpec = { type: GqlScalar; nullable?: boolean };
 
 export interface ArgBuilder {
   id(name: string): ArgBuilder;
@@ -77,13 +105,14 @@ export interface ArgBuilder {
   float(name: string): ArgBuilder;
   boolean(name: string): ArgBuilder;
   json(name: string): ArgBuilder;
+  readonly nullable: ArgBuilder;
 }
 
 type FieldArgsOrOpts<Res extends FieldSpec["resolve"] | undefined> =
   | Res // legacy (name, resolve)
-  | Record<string, GqlScalar> // legacy (name, args, resolve?)
+  | Record<string, ArgSpec> // legacy (name, args, resolve?)
   | {
-    args?: ((a: ArgBuilder) => void) | Record<string, GqlScalar>;
+    args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
     resolve?: Res;
   };
 
@@ -118,7 +147,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
     name: string,
     type: GqlScalar,
     nullable: boolean,
-    args?: Record<string, GqlScalar>,
+    args?: Record<string, ArgSpec>,
     resolve?: Res,
   ) {
     store[name] = { type, nullable, args, resolve };
@@ -128,8 +157,8 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
   function parseArgsAndResolve(
     argOrOpts?: FieldArgsOrOpts<Res>,
     maybeRes?: Res,
-  ): { args?: Record<string, GqlScalar>; resolve?: Res } {
-    let args: Record<string, GqlScalar> | undefined;
+  ): { args?: Record<string, ArgSpec>; resolve?: Res } {
+    let args: Record<string, ArgSpec> | undefined;
     let resolve: Res | undefined;
 
     if (typeof argOrOpts === "function" && !maybeRes) {
@@ -142,7 +171,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
       const bag = argOrOpts as Record<string, unknown>;
       if ("args" in bag || "resolve" in bag) {
         const cfg = bag as {
-          args?: ((a: ArgBuilder) => void) | Record<string, GqlScalar>;
+          args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
           resolve?: Res;
         };
         if (cfg.args) {
@@ -152,7 +181,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
         }
         if (cfg.resolve) resolve = cfg.resolve;
       } else {
-        args = bag as Record<string, GqlScalar>;
+        args = bag as Record<string, ArgSpec>;
         resolve = maybeRes;
       }
     }
@@ -196,14 +225,14 @@ type AddRelationFn<M extends boolean, D extends Direction> = <
   Name extends string,
 >(
   name: Name,
-  target: () => AnyBfNodeCtor,
+  target: () => AnyBfNodeCtor | typeof GraphQLObjectBase,
   opts?: Partial<Omit<RelationSpec, "target" | "many" | "direction">>,
 ) => RelationBuilder;
 
 export interface RelationSpec {
-  target: () => AnyBfNodeCtor;
+  target: () => AnyBfNodeCtor | typeof GraphQLObjectBase;
   many: boolean;
-  edge?: () => typeof BfEdgeBase;
+  edge?: () => typeof GraphQLObjectBase;
   direction: Direction;
 }
 
@@ -281,6 +310,7 @@ interface ReturnsBase {
 
 function makeReturnsBuilder(
   flags = { list: false, nullable: false },
+  bucket: OutputSpec = {},
 ): ReturnsBase {
   function attachNullable(out: OutputSpec) {
     Object.defineProperty(out, "nullable", {
@@ -306,10 +336,14 @@ function makeReturnsBuilder(
         const entry: any = { list: true, of: type };
         if (flags.nullable) entry.nullable = true;
         const out: OutputSpec = { [prop]: entry };
+        /* ⬇️  NEW — merge every generated piece into the bucket */
+        Object.assign(bucket, out);
         attachNullable(out);
         return out as WithNullable<OutputSpec>;
       }
       const out: OutputSpec = { [prop]: type };
+      /* ⬇️  NEW — merge every generated piece into the bucket */
+      Object.assign(bucket, out);
       attachNullable(out);
       return out as WithNullable<OutputSpec>;
     };
@@ -330,6 +364,8 @@ function makeReturnsBuilder(
         enumerable: false,
       });
       const out: OutputSpec = { [key]: fn };
+      /* ⬇️  NEW — merge every generated piece into the bucket */
+      Object.assign(bucket, out);
       attachNullable(out);
       return out as WithNullable<OutputSpec>;
     },
@@ -341,19 +377,27 @@ function makeReturnsBuilder(
       });
       const entry = { connection: true, node: fn };
       const out: OutputSpec = { [key]: entry };
+      /* ⬇️  NEW — merge every generated piece into the bucket */
+      Object.assign(bucket, out);
       attachNullable(out);
       return out as WithNullable<OutputSpec>;
     },
   } as const;
 
   const flagsBuilder = (extra: Partial<typeof flags>): ReturnsBase =>
-    makeReturnsBuilder({
-      list: flags.list || !!extra.list,
-      nullable: flags.nullable || !!extra.nullable,
-    });
+    makeReturnsBuilder(
+      {
+        list: flags.list || !!extra.list,
+        nullable: flags.nullable || !!extra.nullable,
+      },
+      bucket, // ⬅ share the same bucket
+    );
 
   const obj: any = Object.create(null);
   Object.assign(obj, base);
+
+  /* ⬇️  expose the merged spec */
+  Object.defineProperty(obj, "_spec", { value: bucket, enumerable: false });
 
   Object.defineProperty(obj, "list", {
     get() {
@@ -378,7 +422,7 @@ function makeReturnsBuilder(
 
 export interface CustomMutation {
   name: string;
-  args: Record<string, GqlScalar>;
+  args: Record<string, ArgSpec>;
   output: OutputSpec;
   resolve: (
     src: InstanceType<AnyBfNodeCtor>,
@@ -427,8 +471,8 @@ function buildMutation() {
     custom(
       name: string,
       cfg: {
-        args?: ((a: ArgBuilder) => void) | Record<string, GqlScalar>;
-        returns: (r: ReturnsBase) => OutputSpec;
+        args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
+        returns: (r: ReturnsBase) => void | OutputSpec;
         resolve: CustomMutation["resolve"];
       },
     ) {
@@ -436,7 +480,12 @@ function buildMutation() {
         ? collectArgs(cfg.args)
         : (cfg.args ?? {});
 
-      const output = cfg.returns(makeReturnsBuilder());
+      const builder = makeReturnsBuilder();
+      const maybeOutput = cfg.returns(builder);
+
+      /* If the callback didn’t return anything, fall back to the
+         spec aggregated inside the builder */
+      const output = maybeOutput ?? (builder as any)._spec;
       spec.customs.push({
         name,
         args: argsSpec ?? {},

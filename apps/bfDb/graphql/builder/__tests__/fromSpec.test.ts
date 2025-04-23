@@ -34,7 +34,7 @@ Deno.test("specToNexusObject – maps field args & resolvers", () => {
   const spec = defineGqlNode((field, _relation, _mutation) => {
     field.boolean(
       "isFollowedByViewer",
-      { viewerId: "id" },
+      { viewerId: { type: "id" } },
       () => true,
     );
   });

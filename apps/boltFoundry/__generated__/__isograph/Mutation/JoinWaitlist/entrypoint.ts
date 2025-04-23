@@ -33,7 +33,7 @@ const normalizationAst: NormalizationAst = {
           { kind: "Variable", name: "company" },
         ],
       ],
-      concreteType: "JoinWaitlistResponse",
+      concreteType: "JoinWaitlistPayload",
       selections: [
         {
           kind: "Scalar",
