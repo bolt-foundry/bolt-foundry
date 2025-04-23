@@ -7,7 +7,6 @@
 
 
 import type { Context } from "./../graphqlContext.ts"
-import type { GraphqlBfNode, GraphqlNode } from "./../types/graphqlBfNode.ts"
 import type { core, connectionPluginCore } from "nexus"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
@@ -50,12 +49,6 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
-  BfCurrentViewerLoggedIn: { // root type
-    id: string; // ID!
-  }
-  BfCurrentViewerLoggedOut: { // root type
-    id: string; // ID!
-  }
   BfOrganization: { // root type
     name: string; // String!
     person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
@@ -74,9 +67,7 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  BfCurrentViewer: core.Discriminate<'BfCurrentViewerLoggedIn', 'required'> | core.Discriminate<'BfCurrentViewerLoggedOut', 'required'>;
-  BfNode: GraphqlBfNode;
-  Node: GraphqlNode;
+  BfNode: core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
 }
 
 export interface NexusGenUnions {
@@ -87,12 +78,6 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
-  BfCurrentViewerLoggedIn: { // field return type
-    id: string; // ID!
-  }
-  BfCurrentViewerLoggedOut: { // field return type
-    id: string; // ID!
-  }
   BfOrganization: { // field return type
     name: string; // String!
     person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
@@ -112,27 +97,11 @@ export interface NexusGenFieldTypes {
     updateBfPerson: boolean | null; // Boolean
   }
   Query: { // field return type
-    bfNode: NexusGenRootTypes['BfNode'] | null; // BfNode
-    me: NexusGenRootTypes['BfCurrentViewer'] | null; // BfCurrentViewer
-  }
-  BfCurrentViewer: { // field return type
-    id: string; // ID!
-  }
-  BfNode: { // field return type
-    id: string; // ID!
-  }
-  Node: { // field return type
-    id: string; // ID!
+    ok: boolean; // Boolean!
   }
 }
 
 export interface NexusGenFieldTypeNames {
-  BfCurrentViewerLoggedIn: { // field return type name
-    id: 'ID'
-  }
-  BfCurrentViewerLoggedOut: { // field return type name
-    id: 'ID'
-  }
   BfOrganization: { // field return type name
     name: 'String'
     person: 'BfPerson'
@@ -152,17 +121,7 @@ export interface NexusGenFieldTypeNames {
     updateBfPerson: 'Boolean'
   }
   Query: { // field return type name
-    bfNode: 'BfNode'
-    me: 'BfCurrentViewer'
-  }
-  BfCurrentViewer: { // field return type name
-    id: 'ID'
-  }
-  BfNode: { // field return type name
-    id: 'ID'
-  }
-  Node: { // field return type name
-    id: 'ID'
+    ok: 'Boolean'
   }
 }
 
@@ -182,23 +141,15 @@ export interface NexusGenArgTypes {
       params?: NexusGenScalars['JSON'] | null; // JSON
     }
   }
-  Query: {
-    bfNode: { // args
-      id?: string | null; // ID
-    }
-  }
 }
 
 export interface NexusGenAbstractTypeMembers {
-  BfCurrentViewer: "BfCurrentViewerLoggedIn" | "BfCurrentViewerLoggedOut"
-  Node: "BfCurrentViewerLoggedIn" | "BfCurrentViewerLoggedOut"
+  BfNode: "BfOrganization" | "BfPerson"
 }
 
 export interface NexusGenTypeInterfaces {
-  BfCurrentViewerLoggedIn: "BfCurrentViewer" | "Node"
-  BfCurrentViewerLoggedOut: "BfCurrentViewer" | "Node"
-  BfCurrentViewer: "Node"
-  BfNode: "Node"
+  BfOrganization: "BfNode"
+  BfPerson: "BfNode"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;

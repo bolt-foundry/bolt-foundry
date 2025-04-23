@@ -481,5 +481,5 @@ export type GqlNodeSpec = {
   field: Record<string, FieldSpec>;
   relation: Record<string, RelationSpec>;
   mutation: MutationSpec;
-  implements?: Array<GqlNodeSpec>;
+  implements?: Array<string>;
 };

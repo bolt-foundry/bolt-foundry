@@ -47,7 +47,11 @@ export class BfNodeBase<
   TMetadata extends BfMetadataBase = BfMetadataBase,
   TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
 > {
-  __typename = this.constructor.name;
+  static get __typename() {
+    return this.name;
+  }
+  readonly __typename = (this.constructor as typeof BfNodeBase).__typename;
+
   private _id?: string;
 
   get id(): string {
@@ -68,7 +72,7 @@ export class BfNodeBase<
       return null;
     }
 
-    const parent = Object.getPrototypeOf(this) as typeof BfNodeBase;
+    const Parent = Object.getPrototypeOf(this) as typeof BfNodeBase;
 
     if (typeof defOrNull === "function") {
       const spec = defineGqlNode(defOrNull);
@@ -77,8 +81,8 @@ export class BfNodeBase<
       spec.implements = spec.implements ?? [];
 
       // Include parent's spec if available
-      if (parent?.gqlSpec) {
-        spec.implements.push(parent.gqlSpec);
+      if (Parent?.gqlSpec) {
+        spec.implements.push(Parent.__typename);
       }
 
       this.gqlSpec = spec;
@@ -86,8 +90,10 @@ export class BfNodeBase<
     }
 
     // Inherit gqlSpec from parent if not explicitly defined
-    if (!this.gqlSpec && parent?.gqlSpec) {
-      this.gqlSpec = parent.gqlSpec;
+    if (!this.gqlSpec && Parent?.gqlSpec) {
+      const spec = defineGqlNode(() => {});
+      spec.implements = [Parent.__typename];
+      this.gqlSpec = spec;
     }
 
     return this.gqlSpec ?? null;

@@ -4,6 +4,7 @@ import {
   floatArg,
   idArg,
   intArg,
+  interfaceType,
   mutationField,
   objectType,
   scalarType,
@@ -11,24 +12,22 @@ import {
 } from "nexus";
 import type {
   FieldSpec,
+  GqlNodeSpec,
   GqlScalar,
   MutationSpec,
   RelationSpec,
-} from "./builder.ts";
+} from "apps/bfDb/graphql/builder/builder.ts";
 import type {
+  InterfaceDefinitionBlock,
   NexusOutputFieldConfig,
   ObjectDefinitionBlock,
 } from "nexus/dist/core.js";
+import { getLogger } from "packages/logger/logger.ts";
 
-/* -------------------------------------------------------------------------- */
-/*  Sub‑types & helpers                                                       */
-/* -------------------------------------------------------------------------- */
-
-type GqlNodeSpec = {
-  field: Record<string, FieldSpec>;
-  relation: Record<string, RelationSpec>;
-  mutation: MutationSpec;
-};
+type DefBlock<TName extends string> =
+  & ObjectDefinitionBlock<TName>
+  & InterfaceDefinitionBlock<TName>;
+const _logger = getLogger(import.meta);
 
 const scalarMap: Record<GqlScalar, string> = {
   id: "ID",
@@ -39,7 +38,6 @@ const scalarMap: Record<GqlScalar, string> = {
   json: "JSON",
 };
 
-// ensure JSON scalar only once ------------------------------------------------
 let jsonScalarRegistered = false;
 let jsonScalarDef: unknown;
 function ensureJsonScalar(): unknown {
@@ -53,10 +51,6 @@ function ensureJsonScalar(): unknown {
   jsonScalarRegistered = true;
   return jsonScalarDef;
 }
-
-/* -------------------------------------------------------------------------- */
-/*  Helpers – arguments, scalar fields, relations                              */
-/* -------------------------------------------------------------------------- */
 
 function toNexusArg(scalar: GqlScalar) {
   switch (scalar) {
@@ -77,19 +71,17 @@ function toNexusArg(scalar: GqlScalar) {
 }
 
 function addScalarField<TName extends string>(
-  t: ObjectDefinitionBlock<TName>,
+  t: DefBlock<TName>,
   name: string,
   spec: FieldSpec,
 ): void {
   const options: NexusOutputFieldConfig<TName, string> = {
     type: scalarMap[spec.type],
   };
-
   if (spec.args) {
-    type ArgDef = ReturnType<typeof idArg>;
-    const args: Record<string, ArgDef> = {};
+    const args: Record<string, ReturnType<typeof idArg>> = {};
     for (const [argName, argScalar] of Object.entries(spec.args)) {
-      args[argName] = toNexusArg(argScalar as GqlScalar) as ArgDef;
+      args[argName] = toNexusArg(argScalar as GqlScalar);
     }
     options.args = args;
   }
@@ -99,7 +91,6 @@ function addScalarField<TName extends string>(
       string
     >["resolve"];
   }
-
   if (spec.nullable) {
     t.field(name, options);
   } else {
@@ -108,7 +99,7 @@ function addScalarField<TName extends string>(
 }
 
 function addRelationField<TName extends string>(
-  t: ObjectDefinitionBlock<TName>,
+  t: DefBlock<TName>,
   name: string,
   spec: RelationSpec,
 ): void {
@@ -117,7 +108,7 @@ function addRelationField<TName extends string>(
     const target = spec.target();
     if (target?.name) targetName = target.name as string;
   } catch {
-    /* ignore – fallback to generic */
+    // ignore
   }
 
   if (spec.many) {
@@ -127,14 +118,9 @@ function addRelationField<TName extends string>(
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Mutations – convert builder spec → mutationField objs                      */
-/* -------------------------------------------------------------------------- */
-
 function buildMutationFields(nodeName: string, mutation: MutationSpec) {
   const defs: unknown[] = [];
 
-  // standard mutations --------------------------------------------------------
   if (mutation.standard.update) {
     defs.push(
       mutationField(`update${nodeName}`, {
@@ -160,21 +146,17 @@ function buildMutationFields(nodeName: string, mutation: MutationSpec) {
     );
   }
 
-  // custom mutations ----------------------------------------------------------
   for (const cm of mutation.customs) {
     const argsCfg: Record<string, ReturnType<typeof idArg>> = {};
     for (const [argName, argScalar] of Object.entries(cm.args)) {
-      argsCfg[argName] = toNexusArg(argScalar as GqlScalar) as ReturnType<
-        typeof idArg
-      >;
+      argsCfg[argName] = toNexusArg(argScalar as GqlScalar);
     }
 
     defs.push(
       mutationField(`${cm.name}${nodeName}`, {
-        type: "JSON", // generic opaque payload – concrete types could be generated later
+        type: "JSON",
         args: argsCfg,
-        // deno-lint-ignore no-explicit-any
-        resolve: cm.resolve as any,
+        resolve: cm.resolve,
       }),
     );
   }
@@ -182,28 +164,88 @@ function buildMutationFields(nodeName: string, mutation: MutationSpec) {
   return defs;
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Main – convert a GqlNodeSpec to Nexus object & mutation fields             */
-/* -------------------------------------------------------------------------- */
-
-export function specToNexusObject(nodeName: string, spec: GqlNodeSpec) {
+export function specsToNexusDefs(
+  specs: Record<string, GqlNodeSpec>,
+): unknown[] {
   ensureJsonScalar();
 
-  const nodeType = objectType({
-    name: nodeName,
-    definition(t) {
-      // scalar fields
-      for (const [fieldName, fieldSpec] of Object.entries(spec.field)) {
-        addScalarField(t, fieldName, fieldSpec);
-      }
-      // relations
-      for (const [relName, relSpec] of Object.entries(spec.relation)) {
-        addRelationField(t, relName, relSpec);
-      }
-    },
-  });
+  /* 1. Find every interface name already referenced */
+  const directlyReferenced = new Set<string>();
+  for (const { implements: impl = [] } of Object.values(specs)) {
+    impl.forEach((n) => directlyReferenced.add(n));
+  }
 
-  const mutationDefs = buildMutationFields(nodeName, spec.mutation);
+  /* 2. If *two* specs share the same root interface (e.g. BfNodeBase)
+        treat the older sibling as an interface too. */
+  const promotedInterfaces = new Set<string>();
+  for (const [nodeName, _spec] of Object.entries(specs)) {
+    if (
+      [...directlyReferenced].filter((n) =>
+        specs[n]?.implements?.includes("BfNodeBase")
+      ).length > 1
+    ) {
+      promotedInterfaces.add(nodeName);
+    }
+  }
 
-  return [nodeType, ...mutationDefs, ensureJsonScalar()];
+  const interfaceNames = new Set<string>([
+    ...directlyReferenced,
+    ...promotedInterfaces,
+  ]);
+
+  const allDefs: unknown[] = [];
+
+  for (const iface of interfaceNames) {
+    if (!(iface in specs)) {
+      allDefs.push(
+        interfaceType({
+          name: iface,
+          definition() {},
+        }),
+      );
+    }
+  }
+
+  /* 4. Build real specs -------------------------------------------------- */
+  for (const [nodeName, spec] of Object.entries(specs)) {
+    const isInterface = interfaceNames.has(nodeName);
+
+    const definition = (t: DefBlock<string>) => {
+      for (const [fname, fspec] of Object.entries(spec.field)) {
+        addScalarField(t, fname, fspec);
+      }
+      for (const [rname, rspec] of Object.entries(spec.relation)) {
+        addRelationField(t, rname, rspec);
+      }
+
+      // Original implements
+      for (const ifName of spec.implements ?? []) t.implements(ifName);
+
+      /* 4a.  Extra “sibling” interface if needed (SubNode → BaseNode) */
+      if (
+        !isInterface &&
+        (spec.implements ?? []).every((n) => n === "BfNodeBase")
+      ) {
+        const extra = [...promotedInterfaces].find((n) => n !== nodeName);
+        if (extra) t.implements(extra);
+      }
+    };
+
+    const typeDef = isInterface
+      ? interfaceType({
+        name: nodeName,
+        definition,
+        resolveType: (f) => f.__typename,
+      })
+      : objectType({ name: nodeName, definition });
+
+    allDefs.push(typeDef);
+
+    if (!isInterface) {
+      allDefs.push(...buildMutationFields(nodeName, spec.mutation));
+    }
+  }
+
+  allDefs.push(ensureJsonScalar());
+  return allDefs;
 }
