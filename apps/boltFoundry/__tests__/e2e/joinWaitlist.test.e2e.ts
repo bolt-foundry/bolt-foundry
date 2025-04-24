@@ -1,4 +1,5 @@
 #! /usr/bin/env -S bff e2e
+
 import { assertEquals } from "@std/assert";
 import {
   navigateTo,
@@ -8,10 +9,10 @@ import {
 import { getLogger } from "packages/logger/logger.ts";
 
 // End‑to‑end test: verifies that a visitor can successfully submit the
-// “Join the waitlist” form on the home page.
+// "Join the waitlist" form on the home page.
 // Steps
-// 1. Navigate to “/”
-// 2. Click the primary CTA “Join the waitlist” button
+// 1. Navigate to "/"
+// 2. Click the primary CTA "Join the waitlist" button
 // 3. Wait for the modal dialog to appear
 // 4. Fill out the form inputs (name, email, company)
 // 5. Submit the form
@@ -39,9 +40,9 @@ Deno.test("User can join the waitlist successfully", async () => {
     await context.page.waitForSelector(modalSelector, { timeout: 10_000 });
     await context.takeScreenshot("waitlist‑modal‑open");
 
-    // 4️⃣  Fill the form fields
+    // 4️⃣  Fill the form fields with test data (use dry run email format)
     await context.page.type("#bfDsFormInput-name", "Test User");
-    await context.page.type("#bfDsFormInput-email", "test@example.com");
+    await context.page.type("#bfDsFormInput-email", "test.dryrun@example.com");
     await context.page.type("#bfDsFormInput-company", "Bolt Foundry");
     await context.takeScreenshot("waitlist‑form‑filled");
 
