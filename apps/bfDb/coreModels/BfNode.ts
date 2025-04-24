@@ -3,6 +3,7 @@ import {
   BfNodeBase,
   type BfNodeBaseProps,
   type BfNodeCache,
+  type ConcreteBfNodeBaseCtor,
 } from "apps/bfDb/classes/BfNodeBase.ts";
 import type { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
@@ -12,6 +13,7 @@ import { storage } from "apps/bfDb/storage/storage.ts";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorNode.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import type { BfEdgeBaseProps } from "apps/bfDb/classes/BfEdgeBase.ts";
+import type { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 
 const logger = getLogger(import.meta);
 
@@ -33,6 +35,17 @@ export class BfNode<
   override readonly relatedEdge: string = "apps/bfDb/coreModels/BfEdge.ts";
   protected _savedProps: TProps;
   protected override _props: TProps;
+  static override defineGqlNode(
+    def: Parameters<typeof GraphQLObjectBase.defineGqlNode>[0],
+  ) {
+    // Wrap so callers get the normal helpers back
+    return super.defineGqlNode((field, relation, mutation) => {
+      def?.(field, relation, mutation);
+      mutation.update?.();
+      mutation.delete?.();
+    });
+  }
+
   static override gqlSpec = this.defineGqlNode((field) => {
     field.id("id");
   });
@@ -68,6 +81,7 @@ export class BfNode<
 
   static override async findX<
     TProps extends BfNodeBaseProps,
+    TMetadata extends BfMetadataNode,
     TThis extends typeof BfNodeBase<TProps>,
   >(
     this: TThis,
@@ -86,7 +100,12 @@ export class BfNode<
       logger.debug("couldn't find item", cv.bfOid, id);
       throw new BfErrorNodeNotFound();
     }
-    const item = new this(cv, itemFromDb.props as TProps, itemFromDb.metadata);
+    const Ctor = this as unknown as ConcreteBfNodeBaseCtor<TProps, TMetadata>;
+    const item = new Ctor(
+      cv,
+      itemFromDb.props as TProps,
+      itemFromDb.metadata as TMetadata,
+    );
     cache?.set(id, item);
     return item as InstanceType<TThis>;
   }
@@ -121,7 +140,12 @@ export class BfNode<
     );
 
     return items.map((item) => {
-      const instance = new this(cv, item.props as TProps, item.metadata);
+      const Ctor = this as unknown as ConcreteBfNodeBaseCtor<TProps, TMetadata>;
+      const instance = new Ctor(
+        cv,
+        item.props as TProps,
+        item.metadata as TMetadata,
+      );
       cache?.set(item.metadata.bfGid, instance);
       return instance as InstanceType<TThis>;
     });
