@@ -40,6 +40,7 @@ export async function isoCommand(options: string[]): Promise<number> {
 
       if (code === 0) {
         logger.info("✅ Isograph compilation completed successfully");
+        await restartLspServer();
       } else {
         logger.error(`❌ Isograph compilation failed with code ${code}`);
       }
@@ -55,6 +56,7 @@ export async function isoCommand(options: string[]): Promise<number> {
 
     if (result === 0) {
       logger.info("✅ Isograph compilation completed successfully");
+      await restartLspServer();
     } else {
       logger.error(`❌ Isograph compilation failed with code ${result}`);
     }
@@ -63,6 +65,19 @@ export async function isoCommand(options: string[]): Promise<number> {
   } catch (error) {
     logger.error("Error running isograph compiler:", error);
     return 1;
+  }
+}
+
+/**
+ * Restart the Deno LSP server to pick up changes
+ */
+async function restartLspServer(): Promise<void> {
+  logger.info("Restarting LSP server to pick up changes...");
+  try {
+    await runShellCommand(["pkill", "-f", "deno lsp"]);
+    logger.info("LSP server restarted successfully");
+  } catch {
+    logger.info("No LSP process found to restart");
   }
 }
 
