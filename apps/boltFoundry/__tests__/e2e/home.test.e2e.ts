@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assert, assertEquals } from "@std/assert";
 import {
   navigateTo,
   setupE2ETest,
@@ -39,6 +39,11 @@ Deno.test("Home page loads successfully", async () => {
       bodyText && bodyText.length > 0,
       true,
       "Page body should not be empty",
+    );
+
+    assert(
+      bodyText?.includes("Bolt Foundry"),
+      "Page should contain 'Bolt Foundry'... probably erroring otherwise",
     );
 
     // Take screenshot after test has completed successfully
