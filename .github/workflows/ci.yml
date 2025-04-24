@@ -4,7 +4,16 @@ jobs:
   build:
     name: bff ci
     runs-on: ubuntu-latest
-    # Use plain ubuntu rather than a nix container for better GitHub Actions compatibility
+    
+    env:
+      DATABASE_URL:        ${{ secrets.DATABASE_URL }}
+      ASSEMBLY_AI_KEY:     ${{ secrets.ASSEMBLY_AI_KEY }}
+      OPEN_AI_API_KEY:     ${{ secrets.OPEN_AI_API_KEY }}
+      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
+      POSTHOG_API_KEY:     ${{ secrets.POSTHOG_API_KEY }}
+      WAITLIST_API_KEY:    ${{ secrets.WAITLIST_API_KEY }}
+      INFRA_BIN_PATH:      ${{ github.workspace }}/infra/bin
+    
     steps:
       - name: Install Nix
         uses: cachix/install-nix-action@v22
@@ -98,17 +107,6 @@ jobs:
 
           # Clean up temporary file
           rm .env_section
-
-      # Set secret-dependent environment variables
-      - name: Set environment variables
-        run: |
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
-          echo "ASSEMBLY_AI_KEY=${{ secrets.ASSEMBLY_AI_KEY }}" >> $GITHUB_ENV
-          echo "OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}" >> $GITHUB_ENV
-          echo "OPEN_ROUTER_API_KEY=${{ secrets.OPEN_ROUTER_API_KEY }}" >> $GITHUB_ENV
-          echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
-          echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
-          echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
 
       # Cache the nix development shell specifically
       - name: Cache nix development shell

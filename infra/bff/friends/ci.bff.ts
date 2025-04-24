@@ -339,7 +339,8 @@ async function runTypecheckStep(useGithub: boolean): Promise<number> {
 // 6. Install step
 // ----------------------------------------------------------------------------
 
-async function runInstallStep(useGithub: boolean): Promise<number> {
+async function runInstallStep(_useGithub: boolean): Promise<number> {
+  const useGithub = false;
   logger.info("Caching dependencies via deno cache .");
   // For the example, we re-use "deno install" since your logs do that.
   // But you might prefer "deno cache --reload ." or similar in your real pipeline.
