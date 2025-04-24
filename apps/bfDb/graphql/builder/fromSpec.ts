@@ -201,6 +201,8 @@ export function specsToNexusDefs(
         interfaceType({
           name: iface,
           definition() {},
+          // default resolver so abstract-type runtime checks pass
+          resolveType: (src) => (src as { __typename?: string }).__typename,
         }),
       );
     }
@@ -210,36 +212,42 @@ export function specsToNexusDefs(
   for (const [nodeName, spec] of Object.entries(specs)) {
     const isInterface = interfaceNames.has(nodeName);
 
-    const definition = (t: DefBlock<string>) => {
-      for (const [fname, fspec] of Object.entries(spec.field)) {
-        addScalarField(t, fname, fspec);
-      }
-      for (const [rname, rspec] of Object.entries(spec.relation)) {
-        addRelationField(t, rname, rspec);
-      }
+    // Only emit an object-type if the spec actually *has* fields
+    const hasOutputFields = Object.keys(spec.field ?? {}).length > 0 ||
+      Object.keys(spec.relation ?? {}).length > 0;
 
-      // Original implements
-      for (const ifName of spec.implements ?? []) t.implements(ifName);
+    if (hasOutputFields || isInterface) {
+      const definition = (t: DefBlock<string>) => {
+        for (const [fname, fspec] of Object.entries(spec.field)) {
+          addScalarField(t, fname, fspec);
+        }
+        for (const [rname, rspec] of Object.entries(spec.relation)) {
+          addRelationField(t, rname, rspec);
+        }
 
-      /* 4a.  Extra “sibling” interface if needed (SubNode → BaseNode) */
-      if (
-        !isInterface &&
-        (spec.implements ?? []).every((n) => n === "BfNodeBase")
-      ) {
-        const extra = [...promotedInterfaces].find((n) => n !== nodeName);
-        if (extra) t.implements(extra);
-      }
-    };
+        // Original implements
+        for (const ifName of spec.implements ?? []) t.implements(ifName);
 
-    const typeDef = isInterface
-      ? interfaceType({
-        name: nodeName,
-        definition,
-        resolveType: (f) => f.__typename,
-      })
-      : objectType({ name: nodeName, definition });
+        /* 4a.  Extra "sibling" interface if needed (SubNode → BaseNode) */
+        if (
+          !isInterface &&
+          (spec.implements ?? []).every((n) => n === "BfNodeBase")
+        ) {
+          const extra = [...promotedInterfaces].find((n) => n !== nodeName);
+          if (extra) t.implements(extra);
+        }
+      };
 
-    allDefs.push(typeDef);
+      const typeDef = isInterface
+        ? interfaceType({
+          name: nodeName,
+          definition,
+          resolveType: (f) => f.__typename,
+        })
+        : objectType({ name: nodeName, definition });
+
+      allDefs.push(typeDef);
+    }
 
     if (!isInterface) {
       allDefs.push(...buildMutationFields(nodeName, spec.mutation));
