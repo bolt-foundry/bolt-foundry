@@ -102,13 +102,16 @@ jobs:
       # Set secret-dependent environment variables
       - name: Set environment variables
         run: |
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
-          echo "ASSEMBLY_AI_KEY=${{ secrets.ASSEMBLY_AI_KEY }}" >> $GITHUB_ENV
-          echo "OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}" >> $GITHUB_ENV
-          echo "OPEN_ROUTER_API_KEY=${{ secrets.OPEN_ROUTER_API_KEY }}" >> $GITHUB_ENV
-          echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
-          echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
-          echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
+          # Write each secret to $GITHUB_ENV without another round of $-expansion
+          printf 'DATABASE_URL=%s\n'        "${{ secrets.DATABASE_URL }}"        >> "$GITHUB_ENV"
+          printf 'ASSEMBLY_AI_KEY=%s\n'     "${{ secrets.ASSEMBLY_AI_KEY }}"     >> "$GITHUB_ENV"
+          printf 'OPEN_AI_API_KEY=%s\n'     "${{ secrets.OPEN_AI_API_KEY }}"     >> "$GITHUB_ENV"
+          printf 'OPEN_ROUTER_API_KEY=%s\n' "${{ secrets.OPEN_ROUTER_API_KEY }}" >> "$GITHUB_ENV"
+          printf 'POSTHOG_API_KEY=%s\n'     "${{ secrets.POSTHOG_API_KEY }}"     >> "$GITHUB_ENV"
+          printf 'WAITLIST_API_KEY=%s\n'    "${{ secrets.WAITLIST_API_KEY }}"    >> "$GITHUB_ENV"
+
+          printf 'INFRA_BIN_PATH=%s\n' "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_ENV"
+          printf '%s\n' "$GITHUB_WORKSPACE/infra/bin"               >> "$GITHUB_PATH"
 
       # Cache the nix development shell specifically
       - name: Cache nix development shell

@@ -331,3 +331,36 @@ Deno.test(
     assertStringIncludes(sdl, "answer: String!");
   },
 );
+
+Deno.test("returns.<scalar>() is nullable by default", () => {
+  const spec = defineGqlNode((_f, _r, m) => {
+    m.custom("ping", {
+      args: () => ({}),
+      returns: (r) => r.string("message"),
+      resolve: () => ({ message: null }),
+    });
+  });
+
+  const Dummy = specsToNexusDefs({ DummyNullable: spec });
+  const sdl = sdlOfTypes([Dummy]);
+
+  // Generated payload type PingPayload { message: String }
+  assertStringIncludes(sdl, "type PingPayload");
+  assertStringIncludes(sdl, "message: String"); // **no bang**
+  assert(!sdl.includes("message: String!"));
+});
+
+Deno.test("returns.nonNull.<scalar>() flips nullable → non-null", () => {
+  const spec = defineGqlNode((_f, _r, m) => {
+    m.custom("save", {
+      args: () => ({}),
+      returns: (r) => r.nonNull.boolean("success"),
+      resolve: () => ({ success: true }),
+    });
+  });
+
+  const Dummy = specsToNexusDefs({ DummyNN: spec });
+  const sdl = sdlOfTypes([Dummy]);
+
+  assertStringIncludes(sdl, "success: Boolean!");
+});
