@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 import { register } from "infra/bff/bff.ts";
 import {
   __DANGEROUSLY_DESTROY_THE_DATABASE__,

@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 // ./infra/bff/friends/__tests__/llm.test.ts
 import { assert, assertStringIncludes } from "@std/assert";
 import { join } from "@std/path";

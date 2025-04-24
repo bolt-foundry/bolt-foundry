@@ -3,7 +3,6 @@
 import { connectionPlugin, makeSchema } from "nexus";
 import { createYoga } from "graphql-yoga";
 
-import * as oldTypes from "apps/bfDb/graphql/__generated__/graphqlTypesList.ts";
 import { createContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { SchemaConfig } from "nexus/dist/builder.js";
 import { getLogger } from "packages/logger/logger.ts";
@@ -11,12 +10,8 @@ import { loadModelTypes } from "apps/bfDb/graphql/builder/loadSpecs.ts";
 
 const logger = getLogger(import.meta);
 
-const rootsList = await import(
-  "apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts"
-);
-
 const schemaOptions: SchemaConfig = {
-  types: { ...loadModelTypes(), ...oldTypes, ...rootsList },
+  types: { ...loadModelTypes() },
   features: {
     abstractTypeStrategies: {
       __typename: true,
