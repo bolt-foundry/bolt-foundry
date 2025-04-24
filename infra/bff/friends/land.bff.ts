@@ -173,6 +173,7 @@ export async function land(): Promise<number> {
   const commitResult = await runShellCommand([
     "git",
     "commit",
+    "-a",
     "-m",
     fullCommitMsg,
   ]);
