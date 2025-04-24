@@ -107,6 +107,7 @@ jobs:
           echo "OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}" >> $GITHUB_ENV
           echo "OPEN_ROUTER_API_KEY=${{ secrets.OPEN_ROUTER_API_KEY }}" >> $GITHUB_ENV
           echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
+          echo "WAITLIST_API_KEY=${{ secrets.WAITLIST_API_KEY }}" >> $GITHUB_ENV
           echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
           echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
 

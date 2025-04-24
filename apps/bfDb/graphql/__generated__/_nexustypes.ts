@@ -50,25 +50,25 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   BfEdge: { // root type
-    id: string; // ID!
+    id?: string | null; // ID
   }
   BfEdgeBase: { // root type
-    id: string; // ID!
+    id?: string | null; // ID
   }
   BfOrganization: { // root type
-    id: string; // ID!
-    name: string; // String!
+    id?: string | null; // ID
+    name?: string | null; // String
     person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
-    settings: NexusGenScalars['JSON']; // JSON!
+    settings?: NexusGenScalars['JSON'] | null; // JSON
   }
   BfPerson: { // root type
-    email: string; // String!
-    id: string; // ID!
-    name: string; // String!
+    email?: string | null; // String
+    id?: string | null; // ID
+    name?: string | null; // String
   }
-  JoinWaitlistPayload: { // root type
-    message: string; // String!
-    success: boolean; // Boolean!
+  JoinPayload: { // root type
+    message?: string | null; // String
+    success?: boolean | null; // Boolean
   }
   Mutation: {};
   Query: {};
@@ -88,37 +88,37 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   BfEdge: { // field return type
-    id: string; // ID!
+    id: string | null; // ID
   }
   BfEdgeBase: { // field return type
-    id: string; // ID!
+    id: string | null; // ID
   }
   BfOrganization: { // field return type
-    id: string; // ID!
-    name: string; // String!
+    id: string | null; // ID
+    name: string | null; // String
     person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
-    settings: NexusGenScalars['JSON']; // JSON!
+    settings: NexusGenScalars['JSON'] | null; // JSON
   }
   BfPerson: { // field return type
-    email: string; // String!
-    id: string; // ID!
-    name: string; // String!
+    email: string | null; // String
+    id: string | null; // ID
+    name: string | null; // String
   }
-  JoinWaitlistPayload: { // field return type
-    message: string; // String!
-    success: boolean; // Boolean!
+  JoinPayload: { // field return type
+    message: string | null; // String
+    success: boolean | null; // Boolean
   }
   Mutation: { // field return type
-    joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+    joinWaitlist: NexusGenRootTypes['JoinPayload'] | null; // JoinPayload
   }
   Query: { // field return type
     ok: boolean; // Boolean!
   }
   BfNode: { // field return type
-    id: string; // ID!
+    id: string | null; // ID
   }
   BfNodeBase: { // field return type
-    id: string; // ID!
+    id: string | null; // ID
   }
 }
 
@@ -140,12 +140,12 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     name: 'String'
   }
-  JoinWaitlistPayload: { // field return type name
+  JoinPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
   }
   Mutation: { // field return type name
-    joinWaitlist: 'JoinWaitlistPayload'
+    joinWaitlist: 'JoinPayload'
   }
   Query: { // field return type name
     ok: 'Boolean'
@@ -161,9 +161,9 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Mutation: {
     joinWaitlist: { // args
-      company: string; // String!
-      email: string; // String!
-      name: string; // String!
+      company?: string | null; // String
+      email?: string | null; // String
+      name?: string | null; // String
     }
   }
 }
