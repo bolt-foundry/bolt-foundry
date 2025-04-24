@@ -1,7 +1,7 @@
 #! /usr/bin/env -S bff test
-// @ts-nocheck – Red tests
 
 import { defineGqlNode } from "apps/bfDb/graphql/builder/builder.ts";
+import { assertValidSchema, buildSchema } from "graphql";
 import {
   assert,
   assertEquals,
@@ -201,7 +201,7 @@ Deno.test("child gqlSpec implements parent's gqlSpec as interface", () => {
 
 Deno.test("subclass setting gqlSpec = null disables GraphQL", () => {
   class SilentNode extends BfNodeBase {
-    static override gqlSpec = this.defineGqlNode(null);
+    static override gqlSpec = null;
   }
 
   assertEquals(
@@ -239,4 +239,15 @@ Deno.test("Subclass gqlSpec should implement parent class", () => {
     implementsParent,
     "Subclass should include parent spec in 'implements'",
   );
+});
+
+Deno.test("the GraphQL schema in schema.graphql is valid", async () => {
+  const sdl = await Deno.readTextFile(
+    new URL(
+      import.meta.resolve("apps/bfDb/graphql/__generated__/schema.graphql"),
+    ),
+  );
+  const schema = buildSchema(sdl);
+
+  assertValidSchema(schema);
 });

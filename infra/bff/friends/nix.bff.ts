@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/bff.ts";
 

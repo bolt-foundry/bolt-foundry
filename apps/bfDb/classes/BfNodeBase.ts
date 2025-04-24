@@ -62,14 +62,14 @@ export class BfNodeBase<
   readonly relatedEdge: string = "apps/bfDb/classes/BfEdgeBase.ts";
 
   readonly _currentViewer: BfCurrentViewer;
-  static gqlSpec?: GqlNodeSpec | null;
+
   static defineGqlNode(
     ...args: Parameters<typeof defineGqlNode>
-  ): ReturnType<typeof defineGqlNode> | null {
-    const defOrNull = args[0] as (typeof args)[0] | null;
+  ) {
+    const defOrNull = args[0] as (typeof args)[0] | undefined;
     if (defOrNull === null) {
-      this.gqlSpec = null;
-      return null;
+      this.gqlSpec = undefined;
+      return undefined;
     }
 
     const Parent = Object.getPrototypeOf(this) as typeof BfNodeBase;
@@ -96,7 +96,23 @@ export class BfNodeBase<
       this.gqlSpec = spec;
     }
 
-    return this.gqlSpec ?? null;
+    return this.gqlSpec;
+  }
+  static gqlSpec?: GqlNodeSpec | null | undefined = this.defineGqlNode(
+    (field) => {
+      field.id("id");
+    },
+  );
+
+  /** Coerce `undefined` → `null` so tests see a stable sentinel value */
+  static {
+    if (
+      Object.prototype.hasOwnProperty.call(this, "gqlSpec") &&
+      this.gqlSpec === undefined
+    ) {
+      // --> tells the test "GraphQL is turned off for this type"
+      this.gqlSpec = null as never;
+    }
   }
 
   static generateSortValue() {
