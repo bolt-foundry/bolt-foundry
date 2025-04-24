@@ -23,13 +23,10 @@ type WaitlistFormData = {
 };
 
 export const Home = iso(`
-  field BfCurrentViewer.Home @component {
+field Query.Home @component {
     __typename
-    asBfCurrentViewerLoggedOut {
-      __typename
-    }
   }
-`)(function Home({ data }) {
+`)(function Home() {
   const { commit } = useMutation(joinWaitlistMutation);
   const { showModal } = useBfDs();
   const modalRef = useRef<ModalHandles>(null);
@@ -38,7 +35,7 @@ export const Home = iso(`
   const [playPlinko, setPlayPlinko] = useState(false);
   const { navigate } = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const loggedOut = data?.asBfCurrentViewerLoggedOut;
+  const loggedOut = true;
 
   useEffect(() => {
     const video = videoRef.current;
