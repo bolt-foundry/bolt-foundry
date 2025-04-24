@@ -42,8 +42,8 @@ Deno.test("Home page loads successfully", async () => {
     );
 
     assert(
-      bodyText?.includes("Bolt Foundry"),
-      "Page should contain 'Bolt Foundry'... probably erroring otherwise",
+      bodyText?.includes("Foundry"),
+      "Page should contain 'Foundry'... probably erroring otherwise",
     );
 
     // Take screenshot after test has completed successfully

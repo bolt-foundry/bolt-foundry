@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 // infra/bff/friends/pr-comments.bff.ts
 import { register } from "infra/bff/bff.ts";
 import { runShellCommandWithOutput } from "infra/bff/shellBase.ts";

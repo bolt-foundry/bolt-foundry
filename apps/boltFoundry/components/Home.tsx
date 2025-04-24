@@ -263,6 +263,7 @@ field Query.Home @component {
             text={playPlinko ? "Watch the video" : "Play the game"}
             onClick={() => setPlayPlinko(!playPlinko)}
           />
+          <div>Copyright Content Foundry, Inc.</div>
         </div>
         <div className="appFooter mobile-show">
           Play the game in your desktop browser.

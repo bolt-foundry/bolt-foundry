@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/bff.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
@@ -374,6 +376,14 @@ function stopContinuousMemoryLogging(): void {
   }
 }
 
+async function sh(command: string, cwd?: string): Promise<number> {
+  const result = await runShellCommand([command], cwd);
+  if (result !== 0) {
+    throw new Error(`Command "${command}" failed with exit code ${result}`);
+  }
+  return result;
+}
+
 export async function build(args: Array<string>): Promise<number> {
   const waitForFail = args.includes("--slow-exit");
   const debug = args.includes("--debug");
@@ -418,10 +428,14 @@ export async function build(args: Array<string>): Promise<number> {
     );
   }
 
+  logger.info("Starting build process");
+
+  // Generate barrel files
+  logger.info("Generating barrel files");
+  await sh("./apps/bfDb/bin/genBarrel.ts");
+
   if (debug) logMemoryUsage("before routes build");
-  const routesBuildResult = await runShellCommand([
-    "./infra/appBuild/routesBuild.ts",
-  ]);
+  const routesBuildResult = await sh("./infra/appBuild/routesBuild.ts");
   if (debug) logMemoryUsage("after routes build");
 
   if (routesBuildResult !== 0) {
@@ -429,9 +443,7 @@ export async function build(args: Array<string>): Promise<number> {
   }
 
   if (debug) logMemoryUsage("before content build");
-  const contentResult = await runShellCommand([
-    "./infra/appBuild/contentBuild.ts",
-  ]);
+  const contentResult = await sh("./infra/appBuild/contentBuild.ts");
   if (debug) logMemoryUsage("after content build");
 
   if (contentResult !== 0) {
@@ -439,9 +451,7 @@ export async function build(args: Array<string>): Promise<number> {
   }
 
   if (debug) logMemoryUsage("before graphql server");
-  const result = await runShellCommand([
-    "./apps/bfDb/graphql/graphqlServer.ts",
-  ]);
+  const result = await sh("./apps/bfDb/graphql/graphqlServer.ts");
   if (debug) logMemoryUsage("after graphql server");
 
   if (result) return result;
