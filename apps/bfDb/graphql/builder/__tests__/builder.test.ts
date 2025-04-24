@@ -1,7 +1,7 @@
 #! /usr/bin/env -S bff test
-// @ts-nocheck – Red tests
 
 import { defineGqlNode } from "apps/bfDb/graphql/builder/builder.ts";
+import { assertValidSchema, buildSchema } from "graphql";
 import {
   assert,
   assertEquals,
@@ -12,6 +12,7 @@ import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { specsToNexusDefs } from "apps/bfDb/graphql/builder/fromSpec.ts";
 import { makeSchema } from "nexus";
 import { printSchema } from "graphql";
+import { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
 import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
@@ -163,7 +164,7 @@ Deno.test("specsToNexusDefs – update mutation args", () => {
 });
 
 Deno.test("inherits parent's gqlSpec when subclass omits its own", () => {
-  class ParentNode extends BfNode {
+  class ParentNode extends BfNodeBase {
     static override gqlSpec = this.defineGqlNode((field) => {
       field.string("parentField");
     });
@@ -171,13 +172,13 @@ Deno.test("inherits parent's gqlSpec when subclass omits its own", () => {
 
   class ChildNode extends ParentNode {}
 
-  const inheritedSpec = (ChildNode as typeof BfNode).gqlSpec;
+  const inheritedSpec = (ChildNode as typeof BfNodeBase).gqlSpec;
   assertExists(inheritedSpec, "Child should inherit gqlSpec from parent");
-  assertEquals(inheritedSpec, (ParentNode as typeof BfNode).gqlSpec);
+  assertEquals(inheritedSpec, (ParentNode as typeof BfNodeBase).gqlSpec);
 });
 
 Deno.test("child gqlSpec implements parent's gqlSpec as interface", () => {
-  class ParentNode extends BfNode {
+  class ParentNode extends BfNodeBase {
     static override gqlSpec = this.defineGqlNode((field) => {
       field.string("parentField");
     });
@@ -189,18 +190,18 @@ Deno.test("child gqlSpec implements parent's gqlSpec as interface", () => {
     });
   }
 
-  const spec = (ChildNode as typeof BfNode).gqlSpec;
+  const spec = (ChildNode as typeof BfNodeBase).gqlSpec;
   assertExists(spec, "Child should define its own gqlSpec");
   assertExists(spec.implements, "Child spec should implement parent interface");
   assertEquals(
     spec.implements?.[0],
-    (ParentNode as typeof BfNode).__typename,
+    (ParentNode as typeof BfNodeBase).__typename,
   );
 });
 
 Deno.test("subclass setting gqlSpec = null disables GraphQL", () => {
-  class SilentNode extends BfNode {
-    static override gqlSpec = this.defineGqlNode(null);
+  class SilentNode extends BfNodeBase {
+    static override gqlSpec = null;
   }
 
   assertEquals(
@@ -217,7 +218,7 @@ Deno.test("BfNode exposes ID field via GraphQL", () => {
 });
 
 Deno.test("Subclass gqlSpec should implement parent class", () => {
-  class BaseNode extends BfNode {
+  class BaseNode extends BfNodeBase {
     static override gqlSpec = this.defineGqlNode((field) => {
       field.string("baseField");
     });
@@ -238,4 +239,15 @@ Deno.test("Subclass gqlSpec should implement parent class", () => {
     implementsParent,
     "Subclass should include parent spec in 'implements'",
   );
+});
+
+Deno.test("the GraphQL schema in schema.graphql is valid", async () => {
+  const sdl = await Deno.readTextFile(
+    new URL(
+      import.meta.resolve("apps/bfDb/graphql/__generated__/schema.graphql"),
+    ),
+  );
+  const schema = buildSchema(sdl);
+
+  assertValidSchema(schema);
 });

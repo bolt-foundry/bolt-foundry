@@ -458,7 +458,7 @@ function buildMutation() {
 /* -------------------------------------------------------------------------- */
 
 export function defineGqlNode(
-  def: (
+  def?: (
     field: ReturnType<typeof buildField>,
     relation: ReturnType<typeof buildRelation>,
     mutation: ReturnType<typeof buildMutation>,
@@ -468,7 +468,9 @@ export function defineGqlNode(
   const relations: Record<string, RelationSpec> = {};
   const mutationBuilder = buildMutation();
 
-  def(buildField(fields), buildRelation(relations), mutationBuilder);
+  if (def) {
+    def(buildField(fields), buildRelation(relations), mutationBuilder);
+  }
 
   return {
     field: fields,
