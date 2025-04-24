@@ -5,11 +5,9 @@ import type {
   BfNodeBase,
   BfNodeBaseProps,
 } from "apps/bfDb/classes/BfNodeBase.ts";
-import type {
-  BfEdgeBase,
-  BfEdgeBaseProps,
-} from "apps/bfDb/classes/BfEdgeBase.ts";
+import type { BfEdgeBaseProps } from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
+import type { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 
 /* -------------------------------------------------------------------------- */
 /*  Scalars & helpers                                                         */
@@ -17,6 +15,7 @@ import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 
 export type GqlScalar =
   | "id"
+  | "BfGID"
   | "string"
   | "int"
   | "float"
@@ -45,7 +44,7 @@ export type AnyBfNodeCtor<
 export interface FieldSpec {
   type: GqlScalar;
   nullable: boolean;
-  args?: Record<string, GqlScalar>;
+  args?: Record<string, ArgSpec>;
   resolve?: (
     src: BfNodeBase,
     args: unknown,
@@ -54,37 +53,53 @@ export interface FieldSpec {
 }
 
 function collectArgs(fn?: (a: ArgBuilder) => unknown | void):
-  | Record<string, GqlScalar>
+  | Record<string, ArgSpec>
   | undefined {
   if (!fn) return undefined;
-  const store: Record<string, GqlScalar> = {};
-  /** helper to avoid repeating the same arrow-function boilerplate */
-  const add = (scalar: GqlScalar) =>
-  (
-    name: string,
-  ): ArgBuilder => ((store[name] = scalar), b);
+  const store: Record<string, ArgSpec> = {};
 
-  const b: ArgBuilder = {
+  // ── create a scalar arg builder ──────────────────────────────────
+  function add(type: GqlScalar) {
+    /* nullable defaults to true; proxy can override per-call          */
+    return (
+      name: string,
+      nullable: boolean = true,
+    ) => (store[name] = { type, nullable }, proxy);
+  }
+
+  const base = {
     id: add("id"),
     string: add("string"),
     int: add("int"),
     float: add("float"),
     boolean: add("boolean"),
     json: add("json"),
-    get nullable() {
-      return {
-        id: add("id"),
-        string: add("string"),
-        int: add("int"),
-        float: add("float"),
-        boolean: add("boolean"),
-        json: add("json"),
-      };
-    },
   } as const;
-  fn(b);
+
+  let flagNonNull = false;
+  const proxy: ArgBuilder = new Proxy(base as ArgBuilder, {
+    get(t, prop, recv) {
+      if (prop === "nonNull") {
+        flagNonNull = true; // next scalar call uses nonNull = true
+        return proxy;
+      }
+      // on every scalar call we read and immediately reset the flag
+      if (prop in t) {
+        const fn = (t as any)[prop];
+        return (name: string) => {
+          const res = fn(name, /* nullable = */ !flagNonNull);
+          flagNonNull = false;
+          return res;
+        };
+      }
+      return Reflect.get(t, prop, recv);
+    },
+  });
+
+  fn(proxy);
   return store;
 }
+type ArgSpec = { type: GqlScalar; nullable?: boolean };
 
 export interface ArgBuilder {
   id(name: string): ArgBuilder;
@@ -93,25 +108,14 @@ export interface ArgBuilder {
   float(name: string): ArgBuilder;
   boolean(name: string): ArgBuilder;
   json(name: string): ArgBuilder;
-
-  /** Chain `.nullable` just for symmetry with the field-builder.
-   *  GraphQL input arguments are nullable by default, so we only
-   *  mirror the API – we don't track nullability in the spec. */
-  readonly nullable: {
-    id(name: string): ArgBuilder;
-    string(name: string): ArgBuilder;
-    int(name: string): ArgBuilder;
-    float(name: string): ArgBuilder;
-    boolean(name: string): ArgBuilder;
-    json(name: string): ArgBuilder;
-  };
+  readonly nonNull: ArgBuilder;
 }
 
 type FieldArgsOrOpts<Res extends FieldSpec["resolve"] | undefined> =
   | Res // legacy (name, resolve)
-  | Record<string, GqlScalar> // legacy (name, args, resolve?)
+  | Record<string, ArgSpec> // legacy (name, args, resolve?)
   | {
-    args?: ((a: ArgBuilder) => void) | Record<string, GqlScalar>;
+    args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
     resolve?: Res;
   };
 
@@ -130,7 +134,8 @@ export interface FieldBuilder {
   float: AddFieldFn<string>;
   boolean: AddFieldFn<string>;
   json: AddFieldFn<string>;
-  nullable: {
+  nonNull: {
+    id: AddFieldFn<string>;
     string: AddFieldFn<string>;
     int: AddFieldFn<string>;
     float: AddFieldFn<string>;
@@ -146,7 +151,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
     name: string,
     type: GqlScalar,
     nullable: boolean,
-    args?: Record<string, GqlScalar>,
+    args?: Record<string, ArgSpec>,
     resolve?: Res,
   ) {
     store[name] = { type, nullable, args, resolve };
@@ -156,8 +161,8 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
   function parseArgsAndResolve(
     argOrOpts?: FieldArgsOrOpts<Res>,
     maybeRes?: Res,
-  ): { args?: Record<string, GqlScalar>; resolve?: Res } {
-    let args: Record<string, GqlScalar> | undefined;
+  ): { args?: Record<string, ArgSpec>; resolve?: Res } {
+    let args: Record<string, ArgSpec> | undefined;
     let resolve: Res | undefined;
 
     if (typeof argOrOpts === "function" && !maybeRes) {
@@ -170,7 +175,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
       const bag = argOrOpts as Record<string, unknown>;
       if ("args" in bag || "resolve" in bag) {
         const cfg = bag as {
-          args?: ((a: ArgBuilder) => void) | Record<string, GqlScalar>;
+          args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
           resolve?: Res;
         };
         if (cfg.args) {
@@ -180,7 +185,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
         }
         if (cfg.resolve) resolve = cfg.resolve;
       } else {
-        args = bag as Record<string, GqlScalar>;
+        args = bag as Record<string, ArgSpec>;
         resolve = maybeRes;
       }
     }
@@ -189,7 +194,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
   }
 
   const add =
-    (type: GqlScalar, nullable = false): AddFieldFn<string> =>
+    (type: GqlScalar, nullable = true): AddFieldFn<string> =>
     (name: any, argOrOpts?: any, maybeRes?: any) => {
       const { args, resolve } = parseArgsAndResolve(argOrOpts, maybeRes);
       return save(name, type, nullable, args, resolve);
@@ -202,12 +207,13 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
     float: add("float"),
     boolean: add("boolean"),
     json: add("json"),
-    nullable: {
-      string: add("string", true),
-      int: add("int", true),
-      float: add("float", true),
-      boolean: add("boolean", true),
-      json: add("json", true),
+    nonNull: {
+      id: add("id", false),
+      string: add("string", false),
+      int: add("int", false),
+      float: add("float", false),
+      boolean: add("boolean", false),
+      json: add("json", false),
     },
   };
 
@@ -224,14 +230,14 @@ type AddRelationFn<M extends boolean, D extends Direction> = <
   Name extends string,
 >(
   name: Name,
-  target: () => AnyBfNodeCtor,
+  target: () => AnyBfNodeCtor | typeof GraphQLObjectBase,
   opts?: Partial<Omit<RelationSpec, "target" | "many" | "direction">>,
 ) => RelationBuilder;
 
 export interface RelationSpec {
-  target: () => AnyBfNodeCtor;
+  target: () => AnyBfNodeCtor | typeof GraphQLObjectBase;
   many: boolean;
-  edge?: () => typeof BfEdgeBase;
+  edge?: () => typeof GraphQLObjectBase;
   direction: Direction;
 }
 
@@ -286,39 +292,40 @@ function buildRelation(store: Record<string, RelationSpec>): RelationBuilder {
 
 type OutputSpec = Record<string, unknown>;
 
-type WithNullable<T extends OutputSpec> = T & { nullable: () => T };
+type WithNonNull<T extends OutputSpec> = T & { nonNull: () => T };
 
 interface ReturnsBase {
-  string(key?: string): WithNullable<OutputSpec>;
-  int(key?: string): WithNullable<OutputSpec>;
-  float(key?: string): WithNullable<OutputSpec>;
-  boolean(key?: string): WithNullable<OutputSpec>;
-  id(key?: string): WithNullable<OutputSpec>;
-  json(key?: string): WithNullable<OutputSpec>;
+  string(key?: string): WithNonNull<OutputSpec>;
+  int(key?: string): WithNonNull<OutputSpec>;
+  float(key?: string): WithNonNull<OutputSpec>;
+  boolean(key?: string): WithNonNull<OutputSpec>;
+  id(key?: string): WithNonNull<OutputSpec>;
+  json(key?: string): WithNonNull<OutputSpec>;
   object<T extends AnyBfNodeCtor>(
     cls: T,
     key: string,
-  ): WithNullable<OutputSpec>;
+  ): WithNonNull<OutputSpec>;
   collection<T extends AnyBfNodeCtor>(
     cls: T,
     key: string,
-  ): WithNullable<OutputSpec>;
+  ): WithNonNull<OutputSpec>;
   readonly list: ReturnsBase;
-  readonly nullable: ReturnsBase;
+  readonly nonNull: ReturnsBase;
 }
 
 function makeReturnsBuilder(
-  flags = { list: false, nullable: false },
+  flags = { list: false, nonNull: false },
+  bucket: OutputSpec = {},
 ): ReturnsBase {
-  function attachNullable(out: OutputSpec) {
-    Object.defineProperty(out, "nullable", {
+  function attachNonNull(out: OutputSpec) {
+    Object.defineProperty(out, "nonNull", {
       value: () => {
-        if (flags.list || flags.nullable) {
+        if (flags.list || !flags.nonNull) {
           // list path already embeds nullability in inner object
         } else {
-          // mark scalar/object payload nullable flag when called later
+          // mark scalar/object payload nonNull flag when called later
           Object.values(out).forEach((v) => {
-            if (typeof v === "object") (v as any).nullable = true;
+            if (typeof v === "object") (v as any).nullable = false;
           });
         }
         return out;
@@ -328,22 +335,25 @@ function makeReturnsBuilder(
   }
 
   function scalarFactory(type: GqlScalar) {
-    return (key = "value"): WithNullable<OutputSpec> => {
+    return (key = "value"): WithNonNull<OutputSpec> => {
       const prop = key;
       if (flags.list) {
         const entry: any = { list: true, of: type };
-        if (flags.nullable) entry.nullable = true;
+        // A list is nullable unless `nonNull` was chained
+        if (!flags.nonNull) entry.nullable = true;
         const out: OutputSpec = { [prop]: entry };
-        attachNullable(out);
-        return out as WithNullable<OutputSpec>;
+        Object.assign(bucket, out);
+        attachNonNull(out);
+        return out as WithNonNull<OutputSpec>;
       }
       const out: OutputSpec = { [prop]: type };
-      attachNullable(out);
-      return out as WithNullable<OutputSpec>;
+      Object.assign(bucket, out);
+      attachNonNull(out);
+      return out as WithNonNull<OutputSpec>;
     };
   }
 
-  const base: Omit<ReturnsBase, "list" | "nullable"> = {
+  const base: Omit<ReturnsBase, "list" | "nonNull"> = {
     string: scalarFactory("string"),
     int: scalarFactory("int"),
     float: scalarFactory("float"),
@@ -352,14 +362,14 @@ function makeReturnsBuilder(
     json: scalarFactory("json"),
     object: (cls, key) => {
       const fn = () => cls;
-      // Override function.toString so Deno std/assert compares by string value
       Object.defineProperty(fn, "toString", {
         value: () => "() => " + cls.name,
         enumerable: false,
       });
       const out: OutputSpec = { [key]: fn };
-      attachNullable(out);
-      return out as WithNullable<OutputSpec>;
+      Object.assign(bucket, out);
+      attachNonNull(out);
+      return out as WithNonNull<OutputSpec>;
     },
     collection: (cls, key) => {
       const fn = () => cls;
@@ -369,19 +379,25 @@ function makeReturnsBuilder(
       });
       const entry = { connection: true, node: fn };
       const out: OutputSpec = { [key]: entry };
-      attachNullable(out);
-      return out as WithNullable<OutputSpec>;
+      Object.assign(bucket, out);
+      attachNonNull(out);
+      return out as WithNonNull<OutputSpec>;
     },
   } as const;
 
   const flagsBuilder = (extra: Partial<typeof flags>): ReturnsBase =>
-    makeReturnsBuilder({
-      list: flags.list || !!extra.list,
-      nullable: flags.nullable || !!extra.nullable,
-    });
+    makeReturnsBuilder(
+      {
+        list: flags.list || !!extra.list,
+        nonNull: flags.nonNull || !!extra.nonNull,
+      },
+      bucket, // ⬅ share the same bucket
+    );
 
   const obj: any = Object.create(null);
   Object.assign(obj, base);
+
+  Object.defineProperty(obj, "_spec", { value: bucket, enumerable: false });
 
   Object.defineProperty(obj, "list", {
     get() {
@@ -390,9 +406,9 @@ function makeReturnsBuilder(
     enumerable: false,
   });
 
-  Object.defineProperty(obj, "nullable", {
+  Object.defineProperty(obj, "nonNull", {
     get() {
-      return flagsBuilder({ nullable: true });
+      return flagsBuilder({ nonNull: true });
     },
     enumerable: false,
   });
@@ -406,7 +422,7 @@ function makeReturnsBuilder(
 
 export interface CustomMutation {
   name: string;
-  args: Record<string, GqlScalar>;
+  args: Record<string, ArgSpec>;
   output: OutputSpec;
   resolve: (
     src: InstanceType<AnyBfNodeCtor>,
@@ -455,9 +471,8 @@ function buildMutation() {
     custom(
       name: string,
       cfg: {
-        args?: ((a: ArgBuilder) => void) | Record<string, GqlScalar>;
-        /** May return void – we'll inspect whatever the builder created */
-        returns: (r: ReturnsBase) => OutputSpec | void;
+        args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
+        returns: (r: ReturnsBase) => void | OutputSpec;
         resolve: CustomMutation["resolve"];
       },
     ) {
@@ -465,20 +480,10 @@ function buildMutation() {
         ? collectArgs(cfg.args)
         : (cfg.args ?? {});
 
-      // Instrument the returns-builder so we can grab the last spec
-      let lastOutput: OutputSpec | undefined;
-      const rb = makeReturnsBuilder();
-      const wrap = <T extends (...p: any[]) => OutputSpec>(f: T): T =>
-        ((...p: any[]) => (lastOutput = f(...p))) as T;
-      // patch every scalar factory on the fly
-      for (const k of Object.keys(rb) as (keyof ReturnsBase)[]) {
-        if (typeof (rb as any)[k] === "function") {
-          (rb as any)[k] = wrap((rb as any)[k]);
-        }
-      }
+      const builder = makeReturnsBuilder();
+      const maybeOutput = cfg.returns(builder);
 
-      const maybeOut = cfg.returns(rb);
-      const output = maybeOut ?? lastOutput ?? {};
+      const output = maybeOutput ?? (builder as any)._spec;
       spec.customs.push({
         name,
         args: argsSpec ?? {},
@@ -500,7 +505,7 @@ function buildMutation() {
 /* -------------------------------------------------------------------------- */
 
 export function defineGqlNode(
-  def?: (
+  def: (
     field: ReturnType<typeof buildField>,
     relation: ReturnType<typeof buildRelation>,
     mutation: ReturnType<typeof buildMutation>,
@@ -510,9 +515,7 @@ export function defineGqlNode(
   const relations: Record<string, RelationSpec> = {};
   const mutationBuilder = buildMutation();
 
-  if (def) {
-    def(buildField(fields), buildRelation(relations), mutationBuilder);
-  }
+  def(buildField(fields), buildRelation(relations), mutationBuilder);
 
   return {
     field: fields,

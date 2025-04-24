@@ -34,13 +34,13 @@ type BfPerson implements BfNode & BfNodeBase {
 
 scalar JSON
 
-type JoinWaitlistResponse {
-  message: String
-  success: Boolean
+type JoinWaitlistPayload {
+  message: String!
+  success: Boolean!
 }
 
 type Mutation {
-  joinWaitlist(company: String, email: String, name: String): JoinWaitlistResponse
+  joinWaitlist(company: String!, email: String!, name: String!): JoinWaitlistPayload
 }
 
 type Query {

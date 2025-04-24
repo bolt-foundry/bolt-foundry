@@ -58,7 +58,7 @@ Deno.test("defineGqlNode – rich returns DSL with order‑agnostic nullable/lis
     /* ── scalar fields ─────────────────────────────────────────────── */
     field.id("id");
     field.string("name");
-    field.nullable.int("age");
+    field.int("age"); // default is nullable now
 
     field.boolean("isFollowedByPerson", {
       args: (arg) => arg.id("followerId"),
@@ -91,24 +91,24 @@ Deno.test("defineGqlNode – rich returns DSL with order‑agnostic nullable/lis
       }),
     });
 
-    // List payload + nullable wrapper (list → nullable order)
+    // List payload + nullable wrapper (list defaults to nullable now)
     mutation.custom("listNames", {
       args: () => ({}),
-      returns: (r) => r.list.string("names").nullable(),
+      returns: (r) => r.list.string("names"), // already nullable by default
       resolve: (): NameListPayload | null => ({ names: [] }),
     });
 
-    // Same nullable list but declared nullable → list order
+    // Same nullable list but using default nullability
     mutation.custom("maybeNames", {
       args: () => ({}),
-      returns: (r) => r.nullable.list.string("maybeNames"),
+      returns: (r) => r.list.string("maybeNames"), // already nullable by default
       resolve: (): MaybeNameListPayload => ({ maybeNames: ["x", "y"] }),
     });
 
     // Non‑nullable list payload
     mutation.custom("allNames", {
       args: () => ({}),
-      returns: (r) => r.list.string("allNames"),
+      returns: (r) => r.nonNull.list.string("allNames"),
       resolve: (): AllNamesPayload => ({ allNames: ["a", "b"] }),
     });
 
@@ -251,3 +251,83 @@ Deno.test("the GraphQL schema in schema.graphql is valid", async () => {
 
   assertValidSchema(schema);
 });
+
+/* -------------------------------------------------------------------------- */
+/*  nonNull() arg-builder behaviour                                           */
+/* -------------------------------------------------------------------------- */
+
+/** Quick helper to turn a Nexus type array into printed SDL */
+function sdlOfTypes(types: unknown[]) {
+  const schema = makeSchema({ types });
+  return printSchema(schema);
+}
+
+Deno.test("ArgBuilder.nonNull makes the argument non-nullable", () => {
+  const spec = defineGqlNode((field) => {
+    field.boolean("isFriendWithViewer", {
+      args: (a) => a.nonNull.id("viewerId"),
+    });
+  });
+
+  const Dummy = specsToNexusDefs({ DummyNN: spec });
+  const sdl = sdlOfTypes([Dummy]);
+
+  // Expect “viewerId: ID!” instead of default nullable “ID”
+  assertStringIncludes(sdl, "isFriendWithViewer(viewerId: ID!): Boolean");
+});
+
+Deno.test("nonNull flag resets after each scalar call", () => {
+  const spec = defineGqlNode((field) => {
+    field.boolean("doTheyKnowEachOther", {
+      // First arg is non-null, second arg should fall back to nullable
+      args: (a) => a.nonNull.id("viewerId").string("context"),
+    });
+  });
+
+  const Dummy = specsToNexusDefs({ DummyReset: spec });
+  const sdl = sdlOfTypes([Dummy]);
+
+  // First arg non-null
+  assertStringIncludes(sdl, "viewerId: ID!");
+  // Second arg nullable (default)
+  assertStringIncludes(sdl, "context: String");
+});
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/*  Field.nonNull                                                              */
+/* ────────────────────────────────────────────────────────────────────────── */
+Deno.test("field.nonNull.<scalar>() makes the field non-nullable", () => {
+  const spec = defineGqlNode((field) => {
+    field.nonNull.string("name");
+    field.string("nickname"); // control
+  });
+
+  const Dummy = specsToNexusDefs({ DummyNNField: spec });
+  const sdl = sdlOfTypes([Dummy]);
+
+  assertStringIncludes(sdl, "name: String!");
+  assertStringIncludes(sdl, "nickname: String"); // still nullable
+});
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/*  Returns.nonNull                                                            */
+/* ────────────────────────────────────────────────────────────────────────── */
+Deno.test(
+  "returns.nonNull.<scalar>() makes the mutation payload non-nullable",
+  () => {
+    const spec = defineGqlNode((_field, _rel, mutation) => {
+      mutation.custom("echo", {
+        args: (a) => a.string("msg"),
+        returns: (r) => r.nonNull.string("answer"),
+        resolve: (_src, { msg }) => ({ answer: msg }),
+      });
+    });
+
+    const Dummy = specsToNexusDefs({ DummyNNReturn: spec });
+    const sdl = sdlOfTypes([Dummy]);
+
+    // Generated payload type is <MutationName>Payload – assert on its SDL
+    assertStringIncludes(sdl, "type EchoPayload");
+    assertStringIncludes(sdl, "answer: String!");
+  },
+);
