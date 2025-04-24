@@ -7,6 +7,8 @@ import { printSchema } from "graphql";
 import { assertStringIncludes } from "@std/assert";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
+import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
+import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 
 /** Build an SDL string for one or more Nexus object types */
 function sdlOf(...types: Array<ReturnType<typeof specsToNexusDefs>>): string {
@@ -16,9 +18,9 @@ function sdlOf(...types: Array<ReturnType<typeof specsToNexusDefs>>): string {
 
 Deno.test("specToNexusObject – maps scalar fields", () => {
   const spec = defineGqlNode((field, _relation, _mutation) => {
-    field.id("id");
+    field.nonNull.id("id");
     field.string("name");
-    field.nullable.int("age");
+    field.int("age"); // default is nullable now
   });
 
   const Dummy = specsToNexusDefs({ "Dummy": spec });
@@ -26,23 +28,31 @@ Deno.test("specToNexusObject – maps scalar fields", () => {
 
   assertStringIncludes(sdl, "type Dummy");
   assertStringIncludes(sdl, "id: ID!");
-  assertStringIncludes(sdl, "name: String!");
-  assertStringIncludes(sdl, "age: Int"); // nullable
+  assertStringIncludes(sdl, "name: String");
+  assertStringIncludes(sdl, "age: Int"); // still nullable, but by default now
 });
 
 Deno.test("specToNexusObject – maps field args & resolvers", () => {
-  const spec = defineGqlNode((field, _relation, _mutation) => {
-    field.boolean(
-      "isFollowedByViewer",
-      { viewerId: "id" },
-      () => true,
-    );
-  });
+  class Thingy extends GraphQLObjectBase {
+    static override gqlSpec = defineGqlNode((field, _relation, _mutation) => {
+      field.boolean(
+        "isFollowedByViewer",
+        {
+          args: (a) => a.id("viewerId"),
+        },
+      );
+    });
+
+    viewerId(id: BfGid) {
+      return id;
+    }
+  }
+  const spec = Thingy.gqlSpec;
 
   const DummyArgs = specsToNexusDefs({ "DummyArgs": spec });
   const sdl = sdlOf(DummyArgs);
 
-  assertStringIncludes(sdl, "isFollowedByViewer(viewerId: ID): Boolean!");
+  assertStringIncludes(sdl, "isFollowedByViewer(viewerId: ID): Boolean");
 });
 
 Deno.test("specToNexusObject – maps one & many relations", () => {
@@ -72,8 +82,8 @@ Deno.test("specToNexusObject – maps one & many relations", () => {
 Deno.test("specToNexusObject – respects nullable list & element nullability", () => {
   const spec = defineGqlNode((field) => {
     field.id("id");
-    // suppose builder.nullable.json("tags") would become [JSON]
-    field.nullable.json("tags");
+    // Fields are nullable by default now, no need for .nullable
+    field.json("tags");
   });
   const Dummy = specsToNexusDefs({ "NullableDummy": spec });
   const sdl = sdlOf(Dummy);
