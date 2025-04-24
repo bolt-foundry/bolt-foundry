@@ -15,11 +15,7 @@ import type {
   BfEdgeBaseProps,
 } from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { Connection, ConnectionArguments } from "graphql-relay";
-import {
-  defineGqlNode,
-  type GqlNodeSpec,
-} from "apps/bfDb/graphql/builder/builder.ts";
-import { generateUUID } from "lib/generateUUID.ts";
+import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 
 const logger = getLogger(import.meta);
 
@@ -42,62 +38,24 @@ export type BfNodeCache<
   InstanceType<T>
 >;
 
-export class BfNodeBase<
+export type ConcreteBfNodeBaseCtor<
+  TP extends BfNodeBaseProps,
+  TM extends BfMetadataBase,
+> = new (
+  cv: BfCurrentViewer,
+  props: TP,
+  metadata?: Partial<TM>,
+) => BfNodeBase<TP, TM>;
+
+export abstract class BfNodeBase<
   TProps extends BfNodeBaseProps = BfNodeBaseProps,
   TMetadata extends BfMetadataBase = BfMetadataBase,
   TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
-> {
-  static get __typename() {
-    return this.name;
-  }
-  readonly __typename = (this.constructor as typeof BfNodeBase).__typename;
-
-  private _id?: string;
-
-  get id(): string {
-    return this._id ?? (this._id = generateUUID());
-  }
-
+> extends GraphQLObjectBase {
   protected _metadata: TMetadata;
   readonly relatedEdge: string = "apps/bfDb/classes/BfEdgeBase.ts";
 
   readonly _currentViewer: BfCurrentViewer;
-  static gqlSpec?: GqlNodeSpec | null;
-  static defineGqlNode(
-    ...args: Parameters<typeof defineGqlNode>
-  ): ReturnType<typeof defineGqlNode> | null {
-    const defOrNull = args[0] as (typeof args)[0] | null;
-    if (defOrNull === null) {
-      this.gqlSpec = null;
-      return null;
-    }
-
-    const Parent = Object.getPrototypeOf(this) as typeof BfNodeBase;
-
-    if (typeof defOrNull === "function") {
-      const spec = defineGqlNode(defOrNull);
-
-      // Ensure 'implements' is an array
-      spec.implements = spec.implements ?? [];
-
-      // Include parent's spec if available
-      if (Parent?.gqlSpec) {
-        spec.implements.push(Parent.__typename);
-      }
-
-      this.gqlSpec = spec;
-      return spec;
-    }
-
-    // Inherit gqlSpec from parent if not explicitly defined
-    if (!this.gqlSpec && Parent?.gqlSpec) {
-      const spec = defineGqlNode(() => {});
-      spec.implements = [Parent.__typename];
-      this.gqlSpec = spec;
-    }
-
-    return this.gqlSpec ?? null;
-  }
 
   static generateSortValue() {
     return Date.now();
@@ -188,7 +146,9 @@ export class BfNodeBase<
     logger.debug(
       `Creating unattached ${this.name} with props ${JSON.stringify(props)}`,
     );
-    const newNode = new this(cv, props, metadata) as InstanceType<TThis>;
+    // indirection is because we're "newing" an abstract class, but it's actually a concrete subclass
+    const Ctor = this as unknown as ConcreteBfNodeBaseCtor<TProps, TMetadata>;
+    const newNode = new Ctor(cv, props, metadata) as InstanceType<TThis>;
     await newNode.beforeCreate();
     await newNode.save();
     await newNode.afterCreate();
@@ -202,6 +162,7 @@ export class BfNodeBase<
     protected _props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
+    super();
     this._metadata = (this.constructor as typeof BfNodeBase).generateMetadata(
       currentViewer,
       metadata,
@@ -233,7 +194,7 @@ export class BfNodeBase<
     return toGraphqlFromNode(this as unknown as BfNodeBase);
   }
 
-  toString() {
+  override toString() {
     return `${this.constructor.name}#${this.metadata.bfGid}⚡️${this.metadata.bfOid}`;
   }
 
