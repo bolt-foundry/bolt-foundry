@@ -11,12 +11,10 @@ type Props = {
 };
 
 export class BfOrganization extends BfNode<Props> {
-  static override gqlSpec = this.defineGqlNode((field, relation, mutation) => {
+  static override gqlSpec = this.defineGqlNode((field, relation) => {
     field.string("name");
     field.json("settings");
 
     relation.many("person", () => BfPerson);
-
-    mutation.update();
   });
 }

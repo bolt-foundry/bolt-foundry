@@ -17,12 +17,9 @@ export class BfPerson extends BfNode<BfPersonProps> {
   /* ---------------------------------------------------------------------- */
   /* GraphQL spec                                                            */
   /* ---------------------------------------------------------------------- */
-  static override gqlSpec = this.defineGqlNode((field, _relation, mutation) => {
+  static override gqlSpec = this.defineGqlNode((field) => {
     field.string("email");
     field.string("name");
-
-    // Phase A – only updates are allowed via generic mutation helpers
-    mutation.update();
   });
 
   /* ---------------------------------------------------------------------- */

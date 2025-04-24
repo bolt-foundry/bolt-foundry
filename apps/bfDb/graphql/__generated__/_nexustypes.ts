@@ -50,12 +50,14 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   BfOrganization: { // root type
+    id: string; // ID!
     name: string; // String!
     person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
     settings: NexusGenScalars['JSON']; // JSON!
   }
   BfPerson: { // root type
     email: string; // String!
+    id: string; // ID!
     name: string; // String!
   }
   JoinWaitlistResponse: { // root type
@@ -68,6 +70,7 @@ export interface NexusGenObjects {
 
 export interface NexusGenInterfaces {
   BfNode: core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
+  BfNodeBase: core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
 }
 
 export interface NexusGenUnions {
@@ -79,12 +82,14 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   BfOrganization: { // field return type
+    id: string; // ID!
     name: string; // String!
     person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
     settings: NexusGenScalars['JSON']; // JSON!
   }
   BfPerson: { // field return type
     email: string; // String!
+    id: string; // ID!
     name: string; // String!
   }
   JoinWaitlistResponse: { // field return type
@@ -93,8 +98,6 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinWaitlistResponse'] | null; // JoinWaitlistResponse
-    updateBfOrganization: boolean | null; // Boolean
-    updateBfPerson: boolean | null; // Boolean
   }
   Query: { // field return type
     ok: boolean; // Boolean!
@@ -103,12 +106,14 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   BfOrganization: { // field return type name
+    id: 'ID'
     name: 'String'
     person: 'BfPerson'
     settings: 'JSON'
   }
   BfPerson: { // field return type name
     email: 'String'
+    id: 'ID'
     name: 'String'
   }
   JoinWaitlistResponse: { // field return type name
@@ -117,8 +122,6 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     joinWaitlist: 'JoinWaitlistResponse'
-    updateBfOrganization: 'Boolean'
-    updateBfPerson: 'Boolean'
   }
   Query: { // field return type name
     ok: 'Boolean'
@@ -132,24 +135,17 @@ export interface NexusGenArgTypes {
       email?: string | null; // String
       name?: string | null; // String
     }
-    updateBfOrganization: { // args
-      id?: string | null; // ID
-      params?: NexusGenScalars['JSON'] | null; // JSON
-    }
-    updateBfPerson: { // args
-      id?: string | null; // ID
-      params?: NexusGenScalars['JSON'] | null; // JSON
-    }
   }
 }
 
 export interface NexusGenAbstractTypeMembers {
   BfNode: "BfOrganization" | "BfPerson"
+  BfNodeBase: "BfOrganization" | "BfPerson"
 }
 
 export interface NexusGenTypeInterfaces {
-  BfOrganization: "BfNode"
-  BfPerson: "BfNode"
+  BfOrganization: "BfNode" | "BfNodeBase"
+  BfPerson: "BfNode" | "BfNodeBase"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
