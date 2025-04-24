@@ -58,13 +58,27 @@ function collectArgs(fn?: (a: ArgBuilder) => unknown | void):
   | undefined {
   if (!fn) return undefined;
   const store: Record<string, GqlScalar> = {};
+  /** helper to avoid repeating the same arrow-function boilerplate */
+  const add = (scalar: GqlScalar) =>
+    (name: string): ArgBuilder => ((store[name] = scalar), b);
+
   const b: ArgBuilder = {
-    id: (n) => (store[n] = "id", b),
-    string: (n) => (store[n] = "string", b),
-    int: (n) => (store[n] = "int", b),
-    float: (n) => (store[n] = "float", b),
-    boolean: (n) => (store[n] = "boolean", b),
-    json: (n) => (store[n] = "json", b),
+    id: add("id"),
+    string: add("string"),
+    int: add("int"),
+    float: add("float"),
+    boolean: add("boolean"),
+    json: add("json"),
+    get nullable() {
+      return {
+        id: add("id"),
+        string: add("string"),
+        int: add("int"),
+        float: add("float"),
+        boolean: add("boolean"),
+        json: add("json"),
+      };
+    },
   } as const;
   fn(b);
   return store;
@@ -77,6 +91,18 @@ export interface ArgBuilder {
   float(name: string): ArgBuilder;
   boolean(name: string): ArgBuilder;
   json(name: string): ArgBuilder;
+
+  /** Chain `.nullable` just for symmetry with the field-builder.
+   *  GraphQL input arguments are nullable by default, so we only
+   *  mirror the API – we don't track nullability in the spec. */
+  readonly nullable: {
+    id(name: string): ArgBuilder;
+    string(name: string): ArgBuilder;
+    int(name: string): ArgBuilder;
+    float(name: string): ArgBuilder;
+    boolean(name: string): ArgBuilder;
+    json(name: string): ArgBuilder;
+  };
 }
 
 type FieldArgsOrOpts<Res extends FieldSpec["resolve"] | undefined> =
@@ -428,7 +454,8 @@ function buildMutation() {
       name: string,
       cfg: {
         args?: ((a: ArgBuilder) => void) | Record<string, GqlScalar>;
-        returns: (r: ReturnsBase) => OutputSpec;
+        /** May return void – we'll inspect whatever the builder created */
+        returns: (r: ReturnsBase) => OutputSpec | void;
         resolve: CustomMutation["resolve"];
       },
     ) {
@@ -436,7 +463,18 @@ function buildMutation() {
         ? collectArgs(cfg.args)
         : (cfg.args ?? {});
 
-      const output = cfg.returns(makeReturnsBuilder());
+      // Instrument the returns-builder so we can grab the last spec
+      let lastOutput: OutputSpec | undefined;
+      const rb = makeReturnsBuilder();
+      const wrap = <T extends (...p: any[]) => OutputSpec>(f: T): T =>
+        ((...p: any[]) => (lastOutput = f(...p))) as T;
+      // patch every scalar factory on the fly
+      for (const k of Object.keys(rb) as (keyof ReturnsBase)[]) {
+        if (typeof (rb as any)[k] === "function") (rb as any)[k] = wrap((rb as any)[k]);
+      }
+
+      const maybeOut = cfg.returns(rb);
+      const output = (maybeOut ?? lastOutput ?? {});
       spec.customs.push({
         name,
         args: argsSpec ?? {},

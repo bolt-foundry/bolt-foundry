@@ -9,7 +9,7 @@ import type { GqlNodeSpec } from "apps/bfDb/graphql/builder/builder.ts";
 export function loadModelTypes() {
   const specs: Record<string, GqlNodeSpec> = {};
 
-  const barrels = [modelBarrel, coreBarrel, classBarrel];
+  const barrels = [modelBarrel, coreBarrel, classBarrel, roots];
 
   for (const b of barrels) {
     for (const cls of Object.values(b)) {
@@ -18,6 +18,5 @@ export function loadModelTypes() {
       }
     }
   }
-
-  return compileSpecs({ ...specs, ...roots });
+  return compileSpecs(specs);
 }

@@ -15,13 +15,16 @@ export function collectArgs(
 ): Record<string, GqlScalar> | undefined {
   if (!fn) return undefined;
   const store: Record<string, GqlScalar> = {};
+  const add = (scalar: GqlScalar) =>
+    (name: string): ArgBuilder => ((store[name] = scalar), b);
+
   const b: ArgBuilder = {
-    id: (n) => (store[n] = "id", b),
-    string: (n) => (store[n] = "string", b),
-    int: (n) => (store[n] = "int", b),
-    float: (n) => (store[n] = "float", b),
-    boolean: (n) => (store[n] = "boolean", b),
-    json: (n) => (store[n] = "json", b),
+    id: add("id"),
+    string: add("string"),
+    int: add("int"),
+    float: add("float"),
+    boolean: add("boolean"),
+    json: add("json"),
   } as const;
   fn(b);
   return store;
