@@ -15,6 +15,11 @@ jobs:
       INFRA_BIN_PATH:      ${{ github.workspace }}/infra/bin
     
     steps:
+
+      - name: Set environment variables
+        run: |
+          echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
+        
       - name: Install Nix
         uses: cachix/install-nix-action@v22
         with:
