@@ -2,6 +2,7 @@ import { type Browser, launch, type Page } from "puppeteer-core";
 import { getLogger } from "packages/logger/logger.ts";
 import { ensureDir } from "@std/fs";
 import { join } from "@std/path";
+import { getConfigurationVariable } from "packages/get-configuration-var/get-configuration-var.ts";
 
 const logger = getLogger(import.meta);
 
@@ -20,7 +21,9 @@ export async function setupE2ETest(options: {
   headless?: boolean;
 } = {}): Promise<E2ETestContext> {
   const baseUrl = options.baseUrl || "http://localhost:8000";
-  const headless = options.headless !== false;
+  const headless = options.headless !== false ? true : getConfigurationVariable(
+    "BF_E2E_HEADLESS",
+  ) != "false";
 
   logger.info(`Starting e2e test with baseUrl: ${baseUrl}`);
 

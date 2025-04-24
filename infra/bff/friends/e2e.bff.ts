@@ -7,6 +7,50 @@ const logger = getLogger(import.meta);
 export async function e2eCommand(args: string[]): Promise<number> {
   logger.info("Starting e2e tests");
 
+  /**
+   * Utility function to wait for a port to be available
+   * @param port The port to check
+   * @param timeout Maximum time to wait in milliseconds
+   * @param interval Check interval in milliseconds
+   */
+  async function waitForPort(
+    port: number,
+    timeout = 30000,
+    interval = 500,
+  ): Promise<boolean> {
+    const startTime = Date.now();
+
+    while (Date.now() - startTime < timeout) {
+      try {
+        // Attempt to connect to the port
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1000);
+
+        try {
+          const response = await fetch(`http://localhost:${port}`, {
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
+
+          if (response.status) {
+            return true; // Port is available and responding
+          }
+        } catch {
+          clearTimeout(timeoutId);
+          // Connection refused or other error, port not ready yet
+        }
+
+        // Wait before trying again
+        await new Promise((resolve) => setTimeout(resolve, interval));
+      } catch (error) {
+        logger.warn(`Error checking port ${port}: ${(error as Error).message}`);
+      }
+    }
+
+    logger.warn(`Timed out waiting for port ${port} after ${timeout}ms`);
+    return false;
+  }
+
   try {
     // Create a unique run ID based on timestamp
     const runId = new Date().toISOString().replace(/[:.]/g, "-");
@@ -41,15 +85,14 @@ export async function e2eCommand(args: string[]): Promise<number> {
 
     // Start the web server in the background
     logger.info("Starting web server...");
-    const serverCommand = new Deno.Command("./build/web", {
-      stdout: "piped",
-      stderr: "piped",
-    });
+    const serverCommand = new Deno.Command("./build/web", {});
 
     const serverProcess = serverCommand.spawn();
 
-    // Wait a moment for the server to start
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Wait for the server to be ready on port 8000
+    logger.info("Waiting for web server to be ready on port 8000...");
+    await waitForPort(8000, 30000); // Wait up to 30 seconds
+    logger.info("Web server is ready on port 8000");
 
     // Determine test paths
     let testPaths: string[];
