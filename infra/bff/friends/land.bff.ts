@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 import { parse as parseToml, stringify as stringifyToml } from "@std/toml";
 import { register } from "infra/bff/bff.ts";
 import {

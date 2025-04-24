@@ -59,12 +59,30 @@ if (import.meta.main) {
     }
   }
 
-  const command = Deno.args[0] ?? "help";
-  const friend = friendMap.get(command);
+  const token = Deno.args[0] ?? "help";
+  if (!token) {
+    logger.error("bff: no command or file given");
+    Deno.exit(1);
+  }
+
+  // 1️⃣ File-path first
+  const stat = await Deno.stat(token).catch(() => null)
+  if (stat?.isFile) {
+    const { code } = await new Deno.Command("deno", {
+      args: ["run", "-A", token, ...Deno.args.slice(1)],
+      stdin: "inherit",
+      stdout: "inherit",
+      stderr: "inherit",
+    }).output();
+    Deno.exit(code);
+  }
+
+  // 2️⃣ Otherwise fall back to the internal command registry
+  const friend = friendMap.get(token);
   if (friend) {
     Deno.exit(await friend.command(Deno.args.slice(1)));
   } else {
-    logger.error(`Unknown command: ${command}`);
+    logger.error(`Unknown command: ${token}`);
     Deno.exit(1);
   }
 }
