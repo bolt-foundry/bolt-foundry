@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 // Tests for ./infra/bff/shellBase.ts
 import { assertEquals } from "@std/assert";
 import {

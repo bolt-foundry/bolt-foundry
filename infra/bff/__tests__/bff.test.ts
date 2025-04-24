@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 // Tests for ./infra/bff/bff.ts
 import { assertEquals, assertExists } from "@std/assert";
 import { friendMap, register } from "../bff.ts";

@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 // ./infra/bff/friends/template.bff.ts
 import { register } from "infra/bff/bff.ts";
 import { getLogger } from "packages/logger/logger.ts";

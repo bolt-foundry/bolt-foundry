@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 import { register } from "infra/bff/bff.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { extractYaml } from "@std/front-matter";

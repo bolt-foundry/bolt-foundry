@@ -49,13 +49,21 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  BfEdge: { // root type
+    id: string; // ID!
+  }
+  BfEdgeBase: { // root type
+    id: string; // ID!
+  }
   BfOrganization: { // root type
+    id: string; // ID!
     name: string; // String!
     person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
     settings: NexusGenScalars['JSON']; // JSON!
   }
   BfPerson: { // root type
     email: string; // String!
+    id: string; // ID!
     name: string; // String!
   }
   JoinWaitlistResponse: { // root type
@@ -67,7 +75,8 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  BfNode: core.Discriminate<'BfOrganization', 'required'> | core.Discriminate<'BfPerson', 'required'>;
+  BfNode: core.Discriminate<'BfOrganization', 'optional'> | core.Discriminate<'BfPerson', 'optional'>;
+  BfNodeBase: core.Discriminate<'BfEdge', 'optional'> | core.Discriminate<'BfOrganization', 'optional'> | core.Discriminate<'BfPerson', 'optional'>;
 }
 
 export interface NexusGenUnions {
@@ -78,13 +87,21 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  BfEdge: { // field return type
+    id: string; // ID!
+  }
+  BfEdgeBase: { // field return type
+    id: string; // ID!
+  }
   BfOrganization: { // field return type
+    id: string; // ID!
     name: string; // String!
     person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
     settings: NexusGenScalars['JSON']; // JSON!
   }
   BfPerson: { // field return type
     email: string; // String!
+    id: string; // ID!
     name: string; // String!
   }
   JoinWaitlistResponse: { // field return type
@@ -99,16 +116,30 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     ok: boolean; // Boolean!
   }
+  BfNode: { // field return type
+    id: string; // ID!
+  }
+  BfNodeBase: { // field return type
+    id: string; // ID!
+  }
 }
 
 export interface NexusGenFieldTypeNames {
+  BfEdge: { // field return type name
+    id: 'ID'
+  }
+  BfEdgeBase: { // field return type name
+    id: 'ID'
+  }
   BfOrganization: { // field return type name
+    id: 'ID'
     name: 'String'
     person: 'BfPerson'
     settings: 'JSON'
   }
   BfPerson: { // field return type name
     email: 'String'
+    id: 'ID'
     name: 'String'
   }
   JoinWaitlistResponse: { // field return type name
@@ -122,6 +153,12 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     ok: 'Boolean'
+  }
+  BfNode: { // field return type name
+    id: 'ID'
+  }
+  BfNodeBase: { // field return type name
+    id: 'ID'
   }
 }
 
@@ -145,11 +182,14 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   BfNode: "BfOrganization" | "BfPerson"
+  BfNodeBase: "BfEdge" | "BfOrganization" | "BfPerson"
 }
 
 export interface NexusGenTypeInterfaces {
-  BfOrganization: "BfNode"
-  BfPerson: "BfNode"
+  BfEdge: "BfNodeBase"
+  BfOrganization: "BfNode" | "BfNodeBase"
+  BfPerson: "BfNode" | "BfNodeBase"
+  BfNode: "BfNodeBase"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
@@ -166,7 +206,7 @@ export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = never;
+export type NexusGenAbstractsUsingStrategyResolveType = "BfNode" | "BfNodeBase";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

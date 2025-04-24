@@ -3,16 +3,32 @@
 ### Do not make changes to this file directly
 
 
-interface BfNode
+type BfEdge implements BfNodeBase {
+  id: ID!
+}
 
-type BfOrganization implements BfNode {
+type BfEdgeBase {
+  id: ID!
+}
+
+interface BfNode implements BfNodeBase {
+  id: ID!
+}
+
+interface BfNodeBase {
+  id: ID!
+}
+
+type BfOrganization implements BfNode & BfNodeBase {
+  id: ID!
   name: String!
   person: [BfPerson!]!
   settings: JSON!
 }
 
-type BfPerson implements BfNode {
+type BfPerson implements BfNode & BfNodeBase {
   email: String!
+  id: ID!
   name: String!
 }
 
