@@ -66,9 +66,9 @@ export interface NexusGenObjects {
     id: string; // ID!
     name: string; // String!
   }
-  JoinWaitlistResponse: { // root type
-    message?: string | null; // String
-    success?: boolean | null; // Boolean
+  JoinWaitlistPayload: { // root type
+    message: string; // String!
+    success: boolean; // Boolean!
   }
   Mutation: {};
   Query: {};
@@ -104,12 +104,12 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     name: string; // String!
   }
-  JoinWaitlistResponse: { // field return type
-    message: string | null; // String
-    success: boolean | null; // Boolean
+  JoinWaitlistPayload: { // field return type
+    message: string; // String!
+    success: boolean; // Boolean!
   }
   Mutation: { // field return type
-    joinWaitlist: NexusGenRootTypes['JoinWaitlistResponse'] | null; // JoinWaitlistResponse
+    joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
   }
   Query: { // field return type
     ok: boolean; // Boolean!
@@ -140,12 +140,12 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     name: 'String'
   }
-  JoinWaitlistResponse: { // field return type name
+  JoinWaitlistPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
   }
   Mutation: { // field return type name
-    joinWaitlist: 'JoinWaitlistResponse'
+    joinWaitlist: 'JoinWaitlistPayload'
   }
   Query: { // field return type name
     ok: 'Boolean'
@@ -161,9 +161,9 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Mutation: {
     joinWaitlist: { // args
-      company?: string | null; // String
-      email?: string | null; // String
-      name?: string | null; // String
+      company: string; // String!
+      email: string; // String!
+      name: string; // String!
     }
   }
 }

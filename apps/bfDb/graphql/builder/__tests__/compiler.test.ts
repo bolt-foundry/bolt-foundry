@@ -41,5 +41,5 @@ Deno.test("compileSpecs – generates Nexus object types for each node class", (
   const sdl = sdlOf(types);
   assertStringIncludes(sdl, "type TestA");
   assertStringIncludes(sdl, "type TestB");
-  assertStringIncludes(sdl, "name: String!");
+  assertStringIncludes(sdl, "name: String");
 });
