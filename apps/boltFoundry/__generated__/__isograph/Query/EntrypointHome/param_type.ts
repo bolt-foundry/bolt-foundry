@@ -1,10 +1,8 @@
-import { type BfCurrentViewer__Home__output_type } from '../../BfCurrentViewer/Home/output_type.ts';
+import { type Query__Home__output_type } from '../../Query/Home/output_type.ts';
 
 export type Query__EntrypointHome__param = {
   readonly data: {
-    readonly me: ({
-      readonly Home: BfCurrentViewer__Home__output_type,
-    } | null),
+    readonly Home: Query__Home__output_type,
   },
   readonly parameters: Record<PropertyKey, never>,
 };

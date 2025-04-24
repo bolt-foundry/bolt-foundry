@@ -5,12 +5,10 @@ const logger = getLogger(import.meta);
 
 export const EntrypointHome = iso(`
   field Query.EntrypointHome {
-    me {
-      Home
-    }
+    Home
   }
 `)(function EntrypointHome({ data }) {
-  const Body = data?.me?.Home;
+  const Body = data.Home;
   logger.debug("dataer", data);
   const title = "Bolt Foundry: The Content Operating System.";
   return { Body, title };
