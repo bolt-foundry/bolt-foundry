@@ -41,12 +41,19 @@ jobs:
         uses: actions/cache@v4
         id: nix-cache
         with:
+          # ──────────────── 1️⃣  Avoid unreadable lock files ────────────────
           path: |
             /nix/store
-            /nix/var/nix/db
             /nix/var/nix/profiles
             ~/.cache/nix
-          key: ${{ runner.os }}-nix-store-${{ hashFiles('**/*.nix', 'flake.lock') }}
+            # Everything below is excluded. "!" is a git-ignore-style negation
+            !/nix/var/nix/db/big-lock
+            !/nix/var/nix/db/reserved
+
+          # ──────────────── 2️⃣  Make the key unique per run ────────────────
+          #   * hashFiles() keeps different store hashes separate
+          #   * github.run_id guarantees two concurrent runs never fight
+          key: ${{ runner.os }}-nix-store-${{ hashFiles('**/*.nix', 'flake.lock') }}-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-nix-store-
 
@@ -72,6 +79,16 @@ jobs:
       - name: Parse .replit env and export to GitHub Actions
         run: |
           # Extract the [env] section from .replit
+
+      # OPTIONAL – only save the cache if we actually changed something
+      # (prevents unnecessary uploads on clean builds)
+      - name: Save nix store cache
+        if: steps.nix-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ steps.nix-cache.outputs.cache-primary-key-path }}
+          key: ${{ steps.nix-cache.outputs.cache-primary-key }}
+
           sed -n '/^\[env\]/,/^\[/p' .replit | grep -v '^\[' > .env_section
 
           # Process each line in the environment section
