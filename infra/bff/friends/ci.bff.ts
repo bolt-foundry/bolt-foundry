@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 // FILE: infra/bff/friends/ci.bff.ts
 
 import { register } from "infra/bff/bff.ts";

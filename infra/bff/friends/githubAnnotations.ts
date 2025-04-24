@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 // infra/bff/friends/githubAnnotations.ts
 
 import { getLogger } from "packages/logger/logger.ts";

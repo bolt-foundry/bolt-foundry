@@ -1,3 +1,5 @@
+#! /usr/bin/env -S bff
+
 import type { Handler } from "apps/web/web.tsx";
 import { getLogger } from "packages/logger/logger.ts";
 import { BfError } from "infra/BfError.ts";
