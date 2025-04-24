@@ -337,16 +337,26 @@ function makeReturnsBuilder(
   function scalarFactory(type: GqlScalar) {
     return (key = "value"): WithNonNull<OutputSpec> => {
       const prop = key;
+      /* ── LIST OUTPUT ─────────────────────────────────────────────── */
       if (flags.list) {
-        const entry: any = { list: true, of: type };
-        // A list is nullable unless `nonNull` was chained
-        if (!flags.nonNull) entry.nullable = true;
+        const entry = {
+          list: true,
+          of: type,
+          /** list itself is nullable unless .nonNull was chained */
+          nullable: !flags.nonNull,
+        };
         const out: OutputSpec = { [prop]: entry };
         Object.assign(bucket, out);
         attachNonNull(out);
         return out as WithNonNull<OutputSpec>;
       }
-      const out: OutputSpec = { [prop]: type };
+
+      /* ── SCALAR OUTPUT ───────────────────────────────────────────── */
+      const entry = {
+        type,
+        /** scalar is nullable unless .nonNull */ nullable: !flags.nonNull,
+      };
+      const out: OutputSpec = { [prop]: entry };
       Object.assign(bucket, out);
       attachNonNull(out);
       return out as WithNonNull<OutputSpec>;
