@@ -78,7 +78,7 @@ const barrels: BarrelConfig[] = [
     out: new URL("../classes/__generated__/classesList.ts", import.meta.url),
     importPath: (f) => `apps/bfDb/classes/${f}`,
   },
-  // 4️⃣  GraphQL root objects (AuthRoot, HealthRoot, …)
+  // 4️⃣  GraphQL root objects (HealthRoot, …)
   {
     dir: new URL("../graphql/roots/", import.meta.url),
     out: new URL(
