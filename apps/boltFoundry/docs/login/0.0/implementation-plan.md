@@ -1,22 +1,27 @@
 # Login Phase 0 — Project Plan
 
-> **Purpose:** establish the minimum viable authentication flow so internal developers can sign in with Google, unblock GraphQL development, and lay automated‑test foundations. Breaking existing unauthenticated flows is acceptable in this phase.
+> **Purpose:** establish the minimum viable authentication flow so internal
+> developers can sign in with Google, unblock GraphQL development, and lay
+> automated‑test foundations. Breaking existing unauthenticated flows is
+> acceptable in this phase.
 
 ---
 ## Current Status
 
 - [x] Implement red tests
 - [ ] Build implementations to fix red tests
-
 ---
 
 ## 1 — Objectives
 
 - 🔑 Enable Google‑based login stub in dev & CI environments.
-- 🆔 Rename **`BfCurrentViewer`**\*\* ➜ \*\***`CurrentViewer`** and migrate all references.
-- 📜 Expose **`currentViewer`** root query (replace `authRoot`, `me`, `loginWithGoogle`).
+- 🆔 Rename **`BfCurrentViewer`**\*\* ➜ \*\***`CurrentViewer`** and migrate all
+  references.
+- 📜 Expose **`currentViewer`** root query (replace `authRoot`, `me`,
+  `loginWithGoogle`).
 - ✅ Add unit “red tests” + e2e smoke test harness (Puppeteer).
-- 🛠️ Accept temporary breakage of unauthenticated paths; focus on compile‑green + tests‑green.
+- 🛠️ Accept temporary breakage of unauthenticated paths; focus on
+  compile‑green + tests‑green.
 
 ---
 
@@ -41,19 +46,23 @@
 
 1. **CurrentViewer class**
    - File moved to `apps/bfDb/classes/CurrentViewer.ts`.
-   - `static gqlSpec` uses `this.defineGqlNode()`; inherits fields when extended.
+   - `static gqlSpec` uses `this.defineGqlNode()`; inherits fields when
+     extended.
 2. **Root query**
    - `currentViewer: CurrentViewer!` added to builder root.
    - Remove `authRoot`, `me`, `loginWithGoogle` stalemates.
 3. **Google login stub**
-   - New endpoint `/api/dev/google-login` returns signed JWT for predefined test user.
+   - New endpoint `/api/dev/google-login` returns signed JWT for predefined test
+     user.
    - Front‑end util `devGoogleLogin()` used by e2e.
 4. **Unit tests (red → green)**
-   - `CurrentViewer.spec.ts` covers resolver returns correct type after stub login.
+   - `CurrentViewer.spec.ts` covers resolver returns correct type after stub
+     login.
    - `Query.test.ts` checks `currentViewer` query.
    - Schema compilation test validates type inheritance.
 5. **E2E Tests** (Puppeteer)
-   - `login.spec.e2e.ts` – navigate to `/login`, invoke stub, assert landing page shows user name.
+   - `login.spec.e2e.ts` – navigate to `/login`, invoke stub, assert landing
+     page shows user name.
    - Pattern mirrors `joinWaitlist.test.e2e.ts` (uses `PuppeteerTestEnv`).
 6. **CI updates**
    - Add `yarn test:e2e-login` to GitHub Actions.
