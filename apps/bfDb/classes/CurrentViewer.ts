@@ -1,0 +1,332 @@
+import { getLogger } from "packages/logger/logger.ts";
+import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import type { WebAuthnCredential } from "@simplewebauthn/server";
+// deno-lint-ignore no-external-import
+import { Buffer } from "node:buffer";
+import jwt from "jsonwebtoken";
+import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
+
+const JWT_SECRET = Buffer.from("content-foundry-secret-key");
+const JWT_EXPIRES_IN = "1h";
+const REFRESH_TOKEN_EXPIRES_IN = "7d"; // Example refresh token expiration
+
+function generateToken(sub: string, expiresIn: string): string {
+  return jwt.sign({ sub }, JWT_SECRET, { expiresIn } as jwt.SignOptions);
+}
+
+export type StorableCredential = Omit<WebAuthnCredential, "publicKey"> & {
+  publicKey: string;
+  backedUp: boolean;
+};
+
+function generateTokens(
+  sub: string,
+): { accessToken: string; refreshToken: string } {
+  const accessToken = generateToken(sub, JWT_EXPIRES_IN);
+  const refreshToken = generateToken(sub, REFRESH_TOKEN_EXPIRES_IN);
+  return { accessToken, refreshToken };
+}
+
+function verifyAccessToken(token: string): { sub: string } | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as { sub: string };
+  } catch {
+    return null;
+  }
+}
+
+function verifyRefreshToken(token: string): { sub: string } | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as { sub: string };
+  } catch {
+    return null;
+  }
+}
+
+export type CurrentViewerTypenames =
+  | "CurrentViewerLoggedIn"
+  | "CurrentViewerLoggedOut";
+
+const logger = getLogger(import.meta);
+
+export abstract class CurrentViewer extends GraphQLObjectBase {
+  __typename: CurrentViewerTypenames;
+
+  static gqlSpec = this.defineGqlNode((field) => {
+    field.id("id");
+    field.string("__typename");
+  });
+
+  static setLoginSuccessHeaders(responseHeaders: Headers, bfGid: string) {
+    const { accessToken, refreshToken } = generateTokens(bfGid);
+    responseHeaders.set(
+      "Set-Cookie",
+      `bfgat=${accessToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=900`,
+    );
+    responseHeaders.set(
+      "Set-Cookie",
+      `bfgrt=${refreshToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${604800}`,
+    ); //7 days in seconds
+  }
+
+  get id() {
+    return `${this.constructor.name}#${this.bfGid}⚡️${this.bfOid}`;
+  }
+  static createFromRequest(
+    importMeta: ImportMeta,
+    request: Request,
+    responseHeaders?: Headers,
+  ) {
+    logger.debug("Creating viewer from request");
+
+    const accessToken = request.headers.get("Cookie")?.match(/bfgat=([^;]+)/)
+      ?.[1];
+    const refreshToken = request.headers.get("Cookie")?.match(/bfgrt=([^;]+)/)
+      ?.[1];
+
+    logger.debug("Found tokens", {
+      hasAccessToken: !!accessToken,
+      hasRefreshToken: !!refreshToken,
+    });
+    let tokenResult = accessToken ? verifyAccessToken(accessToken) : null;
+    logger.debug("Verified access token result", {
+      hasTokenResult: !!tokenResult,
+    });
+
+    if (!tokenResult && refreshToken) {
+      const refreshResult = verifyRefreshToken(refreshToken);
+      if (refreshResult) {
+        // Generate new tokens if refresh token is valid
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+          generateTokens(refreshResult.sub);
+        responseHeaders?.set(
+          "Set-Cookie",
+          `bfgat=${newAccessToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=900`,
+        );
+        responseHeaders?.set(
+          "Set-Cookie",
+          `bfgrt=${newRefreshToken}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${604800}`,
+        ); //7 days in seconds
+
+        tokenResult = refreshResult;
+      }
+    }
+
+    const userLoggedIn = !!tokenResult;
+
+    if (!userLoggedIn) {
+      responseHeaders?.set(
+        "Set-Cookie",
+        "bfgat=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0",
+      );
+      responseHeaders?.set(
+        "Set-Cookie",
+        "bfgrt=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0",
+      );
+    }
+
+    if (userLoggedIn) {
+      const userId = tokenResult!.sub;
+      const cv = CurrentViewerLoggedIn
+        .__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+          importMeta,
+          toBfGid(userId),
+          toBfGid(userId),
+        );
+
+      return cv;
+    }
+    return CurrentViewerLoggedOut.__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+      importMeta,
+    );
+  }
+
+  static __DANGEROUS_USE_IN_SCRIPTS_ONLY__createOmni(importMeta: ImportMeta) {
+    logger.warn(`Creating omnivc from: ${importMeta.url}`);
+    return CurrentViewer__DANGEROUS__OMNI__
+      .__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(importMeta);
+  }
+  static __DANGEROUS_USE_IN_SCRIPTS_ONLY__createLoggedIn(
+    importMeta: ImportMeta,
+    bfGid: string | BfGid,
+    bfOid: string | BfGid,
+  ) {
+    logger.warn(`Creating Logged in user: ${importMeta.url}`);
+    return CurrentViewerLoggedIn.__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+      importMeta,
+      toBfGid(bfGid),
+      toBfGid(bfOid),
+    );
+  }
+  static __DANGEROUS_USE_IN_REGISTRATION_ONLY__createCvForRegistration(
+    importMeta: ImportMeta,
+    email: string,
+  ) {
+    return CurrentViewerForRegistration
+      .__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+        importMeta,
+        toBfGid(email),
+      );
+  }
+
+  static createLoggedOut(
+    importMeta: ImportMeta,
+  ) {
+    logger.warn(`Creating Logged in user: ${import.meta.url}`);
+    return CurrentViewerLoggedOut.__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+      importMeta,
+    );
+  }
+  static __DANGEROUS__createFromEmail(
+    importMeta: ImportMeta,
+    email: string,
+  ) {
+    return CurrentViewerLoggedIn
+      .__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+        importMeta,
+        toBfGid(email),
+        toBfGid(email),
+      );
+  }
+  static __DANGEROUS__createFromBfGid(
+    importMeta: ImportMeta,
+    bfGid: string,
+    bfOid: string,
+  ) {
+    return CurrentViewerLoggedIn.__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+      importMeta,
+      toBfGid(bfGid),
+      toBfGid(bfOid),
+    );
+  }
+
+  static __DANGEROUS__createTestCurrentViewer(
+    importMeta: ImportMeta,
+    isLoggedIn: boolean = true,
+    options: {
+      bfGid?: string | BfGid;
+      bfOid?: string | BfGid;
+    } = {},
+  ) {
+    logger.debug(`Creating test current viewer, logged in: ${isLoggedIn}`);
+
+    if (isLoggedIn) {
+      const bfGid = options.bfGid
+        ? toBfGid(options.bfGid)
+        : toBfGid("test-user-id");
+      const bfOid = options.bfOid
+        ? toBfGid(options.bfOid)
+        : toBfGid("test-owner-id");
+      return CurrentViewerLoggedIn
+        .__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+          importMeta,
+          bfGid,
+          bfOid,
+        );
+    } else {
+      return CurrentViewerLoggedOut
+        .__PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+          importMeta,
+        );
+    }
+  }
+
+  clear() {
+  }
+
+  protected constructor(
+    readonly creator: ImportMeta, // the import.meta of the module that created the current viewer
+    readonly bfGid: BfGid, // person for whom the access token was created
+    readonly bfOid: BfGid, // always an owner, used to determine access control
+  ) {
+    super();
+    this.__typename = this.constructor.name as CurrentViewerTypenames;
+  }
+
+  toGraphql() {
+    return {
+      __typename: this.constructor.name as CurrentViewerTypenames,
+      id: this.bfGid,
+    };
+  }
+
+  toString() {
+    return this.id;
+  }
+  get isLoggedIn(): boolean {
+    return false;
+  }
+
+  [Symbol.dispose]() {
+    this.clear();
+  }
+}
+
+export class CurrentViewerLoggedOut extends CurrentViewer {
+  static override gqlSpec = this.defineGqlNode((field) => {
+    field.inherit();
+  });
+
+  protected constructor(
+    override readonly creator: ImportMeta, // the import.meta of the module that created the current viewer
+  ) {
+    super(creator, toBfGid("ANON"), toBfGid("ANON"));
+  }
+
+  static __PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(creator: ImportMeta) {
+    return new this(creator);
+  }
+  override get isLoggedIn(): boolean {
+    return false;
+  }
+}
+
+class CurrentViewerLoggedIn extends CurrentViewer {
+  static override gqlSpec = this.defineGqlNode((field) => {
+    field.inherit();
+    field.string("email");
+    field.string("displayName");
+  });
+
+  static __PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+    creator: ImportMeta,
+    bfGid: BfGid,
+    bfOid: BfGid,
+  ) {
+    return new this(creator, bfGid, bfOid);
+  }
+
+  override get isLoggedIn(): boolean {
+    return true;
+  }
+}
+
+export class CurrentViewerForRegistration extends CurrentViewerLoggedIn {
+  static override gqlSpec = this.defineGqlNode((field) => {
+    field.inherit();
+  });
+
+  static override __PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(
+    creator: ImportMeta,
+    emailString: string,
+  ) {
+    const bfGid = toBfGid(emailString);
+    return new this(creator, bfGid, bfGid);
+  }
+  override get isLoggedIn(): boolean {
+    return false;
+  }
+}
+
+class CurrentViewer__DANGEROUS__OMNI__ extends CurrentViewer {
+  static override gqlSpec = this.defineGqlNode((field) => {
+    field.inherit();
+  });
+
+  static __PROBABLY_DONT_USE_THIS_VERY_OFTEN__create(creator: ImportMeta) {
+    return new this(creator, toBfGid("OMNI"), toBfGid("OMNI"));
+  }
+  override get isLoggedIn(): boolean {
+    return true;
+  }
+}
