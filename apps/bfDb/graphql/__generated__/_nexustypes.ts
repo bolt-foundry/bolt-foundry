@@ -66,9 +66,24 @@ export interface NexusGenObjects {
     id?: string | null; // ID
     name?: string | null; // String
   }
+  CurrentViewer: { // root type
+    email?: string | null; // String
+    id?: string | null; // ID
+  }
+  CurrentViewerLoggedIn: { // root type
+    email?: string | null; // String
+    id?: string | null; // ID
+  }
+  CurrentViewerLoggedOut: { // root type
+    email?: string | null; // String
+    id?: string | null; // ID
+  }
   JoinPayload: { // root type
     message?: string | null; // String
     success?: boolean | null; // Boolean
+  }
+  LoginWithEmailDevPayload: { // root type
+    currentViewer: NexusGenRootTypes['BfNode']; // BfNode!
   }
   Mutation: {};
   Query: {};
@@ -104,15 +119,33 @@ export interface NexusGenFieldTypes {
     id: string | null; // ID
     name: string | null; // String
   }
+  CurrentViewer: { // field return type
+    email: string | null; // String
+    id: string | null; // ID
+  }
+  CurrentViewerLoggedIn: { // field return type
+    email: string | null; // String
+    id: string | null; // ID
+  }
+  CurrentViewerLoggedOut: { // field return type
+    email: string | null; // String
+    id: string | null; // ID
+  }
   JoinPayload: { // field return type
     message: string | null; // String
     success: boolean | null; // Boolean
   }
+  LoginWithEmailDevPayload: { // field return type
+    currentViewer: NexusGenRootTypes['BfNode']; // BfNode!
+  }
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinPayload'] | null; // JoinPayload
+    loginWithEmailDevCurrentViewer: NexusGenRootTypes['LoginWithEmailDevPayload'] | null; // LoginWithEmailDevPayload
+    loginWithEmailDevCurrentViewerLoggedIn: NexusGenRootTypes['LoginWithEmailDevPayload'] | null; // LoginWithEmailDevPayload
+    loginWithEmailDevCurrentViewerLoggedOut: NexusGenRootTypes['LoginWithEmailDevPayload'] | null; // LoginWithEmailDevPayload
   }
   Query: { // field return type
-    ok: boolean; // Boolean!
+    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
   }
   BfNode: { // field return type
     id: string | null; // ID
@@ -140,15 +173,33 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     name: 'String'
   }
+  CurrentViewer: { // field return type name
+    email: 'String'
+    id: 'ID'
+  }
+  CurrentViewerLoggedIn: { // field return type name
+    email: 'String'
+    id: 'ID'
+  }
+  CurrentViewerLoggedOut: { // field return type name
+    email: 'String'
+    id: 'ID'
+  }
   JoinPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
   }
+  LoginWithEmailDevPayload: { // field return type name
+    currentViewer: 'BfNode'
+  }
   Mutation: { // field return type name
     joinWaitlist: 'JoinPayload'
+    loginWithEmailDevCurrentViewer: 'LoginWithEmailDevPayload'
+    loginWithEmailDevCurrentViewerLoggedIn: 'LoginWithEmailDevPayload'
+    loginWithEmailDevCurrentViewerLoggedOut: 'LoginWithEmailDevPayload'
   }
   Query: { // field return type name
-    ok: 'Boolean'
+    currentViewer: 'CurrentViewer'
   }
   BfNode: { // field return type name
     id: 'ID'
@@ -164,6 +215,15 @@ export interface NexusGenArgTypes {
       company?: string | null; // String
       email?: string | null; // String
       name?: string | null; // String
+    }
+    loginWithEmailDevCurrentViewer: { // args
+      email: string; // String!
+    }
+    loginWithEmailDevCurrentViewerLoggedIn: { // args
+      email: string; // String!
+    }
+    loginWithEmailDevCurrentViewerLoggedOut: { // args
+      email: string; // String!
     }
   }
 }

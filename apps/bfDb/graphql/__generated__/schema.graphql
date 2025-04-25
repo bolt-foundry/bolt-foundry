@@ -32,6 +32,21 @@ type BfPerson implements BfNode & BfNodeBase {
   name: String
 }
 
+type CurrentViewer {
+  email: String
+  id: ID
+}
+
+type CurrentViewerLoggedIn {
+  email: String
+  id: ID
+}
+
+type CurrentViewerLoggedOut {
+  email: String
+  id: ID
+}
+
 scalar JSON
 
 type JoinPayload {
@@ -39,10 +54,17 @@ type JoinPayload {
   success: Boolean
 }
 
+type LoginWithEmailDevPayload {
+  currentViewer: BfNode!
+}
+
 type Mutation {
   joinWaitlist(company: String, email: String, name: String): JoinPayload
+  loginWithEmailDevCurrentViewer(email: String!): LoginWithEmailDevPayload
+  loginWithEmailDevCurrentViewerLoggedIn(email: String!): LoginWithEmailDevPayload
+  loginWithEmailDevCurrentViewerLoggedOut(email: String!): LoginWithEmailDevPayload
 }
 
 type Query {
-  ok: Boolean!
+  currentViewer: CurrentViewer!
 }
