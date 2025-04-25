@@ -7,3 +7,4 @@ export * from "apps/bfDb/classes/BfErrorDb.ts";
 export * from "apps/bfDb/classes/BfErrorNode.ts";
 export * from "apps/bfDb/classes/BfNodeBase.ts";
 export * from "apps/bfDb/classes/BfNodeIds.ts";
+export * from "apps/bfDb/classes/CurrentViewer.ts";
