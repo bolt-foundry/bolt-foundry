@@ -8,7 +8,7 @@ import { BfOrganization } from "apps/bfDb/models/BfOrganization.ts";
 import { BfErrorOrganizationNotAllowed } from "apps/bfDb/classes/BfErrorNode.ts";
 
 /**
- * Build a minimal mock of the Google ID‑token payload we care about for Phase A
+ * Build a minimal mock of the Google ID‑token payload we care about
  */
 function mockGooglePayload(email: string) {
   return {
