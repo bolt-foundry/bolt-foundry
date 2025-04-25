@@ -1,13 +1,13 @@
 /* -------------------------------------------------------------------------- */
-/*  CurrentViewer – Phase‑0 stub                                              */
+/*  CurrentViewer – Phase‑0 stub (updated)                                    */
 /*  Location: apps/bfDb/classes/CurrentViewer.ts                              */
 /*                                                                            */
-/*  This is the first implementation step for the new viewer model.           */
-/*  It purposefully stays minimal: just enough to turn the red tests for       */
-/*  CurrentViewer green while we migrate away from BfCurrentViewer.           */
+/*  Uses explicit subclasses (LoggedIn / LoggedOut) instead of passing        */
+/*  state flags into the base constructor.                                    */
 /* -------------------------------------------------------------------------- */
 
 import { defineGqlNode } from "../graphql/builder/builder.ts";
+import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 import { BfCurrentViewer } from "./BfCurrentViewer.ts";
 import { BfErrorInvalidEmail } from "./BfErrorInvalidEmail.ts";
 
@@ -19,30 +19,34 @@ import { BfErrorInvalidEmail } from "./BfErrorInvalidEmail.ts";
 const EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 /* -------------------------------------------------------------------------- */
-/*  Public API                                                                 */
+/*  Base class                                                                 */
 /* -------------------------------------------------------------------------- */
 
-type ViewerState = "CurrentViewerLoggedIn" | "CurrentViewerLoggedOut";
-
-export class CurrentViewer {
+export class CurrentViewer extends GraphQLObjectBase {
   /* ------------------------------------------------------------------------ */
   /*  GraphQL spec (builder DSL)                                              */
   /* ------------------------------------------------------------------------ */
-  static gqlSpec = defineGqlNode((field) => {
+  static override gqlSpec = defineGqlNode((field, _rel, mutation) => {
     field.id("id");
     field.string("email");
+
+    /* ── Dev‑only email login ───────────────────────────────────────────── */
+    mutation.custom("loginWithEmailDev", {
+      args: (a) => a.nonNull.string("email"),
+      returns: (r) => r.object(CurrentViewer, "currentViewer"),
+      resolve: async (_src, { email }) => ({
+        currentViewer: await CurrentViewer.loginWithEmailDev(email),
+      }),
+    });
   });
 
   /* ------------------------------------------------------------------------ */
   /*  Instance fields                                                         */
   /* ------------------------------------------------------------------------ */
-  readonly __typename: ViewerState;
-  readonly id: string;
   readonly email?: string;
 
-  private constructor(state: ViewerState, id: string, email?: string) {
-    this.__typename = state;
-    this.id = id;
+  constructor(id: string, email?: string) {
+    super(id);
     this.email = email;
   }
 
@@ -50,7 +54,9 @@ export class CurrentViewer {
   /*  Dev‑only e‑mail login helper                                            */
   /* ------------------------------------------------------------------------ */
   // deno-lint-ignore require-await
-  static async loginWithEmailDev(email: string): Promise<CurrentViewer> {
+  static async loginWithEmailDev(
+    email: string,
+  ): Promise<CurrentViewerLoggedIn> {
     if (!EMAIL_REGEX.test(email)) {
       throw new BfErrorInvalidEmail(email);
     }
@@ -60,21 +66,37 @@ export class CurrentViewer {
     const bfCv = BfCurrentViewer
       .__DANGEROUS_USE_IN_SCRIPTS_ONLY__createLoggedIn(
         import.meta,
-        email.split("@")[0], // name – temporary
+        email.split("@")[0], // temporary display name
         email,
       );
 
-    return new CurrentViewer("CurrentViewerLoggedIn", bfCv.bfGid, email);
+    return new CurrentViewerLoggedIn(bfCv.bfGid, email);
   }
 
   /* ------------------------------------------------------------------------ */
   /*  Request‑scoped helper – anonymous / logged‑out                          */
   /* ------------------------------------------------------------------------ */
-  static currentViewerForRequest(_req: Request): Promise<CurrentViewer> {
+  static currentViewerForRequest(
+    _req: Request,
+  ): Promise<CurrentViewerLoggedOut> {
     // Phase‑0: always treat as anonymous. Later we’ll parse cookies / headers.
-    return Promise.resolve(
-      new CurrentViewer("CurrentViewerLoggedOut", "anonymous"),
-    );
+    return Promise.resolve(new CurrentViewerLoggedOut());
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Concrete subclasses                                                       */
+/* -------------------------------------------------------------------------- */
+
+export class CurrentViewerLoggedIn extends CurrentViewer {
+  constructor(id: string, email: string) {
+    super(id, email);
+  }
+}
+
+export class CurrentViewerLoggedOut extends CurrentViewer {
+  constructor() {
+    super("anonymous");
   }
 }
 
