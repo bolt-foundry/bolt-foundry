@@ -13,7 +13,8 @@ export function isGraphQLObjectBase(
   ctor: unknown,
 ): ctor is typeof GraphQLObjectBase {
   return typeof ctor === "function" &&
-    ctor.prototype instanceof GraphQLObjectBase;
+    "defineGqlNode" in ctor &&
+    "gqlSpec" in ctor;
 }
 
 export class GraphQLObjectBase {
@@ -31,6 +32,11 @@ export class GraphQLObjectBase {
   get id(): string {
     return this.#tmpId ??= globalThis.crypto?.randomUUID?.() ??
       Math.random().toString(36).slice(2);
+  }
+
+  // allow subclasses to override the id
+  protected constructor(tmpId?: string) {
+    if (tmpId) this.#tmpId = tmpId;
   }
 
   /* ────────────────────────────────
@@ -97,13 +103,16 @@ export class GraphQLObjectBase {
 
     //— Build and cache the spec ————————————————————————————————
     const spec = _baseDefineGqlNode(wrapped);
+    spec.owner ??= this.name;
 
     // subclasses that *extend* another GraphQLObjectBase automatically
     // inherit the parent’s implements-chain
     const Parent = Object.getPrototypeOf(this) as HasGqlSpecCtor;
     // Skip the base class itself – we don’t want a GraphQLObjectBase
     // interface appearing in the schema (would require resolveType).
-    if (Parent && Parent !== GraphQLObjectBase && Parent.gqlSpec) {
+    if (
+      isGraphQLObjectBase(Parent) && Parent !== this && Parent.gqlSpec
+    ) {
       // put the direct parent first, then keep whatever it already implements
       spec.implements = [Parent.name, ...(Parent.gqlSpec.implements ?? [])];
     }

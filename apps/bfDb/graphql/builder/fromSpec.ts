@@ -17,7 +17,9 @@ import type {
 } from "apps/bfDb/graphql/builder/builder.ts";
 import type {
   InterfaceDefinitionBlock,
+  NexusAcceptedTypeDef,
   NexusOutputFieldConfig,
+  NexusScalarTypeDef,
   ObjectDefinitionBlock,
 } from "nexus/dist/core.js";
 import { getLogger } from "packages/logger/logger.ts";
@@ -41,8 +43,8 @@ const scalarMap: Record<GqlScalar, string> = {
 /*  Custom BfGID scalar (placeholder passthrough implementation)       */
 /* ------------------------------------------------------------------ */
 let bfGidScalarRegistered = false;
-let bfGidScalarDef: unknown;
-function ensureBfGidScalar(): unknown {
+let bfGidScalarDef: NexusScalarTypeDef<"BfGID">;
+function ensureBfGidScalar(): NexusScalarTypeDef<"BfGID"> {
   if (bfGidScalarRegistered) return bfGidScalarDef;
   bfGidScalarDef = scalarType({
     name: "BfGID",
@@ -55,8 +57,8 @@ function ensureBfGidScalar(): unknown {
 }
 
 let jsonScalarRegistered = false;
-let jsonScalarDef: unknown;
-function ensureJsonScalar(): unknown {
+let jsonScalarDef: ReturnType<typeof scalarType>;
+function ensureJsonScalar() {
   if (jsonScalarRegistered) return jsonScalarDef;
   jsonScalarDef = scalarType({
     name: "JSON",
@@ -85,13 +87,37 @@ function toNexusArg(
   return arg({ type: wrapped });
 }
 
-function addScalarField<TName extends string>(
+function addScalarFieldOrObject<TName extends string>(
   t: DefBlock<TName>,
   name: string,
   spec: FieldSpec,
 ): void {
+  /* object field ------------------------------------------------------ */
+  if (spec.type === "object") {
+    let targetName = "JSON";
+    try {
+      const tgt = spec.target?.();
+      if (tgt?.name) targetName = tgt.name;
+    } catch { /* ignore */ }
+
+    const opts = {
+      type: targetName,
+      resolve: spec.resolve as any,
+      args: spec.args
+        ? Object.fromEntries(
+          Object.entries(spec.args).map(([k, v]) => [k, toNexusArg(v)]),
+        )
+        : undefined,
+    } as NexusOutputFieldConfig<TName, string>;
+
+    if (spec.nullable) t.field(name, opts);
+    else t.nonNull.field(name, opts);
+    return;
+  }
+
+  /* scalar field ------------------------------------------------------ */
   const options: NexusOutputFieldConfig<TName, string> = {
-    type: scalarMap[spec.type],
+    type: scalarMap[spec.type as GqlScalar],
   };
   if (spec.args) {
     const args: Record<string, ReturnType<typeof idArg>> = {};
@@ -133,8 +159,12 @@ function addRelationField<TName extends string>(
   }
 }
 
-function buildMutationFields(nodeName: string, mutation: MutationSpec) {
-  const defs: unknown[] = [];
+function buildMutationFields(
+  nodeName: string,
+  mutation: MutationSpec,
+  emittedPayloads: Set<string>,
+) {
+  const defs = [];
 
   if (mutation.standard.update) {
     defs.push(
@@ -171,12 +201,16 @@ function buildMutationFields(nodeName: string, mutation: MutationSpec) {
     const outputFields = cm.output ?? {}; // ← the builder puts fields here
     const hasConcretePayload = Object.keys(outputFields).length > 0;
 
-    /* 1.  If so, create a Nexus object that mirrors those fields ------ */
+    /* 1.  Work out the payload typename ------------------------------ */
     let payloadName = "JSON"; // default / fallback
-
     if (hasConcretePayload) {
       const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
       payloadName = `${cap(cm.name)}Payload`;
+    }
+
+    /* 1a.  Emit it only if we haven't already ----------------------- */
+    if (hasConcretePayload && !emittedPayloads.has(payloadName)) {
+      emittedPayloads.add(payloadName);
 
       defs.push(
         objectType({
@@ -199,7 +233,7 @@ function buildMutationFields(nodeName: string, mutation: MutationSpec) {
                 const specObj = typeof fspec === "string"
                   ? { type: fspec, nullable: false } // normalise shorthand
                   : (fspec as any);
-                addScalarField(def, fname, specObj);
+                addScalarFieldOrObject(def, fname, specObj);
               } else {
                 addRelationField(def, fname, fspec as any);
               }
@@ -229,7 +263,8 @@ function buildMutationFields(nodeName: string, mutation: MutationSpec) {
 
 export function specsToNexusDefs(
   specs: Record<string, GqlNodeSpec>,
-): unknown[] {
+) {
+  const emittedPayloads = new Set<string>(); // 🆕
   ensureJsonScalar();
 
   /* 1. Find every interface name already referenced */
@@ -256,7 +291,7 @@ export function specsToNexusDefs(
     ...promotedInterfaces,
   ]);
 
-  const allDefs: unknown[] = [];
+  const allDefs: Array<NexusAcceptedTypeDef> = [];
 
   /* ------------------------------------------------------------------ */
   /*  Helper: synthesise fields for stub interfaces                      */
@@ -291,7 +326,7 @@ export function specsToNexusDefs(
             const def = t as any;
 
             for (const [fname, fspec] of Object.entries(mergedFields)) {
-              addScalarField(def, fname, fspec);
+              addScalarFieldOrObject(def, fname, fspec);
             }
 
             for (const [rname, rspec] of Object.entries(mergedRelations)) {
@@ -315,7 +350,9 @@ export function specsToNexusDefs(
     const hasFields = Object.keys(spec.field).length > 0;
     const hasRelations = Object.keys(spec.relation).length > 0;
     if (!isInterface && !hasFields && !hasRelations) {
-      allDefs.push(...buildMutationFields(nodeName, spec.mutation));
+      allDefs.push(
+        ...buildMutationFields(nodeName, spec.mutation, emittedPayloads),
+      );
       continue; // ⟵ skip objectType()
     }
 
@@ -329,7 +366,7 @@ export function specsToNexusDefs(
       const def = t as any;
 
       for (const [fname, fspec] of Object.entries(spec.field)) {
-        addScalarField(def, fname, fspec);
+        addScalarFieldOrObject(def, fname, fspec);
       }
       for (const [rname, rspec] of Object.entries(spec.relation)) {
         addRelationField(def, rname, rspec as any);
@@ -358,8 +395,10 @@ export function specsToNexusDefs(
 
     allDefs.push(typeDef);
 
-    if (!isInterface) {
-      allDefs.push(...buildMutationFields(nodeName, spec.mutation));
+    if (!isInterface || (!spec.owner || spec.owner === nodeName)) {
+      allDefs.push(
+        ...buildMutationFields(nodeName, spec.mutation, emittedPayloads),
+      );
     }
   }
 
