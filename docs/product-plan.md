@@ -5,6 +5,11 @@
 _Improve the reliability of customers' LLM capabilities by building an
 evaluation and observability pipeline that enables continuous improvement._
 
+## Next step
+
+0.1 is in progress. Randall is currently implementing it by doing the plan
+outlined in [login-product-plan](../apps/boltFoundry/docs/login-project-plan.md)
+
 ## Milestones
 
 - **0.0 →** Metrics flowing through PostHog.
