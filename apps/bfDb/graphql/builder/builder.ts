@@ -37,36 +37,52 @@ export type AnyBfNodeCtor<
   TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
 > = typeof BfNodeBase<TProps, TMetadata, TEdgeProps>;
 
+export type AnyGqlObjectCtor = abstract new (
+  ...args: never[]
+) => GraphQLObjectBase & { // static side guarantees
+  gqlSpec?: GqlNodeSpec | null;
+  __typename: string;
+};
+
+type AnyArgs = Record<string, unknown>;
+
 /* -------------------------------------------------------------------------- */
 /*  Field builder DSL                                                        */
 /* -------------------------------------------------------------------------- */
 
 export interface FieldSpec {
-  type: GqlScalar;
+  type: GqlScalar | "object";
+  target?: () => AnyGqlObjectCtor; // ⬅ for object fields
   nullable: boolean;
   args?: Record<string, ArgSpec>;
   resolve?: (
-    src: BfNodeBase,
+    src: GraphQLObjectBase,
     args: unknown,
     ctx: BfGraphqlContext,
   ) => unknown | Promise<unknown>;
 }
 
-function collectArgs(fn?: (a: ArgBuilder) => unknown | void):
-  | Record<string, ArgSpec>
-  | undefined {
+export type ArgSpec = { type: GqlScalar; nullable: boolean };
+
+export type InferArgs<F> = F extends (...args: any[]) => ArgBuilder<infer T> ? T
+  : Record<string, never>;
+
+/* -------------------------------------------------------------------------- */
+/*  collectArgs – stores runtime spec *and* preserves compile-time type       */
+/* -------------------------------------------------------------------------- */
+export function collectArgs<
+  F extends ((a: ArgBuilder<any>) => any) | void | undefined,
+>(fn?: F): Record<string, ArgSpec> | undefined {
   if (!fn) return undefined;
+
   const store: Record<string, ArgSpec> = {};
+  const add = (type: GqlScalar) =>
+  (
+    name: string,
+    nullable = true,
+  ) => (store[name] = { type, nullable }, proxy);
 
-  // ── create a scalar arg builder ──────────────────────────────────
-  function add(type: GqlScalar) {
-    /* nullable defaults to true; proxy can override per-call          */
-    return (
-      name: string,
-      nullable: boolean = true,
-    ) => (store[name] = { type, nullable }, proxy);
-  }
-
+  /* 1.  Concrete scalar helpers ------------------------------------------- */
   const base = {
     id: add("id"),
     string: add("string"),
@@ -76,14 +92,14 @@ function collectArgs(fn?: (a: ArgBuilder) => unknown | void):
     json: add("json"),
   } as const;
 
+  /* 2.  Proxy to implement `.nonNull.…()` sugar --------------------------- */
   let flagNonNull = false;
-  const proxy: ArgBuilder = new Proxy(base as ArgBuilder, {
-    get(t, prop, recv) {
+  const proxy: ArgBuilder = new Proxy(base as unknown as ArgBuilder, {
+    get(t, prop) {
       if (prop === "nonNull") {
-        flagNonNull = true; // next scalar call uses nonNull = true
+        flagNonNull = true;
         return proxy;
       }
-      // on every scalar call we read and immediately reset the flag
       if (prop in t) {
         const fn = (t as any)[prop];
         return (name: string) => {
@@ -92,31 +108,54 @@ function collectArgs(fn?: (a: ArgBuilder) => unknown | void):
           return res;
         };
       }
-      return Reflect.get(t, prop, recv);
+      return (t as any)[prop];
     },
   });
 
-  fn(proxy);
+  /* 3.  Execute user callback (ignoring its return value) ----------------- */
+  (fn as any)(proxy);
   return store;
 }
-type ArgSpec = { type: GqlScalar; nullable?: boolean };
 
-export interface ArgBuilder {
-  id(name: string): ArgBuilder;
-  string(name: string): ArgBuilder;
-  int(name: string): ArgBuilder;
-  float(name: string): ArgBuilder;
-  boolean(name: string): ArgBuilder;
-  json(name: string): ArgBuilder;
-  readonly nonNull: ArgBuilder;
-}
+// ---------------------------------------------------------------------------
+//  ArgBuilder – carries an accumulating generic state `T`
+// ---------------------------------------------------------------------------
+export type ArgBuilder<T = AnyArgs> = {
+  /* nullable scalars (default) */
+  id<N extends string>(name: N): ArgBuilder<T & { [K in N]?: string }>;
+  string<N extends string>(name: N): ArgBuilder<T & { [K in N]?: string }>;
+  int<N extends string>(name: N): ArgBuilder<T & { [K in N]?: number }>;
+  float<N extends string>(name: N): ArgBuilder<T & { [K in N]?: number }>;
+  boolean<N extends string>(name: N): ArgBuilder<T & { [K in N]?: boolean }>;
+  json<N extends string>(name: N): ArgBuilder<T & { [K in N]?: unknown }>;
+
+  /* chain-once wrapper that flips the next call to non-nullable */
+  nonNull: {
+    id<N extends string>(name: N): ArgBuilder<T & { [K in N]: string }>;
+    string<N extends string>(name: N): ArgBuilder<T & { [K in N]: string }>;
+    int<N extends string>(name: N): ArgBuilder<T & { [K in N]: number }>;
+    float<N extends string>(name: N): ArgBuilder<T & { [K in N]: number }>;
+    boolean<N extends string>(name: N): ArgBuilder<T & { [K in N]: boolean }>;
+    json<N extends string>(name: N): ArgBuilder<T & { [K in N]: unknown }>;
+  };
+};
+
+// export interface ArgBuilder {
+//   id(name: string): ArgBuilder;
+//   string(name: string): ArgBuilder;
+//   int(name: string): ArgBuilder;
+//   float(name: string): ArgBuilder;
+//   boolean(name: string): ArgBuilder;
+//   json(name: string): ArgBuilder;
+//   readonly nonNull: ArgBuilder;
+// }
 
 type FieldArgsOrOpts<Res extends FieldSpec["resolve"] | undefined> =
   | Res // legacy (name, resolve)
   | Record<string, ArgSpec> // legacy (name, args, resolve?)
   | {
     args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
-    resolve?: Res;
+    resolve?: FieldSpec["resolve"];
   };
 
 export type AddFieldFn<Name extends string> = <
@@ -127,6 +166,15 @@ export type AddFieldFn<Name extends string> = <
   maybeRes?: Res,
 ) => FieldBuilder;
 
+export type AddObjectFieldFn<Name extends string> = (
+  name: Name,
+  target: () => AnyGqlObjectCtor,
+  opts?: {
+    args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
+    resolve?: FieldSpec["resolve"]; // ← concrete type
+  },
+) => FieldBuilder;
+
 export interface FieldBuilder {
   id: AddFieldFn<string>;
   string: AddFieldFn<string>;
@@ -134,6 +182,7 @@ export interface FieldBuilder {
   float: AddFieldFn<string>;
   boolean: AddFieldFn<string>;
   json: AddFieldFn<string>;
+  object: AddObjectFieldFn<string>;
   nonNull: {
     id: AddFieldFn<string>;
     string: AddFieldFn<string>;
@@ -141,6 +190,7 @@ export interface FieldBuilder {
     float: AddFieldFn<string>;
     boolean: AddFieldFn<string>;
     json: AddFieldFn<string>;
+    object: AddObjectFieldFn<string>;
   };
 }
 
@@ -200,6 +250,23 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
       return save(name, type, nullable, args, resolve);
     };
 
+  const addObject = (nullable = true): AddObjectFieldFn<string> =>
+  (
+    name,
+    target,
+    opts = {},
+  ) => {
+    const { args } = parseArgsAndResolve(opts);
+    store[name] = {
+      type: "object",
+      target,
+      nullable,
+      args,
+      resolve: opts.resolve, // now typed as Res
+    };
+    return api;
+  };
+
   const api: FieldBuilder = {
     id: add("id"),
     string: add("string"),
@@ -207,6 +274,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
     float: add("float"),
     boolean: add("boolean"),
     json: add("json"),
+    object: addObject(), // nullable by default
     nonNull: {
       id: add("id", false),
       string: add("string", false),
@@ -214,6 +282,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
       float: add("float", false),
       boolean: add("boolean", false),
       json: add("json", false),
+      object: addObject(false),
     },
   };
 
@@ -230,12 +299,12 @@ type AddRelationFn<M extends boolean, D extends Direction> = <
   Name extends string,
 >(
   name: Name,
-  target: () => AnyBfNodeCtor | typeof GraphQLObjectBase,
+  target: () => AnyGqlObjectCtor,
   opts?: Partial<Omit<RelationSpec, "target" | "many" | "direction">>,
 ) => RelationBuilder;
 
 export interface RelationSpec {
-  target: () => AnyBfNodeCtor | typeof GraphQLObjectBase;
+  target: () => AnyGqlObjectCtor;
   many: boolean;
   edge?: () => typeof GraphQLObjectBase;
   direction: Direction;
@@ -301,7 +370,7 @@ interface ReturnsBase {
   boolean(key?: string): WithNonNull<OutputSpec>;
   id(key?: string): WithNonNull<OutputSpec>;
   json(key?: string): WithNonNull<OutputSpec>;
-  object<T extends AnyBfNodeCtor>(
+  object<T extends AnyGqlObjectCtor>(
     cls: T,
     key: string,
   ): WithNonNull<OutputSpec>;
@@ -430,13 +499,13 @@ function makeReturnsBuilder(
 /*  Mutation builder DSL                                                     */
 /* -------------------------------------------------------------------------- */
 
-export interface CustomMutation {
+export interface CustomMutation<A = AnyArgs> {
   name: string;
   args: Record<string, ArgSpec>;
   output: OutputSpec;
   resolve: (
-    src: InstanceType<AnyBfNodeCtor>,
-    args: Record<string, unknown>,
+    src: InstanceType<AnyGqlObjectCtor>,
+    args: A,
     ctx: BfGraphqlContext,
   ) => unknown | Promise<unknown>;
 }
@@ -448,7 +517,7 @@ export interface StandardMutations {
 
 export interface MutationSpec {
   createdBy?: {
-    parent: () => AnyBfNodeCtor;
+    parent: () => AnyGqlObjectCtor;
     relation?: string;
     name?: string;
   };
@@ -459,12 +528,12 @@ export interface MutationSpec {
 function buildMutation() {
   const spec: MutationSpec = {
     standard: { update: false, delete: false },
-    customs: [],
+    customs: [] as Array<CustomMutation<any>>,
   };
 
   const api = {
     createdBy(
-      parent: () => AnyBfNodeCtor,
+      parent: () => AnyGqlObjectCtor,
       opts: { relation?: string; name?: string } = {},
     ) {
       spec.createdBy = { parent, ...opts };
@@ -478,28 +547,35 @@ function buildMutation() {
       spec.standard.delete = true;
       return api;
     },
-    custom(
+    custom<
+      F extends ((a: ArgBuilder<any>) => any) | void = (a: ArgBuilder) => void,
+    >(
       name: string,
       cfg: {
-        args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
+        args?: F;
         returns: (r: ReturnsBase) => void | OutputSpec;
-        resolve: CustomMutation["resolve"];
+        resolve: (
+          src: InstanceType<AnyGqlObjectCtor>,
+          args: InferArgs<F>, // ← inferred object
+          ctx: BfGraphqlContext,
+        ) => unknown | Promise<unknown>;
       },
     ) {
       const argsSpec = typeof cfg.args === "function"
         ? collectArgs(cfg.args)
-        : (cfg.args ?? {});
+        : cfg.args ?? {};
 
       const builder = makeReturnsBuilder();
-      const maybeOutput = cfg.returns(builder);
-
-      const output = maybeOutput ?? (builder as any)._spec;
-      spec.customs.push({
+      const output =
+        (cfg.returns(builder) ?? (builder as any)._spec) as OutputSpec;
+      const typedMut = {
         name,
-        args: argsSpec ?? {},
+        args: argsSpec,
         output,
         resolve: cfg.resolve,
-      });
+      } as CustomMutation<InferArgs<F>>;
+      spec.customs.push(typedMut as unknown as CustomMutation<any>);
+
       return api;
     },
     _build(): MutationSpec {
@@ -539,4 +615,5 @@ export type GqlNodeSpec = {
   relation: Record<string, RelationSpec>;
   mutation: MutationSpec;
   implements?: Array<string>;
+  owner?: string;
 };
