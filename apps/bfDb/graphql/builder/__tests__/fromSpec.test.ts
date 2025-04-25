@@ -3,8 +3,13 @@
 import { defineGqlNode } from "apps/bfDb/graphql/builder/builder.ts";
 import { specsToNexusDefs } from "apps/bfDb/graphql/builder/fromSpec.ts";
 import { makeSchema } from "nexus";
-import { printSchema } from "graphql";
-import { assertStringIncludes } from "@std/assert";
+import {
+  type GraphQLField,
+  type GraphQLObjectType,
+  type GraphQLResolveInfo,
+  printSchema,
+} from "graphql";
+import { assert, assertStringIncludes } from "@std/assert";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
 import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
@@ -139,4 +144,126 @@ Deno.test("fromSpec should preserve implements chain", () => {
   const sdl = sdlOf(types);
 
   assertStringIncludes(sdl, "type SubNode implements BaseNode");
+});
+
+class Viewer extends GraphQLObjectBase {
+  static override gqlSpec = this.defineGqlNode((_f, _rel, mutation) => {
+    mutation.custom("loginWithEmailDev", {
+      args: (a) => a.nonNull.string("email"),
+      returns: (r) => r.string("ok"),
+      resolve: () => ({ ok: "✔" }),
+    });
+  });
+}
+
+/** Subclass has NO gqlSpec override – inherits parent’s */
+class ViewerChild extends Viewer {}
+
+/* -------------------------------------------------------------------------- */
+/*  Test – makeSchema must succeed once                                       */
+/* -------------------------------------------------------------------------- */
+
+Deno.test("shared custom mutation payload emitted only once", () => {
+  const nexusTypes = specsToNexusDefs({
+    Viewer: Viewer.gqlSpec!,
+    ViewerChild: ViewerChild.gqlSpec!,
+  });
+
+  // makeSchema used to throw here; now it should compile cleanly
+  let threw = false;
+  try {
+    const schema = makeSchema({ types: nexusTypes });
+    void printSchema(schema); // extra paranoia: print SDL to make sure build finished
+  } catch (_err) {
+    threw = true;
+  }
+
+  assert(!threw, "Duplicate payload type should not be generated");
+});
+
+class DummyTarget extends GraphQLObjectBase {
+  static override gqlSpec = defineGqlNode((field) => {
+    field.id("id");
+    field.string("name");
+  });
+
+  constructor(private _name: string) {
+    super();
+  }
+
+  /* simple resolver helpers */
+  get name() {
+    return this._name;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 1. Nullable (default)                                                       */
+/* -------------------------------------------------------------------------- */
+Deno.test("field.object() emits nullable target type", () => {
+  const spec = defineGqlNode((field) => {
+    field.object("viewer", () => DummyTarget);
+  });
+
+  const types = specsToNexusDefs({
+    QueryObj: spec,
+    DummyTarget: DummyTarget.gqlSpec!,
+  });
+  const sdl = sdlOf(types);
+
+  // Expect: viewer: DummyTarget
+  assertStringIncludes(sdl, "viewer: DummyTarget");
+});
+
+/* -------------------------------------------------------------------------- */
+/* 2. Non‑null variant                                                         */
+/* -------------------------------------------------------------------------- */
+Deno.test("field.nonNull.object() emits non‑null target type", () => {
+  const spec = defineGqlNode((field) => {
+    field.nonNull.object("viewer", () => DummyTarget);
+  });
+
+  const types = specsToNexusDefs({
+    NNQuery: spec,
+    DummyTarget: DummyTarget.gqlSpec!,
+  });
+  const sdl = sdlOf(types);
+
+  // Expect: viewer: DummyTarget!
+  assertStringIncludes(sdl, "viewer: DummyTarget!");
+});
+
+/* -------------------------------------------------------------------------- */
+/* 3. Resolver returns correct instance type                                   */
+/* -------------------------------------------------------------------------- */
+Deno.test("object field resolver returns the target instance", async () => {
+  const spec = defineGqlNode((field) => {
+    field.object("viewer", () => DummyTarget, {
+      resolve: () => new DummyTarget("Carol"),
+    });
+  });
+
+  const types = specsToNexusDefs({
+    Query: spec,
+    DummyTarget: DummyTarget.gqlSpec!,
+  });
+  const schema = makeSchema({ types });
+
+  // Minimal runtime execution: call the resolver manually
+  const queryType = schema.getType("Query") as GraphQLObjectType; // 👈 1
+  const fieldConfig = queryType.getFields().viewer as GraphQLField<
+    unknown, // <TSource>
+    unknown // <TContext>
+  >;
+
+  const result = await (fieldConfig.resolve as Exclude<
+    typeof fieldConfig.resolve,
+    undefined
+  >)(
+    null, // parent / source
+    {}, // args
+    {}, // context
+    {} as GraphQLResolveInfo, // info
+  );
+  assert(result instanceof DummyTarget, "Resolver did not return DummyTarget");
 });
