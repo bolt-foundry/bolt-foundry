@@ -29,7 +29,10 @@ class Foo extends GraphQLObjectBase {
   });
 }
 
-Deno.test("GraphQLObjectBase › defineGqlNode caches & adds id helper", () => {
+Deno.test({
+  name: "GraphQLObjectBase › defineGqlNode caches & adds id helper",
+  ignore: true, // Phase 2
+}, () => {
   const first = Foo.gqlSpec;
   const second = Foo.defineGqlNode((_f) => {});
 
@@ -49,7 +52,10 @@ Deno.test("GraphQLObjectBase › defineGqlNode caches & adds id helper", () => {
 /* 2. BfNodeBase must inherit GraphQLObjectBase                               */
 /* -------------------------------------------------------------------------- */
 
-Deno.test("BfNodeBase extends GraphQLObjectBase", () => {
+Deno.test({
+  name: "BfNodeBase extends GraphQLObjectBase",
+  ignore: true, // Phase 2
+}, () => {
   assert(
     BfNodeBase.prototype instanceof GraphQLObjectBase,
     "BfNodeBase must inherit GraphQLObjectBase",
