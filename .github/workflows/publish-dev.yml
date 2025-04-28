@@ -1,187 +1,204 @@
-name: Publish Dev Version
+# name: Publish Dev Version
 
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - "packages/**"
-  workflow_dispatch:
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - "packages/**"
+#   workflow_dispatch:
 
-jobs:
-  build-and-publish:
-    name: Build and Publish Dev Version
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Install Nix
-        uses: cachix/install-nix-action@v22
-        with:
-          nix_path: nixpkgs=channel:nixos-24.11
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-            max-jobs = auto
-            cores = 0
-            substituters = https://cache.nixos.org
-            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+# jobs:
+#   build-and-publish:
+#     name: Build and Publish Dev Version
+#     runs-on: ubuntu-latest
+#     permissions:
+#       id-token: write
+#       contents: read
+#     steps:
+#       - name: Install Nix
+#         uses: cachix/install-nix-action@v22
+#         with:
+#           nix_path: nixpkgs=channel:nixos-24.11
+#           extra_nix_config: |
+#             experimental-features = nix-command flakes
+#             max-jobs = auto
+#             cores = 0
+#             substituters = https://cache.nixos.org
+#             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          repository: bolt-foundry/bolt-foundry
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ssh-strict: true
-          persist-credentials: true
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+#         with:
+#           repository: bolt-foundry/bolt-foundry
+#           fetch-depth: 0
+#           token: ${{ secrets.GITHUB_TOKEN }}
+#           ssh-strict: true
+#           persist-credentials: true
 
-      # Restore Nix store cache
-      - name: Restore nix store cache
-        uses: actions/cache@v4
-        id: nix-cache
-        with:
-          path: |
-            /nix/store
-            /nix/var/nix/db
-            /nix/var/nix/profiles
-            ~/.cache/nix
-          key: ${{ runner.os }}-nix-store-${{ hashFiles('**/*.nix', 'flake.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-nix-store-
+#       # Restore Nix store cache
+#       - name: Restore nix store cache
+#         uses: actions/cache@v4
+#         id: nix-cache
+#         with:
+#           # ──────────────── 1️⃣  Avoid unreadable lock files ────────────────
+#           path: |
+#             /nix/store
+#             /nix/var/nix/profiles
+#             ~/.cache/nix
+#             # Everything below is excluded. "!" is a git-ignore-style negation
+#             !/nix/var/nix/db/big-lock
+#             !/nix/var/nix/db/reserved
 
-      # Cache node_modules and vendor directories
-      - name: Cache node_modules and vendor folders
-        uses: actions/cache@v4
-        id: dependency-cache
-        with:
-          path: |
-            node_modules
-            */*/node_modules
-            */*/*/node_modules
-            vendor
-            */*/vendor
-            */*/*/vendor
-            ~/.npm
-            packages/bolt-foundry/npm/node_modules
-          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/package.json', 'package-lock.json', 'package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-deps-
+#           # ──────────────── 2️⃣  Make the key unique per run ────────────────
+#           #   * hashFiles() keeps different store hashes separate
+#           #   * github.run_id guarantees two concurrent runs never fight
+#           key: ${{ runner.os }}-nix-store-${{ hashFiles('**/*.nix', 'flake.lock') }}-${{ github.run_id }}
+#           restore-keys: |
+#             ${{ runner.os }}-nix-store-
 
-      # Parse .replit env using pure bash
-      - name: Parse .replit env and export to GitHub Actions
-        run: |
-          # Extract the [env] section from .replit
-          sed -n '/^\[env\]/,/^\[/p' .replit | grep -v '^\[' > .env_section
+#       # Cache node_modules and vendor directories
+#       - name: Cache node_modules and vendor folders
+#         uses: actions/cache@v4
+#         id: dependency-cache
+#         with:
+#           path: |
+#             node_modules
+#             */*/node_modules
+#             */*/*/node_modules
+#             vendor
+#             */*/vendor
+#             */*/*/vendor
+#             ~/.npm
+#             packages/bolt-foundry/npm/node_modules
+#           key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/package.json', 'package-lock.json', 'package.json') }}
+#           restore-keys: |
+#             ${{ runner.os }}-deps-
 
-          # Process each line in the environment section
-          while IFS= read -r line; do
-            # Skip empty lines, comments, or section headers
-            if [[ "$line" =~ ^[[:space:]]*$ || "$line" =~ ^[[:space:]]*# || "$line" =~ ^\[ ]]; then
-              continue
-            fi
+#       # Parse .replit env using pure bash
+#       - name: Parse .replit env and export to GitHub Actions
+#         run: |
+#           # Extract the [env] section from .replit
 
-            # Extract key and value
-            if [[ "$line" =~ ^([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*(.*) ]]; then
-              key="${BASH_REMATCH[1]}"
-              value="${BASH_REMATCH[2]}"
+#       # OPTIONAL – only save the cache if we actually changed something
+#       # (prevents unnecessary uploads on clean builds)
+#       - name: Save nix store cache
+#         if: steps.nix-cache.outputs.cache-hit != 'true'
+#         uses: actions/cache/save@v4
+#         with:
+#           path: ${{ steps.nix-cache.outputs.cache-primary-key-path }}
+#           key: ${{ steps.nix-cache.outputs.cache-primary-key }}
 
-              # Skip PATH variable as it's handled separately
-              if [[ "$key" == "PATH" ]]; then
-                continue
-              fi
+#           sed -n '/^\[env\]/,/^\[/p' .replit | grep -v '^\[' > .env_section
 
-              # Remove quotes if present
-              value="${value//\"/}"
+#           # Process each line in the environment section
+#           while IFS= read -r line; do
+#             # Skip empty lines, comments, or section headers
+#             if [[ "$line" =~ ^[[:space:]]*$ || "$line" =~ ^[[:space:]]*# || "$line" =~ ^\[ ]]; then
+#               continue
+#             fi
 
-              # Replace $REPL_HOME with $GITHUB_WORKSPACE
-              value="${value//\$REPL_HOME/$GITHUB_WORKSPACE}"
+#             # Extract key and value
+#             if [[ "$line" =~ ^([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*(.*) ]]; then
+#               key="${BASH_REMATCH[1]}"
+#               value="${BASH_REMATCH[2]}"
 
-              # Skip commented out variables
-              if [[ "$key" == \#* ]]; then
-                continue
-              fi
+#               # Skip PATH variable as it's handled separately
+#               if [[ "$key" == "PATH" ]]; then
+#                 continue
+#               fi
 
-              echo "$key=$value" >> $GITHUB_ENV
-              echo "Added environment variable: $key"
-            fi
-          done < .env_section
+#               # Remove quotes if present
+#               value="${value//\"/}"
 
-          # Clean up temporary file
-          rm .env_section
+#               # Replace $REPL_HOME with $GITHUB_WORKSPACE
+#               value="${value//\$REPL_HOME/$GITHUB_WORKSPACE}"
 
-      # Set secret-dependent environment variables
-      - name: Set environment variables
-        run: |
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
-          echo "ASSEMBLY_AI_KEY=${{ secrets.ASSEMBLY_AI_KEY }}" >> $GITHUB_ENV
-          echo "OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}" >> $GITHUB_ENV
-          echo "OPEN_ROUTER_API_KEY=${{ secrets.OPEN_ROUTER_API_KEY }}" >> $GITHUB_ENV
-          echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
-          echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
-          echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
+#               # Skip commented out variables
+#               if [[ "$key" == \#* ]]; then
+#                 continue
+#               fi
 
-      # Cache the nix development shell specifically
-      - name: Cache nix development shell
-        id: nix-shell-cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            /tmp/nix-shell-cache
-          key: ${{ runner.os }}-nix-shell-${{ hashFiles('shell.nix', 'default.nix', 'flake.nix', 'flake.lock') }}
+#               echo "$key=$value" >> $GITHUB_ENV
+#               echo "Added environment variable: $key"
+#             fi
+#           done < .env_section
 
-      # Pre-build the development shell if it's not in cache
-      - name: Pre-build nix development shell
-        if: steps.nix-shell-cache.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p /tmp/nix-shell-cache
-          # Build the dev shell into a profile
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile
+#           # Clean up temporary file
+#           rm .env_section
 
-      - name: Generate short git hash
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+#       # Set secret-dependent environment variables
+#       - name: Set environment variables
+#         run: |
+#           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+#           echo "ASSEMBLY_AI_KEY=${{ secrets.ASSEMBLY_AI_KEY }}" >> $GITHUB_ENV
+#           echo "OPEN_AI_API_KEY=${{ secrets.OPEN_AI_API_KEY }}" >> $GITHUB_ENV
+#           echo "OPEN_ROUTER_API_KEY=${{ secrets.OPEN_ROUTER_API_KEY }}" >> $GITHUB_ENV
+#           echo "POSTHOG_API_KEY=${{ secrets.POSTHOG_API_KEY }}" >> $GITHUB_ENV
+#           echo "INFRA_BIN_PATH=$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_ENV
+#           echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
 
-      - name: Update version in deno.jsonc and npm
-        run: |
-          cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            cd packages/bolt-foundry
-            # Update version in deno.json using jq instead of deno eval
-            ls -la
-            CURRENT_VERSION=\$(cat deno.json | jq -r '.version')
-            NEW_VERSION=\"\${CURRENT_VERSION}-dev.${sha_short}\"
-            jq --arg version \"\$NEW_VERSION\" '.version = \$version' ./deno.json > ./deno.json.tmp
-            mv ./deno.json.tmp ./deno.json
-            echo \"Updated deno.json version to \${CURRENT_VERSION}-dev.${sha_short}\"
-          "
-      - name: Build package
-        run: |
-          cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            deno run -A packages/bolt-foundry/bin/build.ts
-          "
+#       # Cache the nix development shell specifically
+#       - name: Cache nix development shell
+#         id: nix-shell-cache
+#         uses: actions/cache@v3
+#         with:
+#           path: |
+#             /tmp/nix-shell-cache
+#           key: ${{ runner.os }}-nix-shell-${{ hashFiles('shell.nix', 'default.nix', 'flake.nix', 'flake.lock') }}
 
-      - name: Publish to npm
-        run: |
-          cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            cd packages/bolt-foundry/npm
-            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-            npm publish --access public --tag dev
-          "
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+#       # Pre-build the development shell if it's not in cache
+#       - name: Pre-build nix development shell
+#         if: steps.nix-shell-cache.outputs.cache-hit != 'true'
+#         run: |
+#           mkdir -p /tmp/nix-shell-cache
+#           # Build the dev shell into a profile
+#           nix develop . --impure --profile /tmp/nix-shell-cache/profile
 
-      # - name: Publish package to jsr
-      #   run: |
-      #     cd $GITHUB_WORKSPACE
-      #     # Use the cached profile for the development shell
-      #     nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-      #       deno publish --allow-dirty
-      #     "
-      #   env:
-      #     DENO_AUTH_TOKENS: true
+#       - name: Generate short git hash
+#         id: vars
+#         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+#       - name: Update version in deno.jsonc and npm
+#         run: |
+#           cd $GITHUB_WORKSPACE
+#           # Use the cached profile for the development shell
+#           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+#             cd packages/bolt-foundry
+#             # Update version in deno.json using jq instead of deno eval
+#             ls -la
+#             CURRENT_VERSION=\$(cat deno.json | jq -r '.version')
+#             NEW_VERSION=\"\${CURRENT_VERSION}-dev.${sha_short}\"
+#             jq --arg version \"\$NEW_VERSION\" '.version = \$version' ./deno.json > ./deno.json.tmp
+#             mv ./deno.json.tmp ./deno.json
+#             echo \"Updated deno.json version to \${CURRENT_VERSION}-dev.${sha_short}\"
+#           "
+#       - name: Build package
+#         run: |
+#           cd $GITHUB_WORKSPACE
+#           # Use the cached profile for the development shell
+#           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+#             deno run -A packages/bolt-foundry/bin/build.ts
+#           "
+
+#       - name: Publish to npm
+#         run: |
+#           cd $GITHUB_WORKSPACE
+#           # Use the cached profile for the development shell
+#           nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+#             cd packages/bolt-foundry/npm
+#             echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+#             npm publish --access public --tag dev
+#           "
+#         env:
+#           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+#       # - name: Publish package to jsr
+#       #   run: |
+#       #     cd $GITHUB_WORKSPACE
+#       #     # Use the cached profile for the development shell
+#       #     nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+#       #       deno publish --allow-dirty
+#       #     "
+#       #   env:
+#       #     DENO_AUTH_TOKENS: true
