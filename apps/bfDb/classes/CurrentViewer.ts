@@ -1,4 +1,4 @@
-import { defineGqlNode } from "../graphql/builder/builder.ts";
+import { defineGqlNode, type GqlNodeSpec } from "../graphql/builder/builder.ts";
 import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 import { BfCurrentViewer } from "./BfCurrentViewer.ts";
 import { BfErrorInvalidEmail } from "./BfErrorInvalidEmail.ts";
@@ -67,18 +67,20 @@ function writeBothCookies(
 
 export class CurrentViewer extends GraphQLObjectBase {
   /* GraphQL ---------------------------------------------------------------- */
-  static override gqlSpec? = defineGqlNode((field, _rel, mutation) => {
-    field.id("id");
-    field.string("email");
+  static override gqlSpec?: GqlNodeSpec | null | undefined = defineGqlNode(
+    (field, _rel, mutation) => {
+      field.id("id");
+      field.string("email");
 
-    mutation.custom("loginWithEmailDev", {
-      args: (a) => a.nonNull.string("email"),
-      returns: (r) => r.object(CurrentViewer, "currentViewer"),
-      resolve: async (_src, { email }) => ({
-        currentViewer: await CurrentViewer.loginWithEmailDev(email),
-      }),
-    });
-  });
+      mutation.custom("loginWithEmailDev", {
+        args: (a) => a.nonNull.string("email"),
+        returns: (r) => r.object(CurrentViewer, "currentViewer"),
+        resolve: async (_src, { email }) => ({
+          currentViewer: await CurrentViewer.loginWithEmailDev(email),
+        }),
+      });
+    },
+  );
 
   /* ---------------------------------------------------------------------- */
   /*  Cookie helper used by loginWithEmailDev & tests                       */
@@ -158,11 +160,15 @@ export class CurrentViewer extends GraphQLObjectBase {
 /*  Concrete subclasses                                                       */
 /* -------------------------------------------------------------------------- */
 export class CurrentViewerLoggedIn extends CurrentViewer {
+  static override gqlSpec = this.defineGqlNode(() => {
+  });
   constructor(id: string, email?: string) {
     super(id, email);
   }
 }
 export class CurrentViewerLoggedOut extends CurrentViewer {
+
+  static override gqlSpec = this.defineGqlNode(() => {});
   constructor() {
     super("anonymous");
   }
