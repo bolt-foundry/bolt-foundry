@@ -1,11 +1,11 @@
-import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import { BfPerson } from "apps/bfDb/models/BfPerson.ts";
 import { BfOrganization } from "apps/bfDb/models/BfOrganization.ts";
 import { getLogger } from "packages/logger/logger.ts";
+import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 const logger = getLogger(import.meta);
 
 export async function bootstrapTestOrg() {
-  const cv = BfCurrentViewer
+  const cv = CurrentViewer
     .__DANGEROUS_USE_IN_SCRIPTS_ONLY__createLoggedIn(
       import.meta,
       "test",

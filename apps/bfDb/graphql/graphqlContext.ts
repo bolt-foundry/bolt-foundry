@@ -1,9 +1,9 @@
 import { getLogger } from "packages/logger/logger.ts";
 import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 import {
-  BfCurrentViewer,
+  CurrentViewer,
   type CurrentViewerTypenames,
-} from "apps/bfDb/classes/BfCurrentViewer.ts";
+} from "apps/bfDb/classes/CurrentViewer.ts";
 import type {
   BfNodeBase,
   BfNodeBaseProps,
@@ -51,21 +51,19 @@ export async function createContext(
   logger.debug("Creating new context");
   const cache = new Map<string, Map<BfGid, BfNodeBase>>();
   const responseHeaders = new Headers();
-  const currentViewer = BfCurrentViewer.createFromRequest(
+  const currentViewer = CurrentViewer.createFromRequest(
     import.meta,
     request,
     responseHeaders,
   );
   logger.debug("Current viewer created");
 
-  logger.debug("context Creating");
   const ctx: BfGraphqlContext = {
     [Symbol.dispose]() {
       logger.debug("Starting context disposal");
       cache.clear();
       logger.debug("Cache cleared");
-      currentViewer.clear();
-      logger.debug("Current viewer cleared");
+      // CurrentViewer has no explicit clear, but keep symmetry
       logger.debug("Context disposed successfully");
     },
 
@@ -76,7 +74,6 @@ export async function createContext(
     getRequestHeader(name: string) {
       return request.headers.get(name);
     },
-    // responseHeaders,
 
     getCvForGraphql() {
       return currentViewer.toGraphql();

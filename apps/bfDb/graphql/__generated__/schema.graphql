@@ -55,7 +55,7 @@ type JoinPayload {
 }
 
 type LoginWithEmailDevPayload {
-  currentViewer: BfNode!
+  currentViewer: CurrentViewer!
 }
 
 type Mutation {
@@ -65,4 +65,8 @@ type Mutation {
 
 type Query {
   currentViewer: CurrentViewer!
+}
+
+type Waitlist {
+  ok: Boolean
 }
