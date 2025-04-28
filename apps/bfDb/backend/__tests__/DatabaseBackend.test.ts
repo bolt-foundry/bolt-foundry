@@ -17,7 +17,7 @@ import {
   type Props,
 } from "apps/bfDb/bfDb.ts";
 import { type BfMetadataNode, BfNode } from "apps/bfDb/coreModels/BfNode.ts";
-import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
+import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 
 const logger = getLogger(import.meta);
 
@@ -333,7 +333,7 @@ Deno.test("bfDb - metadata handling", async () => {
     class TestMetadataNode extends BfNode<TestMetadataNodeProps> {
     }
 
-    const cv = BfCurrentViewer
+    const cv = CurrentViewer
       .__DANGEROUS_USE_IN_SCRIPTS_ONLY__createLoggedIn(
         import.meta,
         "test",

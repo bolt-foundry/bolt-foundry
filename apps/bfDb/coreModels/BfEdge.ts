@@ -10,8 +10,8 @@ import type {
   BfNodeBaseProps,
   BfNodeCache,
 } from "apps/bfDb/classes/BfNodeBase.ts";
-import type { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 
 const _logger = getLogger(import.meta);
 
@@ -33,7 +33,7 @@ export class BfEdge<TProps extends BfEdgeProps = BfEdgeProps>
   static generateEdgeMetadata<
     TMetadata extends BfMetadataEdgeBase,
   >(
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     sourceNode: BfNodeBase,
     targetNode: BfNodeBase,
     metadata?: Partial<TMetadata>,
@@ -57,7 +57,7 @@ export class BfEdge<TProps extends BfEdgeProps = BfEdgeProps>
     TSourceProps extends BfNodeBaseProps,
     TTargetProps extends BfNodeBaseProps,
   >(
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     sourceNode: BfNodeBase<TSourceProps>,
     targetNode: BfNodeBase<TTargetProps>,
     props: Partial<TEdgeProps> = {},
@@ -109,7 +109,7 @@ export class BfEdge<TProps extends BfEdgeProps = BfEdgeProps>
     TEdgeProps extends BfEdgeBaseProps,
     TSourceProps extends BfNodeBaseProps = BfNodeBaseProps,
   >(
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     SourceClass: TSourceClass,
     targetId: BfGid,
     propsToQuery: Partial<TSourceProps> = {},
@@ -163,7 +163,7 @@ export class BfEdge<TProps extends BfEdgeProps = BfEdgeProps>
     TEdgeProps extends BfEdgeBaseProps,
     TTargetProps extends BfNodeBaseProps = BfNodeBaseProps,
   >(
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     TargetClass: TTargetClass,
     sourceId: BfGid,
     propsToQuery: Partial<TTargetProps> = {},
@@ -216,7 +216,7 @@ export class BfEdge<TProps extends BfEdgeProps = BfEdgeProps>
   }
 
   constructor(
-    currentViewer: BfCurrentViewer,
+    currentViewer: CurrentViewer,
     props: TProps,
     metadata?: Partial<BfMetadataEdge>,
   ) {

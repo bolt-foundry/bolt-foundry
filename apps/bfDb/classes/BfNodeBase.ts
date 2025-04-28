@@ -6,7 +6,6 @@ import {
 } from "apps/bfDb/graphql/helpers.ts";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorNode.ts";
 import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
-import type { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import type { JSONValue } from "apps/bfDb/bfDb.ts";
 import { BfErrorNotImplemented } from "infra/BfError.ts";
@@ -16,6 +15,7 @@ import type {
 } from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { Connection, ConnectionArguments } from "graphql-relay";
 import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
+import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 
 const logger = getLogger(import.meta);
 
@@ -42,7 +42,7 @@ export type ConcreteBfNodeBaseCtor<
   TP extends BfNodeBaseProps,
   TM extends BfMetadataBase,
 > = new (
-  cv: BfCurrentViewer,
+  cv: CurrentViewer,
   props: TP,
   metadata?: Partial<TM>,
 ) => BfNodeBase<TP, TM>;
@@ -55,7 +55,7 @@ export abstract class BfNodeBase<
   protected _metadata: TMetadata;
   readonly relatedEdge: string = "apps/bfDb/classes/BfEdgeBase.ts";
 
-  readonly _currentViewer: BfCurrentViewer;
+  readonly _currentViewer: CurrentViewer;
 
   static generateSortValue() {
     return Date.now();
@@ -67,7 +67,7 @@ export abstract class BfNodeBase<
     TThis extends typeof BfNodeBase<TProps, TMetadata>,
   >(
     this: TThis,
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     metadata: Partial<TMetadata> = {},
   ): TMetadata {
     return generateNodeMetadata(cv, this.name, {
@@ -80,7 +80,7 @@ export abstract class BfNodeBase<
     TProps extends BfNodeBaseProps,
     TThis extends typeof BfNodeBase<TProps>,
   >(
-    _cv: BfCurrentViewer,
+    _cv: CurrentViewer,
     _id: BfGid,
     _cache?: BfNodeCache,
   ): Promise<InstanceType<TThis>> {
@@ -92,7 +92,7 @@ export abstract class BfNodeBase<
     TThis extends typeof BfNodeBase<TProps>,
   >(
     this: TThis,
-    _cv: BfCurrentViewer,
+    _cv: CurrentViewer,
     _metadata: Partial<BfMetadataBase>,
     _props: Partial<TProps>,
     _bfGids: Array<BfGid>,
@@ -106,7 +106,7 @@ export abstract class BfNodeBase<
     TThis extends typeof BfNodeBase<TProps>,
   >(
     this: TThis,
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     id: BfGid,
     cache?: BfNodeCache,
   ): Promise<InstanceType<TThis> | null> {
@@ -138,7 +138,7 @@ export abstract class BfNodeBase<
     TThis extends typeof BfNodeBase<TProps, TMetadata>,
   >(
     this: TThis,
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     props: TProps,
     metadata?: Partial<TMetadata>,
     cache?: BfNodeCache,
@@ -158,7 +158,7 @@ export abstract class BfNodeBase<
   }
 
   constructor(
-    currentViewer: BfCurrentViewer,
+    currentViewer: CurrentViewer,
     protected _props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
@@ -170,7 +170,7 @@ export abstract class BfNodeBase<
     this._currentViewer = currentViewer;
   }
 
-  get cv(): BfCurrentViewer {
+  get cv(): CurrentViewer {
     return this._currentViewer;
   }
 

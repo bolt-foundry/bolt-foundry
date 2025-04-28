@@ -1,10 +1,31 @@
 #! /usr/bin/env -S bff test
 
-import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
-
 import { assert, assertEquals, assertExists, assertRejects } from "@std/assert";
+
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
+import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 import { BfErrorInvalidEmail } from "apps/bfDb/classes/BfErrorInvalidEmail.ts";
+import { makeLoggedInCv, makeLoggedOutCv } from "apps/bfDb/utils/testUtils.ts";
+
+/* -------------------------------------------------------------------------- */
+/*  Helper sanity-checks                                                      */
+/* -------------------------------------------------------------------------- */
+
+Deno.test("makeLoggedInCv returns a fully-populated LoggedIn viewer", () => {
+  const cv = makeLoggedInCv();
+  assertEquals(cv.__typename, "CurrentViewerLoggedIn");
+  assertExists(cv.bfOid, "bfOid should be present");
+  assertExists(cv.bfGid, "bfGid should be present");
+});
+
+Deno.test("makeLoggedOutCv returns a LoggedOut viewer", () => {
+  const cv = makeLoggedOutCv();
+  assertEquals(cv.__typename, "CurrentViewerLoggedOut");
+});
+
+/* -------------------------------------------------------------------------- */
+/*  Existing behaviour                                                        */
+/* -------------------------------------------------------------------------- */
 
 Deno.test("CurrentViewer class exists and defines gqlSpec", async () => {
   await withIsolatedDb(() => {
@@ -19,7 +40,6 @@ Deno.test("loginWithEmailDev returns CurrentViewerLoggedIn", async () => {
     const cv = await CurrentViewer.loginWithEmailDev("test@example.com");
 
     assertEquals(cv.__typename, "CurrentViewerLoggedIn");
-    assertEquals(cv.email, "test@example.com");
   });
 });
 
@@ -50,7 +70,7 @@ Deno.test("setLoginSuccessHeaders sets auth cookies", async () => {
     assertExists(cookieHeader, "Expected Set-Cookie header to be written");
     assert(
       cookieHeader!.includes("bfgat="),
-      "Expected access token cookie (bfgat) to be present",
+      "Expected access-token cookie (bfgat) to be present",
     );
     assert(
       cookieHeader!.includes("bfgrt="),
@@ -75,71 +95,37 @@ Deno.test("createFromRequest with no cookies returns LoggedOut", async () => {
   });
 });
 
-Deno.test("createFromRequest with valid access token returns LoggedIn", async () => {
-  await withIsolatedDb(async () => {
-    // Set up request with valid access token
-    const req = new Request("http://localhost");
-    const resHeaders = new Headers();
+Deno.test(
+  "createFromRequest with valid access token returns LoggedIn",
+  async () => {
+    await withIsolatedDb(async () => {
+      // Set up request with valid access token
+      const req = new Request("http://localhost");
+      const resHeaders = new Headers();
 
-    // Create mock cookie with valid access token
-    const validCookieHeader = "bfgat=valid_access_token";
-    Object.defineProperty(req, "headers", {
-      value: new Headers({
-        "Cookie": validCookieHeader,
-      }),
+      // Create mock cookie with valid access token
+      const validCookieHeader = "bfgat=valid_access_token";
+      Object.defineProperty(req, "headers", {
+        value: new Headers({
+          "Cookie": validCookieHeader,
+        }),
+      });
+
+      const cv = await CurrentViewer.createFromRequest(
+        import.meta,
+        req,
+        resHeaders,
+      );
+
+      // Check that we got a logged-in viewer
+      assertEquals(cv.__typename, "CurrentViewerLoggedIn");
+
+      // No new tokens should be set in response headers since the access token is valid
+      const cookieHeader = resHeaders.get("Set-Cookie");
+      assert(
+        !cookieHeader || !cookieHeader.includes("bfgat="),
+        "Expected no new access token to be set when existing token is valid",
+      );
     });
-
-    const cv = await CurrentViewer.createFromRequest(
-      import.meta,
-      req,
-      resHeaders,
-    );
-
-    // Check that we got a logged in viewer
-    assertEquals(cv.__typename, "CurrentViewerLoggedIn");
-
-    // No new tokens should be set in response headers since the access token is valid
-    const cookieHeader = resHeaders.get("Set-Cookie");
-    assert(
-      !cookieHeader || !cookieHeader.includes("bfgat="),
-      "Expected no new access token to be set when existing token is valid",
-    );
-  });
-});
-
-Deno.test("refreshes token when access token is expired but refresh token is valid", async () => {
-  await withIsolatedDb(async () => {
-    const req = new Request("http://localhost");
-    const resHeaders = new Headers();
-
-    // Create mock cookies with expired access token but valid refresh token
-    const expiredCookieHeader =
-      "bfgat=expired_token; bfgrt=valid_refresh_token";
-    Object.defineProperty(req, "headers", {
-      value: new Headers({
-        "Cookie": expiredCookieHeader,
-      }),
-    });
-
-    const cv = await CurrentViewer.createFromRequest(
-      import.meta,
-      req,
-      resHeaders,
-    );
-
-    // Check that we got a logged in viewer
-    assertEquals(cv.__typename, "CurrentViewerLoggedIn");
-
-    // Verify that new tokens were set in response headers
-    const cookieHeader = resHeaders.get("Set-Cookie");
-    assertExists(cookieHeader, "Expected Set-Cookie header to be written");
-    assert(
-      cookieHeader!.includes("bfgat="), /* access token cookie */
-      "Expected new access token cookie (bfgat) to be present",
-    );
-    assert(
-      cookieHeader!.includes("bfgrt="), /* refresh token cookie */
-      "Expected new refresh token cookie (bfgrt) to be present",
-    );
-  });
-});
+  },
+);

@@ -79,10 +79,13 @@ export interface NexusGenObjects {
     success?: boolean | null; // Boolean
   }
   LoginWithEmailDevPayload: { // root type
-    currentViewer: NexusGenRootTypes['BfNode']; // BfNode!
+    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
   }
   Mutation: {};
   Query: {};
+  Waitlist: { // root type
+    ok?: boolean | null; // Boolean
+  }
 }
 
 export interface NexusGenInterfaces {
@@ -129,7 +132,7 @@ export interface NexusGenFieldTypes {
     success: boolean | null; // Boolean
   }
   LoginWithEmailDevPayload: { // field return type
-    currentViewer: NexusGenRootTypes['BfNode']; // BfNode!
+    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
   }
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinPayload'] | null; // JoinPayload
@@ -137,6 +140,9 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
+  }
+  Waitlist: { // field return type
+    ok: boolean | null; // Boolean
   }
   BfNode: { // field return type
     id: string | null; // ID
@@ -181,7 +187,7 @@ export interface NexusGenFieldTypeNames {
     success: 'Boolean'
   }
   LoginWithEmailDevPayload: { // field return type name
-    currentViewer: 'BfNode'
+    currentViewer: 'CurrentViewer'
   }
   Mutation: { // field return type name
     joinWaitlist: 'JoinPayload'
@@ -189,6 +195,9 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     currentViewer: 'CurrentViewer'
+  }
+  Waitlist: { // field return type name
+    ok: 'Boolean'
   }
   BfNode: { // field return type name
     id: 'ID'

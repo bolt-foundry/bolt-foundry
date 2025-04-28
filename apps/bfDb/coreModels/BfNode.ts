@@ -5,7 +5,6 @@ import {
   type BfNodeCache,
   type ConcreteBfNodeBaseCtor,
 } from "apps/bfDb/classes/BfNodeBase.ts";
-import type { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 import { BfErrorNotImplemented } from "infra/BfError.ts";
 import { getLogger } from "packages/logger/logger.ts";
@@ -14,6 +13,7 @@ import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorNode.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import type { BfEdgeBaseProps } from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
+import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 
 const logger = getLogger(import.meta);
 
@@ -63,7 +63,7 @@ export class BfNode<
     TThis extends typeof BfNodeBase<TProps, TMetadata>,
   >(
     this: TThis,
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     metadata?: Partial<TMetadata>,
   ): TMetadata {
     const bfGid = toBfGid(generateUUID());
@@ -88,7 +88,7 @@ export class BfNode<
     TThis extends typeof BfNodeBase<TProps>,
   >(
     this: TThis,
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     id: BfGid,
     cache?: BfNodeCache,
   ) {
@@ -119,7 +119,7 @@ export class BfNode<
     TMetadata extends BfMetadataNode = BfMetadataNode,
   >(
     this: TThis,
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     metadata: Partial<TMetadata>,
     props?: Partial<TProps>,
     bfGids?: Array<BfGid>,
@@ -155,7 +155,7 @@ export class BfNode<
   }
 
   constructor(
-    currentViewer: BfCurrentViewer,
+    currentViewer: CurrentViewer,
     _props: TProps,
     metadata?: Partial<TMetadata>,
   ) {

@@ -2,16 +2,16 @@
 
 import { assertEquals, assertExists } from "@std/assert";
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
-import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import { storage } from "apps/bfDb/storage/storage.ts";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { testBfNodeBase } from "apps/bfDb/classes/__tests__/BfNodeBaseTest.ts";
+import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 
 testBfNodeBase(BfNode);
 
 Deno.test("BfNode persists via storage adapter", async () => {
   await withIsolatedDb(async () => {
-    const cv = BfCurrentViewer.__DANGEROUS_USE_IN_SCRIPTS_ONLY__createLoggedIn(
+    const cv = CurrentViewer.__DANGEROUS_USE_IN_SCRIPTS_ONLY__createLoggedIn(
       import.meta,
       "test",
       "test",
