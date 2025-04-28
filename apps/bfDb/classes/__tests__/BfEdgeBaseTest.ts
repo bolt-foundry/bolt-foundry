@@ -3,12 +3,12 @@ import type {
   BfEdgeBase,
   BfEdgeBaseProps,
 } from "apps/bfDb/classes/BfEdgeBase.ts";
-import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
 import { AdapterRegistry } from "apps/bfDb/storage/AdapterRegistry.ts";
 import { InMemoryAdapter } from "apps/bfDb/storage/InMemoryAdapter.ts";
+import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 AdapterRegistry.register(new InMemoryAdapter());
 
 export function testBfEdgeBase<
@@ -19,7 +19,7 @@ export function testBfEdgeBase<
     // Use withIsolatedDb to ensure database connections are properly closed
     await withIsolatedDb(async () => {
       // Mock current viewer
-      const mockCv = BfCurrentViewer
+      const mockCv = CurrentViewer
         .__DANGEROUS_USE_IN_SCRIPTS_ONLY__createLoggedIn(
           import.meta,
           "test",

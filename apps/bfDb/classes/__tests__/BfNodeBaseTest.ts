@@ -1,5 +1,4 @@
 import { assertEquals, assertExists, assertRejects } from "@std/assert";
-import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import type { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorNode.ts";
@@ -11,13 +10,14 @@ const _logger = getLogger(import.meta);
 
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
 import { toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 
 export function testBfNodeBase(BfNodeClass: typeof BfNodeBase) {
   Deno.test(`BfNodeBase test suite: ${BfNodeClass.name}`, async (t) => {
     // Use withIsolatedDb to ensure database connections are properly closed
     await withIsolatedDb(async () => {
       // Mock current viewer
-      const mockCv = BfCurrentViewer
+      const mockCv = CurrentViewer
         .__DANGEROUS_USE_IN_SCRIPTS_ONLY__createLoggedIn(
           import.meta,
           "test",

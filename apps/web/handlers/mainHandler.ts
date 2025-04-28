@@ -1,8 +1,8 @@
 import { getLogger } from "packages/logger/logger.ts";
-import { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import { handleMatchedRoute } from "apps/web/handlers/requestHandler.ts";
 import { serveStaticFiles } from "apps/web/handlers/staticHandler.ts";
 import type { Handler } from "apps/web/web.tsx";
+import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 
 const logger = getLogger(import.meta);
 
@@ -19,8 +19,8 @@ export async function handleRequest(
   const incomingUrl = new URL(req.url);
   const timer = performance.now();
   const resHeaders = new Headers();
-  // Create current viewer
-  using cv = BfCurrentViewer.createFromRequest(import.meta, req, resHeaders);
+  // todo: this might be a good place for "using" so we don't leak cvs.
+  const cv = CurrentViewer.createFromRequest(import.meta, req, resHeaders);
 
   const staticPrefix = "/static";
   if (incomingUrl.pathname.startsWith(staticPrefix)) {

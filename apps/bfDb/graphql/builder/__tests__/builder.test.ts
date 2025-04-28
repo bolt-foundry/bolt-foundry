@@ -14,6 +14,8 @@ import { makeSchema } from "nexus";
 import { printSchema } from "graphql";
 import { BfNodeBase } from "apps/bfDb/classes/BfNodeBase.ts";
 import { getLogger } from "packages/logger/logger.ts";
+import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
+import { makeLoggedInCv } from "apps/bfDb/utils/testUtils.ts";
 
 const logger = getLogger(import.meta);
 /* -------------------------------------------------------------------------- */
@@ -363,4 +365,35 @@ Deno.test("returns.nonNull.<scalar>() flips nullable → non-null", () => {
   const sdl = sdlOfTypes([Dummy]);
 
   assertStringIncludes(sdl, "success: Boolean!");
+});
+
+Deno.test("custom mutation payload uses concrete node, not BfNode", () => {
+  const testCv = makeLoggedInCv();
+  class DummyViewer extends BfNode<
+    { email: string }
+  > {
+    static override gqlSpec = defineGqlNode((_f, _rel, mutation) => {
+      mutation.custom("loginDev", {
+        args: (a) => a.nonNull.string("email"),
+        returns: (r) => r.object(DummyViewer, "currentViewer"),
+        resolve: (_src, { email }) => ({
+          currentViewer: new DummyViewer(testCv, { email }),
+        }),
+      });
+    });
+  }
+  const types = specsToNexusDefs({
+    BfNode: BfNode.gqlSpec!,
+    DummyViewer: DummyViewer.gqlSpec,
+  });
+  const schema = makeSchema({ types });
+  const sdl = printSchema(schema);
+
+  // Payload type should read `currentViewer: DummyViewer!`
+  // The broken implementation prints `BfNode!`
+  assertStringIncludes(
+    sdl,
+    "currentViewer: DummyViewer!",
+    "Expected concrete node type in payload, got fallback BfNode",
+  );
 });

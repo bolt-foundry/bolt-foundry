@@ -5,10 +5,10 @@ import {
   type BfNodeBaseProps,
   type BfNodeCache,
 } from "apps/bfDb/classes/BfNodeBase.ts";
-import type { BfCurrentViewer } from "apps/bfDb/classes/BfCurrentViewer.ts";
 import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { BfErrorNotImplemented } from "infra/BfError.ts";
+import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 
 const _logger = getLogger(import.meta);
 
@@ -41,7 +41,7 @@ export class BfEdgeBase<
    * @returns Edge metadata with source and target information
    */
   static generateEdgeMetadata<TMetadata extends BfMetadataEdgeBase>(
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     sourceNode: BfNodeBase,
     targetNode: BfNodeBase,
     metadata: Partial<TMetadata> = {},
@@ -58,7 +58,7 @@ export class BfEdgeBase<
    * @param metadata - Optional partial metadata for the edge including source and target IDs
    */
   constructor(
-    currentViewer: BfCurrentViewer,
+    currentViewer: CurrentViewer,
     props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
@@ -77,7 +77,7 @@ export class BfEdgeBase<
    * @returns A new BfEdgeBase instance representing the edge
    */
   static async createBetweenNodes(
-    cv: BfCurrentViewer,
+    cv: CurrentViewer,
     sourceNode: BfNodeBase,
     targetNode: BfNodeBase,
     edgeProps: Partial<BfEdgeBaseProps> = {},
@@ -113,7 +113,7 @@ export class BfEdgeBase<
     TEdgeProps extends BfEdgeBaseProps,
     TSourceProps extends BfNodeBaseProps,
   >(
-    _cv: BfCurrentViewer,
+    _cv: CurrentViewer,
     _SourceClass: TSourceClass,
     _targetId: BfGid,
     _propsToQuery: Partial<TSourceProps> = {},
@@ -138,7 +138,7 @@ export class BfEdgeBase<
     TEdgeProps extends BfEdgeBaseProps,
     TTargetClass extends typeof BfNodeBase<TTargetProps>,
   >(
-    _cv: BfCurrentViewer,
+    _cv: CurrentViewer,
     _TargetClass: TTargetClass,
     _sourceId: BfGid,
     _propsToQuery: Partial<TTargetProps>,
