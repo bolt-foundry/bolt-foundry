@@ -158,13 +158,11 @@ export class CurrentViewer extends GraphQLObjectBase {
 /*  Concrete subclasses                                                       */
 /* -------------------------------------------------------------------------- */
 export class CurrentViewerLoggedIn extends CurrentViewer {
-  static override gqlSpec = undefined;
   constructor(id: string, email?: string) {
     super(id, email);
   }
 }
 export class CurrentViewerLoggedOut extends CurrentViewer {
-  static override gqlSpec = undefined;
   constructor() {
     super("anonymous");
   }
