@@ -343,16 +343,17 @@ export function specsToNexusDefs(
   for (const [nodeName, spec] of Object.entries(specs)) {
     const isInterface = interfaceNames.has(nodeName);
 
-    /* ── Pure-mutation nodes (no fields, no relations) ────────────────
-       Don't create an empty object type – it would be invalid SDL.
-       We still add the mutation fields so the class works as a root
-       "namespace" for mutations only. */
+    /* ── Pure-mutation "namespace" nodes (no fields, no relations) ── */
     const hasFields = Object.keys(spec.field).length > 0;
     const hasRelations = Object.keys(spec.relation).length > 0;
+    const isOwner = spec.owner ? spec.owner === nodeName : true;
+
     if (!isInterface && !hasFields && !hasRelations) {
-      allDefs.push(
-        ...buildMutationFields(nodeName, spec.mutation, emittedPayloads),
-      );
+      if (isOwner) {
+        allDefs.push(
+          ...buildMutationFields(nodeName, spec.mutation, emittedPayloads),
+        );
+      }
       continue; // ⟵ skip objectType()
     }
 
@@ -395,7 +396,10 @@ export function specsToNexusDefs(
 
     allDefs.push(typeDef);
 
-    if (!isInterface || (!spec.owner || spec.owner === nodeName)) {
+    /* Emit mutations **only** for the class that created the spec         *
+     * (spec.owner).  This prevents children that merely *inherit* an      *
+     * interface spec from re-exporting its mutations.                     */
+    if (isOwner) {
       allDefs.push(
         ...buildMutationFields(nodeName, spec.mutation, emittedPayloads),
       );
