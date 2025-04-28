@@ -21,6 +21,7 @@ const allowedEnvironmentVariables = [
   "ENABLE_DEBUG_LOGGER",
   "FORCE_COLOR",
   "FORCE_DB_BACKEND",
+  "JWT_SECRET",
   "LOG_LEVEL",
   "NODE_ENV",
   "NODE_PG_FORCE_NATIVE",

@@ -12,6 +12,7 @@ jobs:
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
       WAITLIST_API_KEY: ${{ secrets.WAITLIST_API_KEY }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
       INFRA_BIN_PATH: ${{ github.workspace }}/infra/bin
 
     steps:
