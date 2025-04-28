@@ -70,14 +70,6 @@ export interface NexusGenObjects {
     email?: string | null; // String
     id?: string | null; // ID
   }
-  CurrentViewerLoggedIn: { // root type
-    email?: string | null; // String
-    id?: string | null; // ID
-  }
-  CurrentViewerLoggedOut: { // root type
-    email?: string | null; // String
-    id?: string | null; // ID
-  }
   JoinPayload: { // root type
     message?: string | null; // String
     success?: boolean | null; // Boolean
@@ -123,14 +115,6 @@ export interface NexusGenFieldTypes {
     email: string | null; // String
     id: string | null; // ID
   }
-  CurrentViewerLoggedIn: { // field return type
-    email: string | null; // String
-    id: string | null; // ID
-  }
-  CurrentViewerLoggedOut: { // field return type
-    email: string | null; // String
-    id: string | null; // ID
-  }
   JoinPayload: { // field return type
     message: string | null; // String
     success: boolean | null; // Boolean
@@ -141,8 +125,6 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinPayload'] | null; // JoinPayload
     loginWithEmailDevCurrentViewer: NexusGenRootTypes['LoginWithEmailDevPayload'] | null; // LoginWithEmailDevPayload
-    loginWithEmailDevCurrentViewerLoggedIn: NexusGenRootTypes['LoginWithEmailDevPayload'] | null; // LoginWithEmailDevPayload
-    loginWithEmailDevCurrentViewerLoggedOut: NexusGenRootTypes['LoginWithEmailDevPayload'] | null; // LoginWithEmailDevPayload
   }
   Query: { // field return type
     currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
@@ -177,14 +159,6 @@ export interface NexusGenFieldTypeNames {
     email: 'String'
     id: 'ID'
   }
-  CurrentViewerLoggedIn: { // field return type name
-    email: 'String'
-    id: 'ID'
-  }
-  CurrentViewerLoggedOut: { // field return type name
-    email: 'String'
-    id: 'ID'
-  }
   JoinPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
@@ -195,8 +169,6 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     joinWaitlist: 'JoinPayload'
     loginWithEmailDevCurrentViewer: 'LoginWithEmailDevPayload'
-    loginWithEmailDevCurrentViewerLoggedIn: 'LoginWithEmailDevPayload'
-    loginWithEmailDevCurrentViewerLoggedOut: 'LoginWithEmailDevPayload'
   }
   Query: { // field return type name
     currentViewer: 'CurrentViewer'
@@ -217,12 +189,6 @@ export interface NexusGenArgTypes {
       name?: string | null; // String
     }
     loginWithEmailDevCurrentViewer: { // args
-      email: string; // String!
-    }
-    loginWithEmailDevCurrentViewerLoggedIn: { // args
-      email: string; // String!
-    }
-    loginWithEmailDevCurrentViewerLoggedOut: { // args
       email: string; // String!
     }
   }

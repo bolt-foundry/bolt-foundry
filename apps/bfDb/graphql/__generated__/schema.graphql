@@ -37,16 +37,6 @@ type CurrentViewer {
   id: ID
 }
 
-type CurrentViewerLoggedIn {
-  email: String
-  id: ID
-}
-
-type CurrentViewerLoggedOut {
-  email: String
-  id: ID
-}
-
 scalar JSON
 
 type JoinPayload {
@@ -61,8 +51,6 @@ type LoginWithEmailDevPayload {
 type Mutation {
   joinWaitlist(company: String, email: String, name: String): JoinPayload
   loginWithEmailDevCurrentViewer(email: String!): LoginWithEmailDevPayload
-  loginWithEmailDevCurrentViewerLoggedIn(email: String!): LoginWithEmailDevPayload
-  loginWithEmailDevCurrentViewerLoggedOut(email: String!): LoginWithEmailDevPayload
 }
 
 type Query {
