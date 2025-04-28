@@ -167,7 +167,6 @@ export class CurrentViewerLoggedIn extends CurrentViewer {
   }
 }
 export class CurrentViewerLoggedOut extends CurrentViewer {
-
   static override gqlSpec = this.defineGqlNode(() => {});
   constructor() {
     super("anonymous");

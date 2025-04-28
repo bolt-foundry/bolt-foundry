@@ -427,11 +427,19 @@ function makeReturnsBuilder(
     id: scalarFactory("id"),
     json: scalarFactory("json"),
     object: (cls, key) => {
-      const fn = () => cls;
+      const fn = () => cls; // keeps the expected thunk
+      // 🆕  graft the RelationSpec bits onto the function
+      Object.assign(fn, {
+        target: () => cls,
+        many: false,
+        direction: Direction.OUT,
+      });
+
       Object.defineProperty(fn, "toString", {
         value: () => "() => " + cls.name,
         enumerable: false,
       });
+
       const out: OutputSpec = { [key]: fn };
       Object.assign(bucket, out);
       attachNonNull(out);
@@ -439,12 +447,18 @@ function makeReturnsBuilder(
     },
     collection: (cls, key) => {
       const fn = () => cls;
+      Object.assign(fn, {
+        target: () => cls,
+        many: true,
+        direction: Direction.OUT,
+      });
+
       Object.defineProperty(fn, "toString", {
         value: () => "() => " + cls.name,
         enumerable: false,
       });
-      const entry = { connection: true, node: fn };
-      const out: OutputSpec = { [key]: entry };
+
+      const out: OutputSpec = { [key]: fn };
       Object.assign(bucket, out);
       attachNonNull(out);
       return out as WithNonNull<OutputSpec>;
@@ -589,6 +603,12 @@ export function defineGqlNode(
   const mutationBuilder = buildMutation();
 
   def(buildField(fields), buildRelation(relations), mutationBuilder);
+
+  // If the node has absolutely no fields/relations it’s acting only as a
+  // mutation namespace.  Add a dummy boolean so Nexus still emits the type.
+  if (Object.keys(fields).length === 0 && Object.keys(relations).length === 0) {
+    fields.ok = { type: "boolean", nullable: true } as const;
+  }
 
   return {
     field: fields,
