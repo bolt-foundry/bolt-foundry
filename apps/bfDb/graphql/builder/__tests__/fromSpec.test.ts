@@ -146,40 +146,9 @@ Deno.test("fromSpec should preserve implements chain", () => {
   assertStringIncludes(sdl, "type SubNode implements BaseNode");
 });
 
-class Viewer extends GraphQLObjectBase {
-  static override gqlSpec = this.defineGqlNode((_f, _rel, mutation) => {
-    mutation.custom("loginWithEmailDev", {
-      args: (a) => a.nonNull.string("email"),
-      returns: (r) => r.string("ok"),
-      resolve: () => ({ ok: "✔" }),
-    });
-  });
-}
-
-/** Subclass has NO gqlSpec override – inherits parent’s */
-class ViewerChild extends Viewer {}
-
 /* -------------------------------------------------------------------------- */
 /*  Test – makeSchema must succeed once                                       */
 /* -------------------------------------------------------------------------- */
-
-Deno.test("shared custom mutation payload emitted only once", () => {
-  const nexusTypes = specsToNexusDefs({
-    Viewer: Viewer.gqlSpec!,
-    ViewerChild: ViewerChild.gqlSpec!,
-  });
-
-  // makeSchema used to throw here; now it should compile cleanly
-  let threw = false;
-  try {
-    const schema = makeSchema({ types: nexusTypes });
-    void printSchema(schema); // extra paranoia: print SDL to make sure build finished
-  } catch (_err) {
-    threw = true;
-  }
-
-  assert(!threw, "Duplicate payload type should not be generated");
-});
 
 class DummyTarget extends GraphQLObjectBase {
   static override gqlSpec = defineGqlNode((field) => {
@@ -266,4 +235,57 @@ Deno.test("object field resolver returns the target instance", async () => {
     {} as GraphQLResolveInfo, // info
   );
   assert(result instanceof DummyTarget, "Resolver did not return DummyTarget");
+});
+
+class Viewer extends GraphQLObjectBase {
+  static override gqlSpec = this.defineGqlNode((_f, _r, m) => {
+    m.custom("ping", {
+      args: () => ({}),
+      returns: (r) => r.string("pong"),
+      resolve: () => ({ pong: "🏓" }),
+    });
+  });
+}
+
+class ViewerChild extends Viewer {} // no gqlSpec override
+
+/* ----------------------------------------------------------------------- */
+Deno.test("Only the owner class exposes its custom mutation", () => {
+  const nexusTypes = specsToNexusDefs({
+    Viewer: Viewer.gqlSpec!,
+    ViewerChild: ViewerChild.gqlSpec!,
+  });
+
+  const sdl = printSchema(makeSchema({ types: nexusTypes }));
+
+  /* parent OK … */
+  assertStringIncludes(
+    sdl,
+    "pingViewer",
+    "Parent mutation field is missing",
+  );
+
+  /* …child must NOT inherit it */
+  assert(
+    !sdl.includes("pingViewerChild"),
+    "Subclass should not expose parent’s mutation",
+  );
+});
+
+Deno.test("shared custom mutation payload emitted only once", () => {
+  const nexusTypes = specsToNexusDefs({
+    Viewer: Viewer.gqlSpec!,
+    ViewerChild: ViewerChild.gqlSpec!,
+  });
+
+  // makeSchema used to throw here; now it should compile cleanly
+  let threw = false;
+  try {
+    const schema = makeSchema({ types: nexusTypes });
+    void printSchema(schema); // extra paranoia: print SDL to make sure build finished
+  } catch (_err) {
+    threw = true;
+  }
+
+  assert(!threw, "Duplicate payload type should not be generated");
 });
