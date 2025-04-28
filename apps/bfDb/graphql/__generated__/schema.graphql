@@ -32,17 +32,17 @@ type BfPerson implements BfNode & BfNodeBase {
   name: String
 }
 
-type CurrentViewer {
+interface CurrentViewer {
   email: String
   id: ID
 }
 
-type CurrentViewerLoggedIn {
+type CurrentViewerLoggedIn implements CurrentViewer {
   email: String
   id: ID
 }
 
-type CurrentViewerLoggedOut {
+type CurrentViewerLoggedOut implements CurrentViewer {
   email: String
   id: ID
 }
@@ -61,8 +61,6 @@ type LoginWithEmailDevPayload {
 type Mutation {
   joinWaitlist(company: String, email: String, name: String): JoinPayload
   loginWithEmailDevCurrentViewer(email: String!): LoginWithEmailDevPayload
-  loginWithEmailDevCurrentViewerLoggedIn(email: String!): LoginWithEmailDevPayload
-  loginWithEmailDevCurrentViewerLoggedOut(email: String!): LoginWithEmailDevPayload
 }
 
 type Query {
