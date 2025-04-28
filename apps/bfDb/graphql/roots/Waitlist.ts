@@ -18,8 +18,6 @@ export class Waitlist extends GraphQLObjectBase {
         r.string("message");
       },
       async resolve(_src, { email, name, company }) {
-        const apiKey = getConfigurationVariable("WAITLIST_API_KEY");
-        logger.info("add-to-waitlist", { email, name, company, apiKey });
         try {
           const apiKey = getConfigurationVariable("WAITLIST_API_KEY");
           if (!apiKey) {

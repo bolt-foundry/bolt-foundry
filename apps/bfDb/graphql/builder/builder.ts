@@ -140,29 +140,16 @@ export type ArgBuilder<T = AnyArgs> = {
   };
 };
 
-// export interface ArgBuilder {
-//   id(name: string): ArgBuilder;
-//   string(name: string): ArgBuilder;
-//   int(name: string): ArgBuilder;
-//   float(name: string): ArgBuilder;
-//   boolean(name: string): ArgBuilder;
-//   json(name: string): ArgBuilder;
-//   readonly nonNull: ArgBuilder;
-// }
-
-type FieldArgsOrOpts<Res extends FieldSpec["resolve"] | undefined> =
-  | Res // legacy (name, resolve)
-  | Record<string, ArgSpec> // legacy (name, args, resolve?)
-  | {
-    args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
-    resolve?: FieldSpec["resolve"];
-  };
+type FieldArgsOrOpts = {
+  args?: ((a: ArgBuilder) => void) | Record<string, ArgSpec>;
+  resolve?: FieldSpec["resolve"];
+};
 
 export type AddFieldFn<Name extends string> = <
   Res extends FieldSpec["resolve"] | undefined = undefined,
 >(
   name: Name,
-  argsOrOpts?: FieldArgsOrOpts<Res>,
+  argsOrOpts?: FieldArgsOrOpts,
   maybeRes?: Res,
 ) => FieldBuilder;
 
@@ -209,7 +196,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
   }
 
   function parseArgsAndResolve(
-    argOrOpts?: FieldArgsOrOpts<Res>,
+    argOrOpts?: FieldArgsOrOpts,
     maybeRes?: Res,
   ): { args?: Record<string, ArgSpec>; resolve?: Res } {
     let args: Record<string, ArgSpec> | undefined;
@@ -262,7 +249,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
       target,
       nullable,
       args,
-      resolve: opts.resolve, // now typed as Res
+      resolve: opts.resolve,
     };
     return api;
   };
@@ -274,7 +261,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
     float: add("float"),
     boolean: add("boolean"),
     json: add("json"),
-    object: addObject(), // nullable by default
+    object: addObject(),
     nonNull: {
       id: add("id", false),
       string: add("string", false),
