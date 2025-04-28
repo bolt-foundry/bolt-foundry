@@ -51,7 +51,7 @@ export class GraphQLObjectBase {
    */
   static defineGqlNode(
     def: Parameters<typeof _baseDefineGqlNode>[0] | null,
-  ): GqlNodeSpec | null {
+  ): GqlNodeSpec | null | undefined {
     // 0) explicit opt-out
     if (def === null) return (this.gqlSpec = null);
 
