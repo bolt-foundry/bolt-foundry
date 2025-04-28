@@ -8,7 +8,7 @@ evaluation and observability pipeline that enables continuous improvement._
 ## Next step
 
 0.1 is in progress. Randall is currently implementing it by doing the plan
-outlined in [login-product-plan](../apps/boltFoundry/docs/login-project-plan.md)
+outlined in [apps/boltFoundry/login/product-plan](../apps/boltFoundry/docs/login/project-plan.md)
 
 ## Milestones
 
