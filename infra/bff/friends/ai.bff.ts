@@ -286,6 +286,8 @@ I need you to analyze the following git diff and create:
 2. A detailed commit message that explains what changed and why
 3. A brief test plan section
 
+If there are automated tests, include the command for running them in the test plan. If they have a shebang at the top, include the path with a "./".
+
 Format your response EXACTLY like this, with no extra text:
 TITLE: <commit title>
 
