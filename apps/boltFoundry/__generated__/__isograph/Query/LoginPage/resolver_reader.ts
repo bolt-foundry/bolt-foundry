@@ -20,6 +20,13 @@ const readerAst: ReaderAst<Query__LoginPage__param> = [
     isUpdatable: false,
     selections: [
       {
+        kind: "Scalar",
+        fieldName: "__typename",
+        alias: null,
+        arguments: null,
+        isUpdatable: false,
+      },
+      {
         kind: "Linked",
         fieldName: "asCurrentViewerLoggedIn",
         alias: null,

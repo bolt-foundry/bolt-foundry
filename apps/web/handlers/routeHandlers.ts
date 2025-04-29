@@ -11,6 +11,9 @@ import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { getIsographHeaderComponent } from "apps/boltFoundry/components/IsographHeader.tsx";
 import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
 import { AssemblyAI } from "assemblyai";
+import {
+  clearAuthCookies,
+} from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
 
 const logger = getLogger(import.meta);
 
@@ -151,15 +154,8 @@ export async function handleAssemblyAI(req: Request) {
 
 export function handleLogout() {
   const headers = new Headers();
+  clearAuthCookies(headers);
   headers.set("location", "/");
-  headers.set(
-    "set-cookie",
-    "bfgat=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT",
-  );
-  headers.set(
-    "set-cookie",
-    "bfgrt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT",
-  );
   return new Response(null, {
     status: 302,
     headers,
