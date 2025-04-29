@@ -2,6 +2,7 @@ import { getLogger } from "packages/logger/logger.ts";
 import { type BfGid, toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 import {
   CurrentViewer,
+  type CurrentViewerLoggedIn,
   type CurrentViewerTypenames,
 } from "apps/bfDb/classes/CurrentViewer.ts";
 import type {
@@ -9,6 +10,7 @@ import type {
   BfNodeBaseProps,
 } from "apps/bfDb/classes/BfNodeBase.ts";
 import type { BfMetadataNode, BfNode } from "apps/bfDb/coreModels/BfNode.ts";
+import { setLoginSuccessHeaders } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
 
 const logger = getLogger(import.meta);
 
@@ -18,6 +20,7 @@ export type BfGraphqlContext = {
     __typename: CurrentViewerTypenames;
     id: string;
   };
+  loginWithEmailDev(email: string): Promise<CurrentViewerLoggedIn>;
   createTargetNode<
     TProps extends BfNodeBaseProps,
     TBfClass extends typeof BfNode<TProps>,
@@ -51,7 +54,7 @@ export async function createContext(
   logger.debug("Creating new context");
   const cache = new Map<string, Map<BfGid, BfNodeBase>>();
   const responseHeaders = new Headers();
-  const currentViewer = CurrentViewer.createFromRequest(
+  let currentViewer = await CurrentViewer.createFromRequest(
     import.meta,
     request,
     responseHeaders,
@@ -63,7 +66,6 @@ export async function createContext(
       logger.debug("Starting context disposal");
       cache.clear();
       logger.debug("Cache cleared");
-      // CurrentViewer has no explicit clear, but keep symmetry
       logger.debug("Context disposed successfully");
     },
 
@@ -77,6 +79,19 @@ export async function createContext(
 
     getCvForGraphql() {
       return currentViewer.toGraphql();
+    },
+
+    async loginWithEmailDev(email) {
+      const viewer = await CurrentViewer.loginWithEmailDev(email);
+      // issue cookies
+      await setLoginSuccessHeaders(
+        responseHeaders,
+        viewer.personBfGid,
+        viewer.orgBfOid,
+        parseInt(viewer.id, 10) || 1,
+      );
+      currentViewer = viewer; // swap in new viewer for rest of request
+      return viewer;
     },
 
     async createTargetNode<
@@ -125,5 +140,5 @@ export async function createContext(
     },
   };
 
-  return await Promise.resolve(ctx);
+  return ctx;
 }
