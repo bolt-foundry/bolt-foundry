@@ -55,3 +55,56 @@ Deno.test("User can sign in with email", async () => {
     await teardownE2ETest(ctx);
   }
 });
+
+Deno.test("Session persists across page reloads", async () => {
+  const ctx = await setupE2ETest();
+
+  try {
+    /* 1️⃣ Regular email sign-in (re-uses the dev flow) */
+    await navigateTo(ctx, "/login");
+    await ctx.page.type(
+      'input[placeholder="you@example.com"]',
+      "test@example.com",
+    );
+    await ctx.page.click("::-p-text(Continue)");
+    await ctx.page.waitForSelector("::-p-text(logged in as)");
+
+    /* 2️⃣ Hard refresh */
+    await ctx.page.reload({ waitUntil: "networkidle0" });
+
+    /* 3️⃣ Should still display LoggedIn */
+    const div = await ctx.page.waitForSelector("::-p-text(logged in as)");
+    assertExists(div);
+    const text = await div.evaluate((el) => el.textContent) ?? "";
+    assertStringIncludes(text, "CurrentViewerLoggedIn");
+  } finally {
+    await teardownE2ETest(ctx);
+  }
+});
+
+Deno.test("Visiting /login while logged-in redirects to /", async () => {
+  const ctx = await setupE2ETest();
+  try {
+    /* 1️⃣ Log-in via existing happy-path helper */
+    await navigateTo(ctx, "/login");
+    await ctx.page.type(
+      'input[placeholder="you@example.com"]',
+      "test@example.com",
+    );
+    await ctx.page.click("::-p-text(Continue)");
+    await ctx.page.waitForSelector("::-p-text(logged in as)");
+
+    /* 2️⃣ Attempt to load /login again */
+    await navigateTo(ctx, "/login");
+
+    /* 3️⃣ Router / server should bounce us back to home (or show the “Already logged in” copy) */
+    const url = ctx.page.url();
+    assertEquals(
+      url.endsWith("/") || url.endsWith("/home") || url.endsWith("/"),
+      true,
+      "Expected /login to redirect once a viewer is authenticated",
+    );
+  } finally {
+    await teardownE2ETest(ctx);
+  }
+});
