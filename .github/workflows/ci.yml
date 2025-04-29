@@ -1,161 +1,77 @@
 name: CI
-on: [pull_request]
-jobs:
-  build:
-    name: bff ci
-    runs-on: ubuntu-latest
 
+on: [pull_request, workflow_dispatch]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 1️⃣ Nix build + cache + (optionally) FlakeHub publish
+  DeterminateCI:
+    uses: DeterminateSystems/ci/.github/workflows/workflow.yml@main
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+
+  # 2️⃣ Custom test phase that piggy-backs on the cache
+  bff-tests:
+    needs: DeterminateCI
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      ASSEMBLY_AI_KEY: ${{ secrets.ASSEMBLY_AI_KEY }}
-      OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
+      DATABASE_URL:        ${{ secrets.DATABASE_URL }}
+      ASSEMBLY_AI_KEY:     ${{ secrets.ASSEMBLY_AI_KEY }}
+      OPEN_AI_API_KEY:     ${{ secrets.OPEN_AI_API_KEY }}
       OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-      WAITLIST_API_KEY: ${{ secrets.WAITLIST_API_KEY }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      INFRA_BIN_PATH: ${{ github.workspace }}/infra/bin
+      POSTHOG_API_KEY:     ${{ secrets.POSTHOG_API_KEY }}
+      WAITLIST_API_KEY:    ${{ secrets.WAITLIST_API_KEY }}
+      JWT_SECRET:          ${{ secrets.JWT_SECRET }}
 
     steps:
+      #–––––––––––––––––––––––––––––––––––––––––––––––
       - name: Set environment variables
-        run: |
-          echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v22
-        with:
-          nix_path: nixpkgs=channel:nixos-24.11
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-            max-jobs = auto
-            cores = 0
-            substituters = https://cache.nixos.org
-            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          repository: bolt-foundry/bolt-foundry
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ssh-strict: true
-          persist-credentials: true
-
-      # Restore Nix store cache
-      - name: Restore nix store cache
+      # 📦 Cache node_modules (works for npm / pnpm / yarn / bun)
+      - name: Cache node_modules
+        id: cache-node
         uses: actions/cache@v4
-        id: nix-cache
         with:
           path: |
-            /nix/store
-            /nix/var/nix/db
-            /nix/var/nix/profiles
-            ~/.cache/nix
-          key: ${{ runner.os }}-nix-store-${{ hashFiles('**/*.nix', 'flake.lock') }}
+            **/node_modules
+          key: |
+            node-${{ runner.os }}-${{ hashFiles('**/package-lock.json', '**/pnpm-lock.yaml', '**/yarn.lock', '**/bun.lockb') }}
           restore-keys: |
-            ${{ runner.os }}-nix-store-
+            node-${{ runner.os }}-
 
-      # Cache node_modules and vendor directories
-      - name: Cache node_modules and vendor folders
+      # 📦 Cache vendor (adjust the lock file if you use another tool)
+      - name: Cache vendor
+        id: cache-vendor
         uses: actions/cache@v4
-        id: dependency-cache
         with:
-          path: |
-            node_modules
-            */*/node_modules
-            */*/*/node_modules
-            vendor
-            */*/vendor
-            */*/*/vendor
-            ~/.npm
-          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/package.json', 'package-lock.json', 'package.json') }}
+          path: vendor
+          key: |
+            vendor-${{ runner.os }}-${{ hashFiles('**/deno.lock') }}
           restore-keys: |
-            ${{ runner.os }}-deps-
+            vendor-${{ runner.os }}-
 
-      # Parse .replit env using pure bash
-      - name: Parse .replit env and export to GitHub Actions
+      #–––––––––––––––––––––––––––––––––––––––––––––––
+      # Light-weight Nix bootstrap that reuses the store populated by DeterminateCI
+      - uses: DeterminateSystems/nix-installer-action@v9
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v2  # hits the store-wide cache
+
+      #–––––––––––––––––––––––––––––––––––––––––––––––
+      - name: Enter dev shell & run bff CI
         run: |
-          # Extract the [env] section from .replit
-          sed -n '/^\[env\]/,/^\[/p' .replit | grep -v '^\[' > .env_section
-
-          # Process each line in the environment section
-          while IFS= read -r line; do
-            # Skip empty lines, comments, or section headers
-            if [[ "$line" =~ ^[[:space:]]*$ || "$line" =~ ^[[:space:]]*# || "$line" =~ ^\[ ]]; then
-              continue
-            fi
-
-            # Extract key and value
-            if [[ "$line" =~ ^([A-Za-z0-9_]+)[[:space:]]*=[[:space:]]*(.*) ]]; then
-              key="${BASH_REMATCH[1]}"
-              value="${BASH_REMATCH[2]}"
-
-              # Skip PATH variable as it's handled separately
-              if [[ "$key" == "PATH" ]]; then
-                continue
-              fi
-
-              # Remove quotes if present
-              value="${value//\"/}"
-
-              # Replace $REPL_HOME with $GITHUB_WORKSPACE
-              value="${value//\$REPL_HOME/$GITHUB_WORKSPACE}"
-
-              # Skip commented out variables
-              if [[ "$key" == \#* ]]; then
-                continue
-              fi
-
-              echo "$key=$value" >> $GITHUB_ENV
-              echo "Added environment variable: $key"
-            fi
-          done < .env_section
-
-          # Clean up temporary file
-          rm .env_section
-
-      # Cache the nix development shell specifically
-      - name: Cache nix development shell
-        id: nix-shell-cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            /tmp/nix-shell-cache
-          key: ${{ runner.os }}-nix-shell-${{ hashFiles('shell.nix', 'default.nix', 'flake.nix', 'flake.lock') }}
-
-      # Pre-build the development shell if it's not in cache
-      - name: Pre-build nix development shell
-        if: steps.nix-shell-cache.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p /tmp/nix-shell-cache
-          # Build the dev shell into a profile
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile
-
-      # Run the CI command using the cached development shell profile
-      - name: Run CI in nix
-        run: |
-          cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+          cd "$GITHUB_WORKSPACE"
+          nix develop . --impure --command bash -c "
             bff ci -g --include-bolt-foundry
           "
-
-      - name: Upload test screenshots
-        uses: actions/upload-artifact@v4
-        if: always() # Run even if previous steps failed
-        with:
-          name: e2e-screenshots-${{ github.run_id }}
-          path: ${{ github.workspace }}/tmp/screenshots/
-          retention-days: 5
-
-      # Optional: Collect and upload build outputs
-      - name: Cache build outputs
-        uses: actions/cache@v4
-        with:
-          path: |
-            result
-            result-*
-            dist
-            build
-          key: ${{ runner.os }}-build-outputs-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-build-outputs-
