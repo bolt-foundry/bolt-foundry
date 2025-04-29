@@ -1,9 +1,14 @@
 import type { IsographEntrypoint } from '@isograph/react';
 import { type Mutation__JoinWaitlist__param } from './Mutation/JoinWaitlist/param_type.ts';
+import { type Mutation__LoginWithEmailDevCurrentViewer__param } from './Mutation/LoginWithEmailDevCurrentViewer/param_type.ts';
 import { type Query__EntrypointHome__param } from './Query/EntrypointHome/param_type.ts';
+import { type Query__EntrypointLogin__param } from './Query/EntrypointLogin/param_type.ts';
 import { type Query__Home__param } from './Query/Home/param_type.ts';
+import { type Query__LoginPage__param } from './Query/LoginPage/param_type.ts';
 import entrypoint_Mutation__JoinWaitlist from '../__isograph/Mutation/JoinWaitlist/entrypoint.ts';
+import entrypoint_Mutation__LoginWithEmailDevCurrentViewer from '../__isograph/Mutation/LoginWithEmailDevCurrentViewer/entrypoint.ts';
 import entrypoint_Query__EntrypointHome from '../__isograph/Query/EntrypointHome/entrypoint.ts';
+import entrypoint_Query__EntrypointLogin from '../__isograph/Query/EntrypointLogin/entrypoint.ts';
 
 // This is the type given to regular client fields.
 // This means that the type of the exported iso literal is exactly
@@ -58,20 +63,40 @@ export function iso<T>(
 ): IdentityWithParam<Mutation__JoinWaitlist__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Mutation.LoginWithEmailDevCurrentViewer', T>
+): IdentityWithParam<Mutation__LoginWithEmailDevCurrentViewer__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.EntrypointHome', T>
 ): IdentityWithParam<Query__EntrypointHome__param>;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Query.EntrypointLogin', T>
+): IdentityWithParam<Query__EntrypointLogin__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.Home', T>
 ): IdentityWithParamComponent<Query__Home__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Query.LoginPage', T>
+): IdentityWithParamComponent<Query__LoginPage__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Mutation.JoinWaitlist', T>
 ): typeof entrypoint_Mutation__JoinWaitlist;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'entrypoint Mutation.LoginWithEmailDevCurrentViewer', T>
+): typeof entrypoint_Mutation__LoginWithEmailDevCurrentViewer;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointHome', T>
 ): typeof entrypoint_Query__EntrypointHome;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointLogin', T>
+): typeof entrypoint_Query__EntrypointLogin;
 
 export function iso(isographLiteralText: string):
   | IdentityWithParam<any>
@@ -81,8 +106,12 @@ export function iso(isographLiteralText: string):
   switch (isographLiteralText) {
     case 'entrypoint Mutation.JoinWaitlist':
       return entrypoint_Mutation__JoinWaitlist;
+    case 'entrypoint Mutation.LoginWithEmailDevCurrentViewer':
+      return entrypoint_Mutation__LoginWithEmailDevCurrentViewer;
     case 'entrypoint Query.EntrypointHome':
       return entrypoint_Query__EntrypointHome;
+    case 'entrypoint Query.EntrypointLogin':
+      return entrypoint_Query__EntrypointLogin;
   } 
   return (clientFieldResolver: any) => clientFieldResolver;
 }
