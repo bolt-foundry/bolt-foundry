@@ -1,7 +1,6 @@
 import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@isograph/react';
 import { Query__LoginPage__param } from './param_type.ts';
 import { LoginPage as resolver } from '../../../../components/LoginPage.tsx';
-import CurrentViewerLoggedIn__asCurrentViewerLoggedIn__resolver_reader from '../../CurrentViewerLoggedIn/asCurrentViewerLoggedIn/resolver_reader.ts';
 
 const readerAst: ReaderAst<Query__LoginPage__param> = [
   {
@@ -20,21 +19,11 @@ const readerAst: ReaderAst<Query__LoginPage__param> = [
     isUpdatable: false,
     selections: [
       {
-        kind: "Linked",
-        fieldName: "asCurrentViewerLoggedIn",
+        kind: "Scalar",
+        fieldName: "__typename",
         alias: null,
         arguments: null,
-        condition: CurrentViewerLoggedIn__asCurrentViewerLoggedIn__resolver_reader,
         isUpdatable: false,
-        selections: [
-          {
-            kind: "Scalar",
-            fieldName: "__typename",
-            alias: null,
-            arguments: null,
-            isUpdatable: false,
-          },
-        ],
       },
     ],
   },

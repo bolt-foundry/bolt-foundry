@@ -48,7 +48,11 @@ export const graphQLHandler = async (req: Request) => {
   const responseHeaders = ctx.getResponseHeaders();
 
   for (const [key, value] of responseHeaders) {
-    res.headers.set(key, value);
+    if (key.toLowerCase() === "set-cookie") {
+      res.headers.append(key, value); // keep both cookies
+    } else {
+      res.headers.set(key, value);
+    }
   }
 
   return res;
