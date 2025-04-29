@@ -21,7 +21,7 @@ Deno.test("BfNode persists via storage adapter", async () => {
     const n = await BfNode.__DANGEROUS__createUnattached(cv, { name: "alice" });
 
     // fetch raw through façade → adapter
-    const raw = await storage.get(cv.bfOid, n.metadata.bfGid);
+    const raw = await storage.get(cv.orgBfOid, n.metadata.bfGid);
     assertExists(raw, "node didn’t save through storage");
     assertEquals(raw.props.name, "alice");
   });
