@@ -113,7 +113,11 @@ const denoCompilationCommand = [
   `--allow-env=${allowedEnvironmentVariables.join(",")}`,
   `--allow-read=${readableLocations.join(",")}`,
   `--allow-write=${writableLocations.join(",")}`,
-  `--allow-run=${allowedBinaries.join(",")}`,
+  ...(
+    allowedBinaries.length > 0
+      ? [`--allow-run=${allowedBinaries.join(",")}`]
+      : []
+  ),
   "apps/web/web.tsx",
 ];
 
