@@ -31,13 +31,17 @@ export type RouteEntrypoint = {
   title: string;
 };
 
-import { entrypointHome } from "apps/boltFoundry/__generated__/builtRoutes.ts";
+import {
+  entrypointHome,
+  entrypointLogin,
+} from "apps/boltFoundry/__generated__/builtRoutes.ts";
 import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
 
 export const loggedInAppRoutes = new Map<string, IsographRoute>([]);
 
 export const isographAppRoutes = new Map<string, IsographRoute>([
   ["/", entrypointHome],
+  ["/login", entrypointLogin],
   ...loggedInAppRoutes,
 ]);
 
