@@ -67,12 +67,14 @@ export interface NexusGenObjects {
     name?: string | null; // String
   }
   CurrentViewerLoggedIn: { // root type
-    email?: string | null; // String
     id?: string | null; // ID
+    orgBfOid?: string | null; // String
+    personBfGid?: string | null; // String
   }
   CurrentViewerLoggedOut: { // root type
-    email?: string | null; // String
     id?: string | null; // ID
+    orgBfOid?: string | null; // String
+    personBfGid?: string | null; // String
   }
   JoinPayload: { // root type
     message?: string | null; // String
@@ -120,12 +122,14 @@ export interface NexusGenFieldTypes {
     name: string | null; // String
   }
   CurrentViewerLoggedIn: { // field return type
-    email: string | null; // String
     id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
   }
   CurrentViewerLoggedOut: { // field return type
-    email: string | null; // String
     id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
   }
   JoinPayload: { // field return type
     message: string | null; // String
@@ -151,8 +155,9 @@ export interface NexusGenFieldTypes {
     id: string | null; // ID
   }
   CurrentViewer: { // field return type
-    email: string | null; // String
     id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
   }
 }
 
@@ -175,12 +180,14 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
   }
   CurrentViewerLoggedIn: { // field return type name
-    email: 'String'
     id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
   }
   CurrentViewerLoggedOut: { // field return type name
-    email: 'String'
     id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
   }
   JoinPayload: { // field return type name
     message: 'String'
@@ -206,8 +213,9 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
   }
   CurrentViewer: { // field return type name
-    email: 'String'
     id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
   }
 }
 
