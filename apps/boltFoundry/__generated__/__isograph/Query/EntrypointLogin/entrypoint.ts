@@ -9,10 +9,7 @@ const queryText = 'query EntrypointLogin  {\
   currentViewer {\
     __typename,\
     id,\
-    ... on CurrentViewerLoggedIn {\
-      id,\
-      __typename,\
-    },\
+    __typename,\
   },\
 }';
 
@@ -41,20 +38,9 @@ const normalizationAst: NormalizationAst = {
           arguments: null,
         },
         {
-          kind: "InlineFragment",
-          type: "CurrentViewerLoggedIn",
-          selections: [
-            {
-              kind: "Scalar",
-              fieldName: "id",
-              arguments: null,
-            },
-            {
-              kind: "Scalar",
-              fieldName: "__typename",
-              arguments: null,
-            },
-          ],
+          kind: "Scalar",
+          fieldName: "__typename",
+          arguments: null,
         },
       ],
     },
