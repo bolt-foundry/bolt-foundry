@@ -9,11 +9,12 @@ and all viewer logic will live under `CurrentViewer`.
 
 ---
 
-## Next Action – Phase 0 Kick‑off
+## Next Action – Phase 0
 
-1. Scaffold `/login` page + prompt logic
-2. Implement `loginWithEmailDev` mutation
-3. Wire `Login` button & add initial tests
+- [ ] Store session in cookie
+- [ ] validate session on server
+- [ ] display current user on login success page. Show current user on login
+      page if already logged in.
 
 ---
 
@@ -49,9 +50,8 @@ and all viewer logic will live under `CurrentViewer`.
    - **Dev mutation**
      `loginWithEmailDev(email: String!): CurrentViewerLoggedIn`.
    - Register both in `graphql/builder/builder.ts` and regenerate schema.
-4. **Session Handling** — store `localStorage.devEmail` + `sid` cookie.
-5. **Viewer Hook** — `useCurrentViewer()`; show `Login` link when logged out.
-6. **Tests** — E2E happy‑path: prompt → email → navbar shows name.
+4. **Tests** — E2E happy‑path: prompt → email → navbar shows name.
+5. **Session Handling** — store session in cookie.
 
 ### Phase 1 – Google OAuth
 
