@@ -33,18 +33,21 @@ type BfPerson implements BfNode & BfNodeBase {
 }
 
 interface CurrentViewer {
-  email: String
   id: ID
+  orgBfOid: String
+  personBfGid: String
 }
 
 type CurrentViewerLoggedIn implements CurrentViewer {
-  email: String
   id: ID
+  orgBfOid: String
+  personBfGid: String
 }
 
 type CurrentViewerLoggedOut implements CurrentViewer {
-  email: String
   id: ID
+  orgBfOid: String
+  personBfGid: String
 }
 
 scalar JSON

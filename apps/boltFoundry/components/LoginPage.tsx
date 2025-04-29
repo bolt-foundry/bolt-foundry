@@ -18,9 +18,7 @@ export const LoginPage = iso(`
   field Query.LoginPage @component {
     __typename
     currentViewer {
-      asCurrentViewerLoggedIn {
-        __typename
-      }
+      __typename
     }
   }
 `)(function LoginPage({ data }) {
@@ -48,10 +46,7 @@ export const LoginPage = iso(`
       },
     );
   }
-  if (data.currentViewer?.asCurrentViewerLoggedIn) {
-    return <div>Already logged in</div>;
-  }
-
+  logger.info(data.currentViewer.__typename);
   if (responseElement) {
     return <div>{responseElement}</div>;
   }
