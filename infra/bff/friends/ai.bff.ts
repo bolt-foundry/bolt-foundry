@@ -9,11 +9,8 @@ import {
 import { getLogger } from "packages/logger/logger.ts";
 import { connectBoltFoundry } from "packages/bolt-foundry/bolt-foundry.ts";
 import { OpenAI } from "@openai/openai";
-const posthogApiKey = Deno.env.get("APPS_INTERNALBF_POSTHOG_API_KEY");
-const client = new OpenAI({
-  apiKey: Deno.env.get("OPENAI_API_KEY"),
-  fetch: connectBoltFoundry(`bf+${posthogApiKey}`, "https://i.bltfdy.co/"),
-});
+import { fetchConfigurationVariable } from "packages/get-configuration-var/get-configuration-var.ts";
+
 const logger = getLogger(import.meta);
 
 /**
@@ -184,11 +181,6 @@ async function ensureGitHubAuth(): Promise<boolean> {
  * Checks for required API keys
  */
 function checkRequiredApiKeys(): boolean {
-  const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!openaiApiKey) {
-    logger.error("OPENAI_API_KEY environment variable is not set");
-    return false;
-  }
   return true;
 }
 
@@ -273,10 +265,10 @@ async function generateCommitMessage(
   suggestion?: string,
 ): Promise<{ title: string; message: string } | null> {
   // Check for OpenAI API key
-  const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!openaiApiKey) {
-    return null;
-  }
+  const OPENAI_API_KEY = await fetchConfigurationVariable("OPENAI_API_KEY");
+  const POSTHOG_KEY = await fetchConfigurationVariable(
+    "APPS_INTERNALBF_POSTHOG_API_KEY",
+  );
 
   try {
     // Prepare the prompt to send to OpenAI
@@ -360,6 +352,10 @@ ${diffOutput}
 
     // Send to OpenAI and get response using the SDK
     logger.info("Sending diff to OpenAI...");
+    const client = new OpenAI({
+      apiKey: OPENAI_API_KEY,
+      fetch: connectBoltFoundry(`bf+${POSTHOG_KEY}`, "https://i.bltfdy.co/"),
+    });
     const response = await client.chat.completions.create({
       model: "gpt-4o",
       messages: [
