@@ -149,3 +149,24 @@ Deno.test("GraphQL currentViewer returns LoggedIn when session cookie is present
     assertEquals(data.currentViewer.__typename, "CurrentViewerLoggedIn");
   });
 });
+
+Deno.test("currentViewer returns LoggedIn after Google login", async () => {
+  // Pre-bake ACCESS cookie (simulates the handler’s side-effect)
+  const { access } = await buildAuthCookies("gid_Person_1", "oid_Org_1");
+
+  const gqlReq = new Request("http://bolt.test/graphql", {
+    method: "POST",
+    headers: { "content-type": "application/json", cookie: access },
+    body: JSON.stringify({ query: "{ currentViewer { __typename } }" }),
+  });
+
+  const res = await yoga.fetch(
+    new URL("/graphql", import.meta.url),
+    gqlReq,
+    await createContext(
+      new Request("http://bolt.test/", { headers: { cookie: access } }),
+    ),
+  );
+  const { data } = await res.json();
+  assertEquals(data.currentViewer.__typename, "CurrentViewerLoggedIn"); // ❌ fails now
+});
