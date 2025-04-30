@@ -6,28 +6,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # 1️⃣ Build + cache (no publish)
-  DeterminateCI:
-    uses: DeterminateSystems/ci/.github/workflows/workflow.yml@main
-    permissions:
-      id-token: write
-      contents: read
-    # no 'visibility' => just build & cache
-
-  # 2️⃣ Publish the flake (only on main/tags)
-  PublishFlake:
-    needs: DeterminateCI
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-    uses: DeterminateSystems/ci/.github/workflows/workflow.yml@main
-    permissions:
-      id-token: write
-      contents: read
-    with:
-      visibility: private # triggers the push
-
-  # 3️⃣ Tests – reuse the cache
   bff-tests:
-    needs: DeterminateCI
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,6 +19,7 @@ jobs:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
       WAITLIST_API_KEY: ${{ secrets.WAITLIST_API_KEY }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      DENO_DIR: ${{ github.workspace }}/.deno-cache # keeps it inside the repo dir
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -49,22 +29,35 @@ jobs:
 
       - uses: DeterminateSystems/flakehub-cache-action@main
 
-      - uses: actions/cache@v4
+      # 1️⃣ RESTORE
+      - name: Restore Deno / vendored / node cache
+        id: cache-deno
+        uses: actions/cache/restore@v4
         with:
           path: |
-            ~/.cache/deno
+            ${{ env.DENO_DIR }}
             vendor
             node_modules
           key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/lock*') }}
           restore-keys: |
             deno-${{ runner.os }}-
-      - name: Set environment variables
-        run: |
-          echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
+
+      - name: Put repo tools on PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
 
       - name: Enter dev shell & run tests
         run: |
           nix develop . --accept-flake-config --impure --command bash -c '
-            deno install
             bff ci --include-bolt-foundry --skip-build
           '
+
+      # 2️⃣ SAVE  (only if we didn't hit above)
+      - name: Save Deno / vendored / node cache
+        if: ${{ steps.cache-deno.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ${{ env.DENO_DIR }}
+            vendor
+            node_modules
+          key: ${{ steps.cache-deno.outputs.cache-primary-key }}
