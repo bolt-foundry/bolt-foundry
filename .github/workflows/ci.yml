@@ -1,5 +1,4 @@
 name: CI
-
 on: [pull_request, workflow_dispatch]
 
 concurrency:
@@ -7,20 +6,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # 1️⃣ Nix build + cache + (optionally) FlakeHub publish
+  # 1️⃣ Build + cache (no publish)
   DeterminateCI:
     uses: DeterminateSystems/ci/.github/workflows/workflow.yml@main
     permissions:
       id-token: write
       contents: read
-    secrets: inherit
+    # no 'visibility' => just build & cache
 
-  # 2️⃣ Custom test phase that piggy-backs on the cache
+  # 2️⃣ Publish the flake (only on main/tags)
+  PublishFlake:
+    needs: DeterminateCI
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    uses: DeterminateSystems/ci/.github/workflows/workflow.yml@main
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      visibility: private # triggers the push
+
+  # 3️⃣ Tests – reuse the cache
   bff-tests:
     needs: DeterminateCI
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write # OIDC for FlakeHub
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       ASSEMBLY_AI_KEY: ${{ secrets.ASSEMBLY_AI_KEY }}
@@ -29,59 +40,31 @@ jobs:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
       WAITLIST_API_KEY: ${{ secrets.WAITLIST_API_KEY }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
-
     steps:
-      #–––––––––––––––––––––––––––––––––––––––––––––––
-      - name: Set environment variables
-        run: echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
-
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
 
-      # 📦 Cache node_modules (works for npm / pnpm / yarn / bun)
-      - name: Cache node_modules
-        id: cache-node
-        uses: actions/cache@v4
-        with:
-          path: |
-            **/node_modules
-          key: |
-            node-${{ runner.os }}-${{ hashFiles('**/package-lock.json', '**/pnpm-lock.yaml', '**/yarn.lock', '**/bun.lockb') }}
-          restore-keys: |
-            node-${{ runner.os }}-
-
-      # 📦 Cache vendor (adjust the lock file if you use another tool)
-      - name: Cache vendor
-        id: cache-vendor
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: |
-            vendor-${{ runner.os }}-${{ hashFiles('**/deno.lock') }}
-          restore-keys: |
-            vendor-${{ runner.os }}-
-
-      #–––––––––––––––––––––––––––––––––––––––––––––––
-      # Light-weight Nix bootstrap that reuses the store populated by DeterminateCI
-      - uses: DeterminateSystems/nix-installer-action@v9
+      - uses: DeterminateSystems/nix-installer-action@main
         with: { determinate: true }
 
-      - uses: DeterminateSystems/magic-nix-cache-action@v2 # hits the store-wide cache
+      - uses: DeterminateSystems/flakehub-cache-action@main
 
-      - name: Restore Deno caches # actions/cache@v4
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/deno        # global module cache
-            vendor               # optional vendored deps
-            node_modules         # optional npm tree
+            ~/.cache/deno
+            vendor
+            node_modules
           key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/lock*') }}
-
-      #–––––––––––––––––––––––––––––––––––––––––––––––
-      - name: Enter dev shell & run bff CI
+          restore-keys: |
+            deno-${{ runner.os }}-
+      - name: Set environment variables
         run: |
-          cd "$GITHUB_WORKSPACE"
-          nix develop . --impure --command bash -c "
+          echo "$GITHUB_WORKSPACE/infra/bin" >> $GITHUB_PATH
+
+      - name: Enter dev shell & run tests
+        run: |
+          nix develop . --accept-flake-config --impure --command bash -c '
             deno install
-            bff ci --include-bolt-foundry
-          "
+            bff ci --include-bolt-foundry --skip-build
+          '
