@@ -109,3 +109,150 @@ Deno.test("Visiting /login while logged-in shows you logged in", async () => {
     await teardownE2ETest(ctx);
   }
 });
+
+Deno.test("user can sign in with Google (GraphQL flow)", async () => {
+  const ctx = await setupE2ETest({ headless: true });
+  const { page } = ctx;
+
+  /* ────────────────────────────── 1️⃣  Stub Google endpoints ───────────────────────────── */
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    const url = req.url();
+
+    // Popup HTML that immediately postMessage’s the fake JWT
+    if (url.startsWith("https://accounts.google.com/")) {
+      return req.respond({
+        status: 200,
+        contentType: "text/html",
+        body: `
+          <html><body>
+            <script>
+              window.opener.postMessage(
+                { credential: "${Deno.env.get("GOOGLE_TEST_JWT")}" },
+                "*"
+              );
+              window.close();
+            </script>
+          </body></html>`,
+      });
+    }
+
+    // Google tokeninfo introspection
+    if (url.startsWith("https://oauth2.googleapis.com/tokeninfo")) {
+      return req.respond({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          email: "tester@example.com",
+          email_verified: true,
+        }),
+      });
+    }
+
+    req.continue();
+  });
+
+  /* ────────────────────────────── 2️⃣  Kick off login flow ─────────────────────────────── */
+  await navigateTo(ctx, "/login");
+  await page.click("text/Sign in with Google");
+
+  /* ────────────────────────────── 3️⃣  Wait for GraphQL call  ───────────────────────────── */
+  await page.waitForResponse((res) => {
+    if (!res.url().endsWith("/graphql") || res.request().method() !== "POST") {
+      return false;
+    }
+    try {
+      const body = JSON.parse(res.request().postData() ?? "{}");
+      return typeof body.query === "string" &&
+        body.query.includes("loginWithGoogle");
+    } catch {
+      return false;
+    }
+  });
+
+  /* ────────────────────────────── 4️⃣  Expect navbar greeting ──────────────────────────── */
+  // This will stay red until the resolver sets cookies & viewer properly.
+  await page.waitForSelector("text/Welcome, Tester");
+  const greeting = await page.$("text/Welcome, Tester");
+  assertExists(greeting); // <-- 🔴 fails now, turns 🟢 when Phase-1 is done
+
+  await teardownE2ETest(ctx);
+});
+
+Deno.test("user can sign in with Google and see CurrentViewerLoggedIn", async () => {
+  const ctx = await setupE2ETest({ headless: true });
+  const { page } = ctx;
+
+  /* ── 1️⃣  Stub Google endpoints ───────────────────────────────────────── */
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    const url = req.url();
+
+    // Fake popup that instantly postMessage’s a test JWT
+    if (url.startsWith("https://accounts.google.com/")) {
+      return req.respond({
+        status: 200,
+        contentType: "text/html",
+        body: `
+          <html><body>
+            <script>
+              window.opener.postMessage(
+                { credential: "${Deno.env.get("GOOGLE_TEST_JWT")}" },
+                "*"
+              );
+              window.close();
+            </script>
+          </body></html>`,
+      });
+    }
+
+    // Stub tokeninfo verification
+    if (url.startsWith("https://oauth2.googleapis.com/tokeninfo")) {
+      return req.respond({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          email: "tester@example.com",
+          email_verified: true,
+        }),
+      });
+    }
+
+    req.continue();
+  });
+
+  /* ── 2️⃣  Kick off login flow ─────────────────────────────────────────── */
+  await navigateTo(ctx, "/login");
+  await page.click("text/Sign in with Google");
+
+  /* ── 3️⃣  Wait for loginWithGoogle request to /graphql ────────────────── */
+  await page.waitForResponse((res) => {
+    if (res.request().method() !== "POST" || !res.url().endsWith("/graphql")) {
+      return false;
+    }
+    try {
+      const body = JSON.parse(res.request().postData() ?? "{}");
+      return typeof body.query === "string" &&
+        body.query.includes("loginWithGoogle");
+    } catch {
+      return false;
+    }
+  });
+
+  const recheckedLoggedInDiv = await ctx.page.waitForSelector(
+    "::-p-text(logged in as)",
+  );
+
+  const string = await recheckedLoggedInDiv?.evaluate((el) => el.textContent) ??
+    "";
+
+  /* 6️⃣  Confirm it shows the correct typename */
+
+  assertStringIncludes(
+    string,
+    "CurrentViewerLoggedIn",
+    'Should contain "CurrentViewerLoggedIn"',
+  );
+
+  await teardownE2ETest(ctx);
+});
