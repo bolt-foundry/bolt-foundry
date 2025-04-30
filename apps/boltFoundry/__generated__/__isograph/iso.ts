@@ -1,4 +1,5 @@
 import type { IsographEntrypoint } from '@isograph/react';
+import { type CurrentViewer__LoginWithGoogleButton__param } from './CurrentViewer/LoginWithGoogleButton/param_type.ts';
 import { type Mutation__JoinWaitlist__param } from './Mutation/JoinWaitlist/param_type.ts';
 import { type Mutation__LoginWithEmailDevCurrentViewer__param } from './Mutation/LoginWithEmailDevCurrentViewer/param_type.ts';
 import { type Query__EntrypointHome__param } from './Query/EntrypointHome/param_type.ts';
@@ -57,6 +58,10 @@ type MatchesWhitespaceAndString<
   TString extends string,
   T
 > = Whitespace<T> extends `${TString}${string}` ? T : never;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field CurrentViewer.LoginWithGoogleButton', T>
+): IdentityWithParamComponent<CurrentViewer__LoginWithGoogleButton__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Mutation.JoinWaitlist', T>

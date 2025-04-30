@@ -109,3 +109,90 @@ Deno.test("Visiting /login while logged-in shows you logged in", async () => {
     await teardownE2ETest(ctx);
   }
 });
+
+Deno.test("user can sign in with Google and see CurrentViewerLoggedIn", async () => {
+  const ctx = await setupE2ETest({ headless: false });
+  const { page } = ctx;
+
+  await page.evaluateOnNewDocument(
+    (jwt: string) => {
+      /* global helper the test will poke */
+      (globalThis as any).__gsi = { fire: () => {} };
+
+      (globalThis as any).google = {
+        accounts: {
+          id: {
+            initialize({ callback }: { callback: (p: any) => void }) {
+              /* store for later; test will call __gsi.fire() */
+              (globalThis as any).__gsi.fire = () =>
+                callback({ credential: jwt });
+            },
+            renderButton(container: HTMLElement) {
+              const btn = document.createElement("button");
+              btn.id = "google-btn";
+              btn.textContent = "Sign in with Google";
+              container.appendChild(btn);
+            },
+            prompt: () => {},
+            cancel: () => {},
+          },
+        },
+      };
+    },
+    Deno.env.get("GOOGLE_TEST_JWT")!,
+  );
+
+  /* keep the real SDK from loading */
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    if (req.url().startsWith("https://accounts.google.com/gsi/client")) {
+      req.respond({ status: 200, body: "" });
+    } else req.continue();
+  });
+
+  /* ── 2️⃣  Kick off login flow ─────────────────────────────────────────── */
+  await navigateTo(ctx, "/login");
+  await ctx.takeScreenshot("google-login-initial");
+
+
+  /* 1️⃣  Button is in the DOM */
+  await page.waitForSelector("#google-btn");
+  await ctx.takeScreenshot("google-login-button");
+
+  /* 2️⃣  Pretend the user clicked it: run the stored callback */
+  await page.evaluate(() => (window as any).__gsi.fire());
+  await ctx.takeScreenshot("google-login-after-click");
+
+  /* ── 3️⃣  Wait for loginWithGoogle request to /graphql ────────────────── */
+  await page.waitForResponse((res) => {
+    if (res.request().method() !== "POST" || !res.url().endsWith("/graphql")) {
+      return false;
+    }
+    try {
+      const body = JSON.parse(res.request().postData() ?? "{}");
+      return typeof body.query === "string" &&
+        body.query.includes("loginWithGoogle");
+    } catch {
+      return false;
+    }
+  });
+  ctx.takeScreenshot("google-login-after-request");
+
+  const recheckedLoggedInDiv = await ctx.page.waitForSelector(
+    "::-p-text(logged in as)",
+  );
+  ctx.takeScreenshot("google-login-after-div");
+
+  const string = await recheckedLoggedInDiv?.evaluate((el) => el.textContent) ??
+    "";
+
+  /* 6️⃣  Confirm it shows the correct typename */
+
+  assertStringIncludes(
+    string,
+    "CurrentViewerLoggedIn",
+    'Should contain "CurrentViewerLoggedIn"',
+  );
+
+  await teardownE2ETest(ctx);
+});
