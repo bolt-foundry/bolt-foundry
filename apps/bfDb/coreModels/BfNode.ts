@@ -69,13 +69,13 @@ export class BfNode<
     const bfGid = toBfGid(generateUUID());
     const baseDefaults: BfMetadataBase = {
       bfGid: bfGid,
-      bfOid: cv.bfOid,
+      bfOid: cv.orgBfOid,
       className: this.name,
       sortValue: this.generateSortValue(),
     };
     const nodeDefaults = {
       ...baseDefaults,
-      bfCid: cv.bfGid,
+      bfCid: cv.personBfGid,
       createdAt: new Date(),
       lastUpdated: new Date(),
     };
@@ -97,10 +97,10 @@ export class BfNode<
     if (itemFromCache) {
       return itemFromCache as InstanceType<TThis>;
     }
-    const itemFromDb = await storage.get(cv.bfOid, id);
+    const itemFromDb = await storage.get(cv.orgBfOid, id);
     logger.debug(itemFromDb);
     if (!itemFromDb) {
-      logger.debug("couldn't find item", cv.bfOid, id);
+      logger.debug("couldn't find item", cv.orgBfOid, id);
       throw new BfErrorNodeNotFound();
     }
     const Ctor = this as unknown as ConcreteBfNodeBaseCtor<TProps, TMetadata>;
@@ -189,7 +189,7 @@ export class BfNode<
   }
 
   override async load(): Promise<this> {
-    const item = await storage.get(this.cv.bfOid, this.metadata.bfGid);
+    const item = await storage.get(this.cv.orgBfOid, this.metadata.bfGid);
     if (!item) {
       throw new BfErrorNodeNotFound();
     }
