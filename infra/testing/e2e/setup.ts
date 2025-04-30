@@ -66,10 +66,23 @@ export async function setupE2ETest(options: {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
 
+    page.on("console", (msg) => {
+      const line = `[browser ${msg.type()}] ${msg.text()}`;
+      // choose ONE of these:
+      logger.info(line);    // if you have a structured logger
+      // console.log(line); // or plain stdout for Deno test runner
+
+      // optional: dump objects the page logs
+      for (const arg of msg.args()) {
+        arg.jsonValue()
+           .then((v) => logger.debug(v))
+           .catch(() => {/* circular/remote handles */});
+      }
+    });
+
     // Create screenshot function
     const takeScreenshot = async (name: string): Promise<string> => {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const fileName = `${name.replace(/\s+/g, "-")}_${timestamp}.png`;
+      const fileName = `${Date.now()}_${name.replace(/\s+/g, "-")}.png`;
       const filePath = join(screenshotsDir, fileName);
 
       try {
