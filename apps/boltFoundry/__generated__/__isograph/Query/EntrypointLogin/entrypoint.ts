@@ -9,6 +9,7 @@ const queryText = 'query EntrypointLogin  {\
   currentViewer {\
     __typename,\
     id,\
+    __typename,\
     ... on CurrentViewerLoggedIn {\
       id,\
       __typename,\
@@ -38,6 +39,11 @@ const normalizationAst: NormalizationAst = {
         {
           kind: "Scalar",
           fieldName: "id",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
+          fieldName: "__typename",
           arguments: null,
         },
         {
