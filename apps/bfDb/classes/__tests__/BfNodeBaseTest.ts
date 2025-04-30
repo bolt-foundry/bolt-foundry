@@ -116,7 +116,7 @@ export function testBfNodeBase(BfNodeClass: typeof BfNodeBase) {
         const metadata = BfNodeClass.generateMetadata(mockCv);
 
         assertExists(metadata.bfGid);
-        assertEquals(metadata.bfOid, mockCv.bfOid);
+        assertEquals(metadata.bfOid, mockCv.orgBfOid);
         assertEquals(metadata.className, BfNodeClass.name);
         assertExists(metadata.sortValue);
       });

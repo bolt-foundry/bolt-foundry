@@ -12,7 +12,7 @@ export function generateNodeMetadata<T extends BfMetadataBase>(
 ): T {
   return {
     bfGid: toBfGid(generateUUID()),
-    bfOid: cv.bfOid,
+    bfOid: cv.orgBfOid,
     className,
     sortValue: Date.now(),
     ...(partial as object),

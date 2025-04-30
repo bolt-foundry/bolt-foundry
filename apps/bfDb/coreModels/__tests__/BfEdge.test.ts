@@ -23,7 +23,7 @@ Deno.test("BfEdge persists via storage adapter", async () => {
 
     const e = await BfEdge.createBetweenNodes(cv, src, tgt, { role: "friend" });
 
-    const raw = await storage.get(cv.bfOid, e.metadata.bfGid);
+    const raw = await storage.get(cv.orgBfOid, e.metadata.bfGid);
     assertExists(raw, "edge didn’t save through storage");
     assertEquals(raw.props.role, "friend");
   });

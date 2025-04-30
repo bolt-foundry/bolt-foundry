@@ -47,9 +47,7 @@ export const graphQLHandler = async (req: Request) => {
   const res = await yoga.handleRequest(req, ctx);
   const responseHeaders = ctx.getResponseHeaders();
 
-  for (const [key, value] of responseHeaders) {
-    res.headers.set(key, value);
-  }
+  for (const [k, v] of responseHeaders) res.headers.append(k, v);
 
   return res;
 };
