@@ -44,3 +44,16 @@ Deno.test("fetchConfigurationVariable – resolves a 1Password reference via CLI
   }
   assertEquals(libValue, "unit-test-secret-value");
 });
+
+Deno.test("getConfigurationVariable – future calls should still resolve synchronously", async () => {
+  await fetchConfigurationVariable(TEST_OP_KEY);
+
+  const libValue = getConfigurationVariable(TEST_OP_KEY);
+
+  if (libValue === undefined) {
+    throw new Error(
+      `Expected secret ${TEST_OP_KEY} to be available via 1Password CLI (is the CI vault configured?)`,
+    );
+  }
+  assertEquals(libValue, "unit-test-secret-value");
+});
