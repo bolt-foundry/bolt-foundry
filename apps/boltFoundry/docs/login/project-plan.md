@@ -23,7 +23,7 @@ and all viewer logic will live under `CurrentViewer`.
 
 - [ ] Create Google OAuth client in Google Cloud Console
 - [ ] Implement Google Sign-In button on login page
-- [ ] Create backend `/api/auth/google` endpoint
+- [ ] Create backend mutation to login from google
 - [ ] Implement user upsert and session creation from Google profile
 
 ---
@@ -53,9 +53,9 @@ and all viewer logic will live under `CurrentViewer`.
 
 1. **Google Console** — create OAuth 2.0 Web client; whitelist dev & prod
    origins.
-2. **Frontend** — implement `<GoogleLogin onSuccess={handleGoogle} />`; POST
-   token to `/api/auth/google`.
-3. **Backend** `/api/auth/google` — verify ID‑token, upsert user & org, return
+2. **Frontend** — implement `<GoogleLogin onSuccess={handleGoogle} />`; graphql
+   mutation.
+3. **Backend** graphql mutation — verify ID‑token, upsert user & org, return
    session cookie.
 4. **GraphQL** — ensure `CurrentViewerLoggedIn` properly uses session cookie.
 5. **Logout** — implement `/logout` route that clears cookie; update
@@ -90,10 +90,9 @@ We’ll extend the existing **BFF E2E harness** (Deno + Puppeteer) used in
 
 ### Tooling & Setup
 
-- Entry‑point shebang: `#!/usr/bin/env -S bff e2e`.
+- E2e test shebang: `#!/usr/bin/env -S bff e2e`.
 - Helpers: `infra/testing/e2e/` (server spin‑up, browser, screenshots).
 - Artifacts: `test‑artifacts/e2e/<timestamp>`.
-- CI env vars: `BF_E2E_HEADLESS`, `GOOGLE_TEST_JWT`, `TEST_USER_EMAIL`.
 
 ### Phase Coverage
 
@@ -134,17 +133,10 @@ variants.
 
 ### Phase Coverage
 
-| Phase | Green Tests                                                                | Red Tests                                                               | Status         |
-| ----- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------- | -------------- |
-| **1** | `/api/auth/google` verifies token; upserts user/org; logout clears cookie. | Disallowed domain → reject; expired JWT → 401.                          | 🔄 Not Started |
-| **2** | CSRF token required; `CurrentViewerLoggedIn` inherits fields.              | Missing CSRF → `BfErrorCsrf`; inheritance red test until builder fixed. | 🔄 Not Started |
-
-### Location Examples
-
-- `apps/boltFoundry/server/__tests__/AuthGoogleEndpoint.test.ts` – Google
-  endpoint.
-- `apps/bfDb/graphql/builder/__tests__/Inheritance.test.ts` – `defineGqlNode`.
-- `apps/bfDb/security/__tests__/Csrf.test.ts` – CSRF middleware.
+| Phase | Green Tests                                                              | Red Tests                                                               | Status         |
+| ----- | ------------------------------------------------------------------------ | ----------------------------------------------------------------------- | -------------- |
+| **1** | graphql mutation verifies token; upserts user/org; logout clears cookie. | Disallowed domain → reject; expired JWT → 401.                          | 🔄 Not Started |
+| **2** | CSRF token required; `CurrentViewerLoggedIn` inherits fields.            | Missing CSRF → `BfErrorCsrf`; inheritance red test until builder fixed. | 🔄 Not Started |
 
 ---
 
@@ -158,6 +150,6 @@ variants.
 
 ## Success Criteria
 
-- Google login shows personalised navbar.
+- /login shows user is logged in.
 - Session persists across refresh & SSR.
 - All tests green
