@@ -10,6 +10,8 @@ const logger = getLogger(import.meta);
 
 const allowedEnvironmentVariables = [
   "ASSEMBLY_AI_KEY",
+  "BF_CACHE_TTL_SEC",
+  "BF_CACHE_ENV",
   "BF_ENV",
   "CI",
   "COLORTERM",
@@ -97,7 +99,7 @@ const writableLocations = [
   "tmp",
 ];
 
-const allowedBinaries = [];
+const allowedBinaries = ["op"];
 
 if (getConfigurationVariable("BF_ENV") === DeploymentEnvs.DEVELOPMENT) {
   allowedBinaries.push("sl");

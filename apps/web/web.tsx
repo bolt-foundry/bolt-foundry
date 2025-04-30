@@ -6,8 +6,11 @@ import {
   registerAllRoutes,
 } from "apps/web/routes/routeRegistry.ts";
 import { handleRequest } from "apps/web/handlers/mainHandler.ts";
+import { startAutoRefresh } from "packages/get-configuration-var/get-configuration-var.ts";
 
 const _logger = getLogger(import.meta);
+
+startAutoRefresh();
 
 export type Handler = (
   request: Request,
