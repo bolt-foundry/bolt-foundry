@@ -32,8 +32,9 @@
           pkgs.sapling
           pkgs.gh
           pkgs.python311Packages.tiktoken
-          unstablePkgs.deno          # ← still on the unstable pin
+          unstablePkgs.deno
           pkgs.nodejs_20
+          pkgs._1password-cli
         ]
         ++ lib.optionals (!pkgs.stdenv.isDarwin) [ pkgs.chromium ];
     in
