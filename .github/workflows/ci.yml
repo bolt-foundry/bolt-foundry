@@ -6,28 +6,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # 1️⃣ Build + cache (no publish)
-  DeterminateCI:
-    uses: DeterminateSystems/ci/.github/workflows/workflow.yml@main
-    permissions:
-      id-token: write
-      contents: read
-    # no 'visibility' => just build & cache
 
-  # 2️⃣ Publish the flake (only on main/tags)
-  PublishFlake:
-    needs: DeterminateCI
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-    uses: DeterminateSystems/ci/.github/workflows/workflow.yml@main
-    permissions:
-      id-token: write
-      contents: read
-    with:
-      visibility: private # triggers the push
-
-  # 3️⃣ Tests – reuse the cache
   bff-tests:
-    needs: DeterminateCI
     runs-on: ubuntu-latest
     permissions:
       contents: read
