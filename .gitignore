@@ -21,3 +21,4 @@ tmp/*
 **/npm
 .replit.local.toml
 generated-icon.png
+/.config/op/
