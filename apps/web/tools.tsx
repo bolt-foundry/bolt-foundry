@@ -1,4 +1,4 @@
-#! /usr/bin/env -S deno run --allow-net=localhost,0.0.0.0,127.0.0.1 --allow-env --allow-read --allow-run=sl
+#! /usr/bin/env -S deno run --allow-net=localhost,0.0.0.0,127.0.0.1 --allow-env --allow-read --allow-run=sl,op
 
 import { getLogger } from "packages/logger/logger.ts";
 import { toolRoutes } from "apps/boltFoundry/routes.ts";

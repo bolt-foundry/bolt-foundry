@@ -81,6 +81,7 @@
     ],
     "rules": {
       "include": [
+        "slow-type-missing-explicit-return-type",
         "no-console",
         "no-external-import",
         "no-self-compare",
