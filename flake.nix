@@ -22,7 +22,7 @@
           unstablePkgs = import (builtins.fetchTarball {
             url    = "https://github.com/NixOS/nixpkgs/archive/5b0bc905a940438854c6f4e9d1947d7ce5ad7a88.tar.gz";
             sha256 = "17bz4ns251l05apaayx4q7zlrva48gajgg5fym70f1i7656fx0jz";
-          }) { inherit system; };
+          }) { inherit system; config.allowUnfree = true; };
           lib = pkgs.lib;
         in
         [
@@ -44,7 +44,7 @@
     ############################################################
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = mkDeps { inherit pkgs system; };
