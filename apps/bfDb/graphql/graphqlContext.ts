@@ -21,6 +21,7 @@ export type BfGraphqlContext = {
     id: string;
   };
   loginWithEmailDev(email: string): Promise<CurrentViewerLoggedIn>;
+  loginWithGoogleToken(idToken: string): Promise<CurrentViewerLoggedIn>;
   createTargetNode<
     TProps extends BfNodeBaseProps,
     TBfClass extends typeof BfNode<TProps>,
@@ -91,6 +92,21 @@ export async function createContext(
         parseInt(viewer.id, 10) || 1,
       );
       currentViewer = viewer; // swap in new viewer for rest of request
+      return viewer;
+    },
+
+    async loginWithGoogleToken(idToken) {
+      logger.debug("Login with Google token attempt");
+      const viewer = await CurrentViewer.loginWithGoogleToken(idToken);
+      // issue cookies
+      await setLoginSuccessHeaders(
+        responseHeaders,
+        viewer.personBfGid,
+        viewer.orgBfOid,
+        parseInt(viewer.id, 10) || 1,
+      );
+      currentViewer = viewer; // swap in new viewer for rest of request
+      logger.debug("Google login successful");
       return viewer;
     },
 
