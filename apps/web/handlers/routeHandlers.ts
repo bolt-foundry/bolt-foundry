@@ -14,17 +14,11 @@ import { AssemblyAI } from "assemblyai";
 import {
   clearAuthCookies,
 } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
+import { PUBLIC_CONFIG_KEYS } from "apps/boltFoundry/__generated__/configKeys.ts";
 
 const logger = getLogger(import.meta);
 
-const configurationVariableKeys = [
-  "POSTHOG_API_KEY",
-];
 
-const configurationVariables = configurationVariableKeys.reduce((acc, key) => {
-  acc[key] = getConfigurationVariable(key);
-  return acc;
-}, {} as Record<string, string | undefined>);
 
 export async function handleAppRoute(
   request: Request,
@@ -85,6 +79,13 @@ export async function handleIsographRoute(
   const queryParams = Object.fromEntries(reqUrl.searchParams.entries());
   const isographServerEnvironment = await getIsographEnvironment(request);
   const featureFlags = {};
+  const configurationVariableKeys = PUBLIC_CONFIG_KEYS;
+
+  const configurationVariables = configurationVariableKeys.reduce((acc, key) => {
+    const val = getConfigurationVariable(key);
+    acc[key] ??= val;
+    return acc;
+  }, {} as Record<string, string | undefined>);
 
   const clientEnvironment = {
     initialPath,

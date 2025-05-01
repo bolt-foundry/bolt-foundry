@@ -41,7 +41,7 @@ function isBrowser() {
 
 // Parse debug loggers from environment variable
 function getDebugLoggers(): string[] {
-  const debugLoggerPaths = getConfigurationVariable("ENABLE_DEBUG_LOGGER");
+  const debugLoggerPaths = getConfigurationVariable("ENABLE_SPECIFIC_LOGGERS");
 
   if (!debugLoggerPaths) {
     return [];
@@ -158,3 +158,5 @@ export function getLogger(importMeta: ImportMeta | string): log.Logger {
 
   return loggerCache.get(loggerName)!;
 }
+
+export type Logger = log.Logger

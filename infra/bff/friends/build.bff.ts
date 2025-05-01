@@ -2,50 +2,21 @@
 
 import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/bff.ts";
-import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
+import { ENVIRONMENT_ONLY_KEYS, getConfigurationVariable, INTERNAL_KEYS } from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "packages/logger/logger.ts";
 import { DeploymentEnvs } from "infra/constants/deploymentEnvs.ts";
+import { PUBLIC_CONFIG_KEYS, PRIVATE_CONFIG_KEYS } from "apps/boltFoundry/__generated__/configKeys.ts"
 
 const logger = getLogger(import.meta);
 
 const allowedEnvironmentVariables = [
-  "ASSEMBLY_AI_KEY",
-  "BF_ENV",
-  "CI",
-  "COLORTERM",
-  "DATABASE_BACKEND",
-  "DATABASE_URL",
-  "DB_BACKEND_TYPE",
-  "DEBUG",
-  "DENO_TRACE_PERMISSIONS",
-  "ENABLE_DEBUG_LOGGER",
-  "FORCE_COLOR",
-  "FORCE_DB_BACKEND",
-  "JWT_SECRET",
-  "LOG_LEVEL",
-  "NODE_ENV",
-  "NODE_PG_FORCE_NATIVE",
-  "OPENAI_BASE_URL",
-  "OPENAI_API_KEY",
-  "OPENAI_ORG_ID",
-  "OPENAI_PROJECT_ID",
-  "OPEN_ROUTER_API_KEY",
-  "POSTHOG_API_KEY",
-  "POSTHOG_HOST",
-  "REPL_HOME",
-  "REPL_SLUG",
-  "REPLIT_DEV_DOMAIN",
-  "RPID",
-  "FORCE_DOMAIN",
-  "SQLITE_DB_PATH",
-  "TEAMCITY_VERSION",
-  "TERM",
-  "TF_BUILD",
-  "USER",
-  "WAITLIST_API_KEY",
-  "WEB_PORT",
-  "WS_NO_BUFFER_UTIL",
-];
+  ...ENVIRONMENT_ONLY_KEYS,
+  ...INTERNAL_KEYS,
+  ...PUBLIC_CONFIG_KEYS,
+  ...PRIVATE_CONFIG_KEYS
+].reduce((acc, key) => acc.add(key), new Set<string>())
+
+logger.debug("Allowed environment variables:", allowedEnvironmentVariables)
 
 // This part is modified to avoid direct dependency on DATABASE_URL
 const DATABASE_STRING = getConfigurationVariable("DATABASE_URL") ?? "";
@@ -97,7 +68,7 @@ const writableLocations = [
   "tmp",
 ];
 
-const allowedBinaries = [];
+const allowedBinaries = ["op"];
 
 if (getConfigurationVariable("BF_ENV") === DeploymentEnvs.DEVELOPMENT) {
   allowedBinaries.push("sl");
@@ -110,7 +81,7 @@ const denoCompilationCommand = [
   "--output=build/",
   ...includableDirectories.map((dir) => `--include=${dir}`),
   `--allow-net=${allowedNetworkDestionations.join(",")}`,
-  `--allow-env=${allowedEnvironmentVariables.join(",")}`,
+  `--allow-env=${allowedEnvironmentVariables.entries().toArray().join(",")}`,
   `--allow-read=${readableLocations.join(",")}`,
   `--allow-write=${writableLocations.join(",")}`,
   ...(
@@ -393,6 +364,7 @@ export async function build(args: Array<string>): Promise<number> {
   const waitForFail = args.includes("--slow-exit");
   const debug = args.includes("--debug");
   const includeBoltFoundry = args.includes("--include-bolt-foundry");
+  const skipConfigKeys = args.includes("--skip-config-keys");
 
   if (debug) {
     logMemoryUsage("build start");
@@ -434,6 +406,17 @@ export async function build(args: Array<string>): Promise<number> {
   }
 
   logger.info("Starting build process");
+
+  // Generate config keys
+  if (!skipConfigKeys) {
+    logger.info("Generating config keys");
+    const genConfigResult = await runShellCommand(["bff", "genConfigKeys"]);
+    if (genConfigResult !== 0) {
+      logger.warn("Failed to generate config keys, continuing build process");
+    }
+  } else {
+    logger.info("Skipping config keys generation (--skip-config-keys flag provided)");
+  }
 
   // Generate barrel files
   logger.info("Generating barrel files");
