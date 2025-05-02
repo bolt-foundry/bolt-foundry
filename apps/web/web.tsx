@@ -11,7 +11,7 @@ import { startAutoRefresh } from "packages/get-configuration-var/get-configurati
 
 const _logger = getLogger(import.meta);
 
-startAutoRefresh();
+await startAutoRefresh();
 
 export type Handler = (
   request: Request,
