@@ -9,8 +9,8 @@ import {
 } from "@bolt-foundry/get-configuration-var";
 
 /* ─────────── constants ─────────── */
-const PUBLIC_KEY = "unit-test-public";
-const PRIVATE_KEY = "unit-test-secret";
+const PUBLIC_KEY = "UNIT_TEST_PUBLIC";
+const PRIVATE_KEY = "UNIT_TEST_SECRET";
 
 /* ─────────── helper – run only if the private item exists ─────────── */
 let _hasPrivateCache: Promise<boolean> | null = null;
