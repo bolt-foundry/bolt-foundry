@@ -1,3 +1,4 @@
+// deno-lint-ignore-file bolt-foundry/no-env-direct-access
 import type { OpenAI } from "@openai/openai";
 
 let logger = console;

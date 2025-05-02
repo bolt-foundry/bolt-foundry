@@ -28,8 +28,8 @@ export class Waitlist extends GraphQLObjectBase {
             };
           }
 
-          const slug = Deno.env.get("REPL_SLUG");
-          const baseUrl = Deno.env.get("NODE_ENV") === "production"
+          const slug = getConfigurationVariable("REPL_SLUG");
+          const baseUrl = getConfigurationVariable("NODE_ENV") === "production"
             ? `https://${slug}.replit.app`
             : "http://localhost:8000";
 
