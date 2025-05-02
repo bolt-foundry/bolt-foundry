@@ -32,7 +32,6 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
-            ${{ env.DENO_DIR }}
             vendor
             node_modules
           key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
@@ -58,7 +57,6 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: |
-            ${{ env.DENO_DIR }}
             vendor
             node_modules
           key: ${{ steps.cache-deno.outputs.cache-primary-key }}
