@@ -1,6 +1,9 @@
 #! /usr/bin/env -S deno run --allow-net=0.0.0.0,us.i.posthog.com --allow-env --watch
 
-import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
+import {
+  getConfigurationVariable,
+  startAutoRefresh,
+} from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "packages/logger/logger.ts";
 import type { Handler } from "apps/web/web.tsx";
 import { handleRequest } from "apps/web/handlers/mainHandler.ts";
@@ -9,12 +12,14 @@ import { trackLlmEvent } from "apps/collector/llm-event-tracker.ts";
 
 const logger = getLogger(import.meta);
 
+await startAutoRefresh();
+
 // Define routes for the collector service
 function registerCollectorRoutes(): Map<string, Handler> {
   const routes = new Map<string, Handler>();
   let appPosthog: PostHog | null = null;
   const appPosthogApiKey = getConfigurationVariable(
-    "APPS_COLLECTOR_POSTHOG_API_KEY",
+    "POSTHOG_API_KEY",
   );
   if (appPosthogApiKey) {
     appPosthog = new PostHog(appPosthogApiKey);
