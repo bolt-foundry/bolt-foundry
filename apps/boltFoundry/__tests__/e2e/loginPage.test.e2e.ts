@@ -1,5 +1,6 @@
 #! /usr/bin/env -S bff e2e
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { assertExists, assertStringIncludes } from "@std/assert";
 import {
   navigateTo,
@@ -112,3 +113,97 @@ Deno.test.ignore(
     }
   },
 );
+
+Deno.test.ignore("user can sign in with Google and see CurrentViewerLoggedIn", async () => {
+  const ctx = await setupE2ETest({ headless: false });
+  const { page } = ctx;
+
+  /* ── 1️⃣  Stub Google endpoints ───────────────────────────────────────── */
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    const url = req.url();
+
+    // 1️⃣  Let the Identity-Services SDK & its iframe through
+    if (url.startsWith("https://accounts.google.com/gsi/")) {
+      return req.continue();
+    }
+
+    // 2️⃣  Intercept ONLY the top-level popup document
+    if (
+      url.startsWith("https://accounts.google.com/") &&
+      req.resourceType() === "document"
+    ) {
+      return req.respond({
+        status: 200,
+        contentType: "text/html",
+        body: `
+          <html><body>
+            <script>
+              window.opener.postMessage(
+                { credential: "${
+          getConfigurationVariable("GOOGLE_TEST_JWT")
+        }" },
+                "*"
+              );
+              window.close();
+            </script>
+          </body></html>`,
+      });
+    }
+
+    // 3️⃣  Fake token-introspection
+    if (url.startsWith("https://oauth2.googleapis.com/tokeninfo")) {
+      return req.respond({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          email: "tester@example.com",
+          email_verified: true,
+        }),
+      });
+    }
+
+    req.continue();
+  });
+
+  /* ── 2️⃣  Kick off login flow ─────────────────────────────────────────── */
+  await navigateTo(ctx, "/login");
+  await ctx.takeScreenshot("google-login-initial");
+
+  // Find and click the Google Sign-In button
+  const googleButton = await page.waitForSelector("text/Sign in with Google");
+  await ctx.takeScreenshot("google-login-before-click");
+  await googleButton?.click();
+  await ctx.takeScreenshot("google-login-after-click");
+
+  /* ── 3️⃣  Wait for loginWithGoogle request to /graphql ────────────────── */
+  await page.waitForResponse((res) => {
+    if (res.request().method() !== "POST" || !res.url().endsWith("/graphql")) {
+      return false;
+    }
+    try {
+      const body = JSON.parse(res.request().postData() ?? "{}");
+      return typeof body.query === "string" &&
+        body.query.includes("loginWithGoogle");
+    } catch {
+      return false;
+    }
+  });
+
+  const recheckedLoggedInDiv = await ctx.page.waitForSelector(
+    "::-p-text(logged in as)",
+  );
+
+  const string = await recheckedLoggedInDiv?.evaluate((el) => el.textContent) ??
+    "";
+
+  /* 6️⃣  Confirm it shows the correct typename */
+
+  assertStringIncludes(
+    string,
+    "CurrentViewerLoggedIn",
+    'Should contain "CurrentViewerLoggedIn"',
+  );
+
+  await teardownE2ETest(ctx);
+});

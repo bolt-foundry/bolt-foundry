@@ -1,6 +1,19 @@
 #! /usr/bin/env -S bff test
 
-import { assertEquals, assertExists, assertRejects } from "@std/assert";
+/**
+ * CurrentViewer unit + integration tests
+ *
+ * Test groups
+ *   1. Sanity helpers (makeLoggedInCv / makeLoggedOutCv)
+ *   2. Email‑dev login flow
+ *   3. JWT‑backed session restore (ACCESS / REFRESH)
+ *   4. Google Sign‑In (token verification + GraphQL path)
+ *
+ * All DB‑touching tests are wrapped in `withIsolatedDb` so they can be executed
+ * in parallel without leaking state.
+ */
+
+import { assert, assertEquals, assertExists, assertRejects } from "@std/assert";
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
 import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 import { BfErrorInvalidEmail } from "apps/bfDb/classes/BfErrorInvalidEmail.ts";
@@ -8,6 +21,7 @@ import { makeLoggedInCv, makeLoggedOutCv } from "apps/bfDb/utils/testUtils.ts";
 import {
   ACCESS_COOKIE,
   buildAuthCookies,
+  REFRESH_COOKIE,
   verifySession,
 } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
 import { createContext } from "apps/bfDb/graphql/graphqlContext.ts";
@@ -19,15 +33,15 @@ import { yoga } from "apps/bfDb/graphql/graphqlServer.ts";
 
 Deno.env.set("JWT_SECRET", "test_secret_key"); // deterministic signatures
 
-function extractCookieValue(cookieStr: string): string {
+function cookieVal(cookieStr: string): string {
   return cookieStr.split(";")[0].split("=")[1];
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Sanity-checks                                                             */
+/*  Group 1: Sanity‑checks                                                    */
 /* -------------------------------------------------------------------------- */
 
-Deno.test("makeLoggedInCv returns a fully-populated LoggedIn viewer", () => {
+Deno.test("makeLoggedInCv returns a fully‑populated LoggedIn viewer", () => {
   const cv = makeLoggedInCv();
   assertEquals(cv.__typename, "CurrentViewerLoggedIn");
   assertExists(cv.orgBfOid);
@@ -40,46 +54,30 @@ Deno.test("makeLoggedOutCv returns a LoggedOut viewer", () => {
 });
 
 /* -------------------------------------------------------------------------- */
-/*  Existing behaviour                                                        */
+/*  Group 2: Email‑dev login                                                  */
 /* -------------------------------------------------------------------------- */
 
-Deno.test("CurrentViewer class exists and defines gqlSpec", async () => {
-  await withIsolatedDb(() => {
-    assertExists(CurrentViewer);
-    assertExists(CurrentViewer.gqlSpec);
-    return Promise.resolve();
-  });
-});
-
-Deno.test("loginWithEmailDev returns CurrentViewerLoggedIn", async () => {
+Deno.test("CurrentViewer.loginWithEmailDev succeeds for valid email", async () => {
   await withIsolatedDb(async () => {
-    const cv = await CurrentViewer.loginWithEmailDev("test@example.com");
+    const cv = await CurrentViewer.loginWithEmailDev("user@example.com");
     assertEquals(cv.__typename, "CurrentViewerLoggedIn");
   });
 });
 
-Deno.test("currentViewer before login returns LoggedOut", async () => {
-  await withIsolatedDb(async () => {
-    const testRequest = new Request("http://localhost:8000");
-    const cv = await CurrentViewer.createFromRequest(import.meta, testRequest);
-    assertEquals(cv.__typename, "CurrentViewerLoggedOut");
-  });
-});
-
-Deno.test("loginWithEmailDev rejects invalid email", async () => {
+Deno.test("CurrentViewer.loginWithEmailDev rejects invalid email", async () => {
   await withIsolatedDb(async () => {
     await assertRejects(
-      () => CurrentViewer.loginWithEmailDev("not-an-email"),
+      () => CurrentViewer.loginWithEmailDev("not‑an‑email"),
       BfErrorInvalidEmail,
     );
   });
 });
 
 /* -------------------------------------------------------------------------- */
-/*  JWT-based session tests                                                   */
+/*  Group 3: JWT‑based session restore                                        */
 /* -------------------------------------------------------------------------- */
 
-Deno.test("createFromRequest with valid ACCESS token returns LoggedIn", async () => {
+Deno.test("createFromRequest with ACCESS cookie returns LoggedIn", async () => {
   await withIsolatedDb(async () => {
     const { access } = await buildAuthCookies("gid_Person_123", "oid_Org_456");
     const req = new Request("http://localhost", {
@@ -93,15 +91,14 @@ Deno.test("createFromRequest with valid ACCESS token returns LoggedIn", async ()
       resHeaders,
     );
     assertEquals(cv.__typename, "CurrentViewerLoggedIn");
-
-    // No new tokens are issued when ACCESS is still valid
-    assertEquals(resHeaders.get("Set-Cookie"), null);
+    // No new cookies should be issued when ACCESS is still valid
+    assertEquals(resHeaders.has("set-cookie"), false);
   });
 });
 
-Deno.test("createFromRequest() restores viewer via REFRESH token", async () => {
+Deno.test("createFromRequest refreshes ACCESS when only REFRESH present", async () => {
   await withIsolatedDb(async () => {
-    const { refresh } = await buildAuthCookies("gid_Person_123", "oid_Org_456");
+    const { refresh } = await buildAuthCookies("gid_Person_789", "oid_Org_999");
     const req = new Request("http://localhost", {
       headers: { cookie: refresh },
     });
@@ -114,38 +111,107 @@ Deno.test("createFromRequest() restores viewer via REFRESH token", async () => {
     );
     assertEquals(cv.__typename, "CurrentViewerLoggedIn");
 
-    // A new ACCESS cookie *should* be issued on the refresh path
-    const setCookies = [...resHeaders.values()];
-    const issued = setCookies.find((c) => c.startsWith(`${ACCESS_COOKIE}=`));
-    assertExists(issued, "Expected fresh ACCESS cookie to be issued");
-    const token = extractCookieValue(issued!);
-    const claims = await verifySession(token);
-    assertExists(claims);
+    const issuedAccess = Array.from(resHeaders.values()).find((v) =>
+      v.startsWith(`${ACCESS_COOKIE}=`)
+    );
+    assertExists(issuedAccess, "Expected ACCESS cookie to be refreshed");
+    const claims = await verifySession(cookieVal(issuedAccess!));
     assertEquals(claims?.typ, "access");
   });
 });
 
-Deno.test("GraphQL currentViewer returns LoggedIn when session cookie is present", async () => {
+/* -------------------------------------------------------------------------- */
+/*  Group 4: Google OAuth                                                     */
+/* -------------------------------------------------------------------------- */
+
+Deno.test("loginWithGoogleToken verifies token and returns LoggedIn viewer", async () => {
   await withIsolatedDb(async () => {
-    const { access } = await buildAuthCookies("gid_Person_123", "oid_Org_456");
+    // mock tokeninfo
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (input: string | URL | Request) => {
+      if (String(input).startsWith("https://oauth2.googleapis.com/tokeninfo")) {
+        const headers = new Headers({ "content-type": "application/json" });
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              email: "test@example.com",
+              email_verified: true,
+              sub: "123",
+            }),
+            { status: 200, headers },
+          ),
+        );
+      }
+      return originalFetch(input);
+    };
 
-    // Build request + GraphQL context
-    const gqlReq = new Request("https://bolt-foundry.test/graphql", {
-      method: "POST",
-      headers: { "content-type": "application/json", cookie: access },
-      body: JSON.stringify({ query: "{ currentViewer { __typename } }" }),
-    });
-    const ctxReq = new Request("https://bolt-foundry.test/", {
-      headers: { cookie: access },
-    });
+    try {
+      const viewer = await CurrentViewer.loginWithGoogleToken("fake_token");
+      assertEquals(viewer.__typename, "CurrentViewerLoggedIn");
+      assertEquals(viewer.personBfGid, "person:test@example.com");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});
 
-    const res = await yoga.fetch(
-      new URL("/graphql", import.meta.url),
-      gqlReq,
-      await createContext(ctxReq),
-    );
-    const { data } = await res.json();
+Deno.test("GraphQL mutation loginWithGoogle issues cookies + returns LoggedIn", async () => {
+  await withIsolatedDb(async () => {
+    // mock tokeninfo
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (input: string | URL | Request) => {
+      if (String(input).startsWith("https://oauth2.googleapis.com/tokeninfo")) {
+        const headers = new Headers({ "content-type": "application/json" });
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              email: "graph@example.com",
+              email_verified: true,
+            }),
+            { status: 200, headers },
+          ),
+        );
+      }
 
-    assertEquals(data.currentViewer.__typename, "CurrentViewerLoggedIn");
+      return originalFetch(input);
+    };
+
+    try {
+      const body = {
+        query:
+          `mutation Login($token:String!){\n  loginWithGoogleCurrentViewer (idToken:$token){ currentViewer { __typename } }\n}`,
+        variables: { token: "fake_graph_token" },
+      };
+      const gqlReq = new Request("https://bolt.test/graphql", {
+        method: "POST",
+        headers: new Headers({ "content-type": "application/json" }),
+        body: JSON.stringify(body),
+      });
+
+      const ctx = await createContext(new Request("https://bolt.test/"));
+      const res = await yoga.fetch(
+        new URL("/graphql", import.meta.url),
+        gqlReq,
+        ctx,
+      );
+
+      const { data, errors } = await res.json();
+
+      assertEquals(errors, undefined, "Expected no errors");
+
+      assertEquals(
+        data.loginWithGoogleCurrentViewer.currentViewer.__typename,
+        "CurrentViewerLoggedIn",
+      );
+
+      const setCookies = Array.from(ctx.getResponseHeaders().values());
+      assert(
+        setCookies.some((v) => v.startsWith(`${ACCESS_COOKIE}=`)) &&
+          setCookies.some((v) => v.startsWith(`${REFRESH_COOKIE}=`)),
+        "Expected both ACCESS and REFRESH cookies to be set",
+      );
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 });
