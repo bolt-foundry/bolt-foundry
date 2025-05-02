@@ -1,5 +1,6 @@
 #! /usr/bin/env -S deno run --allow-net=0.0.0.0,us.i.posthog.com --allow-env --watch
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "packages/logger/logger.ts";
 import type { Handler } from "apps/web/web.tsx";
 import { handleRequest } from "apps/web/handlers/mainHandler.ts";
@@ -12,7 +13,9 @@ const logger = getLogger(import.meta);
 function registerCollectorRoutes(): Map<string, Handler> {
   const routes = new Map<string, Handler>();
   let appPosthog: PostHog | null = null;
-  const appPosthogApiKey = Deno.env.get("APPS_COLLECTOR_POSTHOG_API_KEY");
+  const appPosthogApiKey = getConfigurationVariable(
+    "APPS_COLLECTOR_POSTHOG_API_KEY",
+  );
   if (appPosthogApiKey) {
     appPosthog = new PostHog(appPosthogApiKey);
   }
@@ -74,7 +77,7 @@ async function handleCollectorRequest(req: Request): Promise<Response> {
 }
 
 // Use a different port from the web service
-const port = Number(Deno.env.get("COLLECTOR_PORT") ?? 8001);
+const port = Number(getConfigurationVariable("COLLECTOR_PORT") ?? 8001);
 
 // Start the server if this is the main module
 if (import.meta.main) {
