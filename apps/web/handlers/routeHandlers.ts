@@ -31,7 +31,7 @@ export async function handleAppRoute(
 
   const configurationVariables = configurationVariableKeys.reduce(
     (acc, key) => {
-      const val = getConfigurationVariable(key);
+      const val = getConfigurationVariable(key, true);
       acc[key] ??= val;
       return acc;
     },
@@ -91,7 +91,7 @@ export async function handleIsographRoute(
 
   const configurationVariables = configurationVariableKeys.reduce(
     (acc, key) => {
-      const val = getConfigurationVariable(key);
+      const val = getConfigurationVariable(key, true);
       acc[key] ??= val;
       return acc;
     },
