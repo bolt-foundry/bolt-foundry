@@ -11,14 +11,6 @@ jobs:
     permissions:
       contents: read
       id-token: write # OIDC for FlakeHub
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      ASSEMBLY_AI_KEY: ${{ secrets.ASSEMBLY_AI_KEY }}
-      OPEN_AI_API_KEY: ${{ secrets.OPEN_AI_API_KEY }}
-      OPEN_ROUTER_API_KEY: ${{ secrets.OPEN_ROUTER_API_KEY }}
-      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-      WAITLIST_API_KEY: ${{ secrets.WAITLIST_API_KEY }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     steps:
       - uses: actions/checkout@v4
@@ -41,19 +33,35 @@ jobs:
             ${{ env.DENO_DIR }}
             vendor
             node_modules
-          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/lock*') }}
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
           restore-keys: |
             deno-${{ runner.os }}-
 
       - name: Put repo tools on PATH
         run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
 
+      - name: Warm 1Password secrets and export for nix
+        shell: bash
+        run: |
+          nix develop . --accept-flake-config --impure --command bash -c '
+            deno install
+            # Produce .env right next to the repo (infra/bin/... writes ./.env by default)
+            ./packages/get-configuration-var/get-configuration-var.ts
+  
+            # Make every KEY=value line an env‑var for later steps
+            while IFS= read -r line; do
+              # ① persist to the runner‑wide env file
+              echo "$line" >> "$GITHUB_ENV"
+              # ② prevent accidental leakage in logs
+              echo "::add-mask::${line#*=}"
+            done < .env
+          '
+
       - name: Enter dev shell & run tests
         run: |
           nix develop . --accept-flake-config --impure --command bash -c '
             deno --version
             deno info
-            deno install
             bff ci --include-bolt-foundry --skip-build
           '
 

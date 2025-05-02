@@ -79,8 +79,12 @@
     "exclude": [
       "**/__generated__/**"
     ],
+    "plugins": ["./infra/lint/bolt-foundry.ts"],
+
     "rules": {
       "include": [
+        "bolt-foundry/use-configuration-vars",
+        "no-slow-types",
         "no-console",
         "no-external-import",
         "no-self-compare",

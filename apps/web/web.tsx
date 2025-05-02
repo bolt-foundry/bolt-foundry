@@ -1,13 +1,17 @@
 #! /usr/bin/env -S deno run --allow-net=localhost:8000 --allow-env
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "packages/logger/logger.ts";
 import {
   defaultRoute,
   registerAllRoutes,
 } from "apps/web/routes/routeRegistry.ts";
 import { handleRequest } from "apps/web/handlers/mainHandler.ts";
+import { startAutoRefresh } from "packages/get-configuration-var/get-configuration-var.ts";
 
 const _logger = getLogger(import.meta);
+
+startAutoRefresh();
 
 export type Handler = (
   request: Request,
@@ -23,7 +27,7 @@ async function handleRequestWrapper(req: Request): Promise<Response> {
 }
 
 // Use the port from environment or default 8000
-const port = Number(Deno.env.get("WEB_PORT") ?? 8000);
+const port = Number(getConfigurationVariable("WEB_PORT") ?? 8000);
 
 // Start the server if this is the main module
 if (import.meta.main) {
