@@ -1,16 +1,10 @@
 import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@isograph/react';
 import { Query__LoginPage__param } from './param_type.ts';
 import { LoginPage as resolver } from '../../../../components/LoginPage.tsx';
+import CurrentViewer__LoginWithGoogleButton__resolver_reader from '../../CurrentViewer/LoginWithGoogleButton/resolver_reader.ts';
 import CurrentViewerLoggedIn__asCurrentViewerLoggedIn__resolver_reader from '../../CurrentViewerLoggedIn/asCurrentViewerLoggedIn/resolver_reader.ts';
 
 const readerAst: ReaderAst<Query__LoginPage__param> = [
-  {
-    kind: "Scalar",
-    fieldName: "__typename",
-    alias: null,
-    arguments: null,
-    isUpdatable: false,
-  },
   {
     kind: "Linked",
     fieldName: "currentViewer",
@@ -25,6 +19,13 @@ const readerAst: ReaderAst<Query__LoginPage__param> = [
         alias: null,
         arguments: null,
         isUpdatable: false,
+      },
+      {
+        kind: "Resolver",
+        alias: "LoginWithGoogleButton",
+        arguments: null,
+        readerArtifact: CurrentViewer__LoginWithGoogleButton__resolver_reader,
+        usedRefetchQueries: [],
       },
       {
         kind: "Linked",
