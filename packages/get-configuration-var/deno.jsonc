@@ -3,5 +3,8 @@
   "version": "0.0.0-dev.0",
   "exports": {
     ".": "./get-configuration-var.ts"
+  },
+  "imports": {
+    "@bolt-foundry/logger": "../logger/logger.ts"
   }
 }
