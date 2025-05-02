@@ -136,6 +136,7 @@
     "npm:@types/cors@^2.8.17": "2.8.17",
     "npm:@types/express-session@^1.18.0": "1.18.1",
     "npm:@types/express@4.17.21": "4.17.21",
+    "npm:@types/google.accounts@^0.0.15": "0.0.15",
     "npm:@types/jsonwebtoken@^9.0.8": "9.0.8",
     "npm:@types/matter-js@~0.19.8": "0.19.8",
     "npm:@types/node@20.16.11": "20.16.11",
@@ -3533,6 +3534,9 @@
         "@types/qs",
         "@types/serve-static"
       ]
+    },
+    "@types/google.accounts@0.0.15": {
+      "integrity": "sha512-NiydIuJzwdpnWNqTPOeDzGXhzz46Ll6T4rN3YWSm9Zfx/8ZfbwFbzyPSw1Tkz4uE3gQiU+fRj4KvBVUuHmk+KQ=="
     },
     "@types/hast@3.0.4": {
       "integrity": "sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==",
@@ -9343,6 +9347,7 @@
         "npm:@replit/extensions@^1.10.0",
         "npm:@replit/object-storage@1",
         "npm:@simplewebauthn/browser@^13.1.0",
+        "npm:@types/google.accounts@^0.0.15",
         "npm:@types/jsonwebtoken@^9.0.8",
         "npm:@types/matter-js@~0.19.8",
         "npm:@types/node@^22.10.7",
