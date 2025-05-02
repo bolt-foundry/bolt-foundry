@@ -6,6 +6,7 @@ import { register } from "infra/bff/bff.ts";
 import { runShellCommandWithOutput } from "infra/bff/shellBase.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { loggerGithub } from "infra/bff/githubLogger.ts";
+import { refreshAllSecrets } from "packages/get-configuration-var/get-configuration-var.ts"
 
 const logger = getLogger(import.meta);
 
@@ -358,6 +359,7 @@ async function runInstallStep(_useGithub: boolean): Promise<number> {
 // ----------------------------------------------------------------------------
 
 async function ciCommand(options: string[]) {
+  await refreshAllSecrets()
   logger.info("Running CI checks...");
   const useGithub = options.includes("-g");
 

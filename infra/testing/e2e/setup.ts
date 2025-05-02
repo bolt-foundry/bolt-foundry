@@ -1,8 +1,8 @@
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { type Browser, launch, type Page } from "puppeteer-core";
 import { getLogger } from "packages/logger/logger.ts";
 import { ensureDir } from "@std/fs";
 import { join } from "@std/path";
-import { getConfigurationVariable } from "packages/get-configuration-var/get-configuration-var.ts";
 
 const logger = getLogger(import.meta);
 
@@ -50,7 +50,7 @@ export async function setupE2ETest(options: {
     }
 
     // Ensure screenshots directory exists, using environment variable if available
-    const runSpecificDir = Deno.env.get("BF_E2E_SCREENSHOT_DIR");
+    const runSpecificDir = getConfigurationVariable("BF_E2E_SCREENSHOT_DIR");
     const screenshotsDir = runSpecificDir ||
       join(Deno.cwd(), "tmp", "screenshots");
     await ensureDir(screenshotsDir);
