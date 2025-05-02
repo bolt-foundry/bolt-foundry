@@ -16,9 +16,9 @@ type FormData = { email: string };
 /* -------------------------------------------------------------------------- */
 export const LoginPage = iso(`
   field Query.LoginPage @component {
-    __typename
     currentViewer {
       __typename
+      LoginWithGoogleButton
       asCurrentViewerLoggedIn {
         __typename
       }
@@ -53,34 +53,42 @@ export const LoginPage = iso(`
   if (responseElement) {
     return <div>{responseElement}</div>;
   }
+
   if (data.currentViewer.asCurrentViewerLoggedIn?.__typename) {
     return <div>logged in as {data.currentViewer.__typename}</div>;
   }
 
+  const LoginWithGoogleButton = data.currentViewer.LoginWithGoogleButton ??
+    (() => null);
+
   return (
-    <BfDsForm
-      initialData={initialData}
-      onSubmit={handleSubmit}
-      xstyle={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        width: 320,
-      }}
-    >
-      <BfDsFormTextInput
-        id="email"
-        title="Email"
-        type="email"
-        placeholder="you@example.com"
-        required
-      />
-      <BfDsFormSubmitButton
-        disabled={submitting}
-        showSpinner={submitting}
-        text={submitting ? "Signing in…" : "Continue"}
-      />
-      {error && <div className="colorAlert">{error}</div>}
-    </BfDsForm>
+    <>
+      <LoginWithGoogleButton />;
+
+      <BfDsForm
+        initialData={initialData}
+        onSubmit={handleSubmit}
+        xstyle={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+          width: 320,
+        }}
+      >
+        <BfDsFormTextInput
+          id="email"
+          title="Email"
+          type="email"
+          placeholder="you@example.com"
+          required
+        />
+        <BfDsFormSubmitButton
+          disabled={submitting}
+          showSpinner={submitting}
+          text={submitting ? "Signing in…" : "Continue"}
+        />
+        {error && <div className="colorAlert">{error}</div>}
+      </BfDsForm>
+    </>
   );
 });
