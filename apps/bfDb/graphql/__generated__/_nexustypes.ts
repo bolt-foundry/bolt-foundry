@@ -83,6 +83,9 @@ export interface NexusGenObjects {
   LoginWithEmailDevPayload: { // root type
     currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
   }
+  LoginWithGooglePayload: { // root type
+    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
+  }
   Mutation: {};
   Query: {};
   Waitlist: { // root type
@@ -94,6 +97,7 @@ export interface NexusGenInterfaces {
   BfNode: core.Discriminate<'BfOrganization', 'optional'> | core.Discriminate<'BfPerson', 'optional'>;
   BfNodeBase: core.Discriminate<'BfEdge', 'optional'> | core.Discriminate<'BfOrganization', 'optional'> | core.Discriminate<'BfPerson', 'optional'>;
   CurrentViewer: core.Discriminate<'CurrentViewerLoggedIn', 'optional'> | core.Discriminate<'CurrentViewerLoggedOut', 'optional'>;
+  GraphQLObjectBase: core.Discriminate<'CurrentViewerLoggedIn', 'optional'> | core.Discriminate<'CurrentViewerLoggedOut', 'optional'>;
 }
 
 export interface NexusGenUnions {
@@ -138,9 +142,13 @@ export interface NexusGenFieldTypes {
   LoginWithEmailDevPayload: { // field return type
     currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
   }
+  LoginWithGooglePayload: { // field return type
+    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
+  }
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinPayload'] | null; // JoinPayload
     loginWithEmailDevCurrentViewer: NexusGenRootTypes['LoginWithEmailDevPayload'] | null; // LoginWithEmailDevPayload
+    loginWithGoogleCurrentViewer: NexusGenRootTypes['LoginWithGooglePayload'] | null; // LoginWithGooglePayload
   }
   Query: { // field return type
     currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
@@ -155,6 +163,11 @@ export interface NexusGenFieldTypes {
     id: string | null; // ID
   }
   CurrentViewer: { // field return type
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
+  GraphQLObjectBase: { // field return type
     id: string | null; // ID
     orgBfOid: string | null; // String
     personBfGid: string | null; // String
@@ -196,9 +209,13 @@ export interface NexusGenFieldTypeNames {
   LoginWithEmailDevPayload: { // field return type name
     currentViewer: 'CurrentViewer'
   }
+  LoginWithGooglePayload: { // field return type name
+    currentViewer: 'CurrentViewer'
+  }
   Mutation: { // field return type name
     joinWaitlist: 'JoinPayload'
     loginWithEmailDevCurrentViewer: 'LoginWithEmailDevPayload'
+    loginWithGoogleCurrentViewer: 'LoginWithGooglePayload'
   }
   Query: { // field return type name
     currentViewer: 'CurrentViewer'
@@ -217,6 +234,11 @@ export interface NexusGenFieldTypeNames {
     orgBfOid: 'String'
     personBfGid: 'String'
   }
+  GraphQLObjectBase: { // field return type name
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
 }
 
 export interface NexusGenArgTypes {
@@ -229,6 +251,9 @@ export interface NexusGenArgTypes {
     loginWithEmailDevCurrentViewer: { // args
       email: string; // String!
     }
+    loginWithGoogleCurrentViewer: { // args
+      idToken: string; // String!
+    }
   }
 }
 
@@ -236,15 +261,17 @@ export interface NexusGenAbstractTypeMembers {
   BfNode: "BfOrganization" | "BfPerson"
   BfNodeBase: "BfEdge" | "BfOrganization" | "BfPerson"
   CurrentViewer: "CurrentViewerLoggedIn" | "CurrentViewerLoggedOut"
+  GraphQLObjectBase: "CurrentViewerLoggedIn" | "CurrentViewerLoggedOut"
 }
 
 export interface NexusGenTypeInterfaces {
   BfEdge: "BfNodeBase"
   BfOrganization: "BfNode" | "BfNodeBase"
   BfPerson: "BfNode" | "BfNodeBase"
-  CurrentViewerLoggedIn: "CurrentViewer"
-  CurrentViewerLoggedOut: "CurrentViewer"
+  CurrentViewerLoggedIn: "CurrentViewer" | "GraphQLObjectBase"
+  CurrentViewerLoggedOut: "CurrentViewer" | "GraphQLObjectBase"
   BfNode: "BfNodeBase"
+  CurrentViewer: "GraphQLObjectBase"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
@@ -261,7 +288,7 @@ export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "BfNode" | "BfNodeBase" | "CurrentViewer";
+export type NexusGenAbstractsUsingStrategyResolveType = "BfNode" | "BfNodeBase" | "CurrentViewer" | "GraphQLObjectBase";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
