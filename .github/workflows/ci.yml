@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # OIDC for FlakeHub
+      id-token: write   # OIDC for FlakeHub
     env:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
@@ -42,16 +42,17 @@ jobs:
       - name: Put repo tools on PATH
         run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
 
-      - name: Enter dev shell & run tests
+      # 👇 Everything below now runs *inside* the dev-shell
+      - name: Enter dev-shell & run tests
         run: |
-          nix develop . --accept-flake-config --impure --command bash -c '
+          nix develop . --accept-flake-config --command bash -euc '
             deno --version
             deno info
             deno install
             bff ci --include-bolt-foundry --skip-build
           '
 
-      # 2️⃣ SAVE  (only if we didn't hit above)
+      # 2️⃣ SAVE (only if we didn’t hit above)
       - name: Save Deno / vendored / node cache
         if: ${{ steps.cache-deno.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4

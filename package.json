@@ -17,6 +17,7 @@
     "@replit/extensions": "^1.10.0",
     "@replit/object-storage": "^1.0.0",
     "@simplewebauthn/browser": "^13.1.0",
+    "@types/google.accounts": "^0.0.15",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/matter-js": "^0.19.8",
     "@types/node": "^22.10.7",

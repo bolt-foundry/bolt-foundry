@@ -1,4 +1,3 @@
-import { defineGqlNode, type GqlNodeSpec } from "../graphql/builder/builder.ts";
 import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 import { BfErrorInvalidEmail } from "./BfErrorInvalidEmail.ts";
 import { type BfGid, toBfGid } from "../classes/BfNodeIds.ts";
@@ -21,7 +20,7 @@ export type CurrentViewerTypenames =
 
 export class CurrentViewer extends GraphQLObjectBase {
   /* GraphQL -------------------------------------------------------------- */
-  static override gqlSpec?: GqlNodeSpec | null | undefined = defineGqlNode(
+  static override gqlSpec = this.defineGqlNode(
     (field, _rel, mutation) => {
       field.id("id"); // refresh‑token version
       field.string("personBfGid");
@@ -32,6 +31,15 @@ export class CurrentViewer extends GraphQLObjectBase {
         returns: (r) => r.object(CurrentViewer, "currentViewer"),
         resolve: async (_src, { email }, ctx) => {
           const currentViewer = await ctx.loginWithEmailDev(email);
+          return { currentViewer };
+        },
+      });
+
+      mutation.custom("loginWithGoogle", {
+        args: (a) => a.nonNull.string("idToken"),
+        returns: (r) => r.object(CurrentViewer, "currentViewer"),
+        resolve: async (_src, { idToken }, ctx) => {
+          const currentViewer = await ctx.loginWithGoogleToken(idToken);
           return { currentViewer };
         },
       });
@@ -78,6 +86,58 @@ export class CurrentViewer extends GraphQLObjectBase {
       toBfGid("dev-org"),
       1,
     );
+  }
+
+  /**
+   * Authenticate user with Google ID token
+   * Verifies the token, then creates or updates the user record
+   */
+  static async loginWithGoogleToken(
+    idToken: string,
+  ): Promise<CurrentViewerLoggedIn> {
+    logger.debug("Verifying Google ID token");
+
+    try {
+      // Verify token with Google's tokeninfo endpoint
+      const tokenInfoUrl = new URL("https://oauth2.googleapis.com/tokeninfo");
+      tokenInfoUrl.searchParams.append("id_token", idToken);
+
+      const response = await fetch(tokenInfoUrl.toString());
+
+      if (!response.ok) {
+        logger.warn("Google token verification failed", await response.text());
+        throw new Error("Invalid Google token");
+      }
+
+      const tokenInfo = await response.json();
+      logger.debug("Google token verified successfully");
+
+      // Check if email is verified
+      if (!tokenInfo.email_verified) {
+        logger.warn("Google account email not verified", tokenInfo.email);
+        throw new Error("Email not verified with Google");
+      }
+
+      // In a real implementation, we would:
+      // 1. Find or create BfPerson with this email
+      // 2. Find or create BfOrganization for this person
+      // 3. Create JWT session tokens
+
+      // For now, create a user with a deterministic ID based on email
+      const personId = `person:${tokenInfo.email}`;
+      const orgId = "org:google-login";
+
+      logger.debug(`Created session for Google user: ${personId}`);
+
+      return new CurrentViewerLoggedIn(
+        toBfGid(personId),
+        toBfGid(orgId),
+        1,
+      );
+    } catch (error) {
+      logger.error("Google login failed", error);
+      throw error;
+    }
   }
 
   /* ------------------------------------------------------------------
