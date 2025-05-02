@@ -2,6 +2,7 @@
 
 // infra/bff/friends/githubAnnotations.ts
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "packages/logger/logger.ts";
 import { runShellCommandWithOutput } from "infra/bff/shellBase.ts";
 
@@ -46,7 +47,7 @@ function normalizeFilePath(filename?: string): string {
   if (!filename) return "unknown.ts";
 
   let out = filename.replace(/^file:\/\//, "");
-  const workspace = Deno.env.get("GITHUB_WORKSPACE");
+  const workspace = getConfigurationVariable("GITHUB_WORKSPACE");
   // In Replit, use the workspace directory structure
   const replWorkspace = "/home/runner/workspace";
 
