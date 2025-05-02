@@ -44,12 +44,10 @@ jobs:
 
       - name: Enter dev shell & run tests
         run: |
-          nix develop . --accept-flake-config --impure --command bash -c '
-            deno --version
-            deno info
-            deno install
-            bff ci --include-bolt-foundry --skip-build
-          '
+          deno --version
+          deno info
+          deno install
+          bff ci --include-bolt-foundry --skip-build
 
       # 2️⃣ SAVE  (only if we didn't hit above)
       - name: Save Deno / vendored / node cache
