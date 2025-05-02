@@ -8,7 +8,7 @@ import { DMChannel, type Message, NewsChannel, TextChannel } from "discord.js";
 const logger = getLogger(import.meta);
 
 // Get port from environment variable or use 9999 as default
-const port = Number(Deno.env.get("PORT") ?? 9999);
+const port = Number(getConfigurationVariable("PORT") ?? 9999);
 
 // Discord client instance
 let client: discord.Client | null = null;
