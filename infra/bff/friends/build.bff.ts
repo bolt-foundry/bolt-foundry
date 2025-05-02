@@ -6,7 +6,8 @@ import {
   ENVIRONMENT_ONLY_KEYS,
   getConfigurationVariable,
   INTERNAL_KEYS,
-} from "@bolt-foundry/get-configuration-var";
+  refreshAllSecrets,
+} from "packages/get-configuration-var/get-configuration-var.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { DeploymentEnvs } from "infra/constants/deploymentEnvs.ts";
 import {
@@ -15,6 +16,8 @@ import {
 } from "apps/boltFoundry/__generated__/configKeys.ts";
 
 const logger = getLogger(import.meta);
+
+await refreshAllSecrets()
 
 const allowedEnvironmentVariables = [
   ...ENVIRONMENT_ONLY_KEYS,
