@@ -33,7 +33,7 @@ jobs:
             ${{ env.DENO_DIR }}
             vendor
             node_modules
-          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/lock*') }}
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
           restore-keys: |
             deno-${{ runner.os }}-
 
