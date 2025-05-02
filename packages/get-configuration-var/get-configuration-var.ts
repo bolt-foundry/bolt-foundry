@@ -34,6 +34,8 @@ export const ENVIRONMENT_ONLY_KEYS = [
   "TF_BUILD",
   "USER",
   "WS_NO_BUFFER_UTIL",
+  "XDG_CONFIG_HOME",
+  "XDG_DATA_HOME",
 ];
 /** Extra internal keys that _should_ bypass tag-scraping. */
 export const INTERNAL_KEYS: Set<string> = new Set<string>([
@@ -257,13 +259,16 @@ async function resolveTTL(): Promise<number> {
 }
 
 /** Starts the periodic 1Password warm-up loop. */
-export function startAutoRefresh(): {
+export function startAutoRefresh(): Promise<void> & {
   stop(): Promise<void>;
   [Symbol.dispose](): Promise<void>;
   [Symbol.asyncDispose](): Promise<void>;
 } {
-  refreshAllSecrets().catch(() => {});
-  resolveTTL().catch(() => {});
+  const awaitable = Promise.allSettled([
+    refreshAllSecrets().catch(() => {}),
+    resolveTTL().catch(() => {}),
+  ]).then(() => {});
+
   const pending = new Set<Promise<void>>();
   const timer = setInterval(() => {
     const run = refreshAllSecrets().catch(() => {
@@ -277,7 +282,12 @@ export function startAutoRefresh(): {
     await Promise.allSettled(pending);
     pending.clear();
   }
-  return { stop, [Symbol.dispose]: stop, [Symbol.asyncDispose]: stop };
+  return {
+    ...awaitable,
+    stop,
+    [Symbol.dispose]: stop,
+    [Symbol.asyncDispose]: stop,
+  };
 }
 
 /**
