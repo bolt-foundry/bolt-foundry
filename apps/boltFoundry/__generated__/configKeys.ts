@@ -1,7 +1,7 @@
 /* @generated */
 // Source vault: "c7qk6vxetcikihgccsc2p7d37q"
 // Public tag  : "bolt-foundry-frontend-public"  (6 keys)
-// Private tag : "bolt-foundry-backend-private" (27 keys)
+// Private tag : "bolt-foundry-backend-private" (28 keys)
 
 export const PUBLIC_CONFIG_KEYS = [
   "APPS_INTERNALBF_POSTHOG_API_KEY",
@@ -18,6 +18,7 @@ export const PRIVATE_CONFIG_KEYS = [
   "BF_CACHE_ENV",
   "BF_CACHE_TTL_SEC",
   "BF_ENV",
+  "COLLECTOR_PORT",
   "DATABASE_BACKEND",
   "DATABASE_URL",
   "DATABASE_URL_CONTACTS",
