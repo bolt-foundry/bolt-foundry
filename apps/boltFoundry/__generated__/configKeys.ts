@@ -1,6 +1,6 @@
 /* @generated */
 // Source vault: "c7qk6vxetcikihgccsc2p7d37q"
-// Public tag  : "bolt-foundry-frontend-public"  (6 keys)
+// Public tag  : "bolt-foundry-frontend-public"  (7 keys)
 // Private tag : "bolt-foundry-backend-private" (27 keys)
 
 export const PUBLIC_CONFIG_KEYS = [
@@ -9,7 +9,8 @@ export const PUBLIC_CONFIG_KEYS = [
   "LOG_LEVEL",
   "LOG_LOGGERS_TO_ENABLE",
   "POSTHOG_API_KEY",
-  "UNIT-TEST-PUBLIC",
+  "UNIT_TEST_PUBLIC",
+  "VALUE_THAT_ISNT_REAL",
 ] as const;
 
 export const PRIVATE_CONFIG_KEYS = [
@@ -37,7 +38,7 @@ export const PRIVATE_CONFIG_KEYS = [
   "THANKSBOT_DISCORD_TO_NOTION_MAP_DATABASE_ID",
   "THANKSBOT_NOTION_DATABASE_ID",
   "THANKSBOT_NOTION_TOKEN",
-  "UNIT-TEST-SECRET",
+  "UNIT_TEST_SECRET",
   "WAITLIST_API_KEY",
   "WEB_PORT",
 ] as const;

@@ -169,9 +169,11 @@ export function getConfigurationVariable(
 
   const b = browserEnv(name);
   if (isSet(b)) return b; // 1️⃣ compile-time env
-  const r = runtimeEnv(name);
-  if (isSet(r)) return r; // 2️⃣ runtime env
 
+  if (!requirePublic || !isPublicKey(name)) {
+    const r = runtimeEnv(name);
+    if (isSet(r)) return r; // 2️⃣ runtime
+  }
   // 3️⃣ cached secret
   const vPath = vaultId ? `op://${vaultId}/${name}/value` : "";
   const val = vPath ? valueCache.get(vPath) : undefined;
