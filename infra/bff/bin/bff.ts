@@ -3,6 +3,7 @@
 import { friendMap } from "infra/bff/bff.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { dirname, join } from "@std/path";
+import { refreshAllSecrets } from "packages/get-configuration-var/get-configuration-var.ts";
 
 const logger = getLogger(import.meta);
 

@@ -1,5 +1,6 @@
 #! /usr/bin/env -S bff
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { register } from "infra/bff/bff.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import startSpinner from "lib/terminalSpinner.ts";
@@ -8,7 +9,7 @@ const logger = getLogger(import.meta);
 
 register("remote:list", "list all currently mounted directories", async () => {
   startSpinner();
-  const bfPath = Deno.env.get("PWD");
+  const bfPath = getConfigurationVariable("PWD");
   if (!bfPath) {
     logger.error("BF_PATH is not set");
     return 1;
@@ -58,7 +59,7 @@ register(
   "unmount all or specific SSHFS directories",
   async ([dirName]) => {
     startSpinner();
-    const bfPath = Deno.env.get("PWD");
+    const bfPath = getConfigurationVariable("PWD");
     if (!bfPath) {
       logger.error("BF_PATH is not set");
       return 1;
@@ -124,11 +125,11 @@ register(
 const remoteHandler = async ([target, specificFolder]: Array<string>) => {
   startSpinner();
   if (!target) {
-    if (Deno.env.get("REPL_ID")) {
+    if (getConfigurationVariable("REPL_ID")) {
       logger.info("On your local machine, run:");
       logger.info(
-        `bff remote ${Deno.env.get("REPL_ID")}@${
-          Deno.env.get("REPLIT_DEV_DOMAIN")
+        `bff remote ${getConfigurationVariable("REPL_ID")}@${
+          getConfigurationVariable("REPLIT_DEV_DOMAIN")
         }`,
       );
       return 0;
@@ -176,7 +177,7 @@ const remoteHandler = async ([target, specificFolder]: Array<string>) => {
     return code;
   }
 
-  const bfPath = Deno.env.get("PWD");
+  const bfPath = getConfigurationVariable("PWD");
   const dirsToMount: string[] = [];
   const dirsToAvoid: Array<string> = [
     "bin",
