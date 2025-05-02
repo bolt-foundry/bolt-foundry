@@ -1,5 +1,6 @@
 #! /usr/bin/env -S bff
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { register } from "infra/bff/bff.ts";
 import {
   runningProcesses,
@@ -251,14 +252,16 @@ register(
           logger.info("OAuth token successfully read.");
           // You can now use the oauthToken as needed
 
-          const xdgGitPath = `${Deno.env.get("XDG_CONFIG_HOME")}/git`;
+          const xdgGitPath = `${
+            getConfigurationVariable("XDG_CONFIG_HOME")
+          }/git`;
           await Deno.mkdir(xdgGitPath, { recursive: true });
 
           await runShellCommand([
             "git",
             "config",
             "--file",
-            `${Deno.env.get("XDG_CONFIG_HOME")}/git/config`,
+            `${getConfigurationVariable("XDG_CONFIG_HOME")}/git/config`,
             `url.https://${oauthToken}@github.com.insteadOf`,
             "https://github.com",
           ]);

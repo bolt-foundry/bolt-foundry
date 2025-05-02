@@ -7,22 +7,20 @@
   inputs = {
     nixpkgs.url     = "github:NixOS/nixpkgs/26e168479fdc7a75fe55e457e713d8b5f794606a";
     flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/086a1ea6747bb27e0f94709dd26d12d443fa4845";
   };
 
   ########################
   ## 2. Outputs
   ########################
-  outputs = { self, nixpkgs, flake-utils, ... }:
+  outputs = { self, nixpkgs, flake-utils, nixpkgs-unstable, ... }:
     let
       ####################
       # mkDeps — common package list
       ####################
       mkDeps = { pkgs, system }:
         let
-          unstablePkgs = import (builtins.fetchTarball {
-            url    = "https://github.com/NixOS/nixpkgs/archive/5b0bc905a940438854c6f4e9d1947d7ce5ad7a88.tar.gz";
-            sha256 = "17bz4ns251l05apaayx4q7zlrva48gajgg5fym70f1i7656fx0jz";
-          }) { inherit system; };
+          unstablePkgs  = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
           lib = pkgs.lib;
         in
         [
@@ -44,7 +42,7 @@
     ############################################################
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = mkDeps { inherit pkgs system; };

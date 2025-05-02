@@ -2,6 +2,7 @@
 // Chooses and registers the default backend adapter once
 // per process based on env var DB_BACKEND_TYPE.
 // =====================================================
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { AdapterRegistry } from "./AdapterRegistry.ts";
 import { InMemoryAdapter } from "./InMemoryAdapter.ts";
 import { DatabaseBackendPg } from "../backend/DatabaseBackendPg.ts";
@@ -23,7 +24,8 @@ export function registerDefaultAdapter() {
     // fallthrough – nothing registered yet
   }
 
-  const env = Deno.env.get("DB_BACKEND_TYPE")?.toLowerCase() ?? "memory";
+  const env = getConfigurationVariable("DB_BACKEND_TYPE")?.toLowerCase() ??
+    "memory";
   logger.info(`registerDefaultAdapter → selecting '${env}' backend`);
 
   switch (env) {

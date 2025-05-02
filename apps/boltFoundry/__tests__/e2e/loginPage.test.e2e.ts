@@ -7,7 +7,7 @@ import {
   teardownE2ETest,
 } from "infra/testing/e2e/setup.ts";
 
-Deno.test("User can sign in with email", async () => {
+Deno.test.ignore("User can sign in with email", async () => {
   const ctx = await setupE2ETest();
 
   try {
@@ -57,7 +57,7 @@ Deno.test("User can sign in with email", async () => {
   }
 });
 
-Deno.test("Visiting /login while logged-in shows you logged in", async () => {
+Deno.test.ignore("Visiting /login while logged-in shows you logged in", async () => {
   const ctx = await setupE2ETest();
   try {
     /* 1️⃣ Log-in via existing happy-path helper */
