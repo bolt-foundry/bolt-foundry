@@ -11,7 +11,10 @@ import { getLogger } from "packages/logger/logger.ts";
 import { storage } from "apps/bfDb/storage/storage.ts";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorNode.ts";
 import { generateUUID } from "lib/generateUUID.ts";
-import type { BfEdgeBaseProps } from "apps/bfDb/classes/BfEdgeBase.ts";
+import type {
+  BfEdgeBase,
+  BfEdgeBaseProps,
+} from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 
@@ -25,20 +28,27 @@ export type BfMetadataNode = BfMetadataBase & {
 };
 
 /**
- * talks to the database with graphql stuff
+ * BfNode – concrete implementation of a database‑backed node.
  */
 export class BfNode<
   TProps extends BfNodeBaseProps = BfNodeBaseProps,
   TMetadata extends BfMetadataBase = BfMetadataNode,
   TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
 > extends BfNodeBase<TProps, TMetadata, TEdgeProps> {
-  override readonly relatedEdge: string = "apps/bfDb/coreModels/BfEdge.ts";
+  /**
+   * Default edge implementation that connects **any two** nodes when a more
+   * specialised edge hasn’t been defined.  Individual subclasses can override
+   * this with a more specific edge type (e.g. `BfEdgeComment`).
+   */
+
   protected _savedProps: TProps;
   protected override _props: TProps;
+
+  /* ─────────────── GraphQL integration ─────────────── */
   static override defineGqlNode(
     def: Parameters<typeof GraphQLObjectBase.defineGqlNode>[0],
   ) {
-    // Respect explicit "no GraphQL" opt-out
+    // Respect explicit "no GraphQL" opt‑out
     if (def === null) {
       return super.defineGqlNode(null);
     }
@@ -53,10 +63,12 @@ export class BfNode<
     field.id("id");
   });
 
+  /* ─────────────── ID helpers ─────────────── */
   override get id(): string {
     return this.metadata.bfGid;
   }
 
+  /* ─────────────── Metadata helpers ─────────────── */
   static override generateMetadata<
     TProps extends BfNodeBaseProps,
     TMetadata extends BfMetadataBase,
@@ -68,7 +80,7 @@ export class BfNode<
   ): TMetadata {
     const bfGid = toBfGid(generateUUID());
     const baseDefaults: BfMetadataBase = {
-      bfGid: bfGid,
+      bfGid,
       bfOid: cv.orgBfOid,
       className: this.name,
       sortValue: this.generateSortValue(),
@@ -82,6 +94,7 @@ export class BfNode<
     return { ...nodeDefaults, ...metadata } as unknown as TMetadata;
   }
 
+  /* ─────────────── Static fetch helpers ─────────────── */
   static override async findX<
     TProps extends BfNodeBaseProps,
     TMetadata extends BfMetadataNode,
@@ -154,12 +167,19 @@ export class BfNode<
     });
   }
 
+  static override async fetchRelatedClass() {
+    const { BfEdge } = await import("apps/bfDb/coreModels/BfEdge.ts");
+    return BfEdge as typeof BfEdgeBase;
+  }
+
+  /* ─────────────── Lifecycle ─────────────── */
   constructor(
     currentViewer: CurrentViewer,
     _props: TProps,
     metadata?: Partial<TMetadata>,
   ) {
     super(currentViewer, _props, metadata);
+
     this._savedProps = _props;
     this._props = { ..._props };
   }
@@ -199,6 +219,7 @@ export class BfNode<
     return this;
   }
 
+  /* ─────────────── Edge helpers ─────────────── */
   override async queryTargets<
     TTargetProps extends BfNodeBaseProps,
     TTargetClass extends typeof BfNodeBase<TTargetProps>,
@@ -216,8 +237,11 @@ export class BfNode<
       countOnly?: boolean;
     } = {},
   ): Promise<Array<InstanceType<TTargetClass>>> {
+    const EdgeClass = await (this.constructor as typeof BfNode)
+      .fetchRelatedClass();
+
     logger.debug(
-      `queryTargets: ${this.constructor.name} -> ${TargetClass.name}`,
+      `queryTargets: ${this.constructor.name} –[${EdgeClass.name}]-> ${TargetClass.name}`,
       {
         sourceId: this.metadata.bfGid,
         targetClass: TargetClass.name,
@@ -231,39 +255,24 @@ export class BfNode<
     const metadataQuery = {
       bfSid: this.metadata.bfGid,
       bfTClassName: TargetClass.name,
-    };
+    } as const;
     const propsQuery = Object.keys(edgeProps).length > 0 ? edgeProps : {};
 
-    // First, let's try to get an edge directly from the database to see if it exists
-    const relatedEdgeNameWithTs = this.relatedEdge.split("/").pop() as string;
-    const relatedEdgeName = relatedEdgeNameWithTs.replace(".ts", "");
-    logger.debug(
-      `Using edge class: ${relatedEdgeName} from path: ${this.relatedEdge}`,
-    );
-    logger.debug(
-      `Edge query metadataQuery:`,
-      metadataQuery,
-    );
-    logger.debug(`Edge query propsQuery:`, propsQuery);
-    logger.debug(
-      `Related edge class: ${this.relatedEdge}, derived edge name: ${relatedEdgeName}`,
-    );
-
-    // Load the edge creation log to understand what's happening
+    // 🔎 Diagnostic: show the first few edges of this type in the system
     try {
       const createEdgeLog = await storage.query(
-        { className: relatedEdgeName },
+        { className: EdgeClass.name },
         {},
         undefined,
         "ASC",
         "sort_value",
       );
       logger.debug(
-        `All ${relatedEdgeName} edges in system:`,
+        `First five ${EdgeClass.name} edges in system:`,
         createEdgeLog.slice(0, 5),
       );
     } catch (error) {
-      logger.error(`Error looking up all edges:`, error);
+      logger.error(`Error looking up edge instances:`, error);
     }
 
     const edges = await storage.query(
@@ -278,28 +287,6 @@ export class BfNode<
     logger.debug(`Found ${edges.length} edges from ${this.metadata.bfGid}`);
 
     if (edges.length === 0) {
-      // Debug why no edges were found
-      logger.debug(`No edges found, checking if edge was created properly`);
-
-      // Let's check if the edge exists at all with this source ID
-      const allEdgesFromSource = await storage.query(
-        { bfSid: this.metadata.bfGid },
-        {},
-        undefined,
-        "ASC",
-        "sort_value",
-      );
-
-      logger.debug(
-        `Found ${allEdgesFromSource.length} edges with just source ID`,
-      );
-      if (allEdgesFromSource.length > 0) {
-        logger.debug(
-          `Edge exists with source ID but not with props filter. First edge:`,
-          allEdgesFromSource[0],
-        );
-      }
-
       return [];
     }
 
