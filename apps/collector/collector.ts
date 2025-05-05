@@ -2,7 +2,7 @@
 
 import {
   getConfigurationVariable,
-  startAutoRefresh,
+  warmSecrets,
 } from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "packages/logger/logger.ts";
 import type { Handler } from "apps/web/web.tsx";
@@ -12,7 +12,7 @@ import { trackLlmEvent } from "apps/collector/llm-event-tracker.ts";
 
 const logger = getLogger(import.meta);
 
-await startAutoRefresh();
+await warmSecrets();
 
 // Define routes for the collector service
 function registerCollectorRoutes(): Map<string, Handler> {
