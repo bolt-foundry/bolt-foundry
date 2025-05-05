@@ -1,20 +1,13 @@
 import { assertEquals } from "@std/assert";
-import type {
-  BfEdgeBase,
-  BfEdgeBaseProps,
-} from "apps/bfDb/classes/BfEdgeBase.ts";
-import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
 import { AdapterRegistry } from "apps/bfDb/storage/AdapterRegistry.ts";
 import { InMemoryAdapter } from "apps/bfDb/storage/InMemoryAdapter.ts";
 import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
+import type { BfEdgeBase } from "apps/bfDb/classes/BfEdgeBase.ts";
 AdapterRegistry.register(new InMemoryAdapter());
 
-export function testBfEdgeBase<
-  TEdgeProps extends BfEdgeBaseProps,
-  TMetadata extends BfMetadataEdge,
->(BfEdgeClass: typeof BfEdgeBase<TEdgeProps, TMetadata>) {
+export function testBfEdgeBase(BfEdgeClass: typeof BfEdgeBase) {
   Deno.test(`BfEdgeBase test suite: ${BfEdgeClass.name}`, async (t) => {
     // Use withIsolatedDb to ensure database connections are properly closed
     await withIsolatedDb(async () => {

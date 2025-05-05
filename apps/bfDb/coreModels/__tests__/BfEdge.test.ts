@@ -7,8 +7,9 @@ import { BfEdge } from "apps/bfDb/coreModels/BfEdge.ts";
 import { BfNode } from "apps/bfDb/coreModels/BfNode.ts";
 import { testBfEdgeBase } from "apps/bfDb/classes/__tests__/BfEdgeBaseTest.ts";
 import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
+import type { BfEdgeBase } from "apps/bfDb/classes/BfEdgeBase.ts";
 
-testBfEdgeBase(BfEdge);
+testBfEdgeBase(BfEdge as typeof BfEdgeBase);
 
 Deno.test("BfEdge persists via storage adapter", async () => {
   await withIsolatedDb(async () => {
