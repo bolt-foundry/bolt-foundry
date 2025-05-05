@@ -82,8 +82,7 @@ export async function setupE2ETest(options: {
 
     // Create screenshot function
     const takeScreenshot = async (name: string): Promise<string> => {
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const fileName = `${name.replace(/\s+/g, "-")}_${timestamp}.png`;
+      const fileName = `${Date.now()}_${name.replace(/\s+/g, "-")}.png`;
       const filePath = join(screenshotsDir, fileName);
 
       try {

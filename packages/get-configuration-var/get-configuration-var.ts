@@ -1,343 +1,186 @@
-#! /usr/bin/env -S deno run --allow-run=op --allow-env --allow-write
 // deno-lint-ignore-file bolt-foundry/no-env-direct-access
-// Bolt Foundry • secrets helper — “bulk-warm + auto-refresh + .env export” edition
-// ------------------------------------------------------------------------------
 
-import type { Logger } from "@bolt-foundry/logger";
+/**
+ * Bolt Foundry • secrets helper — lean edition
+ * (env‑first · browser‑safe · legacy shims · multi‑vault)
+ * -----------------------------------------------------------------------------
+ * Works both under **Deno** and in a **browser build**:
+ *   • All `Deno.*` calls are gated behind runtime checks.
+ *   • In a browser, secrets injected by the bundler (Vite, BFF, etc.) are
+ *     surfaced via `globalThis.__ENVIRONMENT__[key]`.
+ *   • Vault access (1Password CLI) is **disabled** in the browser and will
+ *     throw if attempted.
+ *
+ * Public API (new‑school):
+ *   • getSecret(key)             – env‑first async lookup
+ *   • warmSecrets(keys?)         – batch cache warm (Deno‑only)
+ *   • writeEnv(path?, keys?)     – write .env file (Deno‑only)
+ *
+ * Legacy shims and multi‑vault discovery included for drop‑in compatibility.
+ * ----------------------------------------------------------------------------- */
+
 import {
   PRIVATE_CONFIG_KEYS,
   PUBLIC_CONFIG_KEYS,
 } from "apps/boltFoundry/__generated__/configKeys.ts";
 
-/* ───────────  public / private classification via tags  ─────────── */
-const CANON = (s: string) => s.trim().toUpperCase();
+/* ─── environment helpers ─────────────────────────────────────────────────── */
+const isDeno = typeof Deno !== "undefined" && !!Deno?.version?.deno;
 
-const PUBLIC_KEYS = new Set<string>(PUBLIC_CONFIG_KEYS.map(CANON));
-const PRIVATE_KEYS = new Set<string>(PRIVATE_CONFIG_KEYS.map(CANON));
-const KNOWN_KEYS = new Set<string>([...PUBLIC_KEYS, ...PRIVATE_KEYS]);
+const browserEnv = (name: string): string | undefined =>
+  typeof window !== "undefined"
+    // @ts-expect-error: browser-only, injected by page load
+    ? globalThis.__ENVIRONMENT__?.[name]
+    : undefined;
 
-export const ENVIRONMENT_ONLY_KEYS = [
-  "CI",
-  "COLORTERM",
-  "DEBUG",
-  "DENO_TRACE_PERMISSIONS",
-  "FORCE_COLOR",
-  "FORCE_DB_BACKEND",
-  "NODE_ENV",
-  "NODE_PG_FORCE_NATIVE",
-  "REPL_HOME",
-  "REPL_SLUG",
-  "REPLIT_DEV_DOMAIN",
-  "SQLITE_DB_PATH",
-  "TEAMCITY_VERSION",
-  "TERM",
-  "TF_BUILD",
-  "USER",
-  "WS_NO_BUFFER_UTIL",
-  "XDG_CONFIG_HOME",
-  "XDG_DATA_HOME",
-];
-/** Extra internal keys that _should_ bypass tag-scraping. */
-export const INTERNAL_KEYS: Set<string> = new Set<string>([
-  "BF_ENV",
-  "BF_CACHE_TTL_SEC", // 1Password-stored refresh TTL
-  "BF_CACHE_ENV", // disable caching (e.g. for tests)
-]);
-for (const k of INTERNAL_KEYS) KNOWN_KEYS.add(CANON(k));
+const runtimeEnv = (name: string): string | undefined =>
+  isDeno ? Deno.env.get(name) : undefined;
 
-function isPublicKey(name: string): boolean {
-  return PUBLIC_KEYS.has(CANON(name));
-}
-function isKnownKey(name: string): boolean {
-  return KNOWN_KEYS.has(CANON(name)) ||
-    ENVIRONMENT_ONLY_KEYS.includes(CANON(name));
-}
+const getEnv = (name: string): string | undefined =>
+  browserEnv(name) ?? runtimeEnv(name);
 
-/* ───────────  existing imports deferred to avoid log-cycle  ─────────── */
-let logger: Logger;
-(async () => {
-  const { getLogger } = await import("@bolt-foundry/logger");
-  logger = getLogger(import.meta);
+/* ─── constants ────────────────────────────────────────────────────────────── */
+const KNOWN_KEYS = [...PUBLIC_CONFIG_KEYS, ...PRIVATE_CONFIG_KEYS];
+const DECODER = new TextDecoder();
+const ENCODER = new TextEncoder();
+
+// Cache‑TTL default (300s) can be overridden via env / browser injection.
+const CACHE_TTL_MS = (() => {
+  const raw = getEnv("BF_CACHE_TTL_SEC");
+  const secs = Number.parseInt(raw ?? "", 10);
+  return (Number.isFinite(secs) && secs > 0 ? secs : 300) * 1_000;
 })();
 
-/* ───────────  util helpers  ─────────── */
-type Maybe<T> = T | undefined;
-const text = new TextDecoder();
-const isSet = (v: string | undefined): v is string => !!v?.trim();
+/* ─── tiny helpers ─────────────────────────────────────────────────────────── */
+const now = () => Date.now();
+const fromCache = (k: string) => {
+  const hit = CACHE.get(k);
+  return hit && hit.expires > now() ? hit.value : undefined;
+};
 
-/* ───────────  cache knobs  ─────────── */
-const SHOULD_CACHE: boolean = (typeof Deno !== "undefined")
-  ? Deno.env.get("BF_CACHE_ENV") !== "false"
-  : false;
-const DEFAULT_TTL_SEC = 60 * 5; // 5-min fallback
-const TTL_ITEM_NAME = "BF_CACHE_TTL_SEC"; // value in vault
+/* ─── internal cache ───────────────────────────────────────────────────────── */
+const CACHE = new Map<string, { value: string; expires: number }>();
 
-/* ───────────  permission helper  ─────────── */
-const canRunOpPromise: Promise<boolean> = (async () => {
-  if (typeof Deno === "undefined" || !("permissions" in Deno)) return false;
-  try {
-    const s = await Deno.permissions.query({
-      name: "run",
-      command: "op" as const,
-    });
-    return s.state === "granted";
-  } catch {
-    return false;
-  }
-})();
-async function canRunOp() {
-  const ok = await canRunOpPromise;
-  logger?.debug(`1Password CLI available: ${ok}`);
-  return ok;
-}
+/* ─── vault discovery (Deno‑only) ──────────────────────────────────────────── */
+let CACHED_VAULT_ID = getEnv("BF_VAULT_ID") ?? "";
 
-/* ───────────  env helpers (browser / Deno / Node)  ─────────── */
-function browserEnv(name: string): Maybe<string> {
-  // @ts-expect-error build-time global injected by Vite / bff
-  return globalThis.window && globalThis.__ENVIRONMENT__?.[name];
-}
-function runtimeEnv(name: string): Maybe<string> {
-  return (typeof Deno !== "undefined") ? Deno.env.get(name) : undefined;
-}
+async function firstVaultId(): Promise<string> {
+  if (!isDeno) throw new Error("Vault access unavailable in browser");
+  if (CACHED_VAULT_ID) return CACHED_VAULT_ID;
 
-/* ───────────  caches  ─────────── */
-const promiseCache = new Map<string, Promise<string | undefined>>();
-const valueCache = new Map<string, string | undefined>();
-
-/* ───────────  vault discovery (cached)  ─────────── */
-let vaultId = "";
-async function firstVault(): Promise<string> {
-  if (vaultId) return vaultId;
-  if (!(await canRunOp())) {
-    throw new Error("1Password disabled — run with --allow-run=op");
-  }
-  const { stdout } = await new Deno.Command("op", {
+  const { success, stdout, stderr } = await new Deno.Command("op", {
     args: ["vault", "list", "--format=json"],
     stdout: "piped",
+    stderr: "piped",
   }).output();
-  try {
-    const vaults = JSON.parse(text.decode(stdout));
-    if (!vaults.length) throw new Error("No 1Password vaults visible");
-    if (vaults.length > 1) {
-      throw new Error("Multiple vaults visible; hard-coding not yet supported");
-    }
-    vaultId = vaults[0].id;
-    return vaultId;
-  } catch {
-    const log = logger ?? console;
-    log.error("Failed to parse 1Password vault list", text.decode(stdout));
-    throw new Error("Failed to parse 1Password vault list");
+  if (!success) {
+    throw new Error(`Failed to list vaults: ${DECODER.decode(stderr).trim()}`);
   }
+  const list = JSON.parse(DECODER.decode(stdout)) as { id: string }[];
+  if (!list.length) throw new Error("No 1Password vaults visible to CLI");
+  CACHED_VAULT_ID = list[0].id;
+  return CACHED_VAULT_ID;
 }
 
-/* ───────────  low-level read  ─────────── */
-function cachedRead(
-  ref: string,
-  useCache = SHOULD_CACHE,
-): Promise<string | undefined> {
-  if (useCache && valueCache.has(ref)) {
-    return Promise.resolve(valueCache.get(ref));
-  }
-  if (useCache && promiseCache.has(ref)) return promiseCache.get(ref)!;
-
-  const p = new Deno.Command("op", {
-    args: ["read", ref],
+/* ─── low‑level 1Password calls (Deno‑only) ───────────────────────────────── */
+async function opRead(key: string): Promise<string> {
+  if (!isDeno) throw new Error("1Password CLI unavailable in browser");
+  const vault = await firstVaultId();
+  const { success, stdout, stderr } = await new Deno.Command("op", {
+    args: ["read", `op://${vault}/${key}/value`],
     stdout: "piped",
     stderr: "piped",
-  }).output().then(({ success, stdout, stderr }) => {
-    if (!success) {
-      promiseCache.delete(ref);
-      throw new Error(
-        `Failed to resolve ${ref}: ${new TextDecoder().decode(stderr)}`,
-      );
-    }
-    const val = new TextDecoder().decode(stdout).trim();
-    valueCache.set(ref, val);
-    return val;
-  });
-
-  if (useCache) promiseCache.set(ref, p);
-  return p;
+  }).output();
+  if (!success) {
+    throw new Error(
+      `Failed to read \"${key}\": ${DECODER.decode(stderr).trim()}`,
+    );
+  }
+  return DECODER.decode(stdout).trim();
 }
 
-/* ───────────  PUBLIC API — sync  ─────────── */
-export function getConfigurationVariable(
-  name: string,
-  requirePublic = true,
-): Maybe<string> {
-  if (!isKnownKey(name)) return undefined; // ✋ unknown key
-
-  const b = browserEnv(name);
-  if (isSet(b)) return b; // 1️⃣ compile-time env
-  const r = runtimeEnv(name);
-  if (isSet(r)) return r; // 2️⃣ runtime env
-
-  // 3️⃣ cached secret
-  const vPath = vaultId ? `op://${vaultId}/${name}/value` : "";
-  const val = vPath ? valueCache.get(vPath) : undefined;
-  if (!isSet(val)) return undefined;
-  return requirePublic ? (isPublicKey(name) ? val : undefined) : val;
-}
-
-/* ───────────  PUBLIC API — async  ─────────── */
-export async function fetchConfigurationVariable(
-  name: string,
-  useCache = SHOULD_CACHE,
-  requirePublic = true,
-): Promise<string | undefined> {
-  const sync = getConfigurationVariable(name, requirePublic); // fast-path
-  if (isSet(sync)) return sync;
-
-  if (!isKnownKey(name)) return undefined; // unknown
-
-  if (!(await canRunOp())) return undefined;
-  if (requirePublic && !isPublicKey(name)) return undefined;
-
-  const vault = await firstVault();
-  const val = await cachedRead(`op://${vault}/${name}/value`, useCache);
-  return isSet(val) ? val : undefined;
-}
-
-/* ───────────  helper aliases for private access  ─────────── */
-export const getPrivateConfigurationVariable = (
-  name: string,
-): string | undefined =>
-  getConfigurationVariable(name, /*requirePublic=*/ false);
-
-export const fetchPrivateConfigurationVariable = (
-  name: string,
-  useCache = SHOULD_CACHE,
-): Promise<string | undefined> =>
-  fetchConfigurationVariable(name, useCache, /*requirePublic=*/ false);
-
-/* ───────────  BULK WARM + AUTO-REFRESH  ─────────── */
-async function injectMany(names: string[]): Promise<Record<string, string>> {
-  const vault = await firstVault();
+async function opInject(keys: string[]): Promise<Record<string, string>> {
+  if (!isDeno) throw new Error("1Password CLI unavailable in browser");
+  if (!keys.length) return {};
+  const vault = await firstVaultId();
   const template: Record<string, string> = {};
-  for (const n of names) template[n] = `op://${vault}/${n}/value`;
+  keys.forEach((k) => (template[k] = `op://${vault}/${k}/value`));
 
-  const cmd = new Deno.Command("op", {
+  const child = new Deno.Command("op", {
     args: ["inject", "--format=json"],
     stdin: "piped",
     stdout: "piped",
     stderr: "piped",
-  });
-  const child = cmd.spawn();
-  const writer = child.stdin.getWriter();
-  await writer.write(new TextEncoder().encode(JSON.stringify(template)));
-  await writer.close();
+  }).spawn();
+  const w = child.stdin.getWriter();
+  await w.write(ENCODER.encode(JSON.stringify(template)));
+  await w.close();
 
   const { success, stdout, stderr } = await child.output();
-  if (!success) throw new Error(`op inject failed: ${text.decode(stderr)}`);
-  return JSON.parse(text.decode(stdout));
+  if (!success) throw new Error(`op inject failed: ${DECODER.decode(stderr)}`);
+  return JSON.parse(DECODER.decode(stdout));
 }
 
-export async function refreshAllSecrets() {
-  const names = Array.from(KNOWN_KEYS);
-  let payload;
-  try {
-    payload = await injectMany(names);
-  } catch (err) {
-    logger?.warn(`Bulk warm-up skipped – some items missing`, err);
-    return;
-  }
-  const vault = await firstVault();
-  for (const [name, val] of Object.entries(payload)) {
-    const p = Promise.resolve(val);
-    promiseCache.set(`op://${vault}/${name}/value`, p);
-    valueCache.set(`op://${vault}/${name}/value`, val);
-  }
-  logger?.info(`Refreshed ${names.length} secrets from vault ${vaultId}`);
-}
+/* ─── public API ───────────────────────────────────────────────────────────── */
 
-let ttlSeconds = DEFAULT_TTL_SEC;
-async function resolveTTL(): Promise<number> {
-  const raw = await fetchConfigurationVariable(TTL_ITEM_NAME, false);
-  const sec = raw ? Number.parseInt(raw, 10) : NaN;
-  ttlSeconds = Number.isFinite(sec) && sec > 0 ? sec : DEFAULT_TTL_SEC;
-  return ttlSeconds;
-}
-
-/** Starts the periodic 1Password warm-up loop. */
-export function startAutoRefresh(): Promise<void> & {
-  stop(): Promise<void>;
-  [Symbol.dispose](): Promise<void>;
-  [Symbol.asyncDispose](): Promise<void>;
-} {
-  const awaitable = Promise.allSettled([
-    refreshAllSecrets().catch(() => {}),
-    resolveTTL().catch(() => {}),
-  ]).then(() => {});
-
-  const pending = new Set<Promise<void>>();
-  const timer = setInterval(() => {
-    const run = refreshAllSecrets().catch(() => {
-      pending.delete(run);
-    });
-    pending.add(run);
-  }, ttlSeconds * 1_000);
-
-  async function stop() {
-    clearInterval(timer);
-    await Promise.allSettled(pending);
-    pending.clear();
-  }
-  return {
-    ...awaitable,
-    stop,
-    [Symbol.dispose]: stop,
-    [Symbol.asyncDispose]: stop,
-  };
+/**
+ * Resolve a configuration variable.
+ * Order of precedence:
+ *   1️⃣ Compile‑/runtime ENV (`window.__ENVIRONMENT__` in browser, `Deno.env` in Deno)
+ *   2️⃣ Cached value (if previously fetched)
+ *   3️⃣ 1Password vault via CLI (Deno‑only)
+ */
+export async function getSecret(key: string): Promise<string | undefined> {
+  const envVal = getEnv(key);
+  if (envVal) return envVal;
+  const cached = fromCache(key);
+  if (cached) return cached;
+  return await opRead(key) // may throw in browser
+    .then((val) => {
+      CACHE.set(key, { value: val, expires: now() + CACHE_TTL_MS });
+      return val;
+    })
+    .catch(() => undefined);
 }
 
 /**
- * Writes all known configuration variables to a “dotenv”-compatible file.
- *
- * @param filePath         Destination file (default: "./.env")
- * @param opts.includePrivate  Dump private keys too?  (default: true)
- * @param opts.useCache         Use in-memory cache if possible (default: true)
- *
- * Values are fetched **once** (honoring cache knobs) and written as
- *   MY_KEY=some-value
- *   OTHER_KEY="value with spaces"
- *
- * Lines are skipped for keys that can’t be resolved.
+ * Warm multiple secrets into the in‑memory cache (Deno‑only).
+ * Skips keys already present in ENV to honour local overrides.
  */
-export async function writeEnvFile(
-  filePath = ".env",
-  opts: { includePrivate?: boolean; useCache?: boolean } = {},
-): Promise<void> {
-  const { includePrivate = true, useCache = SHOULD_CACHE } = opts;
-  const keys = Array.from(KNOWN_KEYS).filter((k) =>
-    includePrivate ? true : isPublicKey(k)
-  );
-
-  const lines: string[] = [];
-
-  for (const name of keys) {
-    const val = includePrivate
-      ? await fetchPrivateConfigurationVariable(name, useCache)
-      : await fetchConfigurationVariable(
-        name,
-        useCache,
-        /*requirePublic=*/ true,
-      );
-
-    if (!isSet(val)) continue; // skip unresolved
-
-    lines.push(`${name}=${val}`);
+export async function warmSecrets(keys: string[] = KNOWN_KEYS) {
+  if (!isDeno) return; // no‑op in browser
+  const toFetch = keys.filter((k) => !getEnv(k));
+  const resolved = await opInject(toFetch);
+  for (const [k, v] of Object.entries(resolved)) {
+    CACHE.set(k, { value: v, expires: now() + CACHE_TTL_MS });
   }
-
-  if (!lines.length) {
-    logger?.warn("writeEnvFile(): nothing to write – no secrets resolved");
-    return;
-  }
-
-  await Deno.writeTextFile(filePath, lines.join("\n") + "\n");
-  logger?.info(`.env written → ${filePath} (${lines.length} keys)`);
 }
 
-if (import.meta.main) {
-  await refreshAllSecrets();
-  await writeEnvFile();
+/**
+ * Write a .env‑compatible file (Deno‑only). Throws in browser.
+ */
+export async function writeEnv(
+  path = ".env",
+  keys: string[] = KNOWN_KEYS,
+): Promise<void> {
+  if (!isDeno) throw new Error("writeEnv() is unavailable in browser");
+  const lines: string[] = [];
+  for (const k of keys) {
+    const v = await getSecret(k);
+    if (v) lines.push(`${k}=${v}`);
+  }
+  await Deno.writeTextFile(path, lines.join("\n") + "\n");
+}
+
+/* ─── backward‑compat shims (same semantics, now browser‑safe) ─────────────── */
+export function getConfigurationVariable(name: string): string | undefined {
+  return getEnv(name) ?? fromCache(name);
+}
+export const refreshAllSecrets = warmSecrets;
+export const writeEnvFile = writeEnv;
+
+/* ─── CLI entry‑point (Deno only) ─────────────────────────────────────────── */
+if (isDeno && import.meta.main) {
+  await warmSecrets();
+  await writeEnv();
 }

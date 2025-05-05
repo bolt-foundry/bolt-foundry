@@ -2,12 +2,14 @@ import type { IsographEntrypoint } from '@isograph/react';
 import { type CurrentViewer__LoginWithGoogleButton__param } from './CurrentViewer/LoginWithGoogleButton/param_type.ts';
 import { type Mutation__JoinWaitlist__param } from './Mutation/JoinWaitlist/param_type.ts';
 import { type Mutation__LoginWithEmailDevCurrentViewer__param } from './Mutation/LoginWithEmailDevCurrentViewer/param_type.ts';
+import { type Mutation__LoginWithGoogleCurrentViewer__param } from './Mutation/LoginWithGoogleCurrentViewer/param_type.ts';
 import { type Query__EntrypointHome__param } from './Query/EntrypointHome/param_type.ts';
 import { type Query__EntrypointLogin__param } from './Query/EntrypointLogin/param_type.ts';
 import { type Query__Home__param } from './Query/Home/param_type.ts';
 import { type Query__LoginPage__param } from './Query/LoginPage/param_type.ts';
 import entrypoint_Mutation__JoinWaitlist from '../__isograph/Mutation/JoinWaitlist/entrypoint.ts';
 import entrypoint_Mutation__LoginWithEmailDevCurrentViewer from '../__isograph/Mutation/LoginWithEmailDevCurrentViewer/entrypoint.ts';
+import entrypoint_Mutation__LoginWithGoogleCurrentViewer from '../__isograph/Mutation/LoginWithGoogleCurrentViewer/entrypoint.ts';
 import entrypoint_Query__EntrypointHome from '../__isograph/Query/EntrypointHome/entrypoint.ts';
 import entrypoint_Query__EntrypointLogin from '../__isograph/Query/EntrypointLogin/entrypoint.ts';
 
@@ -72,6 +74,10 @@ export function iso<T>(
 ): IdentityWithParam<Mutation__LoginWithEmailDevCurrentViewer__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Mutation.LoginWithGoogleCurrentViewer', T>
+): IdentityWithParam<Mutation__LoginWithGoogleCurrentViewer__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.EntrypointHome', T>
 ): IdentityWithParam<Query__EntrypointHome__param>;
 
@@ -96,6 +102,10 @@ export function iso<T>(
 ): typeof entrypoint_Mutation__LoginWithEmailDevCurrentViewer;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'entrypoint Mutation.LoginWithGoogleCurrentViewer', T>
+): typeof entrypoint_Mutation__LoginWithGoogleCurrentViewer;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointHome', T>
 ): typeof entrypoint_Query__EntrypointHome;
 
@@ -113,6 +123,8 @@ export function iso(isographLiteralText: string):
       return entrypoint_Mutation__JoinWaitlist;
     case 'entrypoint Mutation.LoginWithEmailDevCurrentViewer':
       return entrypoint_Mutation__LoginWithEmailDevCurrentViewer;
+    case 'entrypoint Mutation.LoginWithGoogleCurrentViewer':
+      return entrypoint_Mutation__LoginWithGoogleCurrentViewer;
     case 'entrypoint Query.EntrypointHome':
       return entrypoint_Query__EntrypointHome;
     case 'entrypoint Query.EntrypointLogin':

@@ -1,4 +1,4 @@
-import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
+import { getSecret } from "@bolt-foundry/get-configuration-var";
 import { decodeBase64Url, encodeBase64Url } from "@std/encoding/base64url";
 import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
 
@@ -63,8 +63,8 @@ function toSeconds(dur: string | number): number {
 }
 
 /** Pull shared secret from env & normalise → CryptoKey */
-function getKey(): Promise<CryptoKey> {
-  const secret = getConfigurationVariable("JWT_SECRET");
+async function getKey(): Promise<CryptoKey> {
+  const secret = await getSecret("JWT_SECRET");
   if (!secret) throw new Error("JWT_SECRET env var not set");
   return crypto.subtle.importKey(
     "raw",
