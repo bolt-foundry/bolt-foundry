@@ -8,18 +8,21 @@ import { BfDsProvider } from "apps/bfDs/contexts/BfDsContext.tsx";
 import { ErrorBoundary } from "apps/boltFoundry/components/ErrorBoundary.tsx";
 import { getLogger } from "packages/logger/logger.ts";
 import { AppSidebar } from "apps/boltFoundry/components/AppSidebar.tsx";
+
 const logger = getLogger(import.meta);
 
-export function ClientRoot(
-  {
-    children,
-    ...appEnvironment
-  }: React.PropsWithChildren<ServerProps>,
-) {
+export interface ClientRootProps extends ServerProps {
+  children?: React.ReactNode;
+}
+
+export function ClientRoot({
+  children,
+  ...props
+}: ClientRootProps) {
   return (
     <BfDsProvider>
       <ErrorBoundary>
-        <AppEnvironmentProvider {...appEnvironment}>
+        <AppEnvironmentProvider {...props}>
           <AppSidebar>
             {children}
           </AppSidebar>

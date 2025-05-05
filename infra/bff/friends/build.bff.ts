@@ -3,9 +3,7 @@
 import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/bff.ts";
 import {
-  ENVIRONMENT_ONLY_KEYS,
   getConfigurationVariable,
-  INTERNAL_KEYS,
   refreshAllSecrets,
 } from "packages/get-configuration-var/get-configuration-var.ts";
 import { getLogger } from "packages/logger/logger.ts";
@@ -19,6 +17,34 @@ const logger = getLogger(import.meta);
 
 await refreshAllSecrets();
 
+export const ENVIRONMENT_ONLY_KEYS = [
+  "CI",
+  "COLORTERM",
+  "DEBUG",
+  "DENO_TRACE_PERMISSIONS",
+  "FORCE_COLOR",
+  "FORCE_DB_BACKEND",
+  "NODE_ENV",
+  "NODE_PG_FORCE_NATIVE",
+  "REPL_HOME",
+  "REPL_SLUG",
+  "REPLIT_DEV_DOMAIN",
+  "SQLITE_DB_PATH",
+  "TEAMCITY_VERSION",
+  "TERM",
+  "TF_BUILD",
+  "USER",
+  "WS_NO_BUFFER_UTIL",
+  "XDG_CONFIG_HOME",
+  "XDG_DATA_HOME",
+];
+/** Extra internal keys that _should_ bypass tag-scraping. */
+export const INTERNAL_KEYS: Set<string> = new Set<string>([
+  "BF_CACHE_TTL_SEC", // 1Password-stored refresh TTL
+  "BF_CACHE_ENV", // disable caching (e.g. for tests)
+  "BF_ENV",
+  "BF_VAULT_ID",
+]);
 const allowedEnvironmentVariables = [
   ...ENVIRONMENT_ONLY_KEYS,
   ...INTERNAL_KEYS,
@@ -40,6 +66,7 @@ const DEFAULT_NETWORK_DESTINATIONS = [
   "api.openai.com",
   "app.posthog.com",
   "bf-contacts.replit.app:443",
+  "oauth2.googleapis.com:443",
 ];
 
 const allowedNetworkDestionations = [...DEFAULT_NETWORK_DESTINATIONS];

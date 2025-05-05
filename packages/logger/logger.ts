@@ -142,8 +142,9 @@ export function getLogger(importMeta: ImportMeta | string): log.Logger {
     const newLogger = log.getLogger(loggerName);
 
     // Set default log level first
-    const defaultLogLevelString = getConfigurationVariable("LOG_LEVEL") ??
-      "INFO";
+    const defaultLogLevelString = getConfigurationVariable("LOG_LEVEL")
+      ? getConfigurationVariable("LOG_LEVEL")
+      : "INFO";
     const defaultLogLevel =
       log.levels[defaultLogLevelString as keyof typeof log.levels];
     newLogger.setDefaultLevel(defaultLogLevel);

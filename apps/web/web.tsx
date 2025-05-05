@@ -1,17 +1,20 @@
 #! /usr/bin/env -S deno run --allow-net=localhost:8000 --allow-env
 
-import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
+import {
+  getConfigurationVariable,
+  warmSecrets,
+} from "@bolt-foundry/get-configuration-var";
 import { getLogger } from "packages/logger/logger.ts";
 import {
   defaultRoute,
   registerAllRoutes,
 } from "apps/web/routes/routeRegistry.ts";
 import { handleRequest } from "apps/web/handlers/mainHandler.ts";
-import { startAutoRefresh } from "packages/get-configuration-var/get-configuration-var.ts";
 
 const _logger = getLogger(import.meta);
 
-await startAutoRefresh();
+// Warm the secrets cache before starting auto-refresh
+const warmPromise = warmSecrets();
 
 export type Handler = (
   request: Request,
@@ -23,6 +26,7 @@ const routes = registerAllRoutes();
 
 // Main request handler wrapper
 async function handleRequestWrapper(req: Request): Promise<Response> {
+  await warmPromise;
   return await handleRequest(req, routes, defaultRoute);
 }
 

@@ -2,9 +2,6 @@ import {
   RouterProvider,
   type RouterProviderProps,
 } from "apps/boltFoundry/contexts/RouterContext.tsx";
-// import clientEnvironment from "packages/client/relay/relayEnvironment.ts";
-// import AppStateProvider from "packages/client/contexts/AppStateContext.tsx";
-// import { featureFlags, featureVariants } from "packages/features/list.ts";
 
 import * as React from "react";
 import {
@@ -13,13 +10,15 @@ import {
 } from "@isograph/react";
 import { getEnvironment } from "apps/boltFoundry/isographEnvironment.ts";
 import { getLogger } from "packages/logger/logger.ts";
+import type {
+  ClientEnvironment,
+} from "apps/boltFoundry/__generated__/configKeys.ts";
 
 const logger = getLogger(import.meta);
 
 const AppEnvironmentContext = React.createContext<AppEnvironmentProps>({});
 
-export type AppEnvironmentProps = {
-  POSTHOG_API_KEY?: string;
+export type AppEnvironmentProps = ClientEnvironment & {
   personBfGid?: string;
   featureFlags?: Record<string, string | boolean>;
 };

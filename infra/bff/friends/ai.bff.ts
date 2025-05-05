@@ -1,10 +1,6 @@
 #! /usr/bin/env -S bff
 
-import {
-  fetchConfigurationVariable,
-  fetchPrivateConfigurationVariable,
-  getConfigurationVariable,
-} from "@bolt-foundry/get-configuration-var";
+import { getSecret } from "@bolt-foundry/get-configuration-var";
 import { register } from "infra/bff/bff.ts";
 import {
   runShellCommand,
@@ -268,10 +264,10 @@ async function generateCommitMessage(
   suggestion?: string,
 ): Promise<{ title: string; message: string } | null> {
   // Check for OpenAI API key
-  const OPENAI_API_KEY = await fetchPrivateConfigurationVariable(
+  const OPENAI_API_KEY = await getSecret(
     "OPENAI_API_KEY",
   );
-  const POSTHOG_KEY = await fetchConfigurationVariable(
+  const POSTHOG_KEY = await getSecret(
     "APPS_INTERNALBF_POSTHOG_API_KEY",
   );
 
@@ -440,7 +436,7 @@ export async function aiCommit(args: string[]): Promise<number> {
   await Deno.writeTextFile(tmpFile, fullMessage);
 
   // Open the file in the editor
-  const editor = getConfigurationVariable("EDITOR") || "code";
+  const editor = "code";
   await runShellCommand([editor, tmpFile]);
 
   // Ask user if they want to commit with this message

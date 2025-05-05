@@ -1,18 +1,22 @@
 #! /usr/bin/env -S bff
 // infra/bff/commands/genConfigKeys.bff.ts
 //
-// Generate a single key-only helper file from 1Password.
+// Generate a key‑only helper file from 1Password.
 //
-//   ➜ apps/boltFoundry/configKeys.ts
+//   ➜ apps/boltFoundry/__generated__/configKeys.ts
 //
 // It exports:
 //
-//   PUBLIC_CONFIG_KEYS   – readonly array
-//   PRIVATE_CONFIG_KEYS  – readonly array
-//   PublicConfigKey      – union of public keys
-//   PrivateConfigKey     – union of private keys
-//   ConfigKey            – union of all keys
-//   <Map types>          – {[K in …]: string}
+//   PUBLIC_CONFIG_KEYS  – readonly array
+//   PRIVATE_CONFIG_KEYS – readonly array
+//   CONFIG_KEYS         – readonly array (public + private)
+//   PublicConfigKey     – union of public keys
+//   PrivateConfigKey    – union of private keys
+//   ConfigKey           – union of *all* keys
+//   PublicConfigMap     – {[K in PublicConfigKey]: string}
+//   PrivateConfigMap    – {[K in PrivateConfigKey]: string}
+//   ConfigMap           – PublicConfigMap & PrivateConfigMap
+//   ClientEnvironment   – {[K in PublicConfigKey]?: string | boolean}
 //
 // Usage:
 //   bff gen-config-keys
@@ -27,7 +31,6 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const td = new TextDecoder();
 const logger = getLogger(import.meta);
-const text = new TextDecoder();
 
 let vaultId: string;
 async function firstVault(): Promise<string> {
@@ -38,10 +41,10 @@ async function firstVault(): Promise<string> {
     stdout: "piped",
   }).output();
 
-  const vaults = JSON.parse(text.decode(stdout));
+  const vaults: Array<{ id: string }> = JSON.parse(td.decode(stdout));
   if (!vaults.length) throw new Error("No 1Password vaults visible");
   if (vaults.length > 1) {
-    throw new Error("Multiple vaults visible; hard-coding not yet supported");
+    throw new Error("Multiple vaults visible; hard‑coding not yet supported");
   }
   vaultId = vaults[0].id;
   return vaultId;
@@ -54,7 +57,7 @@ export async function genConfigKeys(
   const PUB_TAG = publicTag ?? "bolt-foundry-frontend-public";
   const PRIV_TAG = privateTag ?? "bolt-foundry-backend-private";
 
-  // helper – list item titles (upper-cased) for a given tag
+  // helper – list item titles (upper‑cased) for a given tag
   async function fetchKeys(tag: string): Promise<string[]> {
     const { success, stdout, stderr } = await new Deno.Command("op", {
       args: [
@@ -87,13 +90,13 @@ export async function genConfigKeys(
   }
 
   /* ------------------------------------------------------------------ */
-  /*  Emit apps/boltFoundry/configKeys.ts                               */
+  /*  Emit apps/boltFoundry/__generated__/configKeys.ts                  */
   /* ------------------------------------------------------------------ */
   const dest = "apps/boltFoundry/__generated__/configKeys.ts";
 
   const lines: string[] = [
     "/* @generated */",
-
+    "",
     `// Source vault: "${VAULT}"`,
     `// Public tag  : "${PUB_TAG}"  (${pubKeys.length} keys)`,
     `// Private tag : "${PRIV_TAG}" (${privKeys.length} keys)`,
@@ -106,13 +109,24 @@ export async function genConfigKeys(
     ...privKeys.map((k) => `  ${JSON.stringify(k)},`),
     "] as const;",
     "",
+    "// All keys (public + private) – do *not* ship private values to the client!",
+    "export const CONFIG_KEYS = [",
+    "  ...PUBLIC_CONFIG_KEYS,",
+    "  ...PRIVATE_CONFIG_KEYS,",
+    "] as const;",
+    "",
     "export type PublicConfigKey  = typeof PUBLIC_CONFIG_KEYS[number];",
     "export type PrivateConfigKey = typeof PRIVATE_CONFIG_KEYS[number];",
-    "export type ConfigKey        = PublicConfigKey | PrivateConfigKey;",
+    "export type ConfigKey        = typeof CONFIG_KEYS[number];",
     "",
     "export type PublicConfigMap  = { [K in PublicConfigKey]: string };",
     "export type PrivateConfigMap = { [K in PrivateConfigKey]: string };",
     "export type ConfigMap        = PublicConfigMap & PrivateConfigMap;",
+    "",
+    "// Shape of globalThis.__ENVIRONMENT__ on the browser:",
+    "export type ClientEnvironment = {",
+    "  [K in PublicConfigKey]?: string | boolean;",
+    "};",
     "",
   ];
 
@@ -125,6 +139,6 @@ export async function genConfigKeys(
 
 register(
   "genConfigKeys",
-  "Generate key-only config helper from 1Password",
+  "Generate key‑only config helper from 1Password",
   genConfigKeys,
 );

@@ -49,7 +49,6 @@ export const LoginPage = iso(`
       },
     );
   }
-  logger.info(data);
   if (responseElement) {
     return <div>{responseElement}</div>;
   }

@@ -7,7 +7,10 @@ import { ClientRoot } from "apps/boltFoundry/ClientRoot.tsx";
 import { getIsographEnvironment } from "apps/boltFoundry/server/isographEnvironment.ts";
 import type { ServerProps } from "apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
 import { getLogger } from "packages/logger/logger.ts";
-import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
+import {
+  getConfigurationVariable,
+  getSecret,
+} from "@bolt-foundry/get-configuration-var";
 import { getIsographHeaderComponent } from "apps/boltFoundry/components/IsographHeader.tsx";
 import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
 import { AssemblyAI } from "assemblyai";
@@ -29,10 +32,20 @@ export async function handleAppRoute(
   const isographServerEnvironment = getIsographEnvironment(request);
   const configurationVariableKeys = PUBLIC_CONFIG_KEYS;
 
-  const configurationVariables = configurationVariableKeys.reduce(
-    (acc, key) => {
-      const val = getConfigurationVariable(key, true);
-      acc[key] ??= val;
+  const configurationVariablePromises = configurationVariableKeys.map(
+    async (key) => {
+      const val = await getSecret(key);
+      return { key, val };
+    },
+  );
+
+  const configurationVariablesArray = await Promise.all(
+    configurationVariablePromises,
+  );
+
+  const configurationVariables = configurationVariablesArray.reduce(
+    (acc, { key, val }) => {
+      acc[key] = val;
       return acc;
     },
     {} as Record<string, string | undefined>,
@@ -85,17 +98,37 @@ export async function handleIsographRoute(
   const reqUrl = new URL(request.url);
   const initialPath = reqUrl.pathname;
   const queryParams = Object.fromEntries(reqUrl.searchParams.entries());
-  const isographServerEnvironment = await getIsographEnvironment(request);
+  const isographServerEnvironment = getIsographEnvironment(request);
   const featureFlags = {};
   const configurationVariableKeys = PUBLIC_CONFIG_KEYS;
 
-  const configurationVariables = configurationVariableKeys.reduce(
-    (acc, key) => {
-      const val = getConfigurationVariable(key, true);
-      acc[key] ??= val;
+  const configurationVariablePromises = configurationVariableKeys.map(
+    async (key) => {
+      const val = await getSecret(key);
+      return { key, val };
+    },
+  );
+
+  const configurationVariablesArray = await Promise.all(
+    configurationVariablePromises,
+  );
+
+  const configurationVariables = configurationVariablesArray.reduce(
+    (acc, { key, val }) => {
+      acc[key] = val;
       return acc;
     },
     {} as Record<string, string | undefined>,
+  );
+
+  logger.info("Starting configuration variable collection");
+  const startTime = performance.now();
+
+  const totalDuration = performance.now() - startTime;
+  logger.info(
+    `Completed loading ${configurationVariableKeys.length} config keys in ${
+      totalDuration.toFixed(2)
+    }ms`,
   );
 
   const clientEnvironment = {
