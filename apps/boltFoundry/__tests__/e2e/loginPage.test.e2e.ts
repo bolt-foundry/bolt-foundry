@@ -1,215 +1,190 @@
 #! /usr/bin/env -S bff e2e
 
-import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { assertExists, assertStringIncludes } from "@std/assert";
 import {
   navigateTo,
   setupE2ETest,
   teardownE2ETest,
 } from "infra/testing/e2e/setup.ts";
+import { signSession } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
+import { graphQLHandler } from "apps/bfDb/graphql/graphqlServer.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
-Deno.test.ignore("User can sign in with email", async () => {
-  const ctx = await setupE2ETest();
+/**
+ * This E2E verifies that a user can log in with Google and that the access
+ * + refresh cookies are persisted between navigations when running in a local
+ * (`http://localhost`) environment.
+ *
+ * Key points handled here:
+ *   1.  Yoga returns **two** `Set‑Cookie` headers → we must forward both.
+ *   2.  Those cookies include `; Secure`. Browsers discard them on HTTP, so we
+ *       strip that flag while the test server is running on plain‐HTTP.
+ *   3.  The Deno `Headers` type has no `raw()` helper (unlike `node‑fetch`), so
+ *       we use `headers.getSetCookie()` (a Deno extension) to pull **all**
+ *       cookie strings.
+ */
 
-  try {
-    /* 1️⃣  Go to the login page */
-    await navigateTo(ctx, "/login");
-    await ctx.takeScreenshot("login-initial");
+const logger = getLogger(import.meta);
 
-    /* 2️⃣  Wait for the form element */
-    const form = await ctx.page.waitForSelector(
-      'input[placeholder="you@example.com"]',
-    );
-    assertExists(form, "Login form should be present");
+Deno.env.set("JWT_SECRET", "test_secret_key");
 
-    /* 3️⃣  Type into the email input (by placeholder) */
-    await ctx.page.type(
-      'input[placeholder="you@example.com"]',
-      "test@example.com",
-    );
-    await ctx.takeScreenshot("login-email-filled");
-
-    /* 4️⃣  Click the “Continue” button */
-    await ctx.page.click("::-p-text(Continue)");
-    await ctx.takeScreenshot("login-clicked-continue");
-
-    /* 5️⃣  Wait for the success copy */
-    const loggedInDiv = await ctx.page.waitForSelector(
-      "::-p-text(logged in as)",
-    );
-    assertExists(
-      loggedInDiv,
-      'Expected a div containing the phrase "logged in as"',
-    );
-
-    const string = await loggedInDiv.evaluate((el) => el.textContent) ?? "";
-
-    /* 6️⃣  Confirm it shows the correct typename */
-
-    assertStringIncludes(
-      string,
-      "CurrentViewerLoggedIn",
-      'Should contain "CurrentViewerLoggedIn"',
-    );
-
-    await ctx.takeScreenshot("login-success");
-  } finally {
-    await teardownE2ETest(ctx);
-  }
-});
-
-Deno.test.ignore(
-  "Visiting /login while logged-in shows you logged in",
-  async () => {
-    const ctx = await setupE2ETest();
-    try {
-      /* 1️⃣ Log-in via existing happy-path helper */
-      await navigateTo(ctx, "/login");
-      await ctx.takeScreenshot("session-initial");
-      const form = await ctx.page.waitForSelector(
-        'input[placeholder="you@example.com"]',
-      );
-      assertExists(form, "Login form should be present");
-
-      /* 3️⃣  Type into the email input (by placeholder) */
-      await ctx.page.type(
-        'input[placeholder="you@example.com"]',
-        "test@example.com",
-      );
-
-      await ctx.takeScreenshot("session-email-filled");
-      await ctx.page.click("::-p-text(Continue)");
-      await ctx.takeScreenshot("session-continued");
-      const loggedInDiv = await ctx.page.waitForSelector(
-        "::-p-text(logged in as)",
-      );
-      assertExists(
-        loggedInDiv,
-        'Expected a div containing the phrase "logged in as"',
-      );
-
-      await navigateTo(ctx, "/login");
-      await ctx.takeScreenshot("session-revisited");
-
-      const recheckedLoggedInDiv = await ctx.page.waitForSelector(
-        "::-p-text(logged in as)",
-      );
-
-      const string = await recheckedLoggedInDiv?.evaluate((el) =>
-        el.textContent
-      ) ?? "";
-
-      /* 6️⃣  Confirm it shows the correct typename */
-
-      assertStringIncludes(
-        string,
-        "CurrentViewerLoggedIn",
-        'Should contain "CurrentViewerLoggedIn"',
-      );
-
-      await ctx.takeScreenshot("session-success");
-    } finally {
-      await teardownE2ETest(ctx);
-    }
+const TEST_JWT = await signSession(
+  {
+    typ: "access",
+    personGid: "gid_Person_e2e",
+    orgOid: "oid_Org_e2e",
   },
+  { expiresIn: "15m" },
 );
 
-Deno.test.ignore(
-  "user can sign in with Google and see CurrentViewerLoggedIn",
-  async () => {
-    const ctx = await setupE2ETest({ headless: false });
-    const { page } = ctx;
+Deno.test("user can sign in with Google and see CurrentViewerLoggedIn", async () => {
+  const ctx = await setupE2ETest({ headless: false });
+  const { page } = ctx;
 
-    /* ── 1️⃣  Stub Google endpoints ───────────────────────────────────────── */
-    await page.setRequestInterception(true);
-    page.on("request", (req) => {
-      const url = req.url();
-
-      // 1️⃣  Let the Identity-Services SDK & its iframe through
-      if (url.startsWith("https://accounts.google.com/gsi/")) {
-        return req.continue();
-      }
-
-      // 2️⃣  Intercept ONLY the top-level popup document
-      if (
-        url.startsWith("https://accounts.google.com/") &&
-        req.resourceType() === "document"
-      ) {
-        return req.respond({
-          status: 200,
-          contentType: "text/html",
-          body: `
-          <html><body>
-            <script>
-              window.opener.postMessage(
-                { credential: "${
-            getConfigurationVariable("GOOGLE_TEST_JWT")
-          }" },
-                "*"
-              );
-              window.close();
-            </script>
-          </body></html>`,
-        });
-      }
-
-      // 3️⃣  Fake token-introspection
-      if (url.startsWith("https://oauth2.googleapis.com/tokeninfo")) {
-        return req.respond({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify({
+  /* ── 1️⃣ Stub Google token verification so Yoga accepts our fake credential ── */
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (input: Request | URL | string, init?: RequestInit) => {
+    const url = String(input);
+    if (url.startsWith("https://oauth2.googleapis.com/tokeninfo")) {
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
             email: "tester@example.com",
             email_verified: true,
+            sub: "12345",
           }),
-        });
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+      );
+    }
+    return originalFetch(input, init as never);
+  };
+
+  /* ── 2️⃣ Intercept external requests (block GIS script, proxy GraphQL) ───── */
+  await page.setRequestInterception(true);
+  page.on("request", async (req) => {
+    const url = req.url();
+    const method = req.method();
+
+    // Block the real Google Identity‑Services JS
+    if (url.startsWith("https://accounts.google.com/gsi/client")) {
+      return req.respond({
+        status: 200,
+        contentType: "text/javascript",
+        body: "", // empty stub
+      });
+    }
+
+    // Proxy GraphQL requests to the in‑process Yoga server
+    if (method === "POST" && url.endsWith("/graphql")) {
+      logger.info(`Proxying GraphQL request to ${url}`);
+      const res = await graphQLHandler(
+        new Request(url, {
+          method,
+          headers: req.headers(),
+          body: req.postData(),
+        }),
+      );
+      logger.info(
+        `GraphQL request proxied to ${url} with status ${res.status}`,
+        req,
+        res,
+      );
+
+      // Convert Headers → plain object *without* collapsing duplicate keys.
+      const headersObj: Record<string, string | string[]> = Object.fromEntries(
+        res.headers,
+      );
+
+      // Pull all Set‑Cookie header values (Deno extension).
+      // `getSetCookie()` returns string[] of *every* Set‑Cookie header.
+      const allCookies: string[] = (res.headers as unknown as {
+        getSetCookie(): string[];
+      }).getSetCookie?.() ?? [];
+
+      if (allCookies.length) {
+        // Browsers discard `Secure` cookies on http://, so strip the flag when
+        // we’re NOT serving over HTTPS (i.e. in local E2E runs).
+        const stripped = allCookies.map((c) => c.replace(/;\s*Secure/gi, ""));
+        headersObj["Set-Cookie"] = stripped;
       }
 
-      req.continue();
-    });
+      return req.respond({
+        status: res.status,
+        headers: headersObj,
+        contentType: res.headers.get("content-type") ?? "application/json",
+        body: await res.text(),
+      });
+    }
 
-    /* ── 2️⃣  Kick off login flow ─────────────────────────────────────────── */
-    await navigateTo(ctx, "/login");
-    await ctx.takeScreenshot("google-login-initial");
+    req.continue();
+  });
 
-    // Find and click the Google Sign-In button
-    const googleButton = await page.waitForSelector("text/Sign in with Google");
-    await ctx.takeScreenshot("google-login-before-click");
-    await googleButton?.click();
-    await ctx.takeScreenshot("google-login-after-click");
+  /* ── 3️⃣ Inject a stubbed google.accounts.id implementation EARLY ─────────── */
+  await page.evaluateOnNewDocument((jwt) => {
+    let interceptedCallback:
+      | ((arg: { credential: string; select_by: string }) => void)
+      | undefined;
 
-    /* ── 3️⃣  Wait for loginWithGoogle request to /graphql ────────────────── */
-    await page.waitForResponse((res) => {
-      if (
-        res.request().method() !== "POST" || !res.url().endsWith("/graphql")
-      ) {
-        return false;
-      }
-      try {
-        const body = JSON.parse(res.request().postData() ?? "{}");
-        return typeof body.query === "string" &&
-          body.query.includes("loginWithGoogle");
-      } catch {
-        return false;
-      }
-    });
+    // deno-lint-ignore no-explicit-any
+    (globalThis as any).google = {
+      accounts: {
+        id: {
+          initialize({ callback }: { callback?: (r: unknown) => void }) {
+            interceptedCallback = callback;
+          },
+          renderButton(el: HTMLElement) {
+            el.innerHTML =
+              '<button id="fake-google">Fake Google Sign‑In</button>';
+            el.querySelector("button")?.addEventListener("click", () => {
+              interceptedCallback?.({ credential: jwt, select_by: "btn" });
+            });
+          },
+          /* no‑op helpers we don’t need in the test */
+          prompt() {},
+          disableAutoSelect() {},
+          storeCredential() {},
+          cancel() {},
+          revoke() {},
+        },
+        oauth2: {
+          initTokenClient() {
+            return { requestAccessToken() {} } as const;
+          },
+          initCodeClient() {
+            return { requestCode() {} } as const;
+          },
+          hasGrantedAllScopes() {
+            return true;
+          },
+          hasGrantedAnyScope() {
+            return true;
+          },
+          revoke() {},
+        },
+      },
+    };
+  }, TEST_JWT);
 
-    const recheckedLoggedInDiv = await ctx.page.waitForSelector(
-      "::-p-text(logged in as)",
-    );
+  /* ── 4️⃣ Visit the login page ─────────────────────────────────────────────── */
+  await navigateTo(ctx, "/login");
 
-    const string =
-      await recheckedLoggedInDiv?.evaluate((el) => el.textContent) ??
-        "";
+  // Wait for our stub button then snapshot
+  await page.waitForSelector("#fake-google");
+  await ctx.takeScreenshot("google-login-visible");
 
-    /* 6️⃣  Confirm it shows the correct typename */
+  /* ── 5️⃣ Complete the login flow ─────────────────────────────────────────── */
+  await page.click("#fake-google");
 
-    assertStringIncludes(
-      string,
-      "CurrentViewerLoggedIn",
-      'Should contain "CurrentViewerLoggedIn"',
-    );
+  await ctx.takeScreenshot("google-login-complete");
 
-    await teardownE2ETest(ctx);
-  },
-);
+  /* ── 6️⃣ Assert viewer shows logged‑in banner, even after reload ─────────── */
+  await page.waitForSelector("text/CurrentViewerLoggedIn");
+
+  await navigateTo(ctx, "/login");
+  await ctx.takeScreenshot("google-login-revisited");
+  await page.waitForSelector("text/CurrentViewerLoggedIn");
+
+  /* ── 7️⃣ Cleanup ─────────────────────────────────────────────────────────── */
+  globalThis.fetch = originalFetch;
+  await teardownE2ETest(ctx);
+});

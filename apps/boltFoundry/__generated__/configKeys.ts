@@ -1,10 +1,12 @@
 /* @generated */
+
 // Source vault: "c7qk6vxetcikihgccsc2p7d37q"
-// Public tag  : "bolt-foundry-frontend-public"  (6 keys)
+// Public tag  : "bolt-foundry-frontend-public"  (7 keys)
 // Private tag : "bolt-foundry-backend-private" (27 keys)
 
 export const PUBLIC_CONFIG_KEYS = [
   "APPS_INTERNALBF_POSTHOG_API_KEY",
+  "ENABLE_SPECIFIC_LOGGERS",
   "GOOGLE_OAUTH_CLIENT_ID",
   "LOG_LEVEL",
   "LOG_LOGGERS_TO_ENABLE",
@@ -42,10 +44,21 @@ export const PRIVATE_CONFIG_KEYS = [
   "WEB_PORT",
 ] as const;
 
+// All keys (public + private) – do *not* ship private values to the client!
+export const CONFIG_KEYS = [
+  ...PUBLIC_CONFIG_KEYS,
+  ...PRIVATE_CONFIG_KEYS,
+] as const;
+
 export type PublicConfigKey  = typeof PUBLIC_CONFIG_KEYS[number];
 export type PrivateConfigKey = typeof PRIVATE_CONFIG_KEYS[number];
-export type ConfigKey        = PublicConfigKey | PrivateConfigKey;
+export type ConfigKey        = typeof CONFIG_KEYS[number];
 
 export type PublicConfigMap  = { [K in PublicConfigKey]: string };
 export type PrivateConfigMap = { [K in PrivateConfigKey]: string };
 export type ConfigMap        = PublicConfigMap & PrivateConfigMap;
+
+// Shape of globalThis.__ENVIRONMENT__ on the browser:
+export type ClientEnvironment = {
+  [K in PublicConfigKey]?: string | boolean;
+};

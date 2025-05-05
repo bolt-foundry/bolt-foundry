@@ -19,6 +19,9 @@ export type CurrentViewerTypenames =
 /* -------------------------------------------------------------------------- */
 
 export class CurrentViewer extends GraphQLObjectBase {
+  override toString() {
+    return `${this.constructor.name}(${this.personBfGid}, ${this.orgBfOid})`;
+  }
   /* GraphQL -------------------------------------------------------------- */
   static override gqlSpec = this.defineGqlNode(
     (field, _rel, mutation) => {
