@@ -3,7 +3,7 @@ import { assertEquals, assertExists } from "@std/assert";
 import { storage } from "apps/bfDb/storage/storage.ts";
 import { AdapterRegistry } from "apps/bfDb/storage/AdapterRegistry.ts";
 import { InMemoryAdapter } from "apps/bfDb/storage/InMemoryAdapter.ts";
-import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import type { BfGid } from "lib/types.ts";
 
 Deno.test("storage facade auto‑registers default adapter", async () => {
   AdapterRegistry.clear();

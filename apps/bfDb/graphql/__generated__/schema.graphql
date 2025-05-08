@@ -3,30 +3,17 @@
 ### Do not make changes to this file directly
 
 
-type BfEdge implements BfNodeBase {
+interface BfNode {
   id: ID
 }
 
-type BfEdgeBase {
-  id: ID
-}
-
-interface BfNode implements BfNodeBase {
-  id: ID
-}
-
-interface BfNodeBase {
-  id: ID
-}
-
-type BfOrganization implements BfNode & BfNodeBase {
+type BfOrganization implements BfNode {
+  domain: String
   id: ID
   name: String
-  person: [BfPerson!]!
-  settings: JSON
 }
 
-type BfPerson implements BfNode & BfNodeBase {
+type BfPerson implements BfNode {
   email: String
   id: ID
   name: String
@@ -63,17 +50,12 @@ type JoinPayload {
   success: Boolean
 }
 
-type LoginWithEmailDevPayload {
-  currentViewer: CurrentViewer!
-}
-
 type LoginWithGooglePayload {
   currentViewer: CurrentViewer!
 }
 
 type Mutation {
   joinWaitlist(company: String, email: String, name: String): JoinPayload
-  loginWithEmailDevCurrentViewer(email: String!): LoginWithEmailDevPayload
   loginWithGoogleCurrentViewer(idToken: String!): LoginWithGooglePayload
 }
 

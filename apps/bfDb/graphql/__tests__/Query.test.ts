@@ -7,7 +7,7 @@
 import { assert } from "@std/assert";
 import { makeSchema } from "nexus";
 import { printSchema } from "graphql";
-import { loadModelTypes } from "apps/bfDb/graphql/builder/loadSpecs.ts";
+import { loadModelTypes } from "apps/bfDb/builders/graphql/loadSpecs.ts";
 
 function buildSdl(): string {
   const schema = makeSchema({ types: { ...loadModelTypes() } });

@@ -7,10 +7,12 @@
 import { AdapterRegistry } from "./AdapterRegistry.ts";
 import { registerDefaultAdapter } from "./registerDefaultAdapter.ts";
 
-import type { BfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import type { BfGid } from "lib/types.ts";
 import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
-import type { BfMetadataNode } from "apps/bfDb/coreModels/BfNode.ts";
-import type { BfMetadataEdge } from "apps/bfDb/coreModels/BfEdge.ts";
+import type {
+  BfEdgeMetadata,
+  BfNodeMetadata,
+} from "apps/bfDb/classes/BfNode.ts";
 
 /**
  * Ensures an adapter is available and returns it.
@@ -37,7 +39,7 @@ export const storage = {
     return adapter().getItem<T>(bfOid, bfGid);
   },
 
-  async put<T extends Props, M extends BfMetadataNode | BfMetadataEdge>(
+  async put<T extends Props, M extends BfNodeMetadata | BfEdgeMetadata>(
     props: T,
     metadata: M,
   ) {

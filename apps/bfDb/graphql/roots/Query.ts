@@ -1,5 +1,5 @@
 import { GraphQLObjectBase } from "../GraphQLObjectBase.ts";
-import { defineGqlNode } from "../builder/builder.ts";
+import { defineGqlNode } from "apps/bfDb/builders/graphql/builder.ts";
 import { CurrentViewer } from "../../classes/CurrentViewer.ts";
 
 export class Query extends GraphQLObjectBase {

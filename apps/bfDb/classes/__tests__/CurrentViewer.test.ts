@@ -13,10 +13,9 @@
  * in parallel without leaking state.
  */
 
-import { assert, assertEquals, assertExists, assertRejects } from "@std/assert";
+import { assert, assertEquals, assertExists } from "@std/assert";
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
 import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
-import { BfErrorInvalidEmail } from "apps/bfDb/classes/BfErrorInvalidEmail.ts";
 import { makeLoggedInCv, makeLoggedOutCv } from "apps/bfDb/utils/testUtils.ts";
 import {
   ACCESS_COOKIE,
@@ -51,26 +50,6 @@ Deno.test("makeLoggedInCv returns a fully‑populated LoggedIn viewer", () => {
 Deno.test("makeLoggedOutCv returns a LoggedOut viewer", () => {
   const cv = makeLoggedOutCv();
   assertEquals(cv.__typename, "CurrentViewerLoggedOut");
-});
-
-/* -------------------------------------------------------------------------- */
-/*  Group 2: Email‑dev login                                                  */
-/* -------------------------------------------------------------------------- */
-
-Deno.test("CurrentViewer.loginWithEmailDev succeeds for valid email", async () => {
-  await withIsolatedDb(async () => {
-    const cv = await CurrentViewer.loginWithEmailDev("user@example.com");
-    assertEquals(cv.__typename, "CurrentViewerLoggedIn");
-  });
-});
-
-Deno.test("CurrentViewer.loginWithEmailDev rejects invalid email", async () => {
-  await withIsolatedDb(async () => {
-    await assertRejects(
-      () => CurrentViewer.loginWithEmailDev("not‑an‑email"),
-      BfErrorInvalidEmail,
-    );
-  });
 });
 
 /* -------------------------------------------------------------------------- */
