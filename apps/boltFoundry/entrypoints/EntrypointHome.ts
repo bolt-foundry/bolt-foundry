@@ -10,6 +10,6 @@ export const EntrypointHome = iso(`
 `)(function EntrypointHome({ data }) {
   const Body = data.Home;
   logger.debug("dataer", data);
-  const title = "Bolt Foundry: The Content Operating System.";
+  const title = "Bolt Foundry: Unit Tests for LLMs.";
   return { Body, title };
 });
