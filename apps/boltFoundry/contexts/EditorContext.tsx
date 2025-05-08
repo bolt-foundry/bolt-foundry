@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 import { getLogger } from "packages/logger/logger.ts";
-import { BfError } from "infra/BfError.ts";
+import { BfError } from "lib/BfError.ts";
 import { findIndexRange } from "apps/boltFoundry/lib/editorHelper.ts";
 
 const logger = getLogger(import.meta);

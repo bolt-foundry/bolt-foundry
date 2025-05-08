@@ -1,8 +1,8 @@
-import { BfError } from "infra/BfError.ts";
 import {
   defineGqlNode as _baseDefineGqlNode,
   type GqlNodeSpec,
-} from "./builder/builder.ts";
+} from "apps/bfDb/builders/graphql/builder.ts";
+import { BfError } from "lib/BfError.ts";
 
 type HasGqlSpecCtor = {
   new (...args: unknown[]): unknown; // <- constructor signature
@@ -35,7 +35,7 @@ export class GraphQLObjectBase {
   }
 
   // allow subclasses to override the id
-  protected constructor(tmpId?: string) {
+  constructor(tmpId?: string) {
     if (tmpId) this.#tmpId = tmpId;
   }
 

@@ -1,11 +1,5 @@
 // apps/bfDb/graphql/builder/builder.ts – complete implementation matching test suite
 // deno-lint-ignore-file no-explicit-any
-import type {
-  BfMetadataBase,
-  BfNodeBase,
-  BfNodeBaseProps,
-} from "apps/bfDb/classes/BfNodeBase.ts";
-import type { BfEdgeBaseProps } from "apps/bfDb/classes/BfEdgeBase.ts";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 
@@ -30,12 +24,6 @@ export enum Direction {
 /* -------------------------------------------------------------------------- */
 /*  Core model helper types                                                   */
 /* -------------------------------------------------------------------------- */
-
-export type AnyBfNodeCtor<
-  TProps extends BfNodeBaseProps = BfNodeBaseProps,
-  TMetadata extends BfMetadataBase = BfMetadataBase,
-  TEdgeProps extends BfEdgeBaseProps = BfEdgeBaseProps,
-> = typeof BfNodeBase<TProps, TMetadata, TEdgeProps>;
 
 export type AnyGqlObjectCtor = abstract new (
   ...args: never[]
@@ -282,7 +270,7 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
 
 type Merge<T, U> = T & U;
 
-type AddRelationFn<M extends boolean, D extends Direction> = <
+type AddRelationFn<_M extends boolean, _D extends Direction> = <
   Name extends string,
 >(
   name: Name,
@@ -361,10 +349,6 @@ interface ReturnsBase {
     cls: T,
     key: string,
   ): WithNonNull<OutputSpec>;
-  collection<T extends AnyBfNodeCtor>(
-    cls: T,
-    key: string,
-  ): WithNonNull<OutputSpec>;
   readonly list: ReturnsBase;
   readonly nonNull: ReturnsBase;
 }
@@ -432,24 +416,6 @@ function makeReturnsBuilder(
       Object.assign(fn, {
         target: () => cls,
         many: false,
-        direction: Direction.OUT,
-      });
-
-      Object.defineProperty(fn, "toString", {
-        value: () => "() => " + cls.name,
-        enumerable: false,
-      });
-
-      const out: OutputSpec = { [key]: fn };
-      Object.assign(bucket, out);
-      attachNonNull(out);
-      return out as WithNonNull<OutputSpec>;
-    },
-    collection: (cls, key) => {
-      const fn = () => cls;
-      Object.assign(fn, {
-        target: () => cls,
-        many: true,
         direction: Direction.OUT,
       });
 

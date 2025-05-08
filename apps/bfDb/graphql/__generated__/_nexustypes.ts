@@ -58,7 +58,6 @@ export interface NexusGenObjects {
   BfOrganization: { // root type
     id?: string | null; // ID
     name?: string | null; // String
-    person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
     settings?: NexusGenScalars['JSON'] | null; // JSON
   }
   BfPerson: { // root type
@@ -117,7 +116,6 @@ export interface NexusGenFieldTypes {
   BfOrganization: { // field return type
     id: string | null; // ID
     name: string | null; // String
-    person: NexusGenRootTypes['BfPerson'][]; // [BfPerson!]!
     settings: NexusGenScalars['JSON'] | null; // JSON
   }
   BfPerson: { // field return type
@@ -184,7 +182,6 @@ export interface NexusGenFieldTypeNames {
   BfOrganization: { // field return type name
     id: 'ID'
     name: 'String'
-    person: 'BfPerson'
     settings: 'JSON'
   }
   BfPerson: { // field return type name

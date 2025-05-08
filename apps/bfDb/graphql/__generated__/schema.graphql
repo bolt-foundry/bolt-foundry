@@ -22,7 +22,6 @@ interface BfNodeBase {
 type BfOrganization implements BfNode & BfNodeBase {
   id: ID
   name: String
-  person: [BfPerson!]!
   settings: JSON
 }
 
