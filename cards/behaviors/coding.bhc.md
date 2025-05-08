@@ -42,7 +42,6 @@ for:
 
 - Use the `override` keyword for inherited methods
 - Use nominal typing for IDs (BfGid)
-- Convert string IDs to `BfGid` using the `toBfGid` function
 - Prefer static factory methods over constructors for BfModels
 - Use class inheritance for core models (inheriting from BfNodeBase, BfEdgeBase)
 - Implement required abstract methods from base classes

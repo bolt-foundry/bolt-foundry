@@ -36,12 +36,12 @@ async function expectedContent(spec: BarrelSpec): Promise<string> {
 // 2️⃣  Model barrel
 // -----------------------------------------------------------------------------
 const modelSpec: BarrelSpec = {
-  dir: new URL("../../models/", import.meta.url),
+  dir: new URL("../../nodeTypes/", import.meta.url),
   out: new URL(
-    "../../models/__generated__/modelClassesList.ts",
+    "../../models/__generated__/nodeTypesList.ts",
     import.meta.url,
   ),
-  importPath: (f) => `apps/bfDb/models/${f}`,
+  importPath: (f) => `apps/bfDb/nodeTypes/${f}`,
 };
 
 Deno.test("modelClassesList barrel is up‑to‑date", async () => {

@@ -56,22 +56,22 @@ async function generateBarrel(cfg: BarrelConfig) {
 const barrels: BarrelConfig[] = [
   // 1️⃣  Models
   {
-    dir: new URL("../models/", import.meta.url),
+    dir: new URL("../nodeTypes/", import.meta.url),
     out: new URL(
-      "../models/__generated__/modelClassesList.ts",
+      "../models/__generated__/nodeTypesList.ts",
       import.meta.url,
     ),
-    importPath: (f) => `apps/bfDb/models/${f}`,
+    importPath: (f) => `apps/bfDb/nodeTypes/${f}`,
   },
-  // 2️⃣  Core Models
-  {
-    dir: new URL("../coreModels/", import.meta.url),
-    out: new URL(
-      "../coreModels/__generated__/coreModelClassesList.ts",
-      import.meta.url,
-    ),
-    importPath: (f) => `apps/bfDb/coreModels/${f}`,
-  },
+  // // 2️⃣  Core Models
+  // {
+  //   dir: new URL("../coreModels/", import.meta.url),
+  //   out: new URL(
+  //     "../coreModels/__generated__/coreModelClassesList.ts",
+  //     import.meta.url,
+  //   ),
+  //   importPath: (f) => `apps/bfDb/coreModels/${f}`,
+  // },
   // 3️⃣  Top‑level classes (utility / abstract classes)
   {
     dir: new URL("../classes/", import.meta.url),

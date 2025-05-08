@@ -1,4 +1,4 @@
-import { defineGqlNode } from "apps/bfDb/graphql/builder/builder.ts";
+import { defineGqlNode } from "apps/bfDb/builders/graphql/builder.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";

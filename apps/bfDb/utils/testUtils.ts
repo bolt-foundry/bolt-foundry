@@ -2,7 +2,7 @@ import {
   CurrentViewer,
   CurrentViewerLoggedOut,
 } from "apps/bfDb/classes/CurrentViewer.ts";
-import { toBfGid } from "apps/bfDb/classes/BfNodeIds.ts";
+import type { BfGid } from "lib/types.ts";
 
 /* -------------------------------------------------------------------------- */
 /*  Types                                                                     */
@@ -52,7 +52,7 @@ export function makeLoggedOutCv(opts: LoggedOutOpts = {}): CurrentViewer {
   // anonymous viewers; no auth tokens, just a stub org id.
   return new CurrentViewerLoggedOut(
     /* whatever params the ctor expects for “logged-out” shape … */
-    toBfGid(orgSlug), // bfOid
-    toBfGid("guest"), // bfGid (guest user)
+    orgSlug as BfGid, // bfOid
+    "guest" as BfGid, // bfGid (guest user)
   );
 }

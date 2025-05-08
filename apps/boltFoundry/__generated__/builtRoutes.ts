@@ -7,7 +7,6 @@ export type RouteEntrypoint = {
 };
 
 iso(`entrypoint Mutation.JoinWaitlist`)
-iso(`entrypoint Mutation.LoginWithEmailDevCurrentViewer`)
 iso(`entrypoint Mutation.LoginWithGoogleCurrentViewer`)
 iso(`entrypoint Query.EntrypointHome`)
 iso(`entrypoint Query.EntrypointLogin`)
@@ -15,11 +14,9 @@ iso(`entrypoint Query.EntrypointLogin`)
 import entrypointHome from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointHome/entrypoint.ts"
 import entrypointLogin from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointLogin/entrypoint.ts"
 import joinWaitlist from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts"
-import loginWithEmailDevCurrentViewer from "apps/boltFoundry/__generated__/__isograph/Mutation/LoginWithEmailDevCurrentViewer/entrypoint.ts"
 import loginWithGoogleCurrentViewer from "apps/boltFoundry/__generated__/__isograph/Mutation/LoginWithGoogleCurrentViewer/entrypoint.ts"
 
 export {entrypointHome};
 export {entrypointLogin};
 export {joinWaitlist};
-export {loginWithEmailDevCurrentViewer};
 export {loginWithGoogleCurrentViewer};

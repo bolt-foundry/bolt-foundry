@@ -2,7 +2,7 @@
 
 import type { Handler } from "apps/web/web.tsx";
 import { getLogger } from "packages/logger/logger.ts";
-import { BfError } from "infra/BfError.ts";
+import { BfError } from "lib/BfError.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 const logger = getLogger(import.meta);
 

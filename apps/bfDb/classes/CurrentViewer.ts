@@ -1,8 +1,7 @@
 import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
-import { BfErrorInvalidEmail } from "./BfErrorInvalidEmail.ts";
-import { type BfGid, toBfGid } from "../classes/BfNodeIds.ts";
 import { claimsFromRequest } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
 import { getLogger } from "packages/logger/logger.ts";
+import type { BfGid } from "lib/types.ts";
 
 const logger = getLogger(import.meta);
 
@@ -28,15 +27,6 @@ export class CurrentViewer extends GraphQLObjectBase {
       field.id("id"); // refresh‑token version
       field.string("personBfGid");
       field.string("orgBfOid");
-
-      mutation.custom("loginWithEmailDev", {
-        args: (a) => a.nonNull.string("email"),
-        returns: (r) => r.object(CurrentViewer, "currentViewer"),
-        resolve: async (_src, { email }, ctx) => {
-          const currentViewer = await ctx.loginWithEmailDev(email);
-          return { currentViewer };
-        },
-      });
 
       mutation.custom("loginWithGoogle", {
         args: (a) => a.nonNull.string("idToken"),
@@ -69,28 +59,11 @@ export class CurrentViewer extends GraphQLObjectBase {
     tokenVersion = 1,
   ): CurrentViewer {
     return new CurrentViewerLoggedIn(
-      toBfGid(id),
-      toBfGid(orgSlug),
+      id as BfGid,
+      orgSlug as BfGid,
       tokenVersion,
     );
   }
-
-  /** simple e‑mail login helper (dev only) */
-  // deno-lint-ignore require-await
-  static async loginWithEmailDev(
-    email: string,
-  ): Promise<CurrentViewerLoggedIn> {
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      throw new BfErrorInvalidEmail(email);
-    }
-    const id = crypto.randomUUID?.() ?? email;
-    return new CurrentViewerLoggedIn(
-      toBfGid(`person:${id}`),
-      toBfGid("dev-org"),
-      1,
-    );
-  }
-
   /**
    * Authenticate user with Google ID token
    * Verifies the token, then creates or updates the user record
@@ -133,8 +106,8 @@ export class CurrentViewer extends GraphQLObjectBase {
       logger.debug(`Created session for Google user: ${personId}`);
 
       return new CurrentViewerLoggedIn(
-        toBfGid(personId),
-        toBfGid(orgId),
+        personId as BfGid,
+        orgId as BfGid,
         1,
       );
     } catch (error) {
@@ -162,8 +135,8 @@ export class CurrentViewer extends GraphQLObjectBase {
         `Restored viewer ${claims.personGid} (org ${claims.orgOid})`,
       );
       return this.makeLoggedInCv(
-        toBfGid(claims.personGid),
-        toBfGid(claims.orgOid),
+        claims.personGid as BfGid,
+        claims.orgOid as BfGid,
         claims.tokenVersion,
       );
     } catch (err) {
@@ -193,8 +166,8 @@ export class CurrentViewer extends GraphQLObjectBase {
    */
   static makeLoggedOutCv(tokenVersion = 1): CurrentViewerLoggedOut {
     return new CurrentViewerLoggedOut(
-      toBfGid("person:anonymous"),
-      toBfGid("org:public"),
+      "person:anonymous" as BfGid,
+      "org:public" as BfGid,
       tokenVersion,
     );
   }
