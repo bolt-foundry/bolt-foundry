@@ -3,20 +3,26 @@
 ### Do not make changes to this file directly
 
 
+type BfEdge {
+  ok: Boolean
+}
+
 interface BfNode {
-  id: ID
+  ok: Boolean
 }
 
 type BfOrganization implements BfNode {
   domain: String
   id: ID
   name: String
+  ok: Boolean
 }
 
 type BfPerson implements BfNode {
   email: String
   id: ID
   name: String
+  ok: Boolean
 }
 
 interface CurrentViewer implements GraphQLObjectBase {

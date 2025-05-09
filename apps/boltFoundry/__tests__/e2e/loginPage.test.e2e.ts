@@ -51,6 +51,7 @@ Deno.test("user can sign in with Google and see CurrentViewerLoggedIn", async ()
             email: "tester@example.com",
             email_verified: true,
             sub: "12345",
+            hd: "example.com",
           }),
           { status: 200, headers: { "content-type": "application/json" } },
         ),

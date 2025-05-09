@@ -201,12 +201,12 @@ Deno.test("child gqlSpec implements parent's gqlSpec as interface", () => {
 
 Deno.test("subclass setting gqlSpec = null disables GraphQL", () => {
   class SilentNode extends BfNode {
-    static override gqlSpec = null;
+    static override gqlSpec = undefined;
   }
 
   assertEquals(
     SilentNode.gqlSpec,
-    null,
+    undefined,
     "Subclass explicitly disables gqlSpec",
   );
 });
@@ -365,7 +365,7 @@ Deno.test("returns.nonNull.<scalar>() flips nullable → non-null", () => {
   assertStringIncludes(sdl, "success: Boolean!");
 });
 
-Deno.test.ignore(
+Deno.test(
   "custom mutation payload uses concrete node, not BfNode",
   () => {
     const testCv = makeLoggedInCv();
@@ -377,7 +377,6 @@ Deno.test.ignore(
           args: (a) => a.nonNull.string("email"),
           returns: (r) => r.object(DummyViewer, "currentViewer"),
           resolve: (_src, { email }) => ({
-            // @ts-expect-error: not typed properly during prototyping
             currentViewer: new DummyViewer(testCv, { email }),
           }),
         });
