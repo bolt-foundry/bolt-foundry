@@ -3,6 +3,7 @@ import {
   type GqlNodeSpec,
 } from "apps/bfDb/builders/graphql/builder.ts";
 import { BfError } from "lib/BfError.ts";
+import type { GraphqlNode } from "apps/bfDb/graphql/helpers.ts";
 
 type HasGqlSpecCtor = {
   new (...args: unknown[]): unknown; // <- constructor signature
@@ -17,7 +18,7 @@ export function isGraphQLObjectBase(
     "gqlSpec" in ctor;
 }
 
-export class GraphQLObjectBase {
+export abstract class GraphQLObjectBase {
   /* ────────────────────────────────
    *  Runtime identity helpers
    * ────────────────────────────────*/
@@ -51,10 +52,7 @@ export class GraphQLObjectBase {
    */
   static defineGqlNode(
     def: Parameters<typeof _baseDefineGqlNode>[0] | null,
-  ): GqlNodeSpec | null | undefined {
-    // 0) explicit opt-out
-    if (def === null) return (this.gqlSpec = null);
-
+  ): GqlNodeSpec {
     // 1) return our own cached copy (but not an ancestor’s)
     if (Object.prototype.hasOwnProperty.call(this, "gqlSpec") && this.gqlSpec) {
       return this.gqlSpec;
@@ -120,9 +118,16 @@ export class GraphQLObjectBase {
     return (this.gqlSpec = spec);
   }
 
-  static gqlSpec?: GqlNodeSpec | null | undefined = this.defineGqlNode(
+  static gqlSpec?: GqlNodeSpec = this.defineGqlNode(
     (field) => {
       field.id("id");
     },
   );
+
+  toGraphql(): GraphqlNode {
+    return {
+      __typename: this.__typename,
+      id: this.id,
+    };
+  }
 }

@@ -115,6 +115,7 @@ Deno.test("loginWithGoogleToken verifies token and returns LoggedIn viewer", asy
             JSON.stringify({
               email: "test@example.com",
               email_verified: true,
+              hd: "example.com",
               sub: "123",
             }),
             { status: 200, headers },
@@ -127,7 +128,7 @@ Deno.test("loginWithGoogleToken verifies token and returns LoggedIn viewer", asy
     try {
       const viewer = await CurrentViewer.loginWithGoogleToken("fake_token");
       assertEquals(viewer.__typename, "CurrentViewerLoggedIn");
-      assertEquals(viewer.personBfGid, "person:test@example.com");
+      assertEquals(viewer.personBfGid, "google-person:123");
     } finally {
       globalThis.fetch = originalFetch;
     }
@@ -146,6 +147,8 @@ Deno.test("GraphQL mutation loginWithGoogle issues cookies + returns LoggedIn", 
             JSON.stringify({
               email: "graph@example.com",
               email_verified: true,
+              hd: "example.com",
+              sub: "456",
             }),
             { status: 200, headers },
           ),

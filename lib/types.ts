@@ -18,3 +18,13 @@ export function convertUnixtimeToJsUnixtime(value: Unixtime): JsUnixtime {
   const jsUnixtime = value * 1000;
   return jsUnixtime as JsUnixtime;
 }
+
+export type PartialJson<T> = {
+  [P in keyof T]?: Exclude<T[P], undefined>;
+};
+
+export type NonUndefined<T> = T extends undefined ? never : T;
+
+export type StrictPartialJson<T> = {
+  [K in keyof T]?: NonUndefined<T[K]>;
+};

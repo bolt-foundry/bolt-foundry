@@ -10,4 +10,7 @@ export class Query extends GraphQLObjectBase {
         resolve: (_src, _args, ctx) => ctx.getCvForGraphql(),
       });
   });
+  override toGraphql() {
+    return { __typename: "Query", id: "Query" };
+  }
 }

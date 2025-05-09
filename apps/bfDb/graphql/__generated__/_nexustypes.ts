@@ -49,15 +49,20 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  BfEdge: { // root type
+    ok?: boolean | null; // Boolean
+  }
   BfOrganization: { // root type
     domain?: string | null; // String
     id?: string | null; // ID
     name?: string | null; // String
+    ok?: boolean | null; // Boolean
   }
   BfPerson: { // root type
     email?: string | null; // String
     id?: string | null; // ID
     name?: string | null; // String
+    ok?: boolean | null; // Boolean
   }
   CurrentViewerLoggedIn: { // root type
     id?: string | null; // ID
@@ -97,15 +102,20 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  BfEdge: { // field return type
+    ok: boolean | null; // Boolean
+  }
   BfOrganization: { // field return type
     domain: string | null; // String
     id: string | null; // ID
     name: string | null; // String
+    ok: boolean | null; // Boolean
   }
   BfPerson: { // field return type
     email: string | null; // String
     id: string | null; // ID
     name: string | null; // String
+    ok: boolean | null; // Boolean
   }
   CurrentViewerLoggedIn: { // field return type
     id: string | null; // ID
@@ -135,7 +145,7 @@ export interface NexusGenFieldTypes {
     ok: boolean | null; // Boolean
   }
   BfNode: { // field return type
-    id: string | null; // ID
+    ok: boolean | null; // Boolean
   }
   CurrentViewer: { // field return type
     id: string | null; // ID
@@ -150,15 +160,20 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  BfEdge: { // field return type name
+    ok: 'Boolean'
+  }
   BfOrganization: { // field return type name
     domain: 'String'
     id: 'ID'
     name: 'String'
+    ok: 'Boolean'
   }
   BfPerson: { // field return type name
     email: 'String'
     id: 'ID'
     name: 'String'
+    ok: 'Boolean'
   }
   CurrentViewerLoggedIn: { // field return type name
     id: 'ID'
@@ -188,7 +203,7 @@ export interface NexusGenFieldTypeNames {
     ok: 'Boolean'
   }
   BfNode: { // field return type name
-    id: 'ID'
+    ok: 'Boolean'
   }
   CurrentViewer: { // field return type name
     id: 'ID'

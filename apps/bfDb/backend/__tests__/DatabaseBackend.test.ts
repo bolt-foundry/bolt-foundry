@@ -1,4 +1,5 @@
-// Tests for database backends and bfDb functionality
+#! /usr/bin/env -S bff test
+
 import { assertEquals } from "@std/assert";
 import { afterEach } from "@std/testing/bdd";
 import { getLogger } from "packages/logger/logger.ts";
@@ -325,7 +326,7 @@ Deno.test("bfDb - query items", async () => {
   }
 });
 
-Deno.test.ignore("bfDb - metadata handling", async () => {
+Deno.test("bfDb - metadata handling", async () => {
   try {
     type TestMetadataNodeProps = {
       name: string;
@@ -341,7 +342,6 @@ Deno.test.ignore("bfDb - metadata handling", async () => {
       );
 
     // Create a node
-    // @ts-expect-error refactory
     const node = await TestMetadataNode.__DANGEROUS__createUnattached(
       cv,
       { name: "Metadata Test" },
@@ -363,7 +363,6 @@ Deno.test.ignore("bfDb - metadata handling", async () => {
     };
     await node.save();
 
-    // @ts-expect-error refactory
     const updatedNode = await TestMetadataNode.findX(cv, bfGid);
     assertEquals(updatedNode.props.name, "Updated Name");
     assertEquals(

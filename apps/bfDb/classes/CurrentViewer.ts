@@ -2,6 +2,10 @@ import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 import { claimsFromRequest } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import type { BfGid } from "lib/types.ts";
+import type { GoogleTokenInfo } from "lib/types/googleTokenInfo.ts";
+import { BfOrganization } from "apps/bfDb/nodeTypes/BfOrganization.ts";
+import { BfError } from "lib/BfError.ts";
+import { BfPerson } from "apps/bfDb/nodeTypes/BfPerson.ts";
 
 const logger = getLogger(import.meta);
 
@@ -85,13 +89,21 @@ export class CurrentViewer extends GraphQLObjectBase {
         throw new Error("Invalid Google token");
       }
 
-      const tokenInfo = await response.json();
+      const tokenInfo: GoogleTokenInfo = await response.json();
       logger.debug("Google token verified successfully");
 
       // Check if email is verified
       if (!tokenInfo.email_verified) {
         logger.warn("Google account email not verified", tokenInfo.email);
-        throw new Error("Email not verified with Google");
+        throw new BfError("Email not verified with Google");
+      }
+
+      if (!tokenInfo.hd) {
+        logger.warn(
+          "Google account not part of an organization",
+          tokenInfo.email,
+        );
+        throw new BfError("Google account not part of an organization");
       }
 
       // In a real implementation, we would:
@@ -100,16 +112,39 @@ export class CurrentViewer extends GraphQLObjectBase {
       // 3. Create JWT session tokens
 
       // For now, create a user with a deterministic ID based on email
-      const personId = `person:${tokenInfo.email}`;
-      const orgId = "org:google-login";
+      const personId = `google-person:${tokenInfo.sub}` as BfGid;
+      const orgId = `google-org:${tokenInfo.hd}` as BfGid;
 
       logger.debug(`Created session for Google user: ${personId}`);
-
-      return new CurrentViewerLoggedIn(
+      const cv = new CurrentViewerLoggedIn(
         personId as BfGid,
         orgId as BfGid,
-        1,
       );
+
+      let org = await BfOrganization.find(cv, orgId);
+      if (!org) {
+        logger.debug("Creating new organization for", orgId);
+        org = await BfOrganization.__DANGEROUS__createUnattached(cv, {
+          name: tokenInfo.hd,
+          domain: tokenInfo.hd,
+        });
+      }
+      let person = await BfPerson.find(cv, personId);
+      if (!person) {
+        logger.debug("Creating new person for", personId);
+        person = await BfPerson.__DANGEROUS__createUnattached(cv, {
+          email: tokenInfo.email,
+          name: tokenInfo.name ?? "",
+        }, {
+          bfOid: personId,
+          bfCid: "GOOGLE_TOKEN" as BfGid,
+          bfGid: personId,
+        });
+      }
+
+      // await org.addPersonIfNotMember(person);
+
+      return cv;
     } catch (error) {
       logger.error("Google login failed", error);
       throw error;
@@ -176,7 +211,7 @@ export class CurrentViewer extends GraphQLObjectBase {
   /*  GraphQL serialisation                                                 */
   /* ---------------------------------------------------------------------- */
 
-  toGraphql() {
+  override toGraphql() {
     return {
       __typename: this.constructor.name as CurrentViewerTypenames,
       id: this.id,
