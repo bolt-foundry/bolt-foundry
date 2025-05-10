@@ -1,4 +1,5 @@
 import { BfNode, type InferProps } from "apps/bfDb/classes/BfNode.ts";
+import { BfOrganization } from "apps/bfDb/nodeTypes/BfOrganization.ts";
 
 export class BfPerson extends BfNode<InferProps<typeof BfPerson>> {
   static override gqlSpec = this.defineGqlNode((node) =>
@@ -11,10 +12,10 @@ export class BfPerson extends BfNode<InferProps<typeof BfPerson>> {
     node
       .string("email")
       .string("name")
-    // .relation(
-    //   "organizations",
-    //   () => BfOrganization,
-    //   (edge) => edge.string("role"),
-    // )
+      .relation(
+        "memberOf",
+        () => BfOrganization,
+        (edge) => edge.string("role"),
+      )
   );
 }
