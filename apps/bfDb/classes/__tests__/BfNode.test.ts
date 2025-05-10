@@ -17,12 +17,36 @@ import { BfNode, type InferProps } from "../BfNode.ts";
 /*  Test fixtures                                                             */
 /* -------------------------------------------------------------------------- */
 
-class BfTestPerson extends BfNode<InferProps<typeof BfTestPerson>> {
+class BfTestOrg extends BfNode<InferProps<typeof BfTestOrg>> {
   static override gqlSpec = this.defineGqlNode((f) =>
-    f.string("email").string("name").int("age")
+    f
+      .string("name")
+      .string("domain")
   );
   static override bfNodeSpec = this.defineBfNode((f) =>
-    f.string("email").string("name").number("age")
+    f
+      .string("name")
+      .string("domain")
+  );
+}
+
+class BfTestPerson extends BfNode<InferProps<typeof BfTestPerson>> {
+  static override gqlSpec = this.defineGqlNode((f) =>
+    f
+      .string("email")
+      .string("name")
+      .int("age")
+  );
+  static override bfNodeSpec = this.defineBfNode((f) =>
+    f
+      .string("email")
+      .string("name")
+      .number("age")
+      .relation(
+        "memberOf",
+        () => BfTestOrg,
+        (edge) => edge.string("role"),
+      )
   );
 }
 
