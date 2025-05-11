@@ -1,28 +1,25 @@
 import {
-  makeRelationBuilder,
-  type RelationBuilder,
-} from "./RelationBuilder.ts";
-import {
   type FieldBuilder,
   type FieldSpec,
   makeFieldBuilder,
+  type RelationBuilder, // 👈  new import
+  type RelationSpec,
 } from "./makeFieldBuilder.ts";
-
-/* ─────────── defineBfNode ────────── */
 
 export function defineBfNode<
   F extends Record<string, FieldSpec>,
-  R = unknown,
+  R extends Record<string, RelationSpec>,
 >(
-  // deno-lint-ignore ban-types
-  builder: (f: FieldBuilder<{}>, r: RelationBuilder) => FieldBuilder<F>,
+  builder: (
+    // deno-lint-ignore ban-types
+    f: FieldBuilder<{}, {}>,
+    r: RelationBuilder,
+  ) => FieldBuilder<F, R>, // 👈  include R
 ): { fields: F; relations: R } {
   const fields: Record<string, FieldSpec> = {};
-  const relations: unknown[] = [];
+  const fb = makeFieldBuilder(fields);
 
-  // NB: the cast is only for the runtime side; the compile-time
-  //     shape is captured in the generics above.
-  builder(makeFieldBuilder(fields), makeRelationBuilder(relations));
+  builder(fb, fb as unknown as RelationBuilder);
 
-  return { fields: fields as F, relations: relations as R };
+  return { fields: fb._spec as F, relations: fb._rels as R };
 }

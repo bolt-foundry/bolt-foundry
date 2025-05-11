@@ -4,42 +4,58 @@
  */
 
 import { assertEquals } from "@std/assert";
-import {
-  makeFieldBuilder,
-  type PropsFromFieldSpec,
-} from "../makeFieldBuilder.ts";
-import type { FieldSpec } from "../makeFieldBuilder.ts";
+import { type FieldSpec, makeFieldBuilder } from "../makeFieldBuilder.ts";
+
+import { BfNode } from "apps/bfDb/classes/BfNode.ts";
 
 /* -------------------------------------------------------------------------- */
-/*  Compile-time assertions                                                   */
+/*  Dummy target node for the relation                                        */
 /* -------------------------------------------------------------------------- */
+class Dummy extends BfNode<Record<string, never>> {
+  static override bfNodeSpec = BfNode.defineBfNode((f) => f);
+}
 
-const target: Record<string, FieldSpec> = {}; // <- will hold runtime data
-const builder = makeFieldBuilder(target) // <- pass the target map in
+/* -------------------------------------------------------------------------- */
+/*  Build spec: two scalars + one relation                                    */
+/* -------------------------------------------------------------------------- */
+const fieldStore: Record<string, FieldSpec> = {};
+
+const builder = makeFieldBuilder(fieldStore)
   .string("email")
-  .number("age");
+  .number("age")
+  .relation("memberOf", () => Dummy, (edge) => edge.string("role"))
+  .one(); // flip multiplicity (default is "many")
 
+/* -------------------------------------------------------------------------- */
+/*  Compile-time checks                                                       */
+/* -------------------------------------------------------------------------- */
 type Spec = typeof builder._spec;
-type ExpectSpec = {
-  email: { kind: "string" };
-  age: { kind: "number" };
+type ExpectSpec = { email: { kind: "string" }; age: { kind: "number" } };
+const specCheck: ExpectSpec = {} as Spec;
+void specCheck;
+
+type Rels = typeof builder._rels;
+type ExpectRels = {
+  memberOf: {
+    target: () => typeof Dummy;
+    props: { role: { kind: "string" } }; // ← FieldSpec
+    multiplicity: "one";
+  };
 };
-
-// ✅ should compile
-const _typeCheck: ExpectSpec = {} as Spec;
-
-type Props = PropsFromFieldSpec<Spec>;
-const okProps: Props = { email: "a@example.com", age: 42 };
-// @ts-expect-error – “foo” isn’t declared
-okProps.foo = "bar";
+const relCheck: ExpectRels = {} as Rels;
+void relCheck;
 
 /* -------------------------------------------------------------------------- */
-/*  Runtime assertion                                                         */
+/*  Runtime assertions                                                        */
 /* -------------------------------------------------------------------------- */
-
-Deno.test("makeFieldBuilder mutates the supplied target map", () => {
-  assertEquals(target, {
+Deno.test("builder mutates field & relation stores", () => {
+  assertEquals(fieldStore, {
     email: { kind: "string" },
     age: { kind: "number" },
   });
+
+  const rel = builder._rels.memberOf;
+  assertEquals(rel.target(), Dummy); // thunk works
+  assertEquals(rel.props, { role: { kind: "string" } });
+  assertEquals(rel.multiplicity, "one");
 });
