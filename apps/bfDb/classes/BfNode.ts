@@ -2,10 +2,11 @@ import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 import type {
   FieldBuilder,
   FieldSpec,
+  RelationBuilder,
+  RelationSpec,
 } from "apps/bfDb/builders/bfDb/makeFieldBuilder.ts";
 
 import { defineBfNode } from "apps/bfDb/builders/bfDb/defineBfNode.ts";
-import type { RelationBuilder } from "apps/bfDb/builders/bfDb/RelationBuilder.ts";
 import type { BfGid } from "lib/types.ts";
 import type { GraphqlNode } from "apps/bfDb/graphql/helpers.ts";
 import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
@@ -14,7 +15,6 @@ import { storage } from "apps/bfDb/storage/storage.ts";
 import type { JSONValue } from "apps/bfDb/bfDb.ts";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorsBfNode.ts";
 import { getLogger } from "packages/logger/logger.ts";
-import { defineGqlNode } from "apps/bfDb/builders/graphql/builder.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 
 const logger = getLogger(import.meta);
@@ -78,17 +78,16 @@ export abstract class BfNode<TProps extends PropsBase = {}>
   protected _savedProps: TProps;
   protected _metadata: BfMetadata;
   readonly currentViewer: CurrentViewer;
-  static override gqlSpec? = defineGqlNode((i) => i.id("id"));
-  static bfNodeSpec = defineBfNode((i) => i);
+  static override gqlSpec? = this.defineGqlNode((i) => i.id("id"));
+  static bfNodeSpec = this.defineBfNode((i) => i);
   static defineBfNode<
     F extends Record<string, FieldSpec>,
-    R = unknown,
+    R extends Record<string, RelationSpec> = Record<string, RelationSpec>,
   >(
     builder: (
       // deno-lint-ignore ban-types
-      f: FieldBuilder<{}>,
-      r: RelationBuilder,
-    ) => FieldBuilder<F>,
+      f: FieldBuilder<{}, {}>,
+    ) => FieldBuilder<F, R>,
   ): { fields: F; relations: R } {
     return defineBfNode<F, R>(builder);
   }

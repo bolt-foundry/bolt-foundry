@@ -8,8 +8,6 @@ import type { BfNode } from "apps/bfDb/classes/BfNode.ts";
 import { setLoginSuccessHeaders } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
 import type { BfGid } from "lib/types.ts";
 
-// import { setLoginSuccessHeaders } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
-
 const logger = getLogger(import.meta);
 
 export type BfGraphqlContext = {
