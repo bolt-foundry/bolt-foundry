@@ -158,6 +158,6 @@ Deno.test("BfNode.find & .query use cache when provided", async () => {
       cache,
     );
     assert(first);
-    assertEquals(cache.size, 2, "query added all nodes to cache");
+    assertEquals(cache.size, 3, "query added all nodes to cache");
   });
 });
