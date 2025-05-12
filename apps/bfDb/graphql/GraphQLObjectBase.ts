@@ -64,8 +64,6 @@ export abstract class GraphQLObjectBase {
       // deno-lint-ignore no-explicit-any
       field: any,
       // deno-lint-ignore no-explicit-any
-      relation: any,
-      // deno-lint-ignore no-explicit-any
       mutation: any,
     ) => {
       // 1) Ensure `id()` always exists even if user never calls it
@@ -95,7 +93,7 @@ export abstract class GraphQLObjectBase {
 
       // 3) Finally run the user’s callback
       if (def) {
-        def(field, relation, mutation);
+        def(field, mutation);
       }
     };
 
