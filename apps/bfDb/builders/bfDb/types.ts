@@ -1,0 +1,44 @@
+/* -------------------------------------------------------------------------- */
+/*  Field primitives                                                          */
+/* -------------------------------------------------------------------------- */
+
+export type FieldSpec =
+  | { kind: "string" }
+  | { kind: "number" };
+
+export type FieldValue<S> = S extends { kind: "string" } ? string
+  : S extends { kind: "number" } ? number
+  : never;
+
+/* -------------------------------------------------------------------------- */
+/*  Relation primitives                                                       */
+/* -------------------------------------------------------------------------- */
+
+export type Direction = "out" | "in";
+export type Cardinality = "one" | "many";
+
+/** Forward decl for any node ctor (keeps builders generic-friendly) */
+// deno-lint-ignore no-explicit-any
+export type AnyBfNodeCtor = abstract new (...args: any[]) => any;
+
+/* -------------------------------------------------------------------------- */
+/*  Edge-builder helper                                                       */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/*  Complete RelationSpec type (runtime)                                      */
+/* -------------------------------------------------------------------------- */
+export type RelationSpec<C extends Cardinality = Cardinality> = {
+  direction: Direction;
+  cardinality: C;
+  target: () => AnyBfNodeCtor;
+  props: Record<string, FieldSpec>;
+  opposite?: string;
+};
+
+/* -------------------------------------------------------------------------- */
+/*  Helper – derive props type from a field-spec map                          */
+/* -------------------------------------------------------------------------- */
+export type PropsFromFieldSpec<F extends Record<string, FieldSpec>> = {
+  [K in keyof F]: FieldValue<F[K]>;
+};
