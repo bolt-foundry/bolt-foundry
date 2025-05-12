@@ -2,7 +2,9 @@
 const IMPORT_TEXT =
   'import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";\n';
 
-/** Insert the import once (idempotent) */
+/* -------------------------------------------------------------------------- */
+/*  Helper: add the import once (idempotent)                                  */
+/* -------------------------------------------------------------------------- */
 function ensureImport(
   sourceCode: Deno.lint.SourceCode,
   fixer: Deno.lint.Fixer,
@@ -26,11 +28,16 @@ function ensureImport(
     : [fixer.insertTextBeforeRange([0, 0], IMPORT_TEXT)];
 }
 
+/* -------------------------------------------------------------------------- */
+/*  Plugin                                                                    */
+/* -------------------------------------------------------------------------- */
 const plugin: Deno.lint.Plugin = {
   name: "bolt-foundry",
   rules: {
+    /* ────────────────────────────────────────────────────────────────────── */
+    /*  1. Deno.env → getConfigurationVariable                              */
+    /* ────────────────────────────────────────────────────────────────────── */
     "no-env-direct-access": {
-      /* only matches `Deno.env.get("FOO")` */
       create(context) {
         const { sourceCode } = context;
 
@@ -44,21 +51,54 @@ const plugin: Deno.lint.Plugin = {
                 "avoid Deno.env – use getConfigurationVariable() instead.",
               fix(fixer) {
                 return [
-                  // 1️⃣ replace the offending call
                   fixer.replaceText(
                     node,
                     `getConfigurationVariable(${
-                      sourceCode.getText(
-                        node.arguments[0],
-                      )
+                      sourceCode.getText(node.arguments[0])
                     })`,
                   ),
-                  // 2️⃣ add the import if it’s missing
                   ...ensureImport(sourceCode, fixer),
                 ];
               },
             });
           },
+        };
+      },
+    },
+
+    /* ────────────────────────────────────────────────────────────────────── */
+    /*  2. bfNodeSpec must NOT be the first static field                     */
+    /* ────────────────────────────────────────────────────────────────────── */
+    "no-bfnodespec-first-static": {
+      create(context) {
+        /** Check each class (declaration or expression). */
+        function checkClass(node: any) {
+          // Get static members in source order
+          const staticMembers = node.body.body.filter(
+            (m: any) => m.static,
+          );
+          if (staticMembers.length === 0) return;
+
+          const first = staticMembers[0];
+          const isBfNodeSpec =
+            (first.type === "PropertyDefinition" ||
+              first.type === "ClassProperty") &&
+            first.key &&
+            first.key.type === "Identifier" &&
+            first.key.name === "bfNodeSpec";
+
+          if (isBfNodeSpec) {
+            context.report({
+              node: first,
+              message:
+                "bfNodeSpec can't be the first static item… try declaring gqlSpec first.",
+            });
+          }
+        }
+
+        return {
+          ClassDeclaration: checkClass,
+          ClassExpression: checkClass,
         };
       },
     },
