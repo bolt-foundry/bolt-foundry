@@ -3,48 +3,74 @@
 ### Do not make changes to this file directly
 
 
-type BfEdge {
-  ok: Boolean
-}
-
-interface BfNode {
-  ok: Boolean
-}
-
-type BfOrganization implements BfNode {
+type BfEdge implements GraphQLObjectBase {
   domain: String
-  id: ID
-  name: String
-  ok: Boolean
-}
-
-type BfPerson implements BfNode {
   email: String
   id: ID
   name: String
-  ok: Boolean
+  orgBfOid: String
+  personBfGid: String
+}
+
+interface BfNode implements GraphQLObjectBase {
+  domain: String
+  email: String
+  id: ID
+  name: String
+  orgBfOid: String
+  personBfGid: String
+}
+
+type BfOrganization implements BfNode & GraphQLObjectBase {
+  domain: String
+  email: String
+  id: ID
+  name: String
+  orgBfOid: String
+  personBfGid: String
+}
+
+type BfPerson implements BfNode & GraphQLObjectBase {
+  domain: String
+  email: String
+  id: ID
+  name: String
+  orgBfOid: String
+  personBfGid: String
 }
 
 interface CurrentViewer implements GraphQLObjectBase {
+  domain: String
+  email: String
   id: ID
+  name: String
   orgBfOid: String
   personBfGid: String
 }
 
 type CurrentViewerLoggedIn implements CurrentViewer & GraphQLObjectBase {
+  domain: String
+  email: String
   id: ID
+  name: String
   orgBfOid: String
   personBfGid: String
 }
 
 type CurrentViewerLoggedOut implements CurrentViewer & GraphQLObjectBase {
+  domain: String
+  email: String
   id: ID
+  name: String
   orgBfOid: String
   personBfGid: String
 }
 
 interface GraphQLObjectBase {
+  domain: String
+  email: String
   id: ID
+  name: String
   orgBfOid: String
   personBfGid: String
 }
@@ -56,9 +82,7 @@ type JoinPayload {
   success: Boolean
 }
 
-type LoginWithGooglePayload {
-  currentViewer: CurrentViewer!
-}
+type LoginWithGooglePayload
 
 type Mutation {
   joinWaitlist(company: String, email: String, name: String): JoinPayload
