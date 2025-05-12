@@ -72,17 +72,18 @@ const plugin: Deno.lint.Plugin = {
     "no-bfnodespec-first-static": {
       create(context) {
         /** Check each class (declaration or expression). */
+        // deno-lint-ignore no-explicit-any
         function checkClass(node: any) {
           // Get static members in source order
           const staticMembers = node.body.body.filter(
+            // deno-lint-ignore no-explicit-any
             (m: any) => m.static,
           );
           if (staticMembers.length === 0) return;
 
           const first = staticMembers[0];
-          const isBfNodeSpec =
-            (first.type === "PropertyDefinition" ||
-              first.type === "ClassProperty") &&
+          const isBfNodeSpec = (first.type === "PropertyDefinition" ||
+            first.type === "ClassProperty") &&
             first.key &&
             first.key.type === "Identifier" &&
             first.key.name === "bfNodeSpec";
