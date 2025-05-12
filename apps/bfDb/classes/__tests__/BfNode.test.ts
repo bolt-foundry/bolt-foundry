@@ -11,68 +11,39 @@
 import { assert, assertEquals, assertInstanceOf } from "@std/assert";
 import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
 import { makeLoggedInCv } from "apps/bfDb/utils/testUtils.ts";
-import { BfNode, type InferProps } from "../BfNode.ts";
 
-/* -------------------------------------------------------------------------- */
-/*  Test fixtures                                                             */
-/* -------------------------------------------------------------------------- */
-
-class BfTestOrg extends BfNode<InferProps<typeof BfTestOrg>> {
-  static override gqlSpec = this.defineGqlNode((f) =>
-    f
-      .string("name")
-      .string("domain")
-  );
-  static override bfNodeSpec = this.defineBfNode((f) =>
-    f
-      .string("name")
-      .string("domain")
-  );
-}
-
-class BfTestPerson extends BfNode<InferProps<typeof BfTestPerson>> {
-  static override gqlSpec = this.defineGqlNode((f) =>
-    f
-      .string("email")
-      .string("name")
-      .int("age")
-  );
-  static override bfNodeSpec = this.defineBfNode((f) =>
-    f
-      .string("email")
-      .string("name")
-      .number("age")
-      .relation(
-        "memberOf",
-        () => BfTestOrg,
-        (edge) => edge.string("role"),
-      )
-  );
-}
+import type { InferProps } from "apps/bfDb/classes/BfNode.ts";
+import { BfExamplePerson } from "apps/bfDb/__fixtures__/Nodes.ts";
 
 /* -------------------------------------------------------------------------- */
 /*  Group 1 – compile-time DSL assertions                                     */
 /* -------------------------------------------------------------------------- */
 
 Deno.test("BfNode DSL infers strict Props type (compile-time only)", () => {
-  const spec = BfTestPerson.bfNodeSpec; // <F extends FieldSpec>
-  type FieldMap = typeof spec.fields; // { email:…, name:…, age:… }
+  const spec = BfExamplePerson.bfNodeSpec; // <F extends FieldSpec>
+  type FieldMap = typeof spec.fields; // { email:…, name:…, isEvil:…, currentOrgId: … }
 
   // Expected describes the *shape* we want
   type Expected = {
     email: { kind: "string" };
     name: { kind: "string" };
-    age: { kind: "number" };
+    isEvil: { kind: "string" };
+    currentOrgId: { kind: "string" };
   };
 
   // If the DSL ever stops emitting correct FieldMap, TS will flag it here
   const fieldCheck: Expected = {} as FieldMap;
 
   // Inferred Props should be usable as a value-object
-  type Props = InferProps<typeof BfTestPerson>;
-  const ok: Props = { email: "a@b.c", name: "Alice", age: 30 };
-  // @ts-expect-error – “isEvil” wasn’t declared
-  const bad: Props = { email: "x@y.z", name: "X", age: 99, isEvil: "yes" };
+  type Props = InferProps<typeof BfExamplePerson>;
+  const ok: Props = {
+    email: "a@b.c",
+    name: "Alice",
+    isEvil: "no",
+    currentOrgId: "org_1",
+  };
+  // @ts-expect-error – "age" wasn't declared
+  const bad: Props = { ...ok, age: 99 };
   void ok;
   void bad;
   void fieldCheck;
@@ -83,7 +54,7 @@ Deno.test("BfNode DSL infers strict Props type (compile-time only)", () => {
 /* -------------------------------------------------------------------------- */
 
 const cv = makeLoggedInCv(); // deterministic org/person IDs
-const newCache = () => new Map<string, BfTestPerson>(); // simple in-mem cache
+const newCache = () => new Map<string, BfExamplePerson>(); // simple in-mem cache
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /* -------------------------------------------------------------------------- */
@@ -92,16 +63,17 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 Deno.test("BfNode lifecycle – create → dirty → save → load", async () => {
   await withIsolatedDb(async () => {
-    const p = await BfTestPerson.__DANGEROUS__createUnattached(cv, {
+    const p = await BfExamplePerson.__DANGEROUS__createUnattached(cv, {
       email: "dev@example.com",
       name: "Dev",
-      age: 42,
+      isEvil: "no",
+      currentOrgId: "org_dev",
     });
 
     assertEquals(p.isDirty(), false, "freshly-saved node not dirty");
 
     // mutate
-    p.props = { age: 43 };
+    p.props = { currentOrgId: "org_dev_2" };
     assertEquals(p.isDirty(), true, "prop change marks node dirty");
 
     const beforeSave = p.metadata.lastUpdated;
@@ -112,10 +84,10 @@ Deno.test("BfNode lifecycle – create → dirty → save → load", async () =>
     assert(p.metadata.lastUpdated > beforeSave, "`lastUpdated` bumped");
 
     // load into a *new* instance to prove persistence
-    const reloaded = await new BfTestPerson(cv, p.props, {
+    const reloaded = await new BfExamplePerson(cv, p.props, {
       bfGid: p.metadata.bfGid,
     }).load();
-    assertEquals(reloaded.props.age, 43);
+    assertEquals(reloaded.props.currentOrgId, "org_dev_2");
     assertEquals(reloaded.metadata.bfGid, p.metadata.bfGid);
   });
 });
@@ -127,32 +99,34 @@ Deno.test("BfNode lifecycle – create → dirty → save → load", async () =>
 Deno.test("BfNode.find & .query use cache when provided", async () => {
   await withIsolatedDb(async () => {
     // create two people
-    const alice = await BfTestPerson.__DANGEROUS__createUnattached(cv, {
+    const alice = await BfExamplePerson.__DANGEROUS__createUnattached(cv, {
       email: "alice@test.io",
       name: "Alice",
-      age: 30,
+      isEvil: "no",
+      currentOrgId: "org_a",
     });
-    await BfTestPerson.__DANGEROUS__createUnattached(cv, {
+    await BfExamplePerson.__DANGEROUS__createUnattached(cv, {
       email: "bob@test.io",
       name: "Bob",
-      age: 31,
+      isEvil: "no",
+      currentOrgId: "org_b",
     });
 
     const cache = newCache();
 
     // --- find (miss → db) ---
-    const fetched = await BfTestPerson.find(cv, alice.metadata.bfGid, cache);
-    assertInstanceOf(fetched, BfTestPerson);
+    const fetched = await BfExamplePerson.find(cv, alice.metadata.bfGid, cache);
+    assertInstanceOf(fetched, BfExamplePerson);
     assertEquals(cache.size, 1, "find populated cache on miss");
 
     // --- find (hit → cache, no db call) ---
-    const again = await BfTestPerson.find(cv, alice.metadata.bfGid, cache);
+    const again = await BfExamplePerson.find(cv, alice.metadata.bfGid, cache);
     assertEquals(again, fetched, "same instance returned from cache");
 
     // --- query populates cache for each hit ---
-    const [first] = await BfTestPerson.query(
+    const [first] = await BfExamplePerson.query(
       cv,
-      { className: "BfTestPerson" },
+      { className: "BfExamplePerson" },
       {},
       [],
       cache,

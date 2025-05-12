@@ -6,7 +6,7 @@ import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 const logger = getLogger(import.meta);
 
 export class Waitlist extends GraphQLObjectBase {
-  static override gqlSpec = defineGqlNode((_f, _rel, mutation) => {
+  static override gqlSpec = defineGqlNode((_f, mutation) => {
     mutation.custom("join", {
       args: (a) => {
         a.string("email");

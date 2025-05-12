@@ -1,40 +1,24 @@
-/* -------------------------------------------------------------------------- */
-/*  Field primitives                                                          */
-/* -------------------------------------------------------------------------- */
+import type {
+  AnyBfNodeCtor,
+  Cardinality,
+  Direction,
+  FieldSpec,
+  RelationBuilder as EdgeRelationBuilder,
+  RelationSpec,
+} from "./types.ts";
+import { makeRelationBuilder } from "./makeRelationBuilder.ts";
 
-export type FieldSpec =
-  | { kind: "string" }
-  | { kind: "number" };
-
-type FieldValue<S> = S extends { kind: "string" } ? string
-  : S extends { kind: "number" } ? number
-  : never;
-
-/* -------------------------------------------------------------------------- */
-/*  Relation primitives                                                       */
-/* -------------------------------------------------------------------------- */
-
-import type { AnyBfNodeCtor } from "apps/bfDb/classes/BfNode.ts";
-
-export type RelationSpec = {
-  target: () => AnyBfNodeCtor;
-  props: Record<string, FieldSpec>;
-  multiplicity: "one" | "many";
-};
-
-/* -------------------------------------------------------------------------- */
-/*  Builder types — accumulating generics                                     */
-/* -------------------------------------------------------------------------- */
+/* ────────────────────────────────────────────────────────────────────────── */
+/*  FIELD BUILDER                                                            */
+/* ────────────────────────────────────────────────────────────────────────── */
 
 export type FieldBuilder<
-  // field map
   // deno-lint-ignore ban-types
   F extends Record<string, FieldSpec> = {},
-  // relation map
   // deno-lint-ignore ban-types
   R extends Record<string, RelationSpec> = {},
 > = {
-  /* ───────── scalars ───────── */
+  /* scalars */
   string<N extends string>(
     name: N,
   ): FieldBuilder<F & { [K in N]: { kind: "string" } }, R>;
@@ -43,64 +27,63 @@ export type FieldBuilder<
     name: N,
   ): FieldBuilder<F & { [K in N]: { kind: "number" } }, R>;
 
-  /* ───────── relations ───────── */
-  relation<
+  /* outbound relations */
+  one: RelationAdder<"out", "one", F, R>;
+  many: RelationAdder<"out", "many", F, R>;
+
+  /* inbound helper (fixture-style) */
+  in<
     N extends string,
-    Target extends AnyBfNodeCtor,
     // deno-lint-ignore ban-types
-    EdgeF extends Record<string, FieldSpec> = {},
+    EdgeP extends Record<string, FieldSpec> = {},
+    C extends Cardinality = Cardinality,
   >(
     name: N,
-    target: () => Target,
-    // deno-lint-ignore ban-types
-    edge: (e: FieldBuilder<{}>) => FieldBuilder<EdgeF>,
-  ):
-    & FieldBuilder<
-      F,
-      & R
-      & {
-        [K in N]: {
-          target: () => Target;
-          props: EdgeF;
-          multiplicity: "one" | "many";
-        };
-      }
-    >
+    build: (b: EdgeRelationBuilder<EdgeP>) => EdgeRelationBuilder<EdgeP, C>,
+  ): FieldBuilder<
+    F,
+    & R
     & {
-      /** call immediately for “one-to-one” */
-      one(): FieldBuilder<
-        F,
-        & R
-        & {
-          [K in N]: {
-            target: () => Target;
-            props: EdgeF;
-            multiplicity: "one";
-          };
-        }
-      >;
-      /** call immediately for “one-to-many” (default if you don’t call it) */
-      many(): FieldBuilder<
-        F,
-        & R
-        & {
-          [K in N]: {
-            target: Target;
-            props: EdgeF;
-            multiplicity: "many";
-          };
-        }
-      >;
-    };
-
-  /* phantom maps – populated at runtime for defineBfNode/tests */
-  _spec: F;
-  _rels: R;
+      [K in N]: RelationSpec<C> & {
+        direction: "in";
+        props: EdgeP;
+      };
+    }
+  >;
+  /* raw spec */
+  readonly _spec: { fields: F; relations: R };
 };
 
-/* -------------------------------------------------------------------------- */
-/*  Builder factory (single argument)                                         */
-/* -------------------------------------------------------------------------- */
+/* relation-adder ---------------------------------------------------------- */
+type RelationAdder<
+  D extends Direction,
+  C extends Cardinality,
+  F extends Record<string, FieldSpec>,
+  R extends Record<string, RelationSpec>,
+> = <
+  N extends string,
+  T extends AnyBfNodeCtor,
+  EB extends EdgeRelationBuilder = EdgeRelationBuilder, // 🆕
+>(
+  name: N,
+  target: () => T,
+  edge?: (e: EdgeRelationBuilder) => EB, // 🆕
+) => FieldBuilder<
+  F,
+  & R
+  & {
+    [K in N]: RelationSpec<C> & {
+      direction: D;
+      target: () => T;
+      // deno-lint-ignore ban-types
+      props: EB extends EdgeRelationBuilder<infer EP> ? EP : {}; // 🆕
+    };
+  }
+>;
+
+/* ────────────────────────────────────────────────────────────────────────── */
+/*  FACTORY                                                                  */
+/* ────────────────────────────────────────────────────────────────────────── */
 
 export function makeFieldBuilder<
   // deno-lint-ignore ban-types
@@ -108,101 +91,95 @@ export function makeFieldBuilder<
   // deno-lint-ignore ban-types
   R extends Record<string, RelationSpec> = {},
 >(
-  fieldStore: Record<string, FieldSpec>,
+  out = { fields: {} as F, relations: {} as R },
 ): FieldBuilder<F, R> {
-  const relationStore: Record<string, RelationSpec> = {};
+  /* helper that creates a **new** builder with fresh generics */
+  const next = <
+    NF extends Record<string, FieldSpec>,
+    NR extends Record<string, RelationSpec>,
+  >(o: { fields: NF; relations: NR }): FieldBuilder<NF, NR> =>
+    makeFieldBuilder(o);
 
-  /* ------------------------------------------------ scalars ---- */
-  const addScalar =
-    <Kind extends "string" | "number", N extends string>(kind: Kind) =>
-    (name: N): FieldBuilder<
-      F & { [K in N]: { kind: Kind } },
-      R
-    > => {
-      fieldStore[name] = { kind };
-      return makeFieldBuilder<
-        F & { [K in N]: { kind: Kind } },
-        R
-      >(fieldStore);
+  /* scalar helpers */
+  const string = <N extends string>(name: N) =>
+    next({
+      ...out,
+      fields: { ...out.fields, [name]: { kind: "string" } },
+    });
+
+  const number = <N extends string>(name: N) =>
+    next({
+      ...out,
+      fields: { ...out.fields, [name]: { kind: "number" } },
+    });
+
+  /* outbound relations */
+  const addRel =
+    <D extends Direction, C extends Cardinality>(direction: D, card: C) =>
+    <
+      N extends string,
+      T extends AnyBfNodeCtor,
+      EB extends EdgeRelationBuilder = EdgeRelationBuilder, // 🆕
+    >(
+      name: N,
+      target: () => T,
+      edge?: (e: EdgeRelationBuilder) => EB, // 🆕
+    ) => {
+      // deno-lint-ignore ban-types
+      type EP = EB extends EdgeRelationBuilder<infer P> ? P : {}; // 🆕
+      const props: EP = edge
+        ? edge(makeRelationBuilder())._spec.props as EP
+        : {} as EP;
+
+      return next({
+        ...out,
+        relations: {
+          ...out.relations,
+          [name]: {
+            direction,
+            cardinality: card,
+            target,
+            props,
+          } as RelationSpec & { props: EP },
+        },
+      });
     };
 
-  /* ------------------------------------------------ relation ---- */
-  function addRelation<
+  /* inbound helper */
+  const inbound = <
     N extends string,
-    Target extends AnyBfNodeCtor,
-    // deno-lint-ignore ban-types
-    EdgeF extends Record<string, FieldSpec> = {},
+    EdgeP extends Record<string, FieldSpec>,
+    C extends Cardinality,
   >(
     name: N,
-    target: () => Target,
-    // deno-lint-ignore ban-types
-    edgeBuilder: (e: FieldBuilder<{}>) => FieldBuilder<EdgeF>,
-  ) {
-    const edgeFields: Record<string, FieldSpec> = {};
-    edgeBuilder(makeFieldBuilder(edgeFields));
-
-    const spec: RelationSpec = {
-      target,
-      props: edgeFields,
-      multiplicity: "many", // default; may be flipped below
-    };
-    relationStore[name] = spec;
-
-    type BaseSpec = {
-      [K in N]: {
-        target: () => Target;
-        props: EdgeF;
-        multiplicity: "one" | "many";
-      };
-    };
-    type OneSpec = {
-      [K in N]: {
-        target: () => Target;
-        props: EdgeF;
-        multiplicity: "one";
-      };
-    };
-    type ManySpec = {
-      [K in N]: {
-        target: Target; // ← constructor, **not** thunk
-        props: EdgeF;
-        multiplicity: "many";
-      };
-    };
-
-    const chain = {
-      one(): FieldBuilder<F, R & OneSpec> {
-        spec.multiplicity = "one";
-        return builder as unknown as FieldBuilder<F, R & OneSpec>;
+    build: (b: EdgeRelationBuilder<EdgeP>) => EdgeRelationBuilder<EdgeP, C>,
+  ) => {
+    const rb = build(makeRelationBuilder<EdgeP>());
+    const { cardinality, target, props } = rb._spec;
+    return next({
+      ...out,
+      relations: {
+        ...out.relations,
+        [name]: {
+          direction: "in",
+          cardinality,
+          target,
+          props,
+        } as RelationSpec & { props: EdgeP },
       },
-      many(): FieldBuilder<F, R & ManySpec> {
-        spec.multiplicity = "many";
-        return builder as unknown as FieldBuilder<F, R & ManySpec>;
-      },
-    };
-
-    return chain as FieldBuilder<F, R & BaseSpec> & typeof chain;
-  }
-
-  /* ------------------------------------------------ public API -- */
-  const builder: FieldBuilder<F, R> = {
-    string: addScalar("string"),
-    number: addScalar("number"),
-    relation: addRelation,
-    _spec: fieldStore as F,
-    _rels: relationStore as R,
+    });
   };
 
-  return builder;
+  return {
+    /* scalars */
+    string,
+    number,
+    /* outbound */
+    one: addRel("out", "one"),
+    many: addRel("out", "many"),
+    /* inbound */
+    in: inbound,
+    /* spec exposer */
+    _spec: out,
+  } as FieldBuilder<F, R>;
 }
-
-/* -------------------------------------------------------------------------- */
-/*  Helper: props type from field spec map                                    */
-/* -------------------------------------------------------------------------- */
-
-export type PropsFromFieldSpec<F extends Record<string, FieldSpec>> = {
-  [K in keyof F]: FieldValue<F[K]>;
-};
-
-// deno-lint-ignore ban-types
-export type RelationBuilder = FieldBuilder<{}, {}>; // <-- add at bottom

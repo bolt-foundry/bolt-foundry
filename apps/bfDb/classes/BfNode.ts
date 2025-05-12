@@ -1,11 +1,6 @@
 import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
-import type {
-  FieldBuilder,
-  FieldSpec,
-  RelationSpec,
-} from "apps/bfDb/builders/bfDb/makeFieldBuilder.ts";
+import type { FieldBuilder } from "apps/bfDb/builders/bfDb/makeFieldBuilder.ts";
 
-import { defineBfNode } from "apps/bfDb/builders/bfDb/defineBfNode.ts";
 import type { BfGid } from "lib/types.ts";
 import type { GraphqlNode } from "apps/bfDb/graphql/helpers.ts";
 import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
@@ -15,6 +10,8 @@ import type { JSONValue } from "apps/bfDb/bfDb.ts";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorsBfNode.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { generateUUID } from "lib/generateUUID.ts";
+import type { FieldSpec, RelationSpec } from "apps/bfDb/builders/bfDb/types.ts";
+import { makeSpec } from "apps/bfDb/builders/bfDb/makeSpec.ts";
 
 const logger = getLogger(import.meta);
 
@@ -88,7 +85,7 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       f: FieldBuilder<{}, {}>,
     ) => FieldBuilder<F, R>,
   ): { fields: F; relations: R } {
-    return defineBfNode<F, R>(builder);
+    return makeSpec<F, R>(builder);
   }
 
   static generateSortValue() {
