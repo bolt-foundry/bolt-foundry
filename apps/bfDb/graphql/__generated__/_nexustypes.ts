@@ -93,9 +93,6 @@ export interface NexusGenObjects {
     message?: string | null; // String
     success?: boolean | null; // Boolean
   }
-  LoginWithGooglePayload: { // root type
-    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
-  }
   Mutation: {};
   Query: {};
   Waitlist: { // root type
@@ -160,9 +157,6 @@ export interface NexusGenFieldTypes {
   JoinPayload: { // field return type
     message: string | null; // String
     success: boolean | null; // Boolean
-  }
-  LoginWithGooglePayload: { // field return type
-    currentViewer: NexusGenRootTypes['CurrentViewer']; // CurrentViewer!
   }
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinPayload'] | null; // JoinPayload
@@ -244,9 +238,6 @@ export interface NexusGenFieldTypeNames {
   JoinPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
-  }
-  LoginWithGooglePayload: { // field return type name
-    currentViewer: 'CurrentViewer'
   }
   Mutation: { // field return type name
     joinWaitlist: 'JoinPayload'

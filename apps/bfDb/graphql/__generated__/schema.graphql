@@ -82,9 +82,7 @@ type JoinPayload {
   success: Boolean
 }
 
-type LoginWithGooglePayload {
-  currentViewer: CurrentViewer!
-}
+type LoginWithGooglePayload
 
 type Mutation {
   joinWaitlist(company: String, email: String, name: String): JoinPayload

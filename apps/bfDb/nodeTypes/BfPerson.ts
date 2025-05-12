@@ -12,10 +12,10 @@ export class BfPerson extends BfNode<InferProps<typeof BfPerson>> {
     node
       .string("email")
       .string("name")
-      .relation(
-        "memberOf",
-        () => BfOrganization,
-        (edge) => edge.string("role"),
-      )
+    // .relation(
+    //   "memberOf",
+    //   () => BfOrganization,
+    //   (edge) => edge.string("role"),
+    // )
   );
 }

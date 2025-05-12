@@ -54,7 +54,7 @@ type FollowersConnPayload = {
 /* -------------------------------------------------------------------------- */
 
 Deno.test("defineGqlNode – rich returns DSL with order‑agnostic nullable/list", () => {
-  const spec = defineGqlNode((field, relation, mutation) => {
+  const spec = defineGqlNode((field, mutation) => {
     /* ── scalar fields ─────────────────────────────────────────────── */
     field.id("id");
     field.string("name");
@@ -64,11 +64,6 @@ Deno.test("defineGqlNode – rich returns DSL with order‑agnostic nullable/lis
       args: (arg) => arg.id("followerId"),
       resolve: () => true,
     });
-
-    /* ── relations ─────────────────────────────────────────────────── */
-    relation.one("account", () => AccountNode);
-    relation.many.in("followers", () => PersonNode);
-    relation.one.in("likedByViewer", () => PersonNode);
 
     /* ── mutations ─────────────────────────────────────────────────── */
     mutation.update().delete();
@@ -148,7 +143,7 @@ Deno.test("defineGqlNode – rich returns DSL with order‑agnostic nullable/lis
 /* -------------------------------------------------------------------------- */
 
 Deno.test("specsToNexusDefs – update mutation args", () => {
-  const spec = defineGqlNode((field, _rel, mutation) => {
+  const spec = defineGqlNode((field, mutation) => {
     field.id("id");
     field.string("name");
     mutation.update();
@@ -315,7 +310,7 @@ Deno.test("field.nonNull.<scalar>() makes the field non-nullable", () => {
 Deno.test(
   "returns.nonNull.<scalar>() makes the mutation payload non-nullable",
   () => {
-    const spec = defineGqlNode((_field, _rel, mutation) => {
+    const spec = defineGqlNode((_field, mutation) => {
       mutation.custom("echo", {
         args: (a) => a.string("msg"),
         returns: (r) => r.nonNull.string("answer"),
@@ -333,7 +328,7 @@ Deno.test(
 );
 
 Deno.test("returns.<scalar>() is nullable by default", () => {
-  const spec = defineGqlNode((_f, _r, m) => {
+  const spec = defineGqlNode((_f, m) => {
     m.custom("ping", {
       args: () => ({}),
       returns: (r) => r.string("message"),
@@ -351,7 +346,7 @@ Deno.test("returns.<scalar>() is nullable by default", () => {
 });
 
 Deno.test("returns.nonNull.<scalar>() flips nullable → non-null", () => {
-  const spec = defineGqlNode((_f, _r, m) => {
+  const spec = defineGqlNode((_f, m) => {
     m.custom("save", {
       args: () => ({}),
       returns: (r) => r.nonNull.boolean("success"),
@@ -372,7 +367,7 @@ Deno.test(
     class DummyViewer extends BfNode<
       { email: string }
     > {
-      static override gqlSpec = defineGqlNode((_f, _rel, mutation) => {
+      static override gqlSpec = defineGqlNode((_f, mutation) => {
         mutation.custom("loginDev", {
           args: (a) => a.nonNull.string("email"),
           returns: (r) => r.object(DummyViewer, "currentViewer"),

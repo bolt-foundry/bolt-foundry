@@ -1,61 +1,77 @@
 #! /usr/bin/env -S bff test
 /**
- * makeFieldBuilder – type-safety *and* runtime smoke-tests
+ * makeFieldBuilder / makeSpec – compile-time + runtime guarantees
+ *
+ * These tests no longer rely on `defineBfNode`; they exercise the new
+ * `makeSpec` helper directly.
  */
 
 import { assertEquals } from "@std/assert";
-import { type FieldSpec, makeFieldBuilder } from "../makeFieldBuilder.ts";
-
-import { BfNode } from "apps/bfDb/classes/BfNode.ts";
-
-/* -------------------------------------------------------------------------- */
-/*  Dummy target node for the relation                                        */
-/* -------------------------------------------------------------------------- */
-class Dummy extends BfNode<Record<string, never>> {
-  static override bfNodeSpec = BfNode.defineBfNode((f) => f);
-}
+import { makeSpec } from "../makeSpec.ts";
+import type { AnyBfNodeCtor } from "apps/bfDb/classes/BfNode.ts";
+import type { PropsFromFieldSpec } from "apps/bfDb/builders/bfDb/types.ts";
 
 /* -------------------------------------------------------------------------- */
-/*  Build spec: two scalars + one relation                                    */
+/*  Minimal dummy node for relation targets                                   */
 /* -------------------------------------------------------------------------- */
-const fieldStore: Record<string, FieldSpec> = {};
 
-const builder = makeFieldBuilder(fieldStore)
-  .string("email")
-  .number("age")
-  .relation("memberOf", () => Dummy, (edge) => edge.string("role"))
-  .one(); // flip multiplicity (default is "many")
+// We only need something that satisfies `AnyBfNodeCtor` at *type* level.
+const DummyNode = class {} as unknown as AnyBfNodeCtor;
 
 /* -------------------------------------------------------------------------- */
-/*  Compile-time checks                                                       */
+/*  1. Pure-field spec                                                        */
 /* -------------------------------------------------------------------------- */
-type Spec = typeof builder._spec;
-type ExpectSpec = { email: { kind: "string" }; age: { kind: "number" } };
-const specCheck: ExpectSpec = {} as Spec;
-void specCheck;
 
-type Rels = typeof builder._rels;
-type ExpectRels = {
-  memberOf: {
-    target: () => typeof Dummy;
-    props: { role: { kind: "string" } }; // ← FieldSpec
-    multiplicity: "one";
-  };
-};
-const relCheck: ExpectRels = {} as Rels;
-void relCheck;
+const PureFieldSpec = makeSpec((f) =>
+  f
+    .string("name")
+    .number("age")
+);
 
-/* -------------------------------------------------------------------------- */
-/*  Runtime assertions                                                        */
-/* -------------------------------------------------------------------------- */
-Deno.test("builder mutates field & relation stores", () => {
-  assertEquals(fieldStore, {
-    email: { kind: "string" },
+/* compile-time assertions */
+type PureFieldMap = typeof PureFieldSpec.fields;
+type PureExpected = { name: { kind: "string" }; age: { kind: "number" } };
+const _pureCheck: PureExpected = {} as PureFieldMap;
+
+/* props helper still works */
+type PureProps = PropsFromFieldSpec<PureFieldMap>;
+const _ok1: PureProps = { name: "Alice", age: 30 };
+// @ts-expect-error age has wrong type
+const _notok: PureProps = { name: "Alice", age: "30" };
+// @ts-expect-error extra field
+const _notok2: PureProps = { name: "Alice", age: 30, extra: "x" };
+
+/* runtime */
+Deno.test("collects plain fields", () => {
+  assertEquals(PureFieldSpec.fields, {
+    name: { kind: "string" },
     age: { kind: "number" },
   });
+  assertEquals(PureFieldSpec.relations, {});
+});
 
-  const rel = builder._rels.memberOf;
-  assertEquals(rel.target(), Dummy); // thunk works
-  assertEquals(rel.props, { role: { kind: "string" } });
-  assertEquals(rel.multiplicity, "one");
+/* -------------------------------------------------------------------------- */
+/*  2. Spec with relations + edge props                                       */
+/* -------------------------------------------------------------------------- */
+
+const WithRelationsSpec = makeSpec((f) =>
+  f
+    .one("bestFriend", () => DummyNode)
+    .many("friends", () => DummyNode, (e) => e.string("since"))
+);
+
+type RelMap = typeof WithRelationsSpec.relations;
+type ExpectedRel = {
+  bestFriend: { cardinality: "one" };
+  friends: { cardinality: "many"; props: { since: { kind: "string" } } };
+};
+// structural‐type check
+const _relCheck: ExpectedRel = {} as RelMap;
+
+Deno.test("collects relations with cardinality and props", () => {
+  const { relations } = WithRelationsSpec;
+
+  assertEquals(relations.bestFriend.cardinality, "one");
+  assertEquals(relations.friends.cardinality, "many");
+  assertEquals(relations.friends.props, { since: { kind: "string" } });
 });

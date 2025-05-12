@@ -27,7 +27,7 @@ export class CurrentViewer extends GraphQLObjectBase {
   }
   /* GraphQL -------------------------------------------------------------- */
   static override gqlSpec = this.defineGqlNode(
-    (field, _rel, mutation) => {
+    (field, mutation) => {
       field.id("id"); // refresh‑token version
       field.string("personBfGid");
       field.string("orgBfOid");
@@ -142,7 +142,7 @@ export class CurrentViewer extends GraphQLObjectBase {
         });
       }
 
-      // await org.addPersonIfNotMember(person);
+      await org.addPersonIfNotMember(person);
 
       return cv;
     } catch (error) {
