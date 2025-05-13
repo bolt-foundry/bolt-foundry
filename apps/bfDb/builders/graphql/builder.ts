@@ -265,72 +265,6 @@ function buildField(store: Record<string, FieldSpec>): FieldBuilder {
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Relation builder DSL                                                      */
-/* -------------------------------------------------------------------------- */
-
-type Merge<T, U> = T & U;
-
-type AddRelationFn<_M extends boolean, _D extends Direction> = <
-  Name extends string,
->(
-  name: Name,
-  target: () => AnyGqlObjectCtor,
-  opts?: Partial<Omit<RelationSpec, "target" | "many" | "direction">>,
-) => RelationBuilder;
-
-export interface RelationSpec {
-  target: () => AnyGqlObjectCtor;
-  many: boolean;
-  edge?: () => typeof GraphQLObjectBase;
-  direction: Direction;
-}
-
-interface OneDirBuilder {
-  out: AddRelationFn<false, Direction.OUT>;
-  in: AddRelationFn<false, Direction.IN>;
-}
-
-interface ManyDirBuilder {
-  out: AddRelationFn<true, Direction.OUT>;
-  in: AddRelationFn<true, Direction.IN>;
-}
-
-export interface RelationBuilder {
-  one: Merge<AddRelationFn<false, Direction.OUT>, OneDirBuilder>;
-  many: Merge<AddRelationFn<true, Direction.OUT>, ManyDirBuilder>;
-}
-
-function buildRelation(store: Record<string, RelationSpec>): RelationBuilder {
-  const add = <M extends boolean, D extends Direction>(
-    many: M,
-    dir: D,
-  ): AddRelationFn<M, D> =>
-    ((name, target, opts = {}) => {
-      store[name] = { target, many, direction: dir, edge: opts.edge };
-      return api;
-    }) as AddRelationFn<M, D>;
-
-  const oneDir = {
-    out: add(false, Direction.OUT),
-    in: add(false, Direction.IN),
-  };
-  const manyDir = {
-    out: add(true, Direction.OUT),
-    in: add(true, Direction.IN),
-  };
-
-  const oneAlias =
-    ((n, t, o?) => oneDir.out(n, t, o)) as RelationBuilder["one"];
-  Object.assign(oneAlias, oneDir);
-  const manyAlias =
-    ((n, t, o?) => manyDir.out(n, t, o)) as RelationBuilder["many"];
-  Object.assign(manyAlias, manyDir);
-
-  const api: RelationBuilder = { one: oneAlias, many: manyAlias };
-  return api;
-}
-
-/* -------------------------------------------------------------------------- */
 /*  Returns builder DSL (for custom mutation payloads)                        */
 /* -------------------------------------------------------------------------- */
 
@@ -560,7 +494,6 @@ function buildMutation() {
 export function defineGqlNode(
   def: (
     field: ReturnType<typeof buildField>,
-    relation: ReturnType<typeof buildRelation>,
     mutation: ReturnType<typeof buildMutation>,
   ) => void,
 ): GqlNodeSpec {
@@ -568,7 +501,7 @@ export function defineGqlNode(
   const relations: Record<string, RelationSpec> = {};
   const mutationBuilder = buildMutation();
 
-  def(buildField(fields), buildRelation(relations), mutationBuilder);
+  def(buildField(fields), mutationBuilder);
 
   // If the node has absolutely no fields/relations it’s acting only as a
   // mutation namespace.  Add a dummy boolean so Nexus still emits the type.
