@@ -13,7 +13,6 @@ import type {
   GqlNodeSpec,
   GqlScalar,
   MutationSpec,
-  RelationSpec,
 } from "apps/bfDb/builders/graphql/builder.ts";
 import type {
   InterfaceDefinitionBlock,
@@ -139,26 +138,6 @@ function addScalarFieldOrObject<TName extends string>(
   }
 }
 
-function addRelationField<TName extends string>(
-  t: DefBlock<TName>,
-  name: string,
-  spec: RelationSpec,
-): void {
-  let targetName = "BfNode";
-  try {
-    const target = spec.target();
-    if (target?.name) targetName = target.name as string;
-  } catch {
-    // ignore
-  }
-
-  if (spec.many) {
-    t.nonNull.list.nonNull.field(name, { type: targetName });
-  } else {
-    t.nonNull.field(name, { type: targetName });
-  }
-}
-
 function buildMutationFields(
   nodeName: string,
   mutation: MutationSpec,
@@ -234,8 +213,6 @@ function buildMutationFields(
                   ? { type: fspec, nullable: false } // normalise shorthand
                   : (fspec as any);
                 addScalarFieldOrObject(def, fname, specObj);
-              } else {
-                addRelationField(def, fname, fspec as any);
               }
             }
           },
@@ -299,7 +276,6 @@ export function specsToNexusDefs(
 
   function buildInterfaceFields(iface: string) {
     const mergedFields: Record<string, FieldSpec> = {};
-    const mergedRelations: Record<string, RelationSpec> = {};
 
     // collect every spec that declares `implements iface` and merge its
     // scalar + relation definitions. The simple Object.assign()‑merge is
@@ -307,16 +283,15 @@ export function specsToNexusDefs(
     for (const s of Object.values(specs)) {
       if (s?.implements?.includes(iface)) {
         Object.assign(mergedFields, s.field);
-        Object.assign(mergedRelations, s.relation);
       }
     }
 
-    return { mergedFields, mergedRelations };
+    return { mergedFields };
   }
 
   for (const iface of interfaceNames) {
     if (!(iface in specs)) {
-      const { mergedFields, mergedRelations } = buildInterfaceFields(iface);
+      const { mergedFields } = buildInterfaceFields(iface);
 
       allDefs.push(
         interfaceType({
@@ -327,10 +302,6 @@ export function specsToNexusDefs(
 
             for (const [fname, fspec] of Object.entries(mergedFields)) {
               addScalarFieldOrObject(def, fname, fspec);
-            }
-
-            for (const [rname, rspec] of Object.entries(mergedRelations)) {
-              addRelationField(def, rname, rspec as any);
             }
           },
           resolveType: (v) => (v as { __typename?: string }).__typename,
@@ -368,9 +339,6 @@ export function specsToNexusDefs(
 
       for (const [fname, fspec] of Object.entries(spec.field)) {
         addScalarFieldOrObject(def, fname, fspec);
-      }
-      for (const [rname, rspec] of Object.entries(spec.relation)) {
-        addRelationField(def, rname, rspec as any);
       }
 
       // Original implements

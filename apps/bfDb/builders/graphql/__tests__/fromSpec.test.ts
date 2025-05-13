@@ -21,7 +21,7 @@ function sdlOf(...types: Array<ReturnType<typeof specsToNexusDefs>>): string {
 }
 
 Deno.test("specToNexusObject – maps scalar fields", () => {
-  const spec = defineGqlNode((field, _relation, _mutation) => {
+  const spec = defineGqlNode((field, _mutation) => {
     field.nonNull.id("id");
     field.string("name");
     field.int("age"); // default is nullable now
@@ -38,7 +38,7 @@ Deno.test("specToNexusObject – maps scalar fields", () => {
 
 Deno.test("specToNexusObject – maps field args & resolvers", () => {
   class Thingy extends GraphQLObjectBase {
-    static override gqlSpec = defineGqlNode((field, _relation, _mutation) => {
+    static override gqlSpec = defineGqlNode((field, _mutation) => {
       field.boolean(
         "isFollowedByViewer",
         {
@@ -66,10 +66,8 @@ Deno.test("specToNexusObject – maps one & many relations", () => {
   });
   const TargetType = specsToNexusDefs({ "BfNode": TargetSpec });
 
-  const spec = defineGqlNode((field, relation, _mutation) => {
+  const spec = defineGqlNode((field, _mutation) => {
     field.id("id");
-    relation.one("account", () => BfNode);
-    relation.many("followers", () => BfNode);
   });
 
   const Dummy = specsToNexusDefs({ "RelDummy": spec });
@@ -97,7 +95,7 @@ Deno.test("specToNexusObject – respects nullable list & element nullability", 
 });
 
 Deno.test("specToNexusObject – maps standard & custom mutations", () => {
-  const spec = defineGqlNode((field, _relation, mutation) => {
+  const spec = defineGqlNode((field, mutation) => {
     field.id("id");
     field.string("name");
 
@@ -237,7 +235,7 @@ Deno.test("object field resolver returns the target instance", async () => {
 });
 
 class Viewer extends GraphQLObjectBase {
-  static override gqlSpec = this.defineGqlNode((_f, _r, m) => {
+  static override gqlSpec = this.defineGqlNode((_f, m) => {
     m.custom("ping", {
       args: () => ({}),
       returns: (r) => r.string("pong"),
