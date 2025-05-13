@@ -1,58 +1,38 @@
+import type { BfGid } from "lib/types.ts";
 import {
   CurrentViewer,
   CurrentViewerLoggedOut,
 } from "apps/bfDb/classes/CurrentViewer.ts";
-import type { BfGid } from "lib/types.ts";
 
-/* -------------------------------------------------------------------------- */
-/*  Types                                                                     */
-/* -------------------------------------------------------------------------- */
+type BaseOpts = {
+  orgSlug?: string;
+  bfGid?: BfGid;
+};
 
-type LoggedInOpts = {
-  /** e-mail that ends up on cv.email and drives bfGid generation            */
+type LoggedInOpts = BaseOpts & {
   email?: string;
-  /** slug used to build bfOid (org “owner” id)                              */
-  orgSlug?: string;
 };
-
-type LoggedOutOpts = {
-  /** if you need a predictable bfOid for permission tests                   */
-  orgSlug?: string;
-};
-
-/* -------------------------------------------------------------------------- */
-/*  Logged-in viewer                                                          */
-/* -------------------------------------------------------------------------- */
 
 export function makeLoggedInCv(opts: LoggedInOpts = {}): CurrentViewer {
   const {
     email = "dev@example.com",
     orgSlug = "dev-org",
+    bfGid,
   } = opts;
 
   return CurrentViewer.__DANGEROUS_USE_IN_SCRIPTS_ONLY__createLoggedIn(
-    // `import.meta` is needed only for the internal call-site;
-    // callers don’t care, so we just pass the current module’s meta.
     import.meta,
-    email,
+    bfGid ?? email,
     orgSlug,
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Logged-out viewer                                                         */
-/* -------------------------------------------------------------------------- */
-
+type LoggedOutOpts = BaseOpts;
 export function makeLoggedOutCv(opts: LoggedOutOpts = {}): CurrentViewer {
   const {
     orgSlug = "dev-org",
+    bfGid = "guest" as BfGid,
   } = opts;
 
-  // We reuse the same constructor the real implementation uses for
-  // anonymous viewers; no auth tokens, just a stub org id.
-  return new CurrentViewerLoggedOut(
-    /* whatever params the ctor expects for “logged-out” shape … */
-    orgSlug as BfGid, // bfOid
-    "guest" as BfGid, // bfGid (guest user)
-  );
+  return new CurrentViewerLoggedOut(orgSlug as BfGid, bfGid);
 }

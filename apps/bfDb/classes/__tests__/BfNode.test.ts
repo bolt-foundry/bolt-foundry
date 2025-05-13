@@ -8,6 +8,8 @@
 
 import { assertEquals } from "@std/assert";
 import { BfNode, type InferProps } from "apps/bfDb/classes/BfNode.ts";
+import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
+import { makeLoggedInCv } from "apps/bfDb/utils/testUtils.ts";
 
 class BfExamplePerson extends BfNode<InferProps<typeof BfExamplePerson>> {
   static override gqlSpec = this.defineGqlNode((f) =>
@@ -16,6 +18,7 @@ class BfExamplePerson extends BfNode<InferProps<typeof BfExamplePerson>> {
       .string("name")
       .int("age")
   );
+
   static override bfNodeSpec = this.defineBfNode((f) =>
     f
       .string("email")
@@ -67,4 +70,21 @@ Deno.test("InferProps generates correct TypeScript shape", () => {
   const bad2: OrgProps = { email: "x", name: "y", age: 42 };
   void bad; // suppress unused-var warning
   void bad2;
+});
+
+Deno.test("props accessor returns plain scalar values", async () => {
+  await withIsolatedDb(async () => {
+    const cv = makeLoggedInCv(); // establish a default viewer for this test
+
+    const alice = await BfExamplePerson.__DANGEROUS__createUnattached(cv, {
+      name: "Alice",
+      email: "alice@example.com",
+    });
+
+    // @ts-expect-error – foo doesn’t exist
+    alice.props.foo;
+
+    assertEquals(alice.props.name, "Alice");
+    assertEquals(alice.props.email, "alice@example.com");
+  });
 });
