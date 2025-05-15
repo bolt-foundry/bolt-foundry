@@ -34,5 +34,6 @@ export function makeLoggedOutCv(opts: LoggedOutOpts = {}): CurrentViewer {
     bfGid = "guest" as BfGid,
   } = opts;
 
-  return new CurrentViewerLoggedOut(orgSlug as BfGid, bfGid);
+  // Use the static factory method instead of calling the constructor directly
+  return CurrentViewer.makeLoggedOutCv();
 }
