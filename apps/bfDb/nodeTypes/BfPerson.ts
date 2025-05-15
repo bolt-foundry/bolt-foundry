@@ -5,6 +5,12 @@ export class BfPerson extends BfNode<InferProps<typeof BfPerson>> {
     node
       .string("email")
       .string("name")
+      .object(
+        "memberOf", 
+        () => import("apps/bfDb/nodeTypes/BfOrganization.ts").then(m => m.BfOrganization)
+        // No options needed - the field name itself defines the relationship
+      
+      )
   );
 
   static override bfNodeSpec = this.defineBfNode((node) =>
