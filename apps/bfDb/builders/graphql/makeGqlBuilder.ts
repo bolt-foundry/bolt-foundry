@@ -1,7 +1,8 @@
-import type { GraphQLInputType, GraphQLResolveInfo } from "graphql";
+import type { GraphQLResolveInfo } from "graphql";
 import type { Connection, ConnectionArguments } from "graphql-relay";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { AnyBfNodeCtor } from "apps/bfDb/builders/bfDb/types.ts";
+import { type ArgsBuilder, makeArgBuilder } from "./makeArgBuilder.ts";
 
 type ThisNode = InstanceType<AnyBfNodeCtor>;
 
@@ -10,21 +11,31 @@ type MaybePromise<T> = T | Promise<T>;
 /** Generic placeholder for a mutation's payload */
 type NMutationPayload = Record<string, unknown>;
 
-type ArgsBuilder = {
-  string(name: string): ArgsBuilder;
-  int(name: string): ArgsBuilder;
-  float(name: string): ArgsBuilder;
-  boolean(name: string): ArgsBuilder;
-  id(name: string): ArgsBuilder;
-};
+/**
+ * Helper type to create nonNull version of the builder
+ * This removes the nonNull property to prevent chaining like .nonNull.nonNull
+ */
+export type OmitNonNull<T> = Omit<T, "nonNull">;
 
+/**
+ * GqlNodeSpec type that represents the structure built by the builder
+ */
+export interface GqlNodeSpec {
+  fields: Record<string, unknown>;
+  relations: Record<string, unknown>;
+  mutations: Record<string, unknown>;
+}
+
+/**
+ * Main GraphQL builder interface
+ */
 export interface GqlBuilder<
   R extends Record<string, unknown> = Record<string, unknown>,
 > {
   string<N extends string>(
     name: N,
     opts?: {
-      args?: (ab: ArgsBuilder) => Record<string, GraphQLInputType>;
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
         args: Record<string, unknown>,
@@ -32,12 +43,12 @@ export interface GqlBuilder<
         info: GraphQLResolveInfo,
       ) => MaybePromise<string>;
     },
-  ): GqlBuilder;
+  ): GqlBuilder<R>;
 
   int<N extends string>(
     name: N,
     opts?: {
-      args?: (ab: ArgsBuilder) => Record<string, GraphQLInputType>;
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
         args: Record<string, unknown>,
@@ -45,12 +56,12 @@ export interface GqlBuilder<
         info: GraphQLResolveInfo,
       ) => MaybePromise<number>;
     },
-  ): GqlBuilder;
+  ): GqlBuilder<R>;
 
   boolean<N extends string>(
     name: N,
     opts?: {
-      args?: (ab: ArgsBuilder) => Record<string, GraphQLInputType>;
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
         args: Record<string, unknown>,
@@ -58,12 +69,12 @@ export interface GqlBuilder<
         info: GraphQLResolveInfo,
       ) => MaybePromise<boolean>;
     },
-  ): GqlBuilder;
+  ): GqlBuilder<R>;
 
   id<N extends string>(
     name: N,
     opts?: {
-      args?: (ab: ArgsBuilder) => Record<string, GraphQLInputType>;
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
         args: Record<string, unknown>,
@@ -71,22 +82,22 @@ export interface GqlBuilder<
         info: GraphQLResolveInfo,
       ) => MaybePromise<string>;
     },
-  ): GqlBuilder;
+  ): GqlBuilder<R>;
 
   object<N extends keyof R & string>(name: N, opts?: {
-    args?: (ab: ArgsBuilder) => Record<string, GraphQLInputType>;
+    args?: (ab: ArgsBuilder) => ArgsBuilder;
     resolve?: (
       root: ThisNode,
       args: Record<string, unknown>,
       ctx: BfGraphqlContext,
       info: GraphQLResolveInfo,
     ) => MaybePromise<R[N]>;
-  }): GqlBuilder;
+  }): GqlBuilder<R>;
 
   connection<N extends keyof R & string>(
     name: N,
     opts?: {
-      additionalArgs?: (ab: ArgsBuilder) => Record<string, GraphQLInputType>;
+      additionalArgs?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
         args: ConnectionArguments & Record<string, unknown>,
@@ -94,12 +105,13 @@ export interface GqlBuilder<
         info: GraphQLResolveInfo,
       ) => MaybePromise<Connection<ThisNode>>;
     },
-  ): GqlBuilder;
+  ): GqlBuilder<R>;
 
   mutation<N extends string>(
     name: N,
     opts?: {
-      args?: (ab: ArgsBuilder) => Record<string, GraphQLInputType>;
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
+      returns?: string;
       resolve?: (
         root: ThisNode,
         args: Record<string, unknown>,
@@ -107,42 +119,186 @@ export interface GqlBuilder<
         info: GraphQLResolveInfo,
       ) => MaybePromise<NMutationPayload>;
     },
-  ): GqlBuilder;
+  ): GqlBuilder<R>;
+
+  // Add nonNull property for creating required fields
+  nonNull: OmitNonNull<GqlBuilder<R>>;
 
   _spec: {
     fields: Record<string, unknown>;
     relations: Record<string, unknown>;
+    mutations: Record<string, unknown>;
   };
 }
 
-export function makeGqlBuilder(): GqlBuilder {
-  // Initial implementation scaffold
-  const builder: GqlBuilder = {
-    string(_name, _opts) {
-      return this;
+/**
+ * Creates a GraphQL builder for defining GraphQL types
+ */
+export function makeGqlBuilder<
+  R extends Record<string, unknown> = Record<string, unknown>,
+>(): GqlBuilder<R> {
+  // Internal spec that's built up as methods are called
+  const spec: GqlNodeSpec = {
+    fields: {},
+    relations: {},
+    mutations: {},
+  };
+
+  // Create the builder with all scalar field methods
+  const builder: GqlBuilder<R> = {
+    string(name, opts = {}) {
+      // Create the argument builder function
+      const argFn = makeArgBuilder();
+
+      spec.fields[name] = {
+        type: "String",
+        nonNull: false,
+        args: opts.args ? argFn(opts.args) : {},
+        resolve: opts.resolve,
+      };
+      return builder;
     },
-    int(_name, _opts) {
-      return this;
+
+    int(name, opts = {}) {
+      // Create the argument builder function
+      const argFn = makeArgBuilder();
+
+      spec.fields[name] = {
+        type: "Int",
+        nonNull: false,
+        args: opts.args ? argFn(opts.args) : {},
+        resolve: opts.resolve,
+      };
+      return builder;
     },
-    boolean(_name, _opts) {
-      return this;
+
+    boolean(name, opts = {}) {
+      // Create the argument builder function
+      const argFn = makeArgBuilder();
+
+      spec.fields[name] = {
+        type: "Boolean",
+        nonNull: false,
+        args: opts.args ? argFn(opts.args) : {},
+        resolve: opts.resolve,
+      };
+      return builder;
     },
-    id(_name, _opts) {
-      return this;
+
+    id(name, opts = {}) {
+      // Create the argument builder function
+      const argFn = makeArgBuilder();
+
+      spec.fields[name] = {
+        type: "ID",
+        nonNull: false,
+        args: opts.args ? argFn(opts.args) : {},
+        resolve: opts.resolve,
+      };
+      return builder;
     },
-    object(_name, _opts) {
-      return this;
+
+    object(name, opts = {}) {
+      // Create the argument builder function
+      const argFn = makeArgBuilder();
+
+      spec.relations[name] = {
+        type: name,
+        args: opts.args ? argFn(opts.args) : {},
+        resolve: opts.resolve,
+      };
+      return builder;
     },
-    connection(_name, _opts) {
-      return this;
+
+    connection(_name, _opts = {}) {
+      // Stub for connection implementation - will be expanded later
+      return builder;
     },
-    mutation(_name, _opts) {
-      return this;
+
+    mutation(name, opts = {}) {
+      // Create the argument builder function
+      const argFn = makeArgBuilder();
+
+      // Create and collect arguments if provided
+      const args = opts.args ? argFn(opts.args) : {};
+
+      // Store the mutation definition
+      spec.mutations[name] = {
+        returns: opts.returns || "JSON",
+        args: args,
+        resolve: opts.resolve,
+      };
+      return builder;
     },
-    _spec: {
-      fields: {},
-      relations: {},
+
+    // NonNull property for required fields
+    get nonNull() {
+      // Create a new object (not a copy) to avoid reference loops
+      const nonNullBuilder: OmitNonNull<GqlBuilder<R>> = {
+        // Override scalar field methods to set nonNull flag
+        string: (name, opts = {}) => {
+          // Create the argument builder function
+          const argFn = makeArgBuilder();
+
+          spec.fields[name] = {
+            type: "String",
+            nonNull: true,
+            args: opts.args ? argFn(opts.args) : {},
+            resolve: opts.resolve,
+          };
+          return builder;
+        },
+
+        int: (name, opts = {}) => {
+          // Create the argument builder function
+          const argFn = makeArgBuilder();
+
+          spec.fields[name] = {
+            type: "Int",
+            nonNull: true,
+            args: opts.args ? argFn(opts.args) : {},
+            resolve: opts.resolve,
+          };
+          return builder;
+        },
+
+        boolean: (name, opts = {}) => {
+          // Create the argument builder function
+          const argFn = makeArgBuilder();
+
+          spec.fields[name] = {
+            type: "Boolean",
+            nonNull: true,
+            args: opts.args ? argFn(opts.args) : {},
+            resolve: opts.resolve,
+          };
+          return builder;
+        },
+
+        id: (name, opts = {}) => {
+          // Create the argument builder function
+          const argFn = makeArgBuilder();
+
+          spec.fields[name] = {
+            type: "ID",
+            nonNull: true,
+            args: opts.args ? argFn(opts.args) : {},
+            resolve: opts.resolve,
+          };
+          return builder;
+        },
+
+        object: builder.object,
+        connection: builder.connection,
+        mutation: builder.mutation,
+        _spec: builder._spec,
+      };
+
+      return nonNullBuilder;
     },
+
+    // Expose the spec for other modules to use
+    _spec: spec,
   };
 
   return builder;

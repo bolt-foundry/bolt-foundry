@@ -6,13 +6,64 @@ import { createYoga } from "graphql-yoga";
 import { createContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { SchemaConfig } from "nexus/dist/builder.js";
 import { getLogger } from "packages/logger/logger.ts";
+// Let's create our own loadModelTypes function
 // import { loadModelTypes } from "apps/bfDb/builders/graphql/loadSpecs.ts";
 
-const _logger = getLogger(import.meta);
+const logger = getLogger(import.meta);
+logger.setLevel(logger.levels.DEBUG);
+
+// Import our GraphQL builder tools - imported only for types but not used directly yet
+import type { makeGqlSpec as _makeGqlSpec } from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
+import type { gqlSpecToNexus as _gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
+import { objectType, queryType } from "nexus";
+
+/**
+ * Loads GraphQL types using our new builder pattern.
+ * This will eventually load all node types in the system.
+ */
+export function loadGqlTypes() {
+  // Create a test GraphQL type directly with Nexus to verify schema generation
+  const TestType = objectType({
+    name: "TestType",
+    definition(t) {
+      t.string("name");
+      t.nonNull.id("id");
+      t.boolean("isActive");
+      t.int("count");
+    },
+  });
+
+  // Create a query type that returns our test type
+  const Query = queryType({
+    definition(t) {
+      // Test field
+      t.field("test", {
+        type: "TestType",
+        resolve: () => ({
+          id: "test-123",
+          name: "Test Object",
+          isActive: true,
+          count: 42,
+        }),
+      });
+
+      // Health check
+      t.nonNull.boolean("ok", {
+        resolve: () => true,
+      });
+    },
+  });
+
+  // Return the types
+  return {
+    Query,
+    TestType,
+  };
+}
 
 const schemaOptions: SchemaConfig = {
-  // types: { ...loadModelTypes() },
-  types: {},
+  // Use our new loadGqlTypes function
+  types: { ...loadGqlTypes() },
   features: {
     abstractTypeStrategies: {
       __typename: true,

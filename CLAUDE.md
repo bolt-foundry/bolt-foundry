@@ -212,7 +212,10 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Documentation Practices
 
-- Do not include dates (specific or relative) in documentation files unless explicitly requested
+- Do not include dates (specific or relative) in documentation files unless
+  explicitly requested
 - Use status.md files in project directories for tracking current project status
-- Documentation follows versioned structure (0.1, 0.2, etc.) rather than date-based versioning
-- Status indicators should use symbols (✅, 🔄, ⏱️) instead of dates to show progress
+- Documentation follows versioned structure (0.1, 0.2, etc.) rather than
+  date-based versioning
+- Status indicators should use symbols (✅, 🔄, ⏱️) instead of dates to show
+  progress

@@ -1,10 +1,8 @@
-import type {
-  GqlBuilder,
-  GqlNodeSpec as OGGqlNodeSpec,
-} from "./makeGqlBuilder.ts";
+import type { GqlBuilder, GqlNodeSpec } from "./makeGqlBuilder.ts";
 import { makeGqlBuilder } from "./makeGqlBuilder.ts";
 
-export type GqlNodeSpec = OGGqlNodeSpec;
+// Re-export the GqlNodeSpec type
+export type { GqlNodeSpec } from "./makeGqlBuilder.ts";
 
 /**
  * Creates a GraphQL node spec using the builder pattern.
@@ -28,6 +26,6 @@ export function makeGqlSpec(
   return {
     fields: gqlBuilder._spec.fields,
     relations: gqlBuilder._spec.relations,
-    mutations: gqlBuilder._spec.mutations || {},
+    mutations: gqlBuilder._spec.mutations,
   };
 }
