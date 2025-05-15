@@ -43,7 +43,7 @@ export class CurrentViewer extends GraphQLObjectBase {
           return { currentViewer };
         },
       })
-      .object("currentViewer") // ← expose the payload object
+      .object("currentViewer", "CurrentViewer") // ← expose the payload object
   );
 
   /* ----------------------------------------------------------------------

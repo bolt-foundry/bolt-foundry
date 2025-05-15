@@ -5,6 +5,14 @@ export class BfPerson extends BfNode<InferProps<typeof BfPerson>> {
     node
       .string("email")
       .string("name")
+      .object(
+        "memberOf", 
+        () => import("apps/bfDb/nodeTypes/BfOrganization.ts").then(m => m.BfOrganization),
+        {
+          isEdgeRelationship: true,
+          edgeRole: "member",
+        }
+      )
   );
 
   static override bfNodeSpec = this.defineBfNode((node) =>
