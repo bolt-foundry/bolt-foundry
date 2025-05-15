@@ -14,8 +14,6 @@ export class BfExamplePerson
       .string("name")
       .one("primaryOrg", () =>
         // if you do a runtime import, you avoid circular dependencies but still get type safety
-        import("apps/bfDb/__fixtures__/Nodes.ts").then((m) =>
-          m.BfExampleOrg
-        ))
+        import("apps/bfDb/__fixtures__/Nodes.ts").then((m) => m.BfExampleOrg))
   );
 }

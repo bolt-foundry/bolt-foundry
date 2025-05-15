@@ -11,7 +11,7 @@ import {
   type RelationBuilder as EdgeRelationBuilder,
 } from "./makeRelationBuilder.ts";
 
-type SyncOrAsync<T> = T | Promise<T>;   // ——— helper
+type SyncOrAsync<T> = T | Promise<T>; // ——— helper
 
 /* ─────────────────────────────────────────────────────────────── */
 /*  FIELD BUILDER                                                 */
@@ -43,12 +43,12 @@ type RelationAdder<
   R extends Record<string, RelationSpec>,
 > = <
   N extends string,
-  TargetFn extends () => SyncOrAsync<any>,             // ① one broad type
+  TargetFn extends () => SyncOrAsync<any>, // ① one broad type
   Resolved extends AnyBfNodeCtor = Awaited<ReturnType<TargetFn>>, // ② constrain here
   EB extends EdgeRelationBuilder = EdgeRelationBuilder,
 >(
   name: N,
-  target: TargetFn,                                   // no intersection
+  target: TargetFn, // no intersection
   edge?: (e: EdgeRelationBuilder) => EB,
 ) => FieldBuilder<
   F,

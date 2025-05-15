@@ -6,12 +6,13 @@ import { createYoga } from "graphql-yoga";
 import { createContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { SchemaConfig } from "nexus/dist/builder.js";
 import { getLogger } from "packages/logger/logger.ts";
-import { loadModelTypes } from "apps/bfDb/builders/graphql/loadSpecs.ts";
+// import { loadModelTypes } from "apps/bfDb/builders/graphql/loadSpecs.ts";
 
 const _logger = getLogger(import.meta);
 
 const schemaOptions: SchemaConfig = {
-  types: { ...loadModelTypes() },
+  // types: { ...loadModelTypes() },
+  types: { },
   features: {
     abstractTypeStrategies: {
       __typename: true,
