@@ -23,7 +23,12 @@
       "Bash(deno fmt:*)",
       "Bash(bff check:*)",
       "Bash(cat:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(gh api:*)",
+      "Bash(bff check:*)",
+      "Bash(chmod:*)",
+      "Bash(apps/bfDb/builders/graphql/__tests__/gqlSpecToNexus.edge.test.ts)",
+      "Bash(apps/bfDb/builders/graphql/__tests__/gqlSpecToNexus.test.ts)"
     ],
     "deny": []
   }

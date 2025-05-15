@@ -84,15 +84,40 @@ export interface GqlBuilder<
     },
   ): GqlBuilder<R>;
 
-  object<N extends keyof R & string>(name: N, opts?: {
-    args?: (ab: ArgsBuilder) => ArgsBuilder;
-    resolve?: (
-      root: ThisNode,
-      args: Record<string, unknown>,
-      ctx: BfGraphqlContext,
-      info: GraphQLResolveInfo,
-    ) => MaybePromise<R[N]>;
-  }): GqlBuilder<R>;
+  object<
+    N extends keyof R & string,
+    // Allow either string type name or a thunk that returns a constructor
+    TargetFn extends string | (() => MaybePromise<AnyBfNodeCtor>)
+  >(
+    name: N, 
+    targetOrOpts: TargetFn | {
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
+      resolve?: (
+        root: ThisNode,
+        args: Record<string, unknown>,
+        ctx: BfGraphqlContext,
+        info: GraphQLResolveInfo,
+      ) => MaybePromise<R[N]>;
+      // Edge relationship options
+      isEdgeRelationship?: boolean;
+      edgeRole?: string;
+      isSourceToTarget?: boolean;
+      type?: string; // For legacy compatibility
+    },
+    opts?: {
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
+      resolve?: (
+        root: ThisNode,
+        args: Record<string, unknown>,
+        ctx: BfGraphqlContext,
+        info: GraphQLResolveInfo,
+      ) => MaybePromise<R[N]>;
+      // Edge relationship options
+      isEdgeRelationship?: boolean;
+      edgeRole?: string;
+      isSourceToTarget?: boolean;
+    }
+  ): GqlBuilder<R>;
 
   connection<N extends keyof R & string>(
     name: N,
@@ -198,14 +223,53 @@ export function makeGqlBuilder<
       return builder;
     },
 
-    object(name, opts = {}) {
+    object(name, targetOrOpts, maybeOpts) {
       // Create the argument builder function
       const argFn = makeArgBuilder();
+      
+      // Handle both styles:
+      // 1. .object("memberOf", () => BfOrganization)
+      // 2. .object("memberOf", { type: "BfOrganization", ... })
+      const isThunkStyle = typeof targetOrOpts === 'function' || typeof targetOrOpts === 'string';
+      
+      const targetFn = isThunkStyle ? targetOrOpts : undefined;
+      // Use type assertion to help TypeScript understand the conditional type narrowing
+      const opts = isThunkStyle ? (maybeOpts || {}) : (targetOrOpts as Record<string, unknown> || {});
+      
+      // Determine the relationship type
+      let typeName: string;
+      if (isThunkStyle) {
+        if (typeof targetFn === 'string') {
+          // Direct string type
+          typeName = targetFn;
+        } else {
+          // For thunk-style, we'll need to resolve the type name at runtime
+          // For now, we'll set the type to the field name, and the resolver
+          // will dynamically determine the concrete type
+          typeName = name;
+          
+          // Store the thunk function for later use
+          (opts as any)._targetThunk = targetFn;
+        }
+      } else {
+        // Legacy style with type in opts
+        typeName = (opts as any).type || name;
+      }
 
+      // Process args function if provided - use type assertion to handle conditional logic
+      const args = (opts as any).args ? argFn((opts as any).args) : {};
+
+      // Store the relation definition with edge relationship info if provided
       spec.relations[name] = {
-        type: name,
-        args: opts.args ? argFn(opts.args) : {},
-        resolve: opts.resolve,
+        type: typeName,
+        args: args,
+        resolve: (opts as any).resolve,
+        // Edge relationship properties
+        isEdgeRelationship: Boolean((opts as any).isEdgeRelationship),
+        edgeRole: (opts as any).edgeRole || name,
+        isSourceToTarget: (opts as any).isSourceToTarget !== false, // Default to true
+        // Store the thunk function if we have one
+        _targetThunk: (opts as any)._targetThunk
       };
       return builder;
     },
