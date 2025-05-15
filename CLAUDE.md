@@ -170,13 +170,15 @@ sl pr submit
 
 ### Commit Organization
 
-- Group related files together by purpose
-- Create multiple focused commits for different types of changes
-- Separate changes into logical commits:
-  - Code changes in one commit
-  - Documentation updates in another commit
-  - Configuration changes in a separate commit
-  - Test changes in a separate commit
+- Group related files together by functionality
+- Create multiple focused commits for different functional changes
+- It's more important to separate commits by grouped functionality than by type (code/docs/config)
+- Code can and should be split into multiple commits when it covers different functional areas
+- Examples of logical grouping:
+  - Features or components that work together
+  - Related bug fixes
+  - Performance improvements to a specific subsystem
+  - API changes and their implementations
 - Each commit should be atomic (self-contained and focused on a single purpose)
 
 Example:
