@@ -9,7 +9,11 @@
       "Bash(sl pr view:*)",
       "Bash(sl pr:*)",
       "Bash(gh pr view:*)",
-      "Bash(sl help:*)"
+      "Bash(sl help:*)",
+      "Bash(chmod:*)",
+      "Bash(deno test:*)",
+      "Bash(grep:*)",
+      "Bash(bff format:*)"
     ],
     "deny": []
   }

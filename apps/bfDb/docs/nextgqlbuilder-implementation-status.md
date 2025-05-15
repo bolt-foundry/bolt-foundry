@@ -2,7 +2,10 @@
 
 ## Current Status (as of May 2025)
 
-The implementation of the new GraphQL builder pattern is in progress. We've made significant progress on the core builder architecture but still need to complete the integration with Nexus. Relay-style connection implementation has been deprioritized for v1.
+The implementation of the new GraphQL builder pattern is in progress. We've made
+significant progress on the core builder architecture but still need to complete
+the integration with Nexus. Relay-style connection implementation has been
+deprioritized for v1.
 
 ### Completed ✅
 
@@ -73,4 +76,5 @@ The implementation of the new GraphQL builder pattern is in progress. We've made
    - Convert a single node to use the new builder pattern
    - Ensure it works end-to-end
 
-After the core scalar, object, and mutation functionality is working correctly, we can later implement Relay-style connections in a future iteration.
+After the core scalar, object, and mutation functionality is working correctly,
+we can later implement Relay-style connections in a future iteration.

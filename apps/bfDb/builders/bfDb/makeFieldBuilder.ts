@@ -45,10 +45,7 @@ type RelationAdder<
   R extends Record<string, RelationSpec>,
 > = <
   N extends string,
-<<<<<<< dest:   18e9ccc3484f - randallb: Introduce GraphQL Builder Migration ...
   // deno-lint-ignore no-explicit-any
-=======
->>>>>>> source: bd899641f7cc - randallb: Rename makeSpec to makeBfDbSpec and ...
   TargetFn extends () => SyncOrAsync<any>, // ① one broad type
   Resolved extends AnyBfNodeCtor = Awaited<ReturnType<TargetFn>>, // ② constrain here
   EB extends EdgeRelationBuilder = EdgeRelationBuilder,

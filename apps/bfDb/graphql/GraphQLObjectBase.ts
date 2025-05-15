@@ -1,5 +1,8 @@
 import type { GraphqlNode } from "apps/bfDb/graphql/helpers.ts";
-import { type GqlNodeSpec, makeGqlSpec } from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
+import {
+  type GqlNodeSpec,
+  makeGqlSpec,
+} from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
 
 export abstract class GraphQLObjectBase {
   /* ────────────────────────────────
@@ -26,7 +29,7 @@ export abstract class GraphQLObjectBase {
   /**
    * Define a GraphQL node using the new fluent builder pattern.
    * This is the primary way to define GraphQL types for nodes.
-   * 
+   *
    * Example:
    * ```
    * static override gqlSpec = this.defineGqlNode(gql =>

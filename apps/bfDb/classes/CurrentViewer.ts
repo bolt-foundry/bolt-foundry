@@ -34,16 +34,15 @@ export class CurrentViewer extends GraphQLObjectBase {
       .id("id")
       .string("personBfGid")
       .string("orgBfOid")
-
       .mutation("loginWithGoogle", {
         args: (a) => a.nonNull.string("idToken"),
-        returns: "CurrentViewer",              // ← new API
+        returns: "CurrentViewer", // ← new API
         resolve: async (_src, { idToken }, ctx) => {
           const currentViewer = await ctx.loginWithGoogleToken(idToken);
           return { currentViewer };
         },
       })
-      .object("currentViewer"),                // ← expose the payload object
+      .object("currentViewer") // ← expose the payload object
   );
 
   /* ----------------------------------------------------------------------
@@ -53,7 +52,7 @@ export class CurrentViewer extends GraphQLObjectBase {
   readonly personBfGid: BfGid;
 
   protected constructor(personBfGid: BfGid, orgBfOid: BfGid, tokenVersion = 1) {
-    super(String(tokenVersion));          // expose refresh-token version as `id`
+    super(String(tokenVersion)); // expose refresh-token version as `id`
     this.orgBfOid = orgBfOid;
     this.personBfGid = personBfGid;
   }
@@ -108,7 +107,7 @@ export class CurrentViewer extends GraphQLObjectBase {
       }
 
       const personId = `google-person:${tokenInfo.sub}` as BfGid;
-      const orgId    = `google-org:${tokenInfo.hd}`   as BfGid;
+      const orgId = `google-org:${tokenInfo.hd}` as BfGid;
 
       const cv = new CurrentViewerLoggedIn(personId, orgId);
 
@@ -185,7 +184,7 @@ export class CurrentViewer extends GraphQLObjectBase {
   static makeLoggedOutCv(tokenVersion = 1): CurrentViewerLoggedOut {
     return new CurrentViewerLoggedOut(
       "person:anonymous" as BfGid,
-      "org:public"      as BfGid,
+      "org:public" as BfGid,
       tokenVersion,
     );
   }
@@ -206,5 +205,5 @@ export class CurrentViewer extends GraphQLObjectBase {
 /* --------------------------------------------------------------------------
  *  Concrete subclasses
  * ------------------------------------------------------------------------ */
-export class CurrentViewerLoggedIn  extends CurrentViewer {}
+export class CurrentViewerLoggedIn extends CurrentViewer {}
 export class CurrentViewerLoggedOut extends CurrentViewer {}
