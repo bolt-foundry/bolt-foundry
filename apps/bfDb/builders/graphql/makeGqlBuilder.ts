@@ -3,7 +3,6 @@
 /* -------------------------------------------------------------------------- */
 
 import type { GraphQLInputType, GraphQLResolveInfo } from "graphql";
-import type { Connection, ConnectionArguments } from "graphql-relay";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { AnyBfNodeCtor } from "apps/bfDb/builders/bfDb/types.ts";
 
@@ -53,15 +52,6 @@ interface BaseFieldOpts<Return> {
   ) => MaybePromise<Return>;
 }
 
-interface ConnectionOpts {
-  additionalArgs?: ArgsSpec;
-  resolve?: (
-    root: ThisNode,
-    args: ConnectionArguments & Record<string, unknown>,
-    ctx: BfGraphqlContext,
-    info: GraphQLResolveInfo,
-  ) => MaybePromise<Connection<ThisNode>>;
-}
 
 interface MutationOpts<A extends Record<string, unknown> = Record<string, unknown>> {
   args?:    ArgsSpec;
@@ -149,14 +139,6 @@ class GqlBuilderImpl {
   id = makeFieldMethod<string>("ID");
   object = makeFieldMethod<unknown>("Object");
 
-  /* Connection helper                                                        */
-  connection(
-    name: string,
-    opts: ConnectionOpts = {},
-  ): this {
-    this._spec.fields[name] = { type: "Connection", ...opts };
-    return this;
-  }
 
   mutation<
     // deno-lint-ignore no-explicit-any
