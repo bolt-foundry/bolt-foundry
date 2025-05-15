@@ -23,6 +23,24 @@ export abstract class GraphQLObjectBase {
     if (tmpId) this.#tmpId = tmpId;
   }
 
+  /**
+   * Define a GraphQL node using the new fluent builder pattern.
+   * This is the primary way to define GraphQL types for nodes.
+   * 
+   * Example:
+   * ```
+   * static override gqlSpec = this.defineGqlNode(gql =>
+   *   gql
+   *     .string("name")
+   *     .id("id")
+   *     .boolean("isActive")
+   *     .object("owner")
+   *     .mutation("update", {
+   *       args: (a) => a.string("newName"),
+   *     })
+   * );
+   * ```
+   */
   static defineGqlNode(
     def: Parameters<typeof makeGqlSpec>[0],
   ): GqlNodeSpec {
