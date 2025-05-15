@@ -3,8 +3,11 @@ import { assert, assertEquals } from "@std/assert";
 
 // Mock the GqlNodeSpec type for testing
 type MockGqlNodeSpec = {
+  // deno-lint-ignore no-explicit-any
   fields: Record<string, any>;
+  // deno-lint-ignore no-explicit-any
   relations: Record<string, any>;
+  // deno-lint-ignore no-explicit-any
   mutations: Record<string, any>;
 };
 
@@ -13,14 +16,16 @@ function mockGqlSpecToNexus(spec: MockGqlNodeSpec, typeName: string) {
   return {
     mainType: {
       name: typeName,
-      definition: (t: any) => {
+      // deno-lint-ignore no-explicit-any
+      definition: (_t: any) => {
         // Mock implementation
       },
     },
     mutationType: spec.mutations && Object.keys(spec.mutations).length > 0
       ? {
         type: "Mutation",
-        definition: (t: any) => {
+        // deno-lint-ignore no-explicit-any
+        definition: (_t: any) => {
           // Mock implementation
         },
       }
