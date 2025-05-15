@@ -11,7 +11,7 @@ import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorsBfNode.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { generateUUID } from "lib/generateUUID.ts";
 import type { FieldSpec, RelationSpec } from "apps/bfDb/builders/bfDb/types.ts";
-import { makeSpec } from "apps/bfDb/builders/bfDb/makeSpec.ts";
+import { makeBfDbSpec } from "apps/bfDb/builders/bfDb/makeBfDbSpec.ts";
 
 const logger = getLogger(import.meta);
 
@@ -88,7 +88,7 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       f: FieldBuilder<{}, {}>,
     ) => FieldBuilder<F, R>,
   ): { fields: F; relations: R } {
-    return makeSpec<F, R>(builder);
+    return makeBfDbSpec<F, R>(builder);
   }
 
   static generateSortValue() {

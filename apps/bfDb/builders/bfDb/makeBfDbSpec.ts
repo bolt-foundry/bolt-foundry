@@ -1,7 +1,7 @@
 import { type FieldBuilder, makeFieldBuilder } from "./makeFieldBuilder.ts";
 import type { FieldSpec, RelationSpec } from "apps/bfDb/builders/bfDb/types.ts";
 
-export function makeSpec<
+export function makeBfDbSpec<
   F extends Record<string, FieldSpec>,
   R extends Record<string, RelationSpec>,
 >(

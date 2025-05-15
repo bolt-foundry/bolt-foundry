@@ -50,27 +50,42 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   BfEdge: { // root type
-    ok?: boolean | null; // Boolean
-  }
-  BfOrganization: { // root type
     domain?: string | null; // String
-    id?: string | null; // ID
-    name?: string | null; // String
-    ok?: boolean | null; // Boolean
-  }
-  BfPerson: { // root type
     email?: string | null; // String
     id?: string | null; // ID
     name?: string | null; // String
-    ok?: boolean | null; // Boolean
+    orgBfOid?: string | null; // String
+    personBfGid?: string | null; // String
+  }
+  BfOrganization: { // root type
+    domain?: string | null; // String
+    email?: string | null; // String
+    id?: string | null; // ID
+    name?: string | null; // String
+    orgBfOid?: string | null; // String
+    personBfGid?: string | null; // String
+  }
+  BfPerson: { // root type
+    domain?: string | null; // String
+    email?: string | null; // String
+    id?: string | null; // ID
+    name?: string | null; // String
+    orgBfOid?: string | null; // String
+    personBfGid?: string | null; // String
   }
   CurrentViewerLoggedIn: { // root type
+    domain?: string | null; // String
+    email?: string | null; // String
     id?: string | null; // ID
+    name?: string | null; // String
     orgBfOid?: string | null; // String
     personBfGid?: string | null; // String
   }
   CurrentViewerLoggedOut: { // root type
+    domain?: string | null; // String
+    email?: string | null; // String
     id?: string | null; // ID
+    name?: string | null; // String
     orgBfOid?: string | null; // String
     personBfGid?: string | null; // String
   }
@@ -91,7 +106,7 @@ export interface NexusGenObjects {
 export interface NexusGenInterfaces {
   BfNode: core.Discriminate<'BfOrganization', 'optional'> | core.Discriminate<'BfPerson', 'optional'>;
   CurrentViewer: core.Discriminate<'CurrentViewerLoggedIn', 'optional'> | core.Discriminate<'CurrentViewerLoggedOut', 'optional'>;
-  GraphQLObjectBase: core.Discriminate<'CurrentViewerLoggedIn', 'optional'> | core.Discriminate<'CurrentViewerLoggedOut', 'optional'>;
+  GraphQLObjectBase: core.Discriminate<'BfEdge', 'optional'> | core.Discriminate<'BfOrganization', 'optional'> | core.Discriminate<'BfPerson', 'optional'> | core.Discriminate<'CurrentViewerLoggedIn', 'optional'> | core.Discriminate<'CurrentViewerLoggedOut', 'optional'>;
 }
 
 export interface NexusGenUnions {
@@ -103,27 +118,42 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   BfEdge: { // field return type
-    ok: boolean | null; // Boolean
-  }
-  BfOrganization: { // field return type
     domain: string | null; // String
-    id: string | null; // ID
-    name: string | null; // String
-    ok: boolean | null; // Boolean
-  }
-  BfPerson: { // field return type
     email: string | null; // String
     id: string | null; // ID
     name: string | null; // String
-    ok: boolean | null; // Boolean
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
+  BfOrganization: { // field return type
+    domain: string | null; // String
+    email: string | null; // String
+    id: string | null; // ID
+    name: string | null; // String
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
+  BfPerson: { // field return type
+    domain: string | null; // String
+    email: string | null; // String
+    id: string | null; // ID
+    name: string | null; // String
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
   }
   CurrentViewerLoggedIn: { // field return type
+    domain: string | null; // String
+    email: string | null; // String
     id: string | null; // ID
+    name: string | null; // String
     orgBfOid: string | null; // String
     personBfGid: string | null; // String
   }
   CurrentViewerLoggedOut: { // field return type
+    domain: string | null; // String
+    email: string | null; // String
     id: string | null; // ID
+    name: string | null; // String
     orgBfOid: string | null; // String
     personBfGid: string | null; // String
   }
@@ -145,15 +175,26 @@ export interface NexusGenFieldTypes {
     ok: boolean | null; // Boolean
   }
   BfNode: { // field return type
-    ok: boolean | null; // Boolean
+    domain: string | null; // String
+    email: string | null; // String
+    id: string | null; // ID
+    name: string | null; // String
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
   }
   CurrentViewer: { // field return type
+    domain: string | null; // String
+    email: string | null; // String
     id: string | null; // ID
+    name: string | null; // String
     orgBfOid: string | null; // String
     personBfGid: string | null; // String
   }
   GraphQLObjectBase: { // field return type
+    domain: string | null; // String
+    email: string | null; // String
     id: string | null; // ID
+    name: string | null; // String
     orgBfOid: string | null; // String
     personBfGid: string | null; // String
   }
@@ -161,27 +202,42 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   BfEdge: { // field return type name
-    ok: 'Boolean'
-  }
-  BfOrganization: { // field return type name
     domain: 'String'
-    id: 'ID'
-    name: 'String'
-    ok: 'Boolean'
-  }
-  BfPerson: { // field return type name
     email: 'String'
     id: 'ID'
     name: 'String'
-    ok: 'Boolean'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
+  BfOrganization: { // field return type name
+    domain: 'String'
+    email: 'String'
+    id: 'ID'
+    name: 'String'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
+  BfPerson: { // field return type name
+    domain: 'String'
+    email: 'String'
+    id: 'ID'
+    name: 'String'
+    orgBfOid: 'String'
+    personBfGid: 'String'
   }
   CurrentViewerLoggedIn: { // field return type name
+    domain: 'String'
+    email: 'String'
     id: 'ID'
+    name: 'String'
     orgBfOid: 'String'
     personBfGid: 'String'
   }
   CurrentViewerLoggedOut: { // field return type name
+    domain: 'String'
+    email: 'String'
     id: 'ID'
+    name: 'String'
     orgBfOid: 'String'
     personBfGid: 'String'
   }
@@ -203,15 +259,26 @@ export interface NexusGenFieldTypeNames {
     ok: 'Boolean'
   }
   BfNode: { // field return type name
-    ok: 'Boolean'
+    domain: 'String'
+    email: 'String'
+    id: 'ID'
+    name: 'String'
+    orgBfOid: 'String'
+    personBfGid: 'String'
   }
   CurrentViewer: { // field return type name
+    domain: 'String'
+    email: 'String'
     id: 'ID'
+    name: 'String'
     orgBfOid: 'String'
     personBfGid: 'String'
   }
   GraphQLObjectBase: { // field return type name
+    domain: 'String'
+    email: 'String'
     id: 'ID'
+    name: 'String'
     orgBfOid: 'String'
     personBfGid: 'String'
   }
@@ -233,14 +300,16 @@ export interface NexusGenArgTypes {
 export interface NexusGenAbstractTypeMembers {
   BfNode: "BfOrganization" | "BfPerson"
   CurrentViewer: "CurrentViewerLoggedIn" | "CurrentViewerLoggedOut"
-  GraphQLObjectBase: "CurrentViewerLoggedIn" | "CurrentViewerLoggedOut"
+  GraphQLObjectBase: "BfEdge" | "BfOrganization" | "BfPerson" | "CurrentViewerLoggedIn" | "CurrentViewerLoggedOut"
 }
 
 export interface NexusGenTypeInterfaces {
-  BfOrganization: "BfNode"
-  BfPerson: "BfNode"
+  BfEdge: "GraphQLObjectBase"
+  BfOrganization: "BfNode" | "GraphQLObjectBase"
+  BfPerson: "BfNode" | "GraphQLObjectBase"
   CurrentViewerLoggedIn: "CurrentViewer" | "GraphQLObjectBase"
   CurrentViewerLoggedOut: "CurrentViewer" | "GraphQLObjectBase"
+  BfNode: "GraphQLObjectBase"
   CurrentViewer: "GraphQLObjectBase"
 }
 
