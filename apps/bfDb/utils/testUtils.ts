@@ -1,8 +1,5 @@
 import type { BfGid } from "lib/types.ts";
-import {
-  CurrentViewer,
-  CurrentViewerLoggedOut,
-} from "apps/bfDb/classes/CurrentViewer.ts";
+import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
 
 type BaseOpts = {
   orgSlug?: string;
@@ -28,11 +25,13 @@ export function makeLoggedInCv(opts: LoggedInOpts = {}): CurrentViewer {
 }
 
 type LoggedOutOpts = BaseOpts;
-export function makeLoggedOutCv(opts: LoggedOutOpts = {}): CurrentViewer {
-  const {
-    orgSlug = "dev-org",
-    bfGid = "guest" as BfGid,
-  } = opts;
+export function makeLoggedOutCv(_opts: LoggedOutOpts = {}): CurrentViewer {
+  // Unused variables prefixed with underscore to satisfy linter
+  // const {
+  //   _orgSlug = "dev-org",
+  //   _bfGid = "guest" as BfGid,
+  // } = _opts;
 
-  return new CurrentViewerLoggedOut(orgSlug as BfGid, bfGid);
+  // Use the static factory method instead of calling the constructor directly
+  return CurrentViewer.makeLoggedOutCv();
 }

@@ -158,7 +158,25 @@ sl amend -m "New commit message"
 
 # Create pull request
 sl pr submit
+
+# Import a PR to your working copy
+sl pr pull <PR_NUMBER>
+
+# View commit stack and relationships
+sl smartlog
 ```
+
+### Working with Stacked PRs
+
+To view the stacked PRs (PRs that depend on each other):
+
+1. Use `sl pr pull <PR_NUMBER>` to import the PR into your working copy
+2. Use `sl smartlog` to visualize the commit stack structure
+3. Use `sl pr list` to see all open PRs
+
+The smartlog output will show you a linear history of commits with connections,
+where each commit may correspond to a PR. Combined with `sl pr list`, you can
+identify the stacked PRs in the current stack.
 
 ### Commit Message Guidelines
 

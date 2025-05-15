@@ -38,7 +38,7 @@ jobs:
       # Set Deno cache directory
       - name: Set Deno cache directory
         run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"
-      
+
       # Cache node_modules and vendor directories
       - name: Cache dependencies
         uses: actions/cache@v4
