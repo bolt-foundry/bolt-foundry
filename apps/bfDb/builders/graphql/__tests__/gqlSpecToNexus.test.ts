@@ -1,16 +1,31 @@
 #! /usr/bin/env -S bff test
 import { assert, assertEquals } from "@std/assert";
-import { makeGqlBuilder } from "../makeGqlBuilder.ts";
 import { makeGqlSpec } from "../makeGqlSpec.ts";
 import { gqlSpecToNexus } from "../gqlSpecToNexus.ts";
-import { nonNull, objectType, stringArg } from "nexus";
+
+// Define common types used in tests
+type FieldConfig = {
+  type: string | { ofType: string; _name: string };
+  nullable?: boolean;
+  resolve?: (
+    root: unknown,
+    args: unknown,
+    ctx: unknown,
+    info: unknown,
+  ) => unknown;
+};
+
+type NexusBuilder = {
+  field: (name: string, config: FieldConfig) => unknown;
+};
 
 /**
  * Tests for gqlSpecToNexus - convert GqlNodeSpec to Nexus types
  */
 
 // Helper function to create a basic GqlNodeSpec for testing
-function createTestSpec() {
+// Not currently used but kept for documentation
+function _createTestSpec() {
   return makeGqlSpec((gql) =>
     gql
       .string("name")
@@ -49,8 +64,9 @@ Deno.test("gqlSpecToNexus converts scalar fields correctly", () => {
 
   // We can't directly test the contents of the definition function,
   // but we can ensure it doesn't throw when executed with a mock builder
+
   const mockBuilder = {
-    field: (name: string, config: any) => {
+    field: (name: string, config: FieldConfig) => {
       // Validate field configuration for known fields
       if (name === "title") {
         assertEquals(config.type, "String", "title should be a String type");
@@ -67,8 +83,11 @@ Deno.test("gqlSpecToNexus converts scalar fields correctly", () => {
     },
   };
 
-  // This shouldn't throw
-  result.mainType.definition(mockBuilder as any);
+  // This shouldn't throw - we have to cast because the actual Nexus type is complex
+  type NexusBuilder = {
+    field: (name: string, config: FieldConfig) => unknown;
+  };
+  result.mainType.definition(mockBuilder as NexusBuilder);
 });
 
 Deno.test("gqlSpecToNexus handles nonNull fields", () => {
@@ -81,17 +100,18 @@ Deno.test("gqlSpecToNexus handles nonNull fields", () => {
   // Check definition with mock builder
   let wasNonNull = false;
   const mockBuilder = {
-    field: (name: string, config: any) => {
+    field: (name: string, config: FieldConfig) => {
       if (name === "requiredField") {
         // For nonNull fields, Nexus should use nonNull wrapper
-        wasNonNull = config.type && config.type._name === "String!" &&
-          config.type.ofType === "String";
+        const typeObj = config.type as { _name: string; ofType: string };
+        wasNonNull = !!typeObj && typeObj._name === "String!" &&
+          typeObj.ofType === "String";
       }
       return mockBuilder;
     },
   };
 
-  result.mainType.definition(mockBuilder as any);
+  result.mainType.definition(mockBuilder as NexusBuilder);
   assert(wasNonNull, "nonNull field should be converted correctly");
 });
 
@@ -118,8 +138,20 @@ Deno.test("gqlSpecToNexus creates mutation fields", () => {
 
   // Check definition with mock builder
   let foundMutation = false;
+  // Use mutation-specific config type
+  type MutationConfig = {
+    type: string;
+    args: Record<string, unknown>;
+    resolve?: (
+      root: unknown,
+      args: unknown,
+      ctx: unknown,
+      info: unknown,
+    ) => unknown;
+  };
+
   const mockBuilder = {
-    field: (name: string, config: any) => {
+    field: (name: string, config: MutationConfig) => {
       if (name === "createItem") {
         foundMutation = true;
         // Check args
@@ -141,7 +173,10 @@ Deno.test("gqlSpecToNexus creates mutation fields", () => {
     },
   };
 
-  result.mutationType.definition(mockBuilder as any);
+  type MutationNexusBuilder = {
+    field: (name: string, config: MutationConfig) => unknown;
+  };
+  result.mutationType.definition(mockBuilder as MutationNexusBuilder);
   assert(foundMutation, "Should define the mutation field");
 });
 
@@ -155,7 +190,7 @@ Deno.test("gqlSpecToNexus includes default resolvers for fields", () => {
   // Check that default resolver is included
   let hasResolver = false;
   const mockBuilder = {
-    field: (name: string, config: any) => {
+    field: (name: string, config: FieldConfig) => {
       if (name === "autoResolved") {
         hasResolver = typeof config.resolve === "function";
       }
@@ -163,7 +198,7 @@ Deno.test("gqlSpecToNexus includes default resolvers for fields", () => {
     },
   };
 
-  result.mainType.definition(mockBuilder as any);
+  result.mainType.definition(mockBuilder as NexusBuilder);
   assert(hasResolver, "Field should have a default resolver");
 });
 
@@ -175,17 +210,24 @@ Deno.test("gqlSpecToNexus default resolver uses fallback chain", async () => {
   const result = gqlSpecToNexus(spec, "FallbackTest");
 
   // Extract resolver for testing
-  let resolver: Function | undefined;
+  type ResolverFn = (
+    root: unknown,
+    args: unknown,
+    ctx: unknown,
+    info: unknown,
+  ) => Promise<unknown> | unknown;
+
+  let resolver: ResolverFn | undefined;
   const mockBuilder = {
-    field: (name: string, config: any) => {
+    field: (name: string, config: FieldConfig) => {
       if (name === "field") {
-        resolver = config.resolve;
+        resolver = config.resolve as ResolverFn;
       }
       return mockBuilder;
     },
   };
 
-  result.mainType.definition(mockBuilder as any);
+  result.mainType.definition(mockBuilder as NexusBuilder);
   assert(resolver, "Field should have a resolver");
 
   // Test resolver with different root objects
@@ -208,6 +250,7 @@ Deno.test("gqlSpecToNexus default resolver uses fallback chain", async () => {
 
   // 3. Root with method
   const root3 = {
+    // deno-lint-ignore no-explicit-any
     field: (args: any) => `method with args: ${args.test}`,
   };
   assertEquals(
