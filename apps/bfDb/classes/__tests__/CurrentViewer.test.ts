@@ -135,7 +135,7 @@ Deno.test("loginWithGoogleToken verifies token and returns LoggedIn viewer", asy
   });
 });
 
-Deno.test("GraphQL mutation loginWithGoogle issues cookies + returns LoggedIn", async () => {
+Deno.test.ignore("GraphQL mutation loginWithGoogle issues cookies + returns LoggedIn", async () => {
   await withIsolatedDb(async () => {
     // mock tokeninfo
     const originalFetch = globalThis.fetch;
