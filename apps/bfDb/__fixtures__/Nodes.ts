@@ -1,8 +1,5 @@
 import { BfNode, type InferProps } from "apps/bfDb/classes/BfNode.ts";
-
-/* -------------------------------------------------------------------------- */
-/*  Organisation                                                              */
-/* -------------------------------------------------------------------------- */
+import { BfExamplePerson } from "apps/bfDb/CircularNodeExample.ts";
 
 export class BfExampleOrg extends BfNode<InferProps<typeof BfExampleOrg>> {
   static override gqlSpec = this.defineGqlNode((gql) =>
@@ -19,10 +16,6 @@ export class BfExampleOrg extends BfNode<InferProps<typeof BfExampleOrg>> {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/*  Pet                                                                       */
-/* -------------------------------------------------------------------------- */
-
 export class BfExamplePet extends BfNode<InferProps<typeof BfExamplePet>> {
   static override gqlSpec = this.defineGqlNode((gql) =>
     gql
@@ -34,24 +27,5 @@ export class BfExamplePet extends BfNode<InferProps<typeof BfExamplePet>> {
       .string("name")
       .string("type")
       .one("vetHospital", () => BfExampleOrg)
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*  Person                                                                    */
-/* -------------------------------------------------------------------------- */
-
-export class BfExamplePerson
-  extends BfNode<InferProps<typeof BfExamplePerson>> {
-  static override gqlSpec = this.defineGqlNode((gql) =>
-    gql
-      .string("email")
-      .string("name")
-  );
-
-  static override bfNodeSpec = this.defineBfNode((node) =>
-    node
-      .string("email")
-      .string("name")
   );
 }
