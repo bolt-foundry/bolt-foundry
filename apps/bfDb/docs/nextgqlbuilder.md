@@ -19,9 +19,6 @@ static override gqlSpec = this.defineGqlNode(gql =>
     .boolean("isActive")
     .id("id")
     .object("primaryOrg")
-    .connection("teams", {
-    additionalArgs: (a) => a.boolean("includeArchived"),
-  })
     .mutation("invite", {
     args: (a) => a.string("email")
     // no custom resolver needed – defaults to root.invite()
@@ -131,18 +128,6 @@ ab.nonNull.int("count")
 // Relations
 .object<N extends keyof R & string>(name: N): GqlBuilder;
 
-.connection<N extends keyof R & string>(
-  name: N,
-  opts?: {
-    additionalArgs?: (ab: ArgsBuilder) => Record<string, GraphQLInputType>;
-    resolve?: (
-      root: ThisNode,
-      args: any,
-      ctx: Ctx,
-      info: GraphQLResolveInfo
-    ) => MaybePromise<RelayConnection<any>>;
-  }
-): GqlBuilder;
 
 // Mutations
 .mutation<N extends string>(
@@ -233,9 +218,8 @@ ab.nonNull.int("count")
     3. Else look for a getter/method `root[name]` and invoke with
        `(args, ctx, info)` if it’s a function.
 
-**Relation helpers** build `object` or `connection` fields automatically with
-correct args (default pagination + `additionalArgs`). Support Relay-style
-connections.
+**Relation helpers** build `object` fields automatically with
+correct args.
 
 ### 7  Mass‑Convert Remaining Nodes
 
