@@ -33,9 +33,14 @@ jobs:
         uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
+          cache: true
 
+      # Set Deno cache directory
+      - name: Set Deno cache directory
+        run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"
+      
       # Cache node_modules and vendor directories
-      - name: Cache node_modules and vendor folders
+      - name: Cache dependencies
         uses: actions/cache@v4
         id: dependency-cache
         with:
@@ -48,7 +53,8 @@ jobs:
             */*/*/vendor
             ~/.npm
             packages/bolt-foundry/npm/node_modules
-          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/package.json', 'package-lock.json', 'package.json') }}
+            ${{ env.DENO_DIR }}
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/package.json', 'package-lock.json', 'package.json', '**/deno.json*', '**/deno.lock') }}
           restore-keys: |
             ${{ runner.os }}-deps-
 
