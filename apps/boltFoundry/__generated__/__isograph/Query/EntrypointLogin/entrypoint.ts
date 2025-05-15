@@ -5,78 +5,16 @@ import readerResolver from './resolver_reader.ts';
 const nestedRefetchQueries: RefetchQueryNormalizationArtifactWrapper[] = [];
 
 const queryText = 'query EntrypointLogin  {\
-  currentViewer {\
-    __typename,\
-    id,\
-    __typename,\
-    ... on CurrentViewerLoggedIn {\
-      id,\
-      __typename,\
-    },\
-    ... on CurrentViewerLoggedOut {\
-      id,\
-      __typename,\
-    },\
-  },\
+  __typename,\
 }';
 
 const normalizationAst: NormalizationAst = {
   kind: "NormalizationAst",
   selections: [
     {
-      kind: "Linked",
-      fieldName: "currentViewer",
+      kind: "Scalar",
+      fieldName: "__typename",
       arguments: null,
-      concreteType: null,
-      selections: [
-        {
-          kind: "Scalar",
-          fieldName: "__typename",
-          arguments: null,
-        },
-        {
-          kind: "Scalar",
-          fieldName: "id",
-          arguments: null,
-        },
-        {
-          kind: "Scalar",
-          fieldName: "__typename",
-          arguments: null,
-        },
-        {
-          kind: "InlineFragment",
-          type: "CurrentViewerLoggedIn",
-          selections: [
-            {
-              kind: "Scalar",
-              fieldName: "id",
-              arguments: null,
-            },
-            {
-              kind: "Scalar",
-              fieldName: "__typename",
-              arguments: null,
-            },
-          ],
-        },
-        {
-          kind: "InlineFragment",
-          type: "CurrentViewerLoggedOut",
-          selections: [
-            {
-              kind: "Scalar",
-              fieldName: "id",
-              arguments: null,
-            },
-            {
-              kind: "Scalar",
-              fieldName: "__typename",
-              arguments: null,
-            },
-          ],
-        },
-      ],
     },
   ],
 };

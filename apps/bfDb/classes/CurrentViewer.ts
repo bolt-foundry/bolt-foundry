@@ -37,7 +37,8 @@ export class CurrentViewer extends GraphQLObjectBase {
       .mutation("loginWithGoogle", {
         args: (a) => a.nonNull.string("idToken"),
         returns: "CurrentViewer", // ← new API
-        resolve: async (_src, { idToken }, ctx) => {
+        resolve: async (_src, args, ctx) => {
+          const idToken = args.idToken as string;
           const currentViewer = await ctx.loginWithGoogleToken(idToken);
           return { currentViewer };
         },

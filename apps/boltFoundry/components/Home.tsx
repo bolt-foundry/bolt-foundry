@@ -11,8 +11,8 @@ import { BfDsFormTextInput } from "apps/bfDs/components/BfDsForm/BfDsFormTextInp
 import { BfDsFormSubmitButton } from "apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
 import { useBfDs } from "apps/bfDs/hooks/useBfDs.tsx";
 import type { ModalHandles } from "apps/bfDs/components/BfDsModal.tsx";
-import { useMutation } from "apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
-import joinWaitlistMutation from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
+import type { useMutation as _useMutation } from "apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
+// import joinWaitlistMutation from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
 
 const logger = getLogger(import.meta);
 
@@ -27,7 +27,7 @@ field Query.Home @component {
     __typename
   }
 `)(function Home() {
-  const { commit } = useMutation(joinWaitlistMutation);
+  // const { commit } = useMutation(joinWaitlistMutation);
   const { showModal } = useBfDs();
   const modalRef = useRef<ModalHandles>(null);
   const [shouldPlay, setShouldPlay] = useState(false);
@@ -86,29 +86,29 @@ field Query.Home @component {
 
     const WaitlistForm = () => {
       const [formSubmitting, setFormSubmitting] = useState(false);
-      const [error, setError] = useState(false);
+      const [error, _setError] = useState(false);
 
-      function submitWaitlistForm(value: WaitlistFormData) {
+      function submitWaitlistForm(_value: WaitlistFormData) {
         setFormSubmitting(true);
-        commit(
-          { name: value.name, email: value.email, company: value.company },
-          {
-            onError: () => {
-              logger.error("Error joining waitlist");
-              setError(true);
-              setFormSubmitting(false);
-            },
-            onComplete: ({ joinWaitlist }) => {
-              if (!joinWaitlist.success) {
-                logger.error(joinWaitlist.message);
-                setError(true);
-                return;
-              }
-              modalRef.current?.closeModal();
-              setFormSubmitting(false);
-            },
-          },
-        );
+        // commit(
+        //   { name: value.name, email: value.email, company: value.company },
+        //   {
+        //     onError: () => {
+        //       logger.error("Error joining waitlist");
+        //       setError(true);
+        //       setFormSubmitting(false);
+        //     },
+        //     onComplete: ({ joinWaitlist }) => {
+        //       if (!joinWaitlist.success) {
+        //         logger.error(joinWaitlist.message);
+        //         setError(true);
+        //         return;
+        //       }
+        //       modalRef.current?.closeModal();
+        //       setFormSubmitting(false);
+        //     },
+        //   },
+        // );
       }
 
       return (
