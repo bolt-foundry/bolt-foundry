@@ -168,6 +168,17 @@ sl pr submit
 - Include "Test plan:" section describing how to verify the changes
 - End with co-author attribution when applicable
 
+### Commit Organization
+
+- Group related files together by purpose
+- Create multiple focused commits for different types of changes
+- Separate changes into logical commits:
+  - Code changes in one commit
+  - Documentation updates in another commit
+  - Configuration changes in a separate commit
+  - Test changes in a separate commit
+- Each commit should be atomic (self-contained and focused on a single purpose)
+
 Example:
 ```
 Add GraphQL Builder v0.1 Implementation Plan
