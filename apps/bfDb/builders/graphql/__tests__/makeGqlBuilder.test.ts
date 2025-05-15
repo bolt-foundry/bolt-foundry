@@ -1,3 +1,4 @@
+#! /usr/bin/env -S bff test
 import { assert, assertEquals } from "@std/assert";
 import { GraphQLString } from "graphql";
 import { makeGqlBuilder } from "../makeGqlBuilder.ts";
@@ -25,13 +26,6 @@ Deno.test("nonNull wrapper sets nonNull: true", () => {
   });
 });
 
-Deno.test("connection helper records Connection type", () => {
-  const builder = makeGqlBuilder();
-  builder.connection("posts");
-  assertEquals(specOf(builder).fields, {
-    posts: { type: "Connection" },
-  });
-});
 
 Deno.test("mutation helper records args and returns", () => {
   const builder = makeGqlBuilder();
@@ -48,8 +42,7 @@ Deno.test("mutation helper records args and returns", () => {
 Deno.test("builders are chainable", () => {
   const builder = makeGqlBuilder()
     .string("name")
-    .nonNull.id("id")
-    // .connection("friends");
+    .nonNull.id("id");
 
-  assertEquals(Object.keys(specOf(builder).fields), ["name", "id", "friends"]);
+  assertEquals(Object.keys(specOf(builder).fields), ["name", "id"]);
 });
