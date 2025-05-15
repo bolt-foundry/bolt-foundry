@@ -12,7 +12,7 @@ const _logger = getLogger(import.meta);
 
 const schemaOptions: SchemaConfig = {
   // types: { ...loadModelTypes() },
-  types: { },
+  types: {},
   features: {
     abstractTypeStrategies: {
       __typename: true,
