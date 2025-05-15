@@ -7,6 +7,7 @@
 import type { GraphQLResolveInfo } from "graphql";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { GqlNodeSpec } from "./makeGqlBuilder.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 /**
  * Creates a nonNull wrapper for a GraphQL type
@@ -64,6 +65,7 @@ function createDefaultRelationResolver(relationName: string) {
     root: any,
     args: Record<string, unknown>,
     ctx: BfGraphqlContext,
+    info: GraphQLResolveInfo,
   ) {
     // Try from relations first
     if (root.relations && relationName in root.relations) {
@@ -72,7 +74,7 @@ function createDefaultRelationResolver(relationName: string) {
 
     // Try as a method
     if (typeof root[relationName] === "function") {
-      return root[relationName](args, ctx);
+      return root[relationName](args, ctx, info);
     }
 
     // Try as a property
@@ -81,6 +83,153 @@ function createDefaultRelationResolver(relationName: string) {
     }
 
     return null;
+  };
+}
+
+/**
+ * Special resolver for edge relationships (like memberOf)
+ * This will be used for handling BfEdge-based relationships between nodes
+ */
+function createEdgeRelationshipResolver(
+  relationName: string,
+  edgeRole: string,
+  isSourceToTarget: boolean,
+) {
+  const logger = getLogger(import.meta);
+
+  // Log when the resolver is created (only see this during initialization)
+  logger.debug(
+    `Creating edge relationship resolver for '${relationName}' with role '${edgeRole}' (${
+      isSourceToTarget ? "source→target" : "target→source"
+    })`,
+  );
+
+  return async function edgeRelationshipResolver(
+    // deno-lint-ignore no-explicit-any
+    root: any,
+    _args: Record<string, unknown>,
+    ctx: BfGraphqlContext,
+    _info: GraphQLResolveInfo,
+  ) {
+    logger.debug(
+      `Resolving edge relationship '${relationName}' for node ${
+        root?.metadata?.className || "unknown"
+      }:${root?.metadata?.bfGid || "unknown"}`,
+    );
+
+    // Ensure we have a valid node with metadata
+    if (!root || !root.metadata || !root.metadata.bfGid) {
+      logger.warn(
+        `Invalid root node provided to edge resolver for ${relationName}`,
+      );
+      return null;
+    }
+
+    // Early return if the context doesn't have currentViewer
+    if (!root.currentViewer) {
+      logger.warn(
+        `Root node has no currentViewer for edge resolver ${relationName}`,
+      );
+      return null;
+    }
+
+    try {
+      // We're focusing only on the source->target direction for now
+      // This allows resolving a BfPerson.memberOf field, not the reverse
+      if (isSourceToTarget) {
+        logger.debug(
+          `Resolving source→target relationship '${relationName}' with role '${edgeRole}'`,
+        );
+
+        // 1. Query for edges with the given role where this node is the source
+        const BfEdge = (await import("apps/bfDb/nodeTypes/BfEdge.ts")).BfEdge;
+
+        // Setup query params to find edges from this node
+        const edgeMetadata = {
+          bfSid: root.metadata.bfGid,
+          bfSClassName: root.metadata.className,
+        };
+
+        logger.debug(
+          `Querying for edges from ${root.metadata.className}:${root.metadata.bfGid} with role '${edgeRole}'`,
+        );
+
+        // Define the class dynamically since we can't resolve the type issues
+        // during compile time due to circular dependencies between BfNode and BfEdge
+        // deno-lint-ignore no-explicit-any
+        type AnyClass = any;
+
+        // Find all edges that match our criteria
+        const BfEdgeAny = BfEdge as AnyClass;
+        const edges = await BfEdgeAny.query(
+          root.currentViewer,
+          edgeMetadata,
+          { role: edgeRole },
+          [],
+        );
+
+        logger.debug(
+          `Found ${
+            edges?.length || 0
+          } edges for relationship '${relationName}'`,
+        );
+
+        if (!edges || edges.length === 0) {
+          logger.debug(
+            `No edges found for '${relationName}' relationship with role '${edgeRole}'`,
+          );
+          return null;
+        }
+
+        // For memberOf relationship, we only expect one target
+        // Take the first edge that matches
+        const edge = edges[0];
+
+        // Extract the target node information from the edge
+        // deno-lint-ignore no-explicit-any
+        const targetId = (edge.metadata as any).bfTid;
+        // deno-lint-ignore no-explicit-any
+        const targetClassName = (edge.metadata as any).bfTClassName;
+
+        logger.debug(
+          `Target node for '${relationName}': ${targetClassName}:${targetId}`,
+        );
+
+        if (!targetId || !targetClassName) {
+          logger.warn(
+            `Edge missing target information for relation ${relationName}`,
+          );
+          return null;
+        }
+
+        // Load the target node using the context helper
+        logger.debug(`Loading target node ${targetClassName}:${targetId}`);
+        const result = await ctx.findNode(targetClassName, targetId);
+
+        if (result) {
+          logger.debug(
+            `Successfully resolved relationship '${relationName}' to ${targetClassName}:${targetId}`,
+          );
+        } else {
+          logger.warn(
+            `Failed to load target node ${targetClassName}:${targetId} for relationship '${relationName}'`,
+          );
+        }
+
+        return result;
+      } else {
+        // We're not implementing the target->source direction in this release
+        logger.warn(
+          `Target→source relationships not implemented yet (${relationName})`,
+        );
+        return null;
+      }
+    } catch (error) {
+      logger.error(
+        `Error resolving edge relationship '${relationName}': ${error}`,
+      );
+      return null;
+    }
   };
 }
 
@@ -147,14 +296,45 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
         // deno-lint-ignore no-explicit-any
         const relation = relationDef as any;
 
+        // Determine if this is an edge relationship
+        let resolver = relation.resolve;
+
+        if (!resolver && relation.isEdgeRelationship) {
+          // Use edge relationship resolver if this is an edge relationship
+          resolver = createEdgeRelationshipResolver(
+            relationName,
+            relation.edgeRole,
+            relation.isSourceToTarget,
+          );
+        } else if (!resolver) {
+          // Use default resolver for regular relations
+          resolver = createDefaultRelationResolver(relationName);
+        }
+
         t.field(relationName, {
           type: relation.type,
           description: relation.description,
           // Handle arguments if provided
           args: relation.args || {},
-          // Add resolver with proper fallback for relations
-          resolve: relation.resolve ||
-            createDefaultRelationResolver(relationName),
+          // Add resolver based on relationship type with debug wrapper
+          resolve: async (...args) => {
+            const logger = getLogger(import.meta);
+            logger.debug(
+              `Starting resolution of '${relationName}' relationship`,
+            );
+            try {
+              const result = await resolver(...args);
+              logger.debug(
+                `Finished resolution of '${relationName}' relationship`,
+              );
+              return result;
+            } catch (error) {
+              logger.error(
+                `Error in resolver wrapper for '${relationName}': ${error}`,
+              );
+              return null;
+            }
+          },
         });
       }
     },

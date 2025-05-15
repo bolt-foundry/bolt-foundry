@@ -85,6 +85,7 @@ export interface GqlBuilder<
   ): GqlBuilder<R>;
 
   object<N extends keyof R & string>(name: N, opts?: {
+    type?: string; // Type name for the relationship
     args?: (ab: ArgsBuilder) => ArgsBuilder;
     resolve?: (
       root: ThisNode,
@@ -92,6 +93,10 @@ export interface GqlBuilder<
       ctx: BfGraphqlContext,
       info: GraphQLResolveInfo,
     ) => MaybePromise<R[N]>;
+    // Edge relationship options
+    isEdgeRelationship?: boolean;
+    edgeRole?: string;
+    isSourceToTarget?: boolean;
   }): GqlBuilder<R>;
 
   connection<N extends keyof R & string>(
@@ -202,10 +207,15 @@ export function makeGqlBuilder<
       // Create the argument builder function
       const argFn = makeArgBuilder();
 
+      // Store the relation definition with edge relationship info if provided
       spec.relations[name] = {
-        type: name,
+        type: opts.type || name, // Use provided type or fallback to field name
         args: opts.args ? argFn(opts.args) : {},
         resolve: opts.resolve,
+        // Edge relationship properties
+        isEdgeRelationship: opts.isEdgeRelationship || false,
+        edgeRole: opts.edgeRole || name,
+        isSourceToTarget: opts.isSourceToTarget !== false, // Default to true
       };
       return builder;
     },
