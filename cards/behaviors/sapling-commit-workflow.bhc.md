@@ -1,6 +1,7 @@
 # Sapling Commit Workflow
 
-When working with Sapling for version control (instead of git), follow these guidelines for an effective commit workflow:
+When working with Sapling for version control (instead of git), follow these
+guidelines for an effective commit workflow:
 
 ## Commit Creation
 
@@ -9,6 +10,7 @@ When working with Sapling for version control (instead of git), follow these gui
 - Separate unrelated changes into different commits
 
 ### Commit Message Structure
+
 - First line: concise summary of changes (50-72 characters)
 - Empty line after the summary
 - Body: detailed explanation of what and why (not how)
@@ -17,6 +19,7 @@ When working with Sapling for version control (instead of git), follow these gui
 - Add co-author attribution when applicable
 
 Example commit message:
+
 ```
 Refactor GraphQL Builder: Remove Connection Implementation
 
@@ -41,6 +44,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ## Sapling-Specific Commands
 
 ### Basic Commit Workflow
+
 - Check status: `sl status`
 - View changes: `sl diff`
 - Add new files: `sl add <file>` (required for new files)
@@ -49,6 +53,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - Commit all changes: `sl commit -m "Commit message"`
 
 ### Amending Commits
+
 - Amend the current commit: `sl amend -m "New commit message"`
 - Move to a specific commit: `sl goto <commit-hash>`
 - Amend historical commits:
@@ -57,11 +62,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
   3. Sapling will automatically restack child commits
 
 ### Creating Pull Requests
+
 - Submit pull requests: `sl pr submit`
-- If hitting PR creation limits: `sl pr submit --config github.max-prs-to-create=6`
+- If hitting PR creation limits:
+  `sl pr submit --config github.max-prs-to-create=6`
 - Link existing pull requests: `sl pr link <PR-URL>`
 
 ### Checking PR Status
+
 - View PR status: `sl ssl` (alias for `sl smartlog -T {ssl}`)
 - This shows PRs with statuses like "Unreviewed", "Approved", or "Closed"
 - Example output:
@@ -102,4 +110,5 @@ Co-Authored-By: Claude <noreply@anthropic.com>
    - Use `sl pr submit` to create/update PRs from your commits
    - Provide clear PR descriptions that summarize the entire change set
 
-This workflow ensures clean, well-documented version history and makes code review easier for your team.
+This workflow ensures clean, well-documented version history and makes code
+review easier for your team.

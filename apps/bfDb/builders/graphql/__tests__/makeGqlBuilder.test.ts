@@ -26,7 +26,6 @@ Deno.test("nonNull wrapper sets nonNull: true", () => {
   });
 });
 
-
 Deno.test("mutation helper records args and returns", () => {
   const builder = makeGqlBuilder();
   builder.mutation("createPost", {
