@@ -35,7 +35,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           ssh-strict: true
           persist-credentials: true
-          
+
       # Set Deno cache directory
       - name: Set Deno cache directory
         run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"

@@ -22,7 +22,8 @@
       "Bash(bff ci:*)",
       "Bash(deno fmt:*)",
       "Bash(bff check:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(gh api:*)"
     ],
     "deny": []
   }
