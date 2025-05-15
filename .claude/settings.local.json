@@ -14,7 +14,15 @@
       "Bash(deno test:*)",
       "Bash(grep:*)",
       "Bash(bff format:*)",
-      "Bash(sl smartlog:*)"
+      "Bash(sl smartlog:*)",
+      "Bash(bff test:*)",
+      "Bash(bff build:*)",
+      "Bash(ls:*)",
+      "Bash(bff lint:*)",
+      "Bash(bff ci:*)",
+      "Bash(deno fmt:*)",
+      "Bash(bff check:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }
