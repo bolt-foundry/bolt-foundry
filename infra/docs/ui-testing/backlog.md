@@ -3,38 +3,33 @@
 This document tracks features, enhancements, and technical improvements that are
 being considered for future versions of the UI Component Testing framework.
 
-## Integration Features (From Version 0.2)
+## Completed Features
 
-**Priority**: Medium **Type**: Feature **Complexity**: Moderate **Target
-Version**: Future
+### Version 0.1: Foundation
+
+- ✅ Basic testing library with DOM querying capabilities
+- ✅ Event simulation support
+- ✅ Component rendering utilities
+- ✅ Integration with Deno's native testing capabilities
+- ✅ BFF CLI command for UI testing
+
+## Backlog Items
+
+### Integration Features (From Version 0.2)
+
+**Priority**: Medium | **Type**: Feature | **Complexity**: Moderate
 
 **Description**: Integration with BFF CLI tooling, visual comparison
 capabilities, and comprehensive test coverage for BfDs components.
 
-**Justification**: These features enhance the testing framework with better
-tooling integration and visual testing capabilities.
-
-**Dependencies**: Core testing foundation must be stable.
-
-**Acceptance Criteria**:
-
-- Integration with CI/CD pipeline
-- Visual comparison testing implemented
-- BFF CLI integration complete
-- Full test coverage for BfDs components
-
-**Why aren't we working on this yet?** Focusing on establishing the core testing
-infrastructure first before adding more advanced features.
-
-### Components and Implementation Details
+**Components and Implementation Details**:
 
 #### 1. Enhanced Test Utilities
 
 ```typescript
-// infra/testing/ui-testing.ts additions
-
+// Enhanced fireEvent with more specific event types
 export function fireEvent(element: Element, eventName: string, options = {}) {
-  // Implement event simulation
+  // Implement event simulation with extended capabilities
 }
 
 export function createSnapshot(component: JSX.Element) {
@@ -45,8 +40,7 @@ export function createSnapshot(component: JSX.Element) {
 #### 2. Visual Comparison
 
 ```typescript
-// infra/testing/visual-comparison.ts
-
+// Visual comparison testing
 export async function compareVisual(componentName: string, html: string) {
   // Create a visual fingerprint of the component
   // Compare against baseline
@@ -75,36 +69,19 @@ Deno.test("BfDsButton triggers onClick when clicked", () => {
 });
 ```
 
-## Enhancement Features (From Version 0.3)
+### Enhancement Features (From Version 0.3)
 
-**Priority**: Low **Type**: Enhancement **Complexity**: Complex **Target
-Version**: Future
+**Priority**: Low | **Type**: Enhancement | **Complexity**: Complex
 
 **Description**: Snapshot testing capabilities, accessibility testing, and
 comprehensive test reporting.
 
-**Justification**: These features provide more advanced testing capabilities and
-better reporting for UI components.
-
-**Dependencies**: Core testing foundation and integration features must be
-stable.
-
-**Acceptance Criteria**:
-
-- Snapshot testing implemented
-- Accessibility testing integrated
-- Comprehensive test reporting working
-
-**Why aren't we working on this yet?** Focusing on establishing the core testing
-infrastructure first before adding more advanced features.
-
-### Components and Implementation Details
+**Components and Implementation Details**:
 
 #### 1. Snapshot Testing
 
 ```typescript
-// infra/testing/snapshot.ts
-
+// Snapshot testing implementation
 export async function matchSnapshot(componentName: string, html: string) {
   // Read existing snapshot or create new one
   // Compare against current output
@@ -114,8 +91,7 @@ export async function matchSnapshot(componentName: string, html: string) {
 #### 2. Accessibility Testing
 
 ```typescript
-// infra/testing/a11y.ts
-
+// Accessibility testing
 export function checkAccessibility(html: string) {
   // Perform basic accessibility checks
   // Verify ARIA attributes, etc.
@@ -125,9 +101,16 @@ export function checkAccessibility(html: string) {
 #### 3. Test Reporting
 
 ```typescript
-// infra/reporting/test-report.ts
-
+// Test reporting utilities
 export function generateReport(testResults: TestResult[]) {
   // Generate HTML report with component previews
 }
 ```
+
+## Next Steps
+
+When ready to resume UI testing development:
+
+1. Add comprehensive coverage for all BfDs components
+2. Implement visual comparison testing for critical components
+3. Add test reporting with component previews

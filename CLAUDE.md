@@ -131,7 +131,8 @@ bff help
 
 ## Version Control with Sapling
 
-This project uses Sapling SCM instead of Git. Always use `sl` commands instead of `git` commands:
+This project uses Sapling SCM instead of Git. Always use `sl` commands instead
+of `git` commands:
 
 ```bash
 # Check status
@@ -172,8 +173,10 @@ sl pr submit
 
 - Group related files together by functionality
 - Create multiple focused commits for different functional changes
-- It's more important to separate commits by grouped functionality than by type (code/docs/config)
-- Code can and should be split into multiple commits when it covers different functional areas
+- It's more important to separate commits by grouped functionality than by type
+  (code/docs/config)
+- Code can and should be split into multiple commits when it covers different
+  functional areas
 - Examples of logical grouping:
   - Features or components that work together
   - Related bug fixes
@@ -182,6 +185,7 @@ sl pr submit
 - Each commit should be atomic (self-contained and focused on a single purpose)
 
 Example:
+
 ```
 Add GraphQL Builder v0.1 Implementation Plan
 
