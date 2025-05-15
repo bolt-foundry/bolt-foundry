@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sl log:*)",
+      "Bash(sl status:*)",
+      "Bash(sl diff -c ce36913aa3c2d7792bff5b25c05f3c73fbbff910)",
+      "Bash(sl diff:*)",
+      "Bash(sl add:*)"
+    ],
+    "deny": []
+  }
+}
