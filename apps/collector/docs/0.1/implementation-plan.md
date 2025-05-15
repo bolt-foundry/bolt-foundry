@@ -1,8 +1,15 @@
-# Collector Implementation Plan - Version 0.1
+# Collector Implementation Plan - Version 0.1 [PAUSED]
 
-**Version:** 0.1 **Date:** 2023-11-14
+**Version:** 0.1 **Date:** 2023-11-14 **Status:** PAUSED (May 15, 2025)
 
-## Version Summary
+## Status Update
+
+This project has been paused pending product strategy rethinking. The current
+approach to collecting OpenAI SDK calls and analytics may be reconsidered as
+part of a broader product direction change. No development work should proceed
+on this project until further notice.
+
+## Original Version Summary
 
 Initial foundation for the collector system that captures OpenAI SDK calls and
 responses, moving the PostHog logging logic from the frontend bolt-foundry
