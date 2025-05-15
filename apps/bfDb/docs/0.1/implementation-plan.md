@@ -15,6 +15,8 @@ this migration.
 - Improve developer experience with better type inference and IDE support
 - Maintain backward compatibility at the schema level while changing the
   implementation
+- Support edge relationships between node types, with an initial focus on the
+  BfPerson to BfOrganization relationship for login functionality
 - Establish a solid foundation for future enhancements like Relay connections
 
 ## Non-Goals
@@ -44,20 +46,26 @@ this migration.
    - Implement field resolver logic with proper fallback chain
    - Handle mapping of arguments
 
-3. **Validation** ⏱️
+3. **Edge Relationships** 🔄
+   - Implement simple edge relationship between BfPerson and BfOrganization
+   - Support "member of" relationship pattern for organization membership
+   - Ensure GraphQL schema correctly exposes this relationship
+
+4. **Validation** ⏱️
    - Add validation for object relations against bfNodeSpec.relations
    - Ensure consistency between database and GraphQL schema
 
-4. **Migration** ⏱️
+5. **Migration** ⏱️
    - Update GraphQLObjectBase.defineGqlNode
    - Convert one example node as proof of concept
    - Migrate remaining nodes
    - Remove legacy builders
 
-5. **Testing** ⏱️
+6. **Testing** ⏱️
    - Unit tests for builder functionality
    - Tests for Nexus type generation
    - Integration tests for field resolution
+   - Tests for edge relationships
    - End-to-end tests with GraphQL queries
 
 ## Technical Design
@@ -107,6 +115,17 @@ Default field resolver chain:
 For mutations with no custom resolver:
 
 - Call root[name](args, ctx, info) method
+
+### Edge Relationship Implementation
+
+For the BfPerson to BfOrganization relationship:
+
+1. Define edge in BfPerson nodeType with memberOf relationship to BfOrganization
+2. Expose the relationship in GraphQL schema using the object method
+3. Support bidirectional navigation (person → organization, organization →
+   members)
+4. Initially focus on a simple 1:n relationship pattern
+5. Provide resolver implementation that uses the underlying bfDb edge data
 
 ### Nexus Integration
 

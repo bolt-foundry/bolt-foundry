@@ -11,6 +11,14 @@ and all viewer logic will live under `CurrentViewer`.
 
 ## Current Status - Phase 1 (Google OAuth)
 
+**BLOCKED: Waiting on GraphQL Builder completion (May 15, 2025)**
+
+This project is currently blocked on the completion of the GraphQL Builder. We
+need the new GraphQL builder to implement the OAuth mutation properly with
+type-safe arguments.
+
+### Completed:
+
 - [x] `CurrentViewer` class implemented with `LoggedIn`/`LoggedOut` subclasses
 - [x] Basic session handling in `CurrentViewer.createFromRequest`
 - [x] Login page component created
@@ -19,7 +27,9 @@ and all viewer logic will live under `CurrentViewer`.
 
 ---
 
-## Next Action – Phase 1 Implementation
+## Next Action – Phase 1 Implementation (Blocked)
+
+Once GraphQL Builder is complete, we will:
 
 - [ ] Create Google OAuth client in Google Cloud Console
 - [ ] Implement Google Sign-In button on login page
@@ -58,9 +68,11 @@ and all viewer logic will live under `CurrentViewer`.
 3. **Backend** graphql mutation — verify ID‑token, upsert user & org, return
    session cookie.
 4. **GraphQL** — ensure `CurrentViewerLoggedIn` properly uses session cookie.
-5. **Logout** — implement `/logout` route that clears cookie; update
+5. **Database Relationship** — implement a simple edge between BfPerson (member
+   of) and BfOrganization using the GraphQL builder for relationship modeling.
+6. **Logout** — implement `/logout` route that clears cookie; update
    `currentViewer` to return `LoggedOut`.
-6. **Tests** — create unit + E2E tests using stubbed Google token.
+7. **Tests** — create unit + E2E tests using stubbed Google token.
 
 ### Phase 2 – Cleanup & Hardening
 
@@ -73,13 +85,13 @@ and all viewer logic will live under `CurrentViewer`.
 
 ## File / Module Impact Matrix
 
-| Area            | Files Touched                                                            | Status         |
-| --------------- | ------------------------------------------------------------------------ | -------------- |
-| **Router**      | `contexts/RouterContext.tsx`, route map                                  | ✅ Complete    |
-| **Login UI**    | `components/Home.tsx`, `pages/Login.tsx`                                 | ✅ Complete    |
-| **GraphQL**     | add `currentViewer` & mutation in `builder.ts`; `CurrentViewer*` classes | ✅ Complete    |
-| **Google Auth** | `server/auth/google.ts`, OAuth handling                                  | 🔄 Not Started |
-| **Tests**       | `*.test.ts`, `*.test.e2e.ts`                                             | 🔄 In Progress |
+| Area            | Files Touched                                                            | Status                    |
+| --------------- | ------------------------------------------------------------------------ | ------------------------- |
+| **Router**      | `contexts/RouterContext.tsx`, route map                                  | ✅ Complete               |
+| **Login UI**    | `components/Home.tsx`, `pages/Login.tsx`                                 | ✅ Complete               |
+| **GraphQL**     | add `currentViewer` & mutation in `builder.ts`; `CurrentViewer*` classes | ✅ Complete               |
+| **Google Auth** | `server/auth/google.ts`, OAuth handling                                  | ⛔ Blocked by GraphQL     |
+| **Tests**       | `*.test.ts`, `*.test.e2e.ts`                                             | ⏸️ Paused until unblocked |
 
 ---
 
