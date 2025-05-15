@@ -1,29 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(sl log:*)",
-      "Bash(sl status:*)",
-      "Bash(sl diff -c ce36913aa3c2d7792bff5b25c05f3c73fbbff910)",
-      "Bash(sl diff:*)",
       "Bash(sl add:*)",
-      "Bash(sl pr view:*)",
-      "Bash(sl pr:*)",
-      "Bash(gh pr view:*)",
-      "Bash(sl help:*)",
-      "Bash(chmod:*)",
-      "Bash(deno test:*)",
-      "Bash(grep:*)",
-      "Bash(bff format:*)",
-      "Bash(sl smartlog:*)",
-      "Bash(bff test:*)",
-      "Bash(bff build:*)",
-      "Bash(ls:*)",
-      "Bash(bff lint:*)",
-      "Bash(bff ci:*)",
-      "Bash(deno fmt:*)",
-      "Bash(bff check:*)",
-      "Bash(cat:*)",
-      "Bash(gh api:*)"
+      "Bash(sl diff:*)"
     ],
     "deny": []
   }
