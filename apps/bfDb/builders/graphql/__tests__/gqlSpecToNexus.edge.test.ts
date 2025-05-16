@@ -33,8 +33,8 @@ Deno.test("gqlSpecToNexus supports defining edge relationships", () => {
         relationDefined = true;
         assertEquals(
           config.type,
-          "memberOf", // With thunk-style, we use the field name as the type name initially
-          "Should use the field name as type name with thunk-style relationships",
+          "BfPerson_memberOf_BfOrganization", // Use pattern SourceType_RelationName_TargetType for uniqueness
+          "Should use source and target type names in the relationship type name",
         );
         assert(
           typeof config.resolve === "function",
