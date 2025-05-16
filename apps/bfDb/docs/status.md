@@ -22,16 +22,18 @@ DSL with a single-argument fluent builder pattern.
   types
 - ✅ Type Generation: Completed `gqlSpecToNexus.ts` to convert specs to Nexus
   types
-- 🔄 Relation Support: Basic edge relationship implementation in progress
+- ✅ Relation Support: Implemented edge relationships with thunk-style type
+  references
 - ⏱️ Validation: Validation against bfNodeSpec.relations pending
 
 ## Next Steps (Priority Order)
 
-1. Implement support for edge relationships between BfPerson and BfOrganization
-2. Add validation against bfNodeSpec.relations
-3. Integrate the builder with existing GraphQL schema and types
-4. Update GraphQLObjectBase.defineGqlNode to use the new builder pattern
-5. Test and validate with a complete example node type
+1. Add validation against bfNodeSpec.relations
+2. Integrate the builder with existing GraphQL schema and types
+3. Update GraphQLObjectBase.defineGqlNode to use the new builder pattern
+4. Test and validate with a complete example node type
+5. Add support for additional edge relationship patterns (target→source,
+   many-to-many)
 
 ## Blocking Issues
 

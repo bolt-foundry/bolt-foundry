@@ -16,8 +16,8 @@ Deno.test("gqlSpecToNexus supports defining edge relationships", () => {
     gql
       .string("name")
       .object(
-        "memberOf", 
-        () => Promise.resolve(class BfOrganization {}) // Using thunk style for type reference
+        "memberOf",
+        () => Promise.resolve(class BfOrganization {}), // Using thunk style for type reference
         // No options needed - field name "memberOf" automatically becomes the edge role
       )
   );
@@ -55,12 +55,12 @@ Deno.test("gqlSpecToNexus correctly configures edge relationship options", async
     gql
       .string("name")
       .object(
-        "memberOf", 
+        "memberOf",
         () => Promise.resolve(class BfOrganization {}), // Using thunk style for type reference
-        { 
+        {
           // Add custom arguments to demonstrate options usage
-          args: (a) => a.string("filter")
-        }
+          args: (a) => a.string("filter"),
+        },
       )
   );
 
@@ -120,5 +120,15 @@ Deno.test("gqlSpecToNexus correctly configures edge relationship options", async
   );
 });
 
-// Integration test for resolvers would need a mock for BfEdge.query
-// This would be implemented once we have the basic structure in place
+// Test placeholder for edge relationship resolvers
+//
+// Note: Testing dynamic imports requires a proper testing infrastructure.
+// We would need to:
+// 1. Mock the dynamic import function (which is challenging in Deno)
+// 2. Mock the BfEdge.query method
+// 3. Set up a complete resolver chain
+//
+// A more practical approach would be to use dependency injection
+// to allow the resolver to accept mocked modules in tests.
+//
+// Leaving this as a future improvement.

@@ -1,31 +1,40 @@
-/**
- * gqlSpecToNexus.ts
- *
- * Converts GqlNodeSpec to Nexus types for schema generation.
- */
-
-/**
- * Type for values that may be a Promise or a direct value
- */
-type MaybePromise<T> = T | Promise<T>;
-
-/**
- * Type definition for an edge relationship spec
- */
-type EdgeRelationshipSpec = {
-  type: string;
-  args: Record<string, unknown>;
-  edgeRole: string; // The field name that serves as the role
-  isSourceToTarget: boolean;
-  _targetThunk: () => MaybePromise<AnyBfNodeCtor>;
-};
-
-import type { GraphQLResolveInfo } from "graphql";
+import type { GraphQLInputFieldMap, GraphQLResolveInfo } from "graphql";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { GqlNodeSpec } from "./makeGqlBuilder.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import type { BfEdgeMetadata } from "apps/bfDb/classes/BfNode.ts";
-import type { AnyBfNodeCtor } from "apps/bfDb/builders/bfDb/types.ts";
+import type {
+  AnyBfNodeCtor,
+  AnyConstructor,
+  AnyGraphqlObjectBaseCtor,
+} from "apps/bfDb/builders/bfDb/types.ts";
+
+
+type MaybePromise<T> = T | Promise<T>;
+
+/**
+ * Type definition for an edge relationship specification
+ *
+ * This defines how an edge relationship is represented in the GraphQL schema
+ * and provides the information needed to resolve the relationship at runtime.
+ */
+type EdgeRelationshipSpec = {
+  /** GraphQL type name (initially same as field name) */
+  type: string;
+
+  /** GraphQL field arguments (from nexus/graphql) */
+  args: GraphQLInputFieldMap;
+
+  /** Direction of the relationship: true = source→target, false = target→source */
+  isSourceToTarget: boolean;
+
+  /** Function that returns the target type constructor, used for runtime resolution */
+  _targetThunk: () => MaybePromise<
+    AnyBfNodeCtor | AnyGraphqlObjectBaseCtor | AnyConstructor
+  >;
+};
+
+
 
 /**
  * Creates a nonNull wrapper for a GraphQL type
@@ -106,25 +115,41 @@ function createDefaultRelationResolver(relationName: string) {
 
 /**
  * Creates a resolver for edge relationships between nodes
- * 
- * @param relationName The name of the field/relationship (e.g., "memberOf")
- * @param edgeRole The role name for the edge (same as relationName)
+ *
+ * This resolver handles the runtime resolution of relationships between nodes using BfEdge.
+ * It follows these steps:
+ * 1. Queries BfEdge with the source node ID and relationship name as the edge role
+ * 2. Extracts the target node information from the first matching edge
+ * 3. Loads and returns the target node
+ *
+ * @param relationName The name of the field/relationship (e.g., "memberOf") which also serves as the edge role
  * @param isSourceToTarget Direction of the relationship (true = source→target)
  * @param targetThunk Function that returns the target object type constructor
  * @returns An async resolver function that handles the edge relationship
+ *
+ * @example
+ * // Field: person.memberOf
+ * // Role: "memberOf" (same as field name)
+ * // Direction: source→target (BfPerson → BfOrganization)
+ * createEdgeRelationshipResolver(
+ *   "memberOf",
+ *   true,
+ *   () => import("../nodeTypes/BfOrganization.ts").then(m => m.BfOrganization)
+ * )
  */
 function createEdgeRelationshipResolver(
-  relationName: string,
-  edgeRole: string, // The field name serves as the role
+  relationName: string, // The field name also serves as the role
   isSourceToTarget: boolean,
   // Must be provided for thunk-style relationships
-  targetThunk: () => MaybePromise<AnyBfNodeCtor>
+  _targetThunk: () => MaybePromise<
+    AnyBfNodeCtor | AnyGraphqlObjectBaseCtor | AnyConstructor
+  >,
 ) {
   const logger = getLogger(import.meta);
 
   // Log when the resolver is created (only see this during initialization)
   logger.debug(
-    `Creating edge relationship resolver for '${relationName}' with role '${edgeRole}' (${
+    `Creating edge relationship resolver for '${relationName}' (${
       isSourceToTarget ? "source→target" : "target→source"
     }) using thunk-style type`,
   );
@@ -163,12 +188,15 @@ function createEdgeRelationshipResolver(
       // This allows resolving a BfPerson.memberOf field, not the reverse
       if (isSourceToTarget) {
         logger.debug(
-          `Resolving source→target relationship '${relationName}' with role '${edgeRole}'`,
+          `Resolving source→target relationship '${relationName}'`,
         );
 
         // 1. Query for edges with the given role where this node is the source
-        // Dynamically import BfEdge to avoid circular dependencies
+        // Use dynamic import to avoid circular dependencies
         const BfEdgeModule = await import("apps/bfDb/nodeTypes/BfEdge.ts");
+
+        // Log that BfEdge was imported
+        logger.debug("Dynamically imported BfEdge");
 
         // Setup query params to find edges from this node
         const queryMetadata = {
@@ -177,18 +205,18 @@ function createEdgeRelationshipResolver(
         };
 
         logger.debug(
-          `Querying for edges from ${root.metadata.className}:${root.metadata.bfGid} with role '${edgeRole}'`,
+          `Querying for edges from ${root.metadata.className}:${root.metadata.bfGid} with role '${relationName}'`,
         );
-        
+
         // Due to circular dependencies between BfNode and BfEdge, we need to use a type assertion
         // deno-lint-ignore no-explicit-any
         type BfEdgeQuery = any; // This is a simplification for type safety
-        
+
         // Call the query method with proper parameters
         const edges = await (BfEdgeModule.BfEdge as BfEdgeQuery).query(
           root.currentViewer,
           queryMetadata as Partial<BfEdgeMetadata>,
-          { role: edgeRole } as Record<string, string>,
+          { role: relationName } as Record<string, string>,
           [], // No specific IDs to filter by
         );
 
@@ -200,7 +228,7 @@ function createEdgeRelationshipResolver(
 
         if (!edges || edges.length === 0) {
           logger.debug(
-            `No edges found for '${relationName}' relationship with role '${edgeRole}'`,
+            `No edges found for '${relationName}' relationship`,
           );
           return null;
         }
@@ -326,8 +354,7 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
           // In GraphQL, we normally already know the type name at build time,
           // but in some cases we might need to dynamically resolve it
           // (e.g., with circular references)
-          const thunkFn = relation._targetThunk;
-          
+
           // The current implementation doesn't require resolving the thunk at schema build time
           // We'll use the function at runtime in the resolver if needed
           // We're keeping this future-proof in case we need to do more with the thunk later
@@ -341,10 +368,9 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
           // Edge relationships are implicit for object fields without custom resolvers
           // The resolver will query for BfEdge objects and resolve the relationship
           resolver = createEdgeRelationshipResolver(
-            relationName, // The field name
-            relation.edgeRole, // The role (same as field name)
+            relationName, // The field name also serves as the edge role
             relation.isSourceToTarget, // Direction of relationship
-            relation._targetThunk // The thunk function that returns the target type
+            relation._targetThunk, // The thunk function that returns the target type
           );
         } else if (!resolver) {
           // Use default resolver for regular relations
@@ -357,12 +383,12 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
           // Handle arguments if provided
           args: relation.args || {},
           // Add resolver based on relationship type with debug wrapper
-          resolve: async function(
+          resolve: async function (
             // deno-lint-ignore no-explicit-any
-            root: any, 
-            args: Record<string, unknown>, 
-            ctx: BfGraphqlContext, 
-            info: GraphQLResolveInfo
+            root: any,
+            args: Record<string, unknown>,
+            ctx: BfGraphqlContext,
+            info: GraphQLResolveInfo,
           ) {
             const logger = getLogger(import.meta);
             logger.debug(

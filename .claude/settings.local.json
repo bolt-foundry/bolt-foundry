@@ -32,7 +32,8 @@
       "Bash(gh pr view:*)",
       "Bash(apps/bfDb/builders/graphql/__tests__/gqlSpecToNexus.edge.test.ts --no-check)",
       "Bash(apps/bfDb/builders/graphql/__tests__/gqlSpecToNexus.schema.test.ts)",
-      "Bash(sl amend:*)"
+      "Bash(sl amend:*)",
+      "Bash(bff ci:*)"
     ],
     "deny": []
   }

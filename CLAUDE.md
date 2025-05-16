@@ -134,6 +134,24 @@ bff help
 This project uses Sapling SCM instead of Git. Always use `sl` commands instead
 of `git` commands:
 
+### GitHub API Access
+
+For accessing GitHub information like PRs and reviews, use the `gh api` command:
+
+```bash
+# Get PR details
+gh api repos/{owner}/{repo}/pulls/{pr_number}
+
+# View PR comments
+gh api repos/{owner}/{repo}/pulls/{pr_number}/comments
+
+# View PR reviews
+gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews
+
+# View PR review comments
+gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews/comments
+```
+
 ```bash
 # Check status
 sl status
