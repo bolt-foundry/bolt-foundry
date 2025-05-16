@@ -38,7 +38,7 @@ async function runPrecommitChecks(): Promise<boolean> {
     return false;
   }
   logger.info("✅ Type checking passed");
-  
+
   return true;
 }
 

@@ -74,7 +74,7 @@ export function register(
   name: string,
   description: string,
   command: BffCommand,
-  options = [],
+  options: Array<Record<string, string>> = [],
 ) {
   // Wrap the command with analytics tracking
   const wrappedCommand: BffCommand = async (cmdOptions) => {
