@@ -24,7 +24,6 @@
       "Bash(bff check:*)",
       "Bash(cat:*)",
       "Bash(gh api:*)",
-      "Bash(gh api:*)",
       "Bash(bff check:*)",
       "Bash(chmod:*)",
       "Bash(apps/bfDb/builders/graphql/__tests__/gqlSpecToNexus.edge.test.ts)",
@@ -33,7 +32,15 @@
       "Bash(apps/bfDb/builders/graphql/__tests__/gqlSpecToNexus.edge.test.ts --no-check)",
       "Bash(apps/bfDb/builders/graphql/__tests__/gqlSpecToNexus.schema.test.ts)",
       "Bash(sl amend:*)",
-      "Bash(bff ci:*)"
+      "Bash(bff ci:*)",
+      "Bash(rg:*)",
+      "Bash(bff test:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(bff format:*)",
+      "Bash(bff lint:*)",
+      "Bash(sl status:*)",
+      "Bash(sl resolve:*)"
     ],
     "deny": []
   }

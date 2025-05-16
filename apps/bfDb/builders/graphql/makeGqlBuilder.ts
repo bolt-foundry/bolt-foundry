@@ -1,34 +1,26 @@
 import type { GraphQLResolveInfo } from "graphql";
 import type { Connection, ConnectionArguments } from "graphql-relay";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
-import type { AnyBfNodeCtor } from "apps/bfDb/builders/bfDb/types.ts";
+import type { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 import { type ArgsBuilder, makeArgBuilder } from "./makeArgBuilder.ts";
 
-type ThisNode = InstanceType<AnyBfNodeCtor>;
+// More flexible type that accepts any class with the right static properties
+type GraphQLObjectClass = {
+  name?: string;
+  __typename?: string;
+  gqlSpec?: unknown;
+};
+
+// For actual GraphQL nodes that need to be instantiated
+type ThisNode = GraphQLObjectBase;
 
 /**
  * Represents a value that may be a Promise or a direct value
  */
 type MaybePromise<T> = T | Promise<T>;
 
-/**
- * Function that returns a GraphQL object type constructor
- * Used for thunk-style references to break circular dependencies
- *
- * The returned value can be:
- * 1. A concrete class constructor (BfOrganization)
- * 2. An abstract class constructor (BfNode)
- * 3. A module promise with a named export (.then(m => m.BfOrganization))
- * 4. Any GraphQL object base class (incl. those with protected constructors like CurrentViewer)
- *
- * Note: Using 'any' here is necessary to handle CurrentViewer's protected constructor
- * which causes type issues with more specific type definitions.
- */
-// deno-lint-ignore no-explicit-any
-type GqlObjectThunk = () => MaybePromise<any>;
-
 /** Generic placeholder for a mutation's payload */
-type NMutationPayload = Record<string, unknown>;
+type NMutationPayload = unknown; // Mutations can return any GraphQL type
 
 /**
  * Helper type to create nonNull version of the builder
@@ -103,40 +95,22 @@ export interface GqlBuilder<
     },
   ): GqlBuilder<R>;
 
-  /**
-   * Define an object field that represents an edge relationship to another object type.
-   *
-   * @param name The field name, which will also serve as the edge role name
-   * @param targetThunk Function that returns the target object type constructor
-   * @param opts Optional configuration for edge relationship
-   * @returns The builder instance for method chaining
-   *
-   * @example
-   * // Define a relationship to BfOrganization
-   * .object("memberOf", () => BfOrganization)
-   *
-   * // With dynamic import to handle circular dependencies
-   * .object("memberOf", () => import("apps/bfDb/nodeTypes/BfOrganization.ts").then(m => m.BfOrganization))
-   *
-   * // With custom arguments
-   * .object("memberOf", () => BfOrganization, {
-   *   args: (a) => a.string("filterBy")
-   * })
-   *
-   * // Custom resolver (not an edge relationship when custom resolver is provided)
-   * .object("memberOf", () => BfOrganization, {
-   *   resolve: (root, args, ctx) => ctx.getOrganizationForUser(root.id)
-   * })
-   *
-   * // Change relationship direction (default is source→target)
-   * .object("follows", () => BfPerson, {
-   *   isSourceToTarget: false // Makes this a target→source relationship
-   * })
-   */
   object<N extends keyof R & string>(
     name: N,
-    targetThunk: GqlObjectThunk,
-    opts?: {
+    targetOrTypeOrOpts:
+      | string // Direct type name for circular imports
+      | (() => GraphQLObjectClass) // Factory function returns class directly
+      | { // Options object
+        type?: string;
+        args?: (ab: ArgsBuilder) => ArgsBuilder;
+        resolve?: (
+          root: ThisNode,
+          args: Record<string, unknown>,
+          ctx: BfGraphqlContext,
+          info: GraphQLResolveInfo,
+        ) => MaybePromise<R[N]>;
+      },
+    extraOpts?: {
       args?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
@@ -144,7 +118,6 @@ export interface GqlBuilder<
         ctx: BfGraphqlContext,
         info: GraphQLResolveInfo,
       ) => MaybePromise<R[N]>;
-      isSourceToTarget?: boolean; // Defaults to true (source->target)
     },
   ): GqlBuilder<R>;
 
@@ -165,7 +138,7 @@ export interface GqlBuilder<
     name: N,
     opts?: {
       args?: (ab: ArgsBuilder) => ArgsBuilder;
-      returns?: string;
+      returns?: string | (() => GraphQLObjectClass);
       resolve?: (
         root: ThisNode,
         args: Record<string, unknown>,
@@ -184,11 +157,6 @@ export interface GqlBuilder<
     mutations: Record<string, unknown>;
   };
 }
-
-/**
- * Creates a GraphQL builder for defining GraphQL types
- */
-// Edge property building will be implemented in a future version if needed
 
 /**
  * Creates a GraphQL builder for defining GraphQL types
@@ -257,34 +225,74 @@ export function makeGqlBuilder<
       return builder;
     },
 
-    object(name, targetThunk, opts = {}) {
+    object(name, targetOrTypeOrOpts, extraOpts) {
       // Create the argument builder function
       const argFn = makeArgBuilder();
 
-      // The field name is used as the GraphQL type name initially
-      // This will be resolved at runtime using the targetThunk
-      const typeName = name;
+      let typeName: string;
+      let opts: {
+        args?: (ab: ArgsBuilder) => ArgsBuilder;
+        resolve?: (
+          root: ThisNode,
+          args: Record<string, unknown>,
+          ctx: BfGraphqlContext,
+          info: GraphQLResolveInfo,
+        ) => MaybePromise<unknown>;
+      } = {};
+      let targetFn: (() => GraphQLObjectClass) | undefined;
 
-      // Store the thunk function for later resolution
-      const _targetThunk = targetThunk;
+      // Handle the three different argument patterns
+      if (typeof targetOrTypeOrOpts === "string") {
+        // Direct type name: .object("owner", "BfPerson")
+        typeName = targetOrTypeOrOpts;
+        opts = extraOpts || {};
+      } else if (typeof targetOrTypeOrOpts === "function") {
+        // Factory pattern: .object("owner", () => BfPerson)
+        targetFn = targetOrTypeOrOpts;
 
-      // Process args function if provided
-      const args = opts.args ? argFn(opts.args) : {};
+        // Execute the factory to get the class and its name
+        try {
+          const target = targetOrTypeOrOpts();
+          if (!target || typeof target.name !== "string") {
+            throw new Error(
+              `Cannot determine type name for relation "${name}". Factory must return a class with a name.`,
+            );
+          }
+          typeName = target.name;
+        } catch (e) {
+          throw new Error(
+            `Failed to determine type for relation "${name}": ${e}. ` +
+              `Use string type for circular imports: .object("${name}", "TypeName")`,
+          );
+        }
 
-      // By default, all object fields without a custom resolver are edge relationships
-      const isEdgeRelationship = !opts.resolve;
+        opts = extraOpts || {};
+      } else {
+        // Options object: .object("owner", { type: "BfPerson", resolve: ... })
+        const optsObj = targetOrTypeOrOpts || {};
 
-      // Store the relation definition with edge relationship info
+        if (!optsObj.type) {
+          throw new Error(
+            `No type specified for relation "${name}". ` +
+              `Use: .object("${name}", "TypeName") or .object("${name}", () => TypeClass)`,
+          );
+        }
+
+        typeName = optsObj.type;
+        opts = {
+          args: optsObj.args,
+          resolve: optsObj.resolve,
+        };
+      }
+
+      // Store the relation definition
       spec.relations[name] = {
         type: typeName,
-        args: args,
+        targetFn,
+        args: opts.args ? argFn(opts.args) : {},
         resolve: opts.resolve,
-        // Edge relationship properties - implicitly created for fields without custom resolvers
-        isEdgeRelationship: isEdgeRelationship,
-        isSourceToTarget: opts.isSourceToTarget !== false, // Default to true
-        // Store the thunk function for later use
-        _targetThunk: _targetThunk,
       };
+
       return builder;
     },
 
@@ -300,9 +308,26 @@ export function makeGqlBuilder<
       // Create and collect arguments if provided
       const args = opts.args ? argFn(opts.args) : {};
 
+      // Handle returns as either string or factory function
+      let returnType: string;
+      if (typeof opts.returns === "function") {
+        // Factory function that returns a class
+        try {
+          const targetClass = opts.returns();
+          returnType = targetClass.name || "JSON";
+        } catch (e) {
+          throw new Error(
+            `Failed to determine return type for mutation "${name}": ${e}. ` +
+              `Use string type for circular imports: returns: "TypeName"`,
+          );
+        }
+      } else {
+        returnType = opts.returns || "JSON";
+      }
+
       // Store the mutation definition
       spec.mutations[name] = {
-        returns: opts.returns || "JSON",
+        returns: returnType,
         args: args,
         resolve: opts.resolve,
       };
@@ -366,7 +391,11 @@ export function makeGqlBuilder<
           return builder;
         },
 
-        object: builder.object,
+        object:
+          ((name, targetOrTypeOrOpts, extraOpts) =>
+            builder.object(name, targetOrTypeOrOpts, extraOpts)) as OmitNonNull<
+              GqlBuilder<R>
+            >["object"],
         connection: builder.connection,
         mutation: builder.mutation,
         _spec: builder._spec,
@@ -375,8 +404,10 @@ export function makeGqlBuilder<
       return nonNullBuilder;
     },
 
-    // Expose the spec for other modules to use
-    _spec: spec,
+    // Expose the spec
+    get _spec() {
+      return spec;
+    },
   };
 
   return builder;
