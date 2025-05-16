@@ -6,7 +6,18 @@ import { type ArgsBuilder, makeArgBuilder } from "./makeArgBuilder.ts";
 
 type ThisNode = InstanceType<AnyBfNodeCtor>;
 
+/**
+ * Represents a value that may be a Promise or a direct value
+ */
 type MaybePromise<T> = T | Promise<T>;
+
+/**
+ * Function that returns a GraphQL object type
+ * Used for thunk-style references to break circular dependencies
+ * 
+ * deno-lint-ignore no-explicit-any
+ */
+type GqlObjectThunk = () => MaybePromise<any>; // Using any here as we need to support both concrete and abstract constructor types
 
 /** Generic placeholder for a mutation's payload */
 type NMutationPayload = Record<string, unknown>;
@@ -84,15 +95,42 @@ export interface GqlBuilder<
     },
   ): GqlBuilder<R>;
 
-  object<N extends keyof R & string>(name: N, opts?: {
-    args?: (ab: ArgsBuilder) => ArgsBuilder;
-    resolve?: (
-      root: ThisNode,
-      args: Record<string, unknown>,
-      ctx: BfGraphqlContext,
-      info: GraphQLResolveInfo,
-    ) => MaybePromise<R[N]>;
-  }): GqlBuilder<R>;
+  /**
+   * Define an object field that represents an edge relationship to another object type.
+   * 
+   * @param name The field name, which will also serve as the edge role name
+   * @param targetThunk Function that returns the target object type constructor
+   * @param opts Optional configuration for edge relationship
+   * @returns The builder instance for method chaining
+   * 
+   * @example
+   * // Define a relationship to BfOrganization
+   * .object("memberOf", () => BfOrganization)
+   * 
+   * // With custom arguments
+   * .object("memberOf", () => BfOrganization, {
+   *   args: (a) => a.string("filterBy")
+   * })
+   * 
+   * // Custom resolver (not an edge relationship when custom resolver is provided)
+   * .object("memberOf", () => BfOrganization, {
+   *   resolve: (root, args, ctx) => ctx.getOrganizationForUser(root.id)
+   * })
+   */
+  object<N extends keyof R & string>(
+    name: N, 
+    targetThunk: GqlObjectThunk,
+    opts?: {
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
+      resolve?: (
+        root: ThisNode,
+        args: Record<string, unknown>,
+        ctx: BfGraphqlContext,
+        info: GraphQLResolveInfo,
+      ) => MaybePromise<R[N]>;
+      isSourceToTarget?: boolean; // Defaults to true (source->target)
+    }
+  ): GqlBuilder<R>;
 
   connection<N extends keyof R & string>(
     name: N,
@@ -130,6 +168,11 @@ export interface GqlBuilder<
     mutations: Record<string, unknown>;
   };
 }
+
+/**
+ * Creates a GraphQL builder for defining GraphQL types
+ */
+// Edge property building will be implemented in a future version if needed
 
 /**
  * Creates a GraphQL builder for defining GraphQL types
@@ -198,14 +241,34 @@ export function makeGqlBuilder<
       return builder;
     },
 
-    object(name, opts = {}) {
+    object(name, targetThunk, opts = {}) {
       // Create the argument builder function
       const argFn = makeArgBuilder();
+      
+      // The field name is used as the GraphQL type name initially
+      // This will be resolved at runtime using the targetThunk
+      const typeName = name;
+      
+      // Store the thunk function for later resolution
+      const _targetThunk = targetThunk;
+      
+      // Process args function if provided
+      const args = opts.args ? argFn(opts.args) : {};
+      
+      // By default, all object fields without a custom resolver are edge relationships
+      const isEdgeRelationship = !opts.resolve;
 
+      // Store the relation definition with edge relationship info
       spec.relations[name] = {
-        type: name,
-        args: opts.args ? argFn(opts.args) : {},
+        type: typeName,
+        args: args,
         resolve: opts.resolve,
+        // Edge relationship properties - implicitly created for fields without custom resolvers
+        isEdgeRelationship: isEdgeRelationship,
+        edgeRole: name, // The field name itself is the role
+        isSourceToTarget: opts.isSourceToTarget !== false, // Default to true
+        // Store the thunk function for later use
+        _targetThunk: _targetThunk
       };
       return builder;
     },

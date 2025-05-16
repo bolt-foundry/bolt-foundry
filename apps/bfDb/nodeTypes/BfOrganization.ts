@@ -5,6 +5,7 @@ export class BfOrganization extends BfNode<InferProps<typeof BfOrganization>> {
     node
       .string("name")
       .string("domain")
+    // Removing the members relationship for now to focus on 1:1
   );
   static override bfNodeSpec = this.defineBfNode((node) =>
     node

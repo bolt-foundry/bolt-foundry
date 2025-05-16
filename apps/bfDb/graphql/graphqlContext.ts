@@ -19,6 +19,21 @@ export type BfGraphqlContext = {
     id: string;
   };
   loginWithGoogleToken(idToken: string): Promise<CurrentViewerLoggedIn>;
+  /**
+   * Loads nodes by their GIDs and className
+   * Used primarily for resolving edge relationships
+   */
+  loadNodesByGids(
+    className: string,
+    gids: BfGid[],
+  ): Promise<BfNode[] | null>;
+  /**
+   * Find a node by its GID
+   */
+  findNode<T extends BfNode = BfNode>(
+    className: string,
+    gid: BfGid,
+  ): Promise<T | null>;
   //   createTargetNode<
   //     TProps extends BfNodeBaseProps,
   //     TBfClass extends typeof BfNode<TProps>,
@@ -92,6 +107,75 @@ export async function createContext(
       currentViewer = viewer; // swap in new viewer for rest of request
       logger.debug("Google login successful");
       return viewer;
+    },
+
+    async loadNodesByGids(className, gids) {
+      logger.debug(`Loading nodes by GIDs: ${className} [${gids.join(", ")}]`);
+
+      if (!gids.length) {
+        logger.debug(`No GIDs provided for ${className}, returning null`);
+        return null;
+      }
+
+      try {
+        // Find the class constructor by name
+        // This is a simplified approach - in a real implementation,
+        // you would have a registry of classes
+        logger.debug(`Importing class ${className} dynamically`);
+        const BfClass = await import(`../nodeTypes/${className}.ts`).then(
+          (module) => module[className],
+        );
+
+        if (!BfClass) {
+          logger.error(`Class ${className} not found`);
+          return null;
+        }
+
+        // Check if we have a cache for this class
+        let classCache = cache.get(className);
+        if (!classCache) {
+          logger.debug(`Creating new cache for ${className}`);
+          classCache = new Map();
+          cache.set(className, classCache);
+        } else {
+          logger.debug(`Using existing cache for ${className}`);
+        }
+
+        // Query for the nodes with the given GIDs
+        logger.debug(`Querying for ${gids.length} nodes of type ${className}`);
+        const nodes = await BfClass.query(
+          currentViewer,
+          { className },
+          {},
+          gids,
+          classCache,
+        );
+
+        logger.debug(`Found ${nodes?.length || 0} nodes of type ${className}`);
+
+        if (!nodes || nodes.length === 0) {
+          return null;
+        }
+
+        return nodes;
+      } catch (error) {
+        logger.error(`Error loading nodes by GIDs: ${error}`);
+        return null;
+      }
+    },
+
+    async findNode<T extends BfNode = BfNode>(className: string, gid: BfGid) {
+      logger.debug(`Finding node: ${className}:${gid}`);
+      const nodes = await this.loadNodesByGids(className, [gid]);
+
+      if (!nodes || nodes.length === 0) {
+        logger.debug(`Node not found: ${className}:${gid}`);
+        return null;
+      }
+
+      logger.debug(`Node found: ${className}:${gid}`);
+      // deno-lint-ignore no-explicit-any
+      return nodes[0] as any as T;
     },
     // async createTargetNode<
     //   TProps extends BfNodeBaseProps = BfNodeBaseProps,
