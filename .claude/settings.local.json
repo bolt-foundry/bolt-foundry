@@ -4,7 +4,8 @@
       "Bash(bff help:*)",
       "Bash(bff format:*)",
       "Bash(bff check:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
