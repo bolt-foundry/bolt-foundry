@@ -20,6 +20,17 @@
       "Bash(bff check:*)",
       "Bash(bff pr-details:*)",
       "Bash(bff merge:*)"
+      "Bash(bff pr-details:*)"
+      "Bash(deno lint:*)",
+      "Bash(bff ci:*)",
+      "Bash(rg:*)",
+      "Bash(bff test:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(bff format:*)",
+      "Bash(bff lint:*)",
+      "Bash(sl status:*)",
+      "Bash(sl resolve:*)"
     ],
     "deny": []
   }
