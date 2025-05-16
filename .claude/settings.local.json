@@ -17,7 +17,9 @@
       "Bash(bff ci-status:*)",
       "Bash(bff format:*)",
       "Bash(grep:*)",
-      "Bash(bff check:*)"
+      "Bash(bff check:*)",
+      "Bash(bff pr-details:*)",
+      "Bash(bff merge:*)"
     ],
     "deny": []
   }
