@@ -42,46 +42,55 @@ const consoleLogger = {
 };
 
 /**
- * Fetches comments from the GitHub PR that's linked to the current Sapling branch
+ * Fetches comments from a GitHub PR, either specified or the one linked to the current Sapling branch
  */
-export async function prCommentsCommand(_options: string[]): Promise<number> {
-  logger.info("Fetching PR comments from linked GitHub PR...");
+export async function prCommentsCommand(options: string[]): Promise<number> {
+  let prNumber: string;
 
-  // First, get the current PR info directly from Sapling
-  const { stdout: prOutput, code: prCode } = await runShellCommandWithOutput([
-    "sl",
-    "pr",
-    "list",
-    "--limit",
-    "1",
-  ]);
+  // Check if PR number was provided as an argument
+  if (options.length > 0 && /^\d+$/.test(options[0])) {
+    prNumber = options[0];
+    logger.info(`Fetching PR comments for PR #${prNumber}...`);
+  } else {
+    logger.info("Fetching PR comments from linked GitHub PR...");
 
-  if (prCode !== 0) {
-    logger.error("Failed to get PR information from Sapling");
-    return 1;
+    // Get the current PR info directly from Sapling
+    const { stdout: prOutput, code: prCode } = await runShellCommandWithOutput([
+      "sl",
+      "pr",
+      "list",
+      "--limit",
+      "1",
+    ]);
+
+    if (prCode !== 0) {
+      logger.error("Failed to get PR information from Sapling");
+      return 1;
+    }
+
+    // Check if we have any PR data
+    if (!prOutput || !prOutput.trim()) {
+      logger.error("No linked GitHub PR found for current branch", prOutput);
+      logger.info("Usage: bff pr-comments [PR_NUMBER]");
+      return 1;
+    }
+
+    logger.debug("PR output:", prOutput);
+
+    // Find the PR number from the PR output
+    // The format is like: "532   Add OpenAI analytics tracking and enhance PostHog integration   pr532   OPEN    2025-04-04T15:50:12Z"
+    const prRegex = /^(\d+)\s+/; // Match the PR number at the start of the output
+    const prMatch = prOutput.match(prRegex);
+
+    if (!prMatch) {
+      logger.error("Could not extract PR number from Sapling output");
+      logger.debug("Received PR output:", prOutput);
+      return 1;
+    }
+
+    prNumber = prMatch[1];
+    logger.info(`Found linked GitHub PR #${prNumber}`);
   }
-
-  // Check if we have any PR data
-  if (!prOutput || !prOutput.trim()) {
-    logger.error("No linked GitHub PR found for current branch", prOutput);
-    return 1;
-  }
-
-  logger.debug("PR output:", prOutput);
-
-  // Find the PR number from the PR output
-  // The format is like: "532   Add OpenAI analytics tracking and enhance PostHog integration   pr532   OPEN    2025-04-04T15:50:12Z"
-  const prRegex = /^(\d+)\s+/; // Match the PR number at the start of the output
-  const prMatch = prOutput.match(prRegex);
-
-  if (!prMatch) {
-    logger.error("Could not extract PR number from Sapling output");
-    logger.debug("Received PR output:", prOutput);
-    return 1;
-  }
-
-  const prNumber = prMatch[1];
-  logger.info(`Found linked GitHub PR #${prNumber}`);
 
   // First, get the repository URL from Sapling
   const { stdout: repoUrlOutput, code: repoUrlCode } =
@@ -266,6 +275,13 @@ export async function prCommentsCommand(_options: string[]): Promise<number> {
 
 register(
   "pr-comments",
-  "Fetch comments from the linked GitHub PR",
+  "Fetch comments from a GitHub PR",
   prCommentsCommand,
+  [
+    {
+      option: "[PR_NUMBER]",
+      description:
+        "Optional PR number to fetch comments from. If not provided, uses the PR linked to the current branch.",
+    },
+  ],
 );
