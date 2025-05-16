@@ -9,7 +9,6 @@ import type {
   AnyGraphqlObjectBaseCtor,
 } from "apps/bfDb/builders/bfDb/types.ts";
 
-
 type MaybePromise<T> = T | Promise<T>;
 
 /**
@@ -33,8 +32,6 @@ type EdgeRelationshipSpec = {
     AnyBfNodeCtor | AnyGraphqlObjectBaseCtor | AnyConstructor
   >;
 };
-
-
 
 /**
  * Creates a nonNull wrapper for a GraphQL type
@@ -359,6 +356,14 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
           // We'll use the function at runtime in the resolver if needed
           // We're keeping this future-proof in case we need to do more with the thunk later
           relation._hasThunkFn = true;
+
+          // Derive a more specific type name using source_relation_target pattern to prevent collisions
+          // Format: SourceType_RelationName_TargetType (e.g., BfPerson_memberOf_BfOrganization)
+          // Extract target class name from the thunk function if possible
+          const targetClassName =
+            relation._targetThunk.toString().match(/class\s+(\w+)/)?.[1] ||
+            "Unknown";
+          relation.type = `${typeName}_${relationName}_${targetClassName}`;
         }
 
         // Determine if this is an edge relationship

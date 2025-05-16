@@ -29,8 +29,8 @@ Deno.test("BfPerson exposes memberOf relationship to BfOrganization", () => {
         hasRelation = true;
         assertEquals(
           config.type,
-          "memberOf", // With thunk-style, we use the field name as the type name initially
-          "Relation should use field name as type with thunk style",
+          "BfPerson_memberOf_BfOrganization", // Use pattern SourceType_RelationName_TargetType for uniqueness
+          "Relation should use source and target type names in the relationship type name",
         );
       }
       return mockBuilder;
@@ -74,8 +74,8 @@ Deno.test("Nexus schema correctly maps edge relationship configuration", () => {
   assert(fields.memberOf, "The memberOf field should be defined");
   assertEquals(
     fields.memberOf.type,
-    "memberOf", // With thunk-style, we use the field name as the type name initially
-    "Should use the field name as type name with thunk-style",
+    "BfPerson_memberOf_BfOrganization", // Use pattern SourceType_RelationName_TargetType for uniqueness
+    "Should use source and target type names in the relationship type name",
   );
   assert(
     typeof fields.memberOf.resolve === "function",
