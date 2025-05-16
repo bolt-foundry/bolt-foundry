@@ -1,190 +1,105 @@
-import { promptForInputWithList } from "../tools.ts";
-import { shellRun } from "../shellBase.ts";
-import { BffFriend, BffFriendReturnValue } from "../bff.ts";
-import { BfError } from "../../../lib/BfError.ts";
+#! /usr/bin/env -S bff
 
-export const runMerge = async (): Promise<void> => {
-  // Get list of open PRs
-  const prsResult = await shellRun({
-    command: ["sl", "pr", "list"],
-    cwd: Deno.cwd(),
-    stdin: "piped",
-    stderr: "piped",
-    stdout: "piped",
-  });
+import { register } from "infra/bff/bff.ts";
+import {
+  runShellCommand,
+  runShellCommandWithOutput,
+} from "infra/bff/shellBase.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
-  if (!prsResult.success) {
-    throw new BfError("MERGE_FAILED", "Failed to get PR list", {
-      stderr: prsResult.stderr,
-    });
-  }
+const logger = getLogger(import.meta);
 
-  // Parse PR list
-  const lines = prsResult.stdout.split("\n").filter((line) => line.trim());
-  const openPRs = lines
-    .filter((line) => line.includes("OPEN"))
-    .map((line) => {
-      const parts = line.split("\t");
-      return {
-        number: parts[0],
-        title: parts[1],
-        branch: parts[2],
-        status: parts[3],
-      };
-    });
-
-  if (openPRs.length === 0) {
-    console.log("No open PRs found");
-    return;
-  }
-
-  // Ask user which PR to merge
-  const prOptions = openPRs.map((pr) => `#${pr.number}: ${pr.title}`);
-  const selectedPR = await promptForInputWithList(
-    "Select PR to merge:",
-    prOptions,
-  );
-
-  const prNumber = selectedPR.match(/#(\d+)/)?.[1];
-  if (!prNumber) {
-    throw new BfError("MERGE_FAILED", "Invalid PR selection");
-  }
-
-  // Ask for merge method
-  const mergeMethod = await promptForInputWithList(
-    "Select merge method:",
-    ["merge", "squash", "rebase"],
-  );
-
-  // Ask for confirmation
-  const confirmInput = await promptForInputWithList(
-    `Are you sure you want to ${mergeMethod} PR #${prNumber}?`,
-    ["yes", "no"],
-  );
-
-  if (confirmInput !== "yes") {
-    console.log("Merge cancelled");
-    return;
-  }
-
-  // Execute merge using GitHub CLI
-  console.log(`Merging PR #${prNumber} using ${mergeMethod} method...`);
-  const mergeResult = await shellRun({
-    command: ["gh", "pr", "merge", prNumber, `--${mergeMethod}`, "--auto"],
-    cwd: Deno.cwd(),
-    stdin: "piped",
-    stderr: "piped",
-    stdout: "piped",
-  });
-
-  if (!mergeResult.success) {
-    throw new BfError("MERGE_FAILED", `Failed to merge PR #${prNumber}`, {
-      stderr: mergeResult.stderr,
-    });
-  }
-
-  console.log(`Successfully merged PR #${prNumber}`);
-  console.log(mergeResult.stdout);
-
-  // Ask if user wants to pull latest changes
-  const pullConfirm = await promptForInputWithList(
-    "Pull latest changes from remote?",
-    ["yes", "no"],
-  );
-
-  if (pullConfirm === "yes") {
-    const pullResult = await shellRun({
-      command: ["sl", "pull"],
-      cwd: Deno.cwd(),
-      stdin: "piped",
-      stderr: "piped",
-      stdout: "piped",
-    });
-
-    if (pullResult.success) {
-      console.log("Successfully pulled latest changes");
-    } else {
-      console.error("Failed to pull changes:", pullResult.stderr);
-    }
-  }
-};
-
-/**
- * bff friend: merge
- *
- * Merge a GitHub pull request
- *
- * Usage:
- *   bff merge        - Interactive PR merge with method selection
- *   bff merge <pr>   - Merge specific PR number (interactive method selection)
- *   bff merge <pr> <method> - Merge specific PR with method (merge/squash/rebase)
- */
-const merge: BffFriend = async (
-  args: string[],
-  cwd: string,
-): Promise<BffFriendReturnValue> => {
+export async function merge(args: string[]): Promise<number> {
+  // Check if PR number and method are provided directly
   const [prNumber, method] = args;
 
   if (prNumber && method) {
     // Direct merge with specified PR and method
     if (!["merge", "squash", "rebase"].includes(method)) {
-      throw new BfError(
-        "MERGE_FAILED",
-        "Invalid merge method. Use: merge, squash, or rebase",
-      );
+      logger.error("Invalid merge method. Use: merge, squash, or rebase");
+      return 1;
     }
 
-    console.log(`Merging PR #${prNumber} using ${method} method...`);
-    const mergeResult = await shellRun({
-      command: ["gh", "pr", "merge", prNumber, `--${method}`, "--auto"],
-      cwd,
-      stdin: "piped",
-      stderr: "piped",
-      stdout: "piped",
+    logger.info(`Merging PR #${prNumber} using ${method} method...`);
+    const mergeResult = await runShellCommand([
+      "gh",
+      "pr",
+      "merge",
+      prNumber,
+      `--${method}`,
+      "--auto",
+    ]);
+
+    if (mergeResult !== 0) {
+      logger.error(`Failed to merge PR #${prNumber}`);
+      return mergeResult;
+    }
+
+    logger.info(`Successfully merged PR #${prNumber}`);
+    return 0;
+  } else if (prNumber) {
+    // Merge specific PR with default method (squash)
+    logger.info(`Merging PR #${prNumber} using squash method...`);
+    const mergeResult = await runShellCommand([
+      "gh",
+      "pr",
+      "merge",
+      prNumber,
+      "--squash",
+      "--auto",
+    ]);
+
+    if (mergeResult !== 0) {
+      logger.error(`Failed to merge PR #${prNumber}`);
+      return mergeResult;
+    }
+
+    logger.info(`Successfully merged PR #${prNumber}`);
+    return 0;
+  } else {
+    // Interactive mode - show list of open PRs
+    logger.info("Fetching list of open PRs...");
+    const { stdout } = await runShellCommandWithOutput(["sl", "pr", "list"]);
+
+    // Parse PR list
+    const lines = stdout.split("\n").filter((line) => line.trim());
+    const openPRs = lines
+      .filter((line) => line.includes("OPEN"))
+      .map((line) => {
+        const parts = line.split("\t");
+        return {
+          number: parts[0],
+          title: parts[1],
+        };
+      });
+
+    if (openPRs.length === 0) {
+      logger.info("No open PRs found");
+      return 0;
+    }
+
+    // Display open PRs
+    logger.info("Open PRs:");
+    openPRs.forEach((pr) => {
+      logger.info(`  #${pr.number}: ${pr.title}`);
     });
 
-    if (!mergeResult.success) {
-      throw new BfError("MERGE_FAILED", `Failed to merge PR #${prNumber}`, {
-        stderr: mergeResult.stderr,
-      });
-    }
-
-    console.log(`Successfully merged PR #${prNumber}`);
-    console.log(mergeResult.stdout);
-  } else if (prNumber) {
-    // Merge specific PR with interactive method selection
-    const mergeMethod = await promptForInputWithList(
-      "Select merge method:",
-      ["merge", "squash", "rebase"],
+    logger.info("\nTo merge a PR, run:");
+    logger.info(
+      "  bff merge <pr-number>           # merge with squash (default)",
+    );
+    logger.info(
+      "  bff merge <pr-number> <method>  # merge with specific method (merge/squash/rebase)",
     );
 
-    console.log(`Merging PR #${prNumber} using ${mergeMethod} method...`);
-    const mergeResult = await shellRun({
-      command: ["gh", "pr", "merge", prNumber, `--${mergeMethod}`, "--auto"],
-      cwd,
-      stdin: "piped",
-      stderr: "piped",
-      stdout: "piped",
-    });
-
-    if (!mergeResult.success) {
-      throw new BfError("MERGE_FAILED", `Failed to merge PR #${prNumber}`, {
-        stderr: mergeResult.stderr,
-      });
-    }
-
-    console.log(`Successfully merged PR #${prNumber}`);
-    console.log(mergeResult.stdout);
-  } else {
-    // Interactive mode
-    await runMerge();
+    return 0;
   }
+}
 
-  return {
-    code: 0,
-    terminalOutput: "",
-  };
-};
+register(
+  "merge",
+  "Merge a GitHub pull request",
+  merge,
+);
 
-const friend = merge;
-export default friend;
+export default merge;

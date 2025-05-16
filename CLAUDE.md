@@ -75,6 +75,11 @@ bff db
 # Generate config keys
 bff genConfigKeys
 
+# Merge a GitHub PR
+bff merge
+bff merge <pr-number>
+bff merge <pr-number> <method>
+
 # Show help
 bff help
 ```
