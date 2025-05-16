@@ -6,24 +6,55 @@ import { createYoga } from "graphql-yoga";
 import { createContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { SchemaConfig } from "nexus/dist/builder.js";
 import { getLogger } from "packages/logger/logger.ts";
-// Let's create our own loadModelTypes function
-// import { loadModelTypes } from "apps/bfDb/builders/graphql/loadSpecs.ts";
+import * as nodeTypes from "apps/bfDb/models/__generated__/nodeTypesList.ts";
+import * as rootTypes from "apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts";
 
 const logger = getLogger(import.meta);
 logger.setLevel(logger.levels.DEBUG);
 
-// Import our GraphQL builder tools - imported only for types but not used directly yet
-import type { makeGqlSpec as _makeGqlSpec } from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
-import type { gqlSpecToNexus as _gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
+// Import our GraphQL builder tools
+import { gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
 import { objectType, queryType } from "nexus";
 
 /**
  * Loads GraphQL types using our new builder pattern.
- * This will eventually load all node types in the system.
+ * This dynamically loads all node types and root types in the system.
  */
 export function loadGqlTypes() {
-  // Create a test GraphQL type directly with Nexus to verify schema generation
-  const TestType = objectType({
+  const types: Record<string, unknown> = {};
+
+  // Load all node types (BfPerson, BfOrganization, etc.)
+  for (const [exportName, exportValue] of Object.entries(nodeTypes)) {
+    if (
+      exportValue &&
+      typeof exportValue === "function" &&
+      exportValue.gqlSpec
+    ) {
+      const className = exportName;
+      const { mainType } = gqlSpecToNexus(exportValue.gqlSpec, className);
+      types[className] = objectType(mainType);
+    }
+  }
+
+  // Load all root types (Query, Mutation, etc.)
+  for (const [exportName, exportValue] of Object.entries(rootTypes)) {
+    if (
+      exportValue &&
+      typeof exportValue === "function" &&
+      exportValue.gqlSpec
+    ) {
+      const className = exportName;
+      const { mainType } = gqlSpecToNexus(exportValue.gqlSpec, className);
+      if (className === "Query") {
+        types[className] = queryType(mainType);
+      } else {
+        types[className] = objectType(mainType);
+      }
+    }
+  }
+
+  // Create a test GraphQL type to keep existing functionality
+  types.TestType = objectType({
     name: "TestType",
     definition(t) {
       t.string("name");
@@ -33,32 +64,31 @@ export function loadGqlTypes() {
     },
   });
 
-  // Create a query type that returns our test type
-  const Query = queryType({
-    definition(t) {
-      // Test field
-      t.field("test", {
-        type: "TestType",
-        resolve: () => ({
-          id: "test-123",
-          name: "Test Object",
-          isActive: true,
-          count: 42,
-        }),
-      });
+  // If we don't already have a Query type from root types, create a basic one
+  if (!types.Query) {
+    types.Query = queryType({
+      definition(t) {
+        // Test field
+        t.field("test", {
+          type: "TestType",
+          resolve: () => ({
+            id: "test-123",
+            name: "Test Object",
+            isActive: true,
+            count: 42,
+          }),
+        });
 
-      // Health check
-      t.nonNull.boolean("ok", {
-        resolve: () => true,
-      });
-    },
-  });
+        // Health check
+        t.nonNull.boolean("ok", {
+          resolve: () => true,
+        });
+      },
+    });
+  }
 
-  // Return the types
-  return {
-    Query,
-    TestType,
-  };
+  // Return all the types
+  return types;
 }
 
 const schemaOptions: SchemaConfig = {
