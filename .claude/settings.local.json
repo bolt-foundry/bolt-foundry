@@ -17,7 +17,7 @@
       "Bash(chmod:*)",
       "Bash(grep:*)",
       "Bash(bff ci-status:*)",
-      "Bash(bff lint:*)"
+      "Bash(bff lint:*)",
       "Bash(apps/bfDb/builders/graphql/__tests__/gqlSpecToNexus.edge.test.ts)",
       "Bash(apps/bfDb/builders/graphql/__tests__/gqlSpecToNexus.test.ts)",
       "Bash(gh pr view:*)",
@@ -44,7 +44,9 @@
       "Bash(bff commit:*)",
       "Bash(sl diff:*)",
       "Bash(sl commit:*)",
-      "Bash(sl pull:*)"
+      "Bash(sl pull:*)",
+      "Bash(deno fmt:*)",
+      "Bash(deno lint:*)"
     ],
     "deny": []
   }
