@@ -1,6 +1,7 @@
 #! /usr/bin/env -S bff test
 import { assert, assertEquals } from "@std/assert";
 import { makeGqlBuilder } from "../makeGqlBuilder.ts";
+import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 
 /** Helper to reach into the builder's private spec */
 const specOf = <T extends Record<string, unknown>>(b: unknown): T => {
@@ -69,6 +70,39 @@ Deno.test("mutation helper records args and returns", () => {
   assertEquals(mutations.createPost.returns, "Post");
 });
 
+Deno.test("mutation helper accepts factory for returns", () => {
+  const builder = makeGqlBuilder();
+
+  // Create a real GraphQLObjectBase-extending class
+  class Post extends GraphQLObjectBase {
+    static override gqlSpec = this.defineGqlNode((gql) =>
+      gql.id("id").string("title")
+    );
+  }
+
+  builder.mutation("createPost", {
+    args: (a) => a.string("title"),
+    returns: () => Post,
+  });
+
+  const mutations = specOf<BuilderSpec>(builder).mutations;
+  assert("createPost" in mutations);
+  assertEquals(mutations.createPost.returns, "Post");
+});
+
+Deno.test("mutation helper accepts string for returns", () => {
+  const builder = makeGqlBuilder();
+
+  builder.mutation("updatePost", {
+    args: (a) => a.id("id").string("title"),
+    returns: "Post",
+  });
+
+  const mutations = specOf<BuilderSpec>(builder).mutations;
+  assert("updatePost" in mutations);
+  assertEquals(mutations.updatePost.returns, "Post");
+});
+
 Deno.test("builders are chainable", () => {
   const builder = makeGqlBuilder()
     .string("name")
@@ -76,4 +110,98 @@ Deno.test("builders are chainable", () => {
 
   const spec = specOf<BuilderSpec>(builder);
   assertEquals(Object.keys(spec.fields), ["name", "id"]);
+});
+
+Deno.test("object method records relations with factory pattern", () => {
+  const builder = makeGqlBuilder();
+
+  // Create real GraphQLObjectBase-extending classes
+  class BfPerson extends GraphQLObjectBase {
+    static override gqlSpec = this.defineGqlNode((gql) =>
+      gql.id("id").string("email").string("name")
+    );
+  }
+
+  // With factory function
+  builder.object("owner", () => BfPerson);
+
+  // With options object
+  builder.object("member", { type: "BfPerson" });
+
+  const spec = specOf<BuilderSpec>(builder);
+
+  type RelationSpec = {
+    type: string;
+    args?: Record<string, unknown>;
+    resolve?: (...args: unknown[]) => unknown;
+    targetFn?: (...args: unknown[]) => unknown;
+  };
+
+  assert(spec.relations.owner, "owner relation should exist");
+  const ownerRelation = spec.relations.owner as RelationSpec;
+  assertEquals(
+    ownerRelation.type,
+    "BfPerson",
+    "owner should have correct type from factory",
+  );
+  assert(ownerRelation.targetFn, "owner should have targetFn stored");
+
+  assert(spec.relations.member, "member relation should exist");
+  const memberRelation = spec.relations.member as RelationSpec;
+  assertEquals(
+    memberRelation.type,
+    "BfPerson",
+    "member should have explicit type",
+  );
+});
+
+Deno.test("object method accepts factory pattern like bfDb", () => {
+  // Create a real GraphQLObjectBase-extending class
+  class MockNode extends GraphQLObjectBase {
+    static override gqlSpec = this.defineGqlNode((gql) =>
+      gql.id("id").string("name")
+    );
+  }
+
+  const builder = makeGqlBuilder();
+
+  // Use factory pattern like bfDb
+  builder.object("bestFriend", () => MockNode);
+
+  // Use string type pattern for circular imports
+  builder.object("stringTypeFriend", "MockNode");
+
+  const spec = specOf<BuilderSpec>(builder);
+
+  type RelationSpec = {
+    type: string;
+    targetFn?: unknown;
+    args?: Record<string, unknown>;
+    resolve?: (...args: unknown[]) => unknown;
+  };
+
+  assert(spec.relations.bestFriend, "bestFriend relation should exist");
+  const bestFriendRelation = spec.relations.bestFriend as RelationSpec;
+  assertEquals(
+    bestFriendRelation.type,
+    "MockNode",
+    "bestFriend should use actual class name",
+  );
+  assert(bestFriendRelation.targetFn, "targetFn should be stored");
+
+  assert(
+    spec.relations.stringTypeFriend,
+    "stringTypeFriend relation should exist",
+  );
+  const stringTypeFriendRelation = spec.relations
+    .stringTypeFriend as RelationSpec;
+  assertEquals(
+    stringTypeFriendRelation.type,
+    "MockNode",
+    "stringTypeFriend should use string type",
+  );
+  assert(
+    !stringTypeFriendRelation.targetFn,
+    "targetFn should not be stored for string type",
+  );
 });

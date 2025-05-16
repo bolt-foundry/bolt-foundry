@@ -36,14 +36,27 @@ export class CurrentViewer extends GraphQLObjectBase {
       .string("orgBfOid")
       .mutation("loginWithGoogle", {
         args: (a) => a.nonNull.string("idToken"),
-        returns: "CurrentViewer", // ← new API
+        returns: () => CurrentViewer,
         resolve: async (_src, args, ctx) => {
           const idToken = args.idToken as string;
           const currentViewer = await ctx.loginWithGoogleToken(idToken);
-          return { currentViewer };
+          return currentViewer;
         },
       })
-      .object("currentViewer") // ← expose the payload object
+      .object("person", "BfPerson", {
+        // deno-lint-ignore require-await
+        resolve: async (_root, _args, _ctx, _info) => {
+          // TODO: Implement fetching person by personBfGid
+          return null;
+        },
+      })
+      .object("org", "BfOrganization", {
+        // deno-lint-ignore require-await
+        resolve: async (_root, _args, _ctx, _info) => {
+          // TODO: Implement fetching org by orgBfOid
+          return null;
+        },
+      })
   );
 
   /* ----------------------------------------------------------------------

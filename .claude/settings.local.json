@@ -23,7 +23,15 @@
       "Bash(deno fmt:*)",
       "Bash(bff check:*)",
       "Bash(cat:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(rg:*)",
+      "Bash(bff test:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(bff format:*)",
+      "Bash(bff lint:*)",
+      "Bash(bff check:*)",
+      "Bash(sl status:*)"
     ],
     "deny": []
   }
