@@ -75,6 +75,12 @@ bff db
 # Generate config keys
 bff genConfigKeys
 
+# View GitHub PR details
+bff pr-details <PR_NUMBER>
+
+# View GitHub PR comments
+bff pr-comments
+
 # Show help
 bff help
 ```
@@ -150,6 +156,23 @@ gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews
 
 # View PR review comments
 gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews/comments
+```
+
+Alternatively, use the BFF commands which handle repository detection
+automatically:
+
+```bash
+# View PR details
+bff pr-details <PR_NUMBER>
+
+# View PR comments  
+bff pr-comments [PR_NUMBER]
+
+# List review threads on a PR
+bff pr-threads [PR_NUMBER]
+
+# Resolve a review thread
+bff pr-resolve PR_NUMBER THREAD_ID
 ```
 
 ```bash
