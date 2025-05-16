@@ -46,7 +46,9 @@
       "Bash(sl commit:*)",
       "Bash(sl pull:*)",
       "Bash(deno fmt:*)",
-      "Bash(deno lint:*)"
+      "Bash(deno lint:*)",
+      "Bash(bff merge:*)",
+      "Bash(bff pr-details:*)"
     ],
     "deny": []
   }
