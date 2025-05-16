@@ -41,15 +41,17 @@ this migration.
    - Add nullability helpers
    - Create argument builder
 
-2. **Type Generation** 🔄
+2. **Type Generation** ✅
    - Create gqlSpecToNexus.ts to map specs to Nexus types
    - Implement field resolver logic with proper fallback chain
    - Handle mapping of arguments
 
-3. **Edge Relationships** 🔄
-   - Implement simple edge relationship between BfPerson and BfOrganization
-   - Support "member of" relationship pattern for organization membership
-   - Ensure GraphQL schema correctly exposes this relationship
+3. **Edge Relationships** ✅
+   - Implemented edge relationships with thunk-style type references
+   - Added support for BfPerson and BfOrganization relationship
+   - Implemented implicit relationships for object fields without custom
+     resolvers
+   - Used field names as edge roles for intuitive API
 
 4. **Validation** ⏱️
    - Add validation for object relations against bfNodeSpec.relations
@@ -73,23 +75,34 @@ this migration.
 ### Builder Interfaces
 
 ```typescript
-// GqlBuilder interface - main builder for nodes
-interface GqlBuilder {
+// GqlBuilder interface with type-safe generics and thunk-style references
+interface GqlBuilder<R = Record<string, unknown>> {
   // Scalar fields
-  string(name: string, opts?: FieldOptions): GqlBuilder;
-  int(name: string, opts?: FieldOptions): GqlBuilder;
-  float(name: string, opts?: FieldOptions): GqlBuilder;
-  boolean(name: string, opts?: FieldOptions): GqlBuilder;
-  id(name: string, opts?: FieldOptions): GqlBuilder;
+  string<N extends string>(name: N, opts?: FieldOptions): GqlBuilder<R>;
+  int<N extends string>(name: N, opts?: FieldOptions): GqlBuilder<R>;
+  boolean<N extends string>(name: N, opts?: FieldOptions): GqlBuilder<R>;
+  id<N extends string>(name: N, opts?: FieldOptions): GqlBuilder<R>;
 
-  // Relations
-  object(name: string, opts?: RelationOptions): GqlBuilder;
+  // Edge relationships with thunk-style type references
+  object<N extends keyof R & string>(
+    name: N,
+    targetThunk: () => MaybePromise<any>,
+    opts?: {
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
+      resolve?: (
+        root: any,
+        args: Record<string, unknown>,
+        ctx: any,
+      ) => MaybePromise<R[N]>;
+      isSourceToTarget?: boolean; // Defaults to true (source->target)
+    },
+  ): GqlBuilder<R>;
 
   // Mutations
-  mutation(name: string, opts?: MutationOptions): GqlBuilder;
+  mutation<N extends string>(name: N, opts?: MutationOptions): GqlBuilder<R>;
 
   // Nullability
-  nonNull: OmitNonNull<GqlBuilder>;
+  nonNull: OmitNonNull<GqlBuilder<R>>;
 }
 
 // ArgsBuilder for field arguments
@@ -118,14 +131,55 @@ For mutations with no custom resolver:
 
 ### Edge Relationship Implementation
 
-For the BfPerson to BfOrganization relationship:
+The edge relationship implementation provides a clean, intuitive API for
+defining relationships between nodes:
 
-1. Define edge in BfPerson nodeType with memberOf relationship to BfOrganization
-2. Expose the relationship in GraphQL schema using the object method
-3. Support bidirectional navigation (person → organization, organization →
-   members)
-4. Initially focus on a simple 1:n relationship pattern
-5. Provide resolver implementation that uses the underlying bfDb edge data
+1. **Thunk-style Type References**: Using function references to avoid circular
+   dependencies
+   ```typescript
+   // Using direct reference
+   .object("memberOf", () => BfOrganization)
+
+   // Using dynamic imports for circular dependencies
+   .object("memberOf", () => import("../nodeTypes/BfOrganization.ts").then(m => m.BfOrganization))
+   ```
+
+2. **Implicit Edge Relationships**: Any object field without a custom resolver
+   is automatically treated as an edge relationship
+   ```typescript
+   // This is an edge relationship because no custom resolver is provided
+   .object("memberOf", () => BfOrganization)
+
+   // This is not an edge relationship (uses custom resolver)
+   .object("memberOf", () => BfOrganization, {
+     resolve: (root, args, ctx) => ctx.getOrganizationForUser(root.id)
+   })
+   ```
+
+3. **Field Name as Edge Role**: The field name automatically serves as the edge
+   role
+   ```typescript
+   // "memberOf" is both the field name and the edge role
+   .object("memberOf", () => BfOrganization)
+
+   // "follows" is both the field name and the edge role
+   .object("follows", () => BfPerson)
+   ```
+
+4. **Relationship Direction Control**: Default is source→target, can be changed
+   with option
+   ```typescript
+   // Default direction (source→target)
+   .object("memberOf", () => BfOrganization)
+
+   // Reversed direction (target→source)
+   .object("follows", () => BfPerson, { 
+     isSourceToTarget: false 
+   })
+   ```
+
+5. **Resolution Logic**: The resolver queries the BfEdge model to find edges
+   with the matching role, then loads the target node
 
 ### Nexus Integration
 

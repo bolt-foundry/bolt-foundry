@@ -8,9 +8,11 @@ export class BfPerson extends BfNode<InferProps<typeof BfPerson>> {
       // Define an edge relationship to BfOrganization
       // The field name "memberOf" automatically becomes the edge role
       .object(
-        "memberOf", 
-        () => import("apps/bfDb/nodeTypes/BfOrganization.ts").then(m => m.BfOrganization)
-      
+        "memberOf",
+        () =>
+          import("apps/bfDb/nodeTypes/BfOrganization.ts").then((m) =>
+            m.BfOrganization
+          ),
       )
   );
 
