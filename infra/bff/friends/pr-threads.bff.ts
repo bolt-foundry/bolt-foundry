@@ -7,6 +7,25 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
+// Type definition for review thread
+interface ReviewThread {
+  id: string;
+  isResolved: boolean;
+  isCollapsed: boolean;
+  path: string | null;
+  line: number | null;
+  comments: {
+    nodes: Array<{
+      id: string;
+      body: string;
+      author: {
+        login: string;
+      } | null;
+      createdAt: string;
+    }>;
+  };
+}
+
 /**
  * Custom console logger for PR threads that formats and outputs them with better readability
  */
@@ -198,8 +217,10 @@ export async function prThreadsCommand(options: string[]): Promise<number> {
     }
 
     // Group threads by resolved status
-    const resolvedThreads = threads.filter((t: any) => t.isResolved);
-    const unresolvedThreads = threads.filter((t: any) => !t.isResolved);
+    const resolvedThreads = threads.filter((t: ReviewThread) => t.isResolved);
+    const unresolvedThreads = threads.filter((t: ReviewThread) =>
+      !t.isResolved
+    );
 
     // Display unresolved threads first
     if (unresolvedThreads.length > 0) {
@@ -231,7 +252,11 @@ export async function prThreadsCommand(options: string[]): Promise<number> {
   }
 }
 
-function displayThread(thread: any, resolved: boolean, prNumber: string) {
+function displayThread(
+  thread: ReviewThread,
+  resolved: boolean,
+  prNumber: string,
+) {
   const status = resolved ? "✅ RESOLVED" : "🔴 UNRESOLVED";
   const file = thread.path || "(unknown file)";
   const line = thread.line ? `:${thread.line}` : "";

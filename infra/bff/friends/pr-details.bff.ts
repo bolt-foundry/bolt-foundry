@@ -8,6 +8,24 @@ import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 /**
+ * Custom console logger for PR details that formats and outputs them with better readability
+ */
+const consoleLogger = {
+  header: (text: string) => {
+    // deno-lint-ignore no-console
+    console.log(`\n\x1b[1;36m=== ${text} ===\x1b[0m`);
+  },
+  content: (text: string) => {
+    // deno-lint-ignore no-console
+    console.log(text);
+  },
+  error: (text: string) => {
+    // deno-lint-ignore no-console
+    console.error(text);
+  },
+};
+
+/**
  * Fetches detailed information about a GitHub PR
  */
 export async function prDetailsCommand(options: string[]): Promise<number> {
@@ -78,31 +96,39 @@ export async function prDetailsCommand(options: string[]): Promise<number> {
     const prData = JSON.parse(prDetailsOutput);
 
     // Print PR information in a formatted way
-    console.log("\n=== PR Details ===");
-    console.log(`Title: ${prData.title}`);
-    console.log(`Number: #${prData.number}`);
-    console.log(`State: ${prData.state}`);
-    console.log(`Author: ${prData.user.login}`);
-    console.log(`Created: ${new Date(prData.created_at).toLocaleString()}`);
-    console.log(`Updated: ${new Date(prData.updated_at).toLocaleString()}`);
+    consoleLogger.header("PR Details");
+    consoleLogger.content(`Title: ${prData.title}`);
+    consoleLogger.content(`Number: #${prData.number}`);
+    consoleLogger.content(`State: ${prData.state}`);
+    consoleLogger.content(`Author: ${prData.user.login}`);
+    consoleLogger.content(
+      `Created: ${new Date(prData.created_at).toLocaleString()}`,
+    );
+    consoleLogger.content(
+      `Updated: ${new Date(prData.updated_at).toLocaleString()}`,
+    );
 
     if (prData.merged_at) {
-      console.log(`Merged: ${new Date(prData.merged_at).toLocaleString()}`);
+      consoleLogger.content(
+        `Merged: ${new Date(prData.merged_at).toLocaleString()}`,
+      );
     }
 
-    console.log(`\nBranches: ${prData.head.ref} -> ${prData.base.ref}`);
-    console.log(`URL: ${prData.html_url}`);
+    consoleLogger.content(
+      `\nBranches: ${prData.head.ref} -> ${prData.base.ref}`,
+    );
+    consoleLogger.content(`URL: ${prData.html_url}`);
 
-    console.log("\n=== Description ===");
-    console.log(prData.body || "(No description provided)");
+    consoleLogger.header("Description");
+    consoleLogger.content(prData.body || "(No description provided)");
 
-    console.log("\n=== Stats ===");
-    console.log(`Comments: ${prData.comments}`);
-    console.log(`Review Comments: ${prData.review_comments}`);
-    console.log(`Commits: ${prData.commits}`);
-    console.log(`Changed Files: ${prData.changed_files}`);
-    console.log(`Additions: +${prData.additions}`);
-    console.log(`Deletions: -${prData.deletions}`);
+    consoleLogger.header("Stats");
+    consoleLogger.content(`Comments: ${prData.comments}`);
+    consoleLogger.content(`Review Comments: ${prData.review_comments}`);
+    consoleLogger.content(`Commits: ${prData.commits}`);
+    consoleLogger.content(`Changed Files: ${prData.changed_files}`);
+    consoleLogger.content(`Additions: +${prData.additions}`);
+    consoleLogger.content(`Deletions: -${prData.deletions}`);
 
     // Fetch reviews
     const { stdout: reviewsOutput, code: reviewsCode } =
@@ -116,18 +142,18 @@ export async function prDetailsCommand(options: string[]): Promise<number> {
 
     if (reviewsCode === 0 && reviewsOutput.trim()) {
       const reviews = JSON.parse(reviewsOutput);
-      console.log("\n=== Reviews ===");
+      consoleLogger.header("Reviews");
       if (reviews.length === 0) {
-        console.log("(No reviews yet)");
+        consoleLogger.content("(No reviews yet)");
       } else {
         for (const review of reviews) {
-          console.log(
+          consoleLogger.content(
             `- ${review.user.login}: ${review.state} (${
               new Date(review.submitted_at).toLocaleString()
             })`,
           );
           if (review.body) {
-            console.log(`  "${review.body}"`);
+            consoleLogger.content(`  "${review.body}"`);
           }
         }
       }
@@ -136,7 +162,7 @@ export async function prDetailsCommand(options: string[]): Promise<number> {
     return 0;
   } catch (error) {
     logger.error("Failed to parse PR details", error);
-    console.error("Failed to parse PR details");
+    consoleLogger.error("Failed to parse PR details");
     return 1;
   }
 }
