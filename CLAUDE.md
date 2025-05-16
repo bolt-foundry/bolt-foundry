@@ -80,6 +80,10 @@ bff merge
 bff merge <pr-number>
 bff merge <pr-number> <method>
 
+# Check GitHub CI status
+bff ci-status
+bff ci-status <commit-hash>
+
 # Show help
 bff help
 ```
