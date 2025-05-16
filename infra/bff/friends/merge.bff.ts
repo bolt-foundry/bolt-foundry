@@ -70,7 +70,7 @@ export async function merge(args: string[]): Promise<number> {
 
   async function getPRDetails(
     prNumber: string,
-  ): Promise<Record<string, unknown> | null> {
+  ): Promise<PR | null> {
     const repoInfo = await getRepoInfo();
     if (!repoInfo) return null;
 

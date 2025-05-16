@@ -38,7 +38,7 @@ async function runPrecommitChecks(): Promise<boolean> {
     return false;
   }
   logger.info("✅ Type checking passed");
-  
+
   return true;
 }
 
@@ -72,7 +72,7 @@ export async function amend(args: string[]): Promise<number> {
   }
 
   logger.info("Running pre-amend checks...");
-  
+
   // Run all precommit checks
   if (!await runPrecommitChecks()) {
     return 1;
