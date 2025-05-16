@@ -10,10 +10,20 @@
 
 ### Core Implementation (Current Focus)
 
-- Complete the implementation of gqlSpecToNexus.ts
-- Add field resolver implementation with proper fallback chain
+- Complete the implementation of gqlSpecToNexus.ts ✅
+- Add field resolver implementation with proper fallback chain ✅
 - Implement validation against bfNodeSpec.relations
-- Add tests for Nexus type generation
+- Add tests for Nexus type generation ✅
+
+### Code Quality Improvements
+
+- Add lint rule to prefer factory function pattern over string types for GraphQL
+  object relationships
+  - Factory functions (`() => TargetClass`) provide better IDE support and
+    source tree accuracy
+  - String types (`"TargetClass"`) should only be used when necessary to avoid
+    circular imports
+  - Rule should warn when string is used without circular import justification
 
 ### Relay Connection Implementation (Deprioritized for v1)
 

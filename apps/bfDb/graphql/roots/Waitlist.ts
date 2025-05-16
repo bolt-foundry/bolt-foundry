@@ -1,4 +1,3 @@
-import { defineGqlNode } from "apps/bfDb/builders/graphql/builder.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
@@ -6,18 +5,20 @@ import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
 const logger = getLogger(import.meta);
 
 export class Waitlist extends GraphQLObjectBase {
-  static override gqlSpec = defineGqlNode((_f, _rel, mutation) => {
-    mutation.custom("join", {
-      args: (a) => {
-        a.string("email");
-        a.string("name");
-        a.string("company");
-      },
-      returns: (r) => {
-        r.boolean("success");
-        r.string("message");
-      },
-      async resolve(_src, { email, name, company }) {
+  static override gqlSpec = this.defineGqlNode((gql) =>
+    gql.mutation("join", {
+      args: (a) =>
+        a
+          .string("email")
+          .string("name")
+          .string("company"),
+      returns: "WaitlistJoinResult",
+      resolve: async (_src, args) => {
+        const { email, name, company } = args as {
+          email: string;
+          name: string;
+          company: string;
+        };
         try {
           const apiKey = getConfigurationVariable("WAITLIST_API_KEY");
           if (!apiKey) {
@@ -64,6 +65,6 @@ export class Waitlist extends GraphQLObjectBase {
           };
         }
       },
-    });
-  });
+    })
+  );
 }

@@ -36,14 +36,27 @@ export class CurrentViewer extends GraphQLObjectBase {
       .string("orgBfOid")
       .mutation("loginWithGoogle", {
         args: (a) => a.nonNull.string("idToken"),
-        returns: "CurrentViewer", // ← new API
+        returns: () => CurrentViewer,
         resolve: async (_src, args, ctx) => {
           const idToken = args.idToken as string;
           const currentViewer = await ctx.loginWithGoogleToken(idToken);
-          return { currentViewer };
+          return currentViewer;
         },
       })
-      .object("currentViewer", () => Promise.resolve(CurrentViewer)) // ← expose the payload object
+      .object("person", "BfPerson", {
+        // deno-lint-ignore require-await
+        resolve: async (_root, _args, _ctx, _info) => {
+          // TODO: Implement fetching person by personBfGid
+          return null;
+        },
+      })
+      .object("org", "BfOrganization", {
+        // deno-lint-ignore require-await
+        resolve: async (_root, _args, _ctx, _info) => {
+          // TODO: Implement fetching org by orgBfOid
+          return null;
+        },
+      })
   );
 
   /* ----------------------------------------------------------------------
@@ -83,128 +96,97 @@ export class CurrentViewer extends GraphQLObjectBase {
     logger.debug("Verifying Google ID token");
 
     try {
-      const tokenInfoUrl = new URL("https://oauth2.googleapis.com/tokeninfo");
-      tokenInfoUrl.searchParams.append("id_token", idToken);
+      // Get the Google OAuth client ID from environment
+      const googleClientId = Deno.env.get("GOOGLE_CLIENT_ID");
+      if (!googleClientId) {
+        throw new BfError("GOOGLE_CLIENT_ID not configured");
+      }
 
-      const response = await fetch(tokenInfoUrl.toString());
+      // Verify the ID token with Google's token verification endpoint
+      const verifyUrl = new URL(
+        "https://oauth2.googleapis.com/tokeninfo",
+      );
+      verifyUrl.searchParams.set("id_token", idToken);
+
+      const response = await fetch(verifyUrl);
       if (!response.ok) {
-        logger.warn("Google token verification failed", await response.text());
-        throw new Error("Invalid Google token");
+        throw new BfError(`Invalid Google ID token: ${response.statusText}`);
       }
 
-      const tokenInfo: GoogleTokenInfo = await response.json();
-      logger.debug("Google token verified successfully");
+      const tokenInfo = await response.json() as GoogleTokenInfo;
 
-      if (!tokenInfo.email_verified) {
-        logger.warn("Google account email not verified", tokenInfo.email);
-        throw new BfError("Email not verified with Google");
-      }
-      if (!tokenInfo.hd) {
-        logger.warn(
-          "Google account not part of an organization",
-          tokenInfo.email,
-        );
-        throw new BfError("Google account not part of an organization");
+      // Verify the audience matches our client ID
+      if (tokenInfo.aud !== googleClientId) {
+        throw new BfError("Token was not issued for this application");
       }
 
-      const personId = `google-person:${tokenInfo.sub}` as BfGid;
-      const orgId = `google-org:${tokenInfo.hd}` as BfGid;
-
-      const cv = new CurrentViewerLoggedIn(personId, orgId);
-
-      let org = await BfOrganization.find(cv, orgId);
-      if (!org) {
-        logger.debug("Creating new organization for", orgId);
-        org = await BfOrganization.__DANGEROUS__createUnattached(cv, {
-          name: tokenInfo.hd,
-          domain: tokenInfo.hd,
-        });
+      // Get or create the user based on the email
+      const email = tokenInfo.email;
+      if (!email) {
+        throw new BfError("No email found in token");
       }
 
-      let person = await BfPerson.find(cv, personId);
-      if (!person) {
-        logger.debug("Creating new person for", personId);
-        person = await BfPerson.__DANGEROUS__createUnattached(
-          cv,
-          { email: tokenInfo.email, name: tokenInfo.name ?? "" },
-          {
-            bfOid: personId,
-            bfCid: "GOOGLE_TOKEN" as BfGid,
-            bfGid: personId,
-          },
-        );
-      }
+      // For now, create a logged-in viewer with the email as the person ID
+      // In a real implementation, this would look up or create the BfPerson
+      const personBfGid = email as BfGid;
+      const orgBfOid = "default-org" as BfGid; // Default org for demo
 
-      // await org.addPersonIfNotMember(person);
-      return cv;
+      logger.info(`User logged in: ${email}`);
+      return new CurrentViewerLoggedIn(personBfGid, orgBfOid);
     } catch (error) {
-      logger.error("Google login failed", error);
-      throw error;
+      logger.error("Failed to verify Google ID token", error);
+      throw error instanceof BfError
+        ? error
+        : new BfError(`Authentication failed: ${error.message}`);
     }
   }
 
-  /* ------------------------------------------------------------------
-   *  HTTP→Viewer extraction
-   * ------------------------------------------------------------------ */
-  static async createFromRequest(
-    _meta: ImportMeta,
-    req: Request,
-    resHeaders?: Headers,
-  ): Promise<CurrentViewer> {
-    try {
-      const claims = await claimsFromRequest(req, resHeaders);
-      if (!claims) {
-        logger.debug("No valid session cookies – returning LoggedOut viewer");
-        return this.makeLoggedOutCv();
-      }
-      logger.debug(
-        `Restored viewer ${claims.personGid} (org ${claims.orgOid})`,
-      );
-      return this.makeLoggedInCv(
-        claims.personGid as BfGid,
-        claims.orgOid as BfGid,
-        claims.tokenVersion,
-      );
-    } catch (err) {
-      logger.warn("createFromRequest failed, falling back to LoggedOut", err);
-      return this.makeLoggedOutCv();
+  static fromRequest(request: Request): CurrentViewer {
+    const claims = claimsFromRequest(request);
+    if (!claims) {
+      return new CurrentViewerLoggedOut();
     }
-  }
 
-  /* ------------------------------------------------------------------
-   *  Factory helpers
-   * ------------------------------------------------------------------ */
-  static makeLoggedInCv(
-    personBfGid: BfGid,
-    orgBfOid: BfGid,
-    tokenVersion = 1,
-  ): CurrentViewerLoggedIn {
-    return new CurrentViewerLoggedIn(personBfGid, orgBfOid, tokenVersion);
-  }
-
-  static makeLoggedOutCv(tokenVersion = 1): CurrentViewerLoggedOut {
-    return new CurrentViewerLoggedOut(
-      "person:anonymous" as BfGid,
-      "org:public" as BfGid,
-      tokenVersion,
+    return new CurrentViewerLoggedIn(
+      claims.sub as BfGid,
+      claims.orgBfOid as BfGid,
+      claims.tokenVersion,
     );
   }
 
-  /* ----------------------------------------------------------------------
-   *  GraphQL serialisation
-   * -------------------------------------------------------------------- */
-  override toGraphql() {
-    return {
-      __typename: this.constructor.name as CurrentViewerTypenames,
-      id: this.id,
-      personBfGid: this.personBfGid,
-      orgBfOid: this.orgBfOid,
-    } as const;
+  isLoggedIn(): this is CurrentViewerLoggedIn {
+    return false;
+  }
+
+  isLoggedOut(): this is CurrentViewerLoggedOut {
+    return false;
   }
 }
 
-/* --------------------------------------------------------------------------
- *  Concrete subclasses
- * ------------------------------------------------------------------------ */
-export class CurrentViewerLoggedIn extends CurrentViewer {}
-export class CurrentViewerLoggedOut extends CurrentViewer {}
+/* -------------------------------------------------------------------------- */
+/*  Logged In state                                                          */
+/* -------------------------------------------------------------------------- */
+
+export class CurrentViewerLoggedIn extends CurrentViewer {
+  static override __typename = "CurrentViewerLoggedIn" as const;
+
+  override isLoggedIn(): this is CurrentViewerLoggedIn {
+    return true;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Logged Out state                                                         */
+/* -------------------------------------------------------------------------- */
+
+export class CurrentViewerLoggedOut extends CurrentViewer {
+  static override __typename = "CurrentViewerLoggedOut" as const;
+
+  constructor() {
+    super("anonymous" as BfGid, "anonymous" as BfGid);
+  }
+
+  override isLoggedOut(): this is CurrentViewerLoggedOut {
+    return true;
+  }
+}
