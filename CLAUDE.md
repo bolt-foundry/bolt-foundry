@@ -146,10 +146,29 @@ bff help
 - Formatting code: `bff format`
 - Generating GraphQL code: `bff iso`
 
-## Version Control with Sapling
+## Version Control
 
-This project uses Sapling SCM instead of Git. Always use `sl` commands instead
-of `git` commands:
+This project uses BFF CLI commands and Sapling SCM for version control.
+
+1. Prefer using `bff` commands whenever available for version control operations
+2. Fall back to `sl` (Sapling) commands when needed
+3. Never use `git` commands under any circumstances
+
+### Commit Workflow with BFF
+
+```bash
+# Create a commit with BFF
+bff commit -m "Your commit message" [files...]
+
+# Amend the current commit
+bff amend -m "Your updated message" [files...]
+
+# Check CI status
+bff ci-status [--details | -d]
+
+# Merge a GitHub PR
+bff merge <pr-number> [method]
+```
 
 ### GitHub API Access
 

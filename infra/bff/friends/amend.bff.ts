@@ -1,6 +1,6 @@
 #! /usr/bin/env -S bff
 
-// ./infra/bff/friends/commit.bff.ts
+// ./infra/bff/friends/amend.bff.ts
 
 import { register } from "infra/bff/bff.ts";
 import { runShellCommand } from "infra/bff/shellBase.ts";
@@ -42,7 +42,7 @@ async function runPrecommitChecks(): Promise<boolean> {
   return true;
 }
 
-export async function commit(args: string[]): Promise<number> {
+export async function amend(args: string[]): Promise<number> {
   // Check if user provided a commit message
   let commitMessage = "";
   const filesToCommit: string[] = [];
@@ -66,58 +66,46 @@ export async function commit(args: string[]): Promise<number> {
 
   if (!commitMessage) {
     logger.error(
-      '❌ No commit message provided. Usage: bff commit -m "Your message" [files...]',
+      '❌ No commit message provided. Usage: bff amend -m "Your message" [files...]',
     );
     return 1;
   }
 
-  logger.info("Running precommit checks...");
-
+  logger.info("Running pre-amend checks...");
+  
   // Run all precommit checks
   if (!await runPrecommitChecks()) {
     return 1;
   }
 
   // Run sl diff to show changes
-  logger.info("Step 4/6: Showing changes...");
+  logger.info("Showing changes...");
   const diffResult = await runShellCommand(["sl", "diff"]);
   if (diffResult !== 0) {
     logger.error("❌ Failed to show diff");
     return diffResult;
   }
 
-  // Create the commit
-  logger.info("Step 5/6: Creating commit...");
-  const commitArgs = ["sl", "commit", "-m", commitMessage];
+  // Amend the commit
+  logger.info("Amending commit...");
+  const amendArgs = ["sl", "commit", "--amend", "-m", commitMessage];
   if (filesToCommit.length > 0) {
-    commitArgs.push(...filesToCommit);
+    amendArgs.push(...filesToCommit);
   }
 
-  const commitResult = await runShellCommand(commitArgs);
-  if (commitResult !== 0) {
-    logger.error("❌ Failed to create commit");
-    return commitResult;
+  const amendResult = await runShellCommand(amendArgs);
+  if (amendResult !== 0) {
+    logger.error("❌ Failed to amend commit");
+    return amendResult;
   }
 
   // All done!
-  logger.info("\n🎉 Commit created successfully!");
-
-  // Submit the pull request
-  logger.info("Step 6/6: Submitting pull request...");
-  const prResult = await runShellCommand(["sl", "pr", "submit"]);
-  if (prResult !== 0) {
-    logger.error("❌ Failed to submit pull request");
-    logger.info("You can manually submit the PR with: sl pr submit");
-    return prResult;
-  }
-
-  logger.info("✅ Pull request submitted successfully!");
-
+  logger.info("\n🎉 Commit amended successfully!");
   return 0;
 }
 
 register(
-  "commit",
-  "Run precommit checks and create a commit",
-  commit,
+  "amend",
+  "Run precommit checks and amend the current commit",
+  amend,
 );
