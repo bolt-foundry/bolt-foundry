@@ -83,6 +83,8 @@ bff merge <pr-number> <method>
 # Check GitHub CI status
 bff ci-status
 bff ci-status <commit-hash>
+bff ci-status --details  # Show detailed failure information
+bff ci-status -d        # Short form for --details
 
 # Show help
 bff help

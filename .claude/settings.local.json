@@ -5,7 +5,9 @@
       "Bash(bff format:*)",
       "Bash(bff check:*)",
       "Bash(chmod:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(bff ci-status:*)",
+      "Bash(bff lint:*)"
     ],
     "deny": []
   }
