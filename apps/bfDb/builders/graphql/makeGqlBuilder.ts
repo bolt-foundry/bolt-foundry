@@ -12,12 +12,20 @@ type ThisNode = InstanceType<AnyBfNodeCtor>;
 type MaybePromise<T> = T | Promise<T>;
 
 /**
- * Function that returns a GraphQL object type
+ * Function that returns a GraphQL object type constructor
  * Used for thunk-style references to break circular dependencies
- * 
- * deno-lint-ignore no-explicit-any
+ *
+ * The returned value can be:
+ * 1. A concrete class constructor (BfOrganization)
+ * 2. An abstract class constructor (BfNode)
+ * 3. A module promise with a named export (.then(m => m.BfOrganization))
+ * 4. Any GraphQL object base class (incl. those with protected constructors like CurrentViewer)
+ *
+ * Note: Using 'any' here is necessary to handle CurrentViewer's protected constructor
+ * which causes type issues with more specific type definitions.
  */
-type GqlObjectThunk = () => MaybePromise<any>; // Using any here as we need to support both concrete and abstract constructor types
+// deno-lint-ignore no-explicit-any
+type GqlObjectThunk = () => MaybePromise<any>;
 
 /** Generic placeholder for a mutation's payload */
 type NMutationPayload = Record<string, unknown>;
@@ -97,28 +105,36 @@ export interface GqlBuilder<
 
   /**
    * Define an object field that represents an edge relationship to another object type.
-   * 
+   *
    * @param name The field name, which will also serve as the edge role name
    * @param targetThunk Function that returns the target object type constructor
    * @param opts Optional configuration for edge relationship
    * @returns The builder instance for method chaining
-   * 
+   *
    * @example
    * // Define a relationship to BfOrganization
    * .object("memberOf", () => BfOrganization)
-   * 
+   *
+   * // With dynamic import to handle circular dependencies
+   * .object("memberOf", () => import("apps/bfDb/nodeTypes/BfOrganization.ts").then(m => m.BfOrganization))
+   *
    * // With custom arguments
    * .object("memberOf", () => BfOrganization, {
    *   args: (a) => a.string("filterBy")
    * })
-   * 
+   *
    * // Custom resolver (not an edge relationship when custom resolver is provided)
    * .object("memberOf", () => BfOrganization, {
    *   resolve: (root, args, ctx) => ctx.getOrganizationForUser(root.id)
    * })
+   *
+   * // Change relationship direction (default is source→target)
+   * .object("follows", () => BfPerson, {
+   *   isSourceToTarget: false // Makes this a target→source relationship
+   * })
    */
   object<N extends keyof R & string>(
-    name: N, 
+    name: N,
     targetThunk: GqlObjectThunk,
     opts?: {
       args?: (ab: ArgsBuilder) => ArgsBuilder;
@@ -129,7 +145,7 @@ export interface GqlBuilder<
         info: GraphQLResolveInfo,
       ) => MaybePromise<R[N]>;
       isSourceToTarget?: boolean; // Defaults to true (source->target)
-    }
+    },
   ): GqlBuilder<R>;
 
   connection<N extends keyof R & string>(
@@ -244,17 +260,17 @@ export function makeGqlBuilder<
     object(name, targetThunk, opts = {}) {
       // Create the argument builder function
       const argFn = makeArgBuilder();
-      
+
       // The field name is used as the GraphQL type name initially
       // This will be resolved at runtime using the targetThunk
       const typeName = name;
-      
+
       // Store the thunk function for later resolution
       const _targetThunk = targetThunk;
-      
+
       // Process args function if provided
       const args = opts.args ? argFn(opts.args) : {};
-      
+
       // By default, all object fields without a custom resolver are edge relationships
       const isEdgeRelationship = !opts.resolve;
 
@@ -265,10 +281,9 @@ export function makeGqlBuilder<
         resolve: opts.resolve,
         // Edge relationship properties - implicitly created for fields without custom resolvers
         isEdgeRelationship: isEdgeRelationship,
-        edgeRole: name, // The field name itself is the role
         isSourceToTarget: opts.isSourceToTarget !== false, // Default to true
         // Store the thunk function for later use
-        _targetThunk: _targetThunk
+        _targetThunk: _targetThunk,
       };
       return builder;
     },
