@@ -7,9 +7,8 @@
 ## What is Bolt Foundry?
 
 Bolt Foundry is an open-source platform that helps developers build reliable LLM
-systems through our Persona Card approach. A Persona Card represents a
-verified, tested unit of LLM functionality that can be composed into larger
-systems.
+systems through our Persona Card approach. A Persona Card represents a verified,
+tested unit of LLM functionality that can be composed into larger systems.
 
 ### Core Features
 
