@@ -8,7 +8,7 @@ code in this repository.
 Bolt Foundry is an open-source platform for creating reliable, testable, and
 verifiable LLM (Large Language Model) systems. The platform focuses on:
 
-- Identity Cards: Testable units of LLM functionality with built-in verification
+- Persona Cards: Testable units of LLM functionality with built-in verification
 - Behavior Cards: Actionable protocols and best practices for LLM systems
 - Test-Driven LLMs: Testing framework for LLM behaviors
 - Composable Systems: Building complex LLM applications from verified components
@@ -37,7 +37,7 @@ The codebase follows a monorepo structure:
 - `lib/`: Shared utilities
 - `static/`: Static assets
 - `docs/`: Project documentation
-- `cards/`: LLM behavior and identity cards
+- `cards/`: LLM behavior and persona cards
 
 ## Development Commands
 

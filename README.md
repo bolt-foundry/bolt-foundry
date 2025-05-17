@@ -7,13 +7,12 @@
 ## What is Bolt Foundry?
 
 Bolt Foundry is an open-source platform that helps developers build reliable LLM
-systems through our Identity Card approach. An Identity Card represents a
-verified, tested unit of LLM functionality that can be composed into larger
-systems.
+systems through our Persona Card approach. A Persona Card represents a verified,
+tested unit of LLM functionality that can be composed into larger systems.
 
 ### Core Features
 
-- **Identity Cards**: Testable units of LLM functionality with built-in
+- **Persona Cards**: Testable units of LLM functionality with built-in
   verification
 - **Behavior Cards**: Actionable protocols and best practices for implementing
   LLM systems
@@ -22,6 +21,14 @@ systems.
   components
 - **Versioning & Tracking**: Monitor and version your LLM system's behavior
 - **Performance Analysis**: Measure and optimize your LLM implementation
+
+---
+
+## Prompt Philosophy
+
+For guidance on crafting high-quality prompts, see
+[Prompt Design Philosophy](docs/prompt-philosophy.md). Start with a perfect
+prompt and iteratively reduce unnecessary pieces while keeping accuracy high.
 
 ---
 
