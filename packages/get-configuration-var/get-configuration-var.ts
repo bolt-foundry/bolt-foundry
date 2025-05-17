@@ -150,10 +150,26 @@ export async function getSecret(key: string): Promise<string | undefined> {
 export async function warmSecrets(keys: string[] = KNOWN_KEYS) {
   if (!isDeno) return; // no‑op in browser
   const toFetch = keys.filter((k) => !getEnv(k));
-  const resolved = await opInject(toFetch);
-  for (const [k, v] of Object.entries(resolved)) {
-    CACHE.set(k, { value: v, expires: now() + CACHE_TTL_MS });
+  try {
+    const resolved = await opInject(toFetch);
+    for (const [k, v] of Object.entries(resolved)) {
+      CACHE.set(k, { value: v, expires: now() + CACHE_TTL_MS });
+    }
+    return;
+  } catch {
+    // Fallback to individual reads when op inject fails (e.g. missing items)
   }
+
+  await Promise.all(
+    toFetch.map(async (k) => {
+      try {
+        const v = await opRead(k);
+        CACHE.set(k, { value: v, expires: now() + CACHE_TTL_MS });
+      } catch {
+        // ignore missing secrets
+      }
+    }),
+  );
 }
 
 /**

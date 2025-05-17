@@ -87,3 +87,9 @@ Deno.test("Unknown key resolves only via ENV", async () => {
   assertEquals(val, "env‑value");
   Deno.env.delete(UNKNOWN_KEY);
 });
+
+Deno.test("warmSecrets does not throw for unknown keys", async () => {
+  await warmSecrets([UNKNOWN_KEY]);
+  const val = await getSecret(UNKNOWN_KEY);
+  assertEquals(val, undefined);
+});
