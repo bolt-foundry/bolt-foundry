@@ -43,6 +43,20 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  BfEdge: {};
+  BfNode: {};
+  BfOrganization: {};
+  BfPerson: {};
+  CurrentViewerLoggedIn: { // root type
+    id: string; // ID!
+    orgBfOid: string; // String!
+    personBfGid: string; // String!
+  }
+  CurrentViewerLoggedOut: { // root type
+    id: string; // ID!
+    orgBfOid: string; // String!
+    personBfGid: string; // String!
+  }
   Query: {};
   TestType: { // root type
     count?: number | null; // Int
@@ -53,19 +67,45 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
+  CurrentViewer: core.Discriminate<'CurrentViewerLoggedIn', 'optional'> | core.Discriminate<'CurrentViewerLoggedOut', 'optional'>;
 }
 
 export interface NexusGenUnions {
 }
 
-export type NexusGenRootTypes = NexusGenObjects
+export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  BfEdge: { // field return type
+    id: string | null; // ID
+  }
+  BfNode: { // field return type
+    id: string | null; // ID
+  }
+  BfOrganization: { // field return type
+    domain: string | null; // String
+    name: string | null; // String
+    primaryOwner: NexusGenRootTypes['BfPerson'] | null; // BfPerson
+  }
+  BfPerson: { // field return type
+    email: string | null; // String
+    name: string | null; // String
+    primaryOrg: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
+  }
+  CurrentViewerLoggedIn: { // field return type
+    id: string; // ID!
+    orgBfOid: string; // String!
+    personBfGid: string; // String!
+  }
+  CurrentViewerLoggedOut: { // field return type
+    id: string; // ID!
+    orgBfOid: string; // String!
+    personBfGid: string; // String!
+  }
   Query: { // field return type
-    ok: boolean; // Boolean!
-    test: NexusGenRootTypes['TestType'] | null; // TestType
+    currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
   }
   TestType: { // field return type
     count: number | null; // Int
@@ -73,12 +113,42 @@ export interface NexusGenFieldTypes {
     isActive: boolean | null; // Boolean
     name: string | null; // String
   }
+  CurrentViewer: { // field return type
+    id: string; // ID!
+    orgBfOid: string; // String!
+    personBfGid: string; // String!
+  }
 }
 
 export interface NexusGenFieldTypeNames {
+  BfEdge: { // field return type name
+    id: 'ID'
+  }
+  BfNode: { // field return type name
+    id: 'ID'
+  }
+  BfOrganization: { // field return type name
+    domain: 'String'
+    name: 'String'
+    primaryOwner: 'BfPerson'
+  }
+  BfPerson: { // field return type name
+    email: 'String'
+    name: 'String'
+    primaryOrg: 'BfOrganization'
+  }
+  CurrentViewerLoggedIn: { // field return type name
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
+  CurrentViewerLoggedOut: { // field return type name
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
   Query: { // field return type name
-    ok: 'Boolean'
-    test: 'TestType'
+    currentViewer: 'CurrentViewer'
   }
   TestType: { // field return type name
     count: 'Int'
@@ -86,15 +156,23 @@ export interface NexusGenFieldTypeNames {
     isActive: 'Boolean'
     name: 'String'
   }
+  CurrentViewer: { // field return type name
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
 }
 
 export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
+  CurrentViewer: "CurrentViewerLoggedIn" | "CurrentViewerLoggedOut"
 }
 
 export interface NexusGenTypeInterfaces {
+  CurrentViewerLoggedIn: "CurrentViewer"
+  CurrentViewerLoggedOut: "CurrentViewer"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
@@ -103,7 +181,7 @@ export type NexusGenInputNames = never;
 
 export type NexusGenEnumNames = never;
 
-export type NexusGenInterfaceNames = never;
+export type NexusGenInterfaceNames = keyof NexusGenInterfaces;
 
 export type NexusGenScalarNames = keyof NexusGenScalars;
 
@@ -111,7 +189,7 @@ export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = never;
+export type NexusGenAbstractsUsingStrategyResolveType = "CurrentViewer";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
