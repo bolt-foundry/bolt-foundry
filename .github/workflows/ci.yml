@@ -97,6 +97,29 @@ jobs:
           echo "Checking Nix store for Deno paths:"
           find /nix/store -name "deno" -type f 2>/dev/null | grep -v "\.drv$" | head -n 5 || echo "No Deno found in Nix store"
 
+      - name: Analyze Deno dependencies
+        run: |
+          echo "Deno lock file analysis:"
+          if [ -f deno.lock ]; then
+            echo "Lock file exists"
+            echo "First 20 npm dependencies:"
+            grep -A1 "\"npm:" deno.lock | head -n 20 || true
+            echo "Number of npm dependencies:"
+            grep -c "\"npm:" deno.lock || true
+            echo "Number of jsr dependencies:"
+            grep -c "\"jsr:" deno.lock || true
+          else
+            echo "No deno.lock file found"
+          fi
+
+      - name: Warm Deno cache
+        run: |
+          echo "Checking for Deno..."
+          which deno || echo "Deno is not in PATH yet, will be available in nix-shell"
+          # Let's see what path Nix will use - this might help diagnose issues
+          echo "Checking Nix store for Deno paths:"
+          find /nix/store -name "deno" -type f 2>/dev/null | grep -v "\.drv$" | head -n 5 || echo "No Deno found in Nix store"
+
       # 👇 Everything below now runs *inside* the dev-shell
       - name: Enter dev-shell & run tests
         run: |
