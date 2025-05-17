@@ -13,7 +13,7 @@ The monorepo is organized into the following top-level directories:
 - `content/`: Documentation and content resources
 - `static/`: Static assets (images, CSS, fonts)
 - `build/`: Compiled output (not committed to source control)
-- `agents/`: AI agent definitions and behavior cards
+- `cards/`: AI agent definitions and behavior cards
 - `docs/`: Project-level documentation
 
 ## Apps Directory Structure
