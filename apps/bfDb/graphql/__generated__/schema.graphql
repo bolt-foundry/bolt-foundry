@@ -3,9 +3,46 @@
 ### Do not make changes to this file directly
 
 
+type BfEdge {
+  id: ID
+}
+
+type BfNode {
+  id: ID
+}
+
+type BfOrganization {
+  domain: String
+  name: String
+  primaryOwner: BfPerson
+}
+
+type BfPerson {
+  email: String
+  name: String
+  primaryOrg: BfOrganization
+}
+
+interface CurrentViewer {
+  id: ID!
+  orgBfOid: String!
+  personBfGid: String!
+}
+
+type CurrentViewerLoggedIn implements CurrentViewer {
+  id: ID!
+  orgBfOid: String!
+  personBfGid: String!
+}
+
+type CurrentViewerLoggedOut implements CurrentViewer {
+  id: ID!
+  orgBfOid: String!
+  personBfGid: String!
+}
+
 type Query {
-  ok: Boolean!
-  test: TestType
+  currentViewer: CurrentViewer
 }
 
 type TestType {
@@ -14,3 +51,5 @@ type TestType {
   isActive: Boolean
   name: String
 }
+
+type Waitlist
