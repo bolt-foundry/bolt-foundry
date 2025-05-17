@@ -61,17 +61,14 @@ export type BfGraphqlContext = {
   getResponseHeaders(): Headers;
 };
 
-export async function createContext(
+export function createContext(
   request: Request,
-): Promise<BfGraphqlContext> {
+): BfGraphqlContext {
   logger.debug("Creating new context");
   const cache = new Map<string, Map<BfGid, BfNode>>();
   const responseHeaders = new Headers();
-  let currentViewer = await CurrentViewer.createFromRequest(
-    import.meta,
-    request,
-    responseHeaders,
-  );
+  // Use the new synchronous fromRequest method
+  let currentViewer = CurrentViewer.fromRequest(request);
   logger.debug("Current viewer created");
 
   const ctx: BfGraphqlContext = {

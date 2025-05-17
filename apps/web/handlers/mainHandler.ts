@@ -19,12 +19,8 @@ export async function handleRequest(
   const incomingUrl = new URL(req.url);
   const timer = performance.now();
   const resHeaders = new Headers();
-  // todo: this might be a good place for "using" so we don't leak cvs.
-  const cvPromise = CurrentViewer.createFromRequest(
-    import.meta,
-    req,
-    resHeaders,
-  );
+  // Use the new synchronous fromRequest method
+  const currentViewer = CurrentViewer.fromRequest(req);
 
   const staticPrefix = "/static";
   if (incomingUrl.pathname.startsWith(staticPrefix)) {
@@ -54,13 +50,12 @@ export async function handleRequest(
   // Log request timing and details
   const perf = performance.now() - timer;
   const perfInMs = Math.round(perf);
-  const cv = await cvPromise;
   logger.info(
     `[${
       new Date().toISOString()
     }] [${req.method}] ${res.status} ${incomingUrl} ${
       req.headers.get("content-type") ?? ""
-    } (${perfInMs}ms) - ${cv}`,
+    } (${perfInMs}ms) - ${currentViewer}`,
   );
 
   return res;

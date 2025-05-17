@@ -5,15 +5,15 @@ export class BfPerson extends BfNode<InferProps<typeof BfPerson>> {
     node
       .string("email")
       .string("name")
-      // Define an edge relationship to BfOrganization
-      // The field name "memberOf" automatically becomes the edge role
-      .object(
-        "memberOf",
-        () =>
-          import("apps/bfDb/nodeTypes/BfOrganization.ts").then((m) =>
-            m.BfOrganization
-          ),
-      )
+      .object("primaryOrg", "BfOrganization", {
+        // deno-lint-ignore require-await
+        resolve: async (_root, _args, _ctx, _info) => {
+          // TODO: Implement edge resolution logic
+          // This would query for BfEdge relationships where this person is the source
+          // and the target is an organization with role "member"
+          return null; // Placeholder until edge query is implemented
+        },
+      })
   );
 
   static override bfNodeSpec = this.defineBfNode((node) =>
