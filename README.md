@@ -108,4 +108,4 @@ Run `bff help` to see all available commands.
 For more details on contributing to Bolt Foundry, check out our
 [contributing guide](/content/documentation/community/contributing.md) and the
 [AGENT.md](AGENT.md) file which contains comprehensive documentation on our
-coding practices and workflows.
+coding practices and workflows..

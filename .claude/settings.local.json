@@ -19,7 +19,10 @@
       "Bash(grep:*)",
       "Bash(bff check:*)",
       "Bash(bff pr-details:*)",
-      "Bash(bff merge:*)"
+      "Bash(bff merge:*)",
+      "Bash(bff pr-details:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh api:*)"
     ],
     "deny": []
   }
