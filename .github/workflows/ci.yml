@@ -26,6 +26,21 @@ jobs:
       - name: Set Deno cache directory
         run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"
 
+      # Debug cache paths before restore
+      - name: Debug directories pre-restore
+        run: |
+          echo "Checking if directories exist before restore:"
+          ls -la . || true
+          echo "Where is deno installed:"
+          which deno || echo "deno not found"
+          echo "Deno version:"
+          deno --version || echo "deno command not available"
+          echo "Default deno locations:"
+          ls -la ~/.deno 2>/dev/null || echo "~/.deno does not exist"
+          ls -la ~/.cache/deno 2>/dev/null || echo "~/.cache/deno does not exist"
+          echo "Symlinks in current directory:"
+          find . -maxdepth 3 -type l -ls || true
+
       # 1️⃣ RESTORE
       - name: Restore Deno / vendored / node cache
         id: cache-deno
@@ -34,12 +49,53 @@ jobs:
           path: |
             vendor
             node_modules
+            ${RUNNER_TEMP}/deno-cache
           key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
           restore-keys: |
             deno-${{ runner.os }}-
 
+      # Debug cache after restore
+      - name: Debug directories post-restore
+        run: |
+          echo "Cache hit: ${{ steps.cache-deno.outputs.cache-hit }}"
+          echo "Cache primary key: ${{ steps.cache-deno.outputs.cache-primary-key }}"
+          echo "Checking directories after restore:"
+          ls -la . || true
+          echo "Node modules existence: $(test -d node_modules && echo 'exists' || echo 'does not exist')"
+          echo "Vendor existence: $(test -d vendor && echo 'exists' || echo 'does not exist')"
+          echo "Deno cache existence: $(test -d "${RUNNER_TEMP}/deno-cache" && echo 'exists' || echo 'does not exist')"
+          echo "Symlinks in node_modules (if exists):"
+          test -d node_modules && find node_modules -type l -ls | head -n 20 || echo "No node_modules directory"
+          echo "Symlinks in vendor (if exists):"
+          test -d vendor && find vendor -type l -ls | head -n 20 || echo "No vendor directory"
+          echo "Deno cache directory structure (if exists):"
+          test -d "${RUNNER_TEMP}/deno-cache" && find "${RUNNER_TEMP}/deno-cache" -type d -maxdepth 2 | sort || echo "No Deno cache directory"
+
       - name: Put repo tools on PATH
         run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
+        
+      - name: Analyze Deno dependencies
+        run: |
+          echo "Deno lock file analysis:"
+          if [ -f deno.lock ]; then
+            echo "Lock file exists"
+            echo "First 20 npm dependencies:"
+            grep -A1 "\"npm:" deno.lock | head -n 20 || true
+            echo "Number of npm dependencies:"
+            grep -c "\"npm:" deno.lock || true
+            echo "Number of jsr dependencies:"
+            grep -c "\"jsr:" deno.lock || true
+          else
+            echo "No deno.lock file found"
+          fi
+          
+      - name: Warm Deno cache
+        run: |
+          echo "Warming Deno dependency cache..."
+          # This command reads the deno.lock file and downloads all dependencies to the cache
+          deno cache deno.jsonc || echo "Failed to warm cache - continuing"
+          echo "Deno cache after warming:"
+          test -d "${RUNNER_TEMP}/deno-cache" && du -sh "${RUNNER_TEMP}/deno-cache" || echo "No Deno cache directory"
 
       # 👇 Everything below now runs *inside* the dev-shell
       - name: Enter dev-shell & run tests
@@ -51,7 +107,33 @@ jobs:
             bff ci --include-bolt-foundry --skip-build
           '
 
-      # 2️⃣ SAVE (only if we didn’t hit above)
+      # Debug before save
+      - name: Debug directories pre-save
+        if: ${{ steps.cache-deno.outputs.cache-hit != 'true' }}
+        run: |
+          echo "Checking directories before save:"
+          ls -la . || true
+          echo "Node modules existence: $(test -d node_modules && echo 'exists' || echo 'does not exist')"
+          echo "Vendor existence: $(test -d vendor && echo 'exists' || echo 'does not exist')"
+          echo "Deno cache existence: $(test -d "${RUNNER_TEMP}/deno-cache" && echo 'exists' || echo 'does not exist')"
+          echo "Symlinks in node_modules (if exists):"
+          test -d node_modules && find node_modules -type l -ls | head -n 20 || echo "No node_modules directory"
+          echo "Symlinks in vendor (if exists):"
+          test -d vendor && find vendor -type l -ls | head -n 20 || echo "No vendor directory"
+          echo "Symlink count in node_modules:"
+          test -d node_modules && find node_modules -type l | wc -l || echo "No node_modules directory"
+          echo "Symlink count in vendor:"
+          test -d vendor && find vendor -type l | wc -l || echo "No vendor directory"
+          echo "Deno cache directory structure (if exists):"
+          test -d "${RUNNER_TEMP}/deno-cache" && find "${RUNNER_TEMP}/deno-cache" -type d -maxdepth 2 | sort || echo "No Deno cache directory"
+          echo "Deno cache directory size:"
+          test -d "${RUNNER_TEMP}/deno-cache" && du -sh "${RUNNER_TEMP}/deno-cache" || echo "No Deno cache directory"
+          echo "File permissions:"
+          find node_modules vendor -type f -name "*.js" | head -n 5 | xargs ls -la 2>/dev/null || true
+          echo "Folders that might be problematic for caching:"
+          find node_modules vendor -type d \( -name ".git" -o -name "node_modules" \) 2>/dev/null || true
+
+      # 2️⃣ SAVE (only if we didn't hit above)
       - name: Save Deno / vendored / node cache
         if: ${{ steps.cache-deno.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v4
@@ -59,4 +141,13 @@ jobs:
           path: |
             vendor
             node_modules
+            ${RUNNER_TEMP}/deno-cache
           key: ${{ steps.cache-deno.outputs.cache-primary-key }}
+
+      # Debug after save attempt
+      - name: Debug post-save
+        if: ${{ steps.cache-deno.outputs.cache-hit != 'true' }}
+        run: |
+          echo "Cache save completed"
+          echo "Final directory status:"
+          du -sh node_modules vendor "${RUNNER_TEMP}/deno-cache" 2>/dev/null || echo "Could not get directory sizes"
