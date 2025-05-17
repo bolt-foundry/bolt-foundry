@@ -19,17 +19,17 @@ outlined in
 - **0.2 →** Collect requests and responses in our system (bfdb), for multiple
   organizations.
   - Metric: Samples ingested
-- **0.3** **→** Structured prompt generator to more easily generate the identity
+- **0.3** **→** Structured prompt generator to more easily generate the persona
   and behavior cards. Structured inputs get filled into mustache bracket
   templates.
   - Metric: Structured calls made
-- **0.4 →** Generate the identity card, behavior card, and reconciled samples
-  for a specific, narrow use case of the prompt.
+- **0.4 →** Generate the persona card, behavior card, and reconciled samples for
+  a specific, narrow use case of the prompt.
   - Metric: Cards generated
-- **0.5** **→** Reconcile generated response samples against established
-  identity and behavior card principles.
+- **0.5** **→** Reconcile generated response samples against established persona
+  and behavior card principles.
   - Metric: Samples reconciled
-- **0.6** **→** Backtesting. If I give it a certain prompt or identity card, and
+- **0.6** **→** Backtesting. If I give it a certain prompt or persona card, and
   run it 100 times, is it better or the same? (Based on RLHF).
   - TBD
 - **0.7 →** Heatmap. ?
@@ -59,6 +59,6 @@ Along the way we'll track specific metrics by version as follows:
 For reference, a sample is reconciled when:
 
 1. The AI agent’s behavior in the sample has been captured.
-2. The sample is then judged against the identity + behavior cards and links the
+2. The sample is then judged against the persona + behavior cards and links the
    specific principles to the individual samples
 3. It has a clear score or rating (+3 to -3)

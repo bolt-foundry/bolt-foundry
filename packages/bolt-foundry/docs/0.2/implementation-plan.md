@@ -83,14 +83,14 @@ const properties: Record<string, unknown> = {
 
 ```typescript
 // Basic usage with API keys
-const openAiFetch = createOpenAIFetch({
+const openAiFetch = connectBoltFoundry({
   openAiApiKey: process.env.OPENAI_API_KEY || "",
   posthogApiKey: process.env.POSTHOG_API_KEY || "",
 });
 
 // Advanced usage with a PostHog client
 const posthogClient = new PostHog("api-key");
-const openAiFetch = createOpenAIFetch({
+const openAiFetch = connectBoltFoundry({
   openAiApiKey: process.env.OPENAI_API_KEY || "",
   posthogClient,
 });

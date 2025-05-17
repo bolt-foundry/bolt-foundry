@@ -4,7 +4,7 @@ This package provides utilities for working with the Bolt Foundry platform.
 
 ## Features
 
-### `createOpenAiFetch`
+### `connectBoltFoundry`
 
 A fetch wrapper that adds authentication and logging for OpenAI API requests.
 
@@ -13,13 +13,13 @@ A fetch wrapper that adds authentication and logging for OpenAI API requests.
 ### With OpenAI SDK
 
 ```typescript
-import { createOpenAiFetch } from "@bolt-foundry/bolt-foundry";
+import { connectBoltFoundry } from "@bolt-foundry/bolt-foundry";
 import OpenAI from "openai";
 
 // Create OpenAI instance with our custom fetch
 const openai = new OpenAI({
   apiKey: "your-api-key-here", // This can be undefined if using fetch wrapper
-  fetch: createOpenAiFetch(process.env.OPENAI_API_KEY),
+  fetch: connectBoltFoundry(process.env.OPENAI_API_KEY),
 });
 
 // Now use the OpenAI client as normal
@@ -45,13 +45,13 @@ directly in your API handlers or where you initialize the OpenAI client:
 
 ```typescript
 // pages/api/chat.ts or similar
-import { createOpenAiFetch } from "@bolt-foundry/bolt-foundry";
+import { connectBoltFoundry } from "@bolt-foundry/bolt-foundry";
 import { OpenAI } from "openai";
 
 export default async function handler(req, res) {
   const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-    fetch: createOpenAiFetch(process.env.OPENAI_API_KEY),
+    fetch: connectBoltFoundry(process.env.OPENAI_API_KEY),
   });
 
   const response = await openai.chat.completions.create({

@@ -66,7 +66,7 @@ The backlog documentation complements other documents in the structure:
 ## Backlog Management Process
 
 Follow the
-[Backlog Management Protocol](../agents/behaviors/backlog-management.bhc.md) for
+[Backlog Management Protocol](../cards/behaviors/backlog-management.bhc.md) for
 guidelines on:
 
 - Adding items to the backlog

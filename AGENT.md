@@ -24,18 +24,19 @@ structured data management, unit testing, and streamlined development processes.
 - **apps/boltFoundry**: Main React frontend application
 - **apps/bfDb/graphql**: GraphQL schema and resolvers
 - **apps/web**: Web server and routing implementation
-- **agents/**: AI agent definitions (Identity and Behavior cards)
+- **cards/**: AI agent definitions (Persona and Behavior cards)
 - **infra/bff**: CLI tooling for building, testing, and development workflows
 - **packages/**: Shared utilities and core libraries
 
 ## AI Agent Reference Cards
 
-### Identity Cards
+### Persona Cards
 
 - **Purpose**: Provide project context and high-level understanding.
 - **Content**: Project overview, architecture, directory structure, technology
   descriptions.
-- **Where to Find**: `agents/`, particularly "Bolt Foundry Identity Card.md"
+- **Where to Find**: `cards/personas/`, particularly "Bolt Foundry Persona
+  Card.md"
 
 ### Behavior Cards
 
@@ -43,7 +44,7 @@ structured data management, unit testing, and streamlined development processes.
 - **Content**: Implementation plans, testing protocols, commit guidelines,
   coding standards.
 - **File Format**: Stored as `.bhc.md` files (Behavior Card Markdown)
-- **Where to Find**: `agents/behaviors/`, notably cards such as "coding.bhc.md,"
+- **Where to Find**: `cards/behaviors/`, notably cards such as "coding.bhc.md,"
   "implementation-plans.bhc.md," "project-plans.bhc.md," and "tdd.bhc.md"
 - **How to Use**: Reference these cards when implementing features, planning
   projects, or following development workflows
@@ -52,7 +53,7 @@ structured data management, unit testing, and streamlined development processes.
 
 - **AGENT.md**: Comprehensive guidelines for working on the project, including
   code organization, development tools, testing, and debugging practices.
-- **Identity & Behavior Cards (`agents/`)**: Essential for understanding the
+- **Persona & Behavior Cards (`cards/`)**: Essential for understanding the
   project and executing tasks effectively.
 - **GraphQL Schema (`apps/bfDb/graphql`)**: Defines API interactions and data
   relationships.
@@ -61,13 +62,13 @@ structured data management, unit testing, and streamlined development processes.
 
 ## Recommended Workflow for AI Agents
 
-1. **Contextual Understanding**: Review Identity Cards and AGENT.md to
-   understand the project structure and purpose.
+1. **Contextual Understanding**: Review Persona Cards and AGENT.md to understand
+   the project structure and purpose.
 2. **Task Implementation**: Follow Behavior Cards strictly for step-by-step
    actions, testing, and committing.
 3. **Testing & Debugging**: Use provided debugging guidelines, log-level
    management, and structured testing processes outlined in AGENT.md.
 
-By utilizing Identity and Behavior Cards together, AI agents can effectively
+By utilizing Persona and Behavior Cards together, AI agents can effectively
 contribute to Bolt Foundry, ensuring adherence to the project's high standards
 and best practices.
