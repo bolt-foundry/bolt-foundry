@@ -23,8 +23,8 @@ Current company milestone: **0.1 → Users can log in with Google**
 - 🔄 **0.1** → Users can log in with Google (In Progress)
 - 📅 **0.2** → Collect requests and responses in our system (bfdb), for multiple
   organizations
-- 📅 **0.3** → Structured prompt generator for identity and behavior cards
-- 📅 **0.4** → Generate identity card, behavior card, and reconciled samples
+- 📅 **0.3** → Structured prompt generator for persona and behavior cards
+- 📅 **0.4** → Generate persona card, behavior card, and reconciled samples
 - 📅 **0.5** → Reconcile generated response samples
 
 ## Notes

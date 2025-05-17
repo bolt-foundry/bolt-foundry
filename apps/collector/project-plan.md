@@ -23,7 +23,7 @@ the collected data to provide valuable insights for AI applications.
 ### Version 0.2: Identity Management
 
 - Create our own API key generation and management system
-- Implement identity and behavior card building on a callsite-by-callsite basis
+- Implement persona and behavior card building on a callsite-by-callsite basis
 - Add metadata injection capabilities for request control
 
 ### Version 0.3: Advanced Controls
@@ -35,7 +35,7 @@ the collected data to provide valuable insights for AI applications.
 
 ## Success Metrics
 
-- Clear identity and behavior tracking for each API interaction
+- Clear persona and behavior tracking for each API interaction
 - Improved debugging capabilities for API-driven features
 
 ## User Journeys
