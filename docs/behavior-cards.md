@@ -3,7 +3,7 @@
 ## What Are Behavior Cards?
 
 Behavior Cards are structured documents that define actionable workflows,
-protocols, and best practices for building LLM systems. While Identity Cards
+protocols, and best practices for building LLM systems. While Persona Cards
 describe what a component is, Behavior Cards describe how to implement
 functionality effectively.
 
@@ -65,18 +65,18 @@ relevant development activities:
 When establishing new workflows or best practices, consider creating a new
 Behavior Card:
 
-1. Create a new markdown file in the `agents/behaviors/` directory with the
+1. Create a new markdown file in the `cards/behaviors/` directory with the
    `.bhc.md` extension
 2. Follow the established format for consistency
 3. Focus on actionable guidance rather than theoretical explanations
 4. Include specific examples where helpful
 5. Keep guidance concise and practical
 
-## Integration with Identity Cards
+## Integration with Persona Cards
 
-Behavior Cards complement Identity Cards in the Bolt Foundry system:
+Behavior Cards complement Persona Cards in the Bolt Foundry system:
 
-- **Identity Cards** define the "what" - the components, their purpose, and
+- **Persona Cards** define the "what" - the components, their purpose, and
   characteristics
 - **Behavior Cards** define the "how" - the processes for implementing and
   working with components

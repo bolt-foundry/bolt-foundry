@@ -93,6 +93,6 @@ Version 0.1 will be considered successful when:
 ## Next Steps for Version 0.2
 
 - Create our own API key generation and management system
-- Implement identity and behavior card building functionality
+- Implement persona and behavior card building functionality
 - Add metadata injection capabilities for request control
 - Build more sophisticated analytics for API usage patterns

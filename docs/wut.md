@@ -18,10 +18,10 @@ The intention is for both humans and machines to understand them, and reference
 them directly and point samples to them to reinforce and disambiguate specific
 principles.
 
-## Identity Card vs Constitution
+## Persona Card vs Constitution
 
-We use **Identity Card** to define the core essence and characteristics of an
-LLM system. Identity Cards represent a verified, tested unit of LLM
+We use **Persona Card** to define the core essence and characteristics of an
+LLM system. Persona Cards represent a verified, tested unit of LLM
 functionality that can be composed into larger systems.
 
 Similarly, we use **Behavior Card** to define actionable protocols and best
