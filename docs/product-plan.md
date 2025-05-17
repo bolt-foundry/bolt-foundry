@@ -23,11 +23,11 @@ outlined in
   and behavior cards. Structured inputs get filled into mustache bracket
   templates.
   - Metric: Structured calls made
-- **0.4 →** Generate the persona card, behavior card, and reconciled samples
-  for a specific, narrow use case of the prompt.
+- **0.4 →** Generate the persona card, behavior card, and reconciled samples for
+  a specific, narrow use case of the prompt.
   - Metric: Cards generated
-- **0.5** **→** Reconcile generated response samples against established
-  persona and behavior card principles.
+- **0.5** **→** Reconcile generated response samples against established persona
+  and behavior card principles.
   - Metric: Samples reconciled
 - **0.6** **→** Backtesting. If I give it a certain prompt or persona card, and
   run it 100 times, is it better or the same? (Based on RLHF).

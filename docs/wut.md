@@ -20,9 +20,9 @@ principles.
 
 ## Persona Card vs Constitution
 
-We use **Persona Card** to define the core essence and characteristics of an
-LLM system. Persona Cards represent a verified, tested unit of LLM
-functionality that can be composed into larger systems.
+We use **Persona Card** to define the core essence and characteristics of an LLM
+system. Persona Cards represent a verified, tested unit of LLM functionality
+that can be composed into larger systems.
 
 Similarly, we use **Behavior Card** to define actionable protocols and best
 practices for implementing LLM systems, rather than referring to these as

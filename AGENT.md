@@ -35,7 +35,8 @@ structured data management, unit testing, and streamlined development processes.
 - **Purpose**: Provide project context and high-level understanding.
 - **Content**: Project overview, architecture, directory structure, technology
   descriptions.
-- **Where to Find**: `cards/personas/`, particularly "Bolt Foundry Persona Card.md"
+- **Where to Find**: `cards/personas/`, particularly "Bolt Foundry Persona
+  Card.md"
 
 ### Behavior Cards
 
@@ -61,8 +62,8 @@ structured data management, unit testing, and streamlined development processes.
 
 ## Recommended Workflow for AI Agents
 
-1. **Contextual Understanding**: Review Persona Cards and AGENT.md to
-   understand the project structure and purpose.
+1. **Contextual Understanding**: Review Persona Cards and AGENT.md to understand
+   the project structure and purpose.
 2. **Task Implementation**: Follow Behavior Cards strictly for step-by-step
    actions, testing, and committing.
 3. **Testing & Debugging**: Use provided debugging guidelines, log-level
