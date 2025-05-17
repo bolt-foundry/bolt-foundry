@@ -87,3 +87,10 @@ Deno.test("Unknown key resolves only via ENV", async () => {
   assertEquals(val, "env‑value");
   Deno.env.delete(UNKNOWN_KEY);
 });
+
+/* ──────── Unknown key missing from ENV ──────── */
+Deno.test("getSecret() returns undefined when unknown key not in ENV", async () => {
+  Deno.env.delete(UNKNOWN_KEY); // ensure no accidental value
+  const val = await getSecret(UNKNOWN_KEY);
+  assertEquals(val, undefined);
+});
