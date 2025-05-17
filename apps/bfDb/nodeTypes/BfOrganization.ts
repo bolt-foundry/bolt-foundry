@@ -5,7 +5,15 @@ export class BfOrganization extends BfNode<InferProps<typeof BfOrganization>> {
     node
       .string("name")
       .string("domain")
-    // Removing the members relationship for now to focus on 1:1
+      .object("primaryOwner", "BfPerson", {
+        // deno-lint-ignore require-await
+        resolve: async (_root, _args, _ctx, _info) => {
+          // TODO: Implement edge resolution logic
+          // This would query for BfEdge relationships where this organization is the target
+          // and the source is a person with role "owner"
+          return null; // Placeholder until edge query is implemented
+        },
+      })
   );
   static override bfNodeSpec = this.defineBfNode((node) =>
     node
