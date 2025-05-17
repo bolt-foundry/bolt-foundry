@@ -72,12 +72,12 @@ Developers will integrate Bolt Foundry directly with their OpenAI client:
 
 ```typescript
 // Where you initialize your OpenAI client:
-import { createOpenAiFetch } from "@bolt-foundry/bolt-foundry";
+import { connectBoltFoundry } from "@bolt-foundry/bolt-foundry";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  fetch: createOpenAiFetch(process.env.OPENAI_API_KEY),
+  fetch: connectBoltFoundry(process.env.OPENAI_API_KEY),
 });
 ```
 

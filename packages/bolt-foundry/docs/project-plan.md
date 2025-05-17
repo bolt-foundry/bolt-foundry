@@ -62,7 +62,7 @@ implementation:
 
 ```typescript
 // Create enhanced fetch with analytics tracking
-const openAiFetch = createOpenAIFetch({
+const openAiFetch = connectBoltFoundry({
   openAiApiKey: process.env.OPENAI_API_KEY || "",
   posthogApiKey: process.env.POSTHOG_NEXTJS_API_KEY || "",
 });
