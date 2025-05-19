@@ -64,12 +64,6 @@ export async function amend(args: string[]): Promise<number> {
     }
   }
 
-  if (!commitMessage) {
-    logger.error(
-      '❌ No commit message provided. Usage: bff amend -m "Your message" [files...]',
-    );
-    return 1;
-  }
 
   logger.info("Running pre-amend checks...");
 
@@ -88,7 +82,10 @@ export async function amend(args: string[]): Promise<number> {
 
   // Amend the commit
   logger.info("Amending commit...");
-  const amendArgs = ["sl", "commit", "--amend", "-m", commitMessage];
+  const amendArgs = ["sl", "commit", "--amend"];
+  if (commitMessage) {
+    amendArgs.push("-m", commitMessage);
+  }
   if (filesToCommit.length > 0) {
     amendArgs.push(...filesToCommit);
   }
