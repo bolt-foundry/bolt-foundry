@@ -16,6 +16,7 @@ logger.setLevel(logger.levels.DEBUG);
 import type { makeGqlSpec as _makeGqlSpec } from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
 import type { gqlSpecToNexus as _gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
 import { objectType, queryType } from "nexus";
+import { generateGqlTypes } from "infra/bff/friends/genGqlTypes.bff.ts";
 
 /**
  * Loads GraphQL types using our new builder pattern.
@@ -61,7 +62,7 @@ export function loadGqlTypes() {
   };
 }
 
-const schemaOptions: SchemaConfig = {
+export const schemaOptions: SchemaConfig = {
   // Use our new loadGqlTypes function
   types: { ...loadGqlTypes() },
   features: {
@@ -105,34 +106,5 @@ export const graphQLHandler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  makeSchema({
-    ...schemaOptions,
-    types: { ...schemaOptions.types },
-    contextType: {
-      module: import.meta.resolve("./graphqlContext.ts").replace("file://", ""),
-      export: "Context",
-    },
-    formatTypegen: (content, type) => {
-      if (type === "schema") {
-        return `### @generated \n${content}`;
-      } else {
-        return `/* @generated */\n// deno-lint-ignore-file\n${
-          content.replace(
-            /(["'])(\.+\/[^"']+)\1/g,
-            "$1$2.ts$1",
-          )
-        }`;
-      }
-    },
-    outputs: {
-      schema: new URL(
-        import.meta.resolve(`apps/bfDb/graphql/__generated__/schema.graphql`),
-      )
-        .pathname,
-      typegen: new URL(
-        import.meta.resolve(`apps/bfDb/graphql/__generated__/_nexustypes.ts`),
-      )
-        .pathname,
-    },
-  });
+  generateGqlTypes();
 }
