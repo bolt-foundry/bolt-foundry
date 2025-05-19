@@ -1,59 +1,55 @@
 import { extendType, objectType } from "nexus";
 import { gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
-import { Waitlist } from "apps/bfDb/graphql/roots/Waitlist.ts";
-import { Query } from "apps/bfDb/graphql/roots/Query.ts";
+import {
+  Query,
+  Waitlist,
+} from "apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts";
 
+const roots = [Query, Waitlist];
 /**
  * Loads GraphQL types using our new builder pattern.
  * This will eventually load all node types in the system.
  */
 export function loadGqlTypes() {
-  // Load the Query type using our new builder
-  const querySpec = Query.gqlSpec;
-  const queryNexusTypes = gqlSpecToNexus(querySpec, "Query");
-  const QueryType = objectType(queryNexusTypes.mainType);
-
-  // Note: JoinWaitlistPayload is now automatically generated from the returns builder
-
-  // Load the Waitlist type using our new builder
-  const waitlistSpec = Waitlist.gqlSpec;
-  const waitlistNexusTypes = gqlSpecToNexus(waitlistSpec, "Waitlist");
-
-  // Create types from the Nexus definitions
-  const WaitlistType = objectType(waitlistNexusTypes.mainType);
-
-  // Create the payload types
+  const types = [];
   const payloadTypeObjects: Record<string, unknown> = {};
-  if (waitlistNexusTypes.payloadTypes) {
-    for (
-      const [typeName, typeDef] of Object.entries(
-        waitlistNexusTypes.payloadTypes,
-      )
-    ) {
-      payloadTypeObjects[typeName] = objectType(
-        typeDef as Parameters<typeof objectType>[0],
-      );
+  const mutationTypes = [];
+
+  // Process each root object
+  for (const root of roots) {
+    const rootSpec = root.gqlSpec;
+    const rootName = root.name;
+    const nexusTypes = gqlSpecToNexus(rootSpec, rootName);
+    
+    // Create the main type
+    const mainType = objectType(nexusTypes.mainType);
+    types.push(mainType);
+    
+    // Process payload types if they exist
+    if (nexusTypes.payloadTypes) {
+      for (
+        const [typeName, typeDef] of Object.entries(
+          nexusTypes.payloadTypes,
+        )
+      ) {
+        payloadTypeObjects[typeName] = objectType(
+          typeDef as Parameters<typeof objectType>[0],
+        );
+      }
+    }
+    
+    // Create the mutation type if it exists
+    if (nexusTypes.mutationType) {
+      const mutationType = extendType(nexusTypes.mutationType);
+      mutationTypes.push(mutationType);
     }
   }
 
-  // Create the mutation type if it exists
-  let WaitlistMutation = null;
-  if (waitlistNexusTypes.mutationType) {
-    WaitlistMutation = extendType(waitlistNexusTypes.mutationType);
-  }
-
   // Return the types - order matters for Nexus!
-  // Return as an array since that's what Nexus expects
-  const types = [
-    QueryType,
-    WaitlistType,
+  // Add all main types first, then payload types, then mutations last
+  return [
+    ...types,
     ...Object.values(payloadTypeObjects),
+    ...mutationTypes,
   ];
-
-  // Add mutation last (it references the payload types)
-  if (WaitlistMutation) {
-    types.push(WaitlistMutation);
-  }
-
-  return types;
 }
