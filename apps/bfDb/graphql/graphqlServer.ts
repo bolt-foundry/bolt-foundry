@@ -8,8 +8,7 @@ import { getLogger } from "packages/logger/logger.ts";
 // Let's create our own loadModelTypes function
 // import { loadModelTypes } from "apps/bfDb/builders/graphql/loadSpecs.ts";
 
-const logger = getLogger(import.meta);
-logger.setLevel(logger.levels.DEBUG);
+const _logger = getLogger(import.meta);
 
 // Import our GraphQL builder tools - imported only for types but not used directly yet
 import type { makeGqlSpec as _makeGqlSpec } from "apps/bfDb/builders/graphql/makeGqlSpec.ts";

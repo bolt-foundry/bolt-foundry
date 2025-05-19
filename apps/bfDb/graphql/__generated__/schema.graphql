@@ -13,15 +13,7 @@ type Mutation {
 }
 
 type Query {
-  ok: Boolean!
-  test: TestType
-}
-
-type TestType {
-  count: Int
-  id: ID!
-  isActive: Boolean
-  name: String
+  ok: Boolean
 }
 
 type Waitlist {

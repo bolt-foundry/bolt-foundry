@@ -1,43 +1,17 @@
-import { extendType, objectType, queryType } from "nexus";
+import { extendType, objectType } from "nexus";
 import { gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
 import { Waitlist } from "apps/bfDb/graphql/roots/Waitlist.ts";
+import { Query } from "apps/bfDb/graphql/roots/Query.ts";
 
 /**
  * Loads GraphQL types using our new builder pattern.
  * This will eventually load all node types in the system.
  */
 export function loadGqlTypes() {
-  // Create a test GraphQL type directly with Nexus to verify schema generation
-  const TestType = objectType({
-    name: "TestType",
-    definition(t) {
-      t.string("name");
-      t.nonNull.id("id");
-      t.boolean("isActive");
-      t.int("count");
-    },
-  });
-
-  // Create a query type that returns our test type
-  const Query = queryType({
-    definition(t) {
-      // Test field
-      t.field("test", {
-        type: "TestType",
-        resolve: () => ({
-          id: "test-123",
-          name: "Test Object",
-          isActive: true,
-          count: 42,
-        }),
-      });
-
-      // Health check
-      t.nonNull.boolean("ok", {
-        resolve: () => true,
-      });
-    },
-  });
+  // Load the Query type using our new builder
+  const querySpec = Query.gqlSpec;
+  const queryNexusTypes = gqlSpecToNexus(querySpec, "Query");
+  const QueryType = objectType(queryNexusTypes.mainType);
 
   // Note: JoinWaitlistPayload is now automatically generated from the returns builder
 
@@ -71,8 +45,7 @@ export function loadGqlTypes() {
   // Return the types - order matters for Nexus!
   // Return as an array since that's what Nexus expects
   const types = [
-    Query,
-    TestType,
+    QueryType,
     WaitlistType,
     ...Object.values(payloadTypeObjects),
   ];

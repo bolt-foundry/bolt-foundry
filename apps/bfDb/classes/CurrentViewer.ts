@@ -206,5 +206,9 @@ export class CurrentViewer extends GraphQLObjectBase {
 /* --------------------------------------------------------------------------
  *  Concrete subclasses
  * ------------------------------------------------------------------------ */
-export class CurrentViewerLoggedIn extends CurrentViewer {}
-export class CurrentViewerLoggedOut extends CurrentViewer {}
+export class CurrentViewerLoggedIn extends CurrentViewer {
+  static override gqlSpec = this.defineGqlNode((gql) => gql);
+}
+export class CurrentViewerLoggedOut extends CurrentViewer {
+  static override gqlSpec = this.defineGqlNode((gql) => gql);
+}
