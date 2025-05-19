@@ -3,6 +3,11 @@ import type { Connection, ConnectionArguments } from "graphql-relay";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { AnyBfNodeCtor } from "apps/bfDb/builders/bfDb/types.ts";
 import { type ArgsBuilder, makeArgBuilder } from "./makeArgBuilder.ts";
+import {
+  makeReturnsBuilder,
+  type ReturnsBuilder,
+} from "./makeReturnsBuilder.ts";
+import type { GraphQLResolverArgs } from "./types/resolverTypes.ts";
 
 type ThisNode = InstanceType<AnyBfNodeCtor>;
 
@@ -57,7 +62,7 @@ export interface GqlBuilder<
       args?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
-        args: Record<string, unknown>,
+        args: GraphQLResolverArgs,
         ctx: BfGraphqlContext,
         info: GraphQLResolveInfo,
       ) => MaybePromise<string>;
@@ -70,7 +75,7 @@ export interface GqlBuilder<
       args?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
-        args: Record<string, unknown>,
+        args: GraphQLResolverArgs,
         ctx: BfGraphqlContext,
         info: GraphQLResolveInfo,
       ) => MaybePromise<number>;
@@ -83,7 +88,7 @@ export interface GqlBuilder<
       args?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
-        args: Record<string, unknown>,
+        args: GraphQLResolverArgs,
         ctx: BfGraphqlContext,
         info: GraphQLResolveInfo,
       ) => MaybePromise<boolean>;
@@ -96,7 +101,7 @@ export interface GqlBuilder<
       args?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
-        args: Record<string, unknown>,
+        args: GraphQLResolverArgs,
         ctx: BfGraphqlContext,
         info: GraphQLResolveInfo,
       ) => MaybePromise<string>;
@@ -140,7 +145,7 @@ export interface GqlBuilder<
       args?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
-        args: Record<string, unknown>,
+        args: GraphQLResolverArgs,
         ctx: BfGraphqlContext,
         info: GraphQLResolveInfo,
       ) => MaybePromise<R[N]>;
@@ -154,35 +159,34 @@ export interface GqlBuilder<
       additionalArgs?: (ab: ArgsBuilder) => ArgsBuilder;
       resolve?: (
         root: ThisNode,
-        args: ConnectionArguments & Record<string, unknown>,
+        args: ConnectionArguments & GraphQLResolverArgs,
         ctx: BfGraphqlContext,
         info: GraphQLResolveInfo,
       ) => MaybePromise<Connection<ThisNode>>;
     },
   ): GqlBuilder<R>;
 
-  mutation<N extends string>(
+  mutation<
+    N extends string,
+    ReturnType extends Record<string, unknown> = Record<string, unknown>,
+  >(
     name: N,
-    opts?: {
+    opts: {
       args?: (ab: ArgsBuilder) => ArgsBuilder;
-      returns?: string;
+      returns: string | ((rb: ReturnsBuilder) => ReturnsBuilder<ReturnType>);
       resolve?: (
         root: ThisNode,
-        args: Record<string, unknown>,
+        args: GraphQLResolverArgs,
         ctx: BfGraphqlContext,
         info: GraphQLResolveInfo,
-      ) => MaybePromise<NMutationPayload>;
+      ) => MaybePromise<ReturnType>;
     },
   ): GqlBuilder<R>;
 
   // Add nonNull property for creating required fields
   nonNull: OmitNonNull<GqlBuilder<R>>;
 
-  _spec: {
-    fields: Record<string, unknown>;
-    relations: Record<string, unknown>;
-    mutations: Record<string, unknown>;
-  };
+  _spec: GqlNodeSpec;
 }
 
 /**
@@ -293,16 +297,31 @@ export function makeGqlBuilder<
       return builder;
     },
 
-    mutation(name, opts = {}) {
+    mutation(name, opts) {
       // Create the argument builder function
       const argFn = makeArgBuilder();
 
       // Create and collect arguments if provided
       const args = opts.args ? argFn(opts.args) : {};
 
+      // Handle returns - can be either a string or a builder function
+      let returnsSpec = null;
+      let returnsType = null;
+
+      if (typeof opts.returns === "string") {
+        // Direct string type reference
+        returnsType = opts.returns;
+      } else if (opts.returns) {
+        // Builder function
+        const returnsBuilder = makeReturnsBuilder();
+        opts.returns(returnsBuilder);
+        returnsSpec = returnsBuilder._spec;
+      }
+
       // Store the mutation definition
       spec.mutations[name] = {
-        returns: opts.returns || "JSON",
+        returnsSpec: returnsSpec,
+        returnsType: returnsType,
         args: args,
         resolve: opts.resolve,
       };
