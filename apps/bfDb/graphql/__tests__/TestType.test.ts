@@ -10,7 +10,7 @@ import { printSchema } from "graphql";
 import { loadGqlTypes } from "../loadGqlTypes.ts";
 
 function buildTestSchema(): string {
-  const schema = makeSchema({ types: { ...loadGqlTypes() } });
+  const schema = makeSchema({ types: loadGqlTypes() });
   return printSchema(schema);
 }
 

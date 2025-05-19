@@ -39,14 +39,7 @@ export function loadGqlTypes() {
     },
   });
 
-  // Create the JoinWaitlistPayload type manually for now
-  const JoinWaitlistPayload = objectType({
-    name: "JoinWaitlistPayload",
-    definition(t) {
-      t.nonNull.boolean("success");
-      t.string("message");
-    },
-  });
+  // Note: JoinWaitlistPayload is now automatically generated from the returns builder
 
   // Load the Waitlist type using our new builder
   const waitlistSpec = Waitlist.gqlSpec;
@@ -55,20 +48,39 @@ export function loadGqlTypes() {
   // Create types from the Nexus definitions
   const WaitlistType = objectType(waitlistNexusTypes.mainType);
 
+  // Create the payload types
+  const payloadTypeObjects: Record<string, unknown> = {};
+  if (waitlistNexusTypes.payloadTypes) {
+    for (
+      const [typeName, typeDef] of Object.entries(
+        waitlistNexusTypes.payloadTypes,
+      )
+    ) {
+      payloadTypeObjects[typeName] = objectType(
+        typeDef as Parameters<typeof objectType>[0],
+      );
+    }
+  }
+
   // Create the mutation type if it exists
   let WaitlistMutation = null;
   if (waitlistNexusTypes.mutationType) {
     WaitlistMutation = extendType(waitlistNexusTypes.mutationType);
   }
 
-  // Return the types
-  const types = {
+  // Return the types - order matters for Nexus!
+  // Return as an array since that's what Nexus expects
+  const types = [
     Query,
     TestType,
-    Waitlist: WaitlistType,
-    JoinWaitlistPayload,
-    ...(WaitlistMutation ? { Mutation: WaitlistMutation } : {}),
-  };
+    WaitlistType,
+    ...Object.values(payloadTypeObjects),
+  ];
+
+  // Add mutation last (it references the payload types)
+  if (WaitlistMutation) {
+    types.push(WaitlistMutation);
+  }
 
   return types;
 }
