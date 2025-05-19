@@ -56,11 +56,19 @@ this migration.
    - Migrate remaining nodes
    - Remove legacy builders
 
-5. **Testing** ⏱️
+5. **Mutation Returns Builder** ⏱️
+   - Create makeReturnsBuilder.ts for building mutation return types
+   - Support scalar field methods with type inference
+   - Implement nonNull pattern for required fields
+   - Automatically generate and register payload types
+   - Type resolver functions based on builder output
+
+6. **Testing** ⏱️
    - Unit tests for builder functionality
    - Tests for Nexus type generation
    - Integration tests for field resolution
    - Tests for edge relationships
+   - Tests for returns builder and type inference
    - End-to-end tests with GraphQL queries
 
 ## Technical Design
@@ -128,6 +136,45 @@ defining relationships between nodes:
 
 5. **Resolution Logic**: The resolver queries the BfEdge model to find edges
    with the matching role, then loads the target node
+
+### Mutation Returns Builder
+
+The mutation returns builder provides a consistent API for defining return types
+inline with type safety:
+
+```typescript
+.mutation("joinWaitlist", {
+  args: (a) => a
+    .nonNull.string("email")
+    .nonNull.string("name")
+    .nonNull.string("company"),
+  returns: (r) => r
+    .string("message")
+    .nonNull.boolean("success"),
+  resolve: async (root, args, ctx, info) => {
+    // TypeScript infers return type: { message?: string, success: boolean }
+    return {
+      success: true,
+      message: "Successfully joined waitlist",
+    };
+  }
+})
+```
+
+Key features:
+
+1. **Inline Type Definition**: Define return types directly in the mutation
+2. **Type Inference**: Resolver function is typed based on builder output
+3. **Automatic Type Names**: Generates payload types like "JoinWaitlistPayload"
+4. **Consistent API**: Same pattern as args builder and field builder
+5. **NonNull Support**: Required fields using `.nonNull` pattern
+
+Implementation details:
+
+- ReturnsBuilder accumulates field definitions as it builds
+- TypeScript tracks the shape using mapped types and generics
+- Generated type names follow pattern: `${MutationName}Payload`
+- Payload types are automatically registered with the schema
 
 ### Nexus Integration
 
