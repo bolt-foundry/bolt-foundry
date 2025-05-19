@@ -38,10 +38,15 @@ jobs:
           echo "Symlinks in current directory:"
           find . -maxdepth 3 -type l -ls || true
 
+      - name: Show computed cache key
+        run: echo "Computed cache key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}"
+
       # 1️⃣ RESTORE
       - name: Restore Deno / vendored / node cache
         id: cache-deno
         uses: actions/cache/restore@v4
+        env:
+          ACTIONS_CACHE_DEBUG: true
         with:
           path: |
             vendor
