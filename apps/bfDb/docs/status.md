@@ -7,9 +7,9 @@
 The GraphQL Builder project has completed the core implementation of the builder
 pattern and is now refocusing priorities. We've successfully implemented the
 core builder functionality, but are deferring the full migration to v0.3 in
-order to prioritize implementing the Node interface in v0.2. This will provide
-proper GraphQL interface support, which is needed for the Login Integration
-project.
+order to prioritize implementing the GraphQLNode class and Node interface in
+v0.2. This will provide proper GraphQL interface support and improve our class
+hierarchy, which is needed for the Login Integration project.
 
 ## Current Progress
 
@@ -35,11 +35,14 @@ project.
 
 ## Next Steps (Priority Order)
 
-1. Implement Node interface for GraphQLObjectBase types (v0.2):
-   - Create common "Node" GraphQL interface definition
-   - Update gqlSpecToNexus.ts to register interface implementations
+1. Implement GraphQLNode and Node interface (v0.2):
+   - Create GraphQLNode class that extends GraphQLObjectBase
+   - Define Node GraphQL interface in the schema
+   - Update loadGqlTypes.ts to automatically register the Node interface
+   - Modify gqlSpecToNexus.ts to automatically detect GraphQLNode types
+   - Refactor BfNode to extend GraphQLNode
    - Add resolveType function for interface resolution
-   - Add tests to verify interface implementation
+   - Add tests to verify implementation
 
 ## Deferred to v0.3
 
