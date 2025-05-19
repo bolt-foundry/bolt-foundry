@@ -1,4 +1,6 @@
-import { objectType, queryType } from "nexus";
+import { extendType, objectType, queryType } from "nexus";
+import { gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
+import { Waitlist } from "apps/bfDb/graphql/roots/Waitlist.ts";
 
 /**
  * Loads GraphQL types using our new builder pattern.
@@ -37,9 +39,36 @@ export function loadGqlTypes() {
     },
   });
 
+  // Create the JoinWaitlistPayload type manually for now
+  const JoinWaitlistPayload = objectType({
+    name: "JoinWaitlistPayload",
+    definition(t) {
+      t.nonNull.boolean("success");
+      t.string("message");
+    },
+  });
+
+  // Load the Waitlist type using our new builder
+  const waitlistSpec = Waitlist.gqlSpec;
+  const waitlistNexusTypes = gqlSpecToNexus(waitlistSpec, "Waitlist");
+
+  // Create types from the Nexus definitions
+  const WaitlistType = objectType(waitlistNexusTypes.mainType);
+
+  // Create the mutation type if it exists
+  let WaitlistMutation = null;
+  if (waitlistNexusTypes.mutationType) {
+    WaitlistMutation = extendType(waitlistNexusTypes.mutationType);
+  }
+
   // Return the types
-  return {
+  const types = {
     Query,
     TestType,
+    Waitlist: WaitlistType,
+    JoinWaitlistPayload,
+    ...(WaitlistMutation ? { Mutation: WaitlistMutation } : {}),
   };
+
+  return types;
 }

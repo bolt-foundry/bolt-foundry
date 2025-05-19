@@ -43,6 +43,11 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  JoinWaitlistPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  Mutation: {};
   Query: {};
   TestType: { // root type
     count?: number | null; // Int
@@ -50,6 +55,7 @@ export interface NexusGenObjects {
     isActive?: boolean | null; // Boolean
     name?: string | null; // String
   }
+  Waitlist: {};
 }
 
 export interface NexusGenInterfaces {
@@ -63,6 +69,13 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  JoinWaitlistPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  Mutation: { // field return type
+    joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+  }
   Query: { // field return type
     ok: boolean; // Boolean!
     test: NexusGenRootTypes['TestType'] | null; // TestType
@@ -73,9 +86,19 @@ export interface NexusGenFieldTypes {
     isActive: boolean | null; // Boolean
     name: string | null; // String
   }
+  Waitlist: { // field return type
+    id: string | null; // ID
+  }
 }
 
 export interface NexusGenFieldTypeNames {
+  JoinWaitlistPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  Mutation: { // field return type name
+    joinWaitlist: 'JoinWaitlistPayload'
+  }
   Query: { // field return type name
     ok: 'Boolean'
     test: 'TestType'
@@ -86,9 +109,19 @@ export interface NexusGenFieldTypeNames {
     isActive: 'Boolean'
     name: 'String'
   }
+  Waitlist: { // field return type name
+    id: 'ID'
+  }
 }
 
 export interface NexusGenArgTypes {
+  Mutation: {
+    joinWaitlist: { // args
+      company: string; // String!
+      email: string; // String!
+      name: string; // String!
+    }
+  }
 }
 
 export interface NexusGenAbstractTypeMembers {
