@@ -137,6 +137,18 @@ bff help
 - Project plans focus on user-centric goals
 - Implementation plans focus on technical details
 
+### Linting
+
+The project uses the Deno linter with custom rules defined in
+`infra/lint/bolt-foundry.ts`:
+
+- `no-env-direct-access`: Prevents direct access to Deno.env, use
+  getConfigurationVariable()
+- `no-bfnodespec-first-static`: Ensures bfNodeSpec is not the first static field
+  in a class
+- `no-logger-set-level`: Prevents accidental commits of logger.setLevel() calls,
+  which should only be used for local debugging
+
 ## Common Workflows
 
 - Running tests for specific modules: `bff test path/to/test.ts`
@@ -145,6 +157,7 @@ bff help
 - Running the development server: `bff dev`
 - Formatting code: `bff format`
 - Generating GraphQL code: `bff iso`
+- Running linter: `bff lint`
 
 ## Version Control
 
