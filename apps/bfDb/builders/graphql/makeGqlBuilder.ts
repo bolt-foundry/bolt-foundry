@@ -150,6 +150,7 @@ export interface GqlBuilder<
         info: GraphQLResolveInfo,
       ) => MaybePromise<R[N]>;
       isSourceToTarget?: boolean; // Defaults to true (source->target)
+      isEdgeRelationship?: boolean; // Marks the field as an edge relationship
     },
   ): GqlBuilder<R>;
 

@@ -15,8 +15,10 @@ Deno.test("BfPerson exposes memberOf relationship to BfOrganization", () => {
       .string("email")
       .object(
         "memberOf",
-        () => Promise.resolve(class BfOrganization {}), // Using thunk style for type reference
-        // No options needed - field name "memberOf" automatically becomes the edge role
+        () => class BfOrganization {}, // Using thunk style for type reference
+        {
+          isEdgeRelationship: true, // Explicitly mark as edge relationship
+        }
       )
   );
 
@@ -48,8 +50,10 @@ Deno.test("Nexus schema correctly maps edge relationship configuration", () => {
       .string("name")
       .object(
         "memberOf",
-        () => Promise.resolve(class BfOrganization {}), // Using thunk style for type reference
-        // No options needed - field name "memberOf" automatically becomes the edge role
+        () => class BfOrganization {}, // Using thunk style for type reference
+        {
+          isEdgeRelationship: true, // Explicitly mark as edge relationship
+        }
       )
   );
 

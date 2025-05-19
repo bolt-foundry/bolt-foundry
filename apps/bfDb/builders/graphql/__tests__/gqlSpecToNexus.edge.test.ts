@@ -17,8 +17,10 @@ Deno.test("gqlSpecToNexus supports defining edge relationships", () => {
       .string("name")
       .object(
         "memberOf",
-        () => Promise.resolve(class BfOrganization {}), // Using thunk style for type reference
-        // No options needed - field name "memberOf" automatically becomes the edge role
+        () => class BfOrganization {}, // Using thunk style for type reference
+        {
+          isEdgeRelationship: true, // Explicitly mark as edge relationship
+        }
       )
   );
 
@@ -56,10 +58,11 @@ Deno.test("gqlSpecToNexus correctly configures edge relationship options", async
       .string("name")
       .object(
         "memberOf",
-        () => Promise.resolve(class BfOrganization {}), // Using thunk style for type reference
+        () => class BfOrganization {}, // Using thunk style for type reference
         {
           // Add custom arguments to demonstrate options usage
           args: (a) => a.string("filter"),
+          isEdgeRelationship: true, // Explicitly mark as edge relationship
         },
       )
   );
