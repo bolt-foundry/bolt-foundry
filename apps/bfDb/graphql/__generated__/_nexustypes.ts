@@ -49,12 +49,6 @@ export interface NexusGenObjects {
   }
   Mutation: {};
   Query: {};
-  TestType: { // root type
-    count?: number | null; // Int
-    id: string; // ID!
-    isActive?: boolean | null; // Boolean
-    name?: string | null; // String
-  }
   Waitlist: {};
 }
 
@@ -77,14 +71,7 @@ export interface NexusGenFieldTypes {
     joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
   }
   Query: { // field return type
-    ok: boolean; // Boolean!
-    test: NexusGenRootTypes['TestType'] | null; // TestType
-  }
-  TestType: { // field return type
-    count: number | null; // Int
-    id: string; // ID!
-    isActive: boolean | null; // Boolean
-    name: string | null; // String
+    ok: boolean | null; // Boolean
   }
   Waitlist: { // field return type
     id: string | null; // ID
@@ -101,13 +88,6 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     ok: 'Boolean'
-    test: 'TestType'
-  }
-  TestType: { // field return type name
-    count: 'Int'
-    id: 'ID'
-    isActive: 'Boolean'
-    name: 'String'
   }
   Waitlist: { // field return type name
     id: 'ID'
