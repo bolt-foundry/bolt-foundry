@@ -1,11 +1,8 @@
 import { extendType, objectType } from "nexus";
 import { gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
-import {
-  Query,
-  Waitlist,
-} from "apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts";
+import * as rootsModule from "apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts";
 
-const roots = [Query, Waitlist];
+const roots = Object.values(rootsModule);
 /**
  * Loads GraphQL types using our new builder pattern.
  * This will eventually load all node types in the system.
@@ -20,11 +17,11 @@ export function loadGqlTypes() {
     const rootSpec = root.gqlSpec;
     const rootName = root.name;
     const nexusTypes = gqlSpecToNexus(rootSpec, rootName);
-    
+
     // Create the main type
     const mainType = objectType(nexusTypes.mainType);
     types.push(mainType);
-    
+
     // Process payload types if they exist
     if (nexusTypes.payloadTypes) {
       for (
@@ -37,7 +34,7 @@ export function loadGqlTypes() {
         );
       }
     }
-    
+
     // Create the mutation type if it exists
     if (nexusTypes.mutationType) {
       const mutationType = extendType(nexusTypes.mutationType);

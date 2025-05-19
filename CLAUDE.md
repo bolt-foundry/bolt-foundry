@@ -323,3 +323,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
   date-based versioning
 - Status indicators should use symbols (✅, 🔄, ⏱️) instead of dates to show
   progress
+
+## Development Best Practices
+
+- Remember to use bff commands first before using any other commands that do the
+  same thing.
+
+## Version Control Workflow
+
+- When committing, start with bff commands, then use sapling commands, finally
+  use gh commands with --repo=bolt-foundry/bolt-foundry and lastly use plain git
+  if no other tool will do
