@@ -102,12 +102,18 @@ Deno.test("gqlSpecToNexus handles nonNull fields", () => {
   const mockBuilder = {
     field: (name: string, config: FieldConfig) => {
       if (name === "requiredField") {
-        // For nonNull fields, Nexus should use nonNull wrapper
-        const typeObj = config.type as { _name: string; ofType: string };
-        wasNonNull = !!typeObj && typeObj._name === "String!" &&
-          typeObj.ofType === "String";
+        assertEquals(config.type, "String");
       }
       return mockBuilder;
+    },
+    nonNull: {
+      field: (name: string, config: FieldConfig) => {
+        if (name === "requiredField") {
+          assertEquals(config.type, "String");
+          wasNonNull = true;
+        }
+        return mockBuilder;
+      },
     },
   };
 
