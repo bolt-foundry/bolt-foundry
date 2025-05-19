@@ -204,3 +204,8 @@ interface GqlSpec {
 - Add more field types and custom scalars
 - Enhance validation and error messages
 - Optimize schema generation performance
+- Implement Node interface for all GraphQLObjectBase types:
+  - Create a common "Node" interface definition in the GraphQL schema
+  - Make all GraphQLObjectBase classes implement this interface
+  - Add support in gqlSpecToNexus.ts to register implementations
+  - Include resolveType function for proper interface resolution
