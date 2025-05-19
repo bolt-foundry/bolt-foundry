@@ -23,6 +23,9 @@ import type {
 
 type MaybePromise<T> = T | Promise<T>;
 
+const logger = getLogger(import.meta);
+logger.setLevel(logger.levels.DEBUG);
+
 /**
  * Type definition for an edge relationship specification
  *
@@ -311,6 +314,11 @@ function createDefaultMutationResolver(mutationName: string) {
  * @returns Nexus compatible type definitions for main type and mutation type
  */
 export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
+  logger.debug(`Converting gqlSpec to Nexus for type: ${typeName}`);
+  logger.debug(`Fields: ${Object.keys(spec.fields).join(", ")}`);
+  logger.debug(`Relations: ${Object.keys(spec.relations).join(", ")}`);
+  logger.debug(`Mutations: ${Object.keys(spec.mutations).join(", ")}`);
+
   // Create the main object type definition
   const mainType = {
     name: typeName,
@@ -320,6 +328,7 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
       // Process fields
       for (const [fieldName, fieldDef] of Object.entries(spec.fields)) {
         const field = fieldDef as GqlFieldDef;
+        logger.debug(`Processing field ${fieldName} of type ${field.type}`);
 
         // For nexus, we use the nonNull chain method instead of type strings with !
         const fieldConfig = {
@@ -344,6 +353,9 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
         const [relationName, relationDef] of Object.entries(spec.relations)
       ) {
         const relation = relationDef as GqlRelationDef;
+        logger.debug(
+          `Processing relation ${relationName} of type ${relation.type}`,
+        );
 
         // Check if we have a thunk function for the target type
         // This is used for the newer thunk-style: .object("memberOf", () => BfOrganization)
@@ -358,13 +370,53 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
           // We're keeping this future-proof in case we need to do more with the thunk later
           relation._hasThunkFn = true;
 
-          // Derive a more specific type name using source_relation_target pattern to prevent collisions
-          // Format: SourceType_RelationName_TargetType (e.g., BfPerson_memberOf_BfOrganization)
-          // Extract target class name from the thunk function if possible
-          const targetClassName =
-            relation._targetThunk.toString().match(/class\s+(\w+)/)?.[1] ||
-            "Unknown";
-          relation.type = `${typeName}_${relationName}_${targetClassName}`;
+          // Use the type name directly if it's specified
+          // For example, if we have .object("currentViewer", () => CurrentViewer),
+          // we want the type to be "CurrentViewer", not some generated name
+          if (!relation.type || relation.type === relationName) {
+            // Try to extract the actual class name from the thunk
+            const thunkStr = relation._targetThunk.toString();
+            // Match patterns like:
+            // () => CurrentViewer
+            // () => import(...).then(m => m.CurrentViewer)
+            // function() { return CurrentViewer }
+            let classMatch = thunkStr.match(
+              /(?:=>|\breturn\s+)(\w+)(?:\s*[;})]|$)/,
+            );
+
+            // Also try to match import patterns
+            if (
+              !classMatch || classMatch[1] === "Promise" ||
+              classMatch[1] === "import"
+            ) {
+              classMatch = thunkStr.match(/\.(\w+)\s*[)}]?\s*$/);
+            }
+
+            if (
+              classMatch && classMatch[1] !== "Promise" &&
+              classMatch[1] !== "then"
+            ) {
+              relation.type = classMatch[1];
+              logger.debug(
+                `Extracted type name ${relation.type} from thunk for relation ${relationName}`,
+              );
+            } else {
+              // If we can't determine the type but it's a common pattern, apply some heuristics
+              if (relationName === "currentViewer") {
+                relation.type = "CurrentViewer";
+                logger.debug(
+                  `Using conventional type name CurrentViewer for relation currentViewer`,
+                );
+              } else {
+                // Capitalize the first letter as a convention
+                relation.type = relationName.charAt(0).toUpperCase() +
+                  relationName.slice(1);
+                logger.debug(
+                  `Using capitalized relation name ${relation.type} as type for relation ${relationName}`,
+                );
+              }
+            }
+          }
         }
 
         // Determine if this is an edge relationship
