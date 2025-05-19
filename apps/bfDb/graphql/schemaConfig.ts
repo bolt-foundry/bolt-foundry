@@ -4,7 +4,7 @@ import { loadGqlTypes } from "./loadGqlTypes.ts";
 
 export const schemaOptions: SchemaConfig = {
   // Use our new loadGqlTypes function
-  types: { ...loadGqlTypes() },
+  types: loadGqlTypes(),
   features: {
     abstractTypeStrategies: {
       __typename: true,
