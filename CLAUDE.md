@@ -188,6 +188,8 @@ gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews
 gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews/comments
 ```
 
+Note: When using the `gh` command, always use `--repo=bolt-foundry/bolt-foundry`
+
 Alternatively, use the BFF commands which handle repository detection
 automatically:
 
