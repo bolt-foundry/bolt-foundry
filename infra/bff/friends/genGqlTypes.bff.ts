@@ -3,7 +3,7 @@
 import { register } from "infra/bff/bff.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { makeSchema } from "nexus";
-import { schemaOptions } from "apps/bfDb/graphql/graphqlServer.ts";
+import { schemaOptions } from "apps/bfDb/graphql/schemaConfig.ts";
 
 const logger = getLogger(import.meta);
 
