@@ -8,6 +8,18 @@ import type {
   AnyConstructor,
   AnyGraphqlObjectBaseCtor,
 } from "apps/bfDb/builders/bfDb/types.ts";
+import type { ReturnSpec } from "./makeReturnsBuilder.ts";
+import { convertArgsToNexus } from "./utils/nexusConverters.ts";
+import type {
+  GraphQLResolverArgs,
+  NexusObjectTypeMap,
+} from "./types/resolverTypes.ts";
+import type {
+  GqlFieldDef,
+  GqlMutationDef,
+  GqlRelationDef,
+  GraphQLRootObject,
+} from "./types/nexusTypes.ts";
 
 type MaybePromise<T> = T | Promise<T>;
 
@@ -37,12 +49,7 @@ type EdgeRelationshipSpec = {
  * Creates a nonNull wrapper for a GraphQL type
  * This matches the Nexus nonNull wrapper format expected by the tests
  */
-function createNonNullType(type: string) {
-  return {
-    _name: `${type}!`,
-    ofType: type,
-  };
-}
+// Removed - using string with ! directly
 
 /**
  * Default resolver for scalar fields that follows the standardized fallback chain:
@@ -52,9 +59,8 @@ function createNonNullType(type: string) {
  */
 function createDefaultFieldResolver(fieldName: string) {
   return function defaultResolver(
-    // deno-lint-ignore no-explicit-any
-    root: any,
-    args: Record<string, unknown>,
+    root: GraphQLRootObject,
+    args: GraphQLResolverArgs,
     ctx: BfGraphqlContext,
     info: GraphQLResolveInfo,
   ) {
@@ -85,9 +91,8 @@ function createDefaultFieldResolver(fieldName: string) {
  */
 function createDefaultRelationResolver(relationName: string) {
   return function defaultRelationResolver(
-    // deno-lint-ignore no-explicit-any
-    root: any,
-    args: Record<string, unknown>,
+    root: GraphQLRootObject,
+    args: GraphQLResolverArgs,
     ctx: BfGraphqlContext,
     info: GraphQLResolveInfo,
   ) {
@@ -152,9 +157,8 @@ function createEdgeRelationshipResolver(
   );
 
   return async function edgeRelationshipResolver(
-    // deno-lint-ignore no-explicit-any
-    root: any,
-    _args: Record<string, unknown>,
+    root: GraphQLRootObject,
+    _args: GraphQLResolverArgs,
     ctx: BfGraphqlContext,
     _info: GraphQLResolveInfo,
   ) {
@@ -286,9 +290,8 @@ function createEdgeRelationshipResolver(
  */
 function createDefaultMutationResolver(mutationName: string) {
   return function defaultMutationResolver(
-    // deno-lint-ignore no-explicit-any
-    root: any,
-    args: Record<string, unknown>,
+    root: GraphQLRootObject,
+    args: GraphQLResolverArgs,
     ctx: BfGraphqlContext,
     info: GraphQLResolveInfo,
   ) {
@@ -311,38 +314,36 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
   // Create the main object type definition
   const mainType = {
     name: typeName,
+    // Keep the parameter as any to maintain compatibility with Nexus types
     // deno-lint-ignore no-explicit-any
     definition(t: any) {
       // Process fields
       for (const [fieldName, fieldDef] of Object.entries(spec.fields)) {
-        // deno-lint-ignore no-explicit-any
-        const field = fieldDef as any;
+        const field = fieldDef as GqlFieldDef;
 
-        // Determine field type
-        let fieldType = field.type;
-
-        // Handle nonNull fields
-        if (field.nonNull) {
-          fieldType = createNonNullType(field.type);
-        }
-
-        // Add field to the object type
-        t.field(fieldName, {
-          type: fieldType,
+        // For nexus, we use the nonNull chain method instead of type strings with !
+        const fieldConfig = {
+          type: field.type,
           description: field.description,
-          // Handle arguments if provided
-          args: field.args || {},
+          // Handle arguments if provided - convert to Nexus format
+          args: convertArgsToNexus(field.args || {}),
           // Add resolver with fallback chain
           resolve: field.resolve || createDefaultFieldResolver(fieldName),
-        });
+        };
+
+        // Add field to the object type
+        if (field.nonNull) {
+          t.nonNull.field(fieldName, fieldConfig);
+        } else {
+          t.field(fieldName, fieldConfig);
+        }
       }
 
       // Process relations (object fields)
       for (
         const [relationName, relationDef] of Object.entries(spec.relations)
       ) {
-        // deno-lint-ignore no-explicit-any
-        const relation = relationDef as any;
+        const relation = relationDef as GqlRelationDef;
 
         // Check if we have a thunk function for the target type
         // This is used for the newer thunk-style: .object("memberOf", () => BfOrganization)
@@ -369,12 +370,12 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
         // Determine if this is an edge relationship
         let resolver = relation.resolve;
 
-        if (!resolver && relation.isEdgeRelationship) {
+        if (!resolver && relation.isEdgeRelationship && relation._targetThunk) {
           // Edge relationships are implicit for object fields without custom resolvers
           // The resolver will query for BfEdge objects and resolve the relationship
           resolver = createEdgeRelationshipResolver(
             relationName, // The field name also serves as the edge role
-            relation.isSourceToTarget, // Direction of relationship
+            relation.isSourceToTarget !== false, // Direction of relationship, default to true
             relation._targetThunk, // The thunk function that returns the target type
           );
         } else if (!resolver) {
@@ -385,13 +386,12 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
         t.field(relationName, {
           type: relation.type,
           description: relation.description,
-          // Handle arguments if provided
-          args: relation.args || {},
+          // Handle arguments if provided - convert to Nexus format
+          args: convertArgsToNexus(relation.args || {}),
           // Add resolver based on relationship type with debug wrapper
           resolve: async function (
-            // deno-lint-ignore no-explicit-any
-            root: any,
-            args: Record<string, unknown>,
+            root: GraphQLRootObject,
+            args: GraphQLResolverArgs,
             ctx: BfGraphqlContext,
             info: GraphQLResolveInfo,
           ) {
@@ -419,23 +419,75 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
 
   // Create mutation type if there are mutations defined
   let mutationType = null;
+  const payloadTypes: NexusObjectTypeMap = {};
+
+  // Build payload types first, outside of the mutation definition
+  for (const [mutationName, mutationDef] of Object.entries(spec.mutations)) {
+    const mutation = mutationDef as GqlMutationDef;
+
+    if (mutation.returnsSpec) {
+      // Generate payload type name - handle camelCase properly
+      const payloadTypeName = mutationName.replace(/([a-z])([A-Z])/g, "$1$2")
+        .split(/(?=[A-Z])/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join("") + "Payload";
+
+      // Create the payload object type
+      payloadTypes[payloadTypeName] = {
+        name: payloadTypeName,
+        // Keep the parameter as any to maintain compatibility with Nexus types
+        // deno-lint-ignore no-explicit-any
+        definition(t: any) {
+          const spec = mutation.returnsSpec as ReturnSpec;
+
+          // Add each field from the returns spec
+          for (const [fieldName, fieldDef] of Object.entries(spec.fields)) {
+            const fieldConfig = {
+              type: fieldDef.type,
+            };
+
+            if (fieldDef.nonNull) {
+              t.nonNull.field(fieldName, fieldConfig);
+            } else {
+              t.field(fieldName, fieldConfig);
+            }
+          }
+        },
+      };
+    }
+  }
+
   if (Object.keys(spec.mutations).length > 0) {
     mutationType = {
       type: "Mutation",
+      // Keep the parameter as any to maintain compatibility with Nexus types
       // deno-lint-ignore no-explicit-any
       definition(t: any) {
         // Add each mutation field to the Mutation type
         for (
           const [mutationName, mutationDef] of Object.entries(spec.mutations)
         ) {
-          // deno-lint-ignore no-explicit-any
-          const mutation = mutationDef as any;
+          const mutation = mutationDef as GqlMutationDef;
+
+          let returnType = "JSON";
+
+          // If we have a direct string return type, use it
+          if (mutation.returnsType) {
+            returnType = mutation.returnsType;
+          } // Otherwise if we have a returnsSpec, use the generated payload type
+          else if (mutation.returnsSpec) {
+            // Generate payload type name - handle camelCase properly
+            returnType = mutationName.replace(/([a-z])([A-Z])/g, "$1$2")
+              .split(/(?=[A-Z])/)
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join("") + "Payload";
+          }
 
           t.field(mutationName, {
-            type: mutation.returns || "JSON",
+            type: returnType,
             description: mutation.description,
-            // Handle mutation arguments
-            args: mutation.args || {},
+            // Handle mutation arguments - convert to Nexus format
+            args: convertArgsToNexus(mutation.args || {}),
             // Add resolver with mutation-specific fallback
             resolve: mutation.resolve ||
               createDefaultMutationResolver(mutationName),
@@ -448,5 +500,6 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
   return {
     mainType,
     mutationType,
+    payloadTypes,
   };
 }
