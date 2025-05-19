@@ -3,6 +3,10 @@ import type { Connection, ConnectionArguments } from "graphql-relay";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { AnyBfNodeCtor } from "apps/bfDb/builders/bfDb/types.ts";
 import { type ArgsBuilder, makeArgBuilder } from "./makeArgBuilder.ts";
+import {
+  makeReturnsBuilder,
+  type ReturnsBuilder,
+} from "./makeReturnsBuilder.ts";
 
 type ThisNode = InstanceType<AnyBfNodeCtor>;
 
@@ -161,17 +165,20 @@ export interface GqlBuilder<
     },
   ): GqlBuilder<R>;
 
-  mutation<N extends string>(
+  mutation<
+    N extends string,
+    ReturnType extends Record<string, unknown> = Record<string, unknown>,
+  >(
     name: N,
-    opts?: {
+    opts: {
       args?: (ab: ArgsBuilder) => ArgsBuilder;
-      returns?: string;
+      returns: string | ((rb: ReturnsBuilder) => ReturnsBuilder<ReturnType>);
       resolve?: (
         root: ThisNode,
         args: Record<string, unknown>,
         ctx: BfGraphqlContext,
         info: GraphQLResolveInfo,
-      ) => MaybePromise<NMutationPayload>;
+      ) => MaybePromise<ReturnType>;
     },
   ): GqlBuilder<R>;
 
@@ -293,16 +300,31 @@ export function makeGqlBuilder<
       return builder;
     },
 
-    mutation(name, opts = {}) {
+    mutation(name, opts) {
       // Create the argument builder function
       const argFn = makeArgBuilder();
 
       // Create and collect arguments if provided
       const args = opts.args ? argFn(opts.args) : {};
 
+      // Handle returns - can be either a string or a builder function
+      let returnsSpec = null;
+      let returnsType = null;
+
+      if (typeof opts.returns === "string") {
+        // Direct string type reference
+        returnsType = opts.returns;
+      } else if (opts.returns) {
+        // Builder function
+        const returnsBuilder = makeReturnsBuilder();
+        opts.returns(returnsBuilder);
+        returnsSpec = returnsBuilder._spec;
+      }
+
       // Store the mutation definition
       spec.mutations[name] = {
-        returns: opts.returns || "JSON",
+        returnsSpec: returnsSpec,
+        returnsType: returnsType,
         args: args,
         resolve: opts.resolve,
       };
