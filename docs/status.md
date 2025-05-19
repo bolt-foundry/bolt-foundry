@@ -8,12 +8,12 @@ Current status overview
 
 ## Status Overview Table
 
-| Project Name      | Current Version | Status      | Next Milestone                            | Key Files                                                                                                        | Owner   |
-| ----------------- | --------------- | ----------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------- |
-| GraphQL Builder   | 0.1             | In Progress | Complete gqlSpecToNexus.ts implementation | [Implementation Plan](/apps/bfDb/docs/0.1/implementation-plan.md), [Status](/apps/bfDb/docs/status.md)           | -       |
-| Login Integration | 0.1             | Blocked     | Waiting on GraphQL Builder completion     | [Project Plan](/apps/boltFoundry/docs/login/project-plan.md)                                                     | Randall |
-| Collector         | 0.1             | Paused      | Pending product rethinking                | [Implementation Plan](/apps/collector/docs/0.1/implementation-plan.md), [Status](/apps/collector/docs/status.md) | -       |
-| BfDB              | 0.1             | Stabilizing | Relation builder improvements             | [Status](/apps/bfDb/docs/backlog.md)                                                                             | -       |
+| Project Name      | Current Version | Status      | Next Milestone                        | Key Files                                                                                                        | Owner   |
+| ----------------- | --------------- | ----------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------- |
+| GraphQL Builder   | 0.1             | In Progress | Migrate existing nodes to new builder | [Implementation Plan](/apps/bfDb/docs/0.1/implementation-plan.md), [Status](/apps/bfDb/docs/status.md)           | -       |
+| Login Integration | 0.1             | Blocked     | Waiting on GraphQL Builder completion | [Project Plan](/apps/boltFoundry/docs/login/project-plan.md)                                                     | Randall |
+| Collector         | 0.1             | Paused      | Pending product rethinking            | [Implementation Plan](/apps/collector/docs/0.1/implementation-plan.md), [Status](/apps/collector/docs/status.md) | -       |
+| BfDB              | 0.1             | Stabilizing | Relation builder improvements         | [Status](/apps/bfDb/docs/backlog.md)                                                                             | -       |
 
 ## Milestone Progress
 
