@@ -2,6 +2,7 @@
 import { assert, assertEquals } from "@std/assert";
 import { makeGqlSpec } from "../makeGqlSpec.ts";
 import { GraphQLNonNull, GraphQLString } from "graphql";
+import type { ArgMap } from "../makeArgBuilder.ts";
 
 /**
  * Test the integration of the new ArgBuilder with the GqlBuilder
@@ -19,7 +20,7 @@ Deno.test("GqlBuilder integrates with ArgBuilder for field arguments", () => {
   type FieldSpec = {
     type: string;
     nonNull?: boolean;
-    args: Record<string, unknown>;
+    args: ArgMap;
     resolve?: (...args: unknown[]) => unknown;
   };
 
@@ -52,8 +53,9 @@ Deno.test("GqlBuilder integrates with ArgBuilder for mutation arguments", () => 
 
   // Define a type for the mutation spec
   type MutationSpec = {
-    returns: string;
-    args: Record<string, unknown>;
+    returnsType?: string;
+    returnsSpec?: Record<string, unknown>;
+    args: ArgMap;
     resolve?: (...args: unknown[]) => unknown;
   };
 
@@ -77,7 +79,7 @@ Deno.test("GqlBuilder integrates with ArgBuilder for mutation arguments", () => 
 
   // Check the return type
   assertEquals(
-    mutationSpec.returns,
+    mutationSpec.returnsType,
     "CreateItemResult",
     "Should have the correct return type",
   );

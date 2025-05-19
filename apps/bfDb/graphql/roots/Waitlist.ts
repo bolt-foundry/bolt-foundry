@@ -14,7 +14,10 @@ export class Waitlist extends GraphQLObjectBase {
             .nonNull.string("email")
             .nonNull.string("name")
             .nonNull.string("company"),
-        returns: "JoinWaitlistPayload",
+        returns: (r) =>
+          r
+            .string("message")
+            .nonNull.boolean("success"),
         async resolve(_src, { email, name, company }) {
           try {
             const apiKey = getConfigurationVariable("WAITLIST_API_KEY");
