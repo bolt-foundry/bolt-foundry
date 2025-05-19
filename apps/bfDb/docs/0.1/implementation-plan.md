@@ -53,9 +53,9 @@ this migration.
 4. **Migration**
    - ✅ Update GraphQLObjectBase.defineGqlNode with comprehensive documentation
    - ✅ Improve loadGqlTypes.ts for dynamic root object loading
-   - ⏱️ Convert one example node as proof of concept
-   - ⏱️ Migrate remaining nodes
-   - ⏱️ Remove legacy builders
+   - ✓ Deferred to v0.3: Convert one example node as proof of concept
+   - ✓ Deferred to v0.3: Migrate remaining nodes
+   - ✓ Deferred to v0.3: Remove legacy builders
 
 5. **Mutation Returns Builder** ✅
    - Created makeReturnsBuilder.ts for building mutation return types
@@ -64,13 +64,14 @@ this migration.
    - Automatically generated and registered payload types
    - Typed resolver functions based on builder output
 
-6. **Testing** ⏱️
-   - Unit tests for builder functionality
-   - Tests for Nexus type generation
-   - Integration tests for field resolution
-   - Tests for edge relationships
-   - Tests for returns builder and type inference
-   - End-to-end tests with GraphQL queries
+6. **Testing**
+   - ✅ Initial tests are in place and passing
+   - ✓ Deferred to v0.3: Additional unit tests for builder functionality
+   - ✓ Deferred to v0.3: Additional tests for Nexus type generation
+   - ✓ Deferred to v0.3: Additional integration tests for field resolution
+   - ✓ Deferred to v0.3: Additional tests for edge relationships
+   - ✓ Deferred to v0.3: Additional tests for returns builder and type inference
+   - ✓ Deferred to v0.3: Additional end-to-end tests with GraphQL queries
 
 ## Technical Design
 
@@ -198,14 +199,21 @@ interface GqlSpec {
 - Improved type safety and IDE support
 - Easier addition of new GraphQL types
 
-## Future Work (v0.2+)
+## Next Version (v0.2)
 
-- Implement Relay-style connections with pagination
-- Add more field types and custom scalars
-- Enhance validation and error messages
-- Optimize schema generation performance
 - Implement Node interface for all GraphQLObjectBase types:
   - Create a common "Node" interface definition in the GraphQL schema
   - Make all GraphQLObjectBase classes implement this interface
   - Add support in gqlSpecToNexus.ts to register implementations
   - Include resolveType function for proper interface resolution
+
+## Future Work (v0.3+)
+
+- Complete migration of remaining nodes to the new builder pattern
+- Remove legacy builders
+- Additional testing coverage for all components
+- Implement Relay-style connections with pagination
+- Add more field types and custom scalars
+- Enhance validation and error messages
+- Optimize schema generation performance
+- Implement validation against bfNodeSpec.relations
