@@ -19,7 +19,14 @@
       "Bash(grep:*)",
       "Bash(bff check:*)",
       "Bash(bff pr-details:*)",
-      "Bash(bff merge:*)"
+      "Bash(bff merge:*)",
+      "Bash(sl status:*)",
+      "Bash(sl diff:*)",
+      "Bash(bff genGqlTypes:*)",
+      "Bash(bff build:*)",
+      "Bash(sl add:*)",
+      "Bash(bff test:*)",
+      "Bash(bff lint:*)"
     ],
     "deny": []
   }

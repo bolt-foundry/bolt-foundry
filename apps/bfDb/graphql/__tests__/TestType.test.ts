@@ -7,7 +7,7 @@
 import { assert } from "@std/assert";
 import { makeSchema } from "nexus";
 import { printSchema } from "graphql";
-import { loadGqlTypes } from "../graphqlServer.ts";
+import { loadGqlTypes } from "../loadGqlTypes.ts";
 
 function buildTestSchema(): string {
   const schema = makeSchema({ types: { ...loadGqlTypes() } });
