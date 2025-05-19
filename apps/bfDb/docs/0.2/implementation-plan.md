@@ -27,43 +27,42 @@ in the system, including BfNode and other specialized nodes.
 
 ## Approach
 
-1. **Explicit Interface Marking**: Create a mechanism for marking classes that
-   should be treated as GraphQL interfaces
+1. **Interface Registry**: Create a central registry of classes that should be
+   treated as GraphQL interfaces
 2. **Class Hierarchy**: Create the GraphQLNode class that extends
-   GraphQLObjectBase and mark it as a GraphQL interface
+   GraphQLObjectBase and add it to the interface registry
 3. **Interface Registration**: Implement automatic registration of GraphQL
-   interfaces from marked classes
-4. **Schema Integration**: Update gqlSpecToNexus.ts to register interface
-   implementations
+   interfaces from the registry during schema generation
+4. **Schema Integration**: Update gqlSpecToNexus.ts to detect interface
+   implementations through the prototype chain
 5. **Inheritance Refactoring**: Update BfNode to extend GraphQLNode
 6. **Testing**: Add comprehensive tests for the implementation
 
 ## Implementation Steps
 
-1. **Create Interface Marking Mechanism**
-   - Define a static property for marking classes as GraphQL interfaces
-   - Update schema generation to check for this marker
-   - Add utility functions for working with interface classes
+1. **Create Interface Registry System**
+   - Create graphqlInterfaces.ts with a registry for GraphQL interfaces
+   - Add utility functions to check if a class is in the registry
+   - Add a function to register interfaces in the registry
 
 2. **Create GraphQLNode Class**
    - Create a new GraphQLNode.ts file that extends GraphQLObjectBase
-   - Mark it as a GraphQL interface using the new marker
    - Implement required methods and properties for node functionality
    - Add gqlSpec definition with core Node fields
    - Ensure id and __typename are properly implemented
+   - Register GraphQLNode in the interface registry
 
-3. **Define Interface Registration System**
-   - Create a registry for GraphQL interfaces
-   - Add functionality to automatically detect marked interface classes
+3. **Implement Interface Registration in Schema**
+   - Modify loadGqlTypes.ts to load interfaces from the registry
+   - Create functions to convert class definitions to GraphQL interfaces
    - Implement resolveType function to determine concrete types at runtime
-   - Export constants and helpers for interface registration
+   - Export constants and helpers for interface functionality
 
 4. **Update Schema Generation**
-   - Modify gqlSpecToNexus.ts to check for interface markers
-   - Modify loadGqlTypes.ts to register marked interfaces
-   - Update schema generation to automatically apply interfaces based on class
-     inheritance
-   - Ensure proper registration of interfaces and implementing types
+   - Modify gqlSpecToNexus.ts to detect implemented interfaces automatically
+   - Add prototype chain traversal to find all implemented interfaces
+   - Update schema generation to apply interfaces to implementing types
+   - Ensure proper registration of interfaces and implementations
 
 5. **Refactor BfNode and Other Classes**
    - Update BfNode to extend GraphQLNode instead of GraphQLObjectBase
@@ -72,44 +71,51 @@ in the system, including BfNode and other specialized nodes.
    - Update any dependent classes as needed
 
 6. **Testing**
-   - Create tests for interface marking mechanism
-   - Test interface registration and implementation
+   - Create tests for the interface registry system
+   - Test interface registration and implementation detection
    - Test interface type resolution with different node types
    - Verify schema generation with interface implementations
    - Test interface field resolution
 
 ## Technical Design
 
-### Interface Marking Mechanism
+### Interface Registry Mechanism
 
-We'll use an explicit static property to mark classes that should be treated as
-GraphQL interfaces:
+Instead of marking each class, we'll use a central registry to explicitly define
+which classes are GraphQL interfaces:
 
 ```typescript
-export class GraphQLObjectBase {
-  // Existing implementation...
+// graphqlInterfaces.ts - Central registry of GraphQL interfaces
+import { GraphQLNode } from "./GraphQLNode";
+// Import other interface classes as needed
 
-  // Static property to mark a class as a GraphQL interface
-  static readonly isGraphQLInterface?: boolean;
+// Registry of all classes that should be treated as GraphQL interfaces
+export const graphQLInterfaces = [
+  GraphQLNode,
+  // Add other interface classes here
+];
 
-  // Method to check if a class is marked as an interface
-  static isInterface(classConstructor: any): boolean {
-    return Boolean(classConstructor?.isGraphQLInterface);
-  }
+// Utility function to check if a class is registered as an interface
+export function isGraphQLInterface(classConstructor: any): boolean {
+  return graphQLInterfaces.includes(classConstructor);
 }
 ```
 
+This approach:
+
+- Maintains a single source of truth for interface definitions
+- Avoids having to mark every class with a property
+- Makes it easy to see all interfaces in one place
+- Avoids inheritance issues with interface markers
+
 ### GraphQLNode Class Implementation
 
-The GraphQLNode class will extend GraphQLObjectBase, be marked as an interface,
-and provide the base functionality for all node types:
+The GraphQLNode class will extend GraphQLObjectBase and provide the base
+functionality for all node types:
 
 ```typescript
 export class GraphQLNode extends GraphQLObjectBase {
-  // Mark this class as a GraphQL interface
-  static readonly isGraphQLInterface = true;
-
-  // Override gqlSpec to include the Node interface fields
+  // Define the GraphQL specification with Node interface fields
   static override gqlSpec = this.defineGqlNode((gql) =>
     gql
       .nonNull.id("id")
@@ -118,6 +124,8 @@ export class GraphQLNode extends GraphQLObjectBase {
 
   // Additional node-specific methods can be added here
 }
+
+// GraphQLNode will be registered as an interface in graphqlInterfaces.ts
 ```
 
 ### Interface Definition in Schema
@@ -134,15 +142,15 @@ interface Node {
 
 ### Interface Registration
 
-We'll build a system to automatically register interfaces from marked classes:
+We'll use the registry to automatically generate interfaces in the schema:
 
 ```typescript
 // In loadGqlTypes.ts
-export function loadGqlTypes() {
-  // Find all classes marked as interfaces and register them
-  const interfaceClasses = findInterfaceClasses();
+import { graphQLInterfaces, isGraphQLInterface } from "./graphqlInterfaces";
 
-  for (const interfaceClass of interfaceClasses) {
+export function loadGqlTypes() {
+  // Register all interfaces from the registry
+  for (const interfaceClass of graphQLInterfaces) {
     const interfaceName = interfaceClass.name;
     schemaConfig.interfaces.push(createInterfaceFromClass(interfaceClass));
   }
@@ -157,8 +165,14 @@ function createInterfaceFromClass(classConstructor: any) {
     definition(t: any) {
       // Extract fields from the class's gqlSpec
       const spec = classConstructor.gqlSpec;
-      // Add fields to the interface definition
-      // ...
+      // Add fields from the specification to the interface
+      for (const [fieldName, fieldDef] of Object.entries(spec.fields)) {
+        if (fieldDef.nonNull) {
+          t.nonNull.field(fieldName, { type: fieldDef.type });
+        } else {
+          t.field(fieldName, { type: fieldDef.type });
+        }
+      }
       // Add resolveType function
       t.resolveType(resolveNodeType);
     },
@@ -166,8 +180,8 @@ function createInterfaceFromClass(classConstructor: any) {
 }
 ```
 
-This approach ensures interfaces are automatically created from marked classes,
-and types that extend those classes will implement the corresponding interfaces.
+This approach uses a centralized registry for interfaces and automatically
+creates the appropriate interface definitions in the schema.
 
 ### Type Resolution Logic
 
@@ -223,15 +237,19 @@ export function gqlSpecToNexus(
 // Helper function to find all interfaces a class implements
 function findImplementedInterfaces(classConstructor: any): string[] {
   const interfaces: string[] = [];
-  let current = Object.getPrototypeOf(classConstructor);
 
-  // Walk up the prototype chain
+  // Check all the classes in the prototype chain
+  let current = classConstructor;
   while (current && current !== GraphQLObjectBase) {
-    // If this parent class is marked as an interface, add it
-    if (GraphQLObjectBase.isInterface(current.constructor)) {
-      interfaces.push(current.constructor.name);
+    // Check each parent class
+    const parentClass = Object.getPrototypeOf(current);
+
+    // If the parent class is in the interface registry, add it
+    if (parentClass && isGraphQLInterface(parentClass)) {
+      interfaces.push(parentClass.name);
     }
-    current = Object.getPrototypeOf(current);
+
+    current = parentClass;
   }
 
   return interfaces;
@@ -254,10 +272,10 @@ export abstract class BfNode extends GraphQLNode {
 
 ## Success Metrics
 
-- Interface marking mechanism is implemented and works correctly
-- GraphQLNode class is properly implemented, marked as an interface, and extends
-  GraphQLObjectBase
+- Interface registry system is implemented and works correctly
+- GraphQLNode class is properly implemented and registered as an interface
 - Interface registration system correctly identifies and registers interfaces
+  from the registry
 - BfNode and other classes correctly inherit from GraphQLNode
 - Interface implementations are automatically detected based on class
   inheritance
