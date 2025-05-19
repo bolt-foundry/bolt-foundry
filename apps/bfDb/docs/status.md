@@ -25,14 +25,18 @@ DSL with a single-argument fluent builder pattern.
   types
 - ✅ Relation Support: Implemented edge relationships with thunk-style type
   references
+- ✅ GraphQLObjectBase: Updated with comprehensive documentation for the
+  defineGqlNode method
+- ✅ Dynamic Root Loading: Improved loadGqlTypes.ts to use Object.values for
+  automatic root loading
 - ⏱️ Validation: Validation against bfNodeSpec.relations pending
 
 ## Next Steps (Priority Order)
 
-1. Update GraphQLObjectBase.defineGqlNode to use the new builder pattern
-2. Test and validate with a complete example node type
-3. Add support for additional edge relationship patterns (target→source,
+1. Test and validate with a complete example node type
+2. Add support for additional edge relationship patterns (target→source,
    many-to-many)
+3. Complete remaining tests for the GraphQL builder
 
 ## Blocking Issues
 
