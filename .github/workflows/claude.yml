@@ -29,11 +29,34 @@ jobs:
       pull-requests: read
       issues: read
       id-token: write
+    defaults:
+      run:
+        shell: nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -e {0}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Cache nix development shell
+        id: nix-shell-cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/nix-shell-cache
+          key: ${{ runner.os }}-nix-shell-${{ hashFiles('flake.nix', 'flake.lock') }}
+
+      - name: Pre-build nix development shell
+        if: steps.nix-shell-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/nix-shell-cache
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile
+
+      - name: Add dev-shell to PATH
+        run: echo "/tmp/nix-shell-cache/profile/bin" >> $GITHUB_PATH
 
       - name: Run Claude PR Action
         uses: anthropics/claude-code-action@beta
