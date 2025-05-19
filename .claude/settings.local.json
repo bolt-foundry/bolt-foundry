@@ -35,7 +35,11 @@
       "Bash(deno test:*)",
       "Bash(find:*)",
       "Bash(gh pr view:*)",
-      "Bash(gh pr diff:*)"
+      "Bash(gh pr diff:*)",
+      "Bash(ls:*)",
+      "Bash(apps/bfDb/bin/genBarrel.ts)",
+      "Bash(./apps/bfDb/graphql/graphqlServer.ts)",
+      "Bash(deno check:*)"
     ],
     "deny": []
   }

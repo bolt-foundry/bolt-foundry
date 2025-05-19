@@ -43,6 +43,10 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  BfNode: {};
+  CurrentViewer: {};
+  CurrentViewerLoggedIn: {};
+  CurrentViewerLoggedOut: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
     success: boolean; // Boolean!
@@ -69,16 +73,37 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  BfNode: { // field return type
+    id: string | null; // ID
+  }
+  CurrentViewer: { // field return type
+    currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
+  CurrentViewerLoggedIn: { // field return type
+    currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
+  CurrentViewerLoggedOut: { // field return type
+    currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
+    id: string | null; // ID
+    orgBfOid: string | null; // String
+    personBfGid: string | null; // String
+  }
   JoinWaitlistPayload: { // field return type
     message: string | null; // String
     success: boolean; // Boolean!
   }
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+    loginWithGoogle: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
   }
   Query: { // field return type
-    ok: boolean; // Boolean!
-    test: NexusGenRootTypes['TestType'] | null; // TestType
+    currentViewer: NexusGenRootTypes['CurrentViewer'] | null; // CurrentViewer
   }
   TestType: { // field return type
     count: number | null; // Int
@@ -92,16 +117,37 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  BfNode: { // field return type name
+    id: 'ID'
+  }
+  CurrentViewer: { // field return type name
+    currentViewer: 'CurrentViewer'
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
+  CurrentViewerLoggedIn: { // field return type name
+    currentViewer: 'CurrentViewer'
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
+  CurrentViewerLoggedOut: { // field return type name
+    currentViewer: 'CurrentViewer'
+    id: 'ID'
+    orgBfOid: 'String'
+    personBfGid: 'String'
+  }
   JoinWaitlistPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
   }
   Mutation: { // field return type name
     joinWaitlist: 'JoinWaitlistPayload'
+    loginWithGoogle: 'CurrentViewer'
   }
   Query: { // field return type name
-    ok: 'Boolean'
-    test: 'TestType'
+    currentViewer: 'CurrentViewer'
   }
   TestType: { // field return type name
     count: 'Int'
@@ -120,6 +166,9 @@ export interface NexusGenArgTypes {
       company: string; // String!
       email: string; // String!
       name: string; // String!
+    }
+    loginWithGoogle: { // args
+      idToken: string; // String!
     }
   }
 }
