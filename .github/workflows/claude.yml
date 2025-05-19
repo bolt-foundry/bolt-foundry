@@ -10,6 +10,12 @@ on:
   pull_request_review:
     types: [submitted]
 
+# Limit concurrent runs per issue/PR
+# This ensures only one run per issue/PR at a time
+concurrency:
+  group: claude-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: false
+
 jobs:
   claude-code-action:
     if: |
@@ -34,3 +40,39 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           timeout_minutes: "60"
+          allowed_tools: |
+            Bash(bff pr-comments:*)
+            Bash(sl help:*)
+            Bash(sl log:*)
+            Bash(bff commit:*)
+            Bash(sl diff:*)
+            Bash(sl commit:*)
+            Bash(sl pull:*)
+            Bash(deno fmt:*)
+            Bash(deno lint:*)
+            Bash(bff merge:*)
+            Bash(bff pr-details:*)
+            Bash(sl status:*)
+            Bash(sl diff:*)
+            Bash(bff ci-status:*)
+            Bash(bff format:*)
+            Bash(grep:*)
+            Bash(bff check:*)
+            Bash(bff pr-details:*)
+            Bash(bff merge:*)
+            Bash(sl status:*)
+            Bash(sl diff:*)
+            Bash(bff genGqlTypes:*)
+            Bash(bff build:*)
+            Bash(sl add:*)
+            Bash(bff test:*)
+            Bash(bff lint:*)
+            Bash(sl:*)
+            Bash(sl pr:*)
+            Bash(sl rebase:*)
+            Bash(sl smartlog:*)
+            Bash(sl shelve:*)
+            Bash(deno test:*)
+            Bash(find:*)
+            Bash(gh pr view:*)
+            Bash(gh pr diff:*)

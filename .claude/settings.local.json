@@ -35,7 +35,11 @@
       "Bash(deno test:*)",
       "Bash(find:*)",
       "Bash(gh pr view:*)",
-      "Bash(gh pr diff:*)"
+      "Bash(gh pr diff:*)",
+      "WebFetch(domain:docs.github.com)",
+      "Bash(sl status:*)",
+      "Bash(sl diff:*)",
+      "Bash(bff commit:*)"
     ],
     "deny": []
   }
