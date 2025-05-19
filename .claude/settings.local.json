@@ -39,7 +39,7 @@
       "WebFetch(domain:docs.github.com)",
       "Bash(sl status:*)",
       "Bash(sl diff:*)",
-      "Bash(bff commit:*)"
+      "Bash(bff commit:*)",
       "Bash(gh pr diff:*)",
       "Bash(ls:*)",
       "Bash(apps/bfDb/bin/genBarrel.ts)",

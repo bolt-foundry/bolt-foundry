@@ -5,7 +5,6 @@ import * as classes from "apps/bfDb/classes/__generated__/classesList.ts";
 import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
-logger.setLevel(logger.levels.DEBUG);
 
 /**
  * Loads GraphQL types using our new builder pattern.

@@ -24,7 +24,6 @@ import type {
 type MaybePromise<T> = T | Promise<T>;
 
 const logger = getLogger(import.meta);
-logger.setLevel(logger.levels.DEBUG);
 
 /**
  * Type definition for an edge relationship specification
