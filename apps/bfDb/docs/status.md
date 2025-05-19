@@ -38,6 +38,12 @@ DSL with a single-argument fluent builder pattern.
    many-to-many)
 3. Complete remaining tests for the GraphQL builder
 
+## Planned for v0.2
+
+1. Implement Node interface - Make all GraphQLObjectBase types implement a
+   common Node interface with id and __typename fields
+2. Add Relay-style connections with pagination support
+
 ## Blocking Issues
 
 The incomplete GraphQL Builder is currently blocking:
