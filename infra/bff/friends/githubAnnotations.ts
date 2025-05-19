@@ -19,12 +19,14 @@ export function printGitHubAnnotation(
   line?: number,
   col?: number,
 ) {
+  const escape = (s: string) =>
+    s.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A");
   let annotation = `::${type}`;
   if (file) annotation += ` file=${file}`;
   // GitHub annotations are 1-indexed, ensure our numbers are as well
   if (typeof line === "number") annotation += `,line=${line}`;
   if (typeof col === "number") annotation += `,col=${col}`;
-  annotation += `::${msg}`;
+  annotation += `::${escape(msg)}`;
   // deno-lint-ignore no-console
   console.log(annotation);
 }
