@@ -161,7 +161,7 @@ This project uses BFF CLI commands and Sapling SCM for version control.
 bff commit -m "Your commit message" [files...]
 
 # Amend the current commit
-bff amend -m "Your updated message" [files...]
+bff amend [-m "Your updated message"] [files...]
 
 # Check CI status
 bff ci-status [--details | -d]
