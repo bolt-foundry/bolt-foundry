@@ -20,6 +20,7 @@ DSL with a single-argument fluent builder pattern.
 - ✅ Resolver Logic: Implemented field resolver chain with proper fallbacks
 - ✅ Mutation Support: Added support for mutations with arguments and return
   types
+- ✅ Returns Builder: Implemented mutation returns builder with type inference
 - ✅ Type Generation: Completed `gqlSpecToNexus.ts` to convert specs to Nexus
   types
 - ✅ Relation Support: Implemented edge relationships with thunk-style type

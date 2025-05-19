@@ -3,7 +3,7 @@ import type { SchemaConfig } from "nexus/dist/builder.js";
 import { loadGqlTypes } from "./loadGqlTypes.ts";
 
 export const schemaOptions: SchemaConfig = {
-  // Use our new loadGqlTypes function
+  // Use our new loadGqlTypes function which returns an array
   types: loadGqlTypes(),
   features: {
     abstractTypeStrategies: {
