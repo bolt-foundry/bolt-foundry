@@ -3,6 +3,15 @@
 ### Do not make changes to this file directly
 
 
+type JoinWaitlistPayload {
+  message: String
+  success: Boolean!
+}
+
+type Mutation {
+  joinWaitlist(company: String!, email: String!, name: String!): JoinWaitlistPayload
+}
+
 type Query {
   ok: Boolean!
   test: TestType
@@ -13,4 +22,8 @@ type TestType {
   id: ID!
   isActive: Boolean
   name: String
+}
+
+type Waitlist {
+  id: ID
 }
