@@ -13,8 +13,6 @@ this migration.
 - Unify our builder patterns (both bfDb and GraphQL using similar fluent
   interfaces)
 - Improve developer experience with better type inference and IDE support
-- Maintain backward compatibility at the schema level while changing the
-  implementation
 - Support edge relationships between node types, with an initial focus on the
   BfPerson to BfOrganization relationship for login functionality
 - Establish a solid foundation for future enhancements like Relay connections
@@ -24,14 +22,13 @@ this migration.
 - Changing the GraphQL schema structure (client-facing API remains the same)
 - Removing dependency on Nexus/GraphQL Yoga (still used under the hood)
 - Implementing Relay-style connections (deprioritized for v0.1)
+- Backward compatability: We're ok with breaking everything.
 
 ## Approach
 
 1. **Builder Pattern**: Create a fluent interface similar to bfNodeSpec
 2. **Direct Integration**: Map builder specs to Nexus types at build time
-3. **Progressive Migration**: Convert nodes one at a time to minimize disruption
-4. **Validation**: Add build-time validation against bfNodeSpec.relations
-5. **Testing**: Comprehensive tests for builder, Nexus generation, and resolvers
+3. **Testing**: Comprehensive tests for builder, Nexus generation, and resolvers
 
 ## Implementation Steps
 
@@ -53,17 +50,13 @@ this migration.
      resolvers
    - Used field names as edge roles for intuitive API
 
-4. **Validation** ⏱️
-   - Add validation for object relations against bfNodeSpec.relations
-   - Ensure consistency between database and GraphQL schema
-
-5. **Migration** ⏱️
+4. **Migration** ⏱️
    - Update GraphQLObjectBase.defineGqlNode
    - Convert one example node as proof of concept
    - Migrate remaining nodes
    - Remove legacy builders
 
-6. **Testing** ⏱️
+5. **Testing** ⏱️
    - Unit tests for builder functionality
    - Tests for Nexus type generation
    - Integration tests for field resolution
@@ -71,51 +64,6 @@ this migration.
    - End-to-end tests with GraphQL queries
 
 ## Technical Design
-
-### Builder Interfaces
-
-```typescript
-// GqlBuilder interface with type-safe generics and thunk-style references
-interface GqlBuilder<R = Record<string, unknown>> {
-  // Scalar fields
-  string<N extends string>(name: N, opts?: FieldOptions): GqlBuilder<R>;
-  int<N extends string>(name: N, opts?: FieldOptions): GqlBuilder<R>;
-  boolean<N extends string>(name: N, opts?: FieldOptions): GqlBuilder<R>;
-  id<N extends string>(name: N, opts?: FieldOptions): GqlBuilder<R>;
-
-  // Edge relationships with thunk-style type references
-  object<N extends keyof R & string>(
-    name: N,
-    targetThunk: () => MaybePromise<any>,
-    opts?: {
-      args?: (ab: ArgsBuilder) => ArgsBuilder;
-      resolve?: (
-        root: any,
-        args: Record<string, unknown>,
-        ctx: any,
-      ) => MaybePromise<R[N]>;
-      isSourceToTarget?: boolean; // Defaults to true (source->target)
-    },
-  ): GqlBuilder<R>;
-
-  // Mutations
-  mutation<N extends string>(name: N, opts?: MutationOptions): GqlBuilder<R>;
-
-  // Nullability
-  nonNull: OmitNonNull<GqlBuilder<R>>;
-}
-
-// ArgsBuilder for field arguments
-interface ArgsBuilder {
-  string(name: string): GraphQLInputType;
-  int(name: string): GraphQLInputType;
-  float(name: string): GraphQLInputType;
-  boolean(name: string): GraphQLInputType;
-  id(name: string): GraphQLInputType;
-
-  nonNull: OmitNonNull<ArgsBuilder>;
-}
-```
 
 ### Resolution Logic
 
@@ -189,6 +137,7 @@ time:
 ```typescript
 interface GqlSpec {
   fields: Record<string, FieldSpec>;
+  relations: Record<string, RelationSpec>;
   mutations: Record<string, MutationSpec>;
 }
 
@@ -197,8 +146,6 @@ interface GqlSpec {
 
 ## Success Metrics
 
-- All nodes successfully migrated to new builder pattern
-- No changes to client-facing GraphQL schema
 - All tests passing, including integration tests
 - Improved type safety and IDE support
 - Easier addition of new GraphQL types
