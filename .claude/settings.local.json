@@ -26,7 +26,14 @@
       "Bash(bff build:*)",
       "Bash(sl add:*)",
       "Bash(bff test:*)",
-      "Bash(bff lint:*)"
+      "Bash(bff lint:*)",
+      "Bash(sl:*)",
+      "Bash(sl pr:*)",
+      "Bash(sl rebase:*)",
+      "Bash(sl smartlog:*)",
+      "Bash(sl shelve:*)",
+      "Bash(deno test:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }

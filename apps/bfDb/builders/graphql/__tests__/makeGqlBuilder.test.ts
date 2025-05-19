@@ -16,7 +16,8 @@ type FieldSpec = {
 };
 
 type MutationSpec = {
-  returns: string;
+  returnsType?: string;
+  returnsSpec?: Record<string, unknown>;
   args?: Record<string, unknown>;
   resolve?: (...args: unknown[]) => unknown;
 };
@@ -66,7 +67,27 @@ Deno.test("mutation helper records args and returns", () => {
 
   const mutations = specOf<BuilderSpec>(builder).mutations;
   assert("createPost" in mutations);
-  assertEquals(mutations.createPost.returns, "Post");
+  assertEquals(mutations.createPost.returnsType, "Post");
+});
+
+Deno.test("mutation helper records args and returns with builder", () => {
+  const builder = makeGqlBuilder();
+  builder.mutation("createPost", {
+    args: (a) => a.string("title"),
+    returns: (r) => r.string("message").nonNull.boolean("success"),
+  });
+
+  const mutations = specOf<BuilderSpec>(builder).mutations;
+  assert("createPost" in mutations);
+  assert(mutations.createPost.returnsSpec, "Should have returnsSpec");
+  const fields = mutations.createPost.returnsSpec?.fields;
+  if (fields && "message" in fields && "success" in fields) {
+    assertEquals(fields.message.type, "String");
+    assertEquals(fields.success.type, "Boolean");
+    assertEquals(fields.success.nonNull, true);
+  } else {
+    throw new Error("Expected fields message and success in returnsSpec");
+  }
 });
 
 Deno.test("builders are chainable", () => {

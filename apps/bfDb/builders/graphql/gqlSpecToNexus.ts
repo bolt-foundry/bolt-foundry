@@ -8,6 +8,8 @@ import type {
   AnyConstructor,
   AnyGraphqlObjectBaseCtor,
 } from "apps/bfDb/builders/bfDb/types.ts";
+import type { ReturnSpec } from "./makeReturnsBuilder.ts";
+import { booleanArg, floatArg, idArg, intArg, nonNull, stringArg } from "nexus";
 
 type MaybePromise<T> = T | Promise<T>;
 
@@ -37,11 +39,53 @@ type EdgeRelationshipSpec = {
  * Creates a nonNull wrapper for a GraphQL type
  * This matches the Nexus nonNull wrapper format expected by the tests
  */
-function createNonNullType(type: string) {
-  return {
-    _name: `${type}!`,
-    ofType: type,
-  };
+// Removed - using string with ! directly
+
+/**
+ * Converts argument definitions from builder format to Nexus format
+ */
+function convertArgsToNexus(
+  args: Record<string, unknown>,
+): Record<string, unknown> {
+  const nexusArgs: Record<string, unknown> = {};
+
+  for (const [name, type] of Object.entries(args)) {
+    // If type is a string, convert to proper Nexus arg
+    if (typeof type === "string") {
+      const isNonNull = type.endsWith("!");
+      const baseType = isNonNull ? type.slice(0, -1) : type;
+
+      let argFn;
+      switch (baseType) {
+        case "String":
+          argFn = stringArg();
+          break;
+        case "Int":
+          argFn = intArg();
+          break;
+        case "Float":
+          argFn = floatArg();
+          break;
+        case "Boolean":
+          argFn = booleanArg();
+          break;
+        case "ID":
+          argFn = idArg();
+          break;
+        default:
+          // Fall back to stringArg for unknown types
+          argFn = stringArg();
+          break;
+      }
+
+      nexusArgs[name] = isNonNull ? nonNull(argFn) : argFn;
+    } else {
+      // Otherwise, assume it's already in the right format
+      nexusArgs[name] = type;
+    }
+  }
+
+  return nexusArgs;
 }
 
 /**
@@ -318,23 +362,22 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
         // deno-lint-ignore no-explicit-any
         const field = fieldDef as any;
 
-        // Determine field type
-        let fieldType = field.type;
-
-        // Handle nonNull fields
-        if (field.nonNull) {
-          fieldType = createNonNullType(field.type);
-        }
-
-        // Add field to the object type
-        t.field(fieldName, {
-          type: fieldType,
+        // For nexus, we use the nonNull chain method instead of type strings with !
+        const fieldConfig = {
+          type: field.type,
           description: field.description,
-          // Handle arguments if provided
-          args: field.args || {},
+          // Handle arguments if provided - convert to Nexus format
+          args: convertArgsToNexus(field.args || {}),
           // Add resolver with fallback chain
           resolve: field.resolve || createDefaultFieldResolver(fieldName),
-        });
+        };
+
+        // Add field to the object type
+        if (field.nonNull) {
+          t.nonNull.field(fieldName, fieldConfig);
+        } else {
+          t.field(fieldName, fieldConfig);
+        }
       }
 
       // Process relations (object fields)
@@ -385,8 +428,8 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
         t.field(relationName, {
           type: relation.type,
           description: relation.description,
-          // Handle arguments if provided
-          args: relation.args || {},
+          // Handle arguments if provided - convert to Nexus format
+          args: convertArgsToNexus(relation.args || {}),
           // Add resolver based on relationship type with debug wrapper
           resolve: async function (
             // deno-lint-ignore no-explicit-any
@@ -419,6 +462,44 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
 
   // Create mutation type if there are mutations defined
   let mutationType = null;
+  const payloadTypes: Record<string, unknown> = {};
+
+  // Build payload types first, outside of the mutation definition
+  for (const [mutationName, mutationDef] of Object.entries(spec.mutations)) {
+    // deno-lint-ignore no-explicit-any
+    const mutation = mutationDef as any;
+
+    if (mutation.returnsSpec) {
+      // Generate payload type name - handle camelCase properly
+      const payloadTypeName = mutationName.replace(/([a-z])([A-Z])/g, "$1$2")
+        .split(/(?=[A-Z])/)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join("") + "Payload";
+
+      // Create the payload object type
+      payloadTypes[payloadTypeName] = {
+        name: payloadTypeName,
+        // deno-lint-ignore no-explicit-any
+        definition(t: any) {
+          const spec = mutation.returnsSpec as ReturnSpec;
+
+          // Add each field from the returns spec
+          for (const [fieldName, fieldDef] of Object.entries(spec.fields)) {
+            const fieldConfig = {
+              type: fieldDef.type,
+            };
+
+            if (fieldDef.nonNull) {
+              t.nonNull.field(fieldName, fieldConfig);
+            } else {
+              t.field(fieldName, fieldConfig);
+            }
+          }
+        },
+      };
+    }
+  }
+
   if (Object.keys(spec.mutations).length > 0) {
     mutationType = {
       type: "Mutation",
@@ -431,11 +512,25 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
           // deno-lint-ignore no-explicit-any
           const mutation = mutationDef as any;
 
+          let returnType = "JSON";
+
+          // If we have a direct string return type, use it
+          if (mutation.returnsType) {
+            returnType = mutation.returnsType;
+          } // Otherwise if we have a returnsSpec, use the generated payload type
+          else if (mutation.returnsSpec) {
+            // Generate payload type name - handle camelCase properly
+            returnType = mutationName.replace(/([a-z])([A-Z])/g, "$1$2")
+              .split(/(?=[A-Z])/)
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join("") + "Payload";
+          }
+
           t.field(mutationName, {
-            type: mutation.returns || "JSON",
+            type: returnType,
             description: mutation.description,
-            // Handle mutation arguments
-            args: mutation.args || {},
+            // Handle mutation arguments - convert to Nexus format
+            args: convertArgsToNexus(mutation.args || {}),
             // Add resolver with mutation-specific fallback
             resolve: mutation.resolve ||
               createDefaultMutationResolver(mutationName),
@@ -448,5 +543,6 @@ export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
   return {
     mainType,
     mutationType,
+    payloadTypes,
   };
 }
