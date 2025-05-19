@@ -1,0 +1,31 @@
+.formatter-container {
+  height: 100vh;
+  background-color: var(--pageBackground);
+}
+.formatter-header {
+  padding: 8px 24px;
+}
+.formatter-logo {
+  width: 96px;
+  height: 18px;
+  aspect-ratio: 8.6 / 1;
+}
+.formatter-header-text {
+  font-family: var(--marketingFontFamily);
+  font-size: 32px;
+  line-height: 1;
+  margin-left: -0.03em;
+}
+
+.formatter-content-main {
+  padding: 8px 24px;
+}
+
+.formatter-section-header h2 {
+  margin: 0;
+}
+
+.formatter-card {
+  background: var(--border);
+  border-radius: 8px;
+}
