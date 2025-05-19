@@ -22,8 +22,39 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-// Flaky b/c it depends on an external service (waitlist API)
-Deno.test.ignore("User can join the waitlist successfully", async () => {
+Deno.test("User can join the waitlist successfully", async () => {
+  // Save original fetch to restore later
+  const originalFetch = globalThis.fetch;
+
+  // Mock the fetch requests to the contacts API
+  globalThis.fetch = (input: string | URL | Request, init?: RequestInit) => {
+    const url = String(input);
+    
+    // Intercept contacts API requests
+    if (url.includes("/contacts-cms") || url.includes("bf-contacts.replit.app/api/contacts")) {
+      logger.info(`Intercepted request to contacts API: ${url}`);
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
+            success: true,
+            message: "Test waitlist entry created successfully"
+          }),
+          { 
+            status: 200, 
+            headers: new Headers({ "content-type": "application/json" }) 
+          }
+        )
+      );
+    }
+    
+    // Pass through all other requests
+    return originalFetch(input, init);
+  };
+
+  // Mock the API key
+  const originalEnv = Deno.env.get("WAITLIST_API_KEY");
+  Deno.env.set("WAITLIST_API_KEY", "mock-api-key-for-testing");
+
   const context = await setupE2ETest({ headless: true });
 
   try {
@@ -70,6 +101,14 @@ Deno.test.ignore("User can join the waitlist successfully", async () => {
     logger.error("Join waitlist e2e test failed", error);
     throw error;
   } finally {
+    // Restore the original fetch and environment variable
+    globalThis.fetch = originalFetch;
+    if (originalEnv) {
+      Deno.env.set("WAITLIST_API_KEY", originalEnv);
+    } else {
+      Deno.env.delete("WAITLIST_API_KEY");
+    }
+    
     await teardownE2ETest(context);
   }
 });
