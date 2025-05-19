@@ -1,13 +1,15 @@
 # GraphQL Builder Status
 
-**Current Status:** IN PROGRESS
+**Current Status:** REFOCUSING
 
 ## Status Details
 
-The GraphQL Builder project is actively being implemented, with focus on
-completing the core functionality needed to enable the Login Integration
-project. This new builder pattern will replace the legacy three-helper GraphQL
-DSL with a single-argument fluent builder pattern.
+The GraphQL Builder project has completed the core implementation of the builder
+pattern and is now refocusing priorities. We've successfully implemented the
+core builder functionality, but are deferring the full migration to v0.3 in
+order to prioritize implementing the Node interface in v0.2. This will provide
+proper GraphQL interface support, which is needed for the Login Integration
+project.
 
 ## Current Progress
 
@@ -33,16 +35,21 @@ DSL with a single-argument fluent builder pattern.
 
 ## Next Steps (Priority Order)
 
-1. Test and validate with a complete example node type
+1. Implement Node interface for GraphQLObjectBase types (v0.2):
+   - Create common "Node" GraphQL interface definition
+   - Update gqlSpecToNexus.ts to register interface implementations
+   - Add resolveType function for interface resolution
+   - Add tests to verify interface implementation
+
+## Deferred to v0.3
+
+1. Complete the migration of remaining nodes to the new builder pattern
 2. Add support for additional edge relationship patterns (target→source,
    many-to-many)
-3. Complete remaining tests for the GraphQL builder
-
-## Planned for v0.2
-
-1. Implement Node interface - Make all GraphQLObjectBase types implement a
-   common Node interface with id and __typename fields
-2. Add Relay-style connections with pagination support
+3. Complete additional tests for the GraphQL builder
+4. Remove legacy builders completely
+5. Add Relay-style connections with pagination support
+6. Implement validation against bfNodeSpec.relations
 
 ## Blocking Issues
 
