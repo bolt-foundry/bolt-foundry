@@ -477,9 +477,9 @@ export async function build(args: Array<string>): Promise<number> {
     return contentResult;
   }
 
-  if (debug) logMemoryUsage("before graphql server");
-  const result = await sh("./apps/bfDb/graphql/graphqlServer.ts");
-  if (debug) logMemoryUsage("after graphql server");
+  if (debug) logMemoryUsage("before graphql types");
+  const result = await runShellCommand(["bff", "genGqlTypes"]);
+  if (debug) logMemoryUsage("after graphql types");
 
   if (result) return result;
   if (result && waitForFail) {
