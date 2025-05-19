@@ -56,12 +56,12 @@ this migration.
    - Migrate remaining nodes
    - Remove legacy builders
 
-5. **Mutation Returns Builder** ⏱️
-   - Create makeReturnsBuilder.ts for building mutation return types
-   - Support scalar field methods with type inference
-   - Implement nonNull pattern for required fields
-   - Automatically generate and register payload types
-   - Type resolver functions based on builder output
+5. **Mutation Returns Builder** ✅
+   - Created makeReturnsBuilder.ts for building mutation return types
+   - Supported scalar field methods with type inference
+   - Implemented nonNull pattern for required fields
+   - Automatically generated and registered payload types
+   - Typed resolver functions based on builder output
 
 6. **Testing** ⏱️
    - Unit tests for builder functionality

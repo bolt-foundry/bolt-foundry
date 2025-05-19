@@ -52,7 +52,8 @@ Deno.test("GqlBuilder integrates with ArgBuilder for mutation arguments", () => 
 
   // Define a type for the mutation spec
   type MutationSpec = {
-    returns: string;
+    returnsType?: string;
+    returnsSpec?: Record<string, unknown>;
     args: Record<string, unknown>;
     resolve?: (...args: unknown[]) => unknown;
   };
@@ -77,7 +78,7 @@ Deno.test("GqlBuilder integrates with ArgBuilder for mutation arguments", () => 
 
   // Check the return type
   assertEquals(
-    mutationSpec.returns,
+    mutationSpec.returnsType,
     "CreateItemResult",
     "Should have the correct return type",
   );
