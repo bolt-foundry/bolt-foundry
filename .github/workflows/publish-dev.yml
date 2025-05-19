@@ -15,17 +15,13 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    defaults:
+      run:
+        shell: nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -e {0}
     steps:
-      - name: Install Nix
-        uses: cachix/install-nix-action@v22
-        with:
-          nix_path: nixpkgs=channel:nixos-24.11
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-            max-jobs = auto
-            cores = 0
-            substituters = https://cache.nixos.org
-            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+      - uses: DeterminateSystems/flakehub-cache-action@main
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -150,42 +146,31 @@ jobs:
       - name: Update version in deno.jsonc and npm
         run: |
           cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            cd packages/bolt-foundry
-            # Update version in deno.json using jq instead of deno eval
-            ls -la
-            CURRENT_VERSION=\$(cat deno.json | jq -r '.version')
-            NEW_VERSION=\"\${CURRENT_VERSION}-dev.${sha_short}\"
-            jq --arg version \"\$NEW_VERSION\" '.version = \$version' ./deno.json > ./deno.json.tmp
-            mv ./deno.json.tmp ./deno.json
-            echo \"Updated deno.json version to \${CURRENT_VERSION}-dev.${sha_short}\"
-          "
+          cd packages/bolt-foundry
+          ls -la
+          CURRENT_VERSION=$(cat deno.json | jq -r ".version")
+          NEW_VERSION="${CURRENT_VERSION}-dev.${sha_short}"
+          jq --arg version "$NEW_VERSION" ".version = $version" ./deno.json > ./deno.json.tmp
+          mv ./deno.json.tmp ./deno.json
+          echo "Updated deno.json version to ${CURRENT_VERSION}-dev.${sha_short}"
+
       - name: Build package
         run: |
           cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            deno run -A packages/bolt-foundry/bin/build.ts
-          "
+          deno run -A packages/bolt-foundry/bin/build.ts
 
       - name: Publish to npm
         run: |
           cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            cd packages/bolt-foundry/npm
-            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-            npm publish --access public --tag dev
-          "
+          cd packages/bolt-foundry/npm
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          npm publish --access public --tag dev
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # - name: Publish package to jsr
       #   run: |
       #     cd $GITHUB_WORKSPACE
-      #     # Use the cached profile for the development shell
-      #     nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
       #       deno publish --allow-dirty
       #     "
       #   env:
