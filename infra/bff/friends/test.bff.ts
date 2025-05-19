@@ -17,11 +17,6 @@ export async function testCommand(options: string[]): Promise<number> {
     : [...pathsStrings, ...pathsStringsX];
   const testArgs = ["deno", "test", "-A", ...runnablePaths];
 
-  // Allow passing specific test files or additional arguments
-  if (options.length > 0) {
-    testArgs.push(...options);
-  }
-
   const result = await runShellCommand(testArgs, undefined, {}, true, true);
 
   if (result === 0) {
