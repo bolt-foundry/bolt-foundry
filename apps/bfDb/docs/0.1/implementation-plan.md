@@ -50,11 +50,12 @@ this migration.
      resolvers
    - Used field names as edge roles for intuitive API
 
-4. **Migration** ⏱️
-   - Update GraphQLObjectBase.defineGqlNode
-   - Convert one example node as proof of concept
-   - Migrate remaining nodes
-   - Remove legacy builders
+4. **Migration**
+   - ✅ Update GraphQLObjectBase.defineGqlNode with comprehensive documentation
+   - ✅ Improve loadGqlTypes.ts for dynamic root object loading
+   - ⏱️ Convert one example node as proof of concept
+   - ⏱️ Migrate remaining nodes
+   - ⏱️ Remove legacy builders
 
 5. **Mutation Returns Builder** ✅
    - Created makeReturnsBuilder.ts for building mutation return types

@@ -27,22 +27,36 @@ export abstract class GraphQLObjectBase {
   }
 
   /**
-   * Define a GraphQL node using the new fluent builder pattern.
+   * Define a GraphQL node using the fluent builder pattern.
    * This is the primary way to define GraphQL types for nodes.
    *
+   * The builder provides methods for:
+   * - Scalar fields (.string(), .int(), .boolean(), .id())
+   * - Object relationships (.object())
+   * - Mutations (.mutation())
+   * - Required fields (.nonNull.string(), etc.)
+   *
+   * Object fields without custom resolvers are automatically treated as edge
+   * relationships, with the field name becoming the edge role.
+   *
    * Example:
-   * ```
+   * ```typescript
    * static override gqlSpec = this.defineGqlNode(gql =>
    *   gql
    *     .string("name")
    *     .id("id")
-   *     .boolean("isActive")
-   *     .object("owner")
+   *     .nonNull.boolean("isActive")
+   *     .object("owner", () => OtherClass)
    *     .mutation("update", {
-   *       args: (a) => a.string("newName"),
+   *       args: (a) => a.nonNull.string("newName"),
+   *       returns: (r) => r.boolean("success").string("message"),
+   *       resolve: (root, args, ctx) => ({ success: true, message: "Updated" })
    *     })
    * );
    * ```
+   *
+   * @param def Builder function that configures the GraphQL type
+   * @returns GqlNodeSpec with fields, relations, and mutations
    */
   static defineGqlNode(
     def: Parameters<typeof makeGqlSpec>[0],
@@ -50,8 +64,19 @@ export abstract class GraphQLObjectBase {
     return makeGqlSpec(def);
   }
 
+  /**
+   * Default GraphQL specification that includes only an ID field.
+   * Subclasses should override this with their own field definitions.
+   */
   static gqlSpec?: GqlNodeSpec = this.defineGqlNode((gql) => gql.id("id"));
 
+  /**
+   * Converts the object to a GraphQL-compatible format.
+   * This implementation returns the minimal required fields, but subclasses
+   * (especially BfNode) provide more comprehensive implementations.
+   *
+   * @returns A GraphQL-compatible representation of this object
+   */
   toGraphql(): GraphqlNode {
     return {
       __typename: this.__typename,
