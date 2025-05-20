@@ -49,11 +49,15 @@ properly registered and loaded in the schema.
 
 ## Current Work (v0.3 - Interface Loading)
 
-We're now focusing on improving the GraphQL interface registration:
+We're now implementing dedicated directory structures and improved loading for
+GraphQL interfaces:
 
-1. Ensure genBarrel.ts includes GraphQL interfaces
-2. Verify the interfacesList.ts barrel file contains all interfaces
-3. Ensure loadGqlTypes.ts correctly uses the interfaces from the barrel file
+1. ✅ Ensure genBarrel.ts includes GraphQL interfaces
+2. ✅ Verify the interfacesList.ts barrel file contains all interfaces
+3. ✅ Ensure loadInterfaces.ts correctly registers interfaces in the schema
+4. ✅ Move GraphQLNode to dedicated interfaces directory
+5. ✅ Update tests to verify interfaces are correctly detected in schema
+6. Implement detection of interface implementations in GraphQL objects
 
 ## Deferred to v0.4
 
