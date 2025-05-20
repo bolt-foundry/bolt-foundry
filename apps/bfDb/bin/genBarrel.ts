@@ -87,6 +87,21 @@ const barrels: BarrelConfig[] = [
     ),
     importPath: (f) => `apps/bfDb/graphql/roots/${f}`,
   },
+  // 5️⃣  GraphQL interfaces
+  {
+    dir: new URL("../graphql/interfaces/", import.meta.url),
+    out: new URL(
+      "../graphql/__generated__/interfacesList.ts",
+      import.meta.url,
+    ),
+    importPath: (f) => `apps/bfDb/graphql/interfaces/${f}`,
+    banner: `/**
+ * GraphQL Interface Barrel File
+ *
+ * @generated
+ * This file is auto-generated. Do not edit directly.
+ */`,
+  },
 ];
 
 export async function generateAllBarrels() {
