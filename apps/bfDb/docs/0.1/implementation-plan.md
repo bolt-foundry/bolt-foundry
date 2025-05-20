@@ -22,13 +22,14 @@ this migration.
 - Changing the GraphQL schema structure (client-facing API remains the same)
 - Removing dependency on Nexus/GraphQL Yoga (still used under the hood)
 - Implementing Relay-style connections (deprioritized for v0.1)
-- Backward compatability: We're ok with breaking everything.
+- Backward compatibility: We're ok with breaking everything.
 
 ## Approach
 
 1. **Builder Pattern**: Create a fluent interface similar to bfNodeSpec
 2. **Direct Integration**: Map builder specs to Nexus types at build time
 3. **Testing**: Comprehensive tests for builder, Nexus generation, and resolvers
+4. **Phased Migration**: Implement core functionality in v0.1, Node interface in v0.2, full migration in v0.3
 
 ## Implementation Steps
 
@@ -50,28 +51,35 @@ this migration.
      resolvers
    - Used field names as edge roles for intuitive API
 
-4. **Migration**
-   - ✅ Update GraphQLObjectBase.defineGqlNode with comprehensive documentation
-   - ✅ Improve loadGqlTypes.ts for dynamic root object loading
-   - ✓ Deferred to v0.3: Convert one example node as proof of concept
-   - ✓ Deferred to v0.3: Migrate remaining nodes
-   - ✓ Deferred to v0.3: Remove legacy builders
-
-5. **Mutation Returns Builder** ✅
+4. **Mutation Returns Builder** ✅
    - Created makeReturnsBuilder.ts for building mutation return types
    - Supported scalar field methods with type inference
    - Implemented nonNull pattern for required fields
    - Automatically generated and registered payload types
    - Typed resolver functions based on builder output
 
-6. **Testing**
-   - ✅ Initial tests are in place and passing
-   - ✓ Deferred to v0.3: Additional unit tests for builder functionality
-   - ✓ Deferred to v0.3: Additional tests for Nexus type generation
-   - ✓ Deferred to v0.3: Additional integration tests for field resolution
-   - ✓ Deferred to v0.3: Additional tests for edge relationships
-   - ✓ Deferred to v0.3: Additional tests for returns builder and type inference
-   - ✓ Deferred to v0.3: Additional end-to-end tests with GraphQL queries
+5. **Infrastructure Setup** ✅
+   - Update GraphQLObjectBase.defineGqlNode with comprehensive documentation
+   - Improve loadGqlTypes.ts for dynamic root object loading
+   - Add schemaConfig.ts for centralized schema configuration
+   - Implement genGqlTypes.bff.ts for type generation
+
+6. **Testing** ✅
+   - Initial tests are in place and passing:
+     - Builder functionality tests
+     - Nexus type generation tests
+     - Basic integration tests
+     - Argument builder tests
+
+7. **Connection Support** ⏱️
+   - Implemented stub for connection method in builder interface
+   - Full implementation deferred to v0.3
+
+8. **Migration Strategy** ⏱️
+   - Keep legacy builders functional while implementing v0.1 and v0.2
+   - Allow both systems to coexist during transition
+   - Provide clear documentation on migration path for node types
+   - Complete migration of remaining nodes in v0.3
 
 ## Technical Design
 
@@ -193,19 +201,66 @@ interface GqlSpec {
 // Converted to Nexus ObjectType definitions using gqlSpecToNexus.ts
 ```
 
+### Example Usage
+
+Here's an example of a GraphQL node type definition using the new builder:
+
+```typescript
+class ExampleNode extends GraphQLObjectBase {
+  static defineGqlNode() {
+    return this.gqlNodeBuilder((b) => b
+      .nonNull.id("id")
+      .nonNull.string("name")
+      .object("organization", () => BfOrganization)
+      .mutation("updateName", {
+        args: (a) => a.nonNull.string("newName"),
+        returns: (r) => r
+          .nonNull.boolean("success")
+          .string("message"),
+        resolve: async (root, { newName }, ctx) => {
+          // Implementation here
+          return { success: true, message: "Name updated" };
+        }
+      })
+    );
+  }
+}
+```
+
+## Validation Plan
+
+1. **Schema-Level Validation**:
+   - Ensure all required fields have nonNull specified
+   - Verify field names follow naming conventions
+   - Check for duplicate field definitions
+
+2. **Edge Relationship Validation**:
+   - Validate edge relationships against bfNodeSpec.relations
+   - Ensure consistency between GraphQL schema and database schema
+   - Warn about potential circular dependencies
+   - Check for proper usage of isSourceToTarget option
+
+3. **Type Safety**:
+   - Leverage TypeScript's type system for compile-time validation
+   - Add runtime validators for schema generation
+
 ## Success Metrics
 
 - All tests passing, including integration tests
 - Improved type safety and IDE support
 - Easier addition of new GraphQL types
+- Valid schema generation with Nexus/GraphQL Yoga
 
 ## Next Version (v0.2)
 
 - Implement Node interface for all GraphQLObjectBase types:
-  - Create a common "Node" interface definition in the GraphQL schema
-  - Make all GraphQLObjectBase classes implement this interface
-  - Add support in gqlSpecToNexus.ts to register implementations
-  - Include resolveType function for proper interface resolution
+  - Create GraphQLNode class that extends GraphQLObjectBase
+  - Define Node GraphQL interface in the schema
+  - Update loadGqlTypes.ts to automatically register the Node interface
+  - Modify gqlSpecToNexus.ts to automatically detect GraphQLNode types
+  - Refactor BfNode to extend GraphQLNode
+  - Add resolveType function for interface resolution
+  - Add tests to verify implementation
 
 ## Future Work (v0.3+)
 
@@ -217,3 +272,4 @@ interface GqlSpec {
 - Enhance validation and error messages
 - Optimize schema generation performance
 - Implement validation against bfNodeSpec.relations
+- Support for additional edge relationship patterns (target→source, many-to-many)
