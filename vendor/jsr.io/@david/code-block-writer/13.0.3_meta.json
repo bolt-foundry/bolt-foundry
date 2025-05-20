@@ -1,0 +1,77 @@
+{
+  "manifest": {
+    "/.github/workflows/ci.yml": {
+      "size": 1012,
+      "checksum": "sha256-9ba5be7d57b88c5486ff53bdb6aa2132d324ced144edbff3ad71d33031b28af0"
+    },
+    "/deno.json": {
+      "size": 252,
+      "checksum": "sha256-e33f3d8466542d2439b1a844a48dfd4efa09a52f58f5a4fdce4b1ad1e04a06f6"
+    },
+    "/README.md": {
+      "size": 6329,
+      "checksum": "sha256-86211e7a0c3ef9689dcd91e2304870d397f458f9c5f66b981dd34c31b4bcaa70"
+    },
+    "/dprint.json": {
+      "size": 237,
+      "checksum": "sha256-6d1a674ab78b701a8e4b66fa0ce9653e14cdede085ebbb50aaf49b93f65be199"
+    },
+    "/deno.lock": {
+      "size": 11148,
+      "checksum": "sha256-44ec9c6a428374249ac7d718217a932313048bca03f55a23b4028389fd361f82"
+    },
+    "/utils/string_utils.test.ts": {
+      "size": 1324,
+      "checksum": "sha256-584ecf874059e0c2a003d6ad98d3f86076fd7090ff5075188bbe1417a84d200a"
+    },
+    "/scripts/build_npm.ts": {
+      "size": 938,
+      "checksum": "sha256-900a7a5540b33ca0f6192d510dabef5b0ea416854514ab5746f402737eb792cd"
+    },
+    "/LICENSE": {
+      "size": 1108,
+      "checksum": "sha256-2769ffd3960ca1197b672b10d18b5216f423cb5c07dc328590548c47724d50fd"
+    },
+    "/utils/string_utils.ts": {
+      "size": 693,
+      "checksum": "sha256-56e4f259c3a4beded71519cc9df85ff881a37ef902987269997153a65f192900"
+    },
+    "/mod.ts": {
+      "size": 29463,
+      "checksum": "sha256-0607bd073927514eb8a03d75b0fb3a4a319af1354904523590fd2ffbb59d3ba5"
+    },
+    "/_test.deps.ts": {
+      "size": 155,
+      "checksum": "sha256-4ccf29082bab0413ae2d3955461bb8c61cc03eeff8dfc5aa2f45350bea997a9b"
+    },
+    "/mod.test.ts": {
+      "size": 50173,
+      "checksum": "sha256-284eb6deb3dc29101d9e03817257134df4fb193e8cd3381b268c7a0550733dde"
+    }
+  },
+  "moduleGraph2": {
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./utils/string_utils.ts",
+          "specifierRange": [
+            [
+              0,
+              62
+            ],
+            [
+              0,
+              87
+            ]
+          ]
+        }
+      ]
+    },
+    "/utils/string_utils.ts": {}
+  },
+  "exports": {
+    ".": "./mod.ts"
+  }
+}

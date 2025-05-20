@@ -1,0 +1,17 @@
+{
+  "scope": "simplewebauthn",
+  "name": "browser",
+  "latest": "13.1.0",
+  "versions": {
+    "13.0.0-alpha1": {},
+    "13.1.0": {},
+    "12.0.0": {},
+    "11.0.0-alpha3": {
+      "yanked": true
+    },
+    "11.0.0-alpha2": {
+      "yanked": true
+    },
+    "13.0.0": {}
+  }
+}

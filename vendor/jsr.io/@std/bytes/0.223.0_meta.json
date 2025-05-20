@@ -1,0 +1,282 @@
+{
+  "manifest": {
+    "/concat.ts": {
+      "size": 675,
+      "checksum": "sha256-8142a1734fd445582be0d209d0def43c2a3c27370a0fd4b327187dd34b98d6eb"
+    },
+    "/repeat_test.ts": {
+      "size": 1018,
+      "checksum": "sha256-35e51cc5bf7f631b65d2c6a55f090833d1854504067244bebc103683c440fed2"
+    },
+    "/ends_with.ts": {
+      "size": 752,
+      "checksum": "sha256-4744d6aac863fc03ddeafa6f7d6c4bb8cf1bd055b1e40a4b844012f70d35f795"
+    },
+    "/copy.ts": {
+      "size": 1307,
+      "checksum": "sha256-e3331dc8b9175f1016b9ef6c1890f1b80770762e017b6ca08b9b764954d26def"
+    },
+    "/starts_with_test.ts": {
+      "size": 501,
+      "checksum": "sha256-01f3567e1229e9e5c7552fcc8eef7ab692c9578482bd03bbdaa10d40730d8a04"
+    },
+    "/index_of_needle.ts": {
+      "size": 1361,
+      "checksum": "sha256-d502e71d7a0502b2564947d3845530632592064b73e9d50e671d4d3275f059d1"
+    },
+    "/copy_test.ts": {
+      "size": 968,
+      "checksum": "sha256-12b4438a78facf92e2858726b8969f9a98033ca38098093bb830bc7da1111994"
+    },
+    "/ends_with_test.ts": {
+      "size": 477,
+      "checksum": "sha256-ea2a3645bf4d868793194d1d7fbc7c816a6fa7f5c87bc12313af2fd37be03fec"
+    },
+    "/concat_test.ts": {
+      "size": 1503,
+      "checksum": "sha256-931349f13d11c0f71cdaece4ad8b02b0bcc79119a67e669ef6aa09829babaf3b"
+    },
+    "/last_index_of_needle.ts": {
+      "size": 1433,
+      "checksum": "sha256-62297687dec7287577b89ac47cb19c93d84a173132e4adb75c14bea3c3d2ce51"
+    },
+    "/index_of_needle_test.ts": {
+      "size": 1694,
+      "checksum": "sha256-aede0bc476e7641159057aef40ab5a33b8b602bd897c8768d13a1e987bf73e5f"
+    },
+    "/last_index_of_needle_test.ts": {
+      "size": 1648,
+      "checksum": "sha256-b059dfef1e295fa06e32767deecaddb199d90e3ed97574789afc10a0b9dd60d3"
+    },
+    "/equals.ts": {
+      "size": 1450,
+      "checksum": "sha256-2a407bf9256800235c7bf9d923a1cf9a66f4dbd0ef8e7501c2f018e97a345a73"
+    },
+    "/starts_with.ts": {
+      "size": 698,
+      "checksum": "sha256-765a16fb7dbd00a8efde85f5e2f5db2b1e81af5743ddcbb04b9359b6234597d6"
+    },
+    "/includes_needle_test.ts": {
+      "size": 570,
+      "checksum": "sha256-1b4dbf4796ce9f0b75ecd63f1ff12adb6a7b870b5fe528b155b37c9edb1f7c02"
+    },
+    "/equals_test.ts": {
+      "size": 1439,
+      "checksum": "sha256-2aeea4c8e245180264e7b7e2a6c183e6c457344d42229654a1a00643cedabdbf"
+    },
+    "/includes_needle.ts": {
+      "size": 950,
+      "checksum": "sha256-68a80d38eefd73d20c4f60d669e08c308a3b92d5cb5e1813bbee23eb9f10d630"
+    },
+    "/repeat.ts": {
+      "size": 1048,
+      "checksum": "sha256-e5adcef788b51327d00894edebcd194a1a65ce64fc7c37161646c4d24cf04747"
+    },
+    "/deno.json": {
+      "size": 446,
+      "checksum": "sha256-9c8c01bad061252880a1ab2bf11c336735f8f6944d15fc7efada089227af5265"
+    },
+    "/mod.ts": {
+      "size": 766,
+      "checksum": "sha256-13a8a7cd4945992a4b1f77a467bb44457e6535a1f18527d556e13f6fd21e5307"
+    }
+  },
+  "moduleGraph1": {
+    "/starts_with.ts": {},
+    "/includes_needle.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./index_of_needle.ts",
+          "specifierRange": [
+            [
+              3,
+              30
+            ],
+            [
+              3,
+              52
+            ]
+          ]
+        }
+      ]
+    },
+    "/concat.ts": {},
+    "/copy.ts": {},
+    "/index_of_needle.ts": {},
+    "/repeat.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./copy.ts",
+          "specifierRange": [
+            [
+              2,
+              21
+            ],
+            [
+              2,
+              32
+            ]
+          ]
+        }
+      ]
+    },
+    "/equals.ts": {},
+    "/ends_with.ts": {},
+    "/last_index_of_needle.ts": {},
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./concat.ts",
+          "specifierRange": [
+            [
+              18,
+              14
+            ],
+            [
+              18,
+              27
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./copy.ts",
+          "specifierRange": [
+            [
+              19,
+              14
+            ],
+            [
+              19,
+              25
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./ends_with.ts",
+          "specifierRange": [
+            [
+              20,
+              14
+            ],
+            [
+              20,
+              30
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./equals.ts",
+          "specifierRange": [
+            [
+              21,
+              14
+            ],
+            [
+              21,
+              27
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./includes_needle.ts",
+          "specifierRange": [
+            [
+              22,
+              14
+            ],
+            [
+              22,
+              36
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./index_of_needle.ts",
+          "specifierRange": [
+            [
+              23,
+              14
+            ],
+            [
+              23,
+              36
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./last_index_of_needle.ts",
+          "specifierRange": [
+            [
+              24,
+              14
+            ],
+            [
+              24,
+              41
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./repeat.ts",
+          "specifierRange": [
+            [
+              25,
+              14
+            ],
+            [
+              25,
+              27
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./starts_with.ts",
+          "specifierRange": [
+            [
+              26,
+              14
+            ],
+            [
+              26,
+              32
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./concat": "./concat.ts",
+    "./copy": "./copy.ts",
+    "./ends-with": "./ends_with.ts",
+    "./equals": "./equals.ts",
+    "./includes-needle": "./includes_needle.ts",
+    "./index-of-needle": "./index_of_needle.ts",
+    "./last-index-of-needle": "./last_index_of_needle.ts",
+    "./repeat": "./repeat.ts",
+    "./starts-with": "./starts_with.ts"
+  }
+}

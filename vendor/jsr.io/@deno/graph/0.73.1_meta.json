@@ -1,0 +1,207 @@
+{
+  "manifest": {
+    "/loader.ts": {
+      "size": 2827,
+      "checksum": "sha256-e139207aac3098df2543c41eefe881d888aee8e3e3aa6ba90c20eee4681baa22"
+    },
+    "/types.ts": {
+      "size": 6922,
+      "checksum": "sha256-ff80b6b69b4f167774d5910ab93d99e8d30ff44b2b71e45a63ca09751d5e0c08"
+    },
+    "/mod.ts": {
+      "size": 9535,
+      "checksum": "sha256-dff3d33b634c078b8e9db73973792022772a42458e40f8ba2516aa7ee030ec4a"
+    },
+    "/deno_graph_wasm.generated.js": {
+      "size": 31243,
+      "checksum": "sha256-4e6ac07a247d1680a663dc3a6bd446428130857832e93dae53c32330bb056bf8"
+    },
+    "/LICENSE": {
+      "size": 1078,
+      "checksum": "sha256-e70487678a799f089f7f78db7302e779d5dc7320ccd02cc13f494a4fb8b88300"
+    },
+    "/media_type.ts": {
+      "size": 393,
+      "checksum": "sha256-8f71caabdc293a0a93e697b423366817ee3eaeef5a0ede5e77df485a1333a7ac"
+    },
+    "/deno.json": {
+      "size": 206,
+      "checksum": "sha256-ffcc118aeb9c7112758bf79df66bec6e057ab59de7dffbe5d45ee1f4a7b0c634"
+    },
+    "/deno_graph_wasm.generated.d.ts": {
+      "size": 2842,
+      "checksum": "sha256-ef8e0ffa7199c1093ce479c1ee7ff07b9cddc40d77f1678a5f40739cc6f83a64"
+    },
+    "/test.ts": {
+      "size": 23691,
+      "checksum": "sha256-76bd66d3d79f639412abbab3be141ea8abe44e797d335d1b4ac3f152867ef886"
+    },
+    "/README.md": {
+      "size": 3247,
+      "checksum": "sha256-e70369361e9f71fae02a734b6c374c6f30e82dab485bba036ae09fafc63c8aac"
+    },
+    "/deno_graph_wasm_bg.wasm": {
+      "size": 2780352,
+      "checksum": "sha256-e4bccbe696c44733b05004335b4f1e73f906f44f3e86e5d7bba8d5da0af14396"
+    }
+  },
+  "moduleGraph1": {
+    "/deno_graph_wasm.generated.d.ts": {},
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./deno_graph_wasm.generated.js",
+          "specifierRange": [
+            [
+              20,
+              22
+            ],
+            [
+              20,
+              54
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./loader.ts",
+          "specifierRange": [
+            [
+              21,
+              36
+            ],
+            [
+              21,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              28,
+              7
+            ],
+            [
+              28,
+              19
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./loader.ts",
+          "specifierRange": [
+            [
+              30,
+              45
+            ],
+            [
+              30,
+              58
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./media_type.ts",
+          "specifierRange": [
+            [
+              31,
+              26
+            ],
+            [
+              31,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "exportType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              40,
+              7
+            ],
+            [
+              40,
+              19
+            ]
+          ]
+        }
+      ]
+    },
+    "/types.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./media_type.ts",
+          "specifierRange": [
+            [
+              2,
+              31
+            ],
+            [
+              2,
+              48
+            ]
+          ]
+        }
+      ]
+    },
+    "/media_type.ts": {},
+    "/loader.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              2,
+              56
+            ],
+            [
+              2,
+              68
+            ]
+          ]
+        }
+      ]
+    },
+    "/deno_graph_wasm.generated.js": {
+      "tsReferences": [
+        {
+          "type": "types",
+          "text": "./deno_graph_wasm.generated.d.ts",
+          "range": [
+            [
+              4,
+              21
+            ],
+            [
+              4,
+              55
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./loader": "./loader.ts",
+    "./types": "./types.ts"
+  }
+}

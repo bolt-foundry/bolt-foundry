@@ -1,0 +1,199 @@
+{
+  "manifest": {
+    "/mod.ts": {
+      "size": 78,
+      "checksum": "sha256-01985d2ee7da8d1caee318a9d07664774fbee4e31602bc2bb6bb62c3489555ed"
+    },
+    "/ts_morph_common.d.ts": {
+      "size": 44199,
+      "checksum": "sha256-6edce1218c51a593765c9a9d2e1dfeab294ccdc800016d6c78530a9f4c0847a7"
+    },
+    "/DenoRuntime.ts": {
+      "size": 4715,
+      "checksum": "sha256-9f687e70238772f481e2e7e6751fb1db8194c87c6d33d0b39b7cd038eb7163d6"
+    },
+    "/typescript.d.ts": {
+      "size": 578803,
+      "checksum": "sha256-8d34b67775da067998d8c6b20fa639fa61950d7f6ea0af386e8ad52296db4dd6"
+    },
+    "/deno.json": {
+      "size": 182,
+      "checksum": "sha256-21a0cd529f13e6205c0a524f9e10fad60161a595191623ae0c1267d921d6b25c"
+    },
+    "/ts_morph_common.js": {
+      "size": 1887007,
+      "checksum": "sha256-3cd50c7970857f67e0be82f518d207806a6cf02930c9ae2c38c7ea85538e7374"
+    },
+    "/typescript.js": {
+      "size": 8869445,
+      "checksum": "sha256-c7b5e56d458adc0e9ff01547c970910fdebdd2508e71cf62de49634bb62e5e12"
+    }
+  },
+  "moduleGraph2": {
+    "/typescript.js": {},
+    "/typescript.d.ts": {},
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "typesSpecifier": {
+            "text": "./ts_morph_common.d.ts",
+            "range": [
+              [
+                0,
+                15
+              ],
+              [
+                0,
+                39
+              ]
+            ]
+          },
+          "specifier": "./ts_morph_common.js",
+          "specifierRange": [
+            [
+              1,
+              14
+            ],
+            [
+              1,
+              36
+            ]
+          ]
+        }
+      ]
+    },
+    "/ts_morph_common.d.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "typesSpecifier": {
+            "text": "./typescript.d.ts",
+            "range": [
+              [
+                0,
+                15
+              ],
+              [
+                0,
+                34
+              ]
+            ]
+          },
+          "specifier": "./typescript.js",
+          "specifierRange": [
+            [
+              1,
+              19
+            ],
+            [
+              1,
+              36
+            ]
+          ]
+        }
+      ]
+    },
+    "/ts_morph_common.js": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./DenoRuntime.ts",
+          "specifierRange": [
+            [
+              0,
+              28
+            ],
+            [
+              0,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "typesSpecifier": {
+            "text": "./typescript.d.ts",
+            "range": [
+              [
+                2,
+                15
+              ],
+              [
+                2,
+                34
+              ]
+            ]
+          },
+          "specifier": "./typescript.js",
+          "specifierRange": [
+            [
+              3,
+              19
+            ],
+            [
+              3,
+              36
+            ]
+          ]
+        }
+      ]
+    },
+    "/DenoRuntime.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:/@std/fs@^0.229.3/ensure-dir",
+          "specifierRange": [
+            [
+              0,
+              41
+            ],
+            [
+              0,
+              75
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:/@std/fs@^0.229.3/expand-glob",
+          "specifierRange": [
+            [
+              1,
+              43
+            ],
+            [
+              1,
+              78
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^0.225.2",
+          "specifierRange": [
+            [
+              2,
+              25
+            ],
+            [
+              2,
+              49
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./mod.ts"
+  }
+}

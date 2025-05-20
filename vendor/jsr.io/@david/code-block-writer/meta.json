@@ -1,0 +1,10 @@
+{
+  "scope": "david",
+  "name": "code-block-writer",
+  "latest": "13.0.3",
+  "versions": {
+    "13.0.2": {},
+    "13.0.3": {},
+    "13.0.1": {}
+  }
+}

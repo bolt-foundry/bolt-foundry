@@ -1,0 +1,409 @@
+{
+  "manifest": {
+    "/LICENSE": {
+      "size": 1080,
+      "checksum": "sha256-55a1b7d89e10abec6d595b8f36a372ad96df764243d6697b152bfa9f50a8d22e"
+    },
+    "/mod.ts": {
+      "size": 4748,
+      "checksum": "sha256-5dec80ee7a3a325be45c03439558531bce7707ac118f4376cebbd6740ff24bfb"
+    },
+    "/.github/workflows/deno.yml": {
+      "size": 853,
+      "checksum": "sha256-3a69e79285d63c4e25ebb36ac84ca2a91575d24fe7f691d19b611e89f55b6f60"
+    },
+    "/README.md": {
+      "size": 4110,
+      "checksum": "sha256-93fe3a2cac8af6ab8dfa862fc3fac99e86b8daa114d6d2c546923838ab9d872f"
+    },
+    "/deno.json": {
+      "size": 132,
+      "checksum": "sha256-8861d362571930e76015d43cb18f56a359a311d738494cda3f4f2a9cf9c1f4ad"
+    },
+    "/.gitignore": {
+      "size": 166,
+      "checksum": "sha256-0902b392783db97b092ffc156aaf74fa78bb6c2dec5331fd4884627a7b37adab"
+    },
+    "/util_test.ts": {
+      "size": 11513,
+      "checksum": "sha256-f5b521be3c2d648fd934746a0fee63f0e98a5b64a0c19ec3f95e571fa073cf83"
+    },
+    "/types.ts": {
+      "size": 5507,
+      "checksum": "sha256-0490359117c53783138f2b6692a34f85bca9237314ba8cdef8ad682d81218d21"
+    },
+    "/download.ts": {
+      "size": 7361,
+      "checksum": "sha256-ada314a1a273c43559acd341155fbfc4aba41247d84361f2db7423d1648bd816"
+    },
+    "/.editorconfig": {
+      "size": 99,
+      "checksum": "sha256-561e2d9d8035e8b9861e31b3934557da651481d95dfd8992e12dbbee03c285c2"
+    },
+    "/.github/workflows/depsbot.yml": {
+      "size": 375,
+      "checksum": "sha256-a46c05fea71113a571a09dceb204bfe1621c78250f6512d0484752a9a5f5373a"
+    },
+    "/download_test.ts": {
+      "size": 7326,
+      "checksum": "sha256-895203a559f88ed23a715f4f5c7f33fabf0cb898c14359767a0e9f9e4747ed02"
+    },
+    "/import_map.json": {
+      "size": 61,
+      "checksum": "sha256-d27bbf15ae5bf9f2a14af6d045d761e01cec2795c8f1b3e46eb55a95077b8415"
+    },
+    "/deps.ts": {
+      "size": 305,
+      "checksum": "sha256-4518c332757c16e1b10e01f6d7f618053a45c6c467cc4302827cefea7294f00b"
+    },
+    "/util.ts": {
+      "size": 3007,
+      "checksum": "sha256-aa96bc3cdae1787220bac9d37e90879b3d5deea5b46adebb1ff2fcb3ea84e0e6"
+    },
+    "/.github/FUNDING.yml": {
+      "size": 45,
+      "checksum": "sha256-f7d5bd53b9a6add2d05771a6edeb3192701e92fb60c0725cbd861ebadd5e4181"
+    },
+    "/test_deps.ts": {
+      "size": 120,
+      "checksum": "sha256-885688777e176cb27dc7cfb282fe6a95c907147e7379413cf3febe778d51bb33"
+    }
+  },
+  "moduleGraph1": {
+    "/util.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "range": [
+            [
+              0,
+              0
+            ],
+            [
+              7,
+              19
+            ]
+          ],
+          "specifier": "./deps.ts",
+          "specifierRange": [
+            [
+              7,
+              7
+            ],
+            [
+              7,
+              18
+            ]
+          ]
+        }
+      ]
+    },
+    "/deps.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "range": [
+            [
+              0,
+              0
+            ],
+            [
+              9,
+              31
+            ]
+          ],
+          "specifier": "jsr:@std/path@0.213.1",
+          "specifierRange": [
+            [
+              9,
+              7
+            ],
+            [
+              9,
+              30
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "range": [
+            [
+              10,
+              0
+            ],
+            [
+              10,
+              48
+            ]
+          ],
+          "specifier": "jsr:@std/fs@0.213.1",
+          "specifierRange": [
+            [
+              10,
+              26
+            ],
+            [
+              10,
+              47
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "range": [
+            [
+              11,
+              0
+            ],
+            [
+              11,
+              65
+            ]
+          ],
+          "specifier": "jsr:@std/encoding@0.213.1/hex",
+          "specifierRange": [
+            [
+              11,
+              33
+            ],
+            [
+              11,
+              64
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "range": [
+            [
+              12,
+              0
+            ],
+            [
+              12,
+              52
+            ]
+          ],
+          "specifier": "jsr:@std/fmt@0.213.1/colors",
+          "specifierRange": [
+            [
+              12,
+              22
+            ],
+            [
+              12,
+              51
+            ]
+          ]
+        }
+      ]
+    },
+    "/types.ts": {},
+    "/download.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "range": [
+            [
+              0,
+              0
+            ],
+            [
+              9,
+              19
+            ]
+          ],
+          "specifier": "./deps.ts",
+          "specifierRange": [
+            [
+              9,
+              7
+            ],
+            [
+              9,
+              18
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "range": [
+            [
+              10,
+              0
+            ],
+            [
+              16,
+              20
+            ]
+          ],
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              16,
+              7
+            ],
+            [
+              16,
+              19
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "range": [
+            [
+              17,
+              0
+            ],
+            [
+              23,
+              19
+            ]
+          ],
+          "specifier": "./util.ts",
+          "specifierRange": [
+            [
+              23,
+              7
+            ],
+            [
+              23,
+              18
+            ]
+          ]
+        }
+      ]
+    },
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "leadingComments": [
+            {
+              "text": "*\n * Plug is a drop in extension for using remote dynamic libraries in deno. It\n * automatically handles caching and loading with minimal overhead. It can\n * automatically create the URL for your cross-operating-system, cross-architecture\n * libraries if you so wish using a simple configuration which deviates from\n * the standard URL/string path input.\n *\n * @example\n * ```ts\n * import { dlopen } from \"https://deno.land/x/plug/mod.ts\";\n *\n * // Drop-in replacement for `Deno.dlopen` which fetches the following depending\n * // on operating system:\n * // * darwin: \"https://example.com/some/path/libexample.dylib\"\n * // * windows: \"https://example.com/some/path/example.dll\"\n * // * linux: \"https://example.com/some/path/libexample.so\"\n * const library = await dlopen(\"https://example.com/some/path/\", {\n *   noop: { parameters: [], result: \"void\" },\n * });\n *\n * library.symbols.noop();\n * ```\n *\n * @example\n * ```ts\n * import { dlopen, FetchOptions } from \"https://deno.land/x/plug/mod.ts\";\n *\n * // If you want plug to guess your binary names\n * const options: FetchOptions = {\n *   name: \"example\",\n *   url: \"https://example.com/some/path/\",\n *   // Becomes:\n *   // darwin: \"https://example.com/some/path/libexample.dylib\"\n *   // windows: \"https://example.com/some/path/example.dll\"\n *   // linux: \"https://example.com/some/path/libexample.so\"\n * };\n *\n * const library = await dlopen(options, {\n *   noop: { parameters: [], result: \"void\" },\n * });\n *\n * library.symbols.noop();\n * ```\n *\n * @example\n * ```ts\n * import { dlopen, FetchOptions } from \"https://deno.land/x/plug/mod.ts\";\n *\n * // Also you can specify the path for certain architecture\n * const options: FetchOptions = {\n *   name: \"example\",\n *   url: {\n *     darwin: {\n *       aarch64: `https://example.com/some/path/libexample.aarch64.dylib`,\n *       x86_64: `https://example.com/some/path/libexample.x86_64.dylib`,\n *     },\n *     windows: `https://example.com/some/path/example.dll`,\n *     linux: `https://example.com/some/path/libexample.so`,\n *   },\n * };\n *\n * await dlopen(options, {});\n * ```\n *\n * @example\n * ```ts\n * import { dlopen, FetchOptions } from \"https://deno.land/x/plug/mod.ts\";\n *\n * // Or even configure plug to automatically guess the binary names for you,\n * // even when there are special rules for naming on specific architectures\n * const options: FetchOptions = {\n *   name: \"test\",\n *   url: \"https://example.com/some/path/\",\n *   suffixes: {\n *     darwin: {\n *       aarch64: \".aarch64\",\n *       x86_64: \".x86_64\",\n *     },\n *   },\n *   // Becomes:\n *   // darwin-aarch64: \"https://example.com/some/path/libexample.aarch64.dylib\"\n *   // darwin-x86_64: \"https://example.com/some/path/libexample.x86_64.dylib\"\n * };\n *\n * await dlopen(options, {});\n * ```\n *\n * @module\n ",
+              "range": [
+                [
+                  0,
+                  0
+                ],
+                [
+                  88,
+                  3
+                ]
+              ]
+            }
+          ],
+          "range": [
+            [
+              90,
+              0
+            ],
+            [
+              90,
+              41
+            ]
+          ],
+          "specifier": "./download.ts",
+          "specifierRange": [
+            [
+              90,
+              25
+            ],
+            [
+              90,
+              40
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "range": [
+            [
+              91,
+              0
+            ],
+            [
+              91,
+              47
+            ]
+          ],
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              91,
+              34
+            ],
+            [
+              91,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "exportType",
+          "range": [
+            [
+              93,
+              0
+            ],
+            [
+              104,
+              20
+            ]
+          ],
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              104,
+              7
+            ],
+            [
+              104,
+              19
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "range": [
+            [
+              105,
+              0
+            ],
+            [
+              105,
+              41
+            ]
+          ],
+          "specifier": "./download.ts",
+          "specifierRange": [
+            [
+              105,
+              25
+            ],
+            [
+              105,
+              40
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./mod.ts"
+  }
+}

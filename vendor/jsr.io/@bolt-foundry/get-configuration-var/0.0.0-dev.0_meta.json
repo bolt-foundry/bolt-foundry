@@ -1,0 +1,22 @@
+{
+  "manifest": {
+    "/LICENSE": {
+      "size": 1072,
+      "checksum": "sha256-075ade523c180db2007b9b2d53b69226f96b73f53f2f0549c7292febd1619d9d"
+    },
+    "/deno.jsonc": {
+      "size": 137,
+      "checksum": "sha256-1d0d71427e047828ce69b8e9d0d2dc22ca147234f8fe4b0c7ec77324fbbdc8d6"
+    },
+    "/get-configuration-var.ts": {
+      "size": 397,
+      "checksum": "sha256-7dad163ffaae44d553a77282c67f77d8c9db1921a8df09134d471ae913dd5603"
+    }
+  },
+  "moduleGraph2": {
+    "/get-configuration-var.ts": {}
+  },
+  "exports": {
+    ".": "./get-configuration-var.ts"
+  }
+}
