@@ -3,6 +3,11 @@
 ### Do not make changes to this file directly
 
 
+interface Entity {
+  """When this entity was created"""
+  createdAt: String!
+}
+
 type JoinWaitlistPayload {
   message: String
   success: Boolean!
@@ -10,6 +15,11 @@ type JoinWaitlistPayload {
 
 type Mutation {
   joinWaitlist(company: String!, email: String!, name: String!): JoinWaitlistPayload
+}
+
+interface Node {
+  """Unique identifier for the object"""
+  id: ID!
 }
 
 type Query {

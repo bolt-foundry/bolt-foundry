@@ -1,11 +1,19 @@
 import { GraphQLObjectBase } from "./GraphQLObjectBase.ts";
 import type { GqlNodeSpec } from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
+import { GraphQLInterface } from "./decorators.ts";
 
 /**
  * Base class for all GraphQL nodes that implement the Node interface.
  * This class provides the foundation for objects that can be retrieved by ID
  * and conform to the Relay Node specification.
+ *
+ * The @GraphQLInterface decorator marks this class as a GraphQL interface,
+ * which will be used to generate the Node interface in the schema.
  */
+@GraphQLInterface({
+  name: "Node",
+  description: "An object with a unique identifier",
+})
 export abstract class GraphQLNode extends GraphQLObjectBase {
   /**
    * Define the GraphQL specification with Node interface fields.
@@ -21,6 +29,9 @@ export abstract class GraphQLNode extends GraphQLObjectBase {
    * Concrete implementations must provide this field.
    */
   abstract override get id(): string;
+
+  // We inherit __typename from GraphQLObjectBase, which is set to this.constructor.name
+  // This is sufficient for type resolution
 
   constructor() {
     super();
