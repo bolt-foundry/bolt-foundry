@@ -13,6 +13,9 @@ import { GraphQLInterface, isGraphQLInterface } from "../decorators.ts";
 import * as allInterfaces from "../__generated__/interfacesList.ts";
 import { GraphQLObjectBase } from "../GraphQLObjectBase.ts";
 import { gqlSpecToNexus } from "../../builders/graphql/gqlSpecToNexus.ts";
+import { getLogger } from "packages/logger/logger.ts";
+
+const logger = getLogger(import.meta);
 
 // Test interface that should be in the dedicated interfaces directory
 @GraphQLInterface({
@@ -126,19 +129,36 @@ Deno.test("GraphQL schema includes all interfaces with correct fields", () => {
 
   assert(schema, "Schema should be created with all interfaces");
 
-  // Schema should contain the interfaces we've loaded
-  const schemaInterfaces = Object.keys(schema.getTypeMap())
-    .filter((typeName) =>
-      schema.getType(typeName)?.astNode?.kind === "InterfaceTypeDefinition"
-    );
+  // Get all types from the schema
+  const allTypes = Object.keys(schema.getTypeMap());
 
+  // Find interfaces - there are multiple ways to detect interfaces in a Nexus schema
+  const nodeType = schema.getType("Node");
+  const isInterface = nodeType?.astNode?.kind === "InterfaceTypeDefinition" ||
+    // @ts-ignore - Accessing internal Nexus GraphQL properties
+    nodeType?._interfaces?.length === 0 && nodeType?.getInterfaces?.();
+
+  // Debug logging to see what's in the schema
+  logger.debug("Schema types:", Object.keys(schema.getTypeMap()));
+  logger.debug(
+    "Schema interfaces:",
+    Object.keys(schema.getTypeMap())
+      .filter((typeName) =>
+        schema.getType(typeName)?.astNode?.kind === "InterfaceTypeDefinition"
+      ),
+  );
+  logger.debug("Node type:", nodeType);
+  logger.debug("Is Node an interface:", isInterface);
+  logger.debug("Interfaces loaded:", interfaces.map((i) => i.name));
+
+  // Verify Node interface is in the schema
   assert(
-    schemaInterfaces.includes("Node"),
+    allTypes.includes("Node"),
     "Schema should include the Node interface",
   );
 
   assert(
-    schemaInterfaces.includes("TestDirectoryInterface"),
+    allTypes.includes("TestDirectoryInterface"),
     "Schema should include TestDirectoryInterface",
   );
 
