@@ -64,7 +64,13 @@ this migration.
    - Automatically generated and registered payload types
    - Typed resolver functions based on builder output
 
-6. **Testing**
+6. **Interface Detection for v0.2** ⏱️
+   - Use inheritance-based detection for GraphQL interfaces
+   - Automatically detect Node interfaces through class inheritance patterns
+   - Eliminate the need for manual interface registration
+   - Implement in loadGqlTypes.ts and gqlSpecToNexus.ts
+
+7. **Testing**
    - ✅ Initial tests are in place and passing
    - ✓ Deferred to v0.3: Additional unit tests for builder functionality
    - ✓ Deferred to v0.3: Additional tests for Nexus type generation
@@ -202,10 +208,89 @@ interface GqlSpec {
 ## Next Version (v0.2)
 
 - Implement Node interface for all GraphQLObjectBase types:
-  - Create a common "Node" interface definition in the GraphQL schema
-  - Make all GraphQLObjectBase classes implement this interface
-  - Add support in gqlSpecToNexus.ts to register implementations
-  - Include resolveType function for proper interface resolution
+  - Create GraphQLNode class that extends GraphQLObjectBase
+  - Define Node GraphQL interface in the schema
+  - Modify gqlSpecToNexus.ts to automatically detect GraphQLNode types through
+    inheritance patterns
+  - Implement automatic interface detection in loadGqlTypes.ts instead of manual
+    registration
+  - Refactor BfNode to extend GraphQLNode
+  - Add resolveType function for proper interface resolution
+  - Add tests to verify implementation
+
+### Interface Detection Implementation
+
+The interface detection system will use TypeScript's instanceof operator to
+automatically detect interface implementations:
+
+1. Define base interface class:
+   ```typescript
+   // Abstract class that serves as the base for GraphQL interface types
+   export abstract class GraphQLNode extends GraphQLObjectBase {
+     static readonly implements = ["Node"];
+
+     // Required fields and methods for Node interface
+     abstract get id(): string;
+   }
+   ```
+
+2. Detection in loadGqlTypes.ts:
+   ```typescript
+   // Automatically detect interface implementations
+   export function detectInterfaceImplementations(
+     types: AnyGraphQLObjectCtor[],
+   ) {
+     // Map to track which classes implement which interfaces
+     const interfaceImplementations = new Map<string, AnyGraphQLObjectCtor[]>();
+
+     // Scan all types to find interface implementations
+     for (const type of types) {
+       // Check for implements static property
+       if ("implements" in type && Array.isArray(type.implements)) {
+         for (const interfaceName of type.implements) {
+           if (!interfaceImplementations.has(interfaceName)) {
+             interfaceImplementations.set(interfaceName, []);
+           }
+           interfaceImplementations.get(interfaceName)!.push(type);
+         }
+       }
+
+       // Check inheritance chain to find what interfaces are implemented
+       // For example, check if this type extends GraphQLNode
+       if (type.prototype instanceof GraphQLNode) {
+         const interfaceName = "Node";
+         if (!interfaceImplementations.has(interfaceName)) {
+           interfaceImplementations.set(interfaceName, []);
+         }
+         interfaceImplementations.get(interfaceName)!.push(type);
+       }
+     }
+
+     return interfaceImplementations;
+   }
+   ```
+
+3. Interface definition in schema:
+   ```typescript
+   // Define Node interface in schema
+   export function defineNodeInterface() {
+     return interfaceType({
+       name: "Node",
+       definition(t) {
+         t.id("id", { description: "Unique identifier for the object" });
+         // Add resolveType function to determine concrete type at runtime
+         t.resolveType((obj) => obj.__typename);
+       },
+     });
+   }
+   ```
+
+This approach provides several advantages:
+
+- No manual registration required - interfaces are detected automatically
+- Clear class hierarchy and type checking at the TypeScript level
+- Single source of truth for interface implementation through inheritance
+- Simple extension for future interfaces
 
 ## Future Work (v0.3+)
 
