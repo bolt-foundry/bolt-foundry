@@ -46,7 +46,16 @@
       "Bash(./apps/bfDb/graphql/graphqlServer.ts)",
       "Bash(deno check:*)",
       "Bash(chmod:*)",
-      "Bash(./apps/bfDb/graphql/__tests__/GraphQLNode.test.ts)"
+      "Bash(./apps/bfDb/graphql/__tests__/GraphQLNode.test.ts)",
+      "Bash(./apps/bfDb/graphql/__tests__/GraphQLInterfaces.test.ts)",
+      "Bash(./apps/bfDb/graphql/__tests__/GraphQLInterfaces.test.ts --no-check)",
+      "Bash(./apps/bfDb/builders/graphql/__tests__/interfaceDetection.test.ts)",
+      "Bash(./apps/bfDb/bin/__tests__/genInterfaceBarrel.test.ts)",
+      "Bash(./apps/bfDb/graphql/__tests__/LoadInterfaces.test.ts)",
+      "Bash(mkdir:*)",
+      "Bash(./apps/bfDb/builders/graphql/__tests__/interfaceDetection.test.ts --no-check)",
+      "Bash(./apps/bfDb/bin/__tests__/genInterfaceBarrel.test.ts --no-check)",
+      "Bash(./apps/bfDb/graphql/__tests__/LoadInterfaces.test.ts --no-check)"
     ],
     "deny": []
   }

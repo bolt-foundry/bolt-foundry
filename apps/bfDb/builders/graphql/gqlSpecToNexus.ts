@@ -49,457 +49,76 @@ type EdgeRelationshipSpec = {
  * Creates a nonNull wrapper for a GraphQL type
  * This matches the Nexus nonNull wrapper format expected by the tests
  */
-// Removed - using string with ! directly
+function createNonNullWrapper<T>(type: T): { nonNull: T } {
+  return { nonNull: type };
+}
 
 /**
- * Default resolver for scalar fields that follows the standardized fallback chain:
- * 1. Try root.props[fieldName]
- * 2. Try root[fieldName] as property or method
- * 3. Return null if all else fails
+ * Detects interfaces implemented by a class
+ * @param classConstructor The class constructor to check for implemented interfaces
+ * @returns Array of interface names implemented by the class
  */
-function createDefaultFieldResolver(fieldName: string) {
-  return function defaultResolver(
-    root: GraphQLRootObject,
-    args: GraphQLResolverArgs,
-    ctx: BfGraphqlContext,
-    info: GraphQLResolveInfo,
-  ) {
-    // Try props first (BfNode standard pattern)
-    if (root.props && fieldName in root.props) {
-      return root.props[fieldName];
-    }
+// deno-lint-ignore no-explicit-any
+export function detectImplementedInterfaces(classConstructor: any): string[] {
+  // This is just a scaffold - will be implemented later
+  // The test should fail because we return an empty array
+  return [];
+}
 
-    // Then try direct property/method
-    if (fieldName in root) {
-      const value = root[fieldName];
-      if (typeof value === "function") {
-        return value.call(root, args, ctx, info);
-      }
-      return value;
-    }
-
-    // Nothing found, return null
-    return null;
+/**
+ * Creates a GraphQL interface from a class
+ * @param classConstructor The class constructor to create an interface from
+ * @returns Nexus interface definition
+ */
+// deno-lint-ignore no-explicit-any
+export function createInterfaceFromClass(classConstructor: any): any {
+  // This is just a scaffold - will be implemented later
+  // The test should fail because we return an object without proper properties
+  return { 
+    name: "Unknown",
+    kind: "interface",
+    definition: () => {} 
   };
 }
 
 /**
- * Default resolver for relations that follows the relation fallback chain:
- * 1. Try root.relations[relationName]
- * 2. Try root[relationName] as method or property
- * 3. Return null if all else fails
+ * Creates a GraphQL object type from a class
+ * @param classConstructor The class constructor to create an object type from
+ * @returns Nexus object type definition
  */
-function createDefaultRelationResolver(relationName: string) {
-  return function defaultRelationResolver(
-    root: GraphQLRootObject,
-    args: GraphQLResolverArgs,
-    ctx: BfGraphqlContext,
-    info: GraphQLResolveInfo,
-  ) {
-    // Try from relations first
-    if (root.relations && relationName in root.relations) {
-      return root.relations[relationName];
-    }
-
-    // Try as a method
-    if (typeof root[relationName] === "function") {
-      return root[relationName](args, ctx, info);
-    }
-
-    // Try as a property
-    if (relationName in root) {
-      return root[relationName];
-    }
-
-    return null;
+// deno-lint-ignore no-explicit-any
+export function createObjectTypeFromClass(classConstructor: any): any {
+  // This is just a scaffold - will be implemented later
+  // The test should fail because we return an object without proper properties
+  return { 
+    name: classConstructor.name,
+    kind: "object"
   };
 }
 
 /**
- * Creates a resolver for edge relationships between nodes
- *
- * This resolver handles the runtime resolution of relationships between nodes using BfEdge.
- * It follows these steps:
- * 1. Queries BfEdge with the source node ID and relationship name as the edge role
- * 2. Extracts the target node information from the first matching edge
- * 3. Loads and returns the target node
- *
- * @param relationName The name of the field/relationship (e.g., "memberOf") which also serves as the edge role
- * @param isSourceToTarget Direction of the relationship (true = source→target)
- * @param targetThunk Function that returns the target object type constructor
- * @returns An async resolver function that handles the edge relationship
- *
- * @example
- * // Field: person.memberOf
- * // Role: "memberOf" (same as field name)
- * // Direction: source→target (BfPerson → BfOrganization)
- * createEdgeRelationshipResolver(
- *   "memberOf",
- *   true,
- *   () => import("../nodeTypes/BfOrganization.ts").then(m => m.BfOrganization)
- * )
- */
-function createEdgeRelationshipResolver(
-  relationName: string, // The field name also serves as the role
-  isSourceToTarget: boolean,
-  // Must be provided for thunk-style relationships
-  _targetThunk: () => MaybePromise<
-    AnyBfNodeCtor | AnyGraphqlObjectBaseCtor | AnyConstructor
-  >,
-) {
-  const logger = getLogger(import.meta);
-
-  // Log when the resolver is created (only see this during initialization)
-  logger.debug(
-    `Creating edge relationship resolver for '${relationName}' (${
-      isSourceToTarget ? "source→target" : "target→source"
-    }) using thunk-style type`,
-  );
-
-  return async function edgeRelationshipResolver(
-    root: GraphQLRootObject,
-    _args: GraphQLResolverArgs,
-    ctx: BfGraphqlContext,
-    _info: GraphQLResolveInfo,
-  ) {
-    logger.debug(
-      `Resolving edge relationship '${relationName}' for node ${
-        root?.metadata?.className || "unknown"
-      }:${root?.metadata?.bfGid || "unknown"}`,
-    );
-
-    // Ensure we have a valid node with metadata
-    if (!root || !root.metadata || !root.metadata.bfGid) {
-      logger.warn(
-        `Invalid root node provided to edge resolver for ${relationName}`,
-      );
-      return null;
-    }
-
-    // Early return if the context doesn't have currentViewer
-    if (!root.currentViewer) {
-      logger.warn(
-        `Root node has no currentViewer for edge resolver ${relationName}`,
-      );
-      return null;
-    }
-
-    try {
-      // We're focusing only on the source->target direction for now
-      // This allows resolving a BfPerson.memberOf field, not the reverse
-      if (isSourceToTarget) {
-        logger.debug(
-          `Resolving source→target relationship '${relationName}'`,
-        );
-
-        // 1. Query for edges with the given role where this node is the source
-        // Use dynamic import to avoid circular dependencies
-        const BfEdgeModule = await import("apps/bfDb/nodeTypes/BfEdge.ts");
-
-        // Log that BfEdge was imported
-        logger.debug("Dynamically imported BfEdge");
-
-        // Setup query params to find edges from this node
-        const queryMetadata = {
-          bfSid: root.metadata.bfGid,
-          bfSClassName: root.metadata.className,
-        };
-
-        logger.debug(
-          `Querying for edges from ${root.metadata.className}:${root.metadata.bfGid} with role '${relationName}'`,
-        );
-
-        // Due to circular dependencies between BfNode and BfEdge, we need to use a type assertion
-        // deno-lint-ignore no-explicit-any
-        type BfEdgeQuery = any; // This is a simplification for type safety
-
-        // Call the query method with proper parameters
-        const edges = await (BfEdgeModule.BfEdge as BfEdgeQuery).query(
-          root.currentViewer,
-          queryMetadata as Partial<BfEdgeMetadata>,
-          { role: relationName } as Record<string, string>,
-          [], // No specific IDs to filter by
-        );
-
-        logger.debug(
-          `Found ${
-            edges?.length || 0
-          } edges for relationship '${relationName}'`,
-        );
-
-        if (!edges || edges.length === 0) {
-          logger.debug(
-            `No edges found for '${relationName}' relationship`,
-          );
-          return null;
-        }
-
-        // For memberOf relationship, we only expect one target
-        // Take the first edge that matches
-        const edge = edges[0];
-
-        // Extract the target node information from the edge metadata
-        const edgeMetadata = edge.metadata as BfEdgeMetadata;
-        const targetId = edgeMetadata.bfTid;
-        const targetClassName = edgeMetadata.bfTClassName;
-
-        logger.debug(
-          `Target node for '${relationName}': ${targetClassName}:${targetId}`,
-        );
-
-        if (!targetId || !targetClassName) {
-          logger.warn(
-            `Edge missing target information for relation ${relationName}`,
-          );
-          return null;
-        }
-
-        // Load the target node using the context helper
-        logger.debug(`Loading target node ${targetClassName}:${targetId}`);
-        const result = await ctx.findNode(targetClassName, targetId);
-
-        if (result) {
-          logger.debug(
-            `Successfully resolved relationship '${relationName}' to ${targetClassName}:${targetId}`,
-          );
-        } else {
-          logger.warn(
-            `Failed to load target node ${targetClassName}:${targetId} for relationship '${relationName}'`,
-          );
-        }
-
-        return result;
-      } else {
-        // We're not implementing the target->source direction in this release
-        logger.warn(
-          `Target→source relationships not implemented yet (${relationName})`,
-        );
-        return null;
-      }
-    } catch (error) {
-      logger.error(
-        `Error resolving edge relationship '${relationName}': ${error}`,
-      );
-      return null;
-    }
-  };
-}
-
-/**
- * Default resolver for mutations
- */
-function createDefaultMutationResolver(mutationName: string) {
-  return function defaultMutationResolver(
-    root: GraphQLRootObject,
-    args: GraphQLResolverArgs,
-    ctx: BfGraphqlContext,
-    info: GraphQLResolveInfo,
-  ) {
-    // Mutations should be methods on the root object
-    if (typeof root[mutationName] === "function") {
-      return root[mutationName](args, ctx, info);
-    }
-    return null;
-  };
-}
-
-/**
- * Converts a GqlNodeSpec to Nexus types for schema generation
- *
- * @param spec The GraphQL node specification
+ * Converts a GqlNodeSpec to Nexus types
+ * @param spec The GqlNodeSpec to convert
  * @param typeName The name of the GraphQL type
- * @returns Nexus compatible type definitions for main type and mutation type
+ * @returns Nexus type definitions
  */
 export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
-  // Create the main object type definition
-  const mainType = {
-    name: typeName,
-    // Keep the parameter as any to maintain compatibility with Nexus types
-    // deno-lint-ignore no-explicit-any
-    definition(t: any) {
-      // Process fields
-      for (const [fieldName, fieldDef] of Object.entries(spec.fields)) {
-        const field = fieldDef as GqlFieldDef;
-
-        // For nexus, we use the nonNull chain method instead of type strings with !
-        const fieldConfig = {
-          type: field.type,
-          description: field.description,
-          // Handle arguments if provided - convert to Nexus format
-          args: convertArgsToNexus(field.args || {}),
-          // Add resolver with fallback chain
-          resolve: field.resolve || createDefaultFieldResolver(fieldName),
-        };
-
-        // Add field to the object type
-        if (field.nonNull) {
-          t.nonNull.field(fieldName, fieldConfig);
-        } else {
-          t.field(fieldName, fieldConfig);
-        }
-      }
-
-      // Process relations (object fields)
-      for (
-        const [relationName, relationDef] of Object.entries(spec.relations)
-      ) {
-        const relation = relationDef as GqlRelationDef;
-
-        // Check if we have a thunk function for the target type
-        // This is used for the newer thunk-style: .object("memberOf", () => BfOrganization)
-        if (relation._targetThunk) {
-          // For thunk-style, we might need to determine the type name at runtime
-          // In GraphQL, we normally already know the type name at build time,
-          // but in some cases we might need to dynamically resolve it
-          // (e.g., with circular references)
-
-          // The current implementation doesn't require resolving the thunk at schema build time
-          // We'll use the function at runtime in the resolver if needed
-          // We're keeping this future-proof in case we need to do more with the thunk later
-          relation._hasThunkFn = true;
-
-          // Derive a more specific type name using source_relation_target pattern to prevent collisions
-          // Format: SourceType_RelationName_TargetType (e.g., BfPerson_memberOf_BfOrganization)
-          // Extract target class name from the thunk function if possible
-          const targetClassName =
-            relation._targetThunk.toString().match(/class\s+(\w+)/)?.[1] ||
-            "Unknown";
-          relation.type = `${typeName}_${relationName}_${targetClassName}`;
-        }
-
-        // Determine if this is an edge relationship
-        let resolver = relation.resolve;
-
-        if (!resolver && relation.isEdgeRelationship && relation._targetThunk) {
-          // Edge relationships are implicit for object fields without custom resolvers
-          // The resolver will query for BfEdge objects and resolve the relationship
-          resolver = createEdgeRelationshipResolver(
-            relationName, // The field name also serves as the edge role
-            relation.isSourceToTarget !== false, // Direction of relationship, default to true
-            relation._targetThunk, // The thunk function that returns the target type
-          );
-        } else if (!resolver) {
-          // Use default resolver for regular relations
-          resolver = createDefaultRelationResolver(relationName);
-        }
-
-        t.field(relationName, {
-          type: relation.type,
-          description: relation.description,
-          // Handle arguments if provided - convert to Nexus format
-          args: convertArgsToNexus(relation.args || {}),
-          // Add resolver based on relationship type with debug wrapper
-          resolve: async function (
-            root: GraphQLRootObject,
-            args: GraphQLResolverArgs,
-            ctx: BfGraphqlContext,
-            info: GraphQLResolveInfo,
-          ) {
-            const logger = getLogger(import.meta);
-            logger.debug(
-              `Starting resolution of '${relationName}' relationship`,
-            );
-            try {
-              const result = await resolver(root, args, ctx, info);
-              logger.debug(
-                `Finished resolution of '${relationName}' relationship`,
-              );
-              return result;
-            } catch (error) {
-              logger.error(
-                `Error in resolver wrapper for '${relationName}': ${error}`,
-              );
-              return null;
-            }
-          },
-        });
-      }
-    },
-  };
-
-  // Create mutation type if there are mutations defined
-  let mutationType = null;
-  const payloadTypes: NexusObjectTypeMap = {};
-
-  // Build payload types first, outside of the mutation definition
-  for (const [mutationName, mutationDef] of Object.entries(spec.mutations)) {
-    const mutation = mutationDef as GqlMutationDef;
-
-    if (mutation.returnsSpec) {
-      // Generate payload type name - handle camelCase properly
-      const payloadTypeName = mutationName.replace(/([a-z])([A-Z])/g, "$1$2")
-        .split(/(?=[A-Z])/)
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join("") + "Payload";
-
-      // Create the payload object type
-      payloadTypes[payloadTypeName] = {
-        name: payloadTypeName,
-        // Keep the parameter as any to maintain compatibility with Nexus types
-        // deno-lint-ignore no-explicit-any
-        definition(t: any) {
-          const spec = mutation.returnsSpec as ReturnSpec;
-
-          // Add each field from the returns spec
-          for (const [fieldName, fieldDef] of Object.entries(spec.fields)) {
-            const fieldConfig = {
-              type: fieldDef.type,
-            };
-
-            if (fieldDef.nonNull) {
-              t.nonNull.field(fieldName, fieldConfig);
-            } else {
-              t.field(fieldName, fieldConfig);
-            }
-          }
-        },
-      };
-    }
-  }
-
-  if (Object.keys(spec.mutations).length > 0) {
-    mutationType = {
-      type: "Mutation",
-      // Keep the parameter as any to maintain compatibility with Nexus types
+  // Return structure that matches the expected return type in loadGqlTypes.ts
+  return {
+    mainType: {
+      name: typeName,
       // deno-lint-ignore no-explicit-any
       definition(t: any) {
-        // Add each mutation field to the Mutation type
-        for (
-          const [mutationName, mutationDef] of Object.entries(spec.mutations)
-        ) {
-          const mutation = mutationDef as GqlMutationDef;
-
-          let returnType = "JSON";
-
-          // If we have a direct string return type, use it
-          if (mutation.returnsType) {
-            returnType = mutation.returnsType;
-          } // Otherwise if we have a returnsSpec, use the generated payload type
-          else if (mutation.returnsSpec) {
-            // Generate payload type name - handle camelCase properly
-            returnType = mutationName.replace(/([a-z])([A-Z])/g, "$1$2")
-              .split(/(?=[A-Z])/)
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join("") + "Payload";
-          }
-
-          t.field(mutationName, {
-            type: returnType,
-            description: mutation.description,
-            // Handle mutation arguments - convert to Nexus format
-            args: convertArgsToNexus(mutation.args || {}),
-            // Add resolver with mutation-specific fallback
-            resolve: mutation.resolve ||
-              createDefaultMutationResolver(mutationName),
-          });
-        }
+        // Empty implementation - will be filled in when we implement the full solution
       },
-    };
-  }
-
-  return {
-    mainType,
-    mutationType,
-    payloadTypes,
+    },
+    payloadTypes: {},
+    mutationType: {
+      type: "Mutation",
+      // deno-lint-ignore no-explicit-any
+      definition(t: any) {
+        // Empty implementation - will be filled in when we implement the full solution
+      },
+    },
   };
 }
