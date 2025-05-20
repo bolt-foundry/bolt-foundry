@@ -51,6 +51,8 @@
       "Bash(bff genGqlTypes:*)",
       "Bash(cat:*)",
       "Bash(mkdir:*)"
+      "Bash(./apps/bfDb/graphql/__tests__/GraphQLNode.test.ts)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }
