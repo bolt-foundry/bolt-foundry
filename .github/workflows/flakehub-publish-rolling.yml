@@ -1,25 +1,38 @@
-# .github/workflows/ci.yml
-name: CI + FlakeHub Cache
-on: [push, pull_request]
+# .github/workflows/flakehub-ci.yml
+name: CI + FlakeHub
+
+on:
+  push:                       # keeps the automatic path
+    branches: [main]
+  workflow_dispatch:          # <-- this enables the Run-button
+    inputs:                   # (optional) pass parameters at run-time
+      ref:
+        description: 'Branch or tag to build'
+        required: false
+        default: 'main'
+      include_outputs:
+        description: 'Upload realised store paths?'
+        type: boolean
+        default: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write # <- gives the action an OIDC token for FlakeHub
+      id-token: write
       contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || 'main' }}
       - uses: DeterminateSystems/nix-installer-action@v3
-
-      # 🆕 1-liner that enables the binary cache
       - uses: DeterminateSystems/flakehub-cache-action@v1
 
-      # (optional) build something – every result is now cached
-      # - run: nix build .#packages.x86_64-linux.default
+      # build whatever you want cached
+      - run: nix develop .#devShells.x86_64-linux.default -c true 
 
-      # still publish your flake as usual
       - uses: DeterminateSystems/flakehub-push@v2
         with:
-          rolling: true # or omit for tag-only
+          rolling: true
           visibility: public
+          include-output-paths: ${{ github.event.inputs.include_outputs }}
