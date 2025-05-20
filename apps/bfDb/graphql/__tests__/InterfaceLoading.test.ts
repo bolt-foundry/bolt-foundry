@@ -189,9 +189,10 @@ Deno.test("Interfaces are properly detected using @GraphQLInterface decorator", 
 Deno.test("genBarrel configuration detects @GraphQLInterface decorated classes", async () => {
   try {
     // Read and parse the genBarrel.ts file to check configuration
-    const genBarrelContent = await Deno.readTextFile(
-      "/home/runner/workspace/apps/bfDb/bin/genBarrel.ts",
+    const genBarrelPath = new URL(
+      import.meta.resolve("apps/bfDb/bin/genBarrel.ts"),
     );
+    const genBarrelContent = await Deno.readTextFile(genBarrelPath);
 
     // Check if it contains the decorator detection logic
     const hasDecoratorDetection =
