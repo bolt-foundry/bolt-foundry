@@ -4,6 +4,13 @@
  * This file generates GraphQL interfaces from classes decorated with @GraphQLInterface,
  * turning the class metadata into schema definitions for interfaces that can be
  * implemented by GraphQL object types.
+ *
+ * Key points:
+ * 1. Classes can be located anywhere in the codebase
+ * 2. The @GraphQLInterface decorator marks a class as a GraphQL interface
+ * 3. The genBarrel script automatically scans for classes with this decorator
+ * 4. Decorated classes are automatically exported in interfacesList.ts
+ * 5. This file loads all interfaces from the barrel file and creates schema types
  */
 
 import { interfaceType } from "nexus";

@@ -27,10 +27,30 @@ const DEFAULT_BANNER =
 async function generateBarrel(cfg: BarrelConfig) {
   const exportLines: string[] = [];
 
+  // Handle GraphQL interfaces barrel file specially
+  const isInterfacesBarrel = cfg.out.pathname.includes("interfacesList.ts");
+
   for await (const entry of Deno.readDir(cfg.dir)) {
     if (!entry.isFile || !entry.name.endsWith(".ts")) continue;
     if (entry.name.startsWith("_")) continue; // private helpers
     if (entry.name === "__generated__") continue; // skip gen dir itself
+
+    // For the interfaces barrel, only include files with @GraphQLInterface decorator
+    if (isInterfacesBarrel) {
+      const filePath = new URL(entry.name, cfg.dir);
+      const content = await Deno.readTextFile(filePath);
+
+      // Check for @GraphQLInterface decorator in the file
+      // This works with both @GraphQLInterface() and @GraphQLInterface({...})
+      const hasDecorator = content.includes("@GraphQLInterface");
+
+      if (!hasDecorator) {
+        continue; // Skip files without the decorator
+      }
+
+      logger.debug(`Found GraphQL interface in ${entry.name}`);
+    }
+
     exportLines.push(`export * from \"${cfg.importPath(entry.name)}\";`);
   }
 
@@ -87,19 +107,22 @@ const barrels: BarrelConfig[] = [
     ),
     importPath: (f) => `apps/bfDb/graphql/roots/${f}`,
   },
-  // 5️⃣  GraphQL interfaces
+  // 5️⃣  GraphQL interfaces - scan classes directory for @GraphQLInterface decorators
   {
-    dir: new URL("../graphql/interfaces/", import.meta.url),
+    dir: new URL("../classes/", import.meta.url),
     out: new URL(
       "../graphql/__generated__/interfacesList.ts",
       import.meta.url,
     ),
-    importPath: (f) => `apps/bfDb/graphql/interfaces/${f}`,
+    importPath: (f) => `apps/bfDb/classes/${f}`,
     banner: `/**
  * GraphQL Interface Barrel File
  *
  * @generated
  * This file is auto-generated. Do not edit directly.
+ *
+ * Contains exports of all classes decorated with @GraphQLInterface.
+ * These classes will be registered as GraphQL interfaces in the schema.
  */`,
   },
 ];

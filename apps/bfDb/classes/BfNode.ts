@@ -1,5 +1,6 @@
-import { GraphQLNode } from "apps/bfDb/graphql/GraphQLNode.ts";
+import { GraphQLNode } from "./GraphQLNode.ts";
 import type { FieldBuilder } from "apps/bfDb/builders/bfDb/makeFieldBuilder.ts";
+import { GraphQLInterface } from "apps/bfDb/graphql/decorators.ts";
 
 import type { BfGid } from "lib/types.ts";
 import type { GraphqlNode } from "apps/bfDb/graphql/helpers.ts";
@@ -71,6 +72,10 @@ export type InferProps<T extends AnyBfNodeCtor> = T extends
   ? PropsFromFieldSpec<F>
   : never;
 
+@GraphQLInterface({
+  name: "BfNode",
+  description: "Base interface for all Bolt Foundry database nodes",
+})
 // deno-lint-ignore ban-types
 export abstract class BfNode<TProps extends PropsBase = {}>
   extends GraphQLNode {

@@ -3,6 +3,11 @@
 ### Do not make changes to this file directly
 
 
+"""Base interface for all Bolt Foundry database nodes"""
+interface BfNode {
+  id: ID!
+}
+
 type JoinWaitlistPayload {
   message: String
   success: Boolean!
