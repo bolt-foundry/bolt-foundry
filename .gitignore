@@ -7,8 +7,6 @@ attached_assets/
 static/build/*
 .cache
 .local
-node_modules
-vendor
 .config
 .git
 .sl
