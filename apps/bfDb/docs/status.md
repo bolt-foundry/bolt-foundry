@@ -31,6 +31,8 @@ hierarchy, which is needed for the Login Integration project.
   defineGqlNode method
 - ✅ Dynamic Root Loading: Improved loadGqlTypes.ts to use Object.values for
   automatic root loading
+- ⏱️ Interface Detection: Using barrel files for automatic interface
+  registration
 - ⏱️ Validation: Validation against bfNodeSpec.relations pending
 
 ## Next Steps (Priority Order)
@@ -38,8 +40,8 @@ hierarchy, which is needed for the Login Integration project.
 1. Implement GraphQLNode and Node interface (v0.2):
    - Create GraphQLNode class that extends GraphQLObjectBase
    - Define Node GraphQL interface in the schema
-   - Update loadGqlTypes.ts to automatically register the Node interface
-   - Modify gqlSpecToNexus.ts to automatically detect GraphQLNode types
+   - Implement barrel files for interfaces and implementations
+   - Modify loadGqlTypes.ts to use barrel files for automatic registration
    - Refactor BfNode to extend GraphQLNode
    - Add resolveType function for interface resolution
    - Add tests to verify implementation
