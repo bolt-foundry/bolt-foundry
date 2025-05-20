@@ -12,16 +12,20 @@ work while keeping current implementation plans focused.
 
 ## Backlog Structure
 
-Backlogs should be maintained in the docs directory structure with the following
-guidelines:
+Backlogs can be organized in two main ways depending on the complexity of the
+items:
 
-### Location
+### 1. Simple Backlog Lists
+
+For straightforward backlog items that can be documented in a single file:
+
+#### Location
 
 - Project-level backlogs should be stored in `apps/[project]/docs/backlog.md`
 - Version-specific deferred items should be documented in
   `apps/[project]/docs/[version]/backlog.md`
 
-### Organization
+#### Organization
 
 Backlog items should be organized by:
 
@@ -31,7 +35,37 @@ Backlog items should be organized by:
 4. **Target Version**: The anticipated version when the item might be
    implemented
 
+### 2. Feature-Focused Backlog Structure
+
+For more complex features that require multiple related documents:
+
+#### Location
+
+Complex backlog features should be stored in the top-level backlog directory:
+
+```
+docs/backlog/
+├── README.md                    (Structure explanation)
+├── feature-name/                (Directory for a specific feature)
+│   ├── project-plan.md          (User-focused goals and vision)
+│   ├── implementation-plan.md   (Technical approach and strategy)
+│   └── supporting-docs/         (Research, diagrams, etc.)
+└── ...
+```
+
+#### When to Use Feature Directories
+
+Use the feature directory structure when:
+
+1. A potential feature requires detailed planning before it can be considered
+   for the roadmap
+2. Multiple related documents are needed to fully describe the feature
+3. The feature might be complex enough to warrant versioned implementation plans
+4. Collaborative discussion and iteration on the feature design is expected
+
 ## Backlog Item Documentation Format
+
+### For Simple Backlog Lists
 
 Each backlog item should include:
 
@@ -54,6 +88,17 @@ or Future]
 on it yet.
 ```
 
+### For Feature Directories
+
+Each feature directory should contain at minimum:
+
+1. `project-plan.md` - Describing the user-focused goals and vision
+2. `implementation-plan.md` - Outlining the technical approach and
+   implementation strategy
+
+Additional supporting documents can be included as needed in a
+`supporting-docs/` subdirectory.
+
 ## Backlog Review Process
 
 1. **Regular Reviews**: The backlog should be reviewed at the end of each
@@ -70,7 +115,9 @@ on it yet.
 - Backlogs document what MIGHT be built in future versions
 - Items should move from backlog → implementation plan when they come into scope
 
-## Example Structure
+## Example Structures
+
+### Simple Backlog Structure
 
 ```
 apps/project-name/
@@ -86,6 +133,23 @@ apps/project-name/
           └── backlog.md              (Items deferred from 0.2)
 ```
 
+### Feature-Focused Backlog Structure
+
+```
+docs/backlog/
+├── README.md
+├── feature-a/
+│   ├── project-plan.md
+│   ├── implementation-plan.md
+│   └── supporting-docs/
+│       ├── research.md
+│       └── diagrams/
+├── feature-b/
+│   ├── project-plan.md
+│   └── implementation-plan.md
+└── ...
+```
+
 ## Best Practices
 
 1. **Be Specific**: Backlog items should be specific enough to be actionable
@@ -96,6 +160,8 @@ apps/project-name/
    should be valuable
 5. **Regular Triage**: Periodically review and prioritize items to keep the
    backlog fresh
+6. **Choose the Right Format**: Use simple backlog items for straightforward
+   work and feature directories for complex features
 
 Remember that a well-maintained backlog provides a roadmap for future
 development while helping the team stay focused on current priorities.
