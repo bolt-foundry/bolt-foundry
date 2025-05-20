@@ -1,6 +1,5 @@
 build/**
 **/*.ipynb_checkpoints
-!node_modules
 nix_system
 .direnv
 attached_assets/
@@ -22,3 +21,6 @@ generated-icon.png
 .config/op/
 .config/op/*.sock
 .env
+node_modules/*
+!node_modules/.deno/
+!node_modules/.deno/**
