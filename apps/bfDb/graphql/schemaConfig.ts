@@ -8,6 +8,8 @@ export const schemaOptions: SchemaConfig = {
   features: {
     abstractTypeStrategies: {
       __typename: true,
+      // Add resolveType for interface implementation
+      resolveType: true,
     },
   },
   plugins: [

@@ -24,6 +24,9 @@ files for automatically registering interface implementations.
 - Adding Relay-style connections (deferred to future versions)
 - Changing existing field resolution behavior
 - Migrating the rest of the nodes to the new builder pattern (deferred to v0.3)
+- Multiple interface implementation (a single type implementing multiple
+  interfaces) is not currently needed but the architecture supports it for the
+  future
 
 ## Approach
 
