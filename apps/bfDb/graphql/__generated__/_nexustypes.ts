@@ -53,12 +53,14 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
+  Entity: any;
+  Node: any;
 }
 
 export interface NexusGenUnions {
 }
 
-export type NexusGenRootTypes = NexusGenObjects
+export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
@@ -76,6 +78,12 @@ export interface NexusGenFieldTypes {
   Waitlist: { // field return type
     id: string | null; // ID
   }
+  Entity: { // field return type
+    createdAt: string; // String!
+  }
+  Node: { // field return type
+    id: string; // ID!
+  }
 }
 
 export interface NexusGenFieldTypeNames {
@@ -90,6 +98,12 @@ export interface NexusGenFieldTypeNames {
     ok: 'Boolean'
   }
   Waitlist: { // field return type name
+    id: 'ID'
+  }
+  Entity: { // field return type name
+    createdAt: 'String'
+  }
+  Node: { // field return type name
     id: 'ID'
   }
 }
@@ -116,7 +130,7 @@ export type NexusGenInputNames = never;
 
 export type NexusGenEnumNames = never;
 
-export type NexusGenInterfaceNames = never;
+export type NexusGenInterfaceNames = keyof NexusGenInterfaces;
 
 export type NexusGenScalarNames = keyof NexusGenScalars;
 
@@ -124,13 +138,13 @@ export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = never;
+export type NexusGenAbstractsUsingStrategyResolveType = "Entity" | "Node";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
     __typename: true
+    resolveType: true
     isTypeOf: false
-    resolveType: false
   }
 }
 
