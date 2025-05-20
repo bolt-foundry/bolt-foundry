@@ -1,0 +1,19 @@
+# .github/workflows/flakehub-publish-rolling.yml
+name: Publish every push to main to FlakeHub
+on:
+  push:
+    branches: [main]
+
+jobs:
+  flakehub:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # OIDC token for FlakeHub auth
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@v3
+      - uses: DeterminateSystems/flakehub-push@main
+        with:
+          rolling: true # or omit for tagged-only
+          visibility: public # public | private | unlisted
