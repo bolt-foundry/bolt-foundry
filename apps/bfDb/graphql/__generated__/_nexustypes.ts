@@ -53,7 +53,6 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  Entity: any;
   Node: any;
 }
 
@@ -78,9 +77,6 @@ export interface NexusGenFieldTypes {
   Waitlist: { // field return type
     id: string | null; // ID
   }
-  Entity: { // field return type
-    createdAt: string; // String!
-  }
   Node: { // field return type
     id: string; // ID!
   }
@@ -99,9 +95,6 @@ export interface NexusGenFieldTypeNames {
   }
   Waitlist: { // field return type name
     id: 'ID'
-  }
-  Entity: { // field return type name
-    createdAt: 'String'
   }
   Node: { // field return type name
     id: 'ID'
@@ -138,7 +131,7 @@ export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "Entity" | "Node";
+export type NexusGenAbstractsUsingStrategyResolveType = "Node";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
