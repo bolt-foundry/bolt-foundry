@@ -1,0 +1,1960 @@
+{
+  "manifest": {
+    "/src/dom/node.ts": {
+      "size": 17866,
+      "checksum": "sha256-53ada9e4b2ae21f10f5941ff257ed4585920ae392020544648f349c05d15d30c"
+    },
+    "/test/units/Node-events.ts": {
+      "size": 1664,
+      "checksum": "sha256-e50ff72d943fbfc04e78365cd4fe728f35d00c5fda1a4008ee8eca42c2da65d1"
+    },
+    "/html-parser/wasm/Cargo.toml": {
+      "size": 411,
+      "checksum": "sha256-f262c5a66c02eb107dfee1d52795621a90ec7667dbc3b313f075f0b791ad1c5f"
+    },
+    "/test/units/Element-append.ts": {
+      "size": 1474,
+      "checksum": "sha256-39f019a4032e56b3bd1c9444b67d351797403a4a9b30bd347ffc263d0337660f"
+    },
+    "/test/units/cloneNode.ts": {
+      "size": 1668,
+      "checksum": "sha256-47de0e2bba91b232521e226991e80807631ae1923909f02b3e0101101313483e"
+    },
+    "/src/dom/selectors/selectors.ts": {
+      "size": 1315,
+      "checksum": "sha256-83eab57be2290fb48e3130533448c93c6c61239f2a2f3b85f1917f80ca0fdc75"
+    },
+    "/html-parser/wasm/README.md": {
+      "size": 33,
+      "checksum": "sha256-5bcbb260f491b336bf6c237dcabdc16206589904e579c3f571ed978f3ba2a87e"
+    },
+    "/test/units/Element-lastElementChild.ts": {
+      "size": 459,
+      "checksum": "sha256-f5e6832f30ec540e52befb891e6671a84b6e264bde81e2cc9c79ee135df03a37"
+    },
+    "/Cargo.toml": {
+      "size": 114,
+      "checksum": "sha256-cb4905e3329d7334914ba16ca3b92085219d865b9df7164eb7449713d391ec56"
+    },
+    "/test/units/Node-replaceWith-child.ts": {
+      "size": 602,
+      "checksum": "sha256-50bd02ea1c72765fc310220f43fef2d6d859ddca9bc8f158457cf686fd38311b"
+    },
+    "/html-parser/wasm/src/lib.rs": {
+      "size": 326,
+      "checksum": "sha256-9091527ac8ce1c17b46efe40e3ba79354f0571f842ac960de03148f87128c43f"
+    },
+    "/test/units/child-element-count.ts": {
+      "size": 1172,
+      "checksum": "sha256-33ae1da11fd2d66418ff05a6af994de87312407bf6301fa91a6e09bbf9c4c53a"
+    },
+    "/test/units/Element-classList.ts": {
+      "size": 12005,
+      "checksum": "sha256-1036695ceccbe0cc58cdccbc4e9b16a313d92876d4e67a1f7e8b1714928f9d8a"
+    },
+    "/src/dom/document.ts": {
+      "size": 9834,
+      "checksum": "sha256-ad584ac4ce6dce03f0ff6ef4b7db86fd598f9c7824da1387f7f2acd7d6948e4a"
+    },
+    "/test/units/Element-id.ts": {
+      "size": 815,
+      "checksum": "sha256-3830344264ef5b3e2efefa4ec279f24088affe54b216a17896d3ff48bffddf79"
+    },
+    "/LICENSE": {
+      "size": 1063,
+      "checksum": "sha256-a3cba41a137fa7a54db25cd2b964faf4320f2e39daa0e59f2ae04371a51ed35b"
+    },
+    "/test/units/HTMLElement-innerText.ts": {
+      "size": 680,
+      "checksum": "sha256-f4b5b6f87e7a127a374199909c6d38bdca311bd8fc8ed6e67da870464bf49dc1"
+    },
+    "/test/units/noscript-has-domtree.ts": {
+      "size": 477,
+      "checksum": "sha256-f6aebaa195e55f271f007aaac797938d1ab196332b39f3c4f515ef56560fcdd4"
+    },
+    "/deno-dom-native.ts": {
+      "size": 4622,
+      "checksum": "sha256-cb4cc6ca1681381d36bd572049d51eb4425145752f36181cb286025fccc1e97a"
+    },
+    "/src/dom/elements/html-template-element.ts": {
+      "size": 2970,
+      "checksum": "sha256-1707dfb4cbb145f3bcb94426d7cdedbaa336620d0afed30e99f50fe87ba24a98"
+    },
+    "/html-parser/core/src/lib.rs": {
+      "size": 6362,
+      "checksum": "sha256-00fbbcec218593a926c7cf20ed9739911af9e0267e07a4ece17e84931dcec8a7"
+    },
+    "/test/units/instanceof.ts": {
+      "size": 1044,
+      "checksum": "sha256-4b84816092c18c231272b780df37b94fa2d78a6999296ddb3f45835f9e6406e5"
+    },
+    "/deno-dom-wasm.ts": {
+      "size": 759,
+      "checksum": "sha256-0669396686fb207f1354af33df6aabe2189b4eceafdb1bf7f3d6bbb2637b6b03"
+    },
+    "/test/wpt.ts": {
+      "size": 1802,
+      "checksum": "sha256-cfb3ba7d91339f3184f581976872553db8cf8f0afa292a20e3a04998e518ec59"
+    },
+    "/test/units/Element-closest.ts": {
+      "size": 878,
+      "checksum": "sha256-d87e83c1e319cb0df42eacc2961b3c0ba5e9604aa0d24c9f684ff4ae8c981db6"
+    },
+    "/src/dom/selectors/custom-api.ts": {
+      "size": 172,
+      "checksum": "sha256-852696bd58e534bc41bd3be9e2250b60b67cd95fd28ed16b1deff1d548531a71"
+    },
+    "/test/units/Element-children-sync-childNodes.ts": {
+      "size": 1283,
+      "checksum": "sha256-588d78398465ce87e13cc383890b7c3ee7dafc83bc408342d38b3e53a716b021"
+    },
+    "/src/dom/element.ts": {
+      "size": 35503,
+      "checksum": "sha256-7d330192fbfd406fb67ab7a3387576fe35fec129b7c52c2ea38615144fa5b12e"
+    },
+    "/src/dom/dom-parser.ts": {
+      "size": 1612,
+      "checksum": "sha256-784ee0e766d4a01e14420f328053fd3a0016c6b40ee442edc3ae80f5d9777927"
+    },
+    "/test/units/Document.ts": {
+      "size": 1213,
+      "checksum": "sha256-cc10d51026a8bff362b8070d2a95cbbd40e04808732c50889ce93cdb2b23d680"
+    },
+    "/test/units/remove-attribute-delete.ts": {
+      "size": 719,
+      "checksum": "sha256-caa9f0a2eb6866f8b5bd4657f091b52b662ddec135935e9097fe7a52058f7ae9"
+    },
+    "/test/units/Node-insertBefore.ts": {
+      "size": 1892,
+      "checksum": "sha256-10c825a0a8c560dd57bc024ef822266c88bdcc4417345b8a6f641272843970cd"
+    },
+    "/test/units/comments-outside-html.html": {
+      "size": 523,
+      "checksum": "sha256-81d983f165b8944f34b88435797b559644c0605ed4f4616917c13475cc8cd2e5"
+    },
+    "/README.md": {
+      "size": 5414,
+      "checksum": "sha256-928a192f1d173fc9d96199cfff66410986e61dc9e2aa9265a18ef204dc96b60c"
+    },
+    "/html-parser/cli-test/src/main.rs": {
+      "size": 780,
+      "checksum": "sha256-c1a11d4753894647898c27668313eeee71d2896d8050fa41a40e1ac920faee1e"
+    },
+    "/test/units/CharacterData.ts": {
+      "size": 4830,
+      "checksum": "sha256-1ddc1e4bf75e72857f2636b99930afde34388a14428d997475e17c0882afb42c"
+    },
+    "/test/units/querySelectorAll-selector-list.ts": {
+      "size": 604,
+      "checksum": "sha256-03dba162b721db6fc88253cb2930a0d41726fad238bdad4e90a92c904c54fc64"
+    },
+    "/test/units/Element-outerHTML.ts": {
+      "size": 6254,
+      "checksum": "sha256-728979eb7066f6b88c3275bb358768c9543b3ff15124c45557f75f1daf5fb45e"
+    },
+    "/native.test.ts": {
+      "size": 111,
+      "checksum": "sha256-15ac2b6f32cc8e649049effbbbf3ae438b10aa80cd7f43f246fccc7f63e3a7eb"
+    },
+    "/src/dom/selectors/sizzle.js": {
+      "size": 73488,
+      "checksum": "sha256-c3aed60c1045a106d8e546ac2f85cc82e65f62d9af2f8f515210b9212286682a"
+    },
+    "/src/api.ts": {
+      "size": 2715,
+      "checksum": "sha256-0ff5790f0a3eeecb4e00b7d8fbfa319b165962cf6d0182a65ba90f158d74f7d7"
+    },
+    "/deno-dom-wasm-noinit.ts": {
+      "size": 1221,
+      "checksum": "sha256-5b2910c929f56751f9db41ff4ac114aa4d933f17ef63f10b0e849568719c10bb"
+    },
+    "/test/wpt-runner-worker.ts": {
+      "size": 1643,
+      "checksum": "sha256-26c2b80ddb4c884f812fe2a7cc237a3b250a91a6a0898fcce3a98d62f4367663"
+    },
+    "/test/units/Node-removeChild.ts": {
+      "size": 1262,
+      "checksum": "sha256-39adee431a26de59a560529351ee166358533e2a0a478425c8aebf81bc119aae"
+    },
+    "/test/units/HTMLTemplateElement.ts": {
+      "size": 10650,
+      "checksum": "sha256-dd3509aa384179ca8919aa5bf83a6b4266bf25337733ccb430d3b108e55826ab"
+    },
+    "/test/units/Node-nodeType-constants.ts": {
+      "size": 2717,
+      "checksum": "sha256-44f89753abefac6905ef6560761cf2c55a5c947b20444291d6db2556be373d28"
+    },
+    "/test/units.ts": {
+      "size": 423,
+      "checksum": "sha256-b9b990d1fa9ba7b7a0bfab64d927d4cb468d7f68df37a1633fd434ea46443c86"
+    },
+    "/test/units/case-insensitive-attributes.ts": {
+      "size": 820,
+      "checksum": "sha256-6f55aa7582538daf1eb92c6c671e83e7c13d020004de0c7221042cc2e139413c"
+    },
+    "/test/units/Node-nodesAndTextNodes-ancestor-check.ts": {
+      "size": 2305,
+      "checksum": "sha256-bbdc7dd88dd64f778646a7371a761a7cbddb9f112ebc902d41003d4d5d796724"
+    },
+    "/test/units/querySelector-dom-type.ts": {
+      "size": 465,
+      "checksum": "sha256-596f4b01281193dc65759ed91dbd8a92022acc89dae8a582e42e2d6adc2d54eb"
+    },
+    "/html-parser/plugin/Cargo.toml": {
+      "size": 334,
+      "checksum": "sha256-9275ab73ddc877c714eeca010539e2276c4e34198ef7b6692cfabd4884dc6b36"
+    },
+    "/src/dom/selectors/nwsapi.js": {
+      "size": 65735,
+      "checksum": "sha256-985d7d8fc1eabbb88946b47a1c44c1b2d4aa79ff23c21424219f1528fa27a2ff"
+    },
+    "/test/units/Element-toggleAttribute.ts": {
+      "size": 1301,
+      "checksum": "sha256-9b5a3420f71a5c6eae9c89595e39cb089a71cba2ac53bf9763221c91964d3763"
+    },
+    "/test/units/Node-appendChild.ts": {
+      "size": 1911,
+      "checksum": "sha256-86e5b3d6e2b2d5b31a52dcbfeb411311956a20a6bb12b080ded04206a3a989ae"
+    },
+    "/test/units/large-child-count.ts": {
+      "size": 830,
+      "checksum": "sha256-360479269e2b916a6f25620d5dfeb1d1715e54b1a9041ea43088fe0d94b1de78"
+    },
+    "/src/dom/html-collection.ts": {
+      "size": 2782,
+      "checksum": "sha256-68046d3f7380f1cb148188c53f48e337123acf3af533c52e74cba6d5e9846c3d"
+    },
+    "/html-parser/Makefile": {
+      "size": 1697,
+      "checksum": "sha256-a5561e5f52c0a4915e9135551fabfb0fa8a6718cfdc5cde5c7d7ae694b06817c"
+    },
+    "/html-parser/core/Cargo.toml": {
+      "size": 299,
+      "checksum": "sha256-0116fa0d37385633dad7443412edc7356c1cc5a9a112496e621cdcdbca5f17fc"
+    },
+    "/html-parser/cli-test/Cargo.toml": {
+      "size": 250,
+      "checksum": "sha256-02ea17d96f99f8d9bef27404ff2336bb1a6fd26bd287ebf0d23aed3e8cf43a05"
+    },
+    "/src/dom/utils.ts": {
+      "size": 7986,
+      "checksum": "sha256-bc429635e9204051ba1ecc1b212031b5ee7c6bcd95120c91bef696804aa67e74"
+    },
+    "/html-parser/README.md": {
+      "size": 504,
+      "checksum": "sha256-83e4d484b367769ad6d81861b4247e6dfb60458538f74fd5343ecfbfceefa72a"
+    },
+    "/src/dom/selectors/nwsapi-types.ts": {
+      "size": 866,
+      "checksum": "sha256-c43b36c36acc5d32caabaa54fda8c9d239b2b0fcbce9a28efb93c84aa1021698"
+    },
+    "/test/wpt-runner.ts": {
+      "size": 1801,
+      "checksum": "sha256-af9bb68846ec76b963c55895bf9bc164d4a5794ffbcd038bb9286f44986fb7d5"
+    },
+    "/test/units/comments-outside-html-test.ts": {
+      "size": 1131,
+      "checksum": "sha256-9be7efdb2380b72bf0f508319372408e18efc5e9a5fd2864c0f581a2fed969f9"
+    },
+    "/src/parser.ts": {
+      "size": 541,
+      "checksum": "sha256-e06b2300d693e6ae7564e53dfa5c9a9e97fdb8c044c39c52c8b93b5d60860be3"
+    },
+    "/test/units/Node-nodeValue.ts": {
+      "size": 487,
+      "checksum": "sha256-d0edbad7a7a40bae85cce1e91381aa69db2127b89bd6f7971db486b45e7b89e9"
+    },
+    "/test/units/NodeList-compatible-api.ts": {
+      "size": 504,
+      "checksum": "sha256-6055c238df58814f2388738fa2229a00643331b1ab4be65a43540ce073a1d0c5"
+    },
+    "/build/deno-wasm/deno-wasm.js": {
+      "size": 823219,
+      "checksum": "sha256-d6841a06342eb6a2798ef28de79ad69c0f2fa349fa04d3ca45e5fcfbf50a9340"
+    },
+    "/test/units/Element-prepend.ts": {
+      "size": 1694,
+      "checksum": "sha256-67bc4e9be93f9beb359c5cb3ad1690b2e109040256942b01cd6340c7c68891f8"
+    },
+    "/src/dom/document-fragment.ts": {
+      "size": 4284,
+      "checksum": "sha256-0b915d094830d43b330dc2fb8012b990f2c815773c6cdcd4a9fdff99fe47412e"
+    },
+    "/test/units/adjacent-siblings.ts": {
+      "size": 1637,
+      "checksum": "sha256-e17148a47e19703ce3a54849f0f86781d567eaff3e1084617e66899021b67aad"
+    },
+    "/test/units/throws-dom-exception.ts": {
+      "size": 724,
+      "checksum": "sha256-b662acbc7407247e1e27db7fe6879a43a79d27a5b3dfe0a9dae019c7eab4b02e"
+    },
+    "/test/units/Element-localName.ts": {
+      "size": 511,
+      "checksum": "sha256-03c00319f65cff3c4050cb7972d7c1da758c9f9316093e857dc03c1c4f2182cc"
+    },
+    "/test/units/Node-compareDocumentPosition.ts": {
+      "size": 1585,
+      "checksum": "sha256-73f54e5029f0aad297915b93a91083577c921efbf70ab2ce4b4cc8682d184b11"
+    },
+    "/test/units/HTMLElement-dataset.ts": {
+      "size": 3963,
+      "checksum": "sha256-15b97c2533bdea4e082ea4308b3d984ef42dc89129d03d1dfce6b94dbfc767a8"
+    },
+    "/test/units/parse-empty-template.ts": {
+      "size": 366,
+      "checksum": "sha256-efca4ab0a43e4f6b3472622fc96199e83eac65072456d37472fb891a4ef49cca"
+    },
+    "/deno.jsonc": {
+      "size": 1083,
+      "checksum": "sha256-7551615c2243bbbaa1c1bb2693e840e12fb8060670a678a8d3fe110753ab0ed2"
+    },
+    "/src/dom/selectors/sizzle-types.ts": {
+      "size": 431,
+      "checksum": "sha256-78149e2502409989ce861ed636b813b059e16bc267bb543e7c2b26ef43e4798b"
+    },
+    "/html-parser/plugin/build.rs": {
+      "size": 47,
+      "checksum": "sha256-f18a2dc4a12907862dc30321fe34a44a5c55c6be7749845a783c5443d06bd5b4"
+    },
+    "/html-parser/core/src/rcdom.rs": {
+      "size": 14436,
+      "checksum": "sha256-99a2c65f10567c4ae9da82b8ab3e72f8e407269e396323637264ab6611ba96e1"
+    },
+    "/html-parser/plugin/src/lib.rs": {
+      "size": 2402,
+      "checksum": "sha256-7330b8c2d6815babc770f8ed8067a2c3dd9d93f9ef610a53f6e86fc8e1ed3923"
+    },
+    "/wasm.test.ts": {
+      "size": 107,
+      "checksum": "sha256-4ae05d7d3f9a55bedd048b37e6fd3bd5fe69a3276bdbc57922763557dd13d723"
+    },
+    "/src/dom/string-cache.ts": {
+      "size": 480,
+      "checksum": "sha256-8e935804f7bac244cc70cec90a28c9f6d30fea14c61c2c4ea48fca274376d786"
+    },
+    "/test/units/Element-firstElementChild.ts": {
+      "size": 463,
+      "checksum": "sha256-c361d2c14ce4dd5d25dd2ab88ad515efe5a08d3b699a3a3403be0215c66cfcd8"
+    },
+    "/test/units/NamedNodeMap.ts": {
+      "size": 11080,
+      "checksum": "sha256-ce5f3c4a1e1571d7206952fbbe491905bf3dbb238d83d9bd1758052f14f6a124"
+    },
+    "/test/units/Element-getElementsByTagName-wildcard.ts": {
+      "size": 507,
+      "checksum": "sha256-1f56d83aee106c75be93111c0ea60a477f228f840a1e1defd465a1100b2f4c81"
+    },
+    "/test/units/basic.html": {
+      "size": 404,
+      "checksum": "sha256-3d0d63756bd52a2d139b8b6d5a6dcffd50158584ff405ea4321e2f5e4435fbe5"
+    },
+    "/test/units/Element-matches.ts": {
+      "size": 305,
+      "checksum": "sha256-7d2973b8c06231004f7b2c9e2a1f758e6bf5ee20af5ab5d676a709bcc5db81c1"
+    },
+    "/test/units/Element-set-innerHTML.ts": {
+      "size": 1156,
+      "checksum": "sha256-ffd5087f451b4fd092ef1cff8add3ca4b234a32ef34c45205e672a6ac10e94cf"
+    },
+    "/test/units/Node-nodesAndTextNodes-sibllings.ts": {
+      "size": 2450,
+      "checksum": "sha256-14ec95ef7ea65d10caf1924214c6e2875fcd8adda82419f04c597be27a8f8d60"
+    },
+    "/test/units/Document-cloneNode.ts": {
+      "size": 628,
+      "checksum": "sha256-b9d65abde71049d22c53c16507e94f488a1332857a20004e164bdd843a3a6bee"
+    },
+    "/test/units/comments-in-outerhtml.ts": {
+      "size": 948,
+      "checksum": "sha256-18c5a170eff160b6ba6abaf1ea1d5dbf169432620e8874cbca53ede748ba9aaf"
+    },
+    "/test/units/DocumentFragment.ts": {
+      "size": 4156,
+      "checksum": "sha256-0c14107f3d8f01e647f525ba70022229c13c4eac1ca01e1c1327202583adb8d8"
+    },
+    "/src/deserialize.ts": {
+      "size": 2408,
+      "checksum": "sha256-514953418b7ae558ed7361ad9be21013f46cba2f58bd7f4acc90cf1e89f9c8cf"
+    },
+    "/src/constructor-lock.ts": {
+      "size": 93,
+      "checksum": "sha256-0e7b297e8b9cf921a3b0d3a692ec5fb462c5afc47ec554292e20090b9e16b40a"
+    },
+    "/src/dom/utils-types.ts": {
+      "size": 395,
+      "checksum": "sha256-96db30e3e4a75b194201bb9fa30988215da7f91b380fca6a5143e51ece2a8436"
+    },
+    "/test/units/collections-toString.ts": {
+      "size": 403,
+      "checksum": "sha256-f1f3534bd7d659f035fd39dbd5fa21796d57a66a015a5c9bd185e1e7405201d1"
+    },
+    "/src/dom/node-list.ts": {
+      "size": 5704,
+      "checksum": "sha256-31b45dafce91d5f6d7e8f5c91cf4f6667842a971f09d40fd08f5ddd7cb3b1dab"
+    },
+    "/test/units/Element-getElementsBy.ts": {
+      "size": 4401,
+      "checksum": "sha256-64504565aa33c054bcd8be197b808f4e6958e8739915372669ecce1c3f9fc4ca"
+    }
+  },
+  "moduleGraph2": {
+    "/src/dom/element.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../constructor-lock.ts",
+          "specifierRange": [
+            [
+              0,
+              25
+            ],
+            [
+              0,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../deserialize.ts",
+          "specifierRange": [
+            [
+              1,
+              40
+            ],
+            [
+              1,
+              59
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./node.ts",
+          "specifierRange": [
+            [
+              2,
+              50
+            ],
+            [
+              2,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./node-list.ts",
+          "specifierRange": [
+            [
+              3,
+              45
+            ],
+            [
+              3,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./html-collection.ts",
+          "specifierRange": [
+            [
+              4,
+              31
+            ],
+            [
+              4,
+              53
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./utils.ts",
+          "specifierRange": [
+            [
+              13,
+              7
+            ],
+            [
+              13,
+              19
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./utils-types.ts",
+          "specifierRange": [
+            [
+              14,
+              22
+            ],
+            [
+              14,
+              40
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./string-cache.ts",
+          "specifierRange": [
+            [
+              15,
+              43
+            ],
+            [
+              15,
+              62
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/selectors/custom-api.ts": {},
+    "/src/dom/selectors/sizzle-types.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./sizzle.js",
+          "specifierRange": [
+            [
+              0,
+              19
+            ],
+            [
+              0,
+              32
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../element.ts",
+          "specifierRange": [
+            [
+              1,
+              29
+            ],
+            [
+              1,
+              44
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../document.ts",
+          "specifierRange": [
+            [
+              2,
+              30
+            ],
+            [
+              2,
+              46
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/api.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./deserialize.ts",
+          "specifierRange": [
+            [
+              0,
+              32
+            ],
+            [
+              0,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./dom/node.ts",
+          "specifierRange": [
+            [
+              1,
+              14
+            ],
+            [
+              1,
+              29
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./dom/element.ts",
+          "specifierRange": [
+            [
+              2,
+              14
+            ],
+            [
+              2,
+              32
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./dom/document.ts",
+          "specifierRange": [
+            [
+              3,
+              14
+            ],
+            [
+              3,
+              33
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./dom/document-fragment.ts",
+          "specifierRange": [
+            [
+              4,
+              14
+            ],
+            [
+              4,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./dom/dom-parser.ts",
+          "specifierRange": [
+            [
+              5,
+              14
+            ],
+            [
+              5,
+              35
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./dom/elements/html-template-element.ts",
+          "specifierRange": [
+            [
+              6,
+              14
+            ],
+            [
+              6,
+              55
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./dom/selectors/selectors.ts",
+          "specifierRange": [
+            [
+              7,
+              83
+            ],
+            [
+              7,
+              113
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dom/node.ts",
+          "specifierRange": [
+            [
+              13,
+              7
+            ],
+            [
+              13,
+              22
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dom/document.ts",
+          "specifierRange": [
+            [
+              15,
+              58
+            ],
+            [
+              15,
+              77
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dom/element.ts",
+          "specifierRange": [
+            [
+              20,
+              7
+            ],
+            [
+              20,
+              25
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./dom/node-list.ts",
+          "specifierRange": [
+            [
+              62,
+              43
+            ],
+            [
+              62,
+              63
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./dom/html-collection.ts",
+          "specifierRange": [
+            [
+              63,
+              55
+            ],
+            [
+              63,
+              81
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dom/node-list.ts",
+          "specifierRange": [
+            [
+              65,
+              25
+            ],
+            [
+              65,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dom/html-collection.ts",
+          "specifierRange": [
+            [
+              66,
+              31
+            ],
+            [
+              66,
+              57
+            ]
+          ]
+        }
+      ]
+    },
+    "/build/deno-wasm/deno-wasm.js": {},
+    "/src/deserialize.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./parser.ts",
+          "specifierRange": [
+            [
+              0,
+              33
+            ],
+            [
+              0,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./constructor-lock.ts",
+          "specifierRange": [
+            [
+              1,
+              25
+            ],
+            [
+              1,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dom/node.ts",
+          "specifierRange": [
+            [
+              2,
+              46
+            ],
+            [
+              2,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dom/document.ts",
+          "specifierRange": [
+            [
+              3,
+              29
+            ],
+            [
+              3,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dom/document-fragment.ts",
+          "specifierRange": [
+            [
+              4,
+              33
+            ],
+            [
+              4,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dom/elements/html-template-element.ts",
+          "specifierRange": [
+            [
+              5,
+              36
+            ],
+            [
+              5,
+              77
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dom/element.ts",
+          "specifierRange": [
+            [
+              6,
+              24
+            ],
+            [
+              6,
+              42
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/dom-parser.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../constructor-lock.ts",
+          "specifierRange": [
+            [
+              0,
+              25
+            ],
+            [
+              0,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../deserialize.ts",
+          "specifierRange": [
+            [
+              1,
+              32
+            ],
+            [
+              1,
+              51
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./document.ts",
+          "specifierRange": [
+            [
+              2,
+              43
+            ],
+            [
+              2,
+              58
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./element.ts",
+          "specifierRange": [
+            [
+              3,
+              29
+            ],
+            [
+              3,
+              43
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/utils-types.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./element.ts",
+          "specifierRange": [
+            [
+              0,
+              29
+            ],
+            [
+              0,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./document.ts",
+          "specifierRange": [
+            [
+              1,
+              30
+            ],
+            [
+              1,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./document-fragment.ts",
+          "specifierRange": [
+            [
+              2,
+              38
+            ],
+            [
+              2,
+              62
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/html-collection.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./element.ts",
+          "specifierRange": [
+            [
+              0,
+              29
+            ],
+            [
+              0,
+              43
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/selectors/nwsapi.js": {},
+    "/src/dom/utils.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./node.ts",
+          "specifierRange": [
+            [
+              0,
+              65
+            ],
+            [
+              0,
+              76
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./node-list.ts",
+          "specifierRange": [
+            [
+              1,
+              25
+            ],
+            [
+              1,
+              41
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./utils-types.ts",
+          "specifierRange": [
+            [
+              2,
+              22
+            ],
+            [
+              2,
+              40
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./string-cache.ts",
+          "specifierRange": [
+            [
+              3,
+              29
+            ],
+            [
+              3,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./element.ts",
+          "specifierRange": [
+            [
+              4,
+              29
+            ],
+            [
+              4,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./elements/html-template-element.ts",
+          "specifierRange": [
+            [
+              5,
+              41
+            ],
+            [
+              5,
+              78
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./document-fragment.ts",
+          "specifierRange": [
+            [
+              6,
+              38
+            ],
+            [
+              6,
+              62
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/node.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../constructor-lock.ts",
+          "specifierRange": [
+            [
+              0,
+              25
+            ],
+            [
+              0,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./node-list.ts",
+          "specifierRange": [
+            [
+              1,
+              62
+            ],
+            [
+              1,
+              78
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./utils.ts",
+          "specifierRange": [
+            [
+              6,
+              7
+            ],
+            [
+              6,
+              19
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./element.ts",
+          "specifierRange": [
+            [
+              7,
+              29
+            ],
+            [
+              7,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./document.ts",
+          "specifierRange": [
+            [
+              8,
+              30
+            ],
+            [
+              8,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./document-fragment.ts",
+          "specifierRange": [
+            [
+              9,
+              38
+            ],
+            [
+              9,
+              62
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/parser.ts": {},
+    "/src/dom/node-list.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./node.ts",
+          "specifierRange": [
+            [
+              0,
+              21
+            ],
+            [
+              0,
+              32
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./html-collection.ts",
+          "specifierRange": [
+            [
+              1,
+              31
+            ],
+            [
+              1,
+              53
+            ]
+          ]
+        }
+      ]
+    },
+    "/deno-dom-wasm-noinit.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./build/deno-wasm/deno-wasm.js",
+          "specifierRange": [
+            [
+              33,
+              7
+            ],
+            [
+              33,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./src/parser.ts",
+          "specifierRange": [
+            [
+              34,
+              38
+            ],
+            [
+              34,
+              55
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./src/api.ts",
+          "specifierRange": [
+            [
+              44,
+              14
+            ],
+            [
+              44,
+              28
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/selectors/sizzle.js": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./custom-api.ts",
+          "specifierRange": [
+            [
+              13,
+              57
+            ],
+            [
+              13,
+              74
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/constructor-lock.ts": {},
+    "/deno-dom-wasm.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./build/deno-wasm/deno-wasm.js",
+          "specifierRange": [
+            [
+              22,
+              40
+            ],
+            [
+              22,
+              72
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./src/parser.ts",
+          "specifierRange": [
+            [
+              23,
+              25
+            ],
+            [
+              23,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./src/api.ts",
+          "specifierRange": [
+            [
+              34,
+              14
+            ],
+            [
+              34,
+              28
+            ]
+          ]
+        }
+      ]
+    },
+    "/deno-dom-native.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@denosaurs/plug@1.0.3",
+          "specifierRange": [
+            [
+              34,
+              23
+            ],
+            [
+              34,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./src/parser.ts",
+          "specifierRange": [
+            [
+              35,
+              25
+            ],
+            [
+              35,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./src/api.ts",
+          "specifierRange": [
+            [
+              166,
+              14
+            ],
+            [
+              166,
+              28
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/elements/html-template-element.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../node.ts",
+          "specifierRange": [
+            [
+              0,
+              21
+            ],
+            [
+              0,
+              33
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../element.ts",
+          "specifierRange": [
+            [
+              1,
+              24
+            ],
+            [
+              1,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../document.ts",
+          "specifierRange": [
+            [
+              2,
+              25
+            ],
+            [
+              2,
+              41
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../document-fragment.ts",
+          "specifierRange": [
+            [
+              3,
+              33
+            ],
+            [
+              3,
+              58
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../utils.ts",
+          "specifierRange": [
+            [
+              4,
+              64
+            ],
+            [
+              4,
+              77
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../deserialize.ts",
+          "specifierRange": [
+            [
+              5,
+              40
+            ],
+            [
+              5,
+              62
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../constructor-lock.ts",
+          "specifierRange": [
+            [
+              6,
+              25
+            ],
+            [
+              6,
+              52
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/document.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../constructor-lock.ts",
+          "specifierRange": [
+            [
+              0,
+              25
+            ],
+            [
+              0,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./node.ts",
+          "specifierRange": [
+            [
+              1,
+              46
+            ],
+            [
+              1,
+              57
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./node-list.ts",
+          "specifierRange": [
+            [
+              2,
+              45
+            ],
+            [
+              2,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./element.ts",
+          "specifierRange": [
+            [
+              3,
+              24
+            ],
+            [
+              3,
+              38
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./document-fragment.ts",
+          "specifierRange": [
+            [
+              4,
+              33
+            ],
+            [
+              4,
+              57
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./elements/html-template-element.ts",
+          "specifierRange": [
+            [
+              5,
+              36
+            ],
+            [
+              5,
+              73
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./selectors/selectors.ts",
+          "specifierRange": [
+            [
+              6,
+              47
+            ],
+            [
+              6,
+              73
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./utils.ts",
+          "specifierRange": [
+            [
+              7,
+              39
+            ],
+            [
+              7,
+              51
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./utils-types.ts",
+          "specifierRange": [
+            [
+              8,
+              22
+            ],
+            [
+              8,
+              40
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./string-cache.ts",
+          "specifierRange": [
+            [
+              9,
+              29
+            ],
+            [
+              9,
+              48
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/string-cache.ts": {},
+    "/src/dom/document-fragment.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../constructor-lock.ts",
+          "specifierRange": [
+            [
+              0,
+              25
+            ],
+            [
+              0,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./html-collection.ts",
+          "specifierRange": [
+            [
+              1,
+              31
+            ],
+            [
+              1,
+              53
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./node-list.ts",
+          "specifierRange": [
+            [
+              2,
+              45
+            ],
+            [
+              2,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./node.ts",
+          "specifierRange": [
+            [
+              3,
+              50
+            ],
+            [
+              3,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./element.ts",
+          "specifierRange": [
+            [
+              4,
+              24
+            ],
+            [
+              4,
+              38
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./selectors/custom-api.ts",
+          "specifierRange": [
+            [
+              8,
+              7
+            ],
+            [
+              8,
+              34
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./utils.ts",
+          "specifierRange": [
+            [
+              9,
+              39
+            ],
+            [
+              9,
+              51
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./utils-types.ts",
+          "specifierRange": [
+            [
+              10,
+              22
+            ],
+            [
+              10,
+              40
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/selectors/selectors.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./nwsapi-types.ts",
+          "specifierRange": [
+            [
+              0,
+              29
+            ],
+            [
+              0,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./sizzle-types.ts",
+          "specifierRange": [
+            [
+              1,
+              30
+            ],
+            [
+              1,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../element.ts",
+          "specifierRange": [
+            [
+              2,
+              29
+            ],
+            [
+              2,
+              44
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../document.ts",
+          "specifierRange": [
+            [
+              3,
+              30
+            ],
+            [
+              3,
+              46
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/dom/selectors/nwsapi-types.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./nwsapi.js",
+          "specifierRange": [
+            [
+              0,
+              18
+            ],
+            [
+              0,
+              31
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../element.ts",
+          "specifierRange": [
+            [
+              1,
+              29
+            ],
+            [
+              1,
+              44
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../document.ts",
+          "specifierRange": [
+            [
+              2,
+              30
+            ],
+            [
+              2,
+              46
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./deno-dom-wasm.ts",
+    "./wasm": "./deno-dom-wasm.ts",
+    "./wasm-noinit": "./deno-dom-wasm-noinit.ts",
+    "./native": "./deno-dom-native.ts"
+  }
+}

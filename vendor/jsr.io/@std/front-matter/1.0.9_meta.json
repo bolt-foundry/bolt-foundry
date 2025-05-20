@@ -1,0 +1,505 @@
+{
+  "manifest": {
+    "/json.ts": {
+      "size": 1277,
+      "checksum": "sha256-110f2ddeba659b5989a05ea42acc11715953b2c9207e2778418a588d587b119f"
+    },
+    "/any.ts": {
+      "size": 1629,
+      "checksum": "sha256-408761eb1fb72368715a9941f6f52c760622547b6d2a56ca4880f9ca2ba9f46a"
+    },
+    "/test.ts": {
+      "size": 2106,
+      "checksum": "sha256-aac2345d32ce136111dd7178e18b3b740d916002e868db80bd0e0b3f7aeba9a6"
+    },
+    "/unstable_yaml.ts": {
+      "size": 1429,
+      "checksum": "sha256-dfdf56308b48f84d950d796cb959a1e533186e3eb48a438261cc9dbe13e54b71"
+    },
+    "/_formats.ts": {
+      "size": 1862,
+      "checksum": "sha256-eb3fb4544759df99c57a1e77bd3049ff0f93878b136e4b600faf3a67c0725ccb"
+    },
+    "/test_test.ts": {
+      "size": 2461,
+      "checksum": "sha256-936566f1dd4032f7aab5387cc53e540e0bdb3c93ce4f6273a5aac976398ac180"
+    },
+    "/LICENSE": {
+      "size": 1075,
+      "checksum": "sha256-0961f97da6619d5fe9ddb98649191d5ca6e958856ea5252f4cce7c9b85513819"
+    },
+    "/_shared.ts": {
+      "size": 375,
+      "checksum": "sha256-7bdd1b640449b34b4433f25ee3abaf4cb09b6d5c5ec84db5189196afb1d1bb37"
+    },
+    "/yaml_test.ts": {
+      "size": 3438,
+      "checksum": "sha256-88d2fbe5cad1312adea590b2351148cd02e45255e1f9c32834ed5852da032284"
+    },
+    "/deno.json": {
+      "size": 303,
+      "checksum": "sha256-9343920d7de98848029cf5540e1f2d3514679c40110e14ba72be576ba58ee388"
+    },
+    "/json_test.ts": {
+      "size": 2337,
+      "checksum": "sha256-ded8875ce27d19f3ad876ab5cd06c2014a4943e81bed8bc80049b79e8123ebff"
+    },
+    "/mod.ts": {
+      "size": 2719,
+      "checksum": "sha256-976994df9cd64eff6e5e664f11050957a3469c6ad814e3afffbe6d88b04fbcca"
+    },
+    "/toml_test.ts": {
+      "size": 3336,
+      "checksum": "sha256-105caba010667952e4b9877696e597591d7b3db78a7a8b87fe66800cff4e5549"
+    },
+    "/yaml.ts": {
+      "size": 1432,
+      "checksum": "sha256-687f84d4aaee566c058a1c791d1f882a12281ae50227257db38571c185b4d373"
+    },
+    "/types.ts": {
+      "size": 227,
+      "checksum": "sha256-c21b47f9b9ab682d08bf0bb2c3351775e1a844b1b32c22e13a7067131ae8e81b"
+    },
+    "/any_test.ts": {
+      "size": 1643,
+      "checksum": "sha256-8de34be07301bf6e710e5d2d2b40840759b286d0c3278010bf62d6a3881fae9e"
+    },
+    "/toml.ts": {
+      "size": 1308,
+      "checksum": "sha256-60480059e14055b88cd5a98b5034f86fab067441cf0f829ea4b2ea84a542e1c7"
+    }
+  },
+  "moduleGraph2": {
+    "/json.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_shared.ts",
+          "specifierRange": [
+            [
+              3,
+              35
+            ],
+            [
+              3,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_formats.ts",
+          "specifierRange": [
+            [
+              4,
+              36
+            ],
+            [
+              4,
+              51
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              5,
+              29
+            ],
+            [
+              5,
+              41
+            ]
+          ]
+        }
+      ]
+    },
+    "/toml.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_shared.ts",
+          "specifierRange": [
+            [
+              3,
+              35
+            ],
+            [
+              3,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/toml@^1.0.3/parse",
+          "specifierRange": [
+            [
+              4,
+              22
+            ],
+            [
+              4,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              5,
+              29
+            ],
+            [
+              5,
+              41
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_formats.ts",
+          "specifierRange": [
+            [
+              6,
+              36
+            ],
+            [
+              6,
+              51
+            ]
+          ]
+        }
+      ]
+    },
+    "/test.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_formats.ts",
+          "specifierRange": [
+            [
+              2,
+              48
+            ],
+            [
+              2,
+              63
+            ]
+          ]
+        }
+      ]
+    },
+    "/yaml.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_shared.ts",
+          "specifierRange": [
+            [
+              3,
+              35
+            ],
+            [
+              3,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/yaml@^1.0.5/parse",
+          "specifierRange": [
+            [
+              4,
+              22
+            ],
+            [
+              4,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              5,
+              29
+            ],
+            [
+              5,
+              41
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_formats.ts",
+          "specifierRange": [
+            [
+              6,
+              36
+            ],
+            [
+              6,
+              51
+            ]
+          ]
+        }
+      ]
+    },
+    "/_formats.ts": {},
+    "/any.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./toml.ts",
+          "specifierRange": [
+            [
+              3,
+              39
+            ],
+            [
+              3,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./yaml.ts",
+          "specifierRange": [
+            [
+              4,
+              39
+            ],
+            [
+              4,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./json.ts",
+          "specifierRange": [
+            [
+              5,
+              39
+            ],
+            [
+              5,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              6,
+              29
+            ],
+            [
+              6,
+              41
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_formats.ts",
+          "specifierRange": [
+            [
+              7,
+              37
+            ],
+            [
+              7,
+              52
+            ]
+          ]
+        }
+      ]
+    },
+    "/types.ts": {},
+    "/_shared.ts": {},
+    "/unstable_yaml.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_shared.ts",
+          "specifierRange": [
+            [
+              3,
+              35
+            ],
+            [
+              3,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/yaml@^1.0.5/parse",
+          "specifierRange": [
+            [
+              4,
+              41
+            ],
+            [
+              4,
+              69
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              5,
+              29
+            ],
+            [
+              5,
+              41
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./_formats.ts",
+          "specifierRange": [
+            [
+              6,
+              36
+            ],
+            [
+              6,
+              51
+            ]
+          ]
+        }
+      ]
+    },
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./json.ts",
+          "specifierRange": [
+            [
+              123,
+              39
+            ],
+            [
+              123,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./toml.ts",
+          "specifierRange": [
+            [
+              124,
+              39
+            ],
+            [
+              124,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./yaml.ts",
+          "specifierRange": [
+            [
+              125,
+              39
+            ],
+            [
+              125,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./test.ts",
+          "specifierRange": [
+            [
+              127,
+              14
+            ],
+            [
+              127,
+              25
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              128,
+              14
+            ],
+            [
+              128,
+              26
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./any": "./any.ts",
+    "./json": "./json.ts",
+    "./test": "./test.ts",
+    "./toml": "./toml.ts",
+    "./yaml": "./yaml.ts",
+    "./unstable-yaml": "./unstable_yaml.ts",
+    "./types": "./types.ts"
+  }
+}

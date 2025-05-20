@@ -1,0 +1,671 @@
+{
+  "manifest": {
+    "/LICENCE": {
+      "size": 1078,
+      "checksum": "sha256-e70487678a799f089f7f78db7302e779d5dc7320ccd02cc13f494a4fb8b88300"
+    },
+    "/mod.ts": {
+      "size": 3809,
+      "checksum": "sha256-a70fee05dff76e042714949b7ec909f026de66c38fd45467c5f47b094743dd35"
+    },
+    "/util.ts": {
+      "size": 463,
+      "checksum": "sha256-71ca1c3ea02f476e60be1cf136c0643def6b473de7b497a4dc78b246a49e0240"
+    },
+    "/lib/deno_cache_dir.generated.js": {
+      "size": 947365,
+      "checksum": "sha256-8aeb766fefed2a61438411e37f86788355c7b62a2378712b548d395b71221a3c"
+    },
+    "/disk_cache.ts": {
+      "size": 1260,
+      "checksum": "sha256-459acf89e1520b792726f1f1c8e85ce30b0ac034ae6dcf371973135347e40050"
+    },
+    "/file_fetcher.ts": {
+      "size": 11114,
+      "checksum": "sha256-5541aca99930e111827f43c0102461ff7b7367d0f840462c40c3ebf3d63b07f1"
+    },
+    "/dirs.ts": {
+      "size": 1053,
+      "checksum": "sha256-76f4aa6ab183307aaf85ffd72e07a759157eb700f8a3694da4493efc924832de"
+    },
+    "/auth_tokens_test.ts": {
+      "size": 823,
+      "checksum": "sha256-a917bbeae7f515eaf057a02e31e60cc5635b015654a0f294e5c164ab31c6ea33"
+    },
+    "/http_cache.ts": {
+      "size": 2606,
+      "checksum": "sha256-8aaad7a3605117e1b4ee60ac85a5cf1ee094f7fc627a6b09080fa8a937ec9a1e"
+    },
+    "/deno_dir_test.ts": {
+      "size": 3055,
+      "checksum": "sha256-edd75009d3a1ace7c0c182d356a723b39fa92481129fa01366b8b1c16c052d1f"
+    },
+    "/test.ts": {
+      "size": 1555,
+      "checksum": "sha256-bb85f8cd8b6150078daa0c5344e79ed13a9eba070c0502e318532ef4d1cf63bd"
+    },
+    "/auth_tokens.ts": {
+      "size": 1667,
+      "checksum": "sha256-444a8f3d3c2f9cf4ffa2ae48a9103c4841e41e2c8890d7efd60e2e1d7c5ba80d"
+    },
+    "/file_fetcher_test.ts": {
+      "size": 2159,
+      "checksum": "sha256-0ed2df1b4951177a401db3560d5a04a4431a701eceb0e8ab7afd6479724e8e8b"
+    },
+    "/lib/deno_cache_dir.generated.d.ts": {
+      "size": 2326,
+      "checksum": "sha256-4e6b97f835a5d48783416aac15182a5058eda11e70f0ab49426ecb6b9165968f"
+    },
+    "/.github/workflows/release.yml": {
+      "size": 964,
+      "checksum": "sha256-ccd827fe204581c71c04ae875a434d981015d4ee459bbd0841ec765da502bc5e"
+    },
+    "/.rustfmt.toml": {
+      "size": 47,
+      "checksum": "sha256-5c9b47730885a7e03b6afb73eed16e6ccc07ff666e82974559bfc6a7feb61031"
+    },
+    "/README.md": {
+      "size": 2264,
+      "checksum": "sha256-f87f63e0d01e5269823c5cf603c8a9b6700249d9aa0d1b6c34ec906216e450a7"
+    },
+    "/deno.lock": {
+      "size": 1971,
+      "checksum": "sha256-bd9d02cd9aa470f8c587539a0d520af48adde21c2a006243d28b666b97df144b"
+    },
+    "/disk_cache_test.ts": {
+      "size": 1382,
+      "checksum": "sha256-68db42b4c23904767bcef018f729706da11ae512871144b27c8c5db152dd14f7"
+    },
+    "/.github/workflows/ci.yml": {
+      "size": 1568,
+      "checksum": "sha256-58ae157915e018d69195960b532c63eb75a8ea845864a5df5a9f1b437a9cabb2"
+    },
+    "/lib/snippets/deno_cache_dir-be1befe246e02081/fs.js": {
+      "size": 1979,
+      "checksum": "sha256-cbe3a976ed63c72c7cb34ef845c27013033a3b11f9d8d3e2c4aa5dda2c0c7af6"
+    },
+    "/deno_dir.ts": {
+      "size": 1978,
+      "checksum": "sha256-e2339e84e4ce1395c0fec27f134a416fa1f80bc0b5bcbd45c049ae12d12ef41f"
+    },
+    "/deno.json": {
+      "size": 771,
+      "checksum": "sha256-800e6a50b031802f892ae4885503d1d165f7e4e5b0a18f5948bce5d06a1c9a10"
+    },
+    "/cache.ts": {
+      "size": 789,
+      "checksum": "sha256-a214b3bb11073b50fc4bc368be7117efef9848c86e92f2bee0429d168253adaa"
+    },
+    "/deps_test.ts": {
+      "size": 418,
+      "checksum": "sha256-5c6a278d456cd6e9f5181e4bbda10199ff86a6130870852a8793afc6e4fa8e78"
+    }
+  },
+  "moduleGraph2": {
+    "/dirs.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^0.223",
+          "specifierRange": [
+            [
+              2,
+              21
+            ],
+            [
+              2,
+              43
+            ]
+          ]
+        }
+      ]
+    },
+    "/deno_dir.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^0.223",
+          "specifierRange": [
+            [
+              2,
+              53
+            ],
+            [
+              2,
+              75
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./disk_cache.ts",
+          "specifierRange": [
+            [
+              3,
+              26
+            ],
+            [
+              3,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./dirs.ts",
+          "specifierRange": [
+            [
+              4,
+              34
+            ],
+            [
+              4,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./http_cache.ts",
+          "specifierRange": [
+            [
+              5,
+              26
+            ],
+            [
+              5,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./util.ts",
+          "specifierRange": [
+            [
+              6,
+              23
+            ],
+            [
+              6,
+              34
+            ]
+          ]
+        }
+      ]
+    },
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./cache.ts",
+          "specifierRange": [
+            [
+              34,
+              28
+            ],
+            [
+              34,
+              40
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "jsr:@deno/graph@^0.73.1",
+          "specifierRange": [
+            [
+              35,
+              45
+            ],
+            [
+              35,
+              70
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./deno_dir.ts",
+          "specifierRange": [
+            [
+              36,
+              24
+            ],
+            [
+              36,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./file_fetcher.ts",
+          "specifierRange": [
+            [
+              37,
+              47
+            ],
+            [
+              37,
+              66
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./cache.ts",
+          "specifierRange": [
+            [
+              39,
+              28
+            ],
+            [
+              39,
+              40
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./deno_dir.ts",
+          "specifierRange": [
+            [
+              40,
+              24
+            ],
+            [
+              40,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./http_cache.ts",
+          "specifierRange": [
+            [
+              41,
+              26
+            ],
+            [
+              41,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./disk_cache.ts",
+          "specifierRange": [
+            [
+              42,
+              26
+            ],
+            [
+              42,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./file_fetcher.ts",
+          "specifierRange": [
+            [
+              43,
+              47
+            ],
+            [
+              43,
+              66
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "exportType",
+          "specifier": "jsr:@deno/graph@^0.73.1",
+          "specifierRange": [
+            [
+              61,
+              34
+            ],
+            [
+              61,
+              59
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "exportType",
+          "specifier": "jsr:/@deno/graph@^0.73.1/types",
+          "specifierRange": [
+            [
+              65,
+              7
+            ],
+            [
+              65,
+              39
+            ]
+          ]
+        }
+      ]
+    },
+    "/util.ts": {},
+    "/file_fetcher.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./auth_tokens.ts",
+          "specifierRange": [
+            [
+              2,
+              27
+            ],
+            [
+              2,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^0.223",
+          "specifierRange": [
+            [
+              3,
+              28
+            ],
+            [
+              3,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:/@std/fmt@^0.223/colors",
+          "specifierRange": [
+            [
+              4,
+              24
+            ],
+            [
+              4,
+              53
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "jsr:@deno/graph@^0.73.1",
+          "specifierRange": [
+            [
+              5,
+              34
+            ],
+            [
+              5,
+              59
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./http_cache.ts",
+          "specifierRange": [
+            [
+              6,
+              52
+            ],
+            [
+              6,
+              69
+            ]
+          ]
+        }
+      ]
+    },
+    "/auth_tokens.ts": {},
+    "/lib/deno_cache_dir.generated.d.ts": {},
+    "/disk_cache.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:/@std/fs@^0.223/ensure-dir",
+          "specifierRange": [
+            [
+              2,
+              26
+            ],
+            [
+              2,
+              58
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^0.223",
+          "specifierRange": [
+            [
+              3,
+              42
+            ],
+            [
+              3,
+              64
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/io@^0.223",
+          "specifierRange": [
+            [
+              4,
+              34
+            ],
+            [
+              4,
+              54
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./util.ts",
+          "specifierRange": [
+            [
+              5,
+              35
+            ],
+            [
+              5,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/deno_cache_dir.generated.js",
+          "specifierRange": [
+            [
+              6,
+              28
+            ],
+            [
+              6,
+              63
+            ]
+          ]
+        }
+      ]
+    },
+    "/http_cache.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^0.223",
+          "specifierRange": [
+            [
+              2,
+              27
+            ],
+            [
+              2,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./util.ts",
+          "specifierRange": [
+            [
+              3,
+              23
+            ],
+            [
+              3,
+              34
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/deno_cache_dir.generated.js",
+          "specifierRange": [
+            [
+              8,
+              7
+            ],
+            [
+              8,
+              42
+            ]
+          ]
+        }
+      ]
+    },
+    "/cache.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "jsr:@deno/graph@^0.73.1",
+          "specifierRange": [
+            [
+              2,
+              34
+            ],
+            [
+              2,
+              59
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./file_fetcher.ts",
+          "specifierRange": [
+            [
+              3,
+              47
+            ],
+            [
+              3,
+              66
+            ]
+          ]
+        }
+      ]
+    },
+    "/lib/snippets/deno_cache_dir-be1befe246e02081/fs.js": {},
+    "/lib/deno_cache_dir.generated.js": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./snippets/deno_cache_dir-be1befe246e02081/fs.js",
+          "specifierRange": [
+            [
+              13,
+              7
+            ],
+            [
+              13,
+              57
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./snippets/deno_cache_dir-be1befe246e02081/fs.js",
+          "specifierRange": [
+            [
+              14,
+              25
+            ],
+            [
+              14,
+              75
+            ]
+          ]
+        }
+      ],
+      "tsReferences": [
+        {
+          "type": "types",
+          "text": "./deno_cache_dir.generated.d.ts",
+          "range": [
+            [
+              4,
+              21
+            ],
+            [
+              4,
+              54
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./mod.ts"
+  }
+}

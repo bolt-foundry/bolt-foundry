@@ -1,0 +1,21 @@
+{
+  "scope": "simplewebauthn",
+  "name": "server",
+  "latest": "13.1.1",
+  "versions": {
+    "11.0.0-alpha1": {
+      "yanked": true
+    },
+    "13.1.1": {},
+    "12.0.0": {},
+    "13.0.0-alpha1": {},
+    "13.1.0": {},
+    "13.0.0": {},
+    "11.0.0-alpha3": {
+      "yanked": true
+    },
+    "11.0.0-alpha2": {
+      "yanked": true
+    }
+  }
+}

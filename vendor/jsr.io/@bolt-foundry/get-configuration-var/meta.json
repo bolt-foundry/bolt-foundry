@@ -1,0 +1,10 @@
+{
+  "scope": "bolt-foundry",
+  "name": "get-configuration-var",
+  "latest": "0.0.0",
+  "versions": {
+    "0.0.0": {},
+    "0.0.0-whatevs": {},
+    "0.0.0-dev.0": {}
+  }
+}

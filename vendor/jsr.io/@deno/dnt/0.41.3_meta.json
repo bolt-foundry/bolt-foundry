@@ -1,0 +1,705 @@
+{
+  "manifest": {
+    "/mod.ts": {
+      "size": 21102,
+      "checksum": "sha256-d3bc128223c872e1943e6ceb7ee2068680fc444def0d2e1e81c889ce1e481cd9"
+    },
+    "/lib/types.ts": {
+      "size": 1824,
+      "checksum": "sha256-494366e85a2ea61b3160a869541672c7cae27e87de587a6965f9016686f94bf0"
+    },
+    "/lib/test_runner/test_runner.ts": {
+      "size": 5965,
+      "checksum": "sha256-cfef8844286094865e20f8fbe088527a1ff6db16f57ace4926d40a851c25eaf0"
+    },
+    "/CONTRIBUTING.md": {
+      "size": 261,
+      "checksum": "sha256-45304fe1bf4382da31606931f240e8991faacea113edd46adfaed27d89b5b3d3"
+    },
+    "/lib/test_utils.ts": {
+      "size": 1014,
+      "checksum": "sha256-2f164d56ea9d107a2eb89f273c3058fab64040429404b3ac5f64a30fa2045d56"
+    },
+    "/wasm/src/utils.rs": {
+      "size": 429,
+      "checksum": "sha256-d5a4251fa2c25304986ae65493b14cc047db7875943a7c2e52ba5627aea773a9"
+    },
+    "/lib/pkg/dnt_wasm.generated.d.ts": {
+      "size": 1286,
+      "checksum": "sha256-ac40cb9ce15a4fcee254a4b180473e80352cb9ad82159616c3eea0de916e045f"
+    },
+    "/lib/test_runner/get_test_runner_code.ts": {
+      "size": 4022,
+      "checksum": "sha256-83985c8eefc55fec92924f983b6164fccd0d5b1e35f1de0e7e08bda22d5a2ddd"
+    },
+    "/lib/pkg/snippets/dnt-wasm-a15ef721fa5290c5/helpers.js": {
+      "size": 497,
+      "checksum": "sha256-7057abcd4533b460a0acf671552549b1fe42c314c94bebae61f21b906ca4401b"
+    },
+    "/lib/pkg/dnt_wasm_bg.wasm": {
+      "size": 3148746,
+      "checksum": "sha256-7b4677ad306a4b21bba10571aa4d51d8d6615193311be74abf188f74cca02a0b"
+    },
+    "/lib/package_json.ts": {
+      "size": 6446,
+      "checksum": "sha256-d5887fcb04a631bbc6652777d2d3738bcc159872f79b2b7f6a4fe02b72f92919"
+    },
+    "/wasm/src/lib.rs": {
+      "size": 3171,
+      "checksum": "sha256-ea391dfc64be0e596d4a464637b48f04eceb4faa235151ad57580f38aedd2ed6"
+    },
+    "/lib/shims.ts": {
+      "size": 6681,
+      "checksum": "sha256-6daf7a64cae47f79b77dd207c79bac4c23ec50ec2e3431575a58b5056b2845da"
+    },
+    "/lib/npm_ignore.ts": {
+      "size": 1950,
+      "checksum": "sha256-bfaf0930e5d75079fced79ce2882ca2a9c32952d4b2b31f4fff44d322fa28dd8"
+    },
+    "/deno.jsonc": {
+      "size": 1598,
+      "checksum": "sha256-0179aa1ee78cf9b5cdcc0a2d3b13caeb731e155289e97877c45b24cfc432fd16"
+    },
+    "/README.md": {
+      "size": 20217,
+      "checksum": "sha256-23d35df245edb4333f53e6c00c1e403734b67e056f9af4c09800dcfe536b99dd"
+    },
+    "/LICENSE": {
+      "size": 1074,
+      "checksum": "sha256-932ba4f75e7d7cceb4df9f52cc255c5337a6cc534dea3c42ee827c2aa7cdd656"
+    },
+    "/lib/compiler.ts": {
+      "size": 5603,
+      "checksum": "sha256-ec7d0533e6acf8c916147274e8fbee54c838c6a214ffa16f4ca0be6480cf8fb9"
+    },
+    "/lib/compiler_transforms.ts": {
+      "size": 5622,
+      "checksum": "sha256-5bd22ef8f32526591c70893e7be30d5be126e62cc4b3cb7d86b14ad9052517fb"
+    },
+    "/transform.ts": {
+      "size": 6044,
+      "checksum": "sha256-a65cb30a522801d9e19ff3b32acb7edfa682edc9cc710990753ac53674802748"
+    },
+    "/lib/pkg/dnt_wasm.generated.js": {
+      "size": 25659,
+      "checksum": "sha256-49183ad48528e6e6c5f4dbbabde9972a1b3aaf453c054c3f5595678d7ff849b7"
+    },
+    "/wasm/helpers.js": {
+      "size": 497,
+      "checksum": "sha256-7057abcd4533b460a0acf671552549b1fe42c314c94bebae61f21b906ca4401b"
+    },
+    "/lib/utils.ts": {
+      "size": 2668,
+      "checksum": "sha256-6df463606d383f2d4de79521eca30035da45aacffbcdbd39387d446217ef6991"
+    }
+  },
+  "moduleGraph2": {
+    "/lib/pkg/snippets/dnt-wasm-a15ef721fa5290c5/helpers.js": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@deno/cache-dir@^0.10.3",
+          "specifierRange": [
+            [
+              0,
+              28
+            ],
+            [
+              0,
+              57
+            ]
+          ]
+        }
+      ]
+    },
+    "/lib/shims.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../transform.ts",
+          "specifierRange": [
+            [
+              2,
+              38
+            ],
+            [
+              2,
+              55
+            ]
+          ]
+        }
+      ]
+    },
+    "/lib/compiler_transforms.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@ts-morph/bootstrap@^0.24.0",
+          "specifierRange": [
+            [
+              2,
+              19
+            ],
+            [
+              2,
+              52
+            ]
+          ]
+        }
+      ]
+    },
+    "/lib/test_runner/get_test_runner_code.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@david/code-block-writer@^13.0.2",
+          "specifierRange": [
+            [
+              2,
+              28
+            ],
+            [
+              2,
+              66
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./test_runner.ts",
+          "specifierRange": [
+            [
+              3,
+              35
+            ],
+            [
+              3,
+              53
+            ]
+          ]
+        }
+      ]
+    },
+    "/lib/pkg/dnt_wasm.generated.js": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./snippets/dnt-wasm-a15ef721fa5290c5/helpers.js",
+          "specifierRange": [
+            [
+              9,
+              32
+            ],
+            [
+              9,
+              81
+            ]
+          ]
+        }
+      ],
+      "tsReferences": [
+        {
+          "type": "types",
+          "text": "./dnt_wasm.generated.d.ts",
+          "range": [
+            [
+              4,
+              21
+            ],
+            [
+              4,
+              48
+            ]
+          ]
+        }
+      ]
+    },
+    "/lib/pkg/dnt_wasm.generated.d.ts": {},
+    "/lib/test_runner/test_runner.ts": {},
+    "/lib/npm_ignore.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../transform.ts",
+          "specifierRange": [
+            [
+              2,
+              32
+            ],
+            [
+              2,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./compiler.ts",
+          "specifierRange": [
+            [
+              3,
+              38
+            ],
+            [
+              3,
+              53
+            ]
+          ]
+        }
+      ]
+    },
+    "/lib/types.ts": {},
+    "/lib/compiler.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@ts-morph/bootstrap@^0.24.0",
+          "specifierRange": [
+            [
+              2,
+              19
+            ],
+            [
+              2,
+              52
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@1",
+          "specifierRange": [
+            [
+              3,
+              22
+            ],
+            [
+              3,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              4,
+              34
+            ],
+            [
+              4,
+              46
+            ]
+          ]
+        }
+      ]
+    },
+    "/lib/utils.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:/@std/fs@1/expand-glob",
+          "specifierRange": [
+            [
+              2,
+              27
+            ],
+            [
+              2,
+              55
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@1",
+          "specifierRange": [
+            [
+              3,
+              22
+            ],
+            [
+              3,
+              39
+            ]
+          ]
+        }
+      ]
+    },
+    "/lib/package_json.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../mod.ts",
+          "specifierRange": [
+            [
+              2,
+              45
+            ],
+            [
+              2,
+              56
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../transform.ts",
+          "specifierRange": [
+            [
+              3,
+              37
+            ],
+            [
+              3,
+              54
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              4,
+              33
+            ],
+            [
+              4,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./utils.ts",
+          "specifierRange": [
+            [
+              5,
+              30
+            ],
+            [
+              5,
+              42
+            ]
+          ]
+        }
+      ]
+    },
+    "/transform.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/pkg/dnt_wasm.generated.js",
+          "specifierRange": [
+            [
+              8,
+              28
+            ],
+            [
+              8,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./lib/types.ts",
+          "specifierRange": [
+            [
+              9,
+              34
+            ],
+            [
+              9,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/utils.ts",
+          "specifierRange": [
+            [
+              10,
+              27
+            ],
+            [
+              10,
+              43
+            ]
+          ]
+        }
+      ]
+    },
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:/@std/fmt@1/colors",
+          "specifierRange": [
+            [
+              2,
+              24
+            ],
+            [
+              2,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@1",
+          "specifierRange": [
+            [
+              3,
+              22
+            ],
+            [
+              3,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@ts-morph/bootstrap@^0.24.0",
+          "specifierRange": [
+            [
+              4,
+              38
+            ],
+            [
+              4,
+              71
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/compiler.ts",
+          "specifierRange": [
+            [
+              15,
+              7
+            ],
+            [
+              15,
+              26
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/shims.ts",
+          "specifierRange": [
+            [
+              16,
+              62
+            ],
+            [
+              16,
+              78
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/npm_ignore.ts",
+          "specifierRange": [
+            [
+              17,
+              33
+            ],
+            [
+              17,
+              54
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./lib/types.ts",
+          "specifierRange": [
+            [
+              18,
+              47
+            ],
+            [
+              18,
+              63
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/utils.ts",
+          "specifierRange": [
+            [
+              19,
+              53
+            ],
+            [
+              19,
+              69
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./transform.ts",
+          "specifierRange": [
+            [
+              24,
+              7
+            ],
+            [
+              24,
+              23
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/compiler_transforms.ts",
+          "specifierRange": [
+            [
+              25,
+              36
+            ],
+            [
+              25,
+              66
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/package_json.ts",
+          "specifierRange": [
+            [
+              26,
+              31
+            ],
+            [
+              26,
+              54
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./lib/test_runner/get_test_runner_code.ts",
+          "specifierRange": [
+            [
+              27,
+              34
+            ],
+            [
+              27,
+              77
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "jsr:/@std/fs@1/empty-dir",
+          "specifierRange": [
+            [
+              29,
+              25
+            ],
+            [
+              29,
+              51
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "exportType",
+          "specifier": "./lib/types.ts",
+          "specifierRange": [
+            [
+              30,
+              33
+            ],
+            [
+              30,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "exportType",
+          "specifier": "./lib/compiler.ts",
+          "specifierRange": [
+            [
+              31,
+              47
+            ],
+            [
+              31,
+              66
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "exportType",
+          "specifier": "./lib/shims.ts",
+          "specifierRange": [
+            [
+              32,
+              33
+            ],
+            [
+              32,
+              49
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./transform": "./transform.ts"
+  }
+}

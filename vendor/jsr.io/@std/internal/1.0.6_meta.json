@@ -1,0 +1,284 @@
+{
+  "manifest": {
+    "/build_message.ts": {
+      "size": 3585,
+      "checksum": "sha256-325115803ec9bb87c34142bc40f6ff4551885b4af704619a96e5cee69425635d"
+    },
+    "/diff.ts": {
+      "size": 8203,
+      "checksum": "sha256-8a75475658ad5a0210ce59c8f71c1df9a654a714809c1fef5f6533572f7907a7"
+    },
+    "/LICENSE": {
+      "size": 1075,
+      "checksum": "sha256-0961f97da6619d5fe9ddb98649191d5ca6e958856ea5252f4cce7c9b85513819"
+    },
+    "/diff_str.ts": {
+      "size": 5437,
+      "checksum": "sha256-c5a69e887dca0e91c4bb4a8b9be9e1c30433fc78a326b4f7e95a3de02e2405e9"
+    },
+    "/format_test.ts": {
+      "size": 3290,
+      "checksum": "sha256-af6db8daea6f6b04d8971cee5cfd2c122cfba07bd47bb2179c5b199aa9f8b032"
+    },
+    "/mod.ts": {
+      "size": 1131,
+      "checksum": "sha256-3a8f9d619782dc11d33243726ebeafa9fd4f52b0722421cc1868e1b24cc48f5f"
+    },
+    "/format.ts": {
+      "size": 1102,
+      "checksum": "sha256-ff7166a5423bcf760b6ab39088a158e13f1e3f19e8c48b6e9c6778654194c017"
+    },
+    "/assertion_state_test.ts": {
+      "size": 963,
+      "checksum": "sha256-a2449f49fa6f2492ec209d03f8fa33a1f6dba17de1225d6ca193af40b50a7558"
+    },
+    "/diff_str_test.ts": {
+      "size": 9110,
+      "checksum": "sha256-fa4024f148ecb70e022ef6658cecca5cb494277fa25f93e47060cc3f999dbfd3"
+    },
+    "/assertion_state.ts": {
+      "size": 5824,
+      "checksum": "sha256-7ce14fe387fbd872eb537af6432a906b3f4b7db01d30162cd868284b36ed8546"
+    },
+    "/types.ts": {
+      "size": 506,
+      "checksum": "sha256-19d54fd088240fbe1b3179dcbbdc31c8f9fd442f130d980e1dff689f889a183d"
+    },
+    "/_is_deno_2.ts": {
+      "size": 175,
+      "checksum": "sha256-5ea0e31ab8950191b70869120152644171dd52a6b2a1b545c9498954f7e78249"
+    },
+    "/diff_test.ts": {
+      "size": 5330,
+      "checksum": "sha256-47aa549c960401bdaef1af657a2eb53fadf820d3430eaf500642a3aea9b16158"
+    },
+    "/build_message_test.ts": {
+      "size": 1437,
+      "checksum": "sha256-2fd8e820fd797708bafd21a68535041ab5f1fff9293fd1bab1bd6eb1ec1afec4"
+    },
+    "/deno.json": {
+      "size": 339,
+      "checksum": "sha256-dd01a17ff3a90ef601aee6e2466cb6bc6d3a9ced0dd2fee8561ae6485e7cef50"
+    },
+    "/styles_test.ts": {
+      "size": 2167,
+      "checksum": "sha256-1fa0d360349fe954c2a92fa88ed07b1a356cc4c4a0c7d497cc6ebfcff16be81d"
+    },
+    "/styles.ts": {
+      "size": 5494,
+      "checksum": "sha256-9bcd79843151e58b174e5ef4a8be1711dd7fa0596b490ee580dc130f071039d8"
+    }
+  },
+  "moduleGraph2": {
+    "/types.ts": {},
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./assertion_state.ts",
+          "specifierRange": [
+            [
+              38,
+              14
+            ],
+            [
+              38,
+              36
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./build_message.ts",
+          "specifierRange": [
+            [
+              39,
+              14
+            ],
+            [
+              39,
+              34
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./diff.ts",
+          "specifierRange": [
+            [
+              40,
+              14
+            ],
+            [
+              40,
+              25
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./diff_str.ts",
+          "specifierRange": [
+            [
+              41,
+              14
+            ],
+            [
+              41,
+              29
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./format.ts",
+          "specifierRange": [
+            [
+              42,
+              14
+            ],
+            [
+              42,
+              27
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./styles.ts",
+          "specifierRange": [
+            [
+              43,
+              14
+            ],
+            [
+              43,
+              27
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              44,
+              14
+            ],
+            [
+              44,
+              26
+            ]
+          ]
+        }
+      ]
+    },
+    "/styles.ts": {},
+    "/diff_str.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              3,
+              32
+            ],
+            [
+              3,
+              44
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./diff.ts",
+          "specifierRange": [
+            [
+              4,
+              21
+            ],
+            [
+              4,
+              32
+            ]
+          ]
+        }
+      ]
+    },
+    "/assertion_state.ts": {},
+    "/build_message.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./styles.ts",
+          "specifierRange": [
+            [
+              3,
+              62
+            ],
+            [
+              3,
+              75
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              4,
+              42
+            ],
+            [
+              4,
+              54
+            ]
+          ]
+        }
+      ]
+    },
+    "/format.ts": {},
+    "/diff.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./types.ts",
+          "specifierRange": [
+            [
+              3,
+              42
+            ],
+            [
+              3,
+              54
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./assertion-state": "./assertion_state.ts",
+    "./build-message": "./build_message.ts",
+    "./diff-str": "./diff_str.ts",
+    "./diff": "./diff.ts",
+    "./format": "./format.ts",
+    "./styles": "./styles.ts",
+    "./types": "./types.ts"
+  }
+}

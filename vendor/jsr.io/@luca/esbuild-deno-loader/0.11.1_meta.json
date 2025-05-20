@@ -1,0 +1,646 @@
+{
+  "manifest": {
+    "/src/wasm/fs.js": {
+      "size": 615,
+      "checksum": "sha256-63bedcea54fa2494f106586325ada9dcd5eccf0dcba82caa2fc4a54d9419a14b"
+    },
+    "/src/wasm/src/lib.rs": {
+      "size": 7914,
+      "checksum": "sha256-38e1590caf09b74751963aed2e880faa2bb397ee8ed4b09b5ae525834c1c5ba1"
+    },
+    "/src/wasm/loader.generated.js": {
+      "size": 2343392,
+      "checksum": "sha256-c766177855693201055b3a762929a16b85fd5d5dd8c90d530a928d3e03a1551c"
+    },
+    "/.vscode/settings.json": {
+      "size": 377,
+      "checksum": "sha256-fd130ffd6c737a7e713d5b07a628a7551da177330ff98881b7ce51d4075be47d"
+    },
+    "/examples/custom_scheme_plugin.ts": {
+      "size": 1081,
+      "checksum": "sha256-ff3a9ecb3d9cd4367280e6cf8f0782a1ec5c86ad5b8a521eade12f18accc5930"
+    },
+    "/README.md": {
+      "size": 4470,
+      "checksum": "sha256-31e895507af1a69a840d5ab0655e11aa8ec2c16777e5fa46d63fb6675c73a8eb"
+    },
+    "/LICENSE": {
+      "size": 1070,
+      "checksum": "sha256-75b6120f639f83c46bfaec3a6c97516e015b5ab18053c39bfbaf72f1d76e6c87"
+    },
+    "/src/shared.ts": {
+      "size": 10396,
+      "checksum": "sha256-3237112e33ca33db036cb5d7d5c1064c8bfe65bb3bcbbfb328ecff21629fcd2f"
+    },
+    "/src/wasm/loader.generated.d.ts": {
+      "size": 2005,
+      "checksum": "sha256-5a81527107d6b8fe0ec24477314d3c68ea575d119aa40823cec4ceacd54aede7"
+    },
+    "/src/wasm/snippets/loader-ace679fc3fd6566c/fs.js": {
+      "size": 615,
+      "checksum": "sha256-63bedcea54fa2494f106586325ada9dcd5eccf0dcba82caa2fc4a54d9419a14b"
+    },
+    "/src/plugin_deno_resolver.ts": {
+      "size": 4631,
+      "checksum": "sha256-c0d7d4e4e1cf69313cdf904430824852ff309e628759c3d871b421b40037aa82"
+    },
+    "/src/loader_portable.ts": {
+      "size": 7189,
+      "checksum": "sha256-c600a1e83af419ba72424318d9bb64691fbe8a0155f6577f1aa9ac118babe5ac"
+    },
+    "/.github/workflows/ci.yml": {
+      "size": 1257,
+      "checksum": "sha256-c8bb36bf8002583a645563788905e6e6f2e2a8cfbd2babe9257dc017319dcd92"
+    },
+    "/src/shared_test.ts": {
+      "size": 3926,
+      "checksum": "sha256-b2beb7e9394b1a21d64b57d807d5aa83e5e86ee4eeac755395d6d7ec32bc360d"
+    },
+    "/Cargo.lock": {
+      "size": 17503,
+      "checksum": "sha256-3e2fa77a49a3ac5d2e23a025a64005745ce54c15acb9943b958129d1f146837d"
+    },
+    "/src/esbuild_types.ts": {
+      "size": 3597,
+      "checksum": "sha256-7ecffd69706f9fbe60dcf75a07b94b835b269aedaab270307f2373c246e5fa14"
+    },
+    "/mod.ts": {
+      "size": 3240,
+      "checksum": "sha256-8d0e10d3bd5046246761ae7de21f8087a3d43498cc04aaa34d0b9502956a1c7e"
+    },
+    "/.vscode/launch.json": {
+      "size": 381,
+      "checksum": "sha256-e282e7a86214382bb864dc270b55ef5727bba745506bcc2affa11de235f041cf"
+    },
+    "/examples/bundle.ts": {
+      "size": 307,
+      "checksum": "sha256-df6f7046ef78d8441bb5d77d29735e465900fc5e7741ed84324f42c71323515f"
+    },
+    "/src/deno.ts": {
+      "size": 7321,
+      "checksum": "sha256-11922034c4f35eb98f0787adf5556d07ffb20ba2e743101370a05ee1c9fcc386"
+    },
+    "/rust-toolchain.toml": {
+      "size": 87,
+      "checksum": "sha256-1b36c3d65ba81d090a75fefe18229bf1fd3d4c643973d15dadb271c7f3c38129"
+    },
+    "/deno.json": {
+      "size": 973,
+      "checksum": "sha256-e885193f06c915db9912ec3be459d2d9e79207beaf3c3651108c403dd7907879"
+    },
+    "/Cargo.toml": {
+      "size": 119,
+      "checksum": "sha256-1c3994d06f7d0530b84ae3bed3d5ac92d2d75f8c2a034ec2e67ecb1020a8d8fa"
+    },
+    "/src/loader_native.ts": {
+      "size": 7117,
+      "checksum": "sha256-639560af228e34f165ef69bf4cc3b548e75c5ff4d93a587704a3bdf894e09d5e"
+    },
+    "/src/wasm/Cargo.toml": {
+      "size": 337,
+      "checksum": "sha256-af62a342f0b8d7c002ad57fbcf6edc2ef110ae19c49b7881e166b3a5eaede35b"
+    },
+    "/.rustfmt.toml": {
+      "size": 47,
+      "checksum": "sha256-5c9b47730885a7e03b6afb73eed16e6ccc07ff666e82974559bfc6a7feb61031"
+    },
+    "/src/plugin_deno_loader.ts": {
+      "size": 14302,
+      "checksum": "sha256-df8823e5b3dbe554d8a7d2dafc9af4c564c654dd07ebbb528bb00ce3f38f38f4"
+    }
+  },
+  "moduleGraph2": {
+    "/src/plugin_deno_loader.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./esbuild_types.ts",
+          "specifierRange": [
+            [
+              0,
+              30
+            ],
+            [
+              0,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^1.0.6",
+          "specifierRange": [
+            [
+              1,
+              30
+            ],
+            [
+              1,
+              52
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./loader_native.ts",
+          "specifierRange": [
+            [
+              2,
+              29
+            ],
+            [
+              2,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./loader_portable.ts",
+          "specifierRange": [
+            [
+              3,
+              31
+            ],
+            [
+              3,
+              53
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./shared.ts",
+          "specifierRange": [
+            [
+              4,
+              47
+            ],
+            [
+              4,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./shared.ts",
+          "specifierRange": [
+            [
+              10,
+              7
+            ],
+            [
+              10,
+              20
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/loader_native.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./esbuild_types.ts",
+          "specifierRange": [
+            [
+              0,
+              30
+            ],
+            [
+              0,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^1.0.6",
+          "specifierRange": [
+            [
+              1,
+              43
+            ],
+            [
+              1,
+              65
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:/@std/encoding@^1.0.5/base32",
+          "specifierRange": [
+            [
+              2,
+              29
+            ],
+            [
+              2,
+              63
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/bytes@^1.0.2",
+          "specifierRange": [
+            [
+              3,
+              34
+            ],
+            [
+              3,
+              57
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./deno.ts",
+          "specifierRange": [
+            [
+              4,
+              22
+            ],
+            [
+              4,
+              33
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./deno.ts",
+          "specifierRange": [
+            [
+              5,
+              46
+            ],
+            [
+              5,
+              57
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./shared.ts",
+          "specifierRange": [
+            [
+              13,
+              7
+            ],
+            [
+              13,
+              20
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/wasm/loader.generated.d.ts": {},
+    "/src/wasm/loader.generated.js": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./snippets/loader-ace679fc3fd6566c/fs.js",
+          "specifierRange": [
+            [
+              13,
+              7
+            ],
+            [
+              13,
+              49
+            ]
+          ]
+        }
+      ],
+      "tsReferences": [
+        {
+          "type": "types",
+          "text": "./loader.generated.d.ts",
+          "range": [
+            [
+              4,
+              21
+            ],
+            [
+              4,
+              46
+            ]
+          ]
+        }
+      ]
+    },
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./src/esbuild_types.ts",
+          "specifierRange": [
+            [
+              0,
+              30
+            ],
+            [
+              0,
+              54
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./src/plugin_deno_resolver.ts",
+          "specifierRange": [
+            [
+              5,
+              7
+            ],
+            [
+              5,
+              38
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./src/plugin_deno_loader.ts",
+          "specifierRange": [
+            [
+              12,
+              7
+            ],
+            [
+              12,
+              36
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./src/shared.ts",
+          "specifierRange": [
+            [
+              19,
+              7
+            ],
+            [
+              19,
+              24
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/plugin_deno_resolver.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./esbuild_types.ts",
+          "specifierRange": [
+            [
+              0,
+              30
+            ],
+            [
+              0,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^1.0.6",
+          "specifierRange": [
+            [
+              1,
+              26
+            ],
+            [
+              1,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./shared.ts",
+          "specifierRange": [
+            [
+              6,
+              7
+            ],
+            [
+              6,
+              20
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./wasm/loader.generated.js",
+          "specifierRange": [
+            [
+              7,
+              43
+            ],
+            [
+              7,
+              71
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/deno.ts": {},
+    "/src/shared.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^1.0.6",
+          "specifierRange": [
+            [
+              0,
+              68
+            ],
+            [
+              0,
+              90
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./deno.ts",
+          "specifierRange": [
+            [
+              1,
+              31
+            ],
+            [
+              1,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./esbuild_types.ts",
+          "specifierRange": [
+            [
+              2,
+              30
+            ],
+            [
+              2,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./wasm/loader.generated.js",
+          "specifierRange": [
+            [
+              3,
+              43
+            ],
+            [
+              3,
+              71
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./esbuild_types.ts",
+          "specifierRange": [
+            [
+              4,
+              34
+            ],
+            [
+              4,
+              54
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/loader_portable.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./esbuild_types.ts",
+          "specifierRange": [
+            [
+              0,
+              30
+            ],
+            [
+              0,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@std/path@^1.0.6",
+          "specifierRange": [
+            [
+              1,
+              28
+            ],
+            [
+              1,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./deno.ts",
+          "specifierRange": [
+            [
+              2,
+              27
+            ],
+            [
+              2,
+              38
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./shared.ts",
+          "specifierRange": [
+            [
+              10,
+              7
+            ],
+            [
+              10,
+              20
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./wasm/loader.generated.js",
+          "specifierRange": [
+            [
+              11,
+              47
+            ],
+            [
+              11,
+              75
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/esbuild_types.ts": {},
+    "/src/wasm/snippets/loader-ace679fc3fd6566c/fs.js": {}
+  },
+  "exports": {
+    ".": "./mod.ts",
+    "./esbuild_types": "./src/esbuild_types.ts"
+  }
+}

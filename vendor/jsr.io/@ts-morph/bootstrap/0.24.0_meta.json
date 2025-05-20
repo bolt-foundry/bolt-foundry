@@ -1,0 +1,114 @@
+{
+  "manifest": {
+    "/basic_test.ts": {
+      "size": 449,
+      "checksum": "sha256-b0e3d736ffb44fcb62a16e7d1b7b65887a457824dc5b8fe4945be2aa99e97ef4"
+    },
+    "/ts_morph_bootstrap.js": {
+      "size": 19154,
+      "checksum": "sha256-faf137ba5bf50b5e9f39acb3a886ab85592a5ea3ded7c4ffe8707e2702adb4ea"
+    },
+    "/deno.json": {
+      "size": 159,
+      "checksum": "sha256-f329c8f6d8d5eb7d22bd8e6b85e9235610afc0490908895b9e30837a01d4fcc6"
+    },
+    "/ts_morph_bootstrap.d.ts": {
+      "size": 16846,
+      "checksum": "sha256-9d9881341264c4feb939ece81301aa810efe2a32a517e1e62def2ed7f0fad94c"
+    },
+    "/mod.ts": {
+      "size": 84,
+      "checksum": "sha256-b53aad517f106c4079971fcd4a81ab79fadc40b50061a3ab2b741a09119d51e9"
+    }
+  },
+  "moduleGraph2": {
+    "/ts_morph_bootstrap.d.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@ts-morph/common@^0.24.0",
+          "specifierRange": [
+            [
+              0,
+              36
+            ],
+            [
+              0,
+              66
+            ]
+          ]
+        }
+      ]
+    },
+    "/ts_morph_bootstrap.js": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "jsr:@ts-morph/common@^0.24.0",
+          "specifierRange": [
+            [
+              0,
+              241
+            ],
+            [
+              0,
+              271
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "jsr:@ts-morph/common@^0.24.0",
+          "specifierRange": [
+            [
+              1,
+              105
+            ],
+            [
+              1,
+              135
+            ]
+          ]
+        }
+      ]
+    },
+    "/mod.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "typesSpecifier": {
+            "text": "./ts_morph_bootstrap.d.ts",
+            "range": [
+              [
+                0,
+                15
+              ],
+              [
+                0,
+                42
+              ]
+            ]
+          },
+          "specifier": "./ts_morph_bootstrap.js",
+          "specifierRange": [
+            [
+              1,
+              14
+            ],
+            [
+              1,
+              39
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./mod.ts"
+  }
+}

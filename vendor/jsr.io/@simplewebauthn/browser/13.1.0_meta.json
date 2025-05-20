@@ -1,0 +1,721 @@
+{
+  "manifest": {
+    "/src/helpers/webAuthnError.ts": {
+      "size": 1494,
+      "checksum": "sha256-20d0497161f309be3be26019454187431d175a5393e10d1cbea9eebe1d0ae616"
+    },
+    "/src/helpers/bufferToBase64URLString.ts": {
+      "size": 577,
+      "checksum": "sha256-9961d252964ab54fb6608896f7744ab4a3b5fe89557fd3088c7150c7db503b5b"
+    },
+    "/README.md": {
+      "size": 2298,
+      "checksum": "sha256-394580c6d84286814798ac832469c0c99615e323a28d27292747bfc6ac716cc4"
+    },
+    "/src/helpers/platformAuthenticatorIsAvailable.ts": {
+      "size": 560,
+      "checksum": "sha256-ed95d9133441e678b2e50ea079738f8dafb6c33ae8957d35b028d8e65564ede9"
+    },
+    "/src/helpers/toAuthenticatorAttachment.ts": {
+      "size": 523,
+      "checksum": "sha256-e28819adc608fcf29fff20014d74b8ea87da36c5852042dc5ad6069747c3c0b7"
+    },
+    "/src/helpers/browserSupportsWebAuthn.ts": {
+      "size": 492,
+      "checksum": "sha256-76bcd322cbcca9ef4b15c2508c691cf154507bc56d64fe8bdd08105437340215"
+    },
+    "/src/helpers/toPublicKeyCredentialDescriptor.ts": {
+      "size": 813,
+      "checksum": "sha256-4019d36d5074ed3257050f1ac60d2f1a98296a568ba0d693cb373ed68fb09823"
+    },
+    "/LICENSE.md": {
+      "size": 1071,
+      "checksum": "sha256-bd9e3f45696472076c7160c7f66e54b2d62d38bc2646c812d19be83ee4400c63"
+    },
+    "/src/helpers/browserSupportsWebAuthnAutofill.ts": {
+      "size": 1494,
+      "checksum": "sha256-cf63bdd36af19dffbcd5f876a68d87efbce647270d58ff155489f9e6c6e5dc4f"
+    },
+    "/src/types/index.ts": {
+      "size": 10337,
+      "checksum": "sha256-82a470bcbbe8b1ab7287fd620a7c26a61d5f92630a971f2b01a4cad8f2e2bb4a"
+    },
+    "/src/helpers/isValidDomain.ts": {
+      "size": 543,
+      "checksum": "sha256-59ac1918f99cbeac63f0fb93e52e8fd198ea88e2843afa395bf52c30f159c3ad"
+    },
+    "/src/helpers/identifyAuthenticationError.ts": {
+      "size": 2394,
+      "checksum": "sha256-b46a9d31ec7025ceb4554c198c219b2ce487bbf747cc5e7f4b4f2ab3b4b07f20"
+    },
+    "/src/methods/startRegistration.ts": {
+      "size": 6202,
+      "checksum": "sha256-954c1982eeacc89620640d898bd32e23fb4f75f665900d2901c2f85560844dd2"
+    },
+    "/src/helpers/base64URLStringToBuffer.ts": {
+      "size": 1102,
+      "checksum": "sha256-a72f3f3e9e8c4c61436548cc7fd21348d4842125f7fb850e09242d384193dbca"
+    },
+    "/src/types/dom.ts": {
+      "size": 15178,
+      "checksum": "sha256-169e1099cec5943af5eacf4687fb8608d5f4c17394ca8fce0e54bdec0b9ac7a0"
+    },
+    "/src/methods/startAuthentication.ts": {
+      "size": 5424,
+      "checksum": "sha256-c3bd6010d66154e84afed1e4fbb9ef5507ad0889d0c8bff722f48ad3f5252adf"
+    },
+    "/src/helpers/identifyRegistrationError.ts": {
+      "size": 5329,
+      "checksum": "sha256-744af0b1433941758938b8b2fa5c3c00d172edcb35b5fcf9570ed57d9585d205"
+    },
+    "/deno.json": {
+      "size": 1057,
+      "checksum": "sha256-173ad5a3cc81038431bb6190a39381f7f074855359b4e9df4730ce7f185434a2"
+    },
+    "/src/index.ts": {
+      "size": 514,
+      "checksum": "sha256-de2daa46c576feb308399dc0b1725d4d29482700ffdb150c27c8951e6f10991e"
+    },
+    "/src/helpers/webAuthnAbortService.ts": {
+      "size": 1754,
+      "checksum": "sha256-a483747a5b1a1ac80e31264c9de796d3731437cd30d10e43ec72c9ef57d0933b"
+    }
+  },
+  "moduleGraph2": {
+    "/src/helpers/platformAuthenticatorIsAvailable.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./browserSupportsWebAuthn.ts",
+          "specifierRange": [
+            [
+              0,
+              40
+            ],
+            [
+              0,
+              70
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/methods/startRegistration.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              5,
+              7
+            ],
+            [
+              5,
+              26
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/bufferToBase64URLString.ts",
+          "specifierRange": [
+            [
+              6,
+              40
+            ],
+            [
+              6,
+              79
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/base64URLStringToBuffer.ts",
+          "specifierRange": [
+            [
+              7,
+              40
+            ],
+            [
+              7,
+              79
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/browserSupportsWebAuthn.ts",
+          "specifierRange": [
+            [
+              8,
+              40
+            ],
+            [
+              8,
+              79
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/toPublicKeyCredentialDescriptor.ts",
+          "specifierRange": [
+            [
+              9,
+              48
+            ],
+            [
+              9,
+              95
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/identifyRegistrationError.ts",
+          "specifierRange": [
+            [
+              10,
+              42
+            ],
+            [
+              10,
+              83
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/webAuthnAbortService.ts",
+          "specifierRange": [
+            [
+              11,
+              37
+            ],
+            [
+              11,
+              73
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/toAuthenticatorAttachment.ts",
+          "specifierRange": [
+            [
+              12,
+              42
+            ],
+            [
+              12,
+              83
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/index.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./methods/startRegistration.ts",
+          "specifierRange": [
+            [
+              0,
+              14
+            ],
+            [
+              0,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./methods/startAuthentication.ts",
+          "specifierRange": [
+            [
+              1,
+              14
+            ],
+            [
+              1,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./helpers/browserSupportsWebAuthn.ts",
+          "specifierRange": [
+            [
+              2,
+              14
+            ],
+            [
+              2,
+              52
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./helpers/platformAuthenticatorIsAvailable.ts",
+          "specifierRange": [
+            [
+              3,
+              14
+            ],
+            [
+              3,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./helpers/browserSupportsWebAuthnAutofill.ts",
+          "specifierRange": [
+            [
+              4,
+              14
+            ],
+            [
+              4,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./helpers/base64URLStringToBuffer.ts",
+          "specifierRange": [
+            [
+              5,
+              14
+            ],
+            [
+              5,
+              52
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./helpers/bufferToBase64URLString.ts",
+          "specifierRange": [
+            [
+              6,
+              14
+            ],
+            [
+              6,
+              52
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./helpers/webAuthnAbortService.ts",
+          "specifierRange": [
+            [
+              7,
+              14
+            ],
+            [
+              7,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./helpers/webAuthnError.ts",
+          "specifierRange": [
+            [
+              8,
+              14
+            ],
+            [
+              8,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./types/index.ts",
+          "specifierRange": [
+            [
+              9,
+              14
+            ],
+            [
+              9,
+              32
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/types/dom.ts": {},
+    "/src/methods/startAuthentication.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              4,
+              7
+            ],
+            [
+              4,
+              26
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/bufferToBase64URLString.ts",
+          "specifierRange": [
+            [
+              5,
+              40
+            ],
+            [
+              5,
+              79
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/base64URLStringToBuffer.ts",
+          "specifierRange": [
+            [
+              6,
+              40
+            ],
+            [
+              6,
+              79
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/browserSupportsWebAuthn.ts",
+          "specifierRange": [
+            [
+              7,
+              40
+            ],
+            [
+              7,
+              79
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/browserSupportsWebAuthnAutofill.ts",
+          "specifierRange": [
+            [
+              8,
+              48
+            ],
+            [
+              8,
+              95
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/toPublicKeyCredentialDescriptor.ts",
+          "specifierRange": [
+            [
+              9,
+              48
+            ],
+            [
+              9,
+              95
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/identifyAuthenticationError.ts",
+          "specifierRange": [
+            [
+              10,
+              44
+            ],
+            [
+              10,
+              87
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/webAuthnAbortService.ts",
+          "specifierRange": [
+            [
+              11,
+              37
+            ],
+            [
+              11,
+              73
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/toAuthenticatorAttachment.ts",
+          "specifierRange": [
+            [
+              12,
+              42
+            ],
+            [
+              12,
+              83
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/webAuthnAbortService.ts": {},
+    "/src/types/index.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./dom.ts",
+          "specifierRange": [
+            [
+              27,
+              7
+            ],
+            [
+              27,
+              17
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "exportType",
+          "specifier": "./dom.ts",
+          "specifierRange": [
+            [
+              49,
+              7
+            ],
+            [
+              49,
+              17
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/base64URLStringToBuffer.ts": {},
+    "/src/helpers/isValidDomain.ts": {},
+    "/src/helpers/toPublicKeyCredentialDescriptor.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              4,
+              7
+            ],
+            [
+              4,
+              26
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./base64URLStringToBuffer.ts",
+          "specifierRange": [
+            [
+              5,
+              40
+            ],
+            [
+              5,
+              70
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/browserSupportsWebAuthnAutofill.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              0,
+              47
+            ],
+            [
+              0,
+              66
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./browserSupportsWebAuthn.ts",
+          "specifierRange": [
+            [
+              1,
+              40
+            ],
+            [
+              1,
+              70
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/identifyAuthenticationError.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./isValidDomain.ts",
+          "specifierRange": [
+            [
+              0,
+              30
+            ],
+            [
+              0,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./webAuthnError.ts",
+          "specifierRange": [
+            [
+              1,
+              30
+            ],
+            [
+              1,
+              50
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/toAuthenticatorAttachment.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              0,
+              45
+            ],
+            [
+              0,
+              64
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/webAuthnError.ts": {},
+    "/src/helpers/identifyRegistrationError.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./isValidDomain.ts",
+          "specifierRange": [
+            [
+              0,
+              30
+            ],
+            [
+              0,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./webAuthnError.ts",
+          "specifierRange": [
+            [
+              1,
+              30
+            ],
+            [
+              1,
+              50
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/bufferToBase64URLString.ts": {},
+    "/src/helpers/browserSupportsWebAuthn.ts": {}
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

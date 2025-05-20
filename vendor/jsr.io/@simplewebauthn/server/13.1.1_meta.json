@@ -1,0 +1,4328 @@
+{
+  "manifest": {
+    "/src/helpers/convertCOSEtoPKCS.ts": {
+      "size": 881,
+      "checksum": "sha256-5f5bb74506ebf7adb1f715228ed1b80eba88e164745750815a0022f4057d826e"
+    },
+    "/src/helpers/iso/isoUint8Array.ts": {
+      "size": 2337,
+      "checksum": "sha256-e1c8b725d1db74b4a896fc55e3fda1117a9134f0bd0082d28e26522392795779"
+    },
+    "/src/helpers/iso/isoCBOR.ts": {
+      "size": 1343,
+      "checksum": "sha256-6c0ea33754b8b285e6883fe6484bd3540e7aac6c3eb5c61d3038014f13f34134"
+    },
+    "/src/helpers/iso/isoCrypto/mapCoseAlgToWebCryptoAlg.ts": {
+      "size": 741,
+      "checksum": "sha256-9569ac0fc263a5d817d07b7931db55561b1419ba1d621da4ac569ca4d3c4d7c0"
+    },
+    "/src/helpers/validateExtFIDOGenCEAAGUID.ts": {
+      "size": 1749,
+      "checksum": "sha256-6a066d3c55a089fa5c0aea74f908a8d93c7b57c37e77347a67b96aee7052369a"
+    },
+    "/src/index.ts": {
+      "size": 426,
+      "checksum": "sha256-8787ae28359510a7e219c86369b649362cd1b215a15af8a8a401ea21fd817867"
+    },
+    "/README.md": {
+      "size": 1393,
+      "checksum": "sha256-388eb4fd4b7b194a76bf8ed41c899483ed7752f5b0af9ed390fc98b9cdcb2bf8"
+    },
+    "/src/helpers/iso/isoCrypto/index.ts": {
+      "size": 230,
+      "checksum": "sha256-26bd992ccb2f1e109b155e233be538bee0d0c2d6b0d89662fcb3cbfe8b0062cb"
+    },
+    "/src/helpers/decodeClientDataJSON.ts": {
+      "size": 860,
+      "checksum": "sha256-36b6bec88be2b8dd4388884a8dad78530f699de7f800ca8286d5d2251b914e19"
+    },
+    "/src/registration/generateRegistrationOptions.ts": {
+      "size": 8580,
+      "checksum": "sha256-2f1f953e25af8af3a70cf99cbba005ab2dab742e9b98497cf06e287da7b31fb8"
+    },
+    "/src/authentication/generateAuthenticationOptions.ts": {
+      "size": 2645,
+      "checksum": "sha256-db3c88bec2b02395ec9d2a6fcadec7f102b4204c35e29a1e4b10807f3c24517c"
+    },
+    "/src/helpers/convertCertBufferToPEM.ts": {
+      "size": 1011,
+      "checksum": "sha256-1dfe0a4d0a8f590eda436cd4b7583742b26f49dd14e53322c58efca813923054"
+    },
+    "/src/helpers/cose.ts": {
+      "size": 3997,
+      "checksum": "sha256-fcfdb24e7bf1347767a437d34db69aff0926e5d589de0ba4311e0b3970c16dad"
+    },
+    "/src/helpers/convertPEMToBytes.ts": {
+      "size": 381,
+      "checksum": "sha256-15703899b7281329714a041c63a2b00ca3595dc9dacfcd6392feca12717cd710"
+    },
+    "/src/helpers/generateChallenge.ts": {
+      "size": 852,
+      "checksum": "sha256-d4952feebd58ab5d052b39d57fc3adb7ad09959f2c8552d42663d5bddb778bb1"
+    },
+    "/src/helpers/parseAuthenticatorData.ts": {
+      "size": 5853,
+      "checksum": "sha256-aa280fe4723ff513b8eb0afbc8849d136e3bedaf47d872b2e11d7bbe81423fa5"
+    },
+    "/src/services/defaultRootCerts/android-safetynet.ts": {
+      "size": 1543,
+      "checksum": "sha256-19979981d707f6b1507b87ffc0a5f37dfabcdd10cdb239f0a10c2afbf862099e"
+    },
+    "/src/helpers/fetch.ts": {
+      "size": 410,
+      "checksum": "sha256-ba8c9cff80133cd56e32173f0b1471c3e96df2cd270ce3e7d002c1b59e5665d0"
+    },
+    "/src/helpers/iso/index.ts": {
+      "size": 535,
+      "checksum": "sha256-3784b094dbe78301b04a6c1748fd96d1ad1f1e0aa5a9e305178c6dd90f42e9df"
+    },
+    "/src/helpers/iso/isoCrypto/getRandomValues.ts": {
+      "size": 371,
+      "checksum": "sha256-e9541c19f0fb14fb02254780a53e97c991faa607d7383cafb45bb036d198986e"
+    },
+    "/src/metadata/mdsTypes.ts": {
+      "size": 7879,
+      "checksum": "sha256-55cf3e9167b0e2fb2c9398ae12227bbd611b0fb0acc4876e1ad1659a363c229a"
+    },
+    "/src/helpers/iso/isoCrypto/unwrapEC2Signature.ts": {
+      "size": 3168,
+      "checksum": "sha256-0c5e40454c1c4a65a7b8f335b2d521315c08daad3a28550479957df543505f1b"
+    },
+    "/src/helpers/iso/isoCrypto/structs.ts": {
+      "size": 248,
+      "checksum": "sha256-608d961cb8c28d28bba55012c8a94d77428a4437606bbd3980882db26ede4d22"
+    },
+    "/src/services/metadataService.ts": {
+      "size": 11062,
+      "checksum": "sha256-cbedd6d880e8b90bcd4781b56c6ccce9d17e8ce074c71e408e6604cb7e2d00a0"
+    },
+    "/src/services/settingsService.ts": {
+      "size": 3311,
+      "checksum": "sha256-a492e12ee57ddee654ecda0ce082f6049cb02df252169c74fab03f9974b7513a"
+    },
+    "/deno.json": {
+      "size": 1569,
+      "checksum": "sha256-bd7f6e9597df3b1a495180ace2f7280161fadb8431ead86a4fb736f6638c3b03"
+    },
+    "/src/helpers/generateUserID.ts": {
+      "size": 702,
+      "checksum": "sha256-9bbdbb48207b923bc43049005bbb5e2a436267c287990896b179a8533035439f"
+    },
+    "/src/services/defaultRootCerts/android-key.ts": {
+      "size": 9008,
+      "checksum": "sha256-a0716f92470ea8ff5e133a48b4065e871594307089eb992de3b275915f42d3f1"
+    },
+    "/src/helpers/index.ts": {
+      "size": 645,
+      "checksum": "sha256-21eccd99d4963369ca18259e71f615a8fabbbc0e6c64ae477c2890eeb5ef9ffd"
+    },
+    "/src/helpers/validateCertificatePath.ts": {
+      "size": 6266,
+      "checksum": "sha256-b667110c6195392fd95164341181a09020026ce5da76d41c61b0ba757c1b03e1"
+    },
+    "/src/helpers/iso/isoCrypto/digest.ts": {
+      "size": 656,
+      "checksum": "sha256-d0aadc03f2009e60034b8b6f101b311ee28729abbd4ac15999a5e777f325bf07"
+    },
+    "/src/helpers/iso/isoCrypto/verifyEC2.ts": {
+      "size": 2483,
+      "checksum": "sha256-45ba1516ee8af53e97259e72fdad5cd75d330c4f79155ceb9af3a6046c39ac5d"
+    },
+    "/src/helpers/iso/isoCrypto/verifyOKP.ts": {
+      "size": 1695,
+      "checksum": "sha256-aabd359ddb7fb8c2f5126ba13b17524acb4571c34f2480d7605983d91c63fe91"
+    },
+    "/src/helpers/iso/isoCrypto/verifyRSA.ts": {
+      "size": 3256,
+      "checksum": "sha256-1107437956836e0efced72dc3d7a545e7aff0c7efb0c792cfe3995ec2da78cfd"
+    },
+    "/src/registration/verifications/tpm/parsePubArea.ts": {
+      "size": 4374,
+      "checksum": "sha256-da01b78133df3336aa183948736a5acea0ac79405566160a01156986bb4f3470"
+    },
+    "/src/helpers/convertAAGUIDToString.ts": {
+      "size": 534,
+      "checksum": "sha256-fe81f111f9e471c70137735136c74655cd3f43571210b9bdb37138aec525239c"
+    },
+    "/src/helpers/matchExpectedRPID.ts": {
+      "size": 1315,
+      "checksum": "sha256-cdf33833c239df6d1b4d798d15e9c97f668c8a4fcfc801bf382f4d7e5c1fd6c2"
+    },
+    "/src/helpers/getCertificateInfo.ts": {
+      "size": 2746,
+      "checksum": "sha256-99ecad7e51d58c8cb8ba58b2e41d256fd6ef7de1bfa19411628ff77dbee12cb8"
+    },
+    "/src/helpers/mapX509SignatureAlgToCOSEAlg.ts": {
+      "size": 1075,
+      "checksum": "sha256-3f3fd252841cdca24d9675b01ff7f8ddde1bddaa773d300654f29c01eb596e6b"
+    },
+    "/src/helpers/iso/isoCrypto/verify.ts": {
+      "size": 1433,
+      "checksum": "sha256-ceabeb636e7d161acc19d79b6db177c56b2e41da475317470234de7488eaff4c"
+    },
+    "/src/types/dom.ts": {
+      "size": 15178,
+      "checksum": "sha256-169e1099cec5943af5eacf4687fb8608d5f4c17394ca8fce0e54bdec0b9ac7a0"
+    },
+    "/src/helpers/verifySignature.ts": {
+      "size": 1525,
+      "checksum": "sha256-8f624888408b8903ad69ce1a66333d09082d30aaaa2b8c32eb7cbc5143d2a21d"
+    },
+    "/src/metadata/verifyAttestationWithMetadata.ts": {
+      "size": 7025,
+      "checksum": "sha256-479c244ac6fe6cf318847a954a5856fa81f0fd142546d9a16f0624a6643f571e"
+    },
+    "/src/helpers/decodeCredentialPublicKey.ts": {
+      "size": 501,
+      "checksum": "sha256-757a853da636b81950db0be7c65ad1ae1ea7f19a571b789b823f35ea3443b7cf"
+    },
+    "/src/registration/verifications/verifyAttestationAndroidSafetyNet.ts": {
+      "size": 4895,
+      "checksum": "sha256-80533adfa6b3edcb68c134ce11dbb2f794d143b037ad58811596a8d5ed965409"
+    },
+    "/src/metadata/parseJWT.ts": {
+      "size": 371,
+      "checksum": "sha256-b449eecd8f4f3c7a258f1475c4105ed949205dbfb173c87f0066e28ecd201865"
+    },
+    "/src/helpers/convertX509PublicKeyToCOSE.ts": {
+      "size": 3451,
+      "checksum": "sha256-3f946c905f7b481a12ef74299beb2c20765739cf16b4c3f40ca6dd53174a7f52"
+    },
+    "/LICENSE.md": {
+      "size": 1071,
+      "checksum": "sha256-bd9e3f45696472076c7160c7f66e54b2d62d38bc2646c812d19be83ee4400c63"
+    },
+    "/src/services/defaultRootCerts/mds.ts": {
+      "size": 1552,
+      "checksum": "sha256-b20054c27a1f98aff9f3eef6a3fb2e9bd2c3c4e5fab8814800e002bd96e771ff"
+    },
+    "/src/services/defaultRootCerts/apple.ts": {
+      "size": 1111,
+      "checksum": "sha256-da104fff89ac80b264078ae2c669f28bf122ac68d2a108f731265e2767acabbe"
+    },
+    "/src/registration/verifications/verifyAttestationFIDOU2F.ts": {
+      "size": 2097,
+      "checksum": "sha256-ae088ac53b781855702c51d97f6c8346e9e0b1252adeab7731fa502f48fb80eb"
+    },
+    "/src/helpers/isCertRevoked.ts": {
+      "size": 4160,
+      "checksum": "sha256-79bcb6809f611e4414d604aaeec2cb378ce777367ac95223bc6a9723244c019d"
+    },
+    "/src/helpers/decodeAttestationObject.ts": {
+      "size": 1438,
+      "checksum": "sha256-a72743d64972e7c215e2a6f2e1df8ea63b553ebe90f24f0f005da12b3f8dc6c5"
+    },
+    "/src/helpers/iso/isoCrypto/importKey.ts": {
+      "size": 394,
+      "checksum": "sha256-9e8454a14a91f0c9bef68877482d644a7f6c007bee858b9c6e901e3a6aa75c42"
+    },
+    "/src/registration/verifications/tpm/constants.ts": {
+      "size": 5046,
+      "checksum": "sha256-e9e30e2744a43f0039f06c5bef773d89a8d75d809a9e438dd3bfa0cb7a349703"
+    },
+    "/src/helpers/iso/isoCrypto/mapCoseAlgToWebCryptoKeyAlgName.ts": {
+      "size": 840,
+      "checksum": "sha256-eb73953837c35ecb51b8247f07cb5916ed933afc5e5cccd5a671af00834dd3c3"
+    },
+    "/src/registration/verifications/verifyAttestationApple.ts": {
+      "size": 2834,
+      "checksum": "sha256-80004414b92e77b12268c722c22a2bf89451358c79c3a9848c2695e3d75b2181"
+    },
+    "/src/registration/verifications/tpm/verifyAttestationTPM.ts": {
+      "size": 14414,
+      "checksum": "sha256-5bf01170e6f22bf673b5d2fe9b3fe05998cec2ca9478f7fd5bcc0e23d06b23ad"
+    },
+    "/src/registration/verifyRegistrationResponse.ts": {
+      "size": 13261,
+      "checksum": "sha256-c57009503c9035be8b8f8f1d73be0eb70a548ef0f5f4962d8e01e88b095c24ce"
+    },
+    "/src/types/index.ts": {
+      "size": 10337,
+      "checksum": "sha256-82a470bcbbe8b1ab7287fd620a7c26a61d5f92630a971f2b01a4cad8f2e2bb4a"
+    },
+    "/src/authentication/verifyAuthenticationResponse.ts": {
+      "size": 10764,
+      "checksum": "sha256-fec2db4ac5f00eb5e4da60e42438f6673eb6f4168713a436776bea5c86b432b6"
+    },
+    "/src/metadata/verifyJWT.ts": {
+      "size": 1507,
+      "checksum": "sha256-9e8e9109423f57b78668a4cc0240eb704d25719884d8aabfec517ce1e9497507"
+    },
+    "/src/registration/verifications/tpm/parseCertInfo.ts": {
+      "size": 2595,
+      "checksum": "sha256-4bb59004c0c5ac5a2b77634e5d05913cb8bbadb6085003cacb2ef0acf338324b"
+    },
+    "/src/helpers/decodeAuthenticatorExtensions.ts": {
+      "size": 1294,
+      "checksum": "sha256-1f98f957166e50815aa80773a74ad1cddc0db62cbd7aa53cbfe99e18612893f9"
+    },
+    "/src/registration/verifications/verifyAttestationPacked.ts": {
+      "size": 4736,
+      "checksum": "sha256-6ab622814953f3ea2c56a2ad7616a759c25a470a09432e1466e4ff4d31f84b39"
+    },
+    "/src/helpers/iso/isoCrypto/getWebCrypto.ts": {
+      "size": 2028,
+      "checksum": "sha256-e945ca23b500c844e21d5ca66b5a1e940d24c1d29b4cfba0fb40f2fdbe6e7b7f"
+    },
+    "/src/helpers/logging.ts": {
+      "size": 636,
+      "checksum": "sha256-effaeccf85ba16801a1035818f2a669c58357192afe54eaf5078a4f1f5128165"
+    },
+    "/src/helpers/parseBackupFlags.ts": {
+      "size": 1027,
+      "checksum": "sha256-c7492271dd9eb076b98263b451df5610a9e84df7cad8f895d09196eb949f3fe5"
+    },
+    "/src/helpers/toHash.ts": {
+      "size": 481,
+      "checksum": "sha256-e376dc4d5843b57dbb00ca13d0957d7c3779441753445e74dd02f78e81c73433"
+    },
+    "/src/helpers/iso/isoBase64URL.ts": {
+      "size": 2496,
+      "checksum": "sha256-5bebd7ebd669f2c90aadf9e68f8b539916b9bb6483ee869545a0d76bc619b559"
+    },
+    "/src/registration/verifications/verifyAttestationAndroidKey.ts": {
+      "size": 5544,
+      "checksum": "sha256-fecf9c5afe8bffe917ea85896711d469caaf631b5f1ec6b9d26061986d3dd9bd"
+    }
+  },
+  "moduleGraph2": {
+    "/src/helpers/convertAAGUIDToString.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              0,
+              30
+            ],
+            [
+              0,
+              46
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCrypto/mapCoseAlgToWebCryptoKeyAlgName.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../cose.ts",
+          "specifierRange": [
+            [
+              0,
+              24
+            ],
+            [
+              0,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./structs.ts",
+          "specifierRange": [
+            [
+              1,
+              39
+            ],
+            [
+              1,
+              53
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/verifySignature.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./cose.ts",
+          "specifierRange": [
+            [
+              0,
+              39
+            ],
+            [
+              0,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              1,
+              26
+            ],
+            [
+              1,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./decodeCredentialPublicKey.ts",
+          "specifierRange": [
+            [
+              2,
+              42
+            ],
+            [
+              2,
+              74
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./convertX509PublicKeyToCOSE.ts",
+          "specifierRange": [
+            [
+              3,
+              43
+            ],
+            [
+              3,
+              76
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCrypto/structs.ts": {},
+    "/src/helpers/validateCertificatePath.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-schema@^2.3.8",
+          "specifierRange": [
+            [
+              0,
+              30
+            ],
+            [
+              0,
+              64
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "npm:@peculiar/asn1-x509@^2.3.8",
+          "specifierRange": [
+            [
+              1,
+              33
+            ],
+            [
+              1,
+              65
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./isCertRevoked.ts",
+          "specifierRange": [
+            [
+              3,
+              30
+            ],
+            [
+              3,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./verifySignature.ts",
+          "specifierRange": [
+            [
+              4,
+              32
+            ],
+            [
+              4,
+              54
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./mapX509SignatureAlgToCOSEAlg.ts",
+          "specifierRange": [
+            [
+              5,
+              45
+            ],
+            [
+              5,
+              80
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./getCertificateInfo.ts",
+          "specifierRange": [
+            [
+              6,
+              57
+            ],
+            [
+              6,
+              82
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./convertPEMToBytes.ts",
+          "specifierRange": [
+            [
+              7,
+              34
+            ],
+            [
+              7,
+              58
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/authentication/verifyAuthenticationResponse.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              6,
+              7
+            ],
+            [
+              6,
+              26
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/decodeClientDataJSON.ts",
+          "specifierRange": [
+            [
+              7,
+              37
+            ],
+            [
+              7,
+              73
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/toHash.ts",
+          "specifierRange": [
+            [
+              8,
+              23
+            ],
+            [
+              8,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/verifySignature.ts",
+          "specifierRange": [
+            [
+              9,
+              32
+            ],
+            [
+              9,
+              63
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/parseAuthenticatorData.ts",
+          "specifierRange": [
+            [
+              10,
+              39
+            ],
+            [
+              10,
+              77
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/parseBackupFlags.ts",
+          "specifierRange": [
+            [
+              11,
+              33
+            ],
+            [
+              11,
+              65
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../helpers/decodeAuthenticatorExtensions.ts",
+          "specifierRange": [
+            [
+              12,
+              66
+            ],
+            [
+              12,
+              111
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/matchExpectedRPID.ts",
+          "specifierRange": [
+            [
+              13,
+              34
+            ],
+            [
+              13,
+              67
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              14,
+              44
+            ],
+            [
+              14,
+              69
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCrypto/getRandomValues.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./getWebCrypto.ts",
+          "specifierRange": [
+            [
+              0,
+              29
+            ],
+            [
+              0,
+              48
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/services/metadataService.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/validateCertificatePath.ts",
+          "specifierRange": [
+            [
+              0,
+              40
+            ],
+            [
+              0,
+              79
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/convertCertBufferToPEM.ts",
+          "specifierRange": [
+            [
+              1,
+              39
+            ],
+            [
+              1,
+              77
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/convertAAGUIDToString.ts",
+          "specifierRange": [
+            [
+              2,
+              38
+            ],
+            [
+              2,
+              75
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../metadata/mdsTypes.ts",
+          "specifierRange": [
+            [
+              8,
+              7
+            ],
+            [
+              8,
+              32
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./settingsService.ts",
+          "specifierRange": [
+            [
+              9,
+              32
+            ],
+            [
+              9,
+              54
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/logging.ts",
+          "specifierRange": [
+            [
+              10,
+              26
+            ],
+            [
+              10,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/convertPEMToBytes.ts",
+          "specifierRange": [
+            [
+              11,
+              34
+            ],
+            [
+              11,
+              67
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/fetch.ts",
+          "specifierRange": [
+            [
+              12,
+              22
+            ],
+            [
+              12,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../metadata/parseJWT.ts",
+          "specifierRange": [
+            [
+              14,
+              25
+            ],
+            [
+              14,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../metadata/verifyJWT.ts",
+          "specifierRange": [
+            [
+              15,
+              26
+            ],
+            [
+              15,
+              52
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/isCertRevoked.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-schema@^2.3.8",
+          "specifierRange": [
+            [
+              0,
+              26
+            ],
+            [
+              0,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-x509@^2.3.8",
+          "specifierRange": [
+            [
+              10,
+              7
+            ],
+            [
+              10,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              12,
+              30
+            ],
+            [
+              12,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./fetch.ts",
+          "specifierRange": [
+            [
+              13,
+              22
+            ],
+            [
+              13,
+              34
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCBOR.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@levischuck/tiny-cbor@^0.2.2",
+          "specifierRange": [
+            [
+              4,
+              26
+            ],
+            [
+              4,
+              60
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/registration/verifications/verifyAttestationApple.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-schema@^2.3.8",
+          "specifierRange": [
+            [
+              0,
+              26
+            ],
+            [
+              0,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-x509@^2.3.8",
+          "specifierRange": [
+            [
+              1,
+              28
+            ],
+            [
+              1,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../verifyRegistrationResponse.ts",
+          "specifierRange": [
+            [
+              3,
+              51
+            ],
+            [
+              3,
+              85
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/validateCertificatePath.ts",
+          "specifierRange": [
+            [
+              4,
+              40
+            ],
+            [
+              4,
+              82
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/convertCertBufferToPEM.ts",
+          "specifierRange": [
+            [
+              5,
+              39
+            ],
+            [
+              5,
+              80
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/toHash.ts",
+          "specifierRange": [
+            [
+              6,
+              23
+            ],
+            [
+              6,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/convertCOSEtoPKCS.ts",
+          "specifierRange": [
+            [
+              7,
+              34
+            ],
+            [
+              7,
+              70
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              8,
+              30
+            ],
+            [
+              8,
+              58
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/registration/verifications/tpm/constants.ts": {},
+    "/src/helpers/convertPEMToBytes.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              0,
+              29
+            ],
+            [
+              0,
+              45
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/services/defaultRootCerts/android-safetynet.ts": {},
+    "/src/helpers/decodeAuthenticatorExtensions.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              0,
+              24
+            ],
+            [
+              0,
+              40
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/toHash.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./cose.ts",
+          "specifierRange": [
+            [
+              0,
+              24
+            ],
+            [
+              0,
+              35
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              1,
+              41
+            ],
+            [
+              1,
+              57
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/registration/verifications/verifyAttestationPacked.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../verifyRegistrationResponse.ts",
+          "specifierRange": [
+            [
+              0,
+              51
+            ],
+            [
+              0,
+              85
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/cose.ts",
+          "specifierRange": [
+            [
+              2,
+              26
+            ],
+            [
+              2,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/convertCertBufferToPEM.ts",
+          "specifierRange": [
+            [
+              3,
+              39
+            ],
+            [
+              3,
+              80
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/validateCertificatePath.ts",
+          "specifierRange": [
+            [
+              4,
+              40
+            ],
+            [
+              4,
+              82
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/getCertificateInfo.ts",
+          "specifierRange": [
+            [
+              5,
+              35
+            ],
+            [
+              5,
+              72
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/verifySignature.ts",
+          "specifierRange": [
+            [
+              6,
+              32
+            ],
+            [
+              6,
+              66
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              7,
+              30
+            ],
+            [
+              7,
+              58
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/validateExtFIDOGenCEAAGUID.ts",
+          "specifierRange": [
+            [
+              8,
+              43
+            ],
+            [
+              8,
+              88
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../services/metadataService.ts",
+          "specifierRange": [
+            [
+              9,
+              32
+            ],
+            [
+              9,
+              67
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../metadata/verifyAttestationWithMetadata.ts",
+          "specifierRange": [
+            [
+              10,
+              46
+            ],
+            [
+              10,
+              95
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/decodeClientDataJSON.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              0,
+              37
+            ],
+            [
+              0,
+              56
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              1,
+              29
+            ],
+            [
+              1,
+              45
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoBase64URL.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@hexagon/base64@^1.1.27",
+          "specifierRange": [
+            [
+              4,
+              19
+            ],
+            [
+              4,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../../types/index.ts",
+          "specifierRange": [
+            [
+              6,
+              37
+            ],
+            [
+              6,
+              59
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/generateChallenge.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              0,
+              26
+            ],
+            [
+              0,
+              42
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/services/defaultRootCerts/apple.ts": {},
+    "/src/types/dom.ts": {},
+    "/src/index.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./registration/generateRegistrationOptions.ts",
+          "specifierRange": [
+            [
+              0,
+              14
+            ],
+            [
+              0,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./registration/verifyRegistrationResponse.ts",
+          "specifierRange": [
+            [
+              1,
+              14
+            ],
+            [
+              1,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./authentication/generateAuthenticationOptions.ts",
+          "specifierRange": [
+            [
+              2,
+              14
+            ],
+            [
+              2,
+              65
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./authentication/verifyAuthenticationResponse.ts",
+          "specifierRange": [
+            [
+              3,
+              14
+            ],
+            [
+              3,
+              64
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./services/metadataService.ts",
+          "specifierRange": [
+            [
+              4,
+              14
+            ],
+            [
+              4,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./services/settingsService.ts",
+          "specifierRange": [
+            [
+              5,
+              14
+            ],
+            [
+              5,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./metadata/mdsTypes.ts",
+          "specifierRange": [
+            [
+              6,
+              14
+            ],
+            [
+              6,
+              38
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./types/index.ts",
+          "specifierRange": [
+            [
+              7,
+              14
+            ],
+            [
+              7,
+              32
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/registration/verifyRegistrationResponse.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              5,
+              7
+            ],
+            [
+              5,
+              26
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/decodeAttestationObject.ts",
+          "specifierRange": [
+            [
+              10,
+              7
+            ],
+            [
+              10,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../helpers/decodeAuthenticatorExtensions.ts",
+          "specifierRange": [
+            [
+              11,
+              66
+            ],
+            [
+              11,
+              111
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/decodeClientDataJSON.ts",
+          "specifierRange": [
+            [
+              12,
+              37
+            ],
+            [
+              12,
+              73
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/parseAuthenticatorData.ts",
+          "specifierRange": [
+            [
+              13,
+              39
+            ],
+            [
+              13,
+              77
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/toHash.ts",
+          "specifierRange": [
+            [
+              14,
+              23
+            ],
+            [
+              14,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/decodeCredentialPublicKey.ts",
+          "specifierRange": [
+            [
+              15,
+              42
+            ],
+            [
+              15,
+              83
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/cose.ts",
+          "specifierRange": [
+            [
+              16,
+              25
+            ],
+            [
+              16,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/convertAAGUIDToString.ts",
+          "specifierRange": [
+            [
+              17,
+              38
+            ],
+            [
+              17,
+              75
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/parseBackupFlags.ts",
+          "specifierRange": [
+            [
+              18,
+              33
+            ],
+            [
+              18,
+              65
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/matchExpectedRPID.ts",
+          "specifierRange": [
+            [
+              19,
+              34
+            ],
+            [
+              19,
+              67
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              20,
+              29
+            ],
+            [
+              20,
+              54
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../services/settingsService.ts",
+          "specifierRange": [
+            [
+              21,
+              32
+            ],
+            [
+              21,
+              64
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./generateRegistrationOptions.ts",
+          "specifierRange": [
+            [
+              23,
+              50
+            ],
+            [
+              23,
+              84
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./verifications/verifyAttestationFIDOU2F.ts",
+          "specifierRange": [
+            [
+              24,
+              41
+            ],
+            [
+              24,
+              86
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./verifications/verifyAttestationPacked.ts",
+          "specifierRange": [
+            [
+              25,
+              40
+            ],
+            [
+              25,
+              84
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./verifications/verifyAttestationAndroidSafetyNet.ts",
+          "specifierRange": [
+            [
+              26,
+              50
+            ],
+            [
+              26,
+              104
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./verifications/tpm/verifyAttestationTPM.ts",
+          "specifierRange": [
+            [
+              27,
+              37
+            ],
+            [
+              27,
+              82
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./verifications/verifyAttestationAndroidKey.ts",
+          "specifierRange": [
+            [
+              28,
+              44
+            ],
+            [
+              28,
+              92
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./verifications/verifyAttestationApple.ts",
+          "specifierRange": [
+            [
+              29,
+              39
+            ],
+            [
+              29,
+              82
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCrypto/verify.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../cose.ts",
+          "specifierRange": [
+            [
+              8,
+              7
+            ],
+            [
+              8,
+              22
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./verifyEC2.ts",
+          "specifierRange": [
+            [
+              9,
+              26
+            ],
+            [
+              9,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./verifyRSA.ts",
+          "specifierRange": [
+            [
+              10,
+              26
+            ],
+            [
+              10,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./verifyOKP.ts",
+          "specifierRange": [
+            [
+              11,
+              26
+            ],
+            [
+              11,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./unwrapEC2Signature.ts",
+          "specifierRange": [
+            [
+              12,
+              35
+            ],
+            [
+              12,
+              60
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/metadata/mdsTypes.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              0,
+              37
+            ],
+            [
+              0,
+              56
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/metadata/verifyJWT.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/convertX509PublicKeyToCOSE.ts",
+          "specifierRange": [
+            [
+              0,
+              43
+            ],
+            [
+              0,
+              85
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              1,
+              44
+            ],
+            [
+              1,
+              69
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/cose.ts",
+          "specifierRange": [
+            [
+              2,
+              74
+            ],
+            [
+              2,
+              94
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/iso/isoCrypto/verifyEC2.ts",
+          "specifierRange": [
+            [
+              3,
+              26
+            ],
+            [
+              3,
+              65
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/iso/isoCrypto/verifyRSA.ts",
+          "specifierRange": [
+            [
+              4,
+              26
+            ],
+            [
+              4,
+              65
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/index.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./isoBase64URL.ts",
+          "specifierRange": [
+            [
+              7,
+              30
+            ],
+            [
+              7,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./isoCBOR.ts",
+          "specifierRange": [
+            [
+              8,
+              25
+            ],
+            [
+              8,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./isoCrypto/index.ts",
+          "specifierRange": [
+            [
+              9,
+              27
+            ],
+            [
+              9,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./isoUint8Array.ts",
+          "specifierRange": [
+            [
+              10,
+              31
+            ],
+            [
+              10,
+              51
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/decodeAttestationObject.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              0,
+              24
+            ],
+            [
+              0,
+              40
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/metadata/parseJWT.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              0,
+              29
+            ],
+            [
+              0,
+              54
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/parseAuthenticatorData.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./decodeAuthenticatorExtensions.ts",
+          "specifierRange": [
+            [
+              3,
+              7
+            ],
+            [
+              3,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              4,
+              39
+            ],
+            [
+              4,
+              55
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./cose.ts",
+          "specifierRange": [
+            [
+              5,
+              30
+            ],
+            [
+              5,
+              41
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCrypto/index.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./digest.ts",
+          "specifierRange": [
+            [
+              4,
+              23
+            ],
+            [
+              4,
+              36
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./getRandomValues.ts",
+          "specifierRange": [
+            [
+              5,
+              32
+            ],
+            [
+              5,
+              54
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./verify.ts",
+          "specifierRange": [
+            [
+              6,
+              23
+            ],
+            [
+              6,
+              36
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/decodeCredentialPublicKey.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./cose.ts",
+          "specifierRange": [
+            [
+              0,
+              30
+            ],
+            [
+              0,
+              41
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              1,
+              24
+            ],
+            [
+              1,
+              40
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/getCertificateInfo.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-schema@^2.3.8",
+          "specifierRange": [
+            [
+              0,
+              26
+            ],
+            [
+              0,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-x509@^2.3.8",
+          "specifierRange": [
+            [
+              1,
+              70
+            ],
+            [
+              1,
+              102
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/logging.ts": {},
+    "/src/helpers/iso/isoCrypto/getWebCrypto.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../../../types/index.ts",
+          "specifierRange": [
+            [
+              0,
+              28
+            ],
+            [
+              0,
+              53
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/registration/verifications/verifyAttestationAndroidKey.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-schema@^2.3.8",
+          "specifierRange": [
+            [
+              0,
+              26
+            ],
+            [
+              0,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-x509@^2.3.8",
+          "specifierRange": [
+            [
+              1,
+              28
+            ],
+            [
+              1,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-android@^2.3.10",
+          "specifierRange": [
+            [
+              2,
+              53
+            ],
+            [
+              2,
+              89
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../verifyRegistrationResponse.ts",
+          "specifierRange": [
+            [
+              4,
+              51
+            ],
+            [
+              4,
+              85
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/convertCertBufferToPEM.ts",
+          "specifierRange": [
+            [
+              5,
+              39
+            ],
+            [
+              5,
+              80
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/validateCertificatePath.ts",
+          "specifierRange": [
+            [
+              6,
+              40
+            ],
+            [
+              6,
+              82
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/verifySignature.ts",
+          "specifierRange": [
+            [
+              7,
+              32
+            ],
+            [
+              7,
+              66
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/convertCOSEtoPKCS.ts",
+          "specifierRange": [
+            [
+              8,
+              34
+            ],
+            [
+              8,
+              70
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/cose.ts",
+          "specifierRange": [
+            [
+              9,
+              26
+            ],
+            [
+              9,
+              49
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              10,
+              30
+            ],
+            [
+              10,
+              58
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../services/metadataService.ts",
+          "specifierRange": [
+            [
+              11,
+              32
+            ],
+            [
+              11,
+              67
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../metadata/verifyAttestationWithMetadata.ts",
+          "specifierRange": [
+            [
+              12,
+              46
+            ],
+            [
+              12,
+              95
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCrypto/importKey.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./getWebCrypto.ts",
+          "specifierRange": [
+            [
+              0,
+              29
+            ],
+            [
+              0,
+              48
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/matchExpectedRPID.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./toHash.ts",
+          "specifierRange": [
+            [
+              0,
+              23
+            ],
+            [
+              0,
+              36
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              1,
+              30
+            ],
+            [
+              1,
+              46
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/registration/verifications/tpm/parsePubArea.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./constants.ts",
+          "specifierRange": [
+            [
+              0,
+              39
+            ],
+            [
+              0,
+              55
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              1,
+              30
+            ],
+            [
+              1,
+              61
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoUint8Array.ts": {},
+    "/src/services/settingsService.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../helpers/decodeAttestationObject.ts",
+          "specifierRange": [
+            [
+              0,
+              39
+            ],
+            [
+              0,
+              78
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/convertCertBufferToPEM.ts",
+          "specifierRange": [
+            [
+              1,
+              39
+            ],
+            [
+              1,
+              77
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./defaultRootCerts/android-safetynet.ts",
+          "specifierRange": [
+            [
+              3,
+              35
+            ],
+            [
+              3,
+              76
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./defaultRootCerts/android-key.ts",
+          "specifierRange": [
+            [
+              9,
+              7
+            ],
+            [
+              9,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./defaultRootCerts/apple.ts",
+          "specifierRange": [
+            [
+              10,
+              39
+            ],
+            [
+              10,
+              68
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./defaultRootCerts/mds.ts",
+          "specifierRange": [
+            [
+              11,
+              38
+            ],
+            [
+              11,
+              65
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCrypto/verifyEC2.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../cose.ts",
+          "specifierRange": [
+            [
+              0,
+              61
+            ],
+            [
+              0,
+              76
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./mapCoseAlgToWebCryptoAlg.ts",
+          "specifierRange": [
+            [
+              1,
+              41
+            ],
+            [
+              1,
+              72
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./importKey.ts",
+          "specifierRange": [
+            [
+              2,
+              26
+            ],
+            [
+              2,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../index.ts",
+          "specifierRange": [
+            [
+              3,
+              29
+            ],
+            [
+              3,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./structs.ts",
+          "specifierRange": [
+            [
+              4,
+              32
+            ],
+            [
+              4,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./getWebCrypto.ts",
+          "specifierRange": [
+            [
+              5,
+              29
+            ],
+            [
+              5,
+              48
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/convertX509PublicKeyToCOSE.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-schema@^2.3.8",
+          "specifierRange": [
+            [
+              0,
+              26
+            ],
+            [
+              0,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-x509@^2.3.8",
+          "specifierRange": [
+            [
+              1,
+              28
+            ],
+            [
+              1,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-ecc@^2.3.8",
+          "specifierRange": [
+            [
+              2,
+              73
+            ],
+            [
+              2,
+              104
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./cose.ts",
+          "specifierRange": [
+            [
+              10,
+              7
+            ],
+            [
+              10,
+              18
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-rsa@^2.3.8",
+          "specifierRange": [
+            [
+              11,
+              29
+            ],
+            [
+              11,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./mapX509SignatureAlgToCOSEAlg.ts",
+          "specifierRange": [
+            [
+              13,
+              45
+            ],
+            [
+              13,
+              80
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/registration/verifications/verifyAttestationAndroidSafetyNet.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../verifyRegistrationResponse.ts",
+          "specifierRange": [
+            [
+              0,
+              51
+            ],
+            [
+              0,
+              85
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/toHash.ts",
+          "specifierRange": [
+            [
+              2,
+              23
+            ],
+            [
+              2,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/verifySignature.ts",
+          "specifierRange": [
+            [
+              3,
+              32
+            ],
+            [
+              3,
+              66
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/getCertificateInfo.ts",
+          "specifierRange": [
+            [
+              4,
+              35
+            ],
+            [
+              4,
+              72
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/validateCertificatePath.ts",
+          "specifierRange": [
+            [
+              5,
+              40
+            ],
+            [
+              5,
+              82
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/convertCertBufferToPEM.ts",
+          "specifierRange": [
+            [
+              6,
+              39
+            ],
+            [
+              6,
+              80
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              7,
+              44
+            ],
+            [
+              7,
+              72
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../services/metadataService.ts",
+          "specifierRange": [
+            [
+              8,
+              32
+            ],
+            [
+              8,
+              67
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../metadata/verifyAttestationWithMetadata.ts",
+          "specifierRange": [
+            [
+              9,
+              46
+            ],
+            [
+              9,
+              95
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/authentication/generateAuthenticationOptions.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              5,
+              7
+            ],
+            [
+              5,
+              26
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              6,
+              44
+            ],
+            [
+              6,
+              69
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/generateChallenge.ts",
+          "specifierRange": [
+            [
+              7,
+              34
+            ],
+            [
+              7,
+              67
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/fetch.ts": {},
+    "/src/helpers/validateExtFIDOGenCEAAGUID.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-schema@^2.3.8",
+          "specifierRange": [
+            [
+              0,
+              39
+            ],
+            [
+              0,
+              73
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-x509@^2.3.8",
+          "specifierRange": [
+            [
+              1,
+              27
+            ],
+            [
+              1,
+              59
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              3,
+              30
+            ],
+            [
+              3,
+              46
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/cose.ts": {},
+    "/src/helpers/iso/isoCrypto/mapCoseAlgToWebCryptoAlg.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./structs.ts",
+          "specifierRange": [
+            [
+              0,
+              32
+            ],
+            [
+              0,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../cose.ts",
+          "specifierRange": [
+            [
+              1,
+              24
+            ],
+            [
+              1,
+              39
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCrypto/verifyRSA.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../cose.ts",
+          "specifierRange": [
+            [
+              0,
+              63
+            ],
+            [
+              0,
+              78
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./mapCoseAlgToWebCryptoAlg.ts",
+          "specifierRange": [
+            [
+              1,
+              41
+            ],
+            [
+              1,
+              72
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./importKey.ts",
+          "specifierRange": [
+            [
+              2,
+              26
+            ],
+            [
+              2,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../index.ts",
+          "specifierRange": [
+            [
+              3,
+              29
+            ],
+            [
+              3,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./mapCoseAlgToWebCryptoKeyAlgName.ts",
+          "specifierRange": [
+            [
+              4,
+              48
+            ],
+            [
+              4,
+              86
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./getWebCrypto.ts",
+          "specifierRange": [
+            [
+              5,
+              29
+            ],
+            [
+              5,
+              48
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/registration/verifications/verifyAttestationFIDOU2F.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../verifyRegistrationResponse.ts",
+          "specifierRange": [
+            [
+              0,
+              51
+            ],
+            [
+              0,
+              85
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/convertCOSEtoPKCS.ts",
+          "specifierRange": [
+            [
+              2,
+              34
+            ],
+            [
+              2,
+              70
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/convertCertBufferToPEM.ts",
+          "specifierRange": [
+            [
+              3,
+              39
+            ],
+            [
+              3,
+              80
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/validateCertificatePath.ts",
+          "specifierRange": [
+            [
+              4,
+              40
+            ],
+            [
+              4,
+              82
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/verifySignature.ts",
+          "specifierRange": [
+            [
+              5,
+              32
+            ],
+            [
+              5,
+              66
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              6,
+              30
+            ],
+            [
+              6,
+              58
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../helpers/cose.ts",
+          "specifierRange": [
+            [
+              7,
+              24
+            ],
+            [
+              7,
+              47
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/services/defaultRootCerts/mds.ts": {},
+    "/src/registration/verifications/tpm/parseCertInfo.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./constants.ts",
+          "specifierRange": [
+            [
+              0,
+              32
+            ],
+            [
+              0,
+              48
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              1,
+              30
+            ],
+            [
+              1,
+              61
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/parseBackupFlags.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              0,
+              42
+            ],
+            [
+              0,
+              61
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/services/defaultRootCerts/android-key.ts": {},
+    "/src/helpers/iso/isoCrypto/digest.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../cose.ts",
+          "specifierRange": [
+            [
+              0,
+              24
+            ],
+            [
+              0,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./mapCoseAlgToWebCryptoAlg.ts",
+          "specifierRange": [
+            [
+              1,
+              41
+            ],
+            [
+              1,
+              72
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./getWebCrypto.ts",
+          "specifierRange": [
+            [
+              2,
+              29
+            ],
+            [
+              2,
+              48
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/types/index.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./dom.ts",
+          "specifierRange": [
+            [
+              27,
+              7
+            ],
+            [
+              27,
+              17
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "exportType",
+          "specifier": "./dom.ts",
+          "specifierRange": [
+            [
+              49,
+              7
+            ],
+            [
+              49,
+              17
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/mapX509SignatureAlgToCOSEAlg.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./cose.ts",
+          "specifierRange": [
+            [
+              0,
+              24
+            ],
+            [
+              0,
+              35
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/index.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./convertAAGUIDToString.ts",
+          "specifierRange": [
+            [
+              0,
+              14
+            ],
+            [
+              0,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./convertCertBufferToPEM.ts",
+          "specifierRange": [
+            [
+              1,
+              14
+            ],
+            [
+              1,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./convertCOSEtoPKCS.ts",
+          "specifierRange": [
+            [
+              2,
+              14
+            ],
+            [
+              2,
+              38
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./decodeAttestationObject.ts",
+          "specifierRange": [
+            [
+              3,
+              14
+            ],
+            [
+              3,
+              44
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./decodeClientDataJSON.ts",
+          "specifierRange": [
+            [
+              4,
+              14
+            ],
+            [
+              4,
+              41
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./decodeCredentialPublicKey.ts",
+          "specifierRange": [
+            [
+              5,
+              14
+            ],
+            [
+              5,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./generateChallenge.ts",
+          "specifierRange": [
+            [
+              6,
+              14
+            ],
+            [
+              6,
+              38
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./generateUserID.ts",
+          "specifierRange": [
+            [
+              7,
+              14
+            ],
+            [
+              7,
+              35
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./getCertificateInfo.ts",
+          "specifierRange": [
+            [
+              8,
+              14
+            ],
+            [
+              8,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./isCertRevoked.ts",
+          "specifierRange": [
+            [
+              9,
+              14
+            ],
+            [
+              9,
+              34
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./parseAuthenticatorData.ts",
+          "specifierRange": [
+            [
+              10,
+              14
+            ],
+            [
+              10,
+              43
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./toHash.ts",
+          "specifierRange": [
+            [
+              11,
+              14
+            ],
+            [
+              11,
+              27
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./validateCertificatePath.ts",
+          "specifierRange": [
+            [
+              12,
+              14
+            ],
+            [
+              12,
+              44
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./verifySignature.ts",
+          "specifierRange": [
+            [
+              13,
+              14
+            ],
+            [
+              13,
+              36
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              14,
+              14
+            ],
+            [
+              14,
+              30
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "export",
+          "specifier": "./cose.ts",
+          "specifierRange": [
+            [
+              15,
+              22
+            ],
+            [
+              15,
+              33
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/registration/verifications/tpm/verifyAttestationTPM.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-schema@^2.3.8",
+          "specifierRange": [
+            [
+              0,
+              26
+            ],
+            [
+              0,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-x509@^2.3.8",
+          "specifierRange": [
+            [
+              8,
+              7
+            ],
+            [
+              8,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../../verifyRegistrationResponse.ts",
+          "specifierRange": [
+            [
+              10,
+              51
+            ],
+            [
+              10,
+              88
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/decodeCredentialPublicKey.ts",
+          "specifierRange": [
+            [
+              11,
+              42
+            ],
+            [
+              11,
+              89
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/cose.ts",
+          "specifierRange": [
+            [
+              18,
+              7
+            ],
+            [
+              18,
+              33
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/toHash.ts",
+          "specifierRange": [
+            [
+              19,
+              23
+            ],
+            [
+              19,
+              51
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/convertCertBufferToPEM.ts",
+          "specifierRange": [
+            [
+              20,
+              39
+            ],
+            [
+              20,
+              83
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/validateCertificatePath.ts",
+          "specifierRange": [
+            [
+              21,
+              40
+            ],
+            [
+              21,
+              85
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/getCertificateInfo.ts",
+          "specifierRange": [
+            [
+              22,
+              35
+            ],
+            [
+              22,
+              75
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/verifySignature.ts",
+          "specifierRange": [
+            [
+              23,
+              32
+            ],
+            [
+              23,
+              69
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              24,
+              30
+            ],
+            [
+              24,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../helpers/validateExtFIDOGenCEAAGUID.ts",
+          "specifierRange": [
+            [
+              25,
+              43
+            ],
+            [
+              25,
+              91
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../services/metadataService.ts",
+          "specifierRange": [
+            [
+              26,
+              32
+            ],
+            [
+              26,
+              70
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../../metadata/verifyAttestationWithMetadata.ts",
+          "specifierRange": [
+            [
+              27,
+              46
+            ],
+            [
+              27,
+              98
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./constants.ts",
+          "specifierRange": [
+            [
+              29,
+              62
+            ],
+            [
+              29,
+              78
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./parseCertInfo.ts",
+          "specifierRange": [
+            [
+              30,
+              30
+            ],
+            [
+              30,
+              50
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./parsePubArea.ts",
+          "specifierRange": [
+            [
+              31,
+              29
+            ],
+            [
+              31,
+              48
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/generateUserID.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              0,
+              26
+            ],
+            [
+              0,
+              42
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/convertCertBufferToPEM.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              0,
+              37
+            ],
+            [
+              0,
+              56
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              1,
+              29
+            ],
+            [
+              1,
+              45
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCrypto/unwrapEC2Signature.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-schema@^2.3.8",
+          "specifierRange": [
+            [
+              0,
+              26
+            ],
+            [
+              0,
+              60
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "npm:@peculiar/asn1-ecc@^2.3.8",
+          "specifierRange": [
+            [
+              1,
+              30
+            ],
+            [
+              1,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../cose.ts",
+          "specifierRange": [
+            [
+              3,
+              24
+            ],
+            [
+              3,
+              39
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../index.ts",
+          "specifierRange": [
+            [
+              4,
+              30
+            ],
+            [
+              4,
+              43
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/iso/isoCrypto/verifyOKP.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../cose.ts",
+          "specifierRange": [
+            [
+              0,
+              63
+            ],
+            [
+              0,
+              78
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../../index.ts",
+          "specifierRange": [
+            [
+              1,
+              29
+            ],
+            [
+              1,
+              45
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./structs.ts",
+          "specifierRange": [
+            [
+              2,
+              32
+            ],
+            [
+              2,
+              46
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./importKey.ts",
+          "specifierRange": [
+            [
+              3,
+              26
+            ],
+            [
+              3,
+              42
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./getWebCrypto.ts",
+          "specifierRange": [
+            [
+              4,
+              29
+            ],
+            [
+              4,
+              48
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/helpers/convertCOSEtoPKCS.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./iso/index.ts",
+          "specifierRange": [
+            [
+              0,
+              39
+            ],
+            [
+              0,
+              55
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "./cose.ts",
+          "specifierRange": [
+            [
+              1,
+              43
+            ],
+            [
+              1,
+              54
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/metadata/verifyAttestationWithMetadata.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              0,
+              37
+            ],
+            [
+              0,
+              56
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "./mdsTypes.ts",
+          "specifierRange": [
+            [
+              1,
+              48
+            ],
+            [
+              1,
+              63
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/convertCertBufferToPEM.ts",
+          "specifierRange": [
+            [
+              2,
+              39
+            ],
+            [
+              2,
+              77
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/validateCertificatePath.ts",
+          "specifierRange": [
+            [
+              3,
+              40
+            ],
+            [
+              3,
+              79
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/decodeCredentialPublicKey.ts",
+          "specifierRange": [
+            [
+              4,
+              42
+            ],
+            [
+              4,
+              83
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/cose.ts",
+          "specifierRange": [
+            [
+              11,
+              7
+            ],
+            [
+              11,
+              27
+            ]
+          ]
+        }
+      ]
+    },
+    "/src/registration/generateRegistrationOptions.ts": {
+      "dependencies": [
+        {
+          "type": "static",
+          "kind": "importType",
+          "specifier": "../types/index.ts",
+          "specifierRange": [
+            [
+              9,
+              7
+            ],
+            [
+              9,
+              26
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/generateChallenge.ts",
+          "specifierRange": [
+            [
+              10,
+              34
+            ],
+            [
+              10,
+              67
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/generateUserID.ts",
+          "specifierRange": [
+            [
+              11,
+              31
+            ],
+            [
+              11,
+              61
+            ]
+          ]
+        },
+        {
+          "type": "static",
+          "kind": "import",
+          "specifier": "../helpers/iso/index.ts",
+          "specifierRange": [
+            [
+              12,
+              44
+            ],
+            [
+              12,
+              69
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./helpers": "./src/helpers/index.ts"
+  }
+}
