@@ -1,0 +1,22 @@
+# Exclude static assets to keep flake size small
+static/**
+
+# Exclude build artifacts
+build/**
+static/build/**
+
+# Exclude temporary files
+tmp/**
+
+# Other large files not required for Nix builds
+# Pre-built Deno archive
+deno.zip
+# Generated icons and attached assets
+generated-icon.png
+attached_assets/**
+
+# Local caches and node modules not needed in the flake
+.cache
+.local
+node_modules
+vendor
