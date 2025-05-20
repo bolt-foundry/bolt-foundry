@@ -64,9 +64,12 @@ export interface GqlRelationDef {
 /**
  * Mutation definition from the GQL spec
  */
+// Import ReturnSpec for proper typing
+import type { ReturnSpec } from "../makeReturnsBuilder.ts";
+
 export interface GqlMutationDef {
   returnsType?: string;
-  returnsSpec?: unknown;
+  returnsSpec?: ReturnSpec;
   description?: string;
   args?: Record<string, unknown>;
   resolve?: GqlFieldResolver;

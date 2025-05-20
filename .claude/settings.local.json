@@ -55,7 +55,10 @@
       "Bash(mkdir:*)",
       "Bash(./apps/bfDb/builders/graphql/__tests__/interfaceDetection.test.ts --no-check)",
       "Bash(./apps/bfDb/bin/__tests__/genInterfaceBarrel.test.ts --no-check)",
-      "Bash(./apps/bfDb/graphql/__tests__/LoadInterfaces.test.ts --no-check)"
+      "Bash(./apps/bfDb/graphql/__tests__/LoadInterfaces.test.ts --no-check)",
+      "Bash(bff t:*)",
+      "Bash(sed:*)",
+      "Bash(bff:*)"
     ],
     "deny": []
   }
