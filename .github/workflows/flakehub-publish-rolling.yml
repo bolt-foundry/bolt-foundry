@@ -31,11 +31,54 @@ jobs:
 
       - uses: DeterminateSystems/flakehub-cache-action@main
 
+      # Remove large files before build
+      - name: Remove large files
+        run: |
+          # Remove large media files before building
+          rm -rf static/assets/videos
+          rm -rf static/assets/images
+          
+          # Check size after removal
+          echo "Repository size after removal:"
+          du -sh .
+
       # build whatever you want cached
       - run: nix develop .#devShells.x86_64-linux.default -c true
 
+      # Create a lightweight export without large assets
+      - name: Prepare repository for FlakeHub
+        run: |
+          # Display initial size
+          echo "Initial repository size:"
+          du -sh .
+
+          # Create a temporary directory for the cleaned version
+          mkdir -p /tmp/flake-clean
+
+          # Use git archive to create a clean export without large files
+          git archive --format=tar HEAD | tar -x -C /tmp/flake-clean
+
+          # Remove large files from the exported repository
+          rm -rf /tmp/flake-clean/static/assets/videos
+          rm -rf /tmp/flake-clean/static/assets/images
+          find /tmp/flake-clean -name "*.mp4" -delete
+          find /tmp/flake-clean -name "*.jpg" -delete
+          find /tmp/flake-clean -name "*.png" -delete
+
+          # Check the size of the cleaned repository
+          echo "Size after cleaning:"
+          du -sh /tmp/flake-clean
+
+          # List any remaining large files
+          echo "Remaining large files:"
+          find /tmp/flake-clean -type f -size +5M | xargs du -sh 2>/dev/null | sort -rh | head -10 || echo "No large files found"
+
+          # Copy the flake.nix and flake.lock to ensure they're present
+          cp flake.nix flake.lock /tmp/flake-clean/
+
+      # Push the cleaned repository to FlakeHub
       - uses: DeterminateSystems/flakehub-push@v2
         with:
           rolling: true
           visibility: public
-          include-output-paths: ${{ github.event.inputs.include_outputs }}
+          directory: "/tmp/flake-clean"
