@@ -20,12 +20,51 @@ The backlog serves several important functions:
 4. **Institutional Knowledge**: Preserves context and reasoning around potential
    future work
 
-## Where to Store Backlog Documentation
+## Backlog Organization Approaches
 
-Backlog documentation should be integrated into the existing documentation
-structure:
+There are two main ways to organize backlog items depending on their complexity
+and documentation needs:
 
-### Project-Level Backlog
+### 1. Simple Backlog Lists
+
+For straightforward items that can be documented in a single file:
+
+```
+apps/[project]/docs/backlog.md
+```
+
+### 2. Feature-Focused Backlog Structure
+
+For more complex features that require multiple related documents (project
+plans, implementation plans, research, etc.):
+
+```
+docs/backlog/
+├── README.md                    (Structure explanation)
+├── feature-name/                (Directory for a specific feature)
+│   ├── project-plan.md          (User-focused goals and vision)
+│   ├── implementation-plan.md   (Technical approach and strategy)
+│   └── supporting-docs/         (Research, diagrams, etc.)
+├── another-feature/
+│   ├── project-plan.md
+│   └── implementation-plan.md
+└── ...
+```
+
+#### When to Use Feature Directories
+
+Use the feature directory structure when:
+
+1. A potential feature requires detailed planning before it can be considered
+   for the roadmap
+2. Multiple related documents are needed to fully describe the feature
+3. The feature might be complex enough to warrant versioned implementation plans
+4. Collaborative discussion and iteration on the feature design is expected
+
+See [the backlog README.md](/docs/backlog/README.md) for more details on this
+approach.
+
+### 3. Project-Level Backlog
 
 For broad backlog items that aren't specific to a particular version:
 
@@ -36,7 +75,7 @@ apps/[project]/docs/backlog/
   └── technical-debt.md   (Code quality improvements)
 ```
 
-### Version-Specific Deferred Items
+### 4. Version-Specific Deferred Items
 
 For items that were considered for a specific version but deferred:
 
