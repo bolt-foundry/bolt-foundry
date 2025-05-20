@@ -1,19 +1,39 @@
-# .github/workflows/flakehub-publish-rolling.yml
-name: Publish every push to main to FlakeHub
+# .github/workflows/flakehub-ci.yml
+name: CI + FlakeHub
+
 on:
-  push:
+  push: # keeps the automatic path
     branches: [main]
+  workflow_dispatch: # <-- this enables the Run-button
+    inputs: # (optional) pass parameters at run-time
+      ref:
+        description: "Branch or tag to build"
+        required: false
+        default: "main"
+      include_outputs:
+        description: "Upload realised store paths?"
+        type: boolean
+        default: false
 
 jobs:
-  flakehub:
+  build:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write # OIDC token for FlakeHub auth
+      id-token: write
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@v3
-      - uses: DeterminateSystems/flakehub-push@main
         with:
-          rolling: true # or omit for tagged-only
-          visibility: public # public | private | unlisted
+          ref: ${{ github.event.inputs.ref || 'main' }}
+
+      - uses: DeterminateSystems/nix-installer-action@v3
+      - uses: DeterminateSystems/flakehub-cache-action@v1
+
+      # build whatever you want cached
+      - run: nix build .#packages.x86_64-linux.default
+
+      - uses: DeterminateSystems/flakehub-push@v2
+        with:
+          rolling: true
+          visibility: public
+          include-output-paths: ${{ github.event.inputs.include_outputs }}
