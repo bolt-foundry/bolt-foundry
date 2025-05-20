@@ -1,19 +1,25 @@
-# .github/workflows/flakehub-publish-rolling.yml
-name: Publish every push to main to FlakeHub
-on:
-  push:
-    branches: [main]
+# .github/workflows/ci.yml
+name: CI + FlakeHub Cache
+on: [push, pull_request]
 
 jobs:
-  flakehub:
+  build:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write # OIDC token for FlakeHub auth
+      id-token: write # <- gives the action an OIDC token for FlakeHub
       contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@v3
-      - uses: DeterminateSystems/flakehub-push@main
+
+      # 🆕 1-liner that enables the binary cache
+      - uses: DeterminateSystems/flakehub-cache-action@v1
+
+      # (optional) build something – every result is now cached
+      # - run: nix build .#packages.x86_64-linux.default
+
+      # still publish your flake as usual
+      - uses: DeterminateSystems/flakehub-push@v2
         with:
-          rolling: true # or omit for tagged-only
-          visibility: public # public | private | unlisted
+          rolling: true # or omit for tag-only
+          visibility: public
