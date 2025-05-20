@@ -3,19 +3,8 @@
 ### Do not make changes to this file directly
 
 
-type JoinWaitlistPayload {
-  message: String
-  success: Boolean!
-}
+type Mutation
 
-type Mutation {
-  joinWaitlist(company: String!, email: String!, name: String!): JoinWaitlistPayload
-}
+type Query
 
-type Query {
-  ok: Boolean
-}
-
-type Waitlist {
-  id: ID
-}
+type Waitlist
