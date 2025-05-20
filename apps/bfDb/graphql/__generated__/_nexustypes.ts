@@ -53,6 +53,7 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
+  BfNode: any;
   Node: any;
 }
 
@@ -77,6 +78,9 @@ export interface NexusGenFieldTypes {
   Waitlist: { // field return type
     id: string | null; // ID
   }
+  BfNode: { // field return type
+    id: string; // ID!
+  }
   Node: { // field return type
     id: string; // ID!
   }
@@ -94,6 +98,9 @@ export interface NexusGenFieldTypeNames {
     ok: 'Boolean'
   }
   Waitlist: { // field return type name
+    id: 'ID'
+  }
+  BfNode: { // field return type name
     id: 'ID'
   }
   Node: { // field return type name
@@ -131,7 +138,7 @@ export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "Node";
+export type NexusGenAbstractsUsingStrategyResolveType = "BfNode" | "Node";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

@@ -5,3 +5,4 @@ export * from "apps/bfDb/classes/BfErrorDb.ts";
 export * from "apps/bfDb/classes/BfErrorsBfNode.ts";
 export * from "apps/bfDb/classes/BfNode.ts";
 export * from "apps/bfDb/classes/CurrentViewer.ts";
+export * from "apps/bfDb/classes/GraphQLNode.ts";

@@ -47,13 +47,19 @@ properly registered and loaded in the schema.
   AnyGraphqlObjectBaseCtor
 - ✅ Interface Testing: Added tests for GraphQLNode and interface implementation
 
-## Current Work (v0.3 - Interface Loading)
+## Current Work (v0.3 - Interface Detection & Loading)
 
-We're now focusing on improving the GraphQL interface registration:
+We're implementing decorator-based interface detection and improved loading:
 
-1. Ensure genBarrel.ts includes GraphQL interfaces
-2. Verify the interfacesList.ts barrel file contains all interfaces
-3. Ensure loadGqlTypes.ts correctly uses the interfaces from the barrel file
+1. ✅ Create GraphQLInterface decorator for marking interface classes
+2. ✅ Update genBarrel.ts to scan for @GraphQLInterface decorator in files
+3. ✅ Verify the interfacesList.ts barrel file correctly contains decorated
+   interfaces
+4. ✅ Ensure loadInterfaces.ts properly registers decorated interfaces in the
+   schema
+5. ✅ Update tests to verify decorator-based interface detection works correctly
+6. Implement more robust detection of interface implementations in GraphQL
+   objects
 
 ## Deferred to v0.4
 
