@@ -171,51 +171,41 @@ Deno.test("GraphQL schema includes all interfaces with correct fields", () => {
   );
 });
 
-// This test checks the new directory structure implementation
-Deno.test("Interfaces are properly organized in the dedicated interfaces directory", () => {
-  // This test will fail until the interfaces directory is created and interfaces are moved there
-  // We'll check if the interfaces directory exists
+// We're using decorator-based detection rather than a dedicated interfaces directory
+Deno.test("Interfaces are properly detected using @GraphQLInterface decorator", () => {
+  // Check that our classes with @GraphQLInterface are properly detected
+  const interfaces = loadInterfaces();
+  const interfaceNames = interfaces.map((i) => i.name);
 
-  // Import from the new location - this will throw if the file doesn't exist
-  try {
-    // This import should work after interfaces are moved to the new directory
-    import("apps/bfDb/graphql/interfaces/GraphQLNode.ts");
-
-    // If we get here, the import worked
-    assert(true, "GraphQLNode.ts exists in the interfaces directory");
-  } catch (_e) {
-    // This is expected to fail initially, creating a "red" test
-    throw new Error(
-      "GraphQLNode.ts should be in the interfaces directory. " +
-        "Create the directory apps/bfDb/graphql/interfaces/ and move GraphQLNode.ts there.",
-    );
-  }
+  // We should at least find these in the interfaces
+  assert(interfaceNames.includes("Node"), "Node interface should be detected");
+  assert(
+    interfaceNames.includes("BfNode"),
+    "BfNode interface should be detected",
+  );
 });
 
-// Test for proper barrel file generation with interfaces directory
-Deno.test("genBarrel configuration includes interfaces directory", async () => {
-  // This is a scaffolding test that will fail until the barrel config is updated
-
+// Test for proper barrel file generation with decorator detection
+Deno.test("genBarrel configuration detects @GraphQLInterface decorated classes", async () => {
   try {
     // Read and parse the genBarrel.ts file to check configuration
-    const genBarrelContent = await Deno.readTextFile(
-      "/home/runner/workspace/apps/bfDb/bin/genBarrel.ts",
+    const genBarrelPath = new URL(
+      import.meta.resolve("apps/bfDb/bin/genBarrel.ts"),
     );
+    const genBarrelContent = await Deno.readTextFile(genBarrelPath);
 
-    // Check if it contains the interfaces directory configuration
-    const hasInterfacesConfig =
-      genBarrelContent.includes("../graphql/interfaces/") &&
+    // Check if it contains the decorator detection logic
+    const hasDecoratorDetection =
+      genBarrelContent.includes("@GraphQLInterface") &&
       genBarrelContent.includes("interfacesList.ts");
 
     assert(
-      hasInterfacesConfig,
-      "genBarrel.ts should have configuration for the interfaces directory",
+      hasDecoratorDetection,
+      "genBarrel.ts should have configuration for detecting @GraphQLInterface decorator",
     );
   } catch (_e) {
-    // This is expected to fail initially, creating a "red" test
     throw new Error(
-      "genBarrel.ts should be updated to include the interfaces directory in barrel generation. " +
-        "Add a configuration for apps/bfDb/graphql/interfaces/ that outputs to interfacesList.ts",
+      "genBarrel.ts should include logic to detect @GraphQLInterface decorator in files",
     );
   }
 });

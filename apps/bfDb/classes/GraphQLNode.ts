@@ -1,6 +1,6 @@
-import { GraphQLObjectBase } from "../GraphQLObjectBase.ts";
-import type { GqlNodeSpec } from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
-import { GraphQLInterface } from "../decorators.ts";
+import { GraphQLObjectBase } from "../graphql/GraphQLObjectBase.ts";
+import type { GqlNodeSpec } from "../builders/graphql/makeGqlSpec.ts";
+import { GraphQLInterface } from "../graphql/decorators.ts";
 
 /**
  * Base class for all GraphQL nodes that implement the Node interface.
