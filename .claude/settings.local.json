@@ -44,7 +44,9 @@
       "Bash(ls:*)",
       "Bash(apps/bfDb/bin/genBarrel.ts)",
       "Bash(./apps/bfDb/graphql/graphqlServer.ts)",
-      "Bash(deno check:*)"
+      "Bash(deno check:*)",
+      "Bash(chmod:*)",
+      "Bash(./apps/bfDb/graphql/__tests__/GraphQLNode.test.ts)"
     ],
     "deny": []
   }

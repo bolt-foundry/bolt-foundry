@@ -27,11 +27,12 @@ files for automatically registering interface implementations.
 
 ## Approach
 
-1. **Generated Registry**: Implement an automatic interface registry using generated files
-   in the `__generated__` directory
-2. **Class Hierarchy**: Create the GraphQLNode class alongside other interface types
-3. **Auto-Registration**: Implement a generation step for creating interface registry files
-   during build
+1. **Generated Registry**: Implement an automatic interface registry using
+   generated files in the `__generated__` directory
+2. **Class Hierarchy**: Create the GraphQLNode class alongside other interface
+   types
+3. **Auto-Registration**: Implement a generation step for creating interface
+   registry files during build
 4. **Schema Integration**: Update gqlSpecToNexus.ts to detect interface
    implementations through the prototype chain
 5. **Inheritance Refactoring**: Update BfNode to extend GraphQLNode
@@ -79,7 +80,8 @@ files for automatically registering interface implementations.
 
 ### Generated Interface Registry
 
-We'll follow the existing project convention using generated registry files in `__generated__` folders:
+We'll follow the existing project convention using generated registry files in
+`__generated__` folders:
 
 ```
 apps/bfDb/
@@ -94,6 +96,7 @@ apps/bfDb/
 ```
 
 This structure:
+
 - Maintains consistency with existing project conventions
 - Places interfaces next to related implementations
 - Keeps generated code separate in `__generated__` directories
@@ -160,20 +163,20 @@ We'll modify loadGqlTypes.ts to import from the generated registry files:
 
 ```typescript
 // In loadGqlTypes.ts
-import * as interfaceTypes from './__generated__/graphqlInterfaces.ts';
-import * as nodeTypes from './__generated__/nodeTypesList.ts';
+import * as interfaceTypes from "./__generated__/graphqlInterfaces.ts";
+import * as nodeTypes from "./__generated__/nodeTypesList.ts";
 
 export function loadGqlTypes() {
   const types = [];
-  
+
   // Get all interface types from the barrel
   const graphqlInterfaces = Object.values(interfaceTypes).filter(
-    val => typeof val === 'function' && val.prototype
+    (val) => typeof val === "function" && val.prototype,
   );
-  
+
   // Get all node types from the barrel
   const objectTypes = Object.values(nodeTypes).filter(
-    val => typeof val === 'function' && val.prototype
+    (val) => typeof val === "function" && val.prototype,
   );
 
   // Register interfaces first
@@ -298,7 +301,8 @@ export abstract class BfNode extends GraphQLNode {
 
 ## Success Metrics
 
-- GraphQLNode class is properly implemented and included in the interface registry
+- GraphQLNode class is properly implemented and included in the interface
+  registry
 - Generated registry system correctly identifies and registers interfaces
 - BfNode and other classes correctly inherit from GraphQLNode
 - Interface implementations are automatically detected based on class
