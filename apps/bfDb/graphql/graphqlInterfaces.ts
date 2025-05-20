@@ -107,14 +107,25 @@ export function loadInterfaces() {
   const interfaces = [];
   const interfaceNames = new Set(); // Track which interfaces we've already added
 
+  logger.debug("Starting interface loading from barrel file");
+  logger.debug(
+    `Interface classes found: ${Object.keys(interfaceClasses).length}`,
+  );
+
   // Process all interfaces from the barrel file
-  for (const [_name, interfaceClass] of Object.entries(interfaceClasses)) {
+  for (const [exportName, interfaceClass] of Object.entries(interfaceClasses)) {
+    logger.debug(
+      `Processing export: ${exportName}, type: ${typeof interfaceClass}`,
+    );
+
     if (
       typeof interfaceClass === "function" && isGraphQLInterface(interfaceClass)
     ) {
       // Get interface metadata to get the actual interface name
       const metadata = getGraphQLInterfaceMetadata(interfaceClass);
       const interfaceName = metadata?.name || String(interfaceClass);
+
+      logger.debug(`Found interface: ${interfaceName} (from ${exportName})`);
 
       // Skip if we've already processed this interface
       if (interfaceNames.has(interfaceName)) {
@@ -124,15 +135,25 @@ export function loadInterfaces() {
 
       const interfaceDef = createInterfaceFromClass(interfaceClass);
       if (interfaceDef) {
-        logger.debug(`Adding interface: ${interfaceName}`);
+        logger.debug(`Adding interface: ${interfaceName} to schema`);
         interfaces.push(interfaceDef);
         interfaceNames.add(interfaceName);
+      } else {
+        logger.warn(
+          `Failed to create interface definition for ${interfaceName}`,
+        );
       }
+    } else {
+      logger.debug(`Skipping non-interface export: ${exportName}`);
     }
   }
 
-  // In the future, we can scan for and add more @GraphQLInterface classes here
-  // For now, we'll just manually list the ones we know about
+  logger.debug(`Total interfaces loaded: ${interfaces.length}`);
+  if (interfaces.length > 0) {
+    logger.debug(`Interface names: ${Array.from(interfaceNames).join(", ")}`);
+  } else {
+    logger.warn("No interfaces were loaded, check interface classes import");
+  }
 
   return interfaces;
 }
