@@ -5,7 +5,7 @@
   ## 1. Inputs
   ########################
   inputs = {
-    nixpkgs.url     = "github:NixOS/nixpkgs/26e168479fdc7a75fe55e457e713d8b5f794606a";
+    nixpkgs.url = "github:NixOS/nixpkgs/26e168479fdc7a75fe55e457e713d8b5f794606a";
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/086a1ea6747bb27e0f94709dd26d12d443fa4845";
   };
@@ -20,7 +20,7 @@
       ####################
       mkDeps = { pkgs, system }:
         let
-          unstablePkgs  = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
+          unstablePkgs = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
           lib = pkgs.lib;
         in
         [
@@ -33,8 +33,7 @@
           unstablePkgs.deno
           pkgs.nodejs_20
           pkgs._1password-cli
-        ]
-        ++ lib.optionals (!pkgs.stdenv.isDarwin) [ pkgs.chromium ];
+        ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [ pkgs.chromium ];
     in
 
     ############################################################
@@ -44,16 +43,30 @@
       let
         pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
       in {
+        # Development shell
         devShells.default = pkgs.mkShell {
           buildInputs = mkDeps { inherit pkgs system; };
+        };
+
+        # Default package required by FlakeHub / CI
+        packages.default = pkgs.stdenv.mkDerivation {
+          pname = "bolt-foundry-env";
+          version = "0.1.0";
+
+          dontBuild = true;
+          installPhase = ''
+            mkdir -p $out
+          '';
+
+          # Helpful metadata for anyone querying the build inputs
+          passthru.buildInputs = mkDeps { inherit pkgs system; };
         };
       })
 
     ############################################################
     # 2b. Extra top-level utilities merged in
     ############################################################
-    //
-    {
+    // {
       # Replit (or anything else) can call this with its own ‘pkgs’
       #   The “...” swallows any extra arguments Replit passes.
       replitDeps = { pkgs, system ? builtins.currentSystem, ... }:
