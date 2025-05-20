@@ -64,7 +64,14 @@ this migration.
    - Automatically generated and registered payload types
    - Typed resolver functions based on builder output
 
-6. **Testing**
+6. **Interface Detection for v0.2** ⏱️
+   - Use barrel files for GraphQL interface registration
+   - Organize interfaces and implementations in separate directories with barrel
+     files
+   - Eliminate the need for manual interface registration
+   - Implement auto-loading in loadGqlTypes.ts
+
+7. **Testing**
    - ✅ Initial tests are in place and passing
    - ✓ Deferred to v0.3: Additional unit tests for builder functionality
    - ✓ Deferred to v0.3: Additional tests for Nexus type generation
@@ -202,10 +209,106 @@ interface GqlSpec {
 ## Next Version (v0.2)
 
 - Implement Node interface for all GraphQLObjectBase types:
-  - Create a common "Node" interface definition in the GraphQL schema
-  - Make all GraphQLObjectBase classes implement this interface
-  - Add support in gqlSpecToNexus.ts to register implementations
-  - Include resolveType function for proper interface resolution
+  - Create GraphQLNode class that extends GraphQLObjectBase
+  - Define Node GraphQL interface in the schema
+  - Modify gqlSpecToNexus.ts to automatically detect GraphQLNode types through
+    inheritance patterns
+  - Implement automatic interface detection in loadGqlTypes.ts instead of manual
+    registration
+  - Refactor BfNode to extend GraphQLNode
+  - Add resolveType function for proper interface resolution
+  - Add tests to verify implementation
+
+### Barrel File with Implicit Registration
+
+The interface system will use barrel files and inheritance for automatic
+registration of interfaces and their implementations:
+
+1. Define base interface class:
+   ```typescript
+   // Abstract class that serves as the base for GraphQL interface types
+   export abstract class GraphQLNode extends GraphQLObjectBase {
+     // Required fields and methods for Node interface
+     abstract get id(): string;
+   }
+   ```
+
+2. Create barrel file for interfaces:
+   ```typescript
+   // apps/bfDb/graphql/interfaces/index.ts
+
+   // Export all interface definitions
+   export { GraphQLNode } from "./GraphQLNode";
+
+   // This file can be imported by loadGqlTypes.ts to automatically register all interfaces
+   ```
+
+3. Interface implementations use barrel files:
+   ```typescript
+   // apps/bfDb/graphql/nodeTypes/index.ts
+
+   // Export all node type implementations
+   export { BfPerson } from "./BfPerson";
+   export { BfOrganization } from "./BfOrganization";
+   // Adding a new type only requires adding it to this export list
+   ```
+
+4. Automatic loading in loadGqlTypes.ts:
+   ```typescript
+   // Import all interface definitions and implementations from barrel files
+   import * as interfaces from "../interfaces/index.ts";
+   import * as nodeTypes from "../nodeTypes/index.ts";
+
+   export function loadGqlTypes() {
+     // Get all exported interfaces
+     const interfaceTypes = Object.values(interfaces);
+
+     // Get all node types
+     const objectTypes = Object.values(nodeTypes);
+
+     // Register interfaces first
+     for (const interfaceType of interfaceTypes) {
+       // Register interface with schema
+       registerInterface(interfaceType);
+     }
+
+     // Register object types, checking inheritance for interface implementation
+     for (const objectType of objectTypes) {
+       // Check inheritance chain - if this type extends an interface, register as implementation
+       for (const interfaceType of interfaceTypes) {
+         if (objectType.prototype instanceof interfaceType) {
+           registerImplementation(objectType, interfaceType);
+         }
+       }
+
+       // Register the type with schema
+       registerType(objectType);
+     }
+   }
+   ```
+
+5. Interface definition in schema:
+   ```typescript
+   // Define Node interface in schema
+   export function defineNodeInterface() {
+     return interfaceType({
+       name: "Node",
+       definition(t) {
+         t.id("id", { description: "Unique identifier for the object" });
+         // Add resolveType function to determine concrete type at runtime
+         t.resolveType((obj) => obj.__typename);
+       },
+     });
+   }
+   ```
+
+This approach provides several advantages:
+
+- Simple folder structure with barrel files for auto-registration
+- No manual interface registration required - just export from barrel file
+- Adding new types is as simple as exporting from the barrel file
+- Type safety through inheritance
+- Clear visibility of available interfaces and implementations
 
 ## Future Work (v0.3+)
 
