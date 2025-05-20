@@ -23,17 +23,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - name: Setup Nix caching
+        uses: DeterminateSystems/flakehub-cache-action@main
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org/"
-
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-          cache: true
 
       # Set Deno cache directory
       - name: Set Deno cache directory
@@ -74,8 +75,11 @@ jobs:
 
       - name: Build package
         run: |
-          cd packages/bolt-foundry
-          deno run -A bin/build.ts
+          nix develop . --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"${DENO_DIR}\"
+            cd packages/bolt-foundry
+            deno run -A bin/build.ts
+          "
 
       - name: Publish to npm
         run: |
@@ -86,8 +90,11 @@ jobs:
 
       - name: Publish to JSR
         run: |
-          cd packages/bolt-foundry
-          deno publish --allow-dirty --token ${{ secrets.JSR_TOKEN }}
+          nix develop . --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"${DENO_DIR}\"
+            cd packages/bolt-foundry
+            deno publish --allow-dirty --token ${{ secrets.JSR_TOKEN }}
+          "
         env:
           JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
 
