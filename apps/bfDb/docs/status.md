@@ -1,17 +1,18 @@
 # GraphQL Builder Status
 
-**Current Status:** REFOCUSING
+**Current Status:** IMPLEMENTING v0.3
 
 ## Status Details
 
-The GraphQL Builder project has completed the core implementation of the builder
-pattern and is now refocusing priorities. We've successfully implemented the
-core builder functionality, but are deferring the full migration to v0.3 in
-order to prioritize implementing the GraphQLNode class and Node interface in
-v0.2. This will provide proper GraphQL interface support and improve our class
-hierarchy, which is needed for the Login Integration project.
+The GraphQL Builder project has completed two major milestones: v0.1 (core
+builder implementation) and v0.2 (GraphQLNode class and Node interface
+implementation). We're now focusing on v0.3 to improve the barrel file system
+for automated interface and type registration, which will streamline development
+and reduce manual registration work.
 
-## Current Progress
+## Completed Work
+
+### v0.1 (Core Builder)
 
 - ✅ Core Builder Interface Definition: Completed interface in
   `makeGqlBuilder.ts`
@@ -31,25 +32,33 @@ hierarchy, which is needed for the Login Integration project.
   defineGqlNode method
 - ✅ Dynamic Root Loading: Improved loadGqlTypes.ts to use Object.values for
   automatic root loading
+
+### v0.2 (Node Interface)
+
+- ✅ Create GraphQLNode class that extends GraphQLObjectBase
+- ✅ Define Node GraphQL interface in the schema
+- ✅ Implement decorator-based interface detection
+- ✅ Modify loadGqlTypes.ts to use barrel files for automatic registration
+- ✅ Add resolveType function for interface resolution
+- ✅ Add tests to verify implementation
+- ✅ Refactor BfNode to extend GraphQLNode
 - ✅ Interface Detection: Implemented barrel files for automatic interface
   registration with GraphQLInterface decorator
 - ✅ Type Safety: Improved typing in loadGqlTypes.ts using
   AnyGraphqlObjectBaseCtor
 - ✅ Interface Testing: Added tests for GraphQLNode and interface implementation
-- ⏱️ Validation: Validation against bfNodeSpec.relations pending
 
-## Next Steps (Priority Order)
+## Current Work (v0.3 - Barrel Files)
 
-1. Complete GraphQLNode and Node interface implementation (v0.2):
-   - ✅ Create GraphQLNode class that extends GraphQLObjectBase
-   - ✅ Define Node GraphQL interface in the schema
-   - ✅ Implement decorator-based interface detection
-   - ✅ Modify loadGqlTypes.ts to use barrel files for automatic registration
-   - ✅ Add resolveType function for interface resolution
-   - ✅ Add tests to verify implementation
-   - ⏱️ Refactor BfNode to extend GraphQLNode
+We're now focusing on improving the barrel file system for automated type
+registration:
 
-## Deferred to v0.3
+1. Enhance the barrel file generation system
+2. Improve the automatic interface and type detection
+3. Create consistent patterns for registration across different entity types
+4. Add validation capabilities in the barrel generation process
+
+## Deferred to v0.4
 
 1. Complete the migration of remaining nodes to the new builder pattern
 2. Add support for additional edge relationship patterns (target→source,
@@ -58,6 +67,7 @@ hierarchy, which is needed for the Login Integration project.
 4. Remove legacy builders completely
 5. Add Relay-style connections with pagination support
 6. Implement validation against bfNodeSpec.relations
+7. ⏱️ Validation: Validation against bfNodeSpec.relations pending
 
 ## Blocking Issues
 
@@ -68,5 +78,8 @@ The incomplete GraphQL Builder is currently blocking:
 
 ## References
 
-For questions regarding implementation details, refer to the
-[Implementation Plan](/apps/bfDb/docs/0.1/implementation-plan.md).
+For questions regarding implementation details, refer to the implementation
+plans:
+
+- [v0.1 Implementation Plan](/apps/bfDb/docs/0.1/implementation-plan.md)
+- [v0.2 Implementation Plan](/apps/bfDb/docs/0.2/implementation-plan.md)
