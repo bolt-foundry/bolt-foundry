@@ -20,6 +20,14 @@ import type {
   GqlRelationDef,
   GraphQLRootObject,
 } from "./types/nexusTypes.ts";
+import {
+  getGraphQLInterfaceMetadata,
+  isGraphQLInterface,
+} from "apps/bfDb/graphql/decorators.ts";
+
+// Logger for this module
+// Using underscore prefix for linter to ignore if unused
+const _logger = getLogger(import.meta);
 
 type MaybePromise<T> = T | Promise<T>;
 
@@ -310,10 +318,104 @@ function createDefaultMutationResolver(mutationName: string) {
  * @param typeName The name of the GraphQL type
  * @returns Nexus compatible type definitions for main type and mutation type
  */
-export function gqlSpecToNexus(spec: GqlNodeSpec, typeName: string) {
+/**
+ * Interface implementation options for gqlSpecToNexus
+ */
+export interface GqlSpecToNexusOptions {
+  /** List of interfaces this type implements (manually specified) */
+  interfaces?: string[];
+
+  /**
+   * The class constructor for the type
+   * Used to check for @GraphQLInterface decorator on parent classes
+   */
+  // deno-lint-ignore no-explicit-any
+  classType?: any;
+}
+
+/**
+ * Determines which interface a type should implement by checking:
+ * 1. Explicitly specified interfaces in options
+ * 2. Parent class with @GraphQLInterface decorator (if classType is provided)
+ *
+ * Note: Even though we might find multiple interfaces, we only use the first one
+ * to match our non-goal of avoiding multiple interface implementation
+ */
+function determineInterface(
+  options?: GqlSpecToNexusOptions,
+): string | undefined {
+  // Logger already defined at module level, using _logger instead
+  _logger.debug(
+    `determineInterface for ${options?.classType?.name || "unknown"}`,
+  );
+
+  // First check explicit interfaces
+  if (options?.interfaces?.length) {
+    _logger.debug(
+      `Using explicitly specified interface: ${options.interfaces[0]}`,
+    );
+    // Just return the first interface in the array
+    // This deliberately ignores additional interfaces to match our non-goal
+    return options.interfaces[0];
+  }
+
+  // If no explicit interfaces and classType is provided, check for parent class with decorator
+  if (options?.classType) {
+    _logger.debug(
+      `Checking for parent class of ${options.classType?.name || "unknown"}`,
+    );
+
+    // Get the parent class
+    const parentClass = Object.getPrototypeOf(options.classType);
+
+    _logger.debug(`Parent class is: ${parentClass?.name || "unknown"}`);
+    _logger.debug(
+      `Parent prototype: ${
+        Object.getPrototypeOf(parentClass)?.constructor?.name || "unknown"
+      }`,
+    );
+
+    // Check if the parent class has the @GraphQLInterface decorator
+    if (parentClass) {
+      const decorated = isGraphQLInterface(parentClass);
+      _logger.debug(`Is parent class decorated? ${decorated}`);
+
+      if (decorated) {
+        // Get the interface metadata to get the custom name if specified
+        const metadata = getGraphQLInterfaceMetadata(parentClass);
+        const interfaceName = metadata?.name || parentClass.name;
+        _logger.debug(`Using interface name: ${interfaceName}`);
+        return interfaceName;
+      }
+    }
+  }
+
+  // No interfaces found
+  _logger.debug("No interfaces found");
+  return undefined;
+}
+
+/**
+ * Converts a GqlNodeSpec to Nexus types for schema generation
+ *
+ * @param spec The GraphQL node specification
+ * @param typeName The name of the GraphQL type
+ * @param options Optional parameters for interface implementation
+ * @returns Nexus compatible type definitions for main type and mutation type
+ */
+export function gqlSpecToNexus(
+  spec: GqlNodeSpec,
+  typeName: string,
+  options?: GqlSpecToNexusOptions,
+) {
+  // Get interface this type should implement (only the first one from the array)
+  const interfaceName = determineInterface(options);
+
   // Create the main object type definition
   const mainType = {
     name: typeName,
+    // Add implements if there's an interface to implement
+    ...(interfaceName ? { implements: interfaceName } : {}),
     // Keep the parameter as any to maintain compatibility with Nexus types
     // deno-lint-ignore no-explicit-any
     definition(t: any) {

@@ -46,7 +46,10 @@
       "Bash(./apps/bfDb/graphql/graphqlServer.ts)",
       "Bash(deno check:*)",
       "Bash(chmod:*)",
-      "Bash(./apps/bfDb/graphql/__tests__/GraphQLNode.test.ts)"
+      "Bash(./apps/bfDb/graphql/__tests__/GraphQLNode.test.ts)",
+      "Bash(bff test:*)",
+      "Bash(bff genGqlTypes:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }
