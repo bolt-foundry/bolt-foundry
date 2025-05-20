@@ -6,9 +6,8 @@
 
 The GraphQL Builder project has completed two major milestones: v0.1 (core
 builder implementation) and v0.2 (GraphQLNode class and Node interface
-implementation). We're now focusing on v0.3 to improve the barrel file system
-for automated interface and type registration, which will streamline development
-and reduce manual registration work.
+implementation). We're now focusing on v0.3 to ensure GraphQL interfaces are
+properly registered and loaded in the schema.
 
 ## Completed Work
 
@@ -48,26 +47,23 @@ and reduce manual registration work.
   AnyGraphqlObjectBaseCtor
 - ✅ Interface Testing: Added tests for GraphQLNode and interface implementation
 
-## Current Work (v0.3 - Barrel Files)
+## Current Work (v0.3 - Interface Loading)
 
-We're now focusing on improving the barrel file system for automated type
-registration:
+We're now focusing on improving the GraphQL interface registration:
 
-1. Enhance the barrel file generation system
-2. Improve the automatic interface and type detection
-3. Create consistent patterns for registration across different entity types
-4. Add validation capabilities in the barrel generation process
+1. Ensure genBarrel.ts includes GraphQL interfaces 
+2. Verify the interfacesList.ts barrel file contains all interfaces
+3. Ensure loadGqlTypes.ts correctly uses the interfaces from the barrel file
 
 ## Deferred to v0.4
 
-1. Complete the migration of remaining nodes to the new builder pattern
-2. Add support for additional edge relationship patterns (target→source,
-   many-to-many)
-3. Complete additional tests for the GraphQL builder
-4. Remove legacy builders completely
-5. Add Relay-style connections with pagination support
-6. Implement validation against bfNodeSpec.relations
-7. ⏱️ Validation: Validation against bfNodeSpec.relations pending
+1. Implement barrel files for other GraphQL type categories
+2. Add validation during barrel generation
+3. Create a more comprehensive barrel utility
+4. Complete the migration of remaining nodes to the new builder pattern
+5. Add support for additional edge relationship patterns
+6. Add Relay-style connections with pagination support
+7. Implement validation against bfNodeSpec.relations
 
 ## Blocking Issues
 
@@ -83,3 +79,4 @@ plans:
 
 - [v0.1 Implementation Plan](/apps/bfDb/docs/0.1/implementation-plan.md)
 - [v0.2 Implementation Plan](/apps/bfDb/docs/0.2/implementation-plan.md)
+- [v0.3 Implementation Plan](/apps/bfDb/docs/0.3/implementation-plan.md)
