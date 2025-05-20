@@ -17,15 +17,11 @@ jobs:
       contents: read
     steps:
       - name: Install Nix
-        uses: cachix/install-nix-action@v22
-        with:
-          nix_path: nixpkgs=channel:nixos-24.11
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-            max-jobs = auto
-            cores = 0
-            substituters = https://cache.nixos.org
-            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+        uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - name: Setup Nix caching
+        uses: DeterminateSystems/flakehub-cache-action@main
 
       - name: Checkout repository
         uses: actions/checkout@v4
