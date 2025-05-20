@@ -1,0 +1,33 @@
+
+# Flake ignore file for Bolt Foundry
+# Exclude static assets from linting/formatting
+
+# Static asset directories
+static/assets/images/**
+static/assets/videos/**
+static/build/**
+
+# Build directories
+build/**
+**/build/**
+
+# Generated files
+**/__generated__/**
+
+# Example project directories
+examples/**
+
+# Large binary files
+*.mp4
+*.jpg
+*.png
+*.gif
+*.svg
+*.ico
+*.tar.gz
+*.zip
+
+# Cache directories
+**/cache/**
+**/.cache/**
+tmp/**
