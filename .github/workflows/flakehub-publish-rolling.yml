@@ -34,8 +34,19 @@ jobs:
       # build whatever you want cached
       - run: nix develop .#devShells.x86_64-linux.default -c true
 
+      # List and verify sizes before pushing
+      - name: List largest files before push
+        run: |
+          du -sh .
+          echo "Largest files:"
+          find . -type f -not -path "*/.git/*" -not -path "*/.sl/*" -size +5M | xargs du -sh | sort -rh | head -10
+          echo "Checking .flakeignore exists:"
+          cat .flakeignore
+
       - uses: DeterminateSystems/flakehub-push@v2
         with:
           rolling: true
           visibility: public
           include-output-paths: ${{ github.event.inputs.include_outputs }}
+          flake-path: "."
+          github-token: ${{ github.token }}
