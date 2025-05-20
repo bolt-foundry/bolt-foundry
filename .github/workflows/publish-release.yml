@@ -17,27 +17,34 @@ jobs:
   build-and-publish:
     name: Build and Publish Release
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -e {0}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org/"
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-          cache: true
+      - uses: DeterminateSystems/flakehub-cache-action@main
 
-      # Set Deno cache directory
-      - name: Set Deno cache directory
-        run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"
+      - name: Cache nix development shell
+        id: nix-shell-cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/nix-shell-cache
+          key: ${{ runner.os }}-nix-shell-${{ hashFiles('flake.nix', 'flake.lock') }}
+
+      - name: Pre-build nix development shell
+        if: steps.nix-shell-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/nix-shell-cache
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile
+        shell: bash
+
 
       # Cache node_modules and vendor directories
       - name: Cache dependencies
@@ -53,7 +60,6 @@ jobs:
             */*/*/vendor
             ~/.npm
             packages/bolt-foundry/npm/node_modules
-            ${{ env.DENO_DIR }}
           key: ${{ runner.os }}-deps-${{ hashFiles('**/package-lock.json', '**/package.json', 'package-lock.json', 'package.json', '**/deno.json*', '**/deno.lock') }}
           restore-keys: |
             ${{ runner.os }}-deps-

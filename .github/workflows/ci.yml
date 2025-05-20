@@ -13,6 +13,9 @@ jobs:
       id-token: write # OIDC for FlakeHub
     env:
       OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+    defaults:
+      run:
+        shell: nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -e {0}
 
     steps:
       - uses: actions/checkout@v4
@@ -22,6 +25,23 @@ jobs:
         with: { determinate: true }
 
       - uses: DeterminateSystems/flakehub-cache-action@main
+      - name: Cache nix development shell
+        id: nix-shell-cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/nix-shell-cache
+          key: ${{ runner.os }}-nix-shell-${{ hashFiles('flake.nix', 'flake.lock') }}
+
+      - name: Pre-build nix development shell
+        if: steps.nix-shell-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/nix-shell-cache
+          nix develop . --impure --profile /tmp/nix-shell-cache/profile
+<<<<<<< ours
+=======
+        shell: bash
+
+>>>>>>> theirs
 
       # Debug cache paths before restore
       - name: Debug directories pre-restore
@@ -87,19 +107,19 @@ jobs:
           fi
 
       # 👇 Everything below now runs *inside* the dev-shell
-      - name: Enter dev-shell & run tests
+      - name: Run tests
         run: |
-          # Pass DENO_DIR into the Nix environment to ensure cache sharing
-          nix develop . --accept-flake-config --command bash -euc "
-            export DENO_DIR=\"/home/runner/.cache/deno\"
-            echo \"Using Deno cache directory: \${DENO_DIR}\"
-            deno --version
-            deno info
-            # Pre-cache dependencies
-            deno cache deno.jsonc || echo \"Failed to cache, continuing anyway\"
-            deno install
-            bff ci --include-bolt-foundry --skip-build
-          "
+          export DENO_DIR="/home/runner/.cache/deno"
+          echo "Using Deno cache directory: ${DENO_DIR}"
+          deno --version
+          deno info
+          deno cache deno.jsonc || echo "Failed to cache, continuing anyway"
+          deno install
+          bff ci --include-bolt-foundry --skip-build
+<<<<<<< ours
+=======
+
+>>>>>>> theirs
 
       # Debug before save
       - name: Debug directories pre-save
