@@ -1,16 +1,14 @@
 # GraphQL Builder Status
 
-**Current Status:** COMPLETED v0.3 ✅ | PLANNING v0.4
+**Current Status:** ON HOLD ⏱️
 
 ## Status Details
 
-The GraphQL Builder project has completed three major milestones: v0.1 (core
-builder implementation), v0.2 (GraphQLNode class and Node interface
-implementation), and v0.3 (decorator-based interface detection and loading).
-We're now planning v0.4 to complete the migration of all nodes and implement
-more advanced features.
+The GraphQL Builder project is on hold while we focus on updating the
+bolt-foundry library in the packages directory. All projects are temporarily
+paused during this library update.
 
-## Completed Work
+## Previously Completed Work
 
 ### v0.1 (Core Builder)
 
@@ -60,7 +58,7 @@ more advanced features.
 - ✅ Implement more robust detection of interface implementations in GraphQL
   objects
 
-## Next Work (v0.4 - Barrel System Expansion)
+## Pending Work (v0.4 - On Hold)
 
 1. Implement barrel files for other GraphQL type categories
 2. Add validation during barrel generation
@@ -70,9 +68,9 @@ more advanced features.
 6. Add Relay-style connections with pagination support
 7. Implement validation against bfNodeSpec.relations
 
-## Previously Blocked Projects (Now Unblocked)
+## Related Projects (Also On Hold)
 
-With the completion of GraphQL Builder v0.3, these projects are now unblocked:
+These projects will remain on hold until work resumes:
 
 - Login Integration (Google OAuth) project
 - Relationship modeling between users and organizations
