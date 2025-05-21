@@ -1,22 +1,22 @@
 # Collector Project Status
 
-**Current Status:** PAUSED (May 15, 2025)
+**Current Status:** ON HOLD ⏱️
 
 ## Status Details
 
-The Collector project has been temporarily paused pending a broader product
-strategy reconsideration. The initial approach to capturing OpenAI SDK calls and
-managing analytics through PostHog will be re-evaluated as part of this process.
+The Collector project is on hold while we focus on updating the bolt-foundry
+library in the packages directory. All projects are temporarily paused during
+this library update.
 
-## Reason for Pause
+## Reason for Hold
 
-1. Need to align with evolving product strategy
+1. Need to focus on bolt-foundry library updates
 2. Potential architectural changes to the analytics approach
 3. Re-evaluation of data collection requirements
 
 ## Current Progress
 
-Before the pause, the project had:
+Before the hold, the project had:
 
 - Completed initial planning and architecture design
 - Established basic requirements for API interception
@@ -24,16 +24,16 @@ Before the pause, the project had:
 
 ## Resumption Criteria
 
-The project will be reconsidered for resumption after:
+The project will be resumed after:
 
-1. Completion of product strategy revision
+1. Completion of bolt-foundry library updates
 2. Clear definition of analytics requirements
 3. Determination of the appropriate technical approach
 
 ## Related Components
 
-While the Collector project is paused, any dependencies on this system should be
-handled as follows:
+While the Collector project is on hold, any dependencies on this system should
+be handled as follows:
 
 - Frontend analytics: Continue using direct PostHog integration
 - LLM metrics: Use existing bolt-foundry package capabilities
