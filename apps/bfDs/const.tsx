@@ -93,6 +93,8 @@ function color(
 function createSet(name: string, colorArr: number[], adjustment: number) {
   return {
     [`${name}`]: color(colorArr),
+    [`${name}005`]: color(colorArr, null, 0.05),
+    [`${name}010`]: color(colorArr, null, 0.10),
     [`${name}015`]: color(colorArr, null, 0.15),
     [`${name}030`]: color(colorArr, null, 0.30),
     [`${name}060`]: color(colorArr, null, 0.60),

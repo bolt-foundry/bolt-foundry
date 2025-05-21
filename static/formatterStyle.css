@@ -1,0 +1,84 @@
+.formatter-container {
+  height: 100vh;
+  background-color: var(--pageBackground);
+}
+.formatter-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+}
+.formatter-logo {
+  width: 96px;
+  height: 18px;
+  aspect-ratio: 8.6 / 1;
+}
+.formatter-header-text {
+  font-family: var(--marketingFontFamily);
+  font-size: 32px;
+  line-height: 1;
+  margin-left: -0.03em;
+  color: var(--fourtharyColor);
+}
+
+.formatter-content {
+  overflow-y: auto;
+}
+
+.formatter-content-main {
+  padding: 16px 24px;
+}
+
+.formatter-section-header {
+  /* margin-bottom: 16px; */
+}
+
+.formatter-section-header h2 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.formatter-card {
+  background: var(--background);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.formatter-card:hover {
+  border-color: var(--fourtharyColor030);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.formatter-card-title {
+  font-weight: 500;
+}
+
+.formatter-card-expanded {
+  padding: 20px;
+  margin: 16px 8px;
+  background: var(--textSecondary005);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.formatter-card-expanded-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.formatter-card-input-group {
+  /* margin-bottom: 16px; */
+}
+
+.formatter-card-expanded .bfds-form-label {
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
