@@ -7,16 +7,16 @@ import type { BfDsTooltipMenuType } from "apps/bfDs/components/BfDsTooltipMenu.t
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
 const { useEffect, useState } = React;
 
-type Props = {
+export type DropdownSelectorProps = {
   disabled?: boolean;
   position?: BfDsTooltipPosition;
   justification?: BfDsTooltipJustification;
   // Options are a map of option name to value
   // e.g. { "Option 1": "option1", "Option 2": "option2" }
   options: Record<string, string>;
-  onChange: (value: string) => void;
-  value: string;
-  placeholder: string;
+  onChange?: (value: string) => void;
+  value?: string;
+  placeholder?: string;
   showSpinner?: boolean;
   testId?: string;
 };
@@ -32,7 +32,7 @@ export function BfDsDropdownSelector(
     justification = "end",
     showSpinner,
     testId,
-  }: Props,
+  }: DropdownSelectorProps,
 ) {
   const [menu, setMenu] = useState<Array<BfDsTooltipMenuType>>([]);
 
@@ -41,7 +41,7 @@ export function BfDsDropdownSelector(
       return {
         label: option,
         onClick: () => {
-          onChange(optionValue);
+          onChange?.(optionValue);
         },
         selected: optionValue === value,
       };
