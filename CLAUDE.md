@@ -1,7 +1,8 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with
-code in this repository.
+This file provides guidance to AI agents (including Claude Code) when working
+with code in this repository. CLAUDE.md is symlinked to this file for
+compatibility.
 
 ## Project Overview
 
@@ -39,9 +40,82 @@ The codebase follows a monorepo structure:
 - `docs/`: Project documentation
 - `cards/`: LLM behavior and persona cards
 
+## AI Agent Reference Cards
+
+### Persona Cards
+
+- **Purpose**: Provide project context and high-level understanding.
+- **Content**: Project overview, architecture, directory structure, technology
+  descriptions.
+- **Where to Find**: `cards/personas/`, particularly "Bolt Foundry Persona
+  Card.md"
+
+### Behavior Cards
+
+- **Purpose**: Provide actionable workflows, protocols, and best practices.
+- **Content**: Implementation plans, testing protocols, commit guidelines,
+  coding standards.
+- **File Format**: Stored as `.bhc.md` files (Behavior Card Markdown)
+- **Where to Find**: `cards/behaviors/`, notably cards such as "coding.bhc.md,"
+  "implementation-plans.bhc.md," "project-plans.bhc.md," and "tdd.bhc.md"
+- **How to Use**: Reference these cards when implementing features, planning
+  projects, or following development workflows
+
+## Best Places for AI Agents to Find Information
+
+- **AGENTS.md**: Comprehensive guidelines for working on the project, including
+  code organization, development tools, testing, and debugging practices.
+- **Persona & Behavior Cards (`cards/`)**: Essential for understanding the
+  project and executing tasks effectively.
+- **GraphQL Schema (`apps/bfDb/graphql`)**: Defines API interactions and data
+  relationships.
+- **Design System (`apps/bfDs`)**: Clarifies frontend component usage and UI
+  patterns.
+
+## Recommended Workflow for AI Agents
+
+1. **Contextual Understanding**: Review Persona Cards and AGENTS.md to
+   understand the project structure and purpose.
+2. **Command Execution**: Always use `bff ai` commands first for any development
+   operations (testing, formatting, linting, etc.) before considering
+   alternatives.
+3. **Task Implementation**: Follow Behavior Cards strictly for step-by-step
+   actions, testing, and committing.
+4. **Testing & Debugging**: Use provided debugging guidelines, log-level
+   management, and structured testing processes outlined in AGENTS.md.
+
+By utilizing Persona and Behavior Cards together, AI agents can effectively
+contribute to Bolt Foundry, ensuring adherence to the project's high standards
+and best practices.
+
 ## Development Commands
 
 The primary interface for development is the BFF (Bolt Foundry Friend) CLI:
+
+### AI-Safe Commands
+
+**IMPORTANT**: AI agents must use `bff ai` commands for all development
+operations before considering any alternatives. This ensures safe execution and
+prevents potentially destructive operations.
+
+For AI assistants working on the codebase, use the `bff ai` command to run only
+AI-safe operations:
+
+```bash
+# List all AI-safe commands
+bff ai
+
+# Run AI-safe commands only (prevents potentially destructive operations)
+bff ai test           # Run tests safely
+bff ai format         # Format code safely
+bff ai lint           # Lint code safely
+bff ai check          # Type check safely
+bff ai diff           # View file differences safely
+bff ai status         # Check working directory status safely
+bff ai precommit      # Stage files and run all pre-commit checks safely
+```
+
+### All Commands
 
 ```bash
 # Build the project
@@ -326,11 +400,21 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Development Best Practices
 
+- **AI agents must use `bff ai` commands first** before any other commands that
+  do the same thing. This ensures safety and prevents potentially destructive
+  operations.
 - Remember to use bff commands first before using any other commands that do the
   same thing.
 
 ## Version Control Workflow
 
-- When committing, start with bff commands, then use sapling commands, finally
-  use gh commands with --repo=bolt-foundry/bolt-foundry and lastly use plain git
-  if no other tool will do
+**For AI Agents**: Use only `bff ai` commands for development operations. Other
+version control operations should be requested from human developers.
+
+**General Priority Order**:
+
+1. `bff ai` commands (AI agents should only use these)
+2. `bff` commands
+3. `sl` (Sapling) commands
+4. `gh` commands with --repo=bolt-foundry/bolt-foundry
+5. Never use `git` commands
