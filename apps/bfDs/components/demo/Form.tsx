@@ -2,6 +2,7 @@ import { Example as ExampleDropdown } from "apps/bfDs/components/BfDsDropdownSel
 import { Example as ExampleInput } from "apps/bfDs/components/BfDsInput.tsx";
 import { Example as ExampleToggle } from "apps/bfDs/components/BfDsToggle.tsx";
 import { Example as ExampleCheckbox } from "apps/bfDs/components/BfDsCheckbox.tsx";
+import { Example as ExampleRange } from "apps/bfDs/components/BfDsRange.tsx";
 import { Example as ExampleForm } from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
 import { Example as ExampleTag } from "apps/bfDs/components/BfDsTagInput.tsx";
 
@@ -24,6 +25,10 @@ export function Form() {
         <h2>Toggles & Checkboxes</h2>
         <ExampleToggle />
         <ExampleCheckbox />
+      </div>
+      <div className="ui-section">
+        <h2>Range Sliders</h2>
+        <ExampleRange />
       </div>
       <div className="ui-section">
         <h2>Form</h2>
