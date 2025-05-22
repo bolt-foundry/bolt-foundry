@@ -12,10 +12,14 @@ register(
   "format",
   "Format code using deno fmt",
   formatCommand,
+  [],
+  true, // AI-safe
 );
 
 register(
   "f",
   "Alias for format command",
   formatCommand,
+  [],
+  true, // AI-safe
 );
