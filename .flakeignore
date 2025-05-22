@@ -1,0 +1,39 @@
+# Flake ignore file for Bolt Foundry
+# Exclude files to reduce size below FlakeHub's 50MB limit
+
+# Specifically exclude the large video files
+static/assets/videos/plinko-mobile_720.mp4
+static/assets/videos/plinko-mobile_HD.mp4
+static/assets/videos/plinko_4k.mp4
+static/assets/videos/plinko_720.mp4
+static/assets/videos/plinko_hd.mp4
+
+# Static asset directories
+static/assets/
+static/build/
+
+# Common binary and large file formats
+**/*.mp4
+**/*.jpg
+**/*.png
+**/*.gif
+**/*.svg
+**/*.ico
+**/*.tar.gz
+**/*.zip
+
+# Dependencies and generated code
+**/node_modules/
+vendor/
+**/vendor/
+build/
+**/build/
+**/__generated__/
+examples/
+**/cache/
+**/.cache/
+tmp/
+
+# Version control directories (should be excluded by default, but being explicit)
+.git/
+.sl/

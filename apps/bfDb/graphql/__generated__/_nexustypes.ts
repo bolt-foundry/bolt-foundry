@@ -43,52 +43,79 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
-  Query: {};
-  TestType: { // root type
-    count?: number | null; // Int
-    id: string; // ID!
-    isActive?: boolean | null; // Boolean
-    name?: string | null; // String
+  JoinWaitlistPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
   }
+  Mutation: {};
+  Query: {};
+  Waitlist: {};
 }
 
 export interface NexusGenInterfaces {
+  BfNode: any;
+  Node: any;
 }
 
 export interface NexusGenUnions {
 }
 
-export type NexusGenRootTypes = NexusGenObjects
+export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
-  Query: { // field return type
-    ok: boolean; // Boolean!
-    test: NexusGenRootTypes['TestType'] | null; // TestType
+  JoinWaitlistPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
   }
-  TestType: { // field return type
-    count: number | null; // Int
+  Mutation: { // field return type
+    joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+  }
+  Query: { // field return type
+    ok: boolean | null; // Boolean
+  }
+  Waitlist: { // field return type
+    id: string | null; // ID
+  }
+  BfNode: { // field return type
     id: string; // ID!
-    isActive: boolean | null; // Boolean
-    name: string | null; // String
+  }
+  Node: { // field return type
+    id: string; // ID!
   }
 }
 
 export interface NexusGenFieldTypeNames {
+  JoinWaitlistPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  Mutation: { // field return type name
+    joinWaitlist: 'JoinWaitlistPayload'
+  }
   Query: { // field return type name
     ok: 'Boolean'
-    test: 'TestType'
   }
-  TestType: { // field return type name
-    count: 'Int'
+  Waitlist: { // field return type name
     id: 'ID'
-    isActive: 'Boolean'
-    name: 'String'
+  }
+  BfNode: { // field return type name
+    id: 'ID'
+  }
+  Node: { // field return type name
+    id: 'ID'
   }
 }
 
 export interface NexusGenArgTypes {
+  Mutation: {
+    joinWaitlist: { // args
+      company: string; // String!
+      email: string; // String!
+      name: string; // String!
+    }
+  }
 }
 
 export interface NexusGenAbstractTypeMembers {
@@ -103,7 +130,7 @@ export type NexusGenInputNames = never;
 
 export type NexusGenEnumNames = never;
 
-export type NexusGenInterfaceNames = never;
+export type NexusGenInterfaceNames = keyof NexusGenInterfaces;
 
 export type NexusGenScalarNames = keyof NexusGenScalars;
 
@@ -111,13 +138,13 @@ export type NexusGenUnionNames = never;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = never;
+export type NexusGenAbstractsUsingStrategyResolveType = "BfNode" | "Node";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
     __typename: true
+    resolveType: true
     isTypeOf: false
-    resolveType: false
   }
 }
 

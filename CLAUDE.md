@@ -137,6 +137,18 @@ bff help
 - Project plans focus on user-centric goals
 - Implementation plans focus on technical details
 
+### Linting
+
+The project uses the Deno linter with custom rules defined in
+`infra/lint/bolt-foundry.ts`:
+
+- `no-env-direct-access`: Prevents direct access to Deno.env, use
+  getConfigurationVariable()
+- `no-bfnodespec-first-static`: Ensures bfNodeSpec is not the first static field
+  in a class
+- `no-logger-set-level`: Prevents accidental commits of logger.setLevel() calls,
+  which should only be used for local debugging
+
 ## Common Workflows
 
 - Running tests for specific modules: `bff test path/to/test.ts`
@@ -145,6 +157,7 @@ bff help
 - Running the development server: `bff dev`
 - Formatting code: `bff format`
 - Generating GraphQL code: `bff iso`
+- Running linter: `bff lint`
 
 ## Version Control
 
@@ -161,7 +174,7 @@ This project uses BFF CLI commands and Sapling SCM for version control.
 bff commit -m "Your commit message" [files...]
 
 # Amend the current commit
-bff amend -m "Your updated message" [files...]
+bff amend [-m "Your updated message"] [files...]
 
 # Check CI status
 bff ci-status [--details | -d]
@@ -187,6 +200,8 @@ gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews
 # View PR review comments
 gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews/comments
 ```
+
+Note: When using the `gh` command, always use `--repo=bolt-foundry/bolt-foundry`
 
 Alternatively, use the BFF commands which handle repository detection
 automatically:
@@ -308,3 +323,14 @@ Co-Authored-By: Claude <noreply@anthropic.com>
   date-based versioning
 - Status indicators should use symbols (✅, 🔄, ⏱️) instead of dates to show
   progress
+
+## Development Best Practices
+
+- Remember to use bff commands first before using any other commands that do the
+  same thing.
+
+## Version Control Workflow
+
+- When committing, start with bff commands, then use sapling commands, finally
+  use gh commands with --repo=bolt-foundry/bolt-foundry and lastly use plain git
+  if no other tool will do

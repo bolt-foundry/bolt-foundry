@@ -87,3 +87,29 @@ const completion = await mockOpenAi.chat.completions.create({
   ],
 });
 ```
+
+## Documentation
+
+- [Project Plan](/docs/project-plan.md)
+- [Implementation Plan v0.3](/docs/0.3/implementation-plan.md)
+- [Backlog](/docs/backlog.md)
+
+## Development
+
+### Building
+
+```bash
+# Build the package
+./bin/build.ts
+```
+
+### Testing
+
+```bash
+# Run tests
+bff test packages/bolt-foundry
+```
+
+## License
+
+MIT

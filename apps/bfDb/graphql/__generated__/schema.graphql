@@ -3,14 +3,29 @@
 ### Do not make changes to this file directly
 
 
-type Query {
-  ok: Boolean!
-  test: TestType
+"""Base interface for all Bolt Foundry database nodes"""
+interface BfNode {
+  id: ID!
 }
 
-type TestType {
-  count: Int
+type JoinWaitlistPayload {
+  message: String
+  success: Boolean!
+}
+
+type Mutation {
+  joinWaitlist(company: String!, email: String!, name: String!): JoinWaitlistPayload
+}
+
+"""An object with a unique identifier"""
+interface Node {
   id: ID!
-  isActive: Boolean
-  name: String
+}
+
+type Query {
+  ok: Boolean
+}
+
+type Waitlist {
+  id: ID
 }

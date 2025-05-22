@@ -1,5 +1,6 @@
-import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
+import { GraphQLNode } from "./GraphQLNode.ts";
 import type { FieldBuilder } from "apps/bfDb/builders/bfDb/makeFieldBuilder.ts";
+import { GraphQLInterface } from "apps/bfDb/graphql/decorators.ts";
 
 import type { BfGid } from "lib/types.ts";
 import type { GraphqlNode } from "apps/bfDb/graphql/helpers.ts";
@@ -71,13 +72,19 @@ export type InferProps<T extends AnyBfNodeCtor> = T extends
   ? PropsFromFieldSpec<F>
   : never;
 
+@GraphQLInterface({
+  name: "BfNode",
+  description: "Base interface for all Bolt Foundry database nodes",
+})
 // deno-lint-ignore ban-types
 export abstract class BfNode<TProps extends PropsBase = {}>
-  extends GraphQLObjectBase {
+  extends GraphQLNode {
   protected _savedProps: TProps;
   protected _metadata: BfMetadata;
   readonly currentViewer: CurrentViewer;
-  static override gqlSpec? = this.defineGqlNode((i) => i.id("id"));
+  // We inherit the base gqlSpec from GraphQLNode with the id field
+  // Define the GraphQL spec first to avoid a linting error
+  static override gqlSpec = this.defineGqlNode((gql) => gql.nonNull.id("id"));
   static bfNodeSpec = this.defineBfNode((i) => i);
   static defineBfNode<
     F extends Record<string, FieldSpec>,
@@ -276,6 +283,17 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     return JSON.stringify(this._props) !== JSON.stringify(this._savedProps);
   }
 
+  /**
+   * Implement the id getter required by the Node interface.
+   * Returns the bfGid from the node's metadata.
+   * If metadata or bfGid is missing, returns undefined.
+   * Note: In practice, this should never happen as metadata with bfGid
+   * is always initialized in the constructor.
+   */
+  override get id(): string {
+    return this.metadata?.bfGid;
+  }
+
   override toGraphql(): GraphqlNode {
     const descriptors = Object.getOwnPropertyDescriptors(this);
     const skip = new Set(["metadata", "cv", "props"]);
@@ -289,8 +307,7 @@ export abstract class BfNode<TProps extends PropsBase = {}>
       // deno-lint-ignore no-explicit-any
       ...(this as any).props,
       ...Object.fromEntries(getters),
-      // deno-lint-ignore no-explicit-any
-      id: (this as any).metadata.bfGid,
+      // id is already provided via the getter
       __typename: this.__typename,
     };
   }

@@ -1,15 +1,16 @@
 # GraphQL Builder Status
 
-**Current Status:** IN PROGRESS
+**Current Status:** ON HOLD ⏱️
 
 ## Status Details
 
-The GraphQL Builder project is actively being implemented, with focus on
-completing the core functionality needed to enable the Login Integration
-project. This new builder pattern will replace the legacy three-helper GraphQL
-DSL with a single-argument fluent builder pattern.
+The GraphQL Builder project is on hold while we focus on updating the
+bolt-foundry library in the packages directory. All projects are temporarily
+paused during this library update.
 
-## Current Progress
+## Previously Completed Work
+
+### v0.1 (Core Builder)
 
 - ✅ Core Builder Interface Definition: Completed interface in
   `makeGqlBuilder.ts`
@@ -20,27 +21,65 @@ DSL with a single-argument fluent builder pattern.
 - ✅ Resolver Logic: Implemented field resolver chain with proper fallbacks
 - ✅ Mutation Support: Added support for mutations with arguments and return
   types
+- ✅ Returns Builder: Implemented mutation returns builder with type inference
 - ✅ Type Generation: Completed `gqlSpecToNexus.ts` to convert specs to Nexus
   types
 - ✅ Relation Support: Implemented edge relationships with thunk-style type
   references
-- ⏱️ Validation: Validation against bfNodeSpec.relations pending
+- ✅ GraphQLObjectBase: Updated with comprehensive documentation for the
+  defineGqlNode method
+- ✅ Dynamic Root Loading: Improved loadGqlTypes.ts to use Object.values for
+  automatic root loading
 
-## Next Steps (Priority Order)
+### v0.2 (Node Interface)
 
-1. Update GraphQLObjectBase.defineGqlNode to use the new builder pattern
-2. Test and validate with a complete example node type
-3. Add support for additional edge relationship patterns (target→source,
-   many-to-many)
+- ✅ Create GraphQLNode class that extends GraphQLObjectBase
+- ✅ Define Node GraphQL interface in the schema
+- ✅ Implement decorator-based interface detection
+- ✅ Modify loadGqlTypes.ts to use barrel files for automatic registration
+- ✅ Add resolveType function for interface resolution
+- ✅ Add tests to verify implementation
+- ✅ Refactor BfNode to extend GraphQLNode
+- ✅ Interface Detection: Implemented barrel files for automatic interface
+  registration with GraphQLInterface decorator
+- ✅ Type Safety: Improved typing in loadGqlTypes.ts using
+  AnyGraphqlObjectBaseCtor
+- ✅ Interface Testing: Added tests for GraphQLNode and interface implementation
 
-## Blocking Issues
+### v0.3 (Interface Detection & Loading)
 
-The incomplete GraphQL Builder is currently blocking:
+- ✅ Create GraphQLInterface decorator for marking interface classes
+- ✅ Update genBarrel.ts to scan for @GraphQLInterface decorator in files
+- ✅ Verify the interfacesList.ts barrel file correctly contains decorated
+  interfaces
+- ✅ Ensure loadInterfaces.ts properly registers decorated interfaces in the
+  schema
+- ✅ Update tests to verify decorator-based interface detection works correctly
+- ✅ Implement more robust detection of interface implementations in GraphQL
+  objects
+
+## Pending Work (v0.4 - On Hold)
+
+1. Implement barrel files for other GraphQL type categories
+2. Add validation during barrel generation
+3. Create a more comprehensive barrel utility
+4. Complete the migration of remaining nodes to the new builder pattern
+5. Add support for additional edge relationship patterns
+6. Add Relay-style connections with pagination support
+7. Implement validation against bfNodeSpec.relations
+
+## Related Projects (Also On Hold)
+
+These projects will remain on hold until work resumes:
 
 - Login Integration (Google OAuth) project
 - Relationship modeling between users and organizations
 
 ## References
 
-For questions regarding implementation details, refer to the
-[Implementation Plan](/apps/bfDb/docs/0.1/implementation-plan.md).
+For questions regarding implementation details, refer to the implementation
+plans:
+
+- [v0.1 Implementation Plan](/apps/bfDb/docs/0.1/implementation-plan.md)
+- [v0.2 Implementation Plan](/apps/bfDb/docs/0.2/implementation-plan.md)
+- [v0.3 Implementation Plan](/apps/bfDb/docs/0.3/implementation-plan.md)

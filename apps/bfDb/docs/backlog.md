@@ -8,12 +8,23 @@
 
 ## GraphQL Builder Next Steps
 
-### Core Implementation (Current Focus)
+### GraphQLNode Implementation (Current Priority for v0.2)
 
-- Complete the implementation of gqlSpecToNexus.ts
-- Add field resolver implementation with proper fallback chain
+- Create GraphQLNode class that extends GraphQLObjectBase
+- Define common "Node" GraphQL interface that requires id and __typename fields
+- Update loadGqlTypes.ts to automatically register the Node interface
+- Modify gqlSpecToNexus.ts to automatically detect GraphQLNode types
+- Refactor BfNode to extend GraphQLNode
+- Implement resolveType function for proper interface resolution
+- Add tests to verify implementation works correctly
+
+### Migration Implementation (Deferred to v0.3)
+
+- Complete the implementation of gqlSpecToNexus.ts for additional features
+- Complete the migration of remaining nodes to the new builder pattern
+- Remove legacy builders completely
 - Implement validation against bfNodeSpec.relations
-- Add tests for Nexus type generation
+- Add additional tests for Nexus type generation
 
 ### Relay Connection Implementation (Deprioritized for v1)
 
