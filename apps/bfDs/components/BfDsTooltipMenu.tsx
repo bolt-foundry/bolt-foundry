@@ -33,6 +33,7 @@ type Props = {
   menu: Array<BfDsTooltipMenuType>;
   position?: BfDsTooltipPosition; // default: "top"
   justification?: BfDsTooltipJustification; // default: "center"
+  xstyle?: React.CSSProperties;
 };
 
 const getStyles = (): Record<string, React.CSSProperties> => ({
@@ -161,6 +162,7 @@ export function BfDsTooltipMenu(
     position = "top",
     justification = "center",
     children,
+    xstyle,
   }: React.PropsWithChildren<Props>,
 ) {
   const [showMenu, setShowMenu] = useState(false);
@@ -221,7 +223,7 @@ export function BfDsTooltipMenu(
     <div
       className="tooltip-container"
       ref={tooltipRef}
-      style={styles.tooltipContainer}
+      style={{...styles.tooltipContainer, ...xstyle}}
       onClick={handleShowMenu}
     >
       {children}
