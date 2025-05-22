@@ -43,32 +43,44 @@ async function runPrecommitChecks(): Promise<boolean> {
 }
 
 export async function amend(args: string[]): Promise<number> {
-  // Check if user provided a commit message
+  // Check if user provided a commit message and flags
   let commitMessage = "";
   const filesToCommit: string[] = [];
+  let runPreChecks = false;
+  let submitPR = false;
 
-  // Parse arguments - look for -m flag
+  // Parse arguments - look for -m flag, --pre-check flag, and --submit flag
   let messageIndex = -1;
+  const skipIndices = new Set<number>();
+
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "-m" && i + 1 < args.length) {
       commitMessage = args[i + 1];
       messageIndex = i;
-      break;
+      skipIndices.add(i);
+      skipIndices.add(i + 1);
+    } else if (args[i] === "--pre-check") {
+      runPreChecks = true;
+      skipIndices.add(i);
+    } else if (args[i] === "--submit") {
+      submitPR = true;
+      skipIndices.add(i);
     }
   }
 
-  // Get files to commit (all args except -m and the message)
+  // Get files to commit (all args except flags and their values)
   for (let i = 0; i < args.length; i++) {
-    if (i !== messageIndex && i !== messageIndex + 1) {
+    if (!skipIndices.has(i)) {
       filesToCommit.push(args[i]);
     }
   }
 
-  logger.info("Running pre-amend checks...");
-
-  // Run all precommit checks
-  if (!await runPrecommitChecks()) {
-    return 1;
+  // Run precommit checks only if --pre-check flag is provided
+  if (runPreChecks) {
+    logger.info("Running pre-amend checks...");
+    if (!await runPrecommitChecks()) {
+      return 1;
+    }
   }
 
   // Run sl diff to show changes
@@ -97,11 +109,44 @@ export async function amend(args: string[]): Promise<number> {
 
   // All done!
   logger.info("\n🎉 Commit amended successfully!");
+
+  // Submit PR if requested
+  if (submitPR) {
+    logger.info("Submitting PR...");
+    const submitResult = await runShellCommand(["sl", "pr", "submit"]);
+    if (submitResult !== 0) {
+      logger.error("❌ Failed to submit PR");
+      return submitResult;
+    }
+    logger.info("🚀 PR submitted successfully!");
+  }
+
   return 0;
 }
 
 register(
   "amend",
-  "Run precommit checks and amend the current commit",
+  "Amend the current commit (use --pre-check to run format/lint/check first)",
   amend,
+  [
+    {
+      option: "-m <message>",
+      description: "New commit message.",
+    },
+    {
+      option: "--pre-check",
+      description:
+        "Run precommit checks (format, lint, type check) before amending.",
+    },
+    {
+      option: "--submit",
+      description: "Submit a PR after amending the commit.",
+    },
+    {
+      option: "[files...]",
+      description:
+        "Optional files to amend. If not provided, amends all changes.",
+    },
+  ],
+  false, // Not AI-safe - modifies commits
 );
