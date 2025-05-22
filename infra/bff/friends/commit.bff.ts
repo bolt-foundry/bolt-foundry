@@ -47,9 +47,9 @@ export async function commit(args: string[]): Promise<number> {
   let commitMessage = "";
   const filesToCommit: string[] = [];
   let runPreCheck = false;
-  let submitPR = false;
+  let submitPR = true; // Default to true - submit PR by default
 
-  // Parse arguments - look for -m flag, --pre-check flag, and --submit flag
+  // Parse arguments - look for -m flag, --pre-check flag, and --no-submit flag
   const skipIndices = new Set<number>();
 
   for (let i = 0; i < args.length; i++) {
@@ -60,8 +60,8 @@ export async function commit(args: string[]): Promise<number> {
     } else if (args[i] === "--pre-check") {
       runPreCheck = true;
       skipIndices.add(i);
-    } else if (args[i] === "--submit") {
-      submitPR = true;
+    } else if (args[i] === "--no-submit") {
+      submitPR = false;
       skipIndices.add(i);
     }
   }
@@ -75,7 +75,7 @@ export async function commit(args: string[]): Promise<number> {
 
   if (!commitMessage) {
     logger.error(
-      '❌ No commit message provided. Usage: bff commit -m "Your message" [--pre-check] [files...]',
+      '❌ No commit message provided. Usage: bff commit -m "Your message" [--pre-check] [--no-submit] [files...]',
     );
     return 1;
   }
@@ -133,8 +133,8 @@ register(
         "Run precommit checks (format, lint, type check) before committing.",
     },
     {
-      option: "--submit",
-      description: "Submit a PR after creating the commit.",
+      option: "--no-submit",
+      description: "Skip PR submission after creating the commit.",
     },
     {
       option: "[files...]",

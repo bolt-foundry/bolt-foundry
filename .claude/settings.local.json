@@ -10,7 +10,8 @@
       "Bash(grep:*)",
       "Bash(**/*.test.ts)",
       "WebFetch(domain:docs.github.com)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "WebFetch(domain:docs.deno.com)"
     ],
     "deny": [
       "Bash(git:*)"

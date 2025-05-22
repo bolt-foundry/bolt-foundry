@@ -105,8 +105,82 @@ const plugin: Deno.lint.Plugin = {
     },
 
     /* ────────────────────────────────────────────────────────────────────── */
-    /*  3. Prevent logger.setLevel from being committed                      */
+    /*  3. Rename _logger to logger when it's being used                     */
     /* ────────────────────────────────────────────────────────────────────── */
+    "no-underscore-logger-when-used": {
+      create(context) {
+        const { sourceCode } = context;
+        
+        // Track _logger declarations and usages
+        const underscoreLoggers = new Map(); // node -> isUsed
+        
+        return {
+          // Find _logger declarations
+          'VariableDeclarator[id.name="_logger"]'(node) {
+            // Check if it's created by getLogger
+            if (
+              node.init &&
+              node.init.type === "CallExpression" &&
+              node.init.callee.type === "Identifier" &&
+              node.init.callee.name === "getLogger"
+            ) {
+              underscoreLoggers.set(node, false);
+            }
+          },
+          
+          // Track when _logger is used
+          'MemberExpression[object.name="_logger"]'() {
+            // Mark all _logger declarations as used
+            for (const [decl, ] of underscoreLoggers) {
+              underscoreLoggers.set(decl, true);
+            }
+          },
+          
+          // Check at the end
+          'Program:exit'() {
+            for (const [node, isUsed] of underscoreLoggers) {
+              if (isUsed) {
+                context.report({
+                  node: node.id,
+                  message: "_logger is being used and should be renamed to logger",
+                  fix(fixer) {
+                    const fixes = [];
+                    
+                    // Replace the declaration
+                    fixes.push(fixer.replaceText(node.id, "logger"));
+                    
+                    // Find and replace all usages of _logger in the file
+                    const text = sourceCode.getText();
+                    const regex = /\b_logger\b/g;
+                    let match;
+                    
+                    while ((match = regex.exec(text)) !== null) {
+                      const start = match.index;
+                      const end = start + match[0].length;
+                      
+                      // Skip the declaration itself
+                      if (start >= node.id.range[0] && end <= node.id.range[1]) {
+                        continue;
+                      }
+                      
+                      fixes.push(
+                        fixer.replaceTextRange([start, end], "logger")
+                      );
+                    }
+                    
+                    return fixes;
+                  },
+                });
+              }
+            }
+          },
+        };
+      },
+    },
+
+    /* ────────────────────────────────────────────────────────────────────── */
+    /*  4. Prevent logger.setLevel from being committed                      */
+    /* ────────────────────────────────────────────────────────────────────────────────────────── */
     "no-logger-set-level": {
       create(context) {
         const { sourceCode } = context;
