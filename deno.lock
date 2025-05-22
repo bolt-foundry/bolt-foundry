@@ -70,7 +70,7 @@
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
     "npm:@ai-sdk/openai@^1.3.7": "1.3.7_zod@3.24.1",
-    "npm:@anthropic-ai/claude-code@~0.2.124": "0.2.124",
+    "npm:@anthropic-ai/claude-code@^1.0.1": "1.0.1",
     "npm:@bolt-foundry/bolt-foundry@0.0.0-dev.0281c4c": "0.0.0-dev.0281c4c",
     "npm:@daily-co/daily-js@0.77": "0.77.0",
     "npm:@hexagon/base64@^1.1.27": "1.1.28",
@@ -633,8 +633,8 @@
         "@jridgewell/trace-mapping"
       ]
     },
-    "@anthropic-ai/claude-code@0.2.124": {
-      "integrity": "sha512-W/sPzrDhZq/M6vOK0SsWBWbHZ1SMsstq+tPjNCz10e7l6QVrCxfSSHAKIJRgmXAJRl5cEAt2pcu4Wor0cGimbA==",
+    "@anthropic-ai/claude-code@1.0.1": {
+      "integrity": "sha512-tMwmy2ESCrGd+mgiW45wCQtQAtsVtQSt2pcz+RkkKt9zgHaO5UqqzCJEmpf+4UBJitDp1ZQ3NiL+rxYtTwI51A==",
       "dependencies": [
         "@img/sharp-darwin-arm64",
         "@img/sharp-linux-arm",
@@ -10000,7 +10000,7 @@
     ],
     "packageJson": {
       "dependencies": [
-        "npm:@anthropic-ai/claude-code@~0.2.124",
+        "npm:@anthropic-ai/claude-code@^1.0.1",
         "npm:@hyperdx/browser@~0.21.2",
         "npm:@hyperdx/deno@^0.0.4",
         "npm:@isograph/compiler@0.0.0-main-1fad6d74",
