@@ -325,7 +325,9 @@ export async function mergeStack(args: string[]): Promise<number> {
       }
 
       // If it's blocked by something other than checks, don't wait
-      if (readiness.reason && !readiness.reason.toLowerCase().includes("checks")) {
+      if (
+        readiness.reason && !readiness.reason.toLowerCase().includes("checks")
+      ) {
         logger.warn(`⚠️  PR #${prNumber} is blocked by: ${readiness.reason}`);
         logger.warn(
           `This is not a check-related issue, so we won't wait for it.`,
