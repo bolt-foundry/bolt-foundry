@@ -32,10 +32,6 @@ register(
   "test",
   "Run project tests",
   testCommand,
-);
-
-register(
-  "t",
-  "Run project tests",
-  testCommand,
+  [],
+  true, // AI-safe
 );
