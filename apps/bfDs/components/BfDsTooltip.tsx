@@ -20,6 +20,7 @@ type Props = {
   justification?: BfDsTooltipJustification; // default: "center"
   delay?: number; // default: 1000
   canCopy?: boolean;
+  xstyle?: React.CSSProperties;
 };
 
 export function BfDsTooltip(
@@ -30,6 +31,7 @@ export function BfDsTooltip(
     delay = 1000,
     children,
     canCopy,
+    xstyle,
   }: React.PropsWithChildren<Props>,
 ) {
   const [copiedText, copy] = useCopyToClipboard();
@@ -91,7 +93,7 @@ export function BfDsTooltip(
     <div
       className="tooltip-container"
       ref={tooltipRef}
-      style={styles.tooltipContainer}
+      style={{...styles.tooltipContainer, ...xstyle}}
       onMouseEnter={() => setShouldShowTooltip(true)}
       onMouseLeave={() => setShouldShowTooltip(false)}
       onClick={canCopy && text ? () => copy(text.toString()) : undefined}
