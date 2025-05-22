@@ -46,48 +46,51 @@ export async function commit(args: string[]): Promise<number> {
   // Check if user provided a commit message
   let commitMessage = "";
   const filesToCommit: string[] = [];
+  let runPreCheck = false;
+  let submitPR = false;
 
-  // Parse arguments - look for -m flag
-  let messageIndex = -1;
+  // Parse arguments - look for -m flag, --pre-check flag, and --submit flag
+  const skipIndices = new Set<number>();
+
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "-m" && i + 1 < args.length) {
       commitMessage = args[i + 1];
-      messageIndex = i;
-      break;
+      skipIndices.add(i);
+      skipIndices.add(i + 1);
+    } else if (args[i] === "--pre-check") {
+      runPreCheck = true;
+      skipIndices.add(i);
+    } else if (args[i] === "--submit") {
+      submitPR = true;
+      skipIndices.add(i);
     }
   }
 
-  // Get files to commit (all args except -m and the message)
+  // Get files to commit (all args except -m, the message, and --pre-check)
   for (let i = 0; i < args.length; i++) {
-    if (i !== messageIndex && i !== messageIndex + 1) {
+    if (!skipIndices.has(i)) {
       filesToCommit.push(args[i]);
     }
   }
 
   if (!commitMessage) {
     logger.error(
-      '❌ No commit message provided. Usage: bff commit -m "Your message" [files...]',
+      '❌ No commit message provided. Usage: bff commit -m "Your message" [--pre-check] [files...]',
     );
     return 1;
   }
 
-  logger.info("Running precommit checks...");
-
-  // Run all precommit checks
-  if (!await runPrecommitChecks()) {
-    return 1;
+  // Run precommit checks if requested
+  if (runPreCheck) {
+    logger.info("Running precommit checks...");
+    if (!await runPrecommitChecks()) {
+      return 1;
+    }
   }
 
-  // Run sl diff to show changes
-  logger.info("Step 4/6: Showing changes...");
-  const diffResult = await runShellCommand(["sl", "diff"]);
-  if (diffResult !== 0) {
-    logger.error("❌ Failed to show diff");
-    return diffResult;
-  }
+  logger.info("Creating commit...");
 
   // Create the commit
-  logger.info("Step 5/6: Creating commit...");
   const commitArgs = ["sl", "commit", "-m", commitMessage];
   if (filesToCommit.length > 0) {
     commitArgs.push(...filesToCommit);
@@ -99,25 +102,45 @@ export async function commit(args: string[]): Promise<number> {
     return commitResult;
   }
 
-  // All done!
-  logger.info("\n🎉 Commit created successfully!");
+  logger.info("🎉 Commit created successfully!");
 
-  // Submit the pull request
-  logger.info("Step 6/6: Submitting pull request...");
-  const prResult = await runShellCommand(["sl", "pr", "submit"]);
-  if (prResult !== 0) {
-    logger.error("❌ Failed to submit pull request");
-    logger.info("You can manually submit the PR with: sl pr submit");
-    return prResult;
+  // Submit PR if requested
+  if (submitPR) {
+    logger.info("Submitting PR...");
+    const submitResult = await runShellCommand(["sl", "pr", "submit"]);
+    if (submitResult !== 0) {
+      logger.error("❌ Failed to submit PR");
+      return submitResult;
+    }
+    logger.info("🚀 PR submitted successfully!");
   }
-
-  logger.info("✅ Pull request submitted successfully!");
 
   return 0;
 }
 
 register(
   "commit",
-  "Run precommit checks and create a commit",
+  "Create a commit",
   commit,
+  [
+    {
+      option: "-m <message>",
+      description: "Commit message.",
+    },
+    {
+      option: "--pre-check",
+      description:
+        "Run precommit checks (format, lint, type check) before committing.",
+    },
+    {
+      option: "--submit",
+      description: "Submit a PR after creating the commit.",
+    },
+    {
+      option: "[files...]",
+      description:
+        "Optional files to commit. If not provided, commits all staged changes.",
+    },
+  ],
+  false, // Not AI-safe - creates commits
 );
