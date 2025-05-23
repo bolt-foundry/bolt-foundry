@@ -10,7 +10,7 @@ paused during this library update.
 
 ## Previously Completed Work
 
-### v0.1 (Core Builder)
+### v0.0.1 (Core Builder)
 
 - ✅ Core Builder Interface Definition: Completed interface in
   `makeGqlBuilder.ts`
@@ -31,7 +31,7 @@ paused during this library update.
 - ✅ Dynamic Root Loading: Improved loadGqlTypes.ts to use Object.values for
   automatic root loading
 
-### v0.2 (Node Interface)
+### v0.0.2 (Node Interface)
 
 - ✅ Create GraphQLNode class that extends GraphQLObjectBase
 - ✅ Define Node GraphQL interface in the schema
@@ -46,7 +46,7 @@ paused during this library update.
   AnyGraphqlObjectBaseCtor
 - ✅ Interface Testing: Added tests for GraphQLNode and interface implementation
 
-### v0.3 (Interface Detection & Loading)
+### v0.0.3 (Interface Detection & Loading)
 
 - ✅ Create GraphQLInterface decorator for marking interface classes
 - ✅ Update genBarrel.ts to scan for @GraphQLInterface decorator in files
@@ -58,7 +58,7 @@ paused during this library update.
 - ✅ Implement more robust detection of interface implementations in GraphQL
   objects
 
-## Pending Work (v0.4 - On Hold)
+## Pending Work (v0.0.4 - On Hold)
 
 1. Implement barrel files for other GraphQL type categories
 2. Add validation during barrel generation
