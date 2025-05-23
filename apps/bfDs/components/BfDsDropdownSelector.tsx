@@ -90,8 +90,8 @@ export function BfDsDropdownSelector(
     setMenu(newMenu);
   }, [options]);
 
-  const menuLabel = value === "" ? placeholder : (Object.keys(options).find(
-    (keyValue) => keyValue === value,
+  const menuLabel = value === "" ? placeholder : (Object.entries(options).find(
+    ([_, optionValue]) => optionValue === value,
   )?.[0] ?? placeholder);
 
   const testIdValue = testId ? `${testId}-${!value}` : undefined;
