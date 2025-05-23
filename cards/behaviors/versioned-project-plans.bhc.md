@@ -7,8 +7,10 @@ these guidelines to ensure clear progression and accountability.
 
 - Create version-specific project plan documents in project-specific docs
   directories
-- Use semantic versioning (0.x) for each project version (0.1 for initial, 0.2
-  for first release, etc.)
+- Use semantic versioning:
+  - During development: Use 0.0.x versions (e.g., 0.0.1, 0.0.2)
+  - Upon completion: Graduate to 0.1, 0.2, etc.
+  - Example: Work towards v0.1 uses v0.0.x, completed work is v0.1
 - Store version documents in version-specific subdirectories
 - Structure: `apps/[project]/docs/[version]/[project-plan].md`
 

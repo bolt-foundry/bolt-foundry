@@ -4,7 +4,9 @@
 
 ## Status Details
 
-The Collector project has completed its initial implementation phase. While functional for current needs, it will be expanded as part of future product roadmap initiatives.
+The Collector project has completed its initial implementation phase. While
+functional for current needs, it will be expanded as part of future product
+roadmap initiatives.
 
 ## Current State
 
@@ -17,7 +19,8 @@ The project has successfully delivered:
 
 ## Future Plans
 
-The Collector is part of our broader product vision but not a current priority. Future enhancements will include:
+The Collector is part of our broader product vision but not a current priority.
+Future enhancements will include:
 
 - Advanced analytics capabilities aligned with product roadmap
 - Enhanced data collection based on updated vision
