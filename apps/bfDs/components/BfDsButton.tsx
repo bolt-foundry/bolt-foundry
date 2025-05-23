@@ -44,7 +44,8 @@ export type ButtonKind =
   | "overlaySuccess"
   | "primary"
   | "secondary"
-  | "success";
+  | "success"
+  | "input";
 
 type ButtonCustomSettings = {
   color?: string;
@@ -55,15 +56,17 @@ type ButtonCustomSettings = {
   borderColorHover?: string;
 } | undefined;
 
+export type ButtonXStyle = {
+  borderRadius?: "0" | "6px 0 0 6px" | "0 6px 6px 0";
+  flex?: string;
+  marginInlineEnd?: number;
+  marginInlineStart?: number;
+  width?: string | number;
+  alignSelf?: "flex-start" | "flex-end";
+} | undefined;
+
 export type ButtonType = {
-  xstyle?: {
-    borderRadius?: "0" | "6px 0 0 6px" | "0 6px 6px 0";
-    flex?: string;
-    marginInlineEnd?: number;
-    marginInlineStart?: number;
-    width?: string | number;
-    alignSelf?: "flex-start" | "flex-end";
-  };
+  xstyle?: ButtonXStyle;
   iconLeft?: BfDsIconType;
   iconRight?: BfDsIconType;
   // if link is provided, the button will be rendered as a Link
@@ -472,6 +475,16 @@ const getButtonStyle = (
             : customSettings.borderColor
           : baseStyle.color,
       };
+    case "input":
+      return {
+        ...baseStyle,
+        backgroundColor: hover ? "var(--outlineHover)" : "var(--background)",
+        color: "var(--text)",
+        borderColor: hover ? "var(--textSecondary)" : "var(--textSecondary)",
+        textAlign: "left",
+        fontWeight: 400,
+        fontSize: 16,
+      };
     default:
       return baseStyle;
   }
@@ -778,6 +791,7 @@ export function BfDsButton({
         justification={tooltipJustification}
         position={tooltipPosition}
         text={tooltip}
+        xstyle={xstyle}
       >
         {wrappedButton}
       </BfDsTooltip>
@@ -790,6 +804,7 @@ export function BfDsButton({
         menu={tooltipMenu ?? tooltipMenuDropdown ?? []}
         justification={tooltipJustification}
         position={tooltipPosition}
+        xstyle={xstyle}
       >
         {wrappedButton}
       </BfDsTooltipMenu>
