@@ -69,6 +69,7 @@ const styles: Record<string, React.CSSProperties> = {
   meta: {
     color: "var(--textSecondary)",
     marginTop: 4,
+    fontSize: "0.8em",
   },
 };
 const sizeStyles: Record<string, Record<string, React.CSSProperties>> = {

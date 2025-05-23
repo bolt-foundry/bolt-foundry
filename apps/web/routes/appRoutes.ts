@@ -11,7 +11,8 @@ export function registerAppRoutes(routes: Map<string, Handler>): void {
   // Optionally remove UI route from non-dev environments
   const appRoutesMap = new Map(appRoutes);
   if (getConfigurationVariable("BF_ENV") !== DeploymentEnvs.DEVELOPMENT) {
-    appRoutesMap.delete("/ui");
+    // This doesn't seem to work, it blocks the route in DEV
+    // appRoutesMap.delete("/ui");
   }
 
   // Register each app route in the routes Map
