@@ -1,64 +1,118 @@
 # Bolt Foundry Library Project Plan
 
-**Version:** 0.3 (Planned) **Status:** Planning ⏱️
+**Status:** Active Development
+
+## Version History
+
+- **v0.1**: TypeScript SDK with fluent builder API (Current)
+- **v0.2**: CLI tool for prompt conversion (Planned)
+- **v0.3**: Testing framework and evaluation tools (Planned)
 
 ## Project Purpose
 
-[Project purpose description will go here]
+Create an open source TypeScript SDK that transforms LLM prompt engineering from brittle text strings into structured, semantic APIs. The SDK provides a fluent builder pattern for composing prompts that compile to OpenAI chat completion payloads while automatically tracking usage through integrated telemetry.
 
 ## Project Goals
 
-- [Goal 1]
-- [Goal 2]
-- [Goal 3]
+- **Developer Experience**: Provide a TypeScript-first API with compile-time safety and IntelliSense support
+- **Immediate Value**: Output ready-to-use OpenAI chat completion payloads without additional transformation
+- **Seamless Telemetry**: Automatically track structured prompt usage when integrated with existing Bolt Foundry telemetry
+- **Ecosystem Standards**: Follow TypeScript/JavaScript best practices to maximize adoption
 
 ## User Personas
 
-- [Persona 1]
-- [Persona 2]
-- [Persona 3]
+- **Individual Developer**: Frustrated with managing prompt strings across their LLM application, wants type safety and reusability
+- **LLM Application Team**: Needs to collaborate on prompt development with version control and clear structure
+- **Early Adopter**: Excited about structured prompts, willing to try alpha software and provide feedback
 
 ## Features
 
 ### Core Features
 
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
+- **Fluent Builder API**: Chain method calls to construct structured prompts with full TypeScript type safety
+- **Persona Builder**: Define AI personas with description, traits, and constraints using nested builder pattern
+- **OpenAI Integration**: Render directly to OpenAI chat completions format with configurable model parameters
+- **TypeScript Safety**: Compile-time errors for invalid method chains, runtime validation only at render
 
-### Additional Features
+### Integration Features
 
-- [Feature 4]
-- [Feature 5]
-- [Feature 6]
+- **Telemetry Integration**: Automatically track structured prompt usage through existing connectBoltFoundry wrapper
+- **Clean Exports**: Standard npm package exports following ecosystem conventions
+- **Zero Dependencies**: Minimal runtime dependencies for maximum compatibility
 
 ## Technical Architecture
 
-[Brief description of technical architecture]
+The SDK uses a builder pattern with TypeScript's type system to ensure valid prompt construction:
 
-## Development Timeline
+```typescript
+import { PromptBuilder } from '@bolt-foundry/bolt-foundry';
 
-- **Phase 1**: [Description] (Weeks X-Y)
-- **Phase 2**: [Description] (Weeks X-Y)
-- **Phase 3**: [Description] (Weeks X-Y)
-- **Phase 4**: [Description] (Weeks X-Y)
+const prompt = new PromptBuilder()
+  .persona("assistant", p => p
+    .description("You are a helpful coding assistant")
+    .trait("Explains code clearly")
+    .trait("Suggests best practices")
+    .constraints("security", c => c
+      .constraint("Never expose secrets")
+      .constraint("Follow OWASP guidelines")
+    )
+  );
+
+const payload = prompt.render({
+  model: "gpt-4",
+  temperature: 0.7,
+  telemetry: { apiKey: "...", sessionId: "..." }
+});
+```
+
+## Development Approach
+
+The SDK will be developed iteratively with continuous user feedback:
+
+### v0.1 Development Phases
+- **Phase 1**: Core builder implementation with TypeScript types
+- **Phase 2**: Persona API with nested builders for description, traits, constraints
+- **Phase 3**: OpenAI render method with model parameters
+- **Phase 4**: Telemetry integration and package publishing setup
+
+### Entry Criteria
+- Vision documents approved
+- Technical design reviewed
+- npm package namespace secured
+
+### Exit Criteria
+- All unit tests passing
+- Documentation complete
+- Published to npm as alpha version
+- 5+ internal users successfully integrated
 
 ## Success Metrics
 
-- [Metric 1]
-- [Metric 2]
-- [Metric 3]
+### User Outcomes
+- **Developer Time Saved**: 50% reduction in prompt debugging time
+- **Prompt Reliability**: 90%+ consistency in prompt behavior across runs
+- **Adoption Rate**: 100+ developers using the SDK within first month of release
+
+### Technical Metrics
+- **npm installs**: Track installation growth as primary adoption metric
+- **GitHub stars**: Measure developer interest and engagement
+- **Import tracking**: Monitor "from '@bolt-foundry/bolt-foundry'" in public repositories
+- **Telemetry events**: Count structured prompts rendered through the SDK
 
 ## Risks and Mitigation
 
-- **Risk**: [Description]
-  - **Mitigation**: [Strategy]
+- **Risk**: Developers resist moving from simple strings to structured API
+  - **Mitigation**: Provide clear migration examples and emphasize benefits (type safety, reusability)
 
-- **Risk**: [Description]
-  - **Mitigation**: [Strategy]
+- **Risk**: TypeScript complexity creates poor developer experience
+  - **Mitigation**: Extensive IntelliSense hints, clear error messages, comprehensive examples
+
+- **Risk**: OpenAI API changes break compatibility
+  - **Mitigation**: Version lock OpenAI types, plan for adapter pattern in future versions
 
 ## Next Steps
 
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
+1. Create detailed v0.1 implementation plan with technical specifications
+2. Set up package build pipeline with Deno-to-npm compilation
+3. Implement core builder with TypeScript type system
+4. Write comprehensive tests and documentation
