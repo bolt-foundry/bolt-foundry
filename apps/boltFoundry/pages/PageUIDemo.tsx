@@ -7,6 +7,7 @@ import { Example as ExampleBreadcrumb } from "apps/bfDs/components/BfDsBreadcrum
 import { Example as ExampleCallout } from "apps/bfDs/components/BfDsCallout.tsx";
 import { Example as ExampleDropzone } from "apps/bfDs/components/BfDsDropzone.tsx";
 import { Example as ExampleTable } from "apps/bfDs/components/BfDsTable.tsx";
+import { Example as ExampleTabs } from "apps/bfDs/components/BfDsTabs.tsx";
 import { Example as ExampleToast } from "apps/bfDs/components/BfDsToast.tsx";
 import { Example as ExampleTodos } from "apps/bfDs/components/BfDsTodos.tsx";
 import { Example as ExampleList } from "apps/bfDs/components/BfDsList.tsx";
@@ -119,6 +120,15 @@ const demoData: Array<DemoData> = [
     component: <ExampleSheet />,
   },
   {
+    name: "Tabs",
+    component: (
+      <div className="ui-section">
+        <h2>Tabs</h2>
+        <ExampleTabs />
+      </div>
+    ),
+  },
+  {
     name: "Tables",
     component: (
       <div className="ui-section">
@@ -155,7 +165,7 @@ const demoData: Array<DemoData> = [
 ];
 
 export function PageUIDemo() {
-  const [tab, setTab] = useState(1);
+  const [tab, setTab] = useState(0);
 
   const demoComponent = demoData[tab]?.component ?? (
     <div>Pick one from the sidebar</div>
