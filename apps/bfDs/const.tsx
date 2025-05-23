@@ -10,7 +10,7 @@ const paletteLight = {
   textMarketing: [46, 46, 46], // rgba(46, 46, 46, 1)
   secondaryText: [168, 168, 168], // rgba(141, 147, 154, 1)
   background: [255, 255, 255], // rgba(255, 255, 255, 1)
-  pageBackground: [252, 252, 252],
+  pageBackground: [253, 253, 253],
   border: [242, 242, 242], // rgba(242, 242, 242, 1)
   menuBackground: [255, 255, 255], // background
   glimmerBackground: [250, 250, 250],
@@ -93,6 +93,8 @@ function color(
 function createSet(name: string, colorArr: number[], adjustment: number) {
   return {
     [`${name}`]: color(colorArr),
+    [`${name}005`]: color(colorArr, null, 0.05),
+    [`${name}010`]: color(colorArr, null, 0.10),
     [`${name}015`]: color(colorArr, null, 0.15),
     [`${name}030`]: color(colorArr, null, 0.30),
     [`${name}060`]: color(colorArr, null, 0.60),
