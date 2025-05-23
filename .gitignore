@@ -24,3 +24,4 @@ generated-icon.png
 .config/op/
 .config/op/*.sock
 .env
+*.local.*
