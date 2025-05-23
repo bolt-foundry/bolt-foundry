@@ -51,14 +51,16 @@ interface UserData {
 ## Implementation Versions
 
 - Break down complex implementations into distinct technical versions
-- Note the complexity level of each version (Simple, Moderate, Challenging,
-  Complex)
+- Version numbering:
+  - Use 0.0.x versions during active development
+  - Graduate to 0.1, 0.2, etc. upon completion of each milestone
+  - Example: Working towards v0.1 uses versions 0.0.1, 0.0.2, etc.
 - Describe technical requirements for each version
 - Outline testing strategies for each component
 
 ### Version Template
 
-**Version X: [Name] (Complexity Level)**
+**Version 0.0.X: [Name]**
 
 - **Technical Goal**: What this version accomplishes
 - **Dependencies**: What must be completed first
