@@ -20,6 +20,11 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     flexDirection: "column",
   },
+  meta: {
+    color: "var(--textSecondary)",
+    marginTop: 4,
+    fontSize: "0.8em",
+  },
 };
 
 export type DropdownSelectorProps = {
@@ -30,6 +35,7 @@ export type DropdownSelectorProps = {
   // Options are a map of option name to value
   // e.g. { "Option 1": "option1", "Option 2": "option2" }
   options: Record<string, string>;
+  actions?: Array<BfDsTooltipMenuType>;
   onChange?: (value: string) => void;
   label?: string;
   kind?: ButtonKind;
@@ -46,6 +52,7 @@ export function BfDsDropdownSelector(
   {
     disabled,
     options,
+    actions,
     onChange,
     label,
     kind = "outline",
@@ -64,7 +71,7 @@ export function BfDsDropdownSelector(
   const [menu, setMenu] = useState<Array<BfDsTooltipMenuType>>([]);
 
   useEffect(() => {
-    const newMenu = Object.entries(options).map(([option, optionValue]) => {
+    const menuOptions = Object.entries(options).map(([option, optionValue]) => {
       return {
         label: option,
         onClick: () => {
@@ -73,6 +80,13 @@ export function BfDsDropdownSelector(
         selected: optionValue === value,
       };
     });
+    const menuActions = actions ?? [];
+    if (menuActions.length > 0) {
+      menuActions.unshift({
+        kind: "separator",
+      });
+    }
+    const newMenu = [...menuOptions, ...menuActions];
     setMenu(newMenu);
   }, [options]);
 

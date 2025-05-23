@@ -17,6 +17,7 @@ const styles: Record<string, React.CSSProperties> = {
   meta: {
     color: "var(--textSecondary)",
     marginBottom: 12,
+    fontSize: "0.8em",
   },
   reqNotMet: {
     color: "var(--alert)",
