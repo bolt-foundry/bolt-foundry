@@ -4,21 +4,42 @@ import type {
   BfDsTooltipPosition,
 } from "apps/bfDs/components/BfDsTooltip.tsx";
 import type { BfDsTooltipMenuType } from "apps/bfDs/components/BfDsTooltipMenu.tsx";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import {
+  BfDsButton,
+  type ButtonKind,
+  type ButtonXStyle,
+} from "apps/bfDs/components/BfDsButton.tsx";
 const { useEffect, useState } = React;
 
-type Props = {
+const styles: Record<string, React.CSSProperties> = {
+  inputContainer: {
+    position: "relative",
+    width: "100%",
+  },
+  label: {
+    display: "flex",
+    flexDirection: "column",
+  },
+};
+
+export type DropdownSelectorProps = {
   disabled?: boolean;
+  meta?: string | React.ReactNode;
   position?: BfDsTooltipPosition;
   justification?: BfDsTooltipJustification;
   // Options are a map of option name to value
   // e.g. { "Option 1": "option1", "Option 2": "option2" }
   options: Record<string, string>;
-  onChange: (value: string) => void;
-  value: string;
-  placeholder: string;
+  onChange?: (value: string) => void;
+  label?: string;
+  kind?: ButtonKind;
+  name?: string;
+  value?: string;
+  placeholder?: string;
+  required?: boolean;
   showSpinner?: boolean;
   testId?: string;
+  xstyle?: ButtonXStyle;
 };
 
 export function BfDsDropdownSelector(
@@ -26,13 +47,19 @@ export function BfDsDropdownSelector(
     disabled,
     options,
     onChange,
+    label,
+    kind = "outline",
+    meta,
     value,
-    placeholder,
+    name,
+    placeholder = "Select...",
     position = "bottom",
+    required,
     justification = "end",
     showSpinner,
     testId,
-  }: Props,
+    xstyle,
+  }: DropdownSelectorProps,
 ) {
   const [menu, setMenu] = useState<Array<BfDsTooltipMenuType>>([]);
 
@@ -41,7 +68,7 @@ export function BfDsDropdownSelector(
       return {
         label: option,
         onClick: () => {
-          onChange(optionValue);
+          onChange?.(optionValue);
         },
         selected: optionValue === value,
       };
@@ -49,25 +76,46 @@ export function BfDsDropdownSelector(
     setMenu(newMenu);
   }, [options]);
 
-  const menuLabel = value
-    ? Object.entries(options).find(
-      ([_, optionValue]) => optionValue === value,
-    )?.[0]
-    : placeholder;
+  const menuLabel = value === "" ? placeholder : (Object.keys(options).find(
+    (keyValue) => keyValue === value,
+  )?.[0] ?? placeholder);
 
   const testIdValue = testId ? `${testId}-${!value}` : undefined;
 
-  return (
+  const dropdown = (
     <BfDsButton
       disabled={disabled}
-      kind="outline"
+      kind={kind}
       text={menuLabel}
       tooltipMenuDropdown={menu}
       tooltipPosition={position}
       tooltipJustification={justification}
       showSpinner={showSpinner}
       testId={testIdValue}
+      xstyle={xstyle}
     />
+  );
+
+  if (label) {
+    return (
+      <label htmlFor={name} style={styles.label}>
+        {label}
+        {required && " *"}
+        <div style={styles.inputContainer}>
+          {dropdown}
+        </div>
+        {meta && <div style={styles.meta}>{meta}</div>}
+      </label>
+    );
+  }
+  return (
+    <div>
+      <div style={styles.inputContainer}>
+        {dropdown}
+        {required && " *"}
+      </div>
+      {meta && <div style={styles.meta}>{meta}</div>}
+    </div>
   );
 }
 
