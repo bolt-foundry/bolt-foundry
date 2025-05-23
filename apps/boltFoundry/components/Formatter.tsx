@@ -135,7 +135,7 @@ field Query.Formatter @component {
         </div>
         <h1 className="formatter-nav-text">Formatter</h1>
       </div>
-      {ogPrompt // TODO: change to !ogPrompt for real
+      {!ogPrompt
         ? (
           <div className="formatter-content flexColumn flex1 alignItemsCenter">
             <BfDsForm
@@ -685,7 +685,7 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
   const [model, setModel] = useState<ModelProps>({
     provider: "openai",
     model: "gpt-4",
-    key: "sk_FAKE_KEY",
+    key: null,
   });
   return (
     <div>
