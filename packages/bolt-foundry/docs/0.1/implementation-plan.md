@@ -1,150 +1,306 @@
-# Bolt Foundry Library: Version 0.1 Implementation Plan
+# Bolt Foundry SDK v0.1 Implementation Plan
 
-## Version Goals
+## Overview
 
-This initial version (0.1) establishes the foundation for the Bolt Foundry
-library, focusing on the core functionality of intercepting and logging OpenAI
-API calls made through the Vercel AI SDK. Our primary goal is to create a
-non-invasive way for NextJS developers to gain visibility into their AI
-interactions with minimal code changes.
+This document outlines the technical implementation for the Bolt Foundry SDK v0.1, focusing on a TypeScript-first fluent builder API for creating structured prompts that compile to OpenAI chat completion format.
 
-## Components and Implementation Details
+## Technical Reasoning
 
-### 1. Fetch Interceptor Core
+### Why a Builder Pattern?
 
-The central component of this version is the fetch interceptor that wraps the
-default fetch function to add our tracking capabilities.
+The builder pattern provides several critical advantages for structured prompt construction:
+
+1. **Type Safety**: TypeScript's type system can enforce valid method chains at compile time
+2. **Composability**: Immutable builders allow safe reuse and branching of base configurations
+3. **Discoverability**: IDE autocomplete guides developers through available options
+4. **Validation**: Invalid states become impossible to represent
+
+### Why Immutable Builders?
+
+Following functional programming principles and our existing bfDb patterns:
+
+1. **Predictable State**: Each method returns a new instance, preventing surprising mutations
+2. **Safe Sharing**: Builders can be passed between functions without defensive copying
+3. **Time Travel**: Intermediate states can be captured and tested independently
+4. **Parallel Safety**: Multiple branches can be created from a single base configuration
+
+### Why Persona Cards with XML?
+
+The `<⚡️persona_card⚡️>` format solves critical challenges:
+
+1. **Collision Avoidance**: Near-zero chance of appearing in user content
+2. **Parser-Friendly**: Clear boundaries for future analysis and optimization
+3. **Visual Distinction**: Immediately recognizable as Bolt Foundry structure
+4. **LLM Attention**: Unique tokens may receive special attention from models
+
+## Core Architecture
+
+### File Structure
+```
+packages/bolt-foundry/
+├── builder/
+│   ├── PromptBuilder.ts
+│   ├── PersonaBuilder.ts
+│   └── ConstraintsBuilder.ts
+├── telemetry/
+│   └── connectBoltFoundry.ts  (existing)
+├── types/
+│   └── index.ts
+├── bolt-foundry.ts
+└── __tests__/
+    ├── PromptBuilder.test.ts
+    ├── PersonaBuilder.test.ts
+    └── ConstraintsBuilder.test.ts
+```
+
+### Type Definitions
 
 ```typescript
-// Core function signature
-export function connectToOpenAi(openAiApiKey: string): typeof fetch {
-  return function boltFoundryFetch(
-    url: RequestInfo | URL,
-    options?: RequestInit,
-  ) {
-    // Intercept, log, and enhance OpenAI API calls
-    // ...
-    return fetch(url, modifiedOptions);
-  };
+// types/index.ts
+import type { ChatCompletionCreateParams } from 'openai/resources/chat';
+
+export type RenderOptions = Partial<ChatCompletionCreateParams> & {
+  // Future: telemetry options
+};
+
+export interface PersonaSpec {
+  description?: string;
+  traits?: string[];
+  constraints?: Record<string, ConstraintSpec>;
+}
+
+export interface ConstraintSpec {
+  constraints: string[];
 }
 ```
 
-#### Implementation Details
-
-- **Request Detection**: Identify OpenAI API calls by checking URL patterns
-  (api.openai.com)
-- **Authentication Handling**: Automatically inject API keys into request
-  headers
-- **Request Metadata Capture**: Store request data for logging
-- **Non-Blocking Architecture**: Ensure minimal performance impact on the main
-  request flow
-
-### 2. Logging System
-
-We'll implement a logging system that provides developers with detailed insights
-during development.
-
-#### Implementation Details
-
-- **Integration with @bolt-foundry/logger**: Use our existing logger package
-- **Configurable Log Levels**: Support DEBUG, INFO, WARN, ERROR levels
-- **Context-Aware Logging**: Include relevant request/response data
-- **Development Mode Enhancement**: More verbose logging in dev environments
-
-### 3. Request/Response Processing
-
-Analyze and enhance OpenAI API interactions without disrupting their
-functionality.
-
-#### Implementation Details
-
-- **Header Management**: Preserve existing headers while adding necessary
-  authentication
-- **Body Parsing**: Read and optionally modify request bodies (model selection,
-  etc.)
-- **Error Handling**: Graceful handling of parsing errors without breaking the
-  original request
-- **Response Capturing**: Optional logging of response data for debugging
-
-## Integration Pattern
-
-Developers will integrate Bolt Foundry directly with their OpenAI client:
+### Builder Implementation
 
 ```typescript
-// Where you initialize your OpenAI client:
-import { connectBoltFoundry } from "@bolt-foundry/bolt-foundry";
-import OpenAI from "openai";
+// builder/PersonaBuilder.ts
+export class PersonaBuilder<T extends PersonaSpec = {}> {
+  constructor(private _spec: T) {}
+  
+  /** Set persona description */
+  description<D extends string>(text: D): PersonaBuilder<T & { description: D }> {
+    return new PersonaBuilder({ ...this._spec, description: text });
+  }
+  
+  /** Add a trait to this persona */
+  trait(trait: string): PersonaBuilder<T & { traits: string[] }> {
+    const traits = [...(this._spec.traits || []), trait];
+    return new PersonaBuilder({ ...this._spec, traits });
+  }
+  
+  /** Define constraints for this persona */
+  constraints<K extends string>(
+    name: K, 
+    builder: (c: ConstraintsBuilder) => ConstraintsBuilder
+  ): PersonaBuilder<T & { constraints: Record<K, ConstraintSpec> }> {
+    const constraintsBuilder = builder(new ConstraintsBuilder({}));
+    const constraints = {
+      ...this._spec.constraints,
+      [name]: constraintsBuilder._spec
+    };
+    return new PersonaBuilder({ ...this._spec, constraints });
+  }
+  
+  get _spec(): T {
+    return this._spec;
+  }
+}
+```
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  fetch: connectBoltFoundry(process.env.OPENAI_API_KEY),
+```typescript
+// builder/PromptBuilder.ts
+export class PromptBuilder<T = {}> {
+  private personas: Map<string, PersonaSpec> = new Map();
+  
+  /** Define a persona with traits and constraints */
+  persona(
+    name: string,
+    builder: (p: PersonaBuilder) => PersonaBuilder
+  ): PromptBuilder<T> {
+    const personaBuilder = builder(new PersonaBuilder({}));
+    const newPersonas = new Map(this.personas);
+    newPersonas.set(name, personaBuilder._spec);
+    
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), {
+      personas: newPersonas
+    });
+  }
+  
+  /** Render to OpenAI chat completion format */
+  render(options?: RenderOptions): ChatCompletionCreateParams {
+    if (this.personas.size === 0) {
+      throw new Error('Cannot render empty prompt - at least one persona is required');
+    }
+    
+    const systemMessage = this.buildSystemMessage();
+    
+    return {
+      ...options,
+      messages: [{ role: 'system', content: systemMessage }],
+    };
+  }
+  
+  private buildSystemMessage(): string {
+    const parts: string[] = [];
+    
+    for (const [name, spec] of this.personas) {
+      // Add description outside the card
+      if (spec.description) {
+        parts.push(spec.description);
+        parts.push('');
+      }
+      
+      // Build persona card
+      const cardParts: string[] = [`<⚡️persona_card name="${name}"⚡️>`];
+      
+      if (spec.traits && spec.traits.length > 0) {
+        cardParts.push('Traits:');
+        spec.traits.forEach(trait => cardParts.push(`- ${trait}`));
+        cardParts.push('');
+      }
+      
+      if (spec.constraints) {
+        for (const [constraintName, constraintSpec] of Object.entries(spec.constraints)) {
+          cardParts.push(`Constraints (${constraintName}):`);
+          constraintSpec.constraints.forEach(c => cardParts.push(`- ${c}`));
+          cardParts.push('');
+        }
+      }
+      
+      cardParts.push(`<⚡️/persona_card⚡️>`);
+      parts.push(cardParts.join('\n'));
+      parts.push('');
+    }
+    
+    return parts.join('\n').trim();
+  }
+}
+```
+
+## Implementation Phases
+
+### v0.0.2.1: Core Builder Structure
+- [ ] Set up file structure
+- [ ] Implement PersonaBuilder with immutable pattern
+- [ ] Implement ConstraintsBuilder
+- [ ] Implement PromptBuilder with persona method
+- [ ] Add TypeScript type tests
+
+### v0.0.2.2: Render Implementation
+- [ ] Implement buildSystemMessage with persona card format
+- [ ] Add render method with OpenAI types
+- [ ] Handle edge cases (empty prompts, etc.)
+- [ ] Validate output format
+
+### v0.0.2.3: Testing
+- [ ] Unit tests for PersonaBuilder methods
+- [ ] Unit tests for ConstraintsBuilder
+- [ ] Unit tests for PromptBuilder
+- [ ] Unit tests for render output format
+- [ ] Type-level tests for builder chains
+
+### v0.0.2.4: Package Setup
+- [ ] Configure dnt build for npm
+- [ ] Update package.json with correct metadata
+- [ ] Add minimal JSDoc comments
+- [ ] Set up exports in bolt-foundry.ts
+- [ ] Test npm package locally
+
+### v0.0.2.5: Integration & Polish
+- [ ] Ensure compatibility with existing telemetry
+- [ ] Add basic error messages
+- [ ] Final testing pass
+- [ ] Prepare for npm publish
+
+## Technical Decisions
+
+### Immutable Builder Pattern
+Following the bfDb pattern, each method returns a new instance:
+- Enables safe composition and reuse
+- Prevents accidental mutations
+- Allows branching from base configurations
+
+### Type-Only OpenAI Dependency
+Using `import type` ensures:
+- No runtime dependency for users who don't need it
+- Full type safety for those who do
+- Forward compatibility with OpenAI API changes
+
+### Persona Card Format
+Using `<⚡️persona_card⚡️>` XML format:
+- Nearly impossible to collide with user content
+- Clear visual distinction in prompts
+- Parser-friendly for future analysis
+
+### Minimal Documentation
+Using brief JSDoc comments:
+- Leverages Deno's built-in doc generator
+- Provides IDE intellisense
+- Keeps focus on shipping v0.1
+
+## Testing Strategy
+
+### Unit Tests Only
+Focus on testing individual methods:
+- PersonaBuilder method chains
+- ConstraintsBuilder functionality  
+- PromptBuilder persona accumulation
+- Render output format validation
+- Error cases (empty prompts, etc.)
+
+### Example Test
+```typescript
+Deno.test("PromptBuilder - renders persona with traits", () => {
+  const prompt = new PromptBuilder()
+    .persona("assistant", p => p
+      .description("You are helpful")
+      .trait("Clear communication")
+      .trait("Patient")
+    );
+    
+  const result = prompt.render({ model: "gpt-4" });
+  
+  assertEquals(result.messages[0].role, "system");
+  assert(result.messages[0].content.includes("You are helpful"));
+  assert(result.messages[0].content.includes('<⚡️persona_card name="assistant"⚡️>'));
+  assert(result.messages[0].content.includes("Clear communication"));
 });
 ```
 
-## Testing Strategy for v0.1
+## Success Criteria
 
-### Unit Tests
+### Technical Success
+- All unit tests passing
+- TypeScript compilation with strict mode
+- Clean dnt build to npm package
+- No runtime errors in basic usage
 
-- **Test fetch wrapper**: Verify header injection and URL detection
-- **Test authentication handling**: Ensure API keys are properly applied
-- **Test error resilience**: Confirm that errors don't break the application
-  flow
+### API Success  
+- Intuitive method chaining
+- Clear TypeScript errors for invalid usage
+- Renders valid OpenAI payloads
+- Maintains immutability throughout
 
-### Manual Testing
+## Risks and Mitigations
 
-- **Integration with sample NextJS app**: Verify seamless operation
-- **Performance testing**: Measure overhead of the interceptor
-- **Log output verification**: Ensure logs contain expected information
+### Risk: Unicode/Emoji Issues
+**Mitigation**: Test thoroughly across platforms. Have fallback plan for non-emoji markers if needed.
 
-## Technical Challenges and Solutions
+### Risk: OpenAI Type Changes
+**Mitigation**: Pin OpenAI package version in v0.1. Plan migration strategy for major updates.
 
-### Challenge: Non-Invasive Integration
+### Risk: Builder Complexity
+**Mitigation**: Keep v0.1 minimal. Only persona with traits/constraints. Save behaviors and advanced features for later.
 
-**Solution**: We'll use function wrapping of the global fetch to avoid requiring
-changes to existing code beyond the initial setup.
+## Next Steps
 
-### Challenge: Parsing JSON Safely
-
-**Solution**: Implement try/catch blocks when parsing request bodies to prevent
-breaking the application if unexpected formats are encountered.
-
-### Challenge: Minimizing Performance Impact
-
-**Solution**: Keep processing lightweight during the intercept phase, with more
-intensive operations (if needed) performed asynchronously.
-
-## Version 0.1 Deliverables
-
-1. **Core Library Code**:
-   - `connectToOpenAi` function implementation
-   - Logger integration
-   - Type definitions for improved developer experience
-
-2. **Documentation**:
-   - Installation guide
-   - Integration examples
-   - API reference
-
-3. **Sample Implementation**:
-   - Demo NextJS application showing integration
-
-## Future Considerations (for v0.2+)
-
-- Analytics integration with PostHog
-- Batched event processing
-- Usage pattern detection
-- Cost optimization recommendations
-
-## Success Criteria for v0.1
-
-Version 0.1 will be considered successful when:
-
-1. OpenAI API calls can be intercepted without errors
-2. Request headers are properly enhanced with authentication
-3. Logging provides useful debugging information
-4. Performance impact is negligible
-5. Integration requires minimal code changes
-
-This implementation plan provides the detailed technical roadmap for building
-Version 0.1 of the Bolt Foundry library, establishing the foundation for the
-analytics and optimization features that will follow in later versions.
+1. Create feature branch for v0.1 implementation
+2. Set up basic file structure
+3. Implement PersonaBuilder first (smallest unit)
+4. Build up to PromptBuilder
+5. Add render logic
+6. Write comprehensive unit tests
