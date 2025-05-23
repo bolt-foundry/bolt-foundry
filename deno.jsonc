@@ -83,7 +83,10 @@
 
     "rules": {
       "include": [
-        "bolt-foundry/use-configuration-vars",
+        "bolt-foundry/no-env-direct-access",
+        "bolt-foundry/no-bfnodespec-first-static",
+        "bolt-foundry/no-underscore-logger-when-used",
+        "bolt-foundry/no-logger-set-level",
         "no-slow-types",
         "no-console",
         "no-external-import",
