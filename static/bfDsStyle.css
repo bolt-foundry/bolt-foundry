@@ -78,6 +78,19 @@ a.dark:visited {
 .center {
   text-align: center;
 }
+.alert {
+  color: var(--alert);
+}
+
+.hover,
+.ho .ver {
+  opacity: 0;
+  transition: 200ms opacity ease;
+}
+.hover:hover,
+.ho:hover .ver {
+  opacity: 1;
+}
 
 /* Flexbox */
 .flex1 {
