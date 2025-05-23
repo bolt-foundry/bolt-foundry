@@ -9,6 +9,7 @@ export type Tab = {
   testId?: string; // for identifying the tab in posthog
 };
 type Props = {
+  kind?: "header" | "subheader";
   tabs: Tab[];
   onTabSelected: (tabName: string) => void;
 };
@@ -19,6 +20,9 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     flexDirection: "row",
   },
+  tabsHeader: {
+    gap: 16,
+  },
   tab: {
     padding: "16px 24px 12px",
     fontSize: 16,
@@ -27,6 +31,11 @@ const styles: Record<string, React.CSSProperties> = {
     borderBottomWidth: 4,
     borderBottomStyle: "solid",
     borderBottomColor: "transparent",
+  },
+  tabHeader: {
+    padding: "0 0 10px",
+    fontSize: "1.5em",
+    fontWeight: 600,
   },
   tabSelected: {
     color: "var(--text)",
@@ -38,10 +47,11 @@ const styles: Record<string, React.CSSProperties> = {
   tabNumber: {
     opacity: 0.5,
     fontSize: "0.8em",
+    marginLeft: "0.5em",
   },
 };
 
-export function BfDsTabs({ tabs, onTabSelected }: Props) {
+export function BfDsTabs({ kind = "subheader", tabs, onTabSelected }: Props) {
   const [selectedTabName, setSelectedTabName] = useState<string>(tabs[0].name);
   const [hoveredTab, setHoveredTab] = useState<number | null>(null);
 
@@ -55,7 +65,9 @@ export function BfDsTabs({ tabs, onTabSelected }: Props) {
 
   return (
     <div style={styles.container}>
-      <div style={styles.tabs}>
+      <div
+        style={{ ...styles.tabs, ...(kind === "header" && styles.tabsHeader) }}
+      >
         {tabs.map((tab, index) => {
           if (tab.hidden === true) return null;
           return (
@@ -63,6 +75,7 @@ export function BfDsTabs({ tabs, onTabSelected }: Props) {
               key={index}
               style={{
                 ...styles.tab,
+                ...(kind === "header" && styles.tabHeader),
                 ...(hoveredTab === index && styles.tabHover),
                 ...(selectedTabName === tab.name && styles.tabSelected),
               }}
@@ -80,5 +93,37 @@ export function BfDsTabs({ tabs, onTabSelected }: Props) {
         })}
       </div>
     </div>
+  );
+}
+
+// Example component to demonstrate usage of BfDsTabs
+export function Example() {
+  const [selectedHeaderTab, setSelectedHeaderTab] = useState<string>("Tab 1");
+  const [selectedTab, setSelectedTab] = useState<string>("Tab 1");
+  const demoTabs: Tab[] = [
+    { name: "Tab 1", count: 15 },
+    { name: "Tab 2" },
+    { name: "Tab 3", hidden: true },
+    { name: "Tab 4", count: 1, testId: "tab-4" },
+  ];
+
+  return (
+    <>
+      <BfDsTabs
+        kind="header"
+        tabs={demoTabs}
+        onTabSelected={(tabName: string) => setSelectedHeaderTab(tabName)}
+      />
+      <div style={{ marginTop: 20, marginBottom: 40 }}>
+        Selected tab: {selectedHeaderTab}
+      </div>
+      <BfDsTabs
+        tabs={demoTabs}
+        onTabSelected={(tabName: string) => setSelectedTab(tabName)}
+      />
+      <div style={{ marginTop: 20 }}>
+        Selected tab: {selectedTab}
+      </div>
+    </>
   );
 }
