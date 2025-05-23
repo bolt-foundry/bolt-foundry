@@ -69,6 +69,7 @@ bff check              # TypeScript type checking
 
 # Development workflow
 bff commit -m "msg" --pre-check --submit   # Format, lint, commit, and create PR
+bff commit -m "msg" --skip-pre-check file1 file2  # Commit specific files without pre-checks
 ```
 
 ### Database Commands
