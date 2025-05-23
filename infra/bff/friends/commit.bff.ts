@@ -46,10 +46,10 @@ export async function commit(args: string[]): Promise<number> {
   // Check if user provided a commit message
   let commitMessage = "";
   const filesToCommit: string[] = [];
-  let runPreCheck = false;
+  let runPreCheck = true; // Default to true - run pre-checks by default
   let submitPR = false;
 
-  // Parse arguments - look for -m flag, --pre-check flag, and --submit flag
+  // Parse arguments - look for -m flag, --skip-pre-check flag, and --submit flag
   const skipIndices = new Set<number>();
 
   for (let i = 0; i < args.length; i++) {
@@ -57,8 +57,8 @@ export async function commit(args: string[]): Promise<number> {
       commitMessage = args[i + 1];
       skipIndices.add(i);
       skipIndices.add(i + 1);
-    } else if (args[i] === "--pre-check") {
-      runPreCheck = true;
+    } else if (args[i] === "--skip-pre-check") {
+      runPreCheck = false;
       skipIndices.add(i);
     } else if (args[i] === "--submit") {
       submitPR = true;
@@ -66,7 +66,7 @@ export async function commit(args: string[]): Promise<number> {
     }
   }
 
-  // Get files to commit (all args except -m, the message, and --pre-check)
+  // Get files to commit (all args except -m, the message, and --skip-pre-check)
   for (let i = 0; i < args.length; i++) {
     if (!skipIndices.has(i)) {
       filesToCommit.push(args[i]);
@@ -75,12 +75,12 @@ export async function commit(args: string[]): Promise<number> {
 
   if (!commitMessage) {
     logger.error(
-      '❌ No commit message provided. Usage: bff commit -m "Your message" [--pre-check] [files...]',
+      '❌ No commit message provided. Usage: bff commit -m "Your message" [--skip-pre-check] [files...]',
     );
     return 1;
   }
 
-  // Run precommit checks if requested
+  // Run precommit checks by default (unless skipped)
   if (runPreCheck) {
     logger.info("Running precommit checks...");
     if (!await runPrecommitChecks()) {
@@ -128,9 +128,9 @@ register(
       description: "Commit message.",
     },
     {
-      option: "--pre-check",
+      option: "--skip-pre-check",
       description:
-        "Run precommit checks (format, lint, type check) before committing.",
+        "Skip precommit checks (format, lint, type check). By default, pre-checks run automatically.",
     },
     {
       option: "--submit",
