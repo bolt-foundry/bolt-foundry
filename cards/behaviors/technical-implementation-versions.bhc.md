@@ -6,15 +6,19 @@ documentation with these guidelines:
 ## Version-Based Documentation
 
 - Create implementation version documents in project-specific docs directories
-- Use semantic versioning (0.x) for each implementation version
+- Use semantic versioning:
+  - During development: Use 0.0.x versions (e.g., 0.0.1, 0.0.2)
+  - Upon completion: Graduate to 0.1, 0.2, etc.
+  - Example: Work towards v0.1 uses v0.0.x, completed work is v0.1
 - Store version documents in version-specific subdirectories
-- Structure: `apps/[project]/docs/[version]/[implementation-plan].md`
+- Structure: `apps/[project]/docs/[version]/[x.x.x]-implementation-plan.md`
 
 ## Version Organization
 
 - Each implementation version should be documented in its own file
-- Version numbering should follow semantic versioning (0.1 for initial, 0.2 for
-  first release, 0.3 for iterative improvements)
+- Version numbering follows the development pattern:
+  - Active development: 0.0.1, 0.0.2, 0.0.3
+  - Completed milestones: 0.1, 0.2, 0.3
 - Include clear version information in document headers
 - Store implementation plans in version folders with consistent naming
   (implementation-plan.md)
@@ -27,11 +31,15 @@ apps/project-name/
   └── docs/
       ├── project-plan.md
       ├── 0.1/
-      │   └── implementation-plan.md
+      │   ├── 0.0.1-implementation-plan.md
+      │   ├── 0.0.2-implementation-plan.md
+      │   └── 0.1-implementation-plan.md  (final completed version)
       ├── 0.2/
-      │   └── implementation-plan.md
+      │   ├── 0.1.1-implementation-plan.md
+      │   ├── 0.1.2-implementation-plan.md
+      │   └── 0.2-implementation-plan.md  (final completed version)
       └── 0.3/
-          └── implementation-plan.md
+          └── 0.3-implementation-plan.md
 ```
 
 ## Documentation Continuity
@@ -45,7 +53,7 @@ apps/project-name/
 
 Each version document should include:
 
-**File: `apps/[project]/docs/[version]/implementation-plan.md`**
+**File: `apps/[project]/docs/[version]/[x.x.x]-implementation-plan.md`**
 
 ```markdown
 # [Project] Implementation Plan - Version [X]
