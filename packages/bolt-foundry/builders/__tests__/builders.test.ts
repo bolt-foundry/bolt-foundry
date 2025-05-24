@@ -2,10 +2,10 @@
 
 import { assertEquals } from "@std/assert";
 
-import { type Spec, SpecBuilder } from "../builders.ts";
+import { makeSpecBuilder, type Spec } from "../builders.ts";
 
 Deno.test("SpecBuilder - simple values and groups", () => {
-  const builder = new SpecBuilder()
+  const builder = makeSpecBuilder()
     .spec("Optimistic")
     .specs("wants", (s) =>
       s
