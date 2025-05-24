@@ -5,150 +5,164 @@ export type RenderOptions =
   & Partial<ChatCompletionCreateParams>
   & TelemetryOptions;
 
-export class Spec {
+/**
+ * Generic specification data structure for holding structured data.
+ *
+ * This is a core building block that can be used across the codebase
+ * for any domain that needs hierarchical, structured specifications.
+ */
+export type Spec = {
   name?: string;
   value: string | Array<Spec>;
+};
 
-  constructor(value: string | Array<Spec>, name?: string) {
-    this.value = value;
-    this.name = name;
-  }
-}
-
-export class SpecBuilder {
-  private _specs: Array<Spec> = [];
-
+/**
+ * Generic builder type for creating Spec instances.
+ *
+ * This builder follows the immutable pattern where each method returns
+ * a new builder instance. This ensures predictable behavior and enables
+ * safe method chaining.
+ *
+ * Modeled after the successful builder pattern used in bfDb.
+ */
+export type SpecBuilder = {
   /** Add a simple spec value */
-  spec(value: string): SpecBuilder {
-    const newBuilder = new SpecBuilder();
-    newBuilder._specs = [...this._specs];
-
-    const valueSpec = new Spec(value);
-    newBuilder._specs.push(valueSpec);
-
-    return newBuilder;
-  }
+  spec(value: string): SpecBuilder;
 
   /** Add a named group of specs using a builder function */
-  specs(name: string, builder: (s: SpecBuilder) => SpecBuilder): SpecBuilder {
-    const newBuilder = new SpecBuilder();
-    newBuilder._specs = [...this._specs];
+  specs(name: string, builder: (s: SpecBuilder) => SpecBuilder): SpecBuilder;
 
-    const childBuilder = builder(new SpecBuilder());
-    const groupSpec = new Spec(childBuilder._specs, name);
-    newBuilder._specs.push(groupSpec);
+  /** Get the collected specs */
+  getSpecs(): Array<Spec>;
+};
 
-    return newBuilder;
-  }
+/**
+ * Factory function to create a SpecBuilder
+ */
+export function makeSpecBuilder(specs: Array<Spec> = []): SpecBuilder {
+  return {
+    spec(value: string) {
+      const valueSpec: Spec = { value };
+      return makeSpecBuilder([...specs, valueSpec]);
+    },
 
-  getSpecs(): Array<Spec> {
-    return this._specs;
-  }
+    specs(name: string, builder: (s: SpecBuilder) => SpecBuilder) {
+      const childBuilder = builder(makeSpecBuilder());
+      const groupSpec: Spec = { value: childBuilder.getSpecs(), name };
+      return makeSpecBuilder([...specs, groupSpec]);
+    },
+
+    getSpecs() {
+      return specs;
+    },
+  };
 }
 
-/** Assistant specification that can be rendered to OpenAI format */
-export class SpecForAssistant {
+/**
+ * Alias for assistant specifications
+ */
+export type SpecForAssistant = Spec;
+
+/**
+ * Builder type for creating assistant specifications
+ */
+export type SpecBuilderForAssistant = {
+  /** The name of this assistant */
   readonly name: string;
 
-  constructor(name: string) {
-    this.name = name;
-  }
+  /** Add a simple spec value */
+  spec(value: string): SpecBuilderForAssistant;
+
+  /** Add a named group of specs using a builder function */
+  specs(
+    name: string,
+    builder: (s: SpecBuilder) => SpecBuilder,
+  ): SpecBuilderForAssistant;
+
+  /** Get the collected specs */
+  getSpecs(): Array<Spec>;
 
   /** Render the assistant specification to OpenAI chat completion format */
-  render(options: RenderOptions = {}): ChatCompletionCreateParams {
-    const { messages = [], model = "gpt-4", ...otherOptions } = options;
-
-    // Build system message
-    const systemMessage = {
-      role: "system" as const,
-      content: "", // TODO: Generate from persona and constraints
-    };
-
-    // Combine system message with any user-provided messages
-    const allMessages = [systemMessage, ...messages];
-
-    return {
-      model,
-      messages: allMessages,
-      ...otherOptions, // This will include any other OpenAI params
-    };
-  }
-}
-
-/** Builder for creating assistant specifications */
-export class SpecBuilderForAssistant {
-  private _name: string;
-
-  constructor(name: string) {
-    this._name = name;
-  }
-
-  /** Add a persona section */
-  persona(
-    _builder: (p: PersonaBuilder) => PersonaBuilder,
-  ): SpecBuilderForAssistant {
-    // TODO: Implement
-    return this;
-  }
-
-  /** Add a constraints section */
-  constraints(
-    _builder: (c: ConstraintsBuilder) => ConstraintsBuilder,
-  ): SpecBuilderForAssistant {
-    // TODO: Implement
-    return this;
-  }
-
-  /** Build the final assistant specification */
-  build(): SpecForAssistant {
-    return new SpecForAssistant(this._name);
-  }
-}
-
-/** Builder for persona specifications */
-export class PersonaBuilder {
-  /** Set the persona description */
-  description(_value: string): PersonaBuilder {
-    // TODO: Implement
-    return this;
-  }
-
-  /** Add a trait */
-  trait(_value: string): PersonaBuilder {
-    // TODO: Implement
-    return this;
-  }
-
-  /** Get the built specs */
-  getSpecs(): Array<Spec> {
-    // TODO: Implement
-    return [];
-  }
-}
-
-/** Builder for constraints specifications */
-export class ConstraintsBuilder {
-  /** Add a constraint */
-  constraint(_value: string): ConstraintsBuilder {
-    // TODO: Implement
-    return this;
-  }
-
-  /** Get the built specs */
-  getSpecs(): Array<Spec> {
-    // TODO: Implement
-    return [];
-  }
-}
-
-/** Main client for creating assistants */
-export const boltFoundryClient = {
-  /** Create a new assistant with the given name and configuration */
-  createAssistant(
-    name: string,
-    builder: (b: SpecBuilderForAssistant) => SpecBuilderForAssistant,
-  ): SpecForAssistant {
-    const assistantBuilder = builder(new SpecBuilderForAssistant(name));
-    return assistantBuilder.build();
-  },
+  render(options?: RenderOptions): ChatCompletionCreateParams;
 };
+
+/**
+ * Factory function to create a SpecBuilderForAssistant
+ */
+export function makeSpecBuilderForAssistant(
+  name: string,
+  specs: Array<Spec> = [],
+): SpecBuilderForAssistant {
+  // Helper function to render specs
+  const renderSpecs = (
+    specsToRender: Array<Spec>,
+    indent: string = "",
+  ): string => {
+    return specsToRender.map((spec) => {
+      if (typeof spec.value === "string") {
+        return indent + spec.value + "\n";
+      } else if (Array.isArray(spec.value)) {
+        // Handle nested specs with optional grouping
+        let result = "";
+        if (spec.name) {
+          result += indent + `<${spec.name}>\n`;
+          result += renderSpecs(spec.value, indent + "  ");
+          result += indent + `</${spec.name}>\n`;
+        } else {
+          result += renderSpecs(spec.value, indent);
+        }
+        return result;
+      }
+      return "";
+    }).join("");
+  };
+
+  return {
+    name,
+
+    spec(value: string) {
+      const valueSpec: Spec = { value };
+      return makeSpecBuilderForAssistant(name, [...specs, valueSpec]);
+    },
+
+    specs(groupName: string, builder: (s: SpecBuilder) => SpecBuilder) {
+      const childBuilder = builder(makeSpecBuilder());
+      const groupSpec: Spec = {
+        value: childBuilder.getSpecs(),
+        name: groupName,
+      };
+      return makeSpecBuilderForAssistant(name, [...specs, groupSpec]);
+    },
+
+    getSpecs() {
+      return specs;
+    },
+
+    render(options: RenderOptions = {}) {
+      const { messages = [], model = "gpt-4", ...otherOptions } = options;
+
+      // Build system message content
+      let systemContent = "";
+
+      // Render all specs
+      if (specs.length > 0) {
+        systemContent = renderSpecs(specs).trim();
+      }
+
+      // Build system message
+      const systemMessage = {
+        role: "system" as const,
+        content: systemContent,
+      };
+
+      // Combine system message with any user-provided messages
+      const allMessages = [systemMessage, ...messages];
+
+      return {
+        model,
+        messages: allMessages,
+        ...otherOptions, // This will include any other OpenAI params
+      };
+    },
+  };
+}

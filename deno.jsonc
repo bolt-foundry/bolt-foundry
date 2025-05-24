@@ -2,6 +2,7 @@
   "unstable": ["temporal", "webgpu"],
   "imports": {
     "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
+    "@bolt-foundry/bolt-foundry/": "./packages/bolt-foundry/",
     "@bolt-foundry/logger": "./packages/logger/logger.ts",
     "@bolt-foundry/get-configuration-var": "./packages/get-configuration-var/get-configuration-var.ts",
 

@@ -4,7 +4,8 @@
 
 ## Version History
 
-- **v0.1**: TypeScript SDK with fluent builder API (Current)
+- **v0.0**: Generic spec foundation with OpenAI-compatible rendering (Current)
+- **v0.1**: Domain-specific builders extending base specs (Planned)
 - **v0.2**: CLI tool for prompt conversion (Planned)
 - **v0.3**: Testing framework and evaluation tools (Planned)
 
@@ -56,6 +57,26 @@ payloads while automatically tracking usage through integrated telemetry.
   conventions
 - **Zero Dependencies**: Minimal runtime dependencies for maximum compatibility
 
+## Version Details
+
+### v0.0: Generic Spec Foundation
+
+Establishes the core architecture with a flexible, unopinionated spec system:
+
+- Generic `Spec` class with `value` (string or Array<Spec>) and optional `name`
+- Base `SpecBuilder` with `.spec()` and `.specs()` methods
+- Direct OpenAI chat completion rendering
+- Foundation for future domain-specific extensions
+
+### v0.1: Domain-Specific Builders
+
+Extends v0.0 with structured builders for common LLM patterns:
+
+- `SpecBuilderForPersona`: Persona descriptions and traits
+- `SpecBuilderForConstraints`: Rules and boundaries
+- `SpecBuilderForBehaviors`: Expected actions and responses
+- Type-safe composition of domain-specific specs
+
 ## Technical Architecture
 
 The SDK uses a builder pattern with TypeScript's type system to ensure valid
@@ -92,13 +113,18 @@ const payload = spec.render({
 
 The SDK will be developed iteratively with continuous user feedback:
 
-### v0.1 Development Phases
+### v0.0 Versions
 
-- **Phase 1**: Core builder implementation with TypeScript types
-- **Phase 2**: Client API with createAssistant() method and nested builders for
-  personas, description, traits, constraints
-- **Phase 3**: OpenAI render method with model parameters
-- **Phase 4**: Telemetry integration and package publishing setup
+- **v0.0.1**: Core spec and builder implementation with TypeScript types
+- **v0.0.2**: Generic OpenAI-compatible rendering and client API
+- **v0.0.3**: Package setup and alpha release
+
+### v0.1 Versions
+
+- **v0.1.0**: SpecBuilderForPersona with descriptions and traits
+- **v0.1.1**: SpecBuilderForConstraints with rules and boundaries
+- **v0.1.2**: SpecBuilderForBehaviors with expected actions
+- **v0.1.3**: Full integration with type-safe composition
 
 ### Entry Criteria
 
