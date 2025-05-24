@@ -1,6 +1,8 @@
 // deno-lint-ignore-file bolt-foundry/no-env-direct-access
 import type { OpenAI } from "@openai/openai";
 
+export { BfClient } from "./BfClient.ts";
+
 let logger = console;
 const enableLogging = false;
 if (!enableLogging) {

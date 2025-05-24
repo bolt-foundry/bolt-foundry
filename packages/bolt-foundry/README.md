@@ -8,62 +8,56 @@ This package provides utilities for working with the Bolt Foundry platform.
 
 A fetch wrapper that adds authentication and logging for OpenAI API requests.
 
+### Builder Pattern
+
+A flexible, immutable builder pattern for creating structured AI assistant
+specifications. This pattern provides:
+
+- **Generic `Spec` and `SpecBuilder` types** for creating hierarchical,
+  structured data
+- **Flexible `.spec()` and `.specs()` methods** for unopinionated composition
+- **Immutable builders** that return new instances, ensuring predictable
+  behavior
+
+See [builders/README.md](builders/README.md) for detailed documentation.
+
 ## Usage
 
-### With OpenAI SDK
-
 ```typescript
-import { connectBoltFoundry } from "@bolt-foundry/bolt-foundry";
+import { BfClient } from "@bolt-foundry/bolt-foundry";
 import OpenAI from "openai";
 
-// Create OpenAI instance with our custom fetch
+// Create a Bolt Foundry client
+const bfClient = BfClient.create({
+  apiKey: process.env.BOLT_FOUNDRY_API_KEY, // Optional: for telemetry
+});
+
+// Use the wrapped fetch with OpenAI
 const openai = new OpenAI({
-  apiKey: "your-api-key-here", // This can be undefined if using fetch wrapper
-  fetch: connectBoltFoundry(process.env.OPENAI_API_KEY),
+  apiKey: process.env.OPENAI_API_KEY,
+  fetch: bfClient.fetch,
 });
 
-// Now use the OpenAI client as normal
-const completion = await openai.chat.completions.create({
-  model: "gpt-3.5-turbo",
-  messages: [
-    {
-      role: "system",
-      content: "You are a helpful assistant.",
-    },
-    {
-      role: "user",
-      content: "Say hello world!",
-    },
-  ],
+// Create an assistant with structured prompts
+const assistant = bfClient.createAssistant(
+  "coding-helper",
+  (a) =>
+    a.specs("persona", (p) =>
+      p.spec("An expert TypeScript developer")
+        .spec("Detail-oriented and helpful"))
+      .specs("constraints", (c) =>
+        c.spec("Always use TypeScript")
+          .spec("Follow best practices")
+          .spec("Explain code clearly")),
+);
+
+// Render to OpenAI format and use
+const chatParams = assistant.render({
+  messages: [{ role: "user", content: "Help me write a function" }],
 });
+
+const completion = await openai.chat.completions.create(chatParams);
 ```
-
-### Integration with NextJS App
-
-Instead of overriding the global fetch function, you can integrate the wrapper
-directly in your API handlers or where you initialize the OpenAI client:
-
-```typescript
-// pages/api/chat.ts or similar
-import { connectBoltFoundry } from "@bolt-foundry/bolt-foundry";
-import { OpenAI } from "openai";
-
-export default async function handler(req, res) {
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    fetch: connectBoltFoundry(process.env.OPENAI_API_KEY),
-  });
-
-  const response = await openai.chat.completions.create({
-    // your configuration
-  });
-
-  res.status(200).json(response);
-}
-```
-
-This approach ensures that only OpenAI API calls are intercepted, while other
-fetch calls remain unaffected.
 
 ### For Testing
 
@@ -90,9 +84,10 @@ const completion = await mockOpenAi.chat.completions.create({
 
 ## Documentation
 
-- [Project Plan](/docs/project-plan.md)
-- [Implementation Plan v0.3](/docs/0.3/implementation-plan.md)
-- [Backlog](/docs/backlog.md)
+- [Project Plan](docs/README.md)
+- [v0.0 Implementation](docs/0.0-IMPLEMENTATION.md) - Generic spec foundation
+- [v0.1 Implementation](docs/0.1-IMPLEMENTATION.md) - Domain-specific builders
+- [Current Status](docs/0.0-STATUS.md)
 
 ## Development
 
