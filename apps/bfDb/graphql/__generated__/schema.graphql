@@ -3,9 +3,71 @@
 ### Do not make changes to this file directly
 
 
+type AddCardPayload {
+  message: String
+  success: Boolean!
+}
+
+type AddTurnPayload {
+  message: String
+  success: Boolean!
+}
+
+type AddVariablePayload {
+  message: String
+  success: Boolean!
+}
+
 """Base interface for all Bolt Foundry database nodes"""
 interface BfNode {
   id: ID!
+}
+
+type Bolt {
+  createdAt: String
+  description: String
+  id: ID
+  name: String!
+  originalPrompt: String
+  status: String!
+  updatedAt: String
+}
+
+type Card {
+  boltId: ID!
+  createdAt: String
+  id: ID
+  kind: String!
+  order: Int
+  text: String!
+  title: String!
+  transition: String
+  updatedAt: String
+}
+
+type CreateBoltPayload {
+  id: String
+  message: String
+  success: Boolean!
+}
+
+type DeleteCardPayload {
+  message: String
+  success: Boolean!
+}
+
+type DeleteTurnPayload {
+  message: String
+  success: Boolean!
+}
+
+type DeleteVariablePayload {
+  message: String
+  success: Boolean!
+}
+
+type FormatterMutations {
+  id: ID
 }
 
 type JoinWaitlistPayload {
@@ -14,7 +76,18 @@ type JoinWaitlistPayload {
 }
 
 type Mutation {
+  addCard(boltId: ID!, kind: String!, order: Int, text: String!, title: String!, transition: String): AddCardPayload
+  addTurn(boltId: ID!, message: String!, order: Int, speaker: String!): AddTurnPayload
+  addVariable(boltId: ID!, defaultValue: String, description: String, name: String!, order: Int): AddVariablePayload
+  createBolt(description: String, name: String!, originalPrompt: String!): CreateBoltPayload
+  deleteCard(id: ID!): DeleteCardPayload
+  deleteTurn(id: ID!): DeleteTurnPayload
+  deleteVariable(id: ID!): DeleteVariablePayload
   joinWaitlist(company: String!, email: String!, name: String!): JoinWaitlistPayload
+  updateBolt(description: String, id: ID!, name: String, status: String): UpdateBoltPayload
+  updateCard(id: ID!, order: Int, text: String, title: String, transition: String): UpdateCardPayload
+  updateTurn(id: ID!, message: String, order: Int, speaker: String): UpdateTurnPayload
+  updateVariable(defaultValue: String, description: String, id: ID!, name: String, order: Int): UpdateVariablePayload
 }
 
 """An object with a unique identifier"""
@@ -24,6 +97,47 @@ interface Node {
 
 type Query {
   ok: Boolean
+}
+
+type Turn {
+  boltId: ID!
+  createdAt: String
+  id: ID
+  message: String!
+  order: Int
+  speaker: String!
+  updatedAt: String
+}
+
+type UpdateBoltPayload {
+  message: String
+  success: Boolean!
+}
+
+type UpdateCardPayload {
+  message: String
+  success: Boolean!
+}
+
+type UpdateTurnPayload {
+  message: String
+  success: Boolean!
+}
+
+type UpdateVariablePayload {
+  message: String
+  success: Boolean!
+}
+
+type Variable {
+  boltId: ID!
+  createdAt: String
+  defaultValue: String
+  description: String
+  id: ID
+  name: String!
+  order: Int
+  updatedAt: String
 }
 
 type Waitlist {
