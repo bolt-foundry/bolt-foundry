@@ -43,12 +43,62 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  AddCardPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  AddTurnPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  AddVariablePayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  Bolt: {};
+  Card: {};
+  CreateBoltPayload: { // root type
+    id?: string | null; // String
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  DeleteCardPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  DeleteTurnPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  DeleteVariablePayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  FormatterMutations: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
     success: boolean; // Boolean!
   }
   Mutation: {};
   Query: {};
+  Turn: {};
+  UpdateBoltPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  UpdateCardPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  UpdateTurnPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  UpdateVariablePayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
+  Variable: {};
   Waitlist: {};
 }
 
@@ -65,15 +115,113 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  AddCardPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  AddTurnPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  AddVariablePayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  Bolt: { // field return type
+    createdAt: string | null; // String
+    description: string | null; // String
+    id: string | null; // ID
+    name: string; // String!
+    originalPrompt: string | null; // String
+    status: string; // String!
+    updatedAt: string | null; // String
+  }
+  Card: { // field return type
+    boltId: string; // ID!
+    createdAt: string | null; // String
+    id: string | null; // ID
+    kind: string; // String!
+    order: number | null; // Int
+    text: string; // String!
+    title: string; // String!
+    transition: string | null; // String
+    updatedAt: string | null; // String
+  }
+  CreateBoltPayload: { // field return type
+    id: string | null; // String
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  DeleteCardPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  DeleteTurnPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  DeleteVariablePayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  FormatterMutations: { // field return type
+    id: string | null; // ID
+  }
   JoinWaitlistPayload: { // field return type
     message: string | null; // String
     success: boolean; // Boolean!
   }
   Mutation: { // field return type
+    addCard: NexusGenRootTypes['AddCardPayload'] | null; // AddCardPayload
+    addTurn: NexusGenRootTypes['AddTurnPayload'] | null; // AddTurnPayload
+    addVariable: NexusGenRootTypes['AddVariablePayload'] | null; // AddVariablePayload
+    createBolt: NexusGenRootTypes['CreateBoltPayload'] | null; // CreateBoltPayload
+    deleteCard: NexusGenRootTypes['DeleteCardPayload'] | null; // DeleteCardPayload
+    deleteTurn: NexusGenRootTypes['DeleteTurnPayload'] | null; // DeleteTurnPayload
+    deleteVariable: NexusGenRootTypes['DeleteVariablePayload'] | null; // DeleteVariablePayload
     joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+    updateBolt: NexusGenRootTypes['UpdateBoltPayload'] | null; // UpdateBoltPayload
+    updateCard: NexusGenRootTypes['UpdateCardPayload'] | null; // UpdateCardPayload
+    updateTurn: NexusGenRootTypes['UpdateTurnPayload'] | null; // UpdateTurnPayload
+    updateVariable: NexusGenRootTypes['UpdateVariablePayload'] | null; // UpdateVariablePayload
   }
   Query: { // field return type
     ok: boolean | null; // Boolean
+  }
+  Turn: { // field return type
+    boltId: string; // ID!
+    createdAt: string | null; // String
+    id: string | null; // ID
+    message: string; // String!
+    order: number | null; // Int
+    speaker: string; // String!
+    updatedAt: string | null; // String
+  }
+  UpdateBoltPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  UpdateCardPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  UpdateTurnPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  UpdateVariablePayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
+  }
+  Variable: { // field return type
+    boltId: string; // ID!
+    createdAt: string | null; // String
+    defaultValue: string | null; // String
+    description: string | null; // String
+    id: string | null; // ID
+    name: string; // String!
+    order: number | null; // Int
+    updatedAt: string | null; // String
   }
   Waitlist: { // field return type
     id: string | null; // ID
@@ -87,15 +235,113 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  AddCardPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  AddTurnPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  AddVariablePayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  Bolt: { // field return type name
+    createdAt: 'String'
+    description: 'String'
+    id: 'ID'
+    name: 'String'
+    originalPrompt: 'String'
+    status: 'String'
+    updatedAt: 'String'
+  }
+  Card: { // field return type name
+    boltId: 'ID'
+    createdAt: 'String'
+    id: 'ID'
+    kind: 'String'
+    order: 'Int'
+    text: 'String'
+    title: 'String'
+    transition: 'String'
+    updatedAt: 'String'
+  }
+  CreateBoltPayload: { // field return type name
+    id: 'String'
+    message: 'String'
+    success: 'Boolean'
+  }
+  DeleteCardPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  DeleteTurnPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  DeleteVariablePayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  FormatterMutations: { // field return type name
+    id: 'ID'
+  }
   JoinWaitlistPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
   }
   Mutation: { // field return type name
+    addCard: 'AddCardPayload'
+    addTurn: 'AddTurnPayload'
+    addVariable: 'AddVariablePayload'
+    createBolt: 'CreateBoltPayload'
+    deleteCard: 'DeleteCardPayload'
+    deleteTurn: 'DeleteTurnPayload'
+    deleteVariable: 'DeleteVariablePayload'
     joinWaitlist: 'JoinWaitlistPayload'
+    updateBolt: 'UpdateBoltPayload'
+    updateCard: 'UpdateCardPayload'
+    updateTurn: 'UpdateTurnPayload'
+    updateVariable: 'UpdateVariablePayload'
   }
   Query: { // field return type name
     ok: 'Boolean'
+  }
+  Turn: { // field return type name
+    boltId: 'ID'
+    createdAt: 'String'
+    id: 'ID'
+    message: 'String'
+    order: 'Int'
+    speaker: 'String'
+    updatedAt: 'String'
+  }
+  UpdateBoltPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  UpdateCardPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  UpdateTurnPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  UpdateVariablePayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
+  }
+  Variable: { // field return type name
+    boltId: 'ID'
+    createdAt: 'String'
+    defaultValue: 'String'
+    description: 'String'
+    id: 'ID'
+    name: 'String'
+    order: 'Int'
+    updatedAt: 'String'
   }
   Waitlist: { // field return type name
     id: 'ID'
@@ -110,10 +356,71 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    addCard: { // args
+      boltId: string; // ID!
+      kind: string; // String!
+      order?: number | null; // Int
+      text: string; // String!
+      title: string; // String!
+      transition?: string | null; // String
+    }
+    addTurn: { // args
+      boltId: string; // ID!
+      message: string; // String!
+      order?: number | null; // Int
+      speaker: string; // String!
+    }
+    addVariable: { // args
+      boltId: string; // ID!
+      defaultValue?: string | null; // String
+      description?: string | null; // String
+      name: string; // String!
+      order?: number | null; // Int
+    }
+    createBolt: { // args
+      description?: string | null; // String
+      name: string; // String!
+      originalPrompt: string; // String!
+    }
+    deleteCard: { // args
+      id: string; // ID!
+    }
+    deleteTurn: { // args
+      id: string; // ID!
+    }
+    deleteVariable: { // args
+      id: string; // ID!
+    }
     joinWaitlist: { // args
       company: string; // String!
       email: string; // String!
       name: string; // String!
+    }
+    updateBolt: { // args
+      description?: string | null; // String
+      id: string; // ID!
+      name?: string | null; // String
+      status?: string | null; // String
+    }
+    updateCard: { // args
+      id: string; // ID!
+      order?: number | null; // Int
+      text?: string | null; // String
+      title?: string | null; // String
+      transition?: string | null; // String
+    }
+    updateTurn: { // args
+      id: string; // ID!
+      message?: string | null; // String
+      order?: number | null; // Int
+      speaker?: string | null; // String
+    }
+    updateVariable: { // args
+      defaultValue?: string | null; // String
+      description?: string | null; // String
+      id: string; // ID!
+      name?: string | null; // String
+      order?: number | null; // Int
     }
   }
 }

@@ -388,6 +388,33 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 - Update claude.md when we make changes that could be structural
 
+### Recent Work: Formatter GraphQL Integration (Completed)
+
+Successfully implemented comprehensive GraphQL integration for Formatter.tsx:
+
+**Completed Integration:**
+- ✅ Created GraphQL schema with 4 main types: Bolt, Card, Variable, Turn
+- ✅ Implemented 11 working mutations with stubbed data:
+  - Bolt: createBolt, updateBolt  
+  - Card: addCard, updateCard, deleteCard
+  - Variable: addVariable, updateVariable, deleteVariable
+  - Turn: addTurn, updateTurn, deleteTurn
+- ✅ Replaced fake data in Formatter.tsx with real GraphQL mutation calls
+- ✅ Generated complete GraphQL schema at `/apps/bfDb/graphql/__generated__/schema.graphql`
+
+**Key Files Modified:**
+- `apps/bfDb/graphql/roots/FormatterMutations.ts` - Contains all 10 formatter mutations
+- `apps/bfDb/graphql/roots/Bolt.ts, Card.ts, Variable.ts, Turn.ts` - GraphQL object types
+- `apps/boltFoundry/mutations/graphqlMutations.ts` - Direct GraphQL mutation functions
+- `apps/boltFoundry/components/Formatter.tsx` - Now uses createBolt() GraphQL mutation
+
+**Technical Notes:**
+- Mutations return success/message responses (stubbed data as requested)
+- Query object method `.object()` not implemented yet, so mutations work but queries don't
+- Isograph syntax complex - used direct GraphQL fetch calls instead
+- Schema generation requires full `bff build` for mutations to appear
+- All mutation payload types properly generated in schema
+
 ## Documentation Practices
 
 - Do not include dates (specific or relative) in documentation files unless
