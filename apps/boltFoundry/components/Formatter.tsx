@@ -4,7 +4,6 @@ import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
 import { BfDsForm } from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
 import { BfDsFormTextArea } from "apps/bfDs/components/BfDsForm/BfDsFormTextArea.tsx";
 import { BfDsFormSubmitButton } from "apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
-import { BfDsCopyButton } from "apps/bfDs/components/BfDsCopyButton.tsx";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
 import { BfDsFormDropdownSelector } from "apps/bfDs/components/BfDsForm/BfDsFormDropdownSelector.tsx";
 import { getLogger } from "packages/logger/logger.ts";
@@ -13,84 +12,18 @@ import { BfSymbol } from "apps/bfDs/static/BfSymbol.tsx";
 import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
 import { BfDsRange } from "apps/bfDs/components/BfDsRange.tsx";
 import { BfDsTooltipMenu } from "apps/bfDs/components/BfDsTooltipMenu.tsx";
-import { BfDsInput } from "apps/bfDs/components/BfDsInput.tsx";
 import { BfDsDropdownSelector } from "apps/bfDs/components/BfDsDropdownSelector.tsx";
 import { BfDsTabs } from "apps/bfDs/components/BfDsTabs.tsx";
 import { BfDsSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
+import {
+  FormatterProvider,
+  useFormatter,
+} from "apps/boltFoundry/contexts/FormatterContext.tsx";
+// GraphQL mutations  
+import { createBolt, processPromptWithLLM, type LLMCard } from "apps/boltFoundry/mutations/graphqlMutations.ts";
 
 const logger = getLogger(import.meta);
 
-// FAKE DATA
-const data = {
-  cards: [
-    {
-      title: "Intro",
-      transition: null,
-      text: "This is the intro card",
-    },
-    {
-      title: "Assistant Persona",
-      transition: "This is the assistant persona card",
-      text: "You are a helpful assistant.",
-    },
-    {
-      title: "User Persona",
-      transition: "This is the user persona card",
-      text: "You are a user.",
-    },
-  ],
-  behaviors: [
-    {
-      title: "Behavior name",
-      transition: "This is the behavior card",
-      text: "You are helpful, creative, clever, and very friendly.",
-    },
-  ],
-  tools: [
-    {
-      name: "confirm_fax_number",
-      description:
-        "Use this function to collect the phone number and verify it to use to send a fax.",
-      parameters: {
-        fax_number:
-          "The phone number, should be displayed as a string of numbers, not words",
-        verified: "Whether the fax number has been verified by the agent",
-      },
-    },
-  ],
-  variables: [
-    {
-      name: "post_description",
-      description: "Description of the post",
-      defaultValue: "This is a post",
-    },
-    {
-      name: "post_platform",
-      description: "Platform of the post",
-      defaultValue: "Facebook",
-    },
-  ],
-  turns: [
-    {
-      speaker: "assistant",
-      message: "This is the assistant turn",
-    },
-    {
-      speaker: "user",
-      message: "This is the user turn",
-    },
-  ],
-  bolts: [
-    {
-      name: "Original prompt",
-      id: "1234",
-    },
-    {
-      name: "Initial bolt",
-      id: "5678",
-    },
-  ],
-};
 
 type PromptForm = {
   prompt: string;
@@ -112,13 +45,21 @@ const formStyle: React.CSSProperties = {
   width: "100%",
 };
 
+// TODO: Re-enable FormatterContent component once GraphQL schema is generated
+// export const FormatterContent = iso(`...`);
+
 export const Formatter = iso(`
 field Query.Formatter @component {
   __typename
   }
 `)(function Formatter() {
   const [ogPrompt, setOgPrompt] = useState<string | null>();
+  const [originalBoltId, setOriginalBoltId] = useState<string | null>(null);
+  const [currentBoltId, setCurrentBoltId] = useState<string | null>(null);
   const [forceExpand, setForceExpand] = useState<ForceExpand>(null);
+  const [generatedCards, setGeneratedCards] = useState<LLMCard[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [llmError, setLlmError] = useState<string | null>(null);
 
   const handleForceExpand = (value: ForceExpand) => {
     setForceExpand(value);
@@ -128,205 +69,209 @@ field Query.Formatter @component {
   };
 
   return (
-    <div className="formatter-container flexRow">
-      <div className="formatter-nav">
-        <div className="formatter-logo">
-          <BfLogo boltColor="var(--text)" foundryColor="var(--text)" />
-        </div>
-        <h1 className="formatter-nav-text">Formatter</h1>
-      </div>
-      {!ogPrompt
-        ? (
-          <div className="formatter-content flexColumn flex1 alignItemsCenter">
-            <BfDsForm
-              initialData={{ prompt: "" }}
-              onSubmit={(value: PromptForm) => setOgPrompt(value.prompt)}
-              xstyle={{ ...formStyle, maxWidth: "600px" }}
-            >
-              <BfDsFormTextArea
-                id="prompt"
-                title={`Paste your prompt here. We'll apply the "Bolt Foundry Way" to it. Click "Make this good™" to compare.`}
-                rows={16}
-                placeholder="Paste your prompt here..."
-              />
-              <BfDsFormSubmitButton
-                kind="accent"
-                text="Make this good™"
-              />
-            </BfDsForm>
+    <FormatterProvider>
+      <div className="formatter-container flexRow">
+        <div className="formatter-nav">
+          <div className="formatter-logo">
+            <BfLogo boltColor="var(--text)" foundryColor="var(--text)" />
           </div>
-        )
-        : (
-          <>
-            <div className="flex1 flexColumn">
-              <div className="formatter-toolbar flexRow gapMedium">
-                <BfDsButton
-                  kind="overlay"
-                  iconLeft="arrowLeft"
-                  onClick={() => setOgPrompt(null)}
+          <h1 className="formatter-nav-text">Formatter</h1>
+        </div>
+        {!ogPrompt
+          ? (
+            <div className="formatter-content flexColumn flex1 alignItemsCenter">
+              <BfDsForm
+                initialData={{ prompt: "" }}
+                onSubmit={async (value: PromptForm) => {
+                  setOgPrompt(value.prompt);
+                  setIsProcessing(true);
+                  setLlmError(null);
+                  
+                  try {
+                    // Step 1: Save the original prompt as a bolt
+                    const originalResult = await createBolt({
+                      name: "Original Prompt",
+                      description: "User's original prompt before formatting",
+                      originalPrompt: value.prompt,
+                    });
+                    
+                    if (originalResult.success && originalResult.id) {
+                      setOriginalBoltId(originalResult.id);
+                      logger.info("Created original bolt:", originalResult.message);
+                      
+                      // Step 2: Create a new bolt for the formatted version
+                      const formattedResult = await createBolt({
+                        name: "Formatted Bolt",
+                        description: "Bolt Foundry formatted version of the original prompt",
+                        originalPrompt: value.prompt,
+                      });
+                      
+                      if (formattedResult.success && formattedResult.id) {
+                        setCurrentBoltId(formattedResult.id);
+                        logger.info("Created formatted bolt:", formattedResult.message);
+                        
+                        // Step 3: Process the prompt with LLM to generate cards
+                        const llmResult = await processPromptWithLLM(value.prompt);
+                        
+                        if (llmResult.success && llmResult.data) {
+                          setGeneratedCards(llmResult.data.cards);
+                          logger.info("Generated cards:", llmResult.data.cards);
+                        } else {
+                          setLlmError(llmResult.error || "Failed to process prompt with LLM");
+                          logger.error("Failed to process prompt with LLM:", llmResult.error);
+                        }
+                      } else {
+                        logger.error("Failed to create formatted bolt:", formattedResult.message);
+                      }
+                    } else {
+                      logger.error("Failed to create original bolt:", originalResult.message);
+                    }
+                  } catch (error) {
+                    logger.error("Failed to create bolts:", error);
+                  } finally {
+                    setIsProcessing(false);
+                  }
+                }}
+                xstyle={{ ...formStyle, maxWidth: "600px" }}
+              >
+                <BfDsFormTextArea
+                  id="prompt"
+                  title={`Paste your prompt here. We'll apply the "Bolt Foundry Way" to it. Click "Make this good™" to compare.`}
+                  rows={16}
+                  placeholder="Paste your prompt here..."
                 />
-                <BfDsButton
-                  kind="overlay"
-                  text="Expand"
-                  onClick={() => handleForceExpand("open")}
+                <BfDsFormSubmitButton
+                  kind="accent"
+                  text="Make this good™"
                 />
-                <BfDsButton
-                  kind="overlay"
-                  text="Collapse"
-                  onClick={() => handleForceExpand("close")}
-                />
-              </div>
-              <div className="formatter-content-main flex1 flexColumn gapLarge">
-                <div className="formatter-section flexColumn gapMedium">
-                  <div className="formatter-section-header flexRow gapMedium alignItemsCenter">
-                    <h2 className="flex1">Cards</h2>
-                    <div>
-                      <BfDsCopyButton textToCopy="TODO" />
-                    </div>
-                    <div>
-                      <BfDsButton
-                        iconLeft="plus"
-                        kind="overlay"
-                        onClick={() => logger.info("TODO: Add card")}
-                      />
-                    </div>
-                  </div>
-                  {data.cards.map((card) => {
-                    return (
-                      <Card
-                        forceExpand={forceExpand}
-                        key={card.title}
-                        title={card.title}
-                        kind={null}
-                        transition={card.transition}
-                        text={card.text}
-                      />
-                    );
-                  })}
-                  {data.behaviors.map((card) => {
-                    return (
-                      <Card
-                        forceExpand={forceExpand}
-                        key={card.title}
-                        title={card.title}
-                        kind="behavior"
-                        transition={card.transition}
-                        text={card.text}
-                      />
-                    );
-                  })}
-                  {data.tools.map((card) => {
-                    return (
-                      <Card
-                        forceExpand={forceExpand}
-                        key={card.name}
-                        title={card.name}
-                        kind="tool"
-                        transition={null}
-                        text={card.description}
-                      />
-                    );
-                  })}
-                </div>
-                <div className="formatter-section flexColumn gapMedium">
-                  <div className="formatter-section-header flexRow gapMedium alignItemsCenter">
-                    <h2 className="flex1">Variable turns</h2>
-                    <div>
-                      <BfDsButton
-                        iconLeft="plus"
-                        kind="overlay"
-                        onClick={() => logger.info("TODO: Add variable")}
-                      />
-                    </div>
-                  </div>
-                  {data.variables.map((variable) => {
-                    return (
-                      <VariableCard
-                        forceExpand={forceExpand}
-                        key={variable.name}
-                        name={variable.name}
-                        assistantTurn={`Please provide the value for ${variable.name}.`}
-                        userTurn={variable.defaultValue}
-                      />
-                    );
-                  })}
-                </div>
-                <div className="formatter-section flexColumn gapMedium">
-                  <div className="formatter-section-header flexRow gapMedium alignItemsCenter">
-                    <h2 className="flex1">Turns</h2>
-                  </div>
-                  {data.turns.map((turn, index) => {
-                    return (
-                      <TurnCard
-                        forceExpand={forceExpand}
-                        key={index}
-                        speaker={turn.speaker}
-                        message={turn.message}
-                      />
-                    );
-                  })}
-                  <BfDsForm
-                    initialData={{ message: "", speaker: "assistant" }}
-                    onSubmit={() => logger.info("TODO: Add turn")}
-                  >
-                    <div className="formatter-section-footer flexRow gapMedium alignItemsCenter">
-                      <BfDsFormTextArea
-                        id="message"
-                        rows={1}
-                        placeholder="Enter what the participant should say in this turn..."
-                        xstyle={{ flex: 1 }}
-                      />
-                      <BfDsFormDropdownSelector
-                        id="speaker"
-                        options={{ "Assistant": "assistant", "User": "user" }}
-                        onChange={() => logger.info("TODO: Change speaker")}
-                      />
-                      <BfDsFormSubmitButton
-                        kind="secondary"
-                        iconLeft="plus"
-                        text="Turn"
-                      />
-                    </div>
-                  </BfDsForm>
-                </div>
-              </div>
-              <div className="formatter-content-main-footer">
-                <div className="formatter-content-main-footer-inner flexRow gapMedium alignItemsCenter">
-                  <div className="flex1 flexRow gapMedium alignItemsCenter">
-                    <div>Bolt name</div>
-                    <BfDsButton iconLeft="pencil" kind="overlayDark" />
-                  </div>
+              </BfDsForm>
+            </div>
+          )
+          : (
+            <>
+              <div className="flex1 flexColumn">
+                <div className="formatter-toolbar flexRow gapMedium">
                   <BfDsButton
-                    kind="secondary"
-                    text="Save as new"
-                    onClick={() => logger.info("TODO: Save as new")}
+                    kind="overlay"
+                    iconLeft="arrowLeft"
+                    onClick={() => {
+                      setOgPrompt(null);
+                      setOriginalBoltId(null);
+                      setCurrentBoltId(null);
+                      setGeneratedCards([]);
+                      setIsProcessing(false);
+                      setLlmError(null);
+                    }}
                   />
                   <BfDsButton
-                    kind="accent"
-                    text="Save"
-                    onClick={() => logger.info("TODO: Save")}
+                    kind="overlay"
+                    text="Expand"
+                    onClick={() => handleForceExpand("open")}
+                  />
+                  <BfDsButton
+                    kind="overlay"
+                    text="Collapse"
+                    onClick={() => handleForceExpand("close")}
                   />
                 </div>
+                <div className="formatter-content-main flex1 flexColumn gapLarge">
+                  {/* {currentBoltId && <FormatterContent boltId={currentBoltId} forceExpand={forceExpand} />} */}
+                  <div className="formatter-helper-text">
+                    <div><strong>Formatting your prompt using the Bolt Foundry Way™</strong></div>
+                    <div>Original bolt: {originalBoltId || "Not created"}</div>
+                    <div>Current (formatted) bolt: {currentBoltId || "Not created"}</div>
+                    <div style={{ marginTop: "16px", padding: "12px", background: "var(--surfaceColor)", borderRadius: "8px" }}>
+                      <div><strong>Original prompt:</strong></div>
+                      <div style={{ fontStyle: "italic", marginTop: "8px" }}>{ogPrompt}</div>
+                    </div>
+                  </div>
+                  
+                  {isProcessing && (
+                    <div className="formatter-processing flexRow gapMedium alignItemsCenter" style={{ padding: "16px", background: "var(--surfaceColor)", borderRadius: "8px" }}>
+                      <BfDsSpinner size={24} />
+                      <div>Processing your prompt with LLM...</div>
+                    </div>
+                  )}
+                  
+                  {llmError && (
+                    <div className="formatter-error" style={{ padding: "16px", background: "var(--errorBackground)", color: "var(--errorColor)", borderRadius: "8px" }}>
+                      <div><strong>Error:</strong> {llmError}</div>
+                    </div>
+                  )}
+                  
+                  {generatedCards.length > 0 && (
+                    <div className="formatter-generated-cards flexColumn gapMedium">
+                      <div><strong>Generated Cards:</strong></div>
+                      {generatedCards.map((card, index) => (
+                        <Card
+                          key={index}
+                          forceExpand={forceExpand}
+                          title={card.name}
+                          kind={card.kind as "behavior" | "tool" | "persona" | null}
+                          transition={null}
+                          text={card.message}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="formatter-content-main-footer">
+                  <div className="formatter-content-main-footer-inner flexRow gapMedium alignItemsCenter">
+                    <div className="flex1 flexRow gapMedium alignItemsCenter">
+                      <div>Formatted Bolt</div>
+                      <BfDsButton iconLeft="pencil" kind="overlayDark" />
+                    </div>
+                    <BfDsButton
+                      kind="secondary"
+                      text="Save as new"
+                      onClick={async () => {
+                        if (currentBoltId) {
+                          try {
+                            const newBoltResult = await createBolt({
+                              name: "Formatted Bolt (Copy)",
+                              description: "Copy of formatted bolt",
+                              originalPrompt: ogPrompt || "",
+                            });
+                            
+                            if (newBoltResult.success && newBoltResult.id) {
+                              setCurrentBoltId(newBoltResult.id);
+                              logger.info("Created new bolt copy:", newBoltResult.message);
+                            }
+                          } catch (error) {
+                            logger.error("Failed to create bolt copy:", error);
+                          }
+                        }
+                      }}
+                    />
+                    <BfDsButton
+                      kind="accent"
+                      text="Save"
+                      onClick={() => logger.info("TODO: Save bolt changes for ID:", currentBoltId)}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="formatter-content-sidebar flexColumn gapLarge">
-              <RightSidebar />
-            </div>
-          </>
-        )}
-    </div>
+              <div className="formatter-content-sidebar flexColumn gapLarge">
+                <RightSidebar />
+              </div>
+            </>
+          )}
+      </div>
+    </FormatterProvider>
   );
 });
 
 type CardProps = {
   forceExpand: ForceExpand;
+  id?: string;
   title: string;
-  kind: "behavior" | "tool" | null;
+  kind: "behavior" | "tool" | "persona" | null;
   transition: string | null;
   text: string;
+  onUpdate?: (id: string, updates: any) => void;
 };
 
-function Card({ forceExpand, title, kind, transition, text }: CardProps) {
+function Card({ forceExpand, id, title, kind, transition, text, onUpdate }: CardProps) {
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
@@ -372,13 +317,21 @@ function Card({ forceExpand, title, kind, transition, text }: CardProps) {
           <div className="formatter-card-expanded-title">Edit {title}</div>
           <BfDsForm
             initialData={{ transition: transition ?? "", text: text }}
-            onSubmit={(value) =>
-              logger.info(
-                "TODO: Save card",
-                title,
-                value.transition,
-                value.text,
-              )}
+            onSubmit={(value) => {
+              if (id && onUpdate) {
+                onUpdate(id, {
+                  transition: value.transition,
+                  text: value.text,
+                });
+              } else {
+                logger.info(
+                  "TODO: Save card",
+                  title,
+                  value.transition,
+                  value.text,
+                );
+              }
+            }}
             xstyle={formStyle}
           >
             {transition && (
@@ -681,12 +634,19 @@ function ModelPicker(
 }
 
 function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
-  const [runs, setRuns] = useState(1);
-  const [model, setModel] = useState<ModelProps>({
-    provider: "openai",
-    model: "gpt-4",
-    key: null,
-  });
+  const {
+    iterations,
+    setIterations,
+    model,
+    setModel,
+    validationType,
+    setValidationType,
+    variableValues,
+    setVariableValue,
+    compareBolt,
+    setCompareBolt,
+  } = useFormatter();
+
   return (
     <div>
       <div className="formatter-testing flexColumn gapLarge">
@@ -699,7 +659,10 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
             of the base bolt
           </div>
           <BfDsTooltipMenu
-            menu={data.bolts.map((bolt) => ({ label: bolt.name }))}
+            menu={[
+              { label: "Original prompt", onClick: () => setCompareBolt("original") },
+              { label: "Current bolt", onClick: () => setCompareBolt("current") },
+            ]}
             position="bottom"
             justification="end"
           >
@@ -707,7 +670,9 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
               <div className="bolt-symbol">
                 <BfSymbol color="var(--secondaryColor)" />
               </div>
-              <div className="flex1">Original prompt</div>
+              <div className="flex1">
+                {compareBolt === "current" ? "Current bolt" : "Original prompt"}
+              </div>
               <div className="ver">
                 <BfDsIcon name="arrowDown" color="var(--secondaryColor)" />
               </div>
@@ -721,18 +686,19 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
         <div className="formatter-testing-options flexColumn gapMedium">
           <BfDsRange
             meta="Running more iterations may increase execution time but will provide more reliable statistical insights"
-            value={runs}
+            value={iterations}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setRuns(parseFloat(e.target.value))}
+              setIterations(parseFloat(e.target.value))}
             min={1}
             max={100}
             label="Number of iterations"
           />
           <BfDsDropdownSelector
+            kind="input"
             label="Validation type"
-            value="json"
-            onChange={() => logger.info("TODO: Change validation type")}
-            options={{ "JSON": "json", "User": "user" }}
+            value={validationType}
+            onChange={(value) => setValidationType(value)}
+            options={{ "JSON": "json", "Use concise answers": "concise" }}
             actions={[{
               label: "Add new validation",
               onClick: () => logger.info("TODO: Add new validation"),
@@ -741,15 +707,10 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
           />
           <div className="formatter-testing-options-variables flexColumn gapMedium">
             <div className="bold">Variables</div>
-            {data.variables.map((variable) => {
-              return (
-                <BfDsInput
-                  label={variable.name}
-                  value={variable.defaultValue}
-                  onChange={() => logger.info("TODO: Change variable value")}
-                />
-              );
-            })}
+            {/* TODO: Get variables from GraphQL data */}
+            <div className="formatter-helper-text">
+              Variables will be loaded from the current bolt
+            </div>
           </div>
         </div>
         <BfDsButton
@@ -763,38 +724,117 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
 }
 
 type Result = {
-  boltName: string;
   message: string;
   time: string;
   tokens: number;
+  status: "pass" | "fail";
+};
+type Results = {
+  base: {
+    boltName: string;
+    results: Array<Result>;
+  };
+  new: {
+    boltName: string;
+    results: Array<Result>;
+  };
+} | null;
+
+const TEST_RESULTS_1: Results = {
+  base: {
+    boltName: "Original prompt",
+    results: [
+      {
+        message:
+          "The date is May 22, 2026. Is there anything else I can help you with?",
+        time: "0.91s",
+        tokens: 13,
+        status: "fail",
+      },
+    ],
+  },
+  new: {
+    boltName: "Initial bolt",
+    results: [
+      {
+        message: "May 22, 2026",
+        time: "0.89s",
+        tokens: 3,
+        status: "pass",
+      },
+    ],
+  },
+};
+
+const TEST_RESULTS_MANY: Results = {
+  base: {
+    boltName: "Original prompt",
+    results: [
+      {
+        message:
+          "The date is May 22, 2026. Is there anything else I can help you with?",
+        time: "0.91s",
+        tokens: 13,
+        status: "fail",
+      },
+      {
+        message:
+          "The date is May 22, 2026. Is there anything else I can help you with?",
+        time: "0.91s",
+        tokens: 13,
+        status: "fail",
+      },
+      {
+        message:
+          "The date is May 22, 2026. Is there anything else I can help you with?",
+        time: "0.91s",
+        tokens: 13,
+        status: "fail",
+      },
+    ],
+  },
+  new: {
+    boltName: "Initial bolt",
+    results: [
+      {
+        message: "May 22, 2026",
+        time: "0.89s",
+        tokens: 3,
+        status: "pass",
+      },
+      {
+        message: "May 22, 2026",
+        time: "0.89s",
+        tokens: 3,
+        status: "pass",
+      },
+      {
+        message: "May 22, 2026",
+        time: "0.89s",
+        tokens: 3,
+        status: "pass",
+      },
+    ],
+  },
 };
 
 function ResultsTab() {
-  const [results, setResults] = useState<Array<Result>>([]);
+  const { iterations } = useFormatter();
+  const [results, setResults] = useState<Results>(null);
 
   useEffect(() => {
     globalThis.setTimeout(() => {
-      setResults([
-        {
-          boltName: "Original prompt",
-          message:
-            "The date is May 22, 2026. Is there anything else I can help you with?",
-          time: "0.91s",
-          tokens: 13,
-        },
-        {
-          boltName: "Initial bolt",
-          message: "May 22, 2026",
-          time: "0.89s",
-          tokens: 3,
-        },
-      ]);
+      if (iterations === 1) {
+        setResults(TEST_RESULTS_1);
+      } else {
+        setResults(TEST_RESULTS_MANY);
+      }
     }, 3000);
   }, []);
 
   return (
     <div>
-      {results.length === 0
+      {results == null
         ? (
           <div className="formatter-results-waiting flexRow gapMedium alignItemsCenter">
             <BfDsSpinner size={32} />
@@ -805,7 +845,8 @@ function ResultsTab() {
           <div className="flexColumn gapLarge">
             <div>
               <div>
-                Ran <span className="bold">1</span> iteration.
+                Ran <span className="bold">{iterations}</span>{" "}
+                iteration{iterations === 1 ? "" : "s"}.
               </div>
               <div>
                 Total time: <span className="bold">1.8s</span> (avg.{" "}
@@ -817,60 +858,129 @@ function ResultsTab() {
                 per iteration)
               </div>
             </div>
-            <div className="flexRow gapMedium">
-              <div className="formatter-result base flex1 flexColumn gapMedium">
-                <div className="title">{results[0].boltName}</div>
-                <div className="result flex1">{results[0].message}</div>
-                <div className="stats">
-                  <span className="bold">{results[0].time}</span>,{" "}
-                  <span className="bold">{results[0].tokens}</span> tokens
-                </div>
-              </div>
-              <div className="formatter-result new flex1 flexColumn gapMedium">
-                <div className="title">{results[1].boltName}</div>
-                <div className="result flex1">{results[1].message}</div>
-                <div className="stats">
-                  <span className="bold">{results[1].time}</span>,{" "}
-                  <span className="bold">{results[1].tokens}</span> tokens
-                </div>
-              </div>
-            </div>
-            <div className="formatter-results-summary flexColumn gapMedium">
-              <div className="title">Performance comparison</div>
-              <div className="flexRow gapMedium">
-                <div className="stat">
-                  <div className="title">Response time</div>
-                  <div className="value">
-                    The formatted prompt was 2.2% faster (0.02s difference)
+            {iterations === 1
+              ? (
+                <>
+                  <div className="flexRow gapMedium">
+                    <div className="formatter-result base flex1 flexColumn gapMedium">
+                      <div className="title">{results.base.boltName}</div>
+                      <div className="result flex1">
+                        {results.base.results[0].message}
+                      </div>
+                      <div className="stats">
+                        <span className="bold">
+                          {results.base.results[0].time}
+                        </span>,{" "}
+                        <span className="bold">
+                          {results.base.results[0].tokens}
+                        </span>{" "}
+                        tokens
+                      </div>
+                    </div>
+                    <div className="formatter-result new flex1 flexColumn gapMedium">
+                      <div className="title">{results.new.boltName}</div>
+                      <div className="result flex1">
+                        {results.new.results[0].message}
+                      </div>
+                      <div className="stats">
+                        <span className="bold">
+                          {results.new.results[0].time}
+                        </span>,{" "}
+                        <span className="bold">
+                          {results.new.results[0].tokens}
+                        </span>{" "}
+                        tokens
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="stat">
-                  <div className="title">Response length</div>
-                  <div className="value">
-                    The formatted prompt generated 76.9% less content (43 fewer
-                    characters)
+                  <div className="formatter-results-summary flexColumn gapMedium">
+                    <div className="title">Performance comparison</div>
+                    <div className="flexRow gapMedium">
+                      <div className="stat">
+                        <div className="title">Response time</div>
+                        <div className="value">
+                          The formatted prompt was 2.2% faster (0.02s
+                          difference)
+                        </div>
+                      </div>
+                      <div className="stat">
+                        <div className="title">Response length</div>
+                        <div className="value">
+                          The formatted prompt generated 76.9% less content (43
+                          fewer characters)
+                        </div>
+                      </div>
+                    </div>
+                    <div className="stat">
+                      <div className="title">Key differences</div>
+                      <div className="value">
+                        <div>
+                          <span className="bold">Original</span>: 14 words / 68
+                          characters
+                        </div>
+                        <div>
+                          <span className="bold">Formatted</span>: 3 words / 10
+                          characters
+                        </div>
+                      </div>
+                      <div className="tip">
+                        <span className="bold">Tip:</span>{" "}
+                        Compare the responses above to see which produces more
+                        specific, structured, and relevant results.
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="stat">
-                <div className="title">Key differences</div>
-                <div className="value">
-                  <div>
-                    <span className="bold">Original</span>: 14 words / 68
-                    characters
+                </>
+              )
+              : (
+                <>
+                  <div className="flexRow gapMedium">
+                    <div className="formatter-result base flex1 flexColumn gapMedium">
+                      <div className="title">{results.base.boltName}</div>
+                    </div>
+                    <div className="formatter-result new flex1 flexColumn gapMedium">
+                      <div className="title">{results.new.boltName}</div>
+                    </div>
                   </div>
-                  <div>
-                    <span className="bold">Formatted</span>: 3 words / 10
-                    characters
+                  <div className="formatter-results-summary flexColumn gapMedium">
+                    <div className="title">Performance comparison</div>
+                    <div className="flexRow gapMedium">
+                      <div className="stat">
+                        <div className="title">Response time</div>
+                        <div className="value">
+                          The formatted prompt was 2.2% faster (0.02s
+                          difference)
+                        </div>
+                      </div>
+                      <div className="stat">
+                        <div className="title">Response length</div>
+                        <div className="value">
+                          The formatted prompt generated 76.9% less content (43
+                          fewer characters)
+                        </div>
+                      </div>
+                    </div>
+                    <div className="stat">
+                      <div className="title">Key differences</div>
+                      <div className="value">
+                        <div>
+                          <span className="bold">Original</span>: 14 words / 68
+                          characters
+                        </div>
+                        <div>
+                          <span className="bold">Formatted</span>: 3 words / 10
+                          characters
+                        </div>
+                      </div>
+                      <div className="tip">
+                        <span className="bold">Tip:</span>{" "}
+                        Compare the responses above to see which produces more
+                        specific, structured, and relevant results.
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="tip">
-                  <span className="bold">Tip:</span>{" "}
-                  Compare the responses above to see which produces more
-                  specific, structured, and relevant results.
-                </div>
-              </div>
-            </div>
+                </>
+              )}
           </div>
         )}
     </div>
