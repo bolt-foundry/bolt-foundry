@@ -45,3 +45,110 @@ export class SpecBuilder {
     return this._specs;
   }
 }
+
+/** Assistant specification that can be rendered to OpenAI format */
+export class SpecForAssistant {
+  readonly name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  /** Render the assistant specification to OpenAI chat completion format */
+  render(options: RenderOptions = {}): ChatCompletionCreateParams {
+    const { messages = [], model = "gpt-4", ...otherOptions } = options;
+
+    // Build system message
+    const systemMessage = {
+      role: "system" as const,
+      content: "", // TODO: Generate from persona and constraints
+    };
+
+    // Combine system message with any user-provided messages
+    const allMessages = [systemMessage, ...messages];
+
+    return {
+      model,
+      messages: allMessages,
+      ...otherOptions, // This will include any other OpenAI params
+    };
+  }
+}
+
+/** Builder for creating assistant specifications */
+export class SpecBuilderForAssistant {
+  private _name: string;
+
+  constructor(name: string) {
+    this._name = name;
+  }
+
+  /** Add a persona section */
+  persona(
+    _builder: (p: PersonaBuilder) => PersonaBuilder,
+  ): SpecBuilderForAssistant {
+    // TODO: Implement
+    return this;
+  }
+
+  /** Add a constraints section */
+  constraints(
+    _builder: (c: ConstraintsBuilder) => ConstraintsBuilder,
+  ): SpecBuilderForAssistant {
+    // TODO: Implement
+    return this;
+  }
+
+  /** Build the final assistant specification */
+  build(): SpecForAssistant {
+    return new SpecForAssistant(this._name);
+  }
+}
+
+/** Builder for persona specifications */
+export class PersonaBuilder {
+  /** Set the persona description */
+  description(_value: string): PersonaBuilder {
+    // TODO: Implement
+    return this;
+  }
+
+  /** Add a trait */
+  trait(_value: string): PersonaBuilder {
+    // TODO: Implement
+    return this;
+  }
+
+  /** Get the built specs */
+  getSpecs(): Array<Spec> {
+    // TODO: Implement
+    return [];
+  }
+}
+
+/** Builder for constraints specifications */
+export class ConstraintsBuilder {
+  /** Add a constraint */
+  constraint(_value: string): ConstraintsBuilder {
+    // TODO: Implement
+    return this;
+  }
+
+  /** Get the built specs */
+  getSpecs(): Array<Spec> {
+    // TODO: Implement
+    return [];
+  }
+}
+
+/** Main client for creating assistants */
+export const boltFoundryClient = {
+  /** Create a new assistant with the given name and configuration */
+  createAssistant(
+    name: string,
+    builder: (b: SpecBuilderForAssistant) => SpecBuilderForAssistant,
+  ): SpecForAssistant {
+    const assistantBuilder = builder(new SpecBuilderForAssistant(name));
+    return assistantBuilder.build();
+  },
+};
