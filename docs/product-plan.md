@@ -2,8 +2,8 @@
 
 ## Vision
 
-**Build the ORM for LLMs** — Transform prompt engineering from brittle text
-strings into structured, semantic APIs that enable reliable, testable, and
+**Build structured prompt engineering** — Transform prompt engineering from brittle text
+strings into composable cards with examples and specifications that enable reliable, testable, and
 maintainable LLM applications.
 
 ## Core Problem
@@ -29,7 +29,7 @@ Text prompts are the best first version, but they create fundamental problems:
 ## What We're Building
 
 A comprehensive library and platform for building great LLM applications through
-structured prompts. Great LLM applications are:
+structured prompts organized as composable cards. Great LLM applications are:
 
 1. **Well understood** — Clear semantic structure and intent
 2. **Testable** — Individual components can be verified
@@ -39,19 +39,29 @@ structured prompts. Great LLM applications are:
 Users can either generate prompts locally with our SDK or use our cloud service
 to experiment, test, and improve prompts automatically.
 
+### The Card Metaphor
+
+We're building structured prompt engineering using a trading card metaphor:
+- **Cards are specs**: Each card is a collection of structured specifications
+- **Persona Cards**: Define the AI's identity and constraints
+- **Behavior Cards**: Define specific capabilities and workflows
+- **Card Packs**: Collections of related cards for specific domains
+- **Card Trading**: Share and exchange proven card patterns
+
 ## Architecture Overview
 
 ### Fluent Builder SDK
 
 Engineers compose prompts using a structured
-[DSL](https://en.wikipedia.org/wiki/Domain-specific_language):
+[DSL](https://en.wikipedia.org/wiki/Domain-specific_language) based on cards:
 
 ```typescript
-.persona("assistant", (b) => 
+// Building with cards
+.personaCard("assistant", (b) => 
   b.description("You are a helpful assistant.")
    .trait("Explains spatial layouts visually")
    .constraints("Safety", (b) => b.constraint("Never mention prices"))
-   .behaviors("furniture", (b) => 
+   .behaviorCard("furniture", (b) => 
      b.behavior("layout designer", (b) =>
        b.format("Return Markdown with sub-headings")
         .reference("https://design-principles.pdf")
