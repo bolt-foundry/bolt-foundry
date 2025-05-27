@@ -39,15 +39,6 @@ structured prompts organized as composable cards. Great LLM applications are:
 Users can either generate prompts locally with our SDK or use our cloud service
 to experiment, test, and improve prompts automatically.
 
-### The Card Metaphor
-
-We're building structured prompt engineering using a trading card metaphor:
-
-- **Cards are specs**: Each card is a collection of structured specifications
-- **Persona Cards**: Define the AI's identity and constraints
-- **Behavior Cards**: Define specific capabilities and workflows
-- **Card Sharing**: Share proven card patterns across teams
-
 ## Architecture Overview
 
 ### Fluent Builder SDK
@@ -56,20 +47,63 @@ Engineers compose prompts using a structured
 [DSL](https://en.wikipedia.org/wiki/Domain-specific_language) based on cards:
 
 ```typescript
-// Building with cards
-createCard(
-  "assistant",
-  (b) =>
-    b.specs("persona", (p) =>
-      p.spec("You are a helpful assistant.")
-        .spec("Explains spatial layouts visually"))
-      .specs("constraints", (c) => c.spec("Never mention prices"))
-      .specs("furniture-layout", (f) =>
-        f.spec("Return Markdown with sub-headings")
-          .spec("Reference: https://design-principles.pdf")
-          .spec("Deliver three viable layouts")),
+// Traditional approach: Brittle string concatenation
+const prompt = "You are a customer support agent. Be helpful and empathetic. " +
+  "Don't make promises about refunds. Always be professional. " +
+  "User query: " + userMessage;
+
+// Bolt Foundry approach: Structured, reusable cards
+import { BfClient } from "@bolt-foundry/sdk";
+
+const client = BfClient.create();
+
+const supportAgent = client.createAssistantCard("customer-support", (card) =>
+  card
+    .spec("You are a customer support agent")
+    .specs("personality", (p) =>
+      p.spec("Be helpful and empathetic")
+        .spec("Always be professional", {
+          samples: (s) =>
+            s.sample("Whatever, that's not my problem.", -3)
+              .sample("Look, I don't have time for this right now.", -2)
+              .sample("Yeah, okay, what do you want?", -1)
+              .sample("I can help you with that.", 1)
+              .sample("I'd be happy to assist you with this issue.", 2)
+              .sample(
+                "I'll do everything I can to resolve this for you.",
+                3,
+              ),
+        }))
+    .specs("policies", (p) =>
+      p.spec("Don't make promises about refunds", {
+        samples: (s) =>
+          s.sample(
+            "I understand your frustration. Let me check what options we have.",
+            3,
+          )
+            .sample("Yes, I'll refund everything immediately!", -3),
+      }))
+    .context((ctx) =>
+      ctx.string("userMessage", "What is the customer asking about?")
+    ));
+
+// Use the card with OpenAI (or any LLM)
+const response = await client.fetch(
+  "https://api.openai.com/v1/chat/completions",
+  {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${apiKey}` },
+    body: JSON.stringify(supportAgent.render({
+      "userMessage": "I want a refund!!",
+    })),
+  },
 );
 ```
+
+The -3 to +3 scoring system isn't just about examples — it's about achieving
+[99% reliability through inference-time control](improving-inference-philosophy.md).
+By making behavioral choices explicit and auditable, teams can build AI systems
+as reliable as any other mission-critical software.
 
 ### Persisted Prompt IDs
 
