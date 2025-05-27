@@ -143,24 +143,30 @@ prompts
 access to structured prompt tooling and priority support, establishing pricing
 model and willingness to pay before full credit system implementation.
 
-- **0.1 →** CLI tool for restructuring existing prompts into fluent builder API
+- **0.1 →** Interactive Documentation & Examples
+  - Problem-focused documentation showing real use cases
+  - Interactive demos developers can try immediately
+  - Before/after code comparisons demonstrating the value
+  - "Why structured prompts?" explainer with concrete examples
+  - Metric: Documentation engagement & reduction in 1:1 explanation needs
+- **0.2 →** CLI tool for restructuring existing prompts into fluent builder API
   - Metric: People using prompt converter (trial)
-- **0.2 →** Web-based GUI prompt reformatter with Google authentication
+- **0.3 →** Web-based GUI prompt reformatter with Google authentication
   - Users log in with Google and convert prompts via web interface
   - Results stored in database or provided as TypeScript code to copy/paste
   - Metric: Web conversions completed (platform engagement)
-- **0.3 →** Side-by-side prompt testing UI with JSON validation
+- **0.4 →** Side-by-side prompt testing UI with JSON validation
   - Compare original prompts vs BF-style prompts in parallel
   - First evaluation: JSON response consistency measurement
   - Visual comparison of outputs and performance metrics
   - Metric: Test runs completed (validation of structured prompts)
-- **0.4 →** Custom evaluation builder and testing framework
+- **0.5 →** Custom evaluation builder and testing framework
   - Users can construct custom evals beyond JSON validation
   - Run evals against prompts with A/B testing capabilities
   - Compare performance across different prompt versions
   - Metric: Custom evals created and run (platform depth)
 
-### Private beta (v0.5-0.7)
+### Private beta (v0.6-0.8)
 
 **Goal**: Scale from white glove onboarding to automated self-serve experience
 
@@ -168,16 +174,16 @@ model and willingness to pay before full credit system implementation.
 transitioning from individually onboarded partners to automated onboarding at
 scale
 
-- **0.5 →** Product TBD based on user research
+- **0.6 →** Product TBD based on user research
   - Feature to be determined from Alpha user feedback and research
   - Metric: To be defined based on selected product direction
-- **0.6 →** Automated onboarding and billing system
+- **0.7 →** Automated onboarding and billing system
   - Self-serve onboarding flow for new users
   - Credit-based billing implementation
   - User dashboard for usage tracking and credit management
   - Documentation and tutorials for self-service
   - Metric: Successful self-serve onboardings (automation success)
-- **0.7 →** Marketing foundation and professional brand presence
+- **0.8 →** Marketing foundation and professional brand presence
   - Homepage redesign and professional brand presence
   - Case studies and content from Alpha/Beta users
   - Clear positioning and messaging framework development
@@ -189,7 +195,7 @@ scale
 products to prioritize based on actual developer pain points and usage patterns
 observed during beta.
 
-### Public beta (v0.8-1.0)
+### Public beta (v0.9-1.0)
 
 **Goal**: Iterate towards public launch
 
@@ -198,10 +204,10 @@ observed during beta.
 **Key Differentiator**: "Actually know how to fix your prompts. Know if they're
 working, and if they're not, how to fix them."
 
-- **0.8 →** Product TBD based on beta feedback
+- **0.9 →** Product TBD based on beta feedback
   - Feature to be determined from Private Beta user feedback
   - Metric: To be defined based on selected product direction
-- **0.9 →** Fixathon - Polish and stability improvements
+- **0.95 →** Fixathon - Polish and stability improvements
   - Bug fixes and performance optimizations
   - UI/UX refinements based on user feedback
   - Documentation and onboarding improvements
@@ -258,10 +264,10 @@ traffic
 
 **Phase Metrics**:
 
-- Alpha (0.1-0.4) → Internal adoption and API integration success
-- Private Beta (0.5-0.7) → Product discovery, automation, and marketing
+- Alpha (0.1-0.5) → Internal adoption and API integration success
+- Private Beta (0.6-0.8) → Product discovery, automation, and marketing
   foundation
-- Public Beta (0.8-1.0) → Customer acquisition and revenue growth
+- Public Beta (0.9-1.0) → Customer acquisition and revenue growth
 
 The ultimate measure of success is developers choosing structured prompts over
 text strings for new LLM applications, indicating we've solved the core
