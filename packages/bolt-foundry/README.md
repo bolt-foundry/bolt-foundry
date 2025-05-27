@@ -85,9 +85,9 @@ const completion = await mockOpenAi.chat.completions.create({
 ## Documentation
 
 - [Project Plan](docs/README.md)
-- [v0.0 Implementation](docs/0.0-IMPLEMENTATION.md) - Generic spec foundation
-- [v0.1 Implementation](docs/0.1-IMPLEMENTATION.md) - Domain-specific builders
-- [Current Status](docs/0.0-STATUS.md)
+- [v0.0 Implementation](docs/V0.0.md) - Generic spec foundation
+- [v0.1 Implementation](docs/V0.1.md) - Simplified card system
+- [Changelog](docs/CHANGELOG.md)
 
 ## Development
 
