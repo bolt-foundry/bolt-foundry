@@ -8,9 +8,9 @@ engineering.**
 ## The problem we're solving
 
 Today's LLM development reflects earlier ages of programming. Developers write
-prompts as massive text strings... the equivalent of writing SQL queries by hand
-instead of using an ORM, or building HTML by concatenating strings instead of
-using components.
+prompts as massive text strings instead of composing them from structured cards...
+the equivalent of writing SQL queries by hand instead of using an ORM, or
+building HTML by concatenating strings instead of using components.
 
 This approach creates fundamental problems:
 
@@ -54,7 +54,8 @@ Just as Microsoft became the standard operating system by making computing
 accessible to everyone, we're building the platform that makes LLM development
 predictable and scalable for every developer. Like DOS and Windows created a
 massive market by abstracting away hardware complexity, we're abstracting away
-prompt engineering complexity to unlock the full potential of LLM applications.
+prompt engineering complexity through our card-based system to unlock the full
+potential of LLM applications.
 
 ## How we see the future
 
@@ -71,11 +72,11 @@ prompt engineering complexity to unlock the full potential of LLM applications.
 
 ### Tomorrow: The framework era
 
-- Developers compose prompts using semantic APIs
+- Developers compose prompts using semantic APIs built from reusable cards
 - Reusable components with clear interfaces
 - Unit testing for individual prompt components
 - Automated testing and validation
-- Shared libraries of proven patterns
+- Shared libraries of proven card patterns
 - Seamless updates and A/B testing
 
 ### Long-term: The operating system era
@@ -84,7 +85,16 @@ prompt engineering complexity to unlock the full potential of LLM applications.
 - Real-time performance insights
 - Automated quality assurance
 - Enterprise-grade reliability and security
-- Developer ecosystem around structured prompts
+- Developer ecosystem around structured prompt cards
+
+### The Card System
+
+Just like trading cards have structured attributes and clear rules for combination,
+our prompt cards provide:
+- **Persona Cards**: Define who the LLM should be (traits, constraints, voice)
+- **Behavior Cards**: Define what the LLM should do (goals, steps, outputs)
+- **Composability**: Mix and match cards to create new capabilities
+- **Collectibility**: Share and trade proven card patterns across teams
 
 ## Why this matters
 
