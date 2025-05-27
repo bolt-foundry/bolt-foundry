@@ -7,8 +7,8 @@ code in this repository.
 
 **Bolt Foundry** is an open-source platform for building reliable LLM systems
 through structured "Persona Cards" and behavior-driven development. The project
-is building an "ORM for LLMs" that transforms prompt engineering from brittle
-text strings into structured, semantic APIs.
+provides a structured approach to prompt engineering that transforms brittle
+text strings into composable cards with examples and specifications.
 
 ## Technology Stack & Architecture
 
