@@ -10,7 +10,7 @@ A fetch wrapper that adds authentication and logging for OpenAI API requests.
 
 ### Builder Pattern
 
-A flexible, immutable builder pattern for creating structured AI assistant
+A flexible, immutable builder pattern for creating structured AI card
 specifications. This pattern provides:
 
 - **Generic `Spec` and `SpecBuilder` types** for creating hierarchical,
@@ -38,11 +38,11 @@ const openai = new OpenAI({
   fetch: bfClient.fetch,
 });
 
-// Create an assistant with structured prompts
-const assistant = bfClient.createAssistant(
+// Create a card with structured prompts
+const card = bfClient.createCard(
   "coding-helper",
-  (a) =>
-    a.specs("persona", (p) =>
+  (c) =>
+    c.specs("persona", (p) =>
       p.spec("An expert TypeScript developer")
         .spec("Detail-oriented and helpful"))
       .specs("constraints", (c) =>
@@ -52,7 +52,7 @@ const assistant = bfClient.createAssistant(
 );
 
 // Render to OpenAI format and use
-const chatParams = assistant.render({
+const chatParams = card.render({
   messages: [{ role: "user", content: "Help me write a function" }],
 });
 

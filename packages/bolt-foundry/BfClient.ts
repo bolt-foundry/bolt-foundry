@@ -1,7 +1,7 @@
 import { connectBoltFoundry } from "./bolt-foundry.ts";
 import {
-  makeSpecBuilderForAssistant,
-  type SpecBuilderForAssistant,
+  makeSpecBuilderForCard,
+  type SpecBuilderForCard,
 } from "./builders/builders.ts";
 
 /**
@@ -29,13 +29,13 @@ export class BfClient {
   }
 
   /**
-   * Create a new assistant specification using the builder pattern
+   * Create a new card specification using the builder pattern
    */
-  createAssistant(
+  createCard(
     name: string,
-    builder: (b: SpecBuilderForAssistant) => SpecBuilderForAssistant,
-  ): SpecBuilderForAssistant {
-    return builder(makeSpecBuilderForAssistant(name));
+    builder: (b: SpecBuilderForCard) => SpecBuilderForCard,
+  ): SpecBuilderForCard {
+    return builder(makeSpecBuilderForCard(name));
   }
 
   /**

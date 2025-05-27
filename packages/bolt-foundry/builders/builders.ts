@@ -116,43 +116,43 @@ export function makeSpecBuilder(specs: Array<Spec> = []): SpecBuilder {
 }
 
 /**
- * Alias for assistant specifications
+ * Alias for card specifications
  */
-export type SpecForAssistant = Spec;
+export type SpecForCard = Spec;
 
 /**
- * Builder type for creating assistant specifications
+ * Builder type for creating card specifications
  */
-export type SpecBuilderForAssistant = {
-  /** The name of this assistant */
+export type SpecBuilderForCard = {
+  /** The name of this card */
   readonly name: string;
 
   /** Add a simple spec value */
-  spec(value: string): SpecBuilderForAssistant;
+  spec(value: string): SpecBuilderForCard;
 
   /** Add a spec with options including samples */
-  spec(value: string, options: SpecOptions): SpecBuilderForAssistant;
+  spec(value: string, options: SpecOptions): SpecBuilderForCard;
 
   /** Add a named group of specs using a builder function */
   specs(
     name: string,
     builder: (s: SpecBuilder) => SpecBuilder,
-  ): SpecBuilderForAssistant;
+  ): SpecBuilderForCard;
 
   /** Get the collected specs */
   getSpecs(): Array<Spec>;
 
-  /** Render the assistant specification to OpenAI chat completion format */
+  /** Render the card specification to OpenAI chat completion format */
   render(options?: RenderOptions): ChatCompletionCreateParams;
 };
 
 /**
- * Factory function to create a SpecBuilderForAssistant
+ * Factory function to create a SpecBuilderForCard
  */
-export function makeSpecBuilderForAssistant(
+export function makeSpecBuilderForCard(
   name: string,
   specs: Array<Spec> = [],
-): SpecBuilderForAssistant {
+): SpecBuilderForCard {
   // Helper function to render specs
   const renderSpecs = (
     specsToRender: Array<Spec>,
@@ -192,7 +192,7 @@ export function makeSpecBuilderForAssistant(
         }
       }
 
-      return makeSpecBuilderForAssistant(name, [...specs, valueSpec]);
+      return makeSpecBuilderForCard(name, [...specs, valueSpec]);
     },
 
     specs(groupName: string, builder: (s: SpecBuilder) => SpecBuilder) {
@@ -201,7 +201,7 @@ export function makeSpecBuilderForAssistant(
         value: childBuilder.getSpecs(),
         name: groupName,
       };
-      return makeSpecBuilderForAssistant(name, [...specs, groupSpec]);
+      return makeSpecBuilderForCard(name, [...specs, groupSpec]);
     },
 
     getSpecs() {
