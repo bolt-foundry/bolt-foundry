@@ -29,19 +29,19 @@ brings software engineering best practices to LLM development.
 
 | Task                              | Status   | Description                                    |
 | --------------------------------- | -------- | ---------------------------------------------- |
-| Core spec infrastructure (v0.0.1) | Complete | Base Spec class and SpecBuilder implementation |
-| Public API (v0.0.2)               | Active   | Client pattern and card creation working       |
-| Package setup (v0.0.3)            | Planned  | npm package build and publishing               |
-| Domain builders (v0.1)            | Planned  | Persona, constraints, and behavior builders    |
+| Core spec infrastructure (v0.0)   | Complete | Base Spec class and SpecBuilder implementation |
+| Card system & context (v0.1)      | Complete | Simplified API with samples and variables      |
+| Enhanced analytics (v0.2)         | Complete | PostHog integration and cost tracking          |
+| Package setup                     | Deferred | npm package build and publishing               |
 
 ## Versions
 
-| Version         | Status  | Description                                                   |
-| --------------- | ------- | ------------------------------------------------------------- |
-| [v0.0](V0.0.md) | Active  | Generic spec foundation with OpenAI-compatible rendering      |
-| [v0.1](V0.1.md) | Planned | Domain-specific builders for personas, constraints, behaviors |
-| [v0.2](V0.2.md) | Planned | CLI tool for prompt conversion                                |
-| [v0.3](V0.3.md) | Planned | Testing framework and evaluation tools                        |
+| Version         | Status   | Description                                                         |
+| --------------- | -------- | ------------------------------------------------------------------- |
+| [v0.0](V0.0.md) | Complete | Foundation with immutable builders and basic card creation          |
+| [v0.1](V0.1.md) | Complete | Simplified card system with samples and context variables           |
+| [v0.2](V0.2.md) | Complete | Enhanced analytics with PostHog integration and cost tracking       |
+| v0.3            | Planned  | Conversation management and remaining v0.1 features                 |
 
 ## Future work
 

@@ -14,12 +14,6 @@ writing prompts as long text strings, you build them from reusable components:
 - **Examples**: Show good and bad behaviors with ratings
 - **Specifications**: Organize requirements in clear, testable units
 
-Like trading cards, these components are:
-
-- **Composable**: Mix and match cards to create new capabilities
-- **Shareable**: Share proven card patterns across teams
-- **Collectible**: Build libraries of cards for different domains
-
 ## Learn More
 
 - **[Company Vision](./docs/company-vision.md)** — We want to make LLMs 99%
