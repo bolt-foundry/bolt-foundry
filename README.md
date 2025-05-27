@@ -1,34 +1,27 @@
 # Bolt Foundry
 
-We're building a structured approach to prompt engineering — transforming
-brittle text strings into composable cards with examples and specifications that
-make AI applications reliable and maintainable.
+We're building structured prompt engineering. Instead of text strings,
+developers compose AI from cards with examples and specs that make it reliable.
 
-## What are Prompt Cards?
+## What are assistant cards?
 
-Prompt cards are structured specifications that define AI behavior. Instead of
-writing prompts as long text strings, you build them from reusable components:
+Assistant cards turn AI instructions into testable specifications:
 
-- **Persona Cards**: Define who the AI should be (traits, voice, constraints)
-- **Behavior Cards**: Define what the AI should do (goals, steps, formats)
-- **Examples**: Show good and bad behaviors with ratings
-- **Specifications**: Organize requirements in clear, testable units
+- **Persona cards**: Define who the AI should be (traits, voice, constraints)
+- **Behavior cards**: Define what the AI should do (goals, steps, formats)
+- **Examples**: Show good and bad behaviors with -3 to +3 ratings
+- **Specifications**: Break down requirements into clear, testable units
 
-## Learn More
+## Learn more
 
-- **[Company Vision](./docs/company-vision.md)** — We want to make LLMs 99%
-  reliable through structured prompt cards
-- **[Product Plan](./docs/product-plan.md)** — How we're building the card
-  system
-- **[Prompt Philosophy](./docs/prompt-philosophy.md)** — The theory behind our
-  card-based approach
-- **[Team Story](./docs/team-story.md)** — Who we are, and why we're the ones to
-  do this
+- **[Company vision](./docs/company-vision.md)**: Making LLMs 99% reliable
+  through structured assistant cards
+- **[Product plan](./docs/product-plan.md)**: How we're building the card system
+- **[Inference philosophy](./docs/improving-inference-philosophy.md)**: Why
+  inference-time control matters
+- **[Team story](./docs/team-story.md)**: Who we are and why we're doing this
 
 ---
 
-**Status**: Currently in Alpha. [Join our waitlist](https://boltfoundry.com) for
-early access.
-
-**Contact**: Questions? Reach out at
+**Contact**: Questions? Email us at
 [contact@boltfoundry.com](mailto:contact@boltfoundry.com)

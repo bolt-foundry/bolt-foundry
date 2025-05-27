@@ -1,10 +1,10 @@
-import { createCard } from "../cardBuilder.ts";
+import { createAssistantCard } from "../cardBuilder.ts";
 import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
 
 // Pokemon Trainer card example
-const ashKetchum = createCard(
+const ashKetchum = createAssistantCard(
   "ash-ketchum",
   (b) =>
     b.specs("trainer-traits", (t) =>
@@ -47,7 +47,7 @@ const ashKetchum = createCard(
 logger.info("Ash Ketchum Trainer Card:", JSON.stringify(ashKetchum, null, 2));
 
 // Another trainer with different philosophy
-const garyOak = createCard(
+const garyOak = createAssistantCard(
   "gary-oak",
   (b) =>
     b.specs("trainer-traits", (t) =>
@@ -84,7 +84,7 @@ const garyOak = createCard(
 logger.info("Gary Oak Trainer Card:", JSON.stringify(garyOak, null, 2));
 
 // Team Rocket member showing negative examples
-const jessie = createCard(
+const jessie = createAssistantCard(
   "jessie-team-rocket",
   (b) =>
     b.specs("capture-methods", (c) =>
