@@ -27,25 +27,24 @@ brings software engineering best practices to LLM development.
 
 ## Status
 
-| Task                              | Status   | Description                                    |
-| --------------------------------- | -------- | ---------------------------------------------- |
-| Core spec infrastructure (v0.0)   | Complete | Base Spec class and SpecBuilder implementation |
-| Card system & context (v0.1)      | Complete | Simplified API with samples and variables      |
-| Enhanced analytics (v0.2)         | Complete | PostHog integration and cost tracking          |
-| Package setup                     | Deferred | npm package build and publishing               |
+| Task                            | Status   | Description                                    |
+| ------------------------------- | -------- | ---------------------------------------------- |
+| Core spec infrastructure (v0.0) | Complete | Base Spec class and SpecBuilder implementation |
+| Card system & context (v0.1)    | Complete | Simplified API with samples and variables      |
+| Enhanced analytics (v0.2)       | Complete | PostHog integration and cost tracking          |
+| Package setup                   | Deferred | npm package build and publishing               |
 
 ## Versions
 
-| Version         | Status   | Description                                                         |
-| --------------- | -------- | ------------------------------------------------------------------- |
-| [v0.0](V0.0.md) | Complete | Foundation with immutable builders and basic card creation          |
-| [v0.1](V0.1.md) | Complete | Simplified card system with samples and context variables           |
-| [v0.2](V0.2.md) | Complete | Enhanced analytics with PostHog integration and cost tracking       |
-| v0.3            | Planned  | Conversation management and remaining v0.1 features                 |
+| Version         | Status   | Description                                                   |
+| --------------- | -------- | ------------------------------------------------------------- |
+| [v0.0](V0.0.md) | Complete | Foundation with immutable builders and basic card creation    |
+| [v0.1](V0.1.md) | Complete | Simplified card system with samples and context variables     |
+| [v0.2](V0.2.md) | Complete | Enhanced analytics with PostHog integration and cost tracking |
 
-## Future work
+## Potential future directions
 
-| Task                     | Description                                   |
+| Area                     | Description                                   |
 | ------------------------ | --------------------------------------------- |
 | Variable interpolation   | Support for {{variables}} in prompt templates |
 | Conversation management  | Multi-turn conversation handling              |
@@ -69,9 +68,9 @@ brings software engineering best practices to LLM development.
 
 ## Version History
 
-- **v0.1**: TypeScript SDK with fluent builder API (Current)
-- **v0.2**: CLI tool for prompt conversion (Planned)
-- **v0.3**: Testing framework and evaluation tools (Planned)
+- **v0.0**: Foundation with immutable builders and basic card creation
+- **v0.1**: Simplified card system with samples and context variables
+- **v0.2**: Enhanced analytics with PostHog integration and cost tracking (Current)
 
 ## Project Purpose
 
@@ -149,23 +148,15 @@ const cardData = codingHelper;
 
 ## Development Approach
 
-The SDK will be developed iteratively with continuous user feedback:
+The SDK is developed iteratively with continuous user feedback.
 
-### v0.1 Development Phases
-
-- **Phase 1**: Core builder implementation with TypeScript types
-- **Phase 2**: Client API with createCard() method and nested builders for
-  personas, description, traits, constraints
-- **Phase 3**: OpenAI render method with model parameters
-- **Phase 4**: Telemetry integration and package publishing setup
-
-### Entry Criteria
+### Before starting
 
 - Vision documents approved
 - Technical design reviewed
 - npm package namespace secured
 
-### Exit Criteria
+### When it's ready
 
 - All unit tests passing
 - Documentation complete
@@ -202,9 +193,3 @@ The SDK will be developed iteratively with continuous user feedback:
   - **Mitigation**: Version lock OpenAI types, plan for adapter pattern in
     future versions
 
-## Next Steps
-
-1. Create detailed v0.1 implementation plan with technical specifications
-2. Set up package build pipeline with Deno-to-npm compilation
-3. Implement core builder with TypeScript type system
-4. Write comprehensive tests and documentation

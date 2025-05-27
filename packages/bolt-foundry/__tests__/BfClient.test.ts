@@ -17,18 +17,18 @@ Deno.test("BfClient.create - accepts config options", () => {
   assert(client instanceof BfClient);
 });
 
-Deno.test("BfClient.createCard - creates card specification", () => {
+Deno.test("BfClient.createAssistantCard - creates assistant card specification", () => {
   const client = BfClient.create();
 
-  const card = client.createCard("test-card", (b) => b);
+  const card = client.createAssistantCard("test-card", (b) => b);
 
   assertEquals(card.name, "test-card");
 });
 
-Deno.test("BfClient.createCard - creates card with specs", () => {
+Deno.test("BfClient.createAssistantCard - creates assistant card with specs", () => {
   const client = BfClient.create();
 
-  const card = client.createCard(
+  const card = client.createAssistantCard(
     "pokemon-trainer",
     (b) =>
       b.specs("role", (r) => r.spec("You are an experienced Pokemon trainer"))
@@ -47,10 +47,10 @@ Deno.test("BfClient.createCard - creates card with specs", () => {
   assertEquals(specs[2].name, "skills");
 });
 
-Deno.test("BfClient.createCard - renders to OpenAI format", () => {
+Deno.test("BfClient.createAssistantCard - renders to OpenAI format", () => {
   const client = BfClient.create();
 
-  const card = client.createCard(
+  const card = client.createAssistantCard(
     "test-card",
     (b) =>
       b.spec("You are a helpful assistant")
@@ -72,10 +72,10 @@ Deno.test("BfClient.createCard - renders to OpenAI format", () => {
   assert(content.includes("Clear communicator"));
 });
 
-Deno.test("BfClient.createCard - creates card with context", () => {
+Deno.test("BfClient.createAssistantCard - creates assistant card with context", () => {
   const client = BfClient.create();
 
-  const card = client.createCard(
+  const card = client.createAssistantCard(
     "customer-support",
     (b) =>
       b.spec("You are a customer support agent")
@@ -93,10 +93,10 @@ Deno.test("BfClient.createCard - creates card with context", () => {
   assertEquals(context[2].name, "isPriority");
 });
 
-Deno.test("BfClient.createCard - renders card with context values", () => {
+Deno.test("BfClient.createAssistantCard - renders assistant card with context values", () => {
   const client = BfClient.create();
 
-  const card = client.createCard(
+  const card = client.createAssistantCard(
     "assistant",
     (b) =>
       b.spec("You are a helpful assistant")
