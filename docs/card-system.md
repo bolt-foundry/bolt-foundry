@@ -5,7 +5,7 @@
 The Bolt Foundry Card System transforms prompt engineering from brittle text
 strings into structured, composable specifications. Like trading cards, each
 card has well-defined attributes, clear rules for combination, and can be
-collected, shared, and traded across teams.
+collected and shared across teams.
 
 ## Core Concepts
 
@@ -91,14 +91,6 @@ Cards can be stored as:
 - **Card files**: `{name}.card.ts` or `{name}.card.md`
 - **Card directories**: Group related cards in directories by domain
 
-### Card Discovery
-
-Cards can be discovered through:
-
-1. **Local Registry**: Project-specific cards in `/cards` directory
-2. **Shared Registry**: Organization-wide card repository
-3. **Public Registry**: Community-contributed cards (future)
-
 ## Benefits
 
 ### For Developers
@@ -115,38 +107,17 @@ Cards can be discovered through:
 - **Governance**: Control and audit LLM behaviors
 - **Evolution**: Improve cards without breaking systems
 
-### For Organizations
-
-- **Standardization**: Consistent AI behavior across products
-- **Compliance**: Ensure AI follows company policies
-- **Efficiency**: Reduce duplicate prompt engineering
-- **Innovation**: Build on proven foundations
-
 ## Best Practices
 
 1. **Start Specific**: Create focused cards for single responsibilities
 2. **Document Well**: Clear descriptions help others understand usage
-3. **Version Carefully**: Use semantic versioning for breaking changes
-4. **Test Thoroughly**: Validate cards with comprehensive test suites
-5. **Share Generously**: Contribute useful cards back to the community
 
 ## Future Vision
 
 The card system will evolve to support:
 
-- **Card Marketplace**: Trade and sell premium card packs
 - **Card Analytics**: Track performance and usage metrics
 - **Card Optimization**: AI-powered improvements to existing cards
-- **Card Certification**: Verified cards for regulated industries
-- **Card Ecosystems**: Domain-specific card communities
-
-## Getting Started
-
-1. Review existing cards in `/cards` directory
-2. Use the card builder API in your code
-3. Create custom cards for your specific needs
-4. Share successful patterns with your team
-5. Contribute improvements back to the system
 
 The card system transforms prompt engineering from an art into a science, making
 LLM applications as reliable and maintainable as traditional software.
