@@ -4,9 +4,8 @@
 
 ## Status Details
 
-The Collector project has completed its initial implementation phase. While
-functional for current needs, it will be expanded as part of future product
-roadmap initiatives.
+The Collector project has completed its initial implementation phase and is
+functional for current needs.
 
 ## Current State
 
@@ -15,22 +14,15 @@ The project has successfully delivered:
 - Initial planning and architecture design
 - Basic API interception capabilities
 - Integration points with existing systems
-- Foundation for future analytics expansion
+- Foundation for analytics capabilities
 
-## Future Plans
+## Possible Future Directions
 
-The Collector is part of our broader product vision but not a current priority.
-Future enhancements will include:
+The Collector could potentially be extended with:
 
-- Advanced analytics capabilities aligned with product roadmap
-- Enhanced data collection based on updated vision
-- Expanded integration with the evolving bolt-foundry ecosystem
-
-Updates to this project will resume once:
-
-1. Product vision updates are finalized
-2. Specific analytics requirements are defined for new features
-3. Priority shifts to analytics and observability initiatives
+- Advanced analytics capabilities
+- Enhanced data collection features
+- Expanded integration with the bolt-foundry ecosystem
 
 ## Related Components
 

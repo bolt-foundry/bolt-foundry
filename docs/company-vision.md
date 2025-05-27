@@ -8,33 +8,30 @@ engineering.**
 ## The problem we're solving
 
 Today's LLM development reflects earlier ages of programming. Developers write
-prompts as massive text strings instead of composing them from structured
-cards... the equivalent of writing SQL queries by hand instead of using an ORM,
-or building HTML by concatenating strings instead of using components.
+prompts as text strings instead of composing them from structured cards... the
+equivalent of writing SQL queries by hand instead of using an ORM, or building
+HTML by concatenating strings instead of using components.
 
-This approach creates fundamental problems:
+This creates four problems:
 
-- **Unreliable systems**: Developers view changes as magic rather than a
-  science... One small change to fix one thing breaks two other things.
+- **Unreliable systems**: One small change breaks two other things
 - **Unmaintainable code**: No structure, no reusability, no clear interfaces
 - **Untestable components**: Can't verify individual pieces work correctly
-- **Scaling nightmares**: Each new use case requires starting from scratch
+- **Scaling challenges**: Each new use case starts from scratch
 
-We believe LLM applications deserve the same engineering rigor as any other
-software system.
+LLM applications deserve the same engineering rigor as any other software
+system.
 
 ## Why we're working on this
 
 Our team has been building together for 7+ years, from our first company
 Vidpresso (acquired by Facebook) through Content Foundry and now Bolt Foundry.
-Through this journey, we've discovered a consistent pattern: it's easy to build
-impressive LLM demos, but extremely hard to scale them into reliable, repeatable
-systems.
+We discovered a consistent pattern: it's easy to build impressive LLM demos, but
+hard to scale them into reliable, repeatable systems.
 
-Our team combines journalism, content creation, and technical expertise. This
-gives us deep insight into driving attention efficiently — the same principles
-that make great content (inverted pyramid, active voice, clear structure) are
-exactly what LLMs need to perform reliably.
+Our team combines journalism, content creation, and technical expertise. The
+same principles that make great content (inverted pyramid, active voice, clear
+structure) make LLMs perform reliably.
 
 The timing is perfect. LLM model improvements have plateaued since GPT-4, but
 inference-side optimization is wide open. Most companies accept "good enough"
@@ -46,31 +43,26 @@ _For the complete story of our journey and insights, see
 
 ## Our vision
 
-**Bolt Foundry will be the operating system for LLMs** — providing the
-foundational infrastructure that every LLM application needs to be reliable,
-maintainable, and scalable.
+**Bolt Foundry aims to be the operating system for LLMs**: the foundational
+infrastructure every LLM application needs for reliability, maintainability, and
+scale.
 
-Just as Microsoft became the standard operating system by making computing
-accessible to everyone, we're building the platform that makes LLM development
-predictable and scalable for every developer. Like DOS and Windows created a
-massive market by abstracting away hardware complexity, we're abstracting away
-prompt engineering complexity through our card-based system to unlock the full
-potential of LLM applications.
+Microsoft became the standard by making computing accessible. We're doing the
+same for LLM development. Our card system abstracts away prompt engineering
+complexity, making LLM development predictable and scalable.
 
 ## How we see the future
 
 ### Today: The SQL era
 
 - Developers manually craft text prompts
-- Each prompt is created arbitrarily without understanding crucial ideas like
-  driving attention, organization, voice and tone, second person, inverted
-  pyramid, active voice, etc.
-- Changes require manual testing. Testing takes hours, longer than writing the
-  prompt.
-- Knowledge trapped in individual developer's heads
+- Each prompt ignores writing fundamentals: attention, organization, voice,
+  tone, second person, inverted pyramid, active voice
+- Testing takes hours, longer than writing the prompt
+- Knowledge stays trapped in individual heads
 - No clear upgrade paths or versioning
 
-### Tomorrow: The framework era
+### Near-term vision: The framework era
 
 - Developers compose prompts using semantic APIs built from reusable cards
 - Reusable components with clear interfaces
@@ -79,21 +71,21 @@ potential of LLM applications.
 - Shared libraries of proven card patterns
 - Seamless updates and A/B testing
 
-### Long-term: The operating system era
+### Long-term vision: The operating system era
 
 - Intelligent prompt optimization
 - Real-time performance insights
 - Automated quality assurance
 - Enterprise-grade reliability and security
-- Developer ecosystem around structured prompt cards
+- Developer ecosystem around structured assistant cards
 
-### The Card System
+### The card system
 
 Just like trading cards have structured attributes and clear rules for
-combination, our prompt cards provide:
+combination, our assistant cards provide:
 
-- **Persona Cards**: Define who the LLM should be (traits, constraints, voice)
-- **Behavior Cards**: Define what the LLM should do (goals, steps, outputs)
+- **Persona cards**: Define who the LLM should be (traits, constraints, voice)
+- **Behavior cards**: Define what the LLM should do (goals, steps, outputs)
 - **Composability**: Mix and match cards to create new capabilities
 - **Collectibility**: Share proven card patterns across teams
 
@@ -101,36 +93,41 @@ combination, our prompt cards provide:
 
 ### For developers
 
-- **Productivity**: Build faster with reusable components
-- **Confidence**: Unit test and validate prompt behavior at the component level
-- **Maintainability**: Update systems without breaking everything
-- **Collaboration**: Share and improve prompt patterns across teams
+- Build faster with reusable components
+- Unit test and validate prompt behavior at the component level
+- Update systems without breaking everything
+- Share and improve prompt patterns across teams
 
 ### For companies
 
-- **Reliability**: LLM applications that work consistently
-- **Scalability**: Systems that grow with business needs
-- **Cost Efficiency**: Optimize prompt performance automatically
-- **Risk Reduction**: Predictable behavior in production
+- LLM applications that work consistently
+- Systems that grow with business needs
+- Optimize prompt performance automatically
+- Predictable behavior in production
 
 ### For the industry
 
-- **Democratization**: Make advanced LLM techniques accessible
-- **Standardization**: Establish best practices and conventions
-- **Innovation**: Free developers to focus on unique value, not infrastructure
-- **Trust**: Enable LLM adoption in mission-critical applications
+- Make advanced LLM techniques accessible
+- Establish best practices and conventions
+- Free developers to focus on unique value, not infrastructure
+- Enable LLM adoption in mission-critical applications
 
 ## Our principles
 
 ### Engineering first
 
-We believe great LLM applications are built, not discovered. They require the
-same discipline, testing, and structure as any reliable software system.
+Great LLM applications are built, not discovered. They require the same
+discipline, testing, and structure as any reliable software system.
+
+Our approach centers on
+[improving inference through structured rigor](improving-inference-philosophy.md),
+giving developers control at runtime, not just hoping the model behaves
+correctly.
 
 ### Developer experience
 
-Our tools should feel natural to developers. We prioritize clarity,
-composability, and familiar patterns over clever abstractions.
+Tools feel natural to developers. We prioritize clarity, composability, and
+familiar patterns over clever abstractions.
 
 ### Gradual adoption
 
@@ -139,23 +136,23 @@ paths from existing text prompts to structured systems.
 
 ### Open foundation
 
-The core patterns and principles should be open and extensible. We build
-platforms, not silos.
+Core patterns and principles stay open and extensible. We build platforms, not
+silos.
 
 ## What success looks like
 
 We'll know we're succeeding when:
 
-- **Developers prefer structured prompts** over text strings for new projects
-- **LLM applications achieve web-scale reliability** (99.9%+ uptime)
-- **Prompt engineering becomes teachable** through clear patterns, conventions,
-  and unit testing practices
-- **Enterprise adoption accelerates** due to predictable, maintainable systems
-- **An ecosystem emerges** of shared components and best practices
+- Developers prefer structured prompts over text strings for new projects
+- LLM applications achieve web-scale reliability (99.9%+ uptime)
+- Prompt engineering becomes teachable through clear patterns, conventions, and
+  unit testing practices
+- Enterprise adoption accelerates due to predictable, maintainable systems
+- An ecosystem emerges of shared components and best practices
 
 ## The world we're building
 
-In five years, we envision a world where:
+We're working toward a world where:
 
 - Writing raw text prompts feels as archaic as programming in assembly language
 - LLM applications have the same reliability expectations as web applications
@@ -163,15 +160,15 @@ In five years, we envision a world where:
 - The next generation of AI applications is built on structured, semantic
   foundations
 
-**Bolt Foundry exists to make this future inevitable.**
+**Bolt Foundry is building the tools to make this happen.**
 
 ---
 
 **Related documents:**
 
-- [Our Team Story](./team-story.md) - Detailed background on our journey and
+- [Our team story](./team-story.md) - Detailed background on our journey and
   insights
-- [Business Vision](./business-vision.md) - Go-to-market strategy and revenue
+- [Business vision](./business-vision.md) - Go-to-market strategy and revenue
   model
-- [Product Plan](./product-plan.md) - Technical roadmap and implementation
+- [Product plan](./product-plan.md) - Technical roadmap and implementation
   details
