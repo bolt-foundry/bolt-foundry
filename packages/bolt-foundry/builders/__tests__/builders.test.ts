@@ -112,3 +112,99 @@ Deno.test("specs API - nested structure", () => {
   assertEquals(connection.value, "connection");
   assertEquals(connection.samples?.length, 2);
 });
+
+Deno.test("Sample system - multiple samples on single spec", () => {
+  const builder = makeSpecBuilder();
+  const result = builder
+    .spec("Be helpful", {
+      samples: (s) =>
+        s.sample("I'll help you solve this step by step", 3)
+          .sample("Let me assist you with that", 2)
+          .sample("I can try to help", 1)
+          .sample("Figure it out yourself", -2)
+          .sample("Not my problem", -3),
+    })
+    .getSpecs();
+
+  assertEquals(result.length, 1);
+  assertEquals(result[0].value, "Be helpful");
+  assertEquals(result[0].samples?.length, 5);
+
+  // Verify samples are in order
+  assertEquals(
+    result[0].samples![0].text,
+    "I'll help you solve this step by step",
+  );
+  assertEquals(result[0].samples![0].rating, 3);
+  assertEquals(result[0].samples![4].text, "Not my problem");
+  assertEquals(result[0].samples![4].rating, -3);
+});
+
+Deno.test("Sample system - specs with and without samples mixed", () => {
+  const builder = makeSpecBuilder();
+  const result = builder
+    .spec("Always be honest")
+    .spec("Be kind", {
+      samples: (s) =>
+        s.sample("That must have been difficult for you", 3)
+          .sample("Sucks to be you", -3),
+    })
+    .spec("Stay focused")
+    .specs("communication", (c) =>
+      c.spec("Listen actively", {
+        samples: (s) =>
+          s.sample("Tell me more about that", 3)
+            .sample("Are you done talking yet?", -3),
+      })
+        .spec("Respond thoughtfully"))
+    .getSpecs();
+
+  assertEquals(result.length, 4);
+
+  // First spec: no samples
+  assertEquals(result[0].value, "Always be honest");
+  assertEquals(result[0].samples, undefined);
+
+  // Second spec: has samples
+  assertEquals(result[1].value, "Be kind");
+  assertEquals(result[1].samples?.length, 2);
+
+  // Third spec: no samples
+  assertEquals(result[2].value, "Stay focused");
+  assertEquals(result[2].samples, undefined);
+
+  // Fourth spec: nested with mixed samples
+  assertEquals(result[3].name, "communication");
+  const commSpecs = result[3].value as Array<Spec>;
+  assertEquals(commSpecs[0].samples?.length, 2);
+  assertEquals(commSpecs[1].samples, undefined);
+});
+
+Deno.test("Sample system - empty samples builder", () => {
+  const builder = makeSpecBuilder();
+  const result = builder
+    .spec("No samples here", {
+      samples: (s) => s, // Return builder without adding samples
+    })
+    .getSpecs();
+
+  assertEquals(result.length, 1);
+  assertEquals(result[0].value, "No samples here");
+  assertEquals(result[0].samples, undefined); // No samples array created
+});
+
+Deno.test("Sample system - card with samples renders correctly", () => {
+  const builder = makeSpecBuilder();
+  const result = builder
+    .spec("Be supportive", {
+      samples: (s) =>
+        s.sample("You're doing great, keep going!", 3)
+          .sample("Whatever", -2),
+    })
+    .getSpecs();
+
+  // Just verify the structure is correct - rendering is tested elsewhere
+  assertEquals(result[0].samples?.length, 2);
+  assertEquals(result[0].samples![0].rating, 3);
+  assertEquals(result[0].samples![1].rating, -2);
+});
