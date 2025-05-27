@@ -10,7 +10,7 @@ Current status overview
 
 | Project Name     | Current Version | Status      | Next Milestone                         | Key Files                                                                                                                                  | Owner |
 | ---------------- | --------------- | ----------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----- |
-| bolt-foundry lib | 0.2 → 0.3       | PLANNING ⏱️ | Project plan and implementation design | [Project Plan](/packages/bolt-foundry/docs/project-plan.md), [Implementation Plan](/packages/bolt-foundry/docs/0.3/implementation-plan.md) | -     |
+| bolt-foundry lib | 0.1.0           | PLANNING ⏱️ | Documentation & Examples (v0.1)        | [Project Plan](/packages/bolt-foundry/docs/project-plan.md), [Implementation Plan](/packages/bolt-foundry/docs/0.3/implementation-plan.md) | -     |
 | GraphQL Builder  | 0.0.3 → 0.0.4   | ON HOLD ⏱️  | Expand barrel system for GraphQL types | [Implementation Plan](/apps/bfDb/docs/0.3/implementation-plan.md), [Status](/apps/bfDb/docs/status.md)                                     | -     |
 | Collector        | 0.0.1           | COMPLETE ✅ | Future roadmap expansion               | [Implementation Plan](/apps/collector/docs/0.1/implementation-plan.md), [Status](/apps/collector/docs/status.md)                           | -     |
 | BfDB             | 0.1             | ON HOLD ⏱️  | Relation builder improvements          | [Status](/apps/bfDb/docs/backlog.md)                                                                                                       | -     |
