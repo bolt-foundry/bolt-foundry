@@ -1,15 +1,15 @@
-# The Bolt Foundry Card System
+# The Bolt Foundry card system
 
 ## Overview
 
-The Bolt Foundry Card System transforms prompt engineering from brittle text
+The Bolt Foundry card system transforms prompt engineering from text
 strings into structured, composable specifications. Like trading cards, each
 card has well-defined attributes, clear rules for combination, and can be
 collected and shared across teams.
 
-## Core Concepts
+## Core concepts
 
-### What is a Card?
+### What is a card?
 
 A **card** is a collection of structured specifications that define a particular
 aspect of LLM behavior. Cards are:
@@ -20,7 +20,7 @@ aspect of LLM behavior. Cards are:
 - **Versionable**: Cards can evolve without breaking existing combinations
 - **Shareable**: Cards can be published and reused across projects
 
-### Card Structure
+### Card structure
 
 Cards are named collections of structured specifications. Each card contains:
 
@@ -48,12 +48,12 @@ const card = createCard(
 
 Cards focus on:
 
-- **Semantic Organization**: Group related specs together
-- **Example-Driven**: Use samples to show good and bad behaviors
+- **Semantic organization**: Group related specs together
+- **Example-driven**: Use samples to show good and bad behaviors
 - **Composable**: Build complex behaviors from simple specs
 - **Flexible**: No prescribed structure - organize as needed
 
-### Card Composition
+### Card composition
 
 Cards are created using the simple builder API:
 
@@ -78,7 +78,7 @@ const codeReviewer = createCard(
 
 ## Implementation
 
-### Card Storage
+### Card storage
 
 Cards can be stored as:
 
@@ -86,38 +86,33 @@ Cards can be stored as:
 2. **JSON files**: Serialize card structures for storage
 3. **Markdown files**: Document card specifications in `.card.md` files
 
-### Card Naming Convention
+### Card naming convention
 
 - **Card files**: `{name}.card.ts` or `{name}.card.md`
 - **Card directories**: Group related cards in directories by domain
 
 ## Benefits
 
-### For Developers
+### For developers
 
 - **Consistency**: Same card produces reliable behavior
 - **Reusability**: Build once, use everywhere
 - **Testing**: Validate cards independently
 - **Debugging**: Isolate issues to specific cards
 
-### For Teams
+### For teams
 
-- **Knowledge Sharing**: Codify best practices in cards
+- **Knowledge sharing**: Codify best practices in cards
 - **Onboarding**: New developers inherit proven patterns
 - **Governance**: Control and audit LLM behaviors
 - **Evolution**: Improve cards without breaking systems
 
-## Best Practices
+## Best practices
 
-1. **Start Specific**: Create focused cards for single responsibilities
-2. **Document Well**: Clear descriptions help others understand usage
+1. **Start specific**: Create focused cards for single responsibilities
+2. **Document well**: Clear descriptions help others understand usage
 
-## Future Vision
+## Vision
 
-The card system will evolve to support:
-
-- **Card Analytics**: Track performance and usage metrics
-- **Card Optimization**: AI-powered improvements to existing cards
-
-The card system aims to push prompt engineering from an art into a science,
-making LLM applications as reliable and maintainable as traditional software.
+The card system aims to make prompt engineering more structured and
+maintainable, treating LLM applications with the same rigor as traditional software.

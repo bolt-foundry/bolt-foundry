@@ -29,9 +29,9 @@ export class BfClient {
   }
 
   /**
-   * Create a new card specification using the builder pattern
+   * Create a new assistant card specification using the builder pattern
    */
-  createCard(
+  createAssistantCard(
     name: string,
     builder: (b: SpecBuilderForCard) => SpecBuilderForCard,
   ): SpecBuilderForCard {
