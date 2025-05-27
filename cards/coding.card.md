@@ -94,6 +94,21 @@ Follow these best practices consistently:
 
 ## Development Workflow
 
+### Test-Driven Development (TDD)
+
+We follow a test-driven development approach. Always write tests before
+implementation:
+
+1. Create tests based on your implementation plan
+2. Scaffold functions without implementations
+3. Verify tests fail in expected ways
+4. Write minimal code to make tests pass
+
+See [testing.card.md](./testing.card.md) for the complete TDD workflow and
+testing patterns.
+
+### Common Commands
+
 - Use BFF commands for common tasks
 - Run `bff format` and `bff ci` before committing
 - Build with `bff build`
