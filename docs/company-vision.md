@@ -127,6 +127,11 @@ combination, our prompt cards provide:
 We believe great LLM applications are built, not discovered. They require the
 same discipline, testing, and structure as any reliable software system.
 
+Our approach centers on
+[improving inference through structured rigor](improving-inference-philosophy.md)
+— giving developers control at runtime, not just hoping the model behaves
+correctly.
+
 ### Developer experience
 
 Our tools should feel natural to developers. We prioritize clarity,
