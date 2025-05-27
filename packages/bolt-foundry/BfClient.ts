@@ -39,6 +39,16 @@ export class BfClient {
   }
 
   /**
+   * Create a new assistant card specification using the builder pattern
+   */
+  createAssistantCard(
+    name: string,
+    builder: (b: SpecBuilderForCard) => SpecBuilderForCard,
+  ): SpecBuilderForCard {
+    return this.createCard(name, builder);
+  }
+
+  /**
    * Get the wrapped fetch function for making API calls with telemetry
    */
   get fetch(): typeof fetch {

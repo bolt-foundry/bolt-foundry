@@ -1,28 +1,27 @@
-# The Bolt Foundry Card System
+# The Bolt Foundry card system
 
 ## Overview
 
-The Bolt Foundry Card System transforms prompt engineering from brittle text
-strings into structured, composable specifications. Like trading cards, each
-card has well-defined attributes, clear rules for combination, and can be
-collected and shared across teams.
+Cards make prompt engineering structured and composable. Like trading cards,
+each has defined attributes, clear combination rules, and can be shared across
+teams.
 
-## Core Concepts
+## Core concepts
 
-### What is a Card?
+### What is a card?
 
-A **card** is a collection of structured specifications that define a particular
-aspect of LLM behavior. Cards are:
+A **card** defines a specific aspect of LLM behavior through structured
+specifications:
 
-- **Semantic**: Each card has clear meaning and purpose
-- **Composable**: Cards can be combined to create complex behaviors
-- **Testable**: Individual cards can be validated in isolation
-- **Versionable**: Cards can evolve without breaking existing combinations
-- **Shareable**: Cards can be published and reused across projects
+- **Semantic**: Clear meaning and purpose
+- **Composable**: Combine to create complex behaviors
+- **Testable**: Validate in isolation
+- **Versionable**: Evolve without breaking combinations
+- **Shareable**: Publish and reuse across projects
 
-### Card Structure
+### Card structure
 
-Cards are named collections of structured specifications. Each card contains:
+Each card contains:
 
 - **Name**: A unique identifier for the card
 - **Specs**: Hierarchical specifications organized by category
@@ -46,16 +45,16 @@ const card = createCard(
 );
 ```
 
-Cards focus on:
+Key principles:
 
-- **Semantic Organization**: Group related specs together
-- **Example-Driven**: Use samples to show good and bad behaviors
-- **Composable**: Build complex behaviors from simple specs
-- **Flexible**: No prescribed structure - organize as needed
+- Group related specs together
+- Use samples to show good and bad behaviors  
+- Build complex behaviors from simple specs
+- Organize flexibly based on your needs
 
-### Card Composition
+### Card composition
 
-Cards are created using the simple builder API:
+Create cards using the builder API:
 
 ```typescript
 import { createCard } from "@bolt-foundry/builders";
@@ -78,46 +77,41 @@ const codeReviewer = createCard(
 
 ## Implementation
 
-### Card Storage
+### Card storage
 
-Cards can be stored as:
+Store cards as:
 
 1. **TypeScript files**: Export card definitions as code
 2. **JSON files**: Serialize card structures for storage
 3. **Markdown files**: Document card specifications in `.card.md` files
 
-### Card Naming Convention
+### Card naming convention
 
 - **Card files**: `{name}.card.ts` or `{name}.card.md`
 - **Card directories**: Group related cards in directories by domain
 
 ## Benefits
 
-### For Developers
+### For developers
 
-- **Consistency**: Same card produces reliable behavior
-- **Reusability**: Build once, use everywhere
-- **Testing**: Validate cards independently
-- **Debugging**: Isolate issues to specific cards
+- Same card produces reliable behavior
+- Build once, use everywhere
+- Validate cards independently
+- Isolate issues to specific cards
 
-### For Teams
+### For teams
 
-- **Knowledge Sharing**: Codify best practices in cards
-- **Onboarding**: New developers inherit proven patterns
-- **Governance**: Control and audit LLM behaviors
-- **Evolution**: Improve cards without breaking systems
+- Codify best practices in cards
+- New developers inherit proven patterns
+- Control and audit LLM behaviors
+- Improve cards without breaking systems
 
-## Best Practices
+## Best practices
 
-1. **Start Specific**: Create focused cards for single responsibilities
-2. **Document Well**: Clear descriptions help others understand usage
+1. **Start specific**: Create focused cards for single responsibilities
+2. **Document well**: Clear descriptions help others understand usage
 
-## Future Vision
+## Vision
 
-The card system will evolve to support:
-
-- **Card Analytics**: Track performance and usage metrics
-- **Card Optimization**: AI-powered improvements to existing cards
-
-The card system aims to push prompt engineering from an art into a science,
-making LLM applications as reliable and maintainable as traditional software.
+Cards bring the rigor of traditional software engineering to LLM applications,
+making prompt engineering structured and maintainable.
