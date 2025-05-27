@@ -1,9 +1,22 @@
 import type { ChatCompletionCreateParams } from "openai/resources/chat/completions";
 
 type TelemetryOptions = Record<string, unknown>;
+
+// JSON types for context values
+export type JSONValue =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: JSONValue }
+  | JSONValue[];
+
 export type RenderOptions =
   & Partial<ChatCompletionCreateParams>
-  & TelemetryOptions;
+  & TelemetryOptions
+  & {
+    context?: Record<string, JSONValue>;
+  };
 
 /**
  * Sample data for specifications with a rating from -3 to +3
@@ -116,6 +129,35 @@ export function makeSpecBuilder(specs: Array<Spec> = []): SpecBuilder {
 }
 
 /**
+ * Context variable definition
+ */
+export type ContextVariable = {
+  name: string;
+  type: "string" | "number" | "boolean" | "object";
+  question: string;
+};
+
+/**
+ * Builder for context variables
+ */
+export type ContextBuilder = {
+  /** Add a string context variable */
+  string(name: string, question: string): ContextBuilder;
+
+  /** Add a number context variable */
+  number(name: string, question: string): ContextBuilder;
+
+  /** Add a boolean context variable */
+  boolean(name: string, question: string): ContextBuilder;
+
+  /** Add an object context variable */
+  object(name: string, question: string): ContextBuilder;
+
+  /** Get the collected context variables */
+  getVariables(): Array<ContextVariable>;
+};
+
+/**
  * Alias for card specifications
  */
 export type SpecForCard = Spec;
@@ -139,12 +181,63 @@ export type SpecBuilderForCard = {
     builder: (s: SpecBuilder) => SpecBuilder,
   ): SpecBuilderForCard;
 
+  /** Add context variables */
+  context(builder: (c: ContextBuilder) => ContextBuilder): SpecBuilderForCard;
+
   /** Get the collected specs */
   getSpecs(): Array<Spec>;
+
+  /** Get the collected context variables */
+  getContext(): Array<ContextVariable>;
 
   /** Render the card specification to OpenAI chat completion format */
   render(options?: RenderOptions): ChatCompletionCreateParams;
 };
+
+/**
+ * Factory function to create a ContextBuilder
+ */
+export function makeContextBuilder(
+  variables: Array<ContextVariable> = [],
+): ContextBuilder {
+  return {
+    string(name: string, question: string) {
+      return makeContextBuilder([...variables, {
+        name,
+        type: "string",
+        question,
+      }]);
+    },
+
+    number(name: string, question: string) {
+      return makeContextBuilder([...variables, {
+        name,
+        type: "number",
+        question,
+      }]);
+    },
+
+    boolean(name: string, question: string) {
+      return makeContextBuilder([...variables, {
+        name,
+        type: "boolean",
+        question,
+      }]);
+    },
+
+    object(name: string, question: string) {
+      return makeContextBuilder([...variables, {
+        name,
+        type: "object",
+        question,
+      }]);
+    },
+
+    getVariables() {
+      return variables;
+    },
+  };
+}
 
 /**
  * Factory function to create a SpecBuilderForCard
@@ -152,6 +245,7 @@ export type SpecBuilderForCard = {
 export function makeSpecBuilderForCard(
   name: string,
   specs: Array<Spec> = [],
+  contextVariables: Array<ContextVariable> = [],
 ): SpecBuilderForCard {
   // Helper function to render specs
   const renderSpecs = (
@@ -192,7 +286,11 @@ export function makeSpecBuilderForCard(
         }
       }
 
-      return makeSpecBuilderForCard(name, [...specs, valueSpec]);
+      return makeSpecBuilderForCard(
+        name,
+        [...specs, valueSpec],
+        contextVariables,
+      );
     },
 
     specs(groupName: string, builder: (s: SpecBuilder) => SpecBuilder) {
@@ -201,15 +299,33 @@ export function makeSpecBuilderForCard(
         value: childBuilder.getSpecs(),
         name: groupName,
       };
-      return makeSpecBuilderForCard(name, [...specs, groupSpec]);
+      return makeSpecBuilderForCard(
+        name,
+        [...specs, groupSpec],
+        contextVariables,
+      );
+    },
+
+    context(builder: (c: ContextBuilder) => ContextBuilder) {
+      const contextBuilder = builder(makeContextBuilder());
+      const newVariables = contextBuilder.getVariables();
+      return makeSpecBuilderForCard(name, specs, [
+        ...contextVariables,
+        ...newVariables,
+      ]);
     },
 
     getSpecs() {
       return specs;
     },
 
+    getContext() {
+      return contextVariables;
+    },
+
     render(options: RenderOptions = {}) {
-      const { messages = [], model = "gpt-4", ...otherOptions } = options;
+      const { messages = [], model = "gpt-4", context = {}, ...otherOptions } =
+        options;
 
       // Build system message content
       let systemContent = "";
@@ -225,8 +341,40 @@ export function makeSpecBuilderForCard(
         content: systemContent,
       };
 
-      // Combine system message with any user-provided messages
-      const allMessages = [systemMessage, ...messages];
+      // Build context messages (Q&A pairs)
+      const contextMessages: Array<
+        { role: "assistant" | "user"; content: string }
+      > = [];
+
+      if (contextVariables.length > 0 && context) {
+        for (const variable of contextVariables) {
+          if (variable.name in context) {
+            // Add assistant question
+            contextMessages.push({
+              role: "assistant" as const,
+              content: variable.question,
+            });
+
+            // Add user response
+            const value = context[variable.name];
+            let content: string;
+
+            if (typeof value === "object" && value !== null) {
+              content = JSON.stringify(value);
+            } else {
+              content = String(value);
+            }
+
+            contextMessages.push({
+              role: "user" as const,
+              content,
+            });
+          }
+        }
+      }
+
+      // Combine system message with context messages and any user-provided messages
+      const allMessages = [systemMessage, ...contextMessages, ...messages];
 
       return {
         model,
