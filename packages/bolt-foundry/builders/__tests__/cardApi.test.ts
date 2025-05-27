@@ -2,6 +2,7 @@
 
 import { assert, assertEquals } from "@std/assert";
 import { BfClient } from "../../BfClient.ts";
+import type { Spec } from "../builders.ts";
 
 Deno.test("BfClient.createCard - basic creation", () => {
   const client = BfClient.create();
@@ -153,4 +154,45 @@ Deno.test("Card with multiple spec groups", () => {
   assert(systemMessage.includes("Confident but respectful"));
   assert(systemMessage.includes("Battle with honor"));
   assert(systemMessage.includes("type advantages"));
+});
+
+Deno.test("Card with samples - structure and rendering", () => {
+  const client = BfClient.create();
+  const card = client.createCard("helpful-ai", (b) => {
+    return b
+      .spec("You are a helpful AI assistant", {
+        samples: (s) =>
+          s.sample("I'd be happy to help you with that!", 3)
+            .sample("I don't know, figure it out yourself", -3),
+      })
+      .specs("communication", (s) => {
+        return s
+          .spec("Use clear language", {
+            samples: (sam) =>
+              sam.sample("Let me explain this step by step...", 3)
+                .sample("It's complicated", -2),
+          })
+          .spec("Be patient with users");
+      });
+  });
+
+  // Check the structure
+  const specs = card.getSpecs();
+  assertEquals(specs.length, 2);
+
+  // First spec has samples
+  assertEquals(specs[0].value, "You are a helpful AI assistant");
+  assertEquals(specs[0].samples?.length, 2);
+  assertEquals(specs[0].samples![0].rating, 3);
+  assertEquals(specs[0].samples![1].rating, -3);
+
+  // Second spec group
+  assertEquals(specs[1].name, "communication");
+  const commSpecs = specs[1].value as Array<Spec>;
+  assertEquals(commSpecs[0].samples?.length, 2);
+  assertEquals(commSpecs[1].samples, undefined);
+
+  // Verify it renders without errors
+  const result = card.render();
+  assert(result.messages[0].content);
 });
