@@ -81,6 +81,34 @@ While BFF commands are preferred, you may need direct Sapling commands for:
   2. Then use `sl amend -m "New commit message"` to update it
   3. Sapling will automatically restack child commits
 
+### Splitting Commits
+
+When you need to break a single commit into multiple logical commits:
+
+**File-level splitting (non-interactive):**
+Use `sl uncommit` when changes are cleanly separated by files:
+
+1. `sl uncommit` - Removes the current commit, leaving changes in working directory
+2. `sl commit file1 file2 -m "First logical commit"` - Commit specific files
+3. `sl commit -m "Second logical commit"` - Commit remaining changes
+
+**Hunk-level splitting (requires interaction):**
+When a single file has multiple unrelated changes, use the interactive split:
+
+- `sl split` - Opens interactive interface for hunk-by-hunk selection
+- `sl commit --interactive` - Alternative for selecting hunks during commit
+
+**⚠️ Limitation for AI agents:** The interactive modes don't work well for automation. For mixed changes within files, consider:
+
+1. **Manual file editing:** Temporarily stash changes, make incremental commits
+2. **Better commit discipline:** Make smaller, focused changes to avoid mixed commits
+3. **Human intervention:** Ask a human to handle complex interactive splits
+
+**For historical commits:**
+1. `sl goto <commit-hash>` - Move to the commit you want to split
+2. Use appropriate workflow above
+3. Sapling automatically restacks child commits
+
 ### Creating Pull Requests
 
 - Submit pull requests: `sl pr submit`

@@ -238,3 +238,4 @@ The build system is complex and sequential:
 ## Source Control Notes
 
 - We don't use git, we use sapling.
+- For detailed workflow including commit splitting, see `cards/version-control.card.md`
