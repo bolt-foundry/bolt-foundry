@@ -8,9 +8,9 @@ examples and specifications. Instead of concatenating strings and hoping for the
 best, developers can compose prompts using a fluent builder pattern with full
 TypeScript type safety.
 
-The SDK lets developers create reusable "assistant specifications" that compile
-to OpenAI chat completion payloads. These specs are composable,
-version-controlled, and automatically tracked through integrated telemetry.
+The SDK lets developers create reusable "card specifications" that compile to
+OpenAI chat completion payloads. These specs are composable, version-controlled,
+and automatically tracked through integrated telemetry.
 
 ## Why do we need to build it?
 
@@ -30,7 +30,7 @@ brings software engineering best practices to LLM development.
 | Task                              | Status   | Description                                    |
 | --------------------------------- | -------- | ---------------------------------------------- |
 | Core spec infrastructure (v0.0.1) | Complete | Base Spec class and SpecBuilder implementation |
-| Public API (v0.0.2)               | Active   | Client pattern and assistant creation working  |
+| Public API (v0.0.2)               | Active   | Client pattern and card creation working       |
 | Package setup (v0.0.3)            | Planned  | npm package build and publishing               |
 | Domain builders (v0.1)            | Planned  | Persona, constraints, and behavior builders    |
 
@@ -55,13 +55,13 @@ brings software engineering best practices to LLM development.
 
 ## Measurement
 
-| Metric                  | Purpose              | Description                          |
-| ----------------------- | -------------------- | ------------------------------------ |
-| npm installs            | Adoption tracking    | Monitor weekly install growth        |
-| Time to first assistant | Developer experience | Should be < 5 minutes from install   |
-| Prompt consistency      | Reliability          | 90%+ consistent behavior across runs |
-| Bundle size             | Performance          | Keep under 50KB compressed           |
-| TypeScript errors       | DX quality           | Clear, actionable error messages     |
+| Metric             | Purpose              | Description                          |
+| ------------------ | -------------------- | ------------------------------------ |
+| npm installs       | Adoption tracking    | Monitor weekly install growth        |
+| Time to first card | Developer experience | Should be < 5 minutes from install   |
+| Prompt consistency | Reliability          | 90%+ consistent behavior across runs |
+| Bundle size        | Performance          | Keep under 50KB compressed           |
+| TypeScript errors  | DX quality           | Clear, actionable error messages     |
 
 # Bolt Foundry Library Project Plan
 
