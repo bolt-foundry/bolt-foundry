@@ -71,3 +71,74 @@ Deno.test("BfClient.createCard - renders to OpenAI format", () => {
   assert(content.includes("Patient"));
   assert(content.includes("Clear communicator"));
 });
+
+Deno.test("BfClient.createCard - creates card with context", () => {
+  const client = BfClient.create();
+
+  const card = client.createCard(
+    "customer-support",
+    (b) =>
+      b.spec("You are a customer support agent")
+        .context((c) =>
+          c.string("customerName", "What is the customer's name?")
+            .string("issue", "What is the customer's issue?")
+            .boolean("isPriority", "Is this a priority customer?")
+        ),
+  );
+
+  const context = card.getContext();
+  assertEquals(context.length, 3);
+  assertEquals(context[0].name, "customerName");
+  assertEquals(context[1].name, "issue");
+  assertEquals(context[2].name, "isPriority");
+});
+
+Deno.test("BfClient.createCard - renders card with context values", () => {
+  const client = BfClient.create();
+
+  const card = client.createCard(
+    "assistant",
+    (b) =>
+      b.spec("You are a helpful assistant")
+        .context((c) =>
+          c.string("userName", "What is the user's name?")
+            .number("userAge", "What is the user's age?")
+            .object("preferences", "What are the user's preferences?")
+        ),
+  );
+
+  const result = card.render({
+    model: "gpt-3.5-turbo",
+    context: {
+      userName: "Alice",
+      userAge: 25,
+      preferences: { theme: "dark", notifications: true },
+    },
+  });
+
+  assertEquals(result.model, "gpt-3.5-turbo");
+  assertEquals(result.messages.length, 7);
+
+  // Check system message
+  assertEquals(result.messages[0].role, "system");
+  assertEquals(result.messages[0].content, "You are a helpful assistant");
+
+  // Check context Q&A pairs
+  assertEquals(result.messages[1].role, "assistant");
+  assertEquals(result.messages[1].content, "What is the user's name?");
+  assertEquals(result.messages[2].role, "user");
+  assertEquals(result.messages[2].content, "Alice");
+
+  assertEquals(result.messages[3].role, "assistant");
+  assertEquals(result.messages[3].content, "What is the user's age?");
+  assertEquals(result.messages[4].role, "user");
+  assertEquals(result.messages[4].content, "25");
+
+  assertEquals(result.messages[5].role, "assistant");
+  assertEquals(result.messages[5].content, "What are the user's preferences?");
+  assertEquals(result.messages[6].role, "user");
+  assertEquals(
+    result.messages[6].content,
+    '{"theme":"dark","notifications":true}',
+  );
+});
