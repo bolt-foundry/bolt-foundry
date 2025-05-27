@@ -6,7 +6,8 @@ make AI applications reliable and maintainable.
 
 ## What are Prompt Cards?
 
-Prompt cards are structured specifications that define AI behavior. Instead of writing prompts as long text strings, you build them from reusable components:
+Prompt cards are structured specifications that define AI behavior. Instead of
+writing prompts as long text strings, you build them from reusable components:
 
 - **Persona Cards**: Define who the AI should be (traits, voice, constraints)
 - **Behavior Cards**: Define what the AI should do (goals, steps, formats)
@@ -14,8 +15,9 @@ Prompt cards are structured specifications that define AI behavior. Instead of w
 - **Specifications**: Organize requirements in clear, testable units
 
 Like trading cards, these components are:
+
 - **Composable**: Mix and match cards to create new capabilities
-- **Shareable**: Trade proven card patterns across teams
+- **Shareable**: Share proven card patterns across teams
 - **Collectible**: Build libraries of cards for different domains
 
 ## Learn More
