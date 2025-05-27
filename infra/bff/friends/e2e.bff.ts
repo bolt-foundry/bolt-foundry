@@ -189,4 +189,6 @@ register(
   "e2e",
   "Run end-to-end tests. Optionally specify a test file path.",
   e2eCommand,
+  [],
+  true, // AI-safe
 );
