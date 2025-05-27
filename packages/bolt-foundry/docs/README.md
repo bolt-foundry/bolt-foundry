@@ -27,21 +27,21 @@ brings software engineering best practices to LLM development.
 
 ## Status
 
-| Task                              | Status   | Description                                    |
-| --------------------------------- | -------- | ---------------------------------------------- |
-| Core spec infrastructure (v0.0)   | Complete | Base Spec class and SpecBuilder implementation |
-| Card system & context (v0.1)      | Complete | Simplified API with samples and variables      |
-| Enhanced analytics (v0.2)         | Complete | PostHog integration and cost tracking          |
-| Package setup                     | Deferred | npm package build and publishing               |
+| Task                            | Status   | Description                                    |
+| ------------------------------- | -------- | ---------------------------------------------- |
+| Core spec infrastructure (v0.0) | Complete | Base Spec class and SpecBuilder implementation |
+| Card system & context (v0.1)    | Complete | Simplified API with samples and variables      |
+| Enhanced analytics (v0.2)       | Complete | PostHog integration and cost tracking          |
+| Package setup                   | Deferred | npm package build and publishing               |
 
 ## Versions
 
-| Version         | Status   | Description                                                         |
-| --------------- | -------- | ------------------------------------------------------------------- |
-| [v0.0](V0.0.md) | Complete | Foundation with immutable builders and basic card creation          |
-| [v0.1](V0.1.md) | Complete | Simplified card system with samples and context variables           |
-| [v0.2](V0.2.md) | Complete | Enhanced analytics with PostHog integration and cost tracking       |
-| v0.3            | Planned  | Conversation management and remaining v0.1 features                 |
+| Version         | Status   | Description                                                   |
+| --------------- | -------- | ------------------------------------------------------------- |
+| [v0.0](V0.0.md) | Complete | Foundation with immutable builders and basic card creation    |
+| [v0.1](V0.1.md) | Complete | Simplified card system with samples and context variables     |
+| [v0.2](V0.2.md) | Complete | Enhanced analytics with PostHog integration and cost tracking |
+| v0.3            | Planned  | Conversation management and remaining v0.1 features           |
 
 ## Future work
 
