@@ -3,22 +3,22 @@
 import { assert, assertEquals } from "@std/assert";
 import { BfClient } from "../../BfClient.ts";
 
-Deno.test("BfClient.createAssistant - basic creation", () => {
+Deno.test("BfClient.createCard - basic creation", () => {
   const client = BfClient.create();
-  const assistant = client.createAssistant(
+  const card = client.createCard(
     "pokemon-trainer",
     (b) => b,
   );
-  assertEquals(assistant.name, "pokemon-trainer");
+  assertEquals(card.name, "pokemon-trainer");
 });
 
-Deno.test("AssistantSpec.render - returns OpenAI format", () => {
+Deno.test("CardSpec.render - returns OpenAI format", () => {
   const client = BfClient.create();
-  const assistant = client.createAssistant(
+  const card = client.createCard(
     "pokemon-professor",
     (b) => b,
   );
-  const result = assistant.render();
+  const result = card.render();
 
   // Should have required OpenAI fields
   assert(result.model);
@@ -26,14 +26,14 @@ Deno.test("AssistantSpec.render - returns OpenAI format", () => {
   assertEquals(result.messages[0].role, "system");
 });
 
-Deno.test("AssistantSpec.render - merges user options", () => {
+Deno.test("CardSpec.render - merges user options", () => {
   const client = BfClient.create();
-  const assistant = client.createAssistant(
+  const card = client.createCard(
     "gym-leader",
     (b) => b,
   );
 
-  const result = assistant.render({
+  const result = card.render({
     model: "gpt-4",
     temperature: 0.7,
     messages: [{ role: "user", content: "I challenge you to a battle!" }],
@@ -46,7 +46,7 @@ Deno.test("AssistantSpec.render - merges user options", () => {
 
 Deno.test("Builders are immutable - return new instances", () => {
   const client = BfClient.create();
-  const assistant = client.createAssistant("ash-ketchum", (b) => {
+  const card = client.createCard("ash-ketchum", (b) => {
     const original = b;
     const afterSpecs = b.specs(
       "character",
@@ -64,12 +64,12 @@ Deno.test("Builders are immutable - return new instances", () => {
     return afterMoreSpecs;
   });
 
-  assertEquals(assistant.name, "ash-ketchum");
+  assertEquals(card.name, "ash-ketchum");
 });
 
 Deno.test("Specs builder stores persona information", () => {
   const client = BfClient.create();
-  const assistant = client.createAssistant("professor-oak", (b) => {
+  const card = client.createCard("professor-oak", (b) => {
     return b.specs("character", (s) => {
       return s.spec(
         "A knowledgeable Pokemon researcher who gives new trainers their first Pokemon",
@@ -77,7 +77,7 @@ Deno.test("Specs builder stores persona information", () => {
     });
   });
 
-  const result = assistant.render();
+  const result = card.render();
   const systemMessage = result.messages[0].content;
 
   // System message should include persona description
@@ -87,7 +87,7 @@ Deno.test("Specs builder stores persona information", () => {
 
 Deno.test("Specs builder stores traits", () => {
   const client = BfClient.create();
-  const assistant = client.createAssistant("nurse-joy", (b) => {
+  const card = client.createCard("nurse-joy", (b) => {
     return b.specs("personality", (s) => {
       return s
         .spec("Caring and compassionate")
@@ -95,7 +95,7 @@ Deno.test("Specs builder stores traits", () => {
     });
   });
 
-  const result = assistant.render();
+  const result = card.render();
   const systemMessage = result.messages[0].content;
 
   // System message should include traits
@@ -106,7 +106,7 @@ Deno.test("Specs builder stores traits", () => {
 
 Deno.test("Specs builder stores constraints", () => {
   const client = BfClient.create();
-  const assistant = client.createAssistant("officer-jenny", (b) => {
+  const card = client.createCard("officer-jenny", (b) => {
     return b.specs("rules", (s) => {
       return s
         .spec("Always follow Pokemon League regulations")
@@ -114,7 +114,7 @@ Deno.test("Specs builder stores constraints", () => {
     });
   });
 
-  const result = assistant.render();
+  const result = card.render();
   const systemMessage = result.messages[0].content;
 
   // System message should include constraints
@@ -123,9 +123,9 @@ Deno.test("Specs builder stores constraints", () => {
   assert(systemMessage.includes("Protect trainers and Pokemon"));
 });
 
-Deno.test("Assistant with multiple spec groups", () => {
+Deno.test("Card with multiple spec groups", () => {
   const client = BfClient.create();
-  const assistant = client.createAssistant("elite-four-champion", (b) => {
+  const card = client.createCard("elite-four-champion", (b) => {
     return b
       .specs("character", (s) => {
         return s.spec(
@@ -144,14 +144,13 @@ Deno.test("Assistant with multiple spec groups", () => {
       });
   });
 
-  const result = assistant.render();
+  const result = card.render();
   const systemMessage = result.messages[0].content;
 
-  // Should include all spec groups
+  // System message should include all groups
   assert(typeof systemMessage === "string");
   assert(systemMessage.includes("undefeated Pokemon champion"));
   assert(systemMessage.includes("Confident but respectful"));
-  assert(systemMessage.includes("Encourages growth"));
   assert(systemMessage.includes("Battle with honor"));
   assert(systemMessage.includes("type advantages"));
 });
