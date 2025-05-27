@@ -1,10 +1,10 @@
-import { createCard } from "../cardBuilder.ts";
+import { createAssistantCard } from "../cardBuilder.ts";
 import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
 
 // Simple card creation API - only specs, no metadata:
-const card = createCard(
+const card = createAssistantCard(
   "water-needs",
   (b) =>
     b.specs("persona", (p) =>
@@ -19,7 +19,7 @@ const card = createCard(
 logger.info("Water needs card:", JSON.stringify(card, null, 2));
 
 // Another example with code review samples:
-const codeReviewCard = createCard(
+const codeReviewCard = createAssistantCard(
   "code-reviewer",
   (b) =>
     b.specs("capabilities", (c) =>

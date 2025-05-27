@@ -48,11 +48,21 @@ export function makeCardBuilder(
 }
 
 /**
- * Function to create a card (without builder)
+ * Function to create a card
  */
 export function createCard(
   name: string,
   builder: (b: CardBuilder) => CardBuilder,
 ): Card {
   return builder(makeCardBuilder(name)).build();
+}
+
+/**
+ * Function to create an assistant card (without builder)
+ */
+export function createAssistantCard(
+  name: string,
+  builder: (b: CardBuilder) => CardBuilder,
+): Card {
+  return createCard(name, builder);
 }
