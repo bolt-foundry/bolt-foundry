@@ -119,5 +119,5 @@ The card system will evolve to support:
 - **Card Analytics**: Track performance and usage metrics
 - **Card Optimization**: AI-powered improvements to existing cards
 
-The card system transforms prompt engineering from an art into a science, making
-LLM applications as reliable and maintainable as traditional software.
+The card system aims to push prompt engineering from an art into a science,
+making LLM applications as reliable and maintainable as traditional software.
