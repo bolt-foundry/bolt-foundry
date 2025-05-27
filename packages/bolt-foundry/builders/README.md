@@ -38,28 +38,26 @@ codebase, modeled after the successful pattern used in bfDb.
 ## Usage Example
 
 ```typescript
-import { BfClient } from "@bolt-foundry/bolt-foundry";
+import { createCard } from "@bolt-foundry/builders";
 
-// Create a client
-const client = BfClient.create();
-
-// Generic spec building
-const spec = new SpecBuilder()
-  .spec("simple value")
-  .specs("persona", (b) =>
-    b
-      .spec("description: A helpful assistant")
-      .spec("trait: patient"))
-  .build();
-
-// Domain-specific usage (assistants)
-const assistant = client.createAssistant(
-  "helper",
-  (b) =>
-    b.persona("character", (p) => p.description("..."))
-      .traits("personality", (t) => t.trait("...").trait("..."))
-      .constraints("rules", (c) => c.constraint("...")),
+// Create a card with structured specs
+const assistantCard = createCard("assistant", (b) =>
+  b.specs("persona", (p) =>
+    p.spec("A helpful assistant")
+     .spec("Patient and understanding")
+  )
+  .specs("capabilities", (c) =>
+    c.spec("Answer questions", {
+      samples: (s) =>
+        s.sample("Provides detailed, accurate responses", 3)
+         .sample("Gives vague or incorrect information", -3)
+    })
+  )
 );
+
+// Cards are simple data structures
+console.log(assistantCard.name); // "assistant"
+console.log(assistantCard.specs); // Array of specs
 ```
 
 ## Future Considerations

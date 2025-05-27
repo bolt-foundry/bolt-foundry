@@ -8,9 +8,9 @@ engineering.**
 ## The problem we're solving
 
 Today's LLM development reflects earlier ages of programming. Developers write
-prompts as massive text strings instead of composing them from structured cards...
-the equivalent of writing SQL queries by hand instead of using an ORM, or
-building HTML by concatenating strings instead of using components.
+prompts as massive text strings instead of composing them from structured
+cards... the equivalent of writing SQL queries by hand instead of using an ORM,
+or building HTML by concatenating strings instead of using components.
 
 This approach creates fundamental problems:
 
@@ -89,8 +89,9 @@ potential of LLM applications.
 
 ### The Card System
 
-Just like trading cards have structured attributes and clear rules for combination,
-our prompt cards provide:
+Just like trading cards have structured attributes and clear rules for
+combination, our prompt cards provide:
+
 - **Persona Cards**: Define who the LLM should be (traits, constraints, voice)
 - **Behavior Cards**: Define what the LLM should do (goals, steps, outputs)
 - **Composability**: Mix and match cards to create new capabilities

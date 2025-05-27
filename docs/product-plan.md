@@ -42,6 +42,7 @@ to experiment, test, and improve prompts automatically.
 ### The Card Metaphor
 
 We're building an "ORM for LLMs" using a trading card metaphor:
+
 - **Cards are specs**: Each card is a collection of structured specifications
 - **Persona Cards**: Define the AI's identity and constraints
 - **Behavior Cards**: Define specific capabilities and workflows
@@ -57,15 +58,16 @@ Engineers compose prompts using a structured
 
 ```typescript
 // Building with cards
-.personaCard("assistant", (b) => 
-  b.description("You are a helpful assistant.")
-   .trait("Explains spatial layouts visually")
-   .constraints("Safety", (b) => b.constraint("Never mention prices"))
-   .behaviorCard("furniture", (b) => 
-     b.behavior("layout designer", (b) =>
-       b.format("Return Markdown with sub-headings")
-        .reference("https://design-principles.pdf")
-        .goal("Deliver three viable layouts"))))
+createCard("assistant", (b) => 
+  b.specs("persona", (p) =>
+    p.spec("You are a helpful assistant.")
+     .spec("Explains spatial layouts visually"))
+   .specs("constraints", (c) => 
+     c.spec("Never mention prices"))
+   .specs("furniture-layout", (f) => 
+     f.spec("Return Markdown with sub-headings")
+      .spec("Reference: https://design-principles.pdf")
+      .spec("Deliver three viable layouts")))
 ```
 
 ### Persisted Prompt IDs

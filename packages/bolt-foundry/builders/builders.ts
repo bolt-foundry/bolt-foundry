@@ -6,6 +6,16 @@ export type RenderOptions =
   & TelemetryOptions;
 
 /**
+ * Sample data for specifications with a rating from -3 to +3
+ * Positive values indicate good examples, negative values indicate bad examples
+ */
+export type Sample = {
+  text: string;
+  rating: number; // -3 to +3
+  description?: string;
+};
+
+/**
  * Generic specification data structure for holding structured data.
  *
  * This is a core building block that can be used across the codebase
@@ -14,6 +24,25 @@ export type RenderOptions =
 export type Spec = {
   name?: string;
   value: string | Array<Spec>;
+  samples?: Array<Sample>;
+};
+
+/**
+ * Builder for adding samples to a spec
+ */
+export type SampleBuilder = {
+  /** Add a sample with text and rating (-3 to +3) */
+  sample(text: string, rating: number): SampleBuilder;
+
+  /** Get the collected samples */
+  getSamples(): Array<Sample>;
+};
+
+/**
+ * Options for spec method including samples
+ */
+export type SpecOptions = {
+  samples?: (s: SampleBuilder) => SampleBuilder;
 };
 
 /**
@@ -29,6 +58,9 @@ export type SpecBuilder = {
   /** Add a simple spec value */
   spec(value: string): SpecBuilder;
 
+  /** Add a spec with options including samples */
+  spec(value: string, options: SpecOptions): SpecBuilder;
+
   /** Add a named group of specs using a builder function */
   specs(name: string, builder: (s: SpecBuilder) => SpecBuilder): SpecBuilder;
 
@@ -37,12 +69,37 @@ export type SpecBuilder = {
 };
 
 /**
+ * Factory function to create a SampleBuilder
+ */
+export function makeSampleBuilder(samples: Array<Sample> = []): SampleBuilder {
+  return {
+    sample(text: string, rating: number) {
+      return makeSampleBuilder([...samples, { text, rating }]);
+    },
+
+    getSamples() {
+      return samples;
+    },
+  };
+}
+
+/**
  * Factory function to create a SpecBuilder
  */
 export function makeSpecBuilder(specs: Array<Spec> = []): SpecBuilder {
   return {
-    spec(value: string) {
+    spec(value: string, options?: SpecOptions) {
       const valueSpec: Spec = { value };
+
+      // If options are provided, process samples
+      if (options?.samples) {
+        const sampleBuilder = options.samples(makeSampleBuilder());
+        const samples = sampleBuilder.getSamples();
+        if (samples.length > 0) {
+          valueSpec.samples = samples;
+        }
+      }
+
       return makeSpecBuilder([...specs, valueSpec]);
     },
 
@@ -72,6 +129,9 @@ export type SpecBuilderForAssistant = {
 
   /** Add a simple spec value */
   spec(value: string): SpecBuilderForAssistant;
+
+  /** Add a spec with options including samples */
+  spec(value: string, options: SpecOptions): SpecBuilderForAssistant;
 
   /** Add a named group of specs using a builder function */
   specs(
@@ -120,8 +180,18 @@ export function makeSpecBuilderForAssistant(
   return {
     name,
 
-    spec(value: string) {
+    spec(value: string, options?: SpecOptions) {
       const valueSpec: Spec = { value };
+
+      // If options are provided, process samples
+      if (options?.samples) {
+        const sampleBuilder = options.samples(makeSampleBuilder());
+        const samples = sampleBuilder.getSamples();
+        if (samples.length > 0) {
+          valueSpec.samples = samples;
+        }
+      }
+
       return makeSpecBuilderForAssistant(name, [...specs, valueSpec]);
     },
 
@@ -164,5 +234,19 @@ export function makeSpecBuilderForAssistant(
         ...otherOptions, // This will include any other OpenAI params
       };
     },
+  };
+}
+
+/**
+ * Convenience function to start building specs
+ */
+export function specs(
+  name: string,
+  builder: (s: SpecBuilder) => SpecBuilder,
+): Spec {
+  const specBuilder = builder(makeSpecBuilder());
+  return {
+    name,
+    value: specBuilder.getSpecs(),
   };
 }
