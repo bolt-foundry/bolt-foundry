@@ -1,4 +1,4 @@
-import { createCard } from "../cardBuilder.ts";
+import { createAssistantCard } from "../cardBuilder.ts";
 import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
@@ -7,7 +7,7 @@ const logger = getLogger(import.meta);
 // Original spec API: specs("persona", (p) => p.specs("needs", (n) => n.spec("water", {samples: (s) => s.sample("positive", 3).sample("negative", -3)})))
 
 // With the card API:
-const personaCard = createCard(
+const personaCard = createAssistantCard(
   "persona",
   (card) =>
     card.specs("persona", (p) =>
