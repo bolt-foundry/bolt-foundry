@@ -46,7 +46,7 @@ _For the complete story of our journey and insights, see
 
 ## Our vision
 
-**Bolt Foundry will be the operating system for LLMs** — providing the
+**Bolt Foundry aims to be the operating system for LLMs** — providing the
 foundational infrastructure that every LLM application needs to be reliable,
 maintainable, and scalable.
 
@@ -70,7 +70,7 @@ potential of LLM applications.
 - Knowledge trapped in individual developer's heads
 - No clear upgrade paths or versioning
 
-### Tomorrow: The framework era
+### Near-term vision: The framework era
 
 - Developers compose prompts using semantic APIs built from reusable cards
 - Reusable components with clear interfaces
@@ -79,7 +79,7 @@ potential of LLM applications.
 - Shared libraries of proven card patterns
 - Seamless updates and A/B testing
 
-### Long-term: The operating system era
+### Long-term vision: The operating system era
 
 - Intelligent prompt optimization
 - Real-time performance insights
@@ -127,6 +127,11 @@ combination, our prompt cards provide:
 We believe great LLM applications are built, not discovered. They require the
 same discipline, testing, and structure as any reliable software system.
 
+Our approach centers on
+[improving inference through structured rigor](improving-inference-philosophy.md)
+— giving developers control at runtime, not just hoping the model behaves
+correctly.
+
 ### Developer experience
 
 Our tools should feel natural to developers. We prioritize clarity,
@@ -155,7 +160,7 @@ We'll know we're succeeding when:
 
 ## The world we're building
 
-In five years, we envision a world where:
+We're working toward a world where:
 
 - Writing raw text prompts feels as archaic as programming in assembly language
 - LLM applications have the same reliability expectations as web applications
@@ -163,7 +168,7 @@ In five years, we envision a world where:
 - The next generation of AI applications is built on structured, semantic
   foundations
 
-**Bolt Foundry exists to make this future inevitable.**
+**Bolt Foundry is building the tools to enable this future.**
 
 ---
 
