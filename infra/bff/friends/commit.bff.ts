@@ -88,6 +88,45 @@ export async function commit(args: string[]): Promise<number> {
     }
   }
 
+  // If specific files are provided, we need to stage them appropriately
+  if (filesToCommit.length > 0) {
+    logger.info("Staging specified files...");
+    
+    // Check which files exist and which are deleted
+    const existingFiles: string[] = [];
+    const deletedFiles: string[] = [];
+    
+    for (const file of filesToCommit) {
+      try {
+        await Deno.stat(file);
+        existingFiles.push(file);
+      } catch {
+        // File doesn't exist, assume it's deleted
+        deletedFiles.push(file);
+      }
+    }
+    
+    // Add existing files
+    if (existingFiles.length > 0) {
+      const addArgs = ["sl", "add", ...existingFiles];
+      const addResult = await runShellCommand(addArgs);
+      if (addResult !== 0) {
+        logger.error("❌ Failed to add files");
+        return addResult;
+      }
+    }
+    
+    // Mark deleted files for removal
+    if (deletedFiles.length > 0) {
+      const removeArgs = ["sl", "remove", "--mark", ...deletedFiles];
+      const removeResult = await runShellCommand(removeArgs);
+      if (removeResult !== 0) {
+        logger.error("❌ Failed to mark deleted files for removal");
+        return removeResult;
+      }
+    }
+  }
+
   logger.info("Creating commit...");
 
   // Create the commit
