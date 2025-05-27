@@ -15,7 +15,7 @@ Prompt cards are structured specifications that define AI behavior. Instead of w
 
 Like trading cards, these components are:
 - **Composable**: Mix and match cards to create new capabilities
-- **Shareable**: Trade proven card patterns across teams
+- **Shareable**: Share proven card patterns across teams
 - **Collectible**: Build libraries of cards for different domains
 
 ## Learn More
