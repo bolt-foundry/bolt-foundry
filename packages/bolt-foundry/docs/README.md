@@ -104,14 +104,12 @@ payloads while automatically tracking usage through integrated telemetry.
 
 ### Core Features
 
-- **Client API**: Use `boltFoundryClient.createCard()` to create named cards
-  with full TypeScript type safety
-- **Cards**: Define AI cards with personas, descriptions, traits, and
-  constraints using fluent builder functions
-- **OpenAI Integration**: Render directly to OpenAI chat completions format with
-  configurable model parameters
-- **TypeScript Safety**: Compile-time errors for invalid method chains, runtime
-  validation only at render
+- **Simple API**: Use `createCard()` to create named cards with TypeScript type
+  safety
+- **Cards**: Define AI behavior through hierarchical specs with optional samples
+- **Sample System**: Rate examples from -3 (bad) to +3 (good) to guide behavior
+- **TypeScript Safety**: Compile-time errors for invalid method chains
+- **Flexible Structure**: Organize specs however makes sense for your use case
 
 ### Integration Features
 
@@ -127,30 +125,26 @@ The SDK uses a builder pattern with TypeScript's type system to ensure valid
 prompt construction:
 
 ```typescript
-import { boltFoundryClient } from "@bolt-foundry/bolt-foundry";
+import { createCard } from "@bolt-foundry/builders";
 
-const card = boltFoundryClient.createCard("coding-helper", (b) => {
-  return b
-    .persona((p) =>
-      p
-        .description(
-          "You are helping {{userName}} learn {{language}} programming",
-        )
-        .trait("Explains code clearly")
-        .trait("Suggests best practices")
-    )
-    .constraints("security", (c) =>
-      c
-        .constraint("Never expose secrets")
-        .constraint("Follow OWASP guidelines"));
-});
+const codingHelper = createCard(
+  "coding-helper",
+  (b) =>
+    b.specs("persona", (p) =>
+      p.spec("You are helping users learn programming")
+        .spec("Explains code clearly", {
+          samples: (s) =>
+            s.sample("Here's how this function works step by step...", 3)
+              .sample("It just works", -3),
+        })
+        .spec("Suggests best practices"))
+      .specs("security", (s) =>
+        s.spec("Never expose secrets")
+          .spec("Follow OWASP guidelines")),
+);
 
-const payload = card.render({
-  model: "gpt-4",
-  temperature: 0.7,
-  variables: { userName: "Alice", language: "Python" },
-  telemetry: { apiKey: "...", sessionId: "..." },
-});
+// The card can be serialized to JSON or used with LLM APIs
+const cardData = codingHelper;
 ```
 
 ## Development Approach

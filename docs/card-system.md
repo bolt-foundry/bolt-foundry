@@ -20,124 +20,76 @@ aspect of LLM behavior. Cards are:
 - **Versionable**: Cards can evolve without breaking existing combinations
 - **Shareable**: Cards can be published and reused across projects
 
-### Types of Cards
+### Card Structure
 
-#### Persona Cards (.psc)
+Cards are named collections of structured specifications. Each card contains:
 
-**Persona Spec Cards** define who the LLM should be:
-
-- **Traits**: Personality characteristics and behavioral tendencies
-- **Constraints**: Boundaries and limitations on responses
-- **Voice**: Tone, style, and communication patterns
-- **Knowledge**: Domain expertise and background
+- **Name**: A unique identifier for the card
+- **Specs**: Hierarchical specifications organized by category
+- **Samples**: Optional examples with ratings from -3 (bad) to +3 (good)
 
 Example structure:
 
-```markdown
-# Assistant Persona Card
-
-## Description
-
-You are a helpful, professional assistant focused on clear communication.
-
-## Traits
-
-- Patient and understanding
-- Detail-oriented
-- Proactive in offering solutions
-
-## Constraints
-
-- Never discuss pricing without authorization
-- Maintain professional boundaries
-- Respect user privacy
-
-## Voice
-
-- Clear and concise
-- Second person perspective
-- Active voice preferred
+```typescript
+const card = createCard(
+  "assistant",
+  (b) =>
+    b.specs("persona", (p) =>
+      p.spec("helpful and professional")
+        .spec("patient and understanding"))
+      .specs("capabilities", (c) =>
+        c.spec("code review", {
+          samples: (s) =>
+            s.sample("Provides specific line-by-line feedback", 3)
+              .sample("Says 'code looks fine' without details", -3),
+        })),
+);
 ```
 
-#### Behavior Cards (.bhc)
+Cards focus on:
 
-**Behavior Cards** define what the LLM should do:
-
-- **Goals**: What the behavior aims to achieve
-- **Steps**: Sequential actions to accomplish the goal
-- **Formats**: Expected output structure
-- **References**: External resources or documentation
-
-Example structure:
-
-```markdown
-# Code Review Behavior Card
-
-## Goal
-
-Provide comprehensive, constructive code reviews that improve code quality.
-
-## Steps
-
-1. Analyze code structure and patterns
-2. Identify potential bugs or issues
-3. Suggest improvements for readability
-4. Check for security vulnerabilities
-5. Provide specific, actionable feedback
-
-## Format
-
-- Use markdown with clear sections
-- Include code examples for suggestions
-- Prioritize issues by severity
-
-## References
-
-- Team style guide: /docs/style-guide.md
-- Security checklist: /docs/security.md
-```
+- **Semantic Organization**: Group related specs together
+- **Example-Driven**: Use samples to show good and bad behaviors
+- **Composable**: Build complex behaviors from simple specs
+- **Flexible**: No prescribed structure - organize as needed
 
 ### Card Composition
 
-Cards combine through a fluent builder API:
+Cards are created using the simple builder API:
 
 ```typescript
-const assistant = new LLMBuilder()
-  .personaCard("helpful-assistant")
-  .behaviorCard("code-reviewer")
-  .behaviorCard("test-writer")
-  .context({ language: "TypeScript" })
-  .build();
+import { createCard } from "@bolt-foundry/builders";
+
+const codeReviewer = createCard(
+  "code-reviewer",
+  (b) =>
+    b.specs("goals", (g) =>
+      g.spec("improve code quality")
+        .spec("catch bugs early")
+        .spec("enforce standards"))
+      .specs("approach", (a) =>
+        a.spec("constructive feedback", {
+          samples: (s) =>
+            s.sample("Here's how to improve this function...", 3)
+              .sample("This code is bad", -3),
+        })),
+);
 ```
-
-### Card Packs
-
-Related cards can be grouped into packs for specific domains:
-
-- **Engineering Pack**: Code review, debugging, architecture design
-- **Writing Pack**: Copy editing, content creation, SEO optimization
-- **Analysis Pack**: Data interpretation, report generation, insights
 
 ## Implementation
 
 ### Card Storage
 
-Cards are stored as markdown files with structured frontmatter:
+Cards can be stored as:
 
-```yaml
----
-type: persona
-version: 1.0.0
-tags: [assistant, professional, technical]
-compatibility: [gpt-4, claude-3]
----
-```
+1. **TypeScript files**: Export card definitions as code
+2. **JSON files**: Serialize card structures for storage
+3. **Markdown files**: Document card specifications in `.card.md` files
 
 ### Card Naming Convention
 
-- **Persona Cards**: `{name}.psc.md` (Persona Spec Card)
-- **Behavior Cards**: `{name}.bhc.md` (Behavior Card)
-- **Card Packs**: `{domain}-pack/` directory structure
+- **Card files**: `{name}.card.ts` or `{name}.card.md`
+- **Card directories**: Group related cards in directories by domain
 
 ### Card Discovery
 
