@@ -46,8 +46,7 @@ We're building structured prompt engineering using a trading card metaphor:
 - **Cards are specs**: Each card is a collection of structured specifications
 - **Persona Cards**: Define the AI's identity and constraints
 - **Behavior Cards**: Define specific capabilities and workflows
-- **Card Packs**: Collections of related cards for specific domains
-- **Card Trading**: Share and exchange proven card patterns
+- **Card Sharing**: Share proven card patterns across teams
 
 ## Architecture Overview
 

@@ -95,7 +95,7 @@ combination, our prompt cards provide:
 - **Persona Cards**: Define who the LLM should be (traits, constraints, voice)
 - **Behavior Cards**: Define what the LLM should do (goals, steps, outputs)
 - **Composability**: Mix and match cards to create new capabilities
-- **Collectibility**: Share and trade proven card patterns across teams
+- **Collectibility**: Share proven card patterns across teams
 
 ## Why this matters
 
