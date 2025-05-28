@@ -91,11 +91,11 @@ export async function commit(args: string[]): Promise<number> {
   // If specific files are provided, we need to stage them appropriately
   if (filesToCommit.length > 0) {
     logger.info("Staging specified files...");
-    
+
     // Check which files exist and which are deleted
     const existingFiles: string[] = [];
     const deletedFiles: string[] = [];
-    
+
     for (const file of filesToCommit) {
       try {
         await Deno.stat(file);
@@ -105,7 +105,7 @@ export async function commit(args: string[]): Promise<number> {
         deletedFiles.push(file);
       }
     }
-    
+
     // Add existing files
     if (existingFiles.length > 0) {
       const addArgs = ["sl", "add", ...existingFiles];
@@ -115,7 +115,7 @@ export async function commit(args: string[]): Promise<number> {
         return addResult;
       }
     }
-    
+
     // Mark deleted files for removal
     if (deletedFiles.length > 0) {
       const removeArgs = ["sl", "remove", "--mark", ...deletedFiles];
