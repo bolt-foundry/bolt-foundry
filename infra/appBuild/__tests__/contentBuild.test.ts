@@ -199,3 +199,91 @@ This should be compiled through MDX even though it's a .md file.`;
     await Deno.remove(tempDir, { recursive: true });
   }
 });
+
+Deno.test("generates import map for docs directory", async () => {
+  // This test verifies that the content build generates a proper import map
+  // for all MDX files in the docs directory
+  const tempDir = await Deno.makeTempDir();
+  try {
+    const docsDir = join(tempDir, "docs");
+    const buildDir = join(tempDir, "build");
+    const generatedDir = join(tempDir, "apps", "boltFoundry", "__generated__");
+    
+    // Create test MDX files
+    await Deno.mkdir(docsDir, { recursive: true });
+    await Deno.mkdir(generatedDir, { recursive: true });
+    
+    const quickstartContent = `# Quickstart
+    
+This is the quickstart guide.`;
+    
+    const gettingStartedContent = `# Getting Started
+
+Learn the basics here.`;
+    
+    await Deno.writeTextFile(
+      join(docsDir, "quickstart.mdx"),
+      quickstartContent
+    );
+    
+    await Deno.writeTextFile(
+      join(docsDir, "getting-started.mdx"),
+      gettingStartedContent
+    );
+
+    // Act: Run the content build process
+    const contentBuildPath = join(Deno.cwd(), "infra", "appBuild", "contentBuild.ts");
+    const command = new Deno.Command("deno", {
+      args: ["run", "-A", contentBuildPath],
+      env: {
+        DOCS_DIR: docsDir,
+        BUILD_DIR: buildDir,
+        GENERATED_DIR: generatedDir,
+      },
+    });
+    
+    const { success } = await command.output();
+    
+    // Assert: Build succeeds
+    assert(success, "Content build with import map generation should complete successfully");
+    
+    // Check that the import map was generated
+    const importMapPath = join(generatedDir, "docsImportMap.ts");
+    assert(
+      await exists(importMapPath),
+      "Import map should be generated at __generated__/docsImportMap.ts"
+    );
+    
+    // Read and verify the import map content
+    const importMapContent = await Deno.readTextFile(importMapPath);
+    
+    // Should have imports for both MDX files
+    assert(
+      importMapContent.includes("quickstart"),
+      "Import map should include quickstart"
+    );
+    assert(
+      importMapContent.includes("getting-started"), 
+      "Import map should include getting-started"
+    );
+    
+    // Should export a docComponents object
+    assert(
+      importMapContent.includes("export const docComponents"),
+      "Import map should export docComponents"
+    );
+    
+    // Should have correct slug mappings
+    assert(
+      importMapContent.includes('"quickstart":'),
+      "Import map should have quickstart mapping"
+    );
+    assert(
+      importMapContent.includes('"getting-started":'),
+      "Import map should have getting-started mapping"
+    );
+  } finally {
+    // Clean up
+    await Deno.remove(tempDir, { recursive: true });
+  }
+});
