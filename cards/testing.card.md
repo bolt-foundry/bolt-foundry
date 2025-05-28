@@ -106,15 +106,21 @@ Deno.test("throws BfError", () => {
 
 ## UI Component Testing
 
-- Use the custom `render()` utility from `infra/testing/ui-testing.ts`
+- Use the custom `render()` and `fireEvent()` utilities from
+  `infra/testing/ui-testing.ts`
 - Test component behavior and user interactions
 - Keep UI tests focused on functionality, not implementation
+- Available query methods: `getByText`, `getByRole`, `queryByTestId`
 
 ```typescript
-import { render } from "infra/testing/ui-testing.ts";
+import { fireEvent, render } from "infra/testing/ui-testing.ts";
 
 Deno.test("Component behavior", () => {
-  const { getByText } = render(<MyComponent />);
+  const { getByText, getByRole } = render(<MyComponent />);
+  const button = getByRole("button", { name: "Submit" });
+
+  fireEvent(button, "click");
+
   const element = getByText("Expected Text");
   assertExists(element);
 });
