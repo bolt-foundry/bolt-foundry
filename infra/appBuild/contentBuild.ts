@@ -1,90 +1,123 @@
 #!/usr/bin/env -S deno run -A
 
-import { ensureDir } from "@std/fs";
-// import { dirname, extname, join } from "@std/path";
+import { ensureDir, exists } from "@std/fs";
+import { basename, dirname, extname, join } from "@std/path";
 import { getLogger } from "packages/logger/logger.ts";
-// import { compile } from "@mdx-js/mdx";
-// import { processNotebookContent } from "infra/appBuild/utils/notebookUtils.ts";
+import { compile } from "@mdx-js/mdx";
 
 const logger = getLogger(import.meta);
 
-async function copyContentFiles() {
-  //   const contentDir = "content";
-  const buildDir = "build/content";
+async function processDocsFiles() {
+  const docsDir = Deno.env.get("DOCS_DIR") || "docs";
+  const buildDir = Deno.env.get("BUILD_DIR") || "build";
+  const generatedDir = Deno.env.get("GENERATED_DIR") ||
+    "apps/boltFoundry/__generated__";
 
-  //   // Ensure build directory exists
-  await ensureDir(buildDir);
+  // Ensure directories exist
+  await ensureDir(join(buildDir, "docs"));
+  await ensureDir(generatedDir);
 
-  //   // Walk through content directory
-  //   for await (const entry of Deno.readDir(contentDir)) {
-  //     await processEntry(entry, contentDir, buildDir);
-  //   }
+  // Check if docs directory exists
+  if (!await exists(docsDir)) {
+    logger.info("No docs directory found, skipping docs processing");
+    return;
+  }
+
+  // Collect all MDX files
+  const mdxFiles: { slug: string; path: string }[] = [];
+
+  // Walk through docs directory
+  for await (const entry of Deno.readDir(docsDir)) {
+    if (
+      entry.isFile &&
+      (entry.name.endsWith(".mdx") || entry.name.endsWith(".md"))
+    ) {
+      const slug = basename(entry.name, extname(entry.name));
+      mdxFiles.push({ slug, path: join(docsDir, entry.name) });
+    }
+  }
+
+  // Process each MDX file
+  for (const { slug, path } of mdxFiles) {
+    await processMdxFile(path, slug, buildDir);
+  }
+
+  // Generate import map
+  await generateImportMap(mdxFiles, generatedDir);
 }
 
-// async function processEntry(
-//   entry: Deno.DirEntry,
-//   currentPath: string,
-//   buildPath: string,
-// ) {
-//   const sourcePath = join(currentPath, entry.name);
-//   const targetPath = join(buildPath, entry.name);
+async function processMdxFile(
+  sourcePath: string,
+  slug: string,
+  buildDir: string,
+) {
+  try {
+    const content = await Deno.readTextFile(sourcePath);
 
-//   if (entry.isDirectory) {
-//     await ensureDir(targetPath);
-//     for await (const subEntry of Deno.readDir(sourcePath)) {
-//       await processEntry(subEntry, sourcePath, targetPath);
-//     }
-//   } else if (entry.isFile) {
-//     // Ensure target directory exists
-//     await ensureDir(dirname(targetPath));
+    // Compile MDX to JS as a complete program
+    const compiled = await compile(content, {
+      outputFormat: "program",
+      development: false,
+    });
 
-//     const ext = extname(sourcePath).toLowerCase();
-//     if (ext === ".md" || ext === ".mdx" || ext === ".ipynb") {
-//       let content = "";
+    // The compiled output is already a complete ES module
+    const moduleContent = String(compiled);
 
-//       if (ext === ".ipynb") {
-//         const notebookContent = await Deno.readTextFile(sourcePath);
+    // Save as .js file so it can be imported
+    const destPath = join(buildDir, "docs", `${slug}.js`);
+    await ensureDir(dirname(destPath));
 
-//         content = processNotebookContent(notebookContent);
-//       } else {
-//         content = await Deno.readTextFile(sourcePath);
-//       }
+    logger.info(`Compiling ${sourcePath} -> ${destPath}`);
 
-//       try {
-//         const compiled = await compile(content);
-//         const destPath = targetPath;
-//         logger.info(`Processing ${sourcePath} -> ${destPath}`);
+    await Deno.writeTextFile(destPath, moduleContent);
+  } catch (error) {
+    logger.error(`Error compiling ${sourcePath}: ${error}`);
+    throw error;
+  }
+}
 
-//         // Post-process import statements
-//         let processedContent = String(compiled).replace(
-//           /from\s+["']content\//g,
-//           'from "build/content/',
-//         );
-//         processedContent = processedContent.replace(
-//           /import\s+["']content\//g,
-//           'import "build/content/',
-//         );
+async function generateImportMap(
+  mdxFiles: { slug: string; path: string }[],
+  generatedDir: string,
+) {
+  const importMapPath = join(generatedDir, "docsImportMap.ts");
 
-//         await Deno.writeTextFile(destPath, processedContent);
-//       } catch (error) {
-//         logger.error(`Error compiling ${sourcePath}: ${error}`);
-//       }
-//     } else {
-//       const destPath = targetPath;
-//       logger.info(`Processing ${sourcePath} -> ${destPath}`);
-//       try {
-//         await Deno.copyFile(sourcePath, destPath);
-//       } catch (error) {
-//         logger.error(`Error copying ${sourcePath}: ${error}`);
-//       }
-//     }
-//   }
-// }
+  // Generate import statements
+  // Import from build directory where files are compiled to JS
+  const imports = mdxFiles.map(({ slug }) => {
+    // Convert slug to a valid JavaScript identifier
+    const identifier = slug.replace(/-/g, "_");
+    // Import the compiled JS file
+    return `import ${identifier} from "build/docs/${slug}.js";`;
+  }).join("\n");
+
+  // Generate component mapping
+  const componentMappings = mdxFiles.map(({ slug }) => {
+    const identifier = slug.replace(/-/g, "_");
+    return `  "${slug}": ${identifier},`;
+  }).join("\n");
+
+  // Generate the import map file content
+  const content = `// This file is auto-generated by contentBuild.ts
+// DO NOT EDIT MANUALLY
+
+${imports}
+
+export const docComponents = {
+${componentMappings}
+} as const;
+
+export type DocSlug = keyof typeof docComponents;
+`;
+
+  logger.info(`Generating import map at ${importMapPath}`);
+  await Deno.writeTextFile(importMapPath, content);
+}
 
 if (import.meta.main) {
   logger.info("Starting content build process");
   try {
-    await copyContentFiles();
+    await processDocsFiles();
     logger.info("Content build process complete");
   } catch (error) {
     logger.error("Build failed:", error);
