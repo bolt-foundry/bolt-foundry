@@ -47,13 +47,13 @@ Deno.test("renders documentation at /docs route", async () => {
     const url = context.page.url();
     assert(
       url.includes("/docs"),
-      "Should be on the docs route"
+      "Should be on the docs route",
     );
-    
+
     // Verify docs content is present (this should fail with 404)
     assert(
       bodyText?.includes("Documentation") || bodyText?.includes("Docs"),
-      "Page should contain documentation content"
+      "Page should contain documentation content",
     );
 
     // Take screenshot after test has completed successfully
@@ -89,13 +89,13 @@ Deno.test("renders specific documentation page at /docs/quickstart", async () =>
     const url = context.page.url();
     assert(
       url.includes("/docs/quickstart"),
-      "Should be on the docs/quickstart route"
+      "Should be on the docs/quickstart route",
     );
-    
+
     // Verify quickstart content is present (this should fail with 404)
     assert(
       bodyText?.toLowerCase().includes("quickstart"),
-      "Page should contain quickstart content"
+      "Page should contain quickstart content",
     );
 
     // Take screenshot after test has completed successfully
