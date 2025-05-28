@@ -32,6 +32,7 @@ export type RouteEntrypoint = {
 };
 
 import {
+  entrypointDocsPage,
   entrypointFormatter,
   entrypointHome,
   entrypointLogin,
@@ -44,6 +45,7 @@ export const isographAppRoutes = new Map<string, IsographRoute>([
   ["/", entrypointHome],
   ["/formatter", entrypointFormatter],
   ["/login", entrypointLogin],
+  ["/docs/:slug", entrypointDocsPage],
   ...loggedInAppRoutes,
 ]);
 
