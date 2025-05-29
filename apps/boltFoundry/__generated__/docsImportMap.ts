@@ -11,14 +11,14 @@ export const availableDocs = new Set([
   "team-story",
   "business-vision",
   "company-vision",
-  "STATUS",
   "BACKLOG",
   "CHANGELOG",
   "card-system",
   "improving-inference-philosophy",
-  "interactive-demo",
   "getting-started",
+  "interactive-demo",
   "quickstart",
+  "STATUS",
   "wut",
 ] as const);
 
