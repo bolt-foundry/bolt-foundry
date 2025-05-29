@@ -1,13 +1,13 @@
-
-import { useState } from 'react';
-import { useChat } from 'ai/react';
-import Head from 'next/head';
-import styles from '../styles/Chat.module.css';
-import TextareaAutosize from 'react-textarea-autosize';
-import Link from 'next/link';
+import { useState } from "react";
+import { useChat } from "ai/react";
+import Head from "next/head";
+import styles from "../styles/Chat.module.css";
+import TextareaAutosize from "react-textarea-autosize";
+import Link from "next/link";
 
 export default function ChatPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat();
 
   return (
     <div className={styles.container}>
@@ -19,7 +19,7 @@ export default function ChatPage() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Chat with AI</h1>
-        
+
         <div className={styles.chatContainer}>
           <div className={styles.messagesContainer}>
             {messages.length === 0 && (
@@ -27,12 +27,14 @@ export default function ChatPage() {
                 <p>Ask me anything...</p>
               </div>
             )}
-            
-            {messages.map(message => (
-              <div 
-                key={message.id} 
+
+            {messages.map((message) => (
+              <div
+                key={message.id}
                 className={`${styles.message} ${
-                  message.role === 'user' ? styles.userMessage : styles.aiMessage
+                  message.role === "user"
+                    ? styles.userMessage
+                    : styles.aiMessage
                 }`}
               >
                 <div className={styles.messageContent}>
@@ -41,7 +43,7 @@ export default function ChatPage() {
               </div>
             ))}
           </div>
-          
+
           <form onSubmit={handleSubmit} className={styles.inputForm}>
             <TextareaAutosize
               className={styles.input}
@@ -51,22 +53,22 @@ export default function ChatPage() {
               minRows={1}
               maxRows={5}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleSubmit(e);
                 }
               }}
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className={styles.sendButton}
-              disabled={isLoading || input.trim() === ''}
+              disabled={isLoading || input.trim() === ""}
             >
-              {isLoading ? 'Thinking...' : 'Send'}
+              {isLoading ? "Thinking..." : "Send"}
             </button>
           </form>
         </div>
-        
+
         <div className={styles.navigation}>
           <Link href="/" className={styles.navLink}>
             ← Back to Home

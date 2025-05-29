@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     "@bolt-foundry/bolt-foundry",
     "@bolt-foundry/logger",
-    "@bolt-foundry/get-configuration-var"
+    "@bolt-foundry/get-configuration-var",
   ],
 };
 
