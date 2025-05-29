@@ -1,7 +1,12 @@
 import { streamText } from "ai";
 import { openai } from "@ai-sdk/openai";
 
-export default async function handler(req, res) {
+import type { NextApiRequest, NextApiResponse } from "next";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   if (!process.env.OPENAI_API_KEY) {
     return res.status(500).json({
       error: {
@@ -18,14 +23,18 @@ export default async function handler(req, res) {
       model: openai("gpt-3.5-turbo"),
       messages,
       onError: ({ error }) => {
-        console.error(`Error with OpenAI API request: ${error.message}`);
+        const errorMessage = error instanceof Error
+          ? error.message
+          : String(error);
+        console.error(`Error with OpenAI API request: ${errorMessage}`);
       },
     });
 
     // Respond with the stream
     return result.pipeDataStreamToResponse(res);
   } catch (error) {
-    console.error(`Error with OpenAI API request: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`Error with OpenAI API request: ${errorMessage}`);
     return res.status(500).json({
       error: {
         message: "An error occurred during your request.",
