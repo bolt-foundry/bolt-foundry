@@ -5,7 +5,6 @@ import type { ComponentType } from "react";
 
 // Map of available slugs for runtime checking
 export const availableDocs = new Set([
-  "wut",
   "README",
   "product-plan",
   "measurement-strategy",
@@ -17,9 +16,10 @@ export const availableDocs = new Set([
   "CHANGELOG",
   "card-system",
   "improving-inference-philosophy",
-  "quickstart",
   "interactive-demo",
   "getting-started",
+  "quickstart",
+  "wut",
 ] as const);
 
 // Derive the type from the Set values
