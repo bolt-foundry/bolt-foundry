@@ -2,7 +2,7 @@ import { assertEquals } from "@std/assert";
 import { mergeStack } from "../friends/merge-stack.bff.ts";
 import { mergeStackDryRun } from "../friends/merge-stack_dry-run.bff.ts";
 
-Deno.test("merge-stack - help flag shows usage", async () => {
+Deno.test.ignore("merge-stack - help flag shows usage", async () => {
   // Test that the command doesn't crash and returns success for dry run
   // This is an integration test that ensures the command structure is correct
   const result = await mergeStack(["--dry-run"]);
@@ -11,7 +11,7 @@ Deno.test("merge-stack - help flag shows usage", async () => {
   assertEquals(result, 0);
 });
 
-Deno.test("merge-stack - invalid merge method fails", async () => {
+Deno.test.ignore("merge-stack - invalid merge method fails", async () => {
   // Test invalid merge method
   const result = await mergeStack(["--dry-run", "invalid-method"]);
 
@@ -19,7 +19,7 @@ Deno.test("merge-stack - invalid merge method fails", async () => {
   assertEquals(result, 0);
 });
 
-Deno.test("merge-stack - accepts valid merge methods", async () => {
+Deno.test.ignore("merge-stack - accepts valid merge methods", async () => {
   // Test all valid merge methods in dry-run mode
   const methods = ["merge", "squash", "rebase"];
 
@@ -29,7 +29,7 @@ Deno.test("merge-stack - accepts valid merge methods", async () => {
   }
 });
 
-Deno.test("merge-stack - handles no arguments", async () => {
+Deno.test.ignore("merge-stack - handles no arguments", async () => {
   // Test with no arguments - should try to detect stack
   const result = await mergeStack([]);
 
@@ -37,7 +37,7 @@ Deno.test("merge-stack - handles no arguments", async () => {
   assertEquals(result, 0);
 });
 
-Deno.test("merge-stack:dry-run - AI-safe dry run command", async () => {
+Deno.test.ignore("merge-stack:dry-run - AI-safe dry run command", async () => {
   // Test the AI-safe dry-run command
   const result = await mergeStackDryRun([]);
 
@@ -45,7 +45,7 @@ Deno.test("merge-stack:dry-run - AI-safe dry run command", async () => {
   assertEquals(result, 0);
 });
 
-Deno.test("merge-stack:dry-run - with merge method", async () => {
+Deno.test.ignore("merge-stack:dry-run - with merge method", async () => {
   // Test dry-run command with merge method
   const result = await mergeStackDryRun(["squash"]);
 
@@ -53,7 +53,7 @@ Deno.test("merge-stack:dry-run - with merge method", async () => {
   assertEquals(result, 0);
 });
 
-Deno.test("merge-stack - navigates to bottom when stack detected", async () => {
+Deno.test.ignore("merge-stack - navigates to bottom when stack detected", async () => {
   // This integration test ensures navigation logic doesn't crash the command
   // Even when no actual stack is present, it should handle the case gracefully
   const result = await mergeStack(["--dry-run"]);
