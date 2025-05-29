@@ -150,7 +150,6 @@ model and willingness to pay before full credit system implementation.
   - "Why structured prompts?" explainer with concrete examples
   - **Implementation details:**
     - Streamlined examples folder with multiple LLM provider examples
-    - `bff createExampleApp` command for instant project scaffolding
     - Minimal chat app template with TypeScript and Express backend
     - Self-contained examples that work as starter projects
     - Node.js focused with proper TypeScript support

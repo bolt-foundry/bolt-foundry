@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { createOpenAiFetch } from "@bolt-foundry/bolt-foundry";
+import { createOpenAIFetch } from "@bolt-foundry/bolt-foundry";
 import styles from "../styles/Home.module.css";
 import Link from "next/link";
 
@@ -18,20 +18,18 @@ export default function BoltFoundryExample() {
       setStatus("Testing connection...");
 
       // Create the custom fetch function from bolt-foundry
-      const customFetch = createOpenAiFetch({
+      const customFetch = createOpenAIFetch({
         openAiApiKey: apiKey,
       });
 
       // Simply log the function to show it's working
       setStatus("Successfully created OpenAI fetch wrapper!");
 
-      // Track a sample event
-      await customFetch.trackLlmEvent("example_event", {
-        source: "bolt-foundry-example",
-        timestamp: new Date().toISOString(),
-      });
+      // The customFetch function can be used to make OpenAI API calls
+      // with automatic tracking and monitoring
+      console.log("OpenAI fetch wrapper created:", customFetch);
 
-      setStatus("Successfully created and tested OpenAI fetch wrapper!");
+      setStatus("Successfully created OpenAI fetch wrapper!");
     } catch (error) {
       setStatus(`Error: ${error.message}`);
       console.error(error);

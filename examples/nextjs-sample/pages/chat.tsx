@@ -28,7 +28,7 @@ export default function ChatPage() {
               </div>
             )}
 
-            {messages.map((message) => (
+            {messages.map((message: any) => (
               <div
                 key={message.id}
                 className={`${styles.message} ${
