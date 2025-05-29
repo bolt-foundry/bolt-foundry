@@ -14,11 +14,11 @@ For detailed product roadmap and milestones, see
 Bolt Foundry is building the **Operating System for LLMs**. Our current
 priorities for v0.1 are:
 
-| Priority | Focus Area               | Description                                                                           | Active Work                                                                         |
-| -------- | ------------------------ | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| P0       | Examples & Documentation | Fixing the NextJS sample application with proper TypeScript support and build process | • Fixing TypeScript issues in NextJS example<br>• Adding proper build documentation |
-| P1.1     | Developer Experience     | Creating clear, working examples that demonstrate Bolt Foundry capabilities           | • Creating deployment examples<br>• Improving developer onboarding experience       |
-| P1.2     | Core SDK Stability       | Ensuring the bolt-foundry package (v0.1.0) provides a solid foundation                | • Stabilizing API interfaces<br>• Adding comprehensive tests                        |
+| Priority | Focus Area               | Description                                                                           | Active Work                                                     |
+| -------- | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| P0       | Examples & Documentation | Fixing the NextJS sample application with proper TypeScript support and build process | Fixing TypeScript issues and adding build documentation         |
+| P1.1     | Developer Experience     | Creating clear, working examples that demonstrate Bolt Foundry capabilities           | Creating deployment examples and improving developer onboarding |
+| P1.2     | Core SDK Stability       | Ensuring the bolt-foundry package (v0.1.0) provides a solid foundation                | Stabilizing API interfaces and adding comprehensive tests       |
 
 ## Priority Projects
 
