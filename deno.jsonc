@@ -74,13 +74,13 @@
     "**/__TEMPLATE__.*",
     "**/*.disabled.*",
     "thirdParty",
-    "examples",
     "**/npm",
     "node_modules"
   ],
   "lint": {
     "exclude": [
-      "**/__generated__/**"
+      "**/__generated__/**",
+      "examples/**"
     ],
     "plugins": ["./infra/lint/bolt-foundry.ts"],
 
@@ -105,7 +105,8 @@
       "**/__generated__/**",
       "**/*.json",
       "**/*.ipynb",
-      "**/.ipynb_checkpoints"
+      "**/.ipynb_checkpoints",
+      "**/node_modules/**"
     ]
   },
 

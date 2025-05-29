@@ -1,41 +1,48 @@
 # Bolt Foundry + OpenAI integration example
 
-This Next.js example shows how to use Bolt Foundry's structured card system with OpenAI's API.
+This Next.js example shows how to use Bolt Foundry's structured card system with
+OpenAI's API.
 
 ## What this does
 
-Cards make prompts reliable. Instead of brittle strings, you get type-safe specifications with structured context injection. This example creates an AI assistant with a specific persona and dynamic context.
+Cards make prompts reliable. Instead of brittle strings, you get type-safe
+specifications with structured context injection. This example creates an AI
+assistant with a specific persona and dynamic context.
 
 ## Key concepts
 
 ### Assistant cards
 
-Assistant cards define an AI persona with a structured specification and typed context schema:
+Assistant cards define an AI persona with a structured specification and typed
+context schema:
 
 ```typescript
-const assistantCard = bfClient.createAssistantCard("assistant", (b) => b
-  .spec("You are a pokemon master trainer.")
-  .context((c) => c
-    .string("userName", "What is the user's name?")
-    .number("userAge", "What is the user's age?")
-    .object("preferences", "What are the user's preferences?")
-  )
-)
+const assistantCard = bfClient.createAssistantCard("assistant", (b) =>
+  b
+    .spec("You are a pokemon master trainer.")
+    .context((c) =>
+      c
+        .string("userName", "What is the user's name?")
+        .number("userAge", "What is the user's age?")
+        .object("preferences", "What are the user's preferences?")
+    ));
 ```
 
 ### Context injection via synthetic turns
 
-When you render a card, context values become Q&A exchanges after the system prompt:
+When you render a card, context values become Q&A exchanges after the system
+prompt:
 
 ```typescript
-const renderedCard = assistantCard.render({ 
-  model: "gpt-3.5-turbo", 
-  messages, 
-  context: { userName: "Alice" } 
-})
+const renderedCard = assistantCard.render({
+  model: "gpt-3.5-turbo",
+  messages,
+  context: { userName: "Alice" },
+});
 ```
 
 This produces:
+
 ```
 System: "You are a pokemon master trainer."
 Assistant: "What is the user's name?"
