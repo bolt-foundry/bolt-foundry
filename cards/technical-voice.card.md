@@ -1,4 +1,4 @@
-# Brand voice card
+# Technical voice card
 
 ## Core voice
 
