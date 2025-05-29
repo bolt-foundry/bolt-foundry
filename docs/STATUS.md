@@ -4,36 +4,73 @@ This document provides a centralized view of all active projects across Bolt
 Foundry. It serves as a quick reference for overall project status and progress
 toward company milestones.
 
-Current status overview
+Last Updated: January 2025
 
-## Status Overview Table
-
-| Project Name     | Current Version | Status      | Next Milestone                         | Key Files                                                                                                                                  | Owner |
-| ---------------- | --------------- | ----------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----- |
-| bolt-foundry lib | 0.1.0           | PLANNING ⏱️ | Documentation & Examples (v0.1)        | [Project Plan](/packages/bolt-foundry/docs/project-plan.md), [Implementation Plan](/packages/bolt-foundry/docs/0.3/implementation-plan.md) | -     |
-| GraphQL Builder  | 0.0.3 → 0.0.4   | ON HOLD ⏱️  | Expand barrel system for GraphQL types | [Implementation Plan](/apps/bfDb/docs/0.3/implementation-plan.md), [Status](/apps/bfDb/docs/status.md)                                     | -     |
-| Collector        | 0.0.1           | COMPLETE ✅ | Future roadmap expansion               | [Implementation Plan](/apps/collector/docs/0.1/implementation-plan.md), [Status](/apps/collector/docs/status.md)                           | -     |
-| BfDB             | 0.1             | ON HOLD ⏱️  | Relation builder improvements          | [Status](/apps/bfDb/docs/backlog.md)                                                                                                       | -     |
+For detailed product roadmap and milestones, see
+[Product Plan](/docs/product-plan.md).
 
 ## Current Focus
 
-Bolt Foundry is transitioning to become the **Operating System for LLMs**. Our
-current priorities are:
+Bolt Foundry is building the **Operating System for LLMs**. Our current
+priorities for v0.1 are:
 
-1. **Product Vision Alignment** - Updating our roadmap to reflect the OS for
-   LLMs vision
-2. **Core Infrastructure** - Continuing development of the bolt-foundry library
-3. **Platform Foundation** - Preparing for the structured prompt tooling
-   outlined in our product plan
+| Priority | Focus Area               | Description                                                                           | Active Work                                                                         |
+| -------- | ------------------------ | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| P0       | Examples & Documentation | Fixing the NextJS sample application with proper TypeScript support and build process | • Fixing TypeScript issues in NextJS example<br>• Adding proper build documentation |
+| P1.1     | Developer Experience     | Creating clear, working examples that demonstrate Bolt Foundry capabilities           | • Creating deployment examples<br>• Improving developer onboarding experience       |
+| P1.2     | Core SDK Stability       | Ensuring the bolt-foundry package (v0.1.0) provides a solid foundation                | • Stabilizing API interfaces<br>• Adding comprehensive tests                        |
+
+## Status Overview Table
+
+_For definitions of project states (Alpha, Beta, Launched) and status
+indicators, see [WUT](/docs/wut.md#project-states)._
+
+### In Progress 🚀
+
+| Project Name | Type    | Current Version | State             | Next Milestone                     | Priority Link | Description                          |
+| ------------ | ------- | --------------- | ----------------- | ---------------------------------- | ------------- | ------------------------------------ |
+| bolt-foundry | Package | 0.1.0           | Alpha (Tech Demo) | Fix NextJS example & documentation | P0            | Core SDK for AI-powered applications |
+
+### Stable (Not Currently Prioritized) 🟢
+
+| Project Name          | Type    | Current Version | State             | Next Milestone               | Description                                |
+| --------------------- | ------- | --------------- | ----------------- | ---------------------------- | ------------------------------------------ |
+| bfDs                  | App     | -               | Alpha (Tech Demo) | Component documentation      | Design system with React components        |
+| boltFoundry           | App     | -               | Alpha (Tech Demo) | User onboarding improvements | Main web application with Isograph GraphQL |
+| internalbf            | App     | -               | Launched          | Bot feature additions        | Discord bot and internal tools             |
+| web                   | App     | -               | Launched          | Performance optimizations    | Core web server and routing system         |
+| get-configuration-var | Package | 0.1.0           | Launched          | Documentation improvements   | Secure configuration management            |
+| logger                | Package | 0.1.0           | Launched          | Feature stability            | Centralized logging utilities              |
+
+### On Hold ⏱️
+
+| Project Name | Type | Current Version | State             | Next Milestone                         | Description                                       |
+| ------------ | ---- | --------------- | ----------------- | -------------------------------------- | ------------------------------------------------- |
+| bfDb         | App  | 0.0.3           | Alpha (Tech Demo) | Expand barrel system for GraphQL types | Database ORM with multi-backend support & GraphQL |
+
+### Complete ✅
+
+| Project Name | Type | Current Version | State    | Next Milestone           | Description                   |
+| ------------ | ---- | --------------- | -------- | ------------------------ | ----------------------------- |
+| collector    | App  | 0.0.1           | Launched | Future roadmap expansion | LLM usage analytics collector |
+
+### Deprecated 🚫
+
+| Project Name | Type | Current Version | State        | Migration Plan           | Description                            |
+| ------------ | ---- | --------------- | ------------ | ------------------------ | -------------------------------------- |
+| contacts     | App  | 1.0.0           | Private Beta | Migrate waitlist to bfDb | CRM application with email integration |
 
 ## Notes
 
-- Most projects are on hold or complete pending vision and roadmap updates
+- The bolt-foundry library is actively being developed with focus on examples
+  for v0.1
 - The Collector (v0.0.1) provides foundational analytics that will expand with
   future product features
-- GraphQL Builder (v0.0.3) has core functionality but needs completion for full
-  production use
-- Project ownership should be added to the table as it becomes formalized
-- Status updates should be synchronized with implementation status documentation
-- Projects are primarily tracked through their respective documentation in
-  `apps/[project]/docs/` and `packages/[project]/docs/`
+- GraphQL Builder (v0.0.3) has core functionality but is on hold pending v0.0.4
+  improvements
+- **Contacts app is deprecated** - Waitlist functionality needs to be migrated
+  to bfDb with GraphQL integration
+- For detailed 2025 roadmap including Alpha, Private Beta, and Public Beta
+  phases, see [Product Plan](/docs/product-plan.md)
+- Individual project status is tracked in their respective docs directories when
+  available
