@@ -95,10 +95,10 @@ const Home: NextPage = () => {
             <p>Discover and deploy boilerplate example Next.js projects.</p>
           </a>
 
-          <a href="/chat" className={styles.card}>
+          <Link href="/chat" className={styles.card}>
             <h2>AI Chat &rarr;</h2>
             <p>Chat with an AI assistant powered by OpenAI.</p>
-          </a>
+          </Link>
 
           <a
             href="https://docs.replit.com/category/deployments"
