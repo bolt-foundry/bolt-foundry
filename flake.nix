@@ -39,6 +39,7 @@
           pkgs.python311Packages.tiktoken
           pkgs.nodejs_20
           pkgs._1password-cli
+          pkgs.typescript-language-server
         ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [ pkgs.chromium ];
 
       ##################################################################
