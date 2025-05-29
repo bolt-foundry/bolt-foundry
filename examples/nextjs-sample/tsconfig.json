@@ -1,29 +1,6 @@
 {
-  // TypeScript configuration optimized for examples and experimentation
-  // Enable full strict mode in production projects for maximum type safety
+  "extends": "../tsconfig.nextjs.base.json",
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": false,
-    /* Specific type checks for better DX without full strictness */
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noEmit": true,
-    "incremental": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "target": "ES2022",
     "baseUrl": ".",
     "paths": {}
   },
