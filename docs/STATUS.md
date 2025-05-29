@@ -14,51 +14,35 @@ For detailed product roadmap and milestones, see
 Bolt Foundry is building the **Operating System for LLMs**. Our current
 priorities for v0.1 are:
 
-| Priority | Focus Area               | Description                                                                           | Active Work                                                                         |
-| -------- | ------------------------ | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| P0       | Examples & Documentation | Fixing the NextJS sample application with proper TypeScript support and build process | • Fixing TypeScript issues in NextJS example<br>• Adding proper build documentation |
-| P1.1     | Developer Experience     | Creating clear, working examples that demonstrate Bolt Foundry capabilities           | • Creating deployment examples<br>• Improving developer onboarding experience       |
-| P1.2     | Core SDK Stability       | Ensuring the bolt-foundry package (v0.1.0) provides a solid foundation                | • Stabilizing API interfaces<br>• Adding comprehensive tests                        |
+| Priority | Focus Area               | Description                                                                           | Active Work                                                     |
+| -------- | ------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| P0       | Examples & Documentation | Fixing the NextJS sample application with proper TypeScript support and build process | Fixing TypeScript issues and adding build documentation         |
+| P1.1     | Developer Experience     | Creating clear, working examples that demonstrate Bolt Foundry capabilities           | Creating deployment examples and improving developer onboarding |
+| P1.2     | Core SDK Stability       | Ensuring the bolt-foundry package (v0.1.0) provides a solid foundation                | Stabilizing API interfaces and adding comprehensive tests       |
 
-## Status Overview Table
+## Priority Projects
 
-_For definitions of project states (Alpha, Beta, Launched) and status
-indicators, see [WUT](/docs/wut.md#project-states)._
+_For definitions of project phases and priority levels, see
+[WUT](/docs/wut.md#project-phases) and [WUT](/docs/wut.md#priority-system)._
 
-### In Progress 🚀
+| Priority | Project Name          | Project Phase | Status | Next Milestone                | Description                          | References                                                                                         |
+| -------- | --------------------- | ------------- | ------ | ----------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| P0       | examples              | Pre-alpha     | 🚀     | Fix NextJS TypeScript & build | Working examples demonstrating SDK   | [README](../examples/README.md), [NextJS](../examples/nextjs-sample/README.md)                     |
+| P1       | packages/bolt-foundry | Alpha         | 🚀     | Stabilize API interfaces      | Core SDK for AI-powered applications | [NPM](https://www.npmjs.com/package/@bolt-foundry/sdk), [Docs](../packages/bolt-foundry/README.md) |
 
-| Project Name | Type    | Current Version | State             | Next Milestone                     | Priority Link | Description                          |
-| ------------ | ------- | --------------- | ----------------- | ---------------------------------- | ------------- | ------------------------------------ |
-| bolt-foundry | Package | 0.1.0           | Alpha (Tech Demo) | Fix NextJS example & documentation | P0            | Core SDK for AI-powered applications |
+## Other Projects
 
-### Stable (Not Currently Prioritized) 🟢
-
-| Project Name          | Type    | Current Version | State             | Next Milestone               | Description                                |
-| --------------------- | ------- | --------------- | ----------------- | ---------------------------- | ------------------------------------------ |
-| bfDs                  | App     | -               | Alpha (Tech Demo) | Component documentation      | Design system with React components        |
-| boltFoundry           | App     | -               | Alpha (Tech Demo) | User onboarding improvements | Main web application with Isograph GraphQL |
-| internalbf            | App     | -               | Launched          | Bot feature additions        | Discord bot and internal tools             |
-| web                   | App     | -               | Launched          | Performance optimizations    | Core web server and routing system         |
-| get-configuration-var | Package | 0.1.0           | Launched          | Documentation improvements   | Secure configuration management            |
-| logger                | Package | 0.1.0           | Launched          | Feature stability            | Centralized logging utilities              |
-
-### On Hold ⏱️
-
-| Project Name | Type | Current Version | State             | Next Milestone                         | Description                                       |
-| ------------ | ---- | --------------- | ----------------- | -------------------------------------- | ------------------------------------------------- |
-| bfDb         | App  | 0.0.3           | Alpha (Tech Demo) | Expand barrel system for GraphQL types | Database ORM with multi-backend support & GraphQL |
-
-### Complete ✅
-
-| Project Name | Type | Current Version | State    | Next Milestone           | Description                   |
-| ------------ | ---- | --------------- | -------- | ------------------------ | ----------------------------- |
-| collector    | App  | 0.0.1           | Launched | Future roadmap expansion | LLM usage analytics collector |
-
-### Deprecated 🚫
-
-| Project Name | Type | Current Version | State        | Migration Plan           | Description                            |
-| ------------ | ---- | --------------- | ------------ | ------------------------ | -------------------------------------- |
-| contacts     | App  | 1.0.0           | Private Beta | Migrate waitlist to bfDb | CRM application with email integration |
+| Project Name                   | Project Phase | Status | Next Milestone                         | Description                                       | References                                                                      |
+| ------------------------------ | ------------- | ------ | -------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------- |
+| apps/bfDs                      | Alpha         | 🟢     | Component documentation                | Design system with React components               | [Components](../apps/bfDs/components/)                                          |
+| apps/boltFoundry               | Alpha         | 🟢     | User onboarding improvements           | Main web application with Isograph GraphQL        | [Routes](../apps/boltFoundry/routes.ts)                                         |
+| apps/internalbf                | Production    | 🟢     | Bot feature additions                  | Discord bot and internal tools                    | [Code](../apps/internalbf/)                                                     |
+| apps/web                       | Production    | 🟢     | Performance optimizations              | Core web server and routing system                | [Web server](../apps/web/web.tsx)                                               |
+| packages/get-configuration-var | Production    | 🟢     | Documentation improvements             | Secure configuration management                   | [NPM](https://www.npmjs.com/package/@bolt-foundry/get-configuration-var)        |
+| packages/logger                | Production    | 🟢     | Feature stability                      | Centralized logging utilities                     | [NPM](https://www.npmjs.com/package/@bolt-foundry/logger)                       |
+| apps/bfDb                      | Alpha         | ⏱️     | Expand barrel system for GraphQL types | Database ORM with multi-backend support & GraphQL | [README](../apps/bfDb/docs/0.3/data-model.md), [GraphQL](../apps/bfDb/graphql/) |
+| apps/collector                 | Production    | ✅     | Future roadmap expansion               | LLM usage analytics collector                     | [Status](../apps/collector/docs/status.md)                                      |
+| apps/contacts                  | Private Beta  | 🚫     | Migrate waitlist to bfDb               | CRM application with email integration            | [Server](../apps/contacts/server.ts)                                            |
 
 ## Notes
 
