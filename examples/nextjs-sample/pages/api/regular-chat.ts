@@ -38,6 +38,12 @@ export default async function handler(
     console.log(renderedCard);
     const response = await client.chat.completions.create(renderedCard);
     console.log(response);
+
+    // Type guard to ensure we have a non-streaming response
+    if (!("choices" in response)) {
+      throw new Error("Unexpected streaming response");
+    }
+
     const assistantResponse = response.choices[0].message.content;
     console.log(assistantResponse);
     return res.status(200).json({ content: assistantResponse });

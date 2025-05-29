@@ -1,4 +1,6 @@
 {
+  // TypeScript configuration optimized for examples and experimentation
+  // Enable full strict mode in production projects for maximum type safety
   "compilerOptions": {
     "lib": [
       "dom",
@@ -8,15 +10,20 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
+    /* Specific type checks for better DX without full strictness */
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noEmit": true,
     "incremental": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "target": "ES2017",
+    "target": "ES2022",
     "baseUrl": ".",
     "paths": {}
   },

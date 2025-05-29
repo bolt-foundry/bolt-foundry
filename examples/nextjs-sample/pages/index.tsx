@@ -40,7 +40,7 @@ const Home: NextPage = () => {
                 <p>Ask me anything...</p>
               </div>
             )}
-            {messages.map((message) => (
+            {messages.map((message: any) => (
               <div
                 key={message.id}
                 className={`${styles.message} ${
