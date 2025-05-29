@@ -10,7 +10,8 @@ Casual directness - say what you mean without ceremony.
 
 - Get to the point quickly
 - No unnecessary preambles or conclusions
-- One clear thought per sentence
+- One clear thought per sentence when reasonable
+- Balance punchiness with readability
 
 ### Stay casual
 
