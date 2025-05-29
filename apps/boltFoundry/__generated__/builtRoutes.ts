@@ -6,17 +6,14 @@ export type RouteEntrypoint = {
   title: string;
 };
 
-iso(`entrypoint Query.EntrypointDocsPage`)
 iso(`entrypoint Query.EntrypointFormatter`)
 iso(`entrypoint Query.EntrypointHome`)
 iso(`entrypoint Query.EntrypointLogin`)
 
-import entrypointDocsPage from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointDocsPage/entrypoint.ts"
 import entrypointFormatter from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointFormatter/entrypoint.ts"
 import entrypointHome from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointHome/entrypoint.ts"
 import entrypointLogin from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointLogin/entrypoint.ts"
 
-export {entrypointDocsPage};
 export {entrypointFormatter};
 export {entrypointHome};
 export {entrypointLogin};

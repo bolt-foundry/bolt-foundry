@@ -5,6 +5,7 @@ nix_system
 .direnv
 attached_assets/
 static/build/*
+static/tmp/*
 .cache
 .local
 node_modules
