@@ -8,9 +8,11 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   if (!process.env.OPENAI_API_KEY) {
-    return res.status(500).json({
+    return res.status(400).json({
       error: {
         message: "OpenAI API key not configured",
+        details: "Please set the OPENAI_API_KEY environment variable to use this demo.",
+        helpUrl: "https://platform.openai.com/api-keys"
       },
     });
   }

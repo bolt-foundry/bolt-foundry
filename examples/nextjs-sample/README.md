@@ -60,6 +60,23 @@ User: "Alice"
 
 ## Getting started
 
+### 1. Set up your OpenAI API key
+
+This example requires an OpenAI API key. You have two options:
+
+**Option A: Environment variable (recommended)**
+```bash
+# Create a .env.local file
+echo "OPENAI_API_KEY=your-api-key-here" > .env.local
+```
+
+**Option B: Enter in the UI**
+You can also enter your API key directly in the web interface (for testing only).
+
+> **Note:** Never commit API keys to version control. The `.env.local` file is already in `.gitignore`.
+
+### 2. Install and run
+
 ```bash
 # Install dependencies
 npm install
@@ -69,6 +86,12 @@ npm run dev
 ```
 
 The server runs at [http://localhost:3000](http://localhost:3000).
+
+### 3. Try the examples
+
+- **[/chat](http://localhost:3000/chat)** - Streaming chat with OpenAI
+- **[/regular-chat](http://localhost:3000/regular-chat)** - Non-streaming chat
+- **[/bolt-foundry-example](http://localhost:3000/bolt-foundry-example)** - Bolt Foundry integration
 
 ## Implementation
 
