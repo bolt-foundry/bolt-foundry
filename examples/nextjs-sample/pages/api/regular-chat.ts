@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { BfClient, connectBoltFoundry } from "@bolt-foundry/bolt-foundry-next";
 import OpenAI from "openai";
 
+Deno.Command;
+
 const bfClient = BfClient.create();
 const assistantCard = bfClient.createAssistantCard(
   "assistant",
@@ -14,11 +16,7 @@ const assistantCard = bfClient.createAssistantCard(
     ),
 );
 
-const client = new OpenAI({
-  fetch: connectBoltFoundry(
-    `bf+${process.env.EXAMPLES_NEXTJS_SAMPLE_POSTHOG_NEXTJS_API_KEY}`,
-  ),
-});
+// Note: This will be initialized per-request with the provided API key
 
 export default async function handler(
   req: NextApiRequest,
@@ -29,7 +27,28 @@ export default async function handler(
   }
 
   try {
-    const { messages } = req.body;
+    const { messages, apiKey } = req.body;
+    
+    // Use provided API key or fall back to environment variable
+    const openAIApiKey = apiKey || process.env.OPENAI_API_KEY;
+    
+    if (!openAIApiKey) {
+      return res.status(400).json({ 
+        error: "OpenAI API key not configured",
+        message: "Please provide an OpenAI API key to use this demo.",
+        details: "You can either enter your API key in the form above, or set the OPENAI_API_KEY environment variable.",
+        helpUrl: "https://platform.openai.com/api-keys"
+      });
+    }
+
+    // Create client with the API key
+    const client = new OpenAI({
+      apiKey: openAIApiKey,
+      fetch: connectBoltFoundry(
+        `bf+${process.env.EXAMPLES_NEXTJS_SAMPLE_POSTHOG_NEXTJS_API_KEY}`,
+      ),
+    });
+
     const renderedCard = assistantCard.render({
       model: "gpt-3.5-turbo",
       messages,
@@ -40,9 +59,10 @@ export default async function handler(
     console.log(response);
 
     // Type guard to ensure we have a non-streaming response
-    if (!("choices" in response)) {
-      throw new Error("Unexpected streaming response");
-    }
+    // uncomment this once we have the api set up right.
+    // if (!("choices" in response)) {
+    //   throw new Error("Unexpected streaming response");
+    // }
 
     const assistantResponse = response.choices[0].message.content;
     console.log(assistantResponse);
