@@ -67,33 +67,40 @@ async function generateQuestionWithClaude(
     throw new Error('ANTHROPIC_API_KEY not found in environment variables');
   }
 
-  const prompt = buildQuestionPrompt(userProgress, lastQuestion);
+  const assistantCard = getAssistantCard(userProgress, lastQuestion);
+  const cardData = assistantCard.assistant.render({
+    model: 'claude-3-haiku-20240307',
+    max_tokens: 1000,
+    messages: [
+      {
+        role: 'user',
+        content: ""
+      }
+    ],
+    context: assistantCard.contextData,
+  })
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetch('https://api.anthropic.com/v1/chat/completions', {
+
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
     },
-    body: JSON.stringify({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 1000,
-      messages: [
-        {
-          role: 'user',
-          content: prompt
-        }
-      ]
-    })
+    body: JSON.stringify(cardData)
   });
+
+  console.log("Request to Claude API: ", cardData)
+  console.log("Response from Claude API: ", response)
 
   if (!response.ok) {
     throw new Error(`Claude API error: ${response.status} ${response.statusText}`);
   }
 
   const data = await response.json();
-  const questionText = data.content[0].text;
+  console.log("Response data from Claude API: ", data)
+  const questionText = data.choices[0].message.content;
 
   return parseQuestionResponse(questionText);
 }
@@ -107,7 +114,21 @@ async function generateQuestionWithOpenAI(
     throw new Error('OPENAI_API_KEY not found in environment variables');
   }
 
-  const prompt = buildQuestionPrompt(userProgress, lastQuestion);
+  const assistantCard = getAssistantCard(userProgress, lastQuestion);
+  const cardData = assistantCard.assistant.render({
+    model: 'gpt-3.5-turbo',
+    messages: [
+      {
+        role: 'user',
+        content: ""
+      }
+    ],
+    max_tokens: 1000,
+    temperature: 0.7,
+    context: assistantCard?.contextData,
+  })  
+
+  console.log("Request to OpenAI API: ", cardData)
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -115,17 +136,7 @@ async function generateQuestionWithOpenAI(
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      max_tokens: 1000,
-      temperature: 0.7,
-    })
+    body: JSON.stringify(cardData)
   });
 
   if (!response.ok) {
@@ -138,7 +149,7 @@ async function generateQuestionWithOpenAI(
   return parseQuestionResponse(questionText);
 }
 
-function buildQuestionPrompt(
+function getAssistantCard(
   userProgress: GenerateQuestionRequest['userProgress'],
   lastQuestion?: GenerateQuestionRequest['lastQuestion']
 ): string {
@@ -149,58 +160,97 @@ function buildQuestionPrompt(
   const difficulty = getDifficultyLevel(userProgress, lastQuestion);
   const focusConcepts = getNextConcepts(userProgress, lastQuestion);
 
-  // Create assistant card
-  
-  
-  return `You are a JavaScript tutor creating practical, real-world coding questions. 
+  // Create assistant card for JavaScript tutor
+  const assistant = bf.createAssistantCard("javascript-tutor", (card) =>
+    card
+      .spec("You are a JavaScript tutor creating practical, real-world coding questions")
+      .spec("Focus on exercises that take 2-5 minutes for someone at the target level")
+      .spec("Use practical scenarios, NOT computer science theory like binary trees or linked lists")
+      .spec("Always create function-based exercises where students complete missing functionality")
+      .spec("ALWAYS use console.log(functionName(params)) in both starter code and solution")
+      .specs("Behaviors", (behavior) => (
+        behavior
+          .spec("Ensure all questions are engaging and practical for real web development")
+          .spec("Return ONLY a JSON object with no additional text")
+          .spec("Escape all newlines in JSON string values as \\n")
+          .spec("Include console.log() calls for immediate output feedback")
+          .spec("Use the exact JSON format specified", {
+            // samples: [{
+            //   input: {
+            //     text: "Generate a beginner JavaScript question about variables",
+            //     context: "Sample request for question generation"
+            //   },
+            //   responses: [{
+            //     text: `{
+            // "id": "var-basics-1",
+            // "title": "Create a greeting message", 
+            // "description": "Write a function that takes a name and returns a personalized greeting",
+            // "starterCode": "function greetUser(name) {\\n  // Your code here\\n}\\n\\nconsole.log(greetUser('Alice'));",
+            // "solution": "function greetUser(name) {\\n  return 'Hello, ' + name + '!';\\n}\\n\\nconsole.log(greetUser('Alice'));",
+            // "difficulty": "beginner",
+            // "concepts": ["variables", "functions", "string manipulation"],
+            // "expectedOutputExample": "Hello, Alice!"
+            // }`,
+            //     rating: 3,
+            //     explanation: "Perfect JSON format with escaped newlines and console.log usage"
+            //   }]
+            // }]
+          })
+      ))
+      .context((ctx) =>
+        ctx
+          .string("difficulty", "What is the target difficulty level for the question?")
+          .string("focusConcepts", "What concepts should we focus on, separated by commas?")
+          .number("questionsCompleted", "How many questions has the user completed?")
+          .number("currentStreak", "What's the current streak of correct answers?")
+          .string("conceptsLearned", "Which concepts has the user already learned?")
+          .number("avgHintsUsed", "On average, how many hints have been used recently?")
+          .number("avgAttempts", "On average, how many attempts have been needed recently?")
+      )
+      .context((ctx) =>
+        ctx
+          .string("lastQuestionConcepts", "What were the concepts from the last question?")
+          .string("lastQuestionDifficulty", "What was the difficulty of the last question?")
+          .boolean("lastQuestionWasCorrect", "Was the last question answered correctly?")
+          .number("lastQuestionHintsUsed", "How many hints were used for the last question?")
+          .number("lastQuestionAttempts", "How many attempts were made for the last question?")
+          .string("jsonFormat", "What is the exact JSON format for the question object?")
+      )
+  );
 
-User Progress Context:
-- Questions completed: ${userProgress.questionsCompleted}
-- Current streak: ${userProgress.currentStreak}
-- Concepts learned: ${userProgress.conceptsLearned.join(', ') || 'None yet'}
-- Average hints needed: ${userProgress.recentPerformance.avgHintsUsed}
-- Average attempts: ${userProgress.recentPerformance.avgAttempts}
+  // Prepare context data
+  const userContextData = {
+    difficulty,
+    focusConcepts: focusConcepts.join(', '),
+    questionsCompleted: userProgress.questionsCompleted,
+    currentStreak: userProgress.currentStreak,
+    conceptsLearned: userProgress.conceptsLearned.join(', ') || 'None yet',
+    avgHintsUsed: userProgress.recentPerformance.avgHintsUsed,
+    avgAttempts: userProgress.recentPerformance.avgAttempts
+  };
 
-${lastQuestion ? `
-Last Question Context:
-- Concepts: ${lastQuestion.concepts.join(', ')}
-- Difficulty: ${lastQuestion.difficulty}
-- Was correct: ${lastQuestion.wasCorrect}
-- Hints used: ${lastQuestion.hintsUsed}
-- Attempts: ${lastQuestion.attempts}
-` : ''}
+  const lastQuestionContextData = {
+    lastQuestionConcepts: lastQuestion?.concepts.join(', ') || 'None',
+    lastQuestionDifficulty: lastQuestion?.difficulty || 'None',
+    lastQuestionWasCorrect: lastQuestion?.wasCorrect || false,
+    lastQuestionHintsUsed: lastQuestion?.hintsUsed || 0,
+    lastQuestionAttempts: lastQuestion?.attempts || 0,
+    jsonFormat: `{
+"id": "unique_id _here",
+"title": "Clear, engaging title",
+"description": "Write a function that returns [expected output]. The function will be called and its result will be displayed automatically.",
+"starterCode": "function name(params) {\\n // Your code herel\n // Remember to return the result\\n\\n\\n// Test calls (results will be shown automatically) \ \nname( example
+); "
+"solution": "Complete working solution that RETURNS the result",
+"difficulty": "beginner",
+"concepts": ["concept1", "concept2"],
+"expectedOutputExample": "What the console should show when run"
+}`
+  }
 
-Generate a JavaScript coding question with these requirements:
+  const contextData = {...userContextData, ...lastQuestionContextData};
 
-1. **Difficulty**: ${difficulty}
-2. **Focus Concepts**: ${focusConcepts.join(', ')}
-3. **Style**: Practical, real-world scenarios (NO computer science theory, binary trees, linked lists, etc.)
-4. **Format**: Function that the user needs to complete
-5. **Scope**: Should take 2-5 minutes for someone at this level
-
-IMPORTANT EXECUTION FORMAT:
-- ALWAYS use console.log(functionName(params)) in both starter code and solution
-- This ensures consistent output display for all questions
-- Students will see the output directly when they run their code
-
-Please respond with ONLY a JSON object in this exact format (ensure all newlines are escaped as \\n):
-{
-  "id": "unique_id_here",
-  "title": "Clear, engaging title",
-  "description": "Detailed problem description with context and requirements",
-  "starterCode": "function name(params) {\\n  // Your code here\\n}\\n\\nconsole.log(name(example));",
-  "solution": "Complete working solution",
-  "difficulty": "${difficulty}",
-  "concepts": ["concept1", "concept2"],
-  "expectedOutputExample": "What the console should show when run"
-}
-
-IMPORTANT: 
-- All string values containing newlines must escape them as \\n for valid JSON
-- ALWAYS use console.log(functionName()) format in starter code and solution
-- This creates consistent behavior across all questions
-
-Make it engaging and practical - something they might actually use in real web development!`;
+  return {assistant, contextData};
 }
 
 function getDifficultyLevel(
