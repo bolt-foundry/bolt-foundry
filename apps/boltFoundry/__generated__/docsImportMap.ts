@@ -13,6 +13,7 @@ export const availableDocs = new Set([
   "getting-started",
   "improving-inference-philosophy",
   "interactive-demo",
+  "library-vision",
   "measurement-strategy",
   "product-plan",
   "quickstart",
