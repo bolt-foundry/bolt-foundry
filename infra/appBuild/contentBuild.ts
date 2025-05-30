@@ -44,6 +44,9 @@ async function processDocsFiles() {
     await processMdxFile(path, slug, docsOutputDir);
   }
 
+  // Sort mdxFiles for deterministic output
+  mdxFiles.sort((a, b) => a.slug.localeCompare(b.slug));
+
   // Generate import map
   await generateImportMap(mdxFiles, generatedDir);
 }
