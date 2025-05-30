@@ -11,9 +11,9 @@ testable prompts using cards.
 const prompt = "You are a helpful assistant. Be concise. User: " + userInput;
 
 // After: Structured, testable, maintainable cards
-import { createCard } from "@bolt-foundry/cards";
+import { createAssistantCard } from "@bolt-foundry/bolt-foundry";
 
-const assistant = createCard("assistant")
+const assistant = createAssistantCard("assistant")
   .spec("You are a helpful assistant")
   .spec("Be concise", {
     samples: [
@@ -50,21 +50,19 @@ LLM development should feel as natural and fast as web development:
 - **Production confidence**: A/B test and backtest changes before deployment
 - **Runtime updates**: Update prompts without redeploying code
 
-## Architecture: two packages, one vision
+## Architecture: One package, multiple use cases
 
-### 1. `@bolt-foundry/cards`: The card creator
+### `@bolt-foundry/bolt-foundry`: Everything you need
 
-A lightweight, tree-shakeable package for creating structured prompts:
+A comprehensive package for creating structured prompts with optional platform features:
 
-- Zero dependencies on our platform
-- Works with any LLM provider (OpenAI, Anthropic, Google, and more)
-- Full TypeScript support
-- Use standalone in any project
+- **Standalone usage**: Use `createAssistantCard` without any client setup
+- **Platform integration**: Create a client for telemetry, analytics, and advanced features
+- **Zero lock-in**: Works with any LLM provider (OpenAI, Anthropic, Google, and more)
+- **Full TypeScript support**: Type-safe from development to production
+- **Progressive enhancement**: Start simple, add platform features when needed
 
-### 2. `@bolt-foundry/client`: The platform client
-
-Connects your cards to the Bolt Foundry platform for advanced features:
-
+Platform features (when using a client):
 - Automatic telemetry and analytics
 - A/B testing and experimentation
 - Prompt performance insights
