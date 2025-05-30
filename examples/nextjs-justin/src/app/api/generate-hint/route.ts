@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { BfClient } from "@bolt-foundry/bolt-foundry-next";
 
 interface GenerateHintRequest {
   question: {
@@ -93,25 +94,27 @@ async function generateHintWithClaude(
     throw new Error('ANTHROPIC_API_KEY not found in environment variables');
   }
 
-  const prompt = buildHintPrompt(question, userCode, previousHints, userProgress, attemptHistory);
+  const assistantCard = getHintAssistantCard(question, userCode, previousHints, userProgress, attemptHistory);
+  const cardData = assistantCard.assistant.render({
+    model: 'claude-3-haiku-20240307',
+    max_tokens: 800,
+    messages: [
+      {
+        role: 'user',
+        content: ""
+      }
+    ],
+    context: assistantCard.contextData,
+  })
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetch('https://api.anthropic.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
     },
-    body: JSON.stringify({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 800,
-      messages: [
-        {
-          role: 'user',
-          content: prompt
-        }
-      ]
-    })
+    body: JSON.stringify(cardData)
   });
 
   if (!response.ok) {
@@ -119,7 +122,7 @@ async function generateHintWithClaude(
   }
 
   const data = await response.json();
-  const hintText = data.content[0].text;
+  const hintText = data.choices[0].message.content;
 
   return parseHintResponse(hintText);
 }
@@ -136,7 +139,19 @@ async function generateHintWithOpenAI(
     throw new Error('OPENAI_API_KEY not found in environment variables');
   }
 
-  const prompt = buildHintPrompt(question, userCode, previousHints, userProgress, attemptHistory);
+  const assistantCard = getHintAssistantCard(question, userCode, previousHints, userProgress, attemptHistory);
+  const cardData = assistantCard.assistant.render({
+    model: 'gpt-3.5-turbo',
+    messages: [
+      {
+        role: 'user',
+        content: ""
+      }
+    ],
+    max_tokens: 800,
+    temperature: 0.7,
+    context: assistantCard.contextData,
+  })
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -144,17 +159,7 @@ async function generateHintWithOpenAI(
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'user',
-          content: prompt
-        }
-      ],
-      max_tokens: 800,
-      temperature: 0.7,
-    })
+    body: JSON.stringify(cardData)
   });
 
   if (!response.ok) {
@@ -167,64 +172,76 @@ async function generateHintWithOpenAI(
   return parseHintResponse(hintText);
 }
 
-function buildHintPrompt(
+function getHintAssistantCard(
   question: GenerateHintRequest['question'],
   userCode: string,
   previousHints: GenerateHintRequest['previousHints'],
   userProgress: GenerateHintRequest['userProgress'],
   attemptHistory: GenerateHintRequest['attemptHistory']
-): string {
+) {
+  // Initialize Bolt Foundry client
+  const bf = BfClient.create();
+
   const hintsUsed = previousHints.length;
   const isStruggling = hintsUsed >= 2 || attemptHistory.length >= 4;
-  
-  return `You are a patient JavaScript tutor helping a student who is ${isStruggling ? 'struggling and may be getting frustrated' : 'working through a problem'}. 
 
-QUESTION CONTEXT:
-Title: ${question.title}
-Description: ${question.description}
-Concepts: ${question.concepts.join(', ')}
-Difficulty: ${question.difficulty}
+  // Create assistant card for JavaScript tutor hints
+  const assistant = bf.createAssistantCard("javascript-tutor-hints", (card) =>
+    card
+      .spec("You are a patient JavaScript tutor helping students with coding problems")
+      .spec("Provide helpful hints without giving away the complete solution too early")
+      .spec("Use the Socratic method for students making progress, be more direct for struggling students")
+      .spec("Always be encouraging and explain the reasoning behind suggestions")
+      .specs("Behaviors", (behavior) => (
+        behavior
+          .spec("Return ONLY a JSON object with no additional text")
+          .spec("Escape all newlines in JSON string values as \\n")
+          .spec("Use appropriate hint types: 'socratic' for guided discovery, 'direct' for struggling students, 'example' for code examples")
+          .spec("Provide encouragement that acknowledges their effort and progress")
+          .spec("If student is very stuck, consider showing the solution with explanation")
+      ))
+      .context((ctx) =>
+        ctx
+          .string("questionTitle", "What is the title of the coding question?")
+          .string("questionDescription", "What is the description of the coding question?")
+          .string("questionConcepts", "What concepts does this question cover?")
+          .string("questionDifficulty", "What is the difficulty level of this question?")
+          .string("starterCode", "What is the starter code provided?")
+          .string("correctSolution", "What is the correct solution to the problem?")
+          .string("userCode", "What is the student's current code attempt?")
+          .string("previousHints", "What hints have already been given?")
+          .number("hintsUsed", "How many hints have been used so far?")
+          .boolean("isStruggling", "Is the student struggling with this problem?")
+      )
+      .context((ctx) =>
+        ctx
+          .number("questionsCompleted", "How many questions has the student completed?")
+          .number("currentStreak", "What's the current streak of correct answers?")
+          .string("conceptsLearned", "Which concepts has the student already learned?")
+          .string("attemptHistory", "What attempts has the student made?")
+          .string("jsonFormat", "What is the exact JSON format for the hint response?")
+      )
+  );
 
-STARTER CODE:
-${question.starterCode}
-
-CORRECT SOLUTION:
-${question.solution}
-
-STUDENT'S CURRENT CODE:
-${userCode}
-
-PREVIOUS HINTS GIVEN:
-${previousHints.length > 0 ? previousHints.map((hint, i) => `${i + 1}. ${hint.text}`).join('\n') : 'None yet'}
-
-STUDENT PROGRESS:
-- Questions completed: ${userProgress.questionsCompleted}
-- Current streak: ${userProgress.currentStreak}
-- Concepts learned: ${userProgress.conceptsLearned.join(', ') || 'Just starting'}
-
-ATTEMPT HISTORY:
-${attemptHistory.length > 0 ? attemptHistory.map((attempt, i) => 
-  `Attempt ${i + 1}: ${attempt.wasSuccessful ? 'Success' : 'Failed'} - ${attempt.code.substring(0, 100)}...`
-).join('\n') : 'First attempt'}
-
-INSTRUCTIONS:
-${isStruggling ? `
-The student is struggling (${hintsUsed} hints used, ${attemptHistory.length} attempts). They may be getting frustrated.
-
-1. If they're close to the solution, give them the answer with a clear explanation
-2. If they're far off, provide 1-2 direct, helpful hints that move them significantly forward
-3. Always be encouraging and explain the "why" behind your suggestions
-` : `
-The student is making good progress. Use the Socratic method:
-
-1. Ask leading questions that guide them to discover the solution
-2. Point out what they're doing right
-3. Give gentle nudges in the right direction
-4. Don't give away the answer unless they're really stuck
-`}
-
-Respond with ONLY a JSON object in this exact format:
-{
+  // Prepare context data
+  const contextData = {
+    questionTitle: question.title,
+    questionDescription: question.description,
+    questionConcepts: question.concepts.join(', '),
+    questionDifficulty: question.difficulty,
+    starterCode: question.starterCode,
+    correctSolution: question.solution,
+    userCode: userCode,
+    previousHints: previousHints.length > 0 ? previousHints.map((hint, i) => `${i + 1}. ${hint.text}`).join('\\n') : 'None yet',
+    hintsUsed: hintsUsed,
+    isStruggling: isStruggling,
+    questionsCompleted: userProgress.questionsCompleted,
+    currentStreak: userProgress.currentStreak,
+    conceptsLearned: userProgress.conceptsLearned.join(', ') || 'Just starting',
+    attemptHistory: attemptHistory.length > 0 ? attemptHistory.map((attempt, i) => 
+      `Attempt ${i + 1}: ${attempt.wasSuccessful ? 'Success' : 'Failed'} - ${attempt.code.substring(0, 100)}...`
+    ).join('\\n') : 'First attempt',
+    jsonFormat: `{
   "hints": [
     {
       "text": "Your hint text here - be specific and helpful",
@@ -234,10 +251,10 @@ Respond with ONLY a JSON object in this exact format:
   ],
   "shouldShowSolution": ${isStruggling && hintsUsed >= 3 ? 'true' : 'false'},
   "encouragement": "Brief encouraging message about their progress"
-}
+}`
+  };
 
-If shouldShowSolution is true, include the solution explanation in the hint text.
-Be encouraging but honest about what they need to work on.`;
+  return { assistant, contextData };
 }
 
 function parseHintResponse(responseText: string): HintResponse {
