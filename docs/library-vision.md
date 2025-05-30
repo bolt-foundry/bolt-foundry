@@ -21,7 +21,9 @@ const assistant = createCard("assistant")
       { text: "Well, to understand this we need to go back to...", score: -3 },
     ],
   })
-  .context({ userInput: "string" });
+  .context((ctx) =>
+    ctx.string("userInput", "Input from the user")
+  );
 ```
 
 ## Why we're building this
@@ -32,8 +34,8 @@ Every developer building LLM applications faces the same problems:
    out why without extensive reproduction attempts
 2. **Can't predict changes**: It's impossible to intuit or prove changing a few
    words won't break other situations
-3. **Slow iteration cycles**: Testing is largely manual, and challenging (if
-   possible at all) to automate
+3. **Slow iteration cycles**: Testing is largely manual, and challenging (or
+   impossible) to automate
 4. **No reusability**: Every prompt starts from a blank slate. Users can't take
    advantage of other attempts to drive attention, they're stuck writing every
    prompt from scratch. It's like if coding was only possible using copy/paste,
