@@ -18,8 +18,8 @@ export const availableDocs = new Set([
   "getting-started",
   "interactive-demo",
   "quickstart",
-  "STATUS",
   "wut",
+  "STATUS",
 ] as const);
 
 // Derive the type from the Set values
