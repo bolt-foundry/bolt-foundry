@@ -7,9 +7,9 @@ import type { ComponentType } from "react";
 export const availableDocs = new Set([
   "BACKLOG",
   "business-vision",
-  "card-system",
   "CHANGELOG",
   "company-vision",
+  "deck-system",
   "early-content-plan",
   "getting-started",
   "improving-inference-philosophy",

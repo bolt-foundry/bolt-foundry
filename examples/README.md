@@ -8,7 +8,7 @@ Working code that shows how Bolt Foundry works.
 
 Next.js chat app using OpenAI. Shows:
 
-- Cards with specs
+- Decks with cards and specs
 - Context variables without string interpolation
 - Chat that actually works
 
@@ -29,7 +29,7 @@ Next.js chat app using OpenAI. Shows:
 
 Each example demonstrates:
 
-**Cards** - Structure prompts with specs instead of strings
+**Decks** - Structure prompts with cards and specs instead of strings
 
 **Context** - Add dynamic values without breaking the prompt
 
@@ -40,9 +40,9 @@ Each example demonstrates:
 ## Basic pattern
 
 ```typescript
-import { createCard } from "@bolt-foundry/sdk";
+import { createDeck } from "@bolt-foundry/sdk";
 
-const assistantCard = createCard("assistant", (b) =>
+const assistantDeck = createDeck("assistant", (b) =>
   b
     .spec("You are a helpful assistant")
     .context((c) =>
@@ -51,7 +51,7 @@ const assistantCard = createCard("assistant", (b) =>
     ));
 
 // Render with context
-const messages = assistantCard.render({
+const messages = assistantDeck.render({
   context: { userName: "Alice" },
 });
 ```

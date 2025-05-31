@@ -5,7 +5,7 @@ import OpenAI from "openai";
 Deno.Command;
 
 const bfClient = BfClient.create();
-const assistantCard = bfClient.createAssistantCard(
+const assistantDeck = bfClient.createAssistantDeck(
   "assistant",
   (b) =>
     b.spec("You are a pokemon master trainer.").context((c) =>
@@ -49,13 +49,13 @@ export default async function handler(
       ),
     });
 
-    const renderedCard = assistantCard.render({
+    const renderedDeck = assistantDeck.render({
       model: "gpt-3.5-turbo",
       messages,
       context: { userName: "Alice" },
     });
-    console.log(renderedCard);
-    const response = await client.chat.completions.create(renderedCard);
+    console.log(renderedDeck);
+    const response = await client.chat.completions.create(renderedDeck);
     console.log(response);
 
     // Type guard to ensure we have a non-streaming response

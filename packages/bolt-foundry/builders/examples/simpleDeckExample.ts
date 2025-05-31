@@ -1,14 +1,14 @@
-import { createAssistantCard } from "../cardBuilder.ts";
+import { createAssistantDeck } from "../deckBuilder.ts";
 import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
 
-// Simple card creation API - only specs, no metadata:
-const card = createAssistantCard(
+// Simple deck creation API - only cards and specs, no metadata:
+const deck = createAssistantDeck(
   "water-needs",
   (b) =>
-    b.specs("persona", (p) =>
-      p.specs("needs", (n) =>
+    b.card("persona", (c) =>
+      c.card("needs", (n) =>
         n.spec("water", {
           samples: (s) =>
             s.sample("Clean, fresh drinking water", 3)
@@ -16,13 +16,13 @@ const card = createAssistantCard(
         }))),
 );
 
-logger.info("Water needs card:", JSON.stringify(card, null, 2));
+logger.info("Water needs deck:", JSON.stringify(deck, null, 2));
 
 // Another example with code review samples:
-const codeReviewCard = createAssistantCard(
+const codeReviewDeck = createAssistantDeck(
   "code-reviewer",
   (b) =>
-    b.specs("capabilities", (c) =>
+    b.card("capabilities", (c) =>
       c.spec("code review", {
         samples: (s) =>
           s.sample("Uses descriptive variable names like 'userAuthToken'", 3)
@@ -36,10 +36,10 @@ const codeReviewCard = createAssistantCard(
               2,
             ),
       }))
-      .specs("focus-areas", (f) =>
+      .card("focus-areas", (f) =>
         f.spec("readability")
           .spec("maintainability")
           .spec("performance")),
 );
 
-logger.info("Code review card:", JSON.stringify(codeReviewCard, null, 2));
+logger.info("Code review deck:", JSON.stringify(codeReviewDeck, null, 2));

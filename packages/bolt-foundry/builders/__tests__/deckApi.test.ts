@@ -2,24 +2,24 @@
 
 import { assert, assertEquals } from "@std/assert";
 import { BfClient } from "../../BfClient.ts";
-import type { Spec } from "../builders.ts";
+import type { Card } from "../builders.ts";
 
-Deno.test("BfClient.createCard - basic creation", () => {
+Deno.test("BfClient.createDeck - basic creation", () => {
   const client = BfClient.create();
-  const card = client.createCard(
+  const deck = client.createDeck(
     "pokemon-trainer",
     (b) => b,
   );
-  assertEquals(card.name, "pokemon-trainer");
+  assertEquals(deck.name, "pokemon-trainer");
 });
 
-Deno.test("CardSpec.render - returns OpenAI format", () => {
+Deno.test("DeckSpec.render - returns OpenAI format", () => {
   const client = BfClient.create();
-  const card = client.createCard(
+  const deck = client.createDeck(
     "pokemon-professor",
     (b) => b,
   );
-  const result = card.render();
+  const result = deck.render();
 
   // Should have required OpenAI fields
   assert(result.model);
@@ -27,14 +27,14 @@ Deno.test("CardSpec.render - returns OpenAI format", () => {
   assertEquals(result.messages[0].role, "system");
 });
 
-Deno.test("CardSpec.render - merges user options", () => {
+Deno.test("DeckSpec.render - merges user options", () => {
   const client = BfClient.create();
-  const card = client.createCard(
+  const deck = client.createDeck(
     "gym-leader",
     (b) => b,
   );
 
-  const result = card.render({
+  const result = deck.render({
     model: "gpt-4",
     temperature: 0.7,
     messages: [{ role: "user", content: "I challenge you to a battle!" }],
@@ -47,38 +47,38 @@ Deno.test("CardSpec.render - merges user options", () => {
 
 Deno.test("Builders are immutable - return new instances", () => {
   const client = BfClient.create();
-  const card = client.createCard("ash-ketchum", (b) => {
+  const deck = client.createDeck("ash-ketchum", (b) => {
     const original = b;
-    const afterSpecs = b.specs(
+    const afterCards = b.card(
       "character",
-      (s) => s.spec("A determined Pokemon trainer from Pallet Town"),
+      (c) => c.spec("A determined Pokemon trainer from Pallet Town"),
     );
-    const afterMoreSpecs = afterSpecs.specs(
+    const afterMoreCards = afterCards.card(
       "rules",
-      (s) => s.spec("Never give up on catching them all"),
+      (c) => c.spec("Never give up on catching them all"),
     );
 
     // Each method should return a new instance
-    assert(original !== afterSpecs, "specs() should return new instance");
-    assert(afterSpecs !== afterMoreSpecs, "specs() should return new instance");
+    assert(original !== afterCards, "card() should return new instance");
+    assert(afterCards !== afterMoreCards, "card() should return new instance");
 
-    return afterMoreSpecs;
+    return afterMoreCards;
   });
 
-  assertEquals(card.name, "ash-ketchum");
+  assertEquals(deck.name, "ash-ketchum");
 });
 
-Deno.test("Specs builder stores persona information", () => {
+Deno.test("Cards builder stores persona information", () => {
   const client = BfClient.create();
-  const card = client.createCard("professor-oak", (b) => {
-    return b.specs("character", (s) => {
-      return s.spec(
+  const deck = client.createDeck("professor-oak", (b) => {
+    return b.card("character", (c) => {
+      return c.spec(
         "A knowledgeable Pokemon researcher who gives new trainers their first Pokemon",
       );
     });
   });
 
-  const result = card.render();
+  const result = deck.render();
   const systemMessage = result.messages[0].content;
 
   // System message should include persona description
@@ -86,17 +86,17 @@ Deno.test("Specs builder stores persona information", () => {
   assert(systemMessage.includes("A knowledgeable Pokemon researcher"));
 });
 
-Deno.test("Specs builder stores traits", () => {
+Deno.test("Cards builder stores traits", () => {
   const client = BfClient.create();
-  const card = client.createCard("nurse-joy", (b) => {
-    return b.specs("personality", (s) => {
-      return s
+  const deck = client.createDeck("nurse-joy", (b) => {
+    return b.card("personality", (c) => {
+      return c
         .spec("Caring and compassionate")
         .spec("Always puts Pokemon health first");
     });
   });
 
-  const result = card.render();
+  const result = deck.render();
   const systemMessage = result.messages[0].content;
 
   // System message should include traits
@@ -105,17 +105,17 @@ Deno.test("Specs builder stores traits", () => {
   assert(systemMessage.includes("Pokemon health first"));
 });
 
-Deno.test("Specs builder stores constraints", () => {
+Deno.test("Cards builder stores constraints", () => {
   const client = BfClient.create();
-  const card = client.createCard("officer-jenny", (b) => {
-    return b.specs("rules", (s) => {
-      return s
+  const deck = client.createDeck("officer-jenny", (b) => {
+    return b.card("rules", (c) => {
+      return c
         .spec("Always follow Pokemon League regulations")
         .spec("Protect trainers and Pokemon from harm");
     });
   });
 
-  const result = card.render();
+  const result = deck.render();
   const systemMessage = result.messages[0].content;
 
   // System message should include constraints
@@ -124,28 +124,28 @@ Deno.test("Specs builder stores constraints", () => {
   assert(systemMessage.includes("Protect trainers and Pokemon"));
 });
 
-Deno.test("Card with multiple spec groups", () => {
+Deno.test("Deck with multiple card groups", () => {
   const client = BfClient.create();
-  const card = client.createCard("elite-four-champion", (b) => {
+  const deck = client.createDeck("elite-four-champion", (b) => {
     return b
-      .specs("character", (s) => {
-        return s.spec(
+      .card("character", (c) => {
+        return c.spec(
           "An undefeated Pokemon champion who has mastered all types",
         );
       })
-      .specs("personality", (s) => {
-        return s
+      .card("personality", (c) => {
+        return c
           .spec("Confident but respectful")
           .spec("Encourages growth in challengers");
       })
-      .specs("rules", (s) => {
-        return s
+      .card("rules", (c) => {
+        return c
           .spec("Battle with honor and strategy")
           .spec("Help trainers understand type advantages");
       });
   });
 
-  const result = card.render();
+  const result = deck.render();
   const systemMessage = result.messages[0].content;
 
   // System message should include all groups
@@ -156,17 +156,17 @@ Deno.test("Card with multiple spec groups", () => {
   assert(systemMessage.includes("type advantages"));
 });
 
-Deno.test("Card with samples - structure and rendering", () => {
+Deno.test("Deck with samples - structure and rendering", () => {
   const client = BfClient.create();
-  const card = client.createCard("helpful-ai", (b) => {
+  const deck = client.createDeck("helpful-ai", (b) => {
     return b
       .spec("You are a helpful AI assistant", {
         samples: (s) =>
           s.sample("I'd be happy to help you with that!", 3)
             .sample("I don't know, figure it out yourself", -3),
       })
-      .specs("communication", (s) => {
-        return s
+      .card("communication", (c) => {
+        return c
           .spec("Use clear language", {
             samples: (sam) =>
               sam.sample("Let me explain this step by step...", 3)
@@ -177,22 +177,22 @@ Deno.test("Card with samples - structure and rendering", () => {
   });
 
   // Check the structure
-  const specs = card.getSpecs();
-  assertEquals(specs.length, 2);
+  const cards = deck.getCards();
+  assertEquals(cards.length, 2);
 
-  // First spec has samples
-  assertEquals(specs[0].value, "You are a helpful AI assistant");
-  assertEquals(specs[0].samples?.length, 2);
-  assertEquals(specs[0].samples![0].rating, 3);
-  assertEquals(specs[0].samples![1].rating, -3);
+  // First card has samples
+  assertEquals(cards[0].value, "You are a helpful AI assistant");
+  assertEquals(cards[0].samples?.length, 2);
+  assertEquals(cards[0].samples![0].rating, 3);
+  assertEquals(cards[0].samples![1].rating, -3);
 
-  // Second spec group
-  assertEquals(specs[1].name, "communication");
-  const commSpecs = specs[1].value as Array<Spec>;
-  assertEquals(commSpecs[0].samples?.length, 2);
-  assertEquals(commSpecs[1].samples, undefined);
+  // Second card group
+  assertEquals(cards[1].name, "communication");
+  const commCards = cards[1].value as Array<Card>;
+  assertEquals(commCards[0].samples?.length, 2);
+  assertEquals(commCards[1].samples, undefined);
 
   // Verify it renders without errors
-  const result = card.render();
+  const result = deck.render();
   assert(result.messages[0].content);
 });
