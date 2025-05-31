@@ -106,8 +106,8 @@ Benefits:
 Guide LLM behavior with scored examples using the samples builder:
 
 ```typescript
-const emailWriter = bf.createCard("email-writer", (card) =>
-  card
+const emailWriter = bf.createDeck("email-writer", (deck) =>
+  deck
     .spec("Write professional emails")
     .spec("Match the user's tone", {
       samples: [{
@@ -134,8 +134,8 @@ const emailWriter = bf.createCard("email-writer", (card) =>
 More complex example with multiple specs:
 
 ```typescript
-const codeReviewer = bf.createCard("code-reviewer", (card) =>
-  card
+const codeReviewer = bf.createDeck("code-reviewer", (deck) =>
+  deck
     .spec("Review code for clarity and best practices")
     .spec("Be constructive, not harsh", {
       samples: [{
@@ -195,8 +195,8 @@ const codeReviewer = bf.createCard("code-reviewer", (card) =>
 Pass runtime data to your cards:
 
 ```typescript
-const customerSupport = bf.createCard("support-agent", (card) =>
-  card
+const customerSupport = bf.createDeck("support-agent", (deck) =>
+  deck
     .spec("You are a customer support agent")
     .spec("Be empathetic and helpful")
     .context((ctx) =>
