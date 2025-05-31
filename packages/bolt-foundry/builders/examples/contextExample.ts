@@ -1,24 +1,24 @@
 // deno-lint-ignore-file no-console
 import { BfClient } from "../../BfClient.ts";
 
-// Create a customer support card with context variables
-export function createCustomerSupportCard() {
+// Create a customer support deck with context variables
+export function createCustomerSupportDeck() {
   const client = BfClient.create();
 
-  return client.createCard(
+  return client.createDeck(
     "customer-support-agent",
     (b) =>
-      b.specs(
+      b.card(
         "role",
-        (r) =>
-          r.spec("You are a professional customer support agent")
+        (c) =>
+          c.spec("You are a professional customer support agent")
             .spec("You help resolve customer issues efficiently")
             .spec("You maintain a friendly and empathetic tone"),
       )
-        .specs(
+        .card(
           "behavior",
-          (bh) =>
-            bh.spec("Listen actively to understand the customer's problem")
+          (c) =>
+            c.spec("Listen actively to understand the customer's problem")
               .spec("Provide clear and actionable solutions")
               .spec("Escalate to supervisor when needed"),
         )
@@ -40,10 +40,10 @@ export function createCustomerSupportCard() {
 
 // Example usage
 function demonstrateContextUsage() {
-  const card = createCustomerSupportCard();
+  const deck = createCustomerSupportDeck();
 
   // Render with full context
-  const fullContext = card.render({
+  const fullContext = deck.render({
     model: "gpt-4",
     temperature: 0.7,
     context: {
@@ -62,7 +62,7 @@ function demonstrateContextUsage() {
   console.log("Full context messages:", fullContext.messages);
 
   // Render with partial context (some variables omitted)
-  const partialContext = card.render({
+  const partialContext = deck.render({
     model: "gpt-4",
     context: {
       customerName: "John Doe",
@@ -78,7 +78,7 @@ function demonstrateContextUsage() {
 export function createLearningAssistant() {
   const client = BfClient.create();
 
-  return client.createCard(
+  return client.createDeck(
     "personalized-tutor",
     (b) =>
       b.spec("You are an adaptive learning assistant")
@@ -105,7 +105,7 @@ export function createLearningAssistant() {
 export function createSessionAwareAssistant() {
   const client = BfClient.create();
 
-  const card = client.createCard(
+  const deck = client.createDeck(
     "session-assistant",
     (b) =>
       b.spec("You are a context-aware assistant")
@@ -118,7 +118,7 @@ export function createSessionAwareAssistant() {
   );
 
   // Simulate different session states
-  const newUserSession = card.render({
+  const newUserSession = deck.render({
     context: {
       userName: "Alex",
       sessionData: {
@@ -130,7 +130,7 @@ export function createSessionAwareAssistant() {
     },
   });
 
-  const returningUserSession = card.render({
+  const returningUserSession = deck.render({
     context: {
       userName: "Morgan",
       sessionData: {
@@ -147,12 +147,12 @@ export function createSessionAwareAssistant() {
     },
   });
 
-  return { card, newUserSession, returningUserSession };
+  return { deck, newUserSession, returningUserSession };
 }
 
 // Run demonstrations if this file is executed directly
 if (import.meta.main) {
-  console.log("=== Customer Support Card Example ===");
+  console.log("=== Customer Support Deck Example ===");
   demonstrateContextUsage();
 
   console.log("\n=== Learning Assistant Example ===");

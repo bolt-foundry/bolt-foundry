@@ -5,7 +5,7 @@ Make your LLM applications reliable with structured, testable prompts.
 ## What is Bolt Foundry?
 
 Bolt Foundry helps you build LLM applications that actually work in production.
-Instead of managing brittle prompt strings, you create structured "cards" that
+Instead of managing brittle prompt strings, you create structured "decks" that
 are testable, reusable, and maintainable.
 
 ## Quick start
@@ -25,9 +25,9 @@ const bf = BfClient.create({
   apiKey: process.env.BOLT_FOUNDRY_API_KEY,
 });
 
-// 2. Define your assistant using cards
-const assistant = bf.createCard("helpful-assistant", (card) =>
-  card
+// 2. Define your assistant using decks
+const assistant = bf.createDeck("helpful-assistant", (deck) =>
+  deck
     .spec("You are a helpful assistant")
     .spec("Be concise and clear")
     .spec("Use examples when explaining concepts"));
@@ -49,7 +49,7 @@ const completion = await openai.chat.completions.create(
 );
 ```
 
-### Why use cards?
+### Why use decks?
 
 Traditional prompt engineering:
 
@@ -60,11 +60,11 @@ const prompt = "You are a helpful assistant. Be concise. Don't be verbose. " +
   "avoid unnecessary details. Keep responses short.";
 ```
 
-With Bolt Foundry cards:
+With Bolt Foundry decks:
 
 ```typescript
-const assistant = bf.createCard("assistant", (card) =>
-  card
+const assistant = bf.createDeck("assistant", (deck) =>
+  deck
     .spec("You are a helpful assistant")
     .spec("Be concise", {
       samples: [{

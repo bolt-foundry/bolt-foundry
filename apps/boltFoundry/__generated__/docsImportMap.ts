@@ -23,6 +23,8 @@ export const availableDocs = new Set([
   "STATUS",
   "team-story",
   "wut",
+  "STATUS",
+  "deck-system",
 ] as const);
 
 // Derive the type from the Set values

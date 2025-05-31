@@ -1,8 +1,5 @@
 import { connectBoltFoundry } from "./bolt-foundry.ts";
-import {
-  makeSpecBuilderForCard,
-  type SpecBuilderForCard,
-} from "./builders/builders.ts";
+import { type DeckBuilder, makeDeckBuilder } from "./builders/builders.ts";
 
 /**
  * Main Bolt Foundry client for all SDK functionality
@@ -29,23 +26,23 @@ export class BfClient {
   }
 
   /**
-   * Create a new card specification using the builder pattern
+   * Create a new deck specification using the builder pattern
    */
-  createCard(
+  createDeck(
     name: string,
-    builder: (b: SpecBuilderForCard) => SpecBuilderForCard,
-  ): SpecBuilderForCard {
-    return builder(makeSpecBuilderForCard(name));
+    builder: (b: DeckBuilder) => DeckBuilder,
+  ): DeckBuilder {
+    return builder(makeDeckBuilder(name));
   }
 
   /**
-   * Create a new assistant card specification using the builder pattern
+   * Create a new assistant deck specification using the builder pattern
    */
-  createAssistantCard(
+  createAssistantDeck(
     name: string,
-    builder: (b: SpecBuilderForCard) => SpecBuilderForCard,
-  ): SpecBuilderForCard {
-    return this.createCard(name, builder);
+    builder: (b: DeckBuilder) => DeckBuilder,
+  ): DeckBuilder {
+    return this.createDeck(name, builder);
   }
 
   /**
