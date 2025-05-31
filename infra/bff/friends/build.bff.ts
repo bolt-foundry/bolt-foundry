@@ -469,13 +469,18 @@ export async function build(args: Array<string>): Promise<number> {
     return routesBuildResult;
   }
 
-  if (debug) logMemoryUsage("before content build");
-  const contentResult = await sh("./infra/appBuild/contentBuild.ts");
-  if (debug) logMemoryUsage("after content build");
-
-  if (contentResult !== 0) {
-    return contentResult;
+  // Build documentation content
+  if (debug) logMemoryUsage("before docs build");
+  logger.info("Building documentation content...");
+  const { buildDocs } = await import("infra/appBuild/contentBuild.ts");
+  try {
+    await buildDocs();
+    logger.info("Documentation build completed successfully");
+  } catch (error) {
+    logger.error("Documentation build failed:", error);
+    return 1;
   }
+  if (debug) logMemoryUsage("after docs build");
 
   if (debug) logMemoryUsage("before graphql types");
   const result = await runShellCommand(["bff", "genGqlTypes"]);
@@ -529,4 +534,6 @@ register(
   "build",
   "Builds the current project. Use --debug to show memory and system stats, --slow-exit to wait on failure.",
   build,
+  undefined, // options parameter
+  true, // aiSafe flag
 );
