@@ -21,9 +21,7 @@ import { BfClient } from "@bolt-foundry/bolt-foundry";
 import OpenAI from "openai";
 
 // 1. Create a Bolt Foundry client
-const bf = BfClient.create({
-  apiKey: process.env.BOLT_FOUNDRY_API_KEY,
-});
+const bf = BfClient.create();
 
 // 2. Define your assistant using decks
 const assistant = bf.createDeck("helpful-assistant", (deck) =>
@@ -38,7 +36,7 @@ const openai = new OpenAI({
   fetch: bf.fetch, // Adds telemetry and debugging
 });
 
-// 4. Make requests as normal
+// 4. Make requests as normal, wrapped in the deck's render function
 const completion = await openai.chat.completions.create(
   assistant.render({
     model: "gpt-3.5-turbo",
@@ -192,7 +190,13 @@ const codeReviewer = bf.createDeck("code-reviewer", (deck) =>
 
 ### Dynamic context
 
-Pass runtime data to your cards:
+Pass runtime data to your decks by defining context variables.
+
+Each context variable has:
+
+- **Variable name** (first parameter): Used when passing data to `render()`
+- **AI prompt** (second parameter): The prompt the AI uses to gather this
+  information
 
 ```typescript
 const customerSupport = bf.createDeck("support-agent", (deck) =>
@@ -201,9 +205,10 @@ const customerSupport = bf.createDeck("support-agent", (deck) =>
     .spec("Be empathetic and helpful")
     .context((ctx) =>
       ctx
-        .string("customerName", "Customer's name")
-        .string("issue", "Current issue description")
-        .number("accountAge", "Days since account creation")
+        .string("customerName", "What is the customer's name?")
+        .string("issue", "Describe the current issue")
+        .number("accountAge", "How many days since the account was created?")
+        .boolean("accountActive", "Is the account active?")
     ));
 
 // Use with dynamic data
@@ -211,9 +216,10 @@ const rendered = customerSupport.render({
   model: "gpt-3.5-turbo",
   messages: [],
   context: {
-    customerName: "Alice",
-    issue: "Can't reset password",
-    accountAge: 45,
+    customerName: "Alice", // Answers "What is the customer's name?"
+    issue: "Can't reset password", // Answers "Describe the current issue"
+    accountAge: 45, // Answers "How many days since the account was created?"
+    accountActive: true, // Answers "Is the account active?"
   },
 });
 // The context values are automatically injected into the prompt
@@ -349,12 +355,6 @@ const writingStyle = bf.createDeck("writing-style", (deck) =>
           })
             .spec("Never use em dashes, use colons instead"))));
 ```
-
-## Learn more
-
-- [Why structured prompts?](https://boltfoundry.com/docs/why)
-- [Examples and patterns](https://github.com/bolt-foundry/examples)
-- [API reference](https://boltfoundry.com/docs/api)
 
 ## License
 
