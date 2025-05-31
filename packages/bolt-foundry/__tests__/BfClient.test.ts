@@ -17,49 +17,49 @@ Deno.test("BfClient.create - accepts config options", () => {
   assert(client instanceof BfClient);
 });
 
-Deno.test("BfClient.createAssistantCard - creates assistant card specification", () => {
+Deno.test("BfClient.createAssistantDeck - creates assistant deck specification", () => {
   const client = BfClient.create();
 
-  const card = client.createAssistantCard("test-card", (b) => b);
+  const deck = client.createAssistantDeck("test-deck", (b) => b);
 
-  assertEquals(card.name, "test-card");
+  assertEquals(deck.name, "test-deck");
 });
 
-Deno.test("BfClient.createAssistantCard - creates assistant card with specs", () => {
+Deno.test("BfClient.createAssistantDeck - creates assistant deck with cards", () => {
   const client = BfClient.create();
 
-  const card = client.createAssistantCard(
+  const deck = client.createAssistantDeck(
     "pokemon-trainer",
     (b) =>
-      b.specs("role", (r) => r.spec("You are an experienced Pokemon trainer"))
+      b.card("role", (c) => c.spec("You are an experienced Pokemon trainer"))
         .spec("Optimistic")
-        .specs("skills", (s) =>
-          s.spec("Reading Pokemon emotions")
+        .card("skills", (c) =>
+          c.spec("Reading Pokemon emotions")
             .spec("Strategic battle planning")),
   );
 
-  assertEquals(card.name, "pokemon-trainer");
+  assertEquals(deck.name, "pokemon-trainer");
 
-  const specs = card.getSpecs();
-  assertEquals(specs.length, 3);
-  assertEquals(specs[0].name, "role");
-  assertEquals(specs[1].value, "Optimistic");
-  assertEquals(specs[2].name, "skills");
+  const cards = deck.getCards();
+  assertEquals(cards.length, 3);
+  assertEquals(cards[0].name, "role");
+  assertEquals(cards[1].value, "Optimistic");
+  assertEquals(cards[2].name, "skills");
 });
 
-Deno.test("BfClient.createAssistantCard - renders to OpenAI format", () => {
+Deno.test("BfClient.createAssistantDeck - renders to OpenAI format", () => {
   const client = BfClient.create();
 
-  const card = client.createAssistantCard(
-    "test-card",
+  const deck = client.createAssistantDeck(
+    "test-deck",
     (b) =>
       b.spec("You are a helpful assistant")
-        .specs("traits", (t) =>
-          t.spec("Patient")
+        .card("traits", (c) =>
+          c.spec("Patient")
             .spec("Clear communicator")),
   );
 
-  const result = card.render({ model: "gpt-4" });
+  const result = deck.render({ model: "gpt-4" });
 
   assertEquals(result.model, "gpt-4");
   assertEquals(result.messages[0].role, "system");
@@ -72,10 +72,10 @@ Deno.test("BfClient.createAssistantCard - renders to OpenAI format", () => {
   assert(content.includes("Clear communicator"));
 });
 
-Deno.test("BfClient.createAssistantCard - creates assistant card with context", () => {
+Deno.test("BfClient.createAssistantDeck - creates assistant deck with context", () => {
   const client = BfClient.create();
 
-  const card = client.createAssistantCard(
+  const deck = client.createAssistantDeck(
     "customer-support",
     (b) =>
       b.spec("You are a customer support agent")
@@ -86,17 +86,17 @@ Deno.test("BfClient.createAssistantCard - creates assistant card with context", 
         ),
   );
 
-  const context = card.getContext();
+  const context = deck.getContext();
   assertEquals(context.length, 3);
   assertEquals(context[0].name, "customerName");
   assertEquals(context[1].name, "issue");
   assertEquals(context[2].name, "isPriority");
 });
 
-Deno.test("BfClient.createAssistantCard - renders assistant card with context values", () => {
+Deno.test("BfClient.createAssistantDeck - renders assistant deck with context values", () => {
   const client = BfClient.create();
 
-  const card = client.createAssistantCard(
+  const deck = client.createAssistantDeck(
     "assistant",
     (b) =>
       b.spec("You are a helpful assistant", {
@@ -109,7 +109,7 @@ Deno.test("BfClient.createAssistantCard - renders assistant card with context va
         ),
   );
 
-  const result = card.render({
+  const result = deck.render({
     model: "gpt-3.5-turbo",
     context: {
       userName: "Alice",

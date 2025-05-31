@@ -13,13 +13,13 @@ export const availableDocs = new Set([
   "company-vision",
   "BACKLOG",
   "CHANGELOG",
-  "card-system",
   "improving-inference-philosophy",
   "getting-started",
   "interactive-demo",
   "quickstart",
-  "STATUS",
   "wut",
+  "STATUS",
+  "deck-system",
 ] as const);
 
 // Derive the type from the Set values

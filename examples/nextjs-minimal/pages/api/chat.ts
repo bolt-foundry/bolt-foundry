@@ -5,9 +5,9 @@ import OpenAI from 'openai'
 // Create a Bolt Foundry client instance
 const bfClient = BfClient.create()
 
-// Define a simple assistant card with a persona
-// This card defines how the AI should behave
-const assistantCard = bfClient.createAssistantCard(
+// Define a simple assistant deck with a persona
+// This deck defines how the AI should behave
+const assistantDeck = bfClient.createAssistantDeck(
   'helpful-assistant',
   (builder) =>
     builder
@@ -50,9 +50,9 @@ export default async function handler(
       ),
     })
 
-    // Render the assistant card with the current conversation
+    // Render the assistant deck with the current conversation
     const completion = await client.chat.completions.create(
-      assistantCard.render({
+      assistantDeck.render({
         model: 'gpt-3.5-turbo',
         messages,
         // Add any context values here

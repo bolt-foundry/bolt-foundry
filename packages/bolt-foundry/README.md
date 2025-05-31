@@ -10,12 +10,12 @@ A fetch wrapper that adds authentication and logging for OpenAI API requests.
 
 ### Builder Pattern
 
-A flexible, immutable builder pattern for creating structured AI card
+A flexible, immutable builder pattern for creating structured AI deck
 specifications. This pattern provides:
 
-- **Generic `Spec` and `SpecBuilder` types** for creating hierarchical,
+- **Generic `Card` and `CardBuilder` types** for creating hierarchical,
   structured data
-- **Flexible `.spec()` and `.specs()` methods** for unopinionated composition
+- **Flexible `.spec()` and `.card()` methods** for unopinionated composition
 - **Immutable builders** that return new instances, ensuring predictable
   behavior
 
@@ -38,21 +38,21 @@ const openai = new OpenAI({
   fetch: bfClient.fetch,
 });
 
-// Create a card with structured prompts
-const card = bfClient.createCard(
+// Create a deck with structured prompts
+const deck = bfClient.createDeck(
   "coding-helper",
-  (c) =>
-    c.specs("persona", (p) =>
-      p.spec("An expert TypeScript developer")
+  (d) =>
+    d.card("persona", (c) =>
+      c.spec("An expert TypeScript developer")
         .spec("Detail-oriented and helpful"))
-      .specs("constraints", (c) =>
+      .card("constraints", (c) =>
         c.spec("Always use TypeScript")
           .spec("Follow best practices")
           .spec("Explain code clearly")),
 );
 
 // Render to OpenAI format and use
-const chatParams = card.render({
+const chatParams = deck.render({
   messages: [{ role: "user", content: "Help me write a function" }],
 });
 
@@ -86,7 +86,7 @@ const completion = await mockOpenAi.chat.completions.create({
 
 - [Project Plan](docs/README.md)
 - [v0.0 Implementation](docs/V0.0.md) - Generic spec foundation
-- [v0.1 Implementation](docs/V0.1.md) - Simplified card system
+- [v0.1 Implementation](docs/V0.1.md) - Simplified deck system
 - [Changelog](docs/CHANGELOG.md)
 
 ## Development

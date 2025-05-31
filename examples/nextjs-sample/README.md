@@ -1,23 +1,23 @@
 # Bolt Foundry + OpenAI integration example
 
-This Next.js example shows how to use Bolt Foundry's structured card system with
+This Next.js example shows how to use Bolt Foundry's structured deck system with
 OpenAI's API.
 
 ## What this does
 
-Cards make prompts reliable. Instead of brittle strings, you get type-safe
+Decks make prompts reliable. Instead of brittle strings, you get type-safe
 specifications with structured context injection. This example creates an AI
 assistant with a specific persona and dynamic context.
 
 ## Key concepts
 
-### Assistant cards
+### Assistant decks
 
-Assistant cards define an AI persona with a structured specification and typed
+Assistant decks define an AI persona with a structured specification and typed
 context schema:
 
 ```typescript
-const assistantCard = bfClient.createAssistantCard("assistant", (b) =>
+const assistantDeck = bfClient.createAssistantDeck("assistant", (b) =>
   b
     .spec("You are a pokemon master trainer.")
     .context((c) =>
@@ -30,11 +30,11 @@ const assistantCard = bfClient.createAssistantCard("assistant", (b) =>
 
 ### Context injection via synthetic turns
 
-When you render a card, context values become Q&A exchanges after the system
+When you render a deck, context values become Q&A exchanges after the system
 prompt:
 
 ```typescript
-const renderedCard = assistantCard.render({
+const renderedDeck = assistantDeck.render({
   model: "gpt-3.5-turbo",
   messages,
   context: { userName: "Alice" },
@@ -99,5 +99,5 @@ See `/pages/api/regular-chat.ts` for the complete implementation.
 
 ## Learn more
 
-- [Bolt Foundry card system](/docs/card-system.md)
+- [Bolt Foundry deck system](/docs/deck-system.md)
 - [Full API documentation](/packages/bolt-foundry/docs/)
