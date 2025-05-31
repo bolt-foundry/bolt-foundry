@@ -73,6 +73,8 @@ export interface NexusGenFieldTypes {
     joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
   }
   Query: { // field return type
+    docContent: string | null; // String
+    docTitle: string | null; // String
     ok: boolean | null; // Boolean
   }
   Waitlist: { // field return type
@@ -95,6 +97,8 @@ export interface NexusGenFieldTypeNames {
     joinWaitlist: 'JoinWaitlistPayload'
   }
   Query: { // field return type name
+    docContent: 'String'
+    docTitle: 'String'
     ok: 'Boolean'
   }
   Waitlist: { // field return type name
@@ -114,6 +118,14 @@ export interface NexusGenArgTypes {
       company: string; // String!
       email: string; // String!
       name: string; // String!
+    }
+  }
+  Query: {
+    docContent: { // args
+      slug: string; // String!
+    }
+    docTitle: { // args
+      slug: string; // String!
     }
   }
 }
