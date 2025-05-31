@@ -1,14 +1,14 @@
-import { createAssistantCard } from "../cardBuilder.ts";
+import { createAssistantDeck } from "../deckBuilder.ts";
 import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
 
-// Pokemon Trainer card example
-const ashKetchum = createAssistantCard(
+// Pokemon Trainer deck example
+const ashKetchum = createAssistantDeck(
   "ash-ketchum",
   (b) =>
-    b.specs("trainer-traits", (t) =>
-      t.spec("determination", {
+    b.card("trainer-traits", (c) =>
+      c.spec("determination", {
         samples: (s) =>
           s.sample("Never gives up even when facing legendary Pokemon", 3)
             .sample("Keeps trying after losing multiple gym battles", 2)
@@ -27,8 +27,8 @@ const ashKetchum = createAssistantCard(
               .sample("Abandons Pokemon at Pokemon Center", -3)
               .sample("Trades Pokemon without considering their feelings", -2),
         }))
-      .specs("battle-strategy", (b) =>
-        b.spec("adaptability", {
+      .card("battle-strategy", (c) =>
+        c.spec("adaptability", {
           samples: (s) =>
             s.sample("Uses environment creatively like sprinklers vs Onix", 3)
               .sample("Combines moves in unexpected ways", 2)
@@ -44,14 +44,14 @@ const ashKetchum = createAssistantCard(
           })),
 );
 
-logger.info("Ash Ketchum Trainer Card:", JSON.stringify(ashKetchum, null, 2));
+logger.info("Ash Ketchum Trainer Deck:", JSON.stringify(ashKetchum, null, 2));
 
 // Another trainer with different philosophy
-const garyOak = createAssistantCard(
+const garyOak = createAssistantDeck(
   "gary-oak",
   (b) =>
-    b.specs("trainer-traits", (t) =>
-      t.spec("competitiveness", {
+    b.card("trainer-traits", (c) =>
+      c.spec("competitiveness", {
         samples: (s) =>
           s.sample("Studies type matchups and stats meticulously", 3)
             .sample("Maintains detailed records of battle performance", 2)
@@ -68,8 +68,8 @@ const garyOak = createAssistantCard(
               .sample("Focuses only on winning, ignoring Pokemon wellbeing", -3)
               .sample("Overtains Pokemon to exhaustion", -3),
         }))
-      .specs("research-focus", (r) =>
-        r.spec("pokemon-ecology", {
+      .card("research-focus", (c) =>
+        c.spec("pokemon-ecology", {
           samples: (s) =>
             s.sample("Documents Pokemon behavior in natural habitats", 3)
               .sample("Studies breeding patterns and evolution triggers", 3)
@@ -81,13 +81,13 @@ const garyOak = createAssistantCard(
         })),
 );
 
-logger.info("Gary Oak Trainer Card:", JSON.stringify(garyOak, null, 2));
+logger.info("Gary Oak Trainer Deck:", JSON.stringify(garyOak, null, 2));
 
 // Team Rocket member showing negative examples
-const jessie = createAssistantCard(
+const jessie = createAssistantDeck(
   "jessie-team-rocket",
   (b) =>
-    b.specs("capture-methods", (c) =>
+    b.card("capture-methods", (c) =>
       c.spec("pokemon-theft", {
         samples: (s) =>
           s.sample("Uses elaborate disguises and clever schemes", 1) // Slightly positive for creativity
@@ -96,8 +96,8 @@ const jessie = createAssistantCard(
             .sample("Uses nets and cages on wild Pokemon", -3)
             .sample("Separates baby Pokemon from parents", -3),
       }))
-      .specs("motivations", (m) =>
-        m.spec("glory-seeking", {
+      .card("motivations", (c) =>
+        c.spec("glory-seeking", {
           samples: (s) =>
             s.sample("Wants to impress Giovanni with rare Pokemon", -1)
               .sample("Dreams of promotion within Team Rocket", -1)
@@ -107,6 +107,6 @@ const jessie = createAssistantCard(
 );
 
 logger.info(
-  "Jessie (Team Rocket) Trainer Card:",
+  "Jessie (Team Rocket) Trainer Deck:",
   JSON.stringify(jessie, null, 2),
 );

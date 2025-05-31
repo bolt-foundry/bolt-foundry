@@ -1,17 +1,17 @@
 #! /usr/bin/env -S bff test
 import { assertEquals } from "@std/assert";
 import {
+  type Card,
+  card,
+  makeCardBuilder,
   makeSampleBuilder,
-  makeSpecBuilder,
-  type Spec,
-  specs,
 } from "../builders.ts";
 
-Deno.test("specs API - basic usage", () => {
-  const result = specs(
+Deno.test("card API - basic usage", () => {
+  const result = card(
     "persona",
-    (p) =>
-      p.specs("needs", (n) =>
+    (c) =>
+      c.card("needs", (n) =>
         n.spec("water", {
           samples: (s) =>
             s.sample("Clean drinking water", 3)
@@ -22,32 +22,32 @@ Deno.test("specs API - basic usage", () => {
   assertEquals(result.name, "persona");
   assertEquals(Array.isArray(result.value), true);
 
-  const personaSpecs = result.value as Array<Spec>;
-  assertEquals(personaSpecs.length, 1);
-  assertEquals(personaSpecs[0].name, "needs");
+  const personaCards = result.value as Array<Card>;
+  assertEquals(personaCards.length, 1);
+  assertEquals(personaCards[0].name, "needs");
 
-  const needsSpecs = personaSpecs[0].value as Array<Spec>;
-  assertEquals(needsSpecs.length, 1);
-  assertEquals(needsSpecs[0].value, "water");
-  assertEquals(needsSpecs[0].samples?.length, 2);
-  assertEquals(needsSpecs[0].samples![0], {
+  const needsCards = personaCards[0].value as Array<Card>;
+  assertEquals(needsCards.length, 1);
+  assertEquals(needsCards[0].value, "water");
+  assertEquals(needsCards[0].samples?.length, 2);
+  assertEquals(needsCards[0].samples![0], {
     text: "Clean drinking water",
     rating: 3,
   });
-  assertEquals(needsSpecs[0].samples![1], {
+  assertEquals(needsCards[0].samples![1], {
     text: "Contaminated water",
     rating: -3,
   });
 });
 
-Deno.test("SpecBuilder - spec with samples", () => {
-  const builder = makeSpecBuilder();
+Deno.test("CardBuilder - spec with samples", () => {
+  const builder = makeCardBuilder();
   const result = builder
     .spec("basic")
     .spec("with-samples", {
       samples: (s) => s.sample("Good example", 2).sample("Bad example", -2),
     })
-    .getSpecs();
+    .getCards();
 
   assertEquals(result.length, 2);
   assertEquals(result[0].value, "basic");
@@ -81,14 +81,14 @@ Deno.test("SampleBuilder - various ratings", () => {
   assertEquals(samples[6], { text: "Terrible example", rating: -3 });
 });
 
-Deno.test("specs API - nested structure", () => {
-  const result = specs(
+Deno.test("card API - nested structure", () => {
+  const result = card(
     "system",
-    (s) =>
-      s.specs(
+    (c) =>
+      c.card(
         "components",
         (c) =>
-          c.specs("database", (d) =>
+          c.card("database", (d) =>
             d.spec("connection", {
               samples: (s) =>
                 s.sample("Persistent connection with pooling", 3).sample(
@@ -100,21 +100,21 @@ Deno.test("specs API - nested structure", () => {
   );
 
   assertEquals(result.name, "system");
-  const components = (result.value as Array<Spec>)[0];
+  const components = (result.value as Array<Card>)[0];
   assertEquals(components.name, "components");
 
-  const componentsValue = components.value as Array<Spec>;
+  const componentsValue = components.value as Array<Card>;
   const database = componentsValue[0];
   assertEquals(database.name, "database");
 
-  const databaseValue = database.value as Array<Spec>;
+  const databaseValue = database.value as Array<Card>;
   const connection = databaseValue[0];
   assertEquals(connection.value, "connection");
   assertEquals(connection.samples?.length, 2);
 });
 
 Deno.test("Sample system - multiple samples on single spec", () => {
-  const builder = makeSpecBuilder();
+  const builder = makeCardBuilder();
   const result = builder
     .spec("Be helpful", {
       samples: (s) =>
@@ -124,7 +124,7 @@ Deno.test("Sample system - multiple samples on single spec", () => {
           .sample("Figure it out yourself", -2)
           .sample("Not my problem", -3),
     })
-    .getSpecs();
+    .getCards();
 
   assertEquals(result.length, 1);
   assertEquals(result[0].value, "Be helpful");
@@ -141,7 +141,7 @@ Deno.test("Sample system - multiple samples on single spec", () => {
 });
 
 Deno.test("Sample system - specs with and without samples mixed", () => {
-  const builder = makeSpecBuilder();
+  const builder = makeCardBuilder();
   const result = builder
     .spec("Always be honest")
     .spec("Be kind", {
@@ -150,14 +150,14 @@ Deno.test("Sample system - specs with and without samples mixed", () => {
           .sample("Sucks to be you", -3),
     })
     .spec("Stay focused")
-    .specs("communication", (c) =>
+    .card("communication", (c) =>
       c.spec("Listen actively", {
         samples: (s) =>
           s.sample("Tell me more about that", 3)
             .sample("Are you done talking yet?", -3),
       })
         .spec("Respond thoughtfully"))
-    .getSpecs();
+    .getCards();
 
   assertEquals(result.length, 4);
 
@@ -173,20 +173,20 @@ Deno.test("Sample system - specs with and without samples mixed", () => {
   assertEquals(result[2].value, "Stay focused");
   assertEquals(result[2].samples, undefined);
 
-  // Fourth spec: nested with mixed samples
+  // Fourth card: nested with mixed samples
   assertEquals(result[3].name, "communication");
-  const commSpecs = result[3].value as Array<Spec>;
-  assertEquals(commSpecs[0].samples?.length, 2);
-  assertEquals(commSpecs[1].samples, undefined);
+  const commCards = result[3].value as Array<Card>;
+  assertEquals(commCards[0].samples?.length, 2);
+  assertEquals(commCards[1].samples, undefined);
 });
 
 Deno.test("Sample system - empty samples builder", () => {
-  const builder = makeSpecBuilder();
+  const builder = makeCardBuilder();
   const result = builder
     .spec("No samples here", {
       samples: (s) => s, // Return builder without adding samples
     })
-    .getSpecs();
+    .getCards();
 
   assertEquals(result.length, 1);
   assertEquals(result[0].value, "No samples here");
@@ -194,14 +194,14 @@ Deno.test("Sample system - empty samples builder", () => {
 });
 
 Deno.test("Sample system - card with samples renders correctly", () => {
-  const builder = makeSpecBuilder();
+  const builder = makeCardBuilder();
   const result = builder
     .spec("Be supportive", {
       samples: (s) =>
         s.sample("You're doing great, keep going!", 3)
           .sample("Whatever", -2),
     })
-    .getSpecs();
+    .getCards();
 
   // Just verify the structure is correct - rendering is tested elsewhere
   assertEquals(result[0].samples?.length, 2);

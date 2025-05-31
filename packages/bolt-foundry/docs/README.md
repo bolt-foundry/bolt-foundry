@@ -3,13 +3,13 @@
 ## What are we building?
 
 We're building an open source TypeScript SDK that transforms LLM prompt
-engineering from brittle text strings into structured, composable cards with
+engineering from brittle text strings into structured, composable decks with
 examples and specifications. Instead of concatenating strings and hoping for the
 best, developers can compose prompts using a fluent builder pattern with full
 TypeScript type safety.
 
-The SDK lets developers create reusable "card specifications" that compile to
-OpenAI chat completion payloads. These specs are composable, version-controlled,
+The SDK lets developers create reusable "deck specifications" that compile to
+OpenAI chat completion payloads. These decks are composable, version-controlled,
 and automatically tracked through integrated telemetry.
 
 ## Why do we need to build it?
@@ -29,8 +29,8 @@ brings software engineering best practices to LLM development.
 
 | Task                            | Status   | Description                                    |
 | ------------------------------- | -------- | ---------------------------------------------- |
-| Core spec infrastructure (v0.0) | Complete | Base Spec class and SpecBuilder implementation |
-| Card system & context (v0.1)    | Complete | Simplified API with samples and variables      |
+| Core card infrastructure (v0.0) | Complete | Base Card class and CardBuilder implementation |
+| Deck system & context (v0.1)    | Complete | Simplified API with samples and variables      |
 | Enhanced analytics (v0.2)       | Complete | PostHog integration and cost tracking          |
 | Package setup                   | Deferred | npm package build and publishing               |
 
@@ -38,8 +38,8 @@ brings software engineering best practices to LLM development.
 
 | Version         | Status   | Description                                                   |
 | --------------- | -------- | ------------------------------------------------------------- |
-| [v0.0](V0.0.md) | Complete | Foundation with immutable builders and basic card creation    |
-| [v0.1](V0.1.md) | Complete | Simplified card system with samples and context variables     |
+| [v0.0](V0.0.md) | Complete | Foundation with immutable builders and basic deck creation    |
+| [v0.1](V0.1.md) | Complete | Simplified deck system with samples and context variables     |
 | [v0.2](V0.2.md) | Complete | Enhanced analytics with PostHog integration and cost tracking |
 
 ## Potential future directions
@@ -68,8 +68,8 @@ brings software engineering best practices to LLM development.
 
 ## Version History
 
-- **v0.0**: Foundation with immutable builders and basic card creation
-- **v0.1**: Simplified card system with samples and context variables
+- **v0.0**: Foundation with immutable builders and basic deck creation
+- **v0.1**: Simplified deck system with samples and context variables
 - **v0.2**: Enhanced analytics with PostHog integration and cost tracking
   (Current)
 
@@ -104,9 +104,9 @@ payloads while automatically tracking usage through integrated telemetry.
 
 ### Core Features
 
-- **Simple API**: Use `createCard()` to create named cards with TypeScript type
+- **Simple API**: Use `createDeck()` to create named decks with TypeScript type
   safety
-- **Cards**: Define AI behavior through hierarchical specs with optional samples
+- **Decks**: Define AI behavior through hierarchical cards with optional samples
 - **Sample System**: Rate examples from -3 (bad) to +3 (good) to guide behavior
 - **TypeScript Safety**: Compile-time errors for invalid method chains
 - **Flexible Structure**: Organize specs however makes sense for your use case
@@ -125,26 +125,26 @@ The SDK uses a builder pattern with TypeScript's type system to ensure valid
 prompt construction:
 
 ```typescript
-import { createCard } from "@bolt-foundry/builders";
+import { createDeck } from "@bolt-foundry/builders";
 
-const codingHelper = createCard(
+const codingHelper = createDeck(
   "coding-helper",
   (b) =>
-    b.specs("persona", (p) =>
-      p.spec("You are helping users learn programming")
+    b.card("persona", (c) =>
+      c.spec("You are helping users learn programming")
         .spec("Explains code clearly", {
           samples: (s) =>
             s.sample("Here's how this function works step by step...", 3)
               .sample("It just works", -3),
         })
         .spec("Suggests best practices"))
-      .specs("security", (s) =>
-        s.spec("Never expose secrets")
+      .card("security", (c) =>
+        c.spec("Never expose secrets")
           .spec("Follow OWASP guidelines")),
 );
 
-// The card can be serialized to JSON or used with LLM APIs
-const cardData = codingHelper;
+// The deck can be serialized to JSON or used with LLM APIs
+const deckData = codingHelper;
 ```
 
 ## Development Approach

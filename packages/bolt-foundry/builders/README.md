@@ -10,27 +10,27 @@ codebase, modeled after the successful pattern used in bfDb.
 
 ### Core Components
 
-- **`Spec`**: A generic data structure for holding structured specifications. It
+- **`Card`**: A generic data structure for holding structured specifications. It
   can contain either:
   - A simple string value
-  - An array of nested Spec objects (for hierarchical structures)
+  - An array of nested Card objects (for hierarchical structures)
   - An optional name for grouping/categorization
 
-- **`SpecBuilder`**: A generic, immutable builder for creating `Spec` instances.
+- **`CardBuilder`**: A generic, immutable builder for creating `Card` instances.
   Each method returns a new builder instance, ensuring immutability.
 
 ### Design Principles
 
-1. **Generic and Reusable**: `Spec` and `SpecBuilder` are intentionally generic.
+1. **Generic and Reusable**: `Card` and `CardBuilder` are intentionally generic.
    They don't contain any domain-specific logic or rendering capabilities.
 
 2. **Immutable Builders**: All builder methods return new instances rather than
    mutating the existing one. This ensures predictable behavior and enables
    method chaining without side effects.
 
-3. **Domain-Specific Extensions**: Classes like `SpecForAssistant` extend `Spec`
-   to add domain-specific functionality (e.g., rendering to OpenAI format). The
-   rendering logic belongs in these specialized classes, not in the base `Spec`.
+3. **Domain-Specific Extensions**: Classes like `DeckBuilder` extend `Card` to
+   add domain-specific functionality (e.g., rendering to OpenAI format). The
+   rendering logic belongs in these specialized classes, not in the base `Card`.
 
 4. **Composable**: Builders can be composed to create complex hierarchical
    structures while maintaining type safety and immutability.
@@ -38,16 +38,16 @@ codebase, modeled after the successful pattern used in bfDb.
 ## Usage Example
 
 ```typescript
-import { createCard } from "@bolt-foundry/builders";
+import { createDeck } from "@bolt-foundry/builders";
 
-// Create a card with structured specs
-const assistantCard = createCard(
+// Create a deck with structured cards
+const assistantDeck = createDeck(
   "assistant",
   (b) =>
-    b.specs("persona", (p) =>
-      p.spec("A helpful assistant")
+    b.card("persona", (c) =>
+      c.spec("A helpful assistant")
         .spec("Patient and understanding"))
-      .specs("capabilities", (c) =>
+      .card("capabilities", (c) =>
         c.spec("Answer questions", {
           samples: (s) =>
             s.sample("Provides detailed, accurate responses", 3)
@@ -55,9 +55,9 @@ const assistantCard = createCard(
         })),
 );
 
-// Cards are simple data structures
-console.log(assistantCard.name); // "assistant"
-console.log(assistantCard.specs); // Array of specs
+// Decks are simple data structures
+console.log(assistantDeck.name); // "assistant"
+console.log(assistantDeck.cards); // Array of cards
 ```
 
 ## Future Considerations

@@ -48,21 +48,21 @@ This example demonstrates the basic Bolt Foundry pattern:
 
 1. **Frontend** (`pages/index.tsx`): A simple React component that handles the chat UI
 2. **API Route** (`pages/api/chat.ts`): Uses the Bolt Foundry SDK to process messages
-3. **Assistant Card**: Defines the AI's behavior and personality
+3. **Assistant Deck**: Defines the AI's behavior and personality
 
 The key code is in the API route:
 
 ```typescript
-// Create an assistant card that defines the AI's behavior
-const assistantCard = bfClient.createAssistantCard(
+// Create an assistant deck that defines the AI's behavior
+const assistantDeck = bfClient.createAssistantDeck(
   'helpful-assistant',
   (builder) =>
     builder.spec('You are a helpful, friendly assistant.')
 )
 
-// Use the card to process messages
+// Use the deck to process messages
 const completion = await client.chat.completions.create(
-  assistantCard.render({
+  assistantDeck.render({
     model: 'gpt-3.5-turbo',
     messages,
   })
@@ -89,7 +89,7 @@ nextjs-minimal/
 
 - Customize the assistant's personality in `pages/api/chat.ts`
 - Add context parameters to pass user information
-- Explore more complex card compositions
+- Explore more complex deck compositions
 - Check out the [full example](../nextjs-sample) for advanced features
 
 ## Learn More
