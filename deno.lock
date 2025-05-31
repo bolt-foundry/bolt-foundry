@@ -10151,6 +10151,24 @@
           ]
         }
       },
+      "examples/nextjs-justin": {
+        "packageJson": {
+          "dependencies": [
+            "npm:@eslint/eslintrc@3",
+            "npm:@tailwindcss/postcss@4",
+            "npm:@types/node@20",
+            "npm:@types/react-dom@19",
+            "npm:@types/react@19",
+            "npm:eslint-config-next@15.3.2",
+            "npm:eslint@9",
+            "npm:next@15.3.2",
+            "npm:react-dom@19",
+            "npm:react@19",
+            "npm:tailwindcss@4",
+            "npm:typescript@5"
+          ]
+        }
+      },
       "examples/nextjs-sample": {
         "packageJson": {
           "dependencies": [
