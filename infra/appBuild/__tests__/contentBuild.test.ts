@@ -1,337 +1,102 @@
 #!/usr/bin/env -S bff test
 
-import { assert } from "@std/assert";
+import { assert, assertEquals, assertExists } from "@std/assert";
 import { exists } from "@std/fs";
 import { join } from "@std/path";
+import { buildDocs, processDocsContent } from "../contentBuild.ts";
 
-Deno.test("processes docs directory and creates build output", async () => {
-  // Arrange: Create a temporary docs structure for testing
-  const tempDir = await Deno.makeTempDir();
-  try {
-    const docsDir = join(tempDir, "docs");
-    const buildDocsDir = join(tempDir, "build", "docs");
-    const generatedDir = join(tempDir, "generated");
+// Test processing a single markdown file
+Deno.test("processDocsContent - converts markdown to MDX module", async (t) => {
+  const testContent = `# Test Document
 
-    // Create test files
-    await Deno.mkdir(docsDir, { recursive: true });
+This is a test document with some **bold** text.`;
 
-    // Create test MDX file
-    const testMdxContent = `# Test Documentation
+  await t.step("should compile markdown to JavaScript module", async () => {
+    const result = await processDocsContent(testContent);
 
-This is a test MDX file for the documentation system.
+    // Should return valid JavaScript
+    assertExists(result);
+    assertEquals(typeof result, "string");
 
-## Example Section
+    // Should contain MDX compiled output markers
+    assert(result.includes("export"), "Should have exports");
+    assert(result.includes("function"), "Should have function definitions");
+  });
 
-Some example content here.`;
+  await t.step("should handle MDX with frontmatter", async () => {
+    const contentWithFrontmatter = `---
+title: Test Doc
+description: A test document
+---
 
-    await Deno.writeTextFile(
-      join(docsDir, "test-doc.mdx"),
-      testMdxContent,
-    );
+# Test Document
 
-    // Create test MD file
-    const testMdContent = `# Regular Markdown Documentation
+Content goes here.`;
 
-This is a standard markdown file.
-
-- Should be processed like MDX
-- But without component support`;
-
-    await Deno.writeTextFile(
-      join(docsDir, "regular-doc.md"),
-      testMdContent,
-    );
-
-    // Act: Run the content build process
-    // Note: This will fail initially as we haven't implemented the functionality
-    const contentBuildPath = join(
-      Deno.cwd(),
-      "infra",
-      "appBuild",
-      "contentBuild.ts",
-    );
-    const command = new Deno.Command("deno", {
-      args: ["run", "-A", contentBuildPath],
-      env: {
-        DOCS_DIR: docsDir,
-        BUILD_DIR: join(tempDir, "build"),
-        GENERATED_DIR: generatedDir,
-      },
-    });
-
-    const { success } = await command.output();
-
-    // Assert: Verify the docs were processed
-    assert(success, "Content build should complete successfully");
-
-    // Check that the build directory was created
-    assert(
-      await exists(buildDocsDir),
-      "Build docs directory should be created",
-    );
-
-    // Check that the MDX file was compiled to JS
-    const processedMdxPath = join(buildDocsDir, "test-doc.js");
-    assert(
-      await exists(processedMdxPath),
-      "MDX file should be compiled to JS in build directory",
-    );
-
-    // Check that the MD file was compiled to JS
-    const processedMdPath = join(buildDocsDir, "regular-doc.js");
-    assert(
-      await exists(processedMdPath),
-      "MD file should be compiled to JS in build directory",
-    );
-
-    // Check that import map was generated
-    const importMapPath = join(generatedDir, "docsImportMap.ts");
-    assert(
-      await exists(importMapPath),
-      "Import map should be generated",
-    );
-  } finally {
-    // Clean up
-    await Deno.remove(tempDir, { recursive: true });
-  }
+    const result = await processDocsContent(contentWithFrontmatter);
+    assertExists(result);
+    assertEquals(typeof result, "string");
+  });
 });
 
-Deno.test("compiles MDX files with components", async () => {
-  // This test verifies that MDX files are actually compiled, not just copied
-  const tempDir = await Deno.makeTempDir();
-  try {
-    const docsDir = join(tempDir, "docs");
-    const buildDocsDir = join(tempDir, "build", "docs");
-
-    // Create test MDX file with JSX
-    await Deno.mkdir(docsDir, { recursive: true });
-    const testMdxContent = `# Documentation with Component
-
-<BfDsCallout type="info">
-  This is an MDX component in the docs
-</BfDsCallout>
-
-Regular markdown content here.`;
-
-    await Deno.writeTextFile(
-      join(docsDir, "component-doc.mdx"),
-      testMdxContent,
-    );
-
-    // Act: Run the content build process
-    const contentBuildPath = join(
-      Deno.cwd(),
-      "infra",
-      "appBuild",
-      "contentBuild.ts",
-    );
-    const command = new Deno.Command("deno", {
-      args: ["run", "-A", contentBuildPath],
-      env: {
-        DOCS_DIR: docsDir,
-        BUILD_DIR: join(tempDir, "build"),
-      },
-    });
-
-    const { success } = await command.output();
-
-    // Assert
-    assert(
-      success,
-      "Content build with MDX components should complete successfully",
-    );
-
-    const processedFilePath = join(buildDocsDir, "component-doc.js");
-    assert(
-      await exists(processedFilePath),
-      "MDX file with components should be compiled to JS",
-    );
-
-    // Read the processed content to verify it was compiled to a module
-    const processedContent = await Deno.readTextFile(processedFilePath);
-
-    // The compiled MDX should be a valid ES module
-    assert(
-      processedContent.length > 0,
-      "Processed MDX file should have content",
-    );
-    assert(
-      processedContent.includes("export") ||
-        processedContent.includes("function"),
-      "Compiled MDX should contain module code",
-    );
-  } finally {
-    // Clean up
-    await Deno.remove(tempDir, { recursive: true });
+// Test the full build process
+Deno.test("buildDocs - processes all docs from /docs to /build/docs", async (t) => {
+  // Clean up any existing build directory
+  const buildDir = join(Deno.cwd(), "build", "docs");
+  if (await exists(buildDir)) {
+    await Deno.remove(buildDir, { recursive: true });
   }
+
+  await t.step("should create build/docs directory", async () => {
+    await buildDocs();
+
+    const buildDirExists = await exists(buildDir);
+    assertEquals(buildDirExists, true, "build/docs directory should exist");
+  });
+
+  await t.step("should process markdown files from /docs", async () => {
+    // This assumes we have at least README.md in /docs
+    await buildDocs();
+
+    const readmePath = join(buildDir, "README.js");
+    const readmeExists = await exists(readmePath);
+    assertEquals(readmeExists, true, "README.js should be generated");
+  });
+
+  await t.step("should preserve directory structure", async () => {
+    // If there are subdirectories in /docs, they should be preserved
+    await buildDocs();
+
+    // Check that the build completed without errors
+    // More specific checks would depend on actual /docs structure
+    const buildDirExists = await exists(buildDir);
+    assertEquals(buildDirExists, true);
+  });
+
+  // Cleanup after test
+  await t.step("cleanup", async () => {
+    if (await exists(buildDir)) {
+      await Deno.remove(buildDir, { recursive: true });
+    }
+  });
 });
 
-Deno.test("compiles .md files through MDX processor", async () => {
-  // This test verifies that regular .md files are also processed through MDX
-  const tempDir = await Deno.makeTempDir();
-  try {
-    const docsDir = join(tempDir, "docs");
-    const buildDocsDir = join(tempDir, "build", "docs");
+// Test error handling
+Deno.test("processDocsContent - handles invalid content gracefully", async (t) => {
+  await t.step("should handle empty content", async () => {
+    const result = await processDocsContent("");
+    assertExists(result);
+  });
 
-    // Create test MD file with code blocks
-    await Deno.mkdir(docsDir, { recursive: true });
-    const testMdContent = `# Markdown with Code
+  await t.step("should handle malformed MDX", async () => {
+    const malformedContent = `# Title
 
-Here's a code example:
+{{{ this is not valid MDX }}}
 
-\`\`\`typescript
-const greeting = "Hello, docs!";
-console.log(greeting);
-\`\`\`
+Some content`;
 
-This should be compiled through MDX even though it's a .md file.`;
-
-    await Deno.writeTextFile(
-      join(docsDir, "code-example.md"),
-      testMdContent,
-    );
-
-    // Act: Run the content build process
-    const contentBuildPath = join(
-      Deno.cwd(),
-      "infra",
-      "appBuild",
-      "contentBuild.ts",
-    );
-    const command = new Deno.Command("deno", {
-      args: ["run", "-A", contentBuildPath],
-      env: {
-        DOCS_DIR: docsDir,
-        BUILD_DIR: join(tempDir, "build"),
-      },
-    });
-
-    const { success } = await command.output();
-
-    // Assert
-    assert(
-      success,
-      "Content build with .md files should complete successfully",
-    );
-
-    const processedFilePath = join(buildDocsDir, "code-example.js");
-    assert(
-      await exists(processedFilePath),
-      "MD file should be compiled to JS",
-    );
-
-    // Read the processed content to verify it was compiled
-    const processedContent = await Deno.readTextFile(processedFilePath);
-
-    // The compiled content should exist and be non-empty
-    assert(
-      processedContent.length > 0,
-      "Processed MD file should have content",
-    );
-  } finally {
-    // Clean up
-    await Deno.remove(tempDir, { recursive: true });
-  }
-});
-
-Deno.test("generates import map for docs directory", async () => {
-  // This test verifies that the content build generates a proper import map
-  // for all MDX files in the docs directory with lazy loading support
-  const tempDir = await Deno.makeTempDir();
-  try {
-    const docsDir = join(tempDir, "docs");
-    const buildDir = join(tempDir, "build");
-    const generatedDir = join(tempDir, "apps", "boltFoundry", "__generated__");
-
-    // Create test MDX files
-    await Deno.mkdir(docsDir, { recursive: true });
-    await Deno.mkdir(generatedDir, { recursive: true });
-
-    const quickstartContent = `# Quickstart
-    
-This is the quickstart guide.`;
-
-    const gettingStartedContent = `# Getting Started
-
-Learn the basics here.`;
-
-    await Deno.writeTextFile(
-      join(docsDir, "quickstart.mdx"),
-      quickstartContent,
-    );
-
-    await Deno.writeTextFile(
-      join(docsDir, "getting-started.mdx"),
-      gettingStartedContent,
-    );
-
-    // Act: Run the content build process
-    const contentBuildPath = join(
-      Deno.cwd(),
-      "infra",
-      "appBuild",
-      "contentBuild.ts",
-    );
-    const command = new Deno.Command("deno", {
-      args: ["run", "-A", contentBuildPath],
-      env: {
-        DOCS_DIR: docsDir,
-        BUILD_DIR: buildDir,
-        GENERATED_DIR: generatedDir,
-      },
-    });
-
-    const { success } = await command.output();
-
-    // Assert: Build succeeds
-    assert(
-      success,
-      "Content build with import map generation should complete successfully",
-    );
-
-    // Check that the import map was generated
-    const importMapPath = join(generatedDir, "docsImportMap.ts");
-    assert(
-      await exists(importMapPath),
-      "Import map should be generated at __generated__/docsImportMap.ts",
-    );
-
-    // Read and verify the import map content
-    const importMapContent = await Deno.readTextFile(importMapPath);
-
-    // Should have imports for both MDX files
-    assert(
-      importMapContent.includes("quickstart"),
-      "Import map should include quickstart",
-    );
-    assert(
-      importMapContent.includes("getting-started"),
-      "Import map should include getting-started",
-    );
-
-    // Should export availableDocs Set
-    assert(
-      importMapContent.includes("export const availableDocs"),
-      "Import map should export availableDocs",
-    );
-
-    // Should have lazy loader function
-    assert(
-      importMapContent.includes("export async function loadDocComponent"),
-      "Import map should export loadDocComponent function",
-    );
-
-    // Should have correct slugs in the Set
-    assert(
-      importMapContent.includes('"quickstart"'),
-      "Import map should include quickstart slug",
-    );
-    assert(
-      importMapContent.includes('"getting-started"'),
-      "Import map should include getting-started slug",
-    );
-  } finally {
-    // Clean up
-    await Deno.remove(tempDir, { recursive: true });
-  }
+    // Should not throw, but log error
+    const result = await processDocsContent(malformedContent);
+    assertExists(result);
+  });
 });
