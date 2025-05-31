@@ -208,9 +208,13 @@ const customerSupport = bf.createDeck("support-agent", (deck) =>
 
 // Use with dynamic data
 const rendered = customerSupport.render({
-  customerName: "Alice",
-  issue: "Can't reset password",
-  accountAge: 45,
+  model: "gpt-3.5-turbo",
+  messages: [],
+  context: {
+    customerName: "Alice",
+    issue: "Can't reset password",
+    accountAge: 45,
+  },
 });
 // The context values are automatically injected into the prompt
 ```
@@ -229,6 +233,118 @@ const bf = BfClient.create({
 // - Debugging traces
 // - A/B testing support
 // - Usage analytics
+```
+
+## Card examples
+
+Here are some real card examples using the `deck.card()` API:
+
+### Technical writer persona
+
+```typescript
+const technicalWriter = bf.createDeck("technical-writer", (deck) =>
+  deck
+    .card("Assistant persona", (c) =>
+      c.spec("You are a technical writer for Bolt Foundry")
+        .spec(
+          "Create user-facing documentation, internal technical docs, and API documentation",
+        ))
+    .card("Behavior: Writing style", (c) =>
+      c.spec(
+        "Write in active voice and lead with the most important information",
+      )
+        .spec("Use sentence casing for all headings")
+        .spec("Be direct and conversational")
+        .spec("Never over-promise or mention 'coming soon' features"))
+    .card("Behavior: Technical approach", (c) =>
+      c.spec("Reference existing code in the codebase")
+        .spec("Create minimal working examples")
+        .spec("Focus on clarity over cleverness")
+        .spec("Show, don't just tell")));
+```
+
+### Code assistant with samples
+
+```typescript
+const coderAssistant = bf.createDeck("coder-assistant", (deck) =>
+  deck
+    .card("Assistant persona", (c) =>
+      c.spec("You are an AI assistant that helps write software")
+        .spec("Optimize for speed and business value delivery"))
+    .card("Behavior: Development approach", (c) =>
+      c.spec("Practice Test-Driven Development", {
+        samples: [{
+          input: {
+            text: "Before implementing logic, write a failing test for it.",
+            context: "Practicing test-driven development",
+          },
+          responses: [
+            {
+              text: "Write test first, then implement",
+              rating: 3,
+              explanation: "Follows TDD by writing tests first",
+            },
+            {
+              text: "Write code first, add tests later",
+              rating: -2,
+              explanation: "Doesn't follow TDD approach",
+            },
+          ],
+        }],
+      })
+        .spec("Follow 'worse is better' philosophy")
+        .spec("Ship working solutions quickly")));
+```
+
+### Writing style enforcer
+
+```typescript
+const writingStyle = bf.createDeck("writing-style", (deck) =>
+  deck
+    .card("Behavior: Capitalization", (c) =>
+      c.spec("Always use sentence case", {
+        samples: [{
+          input: {
+            text: "Write a heading for getting started",
+            context: "Documentation header",
+          },
+          responses: [
+            {
+              text: "Getting started guide",
+              rating: 3,
+              explanation: "Correct sentence case",
+            },
+            {
+              text: "Getting Started Guide",
+              rating: -2,
+              explanation: "Uses title case instead of sentence case",
+            },
+          ],
+        }],
+      })
+        .spec("Never use ALLCAPS except for acronyms"))
+    .card("Behavior: Punctuation", (c) =>
+      c.spec("Always use Oxford comma", {
+        samples: [{
+          input: {
+            text: "List three programming languages",
+            context: "Technical writing",
+          },
+          responses: [
+            {
+              text: "Python, JavaScript, and TypeScript",
+              rating: 3,
+              explanation: "Uses Oxford comma correctly",
+            },
+            {
+              text: "Python, JavaScript and TypeScript",
+              rating: -2,
+              explanation: "Missing Oxford comma",
+            },
+          ],
+        }],
+      })
+        .spec("Never use em dashes, use colons instead")));
 ```
 
 ## Learn more
