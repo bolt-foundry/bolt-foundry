@@ -5,12 +5,14 @@ import { getLogger } from "packages/logger/logger.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 import { denoFileResolver } from "./plugins/denoFileResolver.ts";
-import { contentPathRewriter } from "./plugins/contentPathRewriter.ts";
-import { ipynbPlugin } from "./plugins/ipynbPlugin.ts";
+// MDX plugins moved to tmp/garbage
+// import { contentPathRewriter } from "./plugins/contentPathRewriter.ts";
+// import { ipynbPlugin } from "./plugins/ipynbPlugin.ts";
 
 const logger = getLogger(import.meta);
 
-import mdx from "@mdx-js/esbuild";
+// MDX removed - moved to tmp/garbage
+// import mdx from "@mdx-js/esbuild";
 
 const defaultOptions: esbuild.BuildOptions = {
   outdir: "static/build",
@@ -27,9 +29,10 @@ const defaultOptions: esbuild.BuildOptions = {
   publicPath: "/static/build",
   assetNames: "assets/[name]-[hash]",
   plugins: [
-    ipynbPlugin,
-    mdx(),
-    contentPathRewriter,
+    // MDX plugins removed - moved to tmp/garbage
+    // ipynbPlugin,
+    // mdx(),
+    // contentPathRewriter,
     denoFileResolver,
   ],
   treeShaking: true,
