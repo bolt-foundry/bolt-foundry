@@ -23,6 +23,8 @@ interface Node {
 }
 
 type Query {
+  docContent(slug: String!): String
+  docTitle(slug: String!): String
   ok: Boolean
 }
 
