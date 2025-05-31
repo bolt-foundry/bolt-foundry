@@ -31,7 +31,7 @@ export function loadGqlTypes() {
   // The decorator-based approach for interface implementation will
   // automatically detect classes that extend a decorated parent class
 
-  // Process each root object
+  // Process root objects
   for (const root of roots) {
     const rootSpec = root.gqlSpec;
     const rootName = root.name;
