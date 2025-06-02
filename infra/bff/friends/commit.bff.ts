@@ -3,10 +3,68 @@
 // ./infra/bff/friends/commit.bff.ts
 
 import { register } from "infra/bff/bff.ts";
-import { runShellCommand } from "infra/bff/shellBase.ts";
+import {
+  runShellCommand,
+  runShellCommandWithOutput,
+} from "infra/bff/shellBase.ts";
 import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
+
+/**
+ * Stage all untracked files and remove missing files
+ */
+async function stageAllFiles(): Promise<number> {
+  // Get status to find unknown and missing files
+  const { stdout: statusOutput, code: statusCode } =
+    await runShellCommandWithOutput(["sl", "status"]);
+
+  if (statusCode !== 0) {
+    logger.error("Failed to get repository status");
+    return statusCode;
+  }
+
+  const lines = statusOutput.split("\n").filter((line) => line.trim());
+  const unknownFiles: string[] = [];
+  const missingFiles: string[] = [];
+
+  for (const line of lines) {
+    const status = line.charAt(0);
+    const file = line.slice(2); // Skip status character and space
+
+    if (status === "?") {
+      unknownFiles.push(file);
+    } else if (status === "!") {
+      missingFiles.push(file);
+    }
+  }
+
+  // Add unknown files
+  if (unknownFiles.length > 0) {
+    logger.info(`Adding ${unknownFiles.length} unknown files...`);
+    for (const file of unknownFiles) {
+      const result = await runShellCommand(["sl", "add", file]);
+      if (result !== 0) {
+        logger.error(`Failed to add ${file}`);
+        return result;
+      }
+    }
+  }
+
+  // Remove missing files
+  if (missingFiles.length > 0) {
+    logger.info(`Removing ${missingFiles.length} missing files...`);
+    for (const file of missingFiles) {
+      const result = await runShellCommand(["sl", "remove", file]);
+      if (result !== 0) {
+        logger.error(`Failed to remove ${file}`);
+        return result;
+      }
+    }
+  }
+
+  return 0;
+}
 
 /**
  * Run the standard precommit checks (format, lint, type checking)
@@ -88,8 +146,9 @@ export async function commit(args: string[]): Promise<number> {
     }
   }
 
-  // If specific files are provided, we need to stage them appropriately
+  // Stage files appropriately
   if (filesToCommit.length > 0) {
+    // If specific files are provided, stage only those files
     logger.info("Staging specified files...");
 
     // Check which files exist and which are deleted
@@ -124,6 +183,14 @@ export async function commit(args: string[]): Promise<number> {
         logger.error("❌ Failed to mark deleted files for removal");
         return removeResult;
       }
+    }
+  } else {
+    // No specific files provided - stage all changes
+    logger.info("Staging all changes...");
+    const stageResult = await stageAllFiles();
+    if (stageResult !== 0) {
+      logger.error("❌ Failed to stage files");
+      return stageResult;
     }
   }
 
