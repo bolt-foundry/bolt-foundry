@@ -4,10 +4,10 @@ import { exists } from "@std/fs";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorsBfNode.ts";
 
 /**
- * BlogPost node representing a blog post with content.
+ * PublishedDocument node representing a published document with content.
  * Minimal viable implementation with just content field.
  */
-export class BlogPost extends GraphQLNode {
+export class PublishedDocument extends GraphQLNode {
   private _id: string;
   private _content: string;
 
@@ -34,16 +34,24 @@ export class BlogPost extends GraphQLNode {
   /**
    * Find a blog post by slug, throwing an error if not found.
    */
-  static override async findX(slug: string): Promise<BlogPost> {
+  static override async findX(slug: string): Promise<PublishedDocument> {
     const docsDir = "docs";
-    const filePath = join(docsDir, `${slug}.md`);
-
-    if (!await exists(filePath)) {
+    
+    // Check for both .mdx and .md files
+    const mdxPath = join(docsDir, `${slug}.mdx`);
+    const mdPath = join(docsDir, `${slug}.md`);
+    
+    let filePath: string;
+    if (await exists(mdxPath)) {
+      filePath = mdxPath;
+    } else if (await exists(mdPath)) {
+      filePath = mdPath;
+    } else {
       throw new BfErrorNodeNotFound(`Blog post not found: ${slug}`);
     }
 
     const content = await Deno.readTextFile(filePath);
-    return new BlogPost(slug, content);
+    return new PublishedDocument(slug, content);
   }
 
   /**

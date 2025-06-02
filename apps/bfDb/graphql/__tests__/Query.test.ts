@@ -11,7 +11,7 @@ import { printSchema } from "graphql";
 import { gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
 
 // Creating a minimal mock setup to test the existence of currentViewer
-function buildSdl(): string {
+async function buildSdl(): Promise<string> {
   // Create a minimal Query type with currentViewer field
   const querySpec = {
     fields: {},
@@ -25,7 +25,7 @@ function buildSdl(): string {
   };
 
   // Convert to Nexus format
-  const { mainType } = gqlSpecToNexus(querySpec, "Query");
+  const { mainType } = await gqlSpecToNexus(querySpec, "Query");
 
   // Build schema with the generated types
   const schema = makeSchema({
@@ -45,8 +45,8 @@ function buildSdl(): string {
   return printSchema(schema);
 }
 
-Deno.test.ignore("Query.currentViewer root field is present", () => {
-  const sdl = buildSdl();
+Deno.test.ignore("Query.currentViewer root field is present", async () => {
+  const sdl = await buildSdl();
 
   assert(
     sdl.includes("type Query") &&

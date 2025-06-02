@@ -9,12 +9,12 @@ import { loadGqlTypes } from "../loadGqlTypes.ts";
 import { graphql } from "graphql";
 import { createContext } from "../graphqlContext.ts";
 
-export function buildTestSchema() {
-  return makeSchema({ types: loadGqlTypes() });
+export async function buildTestSchema() {
+  return makeSchema({ types: await loadGqlTypes() });
 }
 
 export async function testQuery(options: { query: string }) {
-  const schema = buildTestSchema();
+  const schema = await buildTestSchema();
   // Create a mock request
   const mockRequest = new Request("http://localhost/graphql", {
     method: "POST",
