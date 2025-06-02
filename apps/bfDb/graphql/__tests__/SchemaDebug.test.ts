@@ -7,9 +7,9 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-Deno.test("debug schema building", () => {
+Deno.test("debug schema building", async () => {
   try {
-    const types = loadGqlTypes();
+    const types = await loadGqlTypes();
     // deno-lint-ignore no-explicit-any
     logger.debug("Loaded types:", types.map((t: any) => t.config.name));
 
@@ -26,8 +26,8 @@ Deno.test("debug schema building", () => {
   }
 });
 
-Deno.test("debug loadGqlTypes", () => {
-  const types = loadGqlTypes();
+Deno.test("debug loadGqlTypes", async () => {
+  const types = await loadGqlTypes();
 
   // deno-lint-ignore no-explicit-any
   logger.debug("All types:", types.map((t: any) => t.config.name));
