@@ -35,6 +35,11 @@ type JoinWaitlistPayload {
 
 type Mutation {
   joinWaitlist(company: String!, email: String!, name: String!): JoinWaitlistPayload
+  subscribeToNewsletter(email: String!): SubscribeToNewsletterPayload
+}
+
+type Newsletter {
+  id: ID
 }
 
 """An object with a unique identifier"""
@@ -51,6 +56,11 @@ type Query {
   documentsBySlug(slug: String): PublishedDocument
   githubRepoStats: GithubRepoStats
   ok: Boolean
+}
+
+type SubscribeToNewsletterPayload {
+  message: String
+  success: Boolean!
 }
 
 type Waitlist {
