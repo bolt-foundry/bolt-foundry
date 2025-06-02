@@ -23,6 +23,11 @@ type BfPerson {
   name: String
 }
 
+type GithubRepoStats {
+  id: ID!
+  stars: Int!
+}
+
 type JoinWaitlistPayload {
   message: String
   success: Boolean!
@@ -44,6 +49,7 @@ type PublishedDocument {
 
 type Query {
   documentsBySlug(slug: String): PublishedDocument
+  githubRepoStats: GithubRepoStats
   ok: Boolean
 }
 

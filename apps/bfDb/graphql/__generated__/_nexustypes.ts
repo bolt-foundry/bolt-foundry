@@ -46,6 +46,7 @@ export interface NexusGenObjects {
   BfEdge: {};
   BfOrganization: {};
   BfPerson: {};
+  GithubRepoStats: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
     success: boolean; // Boolean!
@@ -81,6 +82,10 @@ export interface NexusGenFieldTypes {
     memberOf: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     name: string | null; // String
   }
+  GithubRepoStats: { // field return type
+    id: string; // ID!
+    stars: number; // Int!
+  }
   JoinWaitlistPayload: { // field return type
     message: string | null; // String
     success: boolean; // Boolean!
@@ -94,6 +99,7 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
+    githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
     ok: boolean | null; // Boolean
   }
   Waitlist: { // field return type
@@ -120,6 +126,10 @@ export interface NexusGenFieldTypeNames {
     memberOf: 'BfOrganization'
     name: 'String'
   }
+  GithubRepoStats: { // field return type name
+    id: 'ID'
+    stars: 'Int'
+  }
   JoinWaitlistPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
@@ -133,6 +143,7 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     documentsBySlug: 'PublishedDocument'
+    githubRepoStats: 'GithubRepoStats'
     ok: 'Boolean'
   }
   Waitlist: { // field return type name
