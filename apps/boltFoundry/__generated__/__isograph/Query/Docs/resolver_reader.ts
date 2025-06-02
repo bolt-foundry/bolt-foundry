@@ -4,7 +4,7 @@ import { Docs as resolver } from '../../../../components/Docs.tsx';
 
 const readerAst: ReaderAst<Query__Docs__param> = [
   {
-    kind: "Scalar",
+    kind: "Linked",
     fieldName: "documentsBySlug",
     alias: null,
     arguments: [
@@ -13,7 +13,24 @@ const readerAst: ReaderAst<Query__Docs__param> = [
         { kind: "Variable", name: "slug" },
       ],
     ],
+    condition: null,
     isUpdatable: false,
+    selections: [
+      {
+        kind: "Scalar",
+        fieldName: "id",
+        alias: null,
+        arguments: null,
+        isUpdatable: false,
+      },
+      {
+        kind: "Scalar",
+        fieldName: "content",
+        alias: null,
+        arguments: null,
+        isUpdatable: false,
+      },
+    ],
   },
 ];
 
