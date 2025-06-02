@@ -44,21 +44,64 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Version control commands
 
-### BFF commit helper (preferred)
+### BFF commit helpers (preferred)
 
-BFF commands streamline your workflow:
+BFF commands streamline your workflow with automatic formatting, linting, and PR
+submission:
 
-- `bff commit -m "message"` - Run pre-checks (format, lint, type check) then
-  commit
+#### Creating commits
+
+- `bff commit -m "message"` - Run pre-checks then commit and submit PR (default)
 - `bff commit -m "message" --skip-pre-check` - Commit without pre-checks
-- `bff commit -m "message" --submit` - Commit and immediately submit PR
+- `bff commit -m "message" --no-submit` - Commit without submitting PR
 - `bff commit -m "message" file1 file2` - Commit specific files
+- `bff precommit` - Stage files and run pre-commit checks (AI-safe)
+
+**Note:** By default, `bff commit` will:
+
+1. Run pre-commit checks (format, lint, type check)
+2. Create the commit
+3. Submit a pull request
+
+When to modify default behavior:
+
+- Use `--skip-pre-check` when:
+  - You're committing generated files that might not pass linting
+  - You're in the middle of a refactor and need to save progress
+  - You've already run checks manually
+  - You're committing documentation-only changes
+- Use `--no-submit` when:
+  - You're creating multiple commits before submitting a stack
+  - You want to review your commits locally first
+  - You're working on experimental changes
+  - You need to amend or rebase before creating a PR
 
 The pre-checks include:
 
-1. `bff format` - Format code
-2. `bff lint` - Run linting rules
-3. `bff check` - Type checking
+1. `bff format` - Format code (AI-safe)
+2. `bff lint` - Run linting rules (AI-safe)
+3. `bff check` - Type checking (AI-safe)
+
+#### Amending commits
+
+- `bff amend` - Amend current commit and submit PR
+- `bff amend --no-submit` - Amend without submitting PR
+- `bff amend -m "New message"` - Amend with new message
+
+#### Viewing changes and status (AI-safe commands)
+
+- `bff status` - Show working directory status using `sl status`
+- `bff diff` - Show diff of current changes using `sl diff`
+- `bff log` - Show commit history using `sl log`
+
+#### Pull request management
+
+- `bff merge <PR-number>` - Merge a GitHub PR
+- `bff merge-stack` - Merge all PRs in current stack bottom-to-top
+- `bff merge-stack_dry-run` - Preview what would be merged (AI-safe)
+- `bff ci-status` - Check CI status for current commit (AI-safe)
+- `bff pr-details <PR-number>` - Get PR information
+- `bff pr-comments <PR-number>` - Fetch PR comments
 
 ### Direct Sapling commands (when needed)
 
@@ -133,11 +176,27 @@ automation. For mixed changes within files, consider:
   ```
 - For detailed CI check information, use GitHub CLI: `gh pr checks`
 
+## AI-safe commands
+
+When working with AI agents, use these AI-safe BFF commands:
+
+- `bff ai status` - Check repository status
+- `bff ai diff` - View current changes
+- `bff ai log` - View commit history
+- `bff ai format` - Format code
+- `bff ai lint` - Run linting
+- `bff ai check` - Type check
+- `bff ai test` - Run tests
+- `bff ai precommit` - Stage files and run all checks
+- `bff ai ci-status` - Check CI status
+- `bff ai merge-stack_dry-run` - Preview stack merges
+
 ## Best practices
 
 1. **Review before committing**
-   - Use `sl status` to verify which files will be included
-   - Use `sl diff` to review the actual content changes
+   - Use `bff status` (or `bff ai status`) to verify which files will be
+     included
+   - Use `bff diff` (or `bff ai diff`) to review the actual content changes
    - Run `bff format` (or use `bff commit` which includes formatting)
    - Make sure to `sl add` new files and `sl remove` deleted files
 
