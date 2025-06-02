@@ -32,15 +32,7 @@ export async function testQuery(options: { query: string }) {
     contextValue: ctx,
   }) as {
     data: {
-      [key: string]: { [key: string]: string | boolean | null } | {
-        name?: string;
-        fields?: Array<
-          {
-            name: string;
-            type: { kind: string; name?: string; ofType?: { name: string } };
-          }
-        >;
-      };
+      [key: string]: unknown;
     };
     errors?: unknown;
   };

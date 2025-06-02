@@ -83,7 +83,7 @@ export async function setupE2ETest(options: {
     // Create screenshot function
     const takeScreenshot = async (name: string): Promise<string> => {
       const fileName = `${Date.now()}_${name.replace(/\s+/g, "-")}.png`;
-      const filePath = join(screenshotsDir, fileName);
+      const filePath = join(screenshotsDir, fileName) as `${string}.png`;
 
       try {
         await page.screenshot({ path: filePath, fullPage: true });
