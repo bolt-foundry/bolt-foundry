@@ -1881,6 +1881,16 @@
       "integrity": "sha512-/VI4mdlJ9zkaq53MbIG6rZY+QRN3MLbR6usYlgITEzi4Rpx5S6LFKsycOQjkOGmqTNmkIdLjEvooFKwww6OpdQ==",
       "dependencies": [
         "@emnapi/runtime@1.4.3"
+        "@emnapi/runtime@1.4.0"
+      ]
+    },
+    "@img/sharp-win32-arm64@0.34.2": {
+      "integrity": "sha512-cfP/r9FdS63VA5k0xiqaNaEoGxBg9k7uE+RQGzuK9fHt7jib4zAVVseR9LsE4gJcNWgT6APKMNnCcnyOtmSEUQ=="
+    },
+    "@img/sharp-wasm32@0.34.2": {
+      "integrity": "sha512-/VI4mdlJ9zkaq53MbIG6rZY+QRN3MLbR6usYlgITEzi4Rpx5S6LFKsycOQjkOGmqTNmkIdLjEvooFKwww6OpdQ==",
+      "dependencies": [
+        "@emnapi/runtime@1.4.3"
       ]
     },
     "@img/sharp-win32-arm64@0.34.2": {
@@ -5869,6 +5879,7 @@
       "integrity": "sha512-v4gYjd4eYIme8qzaJItpR5MMBXJ0/YV07u7eb50kEnlEmX7yhOjdUdzz70v4fiINYRjLf8X8TbogF0k7wlz6sA==",
       "dependencies": [
         "@next/eslint-plugin-next@15.2.4",
+        "@next/eslint-plugin-next@15.2.4",
         "@rushstack/eslint-patch",
         "@typescript-eslint/eslint-plugin@8.29.0_@typescript-eslint+parser@8.29.0__eslint@9.23.0__typescript@5.8.2_eslint@9.23.0_typescript@5.8.2",
         "@typescript-eslint/parser@8.29.0_eslint@9.23.0_typescript@5.8.2",
@@ -5887,6 +5898,25 @@
       "dependencies": [
         "@next/eslint-plugin-next@15.3.2",
         "@rushstack/eslint-patch",
+        "@typescript-eslint/eslint-plugin@8.29.0_@typescript-eslint+parser@8.29.0__eslint@9.23.0__typescript@5.8.2_eslint@9.23.0_typescript@5.8.2",
+        "@typescript-eslint/parser@8.29.0_eslint@9.23.0_typescript@5.8.2",
+        "eslint",
+        "eslint-import-resolver-node",
+        "eslint-import-resolver-typescript",
+        "eslint-plugin-import",
+        "eslint-plugin-jsx-a11y",
+        "eslint-plugin-react",
+        "eslint-plugin-react-hooks",
+        "typescript@5.6.3"
+      ]
+    },
+    "eslint-config-next@15.3.2_eslint@9.23.0_typescript@5.6.3_@typescript-eslint+parser@8.29.0__eslint@9.23.0__typescript@5.6.3_eslint-plugin-import@2.31.0__eslint@9.23.0": {
+      "integrity": "sha512-FerU4DYccO4FgeYFFglz0SnaKRe1ejXQrDb8kWUkTAg036YWi+jUsgg4sIGNCDhAsDITsZaL4MzBWKB6f4G1Dg==",
+      "dependencies": [
+        "@next/eslint-plugin-next@15.3.2",
+        "@rushstack/eslint-patch",
+        "@typescript-eslint/eslint-plugin@8.29.0_@typescript-eslint+parser@8.29.0__eslint@9.23.0__typescript@5.6.3_eslint@9.23.0_typescript@5.6.3",
+        "@typescript-eslint/parser@8.29.0_eslint@9.23.0_typescript@5.6.3",
         "@typescript-eslint/eslint-plugin@8.29.0_@typescript-eslint+parser@8.29.0__eslint@9.23.0__typescript@5.6.3_eslint@9.23.0_typescript@5.6.3",
         "@typescript-eslint/parser@8.29.0_eslint@9.23.0_typescript@5.6.3",
         "eslint",
