@@ -1,6 +1,7 @@
 import { GraphQLObjectBase } from "../graphql/GraphQLObjectBase.ts";
 import type { GqlNodeSpec } from "../builders/graphql/makeGqlSpec.ts";
 import { GraphQLInterface } from "../graphql/decorators.ts";
+import { BfErrorNodeNotFound } from "./BfErrorsBfNode.ts";
 
 /**
  * Base class for all GraphQL nodes that implement the Node interface.
@@ -32,6 +33,29 @@ export abstract class GraphQLNode extends GraphQLObjectBase {
 
   // We inherit __typename from GraphQLObjectBase, which is set to this.constructor.name
   // This is sufficient for type resolution
+
+  /**
+   * Find a node by some criteria, throwing BfErrorNodeNotFound if not found.
+   * Subclasses should implement this method.
+   */
+  static findX(..._args: unknown[]): Promise<GraphQLNode> {
+    throw new TypeError("findX method must be implemented by subclasses");
+  }
+
+  /**
+   * Find a node, returning null if not found.
+   * This method catches only BfErrorNodeNotFound and returns null, other errors are re-thrown.
+   */
+  static async find(...args: unknown[]): Promise<GraphQLNode | null> {
+    try {
+      return await this.findX(...args);
+    } catch (error) {
+      if (error instanceof BfErrorNodeNotFound) {
+        return null;
+      }
+      throw error;
+    }
+  }
 
   constructor() {
     super();
