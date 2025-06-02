@@ -2,9 +2,8 @@
 
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { ensureDir, exists } from "@std/fs";
-import { basename, dirname, extname, join } from "@std/path";
+import { basename, extname, join } from "@std/path";
 import { getLogger } from "packages/logger/logger.ts";
-import { compile } from "@mdx-js/mdx";
 
 const logger = getLogger(import.meta);
 
@@ -39,10 +38,8 @@ async function processDocsFiles() {
     }
   }
 
-  // Process each MDX file
-  for (const { slug, path } of mdxFiles) {
-    await processMdxFile(path, slug, docsOutputDir);
-  }
+  // Skip MDX processing for v0.1 - we're using runtime markdown rendering
+  logger.info("Skipping MDX build - using runtime markdown rendering for v0.1");
 
   // Sort mdxFiles for deterministic output
   mdxFiles.sort((a, b) => a.slug.localeCompare(b.slug));
@@ -51,35 +48,36 @@ async function processDocsFiles() {
   await generateImportMap(mdxFiles, generatedDir);
 }
 
-async function processMdxFile(
-  sourcePath: string,
-  slug: string,
-  outputDir: string,
-) {
-  try {
-    const content = await Deno.readTextFile(sourcePath);
-
-    // Compile MDX to JS as a complete program
-    const compiled = await compile(content, {
-      outputFormat: "program",
-      development: false,
-    });
-
-    // The compiled output is already a complete ES module
-    const moduleContent = String(compiled);
-
-    // Save as .js file so it can be imported
-    const destPath = join(outputDir, `${slug}.js`);
-    await ensureDir(dirname(destPath));
-
-    logger.info(`Compiling ${sourcePath} -> ${destPath}`);
-
-    await Deno.writeTextFile(destPath, moduleContent);
-  } catch (error) {
-    logger.error(`Error compiling ${sourcePath}: ${error}`);
-    throw error;
-  }
-}
+// Unused function - commented out for v0.1
+// async function processMdxFile(
+//   sourcePath: string,
+//   slug: string,
+//   outputDir: string,
+// ) {
+//   try {
+//     const content = await Deno.readTextFile(sourcePath);
+//
+//     // Compile MDX to JS as a complete program
+//     const compiled = await compile(content, {
+//       outputFormat: "program",
+//       development: false,
+//     });
+//
+//     // The compiled output is already a complete ES module
+//     const moduleContent = String(compiled);
+//
+//     // Save as .js file so it can be imported
+//     const destPath = join(outputDir, `${slug}.js`);
+//     await ensureDir(dirname(destPath));
+//
+//     logger.info(`Compiling ${sourcePath} -> ${destPath}`);
+//
+//     await Deno.writeTextFile(destPath, moduleContent);
+//   } catch (error) {
+//     logger.error(`Error compiling ${sourcePath}: ${error}`);
+//     throw error;
+//   }
+// }
 
 async function generateImportMap(
   mdxFiles: { slug: string; path: string }[],
