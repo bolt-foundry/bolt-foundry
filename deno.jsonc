@@ -81,7 +81,8 @@
   "lint": {
     "exclude": [
       "**/__generated__/**",
-      "examples/**"
+      "examples/**",
+      "apps/contacts/**"
     ],
     "plugins": ["./infra/lint/bolt-foundry.ts"],
 
