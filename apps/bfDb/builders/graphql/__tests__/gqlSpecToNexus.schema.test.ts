@@ -8,7 +8,7 @@ import { gqlSpecToNexus } from "../gqlSpecToNexus.ts";
  * These tests focus on the schema structure rather than resolver logic.
  */
 
-Deno.test("BfPerson exposes memberOf relationship to BfOrganization", () => {
+Deno.test("BfPerson exposes memberOf relationship to BfOrganization", async () => {
   const personSpec = makeGqlSpec((gql) =>
     gql
       .string("name")
@@ -20,7 +20,7 @@ Deno.test("BfPerson exposes memberOf relationship to BfOrganization", () => {
       )
   );
 
-  const result = gqlSpecToNexus(personSpec, "BfPerson");
+  const result = await gqlSpecToNexus(personSpec, "BfPerson");
 
   let hasRelation = false;
   const mockBuilder = {
@@ -29,8 +29,8 @@ Deno.test("BfPerson exposes memberOf relationship to BfOrganization", () => {
         hasRelation = true;
         assertEquals(
           config.type,
-          "BfPerson_memberOf_BfOrganization", // Use pattern SourceType_RelationName_TargetType for uniqueness
-          "Relation should use source and target type names in the relationship type name",
+          "BfOrganization", // Field type should be the target type
+          "Relation should use target type name as the field type",
         );
       }
       return mockBuilder;
@@ -41,7 +41,7 @@ Deno.test("BfPerson exposes memberOf relationship to BfOrganization", () => {
   assert(hasRelation, "The schema should expose the memberOf relationship");
 });
 
-Deno.test("Nexus schema correctly maps edge relationship configuration", () => {
+Deno.test("Nexus schema correctly maps edge relationship configuration", async () => {
   // This tests the basic structure mapping, not the resolver logic
   const personSpec = makeGqlSpec((gql) =>
     gql
@@ -53,7 +53,7 @@ Deno.test("Nexus schema correctly maps edge relationship configuration", () => {
       )
   );
 
-  const result = gqlSpecToNexus(personSpec, "BfPerson");
+  const result = await gqlSpecToNexus(personSpec, "BfPerson");
 
   // Extract the definition function for testing
   const definitionFn = result.mainType.definition;
@@ -74,8 +74,8 @@ Deno.test("Nexus schema correctly maps edge relationship configuration", () => {
   assert(fields.memberOf, "The memberOf field should be defined");
   assertEquals(
     fields.memberOf.type,
-    "BfPerson_memberOf_BfOrganization", // Use pattern SourceType_RelationName_TargetType for uniqueness
-    "Should use source and target type names in the relationship type name",
+    "BfOrganization", // Field type should be the target type
+    "Should use target type name as the field type",
   );
   assert(
     typeof fields.memberOf.resolve === "function",

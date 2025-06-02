@@ -7,17 +7,20 @@ const _logger = getLogger(import.meta);
 
 export const Docs = iso(`
   field Query.Docs($slug: String!) @component {
-    documentsBySlug(slug: $slug)
+    documentsBySlug(slug: $slug) {
+      id
+      content
+    }
   }
 `)(function Docs({ data }) {
-  const markdownContent = data.documentsBySlug;
+  const blogPost = data.documentsBySlug;
 
-  if (!markdownContent) {
+  if (!blogPost) {
     return <PageError error={new Error(`Documentation page not found`)} />;
   }
 
   // Convert markdown to HTML
-  const htmlContent = marked(markdownContent) as string;
+  const htmlContent = marked(blogPost.content) as string;
 
   return (
     <div className="docs-container max-w-4xl mx-auto px-4 py-8">
