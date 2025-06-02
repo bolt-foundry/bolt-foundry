@@ -3,9 +3,24 @@
 ### Do not make changes to this file directly
 
 
+type BfEdge {
+  id: ID!
+}
+
 """Base interface for all Bolt Foundry database nodes"""
 interface BfNode {
   id: ID!
+}
+
+type BfOrganization {
+  domain: String
+  name: String
+}
+
+type BfPerson {
+  email: String
+  memberOf: BfOrganization
+  name: String
 }
 
 type JoinWaitlistPayload {
@@ -22,8 +37,13 @@ interface Node {
   id: ID!
 }
 
+type PublishedDocument {
+  content: String!
+  id: ID!
+}
+
 type Query {
-  documentsBySlug(slug: String!): String
+  documentsBySlug(slug: String!): PublishedDocument
   ok: Boolean
 }
 
