@@ -23,6 +23,7 @@ interface Node {
 }
 
 type Query {
+  documentsBySlug(slug: String!): String
   ok: Boolean
 }
 
