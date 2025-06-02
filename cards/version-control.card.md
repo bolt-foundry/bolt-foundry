@@ -58,11 +58,13 @@ submission:
 - `bff precommit` - Stage files and run pre-commit checks (AI-safe)
 
 **Note:** By default, `bff commit` will:
+
 1. Run pre-commit checks (format, lint, type check)
 2. Create the commit
 3. Submit a pull request
 
 When to modify default behavior:
+
 - Use `--skip-pre-check` when:
   - You're committing generated files that might not pass linting
   - You're in the middle of a refactor and need to save progress
@@ -192,7 +194,8 @@ When working with AI agents, use these AI-safe BFF commands:
 ## Best practices
 
 1. **Review before committing**
-   - Use `bff status` (or `bff ai status`) to verify which files will be included
+   - Use `bff status` (or `bff ai status`) to verify which files will be
+     included
    - Use `bff diff` (or `bff ai diff`) to review the actual content changes
    - Run `bff format` (or use `bff commit` which includes formatting)
    - Make sure to `sl add` new files and `sl remove` deleted files
