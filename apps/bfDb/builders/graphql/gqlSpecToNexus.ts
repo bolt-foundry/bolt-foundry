@@ -401,11 +401,45 @@ function determineInterface(
  * @param options Optional parameters for interface implementation
  * @returns Nexus compatible type definitions for main type and mutation type
  */
-export function gqlSpecToNexus(
+export async function gqlSpecToNexus(
   spec: GqlNodeSpec,
   typeName: string,
   options?: GqlSpecToNexusOptions,
 ) {
+  // Pre-process relations to resolve thunks
+  for (const [relationName, relationDef] of Object.entries(spec.relations)) {
+    const relation = relationDef as GqlRelationDef;
+
+    if (relation._targetThunk && relation._pendingTypeResolution !== false) {
+      try {
+        // Evaluate the thunk to get the target constructor
+        const targetResult = await Promise.resolve(relation._targetThunk());
+
+        // Extract the class name from the constructor
+        const targetClassName = targetResult?.name;
+
+        if (!targetClassName) {
+          logger.warn(
+            `Thunk for ${typeName}.${relationName} returned a value without a name property`,
+          );
+          relation.type = `UnresolvedType_${typeName}_${relationName}`;
+        } else {
+          // Use the actual GraphQL type name
+          relation.type = targetClassName;
+        }
+      } catch (error) {
+        // If thunk evaluation fails, provide a descriptive error type
+        logger.warn(
+          `Failed to resolve target type for ${typeName}.${relationName}:`,
+          error,
+        );
+        relation.type = `FailedToResolveType_${typeName}_${relationName}`;
+      }
+
+      // Mark as resolved so we don't try again
+      relation._pendingTypeResolution = false;
+    }
+  }
   // Get interface this type should implement (only the first one from the array)
   const interfaceName = determineInterface(options);
 
@@ -448,23 +482,16 @@ export function gqlSpecToNexus(
         // Check if we have a thunk function for the target type
         // This is used for the newer thunk-style: .object("memberOf", () => BfOrganization)
         if (relation._targetThunk) {
-          // For thunk-style, we might need to determine the type name at runtime
-          // In GraphQL, we normally already know the type name at build time,
-          // but in some cases we might need to dynamically resolve it
-          // (e.g., with circular references)
-
-          // The current implementation doesn't require resolving the thunk at schema build time
-          // We'll use the function at runtime in the resolver if needed
-          // We're keeping this future-proof in case we need to do more with the thunk later
+          // The thunk should have been resolved in pre-processing
           relation._hasThunkFn = true;
 
-          // Derive a more specific type name using source_relation_target pattern to prevent collisions
-          // Format: SourceType_RelationName_TargetType (e.g., BfPerson_memberOf_BfOrganization)
-          // Extract target class name from the thunk function if possible
-          const targetClassName =
-            relation._targetThunk.toString().match(/class\s+(\w+)/)?.[1] ||
-            "Unknown";
-          relation.type = `${typeName}_${relationName}_${targetClassName}`;
+          // If type is still pending, something went wrong
+          if (!relation.type || relation.type.startsWith("PENDING_")) {
+            logger.warn(
+              `Type resolution failed for ${typeName}.${relationName}`,
+            );
+            relation.type = `UnresolvedType_${typeName}_${relationName}`;
+          }
         }
 
         // Determine if this is an edge relationship

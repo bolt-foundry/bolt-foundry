@@ -6,12 +6,12 @@ import { gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
 import { Waitlist } from "apps/bfDb/graphql/roots/Waitlist.ts";
 import { printSchema } from "graphql";
 
-Deno.test("basic mutation with returns builder", () => {
+Deno.test("basic mutation with returns builder", async () => {
   // Get the spec from Waitlist
   const spec = Waitlist.gqlSpec;
 
   // Convert to nexus types
-  const nexusTypes = gqlSpecToNexus(spec, "Waitlist");
+  const nexusTypes = await gqlSpecToNexus(spec, "Waitlist");
 
   // Create types individually to debug
   const types = [];
