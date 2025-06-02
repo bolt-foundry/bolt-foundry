@@ -1,5 +1,17 @@
+/**
+ * GraphQL Field Builder
+ *
+ * Provides a type-safe fluent API for defining GraphQL object fields.
+ * Supports scalar types, object relationships, and mutation definitions.
+ *
+ * CURRENT LIMITATIONS:
+ * - List/Array types are NOT yet supported. You cannot define fields that return
+ *   arrays like [String], [Int], or [CustomType].
+ * - Connection types (Relay-style pagination) are NOT yet implemented.
+ * - For now, use custom object relationships with manual pagination logic if needed.
+ */
+
 import type { GraphQLResolveInfo } from "graphql";
-import type { Connection, ConnectionArguments } from "graphql-relay";
 import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
 import type { AnyBfNodeCtor } from "apps/bfDb/builders/bfDb/types.ts";
 import { type ArgsBuilder, makeArgBuilder } from "./makeArgBuilder.ts";
@@ -153,19 +165,6 @@ export interface GqlBuilder<
     },
   ): GqlBuilder<R>;
 
-  connection<N extends keyof R & string>(
-    name: N,
-    opts?: {
-      additionalArgs?: (ab: ArgsBuilder) => ArgsBuilder;
-      resolve?: (
-        root: ThisNode,
-        args: ConnectionArguments & GraphQLResolverArgs,
-        ctx: BfGraphqlContext,
-        info: GraphQLResolveInfo,
-      ) => MaybePromise<Connection<ThisNode>>;
-    },
-  ): GqlBuilder<R>;
-
   mutation<
     N extends string,
     ReturnType extends Record<string, unknown> = Record<string, unknown>,
@@ -292,11 +291,6 @@ export function makeGqlBuilder<
       return builder;
     },
 
-    connection(_name, _opts = {}) {
-      // Stub for connection implementation - will be expanded later
-      return builder;
-    },
-
     mutation(name, opts) {
       // Create the argument builder function
       const argFn = makeArgBuilder();
@@ -386,7 +380,6 @@ export function makeGqlBuilder<
         },
 
         object: builder.object,
-        connection: builder.connection,
         mutation: builder.mutation,
         _spec: builder._spec,
       };

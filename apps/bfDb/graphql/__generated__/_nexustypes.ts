@@ -43,6 +43,10 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  BfEdge: {};
+  BfOrganization: {};
+  BfPerson: {};
+  BlogPost: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
     success: boolean; // Boolean!
@@ -65,6 +69,22 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  BfEdge: { // field return type
+    id: string; // ID!
+  }
+  BfOrganization: { // field return type
+    domain: string | null; // String
+    name: string | null; // String
+  }
+  BfPerson: { // field return type
+    email: string | null; // String
+    memberOf: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
+    name: string | null; // String
+  }
+  BlogPost: { // field return type
+    content: string; // String!
+    id: string; // ID!
+  }
   JoinWaitlistPayload: { // field return type
     message: string | null; // String
     success: boolean; // Boolean!
@@ -88,6 +108,22 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  BfEdge: { // field return type name
+    id: 'ID'
+  }
+  BfOrganization: { // field return type name
+    domain: 'String'
+    name: 'String'
+  }
+  BfPerson: { // field return type name
+    email: 'String'
+    memberOf: 'BfOrganization'
+    name: 'String'
+  }
+  BlogPost: { // field return type name
+    content: 'String'
+    id: 'ID'
+  }
   JoinWaitlistPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
