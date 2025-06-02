@@ -529,4 +529,6 @@ register(
   "build",
   "Builds the current project. Use --debug to show memory and system stats, --slow-exit to wait on failure.",
   build,
+  [],
+  true, // Mark as AI-safe
 );
