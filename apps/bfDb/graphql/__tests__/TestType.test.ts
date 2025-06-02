@@ -11,13 +11,13 @@ import { loadGqlTypes } from "../loadGqlTypes.ts";
 import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
-function buildTestSchema(): string {
-  const schema = makeSchema({ types: loadGqlTypes() });
+async function buildTestSchema(): Promise<string> {
+  const schema = makeSchema({ types: await loadGqlTypes() });
   return printSchema(schema);
 }
 
-Deno.test("graphqlServer schema includes health check", () => {
-  const sdl = buildTestSchema();
+Deno.test("graphqlServer schema includes health check", async () => {
+  const sdl = await buildTestSchema();
   logger.debug("Generated SDL:", sdl);
 
   // Verify ok field is present

@@ -9,8 +9,8 @@
 import { assert } from "@std/assert";
 import { loadGqlTypes } from "../loadGqlTypes.ts";
 
-Deno.test("loadGqlTypes returns an array of GraphQL types", () => {
-  const types = loadGqlTypes();
+Deno.test("loadGqlTypes returns an array of GraphQL types", async () => {
+  const types = await loadGqlTypes();
 
   assert(Array.isArray(types), "loadGqlTypes should return an array");
   assert(types.length > 0, "loadGqlTypes should return at least one type");
@@ -24,8 +24,8 @@ Deno.test("loadGqlTypes returns an array of GraphQL types", () => {
   }
 });
 
-Deno.test("loadGqlTypes includes types for the Node interface", () => {
-  const types = loadGqlTypes();
+Deno.test("loadGqlTypes includes types for the Node interface", async () => {
+  const types = await loadGqlTypes();
 
   // Since we can't easily inspect the internal properties of Nexus types,
   // we'll just verify that the array contains the expected number of types

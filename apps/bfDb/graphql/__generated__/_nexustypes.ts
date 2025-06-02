@@ -43,11 +43,15 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  BfEdge: {};
+  BfOrganization: {};
+  BfPerson: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
     success: boolean; // Boolean!
   }
   Mutation: {};
+  PublishedDocument: {};
   Query: {};
   Waitlist: {};
 }
@@ -65,6 +69,18 @@ export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  BfEdge: { // field return type
+    id: string; // ID!
+  }
+  BfOrganization: { // field return type
+    domain: string | null; // String
+    name: string | null; // String
+  }
+  BfPerson: { // field return type
+    email: string | null; // String
+    memberOf: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
+    name: string | null; // String
+  }
   JoinWaitlistPayload: { // field return type
     message: string | null; // String
     success: boolean; // Boolean!
@@ -72,8 +88,12 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
   }
+  PublishedDocument: { // field return type
+    content: string; // String!
+    id: string; // ID!
+  }
   Query: { // field return type
-    documentsBySlug: string | null; // String
+    documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
     ok: boolean | null; // Boolean
   }
   Waitlist: { // field return type
@@ -88,6 +108,18 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  BfEdge: { // field return type name
+    id: 'ID'
+  }
+  BfOrganization: { // field return type name
+    domain: 'String'
+    name: 'String'
+  }
+  BfPerson: { // field return type name
+    email: 'String'
+    memberOf: 'BfOrganization'
+    name: 'String'
+  }
   JoinWaitlistPayload: { // field return type name
     message: 'String'
     success: 'Boolean'
@@ -95,8 +127,12 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     joinWaitlist: 'JoinWaitlistPayload'
   }
+  PublishedDocument: { // field return type name
+    content: 'String'
+    id: 'ID'
+  }
   Query: { // field return type name
-    documentsBySlug: 'String'
+    documentsBySlug: 'PublishedDocument'
     ok: 'Boolean'
   }
   Waitlist: { // field return type name
