@@ -81,7 +81,8 @@
   "lint": {
     "exclude": [
       "**/__generated__/**",
-      "examples/**"
+      "examples/**",
+      "apps/contacts/**"
     ],
     "plugins": ["./infra/lint/bolt-foundry.ts"],
 
@@ -117,11 +118,7 @@
   "workspace": [
     "packages/bolt-foundry",
     "packages/logger",
-    "packages/get-configuration-var",
-    "examples/nextjs-sample",
-    "apps/contacts",
-    "examples/nextjs-justin"
+    "packages/get-configuration-var"
   ],
-  "nodeModulesDir": "manual",
   "vendor": true
 }

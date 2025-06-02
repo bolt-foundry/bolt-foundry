@@ -8,12 +8,12 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-Deno.test("debug Waitlist type generation", () => {
+Deno.test("debug Waitlist type generation", async () => {
   try {
     const waitlistSpec = Waitlist.gqlSpec;
     logger.debug("Waitlist spec:", JSON.stringify(waitlistSpec, null, 2));
 
-    const waitlistNexusTypes = gqlSpecToNexus(waitlistSpec, "Waitlist");
+    const waitlistNexusTypes = await gqlSpecToNexus(waitlistSpec, "Waitlist");
     logger.debug("Nexus types keys:", Object.keys(waitlistNexusTypes));
     logger.debug(
       "Main type:",
