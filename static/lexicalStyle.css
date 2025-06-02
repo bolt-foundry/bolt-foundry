@@ -13,7 +13,7 @@
 }
 
 .editor-text-highlighted {
-  background-color: yellow;
+  background-color: #ffd700;
 }
 
 /* Custom node styles */
@@ -23,7 +23,7 @@
 }
 
 [data-lexical-node="underlined"][data-highlighted="true"] {
-  background-color: yellow;
+  background-color: #ffd700;
 }
 
 body {
