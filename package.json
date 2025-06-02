@@ -37,7 +37,7 @@
     "lexical": "0.27.2",
     "loglevel": "^1.9.2",
     "loglevel-plugin-prefix": "^0.8.4",
-    "marked": "^15.0.7",
+    "marked": "12.0.0",
     "matter-js": "^0.20.0",
     "nexus": "^1.3.0",
     "notebookjs": "^0.8.3",
