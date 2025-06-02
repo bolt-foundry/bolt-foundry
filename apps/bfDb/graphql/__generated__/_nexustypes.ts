@@ -52,8 +52,13 @@ export interface NexusGenObjects {
     success: boolean; // Boolean!
   }
   Mutation: {};
+  Newsletter: {};
   PublishedDocument: {};
   Query: {};
+  SubscribeToNewsletterPayload: { // root type
+    message?: string | null; // String
+    success: boolean; // Boolean!
+  }
   Waitlist: {};
 }
 
@@ -92,6 +97,10 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
+    subscribeToNewsletter: NexusGenRootTypes['SubscribeToNewsletterPayload'] | null; // SubscribeToNewsletterPayload
+  }
+  Newsletter: { // field return type
+    id: string | null; // ID
   }
   PublishedDocument: { // field return type
     content: string; // String!
@@ -101,6 +110,10 @@ export interface NexusGenFieldTypes {
     documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
     githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
     ok: boolean | null; // Boolean
+  }
+  SubscribeToNewsletterPayload: { // field return type
+    message: string | null; // String
+    success: boolean; // Boolean!
   }
   Waitlist: { // field return type
     id: string | null; // ID
@@ -136,6 +149,10 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     joinWaitlist: 'JoinWaitlistPayload'
+    subscribeToNewsletter: 'SubscribeToNewsletterPayload'
+  }
+  Newsletter: { // field return type name
+    id: 'ID'
   }
   PublishedDocument: { // field return type name
     content: 'String'
@@ -145,6 +162,10 @@ export interface NexusGenFieldTypeNames {
     documentsBySlug: 'PublishedDocument'
     githubRepoStats: 'GithubRepoStats'
     ok: 'Boolean'
+  }
+  SubscribeToNewsletterPayload: { // field return type name
+    message: 'String'
+    success: 'Boolean'
   }
   Waitlist: { // field return type name
     id: 'ID'
@@ -163,6 +184,9 @@ export interface NexusGenArgTypes {
       company: string; // String!
       email: string; // String!
       name: string; // String!
+    }
+    subscribeToNewsletter: { // args
+      email: string; // String!
     }
   }
   Query: {
