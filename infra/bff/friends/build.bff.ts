@@ -470,13 +470,7 @@ export async function build(args: Array<string>): Promise<number> {
     return routesBuildResult;
   }
 
-  if (debug) logMemoryUsage("before content build");
-  const contentResult = await sh("./infra/appBuild/contentBuild.ts");
-  if (debug) logMemoryUsage("after content build");
-
-  if (contentResult !== 0) {
-    return contentResult;
-  }
+  // Content build removed for v0.1 - using runtime markdown rendering instead
 
   if (debug) logMemoryUsage("before graphql types");
   const result = await runShellCommand(["bff", "genGqlTypes"]);
