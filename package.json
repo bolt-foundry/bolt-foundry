@@ -14,7 +14,6 @@
     "@mdx-js/mdx": "^3.1.0",
     "@neondatabase/serverless": "^0.10.4",
     "@notionhq/client": "^2.3.0",
-    "@openai/codex": "^0.1.2505161800",
     "@replit/extensions": "^1.10.0",
     "@replit/object-storage": "^1.0.0",
     "@simplewebauthn/browser": "^13.1.0",
