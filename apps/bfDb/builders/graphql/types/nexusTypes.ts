@@ -59,6 +59,7 @@ export interface GqlRelationDef {
   // deno-lint-ignore no-explicit-any
   _targetThunk?: () => any;
   _hasThunkFn?: boolean;
+  _pendingTypeResolution?: boolean;
 }
 
 /**

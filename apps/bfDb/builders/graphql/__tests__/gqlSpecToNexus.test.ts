@@ -38,7 +38,7 @@ function _createTestSpec() {
   );
 }
 
-Deno.test("gqlSpecToNexus converts scalar fields correctly", () => {
+Deno.test("gqlSpecToNexus converts scalar fields correctly", async () => {
   // Create a simple spec with scalar fields
   const spec = makeGqlSpec((gql) =>
     gql
@@ -48,7 +48,7 @@ Deno.test("gqlSpecToNexus converts scalar fields correctly", () => {
   );
 
   // Convert to Nexus types
-  const result = gqlSpecToNexus(spec, "TestType");
+  const result = await gqlSpecToNexus(spec, "TestType");
 
   // Ensure the main type is an objectType
   assert(
@@ -90,12 +90,12 @@ Deno.test("gqlSpecToNexus converts scalar fields correctly", () => {
   result.mainType.definition(mockBuilder as NexusBuilder);
 });
 
-Deno.test("gqlSpecToNexus handles nonNull fields", () => {
+Deno.test("gqlSpecToNexus handles nonNull fields", async () => {
   // Create a spec with nonNull fields
   const spec = makeGqlSpec((gql) => gql.nonNull.string("requiredField"));
 
   // Convert to Nexus types
-  const result = gqlSpecToNexus(spec, "NonNullTest");
+  const result = await gqlSpecToNexus(spec, "NonNullTest");
 
   // Check definition with mock builder
   let wasNonNull = false;
@@ -121,7 +121,7 @@ Deno.test("gqlSpecToNexus handles nonNull fields", () => {
   assert(wasNonNull, "nonNull field should be converted correctly");
 });
 
-Deno.test("gqlSpecToNexus creates mutation fields", () => {
+Deno.test("gqlSpecToNexus creates mutation fields", async () => {
   // Create a spec with a mutation
   const spec = makeGqlSpec((gql) =>
     gql.mutation("createItem", {
@@ -132,7 +132,7 @@ Deno.test("gqlSpecToNexus creates mutation fields", () => {
   );
 
   // Convert to Nexus types
-  const result = gqlSpecToNexus(spec, "MutationTest");
+  const result = await gqlSpecToNexus(spec, "MutationTest");
 
   // Mutation type should exist
   assert(result.mutationType, "Should create a mutation type");
@@ -186,12 +186,12 @@ Deno.test("gqlSpecToNexus creates mutation fields", () => {
   assert(foundMutation, "Should define the mutation field");
 });
 
-Deno.test("gqlSpecToNexus includes default resolvers for fields", () => {
+Deno.test("gqlSpecToNexus includes default resolvers for fields", async () => {
   // Create spec with no custom resolvers
   const spec = makeGqlSpec((gql) => gql.string("autoResolved"));
 
   // Convert to Nexus types
-  const result = gqlSpecToNexus(spec, "ResolverTest");
+  const result = await gqlSpecToNexus(spec, "ResolverTest");
 
   // Check that default resolver is included
   let hasResolver = false;
@@ -213,7 +213,7 @@ Deno.test("gqlSpecToNexus default resolver uses fallback chain", async () => {
   const spec = makeGqlSpec((gql) => gql.string("field"));
 
   // Convert to Nexus types
-  const result = gqlSpecToNexus(spec, "FallbackTest");
+  const result = await gqlSpecToNexus(spec, "FallbackTest");
 
   // Extract resolver for testing
   type ResolverFn = (

@@ -8,6 +8,7 @@
 import { extendType, objectType } from "nexus";
 import { gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
 import * as rootsModule from "apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts";
+import * as nodeTypesModule from "apps/bfDb/models/__generated__/nodeTypesList.ts";
 // Import the loadInterfaces function to register GraphQL interfaces
 import { loadInterfaces } from "apps/bfDb/graphql/graphqlInterfaces.ts";
 // Import the correct type for GraphQL object constructors
@@ -15,12 +16,13 @@ import type { AnyGraphqlObjectBaseCtor } from "apps/bfDb/builders/bfDb/types.ts"
 // Interface classes are automatically loaded via the barrel file in __generated__/interfacesList.ts
 
 const roots = Object.values(rootsModule);
+const nodeTypes = Object.values(nodeTypesModule);
 
 /**
  * Loads GraphQL types using our new builder pattern.
  * This will eventually load all node types in the system.
  */
-export function loadGqlTypes() {
+export async function loadGqlTypes() {
   const types = [];
   const payloadTypeObjects: Record<string, unknown> = {};
   const mutationTypes = [];
@@ -31,13 +33,48 @@ export function loadGqlTypes() {
   // The decorator-based approach for interface implementation will
   // automatically detect classes that extend a decorated parent class
 
+  // Process all node types first (they can be referenced by roots)
+  for (const nodeType of nodeTypes) {
+    // Skip if it's not a class with gqlSpec
+    if (!nodeType.gqlSpec || typeof nodeType !== "function") continue;
+
+    const nodeSpec = nodeType.gqlSpec;
+    const nodeName = nodeType.name;
+
+    const nexusTypes = await gqlSpecToNexus(nodeSpec, nodeName, {
+      classType: nodeType as AnyGraphqlObjectBaseCtor,
+    });
+
+    const mainType = objectType(nexusTypes.mainType);
+    types.push(mainType);
+
+    // Process payload types if they exist
+    if (nexusTypes.payloadTypes) {
+      for (
+        const [typeName, typeDef] of Object.entries(
+          nexusTypes.payloadTypes,
+        )
+      ) {
+        payloadTypeObjects[typeName] = objectType(
+          typeDef as Parameters<typeof objectType>[0],
+        );
+      }
+    }
+
+    // Create the mutation type if it exists
+    if (nexusTypes.mutationType) {
+      const mutationType = extendType(nexusTypes.mutationType);
+      mutationTypes.push(mutationType);
+    }
+  }
+
   // Process each root object
   for (const root of roots) {
     const rootSpec = root.gqlSpec;
     const rootName = root.name;
 
     // Use our improved gqlSpecToNexus with class type for interface detection
-    const nexusTypes = gqlSpecToNexus(rootSpec, rootName, {
+    const nexusTypes = await gqlSpecToNexus(rootSpec, rootName, {
       // Pass the class constructor for automatic parent interface detection
       classType: root as AnyGraphqlObjectBaseCtor,
     });

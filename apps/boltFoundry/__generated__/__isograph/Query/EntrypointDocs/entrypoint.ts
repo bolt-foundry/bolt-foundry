@@ -5,20 +5,36 @@ import readerResolver from './resolver_reader.ts';
 const nestedRefetchQueries: RefetchQueryNormalizationArtifactWrapper[] = [];
 
 const queryText = 'query EntrypointDocs ($slug: String!) {\
-  documentsBySlug____slug___v_slug: documentsBySlug(slug: $slug),\
+  documentsBySlug____slug___v_slug: documentsBySlug(slug: $slug) {\
+    id,\
+    content,\
+  },\
 }';
 
 const normalizationAst: NormalizationAst = {
   kind: "NormalizationAst",
   selections: [
     {
-      kind: "Scalar",
+      kind: "Linked",
       fieldName: "documentsBySlug",
       arguments: [
         [
           "slug",
           { kind: "Variable", name: "slug" },
         ],
+      ],
+      concreteType: "PublishedDocument",
+      selections: [
+        {
+          kind: "Scalar",
+          fieldName: "id",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
+          fieldName: "content",
+          arguments: null,
+        },
       ],
     },
   ],
