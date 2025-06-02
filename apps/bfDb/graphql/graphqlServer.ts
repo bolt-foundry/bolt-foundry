@@ -14,9 +14,9 @@ const _logger = getLogger(import.meta);
 import type { makeGqlSpec as _makeGqlSpec } from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
 import type { gqlSpecToNexus as _gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
 import { generateGqlTypes } from "infra/bff/friends/genGqlTypes.bff.ts";
-import { schemaOptions } from "./schemaConfig.ts";
+import { getSchemaOptions } from "./schemaConfig.ts";
 
-export const schema = makeSchema(schemaOptions);
+export const schema = await makeSchema(await getSchemaOptions());
 
 // Create a Yoga instance with a GraphQL schema.
 export const yoga = createYoga({ schema });
@@ -33,5 +33,5 @@ export const graphQLHandler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  generateGqlTypes();
+  await generateGqlTypes();
 }

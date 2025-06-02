@@ -3,11 +3,12 @@
 import { register } from "infra/bff/bff.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { makeSchema } from "nexus";
-import { schemaOptions } from "apps/bfDb/graphql/schemaConfig.ts";
+import { getSchemaOptions } from "apps/bfDb/graphql/schemaConfig.ts";
 
 const logger = getLogger(import.meta);
 
-export function generateGqlTypes() {
+export async function generateGqlTypes() {
+  const schemaOptions = await getSchemaOptions();
   makeSchema({
     ...schemaOptions,
     types: { ...schemaOptions.types },
@@ -39,10 +40,10 @@ export function generateGqlTypes() {
   });
 }
 
-export function genGqlTypes(_: string[]): number {
+export async function genGqlTypes(_: string[]): Promise<number> {
   try {
     logger.info("Generating GraphQL schema and types...");
-    generateGqlTypes();
+    await generateGqlTypes();
     logger.info("✅ GraphQL types generated");
     return 0;
   } catch (err) {

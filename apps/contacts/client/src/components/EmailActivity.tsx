@@ -10,7 +10,7 @@ interface EmailActivityProps {
 export function EmailActivity({ contacts }: EmailActivityProps) {
   // Get recent contacted contacts (last 5)
   // Get recently emailed contacts by looking at timestamps
-const recentlyContacted = [...contacts]
+  const recentlyContacted = [...contacts]
     .filter((contact) => contact.contacted && contact.emailSentAt)
     .sort((a, b) => {
       const bTime = b.emailSentAt ? new Date(b.emailSentAt).getTime() : 0;

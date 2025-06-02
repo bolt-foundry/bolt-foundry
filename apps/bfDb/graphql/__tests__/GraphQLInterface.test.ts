@@ -83,7 +83,7 @@ Deno.test("GraphQLInterface decorator adds metadata to class", () => {
   );
 });
 
-Deno.test("determineInterface detects parent classes with @GraphQLInterface", () => {
+Deno.test("determineInterface detects parent classes with @GraphQLInterface", async () => {
   // Get interface types
   const interfaces = loadInterfaces();
 
@@ -94,13 +94,17 @@ Deno.test("determineInterface detects parent classes with @GraphQLInterface", ()
 
   // Process TestGraphQLNode with gqlSpecToNexus
   const testNodeSpec = TestGraphQLNode.gqlSpec;
-  const testNodeNexusTypes = gqlSpecToNexus(testNodeSpec, "TestGraphQLNode", {
-    classType: TestGraphQLNode,
-  });
+  const testNodeNexusTypes = await gqlSpecToNexus(
+    testNodeSpec,
+    "TestGraphQLNode",
+    {
+      classType: TestGraphQLNode,
+    },
+  );
 
   // Process test implementation with gqlSpecToNexus
   const implementationSpec = TestImplementation.gqlSpec;
-  const implementationNexusTypes = gqlSpecToNexus(
+  const implementationNexusTypes = await gqlSpecToNexus(
     implementationSpec,
     "TestImplementation",
     {
