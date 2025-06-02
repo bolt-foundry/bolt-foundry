@@ -69,6 +69,7 @@ patterns. This should give readers the "why" behind technical choices.
 - Keep prose sections conceptual and high-level
 - Include both goals and anti-goals for clarity
 - Let tests and scaffolding inform plan updates
+- Plan for test-driven development - consider testability early
 
 ### Don't:
 
@@ -81,11 +82,15 @@ patterns. This should give readers the "why" behind technical choices.
 ## Evolution Cycle
 
 1. **Initial Draft**: Basic goals and approach
-2. **Test Creation**: Implementation plan guides test writing
+2. **Test Creation**: Implementation plan guides test writing (following TDD
+   workflow)
 3. **Scaffolding**: Create minimal structure based on plan
 4. **Discovery**: Update plan with technical findings
 5. **Iteration**: Repeat steps 2-4 until complete
 6. **Completion**: Mine for user-facing documentation
+
+The test creation and scaffolding phases follow our Test-Driven Development
+workflow - see [testing.card.md](./testing.card.md) for detailed TDD practices.
 
 ## Completion
 

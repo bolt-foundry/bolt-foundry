@@ -29,4 +29,12 @@ await build({
       url: "git+https://github.com/bolt-foundry/bolt-foundry.git",
     },
   },
+  postBuild() {
+    // Copy README.md to the npm package
+    const readmePath = import.meta.resolve("../README.md").replace(
+      "file://",
+      "",
+    );
+    Deno.copyFileSync(readmePath, `${outDir}/README.md`);
+  },
 });

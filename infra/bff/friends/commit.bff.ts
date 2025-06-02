@@ -3,10 +3,68 @@
 // ./infra/bff/friends/commit.bff.ts
 
 import { register } from "infra/bff/bff.ts";
-import { runShellCommand } from "infra/bff/shellBase.ts";
+import {
+  runShellCommand,
+  runShellCommandWithOutput,
+} from "infra/bff/shellBase.ts";
 import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
+
+/**
+ * Stage all untracked files and remove missing files
+ */
+async function stageAllFiles(): Promise<number> {
+  // Get status to find unknown and missing files
+  const { stdout: statusOutput, code: statusCode } =
+    await runShellCommandWithOutput(["sl", "status"]);
+
+  if (statusCode !== 0) {
+    logger.error("Failed to get repository status");
+    return statusCode;
+  }
+
+  const lines = statusOutput.split("\n").filter((line) => line.trim());
+  const unknownFiles: string[] = [];
+  const missingFiles: string[] = [];
+
+  for (const line of lines) {
+    const status = line.charAt(0);
+    const file = line.slice(2); // Skip status character and space
+
+    if (status === "?") {
+      unknownFiles.push(file);
+    } else if (status === "!") {
+      missingFiles.push(file);
+    }
+  }
+
+  // Add unknown files
+  if (unknownFiles.length > 0) {
+    logger.info(`Adding ${unknownFiles.length} unknown files...`);
+    for (const file of unknownFiles) {
+      const result = await runShellCommand(["sl", "add", file]);
+      if (result !== 0) {
+        logger.error(`Failed to add ${file}`);
+        return result;
+      }
+    }
+  }
+
+  // Remove missing files
+  if (missingFiles.length > 0) {
+    logger.info(`Removing ${missingFiles.length} missing files...`);
+    for (const file of missingFiles) {
+      const result = await runShellCommand(["sl", "remove", file]);
+      if (result !== 0) {
+        logger.error(`Failed to remove ${file}`);
+        return result;
+      }
+    }
+  }
+
+  return 0;
+}
 
 /**
  * Run the standard precommit checks (format, lint, type checking)
@@ -47,9 +105,9 @@ export async function commit(args: string[]): Promise<number> {
   let commitMessage = "";
   const filesToCommit: string[] = [];
   let runPreCheck = true; // Default to true - run pre-checks by default
-  let submitPR = false;
+  let submitPR = true; // Default to true - submit PR by default
 
-  // Parse arguments - look for -m flag, --skip-pre-check flag, and --submit flag
+  // Parse arguments - look for -m flag, --skip-pre-check flag, and --no-submit flag
   const skipIndices = new Set<number>();
 
   for (let i = 0; i < args.length; i++) {
@@ -60,8 +118,8 @@ export async function commit(args: string[]): Promise<number> {
     } else if (args[i] === "--skip-pre-check") {
       runPreCheck = false;
       skipIndices.add(i);
-    } else if (args[i] === "--submit") {
-      submitPR = true;
+    } else if (args[i] === "--no-submit") {
+      submitPR = false;
       skipIndices.add(i);
     }
   }
@@ -75,7 +133,7 @@ export async function commit(args: string[]): Promise<number> {
 
   if (!commitMessage) {
     logger.error(
-      '❌ No commit message provided. Usage: bff commit -m "Your message" [--skip-pre-check] [files...]',
+      '❌ No commit message provided. Usage: bff commit -m "Your message" [--skip-pre-check] [--no-submit] [files...]',
     );
     return 1;
   }
@@ -85,6 +143,54 @@ export async function commit(args: string[]): Promise<number> {
     logger.info("Running precommit checks...");
     if (!await runPrecommitChecks()) {
       return 1;
+    }
+  }
+
+  // Stage files appropriately
+  if (filesToCommit.length > 0) {
+    // If specific files are provided, stage only those files
+    logger.info("Staging specified files...");
+
+    // Check which files exist and which are deleted
+    const existingFiles: string[] = [];
+    const deletedFiles: string[] = [];
+
+    for (const file of filesToCommit) {
+      try {
+        await Deno.stat(file);
+        existingFiles.push(file);
+      } catch {
+        // File doesn't exist, assume it's deleted
+        deletedFiles.push(file);
+      }
+    }
+
+    // Add existing files
+    if (existingFiles.length > 0) {
+      const addArgs = ["sl", "add", ...existingFiles];
+      const addResult = await runShellCommand(addArgs);
+      if (addResult !== 0) {
+        logger.error("❌ Failed to add files");
+        return addResult;
+      }
+    }
+
+    // Mark deleted files for removal
+    if (deletedFiles.length > 0) {
+      const removeArgs = ["sl", "remove", "--mark", ...deletedFiles];
+      const removeResult = await runShellCommand(removeArgs);
+      if (removeResult !== 0) {
+        logger.error("❌ Failed to mark deleted files for removal");
+        return removeResult;
+      }
+    }
+  } else {
+    // No specific files provided - stage all changes
+    logger.info("Staging all changes...");
+    const stageResult = await stageAllFiles();
+    if (stageResult !== 0) {
+      logger.error("❌ Failed to stage files");
+      return stageResult;
     }
   }
 
@@ -120,7 +226,7 @@ export async function commit(args: string[]): Promise<number> {
 
 register(
   "commit",
-  "Create a commit",
+  "Create a commit and submit PR",
   commit,
   [
     {
@@ -133,8 +239,9 @@ register(
         "Skip precommit checks (format, lint, type check). By default, pre-checks run automatically.",
     },
     {
-      option: "--submit",
-      description: "Submit a PR after creating the commit.",
+      option: "--no-submit",
+      description:
+        "Skip PR submission. By default, PR is submitted automatically.",
     },
     {
       option: "[files...]",

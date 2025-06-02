@@ -29,14 +29,14 @@ export type Sample = {
 };
 
 /**
- * Generic specification data structure for holding structured data.
+ * Generic card data structure for holding structured data.
  *
  * This is a core building block that can be used across the codebase
- * for any domain that needs hierarchical, structured specifications.
+ * for any domain that needs hierarchical, structured cards.
  */
-export type Spec = {
+export type Card = {
   name?: string;
-  value: string | Array<Spec>;
+  value: string | Array<Card>;
   samples?: Array<Sample>;
 };
 
@@ -59,7 +59,7 @@ export type SpecOptions = {
 };
 
 /**
- * Generic builder type for creating Spec instances.
+ * Generic builder type for creating Card instances.
  *
  * This builder follows the immutable pattern where each method returns
  * a new builder instance. This ensures predictable behavior and enables
@@ -67,18 +67,18 @@ export type SpecOptions = {
  *
  * Modeled after the successful builder pattern used in bfDb.
  */
-export type SpecBuilder = {
+export type CardBuilder = {
   /** Add a simple spec value */
-  spec(value: string): SpecBuilder;
+  spec(value: string): CardBuilder;
 
   /** Add a spec with options including samples */
-  spec(value: string, options: SpecOptions): SpecBuilder;
+  spec(value: string, options: SpecOptions): CardBuilder;
 
   /** Add a named group of specs using a builder function */
-  specs(name: string, builder: (s: SpecBuilder) => SpecBuilder): SpecBuilder;
+  card(name: string, builder: (c: CardBuilder) => CardBuilder): CardBuilder;
 
-  /** Get the collected specs */
-  getSpecs(): Array<Spec>;
+  /** Get the collected cards */
+  getCards(): Array<Card>;
 };
 
 /**
@@ -97,33 +97,33 @@ export function makeSampleBuilder(samples: Array<Sample> = []): SampleBuilder {
 }
 
 /**
- * Factory function to create a SpecBuilder
+ * Factory function to create a CardBuilder
  */
-export function makeSpecBuilder(specs: Array<Spec> = []): SpecBuilder {
+export function makeCardBuilder(cards: Array<Card> = []): CardBuilder {
   return {
     spec(value: string, options?: SpecOptions) {
-      const valueSpec: Spec = { value };
+      const valueCard: Card = { value };
 
       // If options are provided, process samples
       if (options?.samples) {
         const sampleBuilder = options.samples(makeSampleBuilder());
         const samples = sampleBuilder.getSamples();
         if (samples.length > 0) {
-          valueSpec.samples = samples;
+          valueCard.samples = samples;
         }
       }
 
-      return makeSpecBuilder([...specs, valueSpec]);
+      return makeCardBuilder([...cards, valueCard]);
     },
 
-    specs(name: string, builder: (s: SpecBuilder) => SpecBuilder) {
-      const childBuilder = builder(makeSpecBuilder());
-      const groupSpec: Spec = { value: childBuilder.getSpecs(), name };
-      return makeSpecBuilder([...specs, groupSpec]);
+    card(name: string, builder: (c: CardBuilder) => CardBuilder) {
+      const childBuilder = builder(makeCardBuilder());
+      const groupCard: Card = { value: childBuilder.getCards(), name };
+      return makeCardBuilder([...cards, groupCard]);
     },
 
-    getSpecs() {
-      return specs;
+    getCards() {
+      return cards;
     },
   };
 }
@@ -158,39 +158,39 @@ export type ContextBuilder = {
 };
 
 /**
- * Alias for card specifications
+ * Alias for deck cards
  */
-export type SpecForCard = Spec;
+export type CardForDeck = Card;
 
 /**
- * Builder type for creating card specifications
+ * Builder type for creating deck specifications
  */
-export type SpecBuilderForCard = {
-  /** The name of this card */
+export type DeckBuilder = {
+  /** The name of this deck */
   readonly name: string;
 
   /** Add a simple spec value */
-  spec(value: string): SpecBuilderForCard;
+  spec(value: string): DeckBuilder;
 
   /** Add a spec with options including samples */
-  spec(value: string, options: SpecOptions): SpecBuilderForCard;
+  spec(value: string, options: SpecOptions): DeckBuilder;
 
   /** Add a named group of specs using a builder function */
-  specs(
+  card(
     name: string,
-    builder: (s: SpecBuilder) => SpecBuilder,
-  ): SpecBuilderForCard;
+    builder: (c: CardBuilder) => CardBuilder,
+  ): DeckBuilder;
 
   /** Add context variables */
-  context(builder: (c: ContextBuilder) => ContextBuilder): SpecBuilderForCard;
+  context(builder: (c: ContextBuilder) => ContextBuilder): DeckBuilder;
 
-  /** Get the collected specs */
-  getSpecs(): Array<Spec>;
+  /** Get the collected cards */
+  getCards(): Array<Card>;
 
   /** Get the collected context variables */
   getContext(): Array<ContextVariable>;
 
-  /** Render the card specification to OpenAI chat completion format */
+  /** Render the deck specification to OpenAI chat completion format */
   render(options?: RenderOptions): ChatCompletionCreateParams;
 };
 
@@ -240,30 +240,30 @@ export function makeContextBuilder(
 }
 
 /**
- * Factory function to create a SpecBuilderForCard
+ * Factory function to create a DeckBuilder
  */
-export function makeSpecBuilderForCard(
+export function makeDeckBuilder(
   name: string,
-  specs: Array<Spec> = [],
+  cards: Array<Card> = [],
   contextVariables: Array<ContextVariable> = [],
-): SpecBuilderForCard {
-  // Helper function to render specs
-  const renderSpecs = (
-    specsToRender: Array<Spec>,
+): DeckBuilder {
+  // Helper function to render cards
+  const renderCards = (
+    cardsToRender: Array<Card>,
     indent: string = "",
   ): string => {
-    return specsToRender.map((spec) => {
-      if (typeof spec.value === "string") {
-        return indent + spec.value + "\n";
-      } else if (Array.isArray(spec.value)) {
-        // Handle nested specs with optional grouping
+    return cardsToRender.map((card) => {
+      if (typeof card.value === "string") {
+        return indent + card.value + "\n";
+      } else if (Array.isArray(card.value)) {
+        // Handle nested cards with optional grouping
         let result = "";
-        if (spec.name) {
-          result += indent + `<${spec.name}>\n`;
-          result += renderSpecs(spec.value, indent + "  ");
-          result += indent + `</${spec.name}>\n`;
+        if (card.name) {
+          result += indent + `<${card.name}>\n`;
+          result += renderCards(card.value, indent + "  ");
+          result += indent + `</${card.name}>\n`;
         } else {
-          result += renderSpecs(spec.value, indent);
+          result += renderCards(card.value, indent);
         }
         return result;
       }
@@ -275,33 +275,33 @@ export function makeSpecBuilderForCard(
     name,
 
     spec(value: string, options?: SpecOptions) {
-      const valueSpec: Spec = { value };
+      const valueCard: Card = { value };
 
       // If options are provided, process samples
       if (options?.samples) {
         const sampleBuilder = options.samples(makeSampleBuilder());
         const samples = sampleBuilder.getSamples();
         if (samples.length > 0) {
-          valueSpec.samples = samples;
+          valueCard.samples = samples;
         }
       }
 
-      return makeSpecBuilderForCard(
+      return makeDeckBuilder(
         name,
-        [...specs, valueSpec],
+        [...cards, valueCard],
         contextVariables,
       );
     },
 
-    specs(groupName: string, builder: (s: SpecBuilder) => SpecBuilder) {
-      const childBuilder = builder(makeSpecBuilder());
-      const groupSpec: Spec = {
-        value: childBuilder.getSpecs(),
+    card(groupName: string, builder: (c: CardBuilder) => CardBuilder) {
+      const childBuilder = builder(makeCardBuilder());
+      const groupCard: Card = {
+        value: childBuilder.getCards(),
         name: groupName,
       };
-      return makeSpecBuilderForCard(
+      return makeDeckBuilder(
         name,
-        [...specs, groupSpec],
+        [...cards, groupCard],
         contextVariables,
       );
     },
@@ -309,14 +309,14 @@ export function makeSpecBuilderForCard(
     context(builder: (c: ContextBuilder) => ContextBuilder) {
       const contextBuilder = builder(makeContextBuilder());
       const newVariables = contextBuilder.getVariables();
-      return makeSpecBuilderForCard(name, specs, [
+      return makeDeckBuilder(name, cards, [
         ...contextVariables,
         ...newVariables,
       ]);
     },
 
-    getSpecs() {
-      return specs;
+    getCards() {
+      return cards;
     },
 
     getContext() {
@@ -330,9 +330,9 @@ export function makeSpecBuilderForCard(
       // Build system message content
       let systemContent = "";
 
-      // Render all specs
-      if (specs.length > 0) {
-        systemContent = renderSpecs(specs).trim();
+      // Render all cards
+      if (cards.length > 0) {
+        systemContent = renderCards(cards).trim();
       }
 
       // Build system message
@@ -386,15 +386,15 @@ export function makeSpecBuilderForCard(
 }
 
 /**
- * Convenience function to start building specs
+ * Convenience function to start building cards
  */
-export function specs(
+export function card(
   name: string,
-  builder: (s: SpecBuilder) => SpecBuilder,
-): Spec {
-  const specBuilder = builder(makeSpecBuilder());
+  builder: (c: CardBuilder) => CardBuilder,
+): Card {
+  const cardBuilder = builder(makeCardBuilder());
   return {
     name,
-    value: specBuilder.getSpecs(),
+    value: cardBuilder.getCards(),
   };
 }

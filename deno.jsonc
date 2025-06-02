@@ -34,6 +34,8 @@
     "react/jsx-runtime": "npm:react/jsx-runtime",
     "content/": "./content/",
     "build/content/": "./build/content/",
+    "docs/": "./docs/",
+    "build/docs/": "./build/docs/",
     "static/": "./static/",
     "tmp/": "./tmp/"
   },
@@ -72,13 +74,14 @@
     "**/__TEMPLATE__.*",
     "**/*.disabled.*",
     "thirdParty",
-    "examples",
     "**/npm",
-    "node_modules"
+    "node_modules",
+    "examples/**"
   ],
   "lint": {
     "exclude": [
-      "**/__generated__/**"
+      "**/__generated__/**",
+      "examples/**"
     ],
     "plugins": ["./infra/lint/bolt-foundry.ts"],
 
@@ -103,7 +106,8 @@
       "**/__generated__/**",
       "**/*.json",
       "**/*.ipynb",
-      "**/.ipynb_checkpoints"
+      "**/.ipynb_checkpoints",
+      "**/node_modules/**"
     ]
   },
 
@@ -115,7 +119,8 @@
     "packages/logger",
     "packages/get-configuration-var",
     "examples/nextjs-sample",
-    "apps/contacts"
+    "apps/contacts",
+    "examples/nextjs-justin"
   ],
   "nodeModulesDir": "manual",
   "vendor": true

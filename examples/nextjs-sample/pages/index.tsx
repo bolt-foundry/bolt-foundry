@@ -7,7 +7,8 @@ import { useChat } from "ai/react";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat();
 
   return (
     <div className={styles.container}>
@@ -19,13 +20,13 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Welcome to Next.js on Replit!</h1>
-        
+
         <div className={styles.grid}>
           <Link href="/chat" className={styles.card}>
             <h2>Streaming Chat &rarr;</h2>
             <p>Chat with AI using streaming responses</p>
           </Link>
-          
+
           <Link href="/regular-chat" className={styles.card}>
             <h2>Regular Chat &rarr;</h2>
             <p>Chat with AI using regular (non-streaming) responses</p>
@@ -39,11 +40,13 @@ const Home: NextPage = () => {
                 <p>Ask me anything...</p>
               </div>
             )}
-            {messages.map(message => (
-              <div 
-                key={message.id} 
+            {messages.map((message: any) => (
+              <div
+                key={message.id}
                 className={`${styles.message} ${
-                  message.role === 'user' ? styles.userMessage : styles.aiMessage
+                  message.role === "user"
+                    ? styles.userMessage
+                    : styles.aiMessage
                 }`}
               >
                 {message.content}
@@ -57,18 +60,18 @@ const Home: NextPage = () => {
               onChange={handleInputChange}
               placeholder="Type your message..."
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleSubmit(e);
                 }
               }}
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className={styles.sendButton}
-              disabled={isLoading || input.trim() === ''}
+              disabled={isLoading || input.trim() === ""}
             >
-              {isLoading ? 'Thinking...' : 'Send'}
+              {isLoading ? "Thinking..." : "Send"}
             </button>
           </form>
         </div>
@@ -91,11 +94,11 @@ const Home: NextPage = () => {
             <h2>Examples &rarr;</h2>
             <p>Discover and deploy boilerplate example Next.js projects.</p>
           </a>
-          
-          <a href="/chat" className={styles.card}>
+
+          <Link href="/chat" className={styles.card}>
             <h2>AI Chat &rarr;</h2>
             <p>Chat with an AI assistant powered by OpenAI.</p>
-          </a>
+          </Link>
 
           <a
             href="https://docs.replit.com/category/deployments"

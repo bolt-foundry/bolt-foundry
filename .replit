@@ -11,6 +11,8 @@ build = ["sh", "-c", "bff build"]
 # build = ["sh", "-c", "bff build"]
 run = ["sh", "-c", "WEB_PORT=9999 ./build/web"]
 
+# Deno LSP handles the entire monorepo but only performs formatting in examples/
+# (configured via deno.jsonc to exclude examples/ from linting and type checking)
 [languages.deno]
 pattern = "**/*.{ts,js,tsx,jsx,json,jsonc,md,mdx}"
 [languages.deno.languageServer]
@@ -19,6 +21,13 @@ start = ["deno", "lsp"]
 enable = true
 lint = true
 config = "./deno.jsonc"
+
+# TypeScript LSP specifically for examples/ directory
+# Each example should have its own tsconfig.json that extends tsconfig.base.json
+[languages.typescript]
+pattern = "examples/**/*.{ts,tsx,js,jsx}"
+[languages.typescript.languageServer]
+start = ["typescript-language-server", "--stdio"]
 
 [workflows]
 runButton = "Run for development"

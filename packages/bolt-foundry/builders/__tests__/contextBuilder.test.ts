@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { makeContextBuilder, makeSpecBuilderForCard } from "../builders.ts";
+import { makeContextBuilder, makeDeckBuilder } from "../builders.ts";
 
 Deno.test("ContextBuilder - creates string context variable", () => {
   const builder = makeContextBuilder();
@@ -68,8 +68,8 @@ Deno.test("ContextBuilder - chains multiple context variables", () => {
   assertEquals(variables[3].name, "settings");
 });
 
-Deno.test("SpecBuilderForCard - adds context variables", () => {
-  const card = makeSpecBuilderForCard("test-card")
+Deno.test("DeckBuilder - adds context variables", () => {
+  const card = makeDeckBuilder("test-card")
     .spec("Be helpful")
     .context((c) =>
       c.string("userName", "What is the user's name?")
@@ -82,8 +82,8 @@ Deno.test("SpecBuilderForCard - adds context variables", () => {
   assertEquals(context[1].name, "userAge");
 });
 
-Deno.test("SpecBuilderForCard - renders with context", () => {
-  const card = makeSpecBuilderForCard("assistant")
+Deno.test("DeckBuilder - renders with context", () => {
+  const card = makeDeckBuilder("assistant")
     .spec("You are a helpful assistant")
     .context((c) =>
       c.string("userName", "What is the user's name?")
@@ -114,8 +114,8 @@ Deno.test("SpecBuilderForCard - renders with context", () => {
   assertEquals(result.messages[4].content, "30");
 });
 
-Deno.test("SpecBuilderForCard - omits missing context variables", () => {
-  const card = makeSpecBuilderForCard("assistant")
+Deno.test("DeckBuilder - omits missing context variables", () => {
+  const card = makeDeckBuilder("assistant")
     .spec("You are a helpful assistant")
     .context((c) =>
       c.string("userName", "What is the user's name?")
@@ -143,8 +143,8 @@ Deno.test("SpecBuilderForCard - omits missing context variables", () => {
   assertEquals(result.messages[2].content, "Bob");
 });
 
-Deno.test("SpecBuilderForCard - renders object context as JSON", () => {
-  const card = makeSpecBuilderForCard("assistant")
+Deno.test("DeckBuilder - renders object context as JSON", () => {
+  const card = makeDeckBuilder("assistant")
     .spec("You are a helpful assistant")
     .context((c) => c.object("preferences", "What are your preferences?"));
 
@@ -159,8 +159,8 @@ Deno.test("SpecBuilderForCard - renders object context as JSON", () => {
   assertEquals(result.messages[2].content, '{"theme":"dark","language":"en"}');
 });
 
-Deno.test("SpecBuilderForCard - renders boolean context", () => {
-  const card = makeSpecBuilderForCard("assistant")
+Deno.test("DeckBuilder - renders boolean context", () => {
+  const card = makeDeckBuilder("assistant")
     .spec("You are a helpful assistant")
     .context((c) => c.boolean("isPremium", "Are you a premium user?"));
 
@@ -175,8 +175,8 @@ Deno.test("SpecBuilderForCard - renders boolean context", () => {
   assertEquals(result.messages[2].content, "true");
 });
 
-Deno.test("SpecBuilderForCard - handles null values in context", () => {
-  const card = makeSpecBuilderForCard("assistant")
+Deno.test("DeckBuilder - handles null values in context", () => {
+  const card = makeDeckBuilder("assistant")
     .spec("You are a helpful assistant")
     .context((c) => c.object("data", "What is the data?"));
 
@@ -191,8 +191,8 @@ Deno.test("SpecBuilderForCard - handles null values in context", () => {
   assertEquals(result.messages[2].content, "null");
 });
 
-Deno.test("SpecBuilderForCard - maintains immutability with context", () => {
-  const base = makeSpecBuilderForCard("base")
+Deno.test("DeckBuilder - maintains immutability with context", () => {
+  const base = makeDeckBuilder("base")
     .spec("Base spec");
 
   const withContext = base.context((c) =>

@@ -45,6 +45,35 @@
   margin-top: 2rem;
 }
 
+.errorBanner {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1rem;
+  text-align: center;
+}
+
+.errorBanner h3 {
+  color: #c00;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.errorBanner p {
+  color: #666;
+  margin: 0.5rem 0;
+}
+
+.errorBanner a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.errorBanner a:hover {
+  text-decoration: underline;
+}
+
 .message {
   max-width: 80%;
   padding: 0.8rem 1.2rem;
@@ -93,11 +122,11 @@
 }
 
 @keyframes loadingDots {
-  0%, 80%, 100% { 
+  0%, 80%, 100% {
     transform: scale(0);
     opacity: 0;
   }
-  40% { 
+  40% {
     transform: scale(1.0);
     opacity: 1;
   }
