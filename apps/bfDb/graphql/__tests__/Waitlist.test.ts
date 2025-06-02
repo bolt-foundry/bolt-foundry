@@ -11,12 +11,12 @@ import { loadGqlTypes } from "../loadGqlTypes.ts";
 import { graphql } from "graphql";
 import { createContext } from "../graphqlContext.ts";
 
-function buildTestSchema() {
-  return makeSchema({ types: { ...loadGqlTypes() } });
+async function buildTestSchema() {
+  return makeSchema({ types: { ...(await loadGqlTypes()) } });
 }
 
 async function testQuery(options: { query: string }) {
-  const schema = buildTestSchema();
+  const schema = await buildTestSchema();
   // Create a mock request
   const mockRequest = new Request("http://localhost/graphql", {
     method: "POST",
@@ -35,8 +35,8 @@ async function testQuery(options: { query: string }) {
   });
 }
 
-Deno.test("Waitlist type is included in schema", () => {
-  const schema = buildTestSchema();
+Deno.test("Waitlist type is included in schema", async () => {
+  const schema = await buildTestSchema();
   const sdl = printSchema(schema);
 
   // Verify Waitlist type is present
@@ -52,8 +52,8 @@ Deno.test("Waitlist type is included in schema", () => {
   );
 });
 
-Deno.test("joinWaitlist mutation is available with returns builder", () => {
-  const schema = buildTestSchema();
+Deno.test("joinWaitlist mutation is available with returns builder", async () => {
+  const schema = await buildTestSchema();
   const sdl = printSchema(schema);
 
   // Verify mutation exists
