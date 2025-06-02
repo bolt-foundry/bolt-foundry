@@ -7,9 +7,9 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-Deno.test("debug Mutation type definition", () => {
+Deno.test("debug Mutation type definition", async () => {
   const waitlistSpec = Waitlist.gqlSpec;
-  const waitlistNexusTypes = gqlSpecToNexus(waitlistSpec, "Waitlist");
+  const waitlistNexusTypes = await gqlSpecToNexus(waitlistSpec, "Waitlist");
 
   logger.debug("Full mutation type definition:");
   logger.debug(JSON.stringify(waitlistNexusTypes.mutationType, null, 2));

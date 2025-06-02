@@ -36,9 +36,17 @@ export class BlogPost extends GraphQLNode {
    */
   static override async findX(slug: string): Promise<BlogPost> {
     const docsDir = "docs";
-    const filePath = join(docsDir, `${slug}.md`);
-
-    if (!await exists(filePath)) {
+    
+    // Check for both .mdx and .md files
+    const mdxPath = join(docsDir, `${slug}.mdx`);
+    const mdPath = join(docsDir, `${slug}.md`);
+    
+    let filePath: string;
+    if (await exists(mdxPath)) {
+      filePath = mdxPath;
+    } else if (await exists(mdPath)) {
+      filePath = mdPath;
+    } else {
       throw new BfErrorNodeNotFound(`Blog post not found: ${slug}`);
     }
 

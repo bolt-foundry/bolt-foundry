@@ -1,14 +1,16 @@
 import { GraphQLObjectBase } from "../GraphQLObjectBase.ts";
+import { BlogPost } from "apps/bfDb/nodeTypes/BlogPost.ts";
 
 export class Query extends GraphQLObjectBase {
   static override gqlSpec = this.defineGqlNode((field) =>
     field
       .boolean("ok")
-      .string("documentsBySlug", {
+      .object("documentsBySlug", () => BlogPost, {
         args: (a) => a.nonNull.string("slug"),
-        resolve: (_root, { slug }) => {
-          // For now, return a simple hello world for all slugs
-          return `# Hello World\n\nYou requested documentation for: **${slug}**\n\nThis is a sample markdown document.`;
+        resolve: async (_root, args, _ctx, _info) => {
+          const slug = args.slug as string;
+          const post = await BlogPost.findX(slug).catch(() => null);
+          return post;
         },
       })
   );

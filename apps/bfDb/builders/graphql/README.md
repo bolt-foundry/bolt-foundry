@@ -39,6 +39,31 @@ The GraphQL Builder consists of the following key components:
    mutations
 5. **Nexus Converter** (`gqlSpecToNexus.ts`): Converts specs to Nexus types
 
+## Current Limitations
+
+### ⚠️ List/Array Types Not Supported
+
+The GraphQL builder currently does NOT support list fields. You cannot define
+fields that return arrays such as:
+
+- `[String]` - List of strings
+- `[Int]` - List of integers
+- `[BlogPost]` - List of custom objects
+
+### ⚠️ Connection Types Not Implemented
+
+Relay-style connections with pagination are not yet implemented in the GraphQL
+builder.
+
+### Workarounds for Collections
+
+- Use custom object relationships with manual pagination logic
+- Return a single string with delimited values (e.g., comma-separated)
+- Create a wrapper object that contains the array as a JSON string field
+- Implement custom edge relationships using the `.object()` method
+
+These are known limitations that will be addressed in a future release.
+
 ## Defining Fields
 
 ### Scalar Fields
@@ -221,8 +246,9 @@ export class Waitlist extends GraphQLObjectBase {
    - Barrel files for automatic interface registration
    - No manual registration required - just export from barrel file
 
-2. **Connection Support**: Relay-style connections with pagination
-3. **Validation**: Schema validation against bfNodeSpec.relations
+2. **List Support**: Array types for fields and arguments
+3. **Connection Support**: Relay-style connections with pagination
+4. **Validation**: Schema validation against bfNodeSpec.relations
 
 For more detailed information, see the
 [Implementation Plan](/apps/bfDb/docs/0.1/implementation-plan.md) and

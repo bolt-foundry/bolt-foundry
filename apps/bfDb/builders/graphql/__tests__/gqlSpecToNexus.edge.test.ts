@@ -10,7 +10,7 @@ import { gqlSpecToNexus } from "../gqlSpecToNexus.ts";
  * between nodes like BfPerson and BfOrganization.
  */
 
-Deno.test("gqlSpecToNexus supports defining edge relationships", () => {
+Deno.test("gqlSpecToNexus supports defining edge relationships", async () => {
   // Create a simple spec with an edge relationship
   const personSpec = makeGqlSpec((gql) =>
     gql
@@ -23,7 +23,7 @@ Deno.test("gqlSpecToNexus supports defining edge relationships", () => {
   );
 
   // Convert to Nexus types
-  const result = gqlSpecToNexus(personSpec, "BfPerson");
+  const result = await gqlSpecToNexus(personSpec, "BfPerson");
 
   // Check that the relation is defined correctly
   let relationDefined = false;
@@ -33,8 +33,8 @@ Deno.test("gqlSpecToNexus supports defining edge relationships", () => {
         relationDefined = true;
         assertEquals(
           config.type,
-          "BfPerson_memberOf_BfOrganization", // Use pattern SourceType_RelationName_TargetType for uniqueness
-          "Should use source and target type names in the relationship type name",
+          "BfOrganization", // Field type should be the target type
+          "Should use target type name as the field type",
         );
         assert(
           typeof config.resolve === "function",
@@ -65,7 +65,7 @@ Deno.test("gqlSpecToNexus correctly configures edge relationship options", async
   );
 
   // Convert to Nexus types
-  const result = gqlSpecToNexus(personSpec, "BfPerson");
+  const result = await gqlSpecToNexus(personSpec, "BfPerson");
 
   // Inspect that all edge options are correctly passed through
   let relationConfig: Record<string, unknown> = null as unknown as Record<
