@@ -67,6 +67,7 @@ const DEFAULT_NETWORK_DESTINATIONS = [
   "app.posthog.com",
   "bf-contacts.replit.app:443",
   "oauth2.googleapis.com:443",
+  "api.github.com",
 ];
 
 const allowedNetworkDestionations = [...DEFAULT_NETWORK_DESTINATIONS];
