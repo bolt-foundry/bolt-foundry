@@ -17,7 +17,9 @@
     "jsr:@std/assert@^1.0.11": "1.0.13",
     "jsr:@std/assert@^1.0.13": "1.0.13",
     "jsr:@std/assert@~0.213.1": "0.213.1",
+    "jsr:@std/async@^1.0.12": "1.0.12",
     "jsr:@std/async@^1.0.13": "1.0.13",
+    "jsr:@std/async@^1.0.9": "1.0.10",
     "jsr:@std/bytes@0.223": "0.223.0",
     "jsr:@std/bytes@^1.0.2": "1.0.6",
     "jsr:@std/cli@^1.0.18": "1.0.19",
@@ -323,6 +325,9 @@
     "@std/async@1.0.13": {
       "integrity": "1d76ca5d324aef249908f7f7fe0d39aaf53198e5420604a59ab5c035adc97c96"
     },
+    "@std/async@1.0.13": {
+      "integrity": "1d76ca5d324aef249908f7f7fe0d39aaf53198e5420604a59ab5c035adc97c96"
+    },
     "@std/bytes@0.223.0": {
       "integrity": "84b75052cd8680942c397c2631318772b295019098f40aac5c36cead4cba51a8"
     },
@@ -445,8 +450,8 @@
       "integrity": "74418be16f627dfe996937ab0ffbdbda9c1f35534b78724658d981492f121e71",
       "dependencies": [
         "jsr:@std/assert@^1.0.13",
-        "jsr:@std/async",
-        "jsr:@std/data-structures",
+        "jsr:@std/async@^1.0.13",
+        "jsr:@std/data-structures@^1.0.8",
         "jsr:@std/fs@^1.0.17",
         "jsr:@std/internal@^1.0.8",
         "jsr:@std/path@^1.1.0"
