@@ -164,7 +164,7 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     });
   }
 
-  static async find<
+  static override async find<
     TProps extends PropsBase,
     TThis extends typeof BfNode<TProps>,
   >(
@@ -195,7 +195,7 @@ export abstract class BfNode<TProps extends PropsBase = {}>
     return null;
   }
 
-  static async findX<
+  static override async findX<
     TProps extends PropsBase,
     TThis extends typeof BfNode<TProps>,
   >(
