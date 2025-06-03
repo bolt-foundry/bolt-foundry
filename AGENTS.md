@@ -3,6 +3,17 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
+## Quick Links to Development Cards
+
+For detailed development practices and workflows, see:
+
+- `cards/version-control.card.md` - Sapling SCM usage, commit workflows, PR
+  management
+- `cards/testing.card.md` - TDD practices, test organization, testing patterns
+- `cards/coding.card.md` - Code organization, style guidelines, conventions
+- `cards/dev-cycle.card.md` - Team development rhythm and processes
+- `cards/hierarchical-naming.card.md` - Naming convention patterns
+
 ## Project Overview
 
 **Bolt Foundry** is an open-source platform for building reliable LLM systems
@@ -68,8 +79,7 @@ bff lint               # Custom linting rules
 bff check              # TypeScript type checking
 
 # Development workflow
-bff commit -m "msg" --pre-check --submit   # Format, lint, commit, and create PR
-bff commit -m "msg" --skip-pre-check file1 file2  # Commit specific files without pre-checks
+# See cards/version-control.card.md for commit workflow and version control commands
 ```
 
 ### Database Commands
@@ -143,11 +153,11 @@ The build system is complex and sequential:
 
 ## Testing Strategy
 
-- **Unit Tests**: `bff test` - Per-module testing with Deno test runner
-- **Integration Tests**: Database and GraphQL integration testing
-- **E2E Tests**: `bff e2e` - Puppeteer-based end-to-end testing
-- **Component Tests**: React component testing in `__tests__/` directories
-- **Custom Evaluations**: LLM prompt testing framework
+See `cards/testing.card.md` for comprehensive testing practices and TDD
+workflow.
+
+- **Quick Reference**: `bff test`, `bff e2e`, test files in `__tests__/`
+  directories
 
 ## Important Implementation Details
 
@@ -157,6 +167,8 @@ The build system is complex and sequential:
 - Apps: `apps/` prefix (e.g., `apps/bfDb/bfDb.ts`)
 - Packages: `packages/` prefix or named imports (e.g., `@bolt-foundry/logger`)
 - Generated Isograph: `@iso/` prefix
+
+See `cards/coding.card.md` for complete code organization guidelines.
 
 ### Configuration Management
 
@@ -172,6 +184,9 @@ The build system is complex and sequential:
   - `no-env-direct-access` - Must use configuration variables
   - `no-console` - Use logger instead
   - `no-logger-set-level` - Logger level set by configuration
+
+See `cards/coding.card.md` for additional coding conventions and style
+guidelines.
 
 ### Router Architecture
 
@@ -212,7 +227,7 @@ The build system is complex and sequential:
 1. **Always run** `bff devTools` to start development environment
 2. **Before committing**, run `bff format && bff lint && bff check`
 3. **Test changes** with `bff test` and `bff e2e --build`
-4. **Use BFF commit workflow**: `bff commit -m "message" --pre-check --submit`
+4. **For commit workflow**, see `cards/version-control.card.md`
 5. **For full CI check**, run `bff ci` before submitting PRs
 6. **Database changes** require running `bff genGqlTypes` to update schema
 7. **Content changes** require `bff build` to process MDX and notebooks
@@ -231,12 +246,12 @@ The build system is complex and sequential:
 
 ## AI Development Guidelines
 
-- Check BFF AI for commands that are already accessible to AI agents. If a
-  command isn't there, it's probably in bff help. If the developer asks, you can
-  run commands in the bff namespace.
+- Use `bff ai` namespace for AI-safe commands (see
+  `cards/version-control.card.md`)
+- Run `bff help` to discover available commands
+- Follow practices in `cards/coder-assistant.card.md` for AI development
 
-## Source Control Notes
+## Source Control
 
-- We don't use git, we use sapling.
-- For detailed workflow including commit splitting, see
-  `cards/version-control.card.md`
+See `cards/version-control.card.md` for Sapling SCM usage, commit workflows, and
+PR management.

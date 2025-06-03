@@ -41,11 +41,20 @@ export function ServerRenderedPage(
             __html: cssVarsString + cssVarsDarkString,
           }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              `document.documentElement.setAttribute("data-theme", "dark");`,
+          }}
+        >
+        </script>
         <link rel="stylesheet" href="/static/marketingpagestyle.css" />
         <link rel="stylesheet" href="/static/bfDsStyle.css" />
         <link rel="stylesheet" href="/static/blogStyle.css" />
         <link rel="stylesheet" href="/static/formatterStyle.css" />
         <link rel="stylesheet" href="/static/appStyle.css" />
+        <link rel="stylesheet" href="/static/landingStyle.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         {
           /* <link rel="stylesheet" href="/static/toolsStyle.css" />
         <link rel="stylesheet" href="/static/lexicalStyle.css" /> */

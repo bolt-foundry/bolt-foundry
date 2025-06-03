@@ -45,7 +45,9 @@ export type ButtonKind =
   | "primary"
   | "secondary"
   | "success"
-  | "input";
+  | "input"
+  | "dan"
+  | "danDim";
 
 type ButtonCustomSettings = {
   color?: string;
@@ -61,6 +63,7 @@ export type ButtonXStyle = {
   flex?: string;
   marginInlineEnd?: number;
   marginInlineStart?: number;
+  minWidth?: string | number;
   width?: string | number;
   alignSelf?: "flex-start" | "flex-end";
 } | undefined;
@@ -484,6 +487,20 @@ const getButtonStyle = (
         textAlign: "left",
         fontWeight: 400,
         fontSize: 16,
+      };
+    case "dan":
+      return {
+        ...baseStyle,
+        backgroundColor: hover ? "var(--pageBackground)" : "transparent",
+        color: hover ? "var(--primaryColor)" : "var(--text)",
+        borderColor: hover ? "var(--primaryColor060)" : "transparent",
+      };
+    case "danDim":
+      return {
+        ...baseStyle,
+        backgroundColor: hover ? "var(--pageBackground)" : "transparent",
+        color: hover ? "var(--primaryColor)" : "var(--text060)",
+        borderColor: hover ? "var(--primaryColor060)" : "transparent",
       };
     default:
       return baseStyle;
