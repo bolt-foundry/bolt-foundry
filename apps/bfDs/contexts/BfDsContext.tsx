@@ -63,7 +63,7 @@ type BfDsToast = {
 export const BfDsProvider = ({ children }: { children: ReactNode }) => {
   const [activeToasts, setActiveToasts] = useState<Array<BfDsToast>>([]);
   const [activeModal, setActiveModal] = useState<ModalType | undefined>();
-  const [darkMode, setDarkMode] = useLocalStorage("darkMode", false);
+  const [darkMode, setDarkMode] = useLocalStorage("darkMode", true);
 
   useEffect(() => {
     // TODO add setting to follow system theme
