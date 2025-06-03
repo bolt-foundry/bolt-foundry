@@ -4,7 +4,8 @@
   box-sizing: border-box;
   margin: 0 auto;
 }
-.landing-page p {
+.landing-page p,
+.landing-page ul {
   font-size: 1.3em;
 }
 .landing-page a {
@@ -13,6 +14,25 @@
 }
 .landing-page a:hover {
   color: var(--primaryColor);
+}
+.landing-page h1 {
+  font-size: 4em;
+  font-family: var(--marketingFontFamily);
+  font-weight: 400;
+  line-height: 1;
+  margin-block-start: 0.1em;
+  margin-block-end: 0.3em;
+}
+.landing-page h2 {
+  font-family: var(--marketingFontFamily);
+  font-size: 3em;
+  line-height: 1;
+  margin-block-start: 0.1em;
+  margin-block-end: 0.3em;
+}
+.landing-page h3 {
+  font-size: 1.5em;
+  margin-block-start: 0.1em;
 }
 
 .header-logo {
@@ -43,21 +63,6 @@ header.landing-header {
   background: var(--background060);
   z-index: 1000;
 }
-h1.hero-headline {
-  font-size: 4em;
-  font-family: var(--marketingFontFamily);
-  font-weight: 400;
-  line-height: 1;
-  margin-block-start: 0.1em;
-  margin-block-end: 0.3em;
-}
-h2.substack-title {
-  font-family: var(--marketingFontFamily);
-  font-size: 3em;
-  line-height: 1;
-  margin-block-start: 0.1em;
-  margin-block-end: 0.3em;
-}
 
 .hero-section {
   background: url(/static/assets/images/bf-symbol-angle-left-1000_black_wide.jpg);
@@ -78,7 +83,7 @@ h2.substack-title {
 }
 
 .substack-section {
-  height: 100vh;
+  min-height: 100vh;
   padding-top: 60px;
   padding-bottom: 60px;
   box-sizing: border-box;
@@ -86,6 +91,17 @@ h2.substack-title {
   border-top: 1px solid var(--border);
   position: relative;
   text-align: center;
+}
+
+.docs-section {
+  min-height: 100vh;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
+  position: relative;
+}
+.docs-section h2 {
+  margin-block-start: 1em;
 }
 
 .npm-command-container {
