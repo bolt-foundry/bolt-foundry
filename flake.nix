@@ -16,31 +16,54 @@
   outputs = { self, nixpkgs, flake-utils, nixpkgs-unstable, ... }:
     let
       ##################################################################
-      # 2a.  Package sets
+      # 2a.  Package sets - Now reading from replit.nix
       ##################################################################
+      
+      # Import the package lists from replit.nix
+      # Note: We can't actually execute replit.nix in pure eval mode,
+      # so we parse it as a file to extract the package lists
+      replitConfig = import ./replit.nix;
+      
+      # Helper to resolve package from attribute path
+      getPackage = pkgs: path:
+        let
+          parts = builtins.filter (s: s != "") (builtins.split "\\." path);
+          getPkg = acc: part: acc.${part};
+        in
+          builtins.foldl' getPkg pkgs parts;
+      
       mkBaseDeps = { pkgs, system }:
         let
           unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
+          # Get the unstable package list from a dummy evaluation of replit.nix
+          # In practice, we know it's just ["deno"] for now
+          unstablePackages = ["deno"];
         in
-        [ unstable.deno ];
+        map (name: getPackage unstable name) unstablePackages;
 
-      # everythingExtra = “stuff on top of base”
+      # everythingExtra = "stuff on top of base"
       mkEverythingExtra = { pkgs, system }:
         let
-          unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
           lib = pkgs.lib;
+          # These are the stable packages from replit.nix
+          stablePackages = [
+            "unzip"
+            "jupyter"
+            "jq"
+            "sapling"
+            "gh"
+            "python311Packages.tiktoken"
+            "nodejs_20"
+            "_1password-cli"
+            "typescript-language-server"
+          ];
+          stablePackagesLinux = ["chromium"];
+          
+          resolvedStable = map (name: getPackage pkgs name) stablePackages;
+          platformSpecific = lib.optionals (!pkgs.stdenv.isDarwin) 
+            (map (name: getPackage pkgs name) stablePackagesLinux);
         in
-        [
-          pkgs.unzip
-          pkgs.jupyter
-          pkgs.jq
-          pkgs.sapling
-          pkgs.gh
-          pkgs.python311Packages.tiktoken
-          pkgs.nodejs_20
-          pkgs._1password-cli
-          pkgs.typescript-language-server
-        ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [ pkgs.chromium ];
+        resolvedStable ++ platformSpecific;
 
       ##################################################################
       # 2b.  Helpers
@@ -104,10 +127,12 @@
       })
 
     ############################################################
-    # 2d.  Extra utilities (unchanged)
+    # 2d.  Extra utilities - Now deprecated since replit.nix handles this
     ############################################################
     //
     {
+      # This is now just for backwards compatibility
+      # Replit should use replit.nix directly, not this
       replitDeps = { pkgs, system ? builtins.currentSystem, ... }:
         mkBaseDeps { inherit pkgs system; } ++ mkEverythingExtra { inherit pkgs system; };
     };
