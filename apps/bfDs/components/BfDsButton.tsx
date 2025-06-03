@@ -47,7 +47,8 @@ export type ButtonKind =
   | "success"
   | "input"
   | "dan"
-  | "danDim";
+  | "danDim"
+  | "danSelected";
 
 type ButtonCustomSettings = {
   color?: string;
@@ -501,6 +502,13 @@ const getButtonStyle = (
         backgroundColor: hover ? "var(--pageBackground)" : "transparent",
         color: hover ? "var(--primaryColor)" : "var(--text060)",
         borderColor: hover ? "var(--primaryColor060)" : "transparent",
+      };
+    case "danSelected":
+      return {
+        ...baseStyle,
+        backgroundColor: "var(--primaryColor030)",
+        color: "var(--primaryColor)",
+        borderColor: "transparent",
       };
     default:
       return baseStyle;

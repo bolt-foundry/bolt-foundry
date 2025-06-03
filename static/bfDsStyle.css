@@ -82,6 +82,9 @@ a.dark:visited {
   color: var(--alert);
 }
 
+.clickable {
+  cursor: pointer;
+}
 .hover,
 .ho .ver {
   opacity: 0;
