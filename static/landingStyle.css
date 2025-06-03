@@ -1,0 +1,117 @@
+.landing-content {
+  padding: 16px 24px;
+  width: min(100%, 80rem);
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+.landing-page p {
+  font-size: 1.3em;
+}
+.landing-page a {
+  color: var(--text);
+  font-weight: bold;
+}
+
+header.landing-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  backdrop-filter: blur(3px);
+  background: var(--background060);
+  z-index: 1000;
+}
+h1.hero-headline {
+  font-size: 4em;
+  font-family: var(--marketingFontFamily);
+  font-weight: 400;
+  line-height: 1;
+  margin-block-start: 0.1em;
+  margin-block-end: 0.3em;
+}
+h2.substack-title {
+  font-family: var(--marketingFontFamily);
+  font-size: 3em;
+  line-height: 1;
+  margin-block-start: 0.1em;
+  margin-block-end: 0.3em;
+}
+
+.hero-section {
+  background: url(/static/assets/images/bf-symbol-angle-left-1000_crop.png);
+  background-repeat: no-repeat;
+  background-position: 100% center;
+  background-size: contain;
+  min-height: 100vh;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  position: relative;
+  box-sizing: border-box;
+  justify-content: flex-end;
+}
+.hero-content {
+  width: 50%;
+  height: 100%;
+  align-items: start;
+}
+
+.substack-section {
+  height: 100vh;
+  padding-top: 60px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
+  background: var(--text005);
+  border-top: 1px solid var(--border);
+  position: relative;
+  text-align: center;
+}
+
+code.npm-command {
+  background: var(--text010);
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.more-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  text-align: center;
+}
+
+.landing-footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid var(--border);
+  background: var(--pageBackground);
+  opacity: 0.5;
+  text-align: left;
+}
+
+@media (max-width: 649px) {
+  .hero-section {
+    background: none;
+    justify-content: center;
+    text-align: center;
+  }
+  .hero-content {
+    width: 100%;
+  }
+}
+
+@media (max-width: 799px) {
+  .hero-section {
+    background-position: 170% center;
+  }
+}
+
+@media (max-width: 999px) {
+  .hero-section {
+    background-position: 130% center;
+  }
+}
