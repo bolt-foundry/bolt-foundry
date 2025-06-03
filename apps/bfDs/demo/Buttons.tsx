@@ -32,6 +32,7 @@ const ALL_BUTTON_KINDS: ButtonKind[] = [
   "overlaySuccess",
   "accent",
   "gradientOverlay",
+  "dan",
 ];
 
 // Define all button sizes

@@ -11,6 +11,28 @@
   color: var(--text);
   font-weight: bold;
 }
+.landing-page a:hover {
+  color: var(--primaryColor);
+}
+
+.header-logo {
+  height: 24px;
+}
+
+.sidebar-nav {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  border: 1px solid var(--primaryColor);
+  border-top: none;
+  border-right: none;
+  border-bottom-left-radius: 12px;
+  box-sizing: border-box;
+  background: var(--background);
+  width: 150px;
+  padding: 16px 24px;
+  z-index: 1001;
+}
 
 header.landing-header {
   position: absolute;
@@ -38,10 +60,10 @@ h2.substack-title {
 }
 
 .hero-section {
-  background: url(/static/assets/images/bf-symbol-angle-left-1000_crop.png);
+  background: url(/static/assets/images/bf-symbol-angle-left-1000_black_wide.jpg);
   background-repeat: no-repeat;
-  background-position: 100% center;
-  background-size: contain;
+  background-position: center center;
+  background-size: cover;
   min-height: 100vh;
   padding-top: 60px;
   padding-bottom: 60px;
@@ -66,6 +88,9 @@ h2.substack-title {
   text-align: center;
 }
 
+.npm-command-container {
+  justify-content: start;
+}
 code.npm-command {
   background: var(--text010);
   padding: 8px 16px;
@@ -89,29 +114,38 @@ code.npm-command {
   left: 0;
   border-top: 1px solid var(--border);
   background: var(--pageBackground);
-  opacity: 0.5;
   text-align: left;
+  color: var(--text060);
 }
 
 @media (max-width: 649px) {
   .hero-section {
-    background: none;
+    background: radial-gradient(var(--text030), transparent 60%);
     justify-content: center;
     text-align: center;
   }
   .hero-content {
     width: 100%;
   }
+  .npm-command-container {
+    justify-content: center;
+  }
 }
 
-@media (max-width: 799px) {
+/* @media (max-width: 799px) {
   .hero-section {
+    background: url(/static/assets/images/bf-symbol-angle-left-1000_black_crop.jpg);
+    background-repeat: no-repeat;
+    background-size: contain;
     background-position: 170% center;
   }
 }
 
 @media (max-width: 999px) {
   .hero-section {
+    background: url(/static/assets/images/bf-symbol-angle-left-1000_black_crop.jpg);
+    background-repeat: no-repeat;
+    background-size: contain;
     background-position: 130% center;
   }
-}
+} */
