@@ -1,274 +1,160 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
-import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { Plinko } from "apps/boltFoundry/pages/Plinko.tsx";
-import { classnames } from "lib/classnames.ts";
+import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
+import { BfDsCopyButton } from "apps/bfDs/components/BfDsCopyButton.tsx";
+// import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
+
 import { getLogger } from "packages/logger/logger.ts";
-import { BfDsForm } from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
-import { BfDsFormTextInput } from "apps/bfDs/components/BfDsForm/BfDsFormTextInput.tsx";
-import { BfDsFormSubmitButton } from "apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
-import { useBfDs } from "apps/bfDs/hooks/useBfDs.tsx";
-import type { ModalHandles } from "apps/bfDs/components/BfDsModal.tsx";
-import type { useMutation as _useMutation } from "apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
-// import joinWaitlistMutation from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
 
-const logger = getLogger(import.meta);
-
-type WaitlistFormData = {
-  name: string;
-  email: string;
-  company: string;
-};
+const _logger = getLogger(import.meta);
 
 export const Home = iso(`
 field Query.Home @component {
     __typename
-  }
-`)(function Home() {
-  // const { commit } = useMutation(joinWaitlistMutation);
-  const { showModal } = useBfDs();
-  const modalRef = useRef<ModalHandles>(null);
-  const [shouldPlay, setShouldPlay] = useState(false);
-  const [showButtons, setShowButtons] = useState(false);
-  const [playPlinko, setPlayPlinko] = useState(false);
-  const { navigate } = useRouter();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const loggedOut = true;
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (shouldPlay || !playPlinko) {
-      video.currentTime = 0;
-      setShowButtons(false);
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            setShouldPlay(false);
-          })
-          .catch((error) => {
-            logger.error("Error playing video: ", error);
-          });
-      }
+    githubRepoStats {
+      stars
     }
-  }, [shouldPlay, playPlinko]);
+  }
+`)(function Home({ data }) {
+  // const { navigate } = useRouter();
+  const substackRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleTimeUpdate = () => {
-      if (video.currentTime < 35) {
-        setShowButtons(false);
-      }
-      if (video.currentTime >= 35) {
-        setShowButtons(true);
-      }
-    };
-
-    video.addEventListener("timeupdate", handleTimeUpdate);
-
-    return () => {
-      video.removeEventListener("timeupdate", handleTimeUpdate);
-    };
-  }, [showButtons]);
-
-  const joinWaitlist = () => {
-    const initialFormData = {
-      name: "",
-      email: "",
-      company: "",
-    };
-
-    const WaitlistForm = () => {
-      const [formSubmitting, setFormSubmitting] = useState(false);
-      const [error, _setError] = useState(false);
-
-      function submitWaitlistForm(_value: WaitlistFormData) {
-        setFormSubmitting(true);
-        // commit(
-        //   { name: value.name, email: value.email, company: value.company },
-        //   {
-        //     onError: () => {
-        //       logger.error("Error joining waitlist");
-        //       setError(true);
-        //       setFormSubmitting(false);
-        //     },
-        //     onComplete: ({ joinWaitlist }) => {
-        //       if (!joinWaitlist.success) {
-        //         logger.error(joinWaitlist.message);
-        //         setError(true);
-        //         return;
-        //       }
-        //       modalRef.current?.closeModal();
-        //       setFormSubmitting(false);
-        //     },
-        //   },
-        // );
-      }
-
-      return (
-        <div>
-          <h3>Join the waitlist</h3>
-          <div style={{ marginBottom: 12 }}>We're happy to have you here.</div>
-          <BfDsForm
-            testId="waitlist-form"
-            initialData={initialFormData}
-            onSubmit={submitWaitlistForm}
-            xstyle={{
-              display: "flex",
-              gap: 8,
-              flexDirection: "column",
-            }}
-          >
-            <BfDsFormTextInput id="name" title="What is your name?" />
-            <BfDsFormTextInput id="email" title="What is your email?" />
-            <BfDsFormTextInput
-              id="company"
-              title="Where do you work?"
-            />
-            <BfDsFormSubmitButton
-              testId="waitlist-submit"
-              disabled={formSubmitting}
-              text="Submit"
-              showSpinner={formSubmitting}
-            />
-            {error && (
-              <div>
-                <h3>Oops!</h3>
-                There was an error... email{" "}
-                <a href="mailto:dan@boltfoundry.com">Dan</a>{" "}
-                and we'll get in touch.
-              </div>
-            )}
-          </BfDsForm>
-        </div>
-      );
-    };
-
-    showModal(<WaitlistForm />, modalRef);
+  const scrollToSubstack = () => {
+    if (substackRef.current) {
+      substackRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
-  const videoContainerClasses = classnames([
-    "videoPlayerButtonsContainer",
-    {
-      active: showButtons,
-    },
-  ]);
-
   return (
-    <>
-      <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
-      />
-      <div className="appPage">
-        <div className="appHeader">
+    <div className="landing-page">
+      {/* Header */}
+      <header className="landing-header">
+        <div className="landing-content flexRow gapLarge">
           <div className="flex1">
-            <div className="appHeaderLogo">
-              <BfLogo boltColor="blpack" foundryColor="black" />
+            <div className="header-logo">
+              <BfLogo
+                boltColor="var(--text)"
+                foundryColor="var(--text)"
+                height={24}
+              />
             </div>
           </div>
-          {loggedOut && (
+          <nav className="alignItemsCenter flexRow gapLarge header-nav">
             <BfDsButton
+              kind="overlay"
+              href="https://substack.com/@boltfoundry"
+              hrefTarget="_blank"
+              rel="noopener noreferrer"
+              text="Blog"
+            />
+            <BfDsButton kind="overlay" link="/docs" text="Docs" />
+            <BfDsButton
+              kind="overlay"
+              href="https://discord.gg/tU5ksTBfEj"
+              hrefTarget="_blank"
+              rel="noopener noreferrer"
+              text="Discord"
+            />
+            {
+              /* <BfDsButton
               kind="outline"
               text="Login"
               onClick={() => navigate("/login")}
-            />
-          )}
+            /> */
+            }
+          </nav>
         </div>
+      </header>
 
-        <div className="appCta row-column">
-          <div className="text">
-            Model fine tuning that improves quality and cuts costs.
-          </div>
-          <BfDsButton text="Join the waitlist" onClick={joinWaitlist} />
-        </div>
-        {playPlinko ? <Plinko /> : (
-          <div className="flex1">
-            <div className="videoPlayer">
-              <video
-                autoPlay
-                muted
-                playsInline
-                webkit-playsinline="true"
-                preload="auto"
-                x-webkit-airplay="allow"
-                ref={videoRef}
-                onLoadedMetadata={(e) => {
-                  const video = e.target as HTMLVideoElement;
-                  video.play().catch((error) => {
-                    logger.error("Error playing video:", error);
-                  });
-                }}
-                onClick={() => {
-                  const video = videoRef.current;
-                  if (!video) return;
-                  if (video.paused) {
-                    video.play();
-                  }
-                }}
-              >
-                <source
-                  src="/static/assets/videos/plinko-mobile_720.mp4"
-                  type="video/mp4"
-                  media="(orientation: portrait) and (max-width: 400px)"
+      {/* Hero Section */}
+      <main className="hero-section flexColumn">
+        <div className="landing-content">
+          <div className="hero-content">
+            {/* Github button */}
+            <BfDsButton
+              kind="outline"
+              iconLeft="brand-github"
+              text={data?.githubRepoStats?.stars.toString() ?? "--"}
+              href="https://github.com/bolt-foundry/bolt-foundry"
+              hrefTarget="_blank"
+            />
+            <h1 className="hero-headline">
+              Structured prompts, reliable output
+            </h1>
+            <p className="hero-subhead">
+              Open source tooling to turn prompt engineering into more science
+              than art through structured, testable prompts
+            </p>
+
+            {/* NPM Install Section */}
+            <div className="npm-section">
+              <div className="npm-command-container">
+                <code className="npm-command">
+                  npm install @bolt-foundry/bolt-foundry
+                </code>
+                <BfDsCopyButton
+                  aria-label="Copy npm command"
+                  textToCopy="npm install @bolt-foundry/bolt-foundry"
                 />
-                <source
-                  src="/static/assets/videos/plinko-mobile_HD.mp4"
-                  type="video/mp4"
-                  media="(orientation: portrait) and (max-width: 800px)"
-                />
-                <source
-                  src="/static/assets/videos/plinko_720.mp4"
-                  type="video/mp4"
-                  media="(orientation: landscape) and (max-width: 800px)"
-                />
-                <source
-                  src="/static/assets/videos/plinko_4k.mp4"
-                  type="video/mp4"
-                  media="(min-width: 2000px)"
-                />
-                <source
-                  src="/static/assets/videos/plinko_hd.mp4"
-                  type="video/mp4"
-                  media="(min-width: 1000px)"
-                />
-                <source
-                  src="/static/assets/videos/plinko_720.mp4"
-                  type="video/mp4"
-                />
-              </video>
-              <div className={videoContainerClasses}>
-                <div className="videoPlayerButtons">
-                  <BfDsButton
-                    iconLeft="back"
-                    kind="outline"
-                    text="Replay"
-                    onClick={() => setShouldPlay(true)}
-                  />
-                  <BfDsButton text="Join the waitlist" onClick={joinWaitlist} />
-                </div>
               </div>
             </div>
           </div>
-        )}
-        <div className="appFooter mobile-hide">
-          <BfDsButton
-            kind="outline"
-            text={playPlinko ? "Watch the video" : "Play the game"}
-            onClick={() => setPlayPlinko(!playPlinko)}
-          />
-          <div>Copyright Content Foundry, Inc.</div>
         </div>
-        <div className="appFooter mobile-show">
-          Play the game in your desktop browser.
+        <div className="more-content flexCenter flexColumn mobile-hide">
+          <BfDsButton iconLeft="arrowDown" onClick={scrollToSubstack} />
         </div>
-      </div>
-    </>
+      </main>
+
+      {/* Substack Subscription */}
+      <section className="substack-section" ref={substackRef}>
+        <div className="landing-content">
+          <div className="substack-container">
+            <h2 className="substack-title">Stay updated</h2>
+
+            {/* Substack email form */}
+            <iframe
+              src="https://boltfoundry.substack.com/embed"
+              width="480"
+              height="320"
+              style={{ borderRadius: 8, maxWidth: "100%" }}
+            >
+            </iframe>
+
+            <p className="substack-description">
+              Get updates on structured prompt engineering from{" "}
+              <a
+                href="https://substack.com/@boltfoundry"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                our Substack
+              </a>
+            </p>
+          </div>
+        </div>
+        <div className="landing-footer">
+          <div className="landing-content flexRow gapMedium">
+            <div className="flex1">
+              &copy; 2025 Bolt Foundry. All rights reserved.
+            </div>
+            <BfDsButton
+              size="medium"
+              kind="overlay"
+              iconLeft="brand-discord"
+              href="https://discord.gg/tU5ksTBfEj"
+              hrefTarget="_blank"
+            />
+            <BfDsButton
+              size="medium"
+              kind="overlay"
+              iconLeft="brand-github"
+              href="https://github.com/bolt-foundry/bolt-foundry"
+              hrefTarget="_blank"
+            />
+          </div>
+        </div>
+      </section>
+    </div>
   );
 });

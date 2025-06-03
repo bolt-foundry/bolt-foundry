@@ -37,7 +37,7 @@ const paletteDark = {
   fourthary: [238, 130, 238], // rgba(238, 130, 238, 1)
   negative: [248, 113, 113], // rgba(248, 113, 113, 1)
   // success: use 'secondary'
-  text: [220, 220, 225],
+  text: [250, 250, 255],
   textMarketing: [230, 230, 235], // rgba(46, 46, 46, 1)
   accentText: [19, 201, 212], // rgba(19, 201, 212, 1)
   secondaryText: [141, 147, 154], // rgba(141, 147, 154, 1)
@@ -156,7 +156,7 @@ function generateColors(dark = false) {
     ...createSet("alert", palette.negative, adjustment),
     success: color(palette.secondary),
     successHover: color(palette.secondary, -adjustment),
-    background: color(palette.background),
+    ...createSet("background", palette.background, adjustment),
     backgroundAlert: color(palette.negative, -adjustment * 20),
     backgroundIcon: color(palette.background, -adjustment),
     backgroundIconHover: color(palette.background, -adjustment * 2),
