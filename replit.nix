@@ -7,5 +7,5 @@ let
 in
 {
   # call the helper with Replit’s own `pkgs`
-  deps = flake.replitDeps pkgs;
+  deps = flake.replitDeps { inherit pkgs system; };
 }
