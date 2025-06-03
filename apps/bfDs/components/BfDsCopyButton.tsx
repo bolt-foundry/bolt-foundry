@@ -11,7 +11,7 @@ type Props = {
 };
 const { useState } = React;
 export function BfDsCopyButton(
-  { textToCopy, buttonText = "Copy", kind = "overlay" }: Props,
+  { textToCopy, buttonText = "Copy", kind = "dan" }: Props,
 ) {
   const [copied, setCopied] = useState(false);
   const [, copy] = useCopyToClipboard();
@@ -22,14 +22,13 @@ export function BfDsCopyButton(
   };
 
   const text = copied ? "Copied!" : buttonText;
-  const marginInlineStart = copied ? 0 : 18;
 
   return (
     <BfDsButton
-      kind={copied ? "outlineSuccess" : kind}
+      kind={copied ? "primary" : kind}
       text={text}
       onClick={handleCopy}
-      xstyle={{ marginInlineStart }}
+      xstyle={{ minWidth: 86 }}
     />
   );
 }
