@@ -1,10 +1,15 @@
 type Props = {
   boltColor?: string;
   foundryColor?: string;
+  height?: number | string;
 };
 
 export function BfLogo(
-  { boltColor = "var(--logoBolt)", foundryColor = "var(--logoFoundry)" }: Props,
+  {
+    boltColor = "var(--logoBolt)",
+    foundryColor = "var(--logoFoundry)",
+    height = "100%",
+  }: Props,
 ) {
   return (
     <svg
@@ -17,6 +22,7 @@ export function BfLogo(
       y="0px"
       viewBox="0 0 601 74"
       xmlSpace="preserve"
+      style={{ height: height }}
     >
       <path
         fill={foundryColor}
