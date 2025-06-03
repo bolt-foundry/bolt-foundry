@@ -7,7 +7,6 @@ channel = "stable-24_11"
 
 [deployment]
 deploymentTarget = "cloudrun"
-build = ["sh", "-c", "bff build"]
 # build = ["sh", "-c", "bff build"]
 run = ["sh", "-c", "WEB_PORT=9999 ./build/web"]
 
