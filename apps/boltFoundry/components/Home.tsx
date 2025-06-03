@@ -43,7 +43,7 @@ field Query.Home @component {
           <nav className="alignItemsCenter flexRow gapLarge header-nav">
             <BfDsButton
               kind="overlay"
-              href="https://substack.com/@boltfoundry"
+              href="https://boltfoundry.substack.com/"
               hrefTarget="_blank"
               rel="noopener noreferrer"
               text="Blog"
