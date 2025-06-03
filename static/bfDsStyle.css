@@ -112,6 +112,9 @@ a.dark:visited {
   align-items: center;
   justify-content: center;
 }
+.flexWrap {
+  flex-wrap: wrap;
+}
 .gapMedium {
   gap: 8px;
 }

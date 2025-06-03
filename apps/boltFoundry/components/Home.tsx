@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
 import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
@@ -9,6 +9,35 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const _logger = getLogger(import.meta);
 
+const NavButtons = () => {
+  return (
+    <>
+      <BfDsButton
+        kind="dan"
+        href="https://boltfoundry.substack.com/"
+        hrefTarget="_blank"
+        rel="noopener noreferrer"
+        text="Blog"
+      />
+      <BfDsButton kind="dan" link="/docs" text="Docs" />
+      <BfDsButton
+        kind="dan"
+        href="https://discord.gg/tU5ksTBfEj"
+        hrefTarget="_blank"
+        rel="noopener noreferrer"
+        text="Discord"
+      />
+      {
+        /* <BfDsButton
+      kind="outline"
+      text="Login"
+      onClick={() => navigate("/login")}
+    /> */
+      }
+    </>
+  );
+};
+
 export const Home = iso(`
 field Query.Home @component {
     __typename
@@ -18,6 +47,7 @@ field Query.Home @component {
   }
 `)(function Home({ data }) {
   // const { navigate } = useRouter();
+  const [showMenu, setShowMenu] = useState(false);
   const substackRef = useRef<HTMLDivElement>(null);
 
   const scrollToSubstack = () => {
@@ -31,7 +61,7 @@ field Query.Home @component {
       {/* Header */}
       <header className="landing-header">
         <div className="landing-content flexRow gapLarge">
-          <div className="flex1">
+          <div className="flex1 flexRow alignItemsCenter">
             <div className="header-logo">
               <BfLogo
                 boltColor="var(--text)"
@@ -40,30 +70,36 @@ field Query.Home @component {
               />
             </div>
           </div>
-          <nav className="alignItemsCenter flexRow gapLarge header-nav">
+          <div className="mobile-hide">
+            <nav className="alignItemsCenter flexRow gapLarge header-nav">
+              <NavButtons />
+            </nav>
+          </div>
+          <nav className="mobile-show">
             <BfDsButton
-              kind="overlay"
-              href="https://boltfoundry.substack.com/"
-              hrefTarget="_blank"
-              rel="noopener noreferrer"
-              text="Blog"
+              kind="dan"
+              iconLeft="menu"
+              onClick={() => {
+                setShowMenu(true);
+              }}
             />
-            <BfDsButton kind="overlay" link="/docs" text="Docs" />
-            <BfDsButton
-              kind="overlay"
-              href="https://discord.gg/tU5ksTBfEj"
-              hrefTarget="_blank"
-              rel="noopener noreferrer"
-              text="Discord"
-            />
-            {
-              /* <BfDsButton
-              kind="outline"
-              text="Login"
-              onClick={() => navigate("/login")}
-            /> */
-            }
           </nav>
+          {showMenu && (
+            <div className="mobile-show">
+              <div className="flexColumn gapLarge sidebar-nav">
+                <div className="selfAlignEnd">
+                  <BfDsButton
+                    kind="dan"
+                    iconLeft="cross"
+                    onClick={() => {
+                      setShowMenu(false);
+                    }}
+                  />
+                </div>
+                <NavButtons />
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -73,7 +109,7 @@ field Query.Home @component {
           <div className="hero-content">
             {/* Github button */}
             <BfDsButton
-              kind="outline"
+              kind="dan"
               iconLeft="brand-github"
               text={data?.githubRepoStats?.stars.toString() ?? "--"}
               href="https://github.com/bolt-foundry/bolt-foundry"
@@ -89,7 +125,7 @@ field Query.Home @component {
 
             {/* NPM Install Section */}
             <div className="npm-section">
-              <div className="npm-command-container">
+              <div className="npm-command-container flexRow flexWrap gapMedium">
                 <code className="npm-command">
                   npm install @bolt-foundry/bolt-foundry
                 </code>
@@ -111,16 +147,6 @@ field Query.Home @component {
         <div className="landing-content">
           <div className="substack-container">
             <h2 className="substack-title">Stay updated</h2>
-
-            {/* Substack email form */}
-            <iframe
-              src="https://boltfoundry.substack.com/embed"
-              width="480"
-              height="320"
-              style={{ borderRadius: 8, maxWidth: "100%" }}
-            >
-            </iframe>
-
             <p className="substack-description">
               Get updates on structured prompt engineering from{" "}
               <a
@@ -131,6 +157,19 @@ field Query.Home @component {
                 our Substack
               </a>
             </p>
+            {/* Substack email form */}
+            <iframe
+              src="https://boltfoundry.substack.com/embed"
+              width="480"
+              height="320"
+              style={{
+                borderRadius: 8,
+                maxWidth: "100%",
+                border: "none",
+                background: "none",
+              }}
+            >
+            </iframe>
           </div>
         </div>
         <div className="landing-footer">
@@ -140,14 +179,14 @@ field Query.Home @component {
             </div>
             <BfDsButton
               size="medium"
-              kind="overlay"
+              kind="danDim"
               iconLeft="brand-discord"
               href="https://discord.gg/tU5ksTBfEj"
               hrefTarget="_blank"
             />
             <BfDsButton
               size="medium"
-              kind="overlay"
+              kind="danDim"
               iconLeft="brand-github"
               href="https://github.com/bolt-foundry/bolt-foundry"
               hrefTarget="_blank"
