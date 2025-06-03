@@ -43,7 +43,7 @@ field Query.Home @component {
           <nav className="alignItemsCenter flexRow gapLarge header-nav">
             <BfDsButton
               kind="overlay"
-              href="https://substack.com/@boltfoundry"
+              href="https://boltfoundry.substack.com/"
               hrefTarget="_blank"
               rel="noopener noreferrer"
               text="Blog"
@@ -120,7 +120,7 @@ field Query.Home @component {
               style={{ borderRadius: 8, maxWidth: "100%" }}
             >
             </iframe>
-
+            
             <p className="substack-description">
               Get updates on structured prompt engineering from{" "}
               <a
