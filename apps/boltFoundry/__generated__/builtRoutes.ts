@@ -6,6 +6,7 @@ export type RouteEntrypoint = {
   title: string;
 };
 
+iso(`entrypoint Mutation.JoinWaitlist`)
 iso(`entrypoint Query.EntrypointDocs`)
 iso(`entrypoint Query.EntrypointFormatter`)
 iso(`entrypoint Query.EntrypointHome`)
@@ -15,8 +16,10 @@ import entrypointDocs from "apps/boltFoundry/__generated__/__isograph/Query/Entr
 import entrypointFormatter from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointFormatter/entrypoint.ts"
 import entrypointHome from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointHome/entrypoint.ts"
 import entrypointLogin from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointLogin/entrypoint.ts"
+import joinWaitlist from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts"
 
 export {entrypointDocs};
 export {entrypointFormatter};
 export {entrypointHome};
 export {entrypointLogin};
+export {joinWaitlist};

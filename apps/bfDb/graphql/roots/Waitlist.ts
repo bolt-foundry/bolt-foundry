@@ -35,28 +35,32 @@ export class Waitlist extends GraphQLObjectBase {
                 ? `https://${slug}.replit.app`
                 : "http://localhost:8000";
 
-            const joinWaitlistResponse = await fetch(
-              `${baseUrl}/contacts-cms`,
-              {
-                method: "POST",
-                headers: {
-                  "x-api-key": apiKey,
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  name: name,
-                  email: email,
-                  company: company,
-                }),
-              },
-            );
+            // const joinWaitlistResponse = await fetch(
+            //   `${baseUrl}/contacts-cms`,
+            //   {
+            //     method: "POST",
+            //     headers: {
+            //       "x-api-key": apiKey,
+            //       "Content-Type": "application/json",
+            //     },
+            //     body: JSON.stringify({
+            //       name: name,
+            //       email: email,
+            //       company: company,
+            //     }),
+            //   },
+            // );
 
-            const responseData = await joinWaitlistResponse.json();
+            // const responseData = await joinWaitlistResponse.json();
+            const responseData = {
+              success: true,
+              message: "Joined waitlist (TEST)",
+            }
             logger.debug("Response", responseData);
 
             return {
               success: responseData.success !== false,
-              message: responseData.message || null,
+              message: responseData.message || undefined,
             };
           } catch (error) {
             logger.error("Error joining waitlist", error);
