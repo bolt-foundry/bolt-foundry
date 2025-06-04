@@ -55,7 +55,7 @@ export type SampleBuilder = {
  * Options for spec method including samples
  */
 export type SpecOptions = {
-  samples?: (s: SampleBuilder) => SampleBuilder;
+  samples?: ((s: SampleBuilder) => SampleBuilder) | Array<Sample>;
 };
 
 /**
@@ -106,9 +106,23 @@ export function makeCardBuilder(cards: Array<Card> = []): CardBuilder {
 
       // If options are provided, process samples
       if (options?.samples) {
-        const sampleBuilder = options.samples(makeSampleBuilder());
-        const samples = sampleBuilder.getSamples();
-        if (samples.length > 0) {
+        let samples: Array<Sample> | undefined;
+
+        if (Array.isArray(options.samples)) {
+          // Array pattern - use samples directly
+          if (options.samples.length > 0) {
+            samples = options.samples;
+          }
+        } else {
+          // Builder pattern - call the function
+          const sampleBuilder = options.samples(makeSampleBuilder());
+          const builtSamples = sampleBuilder.getSamples();
+          if (builtSamples.length > 0) {
+            samples = builtSamples;
+          }
+        }
+
+        if (samples) {
           valueCard.samples = samples;
         }
       }
@@ -279,9 +293,23 @@ export function makeDeckBuilder(
 
       // If options are provided, process samples
       if (options?.samples) {
-        const sampleBuilder = options.samples(makeSampleBuilder());
-        const samples = sampleBuilder.getSamples();
-        if (samples.length > 0) {
+        let samples: Array<Sample> | undefined;
+
+        if (Array.isArray(options.samples)) {
+          // Array pattern - use samples directly
+          if (options.samples.length > 0) {
+            samples = options.samples;
+          }
+        } else {
+          // Builder pattern - call the function
+          const sampleBuilder = options.samples(makeSampleBuilder());
+          const builtSamples = sampleBuilder.getSamples();
+          if (builtSamples.length > 0) {
+            samples = builtSamples;
+          }
+        }
+
+        if (samples) {
           valueCard.samples = samples;
         }
       }

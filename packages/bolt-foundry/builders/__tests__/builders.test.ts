@@ -208,3 +208,143 @@ Deno.test("Sample system - card with samples renders correctly", () => {
   assertEquals(result[0].samples![0].rating, 3);
   assertEquals(result[0].samples![1].rating, -2);
 });
+
+// Array pattern tests for Phase 1 implementation
+Deno.test("Array pattern - basic spec with array of samples", () => {
+  const builder = makeCardBuilder();
+  const result = builder
+    .spec("Be helpful", {
+      samples: [
+        { text: "I'll help you solve this step by step", rating: 3 },
+        { text: "Let me assist you with that", rating: 2 },
+        { text: "Figure it out yourself", rating: -2 },
+      ],
+    })
+    .getCards();
+
+  assertEquals(result.length, 1);
+  assertEquals(result[0].value, "Be helpful");
+  assertEquals(result[0].samples?.length, 3);
+  assertEquals(result[0].samples![0], {
+    text: "I'll help you solve this step by step",
+    rating: 3,
+  });
+  assertEquals(result[0].samples![1], {
+    text: "Let me assist you with that",
+    rating: 2,
+  });
+  assertEquals(result[0].samples![2], {
+    text: "Figure it out yourself",
+    rating: -2,
+  });
+});
+
+Deno.test("Array pattern - empty array creates no samples", () => {
+  const builder = makeCardBuilder();
+  const result = builder
+    .spec("No samples spec", {
+      samples: [],
+    })
+    .getCards();
+
+  assertEquals(result.length, 1);
+  assertEquals(result[0].value, "No samples spec");
+  assertEquals(result[0].samples, undefined);
+});
+
+Deno.test("Array pattern - samples with various ratings", () => {
+  const builder = makeCardBuilder();
+  const result = builder
+    .spec("Communication style", {
+      samples: [
+        { text: "Excellent response", rating: 3 },
+        { text: "Good response", rating: 2 },
+        { text: "Okay response", rating: 1 },
+        { text: "Neutral response", rating: 0 },
+        { text: "Poor response", rating: -1 },
+        { text: "Bad response", rating: -2 },
+        { text: "Terrible response", rating: -3 },
+      ],
+    })
+    .getCards();
+
+  assertEquals(result[0].samples?.length, 7);
+  assertEquals(result[0].samples![0].rating, 3);
+  assertEquals(result[0].samples![6].rating, -3);
+});
+
+Deno.test("Array pattern - mixed with builder pattern in same CardBuilder", () => {
+  const builder = makeCardBuilder();
+  const result = builder
+    .spec("Uses builder", {
+      samples: (s) => s.sample("Builder example", 2),
+    })
+    .spec("Uses array", {
+      samples: [
+        { text: "Array example 1", rating: 1 },
+        { text: "Array example 2", rating: -1 },
+      ],
+    })
+    .getCards();
+
+  assertEquals(result.length, 2);
+
+  // First spec uses builder
+  assertEquals(result[0].value, "Uses builder");
+  assertEquals(result[0].samples?.length, 1);
+  assertEquals(result[0].samples![0].text, "Builder example");
+
+  // Second spec uses array
+  assertEquals(result[1].value, "Uses array");
+  assertEquals(result[1].samples?.length, 2);
+  assertEquals(result[1].samples![0].text, "Array example 1");
+});
+
+Deno.test("Array pattern - samples with descriptions", () => {
+  const builder = makeCardBuilder();
+  const result = builder
+    .spec("Detailed examples", {
+      samples: [
+        {
+          text: "This is a great example",
+          rating: 3,
+          description: "Shows ideal behavior",
+        },
+        {
+          text: "This is problematic",
+          rating: -2,
+          description: "Demonstrates what to avoid",
+        },
+      ],
+    })
+    .getCards();
+
+  assertEquals(result[0].samples?.length, 2);
+  assertEquals(result[0].samples![0].description, "Shows ideal behavior");
+  assertEquals(result[0].samples![1].description, "Demonstrates what to avoid");
+});
+
+Deno.test("Array pattern - nested card structure with array samples", () => {
+  const result = card(
+    "assistant",
+    (c) =>
+      c.card("personality", (p) =>
+        p.spec("empathy", {
+          samples: [
+            { text: "I understand how frustrating that must be", rating: 3 },
+            { text: "That's your problem", rating: -3 },
+          ],
+        })),
+  );
+
+  const personality = (result.value as Array<Card>)[0];
+  const empathy = (personality.value as Array<Card>)[0];
+
+  assertEquals(empathy.value, "empathy");
+  assertEquals(empathy.samples?.length, 2);
+  assertEquals(
+    empathy.samples![0].text,
+    "I understand how frustrating that must be",
+  );
+  assertEquals(empathy.samples![0].rating, 3);
+});
