@@ -23,6 +23,7 @@ import {
   PRIVATE_CONFIG_KEYS,
   PUBLIC_CONFIG_KEYS,
 } from "apps/boltFoundry/__generated__/configKeys.ts";
+import { getLogger } from "packages/logger/logger.ts";
 
 /* ─── environment helpers ─────────────────────────────────────────────────── */
 const isDeno = typeof Deno !== "undefined" && !!Deno?.version?.deno;
@@ -150,9 +151,27 @@ export async function getSecret(key: string): Promise<string | undefined> {
 export async function warmSecrets(keys: string[] = KNOWN_KEYS) {
   if (!isDeno) return; // no‑op in browser
   const toFetch = keys.filter((k) => !getEnv(k));
-  const resolved = await opInject(toFetch);
-  for (const [k, v] of Object.entries(resolved)) {
-    CACHE.set(k, { value: v, expires: now() + CACHE_TTL_MS });
+  
+  try {
+    // Try batch operation first for efficiency
+    const resolved = await opInject(toFetch);
+    for (const [k, v] of Object.entries(resolved)) {
+      CACHE.set(k, { value: v, expires: now() + CACHE_TTL_MS });
+    }
+  } catch (error) {
+    // If batch operation fails (e.g., missing keys), fall back to individual fetches
+    const logger = getLogger(import.meta);
+    logger.warn(`Batch secret fetch failed, falling back to individual fetches: ${error}`);
+    
+    for (const key of toFetch) {
+      try {
+        const value = await opRead(key);
+        CACHE.set(key, { value, expires: now() + CACHE_TTL_MS });
+      } catch (keyError) {
+        // Individual key not found - this is expected for deleted keys
+        logger.debug(`Secret not found in 1Password: ${key}`);
+      }
+    }
   }
 }
 
