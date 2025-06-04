@@ -3,8 +3,56 @@
 import { register } from "infra/bff/bff.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { runEval } from "packages/bolt-foundry/evals/eval.ts";
+import startSpinner from "lib/terminalSpinner.ts";
 
 const logger = getLogger(import.meta);
+
+function printLine(message: string) {
+  // deno-lint-ignore no-console
+  console.log(message);
+}
+
+function printTable(data: unknown[] | Record<string, unknown>) {
+  // Format numbers to at most 3 decimal places
+  const formatValue = (value: unknown): unknown => {
+    if (typeof value === "number") {
+      // If it's an integer or has no decimal places, return as is
+      if (Number.isInteger(value)) {
+        return value;
+      }
+      // Otherwise format to at most 3 decimal places
+      const formatted = parseFloat(value.toFixed(3));
+      return formatted;
+    }
+    return value;
+  };
+
+  // Process the data
+  let processedData: unknown[] | Record<string, unknown>;
+
+  if (Array.isArray(data)) {
+    processedData = data.map((row) => {
+      if (typeof row === "object" && row !== null) {
+        const processedRow: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(row)) {
+          processedRow[key] = formatValue(value);
+        }
+        return processedRow;
+      }
+      return row;
+    });
+  } else if (typeof data === "object" && data !== null) {
+    processedData = {};
+    for (const [key, value] of Object.entries(data)) {
+      processedData[key] = formatValue(value);
+    }
+  } else {
+    processedData = data;
+  }
+
+  // deno-lint-ignore no-console
+  console.table(processedData);
+}
 
 export async function evalCommand(options: string[]): Promise<number> {
   // Parse command line arguments
@@ -45,10 +93,21 @@ export async function evalCommand(options: string[]): Promise<number> {
     args.model = "openai/gpt-4o";
   }
 
-  logger.info(`Running evaluation...`);
-  logger.info(`Input: ${args.inputFile}`);
-  logger.info(`Deck: ${args.deckFile}`);
-  logger.info(`Model: ${args.model}`);
+  logger.debug(`Running evaluation...`);
+  logger.debug(`Input: ${args.inputFile}`);
+  logger.debug(`Deck: ${args.deckFile}`);
+  logger.debug(`Model: ${args.model}`);
+
+  // Show evaluation configuration
+  printLine("\nEvaluation Configuration:");
+  printTable({
+    "Input File": args.inputFile,
+    "Deck File": args.deckFile,
+    "Model": args.model,
+    "Output": args.outputFile || "Console",
+  });
+
+  const stopSpinner = startSpinner();
 
   try {
     // Run the evaluation
@@ -58,23 +117,26 @@ export async function evalCommand(options: string[]): Promise<number> {
       model: args.model,
     });
 
+    stopSpinner();
+    // Clear the spinner line
+    if (Deno.stdout.isTerminal()) {
+      await Deno.stdout.write(new TextEncoder().encode("\r\x1b[K"));
+    }
+
     // Output results
     if (args.outputFile) {
       // Write to file
       const output = results.map((r) => JSON.stringify(r)).join("\n");
       await Deno.writeTextFile(args.outputFile, output);
-      logger.info(`Results written to ${args.outputFile}`);
+      logger.debug(`Results written to ${args.outputFile}`);
     } else {
       // Output to console
-      logger.info(`\nEvaluation Results (${results.length} samples):`);
-
-      // deno-lint-ignore no-console
-      console.table(
+      printLine("\nEvaluation Results:");
+      printTable(
         results.map((r) => ({
           "Sample ID": r.id,
           "Score": r.score,
           "Latency (ms)": r.latencyInMs,
-          "Notes": r.output.notes || "",
         })),
       );
 
@@ -84,11 +146,10 @@ export async function evalCommand(options: string[]): Promise<number> {
       const avgLatency = results.reduce((a, b) => a + b.latencyInMs, 0) /
         results.length;
 
-      logger.info("\nSummary Statistics:");
-      // deno-lint-ignore no-console
-      console.table({
-        "Average Score": avgScore.toFixed(2),
-        "Average Latency (ms)": avgLatency.toFixed(0),
+      printLine("\nSummary Statistics:");
+      printTable({
+        "Average Score": avgScore,
+        "Average Latency (ms)": avgLatency,
         "Total Samples": results.length,
       });
 
@@ -98,7 +159,7 @@ export async function evalCommand(options: string[]): Promise<number> {
       );
 
       if (resultsWithGroundTruth.length > 0) {
-        logger.info("\nJudge Calibration Metrics:");
+        printLine("\nJudge Calibration Metrics:");
 
         // Calculate accuracy metrics
         let exactMatches = 0;
@@ -114,20 +175,19 @@ export async function evalCommand(options: string[]): Promise<number> {
           totalError += diff;
         }
 
-        const exactAccuracy =
-          (exactMatches / resultsWithGroundTruth.length * 100).toFixed(1);
-        const withinOneAccuracy =
-          (withinOne / resultsWithGroundTruth.length * 100).toFixed(1);
-        const avgError = (totalError / resultsWithGroundTruth.length).toFixed(
-          2,
-        );
+        const exactAccuracy = exactMatches / resultsWithGroundTruth.length *
+          100;
+        const withinOneAccuracy = withinOne / resultsWithGroundTruth.length *
+          100;
+        const avgError = totalError / resultsWithGroundTruth.length;
 
-        // deno-lint-ignore no-console
-        console.table({
-          "Exact Match Rate":
-            `${exactAccuracy}% (${exactMatches}/${resultsWithGroundTruth.length})`,
-          "Within ±1 Accuracy":
-            `${withinOneAccuracy}% (${withinOne}/${resultsWithGroundTruth.length})`,
+        printTable({
+          "Exact Match Rate": `${
+            exactAccuracy.toFixed(1)
+          }% (${exactMatches}/${resultsWithGroundTruth.length})`,
+          "Within ±1 Accuracy": `${
+            withinOneAccuracy.toFixed(1)
+          }% (${withinOne}/${resultsWithGroundTruth.length})`,
           "Average Absolute Error": avgError,
           "Total Samples with Ground Truth": resultsWithGroundTruth.length,
         });
@@ -138,9 +198,8 @@ export async function evalCommand(options: string[]): Promise<number> {
         );
 
         if (disagreements.length > 0) {
-          logger.info("\nDisagreements:");
-          // deno-lint-ignore no-console
-          console.table(
+          printLine("\nDisagreements:");
+          printTable(
             disagreements.map((result) => {
               const groundTruth = result.sampleMetadata
                 ?.groundTruthScore as number;
@@ -149,22 +208,48 @@ export async function evalCommand(options: string[]): Promise<number> {
                 "Judge Score": result.score,
                 "Ground Truth": groundTruth,
                 "Difference": result.score - groundTruth,
+                "Assistant Response": "See detailed analysis below",
               };
             }),
           );
+
+          // Detailed breakdown of each disagreement
+          printLine("\nDetailed Disagreement Analysis:");
+          disagreements.forEach((result, index) => {
+            const groundTruth = result.sampleMetadata
+              ?.groundTruthScore as number;
+            printLine(`\n${"=".repeat(80)}`);
+            printLine(
+              `Disagreement ${index + 1} - Sample ID: ${result.id || "N/A"}`,
+            );
+            printLine(`${"=".repeat(80)}`);
+            // User input and assistant response aren't directly available in JudgementResult
+            // They would need to be included in sampleMetadata during evaluation
+            printLine(
+              `Scores: Judge=${result.score}, Ground Truth=${groundTruth}`,
+            );
+            printLine(
+              `Judge Notes: ${result.output.notes || "No notes provided"}`,
+            );
+          });
         }
       }
     }
 
     return 0;
   } catch (error) {
+    stopSpinner();
+    // Clear the spinner line
+    if (Deno.stdout.isTerminal()) {
+      await Deno.stdout.write(new TextEncoder().encode("\r\x1b[K"));
+    }
     logger.error(`Evaluation failed: ${error}`);
     return 1;
   }
 }
 
 function printHelp() {
-  logger.info(`
+  logger.debug(`
 Usage: bff eval [options]
 
 Run LLM evaluation on a dataset using a judge deck.
