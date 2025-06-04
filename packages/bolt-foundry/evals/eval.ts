@@ -18,6 +18,7 @@ export interface JudgementResult {
     score: number;
     notes?: string;
   };
+  sample: EvalSample;
   sampleMetadata?: Record<string, unknown>;
 }
 
@@ -26,7 +27,7 @@ interface EvalSample {
   userMessage: string;
   assistantResponse: string;
   expected?: string;
-  groundTruthScore?: number; // Expected score for meta-evaluation
+  score?: number; // Expected score for meta-evaluation
   [key: string]: unknown;
 }
 
@@ -173,6 +174,7 @@ export async function runEval(
       latencyInMs,
       rawOutput,
       output,
+      sample,
       sampleMetadata: Object.fromEntries(
         Object.entries(sample).filter(([key]) =>
           !["id", "userMessage", "assistantResponse", "expected"].includes(key)
