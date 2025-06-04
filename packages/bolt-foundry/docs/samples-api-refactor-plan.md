@@ -119,12 +119,23 @@ interface Sample {
 
 **Goal**: Standardize on `score` instead of `groundTruthScore`
 
-- [ ] Add `score` as alias for `groundTruthScore` in `EvalSample`
-- [ ] Update eval.ts to accept both `score` and `groundTruthScore`
+**Status**: In Progress
+
+- [x] Add `score` as alias for `groundTruthScore` in `EvalSample`
+  - The interface already accepts any field via `[key: string]: unknown`
+- [x] Update eval.ts to accept both `score` and `groundTruthScore`
+  - Current implementation already preserves both fields in sampleMetadata
 - [ ] Update CLI to use `score` internally
-- [ ] Write tests for both field names working
+  - CLI calibration metrics currently only check for `groundTruthScore`
+- [x] Write tests for both field names working
+  - Added comprehensive tests in `eval.test.ts`
+  - Added `score-field.test.ts` for specific field handling tests
 - [ ] Update eval examples to use `score`
 - [ ] Land this change - both field names work
+
+**Progress Notes**:
+- 2025-01-06: Tests written showing that eval.ts already preserves both fields
+- 2025-01-06: Discovered that only CLI calibration logic needs updating
 
 ### Phase 3: Add Metadata Field Support
 
