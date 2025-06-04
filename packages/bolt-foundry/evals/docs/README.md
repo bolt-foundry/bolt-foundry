@@ -15,6 +15,8 @@ across multiple underlying base models.
   simultaneously to compare performance and consistency (powered by Open Router)
 - **Parallel Execution**: Run evaluations concurrently for faster results across
   multiple models and iterations
+- **Meta Judge Analysis**: Calibrate and validate judge quality using ground
+  truth scores to ensure consistent and accurate evaluations
 
 ## Quickstart
 
@@ -46,6 +48,7 @@ type Sample = {
   userMessage: string;
   assistantResponse: string;
   id?: string;
+  groundTruthScore?: number; // Optional: expected score for meta-evaluation (-3 to 3)
   sampleMetadata?: Record<string, unknown>; // your custom metadata to forward along to the reporter
 };
 
@@ -136,3 +139,61 @@ type JudgementResult<TOutputType = Record<string, unknown>, TSampleMetadata = Re
   }
 }
 ```
+
+## Meta Judge Analysis
+
+Bolt Foundry Evals supports "judging the judge" by comparing judge scores
+against ground truth scores. This calibration feature helps you:
+
+1. **Validate Judge Quality**: Ensure your judges score consistently and
+   accurately
+2. **Improve Judge Criteria**: Identify areas where judge instructions need
+   refinement
+3. **Compare Judge Versions**: Measure improvements when updating judge decks
+
+### Adding Ground Truth Scores
+
+Include a `groundTruthScore` field in your input samples:
+
+```jsonl
+{"userMessage": "Extract: name=John", "assistantResponse": "{\"name\":\"John\"}", "groundTruthScore": 3}
+{"userMessage": "Parse: color=red", "assistantResponse": "{'color': 'red'}", "groundTruthScore": 2}
+{"userMessage": "Convert: email=test@test.com", "assistantResponse": "test@test.com", "groundTruthScore": -3}
+```
+
+### Calibration Metrics
+
+When ground truth scores are provided, the eval command reports:
+
+- **Exact Match Rate**: Percentage of samples where judge score equals ground
+  truth
+- **Within ±1 Accuracy**: Percentage of samples within 1 point of ground truth
+- **Average Absolute Error**: Mean difference between judge and ground truth
+  scores
+- **Disagreements**: Specific samples where judge and ground truth differ
+
+### Example: Improving a JSON Validator
+
+Using calibration data, we improved our JSON validator from 60% to 90% accuracy:
+
+**Version 1** (vague criteria):
+
+```
+Exact Match Rate: 60% (6/10)
+Average Error: 0.80
+```
+
+**Version 2** (precise criteria):
+
+```
+Exact Match Rate: 90% (9/10)
+Average Error: 0.30
+```
+
+The key improvements:
+
+- Clearly distinguished between strict JSON (double quotes) and relaxed syntax
+  (single quotes)
+- Specified exact scoring for different failure modes (-1 for extra keys, -3 for
+  non-JSON)
+- Added precise handling of edge cases (e.g., empty JSON when data expected)
