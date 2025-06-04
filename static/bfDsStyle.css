@@ -394,10 +394,11 @@ li.breadcrumb-item:not(:first-of-type)::before {
   cursor: pointer;
 }
 .list-item-row.clickable:hover {
-  background-color: var(--secondaryColor015);
+  background-color: var(--primaryColor015);
 }
 .list-item-row.isHighlighted {
-  background-color: var(--secondaryColor030);
+  background-color: var(--primaryColor030);
+  color: var(--primaryColor);
 }
 .list-item-main {
   flex: 1;
