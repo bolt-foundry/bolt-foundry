@@ -1,0 +1,4 @@
+{"id":"cal-001","userMessage":"What is the user's name?","assistantResponse":"John","groundTruthScore":3}
+{"id":"cal-002","userMessage":"What is the user's occupation?", "assistantResponse": "Engineer at Meta","groundTruthScore":2}
+{"id":"cal-003","userMessage":"What is the user's name?","assistantResponse":"The user's name is John.","groundTruthScore":-1}
+{"id":"cal-004","userMessage":"What is the user's name?","assistantResponse":"The user's name is John. Is there anything else you want to know about the user?","groundTruthScore":-3}
