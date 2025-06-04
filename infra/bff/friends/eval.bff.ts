@@ -155,7 +155,7 @@ export async function evalCommand(options: string[]): Promise<number> {
 
       // Calibration metrics if ground truth scores are present
       const resultsWithGroundTruth = results.filter((r) =>
-        r.sampleMetadata && "groundTruthScore" in r.sampleMetadata
+        r.sampleMetadata && "score" in r.sampleMetadata
       );
 
       if (resultsWithGroundTruth.length > 0) {
@@ -167,7 +167,7 @@ export async function evalCommand(options: string[]): Promise<number> {
         let totalError = 0;
 
         for (const result of resultsWithGroundTruth) {
-          const groundTruth = result.sampleMetadata?.groundTruthScore as number;
+          const groundTruth = result.sampleMetadata?.score as number;
           const diff = Math.abs(result.score - groundTruth);
 
           if (diff === 0) exactMatches++;
@@ -194,7 +194,7 @@ export async function evalCommand(options: string[]): Promise<number> {
 
         // Show disagreements
         const disagreements = resultsWithGroundTruth.filter((r) =>
-          r.score !== (r.sampleMetadata?.groundTruthScore as number)
+          r.score !== (r.sampleMetadata?.score as number)
         );
 
         if (disagreements.length > 0) {
@@ -202,13 +202,14 @@ export async function evalCommand(options: string[]): Promise<number> {
           printTable(
             disagreements.map((result) => {
               const groundTruth = result.sampleMetadata
-                ?.groundTruthScore as number;
+                ?.score as number;
               return {
                 "Sample ID": result.id,
                 "Judge Score": result.score,
                 "Ground Truth": groundTruth,
                 "Difference": result.score - groundTruth,
-                "Assistant Response": "See detailed analysis below",
+                "Assistant Response": result.sample?.assistantResponse ||
+                  "No response available",
               };
             }),
           );
@@ -217,20 +218,62 @@ export async function evalCommand(options: string[]): Promise<number> {
           printLine("\nDetailed Disagreement Analysis:");
           disagreements.forEach((result, index) => {
             const groundTruth = result.sampleMetadata
-              ?.groundTruthScore as number;
+              ?.score as number;
             printLine(`\n${"=".repeat(80)}`);
             printLine(
               `Disagreement ${index + 1} - Sample ID: ${result.id || "N/A"}`,
             );
             printLine(`${"=".repeat(80)}`);
-            // User input and assistant response aren't directly available in JudgementResult
-            // They would need to be included in sampleMetadata during evaluation
-            printLine(
-              `Scores: Judge=${result.score}, Ground Truth=${groundTruth}`,
-            );
-            printLine(
-              `Judge Notes: ${result.output.notes || "No notes provided"}`,
-            );
+
+            // Show sample data and scores in a single table
+            printLine("\nSample Details:");
+            const sampleData: Record<string, unknown> = {};
+
+            // Display the original sample data
+            if (result.sample) {
+              sampleData["User Message"] = result.sample.userMessage;
+              sampleData["Assistant Response"] =
+                result.sample.assistantResponse;
+
+              // Add expected value if present
+              if (result.sample.expected) {
+                sampleData["Expected"] = result.sample.expected;
+              }
+
+              // Add description from metadata if available
+              if (result.sampleMetadata?.description) {
+                sampleData["Description"] = result.sampleMetadata.description;
+              }
+
+              // Add any other sample fields (excluding the ones we already displayed)
+              const excludedFields = [
+                "id",
+                "userMessage",
+                "assistantResponse",
+                "expected",
+                "score",
+              ];
+              Object.entries(result.sample).forEach(([key, value]) => {
+                if (!excludedFields.includes(key)) {
+                  const displayKey = key
+                    .replace(/([A-Z])/g, " $1")
+                    .replace(/^./, (str) => str.toUpperCase())
+                    .trim();
+                  sampleData[displayKey] = value;
+                }
+              });
+            }
+
+            // Add score comparison to the same table
+            sampleData["Judge Score"] = result.score;
+            sampleData["Ground Truth"] = groundTruth;
+            sampleData["Difference"] = result.score - groundTruth;
+
+            printTable(sampleData);
+
+            // Print judge notes below the table
+            printLine("\nJudge Notes:");
+            printLine(result.output.notes || "No notes provided");
           });
         }
       }
