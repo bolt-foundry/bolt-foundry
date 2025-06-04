@@ -6,6 +6,7 @@ import { marked } from "marked";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
 import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
 import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
+import { DocsSidebar } from "apps/boltFoundry/components/DocsSidebar.tsx";
 
 const _logger = getLogger(import.meta);
 
@@ -45,11 +46,12 @@ export const Docs = iso(`
       content
     }
   }
-`)(function Docs({ data }) {
+`)(function Docs({ data, parameters }) {
   const { navigate } = useRouter();
   const [hoverLogo, setHoverLogo] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const blogPost = data.documentsBySlug;
+  const currentSlug = parameters.slug || "README";
 
   if (!blogPost) {
     return <PageError error={new Error(`Documentation page not found`)} />;
@@ -112,10 +114,15 @@ export const Docs = iso(`
       {/* Docs Content */}
       <section className="docs-section">
         <div className="landing-content">
-          <article
-            className="prose prose-lg"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-          />
+          <div className="docs-layout">
+            <DocsSidebar currentSlug={currentSlug} />
+            <main className="docs-main">
+              <article
+                className="prose prose-lg"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+              />
+            </main>
+          </div>
         </div>
         <div className="landing-footer">
           <div className="landing-content flexRow gapMedium">
