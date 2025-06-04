@@ -42,6 +42,10 @@ brings software engineering best practices to LLM development.
 | [v0.1](V0.1.md) | Complete | Simplified deck system with samples and context variables     |
 | [v0.2](V0.2.md) | Complete | Enhanced analytics with PostHog integration and cost tracking |
 
+## Planned Changes
+
+- [Samples API Refactor](samples-api-refactor-plan.md) - Unifying sample types and simplifying from builder pattern to array pattern (next patch version)
+
 ## Potential future directions
 
 | Area                     | Description                                   |
@@ -133,9 +137,18 @@ const codingHelper = createDeck(
     b.card("persona", (c) =>
       c.spec("You are helping users learn programming")
         .spec("Explains code clearly", {
-          samples: (s) =>
-            s.sample("Here's how this function works step by step...", 3)
-              .sample("It just works", -3),
+          samples: [
+            { 
+              userMessage: "Can you explain this function?",
+              assistantResponse: "Here's how this function works step by step...",
+              score: 3 
+            },
+            { 
+              userMessage: "Can you explain this function?",
+              assistantResponse: "It just works",
+              score: -3 
+            }
+          ]
         })
         .spec("Suggests best practices"))
       .card("security", (c) =>
