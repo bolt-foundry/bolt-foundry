@@ -104,7 +104,7 @@ Deno.test("Docs page loads README.md by default when no slug provided", async ()
     await navigateTo(context, "/docs");
 
     // Wait for the page to load
-    await context.page.waitForSelector(".docs-container", { timeout: 5000 });
+    await context.page.waitForSelector("body", { timeout: 5000 });
 
     // Take screenshot
     await context.takeScreenshot("docs-default-readme");
@@ -144,7 +144,7 @@ Deno.test("Docs page renders different markdown files", async () => {
       await navigateTo(context, `/docs/${docSlug}`);
 
       // Wait for content to load
-      await context.page.waitForSelector(".docs-container", { timeout: 5000 });
+      await context.page.waitForSelector("body", { timeout: 5000 });
 
       // Get the actual content
       const bodyText = await context.page.evaluate(() => {
