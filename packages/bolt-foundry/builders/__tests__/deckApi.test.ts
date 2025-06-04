@@ -196,3 +196,114 @@ Deno.test("Deck with samples - structure and rendering", () => {
   const result = deck.render();
   assert(result.messages[0].content);
 });
+
+// Array pattern tests for DeckBuilder
+Deno.test("DeckBuilder with array pattern samples", () => {
+  const client = BfClient.create();
+  const deck = client.createDeck("array-pattern-ai", (b) => {
+    return b
+      .spec("Be helpful and supportive", {
+        samples: [
+          { text: "I'm here to help you succeed!", rating: 3 },
+          { text: "Let me guide you through this", rating: 2 },
+          { text: "You're on your own", rating: -3 },
+        ],
+      })
+      .card("responses", (c) => {
+        return c
+          .spec("Acknowledge user feelings", {
+            samples: [
+              { text: "I understand this can be frustrating", rating: 3 },
+              { text: "Whatever", rating: -2 },
+            ],
+          })
+          .spec("Provide clear explanations");
+      });
+  });
+
+  // Check structure
+  const cards = deck.getCards();
+  assertEquals(cards.length, 2);
+
+  // First spec with array samples
+  assertEquals(cards[0].value, "Be helpful and supportive");
+  assertEquals(cards[0].samples?.length, 3);
+  assertEquals(cards[0].samples![0].text, "I'm here to help you succeed!");
+  assertEquals(cards[0].samples![2].rating, -3);
+
+  // Nested card with array samples
+  const responseCards = cards[1].value as Array<Card>;
+  assertEquals(responseCards[0].samples?.length, 2);
+  assertEquals(
+    responseCards[0].samples![0].text,
+    "I understand this can be frustrating",
+  );
+});
+
+Deno.test("DeckBuilder mixing array and builder patterns", () => {
+  const client = BfClient.create();
+  const deck = client.createDeck("mixed-patterns", (b) => {
+    return b
+      .spec("Array pattern spec", {
+        samples: [
+          { text: "Array example", rating: 1 },
+        ],
+      })
+      .spec("Builder pattern spec", {
+        samples: (s) => s.sample("Builder example", 2),
+      })
+      .spec("No samples spec");
+  });
+
+  const cards = deck.getCards();
+  assertEquals(cards.length, 3);
+
+  // Array pattern
+  assertEquals(cards[0].samples?.length, 1);
+  assertEquals(cards[0].samples![0].text, "Array example");
+
+  // Builder pattern
+  assertEquals(cards[1].samples?.length, 1);
+  assertEquals(cards[1].samples![0].text, "Builder example");
+
+  // No samples
+  assertEquals(cards[2].samples, undefined);
+});
+
+Deno.test("DeckBuilder with empty array samples", () => {
+  const client = BfClient.create();
+  const deck = client.createDeck("empty-samples", (b) => {
+    return b.spec("Empty array spec", {
+      samples: [],
+    });
+  });
+
+  const cards = deck.getCards();
+  assertEquals(cards.length, 1);
+  assertEquals(cards[0].samples, undefined); // Empty array should not create samples
+});
+
+Deno.test("DeckBuilder array samples with descriptions", () => {
+  const client = BfClient.create();
+  const deck = client.createDeck("descriptive-samples", (b) => {
+    return b.spec("Detailed examples", {
+      samples: [
+        {
+          text: "This demonstrates excellent behavior",
+          rating: 3,
+          description: "Gold standard example",
+        },
+        {
+          text: "This should be avoided",
+          rating: -3,
+          description: "Anti-pattern to avoid",
+        },
+      ],
+    });
+  });
+
+  const cards = deck.getCards();
+  assertEquals(cards[0].samples?.length, 2);
+  assertEquals(cards[0].samples![0].description, "Gold standard example");
+  assertEquals(cards[0].samples![1].description, "Anti-pattern to avoid");
+});

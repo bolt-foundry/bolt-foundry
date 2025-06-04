@@ -90,16 +90,30 @@ interface Sample {
 
 ## Implementation Phases
 
-### Phase 1: Add Array Support Alongside Builder (Non-Breaking)
+### Phase 1: Add Array Support Alongside Builder (Non-Breaking) ✅
 
 **Goal**: Support both builder and array patterns temporarily
 
-- [ ] Add array support to `SpecOptions` type:
+**Status**: Completed
+
+- [x] Add array support to `SpecOptions` type:
       `samples?: SampleBuilder | Array<Sample>`
-- [ ] Update `makeCardBuilder` to handle both patterns
-- [ ] Write tests for array pattern working alongside builder
-- [ ] Update one example to show array pattern
-- [ ] Land this change - both APIs now work
+- [x] Update `makeCardBuilder` to handle both patterns
+- [x] Update `makeDeckBuilder` to handle both patterns
+- [x] Write tests for array pattern working alongside builder
+  - Added comprehensive tests in `builders.test.ts`
+  - Added DeckBuilder tests in `deckApi.test.ts`
+  - Tests cover: basic arrays, empty arrays, mixed patterns, descriptions
+- [x] Update one example to show array pattern
+  - Created `arrayPatternExample.ts` demonstrating both patterns
+- [x] Land this change - both APIs now work
+
+**Progress Notes**:
+
+- 2025-01-06: Tests written for array pattern support. Tests currently failing
+  as expected (TDD approach).
+- 2025-01-06: Implementation completed. All tests passing. Example created
+  showing both patterns working side-by-side.
 
 ### Phase 2: Unify Score Naming in Evals
 
