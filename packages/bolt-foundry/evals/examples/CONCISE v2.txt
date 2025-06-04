@@ -1,0 +1,38 @@
+Evaluation Configuration:
+┌────────────┬──────────────────────────────────────────────────────────────────┐
+│ (idx)      │ Values                                                           │
+├────────────┼──────────────────────────────────────────────────────────────────┤
+│ Input File │ "packages/bolt-foundry/evals/examples/concise-sample-data.jsonl" │
+│ Deck File  │ "packages/bolt-foundry/evals/examples/concise-validator.ts"      │
+│ Model      │ "openai/gpt-4o"                                                  │
+│ Output     │ "Console"                                                        │
+└────────────┴──────────────────────────────────────────────────────────────────┘
+
+Evaluation Results:
+┌───────┬───────────┬───────┬──────────────┐
+│ (idx) │ Sample ID │ Score │ Latency (ms) │
+├───────┼───────────┼───────┼──────────────┤
+│     0 │ "cal-001" │ 3     │ 1163.934     │
+│     1 │ "cal-002" │ 2     │ 758.138      │
+│     2 │ "cal-003" │ -1    │ 637.149      │
+│     3 │ "cal-004" │ -3    │ 769.921      │
+└───────┴───────────┴───────┴──────────────┘
+
+Summary Statistics:
+┌──────────────────────┬─────────┐
+│ (idx)                │ Values  │
+├──────────────────────┼─────────┤
+│ Average Score        │ 0.25    │
+│ Average Latency (ms) │ 832.285 │
+│ Total Samples        │ 4       │
+└──────────────────────┴─────────┘
+
+Judge Calibration Metrics:
+┌─────────────────────────────────┬────────────────┐
+│ (idx)                           │ Values         │
+├─────────────────────────────────┼────────────────┤
+│ Exact Match Rate                │ "100.0% (4/4)" │
+│ Within ±1 Accuracy              │ "100.0% (4/4)" │
+│ Average Absolute Error          │ 0              │
+│ Total Samples with Ground Truth │ 4              │
+└─────────────────────────────────┴────────────────┘

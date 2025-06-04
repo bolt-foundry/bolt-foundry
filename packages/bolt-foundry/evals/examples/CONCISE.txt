@@ -1,0 +1,67 @@
+Evaluation Configuration:
+┌────────────┬──────────────────────────────────────────────────────────────────┐
+│ (idx)      │ Values                                                           │
+├────────────┼──────────────────────────────────────────────────────────────────┤
+│ Input File │ "packages/bolt-foundry/evals/examples/concise-sample-data.jsonl" │
+│ Deck File  │ "packages/bolt-foundry/evals/examples/concise-validator.ts"      │
+│ Model      │ "openai/gpt-4o"                                                  │
+│ Output     │ "Console"                                                        │
+└────────────┴──────────────────────────────────────────────────────────────────┘
+
+Evaluation Results:
+┌───────┬───────────┬───────┬──────────────┐
+│ (idx) │ Sample ID │ Score │ Latency (ms) │
+├───────┼───────────┼───────┼──────────────┤
+│     0 │ "cal-001" │ 3     │ 1242.016     │
+│     1 │ "cal-002" │ 3     │ 1186.049     │
+│     2 │ "cal-003" │ 3     │ 1007.866     │
+│     3 │ "cal-004" │ 3     │ 1668.722     │
+└───────┴───────────┴───────┴──────────────┘
+
+Summary Statistics:
+┌──────────────────────┬──────────┐
+│ (idx)                │ Values   │
+├──────────────────────┼──────────┤
+│ Average Score        │ 3        │
+│ Average Latency (ms) │ 1276.163 │
+│ Total Samples        │ 4        │
+└──────────────────────┴──────────┘
+
+Judge Calibration Metrics:
+┌─────────────────────────────────┬───────────────┐
+│ (idx)                           │ Values        │
+├─────────────────────────────────┼───────────────┤
+│ Exact Match Rate                │ "25.0% (1/4)" │
+│ Within ±1 Accuracy              │ "50.0% (2/4)" │
+│ Average Absolute Error          │ 2.75          │
+│ Total Samples with Ground Truth │ 4             │
+└─────────────────────────────────┴───────────────┘
+
+Disagreements:
+┌───────┬───────────┬─────────────┬──────────────┬────────────┬───────────────────────────────┐
+│ (idx) │ Sample ID │ Judge Score │ Ground Truth │ Difference │ Assistant Response            │
+├───────┼───────────┼─────────────┼──────────────┼────────────┼───────────────────────────────┤
+│     0 │ "cal-002" │ 3           │ 2            │ 1          │ "See detailed analysis below" │
+│     1 │ "cal-003" │ 3           │ -1           │ 4          │ "See detailed analysis below" │
+│     2 │ "cal-004" │ 3           │ -3           │ 6          │ "See detailed analysis below" │
+└───────┴───────────┴─────────────┴──────────────┴────────────┴───────────────────────────────┘
+
+Detailed Disagreement Analysis:
+
+================================================================================
+Disagreement 1 - Sample ID: cal-002
+================================================================================
+Scores: Judge=3, Ground Truth=2
+Judge Notes: The response is extremely concise and directly answers the question without any unnecessary words.
+
+================================================================================
+Disagreement 2 - Sample ID: cal-003
+================================================================================
+Scores: Judge=3, Ground Truth=-1
+Judge Notes: The response is concise and directly answers the question without any unnecessary words.
+
+================================================================================
+Disagreement 3 - Sample ID: cal-004
+================================================================================
+Scores: Judge=3, Ground Truth=-3
+Judge Notes: The response is concise and directly answers the question without unnecessary information.
