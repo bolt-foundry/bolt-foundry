@@ -93,6 +93,12 @@ header.landing-header {
   text-align: center;
 }
 
+.substack-form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
 .docs-section {
   min-height: 100vh;
   padding-top: 60px;
