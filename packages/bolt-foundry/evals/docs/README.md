@@ -15,19 +15,22 @@ across multiple underlying base models.
   simultaneously to compare performance and consistency (powered by Open Router)
 - **Parallel Execution**: Run evaluations concurrently for faster results across
   multiple models and iterations
+- **Meta Judge Analysis**: Calibrate and validate judge quality using ground
+  truth scores to ensure consistent and accurate evaluations
 
 ## Quickstart
 
 Set your `OPENROUTER_API_KEY` environment variable.
 
 ```bash
-npx bff-eval --help
+bff eval --help
 ```
 
-Run our simple json sample:
+Run evaluation with sample data:
 
 ```bash
-npm bff-eval --DEMO
+bff eval --input packages/bolt-foundry/evals/examples/sample-data.jsonl \
+         --deck packages/bolt-foundry/evals/examples/json-validator.ts
 ```
 
 ## Input data
@@ -46,6 +49,7 @@ type Sample = {
   userMessage: string;
   assistantResponse: string;
   id?: string;
+  groundTruthScore?: number; // Optional: expected score for meta-evaluation (-3 to 3)
   sampleMetadata?: Record<string, unknown>; // your custom metadata to forward along to the reporter
 };
 
@@ -65,74 +69,149 @@ To be clear, you SHOULD NOT BE INTERPOLATING ANY STRINGS IN THE SPECS. Use
 `.context` builders to safely include variables. [See why].
 
 ```typescript
-import { makeJudgeDeck } from "@bolt-foundry/bolt-foundry";
+import { makeJudgeDeckBuilder } from "../makeJudgeDeckBuilder.ts";
 
 // Create a judge that evaluates JSON outputs
+export default makeJudgeDeckBuilder("json-validator")
+  .spec(
+    "You are an expert at evaluating JSON outputs for correctness and completeness.",
+  )
+  .card(
+    "evaluation criteria",
+    (c) =>
+      c.spec("Check if the output is valid JSON syntax")
+        .spec("Verify all required fields are present")
+        .spec("Ensure data types match expected schema"),
+  )
+  .card(
+    "scoring guidelines",
+    (c) =>
+      c.spec(
+        "Score 3: Perfect - Strict valid JSON that exactly matches the expected schema",
+      )
+        .spec(
+          "Score 2: Good - Valid JSON but uses relaxed syntax (single quotes, trailing commas, etc)",
+        )
+        .spec(
+          "Score 1: Acceptable - Valid JSON but has missing optional fields",
+        )
+        .spec(
+          "Score -1: Poor - Valid JSON but has hallucinated/extra keys not in the input",
+        )
+        .spec(
+          "Score -3: Failure - Not JSON at all, plain text, or doesn't parse",
+        ),
+  );
 
-// outputFormat should be a json string right now, we'll try to make it zod soon.
-export default function createJsonJudge(outputFormat: string) {
-  return makeJudgeDeck("json-validator")
-    .spec(
-      "You are an expert at evaluating JSON outputs for correctness and completeness.",
-    )
-    .card(
-      "evaluation criteria",
-      (c) =>
-        c.spec("Check if the output is valid JSON syntax")
-          .spec("Verify all required fields are present")
-          .spec("Ensure data types match expected schema"),
-    );
-  // automatically included from the makeJudgeDeck builder
-  // .card(
-  //   "Scoring instructions",
-  //   (c) =>
-  //     c.spec("something we figure out soon")
-  // )
-  // .context(
-  //   "Judge input",
-  //   (c) =>
-  //     c.string("userMessage", "What was the original prompt?")
-  //       .string("assistantResponse", "What was the LLM response to evaluate?")
-  //       .object("expectedSchema", "What is the expected JSON schema?"),
-  // );
-  // .context("Output format", (c) => {
-  //   c.string("outputFormat", "How would you like to output the result?", "")
-  // })
-}
+// Note: The makeJudgeDeckBuilder automatically:
+// - Appends evaluation context (userMessage, assistantResponse, expected)
+// - Adds output format requirements (JSON with score and notes)
+// - Handles all the boilerplate for judge evaluation
 ```
 
 ## Model Selection
 
-You can pick models to judge against, or we can pick random ones for you. You
-can filter the random ones by criteria you'd like. Our default filter skips free
-models, because they're the most likely to fail w/ tos stuff on open router.
+Specify the model to use for evaluation using the `--model` flag:
+
+```bash
+bff eval --input data.jsonl --deck judge.ts --model openai/gpt-4o  # Default
+bff eval --input data.jsonl --deck judge.ts --model anthropic/claude-3-opus
+```
+
+The evaluation uses OpenRouter API, so any model available on OpenRouter can be
+used.
 
 ## Output Formats
 
 Evaluations produce results that look like this:
 
 ```typescript
-type JudgementResult<TOutputType = Record<string, unknown>, TSampleMetadata = Record<string, never>> = {
-  model: string,
-  id?: string,
-  iteration: number,
-  score: -3 | -2 | -1 | 0 | 1 | 2 | 3,
-  latencyInMs: number,
-  rawOutput: string,
-  output: TOutputType,
-  sampleMetadata: TSampleMetadata,
+export interface JudgementResult {
+  model: string;
+  id?: string;
+  iteration: number;
+  score: -3 | -2 | -1 | 0 | 1 | 2 | 3;
+  latencyInMs: number;
+  rawOutput: string;
+  output: {
+    score: number;
+    notes?: string;
+  };
+  sampleMetadata?: Record<string, unknown>;
 }
 
+// Example result:
 {
-  model: "gpt-4",
-  sampleId: "sample-001",
+  model: "openai/gpt-4o",
+  id: "sample-001",
   iteration: 1,
-  score: 3, // +3 to -3
-  latency: 1234,  // milliseconds
-  output: "raw model response",
-  parsed: { /* parsed JSON if applicable */ },
+  score: 3,
+  latencyInMs: 1234,
+  rawOutput: "{\"score\": 3, \"notes\": \"Perfect JSON with correct schema\"}",
+  output: {
+    score: 3,
+    notes: "Perfect JSON with correct schema"
+  },
   sampleMetadata: {
-    your: "keys and values"
+    groundTruthScore: 3  // If provided in input
   }
 }
 ```
+
+## Meta Judge Analysis
+
+Bolt Foundry Evals supports "judging the judge" by comparing judge scores
+against ground truth scores. This calibration feature helps you:
+
+1. **Validate Judge Quality**: Ensure your judges score consistently and
+   accurately
+2. **Improve Judge Criteria**: Identify areas where judge instructions need
+   refinement
+3. **Compare Judge Versions**: Measure improvements when updating judge decks
+
+### Adding Ground Truth Scores
+
+Include a `groundTruthScore` field in your input samples:
+
+```jsonl
+{"userMessage": "Extract: name=John", "assistantResponse": "{\"name\":\"John\"}", "groundTruthScore": 3}
+{"userMessage": "Parse: color=red", "assistantResponse": "{'color': 'red'}", "groundTruthScore": 2}
+{"userMessage": "Convert: email=test@test.com", "assistantResponse": "test@test.com", "groundTruthScore": -3}
+```
+
+### Calibration Metrics
+
+When ground truth scores are provided, the eval command reports:
+
+- **Exact Match Rate**: Percentage of samples where judge score equals ground
+  truth
+- **Within ±1 Accuracy**: Percentage of samples within 1 point of ground truth
+- **Average Absolute Error**: Mean difference between judge and ground truth
+  scores
+- **Disagreements**: Specific samples where judge and ground truth differ
+
+### Example: Improving a JSON Validator
+
+Using calibration data, we improved our JSON validator from 60% to 90% accuracy:
+
+**Version 1** (vague criteria):
+
+```
+Exact Match Rate: 60% (6/10)
+Average Error: 0.80
+```
+
+**Version 2** (precise criteria):
+
+```
+Exact Match Rate: 90% (9/10)
+Average Error: 0.30
+```
+
+The key improvements:
+
+- Clearly distinguished between strict JSON (double quotes) and relaxed syntax
+  (single quotes)
+- Specified exact scoring for different failure modes (-1 for extra keys, -3 for
+  non-JSON)
+- Added precise handling of edge cases (e.g., empty JSON when data expected)

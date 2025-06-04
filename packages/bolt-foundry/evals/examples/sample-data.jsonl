@@ -1,0 +1,3 @@
+{"userMessage": "Extract user info from: 'John Doe, 30, NYC'", "assistantResponse": "{\"name\":\"John Doe\",\"age\":30,\"city\":\"NYC\"}", "id": "sample-001"}
+{"userMessage": "Parse address: '123 Main St, Apt 4B'", "assistantResponse": "{\"street\":\"123 Main St\",\"unit\":\"Apt 4B\"}", "id": "sample-002"}
+{"userMessage": "Extract email from: 'Contact me at john@example.com'", "assistantResponse": "{\"email\":\"john@example.com\"}", "id": "sample-003"}
