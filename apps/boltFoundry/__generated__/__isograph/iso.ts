@@ -1,4 +1,5 @@
 import type { IsographEntrypoint } from '@isograph/react';
+import { type Mutation__JoinWaitlist__param } from './Mutation/JoinWaitlist/param_type.ts';
 import { type Query__Docs__param } from './Query/Docs/param_type.ts';
 import { type Query__EntrypointDocs__param } from './Query/EntrypointDocs/param_type.ts';
 import { type Query__EntrypointFormatter__param } from './Query/EntrypointFormatter/param_type.ts';
@@ -6,6 +7,7 @@ import { type Query__EntrypointHome__param } from './Query/EntrypointHome/param_
 import { type Query__EntrypointLogin__param } from './Query/EntrypointLogin/param_type.ts';
 import { type Query__Formatter__param } from './Query/Formatter/param_type.ts';
 import { type Query__Home__param } from './Query/Home/param_type.ts';
+import entrypoint_Mutation__JoinWaitlist from '../__isograph/Mutation/JoinWaitlist/entrypoint.ts';
 import entrypoint_Query__EntrypointDocs from '../__isograph/Query/EntrypointDocs/entrypoint.ts';
 import entrypoint_Query__EntrypointFormatter from '../__isograph/Query/EntrypointFormatter/entrypoint.ts';
 import entrypoint_Query__EntrypointHome from '../__isograph/Query/EntrypointHome/entrypoint.ts';
@@ -60,6 +62,10 @@ type MatchesWhitespaceAndString<
 > = Whitespace<T> extends `${TString}${string}` ? T : never;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Mutation.JoinWaitlist', T>
+): IdentityWithParam<Mutation__JoinWaitlist__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.Docs', T>
 ): IdentityWithParamComponent<Query__Docs__param>;
 
@@ -88,6 +94,10 @@ export function iso<T>(
 ): IdentityWithParamComponent<Query__Home__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'entrypoint Mutation.JoinWaitlist', T>
+): typeof entrypoint_Mutation__JoinWaitlist;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointDocs', T>
 ): typeof entrypoint_Query__EntrypointDocs;
 
@@ -109,6 +119,8 @@ export function iso(isographLiteralText: string):
   | IsographEntrypoint<any, any, any>
 {
   switch (isographLiteralText) {
+    case 'entrypoint Mutation.JoinWaitlist':
+      return entrypoint_Mutation__JoinWaitlist;
     case 'entrypoint Query.EntrypointDocs':
       return entrypoint_Query__EntrypointDocs;
     case 'entrypoint Query.EntrypointFormatter':
