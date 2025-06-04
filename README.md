@@ -1,7 +1,19 @@
 # Bolt Foundry
 
 We're building structured prompt engineering. Instead of text strings,
-developers compose AI from cards with examples and specs that make it reliable.
+developers compose AI from decks of cards with examples and specs that make it
+reliable.
+
+## The Deck System
+
+Our deck system brings structured engineering to LLM applications:
+
+- **Decks**: Composable collections of cards that define specific AI behaviors
+- **Cards**: Hierarchical specifications organized by category (persona,
+  behavior, etc.)
+- **Specs**: Clear, testable requirements that define precise AI capabilities
+- **Context**: Structured information that guides AI understanding and responses
+- **Samples**: Rated examples (-3 to +3) showing good and bad behaviors
 
 ## What are assistant cards?
 

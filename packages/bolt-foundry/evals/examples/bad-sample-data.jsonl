@@ -1,0 +1,10 @@
+{"id":"bad-001","userMessage":"Extract my info: John Doe, 30, NYC","assistantResponse":"Sure! Here's your info: John Doe is 30 years old and lives in NYC. Is there anything else you'd like to know?"}
+{"id":"bad-002","userMessage":"Parse address: 123 Main St, Apt 4B","assistantResponse":"123 Main St, Apt 4B"}
+{"id":"bad-003","userMessage":"Email: john@example.com","assistantResponse":"john@example.com"}
+{"id":"bad-004","userMessage":"Convert to JSON: name=Alice, age=25","assistantResponse":"{name: Alice, age: 25}"}
+{"id":"bad-005","userMessage":"Extract data: Product: Laptop, Price: $999","assistantResponse":"Product is Laptop\nPrice is $999"}
+{"id":"bad-006","userMessage":"Parse: {\"user\": \"Bob\", \"active\": true}","assistantResponse":"User Bob is active"}
+{"id":"bad-007","userMessage":"Format as JSON: Temperature 72F, Humidity 65%","assistantResponse":"Temperature: 72F, Humidity: 65%"}
+{"id":"bad-008","userMessage":"Extract JSON: Order #1234, Status: Shipped","assistantResponse":"Order number 1234 has been shipped! 🚚"}
+{"id":"bad-009","userMessage":"Parse contact: Tel: 555-1234, Email: test@test.com","assistantResponse":"Contact Information:\n- Phone: 555-1234\n- Email: test@test.com\n\nWould you like me to save this?"}
+{"id":"bad-010","userMessage":"JSON output: Color: Blue, Size: Large","assistantResponse":"```json\n{\n  color: \"Blue\",\n  size: \"Large\"\n}\n```"}
