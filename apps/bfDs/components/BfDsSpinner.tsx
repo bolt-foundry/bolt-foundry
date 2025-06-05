@@ -13,7 +13,7 @@ const bottomTo = "75,77 25,77 49.96,38.56"; // hourglass
 export function BfDsSpinner(
   {
     size = 48,
-    spinnerColor = "var(--success)",
+    spinnerColor = "var(--primaryColor)",
     backgroundColor = "var(--background)",
     waitIcon = false,
   }: Props,
