@@ -23,13 +23,13 @@ across multiple underlying base models.
 Set your `OPENROUTER_API_KEY` environment variable.
 
 ```bash
-bff eval --help
+npx bff-eval --help
 ```
 
 Run evaluation with sample data:
 
 ```bash
-bff eval --input packages/bolt-foundry/evals/examples/sample-data.jsonl \
+npx bff-eval --input packages/bolt-foundry/evals/examples/sample-data.jsonl \
          --grader packages/bolt-foundry/evals/examples/json-validator.ts
 ```
 
@@ -49,8 +49,8 @@ type Sample = {
   userMessage: string;
   assistantResponse: string;
   id?: string;
-  groundTruthScore?: number; // Optional: expected score for meta-evaluation (-3 to 3)
-  sampleMetadata?: Record<string, unknown>; // your custom metadata to forward along to the reporter
+  score?: number; // Optional: expected score for meta-evaluation (-3 to 3)
+  metadata?: Record<string, unknown>; // your custom metadata to forward along to the reporter
 };
 
 type InputSampleFile = Array<Sample>;
@@ -115,8 +115,8 @@ export default makeGraderDeckBuilder("json-validator")
 Specify the model to use for evaluation using the `--model` flag:
 
 ```bash
-bff eval --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
-bff eval --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
+npx bff-eval --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
+npx bff-eval --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
 ```
 
 The evaluation uses OpenRouter API, so any model available on OpenRouter can be
@@ -161,7 +161,7 @@ export interface GradingResult {
 
 ## Meta Grader Analysis
 
-Bolt Foundry Evals supports "judging the grader" by comparing grader scores
+Bolt Foundry Evals supports "grading the grader" by comparing grader scores
 against ground truth scores. This calibration feature helps you:
 
 1. **Validate Grader Quality**: Ensure your graders score consistently and
