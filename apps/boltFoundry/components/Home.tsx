@@ -121,6 +121,9 @@ field Query.Home @component {
     company: "",
   };
 
+  // const bfCode = "npm install @bolt-foundry/bolt-foundry";
+  const bfCode = "npx bff-eval --demo";
+
   return (
     <div className="landing-page">
       {/* Header */}
@@ -192,11 +195,11 @@ field Query.Home @component {
             <div className="npm-section">
               <div className="npm-command-container flexRow flexWrap gapMedium">
                 <code className="npm-command">
-                  npm install @bolt-foundry/bolt-foundry
+                  {bfCode}
                 </code>
                 <BfDsCopyButton
                   aria-label="Copy npm command"
-                  textToCopy="npm install @bolt-foundry/bolt-foundry"
+                  textToCopy={bfCode}
                 />
               </div>
             </div>
