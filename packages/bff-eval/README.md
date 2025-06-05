@@ -87,7 +87,8 @@ type InputSampleFile = Array<Sample>;
 ## Create your grader
 
 Graders let you build your eval logic in a structured way. Read more on our
-[prompting philosophy], or the [case studies] as to why we've done it this way.
+[prompting philosophy](/docs/improving-inference-philosophy.md), or the
+[case studies](/docs/case-studies.md) as to why we've done it this way.
 
 1. Structure your grader with an initial spec explaining what your grader will
    do.
@@ -95,7 +96,7 @@ Graders let you build your eval logic in a structured way. Read more on our
 3. Include any variables as context, INCLUDING OUTPUT FORMAT.
 
 To be clear, you SHOULD NOT BE INTERPOLATING ANY STRINGS IN THE SPECS. Use
-`.context` builders to safely include variables. [See why].
+`.context` builders to safely include variables.
 
 ```typescript
 import { makeGraderDeckBuilder } from "../makeGraderDeckBuilder.ts";
