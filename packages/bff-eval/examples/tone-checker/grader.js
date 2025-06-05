@@ -1,4 +1,4 @@
-const { makeGraderDeckBuilder } = require("@bolt-foundry/bolt-foundry-next/evals/makeGraderDeckBuilder");
+const { makeGraderDeckBuilder } = require("@bolt-foundry/bolt-foundry/evals/makeGraderDeckBuilder");
 
 // Create a grader that evaluates tone and communication style
 module.exports = makeGraderDeckBuilder("tone-checker")
