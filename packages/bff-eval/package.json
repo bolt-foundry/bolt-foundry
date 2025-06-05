@@ -7,9 +7,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit false --skipLibCheck true",
-    "test": "node --test",
-    "prepublishOnly": "node scripts/prepare-publish.js && npm run build",
-    "postpublish": "node scripts/restore-local.js"
+    "test": "node --test"
   },
   "files": [
     "dist",
