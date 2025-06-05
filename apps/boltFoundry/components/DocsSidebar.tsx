@@ -34,6 +34,7 @@ const docSections: DocSection[] = [
       { slug: "deck-system", title: "Deck system" },
       { slug: "improving-inference-philosophy", title: "Improving inference" },
       //  { slug: "measurement-strategy", title: "Measurement Strategy" },
+      { slug: "evals-overview", title: "Evals" },
     ],
   },
   /*
