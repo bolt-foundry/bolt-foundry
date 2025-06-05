@@ -34,6 +34,7 @@ const docSections: DocSection[] = [
       { slug: "deck-system", title: "Deck System" },
       { slug: "improving-inference-philosophy", title: "Improving Inference" },
       { slug: "measurement-strategy", title: "Measurement Strategy" },
+      { slug: "packages/bolt-foundry/evals/docs/README", title: "Evals" },
     ],
   },
   {
