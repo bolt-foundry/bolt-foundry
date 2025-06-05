@@ -13,14 +13,18 @@ const _logger = getLogger(import.meta);
 const NavButtons = () => {
   return (
     <>
-      <BfDsButton
+      {/* <BfDsButton
         kind="dan"
         href="https://boltfoundry.substack.com/"
         hrefTarget="_blank"
         rel="noopener noreferrer"
         text="Blog"
+      /> */}
+      <BfDsButton
+        kind="danSelected"
+        href="/docs"
+        text="Docs"
       />
-      <BfDsButton kind="danSelected" link="/docs" text="Docs" />
       <BfDsButton
         kind="dan"
         href="https://discord.gg/tU5ksTBfEj"

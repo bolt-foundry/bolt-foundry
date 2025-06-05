@@ -4,8 +4,40 @@ import { build, emptyDir } from "@deno/dnt";
 import denoJson from "../deno.json" with { type: "json" };
 
 const outDir = import.meta.resolve("../npm").replace("file://", "");
+
+// Define all entry points that should be exported
 const entryPoints = [
-  import.meta.resolve("../bolt-foundry.ts").replace("file://", ""),
+  // Main entry
+  {
+    name: ".",
+    path: import.meta.resolve("../bolt-foundry.ts").replace("file://", ""),
+  },
+  // Evals submodules
+  {
+    name: "./evals/eval",
+    path: import.meta.resolve("../evals/eval.ts").replace("file://", ""),
+  },
+  {
+    name: "./evals/makeGraderDeckBuilder",
+    path: import.meta.resolve("../evals/makeGraderDeckBuilder.ts").replace(
+      "file://",
+      "",
+    ),
+  },
+  {
+    name: "./evals",
+    path: import.meta.resolve("../evals/evals.ts").replace("file://", ""),
+  },
+  // Builders submodule
+  {
+    name: "./builders",
+    path: import.meta.resolve("../builders/builders.ts").replace("file://", ""),
+  },
+  // Client
+  {
+    name: "./BfClient",
+    path: import.meta.resolve("../BfClient.ts").replace("file://", ""),
+  },
 ];
 
 await emptyDir(outDir);
@@ -27,6 +59,9 @@ await build({
     repository: {
       type: "git",
       url: "git+https://github.com/bolt-foundry/bolt-foundry.git",
+    },
+    engines: {
+      node: ">=22.0.0",
     },
   },
   postBuild() {

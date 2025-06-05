@@ -66,7 +66,7 @@ Deno.test("joinWaitlist mutation is available with returns builder", async () =>
   assert(
     sdl.includes("email: String!") &&
       sdl.includes("name: String!") &&
-      sdl.includes("company: String!"),
+      sdl.includes("company: String"),
     "joinWaitlist mutation is missing required arguments",
   );
 

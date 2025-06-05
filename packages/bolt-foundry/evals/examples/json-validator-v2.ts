@@ -1,6 +1,6 @@
-import { makeJudgeDeckBuilder } from "../makeJudgeDeckBuilder.ts";
+import { makeGraderDeckBuilder } from "../makeGraderDeckBuilder.ts";
 
-export default makeJudgeDeckBuilder("json-validator-v2")
+export default makeGraderDeckBuilder("json-validator-v2")
   .spec(
     "You are a strict JSON validator that evaluates outputs for correctness, completeness, and adherence to expected schemas.",
   )

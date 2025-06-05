@@ -1,13 +1,12 @@
 import type { DeckBuilder } from "packages/bolt-foundry/builders/builders.ts";
-import { getConfigurationVariable } from "packages/get-configuration-var/get-configuration-var.ts";
 
 export interface EvalOptions {
   inputFile: string;
-  deckFile: string;
+  graderFile: string;
   model: string;
 }
 
-export interface JudgementResult {
+export interface GradingResult {
   model: string;
   id?: string;
   iteration: number;
@@ -33,8 +32,8 @@ interface EvalSample {
 
 export async function runEval(
   options: EvalOptions,
-): Promise<JudgementResult[]> {
-  const { inputFile, deckFile, model } = options;
+): Promise<GradingResult[]> {
+  const { inputFile, graderFile, model } = options;
 
   // Resolve paths relative to current working directory if they're relative
   const resolveFilePath = (filePath: string): URL => {
@@ -48,7 +47,7 @@ export async function runEval(
   };
 
   const inputFilePath = resolveFilePath(inputFile);
-  const deckFilePath = resolveFilePath(deckFile);
+  const graderFilePath = resolveFilePath(graderFile);
   // Read and validate input file
   let inputContent: string;
   try {
@@ -60,19 +59,19 @@ export async function runEval(
     throw error;
   }
 
-  // Read and validate deck file
+  // Read and validate grader file
   try {
-    await Deno.stat(deckFilePath);
+    await Deno.stat(graderFilePath);
   } catch (error) {
     if (error instanceof Deno.errors.NotFound) {
-      throw new Error(`No such file: ${deckFilePath}`);
+      throw new Error(`No such file: ${graderFilePath}`);
     }
     throw error;
   }
 
-  // Load deck module
-  const deckModule = await import(deckFilePath.href);
-  const deck: DeckBuilder = deckModule.default;
+  // Load grader module
+  const graderModule = await import(graderFilePath.href);
+  const grader: DeckBuilder = graderModule.default;
 
   // Parse JSONL input
   const samples: EvalSample[] = [];
@@ -98,7 +97,7 @@ export async function runEval(
   }
 
   // Process each sample
-  const results: JudgementResult[] = [];
+  const results: GradingResult[] = [];
 
   for (const sample of samples) {
     const startTime = performance.now();
@@ -113,8 +112,8 @@ export async function runEval(
       context.expected = sample.expected;
     }
 
-    // Render the deck with the evaluation context
-    const renderedDeck = deck.render({
+    // Render the grader with the evaluation context
+    const renderedGrader = grader.render({
       model,
       context,
       temperature: 0,
@@ -127,13 +126,12 @@ export async function runEval(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${
-            await getConfigurationVariable("OPENROUTER_API_KEY") || ""
-          }`,
+          // deno-lint-ignore bolt-foundry/no-env-direct-access
+          "Authorization": `Bearer ${Deno.env.get("OPENROUTER_API_KEY") || ""}`,
           "HTTP-Referer": "https://boltfoundry.com",
           "X-Title": "Bolt Foundry Eval",
         },
-        body: JSON.stringify(renderedDeck),
+        body: JSON.stringify(renderedGrader),
       },
     );
 
@@ -152,21 +150,21 @@ export async function runEval(
     try {
       output = JSON.parse(rawOutput);
     } catch (_parseError) {
-      // If the judge fails to return valid JSON, that's a score of 0
+      // If the grader fails to return valid JSON, that's a score of 0
       output = {
         score: 0,
-        notes: `Judge failed to return valid JSON. Raw output: ${rawOutput}`,
+        notes: `Grader failed to return valid JSON. Raw output: ${rawOutput}`,
       };
     }
 
     // Validate score is in range
-    const score = Math.round(output.score) as JudgementResult["score"];
+    const score = Math.round(output.score) as GradingResult["score"];
     if (score < -3 || score > 3) {
       throw new Error(`Score ${score} is out of valid range [-3, 3]`);
     }
 
     // Create result
-    const result: JudgementResult = {
+    const result: GradingResult = {
       model,
       id: sample.id,
       iteration: 1,

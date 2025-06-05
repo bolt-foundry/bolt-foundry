@@ -7,7 +7,7 @@ Unify the concept of samples across the codebase by:
 1. Refactoring the samples API from builder pattern to array pattern
 2. Merging the `Sample` type (from builders) and `EvalSample` type (from evals)
    into one unified type
-3. Using consistent naming (`score` instead of `rating`/`groundTruthScore`)
+3. Using consistent naming (`score` instead of `rating`/`score`)
 4. Removing the `expected` field
 
 ## Current State (Two Different Sample Types)
@@ -26,7 +26,7 @@ interface EvalSample {
   userMessage: string;
   assistantResponse: string;
   expected?: string; // to be removed
-  groundTruthScore?: number; // to be renamed to 'score'
+  score?: number; // to be renamed to 'score'
   [key: string]: unknown; // arbitrary fields will move to metadata
 }
 ```
@@ -38,7 +38,7 @@ interface Sample {
   id?: string;
   userMessage: string;
   assistantResponse: string;
-  score?: number; // -3 to +3, replaces both 'rating' and 'groundTruthScore'
+  score?: number; // -3 to +3, replaces both 'rating' and 'score'
   description?: string; // optional notes about the sample
   metadata?: Record<string, unknown>; // arbitrary data for later inspection
 }
@@ -117,10 +117,10 @@ interface Sample {
 
 ### Phase 2: Unify Score Naming in Evals
 
-**Goal**: Standardize on `score` instead of `groundTruthScore`
+**Goal**: Standardize on `score` instead of `score`
 
-- [ ] Add `score` as alias for `groundTruthScore` in `EvalSample`
-- [ ] Update eval.ts to accept both `score` and `groundTruthScore`
+- [ ] Add `score` as alias for `score` in `EvalSample`
+- [ ] Update eval.ts to accept both `score` and `score`
 - [ ] Update CLI to use `score` internally
 - [ ] Write tests for both field names working
 - [ ] Update eval examples to use `score`

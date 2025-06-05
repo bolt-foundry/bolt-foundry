@@ -23,14 +23,18 @@ type WaitlistFormData = {
 const NavButtons = () => {
   return (
     <>
-      <BfDsButton
+      {/* <BfDsButton
         kind="dan"
         href="https://boltfoundry.substack.com/"
         hrefTarget="_blank"
         rel="noopener noreferrer"
         text="Blog"
+      /> */}
+      <BfDsButton
+        kind="dan"
+        href="/docs"
+        text="Docs"
       />
-      <BfDsButton kind="dan" link="/docs" text="Docs" />
       <BfDsButton
         kind="dan"
         href="https://discord.gg/tU5ksTBfEj"
