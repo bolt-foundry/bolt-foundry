@@ -33,6 +33,24 @@ npx bff-eval --input packages/bolt-foundry/evals/examples/sample-data.jsonl \
          --grader packages/bolt-foundry/evals/examples/json-validator.ts
 ```
 
+### Running Demos
+
+The quickest way to get started is with the `--demo` flag:
+
+```bash
+# Run a specific demo
+npx bff-eval --demo json-validator
+
+# Run a random demo
+npx bff-eval --demo
+```
+
+Demos are pre-configured examples with graders and sample data. Each demo includes:
+- `grader.ts` - The evaluation logic
+- `samples.jsonl` - Test cases with expected scores
+
+Available demos are located in the `examples/` directory.
+
 ## Input data
 
 Provide input data as a file in JSONL format.

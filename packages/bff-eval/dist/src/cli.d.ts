@@ -1,11 +1,10 @@
 import yargs from "yargs";
-export declare const cli: yargs.Argv<yargs.Omit<yargs.Omit<{
-    input: unknown;
-    grader: unknown;
-}, "input"> & {
-    input: string;
-}, "grader"> & {
-    grader: string;
+export declare const cli: yargs.Argv<{
+    input: string | undefined;
+} & {
+    grader: string | undefined;
+} & {
+    demo: string | undefined;
 } & {
     model: string;
 } & {
