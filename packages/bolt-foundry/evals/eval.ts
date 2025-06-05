@@ -3,7 +3,7 @@ import { getConfigurationVariable } from "packages/get-configuration-var/get-con
 
 export interface EvalOptions {
   inputFile: string;
-  deckFile: string;
+  graderFile: string;
   model: string;
 }
 
@@ -34,7 +34,7 @@ interface EvalSample {
 export async function runEval(
   options: EvalOptions,
 ): Promise<GradingResult[]> {
-  const { inputFile, deckFile, model } = options;
+  const { inputFile, graderFile, model } = options;
 
   // Resolve paths relative to current working directory if they're relative
   const resolveFilePath = (filePath: string): URL => {
@@ -48,7 +48,7 @@ export async function runEval(
   };
 
   const inputFilePath = resolveFilePath(inputFile);
-  const deckFilePath = resolveFilePath(deckFile);
+  const graderFilePath = resolveFilePath(graderFile);
   // Read and validate input file
   let inputContent: string;
   try {
@@ -60,19 +60,19 @@ export async function runEval(
     throw error;
   }
 
-  // Read and validate deck file
+  // Read and validate grader file
   try {
-    await Deno.stat(deckFilePath);
+    await Deno.stat(graderFilePath);
   } catch (error) {
     if (error instanceof Deno.errors.NotFound) {
-      throw new Error(`No such file: ${deckFilePath}`);
+      throw new Error(`No such file: ${graderFilePath}`);
     }
     throw error;
   }
 
-  // Load deck module
-  const deckModule = await import(deckFilePath.href);
-  const deck: DeckBuilder = deckModule.default;
+  // Load grader module
+  const graderModule = await import(graderFilePath.href);
+  const grader: DeckBuilder = graderModule.default;
 
   // Parse JSONL input
   const samples: EvalSample[] = [];
@@ -113,8 +113,8 @@ export async function runEval(
       context.expected = sample.expected;
     }
 
-    // Render the deck with the evaluation context
-    const renderedDeck = deck.render({
+    // Render the grader with the evaluation context
+    const renderedGrader = grader.render({
       model,
       context,
       temperature: 0,
@@ -133,7 +133,7 @@ export async function runEval(
           "HTTP-Referer": "https://boltfoundry.com",
           "X-Title": "Bolt Foundry Eval",
         },
-        body: JSON.stringify(renderedDeck),
+        body: JSON.stringify(renderedGrader),
       },
     );
 
