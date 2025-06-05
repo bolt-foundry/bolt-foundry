@@ -56,25 +56,34 @@ const docSections: DocSection[] = [
 
 interface DocsSidebarProps {
   currentSlug?: string;
+  setShowSidebar: (show: boolean) => void;
+  xClassName?: string;
 }
 
-export function DocsSidebar({ currentSlug }: DocsSidebarProps) {
+export function DocsSidebar(
+  { currentSlug, setShowSidebar, xClassName }: DocsSidebarProps,
+) {
   const { navigate } = useRouter();
 
   return (
-    <nav className="docs-sidebar flexColumn gapLarge">
-      {docSections.map((section) => (
-        <BfDsList key={section.title} header={section.title}>
-          {section.items.map((item) => (
-            <BfDsListItem
-              key={item.slug}
-              content={item.title}
-              isHighlighted={currentSlug === item.slug}
-              onClick={() => navigate(`/docs/${item.slug}`)}
-            />
-          ))}
-        </BfDsList>
-      ))}
-    </nav>
+    <div className={`docs-sidebar ${xClassName}`}>
+      <nav className=" flexColumn gapLarge">
+        {docSections.map((section) => (
+          <BfDsList key={section.title} header={section.title}>
+            {section.items.map((item) => (
+              <BfDsListItem
+                key={item.slug}
+                content={item.title}
+                isHighlighted={currentSlug === item.slug}
+                onClick={() => {
+                  navigate(`/docs/${item.slug}`);
+                  setShowSidebar(false);
+                }}
+              />
+            ))}
+          </BfDsList>
+        ))}
+      </nav>
+    </div>
   );
 }
