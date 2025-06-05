@@ -1,5 +1,4 @@
 import type { DeckBuilder } from "packages/bolt-foundry/builders/builders.ts";
-import { getConfigurationVariable } from "packages/get-configuration-var/get-configuration-var.ts";
 
 export interface EvalOptions {
   inputFile: string;
@@ -127,9 +126,8 @@ export async function runEval(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${
-            await getConfigurationVariable("OPENROUTER_API_KEY") || ""
-          }`,
+          // deno-lint-ignore bolt-foundry/no-env-direct-access
+          "Authorization": `Bearer ${Deno.env.get("OPENROUTER_API_KEY") || ""}`,
           "HTTP-Referer": "https://boltfoundry.com",
           "X-Title": "Bolt Foundry Eval",
         },

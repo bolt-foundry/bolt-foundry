@@ -6,12 +6,14 @@
     "bff-eval": "dist/bin/bff-eval.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --noEmit false --skipLibCheck true",
     "test": "node --test",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "node scripts/prepare-publish.js && npm run build",
+    "postpublish": "node scripts/restore-local.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "examples"
   ],
   "keywords": [
     "llm",
@@ -38,7 +40,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@bolt-foundry/bolt-foundry": "*",
+    "@bolt-foundry/bolt-foundry": "dev",
+    "@bolt-foundry/bolt-foundry-next": "file:../bolt-foundry/npm",
+    "tsx": "^4.19.4",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
