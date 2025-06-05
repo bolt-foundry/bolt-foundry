@@ -3,7 +3,6 @@ import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
 import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
 import { BfDsCopyButton } from "apps/bfDs/components/BfDsCopyButton.tsx";
-// import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
 import { useMutation } from "apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
 import joinWaitlistMutation from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
 
@@ -48,7 +47,7 @@ const NavButtons = () => {
         /* <BfDsButton
       kind="outline"
       text="Login"
-      onClick={() => navigate("/login")}
+      link="/login"
     /> */
       }
     </>
@@ -64,7 +63,6 @@ field Query.Home @component {
   }
 `)(function Home({ data }) {
   const { commit } = useMutation(joinWaitlistMutation);
-  // const { navigate } = useRouter();
   const [showMenu, setShowMenu] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSubmat, setFormSubmat] = useState(false);

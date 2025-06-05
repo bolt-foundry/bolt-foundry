@@ -38,7 +38,7 @@ const NavButtons = () => {
         /* <BfDsButton
       kind="outline"
       text="Login"
-      onClick={() => navigate("/login")}
+      link="/login"
     /> */
       }
     </>
@@ -89,16 +89,26 @@ export const Docs = iso(`
     return `<h${level} id="${id}">${text}</h${level}>`;
   };
 
-  // Make external links open in new tab
+  // Make external links open in new tab and fix internal doc links
   renderer.link = function (href: string, title: string | null, text: string) {
     const isExternal = href.startsWith("http://") ||
       href.startsWith("https://");
+    const isAnchor = href.startsWith("#");
+    const isAbsolute = href.startsWith("/");
+
+    let finalHref = href;
+
+    // For internal links that aren't anchors or absolute paths, prefix with /docs/
+    if (!isExternal && !isAnchor && !isAbsolute) {
+      finalHref = `/docs/${href}`;
+    }
+
     const titleAttr = title ? ` title="${title}"` : "";
     const target = isExternal
       ? ' target="_blank" rel="noopener noreferrer"'
       : "";
 
-    return `<a href="${href}"${titleAttr}${target}>${text}</a>`;
+    return `<a href="${finalHref}"${titleAttr}${target}>${text}</a>`;
   };
 
   const htmlContent = marked(blogPost.content, { renderer }) as string;
