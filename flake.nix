@@ -39,7 +39,7 @@
           pkgs.sapling
           pkgs.gh
           pkgs.python311Packages.tiktoken
-          pkgs.nodejs_20
+          pkgs.nodejs_24
           pkgs._1password-cli
           pkgs.typescript-language-server
         ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [
