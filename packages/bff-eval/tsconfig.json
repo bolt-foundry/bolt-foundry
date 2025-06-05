@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "node16",
+    "module": "commonjs",
     "lib": ["es2022"],
     "outDir": "./dist",
     "rootDir": ".",
@@ -13,7 +13,7 @@
     "resolveJsonModule": true,
     "declaration": true,
     "declarationMap": true,
-    "moduleResolution": "node16"
+    "moduleResolution": "node"
   },
   "include": [
     "src/**/*",
