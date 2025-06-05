@@ -167,7 +167,7 @@ a.dark:visited {
   justify-content: flex-start;
 }
 
-@media (max-width: 600px), (max-height: 600px) and (orientation: landscape) {
+@media (max-width: 1024px) {
   /* These styles will apply when the viewport width is 600px or less */
   .mobile-show {
     display: initial;
@@ -394,10 +394,11 @@ li.breadcrumb-item:not(:first-of-type)::before {
   cursor: pointer;
 }
 .list-item-row.clickable:hover {
-  background-color: var(--secondaryColor015);
+  background-color: var(--primaryColor015);
 }
 .list-item-row.isHighlighted {
-  background-color: var(--secondaryColor030);
+  background-color: var(--primaryColor030);
+  color: var(--primaryColor);
 }
 .list-item-main {
   flex: 1;

@@ -28,6 +28,9 @@ await build({
       type: "git",
       url: "git+https://github.com/bolt-foundry/bolt-foundry.git",
     },
+    engines: {
+      node: ">=22.0.0",
+    },
   },
   postBuild() {
     // Copy README.md to the npm package
