@@ -9,9 +9,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 describe("bff-eval CLI", () => {
   it("should show help when called with --help", async () => {
     const result = await runCLI(["--help"]);
-    assert.match(result.stdout, /Run LLM evaluation with grader decks/);
+    assert.match(result.stdout, /Run LLM evaluation with graders/);
     assert.match(result.stdout, /--input/);
-    assert.match(result.stdout, /--deck/);
+    assert.match(result.stdout, /--grader/);
     assert.match(result.stdout, /--model/);
     assert.equal(result.code, 0);
   });
@@ -23,14 +23,14 @@ describe("bff-eval CLI", () => {
   });
 
   it("should require input flag", async () => {
-    const result = await runCLI(["--deck", "test.ts"]);
+    const result = await runCLI(["--grader", "test.ts"]);
     assert.match(result.stderr, /Missing required argument: input/);
     assert.notEqual(result.code, 0);
   });
 
-  it("should require deck flag", async () => {
+  it("should require grader flag", async () => {
     const result = await runCLI(["--input", "test.jsonl"]);
-    assert.match(result.stderr, /Missing required argument: deck/);
+    assert.match(result.stderr, /Missing required argument: grader/);
     assert.notEqual(result.code, 0);
   });
 });

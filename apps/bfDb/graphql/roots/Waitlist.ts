@@ -13,7 +13,7 @@ export class Waitlist extends GraphQLObjectBase {
           a
             .nonNull.string("email")
             .nonNull.string("name")
-            .nonNull.string("company"),
+            .string("company"),
         returns: (r) =>
           r
             .string("message")
