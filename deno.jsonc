@@ -76,13 +76,17 @@
     "thirdParty",
     "**/npm",
     "node_modules",
-    "examples/**"
+    "examples/**",
+    "**/dist/**",
+    "packages/bff-eval/**"
   ],
   "lint": {
     "exclude": [
       "**/__generated__/**",
       "examples/**",
-      "apps/contacts/**"
+      "apps/contacts/**",
+      "**/dist/**",
+      "packages/bff-eval/**"
     ],
     "plugins": ["./infra/lint/bolt-foundry.ts"],
 
@@ -108,7 +112,8 @@
       "**/*.json",
       "**/*.ipynb",
       "**/.ipynb_checkpoints",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "**/dist/**"
     ]
   },
 
