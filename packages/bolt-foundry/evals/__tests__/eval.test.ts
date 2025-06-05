@@ -33,7 +33,7 @@ Deno.test("eval - should run end-to-end evaluation with mock API", async () => {
   try {
     const results = await runEval({
       inputFile: new URL("./test-data.jsonl", import.meta.url).pathname,
-      deckFile: new URL("./test-deck.ts", import.meta.url).pathname,
+      graderFile: new URL("./test-deck.ts", import.meta.url).pathname,
       model: "openai/gpt-4o",
     });
 
@@ -74,7 +74,7 @@ Deno.test("eval - should handle missing input file", async () => {
       async () => {
         await runEval({
           inputFile: "./nonexistent.jsonl",
-          deckFile: "./examples/json-validator.ts",
+          graderFile: "./examples/json-validator.ts",
           model: "openai/gpt-4o",
         });
       },
@@ -86,7 +86,7 @@ Deno.test("eval - should handle missing input file", async () => {
   }
 });
 
-Deno.test("eval - should handle invalid deck file", async () => {
+Deno.test("eval - should handle invalid grader file", async () => {
   // Stub file read to succeed for input file
   const readTextFileStub = stub(
     Deno,
@@ -97,12 +97,12 @@ Deno.test("eval - should handle invalid deck file", async () => {
       ),
   );
 
-  // Stub stat to throw not found for deck file
+  // Stub stat to throw not found for grader file
   const statStub = stub(
     Deno,
     "stat",
     (path: string | URL) => {
-      if (path.toString().includes("nonexistent-deck")) {
+      if (path.toString().includes("nonexistent-grader")) {
         return Promise.reject(new Deno.errors.NotFound("file not found"));
       }
       return Promise.resolve({ isFile: true } as Deno.FileInfo);
@@ -114,7 +114,7 @@ Deno.test("eval - should handle invalid deck file", async () => {
       async () => {
         await runEval({
           inputFile: "./valid.jsonl",
-          deckFile: "./nonexistent-deck.ts",
+          graderFile: "./nonexistent-grader.ts",
           model: "openai/gpt-4o",
         });
       },
