@@ -34,7 +34,7 @@ type JoinWaitlistPayload {
 }
 
 type Mutation {
-  joinWaitlist(company: String!, email: String!, name: String!): JoinWaitlistPayload
+  joinWaitlist(company: String, email: String!, name: String!): JoinWaitlistPayload
 }
 
 """An object with a unique identifier"""

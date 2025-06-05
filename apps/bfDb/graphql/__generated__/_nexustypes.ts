@@ -160,7 +160,7 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Mutation: {
     joinWaitlist: { // args
-      company: string; // String!
+      company?: string | null; // String
       email: string; // String!
       name: string; // String!
     }
