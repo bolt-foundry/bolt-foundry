@@ -9,7 +9,7 @@ across multiple underlying base models.
 
 ## Features
 
-- **Custom Grader Decks**: Create specialized graders using a standard DSL to
+- **Custom Graders**: Create specialized graders using a standard DSL to
   easily create and update criteria and output formats.
 - **Multi-Model Evaluation**: Grader responses across multiple LLMs
   simultaneously to compare performance and consistency (powered by Open Router)
@@ -30,7 +30,7 @@ Run evaluation with sample data:
 
 ```bash
 bff eval --input packages/bolt-foundry/evals/examples/sample-data.jsonl \
-         --deck packages/bolt-foundry/evals/examples/json-validator.ts
+         --grader packages/bolt-foundry/evals/examples/json-validator.ts
 ```
 
 ## Input data
@@ -56,12 +56,12 @@ type Sample = {
 type InputSampleFile = Array<Sample>;
 ```
 
-## Create your grader using grader decks
+## Create your grader
 
-Grader decks let you build your eval logic in a structured way. Read more on our
+Graders let you build your eval logic in a structured way. Read more on our
 [prompting philosophy], or the [case studies] as to why we've done it this way.
 
-1. Structure your deck with an initial spec explaining what your grader will do.
+1. Structure your grader with an initial spec explaining what your grader will do.
 2. Add cards to explain evaluation criteria
 3. Include any variables as context, INCLUDING OUTPUT FORMAT.
 
@@ -114,8 +114,8 @@ export default makeGraderDeckBuilder("json-validator")
 Specify the model to use for evaluation using the `--model` flag:
 
 ```bash
-bff eval --input data.jsonl --deck grader.ts --model openai/gpt-4o  # Default
-bff eval --input data.jsonl --deck grader.ts --model anthropic/claude-3-opus
+bff eval --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
+bff eval --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
 ```
 
 The evaluation uses OpenRouter API, so any model available on OpenRouter can be
@@ -167,7 +167,7 @@ against ground truth scores. This calibration feature helps you:
    accurately
 2. **Improve Grader Criteria**: Identify areas where grader instructions need
    refinement
-3. **Compare Grader Versions**: Measure improvements when updating grader decks
+3. **Compare Grader Versions**: Measure improvements when updating graders
 
 ### Adding Ground Truth Scores
 
