@@ -177,16 +177,16 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish to JSR
-        run: |
-          cd $GITHUB_WORKSPACE
-          # Use the cached profile for the development shell
-          nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
-            cd packages/bolt-foundry
-            deno publish --allow-dirty --token ${{ secrets.JSR_TOKEN }}
-          "
-        env:
-          JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
+      # - name: Publish to JSR
+      #   run: |
+      #     cd $GITHUB_WORKSPACE
+      #     # Use the cached profile for the development shell
+      #     nix develop . --impure --profile /tmp/nix-shell-cache/profile --command bash -c "
+      #       cd packages/bolt-foundry
+      #       deno publish --allow-dirty --token ${{ secrets.JSR_TOKEN }}
+      #     "
+      #   env:
+      #     JSR_TOKEN: ${{ secrets.JSR_TOKEN }}
 
       - name: Create Git Tag
         run: |
