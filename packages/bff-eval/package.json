@@ -1,6 +1,6 @@
 {
   "name": "bff-eval",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Evaluation framework for LLM systems - Node.js CLI",
   "bin": {
     "bff-eval": "dist/bin/bff-eval.js"
