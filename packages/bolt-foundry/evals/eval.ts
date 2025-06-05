@@ -7,7 +7,7 @@ export interface EvalOptions {
   model: string;
 }
 
-export interface JudgementResult {
+export interface GradingResult {
   model: string;
   id?: string;
   iteration: number;
@@ -33,7 +33,7 @@ interface EvalSample {
 
 export async function runEval(
   options: EvalOptions,
-): Promise<JudgementResult[]> {
+): Promise<GradingResult[]> {
   const { inputFile, deckFile, model } = options;
 
   // Resolve paths relative to current working directory if they're relative
@@ -98,7 +98,7 @@ export async function runEval(
   }
 
   // Process each sample
-  const results: JudgementResult[] = [];
+  const results: GradingResult[] = [];
 
   for (const sample of samples) {
     const startTime = performance.now();
@@ -152,21 +152,21 @@ export async function runEval(
     try {
       output = JSON.parse(rawOutput);
     } catch (_parseError) {
-      // If the judge fails to return valid JSON, that's a score of 0
+      // If the grader fails to return valid JSON, that's a score of 0
       output = {
         score: 0,
-        notes: `Judge failed to return valid JSON. Raw output: ${rawOutput}`,
+        notes: `Grader failed to return valid JSON. Raw output: ${rawOutput}`,
       };
     }
 
     // Validate score is in range
-    const score = Math.round(output.score) as JudgementResult["score"];
+    const score = Math.round(output.score) as GradingResult["score"];
     if (score < -3 || score > 3) {
       throw new Error(`Score ${score} is out of valid range [-3, 3]`);
     }
 
     // Create result
-    const result: JudgementResult = {
+    const result: GradingResult = {
       model,
       id: sample.id,
       iteration: 1,

@@ -1,10 +1,10 @@
 #!/usr/bin/env -S bff test
 
-import { makeJudgeDeckBuilder } from "../makeJudgeDeckBuilder.ts";
+import { makeGraderDeckBuilder } from "../makeGraderDeckBuilder.ts";
 
-// Test to verify that judge content is appended after user content
-Deno.test("makeJudgeDeckBuilder appends content in correct order", () => {
-  const judgeDeck = makeJudgeDeckBuilder("test-judge")
+// Test to verify that grader content is appended after user content
+Deno.test("makeGraderDeckBuilder appends content in correct order", () => {
+  const graderDeck = makeGraderDeckBuilder("test-grader")
     .spec("User spec 1")
     .spec("User spec 2")
     .card("user criteria", (c) =>
@@ -13,7 +13,7 @@ Deno.test("makeJudgeDeckBuilder appends content in correct order", () => {
     .context((c) => c.string("customVar", "Custom question?"));
 
   // Render the deck to see the final output
-  const rendered = judgeDeck.render({
+  const rendered = graderDeck.render({
     model: "test-model",
     context: {
       userMessage: "Test user message",
@@ -22,7 +22,7 @@ Deno.test("makeJudgeDeckBuilder appends content in correct order", () => {
     },
   });
 
-  // Check that the system message has user content before judge content
+  // Check that the system message has user content before grader content
   const systemMessage = rendered.messages?.[0];
   if (systemMessage?.role !== "system") {
     throw new Error("Expected first message to be system message");
@@ -53,7 +53,7 @@ Deno.test("makeJudgeDeckBuilder appends content in correct order", () => {
     m.content.includes("Custom question?")
   );
 
-  // Find the judge context questions
+  // Find the grader context questions
   const userMessageQuestion = contextMessages.find((m) =>
     m.role === "assistant" && typeof m.content === "string" &&
     m.content.includes("What was the user's original message?")
@@ -66,10 +66,10 @@ Deno.test("makeJudgeDeckBuilder appends content in correct order", () => {
   const customVarIndex = contextMessages.indexOf(customVarMessage);
   const userMessageIndex = contextMessages.indexOf(userMessageQuestion);
 
-  // Custom context should come before judge context
+  // Custom context should come before grader context
   if (customVarIndex > userMessageIndex) {
-    throw new Error("Custom context should appear before judge context");
+    throw new Error("Custom context should appear before grader context");
   }
 
-  // Test passed - judge content correctly appended after user content
+  // Test passed - grader content correctly appended after user content
 });

@@ -2,32 +2,32 @@
 
 ## Overview
 
-Add a "reconcile" option to the evals API that analyzes how well a judge's
+Add a "reconcile" option to the evals API that analyzes how well a grader's
 evaluation notes align with the original evaluation criteria specified in the
-judge deck.
+grader deck.
 
 ## Motivation
 
-When judges evaluate samples, they produce scores and notes explaining their
+When graders evaluate samples, they produce scores and notes explaining their
 reasoning. However, there's currently no automated way to verify whether the
-judge's notes actually address all the evaluation criteria defined in the spec.
+grader's notes actually address all the evaluation criteria defined in the spec.
 This reconciliation feature would:
 
-1. Ensure judges are following the specified evaluation criteria
-2. Identify gaps where judges miss important criteria
-3. Highlight when judges consider factors outside the original spec
-4. Provide quality metrics for judge performance
+1. Ensure graders are following the specified evaluation criteria
+2. Identify gaps where graders miss important criteria
+3. Highlight when graders consider factors outside the original spec
+4. Provide quality metrics for grader performance
 
 ## User Stories
 
-1. **As an eval designer**, I want to verify that my judge is addressing all
+1. **As an eval designer**, I want to verify that my grader is addressing all
    specified criteria so I can ensure comprehensive evaluations.
 
-2. **As a developer**, I want to identify when judges are missing criteria so I
-   can improve the judge prompts.
+2. **As a developer**, I want to identify when graders are missing criteria so I
+   can improve the grader prompts.
 
-3. **As a quality engineer**, I want metrics on how well judges follow
-   specifications so I can track judge reliability.
+3. **As a quality engineer**, I want metrics on how well graders follow
+   specifications so I can track grader reliability.
 
 ## Technical Design
 
@@ -45,10 +45,10 @@ export interface EvalOptions {
 }
 ```
 
-#### JudgementResult Interface Extension
+#### GradingResult Interface Extension
 
 ```typescript
-export interface JudgementResult {
+export interface GradingResult {
   // ... existing fields ...
   reconciliation?: {
     specCriteria: string[]; // Extracted criteria from deck
@@ -71,7 +71,7 @@ export interface JudgementResult {
 
 #### Phase 1: Basic Keyword Matching (MVP)
 
-- Extract criteria from judge deck specs
+- Extract criteria from grader deck specs
 - Use keyword/phrase matching to check coverage
 - Calculate simple metrics
 - No additional LLM calls required
@@ -86,7 +86,7 @@ export interface JudgementResult {
 #### Phase 3: Advanced Features
 
 - Support for weighted criteria importance
-- Multi-judge reconciliation comparison
+- Multi-grader reconciliation comparison
 - Trend analysis across evaluation runs
 - Configurable reconciliation strategies
 
@@ -140,7 +140,7 @@ interface LLMStrategy {
 ### Week 1: Foundation
 
 1. Design and document interfaces
-2. Implement criteria extraction from judge decks
+2. Implement criteria extraction from grader decks
 3. Create basic reconciler module structure
 4. Write comprehensive tests for extraction
 
@@ -149,7 +149,7 @@ interface LLMStrategy {
 1. Implement keyword-based coverage analyzer
 2. Integrate reconciler into eval.ts
 3. Add reconciliation results to output
-4. Test with example judge decks
+4. Test with example grader decks
 
 ### Week 3: Enhancement
 
@@ -173,7 +173,7 @@ interface LLMStrategy {
 # Run eval with reconciliation
 bff eval \
   --input samples.jsonl \
-  --deck judge-clarity.ts \
+  --deck grader-clarity.ts \
   --model claude-3-opus \
   --reconcile
 ```
@@ -184,7 +184,7 @@ bff eval \
 # Use different model for reconciliation
 bff eval \
   --input samples.jsonl \
-  --deck judge-clarity.ts \
+  --deck grader-clarity.ts \
   --model gpt-4 \
   --reconcile \
   --reconcile-model claude-3-opus
@@ -242,7 +242,7 @@ continuous tuning
 
 1. **Visual Dashboard**: Web UI for reconciliation results
 2. **Batch Analysis**: Reconcile multiple eval runs together
-3. **Judge Training**: Use reconciliation data to improve judge prompts
+3. **Grader Training**: Use reconciliation data to improve grader prompts
 4. **API Integration**: REST API for reconciliation as a service
 5. **Custom Strategies**: Plugin system for reconciliation strategies
 
