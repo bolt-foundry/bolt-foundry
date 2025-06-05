@@ -159,7 +159,7 @@ export async function evalCommand(options: string[]): Promise<number> {
       );
 
       if (resultsWithGroundTruth.length > 0) {
-        printLine("\nJudge Calibration Metrics:");
+        printLine("\nGrader Calibration Metrics:");
 
         // Calculate accuracy metrics
         let exactMatches = 0;
@@ -205,7 +205,7 @@ export async function evalCommand(options: string[]): Promise<number> {
                 ?.score as number;
               return {
                 "Sample ID": result.id,
-                "Judge Score": result.score,
+                "Grader Score": result.score,
                 "Ground Truth": groundTruth,
                 "Difference": result.score - groundTruth,
                 "Assistant Response": result.sample?.assistantResponse ||
@@ -265,14 +265,14 @@ export async function evalCommand(options: string[]): Promise<number> {
             }
 
             // Add score comparison to the same table
-            sampleData["Judge Score"] = result.score;
+            sampleData["Grader Score"] = result.score;
             sampleData["Ground Truth"] = groundTruth;
             sampleData["Difference"] = result.score - groundTruth;
 
             printTable(sampleData);
 
-            // Print judge notes below the table
-            printLine("\nJudge Notes:");
+            // Print grader notes below the table
+            printLine("\nGrader Notes:");
             printLine(result.output.notes || "No notes provided");
           });
         }
@@ -295,7 +295,7 @@ function printHelp() {
   logger.debug(`
 Usage: bff eval [options]
 
-Run LLM evaluation on a dataset using a judge deck.
+Run LLM evaluation on a dataset using a grader deck.
 
 Options:
   -i, --input <file>    Input JSONL file with evaluation samples (required)
