@@ -13,6 +13,13 @@ jobs:
     name: Build and Publish bff-eval Dev Version
     runs-on: ubuntu-latest
     steps:
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - name: Setup Nix caching
+        uses: DeterminateSystems/flakehub-cache-action@main
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -24,21 +31,9 @@ jobs:
           node-version: "22"
           registry-url: "https://registry.npmjs.org/"
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
-      # Cache dependencies
-      - name: Cache Deno dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/deno
-            ~/.deno
-          key: ${{ runner.os }}-deno-${{ hashFiles('deno.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-deno-
+      # Set Deno cache directory
+      - name: Set Deno cache directory
+        run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"
 
       # Cache node_modules
       - name: Cache dependencies
@@ -56,7 +51,7 @@ jobs:
       # Build bolt-foundry package first (which bff-eval depends on)
       - name: Build bolt-foundry package
         run: |
-          deno run -A infra/bff/bff.ts build --include-bolt-foundry --skip-barrels --skip-routes --skip-content --skip-config-keys --skip-gql-types --skip-isograph
+          nix develop --impure --command bff build --include-bolt-foundry --skip-barrels --skip-routes --skip-content --skip-config-keys --skip-gql-types --skip-isograph
 
       - name: Install dependencies
         working-directory: packages/bff-eval
