@@ -16,8 +16,8 @@ if (pkg.dependencies) {
   if (pkg.dependencies['@bolt-foundry/bolt-foundry'] === 'dev') {
     pkg.dependencies['@bolt-foundry/bolt-foundry'] = '^0.1.0'; // Use appropriate version
   }
-  if (pkg.dependencies['@bolt-foundry/bolt-foundry-next']?.startsWith('file:')) {
-    pkg.dependencies['@bolt-foundry/bolt-foundry-next'] = '^0.1.0'; // Use appropriate version
+  if (pkg.dependencies['@bolt-foundry/bolt-foundry']?.startsWith('file:')) {
+    pkg.dependencies['@bolt-foundry/bolt-foundry'] = '^0.1.0'; // Use appropriate version
   }
 }
 
