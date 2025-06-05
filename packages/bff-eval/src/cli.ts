@@ -43,11 +43,11 @@ export const cli = yargs(hideBin(process.argv))
   })
   .epilogue("Run LLM evaluation with graders")
   .example(
-    "$0 --input test.jsonl --grader grader.ts",
-    "Run evaluation with test cases from test.jsonl using grader.ts",
+    "$0 --input test.jsonl --grader grader.js",
+    "Run evaluation with test cases from test.jsonl using grader.js",
   )
   .example(
-    "$0 -i data.jsonl -g eval.ts -m gpt-3.5-turbo -o results.json",
+    "$0 -i data.jsonl -g eval.js -m gpt-3.5-turbo -o results.json",
     "Run with custom model and output file",
   )
   .example(

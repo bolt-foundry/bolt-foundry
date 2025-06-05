@@ -40,9 +40,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@bolt-foundry/bolt-foundry": "dev",
-    "@bolt-foundry/bolt-foundry-next": "file:../bolt-foundry/npm",
-    "tsx": "^4.19.4",
+    "@bolt-foundry/bolt-foundry": "0.1.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

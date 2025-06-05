@@ -62,25 +62,9 @@ async function runEvaluation(options) {
         const fs = await import("node:fs/promises");
         const inputContent = await fs.readFile(input, 'utf-8');
         console.log(`✅ Loaded input file: ${input}`);
-        // Load grader module - support both .js and .ts files
-        const isTypeScript = graderPath.endsWith('.ts');
-        console.log(`\n🔧 Loading grader ${isTypeScript ? '(TypeScript)' : '(JavaScript)'}...`);
-        let graderModule;
-        if (isTypeScript) {
-            // For TypeScript files, use tsx to load them
-            const tsx = await import('tsx');
-            const unregister = tsx.register();
-            try {
-                graderModule = require(graderPath);
-            }
-            finally {
-                unregister();
-            }
-        }
-        else {
-            // For JavaScript files, use regular require
-            graderModule = require(graderPath);
-        }
+        // Load grader module
+        console.log(`\n🔧 Loading grader...`);
+        const graderModule = require(graderPath);
         const grader = graderModule.default || graderModule;
         console.log(`✅ Loaded grader: ${graderPath}`);
         // Parse JSONL input

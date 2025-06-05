@@ -1,5 +1,5 @@
 // Direct evaluation implementation that works around the file:// URL issue
-import type { DeckBuilder } from "@bolt-foundry/bolt-foundry-next/builders";
+import type { DeckBuilder } from "@bolt-foundry/bolt-foundry/builders";
 import { TerminalSpinner, ProgressBar } from "./terminal-spinner";
 
 interface RunOptions {
@@ -93,24 +93,10 @@ export async function runEvaluation(options: RunOptions): Promise<void> {
     const inputContent = await fs.readFile(input, 'utf-8');
     console.log(`✅ Loaded input file: ${input}`);
     
-    // Load grader module - support both .js and .ts files
-    const isTypeScript = graderPath.endsWith('.ts');
-    console.log(`\n🔧 Loading grader ${isTypeScript ? '(TypeScript)' : '(JavaScript)'}...`);
+    // Load grader module
+    console.log(`\n🔧 Loading grader...`);
     
-    let graderModule: any;
-    if (isTypeScript) {
-      // For TypeScript files, use tsx to load them
-      const tsx = await import('tsx') as any;
-      const unregister = tsx.register();
-      try {
-        graderModule = require(graderPath);
-      } finally {
-        unregister();
-      }
-    } else {
-      // For JavaScript files, use regular require
-      graderModule = require(graderPath);
-    }
+    const graderModule = require(graderPath);
     const grader: DeckBuilder = graderModule.default || graderModule;
     console.log(`✅ Loaded grader: ${graderPath}`);
     
