@@ -64,8 +64,8 @@ export async function evalCommand(options: string[]): Promise<number> {
 
     if (arg === "--input" || arg === "-i") {
       args.inputFile = options[++i];
-    } else if (arg === "--deck" || arg === "-d") {
-      args.deckFile = options[++i];
+    } else if (arg === "--grader" || arg === "-g") {
+      args.graderFile = options[++i];
     } else if (arg === "--model" || arg === "-m") {
       args.model = options[++i] || "gpt-4o";
     } else if (arg === "--output" || arg === "-o") {
@@ -82,8 +82,8 @@ export async function evalCommand(options: string[]): Promise<number> {
   }
 
   // Validate required arguments
-  if (!args.inputFile || !args.deckFile) {
-    logger.error("Missing required arguments: --input and --deck");
+  if (!args.inputFile || !args.graderFile) {
+    logger.error("Missing required arguments: --input and --grader");
     printHelp();
     return 1;
   }
@@ -95,14 +95,14 @@ export async function evalCommand(options: string[]): Promise<number> {
 
   logger.debug(`Running evaluation...`);
   logger.debug(`Input: ${args.inputFile}`);
-  logger.debug(`Deck: ${args.deckFile}`);
+  logger.debug(`Grader: ${args.graderFile}`);
   logger.debug(`Model: ${args.model}`);
 
   // Show evaluation configuration
   printLine("\nEvaluation Configuration:");
   printTable({
     "Input File": args.inputFile,
-    "Deck File": args.deckFile,
+    "Grader File": args.graderFile,
     "Model": args.model,
     "Output": args.outputFile || "Console",
   });
@@ -113,7 +113,7 @@ export async function evalCommand(options: string[]): Promise<number> {
     // Run the evaluation
     const results = await runEval({
       inputFile: args.inputFile,
-      deckFile: args.deckFile,
+      graderFile: args.graderFile,
       model: args.model,
     });
 
@@ -295,18 +295,18 @@ function printHelp() {
   logger.debug(`
 Usage: bff eval [options]
 
-Run LLM evaluation on a dataset using a grader deck.
+Run LLM evaluation on a dataset using a grader.
 
 Options:
   -i, --input <file>    Input JSONL file with evaluation samples (required)
-  -d, --deck <file>     Deck file with evaluation criteria (required)
+  -g, --grader <file>   Grader file with evaluation criteria (required)
   -m, --model <model>   Model to use for evaluation (default: openai/gpt-4o)
   -o, --output <file>   Output file for results (optional, defaults to console)
   -h, --help            Show this help message
 
 Example:
-  bff eval --input ./data/samples.jsonl --deck ./decks/json-validator.ts
-  bff eval -i samples.jsonl -d validator.ts -m anthropic/claude-3-opus -o results.jsonl
+  bff eval --input ./data/samples.jsonl --grader ./graders/json-validator.ts
+  bff eval -i samples.jsonl -g validator.ts -m anthropic/claude-3-opus -o results.jsonl
 `);
 }
 

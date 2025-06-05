@@ -8,8 +8,8 @@ export const cli = yargs(hideBin(process.argv))
   .help()
   .strict()
   .demandOption(
-    ["input", "deck"],
-    "Please provide both input and deck arguments",
+    ["input", "grader"],
+    "Please provide both input and grader arguments",
   )
   .option("input", {
     alias: "i",
@@ -17,10 +17,10 @@ export const cli = yargs(hideBin(process.argv))
     description: "Input JSONL file containing test cases",
     demandOption: true,
   })
-  .option("deck", {
-    alias: "d",
+  .option("grader", {
+    alias: "g",
     type: "string",
-    description: "Grader deck file to use for evaluation",
+    description: "Grader file to use for evaluation",
     demandOption: true,
   })
   .option("model", {
@@ -40,12 +40,12 @@ export const cli = yargs(hideBin(process.argv))
     description: "Enable verbose logging",
     default: false,
   })
-  .epilogue("Run LLM evaluation with grader decks")
+  .epilogue("Run LLM evaluation with graders")
   .example(
-    "$0 --input test.jsonl --deck grader.ts",
-    "Run evaluation with test cases from test.jsonl using grader.ts deck",
+    "$0 --input test.jsonl --grader grader.ts",
+    "Run evaluation with test cases from test.jsonl using grader.ts",
   )
   .example(
-    "$0 -i data.jsonl -d eval.ts -m gpt-3.5-turbo -o results.json",
+    "$0 -i data.jsonl -g eval.ts -m gpt-3.5-turbo -o results.json",
     "Run with custom model and output file",
   );

@@ -1,6 +1,6 @@
 # bff-eval
 
-Node.js CLI for running LLM evaluations with grader decks.
+Node.js CLI for running LLM evaluations with graders.
 
 ## Installation
 
@@ -14,16 +14,16 @@ npx bff-eval --help
 
 ```bash
 # Basic usage
-bff-eval --input samples.jsonl --deck grader.js
+bff-eval --input samples.jsonl --grader grader.js
 
 # With specific model
-bff-eval --input samples.jsonl --deck grader.js --model openai/gpt-4
+bff-eval --input samples.jsonl --grader grader.js --model openai/gpt-4
 
 # Save results to file
-bff-eval --input samples.jsonl --deck grader.js --output results.json
+bff-eval --input samples.jsonl --grader grader.js --output results.json
 
 # Verbose output
-bff-eval --input samples.jsonl --deck grader.js --verbose
+bff-eval --input samples.jsonl --grader grader.js --verbose
 ```
 
 ## Environment Variables
@@ -46,14 +46,14 @@ Fields:
 - `assistantResponse` or `completion` - The AI's response
 - `score` (optional) - Expected score for calibration metrics
 
-## Grader Deck Format
+## Grader Format
 
-Grader decks should be CommonJS modules that export a DeckBuilder:
+Graders should be CommonJS modules that export a DeckBuilder:
 
 ```javascript
 const { makeGraderDeckBuilder } = require("@bolt-foundry/evals");
 
-const deck = makeGraderDeckBuilder("accuracy-grader")
+const grader = makeGraderDeckBuilder("accuracy-grader")
   .card(
     "criteria",
     (c) =>
@@ -61,7 +61,7 @@ const deck = makeGraderDeckBuilder("accuracy-grader")
         .spec("Score from -3 (completely wrong) to 3 (perfectly accurate)"),
   );
 
-module.exports = deck;
+module.exports = grader;
 ```
 
 ## Output
