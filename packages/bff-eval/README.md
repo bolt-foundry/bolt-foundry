@@ -20,11 +20,21 @@ across multiple underlying base models.
 
 ## Quickstart
 
-Set your `OPENROUTER_API_KEY` environment variable.
+### Setup
 
-```bash
-npx bff-eval --help
-```
+1. **Get an OpenRouter API Key**:
+   - Sign up for an account at [OpenRouter](https://openrouter.ai)
+   - Generate an API key from your dashboard
+   - Set the environment variable:
+   
+   ```bash
+   export OPENROUTER_API_KEY="your-api-key-here"
+   ```
+
+2. **Install and run**:
+   ```bash
+   npx bff-eval --help
+   ```
 
 Run evaluation with sample data:
 
