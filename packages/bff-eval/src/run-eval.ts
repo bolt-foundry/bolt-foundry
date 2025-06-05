@@ -1,5 +1,6 @@
 // Direct evaluation implementation that works around the file:// URL issue
 import type { DeckBuilder } from "@bolt-foundry/bolt-foundry-next/builders";
+import { TerminalSpinner, ProgressBar } from "./terminal-spinner";
 
 interface RunOptions {
   input: string;
@@ -72,6 +73,8 @@ function printTable(data: unknown[] | Record<string, unknown>) {
 export async function runEvaluation(options: RunOptions): Promise<void> {
   const { input, grader: graderPath, model = "openai/gpt-4o", output, verbose } = options;
 
+  console.log("🚀 Starting evaluation...\n");
+
   if (verbose) {
     console.log("Evaluation Configuration:");
     console.table({
@@ -80,16 +83,22 @@ export async function runEvaluation(options: RunOptions): Promise<void> {
       "Model": model,
       "Output": output || "Console",
     });
+    console.log("");
   }
 
   try {
     // Load files
+    console.log("📁 Loading input file...");
     const fs = await import("node:fs/promises");
     const inputContent = await fs.readFile(input, 'utf-8');
+    console.log(`✅ Loaded input file: ${input}`);
     
     // Load grader module - support both .js and .ts files
+    const isTypeScript = graderPath.endsWith('.ts');
+    console.log(`\n🔧 Loading grader ${isTypeScript ? '(TypeScript)' : '(JavaScript)'}...`);
+    
     let graderModule: any;
-    if (graderPath.endsWith('.ts')) {
+    if (isTypeScript) {
       // For TypeScript files, use tsx to load them
       const tsx = await import('tsx') as any;
       const unregister = tsx.register();
@@ -103,8 +112,10 @@ export async function runEvaluation(options: RunOptions): Promise<void> {
       graderModule = require(graderPath);
     }
     const grader: DeckBuilder = graderModule.default || graderModule;
+    console.log(`✅ Loaded grader: ${graderPath}`);
     
     // Parse JSONL input
+    console.log("\n📋 Parsing evaluation samples...");
     const samples: any[] = [];
     const lines = inputContent.trim().split("\n");
     for (let i = 0; i < lines.length; i++) {
@@ -126,101 +137,129 @@ export async function runEvaluation(options: RunOptions): Promise<void> {
         );
       }
     }
+    console.log(`✅ Parsed ${samples.length} samples`);
     
-    // Process each sample
-    const results: GradingResult[] = [];
+    // Process all samples in parallel
+    console.log(`\n🤖 Processing ${samples.length} samples in parallel with ${model}...\n`);
     
-    for (const sample of samples) {
-      const startTime = performance.now();
+    // Track completion status
+    let completedCount = 0;
+    const startTime = Date.now();
+    
+    // Create a function to process a single sample
+    const processSample = async (sample: any, index: number): Promise<GradingResult> => {
+      const sampleNumber = index + 1;
+      const sampleStartTime = performance.now();
       
-      // Prepare context for the deck
-      const context: Record<string, string> = {
-        userMessage: sample.userMessage,
-        assistantResponse: sample.assistantResponse,
-      };
-      
-      if (sample.expected) {
-        context.expected = sample.expected;
-      }
-      
-      // Render the grader with the evaluation context
-      const renderedGrader = grader.render({
-        model,
-        context,
-        temperature: 0,
-      });
-      
-      // Call LLM API via OpenRouter
-      const apiKey = process.env.OPENROUTER_API_KEY || "";
-      const response = await fetch(
-        `https://openrouter.ai/api/v1/chat/completions`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
-            "HTTP-Referer": "https://boltfoundry.com",
-            "X-Title": "Bolt Foundry Eval",
-          },
-          body: JSON.stringify(renderedGrader),
-        },
-      );
-      
-      const endTime = performance.now();
-      const latencyInMs = endTime - startTime;
-      
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.statusText}`);
-      }
-      
-      const apiResponse = await response.json() as any;
-      const rawOutput = apiResponse.choices[0].message.content;
-      
-      // Parse the evaluation result
-      let output: { score: number; notes?: string };
       try {
-        output = JSON.parse(rawOutput);
-      } catch (_parseError) {
-        // If the grader fails to return valid JSON, that's a score of 0
-        output = {
-          score: 0,
-          notes: `Grader failed to return valid JSON. Raw output: ${rawOutput}`,
+        // Prepare context for the deck
+        const context: Record<string, string> = {
+          userMessage: sample.userMessage,
+          assistantResponse: sample.assistantResponse,
         };
-      }
-      
-      // Validate score is in range
-      const score = Math.round(output.score) as GradingResult["score"];
-      if (score < -3 || score > 3) {
-        throw new Error(`Score ${score} is out of valid range [-3, 3]`);
-      }
-      
-      // Create result
-      const result: GradingResult = {
-        model,
-        id: sample.id,
-        iteration: 1,
-        score,
-        latencyInMs,
-        rawOutput,
-        output,
-        sample,
-        sampleMetadata: Object.fromEntries(
-          Object.entries(sample).filter(([key]) =>
-            !["id", "userMessage", "assistantResponse", "expected"].includes(key)
+        
+        if (sample.expected) {
+          context.expected = sample.expected;
+        }
+        
+        // Render the grader with the evaluation context
+        const renderedGrader = grader.render({
+          model,
+          context,
+          temperature: 0,
+        });
+        
+        // Call LLM API via OpenRouter
+        const apiKey = process.env.OPENROUTER_API_KEY || "";
+        const response = await fetch(
+          `https://openrouter.ai/api/v1/chat/completions`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${apiKey}`,
+              "HTTP-Referer": "https://boltfoundry.com",
+              "X-Title": "Bolt Foundry Eval",
+            },
+            body: JSON.stringify(renderedGrader),
+          },
+        );
+        
+        const endTime = performance.now();
+        const latencyInMs = endTime - sampleStartTime;
+        
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.statusText}`);
+        }
+        
+        const apiResponse = await response.json() as any;
+        const rawOutput = apiResponse.choices[0].message.content;
+        
+        // Parse the evaluation result
+        let output: { score: number; notes?: string };
+        try {
+          output = JSON.parse(rawOutput);
+        } catch (_parseError) {
+          // If the grader fails to return valid JSON, that's a score of 0
+          output = {
+            score: 0,
+            notes: `Grader failed to return valid JSON. Raw output: ${rawOutput}`,
+          };
+        }
+        
+        // Validate score is in range
+        const score = Math.round(output.score) as GradingResult["score"];
+        if (score < -3 || score > 3) {
+          throw new Error(`Score ${score} is out of valid range [-3, 3]`);
+        }
+        
+        // Update progress
+        completedCount++;
+        const progress = Math.round((completedCount / samples.length) * 100);
+        process.stdout.write(`\r⚡ Progress: ${completedCount}/${samples.length} (${progress}%) - Latest: ${sample.id} scored ${score} (${Math.round(latencyInMs)}ms)`);
+        
+        // Create result
+        return {
+          model,
+          id: sample.id,
+          iteration: 1,
+          score,
+          latencyInMs,
+          rawOutput,
+          output,
+          sample,
+          sampleMetadata: Object.fromEntries(
+            Object.entries(sample).filter(([key]) =>
+              !["id", "userMessage", "assistantResponse", "expected"].includes(key)
+            ),
           ),
-        ),
-      };
-      
-      results.push(result);
-    }
+        };
+      } catch (error) {
+        // Update progress even on error
+        completedCount++;
+        const progress = Math.round((completedCount / samples.length) * 100);
+        process.stdout.write(`\r⚡ Progress: ${completedCount}/${samples.length} (${progress}%) - Error on ${sample.id}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw error;
+      }
+    };
+    
+    // Process all samples in parallel
+    const resultPromises = samples.map((sample, index) => processSample(sample, index));
+    const results = await Promise.all(resultPromises);
+    
+    // Clear progress line and show completion
+    const totalTime = Date.now() - startTime;
+    process.stdout.write(`\r✅ All ${samples.length} samples processed in ${(totalTime / 1000).toFixed(1)}s (${Math.round(totalTime / samples.length)}ms avg)\n`);
 
     // Output results
     if (output) {
       // Write to file
+      console.log("\n💾 Writing results to file...");
       const outputData = results.map((r: any) => JSON.stringify(r)).join("\n");
       await fs.writeFile(output, outputData);
-      console.log(`Results written to ${output}`);
+      console.log(`✅ Results written to ${output}`);
     } else {
+      console.log("\n📊 Generating evaluation report...");
       // Output to console
       printLine("\nEvaluation Results:");
       printTable(
