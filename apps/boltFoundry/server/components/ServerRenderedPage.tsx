@@ -48,6 +48,7 @@ export function ServerRenderedPage(
           }}
         >
         </script>
+
         <link rel="stylesheet" href="/static/marketingpagestyle.css" />
         <link rel="stylesheet" href="/static/bfDsStyle.css" />
         <link rel="stylesheet" href="/static/blogStyle.css" />
@@ -66,7 +67,7 @@ export function ServerRenderedPage(
         <link
           rel="shortcut icon"
           type="image/jpg"
-          href="https://bf-static-assets.s3.amazonaws.com/favicon.ico"
+          href="https://bolt-foundry-assets.s3.us-east-2.amazonaws.com/favicon.ico"
         />
         <script
           type="module"
