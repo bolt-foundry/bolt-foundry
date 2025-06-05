@@ -264,7 +264,7 @@ field Query.Home @component {
           </div>
         </div>
         <div className="landing-footer">
-          <div className="landing-content flexRow gapMedium">
+          <div className="landing-content flexRow gapMedium alignItemsCenter">
             <div className="flex1">
               &copy; 2025 Bolt Foundry. All rights reserved.
             </div>
