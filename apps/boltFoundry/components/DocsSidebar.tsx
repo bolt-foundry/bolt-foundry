@@ -13,29 +13,30 @@ const docSections: DocSection[] = [
     items: [
       { slug: "README", title: "Overview" },
       { slug: "quickstart", title: "Quickstart" },
-      { slug: "getting-started", title: "Getting Started" },
-      { slug: "interactive-demo", title: "Interactive Demo" },
+      // { slug: "getting-started", title: "Getting Started" },
+      // { slug: "interactive-demo", title: "Interactive Demo" },
     ],
   },
   {
     title: "Planning & Strategy",
     items: [
-      { slug: "product-plan", title: "Product Plan" },
-      { slug: "big-picture-strategy", title: "Big Picture Strategy" },
-      { slug: "business-vision", title: "Business Vision" },
-      { slug: "company-vision", title: "Company Vision" },
-      { slug: "library-vision", title: "Library Vision" },
+      // { slug: "product-plan", title: "Product Plan" },
+      { slug: "big-picture-strategy", title: "Big picture strategy" },
+      //  { slug: "business-vision", title: "Business Vision" },
+      { slug: "company-vision", title: "Company vision" },
+      //  { slug: "library-vision", title: "Library Vision" },
     ],
   },
   {
     title: "Development",
     items: [
-      { slug: "STATUS", title: "Status" },
-      { slug: "deck-system", title: "Deck System" },
-      { slug: "improving-inference-philosophy", title: "Improving Inference" },
-      { slug: "measurement-strategy", title: "Measurement Strategy" },
+      //  { slug: "STATUS", title: "Status" },
+      { slug: "deck-system", title: "Deck system" },
+      { slug: "improving-inference-philosophy", title: "Improving inference" },
+      //  { slug: "measurement-strategy", title: "Measurement Strategy" },
     ],
   },
+  /*
   {
     title: "Team & Culture",
     items: [
@@ -44,12 +45,13 @@ const docSections: DocSection[] = [
       { slug: "early-content-plan", title: "Content Plan" },
     ],
   },
+  */
   {
     title: "Reference",
     items: [
-      { slug: "wut", title: "WUT (Technical Deep Dive)" },
-      { slug: "BACKLOG", title: "Backlog" },
-      { slug: "CHANGELOG", title: "Changelog" },
+      { slug: "wut", title: "wut" },
+      //  { slug: "BACKLOG", title: "Backlog" },
+      //  { slug: "CHANGELOG", title: "Changelog" },
     ],
   },
 ];
