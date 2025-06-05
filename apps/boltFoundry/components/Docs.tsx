@@ -19,7 +19,13 @@ const NavButtons = () => {
         rel="noopener noreferrer"
         text="Blog"
       />
-      <BfDsButton kind="danSelected" link="/docs" text="Docs" />
+      <BfDsButton
+        kind="danSelected"
+        href="https://github.com/bolt-foundry/bolt-foundry/blob/main/docs/README.md"
+        hrefTarget="_blank"
+        rel="noopener noreferrer"
+        text="Docs"
+      />
       <BfDsButton
         kind="dan"
         href="https://discord.gg/tU5ksTBfEj"
