@@ -4,18 +4,18 @@
 
 ## Overview
 
-Bolt Foundry Evals helps developers create judges to test the outputs of LLMs
+Bolt Foundry Evals helps developers create graders to test the outputs of LLMs
 across multiple underlying base models.
 
 ## Features
 
-- **Custom Judge Decks**: Create specialized judges using a standard DSL to
+- **Custom Grader Decks**: Create specialized graders using a standard DSL to
   easily create and update criteria and output formats.
-- **Multi-Model Evaluation**: Judge responses across multiple LLMs
+- **Multi-Model Evaluation**: Grader responses across multiple LLMs
   simultaneously to compare performance and consistency (powered by Open Router)
 - **Parallel Execution**: Run evaluations concurrently for faster results across
   multiple models and iterations
-- **Meta Judge Analysis**: Calibrate and validate judge quality using ground
+- **Meta Grader Analysis**: Calibrate and validate grader quality using ground
   truth scores to ensure consistent and accurate evaluations
 
 ## Quickstart
@@ -56,12 +56,12 @@ type Sample = {
 type InputSampleFile = Array<Sample>;
 ```
 
-## Create your judge using judge decks
+## Create your grader using grader decks
 
-Judge decks let you build your eval logic in a structured way. Read more on our
+Grader decks let you build your eval logic in a structured way. Read more on our
 [prompting philosophy], or the [case studies] as to why we've done it this way.
 
-1. Structure your deck with an initial spec explaining what your judge will do.
+1. Structure your deck with an initial spec explaining what your grader will do.
 2. Add cards to explain evaluation criteria
 3. Include any variables as context, INCLUDING OUTPUT FORMAT.
 
@@ -69,10 +69,10 @@ To be clear, you SHOULD NOT BE INTERPOLATING ANY STRINGS IN THE SPECS. Use
 `.context` builders to safely include variables. [See why].
 
 ```typescript
-import { makeJudgeDeckBuilder } from "../makeJudgeDeckBuilder.ts";
+import { makeGraderDeckBuilder } from "../makeGraderDeckBuilder.ts";
 
-// Create a judge that evaluates JSON outputs
-export default makeJudgeDeckBuilder("json-validator")
+// Create a grader that evaluates JSON outputs
+export default makeGraderDeckBuilder("json-validator")
   .spec(
     "You are an expert at evaluating JSON outputs for correctness and completeness.",
   )
@@ -103,10 +103,10 @@ export default makeJudgeDeckBuilder("json-validator")
         ),
   );
 
-// Note: The makeJudgeDeckBuilder automatically:
+// Note: The makeGraderDeckBuilder automatically:
 // - Appends evaluation context (userMessage, assistantResponse, expected)
 // - Adds output format requirements (JSON with score and notes)
-// - Handles all the boilerplate for judge evaluation
+// - Handles all the boilerplate for grader evaluation
 ```
 
 ## Model Selection
@@ -114,8 +114,8 @@ export default makeJudgeDeckBuilder("json-validator")
 Specify the model to use for evaluation using the `--model` flag:
 
 ```bash
-bff eval --input data.jsonl --deck judge.ts --model openai/gpt-4o  # Default
-bff eval --input data.jsonl --deck judge.ts --model anthropic/claude-3-opus
+bff eval --input data.jsonl --deck grader.ts --model openai/gpt-4o  # Default
+bff eval --input data.jsonl --deck grader.ts --model anthropic/claude-3-opus
 ```
 
 The evaluation uses OpenRouter API, so any model available on OpenRouter can be
@@ -126,7 +126,7 @@ used.
 Evaluations produce results that look like this:
 
 ```typescript
-export interface JudgementResult {
+export interface GradingResult {
   model: string;
   id?: string;
   iteration: number;
@@ -158,16 +158,16 @@ export interface JudgementResult {
 }
 ```
 
-## Meta Judge Analysis
+## Meta Grader Analysis
 
-Bolt Foundry Evals supports "judging the judge" by comparing judge scores
+Bolt Foundry Evals supports "judging the grader" by comparing grader scores
 against ground truth scores. This calibration feature helps you:
 
-1. **Validate Judge Quality**: Ensure your judges score consistently and
+1. **Validate Grader Quality**: Ensure your graders score consistently and
    accurately
-2. **Improve Judge Criteria**: Identify areas where judge instructions need
+2. **Improve Grader Criteria**: Identify areas where grader instructions need
    refinement
-3. **Compare Judge Versions**: Measure improvements when updating judge decks
+3. **Compare Grader Versions**: Measure improvements when updating grader decks
 
 ### Adding Ground Truth Scores
 
@@ -183,12 +183,12 @@ Include a `groundTruthScore` field in your input samples:
 
 When ground truth scores are provided, the eval command reports:
 
-- **Exact Match Rate**: Percentage of samples where judge score equals ground
+- **Exact Match Rate**: Percentage of samples where grader score equals ground
   truth
 - **Within ±1 Accuracy**: Percentage of samples within 1 point of ground truth
-- **Average Absolute Error**: Mean difference between judge and ground truth
+- **Average Absolute Error**: Mean difference between grader and ground truth
   scores
-- **Disagreements**: Specific samples where judge and ground truth differ
+- **Disagreements**: Specific samples where grader and ground truth differ
 
 ### Example: Improving a JSON Validator
 

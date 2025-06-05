@@ -1,6 +1,6 @@
-import { makeJudgeDeckBuilder } from "../makeJudgeDeckBuilder.ts";
+import { makeGraderDeckBuilder } from "../makeGraderDeckBuilder.ts";
 
-export default makeJudgeDeckBuilder("tone-evaluator")
+export default makeGraderDeckBuilder("tone-evaluator")
   .spec(
     "You are evaluating whether an assistant's response is appropriately concise (brief but helpful) or inappropriately curt (rudely brief).",
   )
