@@ -80,8 +80,8 @@ exports.cli = (0, yargs_1.default)((0, helpers_1.hideBin)(process.argv))
     default: false,
 })
     .epilogue("Run LLM evaluation with graders")
-    .example("$0 --input test.jsonl --grader grader.ts", "Run evaluation with test cases from test.jsonl using grader.ts")
-    .example("$0 -i data.jsonl -g eval.ts -m gpt-3.5-turbo -o results.json", "Run with custom model and output file")
+    .example("$0 --input test.jsonl --grader grader.js", "Run evaluation with test cases from test.jsonl using grader.js")
+    .example("$0 -i data.jsonl -g eval.js -m gpt-3.5-turbo -o results.json", "Run with custom model and output file")
     .example("$0 --demo json-validator", "Run the json-validator demo")
     .example("$0 --demo", "Run a random demo from the examples folder")
     .check((argv) => {

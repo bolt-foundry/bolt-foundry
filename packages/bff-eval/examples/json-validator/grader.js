@@ -1,4 +1,4 @@
-const { makeGraderDeckBuilder } = require("@bolt-foundry/bolt-foundry-next/evals/makeGraderDeckBuilder");
+const { makeGraderDeckBuilder } = require("@bolt-foundry/bolt-foundry/evals/makeGraderDeckBuilder");
 
 module.exports = makeGraderDeckBuilder("json-validator")
   .spec("Expert JSON extraction evaluator")

@@ -1,4 +1,4 @@
-import { makeGraderDeckBuilder } from "@bolt-foundry/bolt-foundry-next/evals/makeGraderDeckBuilder";
+import { makeGraderDeckBuilder } from "@bolt-foundry/bolt-foundry/evals/makeGraderDeckBuilder";
 
 // Create a grader that evaluates tone and communication style
 export default makeGraderDeckBuilder("tone-checker")

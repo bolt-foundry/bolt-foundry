@@ -1,4 +1,4 @@
-import { makeGraderDeckBuilder } from "@bolt-foundry/bolt-foundry-next/evals/makeGraderDeckBuilder";
+import { makeGraderDeckBuilder } from "@bolt-foundry/bolt-foundry/evals/makeGraderDeckBuilder";
 
 export default makeGraderDeckBuilder("json-validator")
   .spec("Expert JSON extraction evaluator")
