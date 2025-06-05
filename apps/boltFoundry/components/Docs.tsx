@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { PageError } from "apps/boltFoundry/pages/PageError.tsx";
 import { getLogger } from "packages/logger/logger.ts";
-import { marked } from "marked";
+import { marked, Renderer } from "marked";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
 import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
 import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
+import { DocsSidebar } from "apps/boltFoundry/components/DocsSidebar.tsx";
 
 const _logger = getLogger(import.meta);
 
@@ -45,18 +46,37 @@ export const Docs = iso(`
       content
     }
   }
-`)(function Docs({ data }) {
+`)(function Docs({ data, parameters }) {
   const { navigate } = useRouter();
   const [hoverLogo, setHoverLogo] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const docRef = useRef<HTMLDivElement>(null);
   const blogPost = data.documentsBySlug;
+  const currentSlug = parameters.slug || "README";
+
+  useEffect(() => {
+    if (docRef.current) {
+      docRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [currentSlug]);
 
   if (!blogPost) {
     return <PageError error={new Error(`Documentation page not found`)} />;
   }
 
   // Convert markdown to HTML
-  const htmlContent = marked(blogPost.content) as string;
+  const renderer = new Renderer();
+  renderer.table = function (header: string, body: string) {
+    return `<div class="table-wrapper"><table>${header}${body}</table></div>`;
+  };
+
+  const htmlContent = marked(blogPost.content, { renderer }) as string;
+
+  const sidebarAnimation = {
+    transform: showSidebar ? "translateX(0)" : "translateX(-100%)",
+    transition: "transform 0.3s ease-in-out",
+  };
 
   return (
     <div className="landing-page">
@@ -110,15 +130,53 @@ export const Docs = iso(`
         </div>
       </header>
       {/* Docs Content */}
-      <section className="docs-section">
+      <section className="docs-section" ref={docRef}>
         <div className="landing-content">
-          <article
-            className="prose prose-lg"
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
-          />
+          <div className="docs-layout">
+            <div
+              className="mobile-show sidebar-container"
+              style={sidebarAnimation}
+            >
+              <DocsSidebar
+                currentSlug={currentSlug}
+                setShowSidebar={setShowSidebar}
+              />
+            </div>
+            <DocsSidebar
+              currentSlug={currentSlug}
+              setShowSidebar={setShowSidebar}
+              xClassName="mobile-hide"
+            />
+            <div className="mobile-show docs-navbar">
+              <div className="flexRow gapMedium alignItemsCenter">
+                <BfDsButton
+                  kind={showSidebar ? "primary" : "secondary"}
+                  iconLeft={showSidebar ? "sidebarClose" : "sidebarOpen"}
+                  onClick={() => {
+                    setShowSidebar(!showSidebar);
+                  }}
+                  size="medium"
+                />
+                <div
+                  className="flex1"
+                  onClick={() => {
+                    setShowSidebar(!showSidebar);
+                  }}
+                >
+                  {currentSlug}
+                </div>
+              </div>
+            </div>
+            <main className="docs-main">
+              <article
+                className="prose prose-lg"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+              />
+            </main>
+          </div>
         </div>
         <div className="landing-footer">
-          <div className="landing-content flexRow gapMedium">
+          <div className="landing-content flexRow gapMedium alignItemsCenter">
             <div className="flex1">
               &copy; 2025 Bolt Foundry. All rights reserved.
             </div>

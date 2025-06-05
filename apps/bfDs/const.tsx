@@ -93,11 +93,13 @@ function color(
 function createSet(name: string, colorArr: number[], adjustment: number) {
   return {
     [`${name}`]: color(colorArr),
+    [`${name}002`]: color(colorArr, null, 0.02),
     [`${name}005`]: color(colorArr, null, 0.05),
     [`${name}010`]: color(colorArr, null, 0.10),
     [`${name}015`]: color(colorArr, null, 0.15),
     [`${name}030`]: color(colorArr, null, 0.30),
     [`${name}060`]: color(colorArr, null, 0.60),
+    [`${name}090`]: color(colorArr, null, 0.90),
     [`${name}Hover`]: color(colorArr, -adjustment),
   };
 }
@@ -134,8 +136,8 @@ function generateColors(dark = false) {
     ...createSet("fourtharyColor", palette.fourthary, adjustment),
     tertiaryColorDark: color(palette.tertiaryDark),
     alwaysWhite: color(constantColors.alwaysWhite),
-    alwaysDark: color(constantColors.alwaysDark),
-    alwaysLight: color(constantColors.lightText),
+    ...createSet("alwaysDark", constantColors.alwaysDark, adjustment),
+    ...createSet("alwaysLight", constantColors.lightText, adjustment),
     logoBolt: color(palette.primary),
     logoFoundry: color(palette.secondary),
     primaryButton: color(palette.primary),
