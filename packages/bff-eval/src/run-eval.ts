@@ -1,5 +1,5 @@
 // Direct evaluation implementation that works around the file:// URL issue
-import type { DeckBuilder } from "@bolt-foundry/bolt-foundry/builders";
+import type { DeckBuilder } from "@bolt-foundry/bolt-foundry";
 import { TerminalSpinner, ProgressBar } from "./terminal-spinner";
 
 interface RunOptions {
