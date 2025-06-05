@@ -1,63 +1,62 @@
-# Bolt Foundry - Company-Level Documentation
+# Overview
 
-This directory contains high-level, company-wide documentation for Bolt Foundry.
-Unlike project-specific documentation (found in `apps/[project]/docs/`), the
-documents here are intended to be long-term resources that apply across the
-entire organization.
+Welcome to Bolt Foundry, the easiest way to fine tune your prompts before you
+fine tune your models.
 
-## Purpose
+Bolt Foundry provides a library for systematically formatting prompts to make
+them more reliable, plus tools to easily build evaluations so you can ensure
+your prompts are performing the way you want.
 
-Aligned with our "Worse is Better" philosophy, this documentation should:
+You can get started in five minutes with our [Quickstart Guide](quickstart.mdx).
 
-- Provide enduring, strategic guidance that prioritizes simplicity over
-  complexity
-- Define company-wide standards and best practices that value working solutions
-- Establish shared vocabulary and conceptual frameworks for test-driven
-  development
-- Serve as reference material for onboarding and training that emphasizes action
-  over planning
+For an overview of our approach to documentation and overall structure, check
+out our [docs overview](docs-overview.md).
 
-## Documentation Guidelines
+## Getting Started
 
-### Long-Term Focus
+- **[Quickstart](quickstart.mdx)** - Get up and running with structured prompts
+  in minutes with a practical example
+- **[Getting Started](getting-started.mdx)** - Learn the core concepts behind
+  cards, specifications, and the scoring system
+- **[Interactive Demo](interactive-demo.mdx)** - Explore interactive React
+  components and code examples in our documentation system
 
-Documents in this directory should be evergreen and focus on stable, long-term
-concepts rather than ephemeral information. Specifically:
+## Concepts
 
-- **DO** include foundational principles, architectural patterns, and core
-  values
-- **DO** document company-wide processes and standards
-- **DO NOT** include time-sensitive information that will quickly become
-  outdated
-- **DO NOT** duplicate project-specific implementation details (these belong in
-  `apps/[project]/docs/`)
+- **[Deck System](deck-system.md)** - Learn how decks make prompt engineering
+  structured and composable through cards and specifications
+- **[Improving Inference Philosophy](improving-inference-philosophy.md)** -
+  Understand our approach to achieving 99% reliability through inference-time
+  control and scored samples
+- **[WUT](wut.md)** - A rosetta stone for understanding Bolt Foundry culture,
+  terminology, and project conventions
 
-### Structure and Organization
+## Vision & Strategy
 
-For consistency with the rest of the monorepo:
+- **[Company Vision](company-vision.md)** - Our mission to make LLM development
+  as reliable and maintainable as traditional software engineering
+- **[Library Vision](library-vision.md)** - The technical vision for our
+  TypeScript library that makes LLM applications reliable through structured
+  cards
+- **[Big Picture Strategy](big-picture-strategy.md)** - Why Bolt Foundry exists
+  and our core strategy to build the React + TypeScript + Jest for assistant
+  logic
+- **[Business Vision](business-vision.md)** - Our go-to-market strategy, revenue
+  model, and path to building a sustainable business
 
-- Use Markdown (`.md`) for all documentation
-- Follow the
-  [documentation directory protocol](../cards/behaviors/docs-directory.bhc.md)
-  for structure and versioning
-- Cross-reference related documents where appropriate
-- Include clear titles and section headers
+## Planning
 
-## Relationship to Project Documentation
+- **[Product Plan](product-plan.md)** - Technical roadmap from alpha to
+  production launch, featuring structured prompts, our fluent builder SDK, and
+  core platform features
+- **[Marketing Plan](marketing-plan.md)** - 30-day tactical content marketing
+  plan launching our docs section and weekly podcast to reach developers with
+  prompt reliability issues
+- **[Measurement Strategy](measurement-strategy.md)** - Our KPI framework for
+  how we measure success
 
-The relationship between company-level and project-level documentation:
+## About
 
-```
-docs/                        <- Company-wide, long-term documentation
-├── standards/               <- Cross-project standards
-├── architecture/            <- Enterprise architecture
-└── processes/               <- Organizational processes
-
-apps/[project]/docs/         <- Project-specific documentation
-├── [project]-project-plan.md    <- Project vision
-├── [project]-implementation-plan.md  <- Technical approach
-└── [version]/               <- Versioned implementation details
-```
-
-Remember that project-specific documentation belongs in the respective project's
-docs directory following the standard directory structure.
+- **[Team Story](team-story.md)** - How our 7+ year journey building creator
+  tools led us to discover the structured prompt reliability problem we're
+  solving today
