@@ -32,9 +32,7 @@ const NavButtons = () => {
       />
       <BfDsButton
         kind="dan"
-        href="https://github.com/bolt-foundry/bolt-foundry/blob/main/docs/README.md"
-        hrefTarget="_blank"
-        rel="noopener noreferrer"
+        href="/docs"
         text="Docs"
       />
       <BfDsButton
