@@ -438,6 +438,21 @@ export async function build(args: Array<string>): Promise<number> {
       logger.error("Failed to build bolt-foundry package");
       return boltFoundryBuildResult;
     }
+
+    // Build bff-eval package after bolt-foundry
+    if (debug) logMemoryUsage("before bff-eval package build");
+    logger.info("Building bff-eval package...");
+    const bffEvalBuildResult = await runShellCommand([
+      "npm",
+      "run",
+      "build",
+    ], "packages/bff-eval");
+    if (debug) logMemoryUsage("after bff-eval package build");
+
+    if (bffEvalBuildResult !== 0) {
+      logger.error("Failed to build bff-eval package");
+      return bffEvalBuildResult;
+    }
   } else {
     logger.info(
       "Skipping bolt-foundry package build (use --include-bolt-foundry to build it)",

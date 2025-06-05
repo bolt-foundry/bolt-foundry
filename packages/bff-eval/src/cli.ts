@@ -4,7 +4,7 @@ import { hideBin } from "yargs/helpers";
 export const cli = yargs(hideBin(process.argv))
   .scriptName("bff-eval")
   .usage("$0 [options]")
-  .version("0.1.0")
+  .version("0.1.1")
   .help()
   .strict()
   .demandOption(
