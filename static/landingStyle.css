@@ -225,14 +225,17 @@ code.npm-command {
 .docs-main h1 {
   font-size: 2.5em;
   border-bottom: 1px solid var(--alwaysDark005);
+  scroll-margin-top: 86px;
 }
 .docs-main h2 {
   margin-block-start: 1em;
   font-size: 1.8em;
   border-bottom: 1px solid var(--alwaysDark005);
+  scroll-margin-top: 86px;
 }
 .docs-main h3 {
   font-size: 1.2em;
+  scroll-margin-top: 86px;
 }
 .docs-main a {
   color: var(--alwaysDark);

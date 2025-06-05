@@ -39,7 +39,7 @@ reliability, but the ones who achieve 99% reliability will dominate their
 markets. We're building the infrastructure to make that possible.
 
 _For the complete story of our journey and insights, see
-[Our Team Story](./team-story.md)._
+[Our Team Story](team-story)._
 
 ## Our vision
 
@@ -120,7 +120,7 @@ Great LLM applications are built, not discovered. They require the same
 discipline, testing, and structure as any reliable software system.
 
 Our approach centers on
-[improving inference through structured rigor](improving-inference-philosophy.md),
+[improving inference through structured rigor](improving-inference-philosophy),
 giving developers control at runtime, not just hoping the model behaves
 correctly.
 
@@ -166,9 +166,9 @@ We're working toward a world where:
 
 **Related documents:**
 
-- [Our team story](./team-story.md) - Detailed background on our journey and
+- [Our team story](team-story) - Detailed background on our journey and
   insights
-- [Business vision](./business-vision.md) - Go-to-market strategy and revenue
+- [Business vision](business-vision) - Go-to-market strategy and revenue
   model
-- [Product plan](./product-plan.md) - Technical roadmap and implementation
+- [Product plan](product-plan) - Technical roadmap and implementation
   details
