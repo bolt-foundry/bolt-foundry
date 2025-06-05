@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "commonjs",
+    "module": "node16",
     "lib": ["es2022"],
     "outDir": "./dist",
     "rootDir": ".",
@@ -11,7 +11,8 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "moduleResolution": "node16"
   },
   "include": [
     "src/**/*",
