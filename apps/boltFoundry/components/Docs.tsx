@@ -97,11 +97,16 @@ export const Docs = iso(`
     const isAbsolute = href.startsWith("/");
 
     let finalHref = href;
+    // Remove file extension if present (e.g., .md, .mdx)
+    const hrefWithoutExtension = href.replace(/\.(md|mdx)$/, "");
+
+    // For absolute paths, use the href without extension
+    if (isAbsolute) {
+      finalHref = hrefWithoutExtension;
+    }
 
     // For internal links that aren't anchors or absolute paths, prefix with /docs/
     if (!isExternal && !isAnchor && !isAbsolute) {
-      // Remove file extension if present (e.g., .md, .mdx)
-      const hrefWithoutExtension = href.replace(/\.(md|mdx)$/, "");
       finalHref = `/docs/${hrefWithoutExtension}`;
     }
 
