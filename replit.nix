@@ -22,7 +22,7 @@ in
     pkgs.sapling
     pkgs.gh
     pkgs.python311Packages.tiktoken
-    pkgs.nodejs_20
+    pkgs.nodejs_22
     pkgs._1password-cli
     pkgs.typescript-language-server
   ] ++ pkgs.lib.optionals (!pkgs.stdenv.isDarwin) [
