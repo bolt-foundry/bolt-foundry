@@ -100,7 +100,9 @@ export const Docs = iso(`
 
     // For internal links that aren't anchors or absolute paths, prefix with /docs/
     if (!isExternal && !isAnchor && !isAbsolute) {
-      finalHref = `/docs/${href}`;
+      // Remove file extension if present (e.g., .md, .mdx)
+      const hrefWithoutExtension = href.replace(/\.(md|mdx)$/, "");
+      finalHref = `/docs/${hrefWithoutExtension}`;
     }
 
     const titleAttr = title ? ` title="${title}"` : "";
