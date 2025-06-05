@@ -12,6 +12,7 @@ const docSections: DocSection[] = [
     title: "Getting Started",
     items: [
       { slug: "README", title: "Overview" },
+      { slug: "docs-overview", title: "Docs Overview" },
       { slug: "quickstart", title: "Quickstart" },
       { slug: "getting-started", title: "Getting Started" },
       { slug: "interactive-demo", title: "Interactive Demo" },
