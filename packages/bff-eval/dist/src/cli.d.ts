@@ -1,11 +1,11 @@
 import yargs from "yargs";
 export declare const cli: yargs.Argv<yargs.Omit<yargs.Omit<{
     input: unknown;
-    deck: unknown;
+    grader: unknown;
 }, "input"> & {
     input: string;
-}, "deck"> & {
-    deck: string;
+}, "grader"> & {
+    grader: string;
 } & {
     model: string;
 } & {
