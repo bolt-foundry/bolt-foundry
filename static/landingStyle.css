@@ -367,6 +367,7 @@ pre > code {
 .vertical-separator {
   border-left: 1px solid var(--border);
   margin: 0 8px;
+  height: 1.5rem;
 }
 
 .deck-container {
