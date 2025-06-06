@@ -2,44 +2,48 @@
 
 ## Why Structured Prompts?
 
-Every LLM prompt today is a text string. While this works for simple cases, it creates problems as applications grow:
+Every LLM prompt today is a text string. While this works for simple cases, it
+creates problems as applications grow:
 
-- **Brittleness**: Changing one part breaks unrelated functionality  
+- **Brittleness**: Changing one part breaks unrelated functionality
 - **Maintainability**: No clear structure or semantic meaning
 - **Testability**: Hard to verify prompt components work as intended
 - **Composability**: Difficult to reuse prompt patterns across projects
 
-Bolt Foundry solves these problems by transforming prompts from strings into **composable cards** with specifications and examples.
+Bolt Foundry solves these problems by transforming prompts from strings into
+**composable cards** with specifications and examples.
 
 ## Core Concepts
 
 ### Cards
 
 Cards are the building blocks of structured prompts. Each card encapsulates:
+
 - **Specifications**: What the AI should do
-- **Examples**: Scored samples showing good (-3 to +3) behavior  
+- **Examples**: Scored samples showing good (-3 to +3) behavior
 - **Context**: Required inputs and their descriptions
 
 ### Specifications
 
-Specifications define the behavior you want from the AI. They're organized hierarchically:
+Specifications define the behavior you want from the AI. They're organized
+hierarchically:
 
 ```typescript
 card
   .spec("Main behavior")
-  .specs("category", (s) => 
+  .specs("category", (s) =>
     s.spec("Specific behavior 1")
-     .spec("Specific behavior 2")
-  )
+      .spec("Specific behavior 2"));
 ```
 
 ### Scoring System
 
-The -3 to +3 scoring isn't just about examples - it's about achieving 99% reliability through inference-time control:
+The -3 to +3 scoring isn't just about examples - it's about achieving 99%
+reliability through inference-time control:
 
 - **+3**: Excellent example of desired behavior
 - **+2**: Good example
-- **+1**: Acceptable  
+- **+1**: Acceptable
 - **-1**: Mildly undesirable
 - **-2**: Bad example
 - **-3**: Completely wrong behavior
@@ -62,12 +66,11 @@ const supportAgent = client.createAssistantCard(
         p.spec("Be empathetic and professional", {
           samples: (s) =>
             s.sample("I understand your frustration. Let me help.", 3)
-             .sample("Whatever, that's not my problem.", -3)
-        })
-      )
+              .sample("Whatever, that's not my problem.", -3),
+        }))
       .context((ctx) =>
         ctx.string("customerQuery", "What the customer is asking")
-      )
+      ),
 );
 ```
 

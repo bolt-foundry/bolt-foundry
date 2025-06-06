@@ -42,23 +42,17 @@ export class BlogPost extends GraphQLNode {
     if (!postPromise) {
       // Create a new promise for loading this post
       postPromise = (async () => {
-        const blogDir = "content/blog";
+        const blogDir = "docs/blog";
 
-        // Check for both .mdx and .md files
-        const mdxPath = join(blogDir, `${slug}.mdx`);
+        // Only check for .md files
         const mdPath = join(blogDir, `${slug}.md`);
 
-        let filePath: string;
-        if (await exists(mdxPath)) {
-          filePath = mdxPath;
-        } else if (await exists(mdPath)) {
-          filePath = mdPath;
+        if (await exists(mdPath)) {
+          const content = await Deno.readTextFile(mdPath);
+          return new BlogPost(slug, content);
         } else {
           throw new BfErrorNodeNotFound(`Blog post not found: ${slug}`);
         }
-
-        const content = await Deno.readTextFile(filePath);
-        return new BlogPost(slug, content);
       })();
 
       // Cache the promise

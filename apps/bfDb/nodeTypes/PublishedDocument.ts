@@ -42,23 +42,17 @@ export class PublishedDocument extends GraphQLNode {
     if (!documentPromise) {
       // Create a new promise for loading this document
       documentPromise = (async () => {
-        const docsDir = "docs";
+        const docsDir = "docs/guides";
 
-        // Check for both .mdx and .md files
-        const mdxPath = join(docsDir, `${slug}.mdx`);
+        // Only check for .md files
         const mdPath = join(docsDir, `${slug}.md`);
 
-        let filePath: string;
-        if (await exists(mdxPath)) {
-          filePath = mdxPath;
-        } else if (await exists(mdPath)) {
-          filePath = mdPath;
+        if (await exists(mdPath)) {
+          const content = await Deno.readTextFile(mdPath);
+          return new PublishedDocument(slug, content);
         } else {
-          throw new BfErrorNodeNotFound(`Blog post not found: ${slug}`);
+          throw new BfErrorNodeNotFound(`Document not found: ${slug}`);
         }
-
-        const content = await Deno.readTextFile(filePath);
-        return new PublishedDocument(slug, content);
       })();
 
       // Cache the promise
