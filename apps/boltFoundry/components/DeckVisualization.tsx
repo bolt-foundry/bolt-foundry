@@ -5,8 +5,11 @@ const logger = getLogger(import.meta);
 
 // Types
 interface Sample {
-  text: string;
+  id: string;
+  userMessage: string;
+  assistantResponse: string;
   score: number;
+  description: string;
 }
 
 interface Spec {
@@ -24,6 +27,67 @@ interface DeckData {
   name: string;
   specs: Array<Spec>;
   cards: Array<Card>;
+}
+
+// Helper function to parse specs with samples from content
+function parseSpecsWithSamples(content: string): Array<Spec> {
+  const specs: Array<Spec> = [];
+
+  // First, find all sample arrays in the content
+  const allSamplesMatches = content.matchAll(/samples:\s*(\[[\s\S]*?\])/g);
+  const foundSamples = new Map<number, Array<Sample>>();
+
+  for (const match of allSamplesMatches) {
+    try {
+      // Clean up the JSON string to handle trailing commas
+      const cleanedJson = match[1]
+        .replace(/,\s*}/g, "}") // Remove trailing commas before }
+        .replace(/,\s*]/g, "]"); // Remove trailing commas before ]
+
+      const parsedSamples = JSON.parse(cleanedJson);
+
+      const validSamples = parsedSamples.filter((sample: Sample) =>
+        sample && typeof sample === "object" &&
+        sample.id && sample.userMessage && sample.assistantResponse &&
+        typeof sample.score === "number" && sample.description
+      );
+
+      if (validSamples.length > 0 && match.index !== undefined) {
+        foundSamples.set(match.index, validSamples);
+      }
+    } catch (error) {
+      logger.debug("Error parsing samples array:", error);
+    }
+  }
+
+  // Find all specs and associate them with samples
+  const allSpecMatches = Array.from(content.matchAll(/\.spec\(\s*"([^"]+)"/g));
+
+  for (const specMatch of allSpecMatches) {
+    const specText = specMatch[1];
+    const specIndex = specMatch.index || 0;
+
+    // Find the closest samples array that comes after this spec
+    let closestSamples: Array<Sample> = [];
+    let minDistance = Infinity;
+
+    for (const [samplesIndex, samples] of foundSamples) {
+      if (samplesIndex > specIndex) {
+        const distance = samplesIndex - specIndex;
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestSamples = samples;
+        }
+      }
+    }
+
+    specs.push({
+      text: specText,
+      samples: closestSamples.length > 0 ? closestSamples : undefined,
+    });
+  }
+
+  return specs;
 }
 
 // Helper to find matching parenthesis
@@ -115,32 +179,8 @@ function parseCards(content: string, depth: number = 0): Array<Card> {
       nestedCardsContent = cardContent.slice(nestedCardIndex);
     }
 
-    // Extract specs
-    const specMatches = specsContent.matchAll(
-      /\.spec\(\s*"([^"]+)"(?:\s*,\s*\{([^}]*)\})?/g,
-    );
-    const specs: Array<Spec> = [];
-
-    for (const specMatch of specMatches) {
-      const specText = specMatch[1];
-      const samplesContent = specMatch[2];
-
-      let samples: Array<Sample> = [];
-      if (samplesContent) {
-        const sampleMatches = samplesContent.matchAll(
-          /\.sample\(\s*"([^"]+)"\s*,\s*(-?\d+)\)/g,
-        );
-        samples = Array.from(sampleMatches).map((match) => ({
-          text: match[1],
-          score: parseInt(match[2]),
-        }));
-      }
-
-      specs.push({
-        text: specText,
-        samples: samples.length > 0 ? samples : undefined,
-      });
-    }
+    // Extract specs - updated to handle array format
+    const specs = parseSpecsWithSamples(specsContent);
 
     // Parse nested cards
     let nestedCards: Array<Card> = [];
@@ -171,47 +211,28 @@ function parseDeckString(deckString: string): DeckData | null {
 
     if (genericDeckMatch) {
       deckName = genericDeckMatch[1];
+    } else {
+      logger.debug("No deck name found, using default");
     }
 
     // Extract deck-level specs (specs that appear before any .card() calls)
     const firstCardIndex = deckString.search(/\.card\s*\(/);
+
     const deckLevelContent = firstCardIndex !== -1
       ? deckString.slice(0, firstCardIndex)
       : deckString;
 
-    const deckSpecs: Array<Spec> = [];
-    const deckSpecMatches = deckLevelContent.matchAll(
-      /\.spec\(\s*"([^"]+)"(?:\s*,\s*\{([^}]*)\})?/g,
-    );
-
-    for (const specMatch of deckSpecMatches) {
-      const specText = specMatch[1];
-      const samplesContent = specMatch[2];
-
-      let samples: Array<Sample> = [];
-      if (samplesContent) {
-        const sampleMatches = samplesContent.matchAll(
-          /\.sample\(\s*"([^"]+)"\s*,\s*(-?\d+)\)/g,
-        );
-        samples = Array.from(sampleMatches).map((match) => ({
-          text: match[1],
-          score: parseInt(match[2]),
-        }));
-      }
-
-      deckSpecs.push({
-        text: specText,
-        samples: samples.length > 0 ? samples : undefined,
-      });
-    }
+    const deckSpecs = parseSpecsWithSamples(deckLevelContent);
 
     // Extract cards using parser
     const cardsContent = firstCardIndex !== -1
       ? deckString.slice(firstCardIndex)
       : "";
+
     const cards = parseCards(cardsContent, 0);
 
-    return { name: deckName, specs: deckSpecs, cards };
+    const result = { name: deckName, specs: deckSpecs, cards };
+    return result;
   } catch (error) {
     logger.error("Error parsing deck string:", error);
     return null;
@@ -229,31 +250,48 @@ function CardRenderer({ card, depth = 0 }: { card: Card; depth?: number }) {
       </h2>
 
       <div className="card-content">
-        {card.specs.map((spec, specIndex) => (
-          <div key={specIndex} className="spec-item">
-            <div className="spec-label">SPEC</div>
-            <div>"{spec.text}"</div>
-            {spec.samples && (
-              <div className="samples">
-                <div className="samples-label">SAMPLES</div>
-                {spec.samples.map((sample, sampleIndex) => (
-                  <div
-                    key={sampleIndex}
-                    className={`sample-item ${
-                      sample.score > 0 ? "positive" : "negative"
-                    }`}
-                  >
-                    <div className="sample-header">
-                      <span className="sample-label">SAMPLE</span>
-                      <span className="sample-score">{sample.score}</span>
-                    </div>
-                    <div>"{sample.text}"</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+        {card.specs.map((spec, specIndex) => {
+          return (
+            <div key={specIndex} className="spec-item">
+              <div className="spec-label">SPEC</div>
+              <div>"{spec.text}"</div>
+              {spec.samples && (
+                <div className="samples">
+                  <div className="samples-label">SAMPLES</div>
+                  {spec.samples.map((sample, sampleIndex) => {
+                    return (
+                      <div
+                        key={sampleIndex}
+                        className={`sample-item ${
+                          sample.score > 0 ? "positive" : "negative"
+                        }`}
+                      >
+                        <div className="sample-header">
+                          <span className="sample-label">SAMPLE</span>
+                          <span className="sample-score">{sample.score}</span>
+                        </div>
+                        <div className="sample-content">
+                          <div className="sample-description">
+                            "{sample.description}"
+                          </div>
+                          <div className="sample-exchange">
+                            <div className="user-message">
+                              <strong>User:</strong> {sample.userMessage}
+                            </div>
+                            <div className="assistant-response">
+                              <strong>Assistant:</strong>{" "}
+                              {sample.assistantResponse}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {/* Render nested cards */}
         {card.cards && (
@@ -285,6 +323,7 @@ export function DeckVisualization({ deckString }: DeckVisualizationProps) {
   }, [deckString]);
 
   if (!deckData) {
+    logger.debug("No deck data, showing invalid format message");
     return <div>Invalid deck format</div>;
   }
 
@@ -315,7 +354,20 @@ export function DeckVisualization({ deckString }: DeckVisualizationProps) {
                         <span className="sample-label">SAMPLE</span>
                         <span className="sample-score">{sample.score}</span>
                       </div>
-                      <div>"{sample.text}"</div>
+                      <div className="sample-content">
+                        <div className="sample-description">
+                          "{sample.description}"
+                        </div>
+                        <div className="sample-exchange">
+                          <div className="user-message">
+                            <strong>User:</strong> {sample.userMessage}
+                          </div>
+                          <div className="assistant-response">
+                            <strong>Assistant:</strong>{" "}
+                            {sample.assistantResponse}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
