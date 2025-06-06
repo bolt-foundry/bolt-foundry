@@ -22,7 +22,7 @@ export const appRoutes: RouteMap = new Map([
   ["/ui", { Component: PageUIDemo }],
   ["/justin", { Component: LexicalDemo }],
   ["/plinko", { Component: Plinko }],
-  ["/decks", { Component: Decks }],
+  ["/deckDemo", { Component: Decks }],
 ]);
 
 export type IsographRoute = BfIsographEntrypoint;

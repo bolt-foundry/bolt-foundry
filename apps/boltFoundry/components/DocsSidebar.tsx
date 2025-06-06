@@ -13,46 +13,28 @@ const docSections: DocSection[] = [
     items: [
       { slug: "README", title: "Overview" },
       { slug: "quickstart", title: "Quickstart" },
-      // { slug: "getting-started", title: "Getting Started" },
-      // { slug: "interactive-demo", title: "Interactive Demo" },
+      { slug: "getting-started", title: "Getting Started" },
     ],
   },
   {
     title: "Planning & Strategy",
     items: [
-      // { slug: "product-plan", title: "Product Plan" },
       { slug: "big-picture-strategy", title: "Big picture strategy" },
-      //  { slug: "business-vision", title: "Business Vision" },
       { slug: "company-vision", title: "Company vision" },
-      //  { slug: "library-vision", title: "Library Vision" },
     ],
   },
   {
     title: "Development",
     items: [
-      //  { slug: "STATUS", title: "Status" },
       { slug: "deck-system", title: "Deck system" },
       { slug: "improving-inference-philosophy", title: "Improving inference" },
-      //  { slug: "measurement-strategy", title: "Measurement Strategy" },
       { slug: "evals-overview", title: "Evals" },
     ],
   },
-  /*
-  {
-    title: "Team & Culture",
-    items: [
-      { slug: "team-story", title: "Team Story" },
-      { slug: "marketing-plan", title: "Marketing Plan" },
-      { slug: "early-content-plan", title: "Content Plan" },
-    ],
-  },
-  */
   {
     title: "Reference",
     items: [
       { slug: "wut", title: "wut" },
-      //  { slug: "BACKLOG", title: "Backlog" },
-      //  { slug: "CHANGELOG", title: "Changelog" },
     ],
   },
 ];
