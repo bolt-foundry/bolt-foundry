@@ -7,17 +7,20 @@ export type RouteEntrypoint = {
 };
 
 iso(`entrypoint Mutation.JoinWaitlist`)
+iso(`entrypoint Query.EntrypointBlog`)
 iso(`entrypoint Query.EntrypointDocs`)
 iso(`entrypoint Query.EntrypointFormatter`)
 iso(`entrypoint Query.EntrypointHome`)
 iso(`entrypoint Query.EntrypointLogin`)
 
+import entrypointBlog from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointBlog/entrypoint.ts"
 import entrypointDocs from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointDocs/entrypoint.ts"
 import entrypointFormatter from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointFormatter/entrypoint.ts"
 import entrypointHome from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointHome/entrypoint.ts"
 import entrypointLogin from "apps/boltFoundry/__generated__/__isograph/Query/EntrypointLogin/entrypoint.ts"
 import joinWaitlist from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts"
 
+export {entrypointBlog};
 export {entrypointDocs};
 export {entrypointFormatter};
 export {entrypointHome};
