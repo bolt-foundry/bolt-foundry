@@ -39,8 +39,8 @@ across multiple underlying base models.
 Run evaluation with sample data:
 
 ```bash
-npx bff-eval --input packages/bolt-foundry/evals/examples/sample-data.jsonl \
-         --grader packages/bolt-foundry/evals/examples/json-validator.ts
+npx bff-eval --input examples/json-validator/samples.jsonl \
+         --grader examples/json-validator/grader.js
 ```
 
 ### Running Demos
@@ -99,7 +99,7 @@ To be clear, you SHOULD NOT BE INTERPOLATING ANY STRINGS IN THE SPECS. Use
 `.context` builders to safely include variables.
 
 ```typescript
-import { makeGraderDeckBuilder } from "../makeGraderDeckBuilder.ts";
+import { makeGraderDeckBuilder } from "@bolt-foundry/bolt-foundry";
 
 // Create a grader that evaluates JSON outputs
 export default makeGraderDeckBuilder("json-validator")
