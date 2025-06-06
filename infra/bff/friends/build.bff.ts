@@ -100,6 +100,7 @@ const readableLocations = [
   "static/",
   "tmp/",
   "docs/",
+  "content/",
 ];
 
 const writableLocations = [

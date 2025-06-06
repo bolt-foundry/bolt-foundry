@@ -46,6 +46,7 @@ export interface NexusGenObjects {
   BfEdge: {};
   BfOrganization: {};
   BfPerson: {};
+  BlogPost: {};
   GithubRepoStats: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
@@ -82,6 +83,10 @@ export interface NexusGenFieldTypes {
     memberOf: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
     name: string | null; // String
   }
+  BlogPost: { // field return type
+    content: string; // String!
+    id: string; // ID!
+  }
   GithubRepoStats: { // field return type
     id: string; // ID!
     stars: number; // Int!
@@ -98,6 +103,7 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
   }
   Query: { // field return type
+    blogPost: NexusGenRootTypes['BlogPost'] | null; // BlogPost
     documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
     githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
     ok: boolean | null; // Boolean
@@ -126,6 +132,10 @@ export interface NexusGenFieldTypeNames {
     memberOf: 'BfOrganization'
     name: 'String'
   }
+  BlogPost: { // field return type name
+    content: 'String'
+    id: 'ID'
+  }
   GithubRepoStats: { // field return type name
     id: 'ID'
     stars: 'Int'
@@ -142,6 +152,7 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
   }
   Query: { // field return type name
+    blogPost: 'BlogPost'
     documentsBySlug: 'PublishedDocument'
     githubRepoStats: 'GithubRepoStats'
     ok: 'Boolean'
@@ -166,6 +177,9 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
+    blogPost: { // args
+      slug?: string | null; // String
+    }
     documentsBySlug: { // args
       slug?: string | null; // String
     }
