@@ -18,6 +18,7 @@ bff test               # Run tests
 bff e2e --build        # Run end-to-end tests
 bff ci                 # Full CI pipeline
 bff devTools           # Start development environment
+bff ai                 # List AI-safe commands
 ```
 
 ## Key Resources
