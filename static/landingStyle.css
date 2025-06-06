@@ -367,6 +367,7 @@ pre > code {
 .vertical-separator {
   border-left: 1px solid var(--border);
   margin: 0 8px;
+  height: 1.5rem;
 }
 
 .deck-container {
@@ -418,7 +419,12 @@ h1.deck-title, h2.card-title {
   color: var(--primaryColor);
   font-size: 0.7em;
   font-weight: bold;
-  margin-bottom: 0.5rem;
+}
+
+.sample-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .sample-header {
@@ -426,6 +432,12 @@ h1.deck-title, h2.card-title {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
+}
+
+.sample-exchange {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .sample-item.positive .sample-score {
