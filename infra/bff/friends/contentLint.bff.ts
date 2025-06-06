@@ -13,7 +13,7 @@ const REQUIRED_FIELDS = ["title", "author", "summary", "cta"];
 
 export async function contentLint(
   args: string[],
-  contentDir = "content/blog",
+  contentDir = "docs/blog",
 ): Promise<number> {
   const shouldFix = args.includes("--fix");
   logger.info(

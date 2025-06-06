@@ -136,39 +136,78 @@ Deno.test("Docs page renders different markdown files", async () => {
   const context = await setupE2ETest({ headless: true });
 
   try {
-    // Test a few different docs pages
-    const docsToTest = ["CHANGELOG", "STATUS", "business-vision"];
+    // Get list of docs from the docs/guides directory
+    const docsDir = "docs/guides";
+    const files: string[] = [];
 
-    for (const docSlug of docsToTest) {
+    for await (const entry of Deno.readDir(docsDir)) {
+      if (entry.isFile && entry.name.endsWith(".md")) {
+        // Remove file extension for the slug
+        const slug = entry.name.replace(/\.md$/, "");
+        files.push(slug);
+      }
+    }
+
+    // Sort files to ensure consistent ordering
+    files.sort();
+
+    // Test first 3 and last 3 files (or all if less than 6)
+    const filesToTest = files.length <= 6
+      ? files
+      : [...files.slice(0, 3), ...files.slice(-3)];
+
+    logger.info(
+      `Testing ${filesToTest.length} docs: ${filesToTest.join(", ")}`,
+    );
+
+    for (const docSlug of filesToTest) {
       // Navigate to the docs page
       await navigateTo(context, `/docs/${docSlug}`);
 
       // Wait for content to load
       await context.page.waitForSelector("body", { timeout: 5000 });
 
-      // Get the actual content
+      // Get the rendered page content
       const bodyText = await context.page.evaluate(() => {
         return document.body.textContent || "";
       });
 
-      // Verify content loaded based on the document
-      if (docSlug === "CHANGELOG") {
-        // CHANGELOG.md is empty, so just check that the page loaded
-        assert(
-          bodyText.length > 0,
-          `Docs page for ${docSlug} should load`,
-        );
-      } else if (docSlug === "STATUS") {
-        assert(
-          bodyText.includes("Bolt Foundry Project Status"),
-          `Docs page for ${docSlug} should contain expected content`,
-        );
-      } else if (docSlug === "business-vision") {
-        assert(
-          bodyText.includes("Revenue model"),
-          `Docs page for ${docSlug} should contain expected content`,
-        );
-      }
+      // Check that the page has loaded with content
+      assert(
+        bodyText.length > 200,
+        `Docs page for ${docSlug} should have substantial content (got ${bodyText.length} characters)`,
+      );
+
+      // Verify no error messages
+      const hasError = bodyText.includes("Documentation page not found") ||
+        bodyText.includes("Error loading") ||
+        bodyText.includes("404") ||
+        bodyText.includes("Page not found");
+      assert(
+        !hasError,
+        `Docs page for ${docSlug} should not contain error messages`,
+      );
+
+      // Check that markdown was rendered (look for common HTML elements)
+      const hasRenderedContent = await context.page.evaluate(() => {
+        const article = document.querySelector("article.prose");
+        if (!article) return false;
+
+        // Check for common markdown-rendered elements
+        return article.querySelector("h1, h2, h3") !== null ||
+          article.querySelector("p") !== null ||
+          article.querySelector("ul, ol") !== null ||
+          article.querySelector("pre, code") !== null;
+      });
+
+      assert(
+        hasRenderedContent,
+        `Docs page for ${docSlug} should contain rendered markdown elements`,
+      );
+
+      logger.info(
+        `Docs page ${docSlug} loaded successfully with ${bodyText.length} characters`,
+      );
 
       // Take screenshot
       await context.takeScreenshot(`docs-page-${docSlug}`);
