@@ -374,7 +374,7 @@ pre > code {
   background: var(--background);
   color: var(--text);
   padding: 1rem;
-  border-radius: 1rem;
+  border-radius: 1.5rem 1.5rem 2.6rem 2.6rem;
   border: 1px solid var(--border);
   box-sizing: border-box;
 }
@@ -404,8 +404,83 @@ h1.deck-title, h2.card-title {
 
 .card, .spec-item, .samples, .sample-item {
   background: var(--text010);
-  border-radius: 1rem;
+  border-radius: 1rem 1rem 1.6rem 1.6rem;
   padding: 1rem;
+}
+.spec-item {
+  border-radius: 1rem;
+}
+
+/* Progressive border-radius reduction for nested elements */
+.card .spec-item {
+  border-radius: 0.75rem;
+}
+
+.card .samples {
+  border-radius: 0.2rem;
+}
+
+.card .sample-item {
+  border-radius: 0rem;
+}
+
+/* Nested cards have smaller border-radius */
+.nested-card {
+  border-radius: 0.75rem;
+}
+
+.nested-card.depth-1 {
+  border-radius: 0.75rem;
+}
+
+.nested-card.depth-2 {
+  border-radius: 0.2rem;
+}
+
+.nested-card.depth-3 {
+  border-radius: 0rem;
+}
+
+.nested-card.depth-4 {
+  border-radius: 0rem;
+}
+
+.nested-card.depth-5 {
+  border-radius: 0rem;
+}
+
+/* Nested elements within nested cards also get smaller border-radius */
+.nested-card .spec-item {
+  border-radius: 0.2rem;
+}
+
+.nested-card .samples {
+  border-radius: 0rem;
+}
+
+.nested-card .sample-item {
+  border-radius: 0rem;
+}
+
+.nested-card.depth-2 .spec-item,
+.nested-card.depth-3 .spec-item,
+.nested-card.depth-4 .spec-item,
+.nested-card.depth-5 .spec-item {
+  border-radius: 0;
+}
+
+.nested-card.depth-2 .samples,
+.nested-card.depth-3 .samples,
+.nested-card.depth-4 .samples,
+.nested-card.depth-5 .samples {
+  border-radius: 0;
+}
+
+.nested-card.depth-2 .sample-item,
+.nested-card.depth-3 .sample-item,
+.nested-card.depth-4 .sample-item,
+.nested-card.depth-5 .sample-item {
+  border-radius: 0;
 }
 
 .card-content {
