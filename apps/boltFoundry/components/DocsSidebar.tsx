@@ -11,50 +11,35 @@ const docSections: DocSection[] = [
   {
     title: "Getting Started",
     items: [
-      { slug: "README", title: "Overview" },
+      { slug: "getting-started", title: "Getting Started" },
       { slug: "quickstart", title: "Quickstart" },
-      // { slug: "getting-started", title: "Getting Started" },
-      // { slug: "interactive-demo", title: "Interactive Demo" },
     ],
   },
+  // Temporarily commenting out sections with docs that exist in memos/guides but not docs/guides
+  // TODO: Either move these docs to docs/guides or update PublishedDocument to search memos/guides
+  /*
   {
     title: "Planning & Strategy",
     items: [
-      // { slug: "product-plan", title: "Product Plan" },
       { slug: "big-picture-strategy", title: "Big picture strategy" },
-      //  { slug: "business-vision", title: "Business Vision" },
       { slug: "company-vision", title: "Company vision" },
-      //  { slug: "library-vision", title: "Library Vision" },
     ],
   },
   {
     title: "Development",
     items: [
-      //  { slug: "STATUS", title: "Status" },
       { slug: "deck-system", title: "Deck system" },
       { slug: "improving-inference-philosophy", title: "Improving inference" },
-      //  { slug: "measurement-strategy", title: "Measurement Strategy" },
       { slug: "evals-overview", title: "Evals" },
     ],
   },
-  /*
-  {
-    title: "Team & Culture",
-    items: [
-      { slug: "team-story", title: "Team Story" },
-      { slug: "marketing-plan", title: "Marketing Plan" },
-      { slug: "early-content-plan", title: "Content Plan" },
-    ],
-  },
-  */
   {
     title: "Reference",
     items: [
       { slug: "wut", title: "wut" },
-      //  { slug: "BACKLOG", title: "Backlog" },
-      //  { slug: "CHANGELOG", title: "Changelog" },
     ],
   },
+  */
 ];
 
 interface DocsSidebarProps {
