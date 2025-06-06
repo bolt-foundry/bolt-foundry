@@ -40,7 +40,7 @@ blog posts and documentation.
 
 ## Existing assets
 
-- Clear brand voice and messaging framework (`cards/brand-voice.card.md`)
+- Clear brand voice and messaging framework (`decks/cards/brand-voice.card.md`)
 - Comprehensive strategic positioning (business-vision.md, product-plan.md)
 - Technical philosophy and worldview (improving-inference-philosophy.md,
   card-system.md)
