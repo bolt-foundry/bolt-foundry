@@ -407,7 +407,7 @@
   margin-bottom: 10px;
 }
 
-.card-container {
+/* .card-container {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
@@ -449,7 +449,7 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-}
+} */
 
 /* CURRENT EVENT CHOSEN PAGE */
 

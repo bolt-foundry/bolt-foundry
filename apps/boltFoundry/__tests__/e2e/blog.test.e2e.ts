@@ -15,6 +15,12 @@ Deno.test("Can read blog post at /blog/hello-world-2025-06-01", async () => {
     // Navigate to the blog post
     await navigateTo(context, "/blog/hello-world-2025-06-01");
 
+    // Take screenshot after navigation
+    await context.takeScreenshot("blog-post-loaded");
+
+    // Wait for content to fully render
+    await context.page.waitForSelector("h1", { timeout: 5000 });
+
     // Get page body text
     const bodyText = await context.page.evaluate(() =>
       document.body.textContent
@@ -30,6 +36,9 @@ Deno.test("Can read blog post at /blog/hello-world-2025-06-01", async () => {
       bodyText?.includes("This is our first blog post"),
       "Page should contain blog post content",
     );
+
+    // Take screenshot after successful assertions
+    await context.takeScreenshot("blog-post-success");
 
     logger.info("Blog post loaded successfully");
   } catch (error) {
