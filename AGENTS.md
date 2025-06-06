@@ -7,12 +7,14 @@ code in this repository.
 
 For detailed development practices and workflows, see:
 
-- `cards/version-control.card.md` - Sapling SCM usage, commit workflows, PR
-  management
-- `cards/testing.card.md` - TDD practices, test organization, testing patterns
-- `cards/coding.card.md` - Code organization, style guidelines, conventions
-- `cards/dev-cycle.card.md` - Team development rhythm and processes
-- `cards/hierarchical-naming.card.md` - Naming convention patterns
+- `decks/cards/version-control.card.md` - Sapling SCM usage, commit workflows,
+  PR management
+- `decks/cards/testing.card.md` - TDD practices, test organization, testing
+  patterns
+- `decks/cards/coding.card.md` - Code organization, style guidelines,
+  conventions
+- `decks/cards/dev-cycle.card.md` - Team development rhythm and processes
+- `decks/cards/hierarchical-naming.card.md` - Naming convention patterns
 
 ## Project Overview
 
@@ -79,7 +81,7 @@ bff lint               # Custom linting rules
 bff check              # TypeScript type checking
 
 # Development workflow
-# See cards/version-control.card.md for commit workflow and version control commands
+# See decks/cards/version-control.card.md for commit workflow and version control commands
 ```
 
 ### Database Commands
@@ -153,7 +155,7 @@ The build system is complex and sequential:
 
 ## Testing Strategy
 
-See `cards/testing.card.md` for comprehensive testing practices and TDD
+See `decks/cards/testing.card.md` for comprehensive testing practices and TDD
 workflow.
 
 - **Quick Reference**: `bff test`, `bff e2e`, test files in `__tests__/`
@@ -168,7 +170,7 @@ workflow.
 - Packages: `packages/` prefix or named imports (e.g., `@bolt-foundry/logger`)
 - Generated Isograph: `@iso/` prefix
 
-See `cards/coding.card.md` for complete code organization guidelines.
+See `decks/cards/coding.card.md` for complete code organization guidelines.
 
 ### Configuration Management
 
@@ -185,7 +187,7 @@ See `cards/coding.card.md` for complete code organization guidelines.
   - `no-console` - Use logger instead
   - `no-logger-set-level` - Logger level set by configuration
 
-See `cards/coding.card.md` for additional coding conventions and style
+See `decks/cards/coding.card.md` for additional coding conventions and style
 guidelines.
 
 ### Router Architecture
@@ -227,7 +229,7 @@ guidelines.
 1. **Always run** `bff devTools` to start development environment
 2. **Before committing**, run `bff format && bff lint && bff check`
 3. **Test changes** with `bff test` and `bff e2e --build`
-4. **For commit workflow**, see `cards/version-control.card.md`
+4. **For commit workflow**, see `decks/cards/version-control.card.md`
 5. **For full CI check**, run `bff ci` before submitting PRs
 6. **Database changes** require running `bff genGqlTypes` to update schema
 7. **Content changes** require `bff build` to process MDX and notebooks
@@ -247,11 +249,11 @@ guidelines.
 ## AI Development Guidelines
 
 - Use `bff ai` namespace for AI-safe commands (see
-  `cards/version-control.card.md`)
+  `decks/cards/version-control.card.md`)
 - Run `bff help` to discover available commands
-- Follow practices in `cards/coder-assistant.card.md` for AI development
+- Follow practices in `decks/cards/coder-assistant.card.md` for AI development
 
 ## Source Control
 
-See `cards/version-control.card.md` for Sapling SCM usage, commit workflows, and
-PR management.
+See `decks/cards/version-control.card.md` for Sapling SCM usage, commit
+workflows, and PR management.

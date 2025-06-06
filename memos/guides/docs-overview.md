@@ -38,7 +38,7 @@ For consistency with the rest of the monorepo:
 
 - Use Markdown (`.md`) for all documentation
 - Follow the
-  [documentation directory protocol](../cards/behaviors/docs-directory.bhc.md)
+  [documentation directory protocol](../decks/cards/behaviors/docs-directory.bhc.md)
   for structure and versioning
 - Cross-reference related documents where appropriate
 - Include clear titles and section headers
