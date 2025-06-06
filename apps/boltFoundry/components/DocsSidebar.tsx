@@ -11,13 +11,11 @@ const docSections: DocSection[] = [
   {
     title: "Getting Started",
     items: [
-      { slug: "getting-started", title: "Getting Started" },
+      { slug: "README", title: "Overview" },
       { slug: "quickstart", title: "Quickstart" },
+      { slug: "getting-started", title: "Getting Started" },
     ],
   },
-  // Temporarily commenting out sections with docs that exist in memos/guides but not docs/guides
-  // TODO: Either move these docs to docs/guides or update PublishedDocument to search memos/guides
-  /*
   {
     title: "Planning & Strategy",
     items: [
@@ -39,7 +37,6 @@ const docSections: DocSection[] = [
       { slug: "wut", title: "wut" },
     ],
   },
-  */
 ];
 
 interface DocsSidebarProps {
