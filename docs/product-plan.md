@@ -52,7 +52,7 @@ const prompt = "You are a customer support agent. Be helpful and empathetic. " +
   "User query: " + userMessage;
 
 // Bolt Foundry approach: Structured, reusable cards
-import { BfClient } from "@bolt-foundry/sdk";
+import { BfClient } from "@bolt-foundry/bolt-foundry";
 
 const client = BfClient.create();
 

@@ -23,6 +23,11 @@ type BfPerson {
   name: String
 }
 
+type BlogPost {
+  content: String!
+  id: ID!
+}
+
 type GithubRepoStats {
   id: ID!
   stars: Int!
@@ -48,6 +53,7 @@ type PublishedDocument {
 }
 
 type Query {
+  blogPost(slug: String): BlogPost
   documentsBySlug(slug: String): PublishedDocument
   githubRepoStats: GithubRepoStats
   ok: Boolean

@@ -146,7 +146,16 @@ async function runEvaluation(options) {
                     temperature: 0,
                 });
                 // Call LLM API via OpenRouter
-                const apiKey = process.env.OPENROUTER_API_KEY || "";
+                const apiKey = process.env.OPENROUTER_API_KEY;
+                if (!apiKey) {
+                    throw new Error(`Missing OPENROUTER_API_KEY environment variable.\n\n` +
+                        `To use bff-eval, you need to set up an OpenRouter API key:\n` +
+                        `1. Sign up for an account at https://openrouter.ai\n` +
+                        `2. Generate an API key from your dashboard\n` +
+                        `3. Set the environment variable:\n` +
+                        `   export OPENROUTER_API_KEY="your-api-key-here"\n\n` +
+                        `For more information, visit: https://openrouter.ai/docs`);
+                }
                 const response = await fetch(`https://openrouter.ai/api/v1/chat/completions`, {
                     method: "POST",
                     headers: {
