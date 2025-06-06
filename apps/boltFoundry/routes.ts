@@ -22,6 +22,7 @@ export const appRoutes: RouteMap = new Map([
   ["/ui", { Component: PageUIDemo }],
   ["/justin", { Component: LexicalDemo }],
   ["/plinko", { Component: Plinko }],
+  ["/decks", { Component: Decks }],
 ]);
 
 export type IsographRoute = BfIsographEntrypoint;
@@ -36,6 +37,7 @@ import {
   entrypointHome,
 } from "apps/boltFoundry/__generated__/builtRoutes.ts";
 import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
+import { Decks } from "apps/boltFoundry/pages/Decks.tsx";
 
 export const loggedInAppRoutes = new Map<string, IsographRoute>([]);
 
