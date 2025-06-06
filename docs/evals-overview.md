@@ -29,8 +29,8 @@ npx bff-eval --help
 Run evaluation with sample data:
 
 ```bash
-npx bff-eval --input packages/bolt-foundry/evals/examples/sample-data.jsonl \
-         --grader packages/bolt-foundry/evals/examples/json-validator.ts
+npx bff-eval --input examples/json-validator/samples.jsonl \
+         --grader examples/json-validator/grader.js
 ```
 
 ## Input data
@@ -71,7 +71,7 @@ To be clear, you SHOULD NOT BE INTERPOLATING ANY STRINGS IN THE SPECS. Use
 `.context` builders to safely include variables.
 
 ```typescript
-import { makeGraderDeckBuilder } from "../makeGraderDeckBuilder.ts";
+import { makeGraderDeckBuilder } from "@bolt-foundry/bolt-foundry";
 
 // Create a grader that evaluates JSON outputs
 export default makeGraderDeckBuilder("json-validator")
@@ -155,7 +155,7 @@ export interface GradingResult {
     notes: "Perfect JSON with correct schema"
   },
   sampleMetadata: {
-    groundTruthScore: 3  // If provided in input
+    score: 3  // If provided in input
   }
 }
 ```
@@ -163,7 +163,7 @@ export interface GradingResult {
 ## Meta Grader Analysis
 
 Bolt Foundry Evals supports "grading the grader" by comparing grader scores
-against ground truth scores. This calibration feature helps you:
+against expected scores. This calibration feature helps you:
 
 1. **Validate Grader Quality**: Ensure your graders score consistently and
    accurately
@@ -171,26 +171,25 @@ against ground truth scores. This calibration feature helps you:
    refinement
 3. **Compare Grader Versions**: Measure improvements when updating graders
 
-### Adding Ground Truth Scores
+### Adding Expected Scores
 
-Include a `groundTruthScore` field in your input samples:
+Include a `score` field in your input samples:
 
 ```jsonl
-{"userMessage": "Extract: name=John", "assistantResponse": "{\"name\":\"John\"}", "groundTruthScore": 3}
-{"userMessage": "Parse: color=red", "assistantResponse": "{'color': 'red'}", "groundTruthScore": 2}
-{"userMessage": "Convert: email=test@test.com", "assistantResponse": "test@test.com", "groundTruthScore": -3}
+{"userMessage": "Extract: name=John", "assistantResponse": "{\"name\":\"John\"}", "score": 3}
+{"userMessage": "Parse: color=red", "assistantResponse": "{'color': 'red'}", "score": 2}
+{"userMessage": "Convert: email=test@test.com", "assistantResponse": "test@test.com", "score": -3}
 ```
 
 ### Calibration Metrics
 
-When ground truth scores are provided, the eval command reports:
+When expected scores are provided, the eval command reports:
 
-- **Exact Match Rate**: Percentage of samples where grader score equals ground
-  truth
-- **Within ±1 Accuracy**: Percentage of samples within 1 point of ground truth
-- **Average Absolute Error**: Mean difference between grader and ground truth
-  scores
-- **Disagreements**: Specific samples where grader and ground truth differ
+- **Exact Match Rate**: Percentage of samples where grader score equals expected
+  score
+- **Within ±1 Accuracy**: Percentage of samples within 1 point of expected score
+- **Average Absolute Error**: Mean difference between grader and expected scores
+- **Disagreements**: Specific samples where grader and expected score differ
 
 ### Example: Improving a JSON Validator
 
