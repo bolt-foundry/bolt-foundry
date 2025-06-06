@@ -364,12 +364,16 @@ pre > code {
 } */
 
 
+.vertical-separator {
+  border-left: 1px solid var(--border);
+  margin: 0 8px;
+}
+
 .deck-container {
   background: var(--background);
   color: var(--text);
   padding: 1rem;
   border-radius: 1rem;
-  margin: 1rem;
   border: 1px solid var(--border);
   box-sizing: border-box;
 }

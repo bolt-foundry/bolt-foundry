@@ -70,22 +70,7 @@ export function Decks() {
       <main>
         <div className="landing-content">
           <h1>Decks Demo</h1>
-          <div className="flexRow gapMedium">
-            {deckExamples.map((example, index) => {
-              return (
-                <BfDsButton
-                  kind={index === deckExampleIndex ? "danSelected" : "dan"}
-                  onClick={() => {
-                    setDeckString(example.deck);
-                    setDeckExampleIndex(index);
-                  }}
-                  text={example.name}
-                  key={example.name}
-                />
-              );
-            })}
-          </div>
-          <div>
+          <div className="flexColumn gapLarge">
             <div>
               <BfDsForm
                 key={deckExampleIndex}
@@ -94,9 +79,38 @@ export function Decks() {
                   setDeckString(data.deck);
                   setDeckExampleIndex(-1);
                 }}
+                xstyle={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: 8,
+                }}
               >
-                <BfDsFormTextArea id="deck" rows={12} />
-                <BfDsFormSubmitButton text="Update Visualization" />
+                <BfDsFormTextArea
+                  id="deck"
+                  rows={12}
+                  xstyle={{ alignSelf: "stretch", maxHeight: 340 }}
+                />
+                <div className="flexRow gapMedium alignItemsCenter">
+                  <div>Presets:</div>
+                  {deckExamples.map((example, index) => {
+                    return (
+                      <BfDsButton
+                        kind={index === deckExampleIndex
+                          ? "danSelected"
+                          : "dan"}
+                        onClick={() => {
+                          setDeckString(example.deck);
+                          setDeckExampleIndex(index);
+                        }}
+                        text={example.name}
+                        key={example.name}
+                      />
+                    );
+                  })}
+                  <div className="vertical-separator" />
+                  <BfDsFormSubmitButton text="Update Visualization" />
+                </div>
               </BfDsForm>
             </div>
             <div>
