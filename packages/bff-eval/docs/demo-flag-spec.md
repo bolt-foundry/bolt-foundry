@@ -30,7 +30,7 @@ Where `$NAME` is the name of a demo folder in `packages/bff-eval/examples/`. If 
 The `samples.jsonl` file should follow the standard bff-eval format:
 
 ```jsonl
-{"userMessage": "Extract user info from: 'John Doe, 30, NYC'", "assistantResponse": "{\"name\":\"John Doe\",\"age\":30,\"city\":\"NYC\"}", "id": "sample-001", "score": 3, "metadata": {"category": "extraction"}}
+{"userMessage": "Extract user info from: 'John Doe, 30, NYC'", "assistantResponse": "{\"name\":\"John Doe\",\"age\":30,\"city\":\"NYC\"}", "id": "sample-001", "score": 3, "category": "extraction"}
 {"userMessage": "Parse address: '123 Main St'", "assistantResponse": "{\"street\":\"123 Main St\"}", "id": "sample-002", "score": 2}
 ```
 
@@ -38,8 +38,8 @@ Fields:
 - `userMessage` (required): The user's input
 - `assistantResponse` (required): The assistant's response to evaluate
 - `id` (optional): Unique identifier for the sample
-- `score` (optional): Ground truth score for meta-evaluation (-3 to 3)
-- `metadata` (optional): Custom metadata to forward to the reporter
+- `score` (optional): Expected score for meta-evaluation (-3 to 3)
+- Any additional fields are captured in `sampleMetadata` for use in reporting
 
 ## Example
 
