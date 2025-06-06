@@ -136,8 +136,7 @@ bff genGqlTypes        # Generate GraphQL schema and types
 
 - **MDX Support**: Markdown with embedded React components in `content/`
 - **Jupyter Integration**: `.ipynb` notebook support and rendering
-- **Build Process**: Content processed during `bff build` via
-  `infra/appBuild/contentBuild.ts`
+- **Build Process**: Content processed during `bff build` via plugins
 
 ## Build Process Architecture
 
@@ -220,7 +219,6 @@ guidelines.
 
 - `infra/bff/friends/build.bff.ts` - Main build pipeline
 - `infra/appBuild/appBuild.ts` - Client-side build configuration
-- `infra/appBuild/contentBuild.ts` - Content processing (MDX, notebooks)
 
 ## Development Workflow Best Practices
 
