@@ -17,9 +17,10 @@ const deck = createDeck(
         .spec("patient and understanding"))
       .card("capabilities", (c) =>
         c.spec("code review", {
-          samples: (s) =>
-            s.sample("Provides specific line-by-line feedback", 3)
-              .sample("Says 'code looks fine' without details", -3),
+          samples: [
+            { "id": "c_0", "userMessage": "Check my code for errors: {code}", "assistantResponse": "Line 7 needs a closing '}' bracket.", "score": 3, "description": "Provides specific line-by-line feedback" },
+            { "id": "c_1", "userMessage": "Review this code", "assistantResponse": "Code looks fine", "score": -3, "description": "Says 'code looks fine' without details" },
+          ]
         })),
 );
 `,
@@ -37,22 +38,25 @@ const deck = createDeck(
      .card("Behaviors", (b) =>
         b.card("Oxford comma", (o) =>
           o.spec("Uses the Oxford comma", {
-            samples: (s) =>
-              s.sample("I like apples, oranges, and bananas", 3)
-               .sample("I like apples, oranges and bananas", -3)
+            samples: [
+              { "id": "ox_0", "userMessage": "List three fruits", "assistantResponse": "I like apples, oranges, and bananas", "score": 3, "description": "Uses Oxford comma correctly" },
+              { "id": "ox_1", "userMessage": "List three fruits", "assistantResponse": "I like apples, oranges and bananas", "score": -3, "description": "Missing Oxford comma" },
+            ]
             })
           )
          .card("Contractions", (c) =>
             c.spec("Uses contractions as much as possible", {
-              samples: (s) =>
-                s.sample("I'm going to the store", 3)
-                 .sample("I am going to the store", -3)
-                 .samples("I will go to the store", -3)
+              samples: [
+                { "id": "con_0", "userMessage": "Where are you going?", "assistantResponse": "I'm going to the store", "score": 3, "description": "Uses contraction naturally" },
+                { "id": "con_1", "userMessage": "Where are you going?", "assistantResponse": "I am going to the store", "score": -3, "description": "Formal instead of contraction" },
+                { "id": "con_2", "userMessage": "What will you do?", "assistantResponse": "I will go to the store", "score": -3, "description": "Missed contraction opportunity" },
+              ]
             })
              .spec("Doesn't use contractions for emphasis", {
-               samples: (s) =>
-                 s.sample("It isn't true", -2)
-                  .sample("It is not true", 3)
+               samples: [
+                 { "id": "emp_0", "userMessage": "Is that really true?", "assistantResponse": "It isn't true", "score": -2, "description": "Contraction weakens emphasis" },
+                 { "id": "emp_1", "userMessage": "Is that really true?", "assistantResponse": "It is not true", "score": 3, "description": "Full form for emphasis" },
+               ]
              })
           ) 
     )
