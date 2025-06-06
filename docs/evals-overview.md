@@ -15,26 +15,16 @@ across multiple underlying base models.
   simultaneously to compare performance and consistency (powered by Open Router)
 - **Parallel Execution**: Run evaluations concurrently for faster results across
   multiple models and iterations
-- **Meta Grader Analysis**: Calibrate and validate grader quality using 
-  scores to ensure consistent and accurate evaluations
+- **Meta Grader Analysis**: Calibrate and validate grader quality using ground
+  truth scores to ensure consistent and accurate evaluations
 
 ## Quickstart
 
-### Setup
+Set your `OPENROUTER_API_KEY` environment variable.
 
-1. **Get an OpenRouter API Key**:
-   - Sign up for an account at [OpenRouter](https://openrouter.ai)
-   - Generate an API key from your dashboard
-   - Set the environment variable:
-   
-   ```bash
-   export OPENROUTER_API_KEY="your-api-key-here"
-   ```
-
-2. **Install and run**:
-   ```bash
-   npx bff-eval --help
-   ```
+```bash
+npx bff-eval --help
+```
 
 Run evaluation with sample data:
 
@@ -42,24 +32,6 @@ Run evaluation with sample data:
 npx bff-eval --input packages/bolt-foundry/evals/examples/sample-data.jsonl \
          --grader packages/bolt-foundry/evals/examples/json-validator.ts
 ```
-
-### Running Demos
-
-The quickest way to get started is with the `--demo` flag:
-
-```bash
-# Run a specific demo
-npx bff-eval --demo json-validator
-
-# Run a random demo
-npx bff-eval --demo
-```
-
-Demos are pre-configured examples with graders and sample data. Each demo includes:
-- `grader.ts` - The evaluation logic
-- `samples.jsonl` - Test cases with expected scores
-
-Available demos are located in the `examples/` directory.
 
 ## Input data
 
@@ -183,7 +155,7 @@ export interface GradingResult {
     notes: "Perfect JSON with correct schema"
   },
   sampleMetadata: {
-    score: 3  // If provided in input
+    groundTruthScore: 3  // If provided in input
   }
 }
 ```
@@ -191,7 +163,7 @@ export interface GradingResult {
 ## Meta Grader Analysis
 
 Bolt Foundry Evals supports "grading the grader" by comparing grader scores
-against expected scores. This calibration feature helps you:
+against ground truth scores. This calibration feature helps you:
 
 1. **Validate Grader Quality**: Ensure your graders score consistently and
    accurately
@@ -199,26 +171,26 @@ against expected scores. This calibration feature helps you:
    refinement
 3. **Compare Grader Versions**: Measure improvements when updating graders
 
-### Adding Expected Scores
+### Adding Ground Truth Scores
 
-Include a `score` field in your input samples:
+Include a `groundTruthScore` field in your input samples:
 
 ```jsonl
-{"userMessage": "Extract: name=John", "assistantResponse": "{\"name\":\"John\"}", "score": 3}
-{"userMessage": "Parse: color=red", "assistantResponse": "{'color': 'red'}", "score": 2}
-{"userMessage": "Convert: email=test@test.com", "assistantResponse": "test@test.com", "score": -3}
+{"userMessage": "Extract: name=John", "assistantResponse": "{\"name\":\"John\"}", "groundTruthScore": 3}
+{"userMessage": "Parse: color=red", "assistantResponse": "{'color': 'red'}", "groundTruthScore": 2}
+{"userMessage": "Convert: email=test@test.com", "assistantResponse": "test@test.com", "groundTruthScore": -3}
 ```
 
 ### Calibration Metrics
 
-When expected scores are provided, the eval command reports:
+When ground truth scores are provided, the eval command reports:
 
-- **Exact Match Rate**: Percentage of samples where grader score equals expected
-  score
-- **Within ±1 Accuracy**: Percentage of samples within 1 point of expected score
-- **Average Absolute Error**: Mean difference between grader and expected
+- **Exact Match Rate**: Percentage of samples where grader score equals ground
+  truth
+- **Within ±1 Accuracy**: Percentage of samples within 1 point of ground truth
+- **Average Absolute Error**: Mean difference between grader and ground truth
   scores
-- **Disagreements**: Specific samples where grader and expected score differ
+- **Disagreements**: Specific samples where grader and ground truth differ
 
 ### Example: Improving a JSON Validator
 

@@ -25,10 +25,10 @@ priorities for v0.1 are:
 _For definitions of project phases and priority levels, see
 [WUT](/docs/wut.md#project-phases) and [WUT](/docs/wut.md#priority-system)._
 
-| Priority | Project Name          | Project Phase | Status | Next Milestone            | Description                          | References                                                                                         |
-| -------- | --------------------- | ------------- | ------ | ------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| P0       | examples              | Alpha         | 🟢     | Add more example patterns | Working examples demonstrating SDK   | [README](../examples/README.md), [NextJS](../examples/nextjs-sample/README.md)                     |
-| P1       | packages/bolt-foundry | Alpha         | 🚀     | Stabilize API interfaces  | Core SDK for AI-powered applications | [NPM](https://www.npmjs.com/package/@bolt-foundry/sdk), [Docs](../packages/bolt-foundry/README.md) |
+| Priority | Project Name          | Project Phase | Status | Next Milestone            | Description                          | References                                                                                                  |
+| -------- | --------------------- | ------------- | ------ | ------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| P0       | examples              | Alpha         | 🟢     | Add more example patterns | Working examples demonstrating SDK   | [README](../examples/README.md), [NextJS](../examples/nextjs-sample/README.md)                              |
+| P1       | packages/bolt-foundry | Alpha         | 🚀     | Stabilize API interfaces  | Core SDK for AI-powered applications | [NPM](https://www.npmjs.com/package/@bolt-foundry/bolt-foundry), [Docs](../packages/bolt-foundry/README.md) |
 
 ## Other Projects
 

@@ -1,6 +1,5 @@
 #! /usr/bin/env -S bff e2e
 
-import { assertEquals } from "@std/assert";
 import {
   navigateTo,
   setupE2ETest,
@@ -12,18 +11,16 @@ import { getLogger } from "packages/logger/logger.ts";
 // "Join the waitlist" form on the home page.
 // Steps
 // 1. Navigate to "/"
-// 2. Click the primary CTA "Join the waitlist" button
-// 3. Wait for the modal dialog to appear
-// 4. Fill out the form inputs (name, email, company)
-// 5. Submit the form
-// 6. Confirm that the POST → /contacts‑cms request succeeds
-// 7. Confirm that the modal closes afterwards
-// 8. Take screenshots along the way for debugging / visual regression
+// 2. Scroll to the waitlist form section
+// 3. Fill out the form inputs (name, email, company)
+// 4. Submit the form
+// 5. Confirm that the form is replaced with a success message
+// 6. Take screenshots along the way for debugging / visual regression
 
 const logger = getLogger(import.meta);
 
 // Flaky b/c it depends on an external service (waitlist API)
-Deno.test.ignore("User can join the waitlist successfully", async () => {
+Deno.test("User can join the waitlist successfully", async () => {
   const context = await setupE2ETest({ headless: true });
 
   try {
@@ -31,36 +28,37 @@ Deno.test.ignore("User can join the waitlist successfully", async () => {
     await navigateTo(context, "/");
     await context.takeScreenshot("waitlist‑home‑initial");
 
-    // 2️⃣  Trigger the CTA using the ARIA selector supported by Puppeteer
-    const joinButtonSelector = "aria/Join the waitlist";
-    await context.page.waitForSelector(joinButtonSelector, { timeout: 10_000 });
-    await context.page.click(joinButtonSelector);
+    // 2️⃣  Wait for and scroll to the waitlist form
+    const formSelector = '[data-testid="waitlist-form"]';
+    await context.page.waitForSelector(formSelector, { timeout: 10_000 });
+    await context.page.evaluate((selector) => {
+      const element = document.querySelector(selector);
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, formSelector);
+    await context.takeScreenshot("waitlist‑form‑visible");
 
-    // 3️⃣  Wait for the modal dialog (role="dialog")
-    const modalSelector = '[data-testid="waitlist-form"]';
-    await context.page.waitForSelector(modalSelector, { timeout: 10_000 });
-    await context.takeScreenshot("waitlist‑modal‑open");
-
-    // 4️⃣  Fill the form fields with test data (use dry run email format)
+    // 3️⃣  Fill the form fields with test data (use dry run email format)
     await context.page.type("#bfDsFormInput-name", "Test User");
     await context.page.type("#bfDsFormInput-email", "test.dryrun@example.com");
     await context.page.type("#bfDsFormInput-company", "Bolt Foundry");
     await context.takeScreenshot("waitlist‑form‑filled");
 
-    // 5️⃣  Submit the form via ARIA selector for the submit button
+    // 4️⃣  Submit the form via the submit button
     const submitSelector = "[data-bf-testid='waitlist-submit']";
     await context.page.click(submitSelector);
 
-    // 7️⃣  The modal should close automatically on success
-    await context.page.waitForSelector(modalSelector, {
+    // 5️⃣  Wait for the success message (form should be replaced)
+    // The form should disappear and be replaced with a thank you message
+    await context.page.waitForSelector(formSelector, {
       hidden: true,
       timeout: 10_000,
     });
-    const modalStillVisible = await context.page.$(modalSelector);
-    assertEquals(
-      modalStillVisible,
-      null,
-      "Waitlist modal should close after successful submission",
+
+    // Look for the success message text
+    await context.page.waitForFunction(
+      () =>
+        document.body.textContent?.includes("Thanks for joining the waitlist!"),
+      { timeout: 10_000 },
     );
 
     await context.takeScreenshot("waitlist‑success");

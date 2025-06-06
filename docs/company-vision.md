@@ -39,7 +39,7 @@ reliability, but the ones who achieve 99% reliability will dominate their
 markets. We're building the infrastructure to make that possible.
 
 _For the complete story of our journey and insights, see
-[Our Team Story](./team-story.md)._
+[Our Team Story](team-story.md)._
 
 ## Our vision
 
@@ -166,9 +166,8 @@ We're working toward a world where:
 
 **Related documents:**
 
-- [Our team story](./team-story.md) - Detailed background on our journey and
+- [Our team story](team-story.md) - Detailed background on our journey and
   insights
-- [Business vision](./business-vision.md) - Go-to-market strategy and revenue
+- [Business vision](business-vision.md) - Go-to-market strategy and revenue
   model
-- [Product plan](./product-plan.md) - Technical roadmap and implementation
-  details
+- [Product plan](product-plan.md) - Technical roadmap and implementation details

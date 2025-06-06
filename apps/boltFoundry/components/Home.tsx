@@ -3,7 +3,6 @@ import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
 import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
 import { BfDsCopyButton } from "apps/bfDs/components/BfDsCopyButton.tsx";
-// import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
 import { useMutation } from "apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
 import joinWaitlistMutation from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
 
@@ -23,13 +22,15 @@ type WaitlistFormData = {
 const NavButtons = () => {
   return (
     <>
-      <BfDsButton
+      {
+        /* <BfDsButton
         kind="dan"
         href="https://boltfoundry.substack.com/"
         hrefTarget="_blank"
         rel="noopener noreferrer"
         text="Blog"
-      />
+      /> */
+      }
       <BfDsButton
         kind="dan"
         href="/docs"
@@ -46,7 +47,7 @@ const NavButtons = () => {
         /* <BfDsButton
       kind="outline"
       text="Login"
-      onClick={() => navigate("/login")}
+      link="/login"
     /> */
       }
     </>
@@ -62,7 +63,6 @@ field Query.Home @component {
   }
 `)(function Home({ data }) {
   const { commit } = useMutation(joinWaitlistMutation);
-  // const { navigate } = useRouter();
   const [showMenu, setShowMenu] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSubmat, setFormSubmat] = useState(false);
@@ -120,6 +120,9 @@ field Query.Home @component {
     email: "",
     company: "",
   };
+
+  // const bfCode = "npm install @bolt-foundry/bolt-foundry";
+  const bfCode = "npx bff-eval --demo";
 
   return (
     <div className="landing-page">
@@ -192,11 +195,11 @@ field Query.Home @component {
             <div className="npm-section">
               <div className="npm-command-container flexRow flexWrap gapMedium">
                 <code className="npm-command">
-                  npm install @bolt-foundry/bolt-foundry
+                  {bfCode}
                 </code>
                 <BfDsCopyButton
                   aria-label="Copy npm command"
-                  textToCopy="npm install @bolt-foundry/bolt-foundry"
+                  textToCopy={bfCode}
                 />
               </div>
             </div>
