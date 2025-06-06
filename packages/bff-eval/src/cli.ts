@@ -6,7 +6,7 @@ import * as fs from "node:fs";
 export const cli = yargs(hideBin(process.argv))
   .scriptName("bff-eval")
   .usage("$0 [options]")
-  .version("0.1.1")
+  .version("0.1.2")
   .help()
   .strict()
   .option("input", {
