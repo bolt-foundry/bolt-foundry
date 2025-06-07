@@ -22,7 +22,7 @@ Deno.test("GqlBuilder integrates with ArgBuilder for field arguments", () => {
     type: string;
     nonNull?: boolean;
     args: ArgMap;
-    resolve?: (...args: unknown[]) => unknown;
+    resolve?: (...args: Array<unknown>) => unknown;
   };
 
   // Verify the spec contains the arguments
@@ -57,7 +57,7 @@ Deno.test("GqlBuilder integrates with ArgBuilder for mutation arguments", () => 
     returnsType?: string;
     returnsSpec?: ReturnSpec;
     args: ArgMap;
-    resolve?: (...args: unknown[]) => unknown;
+    resolve?: (...args: Array<unknown>) => unknown;
   };
 
   // Verify the mutation exists with the correct arguments

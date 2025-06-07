@@ -34,7 +34,7 @@ interface Annotation {
   raw_details?: string;
 }
 
-export async function ciStatus(args: string[]): Promise<number> {
+export async function ciStatus(args: Array<string>): Promise<number> {
   // Parse arguments for commit hash and flags
   const showDetails = args.includes("--details") || args.includes("-d");
   const filteredArgs = args.filter((arg) =>
@@ -82,8 +82,10 @@ export async function ciStatus(args: string[]): Promise<number> {
       ".workflow_runs",
     ]);
 
-    const checkRuns: CheckRun[] = JSON.parse(checkRunsResult.stdout);
-    const workflowRuns: WorkflowRun[] = JSON.parse(workflowRunsResult.stdout);
+    const checkRuns: Array<CheckRun> = JSON.parse(checkRunsResult.stdout);
+    const workflowRuns: Array<WorkflowRun> = JSON.parse(
+      workflowRunsResult.stdout,
+    );
 
     if (checkRuns.length === 0 && workflowRuns.length === 0) {
       logger.info("No check runs or workflow runs found for this commit");
@@ -107,7 +109,7 @@ export async function ciStatus(args: string[]): Promise<number> {
     }
 
     // Group check runs by status
-    const statusGroups: Record<string, CheckRun[]> = {
+    const statusGroups: Record<string, Array<CheckRun>> = {
       completed: [],
       in_progress: [],
       queued: [],
@@ -184,7 +186,7 @@ export async function ciStatus(args: string[]): Promise<number> {
               if (annotationsResult.stdout.trim()) {
                 // Parse each line as a separate JSON object
                 const lines = annotationsResult.stdout.trim().split("\n");
-                const annotations: Annotation[] = lines.map((line) =>
+                const annotations: Array<Annotation> = lines.map((line) =>
                   JSON.parse(line)
                 );
 

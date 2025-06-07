@@ -6,7 +6,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function e2eCommand(args: string[]): Promise<number> {
+export async function e2eCommand(args: Array<string>): Promise<number> {
   logger.info("Starting e2e tests");
 
   /**
@@ -97,7 +97,7 @@ export async function e2eCommand(args: string[]): Promise<number> {
     logger.info("Web server is ready on port 8000");
 
     // Determine test paths
-    let testPaths: string[];
+    let testPaths: Array<string>;
     if (testFilePath) {
       // If a specific test file is provided, use it directly
       logger.info(`Running specific test file: ${testFilePath}`);

@@ -185,7 +185,7 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       const placeholders = bfGids.map(() => "?").join(",");
 
       let query: string;
-      let params: unknown[];
+      let params: Array<unknown>;
 
       if (className) {
         query =
@@ -476,10 +476,10 @@ export class DatabaseBackendSqlite implements DatabaseBackend {
       batchSize,
     });
 
-    const metadataConditions: string[] = [];
-    const propsConditions: string[] = [];
-    const specificIdConditions: string[] = [];
-    const variables: unknown[] = [];
+    const metadataConditions: Array<string> = [];
+    const propsConditions: Array<string> = [];
+    const specificIdConditions: Array<string> = [];
+    const variables: Array<unknown> = [];
 
     // Process metadata conditions
     for (const [originalKey, value] of Object.entries(metadataToQuery)) {

@@ -19,12 +19,12 @@ const DEFAULT_IGNORE_PATTERNS = [
 ];
 
 interface LlmOptions {
-  paths: string[];
-  extensions: string[];
+  paths: Array<string>;
+  extensions: Array<string>;
   includeHidden: boolean;
   ignoreFilesOnly: boolean;
   ignoreGitignore: boolean;
-  ignorePatterns: string[];
+  ignorePatterns: Array<string>;
   outputFile?: string;
   stdOut: boolean;
   cxml: boolean;
@@ -79,7 +79,7 @@ async function getEncoding() {
 /**
  * Helper functions for encoding/decoding text
  */
-async function encodeText(text: string): Promise<number[]> {
+async function encodeText(text: string): Promise<Array<number>> {
   const encoding = await getEncoding();
   // encoding.encode() returns something iterable; convert it to an array
   return Array.from(encoding.encode(text)).map(Number);
@@ -109,7 +109,7 @@ function escapeXmlForAttributes(unsafe: string): string {
 async function collectFilesOutput(
   opts: LlmOptions,
 ): Promise<string> {
-  const outputParts: string[] = [];
+  const outputParts: Array<string> = [];
 
   // Start with XML header if in cxml mode
   if (opts.cxml) {
@@ -151,7 +151,7 @@ async function collectFilesOutput(
 /**
  * Main command: bff llm
  */
-export async function llm(args: string[]): Promise<number> {
+export async function llm(args: Array<string>): Promise<number> {
   try {
     const opts = parseArgs(args);
 
@@ -179,7 +179,7 @@ export async function llm(args: string[]): Promise<number> {
   }
 }
 
-function parseArgs(args: string[]): LlmOptions {
+function parseArgs(args: Array<string>): LlmOptions {
   const opts: LlmOptions = {
     paths: [],
     extensions: [],
@@ -285,8 +285,8 @@ async function processFolderOrFile(
   opts: LlmOptions,
   gitignorePatterns: Set<string>,
   initialDocIndex: number,
-): Promise<{ parts: string[]; nextIndex: number }> {
-  const outputParts: string[] = [];
+): Promise<{ parts: Array<string>; nextIndex: number }> {
+  const outputParts: Array<string> = [];
   let docIndex = initialDocIndex;
 
   const dirCheck = await isDirectory(startPath);
@@ -363,7 +363,7 @@ async function processFile(
   filePath: string,
   opts: LlmOptions,
   docIndex: number,
-): Promise<{ parts: string[]; nextIndex: number } | null> {
+): Promise<{ parts: Array<string>; nextIndex: number } | null> {
   // Skip binary files
   if (await isBinaryFile(filePath)) {
     return null;
@@ -377,7 +377,7 @@ async function processFile(
     return null;
   }
 
-  const parts: string[] = [];
+  const parts: Array<string> = [];
 
   if (opts.lineNumbers) {
     content = addLineNumbers(content);
@@ -406,7 +406,7 @@ async function processFile(
 
 function shouldIgnore(
   filePath: string,
-  ignorePatterns: string[],
+  ignorePatterns: Array<string>,
   _ignoreFilesOnly: boolean,
 ): boolean {
   // Combine user-provided patterns with defaults
