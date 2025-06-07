@@ -5,12 +5,13 @@
  */
 
 import { makeSchema } from "nexus";
-import { loadGqlTypes } from "../loadGqlTypes.ts";
 import { graphql } from "graphql";
 import { createContext } from "../graphqlContext.ts";
+import { getSchemaOptions } from "../schemaConfig.ts";
 
 export async function buildTestSchema() {
-  return makeSchema({ types: await loadGqlTypes() });
+  const schemaOptions = await getSchemaOptions();
+  return makeSchema(schemaOptions);
 }
 
 export async function testQuery(options: { query: string }) {

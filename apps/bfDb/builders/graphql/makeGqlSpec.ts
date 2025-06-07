@@ -22,10 +22,11 @@ export function makeGqlSpec(
   // Run the builder function with nonNull support
   build(gqlBuilder);
 
-  // Return the built spec, including mutations
+  // Return the built spec, including mutations and connections
   return {
     fields: gqlBuilder._spec.fields,
     relations: gqlBuilder._spec.relations,
     mutations: gqlBuilder._spec.mutations,
+    connections: gqlBuilder._spec.connections,
   };
 }

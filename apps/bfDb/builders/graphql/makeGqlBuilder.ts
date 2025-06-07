@@ -60,6 +60,7 @@ export interface GqlNodeSpec {
   fields: Record<string, unknown>;
   relations: Record<string, unknown>;
   mutations: Record<string, unknown>;
+  connections?: Record<string, unknown>;
 }
 
 /**
@@ -179,6 +180,38 @@ export interface GqlBuilder<
         ctx: BfGraphqlContext,
         info: GraphQLResolveInfo,
       ) => MaybePromise<ReturnType>;
+    },
+  ): GqlBuilder<R>;
+
+  /**
+   * Define a connection field for Relay-style pagination.
+   * Connections always require a resolver that returns a Connection type.
+   *
+   * @param name The field name
+   * @param targetThunk Function that returns the target object type constructor
+   * @param opts Configuration including custom args and required resolver
+   * @returns The builder instance for method chaining
+   *
+   * @example
+   * .connection("posts", () => BlogPost, {
+   *   args: (a) => a.string("sortDirection"),
+   *   resolve: async (_root, args) => {
+   *     const posts = await BlogPost.listAll(args.sortDirection);
+   *     return BlogPost.connection(posts, args);
+   *   }
+   * })
+   */
+  connection<N extends string>(
+    name: N,
+    targetThunk: GqlObjectThunk,
+    opts: {
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
+      resolve: (
+        root: ThisNode,
+        args: GraphQLResolverArgs,
+        ctx: BfGraphqlContext,
+        info: GraphQLResolveInfo,
+      ) => MaybePromise<unknown>; // Connection<T> from graphql-relay
     },
   ): GqlBuilder<R>;
 
@@ -322,6 +355,35 @@ export function makeGqlBuilder<
       return builder;
     },
 
+    connection(name, targetThunk, opts) {
+      // Ensure resolver is provided
+      if (!opts || !opts.resolve) {
+        throw new Error("Connection fields require a resolver");
+      }
+
+      // Initialize connections if not already present
+      if (!spec.connections) {
+        spec.connections = {};
+      }
+
+      // Create the argument builder function
+      const argFn = makeArgBuilder();
+
+      // Process args function if provided
+      const args = opts.args ? argFn(opts.args) : {};
+
+      // Store the connection definition
+      spec.connections[name] = {
+        type: name, // Will be resolved from thunk later
+        args: args,
+        resolve: opts.resolve,
+        _targetThunk: targetThunk,
+        _pendingTypeResolution: true,
+      };
+
+      return builder;
+    },
+
     // NonNull property for required fields
     get nonNull() {
       // Create a new object (not a copy) to avoid reference loops
@@ -381,6 +443,7 @@ export function makeGqlBuilder<
 
         object: builder.object,
         mutation: builder.mutation,
+        connection: builder.connection, // Connections can't be nonNull
         _spec: builder._spec,
       };
 
