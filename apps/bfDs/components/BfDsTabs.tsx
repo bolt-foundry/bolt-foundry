@@ -11,7 +11,7 @@ export type Tab = {
 };
 type Props = {
   kind?: "header" | "subheader";
-  tabs: Tab[];
+  tabs: Array<Tab>;
   onTabSelected: (tabName: string) => void;
   overrideSelectedTab?: string; // External control for selected tab
 };
@@ -117,7 +117,7 @@ export function BfDsTabs(
 export function Example() {
   const [selectedHeaderTab, setSelectedHeaderTab] = useState<string>("Tab 1");
   const [selectedTab, setSelectedTab] = useState<string>("Tab 1");
-  const demoTabs: Tab[] = [
+  const demoTabs: Array<Tab> = [
     { name: "Tab 1", count: 15 },
     { name: "Tab 2" },
     { name: "Tab 3", hidden: true },

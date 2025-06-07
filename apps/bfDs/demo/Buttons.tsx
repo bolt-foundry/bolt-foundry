@@ -14,7 +14,7 @@ import type { BfDsIconType } from "apps/bfDs/components/BfDsIcon.tsx";
 const logger = getLogger(import.meta);
 
 // Define all button kinds for dynamic creation
-const ALL_BUTTON_KINDS: ButtonKind[] = [
+const ALL_BUTTON_KINDS: Array<ButtonKind> = [
   "primary",
   "secondary",
   "alert",
@@ -36,7 +36,7 @@ const ALL_BUTTON_KINDS: ButtonKind[] = [
 ];
 
 // Define all button sizes
-const ALL_BUTTON_SIZES: ButtonSizeType[] = [
+const ALL_BUTTON_SIZES: Array<ButtonSizeType> = [
   "xlarge",
   "large",
   "medium",
@@ -61,8 +61,8 @@ const COMMON_ICONS: Array<BfDsIconType> = [
 const generateButtons = (options: {
   withText?: boolean;
   withIcon?: boolean;
-  kinds?: ButtonKind[];
-  sizes?: ButtonSizeType[];
+  kinds?: Array<ButtonKind>;
+  sizes?: Array<ButtonSizeType>;
   withProgress?: boolean;
   withSpinner?: boolean;
   withSubtext?: boolean;

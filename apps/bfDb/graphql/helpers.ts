@@ -39,9 +39,9 @@ export function toGraphqlFromNode(node: BfNode): GraphqlNode {
  * Build a Relay‑style Connection from an array of GraphQL‑ready nodes.
  */
 export function connectionFromNodes<N>(
-  graphqlNodes: N[],
+  graphqlNodes: Array<N>,
   args: ConnectionArguments,
 ): Connection<N> {
   // deno-lint-ignore no-explicit-any
-  return connectionFromArray(graphqlNodes as any[], args) as Connection<N>;
+  return connectionFromArray(graphqlNodes as Array<any>, args) as Connection<N>;
 }
