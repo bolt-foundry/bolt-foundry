@@ -8,7 +8,7 @@ const IMPORT_TEXT =
 function ensureImport(
   sourceCode: Deno.lint.SourceCode,
   fixer: Deno.lint.Fixer,
-): Deno.lint.Fix[] {
+): Array<Deno.lint.Fix> {
   const hasImport = sourceCode.ast.body.some(
     (n) =>
       n.type === "ImportDeclaration" &&
@@ -182,8 +182,44 @@ const plugin: Deno.lint.Plugin = {
     },
 
     /* ────────────────────────────────────────────────────────────────────── */
-    /*  4. Prevent logger.setLevel from being committed                      */
-    /* ────────────────────────────────────────────────────────────────────────────────────────── */
+    /*  4. Prefer Array<Type> over Type[] syntax                             */
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    "prefer-generic-array-syntax": {
+      create(context) {
+        const { sourceCode } = context;
+
+        return {
+          // Match array type annotations like Type[]
+          TSArrayType(node) {
+            context.report({
+              node,
+              message:
+                "Use Array<Type> instead of Type[] for array type annotations",
+              fix(fixer) {
+                // Get the element type text
+                const elementType = sourceCode.getText(node.elementType);
+
+                // Handle cases where the element type might need parentheses
+                // e.g., (string | number)[] -> Array<string | number>
+                const needsParens = node.elementType.type === "TSUnionType" ||
+                  node.elementType.type === "TSIntersectionType" ||
+                  node.elementType.type === "TSConditionalType";
+
+                const typeText = needsParens ? elementType : elementType;
+
+                return [
+                  fixer.replaceText(node, `Array<${typeText}>`),
+                ];
+              },
+            });
+          },
+        };
+      },
+    },
+
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    /*  5. Prevent logger.setLevel from being committed                      */
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
     "no-logger-set-level": {
       create(context) {
         const { sourceCode } = context;
