@@ -6,7 +6,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function diffCommand(options: string[]): Promise<number> {
+export async function diffCommand(options: Array<string>): Promise<number> {
   logger.info("Running sl diff...");
 
   const args = ["sl", "diff", ...options];

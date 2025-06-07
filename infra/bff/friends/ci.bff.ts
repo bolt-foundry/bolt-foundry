@@ -263,7 +263,7 @@ function parseDenoFmtOutput(fullOutput: string) {
 
 async function runBuildStep(
   useGithub: boolean,
-  args: string[],
+  args: Array<string>,
 ): Promise<number> {
   logger.info("Running bff build");
   // Include bolt-foundry in CI builds if the flag is passed
@@ -358,7 +358,7 @@ async function runInstallStep(_useGithub: boolean): Promise<number> {
 // MAIN CI pipeline
 // ----------------------------------------------------------------------------
 
-async function ciCommand(options: string[]) {
+async function ciCommand(options: Array<string>) {
   await refreshAllSecrets();
   logger.info("Running CI checks...");
   const useGithub = options.includes("-g");

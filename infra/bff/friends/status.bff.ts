@@ -6,7 +6,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function statusCommand(options: string[]): Promise<number> {
+export async function statusCommand(options: Array<string>): Promise<number> {
   logger.info("Running sl status...");
 
   const args = ["sl", "status", ...options];

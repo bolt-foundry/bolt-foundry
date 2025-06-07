@@ -12,7 +12,7 @@ function printLine(message: string) {
   console.log(message);
 }
 
-function printTable(data: unknown[] | Record<string, unknown>) {
+function printTable(data: Array<unknown> | Record<string, unknown>) {
   // Format numbers to at most 3 decimal places
   const formatValue = (value: unknown): unknown => {
     if (typeof value === "number") {
@@ -28,7 +28,7 @@ function printTable(data: unknown[] | Record<string, unknown>) {
   };
 
   // Process the data
-  let processedData: unknown[] | Record<string, unknown>;
+  let processedData: Array<unknown> | Record<string, unknown>;
 
   if (Array.isArray(data)) {
     processedData = data.map((row) => {
@@ -54,7 +54,7 @@ function printTable(data: unknown[] | Record<string, unknown>) {
   console.table(processedData);
 }
 
-export async function evalCommand(options: string[]): Promise<number> {
+export async function evalCommand(options: Array<string>): Promise<number> {
   // Parse command line arguments
   const args: Record<string, string> = {};
   let i = 0;

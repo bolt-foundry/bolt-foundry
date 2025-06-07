@@ -45,7 +45,7 @@ Deno.test("GraphQL Builder supports field resolvers", () => {
   // Verify the resolver is included
   type ResolverField = {
     type: string;
-    resolve?: (...args: unknown[]) => unknown;
+    resolve?: (...args: Array<unknown>) => unknown;
   };
 
   const field = spec.fields.hello as ResolverField;

@@ -44,7 +44,9 @@ const consoleLogger = {
 /**
  * Fetches comments from a GitHub PR, either specified or the one linked to the current Sapling branch
  */
-export async function prCommentsCommand(options: string[]): Promise<number> {
+export async function prCommentsCommand(
+  options: Array<string>,
+): Promise<number> {
   let prNumber: string;
 
   // Check if PR number was provided as an argument
@@ -245,13 +247,13 @@ export async function prCommentsCommand(options: string[]): Promise<number> {
 
         const reviewComments = JSON.parse(
           reviewCommentsOutput,
-        ) as ReviewComment[];
+        ) as Array<ReviewComment>;
 
         if (reviewComments.length === 0) {
           consoleLogger.info("(No code review comments found)");
         } else {
           // Group comments by file for better readability
-          const commentsByFile: Record<string, ReviewComment[]> = {};
+          const commentsByFile: Record<string, Array<ReviewComment>> = {};
 
           for (const comment of reviewComments) {
             const filePath = comment.path;

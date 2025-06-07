@@ -32,7 +32,7 @@ interface EvalSample {
 
 export async function runEval(
   options: EvalOptions,
-): Promise<GradingResult[]> {
+): Promise<Array<GradingResult>> {
   const { inputFile, graderFile, model } = options;
 
   // Resolve paths relative to current working directory if they're relative
@@ -74,7 +74,7 @@ export async function runEval(
   const grader: DeckBuilder = graderModule.default;
 
   // Parse JSONL input
-  const samples: EvalSample[] = [];
+  const samples: Array<EvalSample> = [];
   const lines = inputContent.trim().split("\n");
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
@@ -97,7 +97,7 @@ export async function runEval(
   }
 
   // Process each sample
-  const results: GradingResult[] = [];
+  const results: Array<GradingResult> = [];
 
   for (const sample of samples) {
     const startTime = performance.now();

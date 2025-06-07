@@ -7,7 +7,7 @@ import { runLintWithGithubAnnotations } from "./githubAnnotations.ts";
 
 const logger = getLogger(import.meta);
 
-export async function lintCommand(options: string[]): Promise<number> {
+export async function lintCommand(options: Array<string>): Promise<number> {
   logger.info("Running Deno lint...");
   const args = ["deno", "lint"];
 

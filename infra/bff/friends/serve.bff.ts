@@ -5,7 +5,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function serveCommand(args: string[]): Promise<number> {
+export async function serveCommand(args: Array<string>): Promise<number> {
   // Parse port from args (looking for --port or -p)
   let port = "9999";
   for (let i = 0; i < args.length; i++) {

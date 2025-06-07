@@ -25,8 +25,8 @@ export type BfGraphqlContext = {
    */
   loadNodesByGids(
     className: string,
-    gids: BfGid[],
-  ): Promise<BfNode[] | null>;
+    gids: Array<BfGid>,
+  ): Promise<Array<BfNode> | null>;
   /**
    * Find a node by its GID
    */
