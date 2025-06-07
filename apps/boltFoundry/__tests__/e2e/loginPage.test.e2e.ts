@@ -94,15 +94,15 @@ Deno.test.ignore(
         );
 
         // Convert Headers → plain object *without* collapsing duplicate keys.
-        const headersObj: Record<string, string | string[]> = Object
+        const headersObj: Record<string, string | Array<string>> = Object
           .fromEntries(
             res.headers,
           );
 
         // Pull all Set‑Cookie header values (Deno extension).
         // `getSetCookie()` returns string[] of *every* Set‑Cookie header.
-        const allCookies: string[] = (res.headers as unknown as {
-          getSetCookie(): string[];
+        const allCookies: Array<string> = (res.headers as unknown as {
+          getSetCookie(): Array<string>;
         }).getSetCookie?.() ?? [];
 
         if (allCookies.length) {

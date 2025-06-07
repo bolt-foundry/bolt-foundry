@@ -6,7 +6,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function logCommand(options: string[]): Promise<number> {
+export async function logCommand(options: Array<string>): Promise<number> {
   logger.info("Running sl log...");
 
   const args = ["sl", "log", ...options];

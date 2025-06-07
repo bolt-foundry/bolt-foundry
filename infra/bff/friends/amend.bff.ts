@@ -8,7 +8,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function amend(args: string[]): Promise<number> {
+export async function amend(args: Array<string>): Promise<number> {
   // Check for --no-submit flag
   let submitPR = true;
   const filteredArgs = args.filter((arg) => {

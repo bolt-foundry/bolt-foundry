@@ -19,15 +19,18 @@ export type Cardinality = "one" | "many";
 
 /** Forward decl for any node ctor (keeps builders generic-friendly) */
 // deno-lint-ignore no-explicit-any
-export type AnyBfNodeCtor = abstract new (...args: any[]) => any;
+export type AnyBfNodeCtor = abstract new (...args: Array<any>) => any;
 
 /** Forward decl for any GraphQL object ctor */
-// deno-lint-ignore no-explicit-any
-export type AnyGraphqlObjectBaseCtor = abstract new (...args: any[]) => any;
+export type AnyGraphqlObjectBaseCtor = abstract new (
+  // deno-lint-ignore no-explicit-any
+  ...args: Array<any>
+  // deno-lint-ignore no-explicit-any
+) => any;
 
 /** Forward decl that includes objects with protected constructors like CurrentViewer */
 // deno-lint-ignore no-explicit-any
-export type AnyConstructor = new (...args: any[]) => any;
+export type AnyConstructor = new (...args: Array<any>) => any;
 
 /* -------------------------------------------------------------------------- */
 /*  Complete RelationSpec type (runtime)                                      */

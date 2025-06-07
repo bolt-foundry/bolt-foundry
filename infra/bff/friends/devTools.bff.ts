@@ -159,7 +159,7 @@ register(
   register(
     commandName,
     "Run development tools (Postgres, Sapling web interface, Jupyter notebook)",
-    async (options: string[]) => {
+    async (options: Array<string>) => {
       const isDebug = options.includes("--debug");
       // Start Tools first
       startTools();

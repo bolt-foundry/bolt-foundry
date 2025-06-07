@@ -4,10 +4,10 @@ import { BfDsListItem } from "apps/bfDs/components/BfDsListItem.tsx";
 
 interface DocSection {
   title: string;
-  items: { slug: string; title: string }[];
+  items: Array<{ slug: string; title: string }>;
 }
 
-const docSections: DocSection[] = [
+const docSections: Array<DocSection> = [
   {
     title: "Getting Started",
     items: [

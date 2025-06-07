@@ -20,8 +20,8 @@ async function stageFiles(): Promise<number> {
   }
 
   const lines = statusOutput.split("\n").filter((line) => line.trim());
-  const unknownFiles: string[] = [];
-  const missingFiles: string[] = [];
+  const unknownFiles: Array<string> = [];
+  const missingFiles: Array<string> = [];
 
   for (const line of lines) {
     const status = line.charAt(0);
@@ -61,7 +61,9 @@ async function stageFiles(): Promise<number> {
   return 0;
 }
 
-export async function precommitCommand(options: string[]): Promise<number> {
+export async function precommitCommand(
+  options: Array<string>,
+): Promise<number> {
   logger.info("Running AI-safe pre-commit checks...");
 
   // First, stage any unknown files and remove missing files

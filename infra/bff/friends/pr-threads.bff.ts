@@ -60,7 +60,9 @@ const consoleLogger = {
 /**
  * Lists review threads on a GitHub PR
  */
-export async function prThreadsCommand(options: string[]): Promise<number> {
+export async function prThreadsCommand(
+  options: Array<string>,
+): Promise<number> {
   let prNumber: string;
 
   // Check if PR number was provided as an argument

@@ -138,7 +138,7 @@ Deno.test("Docs page renders different markdown files", async () => {
   try {
     // Get list of docs from the docs/guides directory
     const docsDir = "docs/guides";
-    const files: string[] = [];
+    const files: Array<string> = [];
 
     for await (const entry of Deno.readDir(docsDir)) {
       if (entry.isFile && entry.name.endsWith(".md")) {
