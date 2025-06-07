@@ -85,7 +85,8 @@ Deno.test("GraphQL blogPosts connection should support sortDirection argument", 
     const ascResult = await executeQuery(ascQuery);
     assertExists(ascResult.data?.blogPosts, "Should have blogPosts field");
 
-    const ascEdges = ascResult.data.blogPosts.edges;
+    const blogPostsAsc = ascResult.data.blogPosts as { edges: Array<{ node: { id: string } }> };
+    const ascEdges = blogPostsAsc.edges;
     assert(ascEdges.length > 0, "Should have edges");
 
     // Verify ascending order
@@ -112,7 +113,8 @@ Deno.test("GraphQL blogPosts connection should support sortDirection argument", 
     `;
 
     const descResult = await executeQuery(descQuery);
-    const descEdges = descResult.data.blogPosts.edges;
+    const blogPostsDesc = descResult.data!.blogPosts as { edges: Array<{ node: { id: string } }> };
+    const descEdges = blogPostsDesc.edges;
 
     // Verify descending order
     for (let i = 1; i < descEdges.length; i++) {
@@ -148,7 +150,8 @@ Deno.test("GraphQL blogPosts connection should support filterByYear argument", a
     const result = await executeQuery(query);
     assertExists(result.data?.blogPosts, "Should have blogPosts field");
 
-    const edges = result.data.blogPosts.edges;
+    const blogPostsData = result.data.blogPosts as { edges: Array<{ node: { id: string; content: string } }> };
+    const edges = blogPostsData.edges;
     assertEquals(edges.length, 2, "Should have exactly 2 posts from 2024");
 
     // Verify all posts are from 2024
@@ -195,7 +198,8 @@ Deno.test("GraphQL schema introspection should show custom args", async () => {
   const result = await executeQuery(query);
   assertExists(result.data?.__type, "Should have type introspection");
 
-  const queryFields = result.data.__type.fields;
+  const typeInfo = result.data.__type as { fields: Array<{ name: string; args: Array<{ name: string; type: { name?: string; ofType?: { name?: string } } }> }> };
+  const queryFields = typeInfo.fields;
   const blogPostsField = queryFields.find((f: { name: string }) =>
     f.name === "blogPosts"
   );
