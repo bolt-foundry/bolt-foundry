@@ -96,6 +96,7 @@
         "bolt-foundry/no-bfnodespec-first-static",
         "bolt-foundry/no-underscore-logger-when-used",
         "bolt-foundry/no-logger-set-level",
+        "bolt-foundry/prefer-generic-array-syntax",
         "no-slow-types",
         "no-console",
         "no-external-import",
