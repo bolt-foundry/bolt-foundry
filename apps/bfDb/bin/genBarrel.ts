@@ -25,7 +25,7 @@ const DEFAULT_BANNER =
 
 /** Shared code‑gen helper – renders the barrel file and writes it. */
 async function generateBarrel(cfg: BarrelConfig) {
-  const exportLines: string[] = [];
+  const exportLines: Array<string> = [];
 
   // Handle GraphQL interfaces barrel file specially
   const isInterfacesBarrel = cfg.out.pathname.includes("interfacesList.ts");
@@ -73,7 +73,7 @@ async function generateBarrel(cfg: BarrelConfig) {
 /* Barrel definitions                                                          */
 /* -------------------------------------------------------------------------- */
 
-const barrels: BarrelConfig[] = [
+const barrels: Array<BarrelConfig> = [
   // 1️⃣  Models
   {
     dir: new URL("../nodeTypes/", import.meta.url),

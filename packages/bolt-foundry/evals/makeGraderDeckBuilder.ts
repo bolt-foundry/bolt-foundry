@@ -94,7 +94,7 @@ export function makeGraderDeckBuilder(name: string): DeckBuilder {
           // Recreate nested cards
           finalDeck = finalDeck.card(card.name, (c) => {
             let builder = c;
-            const nestedCards = card.value as Card[];
+            const nestedCards = card.value as Array<Card>;
             for (const subCard of nestedCards) {
               if (typeof subCard.value === "string") {
                 builder = builder.spec(subCard.value);

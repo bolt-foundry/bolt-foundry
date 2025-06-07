@@ -12,7 +12,7 @@ const logger = getLogger(import.meta);
 const REQUIRED_FIELDS = ["title", "author", "summary", "cta"];
 
 export async function contentLint(
-  args: string[],
+  args: Array<string>,
   contentDir = "docs/blog",
 ): Promise<number> {
   const shouldFix = args.includes("--fix");

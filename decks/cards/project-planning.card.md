@@ -38,13 +38,6 @@ decisions.
 | -------------------- | ------------------------- | ------------------- |
 | [Current work items] | [Active/Complete/Blocked] | [Brief description] |
 
-**Versions**
-
-| Version         | Status                     | Description                                   |
-| --------------- | -------------------------- | --------------------------------------------- |
-| [v0.0](V0.0.md) | [Current/Complete/Planned] | [Brief summary of what this version delivers] |
-| [v0.1](V0.1.md) | [Planned]                  | [What this version will add]                  |
-
 **Future work**
 
 | Task             | Description             |
@@ -58,13 +51,6 @@ decisions.
 | [What we track] | [Why we track it] | [How we measure] |
 
 ### Supporting Documents
-
-**V[version].md** (e.g., `V0.0.md`, `V0.1.md`)
-
-- Technical details and implementation approaches for each version
-- More detailed than the README
-- Preserved for each version to maintain decision history
-- Linked from the Versions table in README.md
 
 **BACKLOG.md**
 
@@ -85,10 +71,9 @@ decisions.
 
 - Create the README early, even with empty sections
 - Write conversationally, especially in the first two sections
-- Use tables for structured information (status, versions, future work, metrics)
+- Use tables for structured information (status, future work, metrics)
 - Keep the README high-level and less technical
 - Update documents as conversations with AI evolve
-- Track version progression to show project evolution
 - Point AI to docs/README.md as the starting point
 
 ### Don't:

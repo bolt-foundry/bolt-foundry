@@ -40,7 +40,7 @@ export async function generateGqlTypes() {
   });
 }
 
-export async function genGqlTypes(_: string[]): Promise<number> {
+export async function genGqlTypes(_: Array<string>): Promise<number> {
   try {
     logger.info("Generating GraphQL schema and types...");
     await generateGqlTypes();

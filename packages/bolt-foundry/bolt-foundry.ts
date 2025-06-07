@@ -9,10 +9,10 @@ const enableLogging = false;
 if (!enableLogging) {
   logger = {
     ...console,
-    debug: (..._args: unknown[]) => {},
-    warn: (..._args: unknown[]) => {},
-    error: (..._args: unknown[]) => {},
-    info: (..._args: unknown[]) => {},
+    debug: (..._args: Array<unknown>) => {},
+    warn: (..._args: Array<unknown>) => {},
+    error: (..._args: Array<unknown>) => {},
+    info: (..._args: Array<unknown>) => {},
   };
 }
 

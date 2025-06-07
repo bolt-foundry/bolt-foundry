@@ -10,7 +10,9 @@ const logger = getLogger(import.meta);
 /**
  * Resolves a review thread on a GitHub PR using GraphQL
  */
-export async function prResolveCommand(options: string[]): Promise<number> {
+export async function prResolveCommand(
+  options: Array<string>,
+): Promise<number> {
   // Check if PR number and thread ID were provided as arguments
   if (options.length < 2) {
     logger.error("Missing required arguments");

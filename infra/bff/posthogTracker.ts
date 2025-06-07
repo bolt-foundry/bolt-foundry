@@ -46,7 +46,7 @@ export function initPosthog(): PostHog | null {
  */
 export async function trackBffCommand(
   command: string,
-  options: string[] = [],
+  options: Array<string> = [],
   success = true,
   duration = 0,
 ): Promise<void> {

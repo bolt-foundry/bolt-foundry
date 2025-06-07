@@ -25,8 +25,8 @@ async function stageAllFiles(): Promise<number> {
   }
 
   const lines = statusOutput.split("\n").filter((line) => line.trim());
-  const unknownFiles: string[] = [];
-  const missingFiles: string[] = [];
+  const unknownFiles: Array<string> = [];
+  const missingFiles: Array<string> = [];
 
   for (const line of lines) {
     const status = line.charAt(0);
@@ -100,10 +100,10 @@ async function runPrecommitChecks(): Promise<boolean> {
   return true;
 }
 
-export async function commit(args: string[]): Promise<number> {
+export async function commit(args: Array<string>): Promise<number> {
   // Check if user provided a commit message
   let commitMessage = "";
-  const filesToCommit: string[] = [];
+  const filesToCommit: Array<string> = [];
   let runPreCheck = true; // Default to true - run pre-checks by default
   let submitPR = true; // Default to true - submit PR by default
 
@@ -152,8 +152,8 @@ export async function commit(args: string[]): Promise<number> {
     logger.info("Staging specified files...");
 
     // Check which files exist and which are deleted
-    const existingFiles: string[] = [];
-    const deletedFiles: string[] = [];
+    const existingFiles: Array<string> = [];
+    const deletedFiles: Array<string> = [];
 
     for (const file of filesToCommit) {
       try {

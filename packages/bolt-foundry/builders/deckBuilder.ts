@@ -6,7 +6,7 @@ import { card } from "./builders.ts";
  */
 export type Deck = {
   name: string;
-  cards: Card[];
+  cards: Array<Card>;
 };
 
 /**
@@ -31,7 +31,7 @@ export type DeckBuilderLegacy = {
  */
 export function makeDeckBuilderLegacy(
   name: string,
-  deckCards: Card[] = [],
+  deckCards: Array<Card> = [],
 ): DeckBuilderLegacy {
   return {
     name,

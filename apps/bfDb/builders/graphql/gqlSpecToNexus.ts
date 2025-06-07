@@ -323,7 +323,7 @@ function createDefaultMutationResolver(mutationName: string) {
  */
 export interface GqlSpecToNexusOptions {
   /** List of interfaces this type implements (manually specified) */
-  interfaces?: string[];
+  interfaces?: Array<string>;
 
   /**
    * The class constructor for the type

@@ -27,12 +27,6 @@ Based on the product plan's v0.1 focus on "Interactive Documentation & Examples,
 | Test and validate | Pending | Ensure it runs cleanly |
 | Add inline documentation | Pending | Clear comments explaining each part |
 
-## Versions
-
-| Version | Status | Description |
-| --- | --- | --- |
-| [v0.1](V0.1.md) | Current | Initial minimal example with basic chat |
-
 ## Future work
 
 | Task | Description |
