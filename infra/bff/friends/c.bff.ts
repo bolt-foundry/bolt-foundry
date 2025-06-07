@@ -6,7 +6,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function cCommand(options: string[]): Promise<number> {
+export async function cCommand(options: Array<string>): Promise<number> {
   logger.info("Running type check via 'c' command...");
 
   // Simply pass all arguments to the check command

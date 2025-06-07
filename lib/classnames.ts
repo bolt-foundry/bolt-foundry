@@ -13,7 +13,7 @@
  */
 
 export function classnames(
-  items: (string | { [key: string]: boolean | null | undefined })[],
+  items: Array<string | { [key: string]: boolean | null | undefined }>,
 ) {
   let className = "";
 

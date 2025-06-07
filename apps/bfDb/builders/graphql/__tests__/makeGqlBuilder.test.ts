@@ -14,14 +14,14 @@ type FieldSpec = {
   type: string;
   nonNull?: boolean;
   args?: ArgMap;
-  resolve?: (...args: unknown[]) => unknown;
+  resolve?: (...args: Array<unknown>) => unknown;
 };
 
 type MutationSpec = {
   returnsType?: string;
   returnsSpec?: ReturnSpec;
   args?: ArgMap;
-  resolve?: (...args: unknown[]) => unknown;
+  resolve?: (...args: Array<unknown>) => unknown;
 };
 
 interface BuilderSpec extends Record<string, unknown> {

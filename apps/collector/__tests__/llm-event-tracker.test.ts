@@ -18,7 +18,7 @@ type PostHogEvent = {
 
 // Create a mock for the PostHog client
 class MockPostHog {
-  events: PostHogEvent[] = [];
+  events: Array<PostHogEvent> = [];
   flushed = false;
 
   capture(event: PostHogEvent) {
@@ -627,7 +627,7 @@ Deno.test("trackLlmEvent handles tools/functions correctly", async () => {
 
   // Verify tools were captured correctly
   assertEquals(Array.isArray(properties["$ai_tools"]), true);
-  const tools = properties["$ai_tools"] as JSONValue[];
+  const tools = properties["$ai_tools"] as Array<JSONValue>;
   // We need to compare each tool since direct comparison might not work
   mockRequestBody.tools.forEach((tool, index) => {
     assertObjectMatch(tools[index] as Record<string, JSONValue>, tool);

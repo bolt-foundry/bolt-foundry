@@ -3,7 +3,7 @@
 import { register } from "infra/bff/bff.ts";
 import { mergeStack } from "./merge-stack.bff.ts";
 
-export async function mergeStackDryRun(args: string[]): Promise<number> {
+export async function mergeStackDryRun(args: Array<string>): Promise<number> {
   // Always run in dry-run mode
   const dryRunArgs = ["--dry-run", ...args];
   return await mergeStack(dryRunArgs);
