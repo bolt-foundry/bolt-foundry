@@ -122,9 +122,9 @@ Deno.test("gqlSpecToNexus should pass custom args to connectionField", async () 
   const mockT = {
     connectionField: (
       _name: string,
-      config: { args?: Record<string, unknown> },
+      config: { additionalArgs?: Record<string, unknown> },
     ) => {
-      capturedArgs = config.args;
+      capturedArgs = config.additionalArgs;
     },
     field: () => {},
   };
