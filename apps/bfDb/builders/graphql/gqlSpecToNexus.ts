@@ -15,6 +15,7 @@ import type {
   NexusObjectTypeMap,
 } from "./types/resolverTypes.ts";
 import type {
+  GqlConnectionDef,
   GqlFieldDef,
   GqlMutationDef,
   GqlRelationDef,
@@ -440,6 +441,47 @@ export async function gqlSpecToNexus(
       relation._pendingTypeResolution = false;
     }
   }
+
+  // Pre-process connections to resolve thunks
+  if (spec.connections) {
+    for (
+      const [connectionName, connectionDef] of Object.entries(spec.connections)
+    ) {
+      const connection = connectionDef as GqlConnectionDef;
+
+      if (
+        connection._targetThunk && connection._pendingTypeResolution !== false
+      ) {
+        try {
+          // Evaluate the thunk to get the target constructor
+          const targetResult = await Promise.resolve(connection._targetThunk());
+
+          // Extract the class name from the constructor
+          const targetClassName = targetResult?.name;
+
+          if (!targetClassName) {
+            logger.warn(
+              `Thunk for ${typeName}.${connectionName} returned a value without a name property`,
+            );
+            connection.type = `UnresolvedType_${typeName}_${connectionName}`;
+          } else {
+            // Use the actual GraphQL type name
+            connection.type = targetClassName;
+          }
+        } catch (error) {
+          // If thunk evaluation fails, provide a descriptive error type
+          logger.warn(
+            `Failed to resolve target type for ${typeName}.${connectionName}:`,
+            error,
+          );
+          connection.type = `FailedToResolveType_${typeName}_${connectionName}`;
+        }
+
+        // Mark as resolved so we don't try again
+        connection._pendingTypeResolution = false;
+      }
+    }
+  }
   // Get interface this type should implement (only the first one from the array)
   const interfaceName = determineInterface(options);
 
@@ -540,6 +582,39 @@ export async function gqlSpecToNexus(
             }
           },
         });
+      }
+
+      // Process connections
+      if (spec.connections) {
+        for (
+          const [connectionName, connectionDef] of Object.entries(
+            spec.connections,
+          )
+        ) {
+          const connection = connectionDef as GqlConnectionDef;
+
+          // Resolve the type from the thunk if needed
+          let targetType = connection.type;
+          if (connection._pendingTypeResolution && connection._targetThunk) {
+            const resolvedClass = connection._targetThunk();
+            targetType = resolvedClass.name;
+
+            // Update the connection definition with resolved type
+            connection.type = targetType;
+            delete connection._pendingTypeResolution;
+            delete connection._targetThunk;
+          }
+
+          // Connection fields use Nexus connectionField
+          t.connectionField(connectionName, {
+            type: targetType,
+            description: connection.description,
+            // Handle arguments if provided - convert to Nexus format
+            additionalArgs: convertArgsToNexus(connection.args || {}),
+            // Pass resolver directly - Nexus handles connection wrapping
+            resolve: connection.resolve,
+          });
+        }
       }
     },
   };

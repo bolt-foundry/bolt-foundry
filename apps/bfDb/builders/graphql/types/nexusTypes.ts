@@ -74,6 +74,20 @@ export interface GqlMutationDef {
 }
 
 /**
+ * Connection definition from the GQL spec
+ * Represents a Relay-style connection field with pagination
+ */
+export interface GqlConnectionDef {
+  type: string;
+  description?: string;
+  args?: Record<string, unknown>;
+  resolve: GqlFieldResolver; // Required for connections
+  // deno-lint-ignore no-explicit-any
+  _targetThunk?: () => any;
+  _pendingTypeResolution?: boolean;
+}
+
+/**
  * Type-safe replacement for Nexus object definition function parameter
  * This represents the 't' parameter in Nexus type definitions
  */

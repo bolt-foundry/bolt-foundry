@@ -47,6 +47,8 @@ export const isographAppRoutes = new Map<string, IsographRoute>([
   ["/docs", entrypointDocs],
   ["/docs/", entrypointDocs],
   ["/docs/:slug", entrypointDocs],
+  ["/blog", entrypointBlog],
+  ["/blog/", entrypointBlog],
   ["/blog/:slug", entrypointBlog],
   ...loggedInAppRoutes,
 ]);

@@ -1,6 +1,8 @@
 import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@isograph/react';
 import { Query__Blog__param } from './param_type.ts';
 import { Blog as resolver } from '../../../../components/Blog.tsx';
+import BlogPost__BlogPostView__resolver_reader from '../../BlogPost/BlogPostView/resolver_reader.ts';
+import BlogPostConnection__BlogList__resolver_reader from '../../BlogPostConnection/BlogList/resolver_reader.ts';
 
 const readerAst: ReaderAst<Query__Blog__param> = [
   {
@@ -17,18 +19,38 @@ const readerAst: ReaderAst<Query__Blog__param> = [
     isUpdatable: false,
     selections: [
       {
-        kind: "Scalar",
-        fieldName: "id",
-        alias: null,
+        kind: "Resolver",
+        alias: "BlogPostView",
         arguments: null,
-        isUpdatable: false,
+        readerArtifact: BlogPost__BlogPostView__resolver_reader,
+        usedRefetchQueries: [],
       },
+    ],
+  },
+  {
+    kind: "Linked",
+    fieldName: "blogPosts",
+    alias: null,
+    arguments: [
+      [
+        "first",
+        { kind: "Literal", value: 10 },
+      ],
+
+      [
+        "sortDirection",
+        { kind: "String", value: "DESC" },
+      ],
+    ],
+    condition: null,
+    isUpdatable: false,
+    selections: [
       {
-        kind: "Scalar",
-        fieldName: "content",
-        alias: null,
+        kind: "Resolver",
+        alias: "BlogList",
         arguments: null,
-        isUpdatable: false,
+        readerArtifact: BlogPostConnection__BlogList__resolver_reader,
+        usedRefetchQueries: [],
       },
     ],
   },

@@ -1,4 +1,6 @@
 import type { IsographEntrypoint } from '@isograph/react';
+import { type BlogPost__BlogPostView__param } from './BlogPost/BlogPostView/param_type.ts';
+import { type BlogPostConnection__BlogList__param } from './BlogPostConnection/BlogList/param_type.ts';
 import { type Mutation__JoinWaitlist__param } from './Mutation/JoinWaitlist/param_type.ts';
 import { type Query__Blog__param } from './Query/Blog/param_type.ts';
 import { type Query__Docs__param } from './Query/Docs/param_type.ts';
@@ -63,6 +65,14 @@ type MatchesWhitespaceAndString<
   TString extends string,
   T
 > = Whitespace<T> extends `${TString}${string}` ? T : never;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field BlogPost.BlogPostView', T>
+): IdentityWithParamComponent<BlogPost__BlogPostView__param>;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field BlogPostConnection.BlogList', T>
+): IdentityWithParamComponent<BlogPostConnection__BlogList__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Mutation.JoinWaitlist', T>
