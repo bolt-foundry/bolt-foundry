@@ -3,7 +3,7 @@
 Implementation plans are temporary guides that provide just enough structure to
 keep development on track. They start simple and evolve with technical
 discoveries, eventually serving as source material for user-facing documentation
-when the version is complete.
+when the work is complete.
 
 ## Purpose
 
@@ -20,8 +20,8 @@ developers (human or AI) verify they're:
 
 ### Overview
 
-Start with 1-2 paragraphs explaining what this version delivers and why it
-matters. Keep it conceptual and focused on outcomes.
+Start with 1-2 paragraphs explaining what this work delivers and why it matters.
+Keep it conceptual and focused on outcomes.
 
 ### Goals
 
@@ -76,7 +76,7 @@ patterns. This should give readers the "why" behind technical choices.
 - Try to answer every question upfront
 - Create documentation for documentation's sake
 - Make the plan so detailed it becomes rigid
-- Keep plans around after version completion
+- Keep plans around after work completion
 - Separate planning from doing
 
 ## Evolution Cycle
@@ -87,7 +87,7 @@ patterns. This should give readers the "why" behind technical choices.
 3. **Scaffolding**: Create minimal structure based on plan
 4. **Discovery**: Update plan with technical findings
 5. **Iteration**: Repeat steps 2-4 until complete
-6. **Completion**: Mine for user-facing documentation
+6. **Archive**: Mine for user-facing documentation
 
 The test creation and scaffolding phases follow our Test-Driven Development
 workflow - see [testing.card.md](./testing.card.md) for detailed TDD practices.
@@ -99,7 +99,7 @@ An implementation plan is ready to be archived when:
 - All goals have been achieved
 - Tests are passing
 - Technical decisions are documented
-- The version is ready to ship
+- The work is ready to ship
 
 At this point, the implementation plan becomes source material for creating
 user-facing documentation, changelogs, and other public artifacts.

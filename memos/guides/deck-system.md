@@ -16,7 +16,7 @@ specifications:
 - **Semantic**: Clear meaning and purpose
 - **Composable**: Combine to create complex behaviors
 - **Testable**: Validate in isolation
-- **Versionable**: Evolve without breaking combinations
+- **Evolvable**: Can be updated without breaking existing combinations
 - **Shareable**: Publish and reuse across projects
 
 ### Deck structure
