@@ -33,7 +33,7 @@ async function findTemplateFile(
 }
 
 // 1) Export the command's main logic so tests can import it.
-export async function templateCommand(args: string[]): Promise<number> {
+export async function templateCommand(args: Array<string>): Promise<number> {
   if (args.length < 1) {
     logger.error("Usage: bff template <filename>");
     return 1;

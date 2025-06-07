@@ -972,7 +972,7 @@ export function ContentFoundryPlugin(): JSX.Element {
         editor.getEditorState().read(() => {
           for (const [key, mutation] of mutations) {
             const node: null | MarkNode = $getNodeByKey(key);
-            let ids: NodeKey[] = [];
+            let ids: Array<NodeKey> = [];
 
             if (mutation === "destroyed") {
               ids = markNodeKeysToIDs.get(key) || [];

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 type Props = {
   accept?: string;
-  onFileSelect: (files: File[]) => void;
+  onFileSelect: (files: Array<File>) => void;
 };
 
 export function BfDsDropzone({ accept, onFileSelect }: Props) {
@@ -70,7 +70,7 @@ export function Example() {
     <>
       <BfDsDropzone
         accept="audio/*,video/*"
-        onFileSelect={(files: File[]): void => {
+        onFileSelect={(files: Array<File>): void => {
           setFile(files[0]);
         }}
       />

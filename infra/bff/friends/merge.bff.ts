@@ -19,7 +19,7 @@ interface PR {
   };
 }
 
-export async function merge(args: string[]): Promise<number> {
+export async function merge(args: Array<string>): Promise<number> {
   // Parse arguments - check for flags and PR number
   let prNumber: string | undefined;
   let method: string | undefined;
@@ -91,7 +91,7 @@ export async function merge(args: string[]): Promise<number> {
     return JSON.parse(stdout);
   }
 
-  async function getStackedPRs(prNumber: string): Promise<string[]> {
+  async function getStackedPRs(prNumber: string): Promise<Array<string>> {
     // Get the PR details to find its branch
     const prDetails = await getPRDetails(prNumber);
     if (!prDetails) return [];
@@ -110,7 +110,7 @@ export async function merge(args: string[]): Promise<number> {
       });
 
     // For each open PR, check if it's part of the same stack
-    const stackedPRs: string[] = [];
+    const stackedPRs: Array<string> = [];
     for (const pr of openPRs) {
       if (pr === prNumber) continue; // Skip the PR we're merging
 
@@ -126,7 +126,7 @@ export async function merge(args: string[]): Promise<number> {
     return stackedPRs;
   }
 
-  async function getFullPRStack(prNumber: string): Promise<string[]> {
+  async function getFullPRStack(prNumber: string): Promise<Array<string>> {
     // Get PR details including the body which contains sapling stack info
     const repoInfo = await getRepoInfo();
     if (!repoInfo) return [prNumber];
@@ -157,7 +157,7 @@ export async function merge(args: string[]): Promise<number> {
         const stackPRs = stackLines.map((line: string) => {
           const match = line.match(/#(\d+)/);
           return match ? match[1] : null;
-        }).filter((pr: string | null) => pr !== null) as string[];
+        }).filter((pr: string | null) => pr !== null) as Array<string>;
 
         // Reverse the stack so bottom PRs come first (for merging)
         return [...stackPRs].reverse();

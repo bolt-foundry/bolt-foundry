@@ -7,7 +7,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function checkCommand(options: string[]): Promise<number> {
+export async function checkCommand(options: Array<string>): Promise<number> {
   logger.info("Running type checking...");
 
   const args = ["deno", "check"];

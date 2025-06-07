@@ -5,7 +5,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function aiCommand(args: string[]): Promise<number> {
+export async function aiCommand(args: Array<string>): Promise<number> {
   if (args.length === 0) {
     // Show AI-safe commands
     logger.info("AI-safe BFF commands:");

@@ -38,7 +38,7 @@ export abstract class GraphQLNode extends GraphQLObjectBase {
    * Find a node by some criteria, throwing BfErrorNodeNotFound if not found.
    * Subclasses should implement this method.
    */
-  static findX(..._args: unknown[]): Promise<GraphQLNode> {
+  static findX(..._args: Array<unknown>): Promise<GraphQLNode> {
     throw new TypeError("findX method must be implemented by subclasses");
   }
 
@@ -46,7 +46,7 @@ export abstract class GraphQLNode extends GraphQLObjectBase {
    * Find a node, returning null if not found.
    * This method catches only BfErrorNodeNotFound and returns null, other errors are re-thrown.
    */
-  static async find(...args: unknown[]): Promise<GraphQLNode | null> {
+  static async find(...args: Array<unknown>): Promise<GraphQLNode | null> {
     try {
       return await this.findX(...args);
     } catch (error) {

@@ -49,12 +49,12 @@ export const storage = {
   query<T extends Props>(
     metadata: Record<string, unknown>,
     props: Partial<T> = {},
-    bfGids?: BfGid[],
+    bfGids?: Array<BfGid>,
     order: "ASC" | "DESC" = "ASC",
     orderBy?: string,
     // legacy `options` arg retained for backward‑compat but ignored here
     _options: Record<string, unknown> = {},
-  ): Promise<DbItem<T>[]> {
+  ): Promise<Array<DbItem<T>>> {
     // Current DatabaseBackend interface ignores order/orderBy; we pass them so
     // the signature is future‑proof once those params are respected.
     return adapter().queryItems<T>(

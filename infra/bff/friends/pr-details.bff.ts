@@ -28,7 +28,9 @@ const consoleLogger = {
 /**
  * Fetches detailed information about a GitHub PR
  */
-export async function prDetailsCommand(options: string[]): Promise<number> {
+export async function prDetailsCommand(
+  options: Array<string>,
+): Promise<number> {
   // Check if PR number is provided
   const prNumber = options[0];
   if (!prNumber) {
