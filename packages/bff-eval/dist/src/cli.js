@@ -44,7 +44,7 @@ const fs = __importStar(require("node:fs"));
 exports.cli = (0, yargs_1.default)((0, helpers_1.hideBin)(process.argv))
     .scriptName("bff-eval")
     .usage("$0 [options]")
-    .version("0.1.1")
+    .version("0.1.2")
     .help()
     .strict()
     .option("input", {
