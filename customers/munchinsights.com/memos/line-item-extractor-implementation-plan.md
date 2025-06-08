@@ -50,9 +50,11 @@ Key design decisions:
 | ---------------------- | -------------------------------------------------- | ------ |
 | Grader update          | Modify grader to accept 'CT' as valid default unit | [ ]    |
 | Vendor extraction card | Extract vendor name, invoice number, date, total   | [ ]    |
-| Line item parsing card | Parse description, quantity, price fields          | [ ]    |
+| Line item parsing card | Parse Quantity, Unit, Pack, Pack Unit, Pack Size, Pack Size Unit, Unit Price, and Price | [ ]    |
 | Unit extraction card   | Extract and normalize units (CS, BX, BG, etc.)     | [ ]    |
-| Complex unit card      | Handle pack/size splits (12/6oz format)            | [ ]    |
+| Complex unit card      | Handle format such as: 6CS 12/6oz --> 6 (quantity) CS (unit) 12 (pack) pack (pack unit) 6 (pack size) oz (pack size unit)
+
+Pack, pack unit, pack size, and pack size unit can be null and may be missing at times | [ ]    |
 | Output format card     | Define JSON structure for results                  | [ ]    |
 | Integration tests      | Test full extraction against sample invoices       | [ ]    |
 
