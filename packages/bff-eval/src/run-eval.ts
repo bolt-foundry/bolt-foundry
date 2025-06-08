@@ -207,9 +207,20 @@ export async function runEvaluation(options: RunOptions): Promise<void> {
         }
         
         // Validate score is in range
-        const score = Math.round(output.score) as GradingResult["score"];
-        if (score < -3 || score > 3) {
-          throw new Error(`Score ${score} is out of valid range [-3, 3]`);
+        // If score is undefined, null, or NaN, default to 0
+        let score: GradingResult["score"];
+        if (output.score === undefined || output.score === null || isNaN(output.score)) {
+          score = 0 as GradingResult["score"];
+          output.notes = (output.notes ? output.notes + " | " : "") + 
+            `Score was invalid (${output.score}), defaulting to 0`;
+        } else {
+          score = Math.round(output.score) as GradingResult["score"];
+          if (score < -3 || score > 3) {
+            // Clamp the score to valid range
+            score = Math.max(-3, Math.min(3, score)) as GradingResult["score"];
+            output.notes = (output.notes ? output.notes + " | " : "") + 
+              `Score was clamped to valid range [-3, 3]`;
+          }
         }
         
         // Update progress
@@ -284,7 +295,9 @@ export async function runEvaluation(options: RunOptions): Promise<void> {
 
       // Calibration metrics if ground truth scores are present
       const resultsWithGroundTruth = results.filter((r: any) =>
-        r.sampleMetadata && "score" in r.sampleMetadata
+        r.sampleMetadata && "score" in r.sampleMetadata && 
+        r.sampleMetadata.score !== null && 
+        r.sampleMetadata.score !== ""
       );
 
       if (resultsWithGroundTruth.length > 0) {
@@ -331,8 +344,8 @@ export async function runEvaluation(options: RunOptions): Promise<void> {
                 "Grader Score": result.score,
                 "Ground Truth": groundTruth,
                 "Difference": result.score - groundTruth,
-                "Assistant Response": result.sample?.assistantResponse ||
-                  "No response available",
+                // "Assistant Response": result.sample?.assistantResponse ||
+                //   "No response available",
               };
             }),
           );
@@ -354,37 +367,15 @@ export async function runEvaluation(options: RunOptions): Promise<void> {
 
             // Display the original sample data
             if (result.sample) {
-              sampleData["User Message"] = result.sample.userMessage;
-              sampleData["Assistant Response"] =
-                result.sample.assistantResponse;
-
-              // Add expected value if present
-              if (result.sample.expected) {
-                sampleData["Expected"] = result.sample.expected;
-              }
+              // sampleData["User Message"] = result.sample.userMessage;
+              // sampleData["Assistant Response"] =
+              //   result.sample.assistantResponse;
 
               // Add description from metadata if available
               if (result.sampleMetadata?.description) {
                 sampleData["Description"] = result.sampleMetadata.description;
               }
 
-              // Add any other sample fields (excluding the ones we already displayed)
-              const excludedFields = [
-                "id",
-                "userMessage",
-                "assistantResponse",
-                "expected",
-                "score",
-              ];
-              Object.entries(result.sample).forEach(([key, value]) => {
-                if (!excludedFields.includes(key)) {
-                  const displayKey = key
-                    .replace(/([A-Z])/g, " $1")
-                    .replace(/^./, (str) => str.toUpperCase())
-                    .trim();
-                  sampleData[displayKey] = value;
-                }
-              });
             }
 
             // Add score comparison to the same table
