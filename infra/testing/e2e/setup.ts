@@ -6,6 +6,52 @@ import { join } from "@std/path";
 
 const logger = getLogger(import.meta);
 
+/**
+ * Detects if the current environment is a CI environment
+ */
+function isCI(): boolean {
+  // Check if this is Replit - Replit has display server and should not be treated as CI
+  if (
+    getConfigurationVariable("REPL_ID") ||
+    getConfigurationVariable("REPL_SLUG") ||
+    getConfigurationVariable("REPLIT_DB_URL")
+  ) {
+    logger.info(
+      "Detected Replit environment - treating as non-CI for E2E tests",
+    );
+    return false;
+  }
+
+  // Check for Bolt Foundry specific CI flag first
+  const bfCI = getConfigurationVariable("BF_CI");
+  if (bfCI === "true") return true;
+
+  // Check for common CI environment variables
+  const ciVars = [
+    "CI",
+    "CONTINUOUS_INTEGRATION",
+    "GITHUB_ACTIONS",
+    "GITLAB_CI",
+    "JENKINS_HOME",
+    "JENKINS_URL",
+    "CIRCLECI",
+    "TRAVIS",
+    "BUILDKITE",
+    "DRONE",
+    "TEAMCITY_VERSION",
+    "TF_BUILD", // Azure DevOps
+    "BITBUCKET_BUILD_NUMBER",
+    "SEMAPHORE",
+    "APPVEYOR",
+    "CODEBUILD_BUILD_ID", // AWS CodeBuild
+  ];
+
+  return ciVars.some((varName) => {
+    const value = getConfigurationVariable(varName);
+    return value === "true" || value === "1";
+  });
+}
+
 export interface E2ETestContext {
   browser: Browser;
   page: Page;
@@ -21,11 +67,27 @@ export async function setupE2ETest(options: {
   headless?: boolean;
 } = {}): Promise<E2ETestContext> {
   const baseUrl = options.baseUrl || "http://localhost:8000";
-  const headless = options.headless !== false ? true : getConfigurationVariable(
-    "BF_E2E_HEADLESS",
-  ) != "false";
 
-  logger.info(`Starting e2e test with baseUrl: ${baseUrl}`);
+  // Determine headless mode with the following precedence:
+  // 1. Explicit option passed to the function
+  // 2. BF_E2E_HEADLESS environment variable (if set)
+  // 3. Default based on CI detection (headless in CI, non-headless locally)
+  let headless: boolean;
+  if (options.headless !== undefined) {
+    headless = options.headless;
+  } else {
+    const headlessEnv = getConfigurationVariable("BF_E2E_HEADLESS");
+    if (headlessEnv !== undefined) {
+      headless = headlessEnv !== "false";
+    } else {
+      // Default: headless in CI, non-headless for local development
+      headless = isCI();
+    }
+  }
+
+  logger.info(
+    `Starting e2e test with baseUrl: ${baseUrl}, headless: ${headless}`,
+  );
 
   try {
     // Find the chromium executable path

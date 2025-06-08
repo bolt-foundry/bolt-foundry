@@ -136,7 +136,7 @@ Deno.test("Component behavior", () => {
 
 ```typescript
 Deno.test("E2E test", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupE2ETest(); // Headless mode determined automatically
   try {
     await navigateTo(context, "/path");
     // Test interactions
