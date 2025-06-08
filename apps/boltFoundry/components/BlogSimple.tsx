@@ -1,12 +1,7 @@
 import { useState } from "react";
-import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { getLogger } from "packages/logger/logger.ts";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
 import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
 import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
-import { BlogSimple } from "./BlogSimple.tsx";
-
-const _logger = getLogger(import.meta);
 
 const NavButtons = () => {
   return (
@@ -32,26 +27,11 @@ const NavButtons = () => {
   );
 };
 
-// Main Blog component that switches between list and single post
-export const Blog = iso(`
-  field Query.Blog($slug: String) @component {
-    blogPost(slug: $slug) {
-      BlogPostView
-    }
-    blogPosts(first: 10, sortDirection: "DESC") {
-      BlogList
-    }
-  }
-`)(function Blog({ data, parameters = {} }) {
+// Simple blog component for SSR compatibility
+export const BlogSimple = ({ slug }: { slug?: string }) => {
   const { navigate } = useRouter();
   const [hoverLogo, setHoverLogo] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const hasSlug = Boolean(parameters?.slug);
-
-  // During SSR or when data is not available, use the simple component
-  if (typeof window === "undefined" || !data) {
-    return <BlogSimple slug={parameters?.slug ?? undefined} />;
-  }
 
   return (
     <div className="landing-page">
@@ -109,13 +89,24 @@ export const Blog = iso(`
         <div className="landing-content">
           <div className="blog-layout">
             <main className="blog-main">
-              {hasSlug
-                ? (data.blogPost
-                  ? <data.blogPost.BlogPostView />
-                  : <div>Blog post not found</div>)
-                : (data.blogPosts
-                  ? <data.blogPosts.BlogList />
-                  : <div>Loading blog posts...</div>)}
+              {slug
+                ? (
+                  <article className="blog-post-preview">
+                    <h1>Blog Post</h1>
+                    <p>Loading blog post: {slug}</p>
+                  </article>
+                )
+                : (
+                  <div className="blog-list">
+                    <h1>Blog Posts</h1>
+                    <div className="blog-posts">
+                      <article className="blog-post-preview">
+                        <h2>Welcome to our Blog</h2>
+                        <p>Check back soon for more content!</p>
+                      </article>
+                    </div>
+                  </div>
+                )}
             </main>
           </div>
         </div>
@@ -125,22 +116,13 @@ export const Blog = iso(`
               &copy; 2025 Bolt Foundry. All rights reserved.
             </div>
             <BfDsButton
-              size="medium"
-              kind="danDim"
-              iconLeft="brand-discord"
-              href="https://discord.gg/tU5ksTBfEj"
-              hrefTarget="_blank"
-            />
-            <BfDsButton
-              size="medium"
-              kind="danDim"
-              iconLeft="brand-github"
-              href="https://github.com/bolt-foundry/bolt-foundry"
-              hrefTarget="_blank"
+              kind="dan"
+              href="mailto:hello@boltfoundry.com"
+              text="Contact"
             />
           </div>
         </div>
       </section>
     </div>
   );
-});
+};

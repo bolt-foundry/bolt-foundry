@@ -71,9 +71,9 @@ export class BlogPost extends GraphQLNode {
    */
   static async listAll(
     sortDirection: "ASC" | "DESC" = "DESC",
-  ): Promise<BlogPost[]> {
+  ): Promise<Array<BlogPost>> {
     const blogDir = "docs/blog";
-    const posts: BlogPost[] = [];
+    const posts: Array<BlogPost> = [];
 
     try {
       // Read all files in the blog directory
@@ -112,7 +112,7 @@ export class BlogPost extends GraphQLNode {
    * @returns Relay Connection object
    */
   static connection(
-    posts: BlogPost[],
+    posts: Array<BlogPost>,
     args: ConnectionArguments,
   ): Promise<Connection<BlogPost>> {
     // connectionFromArray handles all the cursor logic for us

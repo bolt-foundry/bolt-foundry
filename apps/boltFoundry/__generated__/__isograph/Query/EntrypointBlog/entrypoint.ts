@@ -9,6 +9,21 @@ const queryText = 'query EntrypointBlog ($slug: String) {\
     id,\
     content,\
   },\
+  blogPosts____first___l_10____sortDirection___s_DESC: blogPosts(first: 10, sortDirection: "DESC") {\
+    edges {\
+      cursor,\
+      node {\
+        id,\
+        content,\
+      },\
+    },\
+    pageInfo {\
+      endCursor,\
+      hasNextPage,\
+      hasPreviousPage,\
+      startCursor,\
+    },\
+  },\
 }';
 
 const normalizationAst: NormalizationAst = {
@@ -34,6 +49,83 @@ const normalizationAst: NormalizationAst = {
           kind: "Scalar",
           fieldName: "content",
           arguments: null,
+        },
+      ],
+    },
+    {
+      kind: "Linked",
+      fieldName: "blogPosts",
+      arguments: [
+        [
+          "first",
+          { kind: "Literal", value: 10 },
+        ],
+
+        [
+          "sortDirection",
+          { kind: "String", value: "DESC" },
+        ],
+      ],
+      concreteType: "BlogPostConnection",
+      selections: [
+        {
+          kind: "Linked",
+          fieldName: "edges",
+          arguments: null,
+          concreteType: "BlogPostEdge",
+          selections: [
+            {
+              kind: "Scalar",
+              fieldName: "cursor",
+              arguments: null,
+            },
+            {
+              kind: "Linked",
+              fieldName: "node",
+              arguments: null,
+              concreteType: "BlogPost",
+              selections: [
+                {
+                  kind: "Scalar",
+                  fieldName: "id",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "content",
+                  arguments: null,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          kind: "Linked",
+          fieldName: "pageInfo",
+          arguments: null,
+          concreteType: "PageInfo",
+          selections: [
+            {
+              kind: "Scalar",
+              fieldName: "endCursor",
+              arguments: null,
+            },
+            {
+              kind: "Scalar",
+              fieldName: "hasNextPage",
+              arguments: null,
+            },
+            {
+              kind: "Scalar",
+              fieldName: "hasPreviousPage",
+              arguments: null,
+            },
+            {
+              kind: "Scalar",
+              fieldName: "startCursor",
+              arguments: null,
+            },
+          ],
         },
       ],
     },
