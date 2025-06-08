@@ -1,0 +1,40 @@
+Page 1
+Invoice
+																												  Page 2
+								  永強批發公司
+								  WK FOODS
+																									     810 South Broadway, Hicksville, NY 11801, Fax:516-261-9908 Cell:718-762-2136
+			   				    Tel: 516-261-9901
+		 | Sold To                   |  | 促銷品 04/01/2025 -04/30/2025 | Invoice no.        |
+		 | [7040]                    |  | CHEF 膠炸油(35LB) $29.75      | 743143             |
+		 | ------------------------- |  | -------------------------- | ------------------ |
+		 | LITTLE MO (COD)           |  | OASIS 膠油(35LB) $25.50      | Zone / Stop        |
+		 | 1158 MYRTLE AVE BROOKLYN, | 雞牌 是拉緊辣椒醬包(500PC) $35.00      | 18 09 Invoice Date |
+		 | NY 11221                  |  | 929-210-8100 7040          | 04/25/25           |
+
+	    | Quantity | Description                                                | Brand        | Weight | Unit Price | Amount |
+	    | -------- | ---------------------------------------------------------- | ------------ | ------ | ---------- | ------ |
+	    | 3 包BG    | 三象 香米 (25LB) 3 ELEPHANT JASMINE RICE (25LB)                | 三象 3ELEPHANT |        | 20.50      | 61.50  |
+	    | 2 桶BL    | OASIS 膠炸油(35LB) OASIS CLEAR OIL PLASTIC (35LB)             | AAK          |        | 31.75      | 63.50  |
+	    | 4 箱CS    | R 1/4 薯條(6×4.5LB) REDDY RAW 1/4 FRENCH FRIES (6×4.5L       | REDDY RAW    |        | 31.50      | 126.00 |
+	    | 1 箱CS    | 奇美 1693110 荷葉包(20×10PC/箱) CHIMEI GWA PAO BUN FRZ (20×10PC) | 奇美 CHIMEI    |        | 69.50      | 69.50  |
+	    | 4 箱CS    | RAMA 新鮮潮州粿條(30LB) RAMA FRESH RICE STICK NOODLE (30L        | RAMA FOODS   |        | 38.50      | 154.00 |
+	    | 1 箱CS    | 雞胸骨(40LB) CHICKEN BONE (40LB)                              | 新萬隆          | 40     | 0.60       | 24.00  |
+	    | 1 箱CS    | 12/14 龍利魚片(22LB) 12/14 MEKONG SWAI FILET (22LB)            | MEKONG       | 22     | 2.35       | 51.70  |
+	    | 1        | ** 請老闆查貨,簽單 ** ** PLEASE CHECK INVOICE AND SIGN **         |              |        | 0.00       | 0.00   |
+
+																						  Invoice Total $:			  1,075.45
+	  | 數量 | 行  |
+	  | -- | -- |
+	  | 40 | 23 |
+
+ OTICE: Past due invoices shall accrue interest at 1.5 % each month. If overdue accounts are referred to an attorney,
+ yer agree to pay the 35% collection fee and the attorney's fees as an additional charge under the contract of sale
+ vered by this invoice. unless full payment is made, buyer is deemed receiving finance from vendor and buyer hereby
+ horizes vendor to file UCC 1 against any and all properties within buyer's business premises. the undersigned
+ vidual is the owner or authorized representative of buyer.
+ ase check every item and terms of sale before signing, any claims must be made within 24 hours upon receipt merchandise.
+ 前請當面清點貨物及銷售條款,如有錯漏,損壞,請於二十四小時內洽商處理,逾期恕不負責.退票每票加 $50.00
+																														   永強
+ 謝!			Thank you !
+													   Consented and received by:									   (簽收)

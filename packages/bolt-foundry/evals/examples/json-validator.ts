@@ -4,13 +4,15 @@ export default makeGraderDeckBuilder("json-validator")
   .spec(
     "You are an expert at evaluating JSON outputs for correctness and completeness.",
   )
+  .lead("Now let's talk about how you think")
   .card(
     "evaluation criteria",
     (c) =>
       c.spec("Check if the output is valid JSON syntax")
         .spec("Verify all required fields are present")
-        .spec("Ensure data types match expected schema"),
+        .spec("Ensure data types match expected schema", { samples: []}),
   )
+  .lead("Now let's talk about your scoring")
   .card(
     "scoring guidelines",
     (c) =>
