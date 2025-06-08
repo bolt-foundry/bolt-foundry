@@ -124,7 +124,8 @@ Deno.test("determineInterface detects parent classes with @GraphQLInterface", as
     "TestImplementation should implement CustomNameInterface",
   );
 
-  // Create a custom test interface definition
+  // For this test, we need a minimal schema with our custom interface
+  // since we're testing decorator behavior, not the full production schema
   const customInterface = interfaceType({
     name: "CustomNameInterface",
     definition(t) {

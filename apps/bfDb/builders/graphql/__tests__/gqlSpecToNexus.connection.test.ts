@@ -3,6 +3,7 @@ import { assert, assertEquals, assertExists } from "@std/assert";
 import { gqlSpecToNexus } from "../gqlSpecToNexus.ts";
 import type { GqlNodeSpec } from "../makeGqlBuilder.ts";
 import type { Connection, ConnectionArguments } from "graphql-relay";
+import type { GqlConnectionDef } from "../types/nexusTypes.ts";
 
 /** Test node type */
 class TestNode {
@@ -122,9 +123,9 @@ Deno.test("gqlSpecToNexus should pass custom args to connectionField", async () 
   const mockT = {
     connectionField: (
       _name: string,
-      config: { args?: Record<string, unknown> },
+      config: { additionalArgs?: Record<string, unknown> },
     ) => {
-      capturedArgs = config.args;
+      capturedArgs = config.additionalArgs;
     },
     field: () => {},
   };
@@ -198,7 +199,7 @@ Deno.test("gqlSpecToNexus should resolve target type from thunk", async () => {
   const _result = await gqlSpecToNexus(spec, "TestType");
 
   // After processing, the type should be resolved
-  const connection = spec.connections?.testNodes;
+  const connection = spec.connections?.testNodes as GqlConnectionDef;
   assertEquals(connection?.type, "TestNode", "Should resolve type from thunk");
 });
 
@@ -233,6 +234,6 @@ Deno.test("gqlSpecToNexus should handle async target thunks", async () => {
   const _result = await gqlSpecToNexus(spec, "TestType");
 
   // Type should be resolved even with async thunk
-  const connection = spec.connections?.testNodes;
+  const connection = spec.connections?.testNodes as GqlConnectionDef;
   assertEquals(connection?.type, "TestNode", "Should handle async thunk");
 });

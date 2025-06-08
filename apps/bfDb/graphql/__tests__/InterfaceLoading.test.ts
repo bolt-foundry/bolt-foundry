@@ -122,7 +122,8 @@ Deno.test("GraphQL schema includes all interfaces with correct fields", async ()
   // Load regular interfaces
   const interfaces = loadInterfaces();
 
-  // Build schema with all interfaces and our test implementation
+  // This test needs a minimal schema with custom test interface
+  // Exception: Testing interface loading mechanism with custom interface
   const schema = makeSchema({
     types: [
       ...interfaces,
