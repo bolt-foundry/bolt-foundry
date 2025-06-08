@@ -9,7 +9,7 @@ import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 Deno.test("Can read blog post at /blog/hello-world-2025-06-01", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupE2ETest();
 
   try {
     // Navigate to the blog post

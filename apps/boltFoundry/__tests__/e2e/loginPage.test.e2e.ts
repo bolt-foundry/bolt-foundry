@@ -39,7 +39,7 @@ const TEST_JWT = await signSession(
 Deno.test.ignore(
   "user can sign in with Google and see CurrentViewerLoggedIn",
   async () => {
-    const ctx = await setupE2ETest({ headless: false });
+    const ctx = await setupE2ETest();
     const { page } = ctx;
 
     /* ── 1️⃣ Stub Google token verification so Yoga accepts our fake credential ── */

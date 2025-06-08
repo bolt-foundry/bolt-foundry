@@ -21,7 +21,7 @@ const logger = getLogger(import.meta);
 
 // Flaky b/c it depends on an external service (waitlist API)
 Deno.test("User can join the waitlist successfully", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupE2ETest();
 
   try {
     // 1️⃣  Navigate to the home page
