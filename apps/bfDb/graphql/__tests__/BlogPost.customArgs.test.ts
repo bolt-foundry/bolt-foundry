@@ -158,7 +158,9 @@ Deno.test("GraphQL blogPosts connection should support filterByYear argument", a
       edges: Array<{ node: { id: string; content: string } }>;
     };
     const edges = blogPostsData.edges;
-    assertEquals(edges.length, 2, "Should have exactly 2 posts from 2024");
+    
+    // There are 6 existing 2024 posts + 2 test posts = 8 total
+    assertEquals(edges.length, 8, "Should have 8 posts from 2024 (6 existing + 2 test)");
 
     // Verify all posts are from 2024
     for (const edge of edges) {
