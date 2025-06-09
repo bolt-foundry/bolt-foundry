@@ -97,6 +97,7 @@
         "bolt-foundry/no-underscore-logger-when-used",
         "bolt-foundry/no-logger-set-level",
         "bolt-foundry/prefer-generic-array-syntax",
+        "bolt-foundry/ensure-file-ends-with-newline",
         "no-slow-types",
         "no-console",
         "no-external-import",
