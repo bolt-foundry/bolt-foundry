@@ -60,4 +60,4 @@ const messages = assistantDeck.render({
 
 - [SDK documentation](../packages/bolt-foundry/docs/)
 - [Implementation notes](./docs/)
-- [Product roadmap](../docs/product-plan.md)
+- [Product roadmap](../404.md)

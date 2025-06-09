@@ -170,4 +170,4 @@ We're working toward a world where:
   insights
 - [Business vision](business-vision.md) - Go-to-market strategy and revenue
   model
-- [Product plan](product-plan.md) - Technical roadmap and implementation details
+- [Product plan](../../404.md) - Technical roadmap and implementation details
