@@ -2,6 +2,8 @@ import { GraphQLNode } from "apps/bfDb/classes/GraphQLNode.ts";
 import { join } from "@std/path";
 import { exists } from "@std/fs";
 import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorsBfNode.ts";
+import type { Connection, ConnectionArguments } from "graphql-relay";
+import { connectionFromArray } from "graphql-relay";
 
 /**
  * BlogPost node representing a blog post with content.
@@ -60,6 +62,61 @@ export class BlogPost extends GraphQLNode {
     }
 
     return await postPromise;
+  }
+
+  /**
+   * List all blog posts from the filesystem.
+   * @param sortDirection - "ASC" for chronological, "DESC" for reverse chronological (default)
+   * @returns Array of BlogPost instances
+   */
+  static async listAll(
+    sortDirection: "ASC" | "DESC" = "DESC",
+  ): Promise<BlogPost[]> {
+    const blogDir = "docs/blog";
+    const posts: BlogPost[] = [];
+
+    try {
+      // Read all files in the blog directory
+      for await (const entry of Deno.readDir(blogDir)) {
+        if (entry.isFile && entry.name.endsWith(".md")) {
+          const slug = entry.name.replace(".md", "");
+          // Use findX to leverage caching
+          const post = await this.findX(slug);
+          posts.push(post);
+        }
+      }
+    } catch (error) {
+      // If directory doesn't exist, return empty array
+      if (error instanceof Deno.errors.NotFound) {
+        return [];
+      }
+      throw error;
+    }
+
+    // Sort by filename (which includes date prefix YYYY-MM)
+    posts.sort((a, b) => {
+      if (sortDirection === "ASC") {
+        return a.id.localeCompare(b.id);
+      } else {
+        return b.id.localeCompare(a.id);
+      }
+    });
+
+    return posts;
+  }
+
+  /**
+   * Create a Relay-style connection from an array of blog posts.
+   * @param posts - Array of BlogPost instances
+   * @param args - Relay connection arguments (first, last, after, before)
+   * @returns Relay Connection object
+   */
+  static connection(
+    posts: BlogPost[],
+    args: ConnectionArguments,
+  ): Promise<Connection<BlogPost>> {
+    // connectionFromArray handles all the cursor logic for us
+    return Promise.resolve(connectionFromArray(posts, args));
   }
 
   /**
