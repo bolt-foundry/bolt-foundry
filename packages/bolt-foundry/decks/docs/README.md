@@ -13,12 +13,24 @@ The system parses Markdown files with a specific structure:
 
 - H1 headers are ignored (reference only)
 - Paragraphs become leads (flow control)
-- Non-H1 headers start cards
+- H2 headers (`##`) create parent cards
+- H3, H4, etc. headers create nested cards under their parent
 - Bullet points become specs
-- Embeds hoist content into parent, footnotes attach samples/context
+- Embeds (`![description](path)`) hoist content into parent
+- Card embeds (`![card](file.md#card-id)`) embed specific cards via hash
+  fragments
+- Hierarchical references use dot syntax: `#parent.child.grandchild`
+- Footnotes attach samples/context to elements
 - Regular markdown links become plain text (targets stripped)
 - Tables, code blocks, etc. are stripped from LLM prompts
 - Order matters and is preserved
+
+Card reference examples:
+
+- Simple: `#review-process` (when unique in file)
+- Hierarchical: `#assistant-persona.communication-style`
+- Cross-file: `./other-deck.md#tools.languages`
+- TOML integration: mirrors `contexts.videoUrl` and `samples.good-timestamps`
 
 For complete technical details, see the
 [implementation plan](/memos/plans/2025-06-markdown-decks-implementation.md).
