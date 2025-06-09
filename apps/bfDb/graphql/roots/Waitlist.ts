@@ -20,7 +20,9 @@ export class Waitlist extends GraphQLObjectBase {
             .nonNull.boolean("success"),
         async resolve(_src, { email, name, company }) {
           try {
-            const apiKey = getConfigurationVariable("WAITLIST_API_KEY");
+            const apiKey = getConfigurationVariable("WAITLIST_API_KEY") ??
+              // deno-lint-ignore bolt-foundry/no-env-direct-access
+              Deno.env.get("WAITLIST_API_KEY");
             if (!apiKey) {
               logger.error("WAITLIST_API_KEY environment variable is not set");
               return {
