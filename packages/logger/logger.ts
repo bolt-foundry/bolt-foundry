@@ -40,7 +40,7 @@ function isBrowser() {
 }
 
 // Parse debug loggers from environment variable
-function getDebugLoggers(): string[] {
+function getDebugLoggers(): Array<string> {
   const debugLoggerPaths = getConfigurationVariable("ENABLE_SPECIFIC_LOGGERS");
 
   if (!debugLoggerPaths) {

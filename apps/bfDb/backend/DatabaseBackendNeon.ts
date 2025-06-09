@@ -306,10 +306,10 @@ export class DatabaseBackendNeon implements DatabaseBackend {
       batchSize,
     });
 
-    const metadataConditions: string[] = [];
-    const propsConditions: string[] = [];
-    const specificIdConditions: string[] = [];
-    const variables: unknown[] = [];
+    const metadataConditions: Array<string> = [];
+    const propsConditions: Array<string> = [];
+    const specificIdConditions: Array<string> = [];
+    const variables: Array<unknown> = [];
 
     // Process metadata conditions
     for (const [originalKey, value] of Object.entries(metadataToQuery)) {

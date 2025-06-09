@@ -178,7 +178,7 @@ const remoteHandler = async ([target, specificFolder]: Array<string>) => {
   }
 
   const bfPath = getConfigurationVariable("PWD");
-  const dirsToMount: string[] = [];
+  const dirsToMount: Array<string> = [];
   const dirsToAvoid: Array<string> = [
     "bin",
     "node_modules",

@@ -9,7 +9,7 @@ import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 Deno.test("Docs quickstart page renders markdown content", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupE2ETest();
 
   try {
     // Navigate to the quickstart docs page
@@ -61,7 +61,7 @@ Deno.test("Docs quickstart page renders markdown content", async () => {
 });
 
 Deno.test("Docs page handles non-existent document", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupE2ETest();
 
   try {
     // Navigate to a non-existent docs page
@@ -97,7 +97,7 @@ Deno.test("Docs page handles non-existent document", async () => {
 });
 
 Deno.test("Docs page loads README.md by default when no slug provided", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupE2ETest();
 
   try {
     // Navigate to /docs/ without a slug
@@ -133,12 +133,12 @@ Deno.test("Docs page loads README.md by default when no slug provided", async ()
 });
 
 Deno.test("Docs page renders different markdown files", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupE2ETest();
 
   try {
     // Get list of docs from the docs/guides directory
     const docsDir = "docs/guides";
-    const files: string[] = [];
+    const files: Array<string> = [];
 
     for await (const entry of Deno.readDir(docsDir)) {
       if (entry.isFile && entry.name.endsWith(".md")) {

@@ -41,6 +41,7 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           timeout_minutes: "60"
           allowed_tools: |
+            Bash(bff ai:*)
             Bash(bff pr-comments:*)
             Bash(sl help:*)
             Bash(sl log:*)

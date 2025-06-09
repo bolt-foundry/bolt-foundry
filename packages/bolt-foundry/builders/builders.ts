@@ -9,7 +9,7 @@ export type JSONValue =
   | boolean
   | null
   | { [key: string]: JSONValue }
-  | JSONValue[];
+  | Array<JSONValue>;
 
 export type RenderOptions =
   & Partial<ChatCompletionCreateParams>

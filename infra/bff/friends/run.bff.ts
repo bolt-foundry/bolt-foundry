@@ -6,7 +6,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function runCommand(args: string[]): Promise<number> {
+export async function runCommand(args: Array<string>): Promise<number> {
   // Get the directory path from the first argument
   const directory = args[0];
 

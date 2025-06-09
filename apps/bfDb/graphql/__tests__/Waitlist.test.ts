@@ -5,15 +5,10 @@
  */
 
 import { assert, assertEquals } from "@std/assert";
-import { makeSchema } from "nexus";
 import { printSchema } from "graphql";
-import { loadGqlTypes } from "../loadGqlTypes.ts";
 import { graphql } from "graphql";
 import { createContext } from "../graphqlContext.ts";
-
-async function buildTestSchema() {
-  return makeSchema({ types: { ...(await loadGqlTypes()) } });
-}
+import { buildTestSchema } from "./TestHelpers.test.ts";
 
 async function testQuery(options: { query: string }) {
   const schema = await buildTestSchema();
