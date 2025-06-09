@@ -2,7 +2,7 @@
 
 import { assert } from "@std/assert";
 import { loadGqlTypes } from "../loadGqlTypes.ts";
-import { makeSchema } from "nexus";
+import { buildTestSchema } from "./TestHelpers.test.ts";
 import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
@@ -13,7 +13,8 @@ Deno.test("debug schema building", async () => {
     // deno-lint-ignore no-explicit-any
     logger.debug("Loaded types:", types.map((t: any) => t.config.name));
 
-    const schema = makeSchema({ types });
+    // Use the same schema building approach as other tests
+    const schema = await buildTestSchema();
     logger.debug("Schema built successfully");
 
     assert(schema, "Schema should be created");
