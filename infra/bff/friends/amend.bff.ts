@@ -8,7 +8,18 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function amend(args: string[]): Promise<number> {
+export async function amend(args: Array<string>): Promise<number> {
+  // Run format first
+  logger.info("Running format before amending...");
+  const formatResult = await runShellCommand(["deno", "fmt"]);
+
+  if (formatResult !== 0) {
+    logger.error("❌ Format failed");
+    return formatResult;
+  }
+
+  logger.info("✅ Format completed successfully");
+
   // Check for --no-submit flag
   let submitPR = true;
   const filteredArgs = args.filter((arg) => {

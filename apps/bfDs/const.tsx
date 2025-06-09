@@ -57,8 +57,8 @@ function caplitalize(word: string) {
 }
 
 function mixPalette(
-  color: number[] | undefined,
-  mixColor: number[] | undefined = undefined,
+  color: Array<number> | undefined,
+  mixColor: Array<number> | undefined = undefined,
   mixColorPercent: number | undefined = 0.5,
 ) {
   if (!color || !mixColor) return [255, 0, 0, 1];
@@ -68,7 +68,7 @@ function mixPalette(
 }
 
 function color(
-  color: number[] | undefined,
+  color: Array<number> | undefined,
   adjust: number | null = 0,
   opacity: number | null = 1,
 ) {
@@ -90,7 +90,7 @@ function color(
   })`;
 }
 
-function createSet(name: string, colorArr: number[], adjustment: number) {
+function createSet(name: string, colorArr: Array<number>, adjustment: number) {
   return {
     [`${name}`]: color(colorArr),
     [`${name}002`]: color(colorArr, null, 0.02),
@@ -107,8 +107,8 @@ function createSet(name: string, colorArr: number[], adjustment: number) {
 function createMixSet(
   colorName: string,
   mixName: string,
-  colorArr: number[],
-  mixArr: number[],
+  colorArr: Array<number>,
+  mixArr: Array<number>,
   adjustment: number,
 ) {
   const capName = caplitalize(mixName);

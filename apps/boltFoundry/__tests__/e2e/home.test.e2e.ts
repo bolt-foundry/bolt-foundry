@@ -9,7 +9,7 @@ import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 Deno.test.ignore("Home page loads successfully", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupE2ETest();
 
   try {
     // Navigate to the home page

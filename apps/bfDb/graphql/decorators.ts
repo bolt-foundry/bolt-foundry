@@ -14,7 +14,7 @@ export const GRAPHQL_INTERFACE_PROPERTY = "__graphqlInterface";
  * Type for class constructor
  */
 // deno-lint-ignore no-explicit-any
-type Constructor = { new (...args: any[]): any; name: string };
+type Constructor = { new (...args: Array<any>): any; name: string };
 
 /**
  * Type for abstract class constructor

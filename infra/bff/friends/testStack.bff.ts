@@ -9,7 +9,7 @@ import {
 
 const logger = getLogger(import.meta);
 
-async function getCurrentStack(): Promise<string[]> {
+async function getCurrentStack(): Promise<Array<string>> {
   const { stdout } = await runShellCommandWithOutput(
     [
       "sl",

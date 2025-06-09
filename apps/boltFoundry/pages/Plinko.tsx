@@ -88,7 +88,7 @@ export function Plinko() {
   const [numBalls, setNumBalls] = useState(1);
   const [ballsInPlay, setBallsInPlay] = useState(0);
   const [fineTuned, setFineTuned] = useState(false);
-  const [binsLinePositions, setBinsLinePositions] = useState<number[]>([]);
+  const [binsLinePositions, setBinsLinePositions] = useState<Array<number>>([]);
   const sceneRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<Matter.Engine | null>(null);
   const renderRef = useRef<Matter.Render | null>(null);

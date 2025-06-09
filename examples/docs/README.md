@@ -16,13 +16,9 @@ add examples. Takes forever to see anything work.
 
 ## Status
 
-Working on v0.1.0.
-
-## Versions
-
-| Version           | Status | Description       |
-| ----------------- | ------ | ----------------- |
-| [v0.1.0](V0.1.md) | Active | Fix nextjs-sample |
+| Task | Status | Description |
+| --- | --- | --- |
+| Fix nextjs-sample | Active | Add TypeScript, fix formatting |
 
 ## Future work
 

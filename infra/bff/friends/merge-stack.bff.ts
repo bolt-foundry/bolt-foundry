@@ -21,7 +21,7 @@ interface PR {
   };
 }
 
-export async function mergeStack(args: string[]): Promise<number> {
+export async function mergeStack(args: Array<string>): Promise<number> {
   // Parse arguments
   let method = "rebase"; // default merge method
   let dryRun = false;
@@ -75,7 +75,7 @@ export async function mergeStack(args: string[]): Promise<number> {
     return { owner, repo };
   }
 
-  async function getCurrentCommitStack(): Promise<string[]> {
+  async function getCurrentCommitStack(): Promise<Array<string>> {
     // Get commits in the current stack (ancestors of current commit that aren't on main)
     const { stdout, code } = await runShellCommandWithOutput([
       "sl",
@@ -93,7 +93,7 @@ export async function mergeStack(args: string[]): Promise<number> {
 
     // Parse the output to get commit hashes
     const lines = stdout.split("\n").filter((line) => line.trim());
-    const commits: string[] = [];
+    const commits: Array<string> = [];
 
     for (const line of lines) {
       const hash = line.trim();
@@ -344,10 +344,12 @@ export async function mergeStack(args: string[]): Promise<number> {
     }
   }
 
-  async function waitForAllPRChecks(prNumbers: string[]): Promise<string[]> {
+  async function waitForAllPRChecks(
+    prNumbers: Array<string>,
+  ): Promise<Array<string>> {
     logger.info(`Waiting for checks to complete on ${prNumbers.length} PRs...`);
 
-    const readyPRs: string[] = [];
+    const readyPRs: Array<string> = [];
 
     for (const prNumber of prNumbers) {
       const isReady = await waitForPRChecks(prNumber);
@@ -394,10 +396,10 @@ export async function mergeStack(args: string[]): Promise<number> {
     return true;
   }
 
-  async function getStackPRNumbers(): Promise<string[]> {
+  async function getStackPRNumbers(): Promise<Array<string>> {
     // Get all commits in current stack
     const commits = await getCurrentCommitStack();
-    const prNumbers: string[] = [];
+    const prNumbers: Array<string> = [];
 
     for (const commit of commits) {
       const prNumber = await getCommitPRNumber(commit);
@@ -412,7 +414,7 @@ export async function mergeStack(args: string[]): Promise<number> {
   }
 
   function getBottomCommitOfStack(
-    stackCommits: string[],
+    stackCommits: Array<string>,
   ): string | null {
     if (stackCommits.length === 0) return null;
 
@@ -551,7 +553,7 @@ export async function mergeStack(args: string[]): Promise<number> {
   const notReadyPRs = prReadiness.filter((p) => !p.ready);
 
   // Determine which PRs to merge based on options
-  let prsToMerge: string[] = [];
+  let prsToMerge: Array<string> = [];
 
   if (partial) {
     // For --partial, merge PRs in order (bottom to top) until we hit a blocked one

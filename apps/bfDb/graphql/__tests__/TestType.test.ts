@@ -5,19 +5,14 @@
  */
 
 import { assert } from "@std/assert";
-import { makeSchema } from "nexus";
 import { printSchema } from "graphql";
-import { loadGqlTypes } from "../loadGqlTypes.ts";
+import { buildTestSchema } from "./TestHelpers.test.ts";
 import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
-async function buildTestSchema(): Promise<string> {
-  const schema = makeSchema({ types: await loadGqlTypes() });
-  return printSchema(schema);
-}
-
 Deno.test("graphqlServer schema includes health check", async () => {
-  const sdl = await buildTestSchema();
+  const schema = await buildTestSchema();
+  const sdl = printSchema(schema);
   logger.debug("Generated SDL:", sdl);
 
   // Verify ok field is present

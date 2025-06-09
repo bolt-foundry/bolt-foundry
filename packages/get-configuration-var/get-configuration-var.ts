@@ -76,7 +76,7 @@ async function firstVaultId(): Promise<string> {
   if (!success) {
     throw new Error(`Failed to list vaults: ${DECODER.decode(stderr).trim()}`);
   }
-  const list = JSON.parse(DECODER.decode(stdout)) as { id: string }[];
+  const list = JSON.parse(DECODER.decode(stdout)) as Array<{ id: string }>;
   if (!list.length) throw new Error("No 1Password vaults visible to CLI");
   CACHED_VAULT_ID = list[0].id;
   return CACHED_VAULT_ID;
@@ -99,7 +99,7 @@ async function opRead(key: string): Promise<string> {
   return DECODER.decode(stdout).trim();
 }
 
-async function opInject(keys: string[]): Promise<Record<string, string>> {
+async function opInject(keys: Array<string>): Promise<Record<string, string>> {
   if (!isDeno) throw new Error("1Password CLI unavailable in browser");
   if (!keys.length) return {};
   const vault = await firstVaultId();
@@ -147,7 +147,7 @@ export async function getSecret(key: string): Promise<string | undefined> {
  * Warm multiple secrets into the in‑memory cache (Deno‑only).
  * Skips keys already present in ENV to honour local overrides.
  */
-export async function warmSecrets(keys: string[] = KNOWN_KEYS) {
+export async function warmSecrets(keys: Array<string> = KNOWN_KEYS) {
   if (!isDeno) return; // no‑op in browser
   const toFetch = keys.filter((k) => !getEnv(k));
 
@@ -183,10 +183,10 @@ export async function warmSecrets(keys: string[] = KNOWN_KEYS) {
  */
 export async function writeEnv(
   path = ".env",
-  keys: string[] = KNOWN_KEYS,
+  keys: Array<string> = KNOWN_KEYS,
 ): Promise<void> {
   if (!isDeno) throw new Error("writeEnv() is unavailable in browser");
-  const lines: string[] = [];
+  const lines: Array<string> = [];
   for (const k of keys) {
     const v = await getSecret(k);
     if (v) lines.push(`${k}=${v}`);

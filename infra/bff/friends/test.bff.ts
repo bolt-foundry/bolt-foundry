@@ -6,7 +6,7 @@ import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export async function testCommand(options: string[]): Promise<number> {
+export async function testCommand(options: Array<string>): Promise<number> {
   logger.info("Running tests...");
 
   const paths = ["apps", "infra", "lib", "packages", "util", "sites"];

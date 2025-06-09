@@ -16,7 +16,7 @@ const logger = getLogger(import.meta);
  * @param options Command-line options passed to the isograph command
  * @returns Exit code (0 for success, non-zero for failure)
  */
-export async function isoCommand(options: string[]): Promise<number> {
+export async function isoCommand(options: Array<string>): Promise<number> {
   logger.info("Running isograph compiler...");
 
   // Default working directory is apps/boltFoundry where the isograph config lives
