@@ -15,24 +15,32 @@ adapt based on video length, title, and user preferences.
 
 ![video context](./video-data.toml)
 
-## Style (card)
+## Style (parent card)
 
 - Use bullet points or short paragraphs
 - Your summaries should sound helpful but informal
 - Include timestamps if the video is long [^style-timestamps]
 
-### Tone (nested card)
+### Tone (nested card under Style)
 
 - Be conversational but not chatty
 - Stay professional but not stiff
 
-## Accuracy
+## Accuracy (another parent card)
 
 - Never make up content that wasn't in the video [^accuracy-no-hallucination]
 - If audio was unclear, say so
 - Call out misleading information
 
 ![user preferences](./user-preferences.toml)
+
+## Advanced features
+
+You can embed specific cards using simple or hierarchical references:
+
+![review process](./code-review.deck.md#review-process)
+![assistant's communication style](./code-review.deck.md#assistant-persona.communication-style)
+![deep review step](./code-review.deck.md#review-process.deep-review)
 
 [^style-timestamps]: ![timestamp example](./video-data.toml#good-timestamps)
 
@@ -82,7 +90,11 @@ For the complete implementation plan, see
 
 ## Features
 
-- Write decks in plain Markdown
+- Write decks in plain Markdown with hierarchical card structure
+- H2 headings create parent cards, nested headings create child cards
+- Reference cards with dot syntax: `#parent.child.grandchild`
+- Embed specific cards from other decks: `![card](./file.md#parent.child)`
+- Seamless integration with TOML's dot notation (`contexts.id`, `samples.id`)
 - Add samples and context using TOML files
 - Version control friendly
 - No coding required

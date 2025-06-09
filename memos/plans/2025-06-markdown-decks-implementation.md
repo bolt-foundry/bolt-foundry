@@ -13,7 +13,8 @@ The system will use standard Markdown AST parsing to extract deck structure:
 
 - H1 headers are ignored and for reference only
 - Paragraph text becomes "lead" data type (flow control, not data)
-- Any non-H1 heading starts a new card
+- H2 headings (`##`) start new parent cards
+- Each subsequent nested heading level (H3, H4, etc.) creates a nested card
 - Bullet points under headers define specs
 - All reference links should use postscript style (footnotes)
 - Regular markdown links `[text](url)` or `[text][ref]` are "zoom in" links -
@@ -24,6 +25,9 @@ File references work differently for containers vs elements:
 
 - **Embeds** `![description for people](pathToEmbed)` hoist content into parent
   context
+- **Card embeds** `![card description](./card.md#specific-card)` embed specific
+  cards using hash fragments
+- **Hierarchical references** use dot syntax: `#parent.child.grandchild`
 - **Footnotes** `[^ref]` attach to current element (specs, headings, embeds)
 - **Regular links** `[text](url)` have their targets stripped, leaving just the
   text
@@ -31,7 +35,31 @@ File references work differently for containers vs elements:
 - Footnotes can resolve to `![sample description](file.toml#id)` or
   `![context description](file.toml#id)` embeds
 - Footnotes can also be plain text for reference
-- TOML files use `[samples.id]` or `[context.id]` format
+- TOML files use `[samples.id]` or `[contexts.id]` format
+
+Card reference examples:
+
+- Simple: `#review-process` (when unique in file)
+- Hierarchical: `#review-process.deep-review` (for nested cards)
+- Cross-file: `./code-review.md#assistant-persona.communication-style`
+- TOML alignment: mirrors TOML's `contexts.videoUrl` and
+  `samples.good-timestamps`
+
+ID resolution example:
+
+```markdown
+## Overview <!-- #overview -->
+
+### Setup <!-- #overview.setup -->
+
+## Features <!-- #features -->
+
+### Overview <!-- #features.overview -->
+```
+
+- `#overview` → resolves to the parent card (topmost match)
+- `#features.overview` → unambiguous reference to the nested card
+- Creating another `## Overview` would throw an error
 
 Unclear Markdown elements are stripped from LLM prompts:
 
@@ -79,8 +107,24 @@ description = "Accurately identifies and transcribes multiple speakers"
 - Use `[contexts.id]` for context variables and `[samples.id]` for samples
 - Each ID must be unique within its category
 
+Heading ID generation and uniqueness:
+
+- Convert to lowercase, replace spaces with hyphens, remove special characters
+- Build hierarchical IDs using dot notation for nested cards
+- Example: `## Review Process` → `#review-process`
+- Example: `### Deep Review` under `## Review Process` →
+  `#review-process.deep-review`
+- **Duplicate IDs at the same hierarchy level will throw an error**
+- **When the same ID exists at different levels**, simple references (e.g.,
+  `#overview`) will resolve to the **topmost matching ID**
+- The parser will prevent creating multiple matching IDs and provide clear error
+  messages
+- Use hierarchical dot syntax to reference nested cards unambiguously
+
 The renderer will:
 
 - Recursively crawl all embeds to assemble the complete deck
 - Preserve ordering (order matters for prompt construction)
 - Build prompts following the same patterns as current TypeScript builders
+- Validate heading uniqueness within each hierarchy level
+- Generate appropriate IDs with dot syntax for nested structures
