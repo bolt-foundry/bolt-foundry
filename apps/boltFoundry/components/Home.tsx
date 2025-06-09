@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
 import { BfDsCopyButton } from "apps/bfDs/components/BfDsCopyButton.tsx";
 import { useMutation } from "apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
 import joinWaitlistMutation from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
@@ -10,6 +9,7 @@ import { getLogger } from "packages/logger/logger.ts";
 import { BfDsForm } from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
 import { BfDsFormTextInput } from "apps/bfDs/components/BfDsForm/BfDsFormTextInput.tsx";
 import { BfDsFormSubmitButton } from "apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
+import { Nav } from "apps/boltFoundry/components/Nav.tsx";
 
 const logger = getLogger(import.meta);
 
@@ -17,41 +17,6 @@ type WaitlistFormData = {
   name: string;
   email: string;
   company: string;
-};
-
-const NavButtons = () => {
-  return (
-    <>
-      {
-        /* <BfDsButton
-        kind="dan"
-        href="https://boltfoundry.substack.com/"
-        hrefTarget="_blank"
-        rel="noopener noreferrer"
-        text="Blog"
-      /> */
-      }
-      <BfDsButton
-        kind="dan"
-        href="/docs"
-        text="Docs"
-      />
-      <BfDsButton
-        kind="dan"
-        href="https://discord.gg/tU5ksTBfEj"
-        hrefTarget="_blank"
-        rel="noopener noreferrer"
-        text="Discord"
-      />
-      {
-        /* <BfDsButton
-      kind="outline"
-      text="Login"
-      link="/login"
-    /> */
-      }
-    </>
-  );
 };
 
 export const Home = iso(`
@@ -63,7 +28,6 @@ field Query.Home @component {
   }
 `)(function Home({ data }) {
   const { commit } = useMutation(joinWaitlistMutation);
-  const [showMenu, setShowMenu] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formSubmat, setFormSubmat] = useState(false);
   const [error, setError] = useState(false);
@@ -127,49 +91,7 @@ field Query.Home @component {
   return (
     <div className="landing-page">
       {/* Header */}
-      <header className="landing-header">
-        <div className="landing-content flexRow gapLarge">
-          <div className="flex1 flexRow alignItemsCenter">
-            <div className="header-logo">
-              <BfLogo
-                boltColor="var(--text)"
-                foundryColor="var(--text)"
-                height={24}
-              />
-            </div>
-          </div>
-          <div className="mobile-hide">
-            <nav className="alignItemsCenter flexRow gapLarge header-nav">
-              <NavButtons />
-            </nav>
-          </div>
-          <nav className="mobile-show">
-            <BfDsButton
-              kind="dan"
-              iconLeft="menu"
-              onClick={() => {
-                setShowMenu(true);
-              }}
-            />
-          </nav>
-          {showMenu && (
-            <div className="mobile-show">
-              <div className="flexColumn gapLarge sidebar-nav">
-                <div className="selfAlignEnd">
-                  <BfDsButton
-                    kind="dan"
-                    iconLeft="cross"
-                    onClick={() => {
-                      setShowMenu(false);
-                    }}
-                  />
-                </div>
-                <NavButtons />
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
+      <Nav />
 
       {/* Hero Section */}
       <main className="hero-section flexColumn" ref={heroRef}>
