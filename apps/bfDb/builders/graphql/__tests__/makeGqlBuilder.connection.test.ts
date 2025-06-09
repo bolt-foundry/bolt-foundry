@@ -22,8 +22,9 @@ const specOf = <T extends Record<string, unknown>>(b: unknown): T => {
 type ConnectionSpec = {
   type: string;
   args?: Record<string, unknown>;
-  resolve?: (...args: unknown[]) => unknown;
+  resolve?: (...args: Array<unknown>) => unknown;
   _targetThunk?: () => unknown;
+  _pendingTypeResolution?: boolean;
 };
 
 interface BuilderSpec extends Record<string, unknown> {
@@ -70,7 +71,7 @@ Deno.test("connection method should accept name, targetThunk, and options", () =
     // If we get here without error, the method signature is correct
     assert(true, "connection method accepts expected parameters");
   } catch (error) {
-    throw new Error(`connection method failed: ${error.message}`);
+    throw new Error(`connection method failed: ${(error as Error).message}`);
   }
 });
 
@@ -135,7 +136,7 @@ Deno.test("connection should store spec in connections property", () => {
     "testNodes",
     "Should store field name as initial type",
   );
-  assertEquals(connectionSpec.resolve, resolver, "Should store resolver");
+  assert(connectionSpec.resolve === resolver, "Should store resolver");
   assertExists(connectionSpec._targetThunk, "Should store target thunk");
   assertEquals(
     connectionSpec._pendingTypeResolution,
@@ -197,7 +198,8 @@ Deno.test("connection resolver should be required", () => {
     throw new Error("Should require resolver");
   } catch (error) {
     assert(
-      error.message.includes("resolver") || error.message.includes("required"),
+      (error as Error).message.includes("resolver") ||
+        (error as Error).message.includes("required"),
       "Should throw error about missing resolver",
     );
   }
