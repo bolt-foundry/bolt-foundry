@@ -4,46 +4,10 @@ import { PageError } from "apps/boltFoundry/pages/PageError.tsx";
 import { getLogger } from "packages/logger/logger.ts";
 import { marked, Renderer } from "marked";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
-import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
 import { DocsSidebar } from "apps/boltFoundry/components/DocsSidebar.tsx";
+import { Nav } from "apps/boltFoundry/components/Nav.tsx";
 
 const _logger = getLogger(import.meta);
-
-const NavButtons = () => {
-  return (
-    <>
-      {
-        /* <BfDsButton
-        kind="dan"
-        href="https://boltfoundry.substack.com/"
-        hrefTarget="_blank"
-        rel="noopener noreferrer"
-        text="Blog"
-      /> */
-      }
-      <BfDsButton
-        kind="danSelected"
-        href="/docs"
-        text="Docs"
-      />
-      <BfDsButton
-        kind="dan"
-        href="https://discord.gg/tU5ksTBfEj"
-        hrefTarget="_blank"
-        rel="noopener noreferrer"
-        text="Discord"
-      />
-      {
-        /* <BfDsButton
-      kind="outline"
-      text="Login"
-      link="/login"
-    /> */
-      }
-    </>
-  );
-};
 
 export const Docs = iso(`
   field Query.Docs($slug: String) @component {
@@ -53,9 +17,6 @@ export const Docs = iso(`
     }
   }
 `)(function Docs({ data, parameters }) {
-  const { navigate } = useRouter();
-  const [hoverLogo, setHoverLogo] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const docRef = useRef<HTMLDivElement>(null);
   const blogPost = data.documentsBySlug;
@@ -152,54 +113,7 @@ export const Docs = iso(`
   return (
     <div className="landing-page">
       {/* Header */}
-      <header className="landing-header">
-        <div className="landing-content flexRow gapLarge">
-          <div className="flex1 flexRow alignItemsCenter">
-            <div
-              className="header-logo clickable"
-              onClick={() => navigate("/")}
-              onMouseEnter={() => setHoverLogo(true)}
-              onMouseLeave={() => setHoverLogo(false)}
-            >
-              <BfLogo
-                boltColor={hoverLogo ? "var(--primaryColor)" : "var(--text)"}
-                foundryColor={hoverLogo ? "var(--primaryColor)" : "var(--text)"}
-                height={24}
-              />
-            </div>
-          </div>
-          <div className="mobile-hide">
-            <nav className="alignItemsCenter flexRow gapLarge header-nav">
-              <NavButtons />
-            </nav>
-          </div>
-          <nav className="mobile-show">
-            <BfDsButton
-              kind="dan"
-              iconLeft="menu"
-              onClick={() => {
-                setShowMenu(true);
-              }}
-            />
-          </nav>
-          {showMenu && (
-            <div className="mobile-show">
-              <div className="flexColumn gapLarge sidebar-nav">
-                <div className="selfAlignEnd">
-                  <BfDsButton
-                    kind="dan"
-                    iconLeft="cross"
-                    onClick={() => {
-                      setShowMenu(false);
-                    }}
-                  />
-                </div>
-                <NavButtons />
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
+      <Nav page="docs" />
       {/* Docs Content */}
       <section className="docs-section" ref={docRef}>
         <div className="landing-content">
@@ -238,7 +152,7 @@ export const Docs = iso(`
                 </div>
               </div>
             </div>
-            <main className="docs-main">
+            <main className="docs-main paper">
               <article
                 className="prose prose-lg"
                 dangerouslySetInnerHTML={{ __html: htmlContent }}

@@ -57,58 +57,57 @@ export const BlogList = iso(`
   };
 
   return (
-    <div className="blog-list">
-      <h1>Blog Posts</h1>
-      <div className="blog-posts">
-        {edges.map((edge) => {
-          if (!edge || !edge.node) return null;
-          const { id, content } = edge.node;
-          const { title, date, excerpt } = extractMetadata(content, id);
+    <main className="blog-main">
+      <div className="blog-list">
+        <h1>Blog Posts</h1>
+        <div className="blog-posts">
+          {edges.map((edge) => {
+            if (!edge || !edge.node) return null;
+            const { id, content } = edge.node;
+            const { title, date, excerpt } = extractMetadata(content, id);
 
-          return (
-            <article
-              key={edge.cursor}
-              className="blog-post-preview"
-              style={{
-                marginBottom: "2rem",
-                padding: "1.5rem",
-                border: "1px solid var(--border)",
-                borderRadius: "8px",
-              }}
-            >
-              <h2 style={{ marginTop: 0 }}>
+            return (
+              <article
+                key={edge.cursor}
+                className="blog-post-preview paper"
+                style={{
+                  marginBottom: "2rem",
+                }}
+              >
+                <h2 style={{ marginTop: 0 }}>
+                  <RouterLink
+                    to={`/blog/${id}`}
+                    style={{ color: "inherit", textDecoration: "none" }}
+                  >
+                    {title}
+                  </RouterLink>
+                </h2>
+                {date && (
+                  <time style={{ color: "var(--textDim)", fontSize: "0.9rem" }}>
+                    {date}
+                  </time>
+                )}
+                {excerpt && <p style={{ marginTop: "1rem" }}>{excerpt}</p>}
                 <RouterLink
                   to={`/blog/${id}`}
-                  style={{ color: "inherit", textDecoration: "none" }}
+                  style={{ color: "var(--link)", textDecoration: "none" }}
                 >
-                  {title}
+                  Read more →
                 </RouterLink>
-              </h2>
-              {date && (
-                <time style={{ color: "var(--textDim)", fontSize: "0.9rem" }}>
-                  {date}
-                </time>
-              )}
-              {excerpt && <p style={{ marginTop: "1rem" }}>{excerpt}</p>}
-              <RouterLink
-                to={`/blog/${id}`}
-                style={{ color: "var(--link)", textDecoration: "none" }}
-              >
-                Read more →
-              </RouterLink>
-            </article>
-          );
-        })}
-      </div>
-      {connection.pageInfo.hasNextPage && (
-        <div style={{ marginTop: "2rem" }}>
-          <BfDsButton
-            kind="dan"
-            text="Load more posts"
-            disabled
-          />
+              </article>
+            );
+          })}
         </div>
-      )}
-    </div>
+        {connection.pageInfo.hasNextPage && (
+          <div style={{ marginTop: "2rem" }}>
+            <BfDsButton
+              kind="dan"
+              text="Load more posts"
+              disabled
+            />
+          </div>
+        )}
+      </div>
+    </main>
   );
 });

@@ -18,12 +18,6 @@ export const BlogPostView = iso(`
 
   const blogPost = data;
 
-  useEffect(() => {
-    if (docRef.current) {
-      docRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [data.id]);
-
   // Convert markdown to HTML
   const renderer = new Renderer();
   renderer.table = function (header: string, body: string) {
@@ -81,10 +75,12 @@ export const BlogPostView = iso(`
   }, [htmlContent]);
 
   return (
-    <article
-      ref={docRef}
-      className="prose prose-lg"
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
-    />
+    <main className="blog-main paper">
+      <article
+        ref={docRef}
+        className="prose prose-lg"
+        dangerouslySetInnerHTML={{ __html: htmlContent }}
+      />
+    </main>
   );
 });
