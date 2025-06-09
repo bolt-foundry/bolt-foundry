@@ -214,7 +214,7 @@ code.npm-command {
   color: var(--alwaysLight);
 }
 
-.docs-main {
+.paper {
   flex: 1;
   min-width: 0;
   background: var(--alwaysWhite);
@@ -222,26 +222,26 @@ code.npm-command {
   padding: 16px 24px;
   border-radius: 12px;
 }
-.docs-main h1 {
+.paper h1 {
   font-size: 2.5em;
   border-bottom: 1px solid var(--alwaysDark005);
   scroll-margin-top: 86px;
 }
-.docs-main h2 {
+.paper h2 {
   margin-block-start: 1em;
   font-size: 1.8em;
   border-bottom: 1px solid var(--alwaysDark005);
   scroll-margin-top: 86px;
 }
-.docs-main h3 {
+.paper h3 {
   font-size: 1.2em;
   scroll-margin-top: 86px;
 }
-.docs-main a {
+.paper a {
   color: var(--alwaysDark);
 }
 
-.docs-main pre:has(> code) {
+.paper pre:has(> code) {
   background: var(--alwaysDark005);
   border-radius: 8px;
   padding: 8px;
@@ -257,22 +257,22 @@ pre > code {
   border-radius: 0;
   padding: 0;
 }
-.docs-main .table-wrapper {
+.paper .table-wrapper {
   overflow: auto;
 }
-.docs-main table {
+.paper table {
   border: 1px solid var(--alwaysDark005);
   border-radius: 8px;
   border-spacing: 0;
 }
-.docs-main tr:nth-child(even) {
+.paper tr:nth-child(even) {
   background: var(--alwaysDark005);
 }
-.docs-main th, .docs-main td {
+.paper th, .paper td {
   padding: 4px 8px;
   border-spacing: 0;
 }
-.docs-main thead th {
+.paper thead th {
   border-bottom: 1px solid var(--alwaysDark005);
 }
 
@@ -320,7 +320,7 @@ pre > code {
   .docs-section .landing-content {
     padding: 0;
   }
-  .docs-main {
+  .paper {
     border-radius: 0;
     width: 100%;
     box-sizing: border-box;
