@@ -288,6 +288,46 @@ const plugin: Deno.lint.Plugin = {
         };
       },
     },
+
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    /*  6. Ensure files end with a newline                                   */
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    "ensure-file-ends-with-newline": {
+      create(context) {
+        const { sourceCode } = context;
+
+        return {
+          "Program:exit"() {
+            const text = sourceCode.getText();
+
+            // Check if file is empty
+            if (text.length === 0) {
+              return;
+            }
+
+            // Check if file ends with a newline
+            if (!text.endsWith("\n")) {
+              // Report at the end of the file
+              const lastNode = sourceCode.ast;
+
+              context.report({
+                node: lastNode,
+                message: "File must end with a newline character",
+                fix(fixer) {
+                  // Insert newline at the end of the file
+                  return [
+                    fixer.insertTextAfterRange(
+                      [text.length, text.length],
+                      "\n",
+                    ),
+                  ];
+                },
+              });
+            }
+          },
+        };
+      },
+    },
   },
 };
 
