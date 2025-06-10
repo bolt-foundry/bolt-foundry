@@ -80,6 +80,6 @@ These projects will remain on hold until work resumes:
 For questions regarding implementation details, refer to the implementation
 plans:
 
-- [v0.1 Implementation Plan](/apps/bfDb/docs/0.1/implementation-plan.md)
-- [v0.2 Implementation Plan](/apps/bfDb/docs/0.2/implementation-plan.md)
-- [v0.3 Implementation Plan](/apps/bfDb/docs/0.3/implementation-plan.md)
+- [v0.1 Implementation Plan](../../../../404.md)
+- [v0.2 Implementation Plan](../../../../404.md)
+- [v0.3 Implementation Plan](../../../../404.md)

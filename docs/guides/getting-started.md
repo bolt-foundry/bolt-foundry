@@ -76,6 +76,6 @@ const supportAgent = client.createAssistantCard(
 
 ## Next Steps
 
-- Check out the [Quickstart](/docs/quickstart) for a practical example
+- Check out the [Quickstart](../../404.md) for a practical example
 - Learn about advanced patterns in our guides
 - Explore the API reference for detailed documentation

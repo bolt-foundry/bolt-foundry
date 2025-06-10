@@ -103,7 +103,7 @@ const response = await client.fetch(
 ```
 
 The -3 to +3 scoring system isn't just about examples. It's about achieving
-[99% reliability through inference-time control](improving-inference-philosophy.md).
+[99% reliability through inference-time control](../../docs/guides/improving-inference-philosophy.md).
 By making behavioral choices explicit and auditable, teams build AI systems as
 reliable as any other mission-critical software.
 
