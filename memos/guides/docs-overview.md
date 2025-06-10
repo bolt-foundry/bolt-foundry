@@ -37,7 +37,7 @@ concepts rather than ephemeral information. Specifically:
 For consistency with the rest of the monorepo:
 
 - Use Markdown (`.md`) for all documentation
-- Follow the [documentation directory protocol](../../404.md) for structure and
+- Follow the [documentation directory protocol](/404.md) for structure and
   versioning
 - Cross-reference related documents where appropriate
 - Include clear titles and section headers

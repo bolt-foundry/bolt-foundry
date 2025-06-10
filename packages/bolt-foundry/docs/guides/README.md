@@ -38,14 +38,14 @@ brings software engineering best practices to LLM development.
 
 | Version                                   | Status   | Description                                                   |
 | ----------------------------------------- | -------- | ------------------------------------------------------------- |
-| [v0.0](../../../../404.md)                | Complete | Foundation with immutable builders and basic deck creation    |
+| [v0.0](/404.md)                           | Complete | Foundation with immutable builders and basic deck creation    |
 | [v0.1](../../../../examples/docs/V0.1.md) | Complete | Simplified deck system with samples and context variables     |
-| [v0.2](../../../../404.md)                | Complete | Enhanced analytics with PostHog integration and cost tracking |
+| [v0.2](/404.md)                           | Complete | Enhanced analytics with PostHog integration and cost tracking |
 
 ## Planned Changes
 
-- [Samples API Refactor](../../../../404.md) - Unifying sample types and
-  simplifying from builder pattern to array pattern (next patch version)
+- [Samples API Refactor](/404.md) - Unifying sample types and simplifying from
+  builder pattern to array pattern (next patch version)
 
 ## Potential future directions
 
