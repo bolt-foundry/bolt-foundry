@@ -19,8 +19,8 @@ export const Blog = iso(`
 `)(function Blog({ data, parameters = {} }) {
   const hasSlug = Boolean(parameters?.slug);
 
-  // During SSR or when data is not available, use the simple component
-  if (typeof window === "undefined" || !data) {
+  // If data is not available, use the simple component
+  if (!data) {
     return <BlogSimple slug={parameters?.slug ?? undefined} />;
   }
 
