@@ -121,6 +121,19 @@ export interface GqlBuilder<
     },
   ): GqlBuilder<R>;
 
+  isoDate<N extends string>(
+    name: N,
+    opts?: {
+      args?: (ab: ArgsBuilder) => ArgsBuilder;
+      resolve?: (
+        root: ThisNode,
+        args: GraphQLResolverArgs,
+        ctx: BfGraphqlContext,
+        info: GraphQLResolveInfo,
+      ) => MaybePromise<Date>;
+    },
+  ): GqlBuilder<R>;
+
   /**
    * Define an object field that represents an edge relationship to another object type.
    *
@@ -293,6 +306,19 @@ export function makeGqlBuilder<
       return builder;
     },
 
+    isoDate(name, opts = {}) {
+      // Create the argument builder function
+      const argFn = makeArgBuilder();
+
+      spec.fields[name] = {
+        type: "IsoDate",
+        nonNull: false,
+        args: opts.args ? argFn(opts.args) : {},
+        resolve: opts.resolve,
+      };
+      return builder;
+    },
+
     object(name, targetThunk, opts = {}) {
       // Create the argument builder function
       const argFn = makeArgBuilder();
@@ -434,6 +460,19 @@ export function makeGqlBuilder<
 
           spec.fields[name] = {
             type: "ID",
+            nonNull: true,
+            args: opts.args ? argFn(opts.args) : {},
+            resolve: opts.resolve,
+          };
+          return builder;
+        },
+
+        isoDate: (name, opts = {}) => {
+          // Create the argument builder function
+          const argFn = makeArgBuilder();
+
+          spec.fields[name] = {
+            type: "IsoDate",
             nonNull: true,
             args: opts.args ? argFn(opts.args) : {},
             resolve: opts.resolve,
