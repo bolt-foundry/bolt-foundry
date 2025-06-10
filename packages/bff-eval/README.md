@@ -87,8 +87,8 @@ type InputSampleFile = Array<Sample>;
 ## Create your grader
 
 Graders let you build your eval logic in a structured way. Read more on our
-[prompting philosophy](/docs/improving-inference-philosophy.md), or the
-[case studies](/docs/case-studies.md) as to why we've done it this way.
+[prompting philosophy](../../docs/guides/improving-inference-philosophy.md), or the
+[case studies](../../memos/guides/case-studies.md) as to why we've done it this way.
 
 1. Structure your grader with an initial spec explaining what your grader will
    do.

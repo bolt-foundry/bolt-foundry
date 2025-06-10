@@ -46,7 +46,6 @@ const result = await client.generate(sentimentAnalyzer, {
 
 ## Next Steps
 
-- Read the [Getting Started](/docs/getting-started.mdx) guide for a deeper
-  understanding
+- Read the [Getting Started](../../404.md) guide for a deeper understanding
 - Explore more examples in our documentation
 - Join our community for support and updates
