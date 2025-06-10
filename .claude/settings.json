@@ -13,6 +13,10 @@
       "Bash(find:*)",
       "Bash(grep:*)",
       "Bash(**/*.test.ts)",
+      "WebFetch(domain:jsr.io)",
+      "WebFetch(domain:npmjs.com)",
+      "WebFetch(domain:developer.mozilla.org)",
+      "WebFetch(domain:deno.com)",
       "WebFetch(domain:docs.deno.com)",
       "WebFetch(domain:docs.github.com)",
       "Bash(rg:*)"

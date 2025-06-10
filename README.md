@@ -28,7 +28,7 @@ Assistant cards turn AI instructions into testable specifications:
 
 - **[Company vision](docs/guides/company-vision.md)**: Making LLMs 99% reliable
   through structured assistant cards
-- **[Product plan](404.md)**: How we're building the card system
+- **[Product plan](/404.md)**: How we're building the card system
 - **[Inference philosophy](docs/guides/improving-inference-philosophy.md)**: Why
   inference-time control matters
 - **[Team story](memos/guides/team-story.md)**: Who we are and why we're doing

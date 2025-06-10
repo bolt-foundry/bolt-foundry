@@ -33,11 +33,11 @@ they were written.
 
 ## Versions
 
-| Version              | Status   | Description                                   |
-| -------------------- | -------- | --------------------------------------------- |
-| [v0.1](../../404.md) | Complete | Basic blog reading functionality              |
-| v0.2                 | Planned  | Blog listing page with chronological ordering |
-| v0.3                 | Planned  | Author metadata and tags                      |
+| Version         | Status   | Description                                   |
+| --------------- | -------- | --------------------------------------------- |
+| [v0.1](/404.md) | Complete | Basic blog reading functionality              |
+| v0.2            | Planned  | Blog listing page with chronological ordering |
+| v0.3            | Planned  | Author metadata and tags                      |
 
 ## Future work
 

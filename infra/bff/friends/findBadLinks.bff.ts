@@ -94,7 +94,7 @@ export default async function findBadLinksCommand(
   // Generate report if requested
   if (flags.report) {
     await generateReport(brokenLinks, totalFiles, totalLinks);
-    logger.info("\n📄 Report saved to broken_links_report.md");
+    logger.info("\n📄 Report saved to tmp/broken_links_report.md");
   }
 
   // Fix links if requested
@@ -130,7 +130,10 @@ register(
       "--ai-fix, --aifix":
         "Use Claude to intelligently resolve broken links and apply fixes",
     },
-    { "--report": "Generate a detailed report file" },
+    {
+      "--report":
+        "Generate a detailed report file in tmp/broken_links_report.md",
+    },
     { "--path=<path>": "Specific path to check (default: entire project)" },
   ],
   true, // AI-safe
@@ -232,6 +235,9 @@ async function generateReport(
   totalFiles: number,
   totalLinks: number,
 ) {
+  // Ensure tmp directory exists
+  await Deno.mkdir("tmp", { recursive: true });
+
   const report = [
     "# Broken Links Report",
     "",
@@ -268,7 +274,7 @@ async function generateReport(
     report.push("");
   }
 
-  await Deno.writeTextFile("broken_links_report.md", report.join("\n"));
+  await Deno.writeTextFile("tmp/broken_links_report.md", report.join("\n"));
 }
 
 async function fixBrokenLinks(fixableLinks: Array<BrokenLink>) {
@@ -312,9 +318,8 @@ async function aiFixBrokenLinks(brokenLinks: Array<BrokenLink>) {
     if (link.suggestedFix) {
       fixedLinks.push(link);
     } else {
-      // Use 404.md as fallback for unresolvable links
-      const fileDir = join(link.file, "..");
-      link.suggestedFix = relative(fileDir, join(Deno.cwd(), "404.md"));
+      // Use /404.md as fallback for unresolvable links
+      link.suggestedFix = "/404.md";
       fallbackLinks.push(link);
     }
   }
