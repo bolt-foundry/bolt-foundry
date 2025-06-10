@@ -23,27 +23,46 @@ The system will use standard Markdown AST parsing to extract deck structure:
 
 File references work differently for containers vs elements:
 
-- **Embeds** `![description for people](pathToEmbed)` hoist content into parent
-  context
+- **Embeds** `![description for people](pathToEmbed)` embed content in place
+  within current context
+- **Prefix embeds** `<![description for people](pathToEmbed)` prepend content
+  before the current block
+- **Postfix embeds** `>![description for people](pathToEmbed)` append content
+  after the current block (useful for grader decks)
+- **Parent embeds** `^![description for people](pathToEmbed)` hoist content up
+  to parent card/context
 - **Card embeds** `![card description](./card.md#specific-card)` embed specific
   cards using hash fragments
 - **Hierarchical references** use dot syntax: `#parent.child.grandchild`
+- **All embed types support references**: `![...]`, `<![...]`, `>![...]`,
+  `^![...]` can all use fragments like `#specific-card` or `#parent.child`
+- **Reference syntax philosophy**: "I want this content embedded here for AI
+  execution, but showing it inline would be distracting for humans
+  reading/editing the deck. The AI should process it as if the content were
+  written exactly at this spot."
 - **Footnotes** `[^ref]` attach to current element (specs, headings, embeds)
 - **Regular links** `[text](url)` have their targets stripped, leaving just the
   text
 - Embeds can have footnotes: `![card description](./card.md) [^usage-example]`
-- Footnotes can resolve to `![sample description](file.toml#id)` or
-  `![context description](file.toml#id)` embeds
+- Footnotes can resolve to any embed type: `<![sample](file.toml#id)`,
+  `>![context](file.toml#id)`, `^![shared](file.md#card)`, etc.
 - Footnotes can also be plain text for reference
 - TOML files use `[samples.id]` or `[contexts.id]` format
 
-Card reference examples:
+Card reference examples with all embed types:
 
 - Simple: `#review-process` (when unique in file)
 - Hierarchical: `#review-process.deep-review` (for nested cards)
 - Cross-file: `./code-review.md#assistant-persona.communication-style`
 - TOML alignment: mirrors TOML's `contexts.videoUrl` and
   `samples.good-timestamps`
+
+Reference syntax works with all embed strategies:
+
+- Regular: `![standards](./company.deck.md#code-standards)`
+- Prefix: `<![api headers](./api.deck.md#common-headers)`
+- Postfix: `>![grader rules](./grader.deck.md#evaluation-task)`
+- Parent: `^![shared context](./context.toml#database-config)`
 
 ID resolution example:
 
@@ -154,6 +173,67 @@ The renderer will:
 
 - Recursively crawl all embeds to assemble the complete deck
 - Preserve ordering (order matters for prompt construction)
+- Process embeds based on their type:
+  - Regular embeds (`![...]`) - immediately in place within current context
+  - Prefix embeds (`<![...]`) - prepend before current block starts
+  - Postfix embeds (`>![...]`) - append after current block ends
+  - Parent embeds (`^![...]`) - hoist up to parent card level
 - Build prompts following the same patterns as current TypeScript builders
 - Validate heading uniqueness within each hierarchy level
 - Generate appropriate IDs with dot syntax for nested structures
+
+Embed type examples:
+
+**Regular embed** (in-place within current context):
+
+```markdown
+## Code Review
+
+### Standards
+
+![company coding standards](./standards.deck.md#coding)
+
+- Additional project-specific standards
+```
+
+**Prefix embed** (prepend before block):
+
+```markdown
+## API Design
+
+### REST Endpoints
+
+<![common api headers](./api-common.deck.md#headers)
+
+- GET /users - List all users
+- POST /users - Create new user
+```
+
+**Postfix embed** (append after block):
+
+```markdown
+## My Grader Deck
+
+### Evaluation Criteria
+
+- Response must be concise
+- Must answer the question directly
+
+> ![grader evaluation framework](./grader-base.deck.md#grader-evaluation)
+```
+
+**Parent embed** (hoist to parent level):
+
+```markdown
+## Feature Implementation
+
+### Database Schema
+
+^![shared database context](./db-context.toml)
+
+- Users table with email validation
+- Posts table with timestamps
+```
+
+The parent embed makes the database context available to all cards under
+"Feature Implementation", not just "Database Schema".
