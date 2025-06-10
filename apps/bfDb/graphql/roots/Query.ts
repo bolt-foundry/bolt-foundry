@@ -1,5 +1,5 @@
 import { GraphQLObjectBase } from "../GraphQLObjectBase.ts";
-import { PublishedDocument } from "apps/bfDb/nodeTypes/PublishedDocument.ts";
+import { Document } from "apps/bfDb/nodeTypes/Document.ts";
 import { BlogPost } from "apps/bfDb/nodeTypes/BlogPost.ts";
 import { GithubRepoStats } from "apps/bfDb/nodeTypes/GithubRepoStats.ts";
 
@@ -7,12 +7,12 @@ export class Query extends GraphQLObjectBase {
   static override gqlSpec = this.defineGqlNode((field) =>
     field
       .boolean("ok")
-      .object("documentsBySlug", () => PublishedDocument, {
+      .object("documentsBySlug", () => Document, {
         args: (a) => a.string("slug"),
         resolve: async (_root, args, _ctx, _info) => {
           const slug = (args.slug as string) || "README";
-          const post = await PublishedDocument.findX(slug).catch(() => null);
-          return post;
+          const doc = await Document.findX(slug).catch(() => null);
+          return doc;
         },
       })
       .object("blogPost", () => BlogPost, {
@@ -40,6 +40,19 @@ export class Query extends GraphQLObjectBase {
 
           // Return relay connection
           return BlogPost.connection(filtered, args);
+        },
+      })
+      .connection("documents", () => Document, {
+        args: (a) =>
+          a
+            .string("sortDirection"),
+        resolve: async (_root, args, _ctx) => {
+          // Default to alphabetical order
+          const sortDir = (args.sortDirection as "ASC" | "DESC") || "ASC";
+          const docs = await Document.listAll(sortDir);
+
+          // Return relay connection
+          return Document.connection(docs, args);
         },
       })
       .object("githubRepoStats", () => GithubRepoStats, {

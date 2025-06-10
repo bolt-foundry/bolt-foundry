@@ -1,0 +1,20 @@
+# Root documentation configuration
+
+[section]
+title = "Bolt Foundry Documentation"
+description = "Open-source platform for reliable LLM systems"
+
+# Define the order of documents at the root level
+[[documents]]
+slug = "README"
+title = "Overview"
+
+[[documents]]
+slug = "quickstart"
+title = "Quick Start"
+
+[[documents]]
+slug = "getting-started"
+title = "Getting Started"
+
+# The rest will be added alphabetically after these

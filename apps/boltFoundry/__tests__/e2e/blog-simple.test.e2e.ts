@@ -5,10 +5,7 @@ import {
   teardownE2ETest,
 } from "infra/testing/e2e/setup.ts";
 import { getLogger } from "packages/logger/logger.ts";
-import {
-  getAvailableBlogPosts,
-  getRandomBlogPost,
-} from "./helpers/blogTestHelpers.ts";
+import { getRandomBlogPost } from "./helpers/blogTestHelpers.ts";
 
 const logger = getLogger(import.meta);
 
@@ -46,7 +43,7 @@ Deno.test("Individual blog post route loads", async () => {
 
   // Skip test if no blog posts exist
   if (!randomPost) {
-    console.warn("No blog posts found in docs/blog directory, skipping test");
+    logger.info("No blog posts found in docs/blog directory, skipping test");
     return;
   }
 

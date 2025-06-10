@@ -23,7 +23,7 @@ const normalizationAst: NormalizationAst = {
           { kind: "Variable", name: "slug" },
         ],
       ],
-      concreteType: "PublishedDocument",
+      concreteType: "Document",
       selections: [
         {
           kind: "Scalar",

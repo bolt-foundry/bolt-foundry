@@ -53,6 +53,36 @@ type BlogPostEdge {
   node: BlogPost
 }
 
+type Document {
+  content: String!
+  id: ID!
+}
+
+type DocumentConnection {
+  count: Int
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-Edge-Types
+  """
+  edges: [DocumentEdge]
+
+  """Flattened list of Document type"""
+  nodes: [Document]
+
+  """
+  https://facebook.github.io/relay/graphql/connections.htm#sec-undefined.PageInfo
+  """
+  pageInfo: PageInfo!
+}
+
+type DocumentEdge {
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Cursor"""
+  cursor: String!
+
+  """https://facebook.github.io/relay/graphql/connections.htm#sec-Node"""
+  node: Document
+}
+
 type GithubRepoStats {
   id: ID!
   stars: Int!
@@ -97,6 +127,11 @@ type PageInfo {
   startCursor: String
 }
 
+type PublishableContent {
+  content: String!
+  id: ID!
+}
+
 type PublishedDocument {
   content: String!
   id: ID!
@@ -119,7 +154,21 @@ type Query {
     last: Int
     sortDirection: String
   ): BlogPostConnection
-  documentsBySlug(slug: String): PublishedDocument
+  documents(
+    """Returns the elements in the list that come after the specified cursor"""
+    after: String
+
+    """Returns the elements in the list that come before the specified cursor"""
+    before: String
+
+    """Returns the first n elements from the list."""
+    first: Int
+
+    """Returns the last n elements from the list."""
+    last: Int
+    sortDirection: String
+  ): DocumentConnection
+  documentsBySlug(slug: String): Document
   githubRepoStats: GithubRepoStats
   ok: Boolean
 }

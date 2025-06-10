@@ -57,6 +57,17 @@ export interface NexusGenObjects {
     cursor: string; // String!
     node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  Document: {};
+  DocumentConnection: { // root type
+    count?: number | null; // Int
+    edges?: Array<NexusGenRootTypes['DocumentEdge'] | null> | null; // [DocumentEdge]
+    nodes?: Array<NexusGenRootTypes['Document'] | null> | null; // [Document]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  DocumentEdge: { // root type
+    cursor: string; // String!
+    node?: NexusGenRootTypes['Document'] | null; // Document
+  }
   GithubRepoStats: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
@@ -69,6 +80,7 @@ export interface NexusGenObjects {
     hasPreviousPage: boolean; // Boolean!
     startCursor?: string | null; // String
   }
+  PublishableContent: {};
   PublishedDocument: {};
   Query: {};
   Waitlist: {};
@@ -113,6 +125,20 @@ export interface NexusGenFieldTypes {
     cursor: string; // String!
     node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
   }
+  Document: { // field return type
+    content: string; // String!
+    id: string; // ID!
+  }
+  DocumentConnection: { // field return type
+    count: number | null; // Int
+    edges: Array<NexusGenRootTypes['DocumentEdge'] | null> | null; // [DocumentEdge]
+    nodes: Array<NexusGenRootTypes['Document'] | null> | null; // [Document]
+    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
+  }
+  DocumentEdge: { // field return type
+    cursor: string; // String!
+    node: NexusGenRootTypes['Document'] | null; // Document
+  }
   GithubRepoStats: { // field return type
     id: string; // ID!
     stars: number; // Int!
@@ -130,6 +156,10 @@ export interface NexusGenFieldTypes {
     hasPreviousPage: boolean; // Boolean!
     startCursor: string | null; // String
   }
+  PublishableContent: { // field return type
+    content: string; // String!
+    id: string; // ID!
+  }
   PublishedDocument: { // field return type
     content: string; // String!
     id: string; // ID!
@@ -137,7 +167,8 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     blogPost: NexusGenRootTypes['BlogPost'] | null; // BlogPost
     blogPosts: NexusGenRootTypes['BlogPostConnection'] | null; // BlogPostConnection
-    documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
+    documents: NexusGenRootTypes['DocumentConnection'] | null; // DocumentConnection
+    documentsBySlug: NexusGenRootTypes['Document'] | null; // Document
     githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
     ok: boolean | null; // Boolean
   }
@@ -179,6 +210,20 @@ export interface NexusGenFieldTypeNames {
     cursor: 'String'
     node: 'BlogPost'
   }
+  Document: { // field return type name
+    content: 'String'
+    id: 'ID'
+  }
+  DocumentConnection: { // field return type name
+    count: 'Int'
+    edges: 'DocumentEdge'
+    nodes: 'Document'
+    pageInfo: 'PageInfo'
+  }
+  DocumentEdge: { // field return type name
+    cursor: 'String'
+    node: 'Document'
+  }
   GithubRepoStats: { // field return type name
     id: 'ID'
     stars: 'Int'
@@ -196,6 +241,10 @@ export interface NexusGenFieldTypeNames {
     hasPreviousPage: 'Boolean'
     startCursor: 'String'
   }
+  PublishableContent: { // field return type name
+    content: 'String'
+    id: 'ID'
+  }
   PublishedDocument: { // field return type name
     content: 'String'
     id: 'ID'
@@ -203,7 +252,8 @@ export interface NexusGenFieldTypeNames {
   Query: { // field return type name
     blogPost: 'BlogPost'
     blogPosts: 'BlogPostConnection'
-    documentsBySlug: 'PublishedDocument'
+    documents: 'DocumentConnection'
+    documentsBySlug: 'Document'
     githubRepoStats: 'GithubRepoStats'
     ok: 'Boolean'
   }
@@ -234,6 +284,13 @@ export interface NexusGenArgTypes {
       after?: string | null; // String
       before?: string | null; // String
       filterByYear?: string | null; // String
+      first?: number | null; // Int
+      last?: number | null; // Int
+      sortDirection?: string | null; // String
+    }
+    documents: { // args
+      after?: string | null; // String
+      before?: string | null; // String
       first?: number | null; // Int
       last?: number | null; // Int
       sortDirection?: string | null; // String

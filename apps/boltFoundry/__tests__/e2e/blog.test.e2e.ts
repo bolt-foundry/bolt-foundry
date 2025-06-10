@@ -18,7 +18,7 @@ Deno.test("Blog list page at /blog shows all blog posts", async () => {
 
   // Skip test if no blog posts exist
   if (availablePosts.length === 0) {
-    console.warn("No blog posts found in docs/blog directory, skipping test");
+    logger.info("No blog posts found in docs/blog directory, skipping test");
     return;
   }
 
@@ -164,7 +164,7 @@ Deno.test("Can read blog post", async () => {
 
   // Skip test if no blog posts exist
   if (!recentPost) {
-    console.warn("No blog posts found in docs/blog directory, skipping test");
+    logger.info("No blog posts found in docs/blog directory, skipping test");
     return;
   }
 
@@ -230,14 +230,14 @@ Deno.test("Blog post shows proper date formatting", async () => {
   // Get any available blog post
   const posts = await getAvailableBlogPosts();
   if (posts.length === 0) {
-    console.warn("No blog posts found, skipping date formatting test");
+    logger.info("No blog posts found, skipping date formatting test");
     return;
   }
 
   // Find a post with a date in the filename
   const postWithDate = posts.find((p) => /\d{4}-\d{2}/.test(p.filename));
   if (!postWithDate) {
-    console.warn("No blog posts with date pattern found, skipping test");
+    logger.info("No blog posts with date pattern found, skipping test");
     return;
   }
 
@@ -320,7 +320,7 @@ Deno.test("Blog list shows post excerpts", async () => {
   // Check if there are blog posts
   const posts = await getAvailableBlogPosts();
   if (posts.length === 0) {
-    console.warn("No blog posts found, skipping excerpt test");
+    logger.info("No blog posts found, skipping excerpt test");
     return;
   }
 

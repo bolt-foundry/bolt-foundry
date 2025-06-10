@@ -5,5 +5,7 @@ export * from "apps/bfDb/nodeTypes/BfEdge.ts";
 export * from "apps/bfDb/nodeTypes/BfOrganization.ts";
 export * from "apps/bfDb/nodeTypes/BfPerson.ts";
 export * from "apps/bfDb/nodeTypes/BlogPost.ts";
+export * from "apps/bfDb/nodeTypes/Document.ts";
 export * from "apps/bfDb/nodeTypes/GithubRepoStats.ts";
+export * from "apps/bfDb/nodeTypes/PublishableContent.ts";
 export * from "apps/bfDb/nodeTypes/PublishedDocument.ts";

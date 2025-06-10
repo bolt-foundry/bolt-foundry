@@ -1,4 +1,7 @@
 import { join } from "@std/path";
+import { getLogger } from "packages/logger/logger.ts";
+
+const logger = getLogger(import.meta);
 
 export interface BlogPost {
   filename: string;
@@ -10,9 +13,9 @@ export interface BlogPost {
  * Reads all blog posts from the docs/blog directory
  * @returns Array of blog post metadata
  */
-export async function getAvailableBlogPosts(): Promise<BlogPost[]> {
+export async function getAvailableBlogPosts(): Promise<Array<BlogPost>> {
   const blogDir = join(Deno.cwd(), "docs", "blog");
-  const posts: BlogPost[] = [];
+  const posts: Array<BlogPost> = [];
 
   try {
     for await (const entry of Deno.readDir(blogDir)) {
@@ -35,7 +38,7 @@ export async function getAvailableBlogPosts(): Promise<BlogPost[]> {
       }
     }
   } catch (error) {
-    console.error("Error reading blog directory:", error);
+    logger.error("Error reading blog directory:", error);
   }
 
   // Sort posts by filename (which includes date) in descending order
