@@ -24,8 +24,13 @@ type BfPerson {
 }
 
 type BlogPost {
+  author: String
   content: String!
+  excerpt: String!
   id: ID!
+  publishedAt: IsoDate!
+  tags: String!
+  updatedAt: IsoDate
 }
 
 type BlogPostConnection {
@@ -57,6 +62,9 @@ type GithubRepoStats {
   id: ID!
   stars: Int!
 }
+
+"""ISO 8601 date string (e.g., 2025-06-10T14:30:00.000Z)"""
+scalar IsoDate
 
 type JoinWaitlistPayload {
   message: String

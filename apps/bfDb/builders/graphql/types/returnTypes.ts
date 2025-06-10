@@ -10,7 +10,8 @@ export type GraphQLScalarTypeName =
   | "Int"
   | "Boolean"
   | "ID"
-  | "Float";
+  | "Float"
+  | "IsoDate";
 
 /**
  * Field definition in a return type specification
@@ -25,7 +26,7 @@ export interface ReturnFieldDef {
  * Maps field names to their runtime values
  */
 export type ReturnFieldValues = {
-  [fieldName: string]: string | number | boolean | null | undefined;
+  [fieldName: string]: string | number | boolean | Date | null | undefined;
 };
 
 /**
