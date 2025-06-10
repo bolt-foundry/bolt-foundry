@@ -4,6 +4,7 @@ import { register } from "infra/bff/bff.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { runEval } from "packages/bolt-foundry/evals/eval.ts";
 import startSpinner from "lib/terminalSpinner.ts";
+import { parse as parseToml } from "@std/toml";
 
 const logger = getLogger(import.meta);
 
@@ -56,7 +57,8 @@ function printTable(data: Array<unknown> | Record<string, unknown>) {
 
 export async function evalCommand(options: Array<string>): Promise<number> {
   // Parse command line arguments
-  const args: Record<string, string> = {};
+  const args: Record<string, string | Record<string, unknown>> = {};
+  const contextVars: Record<string, unknown> = {};
   let i = 0;
 
   while (i < options.length) {
@@ -70,6 +72,99 @@ export async function evalCommand(options: Array<string>): Promise<number> {
       args.model = options[++i] || "gpt-4o";
     } else if (arg === "--output" || arg === "-o") {
       args.outputFile = options[++i];
+    } else if (arg === "--context" || arg === "-c") {
+      // Support multiple formats:
+      // --context key=value
+      // --context '{"key": "value"}'
+      // --context @file.json
+      i++;
+      if (i < options.length) {
+        const contextArg = options[i];
+        if (contextArg.startsWith("@")) {
+          // Load from file
+          try {
+            const filePath = contextArg.slice(1);
+            const fileContent = await Deno.readTextFile(filePath);
+
+            let fileContext: Record<string, unknown>;
+
+            // Determine file type and parse accordingly
+            if (filePath.endsWith(".toml")) {
+              // Parse TOML file
+              const tomlData = parseToml(fileContent) as Record<
+                string,
+                unknown
+              >;
+
+              // If the TOML has a 'context' or 'contexts' section, use that
+              // Otherwise use the whole file as context
+              if (tomlData.context && typeof tomlData.context === "object") {
+                fileContext = tomlData.context as Record<string, unknown>;
+              } else if (
+                tomlData.contexts && typeof tomlData.contexts === "object"
+              ) {
+                // Extract just the values from contexts (not the full context definitions)
+                fileContext = {};
+                for (
+                  const [key, value] of Object.entries(
+                    tomlData.contexts as Record<string, unknown>,
+                  )
+                ) {
+                  if (
+                    value && typeof value === "object" && "default" in value
+                  ) {
+                    fileContext[key] = value.default;
+                  } else if (
+                    value && typeof value === "object" && "value" in value
+                  ) {
+                    fileContext[key] = value.value;
+                  }
+                }
+              } else {
+                fileContext = tomlData;
+              }
+            } else {
+              // Default to JSON parsing
+              fileContext = JSON.parse(fileContent);
+            }
+
+            Object.assign(contextVars, fileContext);
+          } catch (error) {
+            logger.error(`Failed to load context from file: ${error}`);
+            return 1;
+          }
+        } else if (contextArg.startsWith("{")) {
+          // JSON format
+          try {
+            const jsonContext = JSON.parse(contextArg);
+            Object.assign(contextVars, jsonContext);
+          } catch (error) {
+            logger.error(`Invalid JSON context: ${error}`);
+            return 1;
+          }
+        } else if (contextArg.includes("=")) {
+          // key=value format
+          const [key, ...valueParts] = contextArg.split("=");
+          let value: unknown = valueParts.join("="); // Handle values with = in them
+
+          // Try to parse as number or boolean
+          if (value === "true") {
+            value = true;
+          } else if (value === "false") {
+            value = false;
+          } else if (!isNaN(Number(value)) && value !== "") {
+            value = Number(value);
+          }
+
+          contextVars[key] = value;
+        } else {
+          logger.error(`Invalid context format: ${contextArg}`);
+          logger.error(
+            'Use: --context key=value, --context \'{"key":"value"}\', --context @file.json, or --context @file.toml',
+          );
+          return 1;
+        }
+      }
     } else if (arg === "--help" || arg === "-h") {
       printHelp();
       return 0;
@@ -81,9 +176,14 @@ export async function evalCommand(options: Array<string>): Promise<number> {
     i++;
   }
 
+  // Add context to args if any were provided
+  if (Object.keys(contextVars).length > 0) {
+    args.context = contextVars;
+  }
+
   // Validate required arguments
-  if (!args.inputFile || !args.graderFile) {
-    logger.error("Missing required arguments: --input and --grader");
+  if (!args.graderFile) {
+    logger.error("Missing required argument: --grader");
     printHelp();
     return 1;
   }
@@ -94,27 +194,41 @@ export async function evalCommand(options: Array<string>): Promise<number> {
   }
 
   logger.debug(`Running evaluation...`);
-  logger.debug(`Input: ${args.inputFile}`);
-  logger.debug(`Grader: ${args.graderFile}`);
-  logger.debug(`Model: ${args.model}`);
+  if (args.inputFile) {
+    logger.debug(`Input: ${args.inputFile}`);
+  }
+  logger.debug(`Grader: ${args.graderFile as string}`);
+  logger.debug(`Model: ${args.model as string}`);
+  if (args.context) {
+    logger.debug(`Context: ${JSON.stringify(args.context)}`);
+  }
 
   // Show evaluation configuration
   printLine("\nEvaluation Configuration:");
-  printTable({
-    "Input File": args.inputFile,
-    "Grader File": args.graderFile,
-    "Model": args.model,
-    "Output": args.outputFile || "Console",
-  });
+  const config: Record<string, string> = {
+    "Grader File": args.graderFile as string,
+    "Model": args.model as string,
+    "Output": (args.outputFile as string) || "Console",
+  };
+  if (args.inputFile) {
+    config["Input File"] = args.inputFile as string;
+  } else {
+    config["Input Source"] = "Embedded in grader deck";
+  }
+  if (args.context) {
+    config["Context Variables"] = JSON.stringify(args.context);
+  }
+  printTable(config);
 
   const stopSpinner = startSpinner();
 
   try {
     // Run the evaluation
     const results = await runEval({
-      inputFile: args.inputFile,
-      graderFile: args.graderFile,
-      model: args.model,
+      inputFile: args.inputFile as string | undefined,
+      graderFile: args.graderFile as string,
+      model: args.model as string,
+      context: args.context as Record<string, unknown> | undefined,
     });
 
     stopSpinner();
@@ -298,14 +412,30 @@ Usage: bff eval [options]
 Run LLM evaluation on a dataset using a grader.
 
 Options:
-  -i, --input <file>    Input JSONL file with evaluation samples (required)
+  -i, --input <file>    Input JSONL file with evaluation samples (optional)
+                        If not provided, samples must be embedded in the grader deck
   -g, --grader <file>   Grader file with evaluation criteria (required)
+                        Supports both .ts and .md files with optional TOML embeds
   -m, --model <model>   Model to use for evaluation (default: openai/gpt-4o)
   -o, --output <file>   Output file for results (optional, defaults to console)
+  -c, --context <var>   Provide context variables (can be used multiple times)
+                        Formats: key=value, '{"key":"value"}', @file.json, or @file.toml
   -h, --help            Show this help message
 
-Example:
+Examples:
+  # With separate input file
   bff eval --input ./data/samples.jsonl --grader ./graders/json-validator.ts
+  
+  # With self-contained grader deck (samples embedded via TOML)
+  bff eval --grader ./graders/writing-quality.md -m gpt-4o-mini
+  
+  # With context variables
+  bff eval --grader grader.md --context maxLength=500 --context style=formal
+  bff eval --grader grader.md --context '{"maxLength":500,"style":"formal"}'
+  bff eval --grader grader.md --context @context.json
+  bff eval --grader grader.md --context @context.toml
+  
+  # With output file
   bff eval -i samples.jsonl -g validator.ts -m anthropic/claude-3-opus -o results.jsonl
 `);
 }

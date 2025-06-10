@@ -3,14 +3,13 @@
   "version": "0.1.2",
   "description": "Evaluation framework for LLM systems - Node.js CLI",
   "bin": {
-    "bff-eval": "dist/bin/bff-eval.js"
+    "bff-eval": "bin/bff-eval.js"
   },
   "scripts": {
-    "build": "tsc --noEmit false --skipLibCheck true",
-    "test": "node --test"
+    "test": "echo 'No tests needed - this is a simple wrapper'"
   },
   "files": [
-    "dist",
+    "bin",
     "examples"
   ],
   "keywords": [
@@ -37,13 +36,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
-    "@bolt-foundry/bolt-foundry": "0.1.1",
-    "yargs": "^17.7.2"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@types/yargs": "^17.0.32",
-    "typescript": "^5.0.0"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
