@@ -76,8 +76,8 @@ export async function precommitCommand(
 
   const checks = [
     { name: "Format", command: ["bff", "ai", "format"] },
+    { name: "Lint", command: ["bff", "ai", "lint", "--fix"] },
     { name: "Type Check", command: ["bff", "ai", "check"] },
-    { name: "Lint", command: ["bff", "ai", "lint"] },
     { name: "Test", command: ["bff", "ai", "test"] },
   ];
 
