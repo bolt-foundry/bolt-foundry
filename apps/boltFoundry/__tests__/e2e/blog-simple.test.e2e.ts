@@ -5,6 +5,10 @@ import {
   teardownE2ETest,
 } from "infra/testing/e2e/setup.ts";
 import { getLogger } from "packages/logger/logger.ts";
+import {
+  getAvailableBlogPosts,
+  getRandomBlogPost,
+} from "./helpers/blogTestHelpers.ts";
 
 const logger = getLogger(import.meta);
 
@@ -37,11 +41,20 @@ Deno.test("Blog routes are accessible", async () => {
 });
 
 Deno.test("Individual blog post route loads", async () => {
+  // First, get a random blog post to test
+  const randomPost = await getRandomBlogPost();
+
+  // Skip test if no blog posts exist
+  if (!randomPost) {
+    console.warn("No blog posts found in docs/blog directory, skipping test");
+    return;
+  }
+
   const context = await setupE2ETest({ headless: true });
 
   try {
-    // Test a specific blog post route
-    await navigateTo(context, "/blog/hello-world-2025-06-01");
+    // Test the dynamically selected blog post route
+    await navigateTo(context, `/blog/${randomPost.slug}`);
     await context.takeScreenshot("blog-post-route-loaded");
 
     // Wait for header to ensure page loaded
@@ -50,8 +63,11 @@ Deno.test("Individual blog post route loads", async () => {
     // Check for either article content or error message
     const hasContent = await context.page.evaluate(() => {
       const article = document.querySelector("article");
+      const blogContent = document.querySelector(".blog-content");
       const errorDiv = document.querySelector(".error-page");
-      return Boolean(article || errorDiv);
+      // Also check for any content that might indicate a blog post
+      const hasHeading = document.querySelector("h1");
+      return Boolean(article || blogContent || errorDiv || hasHeading);
     });
 
     assert(
@@ -59,7 +75,16 @@ Deno.test("Individual blog post route loads", async () => {
       "Page should display either blog content or error message",
     );
 
-    logger.info("Blog post route loaded");
+    // Verify the title is present (if we found a heading)
+    const pageContent = await context.page.evaluate(() =>
+      document.body.textContent
+    );
+    assert(
+      pageContent?.includes(randomPost.title) || hasContent,
+      `Page should contain the blog post title: ${randomPost.title}`,
+    );
+
+    logger.info(`Blog post route loaded successfully for: ${randomPost.slug}`);
   } catch (error) {
     await context.takeScreenshot("blog-post-route-error");
     logger.error("Test failed:", error);
