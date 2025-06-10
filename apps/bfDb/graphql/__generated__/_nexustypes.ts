@@ -40,6 +40,7 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  IsoDate: any
 }
 
 export interface NexusGenObjects {
@@ -100,8 +101,13 @@ export interface NexusGenFieldTypes {
     name: string | null; // String
   }
   BlogPost: { // field return type
+    author: string | null; // String
     content: string; // String!
+    excerpt: string; // String!
     id: string; // ID!
+    publishedAt: NexusGenScalars['IsoDate']; // IsoDate!
+    tags: string; // String!
+    updatedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
   }
   BlogPostConnection: { // field return type
     count: number | null; // Int
@@ -166,8 +172,13 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
   }
   BlogPost: { // field return type name
+    author: 'String'
     content: 'String'
+    excerpt: 'String'
     id: 'ID'
+    publishedAt: 'IsoDate'
+    tags: 'String'
+    updatedAt: 'IsoDate'
   }
   BlogPostConnection: { // field return type name
     count: 'Int'
