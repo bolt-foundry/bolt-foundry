@@ -307,23 +307,64 @@ const plugin: Deno.lint.Plugin = {
 
             // Check if file ends with a newline
             if (!text.endsWith("\n")) {
-              // Report at the end of the file
-              const lastNode = sourceCode.ast;
+              // Report at the last character position
+              const lastPosition = text.length;
 
               context.report({
-                node: lastNode,
+                range: [lastPosition, lastPosition],
                 message: "File must end with a newline character",
                 fix(fixer) {
                   // Insert newline at the end of the file
                   return [
                     fixer.insertTextAfterRange(
-                      [text.length, text.length],
+                      [lastPosition, lastPosition],
                       "\n",
                     ),
                   ];
                 },
               });
             }
+          },
+        };
+      },
+    },
+
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    /*  7. Enforce @ts-expect-error has a description                         */
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    "ts-expect-error-description": {
+      create(context) {
+        const { sourceCode } = context;
+        const text = sourceCode.getText();
+        const lines = text.split("\n");
+
+        return {
+          "Program:exit"() {
+            // Find all @ts-expect-error comments
+            lines.forEach((line, lineIndex) => {
+              const tsExpectErrorMatch = line.match(
+                /^\s*(\/\/\s*@ts-expect-error)(\s*[:\-–]?\s*(.+))?/,
+              );
+              if (tsExpectErrorMatch) {
+                const description = tsExpectErrorMatch[3];
+
+                // Check if there's no description or if it's too generic
+                if (!description || description.trim().length === 0) {
+                  const columnStart = tsExpectErrorMatch.index || 0;
+
+                  context.report({
+                    range: [
+                      lines.slice(0, lineIndex).join("\n").length +
+                      (lineIndex > 0 ? 1 : 0) + columnStart,
+                      lines.slice(0, lineIndex).join("\n").length +
+                      (lineIndex > 0 ? 1 : 0) + line.length,
+                    ],
+                    message:
+                      "@ts-expect-error directive must include a description explaining why it's needed",
+                  });
+                }
+              }
+            });
           },
         };
       },
