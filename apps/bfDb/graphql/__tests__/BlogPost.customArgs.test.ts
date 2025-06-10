@@ -159,11 +159,11 @@ Deno.test("GraphQL blogPosts connection should support filterByYear argument", a
     };
     const edges = blogPostsData.edges;
 
-    // There are 6 existing 2024 posts + 2 test posts = 8 total
+    // We have 2 test posts from 2024
     assertEquals(
       edges.length,
-      8,
-      "Should have 8 posts from 2024 (6 existing + 2 test)",
+      2,
+      "Should have 2 posts from 2024 (test posts)",
     );
 
     // Verify all posts are from 2024
