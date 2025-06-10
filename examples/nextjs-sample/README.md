@@ -99,5 +99,5 @@ See `/pages/api/regular-chat.ts` for the complete implementation.
 
 ## Learn more
 
-- [Bolt Foundry deck system](/docs/deck-system.md)
+- [Bolt Foundry deck system](../../docs/guides/deck-system.md)
 - [Full API documentation](/packages/bolt-foundry/docs/)
