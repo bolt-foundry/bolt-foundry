@@ -1,9 +1,14 @@
 import type { DeckBuilder } from "packages/bolt-foundry/builders/builders.ts";
+import {
+  parseMarkdownToDeck,
+  type TomlSample,
+} from "packages/bolt-foundry/builders/markdown/markdownToDeck.ts";
 
 export interface EvalOptions {
-  inputFile: string;
+  inputFile?: string; // Now optional
   graderFile: string;
   model: string;
+  context?: Record<string, unknown>; // Additional context variables
 }
 
 export interface GradingResult {
@@ -33,7 +38,7 @@ interface EvalSample {
 export async function runEval(
   options: EvalOptions,
 ): Promise<Array<GradingResult>> {
-  const { inputFile, graderFile, model } = options;
+  const { inputFile, graderFile, model, context: providedContext } = options;
 
   // Resolve paths relative to current working directory if they're relative
   const resolveFilePath = (filePath: string): URL => {
@@ -46,18 +51,7 @@ export async function runEval(
     }
   };
 
-  const inputFilePath = resolveFilePath(inputFile);
   const graderFilePath = resolveFilePath(graderFile);
-  // Read and validate input file
-  let inputContent: string;
-  try {
-    inputContent = await Deno.readTextFile(inputFilePath);
-  } catch (error) {
-    if (error instanceof Deno.errors.NotFound) {
-      throw new Error(`No such file: ${inputFile}`);
-    }
-    throw error;
-  }
 
   // Read and validate grader file
   try {
@@ -69,31 +63,82 @@ export async function runEval(
     throw error;
   }
 
-  // Load grader module
-  const graderModule = await import(graderFilePath.href);
-  const grader: DeckBuilder = graderModule.default;
+  // Load grader - handle both TypeScript modules and Markdown files
+  let grader: DeckBuilder;
+  let embeddedSamples: Record<string, TomlSample> = {};
 
-  // Parse JSONL input
+  if (graderFile.endsWith(".md")) {
+    // Read and parse markdown file
+    const markdownContent = await Deno.readTextFile(graderFilePath);
+    // Pass the directory of the grader file as the base path
+    const basePath = graderFilePath.pathname.substring(
+      0,
+      graderFilePath.pathname.lastIndexOf("/"),
+    );
+    const parsedDeck = await parseMarkdownToDeck(markdownContent, basePath);
+    grader = parsedDeck.deck;
+    embeddedSamples = parsedDeck.samples;
+  } else {
+    // Load as TypeScript module
+    const graderModule = await import(graderFilePath.href);
+    grader = graderModule.default;
+  }
+
+  // Get samples from input file or from embedded TOML
   const samples: Array<EvalSample> = [];
-  const lines = inputContent.trim().split("\n");
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
 
+  if (inputFile) {
+    // Read from input file if provided
+    const inputFilePath = resolveFilePath(inputFile);
+    let inputContent: string;
     try {
-      const sample = JSON.parse(line) as EvalSample;
-      // Generate ID if missing
-      if (!sample.id) {
-        sample.id = `eval-${i + 1}`;
-      }
-      samples.push(sample);
+      inputContent = await Deno.readTextFile(inputFilePath);
     } catch (error) {
-      throw new Error(
-        `Invalid JSON on line ${i + 1}: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-      );
+      if (error instanceof Deno.errors.NotFound) {
+        throw new Error(`No such file: ${inputFile}`);
+      }
+      throw error;
     }
+
+    // Parse JSONL input
+    const lines = inputContent.trim().split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+
+      try {
+        const sample = JSON.parse(line) as EvalSample;
+        // Generate ID if missing
+        if (!sample.id) {
+          sample.id = `eval-${i + 1}`;
+        }
+        samples.push(sample);
+      } catch (error) {
+        throw new Error(
+          `Invalid JSON on line ${i + 1}: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
+    }
+  } else if (Object.keys(embeddedSamples).length > 0) {
+    // Use embedded samples from TOML
+    let sampleIndex = 0;
+    for (const [id, tomlSample] of Object.entries(embeddedSamples)) {
+      samples.push({
+        id: id,
+        userMessage: tomlSample.userMessage,
+        assistantResponse: tomlSample.assistantResponse,
+        expected: tomlSample.expected,
+        score: tomlSample.score,
+        ...tomlSample, // Include any extra fields
+      });
+      sampleIndex++;
+    }
+  } else {
+    throw new Error(
+      "No input samples provided. Either specify --input or embed samples in the grader deck using TOML.",
+    );
   }
 
   // Process each sample
@@ -103,13 +148,18 @@ export async function runEval(
     const startTime = performance.now();
 
     // Prepare context for the deck
-    const context: Record<string, string> = {
+    const context: Record<string, string | unknown> = {
       userMessage: sample.userMessage,
       assistantResponse: sample.assistantResponse,
     };
 
     if (sample.expected) {
       context.expected = sample.expected;
+    }
+
+    // Merge any provided context variables
+    if (providedContext) {
+      Object.assign(context, providedContext);
     }
 
     // Render the grader with the evaluation context
