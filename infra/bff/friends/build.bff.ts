@@ -440,10 +440,10 @@ export async function build(args: Array<string>): Promise<number> {
     }
 
     // Build bff-eval package after bolt-foundry
-    if (debug) logMemoryUsage("before bff-eval package build");
-    logger.info("Building bff-eval package...");
+    if (debug) logMemoryUsage("before bff-eval package setup");
+    logger.info("Setting up bff-eval package...");
 
-    // First run npm install to ensure dependencies are installed
+    // Since bff-eval is now a simple wrapper, we only need to ensure npm dependencies are installed
     logger.info("Installing bff-eval dependencies...");
     const bffEvalInstallResult = await runShellCommand([
       "npm",
@@ -455,18 +455,8 @@ export async function build(args: Array<string>): Promise<number> {
       return bffEvalInstallResult;
     }
 
-    // Then build the package
-    const bffEvalBuildResult = await runShellCommand([
-      "npm",
-      "run",
-      "build",
-    ], "packages/bff-eval");
-    if (debug) logMemoryUsage("after bff-eval package build");
-
-    if (bffEvalBuildResult !== 0) {
-      logger.error("Failed to build bff-eval package");
-      return bffEvalBuildResult;
-    }
+    logger.info("bff-eval package setup complete (no build needed)");
+    if (debug) logMemoryUsage("after bff-eval package setup");
   } else {
     logger.info(
       "Skipping bolt-foundry package build (use --include-bolt-foundry to build it)",
