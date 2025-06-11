@@ -1,5 +1,9 @@
 name: CI
-on: [pull_request, workflow_dispatch]
+on:
+  pull_request:
+  merge_group: # 👈 add this
+    types: [checks_requested] # optional but keeps the run list tidy
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
