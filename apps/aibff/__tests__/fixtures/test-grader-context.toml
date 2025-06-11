@@ -1,0 +1,14 @@
+[contexts.userMessage]
+type = "string"
+question = "What was the user's original message?"
+description = "The original message from the user"
+
+[contexts.assistantResponse]
+type = "string"
+question = "What was the assistant's response?"
+description = "The AI assistant's response to be evaluated"
+
+[contexts.outputFormat]
+type = "string"
+question = "What format would you like for the output?"
+description = "The desired output format for the evaluation"
