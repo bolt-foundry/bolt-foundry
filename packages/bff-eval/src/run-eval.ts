@@ -1,5 +1,6 @@
 // Direct evaluation implementation that works around the file:// URL issue
 import type { DeckBuilder } from "@bolt-foundry/bolt-foundry";
+import { parseMarkdownToDeck } from "@bolt-foundry/bolt-foundry/builders/markdown/markdownToDeck.ts";
 import { TerminalSpinner, ProgressBar } from "./terminal-spinner";
 
 interface RunOptions {
@@ -96,9 +97,20 @@ export async function runEvaluation(options: RunOptions): Promise<void> {
     // Load grader module
     console.log(`\n🔧 Loading grader...`);
     
-    const graderModule = require(graderPath);
-    const grader: DeckBuilder = graderModule.default || graderModule;
-    console.log(`✅ Loaded grader: ${graderPath}`);
+    let grader: DeckBuilder;
+    
+    // Check if grader is a markdown file
+    if (graderPath.endsWith('.md')) {
+      console.log("📝 Detected markdown grader file");
+      const graderContent = await fs.readFile(graderPath, 'utf-8');
+      grader = await parseMarkdownToDeck(graderContent);
+      console.log(`✅ Parsed markdown grader: ${graderPath}`);
+    } else {
+      // Load as regular TypeScript/JavaScript module
+      const graderModule = require(graderPath);
+      grader = graderModule.default || graderModule;
+      console.log(`✅ Loaded grader module: ${graderPath}`);
+    }
     
     // Parse JSONL input
     console.log("\n📋 Parsing evaluation samples...");
