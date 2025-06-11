@@ -19,6 +19,7 @@
       "WebFetch(domain:deno.com)",
       "WebFetch(domain:docs.deno.com)",
       "WebFetch(domain:docs.github.com)",
+      "WebFetch(domain:docs.github.com)",
       "Bash(rg:*)"
     ],
     "deny": [
