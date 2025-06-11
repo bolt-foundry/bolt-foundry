@@ -42,7 +42,7 @@ export function makeGraderDeckBuilder(name: string): DeckBuilder {
     c
       .string("userMessage", "What was the user's original message?")
       .string("assistantResponse", "What was the assistant's response?")
-      .string("expected", "What was the expected response? (optional)");
+      .string("outputFormat", "What format would you like for the output?");
 
   // Return a deck builder that intercepts methods
   return {
