@@ -1,3 +1,11 @@
++++
+author = "Dan Sisco"
+publishedAt = 2025-06-10T10:00:00-07:00
+updatedAt = 2025-06-10T10:00:00-07:00
+tags = ["llm", "prompts", "reliability", "engineering"]
+excerpt = "Most teams are building LLM prompts wrong. Here are 5 essential concepts for building reliable LLM applications."
++++
+
 # 5 things about LLM prompts we think everyone should know
 
 Most teams are building LLM prompts wrong.
