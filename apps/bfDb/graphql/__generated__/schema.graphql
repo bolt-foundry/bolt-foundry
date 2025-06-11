@@ -28,7 +28,7 @@ type BlogPost {
   content: String!
   excerpt: String!
   id: ID!
-  publishedAt: IsoDate!
+  publishedAt: IsoDate
   tags: String!
   updatedAt: IsoDate
 }

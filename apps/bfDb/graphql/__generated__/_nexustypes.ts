@@ -105,7 +105,7 @@ export interface NexusGenFieldTypes {
     content: string; // String!
     excerpt: string; // String!
     id: string; // ID!
-    publishedAt: NexusGenScalars['IsoDate']; // IsoDate!
+    publishedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
     tags: string; // String!
     updatedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
   }
