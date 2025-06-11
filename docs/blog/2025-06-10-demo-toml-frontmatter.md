@@ -1,7 +1,7 @@
 +++
-author = "Jane Developer"
-publishedAt = 2025-06-10T09:30:00-07:00
-updatedAt = 2025-06-10T14:45:00-07:00
+author = "Randall Bennett"
+publishedAt =
+updatedAt =
 tags = ["demo", "toml", "frontmatter"]
 excerpt = "This is a demo blog post showing TOML front matter support in our blog system."
 +++

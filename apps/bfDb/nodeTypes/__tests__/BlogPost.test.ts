@@ -11,19 +11,43 @@ async function setupTestBlogPosts(dir: string) {
   const posts = [
     {
       name: "2024-01-first-post.md",
-      content: "# First Post\n\nThis is the first post.",
+      content: `+++
+publishedAt = 2024-01-15T10:00:00-07:00
++++
+
+# First Post
+
+This is the first post.`,
     },
     {
       name: "2024-06-middle-post.md",
-      content: "# Middle Post\n\nThis is a middle post.",
+      content: `+++
+publishedAt = 2024-06-15T10:00:00-07:00
++++
+
+# Middle Post
+
+This is a middle post.`,
     },
     {
       name: "2025-01-latest-post.md",
-      content: "# Latest Post\n\nThis is the latest post.",
+      content: `+++
+publishedAt = 2025-01-15T10:00:00-07:00
++++
+
+# Latest Post
+
+This is the latest post.`,
     },
     {
       name: "2023-12-oldest-post.md",
-      content: "# Oldest Post\n\nThis is the oldest post.",
+      content: `+++
+publishedAt = 2023-12-15T10:00:00-07:00
++++
+
+# Oldest Post
+
+This is the oldest post.`,
     },
   ];
 
@@ -151,7 +175,7 @@ Second paragraph with more content.`;
 
     assertEquals(post.id, "2025-06-test-post");
     assertEquals(post.author, "Alice Johnson");
-    assertEquals(post.publishedAt.toISOString(), "2025-06-10T21:30:00.000Z");
+    assertEquals(post.publishedAt?.toISOString(), "2025-06-10T21:30:00.000Z");
     assertEquals(post.updatedAt?.toISOString(), "2025-06-11T16:00:00.000Z");
     assertEquals(post.tags, ["typescript", "deno", "testing"]);
     assertEquals(post.excerpt, "This is a custom excerpt for the blog post.");
@@ -188,7 +212,7 @@ This is the second paragraph that won't be in the excerpt.`;
 
     assertEquals(post.id, "2025-05-15-no-frontmatter");
     assertEquals(post.author, undefined); // Frontend will handle missing author
-    assertEquals(post.publishedAt.toISOString(), "2025-05-15T00:00:00.000Z"); // Date from filename
+    assertEquals(post.publishedAt, undefined); // No publishedAt without front matter
     assertEquals(post.updatedAt, undefined); // No updatedAt without front matter
     assertEquals(post.tags, []); // Empty array for tags
     assertEquals(
@@ -230,7 +254,7 @@ More content here.`;
 
     assertEquals(post.id, "2025-04-20-partial");
     assertEquals(post.author, "Bob Smith");
-    assertEquals(post.publishedAt.toISOString(), "2025-04-20T00:00:00.000Z"); // From filename
+    assertEquals(post.publishedAt, undefined); // Not provided in front matter
     assertEquals(post.updatedAt, undefined); // Not provided
     assertEquals(post.tags, ["partial", "test"]);
     assertEquals(
@@ -278,7 +302,7 @@ Second paragraph.`;
   }
 });
 
-Deno.test("BlogPost should extract publishedAt from various filename formats", async () => {
+Deno.test("BlogPost should not extract publishedAt from filename without front matter", async () => {
   const tempDir = await Deno.makeTempDir();
   const originalCwd = Deno.cwd();
 
@@ -287,19 +311,13 @@ Deno.test("BlogPost should extract publishedAt from various filename formats", a
     Deno.chdir(tempDir);
 
     const testCases = [
-      { filename: "2025-06-15-test.md", expected: "2025-06-15T00:00:00.000Z" },
-      { filename: "2025-6-5-test.md", expected: "2025-06-05T00:00:00.000Z" }, // Single digit month/day
-      {
-        filename: "2025-12-25-christmas.md",
-        expected: "2025-12-25T00:00:00.000Z",
-      },
-      {
-        filename: "no-date-in-filename.md",
-        expected: new Date().toISOString().split("T")[0] + "T00:00:00.000Z",
-      }, // Today's date
+      "2025-06-15-test.md",
+      "2025-6-5-test.md",
+      "2025-12-25-christmas.md",
+      "no-date-in-filename.md",
     ];
 
-    for (const { filename, expected } of testCases) {
+    for (const filename of testCases) {
       await Deno.writeTextFile(
         join(tempDir, "docs", "blog", filename),
         "# Test\n\nContent",
@@ -308,15 +326,57 @@ Deno.test("BlogPost should extract publishedAt from various filename formats", a
       const id = filename.replace(".md", "");
       const post = await BlogPost.load(id);
 
-      if (filename === "no-date-in-filename.md") {
-        // For posts without date in filename, just check it's today
-        const postDate = post.publishedAt.toISOString().split("T")[0];
-        const today = new Date().toISOString().split("T")[0];
-        assertEquals(postDate, today);
-      } else {
-        assertEquals(post.publishedAt.toISOString(), expected);
-      }
+      // Without explicit publishedAt in front matter, should be undefined
+      assertEquals(post.publishedAt, undefined);
     }
+  } finally {
+    Deno.chdir(originalCwd);
+    await Deno.remove(tempDir, { recursive: true });
+  }
+});
+
+Deno.test("BlogPost.listAll() should filter out posts without publishedAt", async () => {
+  const tempDir = await Deno.makeTempDir();
+  const originalCwd = Deno.cwd();
+
+  try {
+    await Deno.mkdir(join(tempDir, "docs", "blog"), { recursive: true });
+    Deno.chdir(tempDir);
+
+    // Create one post with publishedAt and one without
+    const publishedPost = `+++
+author = "Published Author"
+publishedAt = 2025-06-10T10:00:00-07:00
++++
+
+# Published Post
+
+This post should appear in the list.`;
+
+    const draftPost = `+++
+author = "Draft Author"
++++
+
+# Draft Post
+
+This post should NOT appear in the list.`;
+
+    await Deno.writeTextFile(
+      join(tempDir, "docs", "blog", "2025-06-10-published.md"),
+      publishedPost,
+    );
+
+    await Deno.writeTextFile(
+      join(tempDir, "docs", "blog", "2025-06-10-draft.md"),
+      draftPost,
+    );
+
+    const posts = await BlogPost.listAll();
+
+    // Should only return the published post
+    assertEquals(posts.length, 1, "Should only include posts with publishedAt");
+    assertEquals(posts[0].id, "2025-06-10-published");
+    assertEquals(posts[0].author, "Published Author");
   } finally {
     Deno.chdir(originalCwd);
     await Deno.remove(tempDir, { recursive: true });
