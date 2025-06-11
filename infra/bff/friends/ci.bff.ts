@@ -412,4 +412,6 @@ register(
   "ci",
   "Run CI checks (lint, test, build, format). E.g. `bff ci -g` for GH annotations.",
   ciCommand,
+  [],
+  true, // AI-safe
 );
