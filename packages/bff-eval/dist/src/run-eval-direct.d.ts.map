@@ -1,1 +1,0 @@
-{"version":3,"file":"run-eval-direct.d.ts","sourceRoot":"","sources":["../../src/run-eval-direct.ts"],"names":[],"mappings":"AAGA,UAAU,UAAU;IAClB,KAAK,EAAE,MAAM,CAAC;IACd,MAAM,EAAE,MAAM,CAAC;IACf,KAAK,CAAC,EAAE,MAAM,CAAC;IACf,MAAM,CAAC,EAAE,MAAM,CAAC;IAChB,OAAO,CAAC,EAAE,OAAO,CAAC;CACnB;AAyBD,wBAAsB,aAAa,CAAC,OAAO,EAAE,UAAU,GAAG,OAAO,CAAC,IAAI,CAAC,CAuMtE"}
