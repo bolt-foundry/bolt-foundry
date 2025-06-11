@@ -49,7 +49,23 @@ async function setupTestPosts() {
     await Deno.writeTextFile(`${testDir}/${post.id}.md`, post.content);
   }
 
-  return posts;
+  // Add some older posts for the 'last' test
+  const olderPosts = [
+    {
+      id: "2023-06-test-old",
+      content: "# Old Post 1\n\nThis is an old test post.",
+    },
+    {
+      id: "2023-01-test-oldest",
+      content: "# Oldest Post\n\nThis is the oldest test post.",
+    },
+  ];
+
+  for (const post of olderPosts) {
+    await Deno.writeTextFile(`${testDir}/${post.id}.md`, post.content);
+  }
+
+  return [...posts, ...olderPosts];
 }
 
 async function cleanupTestPosts() {
