@@ -1,4 +1,5 @@
 import type {
+  Card,
   DeckBuilder,
   JSONValue,
 } from "packages/bolt-foundry/builders/builders.ts";
@@ -6,6 +7,9 @@ import {
   parseMarkdownToDeck,
   type TomlSample,
 } from "packages/bolt-foundry/builders/markdown/markdownToDeck.ts";
+import { getLogger } from "packages/logger/logger.ts";
+
+const logger = getLogger(import.meta);
 
 export interface EvalOptions {
   inputFile?: string; // Now optional
@@ -43,6 +47,13 @@ export async function runEval(
 ): Promise<Array<GradingResult>> {
   const { inputFile, graderFile, model, context: providedContext } = options;
 
+  logger.debug(`Starting evaluation with options:`, {
+    inputFile,
+    graderFile,
+    model,
+    providedContext,
+  });
+
   // Resolve paths relative to current working directory if they're relative
   const resolveFilePath = (filePath: string): URL => {
     if (filePath.startsWith("/")) {
@@ -73,16 +84,74 @@ export async function runEval(
   if (graderFile.endsWith(".md")) {
     // Read and parse markdown file
     const markdownContent = await Deno.readTextFile(graderFilePath);
+    logger.debug(
+      `Loaded markdown content from ${graderFile}, length: ${markdownContent.length}`,
+    );
+
     // Pass the directory of the grader file as the base path
     const basePath = graderFilePath.pathname.substring(
       0,
       graderFilePath.pathname.lastIndexOf("/"),
     );
+    logger.debug(`Parsing markdown with basePath: ${basePath}`);
+
     const parsedDeck = await parseMarkdownToDeck(markdownContent, basePath);
-    grader = parsedDeck.deck;
+
+    // Import makeGraderDeckBuilder to wrap the parsed deck
+    const { makeGraderDeckBuilder } = await import(
+      "packages/bolt-foundry/evals/makeGraderDeckBuilder.ts"
+    );
+
+    // Create a grader deck that will append the evaluation context
+    const graderDeck = makeGraderDeckBuilder(parsedDeck.deck.name);
+
+    // Copy all cards from parsed deck to grader deck
+    const cards = parsedDeck.deck.getCards();
+    logger.debug(`Copying ${cards.length} cards to grader deck`);
+
+    // We need to rebuild the deck structure
+    for (const card of cards) {
+      if (typeof card.value === "string") {
+        // This is a spec
+        graderDeck.spec(card.value);
+      } else if (card.name) {
+        // This is a card with nested content
+        graderDeck.card(card.name, (c) => {
+          let builder = c;
+          const nestedCards = card.value as Array<Card>;
+          for (const subCard of nestedCards) {
+            if (typeof subCard.value === "string") {
+              builder = builder.spec(subCard.value);
+            } else if (subCard.name) {
+              // Handle nested cards
+              builder = builder.card(subCard.name, (sc) => {
+                let subBuilder = sc;
+                const subNestedCards = subCard.value as Array<Card>;
+                for (const subSubCard of subNestedCards) {
+                  if (typeof subSubCard.value === "string") {
+                    subBuilder = subBuilder.spec(subSubCard.value);
+                  }
+                }
+                return subBuilder;
+              });
+            }
+          }
+          return builder;
+        });
+      }
+    }
+
+    grader = graderDeck;
     embeddedSamples = parsedDeck.samples;
+
+    logger.debug(
+      `Created grader deck with ${
+        Object.keys(embeddedSamples).length
+      } embedded samples`,
+    );
   } else {
     // Load as TypeScript module
+    logger.debug(`Loading TypeScript module from ${graderFilePath.href}`);
     const graderModule = await import(graderFilePath.href);
     grader = graderModule.default;
   }
@@ -126,8 +195,14 @@ export async function runEval(
     }
   } else if (Object.keys(embeddedSamples).length > 0) {
     // Use embedded samples from TOML
+    logger.debug(
+      `Loading ${
+        Object.keys(embeddedSamples).length
+      } embedded samples from grader deck`,
+    );
     let sampleIndex = 0;
     for (const [id, tomlSample] of Object.entries(embeddedSamples)) {
+      logger.debug(`Loading sample ${id}:`, tomlSample);
       samples.push({
         ...tomlSample, // Include any extra fields
         id: id,
@@ -150,6 +225,17 @@ export async function runEval(
   for (const sample of samples) {
     const startTime = performance.now();
 
+    logger.debug(
+      `\n========== Processing sample: ${sample.id || "unnamed"} ==========`,
+    );
+    logger.debug(`Sample data:`, {
+      id: sample.id,
+      userMessage: sample.userMessage.substring(0, 200) + "...",
+      assistantResponse: sample.assistantResponse,
+      expected: sample.expected,
+      score: sample.score,
+    });
+
     // Prepare context for the deck
     const context: Record<string, JSONValue> = {
       userMessage: sample.userMessage,
@@ -165,11 +251,19 @@ export async function runEval(
       Object.assign(context, providedContext);
     }
 
+    logger.debug(`Context prepared for grader:`, context);
+
     // Render the grader with the evaluation context
     const renderedGrader = grader.render({
       model,
       context,
       temperature: 0,
+    });
+
+    logger.debug(`Rendered grader prompt:`, {
+      messages: renderedGrader.messages,
+      model: renderedGrader.model,
+      temperature: renderedGrader.temperature,
     });
 
     // Call LLM API via OpenRouter
@@ -196,13 +290,18 @@ export async function runEval(
     }
 
     const apiResponse = await response.json();
+    logger.debug(`API Response:`, apiResponse);
+
     const rawOutput = apiResponse.choices[0].message.content;
+    logger.debug(`Raw LLM output: "${rawOutput}"`);
 
     // Parse the evaluation result
     let output: { score: number; notes?: string };
     try {
       output = JSON.parse(rawOutput);
-    } catch (_parseError) {
+      logger.debug(`Successfully parsed output:`, output);
+    } catch (parseError) {
+      logger.error(`Failed to parse JSON output: ${parseError}`);
       // If the grader fails to return valid JSON, that's a score of 0
       output = {
         score: 0,
