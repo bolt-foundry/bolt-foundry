@@ -97,43 +97,44 @@ export async function runEval(
 
     const parsedDeck = await parseMarkdownToDeck(markdownContent, basePath);
 
-    // Import makeGraderDeckBuilder to wrap the parsed deck
-    const { makeGraderDeckBuilder } = await import(
-      "packages/bolt-foundry/evals/makeGraderDeckBuilder.ts"
+    // Load the grader-base.deck.md file
+    const graderBasePath = new URL(
+      "../../../decks/grader-base.deck.md",
+      import.meta.url,
+    ).pathname;
+    logger.debug(`Loading grader base from: ${graderBasePath}`);
+
+    const graderBaseContent = await Deno.readTextFile(graderBasePath);
+    const graderBaseDir = graderBasePath.substring(
+      0,
+      graderBasePath.lastIndexOf("/"),
+    );
+    const graderBaseDeck = await parseMarkdownToDeck(
+      graderBaseContent,
+      graderBaseDir,
     );
 
-    // Create a grader deck that will append the evaluation context
-    const graderDeck = makeGraderDeckBuilder(parsedDeck.deck.name);
+    // Create a new deck that combines user deck + grader base
+    const { makeDeckBuilder } = await import(
+      "packages/bolt-foundry/builders/builders.ts"
+    );
 
-    // Copy all cards from parsed deck to grader deck
-    const cards = parsedDeck.deck.getCards();
-    logger.debug(`Copying ${cards.length} cards to grader deck`);
+    let combinedDeck = makeDeckBuilder(parsedDeck.deck.name);
 
-    // We need to rebuild the deck structure
-    for (const card of cards) {
+    // First, add all cards from the user's grader deck
+    const userCards = parsedDeck.deck.getCards();
+    logger.debug(`Adding ${userCards.length} user cards`);
+
+    for (const card of userCards) {
       if (typeof card.value === "string") {
-        // This is a spec
-        graderDeck.spec(card.value);
+        combinedDeck = combinedDeck.spec(card.value);
       } else if (card.name) {
-        // This is a card with nested content
-        graderDeck.card(card.name, (c) => {
+        combinedDeck = combinedDeck.card(card.name, (c) => {
           let builder = c;
           const nestedCards = card.value as Array<Card>;
           for (const subCard of nestedCards) {
             if (typeof subCard.value === "string") {
               builder = builder.spec(subCard.value);
-            } else if (subCard.name) {
-              // Handle nested cards
-              builder = builder.card(subCard.name, (sc) => {
-                let subBuilder = sc;
-                const subNestedCards = subCard.value as Array<Card>;
-                for (const subSubCard of subNestedCards) {
-                  if (typeof subSubCard.value === "string") {
-                    subBuilder = subBuilder.spec(subSubCard.value);
-                  }
-                }
-                return subBuilder;
-              });
             }
           }
           return builder;
@@ -141,7 +142,68 @@ export async function runEval(
       }
     }
 
-    grader = graderDeck;
+    // Then, add the grader base cards
+    const baseCards = graderBaseDeck.deck.getCards();
+    logger.debug(`Adding ${baseCards.length} grader base cards`);
+
+    combinedDeck = combinedDeck.card("grader evaluation", (c) => {
+      let builder = c;
+      for (const card of baseCards) {
+        if (typeof card.value === "string") {
+          builder = builder.spec(card.value);
+        } else if (card.name) {
+          builder = builder.card(card.name, (sc) => {
+            let subBuilder = sc;
+            const nestedCards = card.value as Array<Card>;
+            for (const subCard of nestedCards) {
+              if (typeof subCard.value === "string") {
+                subBuilder = subBuilder.spec(subCard.value);
+              }
+            }
+            return subBuilder;
+          });
+        }
+      }
+      return builder;
+    });
+
+    // Add contexts from both decks
+    const userContexts = parsedDeck.deck.getContext();
+    const baseContexts = graderBaseDeck.deck.getContext();
+
+    combinedDeck = combinedDeck.context((c) => {
+      let builder = c;
+
+      // Add user contexts first
+      for (const ctx of userContexts) {
+        if (ctx.type === "string") {
+          builder = builder.string(ctx.name, ctx.question);
+        } else if (ctx.type === "number") {
+          builder = builder.number(ctx.name, ctx.question);
+        } else if (ctx.type === "boolean") {
+          builder = builder.boolean(ctx.name, ctx.question);
+        } else if (ctx.type === "object") {
+          builder = builder.object(ctx.name, ctx.question);
+        }
+      }
+
+      // Add base contexts (these will override if there are duplicates)
+      for (const ctx of baseContexts) {
+        if (ctx.type === "string") {
+          builder = builder.string(ctx.name, ctx.question);
+        } else if (ctx.type === "number") {
+          builder = builder.number(ctx.name, ctx.question);
+        } else if (ctx.type === "boolean") {
+          builder = builder.boolean(ctx.name, ctx.question);
+        } else if (ctx.type === "object") {
+          builder = builder.object(ctx.name, ctx.question);
+        }
+      }
+
+      return builder;
+    });
+
+    grader = combinedDeck;
     embeddedSamples = parsedDeck.samples;
 
     logger.debug(
@@ -240,11 +302,15 @@ export async function runEval(
     const context: Record<string, JSONValue> = {
       userMessage: sample.userMessage,
       assistantResponse: sample.assistantResponse,
+      outputFormat: JSON.stringify(
+        {
+          score: "<number from -3 to 3>",
+          notes: "<brief explanation of your scoring>",
+        },
+        null,
+        2,
+      ),
     };
-
-    if (sample.expected) {
-      context.expected = sample.expected;
-    }
 
     // Merge any provided context variables
     if (providedContext) {
@@ -286,6 +352,10 @@ export async function runEval(
     const latencyInMs = endTime - startTime;
 
     if (!response.ok) {
+      const errorBody = await response.text();
+      logger.error(
+        `API request failed with status ${response.status}: ${errorBody}`,
+      );
       throw new Error(`API request failed: ${response.statusText}`);
     }
 

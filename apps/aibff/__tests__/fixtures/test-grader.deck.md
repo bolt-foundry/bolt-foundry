@@ -10,4 +10,4 @@ You are evaluating an AI assistant's response.
 - The response should be accurate
 - The response should be concise
 
->![grader samples](./test-grader-samples.toml)
+> ![grader samples](./test-grader-samples.toml)
