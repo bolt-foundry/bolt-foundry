@@ -13,6 +13,9 @@ import type { Card, CardBuilder, DeckBuilder } from "../builders.ts";
 import { makeCardBuilder, makeDeckBuilder } from "../builders.ts";
 import { parse as parseToml } from "@std/toml";
 import { dirname, resolve } from "@std/path";
+import { getLogger } from "packages/logger/logger.ts";
+
+const logger = getLogger(import.meta);
 
 export interface TomlContext {
   type: "string" | "number" | "boolean";
@@ -58,9 +61,16 @@ export async function parseMarkdownToDeck(
   markdown: string,
   basePath?: string,
 ): Promise<ParsedDeck> {
+  logger.debug(
+    `parseMarkdownToDeck called with basePath: ${basePath}, markdown length: ${markdown.length}`,
+  );
+
   // Parse markdown to AST
   const processor = remark().use(remarkParse);
   const ast = processor.parse(markdown) as Root;
+  logger.debug(
+    `Parsed markdown AST with ${ast.children.length} top-level nodes`,
+  );
 
   // Extract deck name from H1 (if exists)
   let deckName = "deck"; // default name
@@ -94,6 +104,11 @@ export async function parseMarkdownToDeck(
               Object.assign(allContexts, tomlData.contexts);
             }
             if (tomlData.samples) {
+              logger.debug(
+                `Found ${
+                  Object.keys(tomlData.samples).length
+                } samples in TOML embed`,
+              );
               Object.assign(allSamples, tomlData.samples);
             }
           } else {
@@ -460,15 +475,19 @@ async function processTomlEmbed(
     return null;
   }
 
+  logger.debug(`Processing TOML embed: ${node.url}`);
+
   // Split URL and fragment
   const [urlPath, fragment] = node.url.split("#");
 
   // Check if it's a TOML file
   if (!urlPath.endsWith(".toml")) {
+    logger.debug(`Not a TOML file: ${urlPath}`);
     return null;
   }
 
   const filePath = basePath ? resolve(basePath, urlPath) : urlPath;
+  logger.debug(`Loading TOML file from: ${filePath}`);
   const tomlData = await loadTomlFile(filePath);
 
   // If there's a fragment identifier, only return that specific item
