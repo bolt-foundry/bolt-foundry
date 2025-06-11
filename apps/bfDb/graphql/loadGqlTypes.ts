@@ -13,6 +13,8 @@ import * as nodeTypesModule from "apps/bfDb/models/__generated__/nodeTypesList.t
 import { loadInterfaces } from "apps/bfDb/graphql/graphqlInterfaces.ts";
 // Import the correct type for GraphQL object constructors
 import type { AnyGraphqlObjectBaseCtor } from "apps/bfDb/builders/bfDb/types.ts";
+// Import custom scalars
+import { IsoDate } from "apps/bfDb/graphql/scalars/IsoDate.ts";
 // Interface classes are automatically loaded via the barrel file in __generated__/interfacesList.ts
 
 const roots = Object.values(rootsModule);
@@ -26,6 +28,9 @@ export async function loadGqlTypes() {
   const types = [];
   const payloadTypeObjects: Record<string, unknown> = {};
   const mutationTypes = [];
+
+  // Add custom scalars
+  types.push(IsoDate);
 
   // Add all defined interfaces
   types.push(...loadInterfaces());
