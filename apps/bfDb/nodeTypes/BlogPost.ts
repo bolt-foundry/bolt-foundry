@@ -17,7 +17,7 @@ export class BlogPost extends GraphQLNode {
   private _id: string;
   private _content: string;
   private _author?: string;
-  private _publishedAt: Date;
+  private _publishedAt?: Date;
   private _updatedAt?: Date;
   private _tags: Array<string>;
   private _excerpt: string;
@@ -36,7 +36,7 @@ export class BlogPost extends GraphQLNode {
     this._id = id;
     this._content = content;
     this._author = author;
-    this._publishedAt = publishedAt || BlogPost.extractDateFromFilename(id);
+    this._publishedAt = publishedAt;
     this._updatedAt = updatedAt;
     this._tags = tags || [];
     this._excerpt = excerpt || generateExcerpt(content);
@@ -83,7 +83,7 @@ export class BlogPost extends GraphQLNode {
   /**
    * Post published date.
    */
-  get publishedAt(): Date {
+  get publishedAt(): Date | undefined {
     return this._publishedAt;
   }
 
@@ -179,7 +179,11 @@ export class BlogPost extends GraphQLNode {
           const slug = entry.name.replace(".md", "");
           // Use findX to leverage caching
           const post = await this.findX(slug);
-          posts.push(post);
+
+          // Only include posts that have a publishedAt date
+          if (post.publishedAt) {
+            posts.push(post);
+          }
         }
       }
     } catch (error) {
@@ -224,7 +228,7 @@ export class BlogPost extends GraphQLNode {
       .nonNull.id("id")
       .nonNull.string("content")
       .string("author")
-      .nonNull.isoDate("publishedAt")
+      .isoDate("publishedAt")
       .isoDate("updatedAt")
       // Since lists are not supported by the GraphQL builder, we return tags as JSON string
       .nonNull.string("tags", {
