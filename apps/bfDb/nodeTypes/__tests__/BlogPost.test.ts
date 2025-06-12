@@ -382,3 +382,171 @@ This post should NOT appear in the list.`;
     await Deno.remove(tempDir, { recursive: true });
   }
 });
+
+Deno.test("BlogPost.listAll() should filter out future-dated posts", async () => {
+  const tempDir = await Deno.makeTempDir();
+  const originalCwd = Deno.cwd();
+
+  try {
+    await Deno.mkdir(join(tempDir, "docs", "blog"), { recursive: true });
+    Deno.chdir(tempDir);
+
+    const now = new Date();
+    const past = new Date(now.getTime() - 24 * 60 * 60 * 1000); // Yesterday
+    const future = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Tomorrow
+
+    // Create posts with different dates
+    const pastPost = `+++
+author = "Past Author"
+publishedAt = ${past.toISOString()}
++++
+
+# Past Post
+
+This post was published yesterday.`;
+
+    const futurePost = `+++
+author = "Future Author"
+publishedAt = ${future.toISOString()}
++++
+
+# Future Post
+
+This post is scheduled for tomorrow.`;
+
+    const todayPost = `+++
+author = "Today Author"
+publishedAt = ${now.toISOString()}
++++
+
+# Today Post
+
+This post was published today.`;
+
+    await Deno.writeTextFile(
+      join(tempDir, "docs", "blog", "2025-01-01-past.md"),
+      pastPost,
+    );
+
+    await Deno.writeTextFile(
+      join(tempDir, "docs", "blog", "2025-12-31-future.md"),
+      futurePost,
+    );
+
+    await Deno.writeTextFile(
+      join(tempDir, "docs", "blog", "2025-06-15-today.md"),
+      todayPost,
+    );
+
+    const posts = await BlogPost.listAll();
+
+    // Should only return past and today's posts, not future posts
+    assertEquals(posts.length, 2, "Should exclude future-dated posts");
+
+    // Verify the future post is correctly excluded
+    const futurePostIncluded = posts.some((p) => p.id === "2025-12-31-future");
+    assertEquals(
+      futurePostIncluded,
+      false,
+      "Future post is correctly excluded",
+    );
+
+    // Past and today posts should be included
+    const pastPostIncluded = posts.some((p) => p.id === "2025-01-01-past");
+    const todayPostIncluded = posts.some((p) => p.id === "2025-06-15-today");
+    assertEquals(pastPostIncluded, true, "Past post should be included");
+    assertEquals(todayPostIncluded, true, "Today's post should be included");
+  } finally {
+    Deno.chdir(originalCwd);
+    await Deno.remove(tempDir, { recursive: true });
+  }
+});
+
+Deno.test("BlogPost.listAll() should sort by publishedAt date not filename", async () => {
+  const tempDir = await Deno.makeTempDir();
+  const originalCwd = Deno.cwd();
+
+  try {
+    await Deno.mkdir(join(tempDir, "docs", "blog"), { recursive: true });
+    Deno.chdir(tempDir);
+
+    // Create posts where filename date doesn't match publishedAt date
+    const posts = [
+      {
+        // Filename suggests January, but published in December
+        name: "2025-01-wrong-date.md",
+        content: `+++
+author = "Test Author"
+publishedAt = 2024-12-01T10:00:00-07:00
++++
+
+# Post with mismatched dates
+
+Filename says January 2025 but published December 2024.`,
+      },
+      {
+        // Filename suggests June, but published in January
+        name: "2025-06-another-wrong.md",
+        content: `+++
+author = "Test Author"
+publishedAt = 2025-01-15T10:00:00-07:00
++++
+
+# Another mismatched post
+
+Filename says June 2025 but published January 2025.`,
+      },
+      {
+        // Correct matching dates
+        name: "2025-03-correct.md",
+        content: `+++
+author = "Test Author"
+publishedAt = 2025-03-15T10:00:00-07:00
++++
+
+# Correctly dated post
+
+Filename and publishedAt both say March 2025.`,
+      },
+    ];
+
+    for (const post of posts) {
+      await Deno.writeTextFile(
+        join(tempDir, "docs", "blog", post.name),
+        post.content,
+      );
+    }
+
+    const postsList = await BlogPost.listAll("DESC");
+
+    // Should be sorted by publishedAt date (DESC): March 2025, Jan 2025, Dec 2024
+    assertEquals(
+      postsList[0].id,
+      "2025-03-correct",
+      "March 2025 should be first",
+    );
+    assertEquals(
+      postsList[1].id,
+      "2025-06-another-wrong",
+      "January 2025 should be second",
+    );
+    assertEquals(
+      postsList[2].id,
+      "2025-01-wrong-date",
+      "December 2024 should be last",
+    );
+
+    // Verify they're actually sorted by publishedAt
+    const dates = postsList.map((p) => p.publishedAt?.getTime() || 0);
+    for (let i = 1; i < dates.length; i++) {
+      assertEquals(
+        dates[i - 1] >= dates[i],
+        true,
+        "Dates should be in descending order",
+      );
+    }
+  } finally {
+    Deno.chdir(originalCwd);
+    await Deno.remove(tempDir, { recursive: true });
+  }
+});

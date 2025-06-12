@@ -180,8 +180,8 @@ export class BlogPost extends GraphQLNode {
           // Use findX to leverage caching
           const post = await this.findX(slug);
 
-          // Only include posts that have a publishedAt date
-          if (post.publishedAt) {
+          // Only include posts that have a publishedAt date and are not in the future
+          if (post.publishedAt && post.publishedAt <= new Date()) {
             posts.push(post);
           }
         }
@@ -194,12 +194,16 @@ export class BlogPost extends GraphQLNode {
       throw error;
     }
 
-    // Sort by filename (which includes date prefix YYYY-MM)
+    // Sort by publishedAt date
     posts.sort((a, b) => {
+      // Both posts should have publishedAt since we filter for it above
+      const dateA = a.publishedAt?.getTime() ?? 0;
+      const dateB = b.publishedAt?.getTime() ?? 0;
+
       if (sortDirection === "ASC") {
-        return a.id.localeCompare(b.id);
+        return dateA - dateB;
       } else {
-        return b.id.localeCompare(a.id);
+        return dateB - dateA;
       }
     });
 
