@@ -241,6 +241,22 @@ code.npm-command {
   color: var(--alwaysDark);
 }
 
+.paper blockquote {
+  border-left: 4px solid var(--primaryColor);
+  padding: 8px 16px;
+  margin: 0;
+}
+.paper blockquote p {
+  margin: 0;
+}
+.paper blockquote > ul {
+  list-style: none;
+  padding: 4px 0 0;
+  color: var(--textSecondary);
+  font-size: 0.8em;
+  margin: 0;
+}
+
 .paper pre:has(> code) {
   background: var(--alwaysDark005);
   border-radius: 8px;
