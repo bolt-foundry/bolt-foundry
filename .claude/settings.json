@@ -5,6 +5,7 @@
   },
   "permissions": {
     "allow": [
+      "Bash(aibff:*)",
       "Bash(bff ai:*)",
       "Bash(ls:*)",
       "Bash(cat:*)",

@@ -60,7 +60,7 @@
     "jsr:@std/yaml@^1.0.5": "1.0.6",
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
-    "npm:@anthropic-ai/claude-code@^1.0.19": "1.0.19",
+    "npm:@anthropic-ai/claude-code@^1.0.21": "1.0.21",
     "npm:@hexagon/base64@^1.1.27": "1.1.28",
     "npm:@hyperdx/browser@~0.21.2": "0.21.2_@hyperdx+otel-web@0.16.3__@opentelemetry+api@1.9.0",
     "npm:@hyperdx/deno@^0.0.4": "0.0.4_@opentelemetry+api@1.6.0_@opentelemetry+api-logs@0.43.0",
@@ -373,8 +373,8 @@
     }
   },
   "npm": {
-    "@anthropic-ai/claude-code@1.0.19": {
-      "integrity": "sha512-lejDYytnk5Zh/qhHDplTSNDslpEJOn4V4GN3yVry8ZAdXhc5JGtOpyCoDZPTagtK3yuZ1SpS3R0XFDIPzdJ+eQ==",
+    "@anthropic-ai/claude-code@1.0.21": {
+      "integrity": "sha512-Ig+OPSl7e77SJrE2jB8p4qnnyS/+iGItttIxh0oxkZI3qSKu/K3Z7zx8r4YTDCo7XJsoYnV0MNsDBcXWa/YKUg==",
       "dependencies": [
         "@img/sharp-darwin-arm64",
         "@img/sharp-darwin-x64",
@@ -4503,7 +4503,7 @@
     ],
     "packageJson": {
       "dependencies": [
-        "npm:@anthropic-ai/claude-code@^1.0.19",
+        "npm:@anthropic-ai/claude-code@^1.0.21",
         "npm:@hyperdx/browser@~0.21.2",
         "npm:@hyperdx/deno@^0.0.4",
         "npm:@isograph/compiler@0.0.0-main-1fad6d74",

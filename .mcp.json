@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "deno_diagnostics": {
+      "type": "stdio",
+      "command": "./apps/denomcp/mod.ts",
+      "args": [],
+      "env": {}
+    }
+  }
+}
