@@ -7,16 +7,16 @@ const logger = getLogger(import.meta);
 
 const ROOT_DIR = join(import.meta.dirname!, "../../..");
 const DENO_LOCK_PATH = join(ROOT_DIR, "deno.lock");
-const EVAL_ENTRY = join(ROOT_DIR, "apps/aibff/eval.ts");
-const BUILD_DIR = join(ROOT_DIR, "build");
-const OUTPUT_PATH = join(BUILD_DIR, "eval");
+const MAIN_ENTRY = join(ROOT_DIR, "apps/aibff/main.ts");
+const BUILD_DIR = join(ROOT_DIR, "build/bin");
+const OUTPUT_PATH = join(BUILD_DIR, "aibff");
 
 async function extractNpmDependencies(): Promise<Array<string>> {
   const lockFile = JSON.parse(await Deno.readTextFile(DENO_LOCK_PATH));
 
   // Get initial packages from deno info
   const denoInfoCmd = new Deno.Command("deno", {
-    args: ["info", "--json", EVAL_ENTRY],
+    args: ["info", "--json", MAIN_ENTRY],
     stdout: "piped",
   });
 
@@ -90,7 +90,7 @@ async function extractNpmDependencies(): Promise<Array<string>> {
 }
 
 async function build() {
-  logger.info("Building aibff eval command...");
+  logger.info("Building aibff command...");
 
   // Ensure build directory exists
   await Deno.mkdir(BUILD_DIR, { recursive: true });
@@ -138,7 +138,7 @@ async function build() {
   }
 
   // Add the entry point
-  compileArgs.push(EVAL_ENTRY);
+  compileArgs.push(MAIN_ENTRY);
 
   logger.info("Running deno compile...");
   logger.debug(`Output will be: ${OUTPUT_PATH}`);
