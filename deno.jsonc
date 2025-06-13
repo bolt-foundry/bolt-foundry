@@ -99,6 +99,7 @@
         "bolt-foundry/prefer-generic-array-syntax",
         "bolt-foundry/ensure-file-ends-with-newline",
         "bolt-foundry/ts-expect-error-description",
+        "bolt-foundry/no-fancy-quotes-markdown",
         "no-slow-types",
         "no-console",
         "no-external-import",

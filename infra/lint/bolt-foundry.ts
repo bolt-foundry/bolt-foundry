@@ -369,6 +369,59 @@ const plugin: Deno.lint.Plugin = {
         };
       },
     },
+
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    /*  8. Prevent fancy quotes and non-ASCII characters in markdown files    */
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    "no-fancy-quotes-markdown": {
+      create(context) {
+        const { sourceCode } = context;
+        
+        // Only apply this rule to markdown files
+        const filename = context.filename || "";
+        if (!filename.endsWith(".md")) {
+          return {};
+        }
+
+        // Define problematic characters and their replacements
+        const replacements = new Map([
+          [""", '"'], // Left double quotation mark
+          [""", '"'], // Right double quotation mark
+          ["'", "'"], // Left single quotation mark
+          ["'", "'"], // Right single quotation mark
+          ["–", "-"], // En dash
+          ["—", "-"], // Em dash
+          ["…", "..."], // Horizontal ellipsis
+        ]);
+
+        return {
+          "Program:exit"() {
+            const text = sourceCode.getText();
+            let hasViolations = false;
+
+            // Check each character in the file
+            for (let i = 0; i < text.length; i++) {
+              const char = text[i];
+              const replacement = replacements.get(char);
+              
+              if (replacement) {
+                hasViolations = true;
+                
+                context.report({
+                  range: [i, i + 1],
+                  message: `Avoid fancy quotes and non-ASCII characters in markdown. Found '${char}', use '${replacement}' instead.`,
+                  fix(fixer) {
+                    return [
+                      fixer.replaceTextRange([i, i + 1], replacement),
+                    ];
+                  },
+                });
+              }
+            }
+          },
+        };
+      },
+    },
   },
 };
 
