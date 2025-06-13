@@ -1,5 +1,6 @@
 {
   "unstable": ["temporal", "webgpu"],
+  "nodeModulesDir": "manual",
   "imports": {
     "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
     "@bolt-foundry/bolt-foundry/": "./packages/bolt-foundry/",
