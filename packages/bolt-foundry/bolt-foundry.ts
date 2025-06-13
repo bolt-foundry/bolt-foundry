@@ -119,7 +119,7 @@ export function connectBoltFoundry(
       const clonedRes = response.clone();
 
       // Process telemetry in a non-blocking way
-      setTimeout(async () => {
+      Promise.resolve().then(async () => {
         try {
           // Extract request data
           let requestBody: OpenAIRequestBody | undefined;
@@ -198,7 +198,7 @@ export function connectBoltFoundry(
         } catch (error) {
           logger.error("Error sending telemetry", error);
         }
-      }, 0);
+      });
 
       return response;
     }
