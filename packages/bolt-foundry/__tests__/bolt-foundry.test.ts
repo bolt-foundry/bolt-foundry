@@ -29,17 +29,26 @@ Deno.test("createOpenAIFetch should properly integrate with OpenAI client", asyn
     ],
   };
 
-  // Create a stub for global fetch that returns the mock response
+  // Create a stub for global fetch that returns appropriate responses
   const fetchStub = stub(
     globalThis,
     "fetch",
-    () =>
-      Promise.resolve(
+    (input: RequestInfo | URL) => {
+      const url = input.toString();
+
+      // For telemetry endpoint, return a simple OK response
+      if (url.includes("i.bltfdy.co")) {
+        return Promise.resolve(new Response("OK", { status: 200 }));
+      }
+
+      // For OpenAI API, return the mock response
+      return Promise.resolve(
         new Response(
           JSON.stringify(mockResponse),
           { status: 200, headers: { "Content-Type": "application/json" } },
         ),
-      ),
+      );
+    },
   );
 
   // Create an OpenAI client with our custom fetch function
@@ -63,10 +72,20 @@ Deno.test("createOpenAIFetch should properly integrate with OpenAI client", asyn
   assertEquals(completion.choices[0].message.role, "assistant");
   assertExists(completion.choices[0].message.content);
 
-  // Verify fetch was called correctly
-  assertSpyCalls(fetchStub, 1);
+  // Wait a bit for any async operations to settle
+  await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
 
-  // Verify the URL and headers were correct in the fetch call
-  const fetchCall = fetchStub.calls[0];
-  assert(fetchCall.args[0].toString().includes("/chat/completions"));
+  // We should have 2 calls: OpenAI + telemetry
+  assertSpyCalls(fetchStub, 2);
+
+  // Verify the first call was to OpenAI
+  const openAICall = fetchStub.calls[0];
+  assert(openAICall.args[0].toString().includes("/chat/completions"));
+
+  // Verify the second call was telemetry
+  const telemetryCall = fetchStub.calls[1];
+  assert(telemetryCall.args[0].toString().includes("i.bltfdy.co"));
+
+  // Clean up the stub to prevent resource leaks
+  fetchStub.restore();
 });
