@@ -1,17 +1,24 @@
 import log from "loglevel";
-import chalk from "chalk";
+import {
+  blue,
+  cyan,
+  dim,
+  magenta,
+  red,
+  stripAnsiCode,
+  yellow,
+} from "@std/fmt/colors";
 import logLevelPrefixPlugin from "loglevel-plugin-prefix";
 import { getConfigurationVariable } from "../get-configuration-var/get-configuration-var.ts";
-chalk.level = 3;
 
 log.setDefaultLevel(log.levels.INFO);
 
 const colors = {
-  TRACE: chalk.magenta,
-  DEBUG: chalk.cyan,
-  INFO: chalk.blue,
-  WARN: chalk.yellow,
-  ERROR: chalk.red,
+  TRACE: magenta,
+  DEBUG: cyan,
+  INFO: blue,
+  WARN: yellow,
+  ERROR: red,
 };
 
 function getCallerInfo() {
@@ -94,7 +101,7 @@ if (!isBrowser()) {
     },
     nameFormatter(name) {
       const callerInfo = getCallerInfo();
-      return `${chalk.dim(`↱ ${name || "global"}${callerInfo}\n`)}`;
+      return `${dim(`↱ ${name || "global"}${callerInfo}\n`)}`;
     },
   });
 
@@ -119,9 +126,9 @@ if (!isBrowser()) {
   // });
 }
 
-const loggerCache = new Map<string, log.Logger>();
+const loggerCache = new Map<string, Logger>();
 
-export function getLogger(importMeta: ImportMeta | string): log.Logger {
+export function getLogger(importMeta: ImportMeta | string): Logger {
   let loggerName: string;
 
   if (typeof importMeta === "string") {
@@ -154,10 +161,40 @@ export function getLogger(importMeta: ImportMeta | string): log.Logger {
       newLogger.setLevel(log.levels.DEBUG);
     }
 
-    loggerCache.set(loggerName, newLogger);
+    const extendedLogger = addPrintln(newLogger);
+    loggerCache.set(loggerName, extendedLogger);
   }
 
   return loggerCache.get(loggerName)!;
 }
 
-export type Logger = log.Logger;
+export type Logger = log.Logger & {
+  println: (
+    message: string,
+    options?: { isError?: boolean; stripColors?: boolean },
+  ) => void;
+};
+
+function addPrintln(logger: log.Logger): Logger {
+  const extendedLogger = logger as Logger;
+
+  extendedLogger.println = (
+    message: string,
+    options?: { isError?: boolean; stripColors?: boolean },
+  ) => {
+    const { isError = false, stripColors = false } = options || {};
+    const output = stripColors ? stripAnsiCode(message) : message;
+
+    if (isError) {
+      // deno-lint-ignore no-console
+      console.error(output);
+    } else {
+      // deno-lint-ignore no-console
+      console.log(output);
+    }
+  };
+
+  return extendedLogger;
+}
+
+export { default as startSpinner } from "./terminalSpinner.ts";
