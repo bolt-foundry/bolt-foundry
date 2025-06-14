@@ -17,6 +17,8 @@ jobs:
   build-and-release:
     name: Build and Release aibff
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required for creating releases and tags
 
     steps:
       - name: Install Nix
@@ -140,6 +142,8 @@ jobs:
     name: Create GitHub Release
     needs: build-and-release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required for creating releases and tags
 
     steps:
       - name: Checkout repository
