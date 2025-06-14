@@ -16,23 +16,7 @@ on:
 jobs:
   build-and-release:
     name: Build and Release aibff
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            platform: linux
-            arch: x86_64
-            artifact-name: aibff-linux-x86_64
-          - os: macos-latest
-            platform: darwin
-            arch: aarch64
-            artifact-name: aibff-darwin-aarch64
-          - os: windows-latest
-            platform: windows
-            arch: x86_64
-            artifact-name: aibff-windows-x86_64
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
       - name: Install Nix
@@ -81,14 +65,24 @@ jobs:
           echo "Updated version to ${{ github.event.inputs.version }}"
           cat apps/aibff/version.ts
 
-      - name: Build aibff binary
+      - name: Build aibff binaries for all platforms
         run: |
-          nix develop --impure --command deno run --allow-all apps/aibff/main.ts rebuild --platform ${{ matrix.platform }} --arch ${{ matrix.arch }}
+          # Build for Linux x64
+          echo "Building for Linux x64..."
+          nix develop --impure --command deno run --allow-all apps/aibff/main.ts rebuild --platform linux --arch x86_64
 
-      - name: Test binary
+          # Build for Windows x64
+          echo "Building for Windows x64..."
+          nix develop --impure --command deno run --allow-all apps/aibff/main.ts rebuild --platform windows --arch x86_64
+
+          # Build for macOS ARM64
+          echo "Building for macOS ARM64..."
+          nix develop --impure --command deno run --allow-all apps/aibff/main.ts rebuild --platform darwin --arch aarch64
+
+      - name: Test Linux binary
         run: |
-          # Find the built binary
-          BINARY_PATH="build/bin/${{ matrix.artifact-name }}"
+          # Test the Linux binary (native platform)
+          BINARY_PATH="build/bin/aibff-linux-x86_64"
 
           # Make it executable
           chmod +x "$BINARY_PATH"
@@ -99,25 +93,48 @@ jobs:
           # Test help output
           "$BINARY_PATH" --help
 
-      - name: Create archive
+      - name: Create archives for all platforms
         run: |
           cd build/bin
-          tar -czf ${{ matrix.artifact-name }}.tar.gz ${{ matrix.artifact-name }}
 
-          # Generate checksum
-          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
-            shasum -a 256 ${{ matrix.artifact-name }}.tar.gz > ${{ matrix.artifact-name }}.tar.gz.sha256
-          else
-            sha256sum ${{ matrix.artifact-name }}.tar.gz > ${{ matrix.artifact-name }}.tar.gz.sha256
-          fi
+          # Create archives for each platform
+          for binary in aibff-linux-x86_64 aibff-windows-x86_64.exe aibff-darwin-aarch64; do
+            # Remove .exe extension for archive name if present
+            archive_name="${binary%.exe}"
 
-      - name: Upload artifact
+            echo "Creating archive for $binary..."
+            tar -czf "${archive_name}.tar.gz" "$binary"
+
+            # Generate checksum
+            sha256sum "${archive_name}.tar.gz" > "${archive_name}.tar.gz.sha256"
+          done
+
+          # List created archives
+          ls -la *.tar.gz*
+
+      - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact-name }}
+          name: aibff-linux-x86_64
           path: |
-            build/bin/${{ matrix.artifact-name }}.tar.gz
-            build/bin/${{ matrix.artifact-name }}.tar.gz.sha256
+            build/bin/aibff-linux-x86_64.tar.gz
+            build/bin/aibff-linux-x86_64.tar.gz.sha256
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aibff-windows-x86_64
+          path: |
+            build/bin/aibff-windows-x86_64.tar.gz
+            build/bin/aibff-windows-x86_64.tar.gz.sha256
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aibff-darwin-aarch64
+          path: |
+            build/bin/aibff-darwin-aarch64.tar.gz
+            build/bin/aibff-darwin-aarch64.tar.gz.sha256
 
   create-release:
     name: Create GitHub Release
