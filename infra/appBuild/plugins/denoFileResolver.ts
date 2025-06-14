@@ -24,8 +24,17 @@ export const denoFileResolver: esbuild.Plugin = {
           throw new Error(`File not found in cache: ${args.path}`);
         }
 
-        // Convert Uint8Array to string
-        const contents = new TextDecoder().decode(cached.content);
+        // Convert content to string if it's a Uint8Array
+        let contents: string;
+        if (cached.kind === "module") {
+          if (typeof cached.content === "string") {
+            contents = cached.content;
+          } else {
+            contents = new TextDecoder().decode(cached.content);
+          }
+        } else {
+          throw new Error(`Unexpected cache kind: ${cached.kind}`);
+        }
         logger.debug(`Loaded from cache: ${args.path}`);
 
         return {
