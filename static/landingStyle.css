@@ -136,7 +136,6 @@ code.npm-command {
   color: var(--text060);
 }
 
-
 /* Docs Layout with Sidebar */
 .docs-layout {
   display: flex;
@@ -292,7 +291,6 @@ pre > code {
   border-bottom: 1px solid var(--alwaysDark005);
 }
 
-
 /* Mobile responsiveness */
 @media (max-width: 1024px) {
   .landing-content {
@@ -303,7 +301,7 @@ pre > code {
     padding-top: 44px;
     padding-bottom: 30px;
   }
-  
+
   .docs-layout {
     flex-direction: column;
     gap: 0;
@@ -325,13 +323,9 @@ pre > code {
     width: 260px;
   }
 
-  .docs-sidebar-content {
-    
-  }
+  .docs-sidebar-content {}
 
-  .docs-sidebar-section {
-    
-  }
+  .docs-sidebar-section {}
 
   .docs-section .landing-content {
     padding: 0;
@@ -378,7 +372,6 @@ pre > code {
     background-position: 130% center;
   }
 } */
-
 
 .vertical-separator {
   border-left: 1px solid var(--border);

@@ -24,11 +24,14 @@ export default function ChatPage() {
           {error && (
             <div className={styles.errorBanner}>
               <h3>🔑 OpenAI API Key Required</h3>
-              <p>To use this chat demo, please set the OPENAI_API_KEY environment variable.</p>
               <p>
-                <a 
-                  href="https://platform.openai.com/api-keys" 
-                  target="_blank" 
+                To use this chat demo, please set the OPENAI_API_KEY environment
+                variable.
+              </p>
+              <p>
+                <a
+                  href="https://platform.openai.com/api-keys"
+                  target="_blank"
                   rel="noopener noreferrer"
                 >
                   Get an API key from OpenAI →
@@ -36,7 +39,7 @@ export default function ChatPage() {
               </p>
             </div>
           )}
-          
+
           <div className={styles.messagesContainer}>
             {messages.length === 0 && (
               <div className={styles.emptyState}>

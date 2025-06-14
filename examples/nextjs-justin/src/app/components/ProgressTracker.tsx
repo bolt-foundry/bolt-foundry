@@ -1,20 +1,22 @@
-'use client';
+"use client";
 
-import { Progress } from '../types/tutor';
+import { Progress } from "../types/tutor";
 
 interface ProgressTrackerProps {
   progress: Progress;
 }
 
 export default function ProgressTracker({ progress }: ProgressTrackerProps) {
-  const completionPercentage = progress.totalQuestions > 0 
-    ? (progress.questionsCompleted / progress.totalQuestions) * 100 
+  const completionPercentage = progress.totalQuestions > 0
+    ? (progress.questionsCompleted / progress.totalQuestions) * 100
     : 0;
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">📊 Your Progress</h3>
-      
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">
+        📊 Your Progress
+      </h3>
+
       <div className="space-y-4">
         {/* Completion Progress */}
         <div>
@@ -27,10 +29,11 @@ export default function ProgressTracker({ progress }: ProgressTrackerProps) {
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-blue-600 h-2 rounded-full transition-all duration-300"
               style={{ width: `${completionPercentage}%` }}
-            ></div>
+            >
+            </div>
           </div>
           <span className="text-xs text-gray-500 mt-1">
             {completionPercentage.toFixed(1)}% Complete
@@ -41,7 +44,9 @@ export default function ProgressTracker({ progress }: ProgressTrackerProps) {
         <div className="flex items-center justify-between p-3 bg-orange-50 border border-orange-200 rounded-md">
           <div className="flex items-center">
             <span className="text-orange-600 mr-2">🔥</span>
-            <span className="text-sm font-medium text-gray-700">Current Streak</span>
+            <span className="text-sm font-medium text-gray-700">
+              Current Streak
+            </span>
           </div>
           <span className="text-lg font-bold text-orange-600">
             {progress.currentStreak}
@@ -53,22 +58,24 @@ export default function ProgressTracker({ progress }: ProgressTrackerProps) {
           <h4 className="text-sm font-medium text-gray-700 mb-2">
             Concepts Learned ({progress.conceptsLearned.length})
           </h4>
-          {progress.conceptsLearned.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {progress.conceptsLearned.map((concept, index) => (
-                <span 
-                  key={index}
-                  className="px-2 py-1 bg-green-100 text-green-800 rounded-md text-xs"
-                >
-                  ✓ {concept}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">
-              Complete your first question to start learning concepts!
-            </p>
-          )}
+          {progress.conceptsLearned.length > 0
+            ? (
+              <div className="flex flex-wrap gap-2">
+                {progress.conceptsLearned.map((concept, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-green-100 text-green-800 rounded-md text-xs"
+                  >
+                    ✓ {concept}
+                  </span>
+                ))}
+              </div>
+            )
+            : (
+              <p className="text-sm text-gray-500">
+                Complete your first question to start learning concepts!
+              </p>
+            )}
         </div>
 
         {/* Motivational Message */}

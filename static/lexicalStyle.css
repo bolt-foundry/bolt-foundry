@@ -29,7 +29,11 @@
 body {
   margin: 0;
   background: #eee;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, '.SFNSText-Regular',
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    ".SFNSText-Regular",
     sans-serif;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
@@ -460,7 +464,6 @@ i.justify-align {
   background-image: url(icons/justify.svg);
 }
 
-
 .Button__root {
   padding-top: 10px;
   padding-bottom: 10px;
@@ -488,8 +491,6 @@ i.justify-align {
 .Button__disabled:hover {
   background-color: #eee;
 }
-
-
 
 .Modal__overlay {
   display: flex;
@@ -573,7 +574,6 @@ i.justify-align {
   overflow: auto;
   resize: vertical;
 }
-
 
 .PlaygroundEditorTheme__ltr {
   text-align: left;
@@ -773,7 +773,7 @@ i.justify-align {
 }
 .PlaygroundEditorTheme__listItemUnchecked:before,
 .PlaygroundEditorTheme__listItemChecked:before {
-  content: '';
+  content: "";
   width: 16px;
   height: 16px;
   top: 2px;
@@ -783,8 +783,8 @@ i.justify-align {
   background-size: cover;
   position: absolute;
 }
-.PlaygroundEditorTheme__listItemUnchecked[dir='rtl']:before,
-.PlaygroundEditorTheme__listItemChecked[dir='rtl']:before {
+.PlaygroundEditorTheme__listItemUnchecked[dir="rtl"]:before,
+.PlaygroundEditorTheme__listItemChecked[dir="rtl"]:before {
   left: auto;
   right: 0;
 }
@@ -804,7 +804,7 @@ i.justify-align {
   background-repeat: no-repeat;
 }
 .PlaygroundEditorTheme__listItemChecked:after {
-  content: '';
+  content: "";
   cursor: pointer;
   border-color: #fff;
   border-style: solid;
@@ -877,12 +877,11 @@ i.justify-align {
   position: relative;
 }
 
-
 /**
  * Sample style
  */
 
- .ContentFoundryPlugin_AddSampleBox {
+.ContentFoundryPlugin_AddSampleBox {
   display: block;
   position: fixed;
   z-index: 10;
@@ -902,7 +901,7 @@ i.justify-align {
 }
 
 .ContentFoundryPlugin_SampleInputBox::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 0;
   height: 0;
@@ -981,7 +980,7 @@ i.justify-align {
 }
 
 .ContentFoundryPlugin_SamplesPanel_Editor::before {
-  content: '';
+  content: "";
   width: 30px;
   height: 20px;
   float: right;

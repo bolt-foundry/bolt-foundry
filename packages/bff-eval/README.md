@@ -1,6 +1,7 @@
 # bff-eval
 
-Node.js wrapper for the Bolt Foundry evaluation framework. This package provides a convenient `bff-eval` command that forwards all arguments to `bff eval`.
+Node.js wrapper for the Bolt Foundry evaluation framework. This package provides
+a convenient `bff-eval` command that forwards all arguments to `bff eval`.
 
 ## Installation
 
@@ -25,6 +26,7 @@ bff eval --input test.jsonl --grader grader.js
 ## Documentation
 
 For full documentation on the Bolt Foundry evaluation framework, including:
+
 - How to write graders
 - Input/output formats
 - Available options

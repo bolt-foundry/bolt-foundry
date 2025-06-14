@@ -1,6 +1,8 @@
 # NextJS Minimal Example
 
-A minimal example demonstrating how to use the Bolt Foundry SDK with Next.js. This example shows the core functionality with the absolute minimum setup required.
+A minimal example demonstrating how to use the Bolt Foundry SDK with Next.js.
+This example shows the core functionality with the absolute minimum setup
+required.
 
 ## Features
 
@@ -46,8 +48,10 @@ Open [http://localhost:3000](http://localhost:3000) to see the chat interface.
 
 This example demonstrates the basic Bolt Foundry pattern:
 
-1. **Frontend** (`pages/index.tsx`): A simple React component that handles the chat UI
-2. **API Route** (`pages/api/chat.ts`): Uses the Bolt Foundry SDK to process messages
+1. **Frontend** (`pages/index.tsx`): A simple React component that handles the
+   chat UI
+2. **API Route** (`pages/api/chat.ts`): Uses the Bolt Foundry SDK to process
+   messages
 3. **Assistant Deck**: Defines the AI's behavior and personality
 
 The key code is in the API route:
@@ -55,18 +59,17 @@ The key code is in the API route:
 ```typescript
 // Create an assistant deck that defines the AI's behavior
 const assistantDeck = bfClient.createAssistantDeck(
-  'helpful-assistant',
-  (builder) =>
-    builder.spec('You are a helpful, friendly assistant.')
-)
+  "helpful-assistant",
+  (builder) => builder.spec("You are a helpful, friendly assistant."),
+);
 
 // Use the deck to process messages
 const completion = await client.chat.completions.create(
   assistantDeck.render({
-    model: 'gpt-3.5-turbo',
+    model: "gpt-3.5-turbo",
     messages,
-  })
-)
+  }),
+);
 ```
 
 ## Project Structure

@@ -1,6 +1,6 @@
-import { Question, Hint, Progress } from '../types/tutor';
+import { Hint, Progress, Question } from "../types/tutor";
 
-export type LLMProvider = 'claude' | 'openai';
+export type LLMProvider = "claude" | "openai";
 
 export interface UserPerformanceMetrics {
   avgHintsUsed: number;
@@ -51,7 +51,7 @@ export interface HintResponse {
 
 export class LLMService {
   private static instance: LLMService;
-  private defaultProvider: LLMProvider = 'claude';
+  private defaultProvider: LLMProvider = "claude";
 
   private constructor() {}
 
@@ -73,14 +73,16 @@ export class LLMService {
   /**
    * Generate a new question based on user progress and performance
    */
-  public async generateQuestion(request: QuestionGenerationRequest): Promise<Question> {
+  public async generateQuestion(
+    request: QuestionGenerationRequest,
+  ): Promise<Question> {
     const provider = request.preferredProvider || this.defaultProvider;
-    
+
     try {
-      const response = await fetch('/api/generate-question', {
-        method: 'POST',
+      const response = await fetch("/api/generate-question", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ...request,
@@ -89,38 +91,46 @@ export class LLMService {
       });
 
       if (!response.ok) {
-        throw new Error(`Question generation failed: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Question generation failed: ${response.status} ${response.statusText}`,
+        );
       }
 
       const data = await response.json();
-      
+
       if (data.error) {
         throw new Error(data.error);
       }
 
       return data.question;
     } catch (error) {
-      console.error('Error generating question:', error);
-      throw new Error(`Failed to generate question: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Error generating question:", error);
+      throw new Error(
+        `Failed to generate question: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      );
     }
   }
 
   /**
    * Generate contextual hints based on user's current attempt
    */
-  public async generateHint(request: HintGenerationRequest): Promise<HintResponse> {
+  public async generateHint(
+    request: HintGenerationRequest,
+  ): Promise<HintResponse> {
     const provider = request.preferredProvider || this.defaultProvider;
-    
+
     try {
-      const response = await fetch('/api/generate-hint', {
-        method: 'POST',
+      const response = await fetch("/api/generate-hint", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           question: request.question,
           userCode: request.userCode,
-          previousHints: request.previousHints.map(hint => ({
+          previousHints: request.previousHints.map((hint) => ({
             text: hint.text,
             level: hint.level,
           })),
@@ -131,11 +141,13 @@ export class LLMService {
       });
 
       if (!response.ok) {
-        throw new Error(`Hint generation failed: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Hint generation failed: ${response.status} ${response.statusText}`,
+        );
       }
 
       const data = await response.json();
-      
+
       if (data.error) {
         throw new Error(data.error);
       }
@@ -153,8 +165,12 @@ export class LLMService {
         encouragement: data.encouragement,
       };
     } catch (error) {
-      console.error('Error generating hint:', error);
-      throw new Error(`Failed to generate hint: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Error generating hint:", error);
+      throw new Error(
+        `Failed to generate hint: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      );
     }
   }
 
@@ -178,20 +194,32 @@ export class LLMService {
 
     // Only consider recent attempts (last 5 questions)
     const recentAttempts = attemptHistory.slice(-5);
-    const successfulAttempts = recentAttempts.filter(attempt => attempt.wasSuccessful);
+    const successfulAttempts = recentAttempts.filter((attempt) =>
+      attempt.wasSuccessful
+    );
 
     if (successfulAttempts.length === 0) {
       return {
-        avgHintsUsed: recentAttempts.reduce((sum, attempt) => sum + attempt.hintsUsed, 0) / recentAttempts.length,
-        avgAttempts: recentAttempts.reduce((sum, attempt) => sum + attempt.attempts, 0) / recentAttempts.length,
+        avgHintsUsed: recentAttempts.reduce((sum, attempt) =>
+          sum + attempt.hintsUsed, 0) / recentAttempts.length,
+        avgAttempts: recentAttempts.reduce((sum, attempt) =>
+          sum + attempt.attempts, 0) / recentAttempts.length,
         avgTimeToComplete: 0, // No successful completions
       };
     }
 
     return {
-      avgHintsUsed: successfulAttempts.reduce((sum, attempt) => sum + attempt.hintsUsed, 0) / successfulAttempts.length,
-      avgAttempts: successfulAttempts.reduce((sum, attempt) => sum + attempt.attempts, 0) / successfulAttempts.length,
-      avgTimeToComplete: successfulAttempts.reduce((sum, attempt) => sum + attempt.timeToComplete, 0) / successfulAttempts.length,
+      avgHintsUsed: successfulAttempts.reduce(
+        (sum, attempt) => sum + attempt.hintsUsed,
+        0,
+      ) / successfulAttempts.length,
+      avgAttempts:
+        successfulAttempts.reduce((sum, attempt) => sum + attempt.attempts, 0) /
+        successfulAttempts.length,
+      avgTimeToComplete: successfulAttempts.reduce(
+        (sum, attempt) => sum + attempt.timeToComplete,
+        0,
+      ) / successfulAttempts.length,
     };
   }
 
@@ -199,12 +227,12 @@ export class LLMService {
    * Determine if user should advance to next difficulty level
    */
   public shouldAdvanceDifficulty(
-    currentDifficulty: 'beginner' | 'intermediate' | 'advanced',
+    currentDifficulty: "beginner" | "intermediate" | "advanced",
     performance: UserPerformanceMetrics,
-    currentStreak: number
+    currentStreak: number,
   ): boolean {
     // Don't advance from advanced
-    if (currentDifficulty === 'advanced') {
+    if (currentDifficulty === "advanced") {
       return false;
     }
 
@@ -221,12 +249,12 @@ export class LLMService {
    * Determine if user should go to easier difficulty
    */
   public shouldReduceDifficulty(
-    currentDifficulty: 'beginner' | 'intermediate' | 'advanced',
+    currentDifficulty: "beginner" | "intermediate" | "advanced",
     performance: UserPerformanceMetrics,
-    recentFailures: number
+    recentFailures: number,
   ): boolean {
     // Don't reduce from beginner
-    if (currentDifficulty === 'beginner') {
+    if (currentDifficulty === "beginner") {
       return false;
     }
 
@@ -243,26 +271,44 @@ export class LLMService {
    */
   public getNextConcepts(
     conceptsLearned: string[],
-    difficulty: 'beginner' | 'intermediate' | 'advanced'
+    difficulty: "beginner" | "intermediate" | "advanced",
   ): string[] {
     const conceptCurriculum = {
       beginner: [
-        'variables', 'functions', 'console.log', 'basic syntax', 'parameters',
-        'return values', 'string manipulation', 'numbers and math'
+        "variables",
+        "functions",
+        "console.log",
+        "basic syntax",
+        "parameters",
+        "return values",
+        "string manipulation",
+        "numbers and math",
       ],
       intermediate: [
-        'if statements', 'comparison operators', 'logical operators',
-        'arrays', 'loops', 'objects', 'array methods', 'string methods'
+        "if statements",
+        "comparison operators",
+        "logical operators",
+        "arrays",
+        "loops",
+        "objects",
+        "array methods",
+        "string methods",
       ],
       advanced: [
-        'arrow functions', 'destructuring', 'template literals',
-        'async/await', 'promises', 'error handling', 'modules', 'classes'
-      ]
+        "arrow functions",
+        "destructuring",
+        "template literals",
+        "async/await",
+        "promises",
+        "error handling",
+        "modules",
+        "classes",
+      ],
     };
 
     const availableConcepts = conceptCurriculum[difficulty];
     const unlearnedConcepts = availableConcepts.filter(
-      concept => !conceptsLearned.includes(concept)
+      (concept) => !conceptsLearned.includes(concept),
     );
 
     if (unlearnedConcepts.length === 0) {

@@ -4,7 +4,7 @@ export interface Question {
   description: string;
   starterCode: string;
   solution: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: "beginner" | "intermediate" | "advanced";
   concepts: string[];
   expectedOutputExample?: string;
 }
@@ -58,7 +58,7 @@ export interface TutorState {
   progress: Progress;
   isLoading: boolean;
   evaluation: AnswerEvaluation | null;
-  
+
   // Enhanced state for LLM integration
   attemptHistory: AttemptHistory[];
   currentAttempts: QuestionAttempt[];
@@ -73,6 +73,6 @@ export interface TutorState {
     hintsUsed: number;
     attempts: number;
   } | null;
-  llmProvider: 'claude' | 'openai';
+  llmProvider: "claude" | "openai";
   encouragementMessage?: string;
 }

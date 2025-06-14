@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 interface CodeEditorProps {
   value: string;
@@ -10,43 +10,43 @@ interface CodeEditorProps {
   isLoading?: boolean;
 }
 
-export default function CodeEditor({ 
-  value, 
-  onChange, 
-  onRun, 
+export default function CodeEditor({
+  value,
+  onChange,
+  onRun,
   placeholder = "// Write your JavaScript code here...",
-  isLoading = false 
+  isLoading = false,
 }: CodeEditorProps) {
-  const [output, setOutput] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  const [output, setOutput] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const runCode = () => {
-    setOutput('');
-    setError('');
-    
+    setOutput("");
+    setError("");
+
     try {
       // Create a simple console mock to capture output
       const logs: string[] = [];
       const mockConsole = {
         log: (...args: any[]) => {
-          logs.push(args.map(arg => String(arg)).join(' '));
-        }
+          logs.push(args.map((arg) => String(arg)).join(" "));
+        },
       };
 
       // Create a function with the user's code
-      const userFunction = new Function('console', value);
+      const userFunction = new Function("console", value);
       userFunction(mockConsole);
-      
-      setOutput(logs.join('\n') || 'Code executed successfully (no output)');
+
+      setOutput(logs.join("\n") || "Code executed successfully (no output)");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     }
-    
+
     onRun();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.ctrlKey && e.key === 'Enter') {
+    if (e.ctrlKey && e.key === "Enter") {
       runCode();
     }
   };
@@ -60,10 +60,10 @@ export default function CodeEditor({
           disabled={isLoading}
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
         >
-          {isLoading ? 'Running...' : 'Run Code'}
+          {isLoading ? "Running..." : "Run Code"}
         </button>
       </div>
-      
+
       <div className="mb-4">
         <textarea
           value={value}
@@ -81,11 +81,13 @@ export default function CodeEditor({
       {(output || error) && (
         <div className="mt-4">
           <h4 className="text-md font-semibold text-gray-800 mb-2">Output:</h4>
-          <div className={`p-4 rounded-md font-mono text-sm ${
-            error 
-              ? 'bg-red-50 text-red-800 border border-red-200' 
-              : 'bg-gray-50 text-gray-800 border border-gray-200'
-          }`}>
+          <div
+            className={`p-4 rounded-md font-mono text-sm ${
+              error
+                ? "bg-red-50 text-red-800 border border-red-200"
+                : "bg-gray-50 text-gray-800 border border-gray-200"
+            }`}
+          >
             {error || output}
           </div>
         </div>
