@@ -7,24 +7,24 @@ import { BUILD_COMMIT, BUILD_TIME, VERSION } from "./version.ts";
 const logger = getLogger(import.meta);
 
 function showHelp(): void {
-  logger.info("Usage: aibff <command> [args...]");
-  logger.info("\nAvailable commands:");
+  logger.println("Usage: aibff <command> [args...]");
+  logger.println("\nAvailable commands:");
 
   const commands = getAllCommands();
   for (const command of commands) {
-    logger.info(`  ${command.name.padEnd(12)} ${command.description}`);
+    logger.println(`  ${command.name.padEnd(12)} ${command.description}`);
   }
 
-  logger.info("\nOptions:");
-  logger.info("  --version    Show version information");
-  logger.info("  --help       Show this help message");
+  logger.println("\nOptions:");
+  logger.println("  --version    Show version information");
+  logger.println("  --help       Show this help message");
 }
 
 function showVersion(): void {
-  logger.info(`aibff ${VERSION}`);
+  logger.println(`aibff ${VERSION}`);
   if (BUILD_TIME !== "development") {
-    logger.info(`Built: ${BUILD_TIME}`);
-    logger.info(`Commit: ${BUILD_COMMIT}`);
+    logger.println(`Built: ${BUILD_TIME}`);
+    logger.println(`Commit: ${BUILD_COMMIT}`);
   }
 }
 
@@ -50,8 +50,10 @@ async function main(): Promise<void> {
   const command = getCommand(commandName);
 
   if (!command) {
-    logger.error(`Unknown command '${commandName}'`);
-    logger.error("Run 'aibff --help' for usage information");
+    logger.println(`Unknown command '${commandName}'`, { isError: true });
+    logger.println("Run 'aibff --help' for usage information", {
+      isError: true,
+    });
     Deno.exit(1);
   }
 

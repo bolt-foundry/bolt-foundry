@@ -2,7 +2,7 @@
 
 import { join } from "@std/path";
 import { parseArgs } from "@std/cli";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger, startSpinner } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -50,12 +50,16 @@ async function validateNodeModules() {
   try {
     await Deno.stat(denoDir);
     // If we get here, .deno exists - fail the build
-    logger.error("❌ Detected node_modules/.deno directory!");
-    logger.error("This project uses npm for dependency management.");
-    logger.error("Please run:");
-    logger.error("  rm -rf node_modules");
-    logger.error("  npm install");
-    logger.error("\nThen try building again.");
+    logger.println("❌ Detected node_modules/.deno directory!", {
+      isError: true,
+    });
+    logger.println("This project uses npm for dependency management.", {
+      isError: true,
+    });
+    logger.println("Please run:", { isError: true });
+    logger.println("  rm -rf node_modules", { isError: true });
+    logger.println("  npm install", { isError: true });
+    logger.println("\nThen try building again.", { isError: true });
     Deno.exit(1);
   } catch {
     // Good - .deno doesn't exist, we can proceed
@@ -90,7 +94,7 @@ async function getDirectlyUsedPackages(): Promise<Array<string>> {
     }
   }
 
-  logger.info(`Found ${npmPackages.size} directly used packages`);
+  logger.debug(`Found ${npmPackages.size} directly used packages`);
   return Array.from(npmPackages);
 }
 
@@ -133,7 +137,7 @@ async function getAllRequiredPackages(): Promise<Array<string>> {
     }
   }
 
-  logger.info(
+  logger.debug(
     `Resolved ${directPackages.length} direct packages to ${allRequired.size} total required packages`,
   );
   return Array.from(allRequired);
@@ -149,7 +153,7 @@ async function updateVersionFile() {
     .replace(/BUILD_COMMIT = ".*"/, `BUILD_COMMIT = "${gitCommit}"`);
 
   await Deno.writeTextFile(VERSION_FILE, updatedContent);
-  logger.info("Updated version file with build metadata");
+  logger.debug("Updated version file with build metadata");
 }
 
 async function getGitCommit(): Promise<string> {
@@ -170,8 +174,8 @@ async function build() {
   const arch = args.arch as string;
   const outputPath = getOutputPath(platform, arch);
 
-  logger.info(`Building aibff for ${platform}-${arch}...`);
-  logger.info(`Output: ${outputPath}`);
+  logger.println(`Building aibff for ${platform}-${arch}...`);
+  logger.println(`Output: ${outputPath}`);
 
   // Validate node_modules structure first
   await validateNodeModules();
@@ -183,13 +187,18 @@ async function build() {
   await Deno.mkdir(BUILD_DIR, { recursive: true });
 
   // Get required npm packages
-  logger.info("Collecting required npm packages...");
+  logger.println("Collecting required npm packages...");
+  const stopPackageSpinner = startSpinner();
   const npmPackages = await getAllRequiredPackages();
+  stopPackageSpinner();
 
   // Get the Deno target
   const denoTarget = getDenoTarget(platform, arch);
   if (!denoTarget) {
-    logger.error(`Unsupported platform/arch combination: ${platform}-${arch}`);
+    logger.println(
+      `Unsupported platform/arch combination: ${platform}-${arch}`,
+      { isError: true },
+    );
     Deno.exit(1);
   }
 
@@ -221,12 +230,13 @@ async function build() {
   // Add the entry point
   compileArgs.push(MAIN_ENTRY);
 
-  logger.info("Running deno compile...");
-  logger.info(
+  logger.println("Running deno compile...");
+  logger.println(
     `Compile command will include ${npmPackages.length} npm packages`,
   );
   logger.debug(`Output will be: ${outputPath}`);
 
+  const stopCompileSpinner = startSpinner();
   const cmd = new Deno.Command("deno", {
     args: compileArgs,
     stdout: "inherit",
@@ -234,14 +244,15 @@ async function build() {
   });
 
   const { success } = await cmd.output();
+  stopCompileSpinner();
 
   if (success) {
-    logger.info("✅ Build successful!");
+    logger.println("✅ Build successful!");
 
     // Check output size
     const stat = await Deno.stat(outputPath);
-    logger.info(`Output size: ${(stat.size / 1024 / 1024).toFixed(2)} MB`);
-    logger.info(`Binary location: ${outputPath}`);
+    logger.println(`Output size: ${(stat.size / 1024 / 1024).toFixed(2)} MB`);
+    logger.println(`Binary location: ${outputPath}`);
 
     // Create a symlink to the latest build for convenience
     const latestLink = join(BUILD_DIR, "aibff");
@@ -252,10 +263,10 @@ async function build() {
     }
     if (platform === Deno.build.os && arch === Deno.build.arch) {
       await Deno.symlink(outputPath, latestLink);
-      logger.info(`Created symlink: ${latestLink} -> ${outputPath}`);
+      logger.println(`Created symlink: ${latestLink} -> ${outputPath}`);
     }
   } else {
-    logger.error("❌ Build failed!");
+    logger.println("❌ Build failed!", { isError: true });
     Deno.exit(1);
   }
 }
