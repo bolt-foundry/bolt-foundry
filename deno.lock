@@ -5,7 +5,9 @@
     "jsr:@bolt-foundry/get-configuration-var@0.0.0-dev.0": "0.0.0-dev.0",
     "jsr:@david/code-block-writer@^13.0.2": "13.0.3",
     "jsr:@deno/cache-dir@~0.10.3": "0.10.3",
+    "jsr:@deno/cache-dir@~0.22.3": "0.22.3",
     "jsr:@deno/dnt@~0.41.3": "0.41.3",
+    "jsr:@deno/graph@0.86": "0.86.9",
     "jsr:@deno/graph@~0.73.1": "0.73.1",
     "jsr:@denosaurs/plug@1.0.3": "1.0.3",
     "jsr:@luca/esbuild-deno-loader@~0.11.1": "0.11.1",
@@ -20,6 +22,7 @@
     "jsr:@std/async@^1.0.12": "1.0.12",
     "jsr:@std/bytes@0.223": "0.223.0",
     "jsr:@std/bytes@^1.0.2": "1.0.5",
+    "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/cli@^1.0.17": "1.0.17",
     "jsr:@std/cli@^1.0.20": "1.0.20",
     "jsr:@std/collections@^1.0.11": "1.0.11",
@@ -30,18 +33,22 @@
     "jsr:@std/fmt@0.213.1": "0.213.1",
     "jsr:@std/fmt@0.223": "0.223.0",
     "jsr:@std/fmt@1": "1.0.7",
+    "jsr:@std/fmt@^1.0.3": "1.0.8",
     "jsr:@std/fmt@^1.0.7": "1.0.7",
+    "jsr:@std/fmt@^1.0.8": "1.0.8",
     "jsr:@std/front-matter@^1.0.5": "1.0.9",
     "jsr:@std/fs@0.213.1": "0.213.1",
     "jsr:@std/fs@0.223": "0.223.0",
     "jsr:@std/fs@1": "1.0.17",
     "jsr:@std/fs@^1.0.10": "1.0.17",
     "jsr:@std/fs@^1.0.16": "1.0.17",
+    "jsr:@std/fs@^1.0.6": "1.0.17",
     "jsr:@std/fs@~0.229.3": "0.229.3",
     "jsr:@std/html@^1.0.3": "1.0.3",
     "jsr:@std/http@^1.0.12": "1.0.15",
     "jsr:@std/internal@^1.0.6": "1.0.6",
     "jsr:@std/io@0.223": "0.223.0",
+    "jsr:@std/io@0.225": "0.225.2",
     "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/net@^1.0.4": "1.0.4",
     "jsr:@std/path@0.213.1": "0.213.1",
@@ -139,18 +146,28 @@
     "@deno/cache-dir@0.10.3": {
       "integrity": "eb022f84ecc49c91d9d98131c6e6b118ff63a29e343624d058646b9d50404776",
       "dependencies": [
-        "jsr:@deno/graph",
+        "jsr:@deno/graph@~0.73.1",
         "jsr:@std/fmt@0.223",
         "jsr:@std/fs@0.223",
-        "jsr:@std/io",
+        "jsr:@std/io@0.223",
         "jsr:@std/path@0.223"
+      ]
+    },
+    "@deno/cache-dir@0.22.3": {
+      "integrity": "20e1b87d99ca2af13f7e1484861cefadcb28b1eebc773bc5a18f26f0edd988ae",
+      "dependencies": [
+        "jsr:@deno/graph@0.86",
+        "jsr:@std/fmt@^1.0.3",
+        "jsr:@std/fs@^1.0.6",
+        "jsr:@std/io@0.225",
+        "jsr:@std/path@^1.0.8"
       ]
     },
     "@deno/dnt@0.41.3": {
       "integrity": "b2ef2c8a5111eef86cb5bfcae103d6a2938e8e649e2461634a7befb7fc59d6d2",
       "dependencies": [
         "jsr:@david/code-block-writer",
-        "jsr:@deno/cache-dir",
+        "jsr:@deno/cache-dir@~0.10.3",
         "jsr:@std/fmt@1",
         "jsr:@std/fs@1",
         "jsr:@std/path@1",
@@ -159,6 +176,9 @@
     },
     "@deno/graph@0.73.1": {
       "integrity": "cd69639d2709d479037d5ce191a422eabe8d71bb68b0098344f6b07411c84d41"
+    },
+    "@deno/graph@0.86.9": {
+      "integrity": "c4f353a695bcc5246c099602977dabc6534eacea9999a35a8cb24e807192e6a1"
     },
     "@denosaurs/plug@1.0.3": {
       "integrity": "b010544e386bea0ff3a1d05e0c88f704ea28cbd4d753439c2f1ee021a85d4640",
@@ -249,6 +269,9 @@
     "@std/fmt@1.0.7": {
       "integrity": "2a727c043d8df62cd0b819b3fb709b64dd622e42c3b1bb817ea7e6cc606360fb"
     },
+    "@std/fmt@1.0.8": {
+      "integrity": "71e1fc498787e4434d213647a6e43e794af4fd393ef8f52062246e06f7e372b7"
+    },
     "@std/front-matter@1.0.9": {
       "integrity": "ee6201d06674cbef137dda2252f62477450b48249e7d8d9ab57a30f85ff6f051",
       "dependencies": [
@@ -302,6 +325,12 @@
       "dependencies": [
         "jsr:@std/assert@0.223",
         "jsr:@std/bytes@0.223"
+      ]
+    },
+    "@std/io@0.225.2": {
+      "integrity": "3c740cd4ee4c082e6cfc86458f47e2ab7cb353dc6234d5e9b1f91a2de5f4d6c7",
+      "dependencies": [
+        "jsr:@std/bytes@^1.0.5"
       ]
     },
     "@std/media-types@1.1.0": {
@@ -4079,6 +4108,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@b-fuze/deno-dom@~0.1.49",
+      "jsr:@deno/cache-dir@~0.22.3",
       "jsr:@deno/dnt@~0.41.3",
       "jsr:@luca/esbuild-deno-loader@~0.11.1",
       "jsr:@openai/openai@^4.78.1",
@@ -4087,6 +4117,7 @@
       "jsr:@std/assert@^1.0.11",
       "jsr:@std/cli@^1.0.20",
       "jsr:@std/encoding@^1.0.10",
+      "jsr:@std/fmt@^1.0.8",
       "jsr:@std/front-matter@^1.0.5",
       "jsr:@std/fs@^1.0.10",
       "jsr:@std/http@^1.0.12",
@@ -4122,7 +4153,6 @@
         "npm:@types/react-dom@19",
         "npm:@types/react@19",
         "npm:assemblyai@^4.9.0",
-        "npm:chalk@^5.4.1",
         "npm:discord.js@^14.18.0",
         "npm:esbuild@~0.24.2",
         "npm:graphql-relay@~0.10.2",
