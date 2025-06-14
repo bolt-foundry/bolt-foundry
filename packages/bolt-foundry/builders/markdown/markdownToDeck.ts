@@ -182,12 +182,29 @@ export async function parseMarkdownToDeck(
       // Save previous H2 card if exists
       if (currentH2Builder && currentH2Name) {
         deck = deck.card(currentH2Name, () => currentH2Builder!);
+        currentH2Builder = null;
+        currentH2Name = "";
       }
 
       // Start new H2 card
       currentH2Index = i;
       currentH2Name = extractText(node);
       currentH2Builder = makeCardBuilder();
+
+      // Check for card introduction lead (paragraph after H2)
+      if (i + 1 < ast.children.length) {
+        const nextNode = ast.children[i + 1];
+        if (
+          nextNode.type === "paragraph" && !hasImageEmbed(nextNode as Paragraph)
+        ) {
+          const leadText = extractTextFromParagraph(nextNode as Paragraph);
+          if (leadText) {
+            currentH2Builder = currentH2Builder.lead(leadText);
+            i++; // Skip this paragraph since we've processed it as a lead
+          }
+        }
+      }
+
       continue;
     }
 
@@ -196,28 +213,60 @@ export async function parseMarkdownToDeck(
       // Handle H3+ headers as nested cards
       if (node.type === "heading" && node.depth >= 3) {
         const nestedCardName = extractText(node);
-        const nestedSpecs = collectSpecsUntilNextHeader(ast.children, i + 1);
 
-        if (nestedSpecs.length > 0) {
-          currentH2Builder = currentH2Builder.card(nestedCardName, (c) => {
-            let builder = c;
-            for (const spec of nestedSpecs) {
-              builder = builder.spec(spec);
+        currentH2Builder = currentH2Builder.card(nestedCardName, (c) => {
+          let builder = c;
+          let j = i + 1;
+
+          // Check for nested card introduction lead
+          if (j < ast.children.length) {
+            const nextNode = ast.children[j];
+            if (
+              nextNode.type === "paragraph" &&
+              !hasImageEmbed(nextNode as Paragraph)
+            ) {
+              const leadText = extractTextFromParagraph(nextNode as Paragraph);
+              if (leadText) {
+                builder = builder.lead(leadText);
+                j++;
+              }
             }
-            return builder;
-          });
-        } else {
-          // Empty nested card
-          currentH2Builder = currentH2Builder.card(nestedCardName, (c) => c);
-        }
+          }
 
-        // Skip the content we just processed
-        while (
-          i + 1 < ast.children.length &&
-          !(ast.children[i + 1].type === "heading")
-        ) {
-          i++;
-        }
+          // Collect specs until next header
+          while (
+            j < ast.children.length && ast.children[j].type !== "heading"
+          ) {
+            const contentNode = ast.children[j];
+            if (contentNode.type === "list" && !contentNode.ordered) {
+              const specs = extractSpecsFromList(contentNode);
+              for (const spec of specs) {
+                builder = builder.spec(spec);
+              }
+            } else if (
+              contentNode.type === "paragraph" &&
+              !hasImageEmbed(contentNode as Paragraph)
+            ) {
+              // Check if this is a lead after specs
+              const prevNode = j > 0 ? ast.children[j - 1] : null;
+              if (prevNode && prevNode.type === "list" && !prevNode.ordered) {
+                const leadText = extractTextFromParagraph(
+                  contentNode as Paragraph,
+                );
+                if (leadText) {
+                  builder = builder.lead(leadText);
+                }
+              }
+            }
+            j++;
+          }
+
+          // Update outer loop index
+          i = j - 1;
+
+          return builder;
+        });
+
         continue;
       }
 
@@ -229,34 +278,60 @@ export async function parseMarkdownToDeck(
         }
       }
 
-      // Handle paragraph nodes that might contain embeds
+      // Handle paragraph nodes
       if (node.type === "paragraph") {
-        for (const child of (node as Paragraph).children) {
-          if (child.type === "image") {
-            // Try markdown embed
-            const mdCards = await processMarkdownEmbed(
-              child as Image,
-              basePath,
-            );
-            if (mdCards) {
-              // Add embedded cards to current builder
-              for (const embeddedCard of mdCards) {
-                if (embeddedCard.name) {
-                  currentH2Builder = currentH2Builder.card(
-                    embeddedCard.name,
-                    (c) => {
-                      if (typeof embeddedCard.value === "string") {
-                        return c.spec(embeddedCard.value);
-                      } else if (Array.isArray(embeddedCard.value)) {
-                        return addCardsToBuilder(c, embeddedCard.value);
-                      }
-                      return c;
-                    },
-                  );
+        const hasEmbed = hasImageEmbed(node as Paragraph);
+
+        if (hasEmbed) {
+          // Process embeds
+          for (const child of (node as Paragraph).children) {
+            if (child.type === "image") {
+              // Try markdown embed
+              const mdCards = await processMarkdownEmbed(
+                child as Image,
+                basePath,
+              );
+              if (mdCards) {
+                // Add embedded cards to current builder
+                for (const embeddedCard of mdCards) {
+                  if (embeddedCard.name) {
+                    currentH2Builder = currentH2Builder.card(
+                      embeddedCard.name,
+                      (c) => {
+                        if (typeof embeddedCard.value === "string") {
+                          return c.spec(embeddedCard.value);
+                        } else if (Array.isArray(embeddedCard.value)) {
+                          return addCardsToBuilder(c, embeddedCard.value);
+                        }
+                        return c;
+                      },
+                    );
+                  }
                 }
               }
             }
           }
+        } else {
+          // Check if this is a lead after specs
+          const prevNode = i > 0 ? ast.children[i - 1] : null;
+          if (prevNode && prevNode.type === "list" && !prevNode.ordered) {
+            // This is a paragraph after a bullet list - treat as jump-out lead
+            const leadText = extractTextFromParagraph(node as Paragraph);
+            if (leadText) {
+              currentH2Builder = currentH2Builder.lead(leadText);
+            }
+          }
+        }
+      }
+    }
+
+    // Handle deck-level content (outside of H2 cards)
+    if (!currentH2Builder || currentH2Index === -1) {
+      if (node.type === "paragraph" && !hasImageEmbed(node as Paragraph)) {
+        // Handle deck-level transitional leads (paragraphs between cards)
+        const leadText = extractTextFromParagraph(node as Paragraph);
+        if (leadText) {
+          deck = deck.lead(leadText);
         }
       }
     }
@@ -315,32 +390,20 @@ function extractTextFromListItem(item: ListItem): string {
 }
 
 /**
- * Collect specs (bullet points) until the next header
+ * Extract text from a paragraph node
  */
-function collectSpecsUntilNextHeader(
-  children: Root["children"],
-  startIndex: number,
-): Array<string> {
-  const specs: Array<string> = [];
+function extractTextFromParagraph(paragraph: Paragraph): string {
+  const textNodes = paragraph.children.filter((c) =>
+    c.type === "text"
+  ) as Array<Text>;
+  return textNodes.map((t) => t.value).join("").trim();
+}
 
-  for (let i = startIndex; i < children.length; i++) {
-    const node = children[i];
-
-    // Stop at next header
-    if (node.type === "heading") {
-      break;
-    }
-
-    // Collect specs from unordered lists
-    if (node.type === "list" && !node.ordered) {
-      specs.push(...extractSpecsFromList(node));
-    }
-
-    // Note: Embedded cards in nested sections are not currently handled
-    // This would require refactoring to return both specs and embedded cards
-  }
-
-  return specs;
+/**
+ * Check if a paragraph contains image embeds
+ */
+function hasImageEmbed(paragraph: Paragraph): boolean {
+  return paragraph.children.some((child) => child.type === "image");
 }
 
 /**

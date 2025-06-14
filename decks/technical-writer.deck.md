@@ -29,6 +29,9 @@ Follow the brand voice card principles:
 - Don't exaggerate problems to make solutions sound better
 - Assert capabilities without defensive language
 
+These principles apply across all documentation types and help maintain
+consistency.
+
 ## Card: User Documentation
 
 When writing user-facing documentation (docs/guides/):
