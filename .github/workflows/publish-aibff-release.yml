@@ -18,7 +18,7 @@ jobs:
     name: Build and Release aibff
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Required for creating releases and tags
+      contents: write # Required for creating releases and tags
 
     steps:
       - name: Install Nix
@@ -99,20 +99,28 @@ jobs:
         run: |
           cd build/bin
 
-          # Create archives for each platform
-          for binary in aibff-linux-x86_64 aibff-windows-x86_64.exe aibff-darwin-aarch64; do
-            # Remove .exe extension for archive name if present
-            archive_name="${binary%.exe}"
+          # Make Unix binaries executable before archiving
+          chmod +x aibff-linux-x86_64
+          chmod +x aibff-darwin-aarch64
 
-            echo "Creating archive for $binary..."
-            tar -czf "${archive_name}.tar.gz" "$binary"
+          # Create archives with simplified names
+          echo "Creating Linux archive..."
+          tar -czf aibff-linux-x86_64.tar.gz --transform 's/aibff-linux-x86_64/aibff/' aibff-linux-x86_64
+          sha256sum aibff-linux-x86_64.tar.gz > aibff-linux-x86_64.tar.gz.sha256
 
-            # Generate checksum
-            sha256sum "${archive_name}.tar.gz" > "${archive_name}.tar.gz.sha256"
-          done
+          echo "Creating Windows archive..."
+          # Use zip for Windows (more common on Windows)
+          cp aibff-windows-x86_64.exe aibff.exe
+          zip aibff-windows-x86_64.zip aibff.exe
+          rm aibff.exe
+          sha256sum aibff-windows-x86_64.zip > aibff-windows-x86_64.zip.sha256
+
+          echo "Creating macOS archive..."
+          tar -czf aibff-darwin-aarch64.tar.gz --transform 's/aibff-darwin-aarch64/aibff/' aibff-darwin-aarch64
+          sha256sum aibff-darwin-aarch64.tar.gz > aibff-darwin-aarch64.tar.gz.sha256
 
           # List created archives
-          ls -la *.tar.gz*
+          ls -la *.tar.gz* *.zip*
 
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
@@ -127,8 +135,8 @@ jobs:
         with:
           name: aibff-windows-x86_64
           path: |
-            build/bin/aibff-windows-x86_64.tar.gz
-            build/bin/aibff-windows-x86_64.tar.gz.sha256
+            build/bin/aibff-windows-x86_64.zip
+            build/bin/aibff-windows-x86_64.zip.sha256
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
@@ -143,7 +151,7 @@ jobs:
     needs: build-and-release
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Required for creating releases and tags
+      contents: write # Required for creating releases and tags
 
     steps:
       - name: Checkout repository
@@ -168,15 +176,13 @@ jobs:
           \`\`\`bash
           # Linux x64
           curl -L https://github.com/${{ github.repository }}/releases/download/aibff-v${{ github.event.inputs.version }}/aibff-linux-x86_64.tar.gz | tar xz
-          chmod +x aibff-linux-x86_64
 
           # macOS ARM64
           curl -L https://github.com/${{ github.repository }}/releases/download/aibff-v${{ github.event.inputs.version }}/aibff-darwin-aarch64.tar.gz | tar xz
-          chmod +x aibff-darwin-aarch64
 
-          # Windows x64
-          curl -L https://github.com/${{ github.repository }}/releases/download/aibff-v${{ github.event.inputs.version }}/aibff-windows-x86_64.tar.gz -o aibff-windows-x86_64.tar.gz
-          tar -xzf aibff-windows-x86_64.tar.gz
+          # Windows x64 (PowerShell)
+          Invoke-WebRequest https://github.com/${{ github.repository }}/releases/download/aibff-v${{ github.event.inputs.version }}/aibff-windows-x86_64.zip -OutFile aibff-windows-x86_64.zip
+          Expand-Archive aibff-windows-x86_64.zip -DestinationPath .
           \`\`\`
 
           ## Usage
@@ -208,6 +214,8 @@ jobs:
           prerelease: ${{ github.event.inputs.prerelease }}
           files: |
             artifacts/*/*.tar.gz
-            artifacts/*/*.sha256
+            artifacts/*/*.tar.gz.sha256
+            artifacts/*/*.zip
+            artifacts/*/*.zip.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
