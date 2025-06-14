@@ -211,10 +211,3 @@ jobs:
             artifacts/*/*.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create Git Tag
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git tag -a aibff-v${{ github.event.inputs.version }} -m "Release aibff v${{ github.event.inputs.version }}"
-          git push origin aibff-v${{ github.event.inputs.version }}
