@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-read --allow-run
 
 import { parseArgs } from "@std/cli";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger, startSpinner } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -14,10 +14,12 @@ const args = parseArgs(Deno.args, {
 });
 
 if (args.help || !args.from) {
-  logger.info(
+  logger.println(
     "Usage: create-release-notes.ts --from <tag/commit> [--to <tag/commit>]",
   );
-  logger.info("Example: create-release-notes.ts --from aibff-v0.1.0 --to HEAD");
+  logger.println(
+    "Example: create-release-notes.ts --from aibff-v0.1.0 --to HEAD",
+  );
   Deno.exit(args.help ? 0 : 1);
 }
 
@@ -67,10 +69,16 @@ function categorizeCommits(commits: Array<string>): {
 }
 
 try {
-  logger.info(`Generating release notes from ${args.from} to ${args.to}...`);
+  logger.println(`Generating release notes from ${args.from} to ${args.to}...`);
 
+  const stopSpinner = startSpinner([
+    "Fetching commit history...",
+    "Analyzing changes...",
+    "Categorizing commits...",
+  ]);
   const commits = await getGitLog(args.from, args.to);
   const { features, fixes, other } = await categorizeCommits(commits);
+  stopSpinner();
 
   // Using stdout directly for release notes output
   const output: Array<string> = [];
@@ -101,6 +109,6 @@ try {
   // Write to stdout
   await Deno.stdout.write(new TextEncoder().encode(output.join("\n")));
 } catch (error) {
-  logger.error(`Error generating release notes: ${error.message}`);
+  logger.printErr(`Error generating release notes: ${error.message}`);
   Deno.exit(1);
 }

@@ -1,5 +1,5 @@
 import type { Command } from "./types.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger, startSpinner } from "packages/logger/logger.ts";
 import { join } from "@std/path";
 import { parseArgs } from "@std/cli";
 
@@ -22,24 +22,24 @@ export const rebuildCommand: Command = {
     });
 
     if (parsedArgs.help) {
-      logger.info("Usage: aibff rebuild [options]");
-      logger.info("\nOptions:");
-      logger.info(
+      logger.println("Usage: aibff rebuild [options]");
+      logger.println("\nOptions:");
+      logger.println(
         "  --platform <os>     Target platform (darwin, linux, windows)",
       );
-      logger.info(
+      logger.println(
         "  --arch <arch>       Target architecture (x86_64, aarch64)",
       );
-      logger.info("  --debug, -d         Show debug output");
-      logger.info("  --help, -h          Show this help message");
-      logger.info("\nExamples:");
-      logger.info(
+      logger.println("  --debug, -d         Show debug output");
+      logger.println("  --help, -h          Show this help message");
+      logger.println("\nExamples:");
+      logger.println(
         "  aibff rebuild                               # Rebuild for current platform",
       );
-      logger.info(
+      logger.println(
         "  aibff rebuild --platform linux --arch x86_64 # Build for Linux x64",
       );
-      logger.info(
+      logger.println(
         "  aibff rebuild --debug                        # Rebuild with debug output",
       );
       return;
@@ -48,7 +48,7 @@ export const rebuildCommand: Command = {
     const platform = parsedArgs.platform as string;
     const arch = parsedArgs.arch as string;
 
-    logger.info(`Rebuilding aibff binary for ${platform}-${arch}...`);
+    logger.println(`Rebuilding aibff binary for ${platform}-${arch}...`);
 
     // Path to the build script
     const buildScriptPath = join(
@@ -76,7 +76,9 @@ export const rebuildCommand: Command = {
       buildArgs.push("--debug");
     }
 
-    // Run the build script
+    // Run the build script with spinner
+    const stopSpinner = startSpinner("Rebuilding aibff binary...");
+
     const buildCommand = new Deno.Command("deno", {
       args: buildArgs,
       stdout: "inherit",
@@ -85,12 +87,13 @@ export const rebuildCommand: Command = {
     });
 
     const { success } = await buildCommand.output();
+    stopSpinner();
 
     if (!success) {
-      logger.error("Build failed!");
+      logger.printErr("Build failed!");
       Deno.exit(1);
     }
 
-    logger.info("✅ Rebuild complete!");
+    logger.println("✅ Rebuild complete!");
   },
 };
