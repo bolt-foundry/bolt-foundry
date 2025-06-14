@@ -38,6 +38,7 @@ export type Card = {
   name?: string;
   value: string | Array<Card>;
   samples?: Array<Sample>;
+  lead?: string;
 };
 
 /**
@@ -76,6 +77,9 @@ export type CardBuilder = {
 
   /** Add a named group of specs using a builder function */
   card(name: string, builder: (c: CardBuilder) => CardBuilder): CardBuilder;
+
+  /** Add a lead (transitional/explanatory text) */
+  lead(text: string): CardBuilder;
 
   /** Get the collected cards */
   getCards(): Array<Card>;
@@ -136,6 +140,11 @@ export function makeCardBuilder(cards: Array<Card> = []): CardBuilder {
       return makeCardBuilder([...cards, groupCard]);
     },
 
+    lead(text: string) {
+      const leadCard: Card = { value: "", lead: text };
+      return makeCardBuilder([...cards, leadCard]);
+    },
+
     getCards() {
       return cards;
     },
@@ -194,6 +203,9 @@ export type DeckBuilder = {
     name: string,
     builder: (c: CardBuilder) => CardBuilder,
   ): DeckBuilder;
+
+  /** Add a lead (transitional/explanatory text) */
+  lead(text: string): DeckBuilder;
 
   /** Add context variables */
   context(builder: (c: ContextBuilder) => ContextBuilder): DeckBuilder;
@@ -267,11 +279,18 @@ export function makeDeckBuilder(
     indent: string = "",
   ): string => {
     return cardsToRender.map((card) => {
-      if (typeof card.value === "string") {
-        return indent + card.value + "\n";
+      let result = "";
+
+      // Handle lead text if present
+      if (card.lead) {
+        result += indent + card.lead + "\n";
+      }
+
+      // Handle card value
+      if (typeof card.value === "string" && card.value) {
+        result += indent + card.value + "\n";
       } else if (Array.isArray(card.value)) {
         // Handle nested cards with optional grouping
-        let result = "";
         if (card.name) {
           result += indent + `<${card.name}>\n`;
           result += renderCards(card.value, indent + "  ");
@@ -279,9 +298,9 @@ export function makeDeckBuilder(
         } else {
           result += renderCards(card.value, indent);
         }
-        return result;
       }
-      return "";
+
+      return result;
     }).join("");
   };
 
@@ -330,6 +349,15 @@ export function makeDeckBuilder(
       return makeDeckBuilder(
         name,
         [...cards, groupCard],
+        contextVariables,
+      );
+    },
+
+    lead(text: string) {
+      const leadCard: Card = { value: "", lead: text };
+      return makeDeckBuilder(
+        name,
+        [...cards, leadCard],
         contextVariables,
       );
     },

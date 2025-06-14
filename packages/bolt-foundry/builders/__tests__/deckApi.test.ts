@@ -191,6 +191,72 @@ Deno.test("Deck with samples - structure and rendering", () => {
   const commCards = cards[1].value as Array<Card>;
   assertEquals(commCards[0].samples?.length, 2);
   assertEquals(commCards[1].samples, undefined);
+});
+
+Deno.test("DeckBuilder - lead functionality", () => {
+  const client = BfClient.create();
+  const deck = client.createDeck("pokemon-narrator", (b) => {
+    return b
+      .lead("This deck creates a narrator for Pokemon adventures")
+      .spec("Set scenes in the Pokemon world")
+      .lead("The narrator should guide trainers on their journey")
+      .card("style", (c) => {
+        return c
+          .lead("Narrative style guidelines")
+          .spec("Descriptive and immersive")
+          .spec("Focus on Pokemon and trainer bonds");
+      })
+      .lead("Remember to make each adventure unique");
+  });
+
+  const result = deck.render();
+  const systemMessage = result.messages[0].content;
+
+  // Check that leads are included in the rendered output
+  assert(typeof systemMessage === "string");
+  assert(
+    systemMessage.includes(
+      "This deck creates a narrator for Pokemon adventures",
+    ),
+  );
+  assert(
+    systemMessage.includes(
+      "The narrator should guide trainers on their journey",
+    ),
+  );
+  assert(systemMessage.includes("Narrative style guidelines"));
+  assert(systemMessage.includes("Remember to make each adventure unique"));
+});
+
+Deno.test("DeckBuilder - leads with nested cards", () => {
+  const client = BfClient.create();
+  const deck = client.createDeck("battle-system", (b) => {
+    return b
+      .lead("Pokemon battle mechanics guide")
+      .card("mechanics", (c) => {
+        return c
+          .lead("Core battle rules")
+          .spec("Type advantages matter")
+          .card("status", (s) => {
+            return s
+              .lead("Status effects in battle")
+              .spec("Paralysis reduces speed")
+              .lead("Status can turn the tide of battle");
+          });
+      });
+  });
+
+  const cards = deck.getCards();
+  assertEquals(cards.length, 2);
+
+  // First item should be the deck lead
+  assertEquals(cards[0].lead, "Pokemon battle mechanics guide");
+  assertEquals(cards[0].value, "");
+
+  // Second item should be the mechanics card
+  assertEquals(cards[1].name, "mechanics");
+  const mechanicsCards = cards[1].value as Array<Card>;
+  assertEquals(mechanicsCards[0].lead, "Core battle rules");
 
   // Verify it renders without errors
   const result = deck.render();
