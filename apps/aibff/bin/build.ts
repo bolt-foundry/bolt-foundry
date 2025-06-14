@@ -6,15 +6,31 @@ import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 const ROOT_DIR = join(import.meta.dirname!, "../../..");
-const DENO_LOCK_PATH = join(ROOT_DIR, "deno.lock");
 const MAIN_ENTRY = join(ROOT_DIR, "apps/aibff/main.ts");
 const BUILD_DIR = join(ROOT_DIR, "build/bin");
 const OUTPUT_PATH = join(BUILD_DIR, "aibff");
 
-async function extractNpmDependencies(): Promise<Array<string>> {
-  const lockFile = JSON.parse(await Deno.readTextFile(DENO_LOCK_PATH));
+// Check if .deno directory exists - we don't want Deno-managed node_modules
+async function validateNodeModules() {
+  const denoDir = join(ROOT_DIR, "node_modules/.deno");
+  try {
+    await Deno.stat(denoDir);
+    // If we get here, .deno exists - fail the build
+    logger.error("❌ Detected node_modules/.deno directory!");
+    logger.error("This project uses npm for dependency management.");
+    logger.error("Please run:");
+    logger.error("  rm -rf node_modules");
+    logger.error("  npm install");
+    logger.error("\nThen try building again.");
+    Deno.exit(1);
+  } catch {
+    // Good - .deno doesn't exist, we can proceed
+    logger.debug("✓ node_modules structure is npm-managed");
+  }
+}
 
-  // Get initial packages from deno info
+async function getDirectlyUsedPackages(): Promise<Array<string>> {
+  // Get packages from deno info
   const denoInfoCmd = new Deno.Command("deno", {
     args: ["info", "--json", MAIN_ENTRY],
     stdout: "piped",
@@ -27,80 +43,80 @@ async function extractNpmDependencies(): Promise<Array<string>> {
   const npmPackages = new Set<string>();
   for (const module of denoInfo.modules) {
     if (
-      module.kind === "external" && module.specifier.includes("node_modules")
+      module.kind === "external" && module.specifier.includes("/node_modules/")
     ) {
-      // Extract package name from path like: node_modules/.deno/chalk@5.4.1/...
-      const match = module.specifier.match(
-        /node_modules\/\.deno\/([^\/]+)@[^\/]+/,
-      );
+      // Extract from file:// URLs (e.g., "file:///path/node_modules/chalk/..." -> "chalk")
+      const match = module.specifier.match(/node_modules\/(@?[^\/]+)\//);
       if (match) {
-        // Find the exact version in specifiers
-        const packageName = match[1];
-        for (const [spec, version] of Object.entries(lockFile.specifiers)) {
-          if (
-            spec.startsWith(`npm:${packageName}@`) ||
-            spec === `npm:${packageName}`
-          ) {
-            const versionedPackage = `${packageName}@${version}`;
-            npmPackages.add(versionedPackage);
-            break;
-          }
+        const pkgName = match[1];
+        if (!pkgName.startsWith("@types")) { // Skip @types packages for now
+          npmPackages.add(pkgName);
         }
       }
     }
   }
 
-  // Collect transitive dependencies
-  const visited = new Set<string>();
-  const allDeps = new Set<string>();
+  logger.info(`Found ${npmPackages.size} directly used packages`);
+  return Array.from(npmPackages);
+}
 
-  function collectDeps(pkgName: string) {
-    if (visited.has(pkgName)) return;
-    visited.add(pkgName);
+async function readPackageJson(
+  packageName: string,
+): Promise<{ dependencies?: Record<string, string> } | null> {
+  try {
+    const packageJsonPath = join(
+      ROOT_DIR,
+      "node_modules",
+      packageName,
+      "package.json",
+    );
+    const content = await Deno.readTextFile(packageJsonPath);
+    return JSON.parse(content);
+  } catch {
+    return null;
+  }
+}
 
-    const pkg = lockFile.npm[pkgName];
-    if (!pkg) return;
+async function getAllRequiredPackages(): Promise<Array<string>> {
+  // First get directly used packages
+  const directPackages = await getDirectlyUsedPackages();
+  const allRequired = new Set<string>(directPackages);
+  const toProcess = [...directPackages];
 
-    allDeps.add(pkgName);
+  // Recursively resolve dependencies by reading package.json files
+  while (toProcess.length > 0) {
+    const pkg = toProcess.shift()!;
+    const packageJson = await readPackageJson(pkg);
 
-    if (pkg.dependencies) {
-      for (const dep of pkg.dependencies) {
-        const depName = dep.replace(/^npm:/, "");
-        const exactDep = Object.keys(lockFile.npm).find((key) =>
-          key.startsWith(depName + "@") || key === depName
-        );
-
-        if (exactDep) {
-          collectDeps(exactDep);
+    if (packageJson && packageJson.dependencies) {
+      for (const depName of Object.keys(packageJson.dependencies)) {
+        if (!allRequired.has(depName)) {
+          allRequired.add(depName);
+          toProcess.push(depName);
+          logger.debug(`Added dependency: ${depName} (required by ${pkg})`);
         }
       }
     }
   }
 
-  // Start with packages found in deno info
-  for (const pkg of npmPackages) {
-    collectDeps(pkg);
-  }
-
-  // Convert to package names without versions for includes
-  return Array.from(allDeps).map((dep) => {
-    const match = dep.match(/^(@?[^@]+)/);
-    return match ? match[1] : dep;
-  });
+  logger.info(
+    `Resolved ${directPackages.length} direct packages to ${allRequired.size} total required packages`,
+  );
+  return Array.from(allRequired);
 }
 
 async function build() {
   logger.info("Building aibff command...");
 
+  // Validate node_modules structure first
+  await validateNodeModules();
+
   // Ensure build directory exists
   await Deno.mkdir(BUILD_DIR, { recursive: true });
 
-  // Extract dependencies
-  logger.info("Extracting npm dependencies...");
-  const npmDeps = await extractNpmDependencies();
-  logger.info(
-    `Found ${npmDeps.length} npm packages (including transitive dependencies)`,
-  );
+  // Get required npm packages
+  logger.info("Collecting required npm packages...");
+  const npmPackages = await getAllRequiredPackages();
 
   // Build compile command
   const compileArgs = [
@@ -113,34 +129,25 @@ async function build() {
     "node_modules",
   ];
 
-  // Add individual includes for each npm package that exists
-  const existingPackages: Array<string> = [];
-  const missingPackages: Array<string> = [];
-
-  for (const pkg of npmDeps) {
+  // Add includes for each npm package
+  for (const pkg of npmPackages) {
     const pkgPath = join(ROOT_DIR, "node_modules", pkg);
     try {
       await Deno.stat(pkgPath);
-      existingPackages.push(pkg);
       compileArgs.push("--include", `node_modules/${pkg}`);
+      logger.debug(`Including: node_modules/${pkg}`);
     } catch {
-      missingPackages.push(pkg);
+      logger.warn(`Package ${pkg} not found in node_modules - skipping`);
     }
-  }
-
-  logger.info(`Including ${existingPackages.length} existing packages`);
-  if (missingPackages.length > 0) {
-    logger.debug(
-      `Skipping ${missingPackages.length} missing packages: ${
-        missingPackages.join(", ")
-      }`,
-    );
   }
 
   // Add the entry point
   compileArgs.push(MAIN_ENTRY);
 
   logger.info("Running deno compile...");
+  logger.info(
+    `Compile command will include ${npmPackages.length} npm packages`,
+  );
   logger.debug(`Output will be: ${OUTPUT_PATH}`);
 
   const cmd = new Deno.Command("deno", {
