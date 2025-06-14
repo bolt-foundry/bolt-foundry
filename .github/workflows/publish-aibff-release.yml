@@ -1,0 +1,191 @@
+name: Publish aibff Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g., 1.0.0)"
+        required: true
+        type: string
+      prerelease:
+        description: "Mark as pre-release"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build-and-release:
+    name: Build and Release aibff
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            arch: x86_64
+            artifact-name: aibff-linux-x86_64
+          - os: macos-latest
+            platform: darwin
+            arch: aarch64
+            artifact-name: aibff-darwin-aarch64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - name: Setup Nix caching
+        uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Set Deno cache directory
+      - name: Set Deno cache directory
+        run: echo "DENO_DIR=${RUNNER_TEMP}/deno-cache" >> "$GITHUB_ENV"
+
+      # Cache node_modules
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: dependency-cache
+        with:
+          path: |
+            node_modules
+            ~/.npm
+            ${{ env.DENO_DIR }}
+          key: ${{ runner.os }}-aibff-deps-${{ hashFiles('package-lock.json', 'package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-aibff-deps-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Update version
+        run: |
+          # Update version.ts
+          sed -i.bak 's/VERSION = ".*"/VERSION = "${{ github.event.inputs.version }}"/' apps/aibff/version.ts
+          rm apps/aibff/version.ts.bak
+
+          echo "Updated version to ${{ github.event.inputs.version }}"
+          cat apps/aibff/version.ts
+
+      - name: Build aibff binary
+        run: |
+          nix develop --impure --command bff aibff:build --platform ${{ matrix.platform }} --arch ${{ matrix.arch }}
+
+      - name: Test binary
+        run: |
+          # Find the built binary
+          BINARY_PATH="build/bin/${{ matrix.artifact-name }}"
+
+          # Make it executable
+          chmod +x "$BINARY_PATH"
+
+          # Test version output
+          "$BINARY_PATH" --version
+
+          # Test help output
+          "$BINARY_PATH" --help
+
+      - name: Create archive
+        run: |
+          cd build/bin
+          tar -czf ${{ matrix.artifact-name }}.tar.gz ${{ matrix.artifact-name }}
+
+          # Generate checksum
+          if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+            shasum -a 256 ${{ matrix.artifact-name }}.tar.gz > ${{ matrix.artifact-name }}.tar.gz.sha256
+          else
+            sha256sum ${{ matrix.artifact-name }}.tar.gz > ${{ matrix.artifact-name }}.tar.gz.sha256
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: |
+            build/bin/${{ matrix.artifact-name }}.tar.gz
+            build/bin/${{ matrix.artifact-name }}.tar.gz.sha256
+
+  create-release:
+    name: Create GitHub Release
+    needs: build-and-release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: Create release notes
+        run: |
+          cat > release-notes.md << EOF
+          # aibff v${{ github.event.inputs.version }}
+
+          ## Installation
+
+          Download the appropriate binary for your platform and extract it:
+
+          \`\`\`bash
+          # Linux x64
+          curl -L https://github.com/${{ github.repository }}/releases/download/aibff-v${{ github.event.inputs.version }}/aibff-linux-x86_64.tar.gz | tar xz
+          chmod +x aibff-linux-x86_64
+
+          # macOS ARM64
+          curl -L https://github.com/${{ github.repository }}/releases/download/aibff-v${{ github.event.inputs.version }}/aibff-darwin-aarch64.tar.gz | tar xz
+          chmod +x aibff-darwin-aarch64
+          \`\`\`
+
+          ## Usage
+
+          \`\`\`bash
+          # Check version
+          ./aibff --version
+
+          # Run evaluation
+          ./aibff eval grader.deck.md samples.jsonl
+          \`\`\`
+
+          ## Checksums
+
+          Verify your download with the provided SHA256 checksums:
+
+          \`\`\`
+          $(cat artifacts/*/*.sha256)
+          \`\`\`
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: aibff-v${{ github.event.inputs.version }}
+          name: aibff v${{ github.event.inputs.version }}
+          body_path: release-notes.md
+          draft: false
+          prerelease: ${{ github.event.inputs.prerelease }}
+          files: |
+            artifacts/*/*.tar.gz
+            artifacts/*/*.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Git Tag
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git tag -a aibff-v${{ github.event.inputs.version }} -m "Release aibff v${{ github.event.inputs.version }}"
+          git push origin aibff-v${{ github.event.inputs.version }}
