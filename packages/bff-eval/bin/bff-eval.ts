@@ -5,7 +5,7 @@ import { runEvaluation } from "../src/run-eval";
 
 async function main() {
   const args = await cli.parse();
-  
+
   // The CLI has already validated and set up input/grader paths
   if (args.input && args.grader) {
     await runEvaluation({

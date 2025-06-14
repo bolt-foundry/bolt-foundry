@@ -18,7 +18,7 @@ export default function BoltFoundryExample() {
 
     try {
       setStatus("Sending message...");
-      
+
       // Call our API route that uses Bolt Foundry server-side
       const res = await fetch("/api/regular-chat", {
         method: "POST",
@@ -27,23 +27,23 @@ export default function BoltFoundryExample() {
         },
         body: JSON.stringify({
           messages: [
-            { role: "user", content: message }
+            { role: "user", content: message },
           ],
           apiKey: apiKey, // Note: Passing API keys from client is insecure
         }),
       });
 
       const data = await res.json();
-      
+
       if (!res.ok) {
         // Handle API errors with better messaging
         if (data.error === "OpenAI API key not configured") {
           setStatus("⚠️ OpenAI API key required");
           setResponse("");
           // Show helpful error UI instead of generic error
-          const errorMessage = document.getElementById('error-message');
+          const errorMessage = document.getElementById("error-message");
           if (errorMessage) {
-            errorMessage.style.display = 'block';
+            errorMessage.style.display = "block";
           }
           return;
         }
@@ -53,9 +53,9 @@ export default function BoltFoundryExample() {
       setResponse(data.content || "No response received");
       setStatus("Message sent successfully!");
       // Hide error message on success
-      const errorMessage = document.getElementById('error-message');
+      const errorMessage = document.getElementById("error-message");
       if (errorMessage) {
-        errorMessage.style.display = 'none';
+        errorMessage.style.display = "none";
       }
     } catch (error) {
       setStatus(`Error: ${error.message}`);
@@ -76,7 +76,7 @@ export default function BoltFoundryExample() {
           alignItems: "center",
         }}
       >
-        <Link 
+        <Link
           href="/"
           style={{
             fontWeight: "bold",
@@ -114,9 +114,10 @@ export default function BoltFoundryExample() {
                 color: "#856404",
               }}
             >
-              <strong>⚠️ Security Warning:</strong> Never pass API keys from the client in production!
-              This is for demonstration purposes only. In a real application, store API keys securely
-              on the server.
+              <strong>⚠️ Security Warning:</strong>{" "}
+              Never pass API keys from the client in production! This is for
+              demonstration purposes only. In a real application, store API keys
+              securely on the server.
             </div>
 
             <div
@@ -136,9 +137,17 @@ export default function BoltFoundryExample() {
               <p style={{ margin: "0 0 12px 0", color: "#666" }}>
                 To use this demo, you need an OpenAI API key. You can:
               </p>
-              <ol style={{ margin: "0 0 12px 0", paddingLeft: "20px", color: "#666" }}>
+              <ol
+                style={{
+                  margin: "0 0 12px 0",
+                  paddingLeft: "20px",
+                  color: "#666",
+                }}
+              >
                 <li>Enter your API key in the field below, or</li>
-                <li>Set the OPENAI_API_KEY environment variable on the server</li>
+                <li>
+                  Set the OPENAI_API_KEY environment variable on the server
+                </li>
               </ol>
               <p style={{ margin: "0", color: "#666" }}>
                 Don&apos;t have an API key?{" "}

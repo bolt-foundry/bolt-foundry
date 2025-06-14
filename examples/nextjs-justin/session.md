@@ -5,11 +5,15 @@
 **Last Updated:** 2025-05-29
 
 ## Overview
-A clean Next.js JavaScript tutoring application built from scratch after removing all Bolt Foundry dependencies. The app provides an interactive learning environment for JavaScript fundamentals.
+
+A clean Next.js JavaScript tutoring application built from scratch after
+removing all Bolt Foundry dependencies. The app provides an interactive learning
+environment for JavaScript fundamentals.
 
 ## Current Architecture
 
 ### Technology Stack
+
 - **Framework:** Next.js 15.3.2 with App Router
 - **Language:** TypeScript 5.x
 - **Styling:** Tailwind CSS 4.x
@@ -17,6 +21,7 @@ A clean Next.js JavaScript tutoring application built from scratch after removin
 - **No external APIs or services** - fully self-contained
 
 ### Project Structure
+
 ```
 src/app/
 ├── components/           # React components
@@ -37,20 +42,26 @@ src/app/
 ## Features Implemented
 
 ### ✅ Core Learning System
+
 - **Interactive Questions:** 3 progressive JavaScript challenges
   1. Hello World (functions, console.log)
   2. Variables and Math (parameters, arithmetic)
   3. Conditional Logic (if statements, comparisons)
-- **Live Code Execution:** Browser-based JavaScript execution with console output
+- **Live Code Execution:** Browser-based JavaScript execution with console
+  output
 - **Answer Evaluation:** Smart evaluation system with detailed feedback
 
 ### ✅ Student Support Features
-- **Progressive Hint System:** Context-aware hints that guide without revealing solutions
-- **Visual Progress Tracking:** Completion percentage, streak counter, concepts learned
+
+- **Progressive Hint System:** Context-aware hints that guide without revealing
+  solutions
+- **Visual Progress Tracking:** Completion percentage, streak counter, concepts
+  learned
 - **Motivational Messaging:** Dynamic encouragement based on progress
 - **Error Handling:** Clear error messages and suggestions
 
 ### ✅ User Experience
+
 - **Responsive Design:** Works on desktop and mobile devices
 - **Clean UI:** Modern Tailwind CSS styling with accessibility considerations
 - **Keyboard Shortcuts:** Ctrl+Enter to run code
@@ -59,16 +70,19 @@ src/app/
 ## Technical Implementation Details
 
 ### State Management
+
 - Uses React's `useState` for local component state
 - Centralized state in `JavaScriptTutor` component
 - Type-safe state with TypeScript interfaces
 
 ### Code Execution
+
 - Browser-based JavaScript execution using `Function` constructor
 - Safe execution environment with console output capture
 - Error handling and user-friendly error messages
 
 ### Question System
+
 - Static question bank with expandable structure
 - Each question includes:
   - Title, description, difficulty level
@@ -77,6 +91,7 @@ src/app/
   - Custom evaluation logic
 
 ### Hint Generation
+
 - Question-specific hint sequences
 - Progressive difficulty (3 levels per question)
 - Contextual hints based on common mistakes
@@ -84,16 +99,19 @@ src/app/
 ## Current Question Bank
 
 ### Question 1: Hello World
+
 - **Difficulty:** Beginner
 - **Concepts:** Functions, console.log, basic syntax
 - **Goal:** Output "Hello, World!" to console
 
 ### Question 2: Variables and Math
+
 - **Difficulty:** Beginner
 - **Concepts:** Variables, arithmetic, parameters, const
 - **Goal:** Add two numbers and display result
 
 ### Question 3: Conditional Logic
+
 - **Difficulty:** Beginner
 - **Concepts:** If statements, comparison operators, conditional logic
 - **Goal:** Classify numbers as positive, negative, or zero
@@ -101,6 +119,7 @@ src/app/
 ## Development Status
 
 ### ✅ Completed Tasks
+
 1. ✅ Removed all Bolt Foundry dependencies
 2. ✅ Created TypeScript type definitions
 3. ✅ Built all core components
@@ -112,24 +131,30 @@ src/app/
 9. ✅ Updated main page to use tutor
 
 ### 🚀 Current Enhancement: LLM Integration
+
 **Status:** In Progress
 
 #### Phase 1: LLM Integration ✅ COMPLETE
+
 - **✅ API Routes:** Next.js API routes for question/hint generation
-- **✅ LLM Service:** Support for Claude (default) and OpenAI APIs  
+- **✅ LLM Service:** Support for Claude (default) and OpenAI APIs
 - **✅ Dynamic Questions:** LLM-generated questions based on adaptive curriculum
 - **✅ Smart Hints:** Context-aware hints using user's code attempts
 - **✅ Adaptive Learning:** Performance-based difficulty adjustment
-- **✅ Enhanced UI:** Provider selection, performance insights, encouragement messages
+- **✅ Enhanced UI:** Provider selection, performance insights, encouragement
+  messages
 
 #### LLM Integration Specifications
+
 - **Question Generation:** Practical, real-world JavaScript (no CS theory)
-- **Hint Strategy:** Socratic method → direct answers when struggling → related follow-up
+- **Hint Strategy:** Socratic method → direct answers when struggling → related
+  follow-up
 - **Curriculum Adaptation:** Based on speed, hints needed, attempts, accuracy
 - **Context Sharing:** Full context including previous attempts and hints
 - **Error Handling:** Simple UI error display, no caching initially
 
 ### 🔄 Future Enhancements
+
 - **Persistence:** Save user progress between sessions
 - **Code Sharing:** Allow users to share solutions
 - **Testing Framework:** Add unit tests for components
@@ -139,6 +164,7 @@ src/app/
 ## Package Dependencies
 
 ### Production Dependencies
+
 ```json
 {
   "next": "15.3.2",
@@ -148,6 +174,7 @@ src/app/
 ```
 
 ### Development Dependencies
+
 ```json
 {
   "typescript": "^5",
@@ -165,18 +192,22 @@ src/app/
 ## Running the Application
 
 ### Development Server
+
 ```bash
 npm run dev
 ```
+
 Access at: http://localhost:3000
 
 ### Build Process
+
 ```bash
 npm run build
 npm run start
 ```
 
 ## Code Quality
+
 - **TypeScript:** Full type safety throughout application
 - **ESLint:** Code linting with Next.js configuration
 - **Component Structure:** Modular, reusable components
@@ -185,7 +216,9 @@ npm run start
 ## Future Roadmap
 
 ### Phase 1: LLM Integration ✅ COMPLETE
+
 **Target:** Intelligent, adaptive JavaScript tutor
+
 - ✅ Requirements gathering and planning
 - ✅ API route implementation (`/api/generate-question`, `/api/generate-hint`)
 - ✅ LLM service layer (Claude + OpenAI support)
@@ -195,12 +228,14 @@ npm run start
 - ✅ Full integration testing and UI enhancements
 
 ### Phase 2: Advanced Learning Features
+
 - **Smart Curriculum:** Multi-concept learning paths
 - **Code Quality:** Style and best practice guidance
 - **Debugging Skills:** Intentional bug finding exercises
 - **Project-Based:** Real-world mini-projects
 
 ### Phase 3: Platform Features
+
 - **User Authentication:** Progress persistence across sessions
 - **Social Learning:** Code sharing and peer reviews
 - **Advanced Analytics:** Detailed learning insights
@@ -209,23 +244,27 @@ npm run start
 ## Technical Notes
 
 ### Current Architecture
+
 - **Client-Side:** React components with TypeScript
 - **Server-Side:** Next.js API routes for LLM integration
 - **APIs:** Claude (Anthropic) as primary, OpenAI as secondary
 - **Environment:** `ANTHROPIC_API_KEY` configured for Claude API
 
 ### LLM Integration Architecture
+
 ```
 User Input → Component → API Route → LLM Service → Response → UI Update
 ```
 
 **API Endpoints (Planned):**
+
 - `POST /api/generate-question` - Creates adaptive questions
 - `POST /api/generate-hint` - Context-aware hint generation
 
 **Error Handling:** Simple UI notifications, graceful degradation
 
 ### Performance & Compatibility
+
 - **Browser Compatibility:** Modern browsers with ES6+ support
 - **Performance:** Lightweight client + efficient server-side LLM calls
 - **Extensibility:** Clean architecture for easy feature additions
@@ -233,7 +272,6 @@ User Input → Component → API Route → LLM Service → Response → UI Updat
 
 ---
 
-**Project Status:** Active development - LLM integration in progress
-**Next Sprint:** API implementation and component integration
-**Maintainer:** Active development team
-**License:** Follows parent project licensing
+**Project Status:** Active development - LLM integration in progress **Next
+Sprint:** API implementation and component integration **Maintainer:** Active
+development team **License:** Follows parent project licensing

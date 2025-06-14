@@ -1,6 +1,7 @@
 #!/usr/bin/env -S deno run --allow-read --allow-run --allow-write --allow-env
 
 import { join } from "@std/path";
+import { parseArgs } from "@std/cli";
 import { getLogger } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
@@ -8,7 +9,40 @@ const logger = getLogger(import.meta);
 const ROOT_DIR = join(import.meta.dirname!, "../../..");
 const MAIN_ENTRY = join(ROOT_DIR, "apps/aibff/main.ts");
 const BUILD_DIR = join(ROOT_DIR, "build/bin");
-const OUTPUT_PATH = join(BUILD_DIR, "aibff");
+const VERSION_FILE = join(ROOT_DIR, "apps/aibff/version.ts");
+
+// Parse command line arguments
+const args = parseArgs(Deno.args, {
+  string: ["platform", "arch"],
+  boolean: ["debug"],
+  default: {
+    platform: Deno.build.os,
+    arch: Deno.build.arch,
+    debug: false,
+  },
+});
+
+// Map platform/arch to Deno target
+function getDenoTarget(platform: string, arch: string): string {
+  const targetMap: Record<string, string> = {
+    "darwin-x86_64": "x86_64-apple-darwin",
+    "darwin-aarch64": "aarch64-apple-darwin",
+    "linux-x86_64": "x86_64-unknown-linux-gnu",
+    "linux-aarch64": "aarch64-unknown-linux-gnu",
+    "windows-x86_64": "x86_64-pc-windows-msvc",
+  };
+
+  const key = `${platform}-${arch}`;
+  return targetMap[key] || "";
+}
+
+// Determine output filename based on platform
+function getOutputPath(platform: string, arch: string): string {
+  const baseName = "aibff";
+  const suffix = platform === "windows" ? ".exe" : "";
+  const platformArch = `${platform}-${arch}`;
+  return join(BUILD_DIR, `${baseName}-${platformArch}${suffix}`);
+}
 
 // Check if .deno directory exists - we don't want Deno-managed node_modules
 async function validateNodeModules() {
@@ -105,11 +139,45 @@ async function getAllRequiredPackages(): Promise<Array<string>> {
   return Array.from(allRequired);
 }
 
+async function updateVersionFile() {
+  const gitCommit = await getGitCommit();
+  const buildTime = new Date().toISOString();
+
+  const versionContent = await Deno.readTextFile(VERSION_FILE);
+  const updatedContent = versionContent
+    .replace(/BUILD_TIME = ".*"/, `BUILD_TIME = "${buildTime}"`)
+    .replace(/BUILD_COMMIT = ".*"/, `BUILD_COMMIT = "${gitCommit}"`);
+
+  await Deno.writeTextFile(VERSION_FILE, updatedContent);
+  logger.info("Updated version file with build metadata");
+}
+
+async function getGitCommit(): Promise<string> {
+  try {
+    const cmd = new Deno.Command("git", {
+      args: ["rev-parse", "--short", "HEAD"],
+      stdout: "piped",
+    });
+    const { stdout } = await cmd.output();
+    return new TextDecoder().decode(stdout).trim();
+  } catch {
+    return "unknown";
+  }
+}
+
 async function build() {
-  logger.info("Building aibff command...");
+  const platform = args.platform as string;
+  const arch = args.arch as string;
+  const outputPath = getOutputPath(platform, arch);
+
+  logger.info(`Building aibff for ${platform}-${arch}...`);
+  logger.info(`Output: ${outputPath}`);
 
   // Validate node_modules structure first
   await validateNodeModules();
+
+  // Update version file with build metadata
+  await updateVersionFile();
 
   // Ensure build directory exists
   await Deno.mkdir(BUILD_DIR, { recursive: true });
@@ -118,13 +186,22 @@ async function build() {
   logger.info("Collecting required npm packages...");
   const npmPackages = await getAllRequiredPackages();
 
+  // Get the Deno target
+  const denoTarget = getDenoTarget(platform, arch);
+  if (!denoTarget) {
+    logger.error(`Unsupported platform/arch combination: ${platform}-${arch}`);
+    Deno.exit(1);
+  }
+
   // Build compile command
   const compileArgs = [
     "compile",
     "--allow-all",
     "--no-check",
+    "--target",
+    denoTarget,
     "--output",
-    OUTPUT_PATH,
+    outputPath,
     "--exclude",
     "node_modules",
   ];
@@ -148,7 +225,7 @@ async function build() {
   logger.info(
     `Compile command will include ${npmPackages.length} npm packages`,
   );
-  logger.debug(`Output will be: ${OUTPUT_PATH}`);
+  logger.debug(`Output will be: ${outputPath}`);
 
   const cmd = new Deno.Command("deno", {
     args: compileArgs,
@@ -162,8 +239,21 @@ async function build() {
     logger.info("✅ Build successful!");
 
     // Check output size
-    const stat = await Deno.stat(OUTPUT_PATH);
+    const stat = await Deno.stat(outputPath);
     logger.info(`Output size: ${(stat.size / 1024 / 1024).toFixed(2)} MB`);
+    logger.info(`Binary location: ${outputPath}`);
+
+    // Create a symlink to the latest build for convenience
+    const latestLink = join(BUILD_DIR, "aibff");
+    try {
+      await Deno.remove(latestLink);
+    } catch {
+      // Ignore if doesn't exist
+    }
+    if (platform === Deno.build.os && arch === Deno.build.arch) {
+      await Deno.symlink(outputPath, latestLink);
+      logger.info(`Created symlink: ${latestLink} -> ${outputPath}`);
+    }
   } else {
     logger.error("❌ Build failed!");
     Deno.exit(1);

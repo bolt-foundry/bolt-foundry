@@ -1,3 +1,3 @@
 export type Query__EntrypointDocs__parameters = {
-  readonly slug?: string | null | void,
+  readonly slug?: string | null | void;
 };

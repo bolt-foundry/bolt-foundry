@@ -2,7 +2,8 @@
 
 ## Overview
 
-The `--demo` flag provides a quick way to run pre-configured evaluation examples without specifying separate input and grader files.
+The `--demo` flag provides a quick way to run pre-configured evaluation examples
+without specifying separate input and grader files.
 
 ## Usage
 
@@ -11,18 +12,24 @@ bff-eval --demo $NAME  # Run a specific demo
 bff-eval --demo        # Run a random demo
 ```
 
-Where `$NAME` is the name of a demo folder in `packages/bff-eval/examples/`. If no name is provided, a random demo will be selected.
+Where `$NAME` is the name of a demo folder in `packages/bff-eval/examples/`. If
+no name is provided, a random demo will be selected.
 
 ## Behavior
 
-- **Location**: Loads demo from `packages/bff-eval/examples/$NAME/` (or random if no name provided)
+- **Location**: Loads demo from `packages/bff-eval/examples/$NAME/` (or random
+  if no name provided)
 - **Required Files**: Each demo folder must contain:
   - `grader.js` - The grader implementation (CommonJS module export)
   - `samples.jsonl` - Sample data in standard format
-- **Exclusivity**: The `--demo` flag is mutually exclusive with `--input` and `--grader` flags
-- **Other Flags**: Configuration flags like `--model`, `--judges`, and `--output` remain customizable
-- **Error Handling**: If the specified demo folder doesn't exist, displays an error listing available demos
-- **Default Behavior**: If no demo name is provided, randomly selects from available demos
+- **Exclusivity**: The `--demo` flag is mutually exclusive with `--input` and
+  `--grader` flags
+- **Other Flags**: Configuration flags like `--model`, `--judges`, and
+  `--output` remain customizable
+- **Error Handling**: If the specified demo folder doesn't exist, displays an
+  error listing available demos
+- **Default Behavior**: If no demo name is provided, randomly selects from
+  available demos
 - **Output**: Shows "Running demo: $NAME" when loading a demo
 
 ## Sample Data Format
@@ -35,6 +42,7 @@ The `samples.jsonl` file should follow the standard bff-eval format:
 ```
 
 Fields:
+
 - `userMessage` (required): The user's input
 - `assistantResponse` (required): The assistant's response to evaluate
 - `id` (optional): Unique identifier for the sample

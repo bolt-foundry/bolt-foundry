@@ -28,16 +28,17 @@ export default async function handler(
 
   try {
     const { messages, apiKey } = req.body;
-    
+
     // Use provided API key or fall back to environment variable
     const openAIApiKey = apiKey || process.env.OPENAI_API_KEY;
-    
+
     if (!openAIApiKey) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: "OpenAI API key not configured",
         message: "Please provide an OpenAI API key to use this demo.",
-        details: "You can either enter your API key in the form above, or set the OPENAI_API_KEY environment variable.",
-        helpUrl: "https://platform.openai.com/api-keys"
+        details:
+          "You can either enter your API key in the form above, or set the OPENAI_API_KEY environment variable.",
+        helpUrl: "https://platform.openai.com/api-keys",
       });
     }
 

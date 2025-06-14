@@ -16,8 +16,8 @@ add examples. Takes forever to see anything work.
 
 ## Status
 
-| Task | Status | Description |
-| --- | --- | --- |
+| Task              | Status | Description                    |
+| ----------------- | ------ | ------------------------------ |
 | Fix nextjs-sample | Active | Add TypeScript, fix formatting |
 
 ## Future work

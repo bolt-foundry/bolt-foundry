@@ -5,9 +5,8 @@
  * Do not make changes to this file directly
  */
 
-
-import type { Context } from "./../graphqlContext.ts"
-import type { core, connectionPluginCore } from "nexus"
+import type { Context } from "./../graphqlContext.ts";
+import type { connectionPluginCore, core } from "nexus";
 
 declare global {
   interface NexusGenCustomOutputMethods<TypeName extends string> {
@@ -18,11 +17,18 @@ declare global {
      */
     connectionField<FieldName extends string>(
       fieldName: FieldName,
-      config: connectionPluginCore.ConnectionFieldConfig<TypeName, FieldName> & { count?: connectionPluginCore.ConnectionFieldResolver<TypeName, FieldName, "count"> }
-    ): void
+      config:
+        & connectionPluginCore.ConnectionFieldConfig<TypeName, FieldName>
+        & {
+          count?: connectionPluginCore.ConnectionFieldResolver<
+            TypeName,
+            FieldName,
+            "count"
+          >;
+        },
+    ): void;
   }
 }
-
 
 declare global {
   interface NexusGen extends NexusGenTypes {}
@@ -35,12 +41,12 @@ export interface NexusGenEnums {
 }
 
 export interface NexusGenScalars {
-  String: string
-  Int: number
-  Float: number
-  Boolean: boolean
-  ID: string
-  IsoDate: any
+  String: string;
+  Int: number;
+  Float: number;
+  Boolean: boolean;
+  ID: string;
+  IsoDate: any;
 }
 
 export interface NexusGenObjects {
@@ -50,26 +56,26 @@ export interface NexusGenObjects {
   BlogPost: {};
   BlogPostConnection: { // root type
     count?: number | null; // Int
-    edges?: Array<NexusGenRootTypes['BlogPostEdge'] | null> | null; // [BlogPostEdge]
-    nodes?: Array<NexusGenRootTypes['BlogPost'] | null> | null; // [BlogPost]
-    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
-  }
+    edges?: Array<NexusGenRootTypes["BlogPostEdge"] | null> | null; // [BlogPostEdge]
+    nodes?: Array<NexusGenRootTypes["BlogPost"] | null> | null; // [BlogPost]
+    pageInfo: NexusGenRootTypes["PageInfo"]; // PageInfo!
+  };
   BlogPostEdge: { // root type
     cursor: string; // String!
-    node?: NexusGenRootTypes['BlogPost'] | null; // BlogPost
-  }
+    node?: NexusGenRootTypes["BlogPost"] | null; // BlogPost
+  };
   GithubRepoStats: {};
   JoinWaitlistPayload: { // root type
     message?: string | null; // String
     success: boolean; // Boolean!
-  }
+  };
   Mutation: {};
   PageInfo: { // root type
     endCursor?: string | null; // String
     hasNextPage: boolean; // Boolean!
     hasPreviousPage: boolean; // Boolean!
     startCursor?: string | null; // String
-  }
+  };
   PublishedDocument: {};
   Query: {};
   Waitlist: {};
@@ -83,150 +89,150 @@ export interface NexusGenInterfaces {
 export interface NexusGenUnions {
 }
 
-export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects
+export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects;
 
-export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars;
 
 export interface NexusGenFieldTypes {
   BfEdge: { // field return type
     id: string; // ID!
-  }
+  };
   BfOrganization: { // field return type
     domain: string | null; // String
     name: string | null; // String
-  }
+  };
   BfPerson: { // field return type
     email: string | null; // String
-    memberOf: NexusGenRootTypes['BfOrganization'] | null; // BfOrganization
+    memberOf: NexusGenRootTypes["BfOrganization"] | null; // BfOrganization
     name: string | null; // String
-  }
+  };
   BlogPost: { // field return type
     author: string | null; // String
     content: string; // String!
     excerpt: string; // String!
     id: string; // ID!
-    publishedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
+    publishedAt: NexusGenScalars["IsoDate"] | null; // IsoDate
     tags: string; // String!
-    updatedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
-  }
+    updatedAt: NexusGenScalars["IsoDate"] | null; // IsoDate
+  };
   BlogPostConnection: { // field return type
     count: number | null; // Int
-    edges: Array<NexusGenRootTypes['BlogPostEdge'] | null> | null; // [BlogPostEdge]
-    nodes: Array<NexusGenRootTypes['BlogPost'] | null> | null; // [BlogPost]
-    pageInfo: NexusGenRootTypes['PageInfo']; // PageInfo!
-  }
+    edges: Array<NexusGenRootTypes["BlogPostEdge"] | null> | null; // [BlogPostEdge]
+    nodes: Array<NexusGenRootTypes["BlogPost"] | null> | null; // [BlogPost]
+    pageInfo: NexusGenRootTypes["PageInfo"]; // PageInfo!
+  };
   BlogPostEdge: { // field return type
     cursor: string; // String!
-    node: NexusGenRootTypes['BlogPost'] | null; // BlogPost
-  }
+    node: NexusGenRootTypes["BlogPost"] | null; // BlogPost
+  };
   GithubRepoStats: { // field return type
     id: string; // ID!
     stars: number; // Int!
-  }
+  };
   JoinWaitlistPayload: { // field return type
     message: string | null; // String
     success: boolean; // Boolean!
-  }
+  };
   Mutation: { // field return type
-    joinWaitlist: NexusGenRootTypes['JoinWaitlistPayload'] | null; // JoinWaitlistPayload
-  }
+    joinWaitlist: NexusGenRootTypes["JoinWaitlistPayload"] | null; // JoinWaitlistPayload
+  };
   PageInfo: { // field return type
     endCursor: string | null; // String
     hasNextPage: boolean; // Boolean!
     hasPreviousPage: boolean; // Boolean!
     startCursor: string | null; // String
-  }
+  };
   PublishedDocument: { // field return type
     content: string; // String!
     id: string; // ID!
-  }
+  };
   Query: { // field return type
-    blogPost: NexusGenRootTypes['BlogPost'] | null; // BlogPost
-    blogPosts: NexusGenRootTypes['BlogPostConnection'] | null; // BlogPostConnection
-    documentsBySlug: NexusGenRootTypes['PublishedDocument'] | null; // PublishedDocument
-    githubRepoStats: NexusGenRootTypes['GithubRepoStats'] | null; // GithubRepoStats
+    blogPost: NexusGenRootTypes["BlogPost"] | null; // BlogPost
+    blogPosts: NexusGenRootTypes["BlogPostConnection"] | null; // BlogPostConnection
+    documentsBySlug: NexusGenRootTypes["PublishedDocument"] | null; // PublishedDocument
+    githubRepoStats: NexusGenRootTypes["GithubRepoStats"] | null; // GithubRepoStats
     ok: boolean | null; // Boolean
-  }
+  };
   Waitlist: { // field return type
     id: string | null; // ID
-  }
+  };
   BfNode: { // field return type
     id: string; // ID!
-  }
+  };
   Node: { // field return type
     id: string; // ID!
-  }
+  };
 }
 
 export interface NexusGenFieldTypeNames {
   BfEdge: { // field return type name
-    id: 'ID'
-  }
+    id: "ID";
+  };
   BfOrganization: { // field return type name
-    domain: 'String'
-    name: 'String'
-  }
+    domain: "String";
+    name: "String";
+  };
   BfPerson: { // field return type name
-    email: 'String'
-    memberOf: 'BfOrganization'
-    name: 'String'
-  }
+    email: "String";
+    memberOf: "BfOrganization";
+    name: "String";
+  };
   BlogPost: { // field return type name
-    author: 'String'
-    content: 'String'
-    excerpt: 'String'
-    id: 'ID'
-    publishedAt: 'IsoDate'
-    tags: 'String'
-    updatedAt: 'IsoDate'
-  }
+    author: "String";
+    content: "String";
+    excerpt: "String";
+    id: "ID";
+    publishedAt: "IsoDate";
+    tags: "String";
+    updatedAt: "IsoDate";
+  };
   BlogPostConnection: { // field return type name
-    count: 'Int'
-    edges: 'BlogPostEdge'
-    nodes: 'BlogPost'
-    pageInfo: 'PageInfo'
-  }
+    count: "Int";
+    edges: "BlogPostEdge";
+    nodes: "BlogPost";
+    pageInfo: "PageInfo";
+  };
   BlogPostEdge: { // field return type name
-    cursor: 'String'
-    node: 'BlogPost'
-  }
+    cursor: "String";
+    node: "BlogPost";
+  };
   GithubRepoStats: { // field return type name
-    id: 'ID'
-    stars: 'Int'
-  }
+    id: "ID";
+    stars: "Int";
+  };
   JoinWaitlistPayload: { // field return type name
-    message: 'String'
-    success: 'Boolean'
-  }
+    message: "String";
+    success: "Boolean";
+  };
   Mutation: { // field return type name
-    joinWaitlist: 'JoinWaitlistPayload'
-  }
+    joinWaitlist: "JoinWaitlistPayload";
+  };
   PageInfo: { // field return type name
-    endCursor: 'String'
-    hasNextPage: 'Boolean'
-    hasPreviousPage: 'Boolean'
-    startCursor: 'String'
-  }
+    endCursor: "String";
+    hasNextPage: "Boolean";
+    hasPreviousPage: "Boolean";
+    startCursor: "String";
+  };
   PublishedDocument: { // field return type name
-    content: 'String'
-    id: 'ID'
-  }
+    content: "String";
+    id: "ID";
+  };
   Query: { // field return type name
-    blogPost: 'BlogPost'
-    blogPosts: 'BlogPostConnection'
-    documentsBySlug: 'PublishedDocument'
-    githubRepoStats: 'GithubRepoStats'
-    ok: 'Boolean'
-  }
+    blogPost: "BlogPost";
+    blogPosts: "BlogPostConnection";
+    documentsBySlug: "PublishedDocument";
+    githubRepoStats: "GithubRepoStats";
+    ok: "Boolean";
+  };
   Waitlist: { // field return type name
-    id: 'ID'
-  }
+    id: "ID";
+  };
   BfNode: { // field return type name
-    id: 'ID'
-  }
+    id: "ID";
+  };
   Node: { // field return type name
-    id: 'ID'
-  }
+    id: "ID";
+  };
 }
 
 export interface NexusGenArgTypes {
@@ -235,12 +241,12 @@ export interface NexusGenArgTypes {
       company?: string | null; // String
       email: string; // String!
       name: string; // String!
-    }
-  }
+    };
+  };
   Query: {
     blogPost: { // args
       slug?: string | null; // String
-    }
+    };
     blogPosts: { // args
       after?: string | null; // String
       before?: string | null; // String
@@ -248,11 +254,11 @@ export interface NexusGenArgTypes {
       first?: number | null; // Int
       last?: number | null; // Int
       sortDirection?: string | null; // String
-    }
+    };
     documentsBySlug: { // args
       slug?: string | null; // String
-    }
-  }
+    };
+  };
 }
 
 export interface NexusGenAbstractTypeMembers {
@@ -279,11 +285,11 @@ export type NexusGenAbstractsUsingStrategyResolveType = "BfNode" | "Node";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
-    __typename: true
-    resolveType: true
-    isTypeOf: false
-  }
-}
+    __typename: true;
+    resolveType: true;
+    isTypeOf: false;
+  };
+};
 
 export interface NexusGenTypes {
   context: Context;
@@ -301,26 +307,41 @@ export interface NexusGenTypes {
   interfaceNames: NexusGenInterfaceNames;
   scalarNames: NexusGenScalarNames;
   unionNames: NexusGenUnionNames;
-  allInputTypes: NexusGenTypes['inputNames'] | NexusGenTypes['enumNames'] | NexusGenTypes['scalarNames'];
-  allOutputTypes: NexusGenTypes['objectNames'] | NexusGenTypes['enumNames'] | NexusGenTypes['unionNames'] | NexusGenTypes['interfaceNames'] | NexusGenTypes['scalarNames'];
-  allNamedTypes: NexusGenTypes['allInputTypes'] | NexusGenTypes['allOutputTypes']
-  abstractTypes: NexusGenTypes['interfaceNames'] | NexusGenTypes['unionNames'];
+  allInputTypes:
+    | NexusGenTypes["inputNames"]
+    | NexusGenTypes["enumNames"]
+    | NexusGenTypes["scalarNames"];
+  allOutputTypes:
+    | NexusGenTypes["objectNames"]
+    | NexusGenTypes["enumNames"]
+    | NexusGenTypes["unionNames"]
+    | NexusGenTypes["interfaceNames"]
+    | NexusGenTypes["scalarNames"];
+  allNamedTypes:
+    | NexusGenTypes["allInputTypes"]
+    | NexusGenTypes["allOutputTypes"];
+  abstractTypes: NexusGenTypes["interfaceNames"] | NexusGenTypes["unionNames"];
   abstractTypeMembers: NexusGenAbstractTypeMembers;
-  objectsUsingAbstractStrategyIsTypeOf: NexusGenObjectsUsingAbstractStrategyIsTypeOf;
+  objectsUsingAbstractStrategyIsTypeOf:
+    NexusGenObjectsUsingAbstractStrategyIsTypeOf;
   abstractsUsingStrategyResolveType: NexusGenAbstractsUsingStrategyResolveType;
   features: NexusGenFeaturesConfig;
 }
-
 
 declare global {
   interface NexusGenPluginTypeConfig<TypeName extends string> {
   }
   interface NexusGenPluginInputTypeConfig<TypeName extends string> {
   }
-  interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
-    
+  interface NexusGenPluginFieldConfig<
+    TypeName extends string,
+    FieldName extends string,
+  > {
   }
-  interface NexusGenPluginInputFieldConfig<TypeName extends string, FieldName extends string> {
+  interface NexusGenPluginInputFieldConfig<
+    TypeName extends string,
+    FieldName extends string,
+  > {
   }
   interface NexusGenPluginSchemaConfig {
   }

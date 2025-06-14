@@ -11,8 +11,9 @@ export default async function handler(
     return res.status(400).json({
       error: {
         message: "OpenAI API key not configured",
-        details: "Please set the OPENAI_API_KEY environment variable to use this demo.",
-        helpUrl: "https://platform.openai.com/api-keys"
+        details:
+          "Please set the OPENAI_API_KEY environment variable to use this demo.",
+        helpUrl: "https://platform.openai.com/api-keys",
       },
     });
   }

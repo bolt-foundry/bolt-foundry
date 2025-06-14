@@ -1,42 +1,51 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Question, Hint, TutorState, AnswerEvaluation, Progress, AttemptHistory, QuestionAttempt } from '../types/tutor';
-import { llmService } from '../services/llmService';
-import QuestionDisplay from './QuestionDisplay';
-import CodeEditor from './CodeEditor';
-import HintSystem from './HintSystem';
-import ProgressTracker from './ProgressTracker';
-import LoadingSpinner from './LoadingSpinner';
+import { useEffect, useState } from "react";
+import {
+  AnswerEvaluation,
+  AttemptHistory,
+  Hint,
+  Progress,
+  Question,
+  QuestionAttempt,
+  TutorState,
+} from "../types/tutor";
+import { llmService } from "../services/llmService";
+import QuestionDisplay from "./QuestionDisplay";
+import CodeEditor from "./CodeEditor";
+import HintSystem from "./HintSystem";
+import ProgressTracker from "./ProgressTracker";
+import LoadingSpinner from "./LoadingSpinner";
 
 // Fallback questions if LLM is unavailable
 const fallbackQuestions: Question[] = [
   {
-    id: 'fallback-1',
-    title: 'Hello World',
+    id: "fallback-1",
+    title: "Hello World",
     description: 'Write a function that logs "Hello, World!" to the console.',
-    starterCode: 'function sayHello() {\n  // Your code here\n}\n\nsayHello();',
-    solution: 'function sayHello() {\n  console.log("Hello, World!");\n}\n\nsayHello();',
-    difficulty: 'beginner',
-    concepts: ['functions', 'console.log', 'basic syntax']
-  }
+    starterCode: "function sayHello() {\n  // Your code here\n}\n\nsayHello();",
+    solution:
+      'function sayHello() {\n  console.log("Hello, World!");\n}\n\nsayHello();',
+    difficulty: "beginner",
+    concepts: ["functions", "console.log", "basic syntax"],
+  },
 ];
 
 export default function JavaScriptTutor() {
   const [state, setState] = useState<TutorState>({
     currentQuestion: null,
-    userCode: '',
+    userCode: "",
     hints: [],
     showingHint: false,
     progress: {
       questionsCompleted: 0,
       totalQuestions: 0, // Dynamic based on curriculum
       currentStreak: 0,
-      conceptsLearned: []
+      conceptsLearned: [],
     },
     isLoading: false,
     evaluation: null,
-    
+
     // Enhanced state for LLM integration
     attemptHistory: [],
     currentAttempts: [],
@@ -44,8 +53,8 @@ export default function JavaScriptTutor() {
     isGeneratingQuestion: false,
     isGeneratingHint: false,
     lastQuestionData: null,
-    llmProvider: 'claude',
-    encouragementMessage: undefined
+    llmProvider: "claude",
+    encouragementMessage: undefined,
   });
 
   // Initialize with first LLM-generated question
@@ -54,8 +63,8 @@ export default function JavaScriptTutor() {
   }, []);
 
   const generateFirstQuestion = async () => {
-    setState(prev => ({ ...prev, isGeneratingQuestion: true }));
-    
+    setState((prev) => ({ ...prev, isGeneratingQuestion: true }));
+
     try {
       const question = await llmService.generateQuestion({
         userProgress: {
@@ -65,29 +74,29 @@ export default function JavaScriptTutor() {
           recentPerformance: {
             avgHintsUsed: 0,
             avgAttempts: 0,
-            avgTimeToComplete: 0
-          }
+            avgTimeToComplete: 0,
+          },
         },
-        preferredProvider: state.llmProvider
+        preferredProvider: state.llmProvider,
       });
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         currentQuestion: question,
         userCode: question.starterCode,
         questionStartTime: Date.now(),
-        isGeneratingQuestion: false
+        isGeneratingQuestion: false,
       }));
     } catch (error) {
-      console.error('Failed to generate first question:', error);
+      console.error("Failed to generate first question:", error);
       // Fallback to static question
       const fallbackQuestion = fallbackQuestions[0];
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         currentQuestion: fallbackQuestion,
         userCode: fallbackQuestion.starterCode,
         questionStartTime: Date.now(),
-        isGeneratingQuestion: false
+        isGeneratingQuestion: false,
       }));
     }
   };
@@ -95,9 +104,9 @@ export default function JavaScriptTutor() {
   const handleRequestHint = async () => {
     if (!state.currentQuestion) return;
 
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      isGeneratingHint: true
+      isGeneratingHint: true,
     }));
 
     try {
@@ -108,96 +117,102 @@ export default function JavaScriptTutor() {
         userProgress: {
           questionsCompleted: state.progress.questionsCompleted,
           currentStreak: state.progress.currentStreak,
-          conceptsLearned: state.progress.conceptsLearned
+          conceptsLearned: state.progress.conceptsLearned,
         },
         attemptHistory: state.currentAttempts,
-        preferredProvider: state.llmProvider
+        preferredProvider: state.llmProvider,
       });
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         hints: [...prev.hints, ...hintResponse.hints],
         encouragementMessage: hintResponse.encouragement,
-        isGeneratingHint: false
+        isGeneratingHint: false,
       }));
 
       // If solution should be shown, add it to evaluation
       if (hintResponse.shouldShowSolution) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           evaluation: {
             correct: false,
-            feedback: 'Here\'s the solution to help you learn:',
-            suggestions: [state.currentQuestion!.solution]
-          }
+            feedback: "Here's the solution to help you learn:",
+            suggestions: [state.currentQuestion!.solution],
+          },
         }));
       }
     } catch (error) {
-      console.error('Failed to generate hint:', error);
+      console.error("Failed to generate hint:", error);
       // Fallback hint
       const fallbackHint: Hint = {
         id: `hint-${Date.now()}`,
-        text: 'Try thinking about what the function should do step by step. What\'s the first thing you need to do?',
-        level: state.hints.length + 1
+        text:
+          "Try thinking about what the function should do step by step. What's the first thing you need to do?",
+        level: state.hints.length + 1,
       };
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
         hints: [...prev.hints, fallbackHint],
-        isGeneratingHint: false
+        isGeneratingHint: false,
       }));
     }
   };
 
   const evaluateAnswer = (code: string): AnswerEvaluation => {
     if (!state.currentQuestion) {
-      return { correct: false, feedback: 'No question selected' };
+      return { correct: false, feedback: "No question selected" };
     }
 
     // Record this attempt
     const attempt: QuestionAttempt = {
       code,
       timestamp: Date.now(),
-      wasSuccessful: false // Will be updated below
+      wasSuccessful: false, // Will be updated below
     };
 
     // Simple evaluation - check if code has meaningful content and try to run it
-    const hasContent = code.trim().length > state.currentQuestion.starterCode.trim().length;
-    const hasFunction = code.includes('function') || code.includes('=>');
-    
+    const hasContent =
+      code.trim().length > state.currentQuestion.starterCode.trim().length;
+    const hasFunction = code.includes("function") || code.includes("=>");
+
     let isCorrect = false;
-    let feedback = '';
-    
+    let feedback = "";
+
     try {
       // Try to execute the code to see if it runs without errors
       const logs: string[] = [];
       const mockConsole = {
         log: (...args: any[]) => {
-          logs.push(args.map(arg => String(arg)).join(' '));
-        }
+          logs.push(args.map((arg) => String(arg)).join(" "));
+        },
       };
-      
-      const userFunction = new Function('console', code);
+
+      const userFunction = new Function("console", code);
       userFunction(mockConsole);
-      
+
       // If it executes and produces output, consider it correct
       if (logs.length > 0 && hasContent && hasFunction) {
         isCorrect = true;
-        feedback = 'Excellent! Your code runs successfully and produces output.';
+        feedback =
+          "Excellent! Your code runs successfully and produces output.";
       } else if (hasContent && hasFunction) {
-        feedback = 'Your code runs without errors, but make sure it produces the expected output.';
+        feedback =
+          "Your code runs without errors, but make sure it produces the expected output.";
       } else {
-        feedback = 'Your code needs more work. Make sure you implement the function properly.';
+        feedback =
+          "Your code needs more work. Make sure you implement the function properly.";
       }
     } catch (error) {
-      feedback = 'There\'s a syntax error in your code. Check your syntax and try again.';
+      feedback =
+        "There's a syntax error in your code. Check your syntax and try again.";
     }
 
     attempt.wasSuccessful = isCorrect;
-    
-    setState(prev => ({
+
+    setState((prev) => ({
       ...prev,
-      currentAttempts: [...prev.currentAttempts, attempt]
+      currentAttempts: [...prev.currentAttempts, attempt],
     }));
 
     return { correct: isCorrect, feedback };
@@ -205,16 +220,17 @@ export default function JavaScriptTutor() {
 
   const handleRunCode = () => {
     const evaluation = evaluateAnswer(state.userCode);
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      evaluation
+      evaluation,
     }));
 
     if (evaluation.correct) {
       // Update progress and record successful completion
       const newConcepts = state.currentQuestion?.concepts || [];
-      const timeToComplete = state.questionStartTime ? 
-        (Date.now() - state.questionStartTime) / 1000 : 0;
+      const timeToComplete = state.questionStartTime
+        ? (Date.now() - state.questionStartTime) / 1000
+        : 0;
 
       // Record this question in attempt history
       const attemptRecord: AttemptHistory = {
@@ -224,16 +240,18 @@ export default function JavaScriptTutor() {
         wasSuccessful: true,
         hintsUsed: state.hints.length,
         attempts: state.currentAttempts.length + 1,
-        timeToComplete
+        timeToComplete,
       };
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         progress: {
           ...prev.progress,
           questionsCompleted: prev.progress.questionsCompleted + 1,
           currentStreak: prev.progress.currentStreak + 1,
-          conceptsLearned: [...new Set([...prev.progress.conceptsLearned, ...newConcepts])]
+          conceptsLearned: [
+            ...new Set([...prev.progress.conceptsLearned, ...newConcepts]),
+          ],
         },
         attemptHistory: [...prev.attemptHistory, attemptRecord],
         lastQuestionData: {
@@ -242,8 +260,8 @@ export default function JavaScriptTutor() {
           difficulty: state.currentQuestion!.difficulty,
           wasCorrect: true,
           hintsUsed: state.hints.length,
-          attempts: state.currentAttempts.length + 1
-        }
+          attempts: state.currentAttempts.length + 1,
+        },
       }));
     }
   };
@@ -251,24 +269,26 @@ export default function JavaScriptTutor() {
   const handleNextQuestion = async () => {
     if (!state.currentQuestion) return;
 
-    setState(prev => ({ ...prev, isGeneratingQuestion: true }));
+    setState((prev) => ({ ...prev, isGeneratingQuestion: true }));
 
     try {
       // Calculate performance metrics
-      const recentPerformance = llmService.calculatePerformanceMetrics(state.attemptHistory);
-      
+      const recentPerformance = llmService.calculatePerformanceMetrics(
+        state.attemptHistory,
+      );
+
       const question = await llmService.generateQuestion({
         userProgress: {
           questionsCompleted: state.progress.questionsCompleted,
           currentStreak: state.progress.currentStreak,
           conceptsLearned: state.progress.conceptsLearned,
-          recentPerformance
+          recentPerformance,
         },
         lastQuestion: state.lastQuestionData || undefined,
-        preferredProvider: state.llmProvider
+        preferredProvider: state.llmProvider,
       });
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         currentQuestion: question,
         userCode: question.starterCode,
@@ -277,11 +297,11 @@ export default function JavaScriptTutor() {
         currentAttempts: [],
         questionStartTime: Date.now(),
         isGeneratingQuestion: false,
-        encouragementMessage: undefined
+        encouragementMessage: undefined,
       }));
     } catch (error) {
-      console.error('Failed to generate next question:', error);
-      setState(prev => ({ ...prev, isGeneratingQuestion: false }));
+      console.error("Failed to generate next question:", error);
+      setState((prev) => ({ ...prev, isGeneratingQuestion: false }));
       // Could show error message to user here
     }
   };
@@ -304,13 +324,17 @@ export default function JavaScriptTutor() {
           <p className="text-lg text-gray-600">
             Learn JavaScript through AI-powered, adaptive challenges
           </p>
-          
+
           {/* LLM Provider Selector */}
           <div className="mt-4">
             <label className="text-sm text-gray-600 mr-2">AI Provider:</label>
             <select
               value={state.llmProvider}
-              onChange={(e) => setState(prev => ({ ...prev, llmProvider: e.target.value as 'claude' | 'openai' }))}
+              onChange={(e) =>
+                setState((prev) => ({
+                  ...prev,
+                  llmProvider: e.target.value as "claude" | "openai",
+                }))}
               className="px-3 py-1 border border-gray-300 rounded-md text-sm"
             >
               <option value="claude">Claude (Anthropic)</option>
@@ -325,11 +349,12 @@ export default function JavaScriptTutor() {
             <QuestionDisplay question={state.currentQuestion} />
             <CodeEditor
               value={state.userCode}
-              onChange={(value) => setState(prev => ({ ...prev, userCode: value }))}
+              onChange={(value) =>
+                setState((prev) => ({ ...prev, userCode: value }))}
               onRun={handleRunCode}
               isLoading={state.isLoading || state.isGeneratingQuestion}
             />
-            
+
             {/* Encouragement Message */}
             {state.encouragementMessage && (
               <div className="p-3 bg-purple-50 border border-purple-200 rounded-md">
@@ -338,26 +363,39 @@ export default function JavaScriptTutor() {
                 </p>
               </div>
             )}
-            
+
             {/* Answer Evaluation */}
             {state.evaluation && (
-              <div className={`p-4 rounded-lg ${
-                state.evaluation.correct 
-                  ? 'bg-green-50 border border-green-200' 
-                  : 'bg-red-50 border border-red-200'
-              }`}>
-                <h4 className={`font-semibold mb-2 ${
-                  state.evaluation.correct ? 'text-green-800' : 'text-red-800'
-                }`}>
-                  {state.evaluation.correct ? '✅ Correct!' : '❌ Not Quite Right'}
+              <div
+                className={`p-4 rounded-lg ${
+                  state.evaluation.correct
+                    ? "bg-green-50 border border-green-200"
+                    : "bg-red-50 border border-red-200"
+                }`}
+              >
+                <h4
+                  className={`font-semibold mb-2 ${
+                    state.evaluation.correct ? "text-green-800" : "text-red-800"
+                  }`}
+                >
+                  {state.evaluation.correct
+                    ? "✅ Correct!"
+                    : "❌ Not Quite Right"}
                 </h4>
-                <p className={state.evaluation.correct ? 'text-green-700' : 'text-red-700'}>
+                <p
+                  className={state.evaluation.correct
+                    ? "text-green-700"
+                    : "text-red-700"}
+                >
                   {state.evaluation.feedback}
                 </p>
                 {state.evaluation.suggestions && (
                   <div className="mt-2">
                     {state.evaluation.suggestions.map((suggestion, index) => (
-                      <div key={index} className="mt-2 p-2 bg-gray-100 rounded text-gray-800 font-mono text-sm">
+                      <div
+                        key={index}
+                        className="mt-2 p-2 bg-gray-100 rounded text-gray-800 font-mono text-sm"
+                      >
                         {suggestion}
                       </div>
                     ))}
@@ -369,7 +407,9 @@ export default function JavaScriptTutor() {
                     disabled={state.isGeneratingQuestion}
                     className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 transition-colors"
                   >
-                    {state.isGeneratingQuestion ? 'Generating Next Question...' : 'Next Question →'}
+                    {state.isGeneratingQuestion
+                      ? "Generating Next Question..."
+                      : "Next Question →"}
                   </button>
                 )}
               </div>
@@ -384,19 +424,27 @@ export default function JavaScriptTutor() {
               onRequestHint={handleRequestHint}
               isLoading={state.isGeneratingHint}
             />
-            
+
             {/* Performance Insights */}
             {state.attemptHistory.length > 0 && (
               <div className="bg-white rounded-lg shadow-md p-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">📈 Your Performance</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  📈 Your Performance
+                </h3>
                 <div className="text-sm text-gray-600 space-y-1">
                   <p>Questions completed: {state.attemptHistory.length}</p>
-                  <p>Average hints used: {
-                    (state.attemptHistory.reduce((sum, h) => sum + h.hintsUsed, 0) / state.attemptHistory.length).toFixed(1)
-                  }</p>
-                  <p>Average attempts: {
-                    (state.attemptHistory.reduce((sum, h) => sum + h.attempts, 0) / state.attemptHistory.length).toFixed(1)
-                  }</p>
+                  <p>
+                    Average hints used: {(state.attemptHistory.reduce(
+                      (sum, h) => sum + h.hintsUsed,
+                      0,
+                    ) / state.attemptHistory.length).toFixed(1)}
+                  </p>
+                  <p>
+                    Average attempts: {(state.attemptHistory.reduce(
+                      (sum, h) => sum + h.attempts,
+                      0,
+                    ) / state.attemptHistory.length).toFixed(1)}
+                  </p>
                 </div>
               </div>
             )}

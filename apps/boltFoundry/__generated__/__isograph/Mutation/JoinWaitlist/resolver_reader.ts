@@ -1,7 +1,7 @@
-import type { EagerReaderArtifact, ReaderAst } from '@isograph/react';
-import { Mutation__JoinWaitlist__param } from './param_type.ts';
-import { Mutation__JoinWaitlist__output_type } from './output_type.ts';
-import { JoinWaitlistMutation as resolver } from '../../../../mutations/JoinWaitlist.tsx';
+import type { EagerReaderArtifact, ReaderAst } from "@isograph/react";
+import { Mutation__JoinWaitlist__param } from "./param_type.ts";
+import { Mutation__JoinWaitlist__output_type } from "./output_type.ts";
+import { JoinWaitlistMutation as resolver } from "../../../../mutations/JoinWaitlist.tsx";
 
 const readerAst: ReaderAst<Mutation__JoinWaitlist__param> = [
   {

@@ -51,13 +51,13 @@ export const CONFIG_KEYS = [
   ...PRIVATE_CONFIG_KEYS,
 ] as const;
 
-export type PublicConfigKey  = typeof PUBLIC_CONFIG_KEYS[number];
+export type PublicConfigKey = typeof PUBLIC_CONFIG_KEYS[number];
 export type PrivateConfigKey = typeof PRIVATE_CONFIG_KEYS[number];
-export type ConfigKey        = typeof CONFIG_KEYS[number];
+export type ConfigKey = typeof CONFIG_KEYS[number];
 
-export type PublicConfigMap  = { [K in PublicConfigKey]: string };
+export type PublicConfigMap = { [K in PublicConfigKey]: string };
 export type PrivateConfigMap = { [K in PrivateConfigKey]: string };
-export type ConfigMap        = PublicConfigMap & PrivateConfigMap;
+export type ConfigMap = PublicConfigMap & PrivateConfigMap;
 
 // Shape of globalThis.__ENVIRONMENT__ on the browser:
 export type ClientEnvironment = {

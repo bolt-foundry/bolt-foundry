@@ -1,6 +1,10 @@
-import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@isograph/react';
-import { BlogPostConnection__BlogList__param } from './param_type.ts';
-import { BlogList as resolver } from '../../../../components/BlogList.tsx';
+import type {
+  ComponentReaderArtifact,
+  ExtractSecondParam,
+  ReaderAst,
+} from "@isograph/react";
+import { BlogPostConnection__BlogList__param } from "./param_type.ts";
+import { BlogList as resolver } from "../../../../components/BlogList.tsx";
 
 const readerAst: ReaderAst<BlogPostConnection__BlogList__param> = [
   {

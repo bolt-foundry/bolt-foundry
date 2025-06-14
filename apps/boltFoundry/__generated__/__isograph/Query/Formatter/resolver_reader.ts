@@ -1,6 +1,10 @@
-import type {ComponentReaderArtifact, ExtractSecondParam, ReaderAst } from '@isograph/react';
-import { Query__Formatter__param } from './param_type.ts';
-import { Formatter as resolver } from '../../../../components/Formatter.tsx';
+import type {
+  ComponentReaderArtifact,
+  ExtractSecondParam,
+  ReaderAst,
+} from "@isograph/react";
+import { Query__Formatter__param } from "./param_type.ts";
+import { Formatter as resolver } from "../../../../components/Formatter.tsx";
 
 const readerAst: ReaderAst<Query__Formatter__param> = [
   {

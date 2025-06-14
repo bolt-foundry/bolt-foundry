@@ -1,47 +1,47 @@
-import { useState } from 'react'
-import Head from 'next/head'
-import TextareaAutosize from 'react-textarea-autosize'
+import { useState } from "react";
+import Head from "next/head";
+import TextareaAutosize from "react-textarea-autosize";
 
 // Message type for our chat
 type Message = {
-  role: 'user' | 'assistant'
-  content: string
-  id: string
-}
+  role: "user" | "assistant";
+  content: string;
+  id: string;
+};
 
 export default function Chat() {
   // State to store chat messages
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<Message[]>([]);
   // State for the input field
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState("");
   // State to track if we're waiting for a response
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Don't submit if input is empty or we're already loading
-    if (input.trim() === '' || isLoading) return
+    if (input.trim() === "" || isLoading) return;
 
     // Create the user message
     const userMessage: Message = {
-      role: 'user',
+      role: "user",
       content: input,
       id: Date.now().toString(),
-    }
+    };
 
     // Add user message to chat and clear input
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
 
     try {
       // Send messages to our API endpoint
-      const response = await fetch('/api/chat', {
-        method: 'POST',
+      const response = await fetch("/api/chat", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           messages: [...messages, userMessage].map(({ role, content }) => ({
@@ -49,50 +49,55 @@ export default function Chat() {
             content,
           })),
         }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to get response')
+        throw new Error("Failed to get response");
       }
 
-      const data = await response.json()
+      const data = await response.json();
 
       // Add AI response to chat
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
-          role: 'assistant',
+          role: "assistant",
           content: data.content,
           id: Date.now().toString(),
         },
-      ])
+      ]);
     } catch (error) {
-      console.error('Error:', error)
+      console.error("Error:", error);
       // Add error message to chat
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
-          role: 'assistant',
-          content: 'Sorry, I encountered an error. Please try again.',
+          role: "assistant",
+          content: "Sorry, I encountered an error. Please try again.",
           id: Date.now().toString(),
         },
-      ])
+      ]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="container">
       <Head>
         <title>Bolt Foundry Chat Example</title>
-        <meta name="description" content="Minimal chat example using Bolt Foundry SDK" />
+        <meta
+          name="description"
+          content="Minimal chat example using Bolt Foundry SDK"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
         <h1>Bolt Foundry Chat Example</h1>
-        <p className="subtitle">A minimal example showing how to use the Bolt Foundry SDK</p>
+        <p className="subtitle">
+          A minimal example showing how to use the Bolt Foundry SDK
+        </p>
 
         <div className="chat-container">
           {/* Messages area */}
@@ -102,17 +107,19 @@ export default function Chat() {
                 Start a conversation...
               </div>
             )}
-            
+
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`message ${message.role === 'user' ? 'user' : 'assistant'}`}
+                className={`message ${
+                  message.role === "user" ? "user" : "assistant"
+                }`}
               >
-                <strong>{message.role === 'user' ? 'You:' : 'AI:'}</strong>
+                <strong>{message.role === "user" ? "You:" : "AI:"}</strong>
                 <div>{message.content}</div>
               </div>
             ))}
-            
+
             {isLoading && (
               <div className="message assistant loading">
                 <strong>AI:</strong>
@@ -132,15 +139,15 @@ export default function Chat() {
               maxRows={5}
               onKeyDown={(e) => {
                 // Submit on Enter (but not Shift+Enter for new lines)
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault()
-                  handleSubmit(e)
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e);
                 }
               }}
             />
-            <button 
-              type="submit" 
-              disabled={isLoading || input.trim() === ''}
+            <button
+              type="submit"
+              disabled={isLoading || input.trim() === ""}
               className="submit-button"
             >
               Send
@@ -149,5 +156,5 @@ export default function Chat() {
         </div>
       </main>
     </div>
-  )
+  );
 }

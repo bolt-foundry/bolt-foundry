@@ -1,7 +1,7 @@
-import type { EagerReaderArtifact, ReaderAst } from '@isograph/react';
-import { Query__EntrypointLogin__param } from './param_type.ts';
-import { Query__EntrypointLogin__output_type } from './output_type.ts';
-import { EntrypointLogin as resolver } from '../../../../entrypoints/EntrypointLogin.ts';
+import type { EagerReaderArtifact, ReaderAst } from "@isograph/react";
+import { Query__EntrypointLogin__param } from "./param_type.ts";
+import { Query__EntrypointLogin__output_type } from "./output_type.ts";
+import { EntrypointLogin as resolver } from "../../../../entrypoints/EntrypointLogin.ts";
 
 const readerAst: ReaderAst<Query__EntrypointLogin__param> = [
   {
