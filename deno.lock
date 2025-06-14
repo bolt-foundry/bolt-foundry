@@ -21,6 +21,7 @@
     "jsr:@std/bytes@0.223": "0.223.0",
     "jsr:@std/bytes@^1.0.2": "1.0.5",
     "jsr:@std/cli@^1.0.17": "1.0.17",
+    "jsr:@std/cli@^1.0.20": "1.0.20",
     "jsr:@std/collections@^1.0.11": "1.0.11",
     "jsr:@std/data-structures@^1.0.6": "1.0.7",
     "jsr:@std/encoding@0.213.1": "0.213.1",
@@ -224,6 +225,9 @@
     "@std/cli@1.0.17": {
       "integrity": "e15b9abe629e17be90cc6216327f03a29eae613365f1353837fa749aad29ce7b"
     },
+    "@std/cli@1.0.20": {
+      "integrity": "a8c384a2c98cec6ec6a2055c273a916e2772485eb784af0db004c5ab8ba52333"
+    },
     "@std/collections@1.0.11": {
       "integrity": "2f62cf9587484b1fff364f6c3e1f83478eea53dbb6faed6ffeda92ddb6b172f0"
     },
@@ -280,7 +284,7 @@
     "@std/http@1.0.15": {
       "integrity": "435a4934b4e196e82a8233f724da525f7b7112f3566502f28815e94764c19159",
       "dependencies": [
-        "jsr:@std/cli",
+        "jsr:@std/cli@^1.0.17",
         "jsr:@std/encoding@^1.0.10",
         "jsr:@std/fmt@^1.0.7",
         "jsr:@std/html",
@@ -4081,6 +4085,7 @@
       "jsr:@simplewebauthn/browser@^13.1.0",
       "jsr:@simplewebauthn/server@^13.1.1",
       "jsr:@std/assert@^1.0.11",
+      "jsr:@std/cli@^1.0.20",
       "jsr:@std/encoding@^1.0.10",
       "jsr:@std/front-matter@^1.0.5",
       "jsr:@std/fs@^1.0.10",
