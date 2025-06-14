@@ -3,6 +3,7 @@
 import { assertEquals, assertExists } from "@std/assert";
 import { parseMarkdownToDeck } from "../markdownToDeck.ts";
 import { join } from "@std/path";
+import type { Card } from "../../builders.ts";
 
 Deno.test("parseMarkdownToDeck - basic deck with name from H1", async () => {
   const markdown = `# My Test Deck
@@ -112,19 +113,31 @@ You are a helpful assistant.
   const { deck } = await parseMarkdownToDeck(markdown);
   const cards = deck.getCards();
 
-  assertEquals(cards.length, 2);
-  assertEquals(cards[0].name, "Persona");
-  assertEquals(cards[1].name, "Behavior");
+  // Should have lead + 2 cards
+  assertEquals(cards.length, 3);
 
-  // Check nested structure of first card
-  const personaContent = cards[0].value as Array<{
-    name: string;
+  // First item should be the deck lead
+  assertEquals(
+    cards[0].lead,
+    "Some introductory text that should be ignored for now.",
+  );
+  assertEquals(cards[0].value, "");
+
+  // Second and third should be the cards
+  assertEquals(cards[1].name, "Persona");
+  assertEquals(cards[2].name, "Behavior");
+
+  // Check nested structure of Persona card
+  const personaContent = cards[1].value as Array<{
+    name?: string;
     value: unknown;
+    lead?: string;
   }>;
-  assertEquals(personaContent[0].name, "Background");
+  assertEquals(personaContent[0].lead, "You are a helpful assistant.");
+  assertEquals(personaContent[1].name, "Background");
 
-  // Check nested structure of second card
-  const behaviorContent = cards[1].value as Array<{
+  // Check nested structure of Behavior card
+  const behaviorContent = cards[2].value as Array<{
     name: string;
     value: unknown;
   }>;
@@ -289,4 +302,203 @@ question = "Maximum tokens?"
     // Clean up
     await Deno.remove(tempDir, { recursive: true });
   }
+});
+
+Deno.test("parseMarkdownToDeck - deck introduction lead after H1", async () => {
+  const markdown = `# My Deck
+
+This is an introduction to the deck that explains its purpose.
+
+## First Card
+
+- Some spec
+`;
+
+  const { deck } = await parseMarkdownToDeck(markdown);
+  const cards = deck.getCards();
+
+  // First card should be the lead
+  assertEquals(
+    cards[0].lead,
+    "This is an introduction to the deck that explains its purpose.",
+  );
+  assertEquals(cards[0].value, "");
+
+  // Second card should be the actual card
+  assertEquals(cards[1].name, "First Card");
+});
+
+Deno.test("parseMarkdownToDeck - card introduction lead after H2", async () => {
+  const markdown = `# Test Deck
+
+## My Card
+
+This lead explains what this card is about.
+
+- First spec
+- Second spec
+`;
+
+  const { deck } = await parseMarkdownToDeck(markdown);
+  const cards = deck.getCards();
+
+  assertEquals(cards.length, 1);
+  assertEquals(cards[0].name, "My Card");
+
+  const cardContent = cards[0].value as Array<Card>;
+  assertEquals(
+    cardContent[0].lead,
+    "This lead explains what this card is about.",
+  );
+  assertEquals(cardContent[1].value, "First spec");
+  assertEquals(cardContent[2].value, "Second spec");
+});
+
+Deno.test("parseMarkdownToDeck - nested card lead after H3", async () => {
+  const markdown = `# Test Deck
+
+## Parent Card
+
+### Nested Card
+
+This is a lead for the nested card.
+
+- Nested spec
+`;
+
+  const { deck } = await parseMarkdownToDeck(markdown);
+  const cards = deck.getCards();
+
+  assertEquals(cards.length, 1);
+  assertEquals(cards[0].name, "Parent Card");
+
+  const parentContent = cards[0].value as Array<Card>;
+  assertEquals(parentContent[0].name, "Nested Card");
+
+  const nestedContent = parentContent[0].value as Array<Card>;
+  assertEquals(nestedContent[0].lead, "This is a lead for the nested card.");
+  assertEquals(nestedContent[1].value, "Nested spec");
+});
+
+Deno.test("parseMarkdownToDeck - jump-out lead after specs", async () => {
+  const markdown = `# Test Deck
+
+## My Card
+
+- First spec
+- Second spec
+
+This is a jump-out lead that provides transition.
+`;
+
+  const { deck } = await parseMarkdownToDeck(markdown);
+  const cards = deck.getCards();
+
+  assertEquals(cards.length, 1);
+  const cardContent = cards[0].value as Array<Card>;
+  assertEquals(cardContent.length, 3);
+  assertEquals(cardContent[0].value, "First spec");
+  assertEquals(cardContent[1].value, "Second spec");
+  assertEquals(
+    cardContent[2].lead,
+    "This is a jump-out lead that provides transition.",
+  );
+});
+
+Deno.test("parseMarkdownToDeck - jump-out lead vs deck transitional lead", async () => {
+  const markdown = `# Test Deck
+
+Some deck-level content before any cards.
+
+## First Card
+
+- Spec one
+
+This is a jump-out lead after specs.
+
+## Second Card
+
+- Spec two
+`;
+
+  const { deck } = await parseMarkdownToDeck(markdown);
+  const cards = deck.getCards();
+
+  assertEquals(cards.length, 3);
+
+  // Deck lead
+  assertEquals(cards[0].lead, "Some deck-level content before any cards.");
+
+  // First card should contain the jump-out lead
+  assertEquals(cards[1].name, "First Card");
+  const firstCardContent = cards[1].value as Array<Card>;
+  assertEquals(firstCardContent.length, 2);
+  assertEquals(firstCardContent[0].value, "Spec one");
+  assertEquals(
+    firstCardContent[1].lead,
+    "This is a jump-out lead after specs.",
+  );
+
+  // Second card
+  assertEquals(cards[2].name, "Second Card");
+});
+
+Deno.test("parseMarkdownToDeck - complex example with multiple lead types", async () => {
+  const markdown = `# Complex Deck
+
+This deck demonstrates all types of leads.
+
+## Main Card
+
+This card has an introduction lead.
+
+### Sub Card
+
+And the sub card has its own lead too.
+
+- A spec in the sub card
+
+This lead jumps out of the sub card.
+
+- Back to main card spec
+
+Transition to next section.
+
+## Another Card
+
+Final card with its lead.
+
+- Final spec
+`;
+
+  const { deck } = await parseMarkdownToDeck(markdown);
+  const cards = deck.getCards();
+
+  // Should have deck lead + 2 cards
+  assertEquals(cards.length, 3);
+
+  // Deck lead
+  assertEquals(cards[0].lead, "This deck demonstrates all types of leads.");
+
+  // Main Card
+  assertEquals(cards[1].name, "Main Card");
+  const mainContent = cards[1].value as Array<Card>;
+  assertEquals(mainContent[0].lead, "This card has an introduction lead.");
+
+  // Sub Card within Main Card
+  assertEquals(mainContent[1].name, "Sub Card");
+  const subContent = mainContent[1].value as Array<Card>;
+  assertEquals(subContent[0].lead, "And the sub card has its own lead too.");
+  assertEquals(subContent[1].value, "A spec in the sub card");
+  assertEquals(subContent[2].lead, "This lead jumps out of the sub card.");
+
+  // The nested card parsing continues until the next header, so these are still in Sub Card
+  assertEquals(subContent[3].value, "Back to main card spec");
+  assertEquals(subContent[4].lead, "Transition to next section.");
+
+  // Another Card
+  assertEquals(cards[2].name, "Another Card");
+  const anotherContent = cards[2].value as Array<Card>;
+  assertEquals(anotherContent[0].lead, "Final card with its lead.");
+  assertEquals(anotherContent[1].value, "Final spec");
 });

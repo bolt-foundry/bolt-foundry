@@ -4,7 +4,7 @@ import { register } from "infra/bff/bff.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { runEval } from "packages/bolt-foundry/evals/eval.ts";
 import type { JSONValue } from "packages/bolt-foundry/builders/builders.ts";
-import startSpinner from "lib/terminalSpinner.ts";
+import { startSpinner } from "packages/logger/logger.ts";
 import { parse as parseToml } from "@std/toml";
 
 const logger = getLogger(import.meta);
