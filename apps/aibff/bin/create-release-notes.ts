@@ -71,7 +71,11 @@ function categorizeCommits(commits: Array<string>): {
 try {
   logger.println(`Generating release notes from ${args.from} to ${args.to}...`);
 
-  const stopSpinner = startSpinner();
+  const stopSpinner = startSpinner([
+    "Fetching commit history...",
+    "Analyzing changes...",
+    "Categorizing commits...",
+  ]);
   const commits = await getGitLog(args.from, args.to);
   const { features, fixes, other } = await categorizeCommits(commits);
   stopSpinner();

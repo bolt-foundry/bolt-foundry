@@ -77,7 +77,7 @@ export const rebuildCommand: Command = {
     }
 
     // Run the build script with spinner
-    const stopSpinner = startSpinner();
+    const stopSpinner = startSpinner("Rebuilding aibff binary...");
 
     const buildCommand = new Deno.Command("deno", {
       args: buildArgs,
