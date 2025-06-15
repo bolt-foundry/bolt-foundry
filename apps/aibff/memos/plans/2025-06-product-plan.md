@@ -31,7 +31,8 @@ take the output of deno info eval.ts and turn it into an array of includes
 
 | Priority | i | e | ieq | Namespace | Action     | Inputs                        | Description                                                                                                                                                   |
 | -------- | - | - | --- | --------- | ---------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| p🔥      | 3 | 3 | 1   | eval      | (default)  | input file or stdin           | Runs a completions API match and returns a grading report (TOML format)                                                                                       |
+| p0       | 3 | 3 | 1   | repl      | (default)  | none                          | Interactive Claude-code-like experience for building and updating evals (default command when running just `aibff`)                                           |
+| p🔥      | 3 | 3 | 1   | eval      |            | input file or stdin           | Runs a completions API match and returns a grading report (TOML format)                                                                                       |
 | p0       | 2 | 1 | 2   | grader    | calibrate  | grader + eval results         | Calibrates a grader by reflecting disagreements and suggesting improvements                                                                                   |
 | p1       | 3 | 1 | 3   | *         | *          | *                             | notify users we collect telemetry / add telemetry opt out in the toml / env var. Only collect command invocations without any metadata of the filenames, etc. |
 | p1       | 3 | 1 | 3   | *         | *          | *                             | Collect telemetry in our collector endpoint not posthog native                                                                                                |
@@ -60,7 +61,7 @@ if you have a deck which references toml, you can:
 
 1. `bff calibrate $GRADER.deck.md`
    1. uses sources.deck.toml which is referred to from the grader.md as an embed
-2. `bff eval --input x.jsonl $GRADER.deck.md`
+2. `aibff eval --input x.jsonl $GRADER.deck.md`
    1. Uses native openai completions format, finds the last user turn and
       assistant turn to grade.
    2. Should stream from the input x.jsonl file instead of reading the whole
@@ -68,10 +69,15 @@ if you have a deck which references toml, you can:
 3. `bff grader compare`
    1. llm comparison for disagreement profiles
 
-bff eval bff-eval bff $FRIEND bff ai $FRIEND ./apps/aibff/eval.ts
+# DEPRECATED: These commands have been removed
+
+# bff eval bff-eval bff $FRIEND bff ai $FRIEND ./apps/aibff/eval.ts
 
 aibff replaces bff ai, eval, bff-eval <-- robots bff $friend <-- humans aibff
 team <-- bff ai replacement
+
+NOTE: bff-eval package and bff eval command have been removed. All eval
+functionality is now consolidated in aibff.
 
 aibff eval aibff grader * aibff team summary aibff team pingping aibff replit
 aibff dev commit/serve/ start / build / whatever
