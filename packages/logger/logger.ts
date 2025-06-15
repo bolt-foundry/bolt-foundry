@@ -169,29 +169,23 @@ export function getLogger(importMeta: ImportMeta | string): Logger {
 }
 
 export type Logger = log.Logger & {
-  println: (
-    message: string,
-    options?: { isError?: boolean; stripColors?: boolean },
-  ) => void;
+  println: (message: string, stripColors?: boolean) => void;
+  printErr: (message: string, stripColors?: boolean) => void;
 };
 
 function addPrintln(logger: log.Logger): Logger {
   const extendedLogger = logger as Logger;
 
-  extendedLogger.println = (
-    message: string,
-    options?: { isError?: boolean; stripColors?: boolean },
-  ) => {
-    const { isError = false, stripColors = false } = options || {};
+  extendedLogger.println = (message: string, stripColors = false) => {
     const output = stripColors ? stripAnsiCode(message) : message;
+    // deno-lint-ignore no-console
+    console.log(output);
+  };
 
-    if (isError) {
-      // deno-lint-ignore no-console
-      console.error(output);
-    } else {
-      // deno-lint-ignore no-console
-      console.log(output);
-    }
+  extendedLogger.printErr = (message: string, stripColors = false) => {
+    const output = stripColors ? stripAnsiCode(message) : message;
+    // deno-lint-ignore no-console
+    console.error(output);
   };
 
   return extendedLogger;
