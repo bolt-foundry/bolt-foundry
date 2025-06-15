@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# bf-env - Run commands with Bolt Foundry secrets injected
+# This script provides a simple way for external apps to access BF secrets
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Function to show usage
+usage() {
+    cat << EOF
+bf-env - Run commands with Bolt Foundry secrets injected
+
+Usage:
+  bf-env <command> [args...]        Run command with secrets injected
+  bf-env --generate [output]        Generate .env file (default: .env)
+  bf-env --export                   Export secrets to current shell
+  bf-env --help                     Show this help message
+
+Examples:
+  bf-env npm start                  Run npm start with secrets
+  bf-env python script.py           Run Python script with secrets
+  bf-env --generate .env.local      Generate .env.local file
+  eval "\$(bf-env --export)"        Export secrets to current shell
+
+EOF
+}
+
+# Check if bff is available
+if ! command -v bff &> /dev/null; then
+    echo -e "${RED}Error: 'bff' command not found.${NC}"
+    echo "Please ensure you're in a Bolt Foundry project directory."
+    exit 1
+fi
+
+# Parse command
+case "$1" in
+    --help|-h)
+        usage
+        exit 0
+        ;;
+    --generate)
+        output="${2:-.env}"
+        echo -e "${GREEN}Generating $output...${NC}"
+        bff secrets:env "$output"
+        exit $?
+        ;;
+    --export)
+        bff --silent secrets:inject --export
+        exit $?
+        ;;
+    "")
+        echo -e "${RED}Error: No command specified${NC}"
+        usage
+        exit 1
+        ;;
+    *)
+        # Run command with secrets
+        exec bff with-secrets "$@"
+        ;;
+esac
