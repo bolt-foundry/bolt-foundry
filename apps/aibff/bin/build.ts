@@ -184,7 +184,11 @@ async function build() {
 
   // Get required npm packages
   logger.println("Collecting required npm packages...");
-  const stopPackageSpinner = startSpinner();
+  const stopPackageSpinner = startSpinner([
+    "Analyzing dependencies...",
+    "Resolving package tree...",
+    "Collecting npm packages...",
+  ]);
   const npmPackages = await getAllRequiredPackages();
   stopPackageSpinner();
 
@@ -231,7 +235,12 @@ async function build() {
   );
   logger.debug(`Output will be: ${outputPath}`);
 
-  const stopCompileSpinner = startSpinner();
+  const stopCompileSpinner = startSpinner([
+    "Compiling TypeScript...",
+    "Bundling dependencies...",
+    "Creating executable...",
+    "Optimizing output...",
+  ]);
   const cmd = new Deno.Command("deno", {
     args: compileArgs,
     stdout: "inherit",
