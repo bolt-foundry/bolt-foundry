@@ -15,8 +15,6 @@ import {
 
 const logger = getLogger(import.meta);
 
-await refreshAllSecrets();
-
 export const ENVIRONMENT_ONLY_KEYS = [
   "CI",
   "COLORTERM",
@@ -400,6 +398,9 @@ async function sh(command: string, cwd?: string): Promise<number> {
 }
 
 export async function build(args: Array<string>): Promise<number> {
+  // Refresh all secrets at the start of the build command
+  await refreshAllSecrets();
+
   const waitForFail = args.includes("--slow-exit");
   const debug = args.includes("--debug");
   const includeBoltFoundry = args.includes("--include-bolt-foundry");

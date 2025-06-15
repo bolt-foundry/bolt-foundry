@@ -13,9 +13,6 @@ import { handleRequest } from "apps/web/handlers/mainHandler.ts";
 
 const _logger = getLogger(import.meta);
 
-// Warm the secrets cache before starting auto-refresh
-const warmPromise = warmSecrets();
-
 export type Handler = (
   request: Request,
   routeParams: Record<string, string>,
@@ -26,7 +23,6 @@ const routes = registerAllRoutes();
 
 // Main request handler wrapper
 async function handleRequestWrapper(req: Request): Promise<Response> {
-  await warmPromise;
   return await handleRequest(req, routes, defaultRoute);
 }
 
@@ -35,5 +31,6 @@ const port = Number(getConfigurationVariable("WEB_PORT") ?? 8000);
 
 // Start the server if this is the main module
 if (import.meta.main) {
+  await warmSecrets();
   Deno.serve({ port }, handleRequestWrapper);
 }
