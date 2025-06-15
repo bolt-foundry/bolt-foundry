@@ -9,8 +9,10 @@ across multiple underlying base models.
 
 ## Features
 
+- **Interactive REPL**: Build and refine graders interactively with immediate
+  feedback
 - **Custom Graders**: Create specialized graders using a standard DSL to easily
-  create and update criteria and output formats.
+  create and update criteria and output formats
 - **Multi-Model Evaluation**: Grader responses across multiple LLMs
   simultaneously to compare performance and consistency (powered by Open Router)
 - **Parallel Execution**: Run evaluations concurrently for faster results across
@@ -22,15 +24,33 @@ across multiple underlying base models.
 
 Set your `OPENROUTER_API_KEY` environment variable.
 
+### Interactive Mode (Recommended)
+
+The easiest way to get started is with the interactive REPL:
+
 ```bash
-npx bff-eval --help
+aibff
 ```
 
-Run evaluation with sample data:
+This launches an interactive Claude-code-like experience that will guide you
+through:
+
+- Creating graders from examples
+- Testing and refining your graders
+- Running evaluations
+- Analyzing results
+
+### Command Line Usage
+
+For automation and CI/CD workflows, you can use the command line interface:
 
 ```bash
-npx bff-eval --input examples/json-validator/samples.jsonl \
-         --grader examples/json-validator/grader.js
+# Show available commands
+aibff --help
+
+# Run evaluation directly
+aibff eval --input examples/json-validator/samples.jsonl \
+            --grader examples/json-validator/grader.js
 ```
 
 ## Input data
@@ -111,13 +131,29 @@ export default makeGraderDeckBuilder("json-validator")
 // - Handles all the boilerplate for grader evaluation
 ```
 
-## Model Selection
+## Working with Evals
+
+### Interactive Workflow
+
+When using the REPL, you can:
+
+1. **Generate graders from examples**: Paste in examples of good and bad outputs
+   with scores
+2. **Test immediately**: Run your grader against sample data
+3. **Refine iteratively**: Adjust criteria based on results
+4. **Export when ready**: Save your grader and samples for production use
+
+### Command Line Workflow
+
+For automated workflows:
+
+#### Model Selection
 
 Specify the model to use for evaluation using the `--model` flag:
 
 ```bash
-npx bff-eval --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
-npx bff-eval --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
+aibff eval --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
+aibff eval --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
 ```
 
 The evaluation uses OpenRouter API, so any model available on OpenRouter can be
