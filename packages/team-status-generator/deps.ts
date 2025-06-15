@@ -1,1 +1,5 @@
-export { assertEquals, assertExists } from "jsr:@std/assert";
+export {
+  assertEquals,
+  assertExists,
+  assertStringIncludes,
+} from "jsr:@std/assert";
