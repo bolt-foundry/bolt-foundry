@@ -18,14 +18,6 @@ function getConfigVar(key: string): string | undefined {
   return Deno.env.get(key);
 }
 
-function scoreToGrade(score: number): string {
-  if (score >= 3) return "A";
-  if (score >= 1) return "B";
-  if (score >= -1) return "C";
-  if (score >= -2) return "D";
-  return "F";
-}
-
 function determineSource(inputFile?: string, actualInputFile?: string): string {
   if (!inputFile && !actualInputFile) return "deck";
   if (actualInputFile && actualInputFile.includes("/tmp/")) return "stdin";
@@ -133,19 +125,6 @@ async function runEvaluation(graderFile: string, inputFile?: string) {
       const passed = scores.filter((s) => s > 0).length;
       const failed = scores.filter((s) => s <= 0).length;
 
-      // Count grades
-      const gradeCounts: Record<string, number> = {
-        A: 0,
-        B: 0,
-        C: 0,
-        D: 0,
-        F: 0,
-      };
-      results.forEach((r) => {
-        const grade = scoreToGrade(r.score);
-        gradeCounts[grade]++;
-      });
-
       // Build TOML output structure
       const tomlOutput = {
         meta: {
@@ -159,11 +138,8 @@ async function runEvaluation(graderFile: string, inputFile?: string) {
           average_score: Number(avgScore.toFixed(2)),
           passed,
           failed,
-          grades: gradeCounts,
         },
         samples: results.map((result, idx) => {
-          const grade = scoreToGrade(result.score);
-
           // Parse feedback from notes if available
           const feedback: Record<string, string> = {};
           if (result.output.notes) {
@@ -174,7 +150,6 @@ async function runEvaluation(graderFile: string, inputFile?: string) {
             id: result.sample.id || `sample-${idx + 1}`,
             source: determineSource(inputFile, actualInputFile),
             score: result.score,
-            grade,
             specs_passed: [], // TODO: Extract from grader output
             specs_failed: [], // TODO: Extract from grader output
             input: {
