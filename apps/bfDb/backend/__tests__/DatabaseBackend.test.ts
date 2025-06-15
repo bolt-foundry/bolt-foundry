@@ -327,6 +327,8 @@ Deno.test("bfDb - query items", async () => {
 });
 
 Deno.test("bfDb - metadata handling", async () => {
+  const nodesToCleanup: string[] = [];
+  
   try {
     type TestMetadataNodeProps = {
       name: string;
@@ -347,6 +349,8 @@ Deno.test("bfDb - metadata handling", async () => {
       { name: "Metadata Test" },
     );
     const bfGid = node.metadata.bfGid;
+    const bfOid = node.metadata.bfOid;
+    nodesToCleanup.push(bfGid);
 
     // Verify metadata properties
     assertEquals(node.metadata.className, "TestMetadataNode");
@@ -370,6 +374,9 @@ Deno.test("bfDb - metadata handling", async () => {
       true,
       "lastUpdated should be newer after update",
     );
+    
+    // Clean up the created node
+    await bfDeleteItem(bfOid, bfGid);
   } finally {
     // Ensure connection is closed even if test fails
     await bfCloseConnection();
@@ -381,25 +388,38 @@ Deno.test("Database backends compatibility test", async () => {
   logger.info("Testing database backends compatibility");
   const hasDatabaseUrl = Boolean(getConfigurationVariable("DATABASE_URL"));
 
-  if (hasDatabaseUrl) {
-    // Test Neon backend if DATABASE_URL is available
-    logger.info("Testing Neon backend");
-    Deno.env.set("DB_BACKEND_TYPE", "neon");
-    const neonBackend = new DatabaseBackendNeon();
-    await runBackendTests(neonBackend, "Neon");
+  try {
+    if (hasDatabaseUrl) {
+      // Test Neon backend if DATABASE_URL is available
+      logger.info("Testing Neon backend");
+      Deno.env.set("DB_BACKEND_TYPE", "neon");
+      const neonBackend = new DatabaseBackendNeon();
+      await runBackendTests(neonBackend, "Neon");
+      
+      // Ensure backend is fully closed before moving to next test
+      await bfCloseConnection();
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // Test PostgreSQL backend if DATABASE_URL is available
-    logger.info("Testing PostgreSQL backend");
-    Deno.env.set("DB_BACKEND_TYPE", "pg");
-    const pgBackend = new DatabaseBackendPg();
-    await runBackendTests(pgBackend, "PostgreSQL");
-  } else {
-    logger.info("Skipping Neon and PostgreSQL tests - DATABASE_URL not set");
+      // Test PostgreSQL backend if DATABASE_URL is available
+      logger.info("Testing PostgreSQL backend");
+      Deno.env.set("DB_BACKEND_TYPE", "pg");
+      const pgBackend = new DatabaseBackendPg();
+      await runBackendTests(pgBackend, "PostgreSQL");
+      
+      // Ensure backend is fully closed before moving to next test
+      await bfCloseConnection();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    } else {
+      logger.info("Skipping Neon and PostgreSQL tests - DATABASE_URL not set");
+    }
+
+    // Always test SQLite backend as it doesn't require external dependencies
+    logger.info("Testing SQLite backend");
+    Deno.env.set("DB_BACKEND_TYPE", "sqlite");
+    const sqliteBackend = new DatabaseBackendSqlite();
+    await runBackendTests(sqliteBackend, "SQLite");
+  } finally {
+    // Final cleanup
+    await bfCloseConnection();
   }
-
-  // Always test SQLite backend as it doesn't require external dependencies
-  logger.info("Testing SQLite backend");
-  Deno.env.set("DB_BACKEND_TYPE", "sqlite");
-  const sqliteBackend = new DatabaseBackendSqlite();
-  await runBackendTests(sqliteBackend, "SQLite");
 });
