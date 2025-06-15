@@ -24,6 +24,10 @@ const CACHE_TTL_SEC = Number(
   getConfigurationVariable("BF_CACHE_TTL_SEC") || "300",
 );
 
+function getNextUpdateTime(): number {
+  return Date.now() + (CACHE_TTL_SEC * 1000);
+}
+
 async function isCacheValid(filePath: string): Promise<boolean> {
   try {
     if (!await exists(filePath)) return false;
@@ -92,6 +96,14 @@ register(
           exportCommands.push(`export ${key}='${escapedValue}'`);
         }
       }
+
+      // Include next update time from cache if available
+      const nextUpdateFromCache = cached["BF_SECRETS_NEXT_UPDATE"];
+      if (nextUpdateFromCache) {
+        exportCommands.push(
+          `export BF_SECRETS_NEXT_UPDATE='${nextUpdateFromCache}'`,
+        );
+      }
     } else {
       logger.info("Fetching secrets from 1Password...");
 
@@ -113,10 +125,15 @@ register(
           const escapedValue = value.replace(/'/g, "'\\''");
           exportCommands.push(`export ${key}='${escapedValue}'`);
 
-          // Add to cache lines (no escaping needed for .env format)
-          cacheLines.push(`${key}=${value}`);
+          // Add to cache lines
+          cacheLines.push(`${key}="${value}"`);
         }
       }
+
+      // Add next update time
+      const nextUpdate = getNextUpdateTime();
+      exportCommands.push(`export BF_SECRETS_NEXT_UPDATE='${nextUpdate}'`);
+      cacheLines.push(`BF_SECRETS_NEXT_UPDATE="${nextUpdate}"`);
 
       // Write to cache file
       try {
@@ -168,6 +185,13 @@ register(
           console.log(`export ${key}='${escapedValue}'`);
         }
       }
+
+      // Include next update time from cache if available
+      const nextUpdateFromCache = cached["BF_SECRETS_NEXT_UPDATE"];
+      if (nextUpdateFromCache) {
+        // deno-lint-ignore no-console
+        console.log(`export BF_SECRETS_NEXT_UPDATE='${nextUpdateFromCache}'`);
+      }
     } else {
       // Warm the cache first
       await warmSecrets(allKeys);
@@ -190,9 +214,15 @@ register(
           console.log(`export ${key}='${escapedValue}'`);
 
           // Add to cache lines
-          cacheLines.push(`${key}=${value}`);
+          cacheLines.push(`${key}="${value}"`);
         }
       }
+
+      // Add next update time
+      const nextUpdate = getNextUpdateTime();
+      // deno-lint-ignore no-console
+      console.log(`export BF_SECRETS_NEXT_UPDATE='${nextUpdate}'`);
+      cacheLines.push(`BF_SECRETS_NEXT_UPDATE="${nextUpdate}"`);
 
       // Write to cache file
       try {
@@ -263,6 +293,12 @@ register(
           env[key] = value;
         }
       }
+
+      // Include next update time from cache
+      const nextUpdateFromCache = cached["BF_SECRETS_NEXT_UPDATE"];
+      if (nextUpdateFromCache && !env["BF_SECRETS_NEXT_UPDATE"]) {
+        env["BF_SECRETS_NEXT_UPDATE"] = nextUpdateFromCache;
+      }
     } else {
       logger.info("Loading secrets from 1Password...");
 
@@ -282,9 +318,14 @@ register(
         const value = await getSecret(key);
         if (value) {
           env[key] = value;
-          cacheLines.push(`${key}=${value}`);
+          cacheLines.push(`${key}="${value}"`);
         }
       }
+
+      // Add next update time
+      const nextUpdate = getNextUpdateTime();
+      env["BF_SECRETS_NEXT_UPDATE"] = String(nextUpdate);
+      cacheLines.push(`BF_SECRETS_NEXT_UPDATE="${nextUpdate}"`);
 
       // Write to cache file
       try {
@@ -354,10 +395,14 @@ register(
     for (const key of allKeys) {
       const value = await getSecret(key);
       if (value) {
-        cacheLines.push(`${key}=${value}`);
+        cacheLines.push(`${key}="${value}"`);
         secretCount++;
       }
     }
+
+    // Add next update time
+    const nextUpdate = getNextUpdateTime();
+    cacheLines.push(`BF_SECRETS_NEXT_UPDATE="${nextUpdate}"`);
 
     // Write to cache file
     try {

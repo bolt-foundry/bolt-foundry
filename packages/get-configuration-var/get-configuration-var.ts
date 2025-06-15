@@ -148,6 +148,17 @@ async function opInject(keys: Array<string>): Promise<Record<string, string>> {
   return JSON.parse(DECODER.decode(stdout));
 }
 
+/* ─── next update check ────────────────────────────────────────────────────── */
+function isSecretsUpdateNeeded(): boolean {
+  const nextUpdate = getEnv("BF_SECRETS_NEXT_UPDATE");
+  if (!nextUpdate) return true;
+
+  const nextUpdateTime = Number(nextUpdate);
+  if (!Number.isFinite(nextUpdateTime)) return true;
+
+  return Date.now() >= nextUpdateTime;
+}
+
 /* ─── public API ───────────────────────────────────────────────────────────── */
 
 /**
@@ -162,6 +173,10 @@ export async function getSecret(key: string): Promise<string | undefined> {
   if (envVal) return envVal;
   const cached = fromCache(key);
   if (cached) return cached;
+
+  // If secrets aren't due for update, don't trigger 1Password
+  if (!isSecretsUpdateNeeded()) return undefined;
+
   return await opRead(key) // may throw in browser
     .then((val) => {
       CACHE.set(key, { value: val, expires: now() + CACHE_TTL_MS });
@@ -176,6 +191,10 @@ export async function getSecret(key: string): Promise<string | undefined> {
  */
 export async function warmSecrets(keys: Array<string> = KNOWN_KEYS) {
   if (!isDeno) return; // no‑op in browser
+
+  // Skip warming if secrets aren't due for update
+  if (!isSecretsUpdateNeeded()) return;
+
   const toFetch = keys.filter((k) => !getEnv(k));
 
   try {
@@ -216,7 +235,7 @@ export async function writeEnv(
   const lines: Array<string> = [];
   for (const k of keys) {
     const v = await getSecret(k);
-    if (v) lines.push(`${k}=${v}`);
+    if (v) lines.push(`${k}="${v}"`);
   }
   await Deno.writeTextFile(path, lines.join("\n") + "\n");
 }
