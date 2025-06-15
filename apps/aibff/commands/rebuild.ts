@@ -90,7 +90,7 @@ export const rebuildCommand: Command = {
     stopSpinner();
 
     if (!success) {
-      logger.println("Build failed!", { isError: true });
+      logger.printErr("Build failed!");
       Deno.exit(1);
     }
 
