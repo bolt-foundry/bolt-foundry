@@ -50,10 +50,8 @@ async function main(): Promise<void> {
   const command = getCommand(commandName);
 
   if (!command) {
-    logger.println(`Unknown command '${commandName}'`, { isError: true });
-    logger.println("Run 'aibff --help' for usage information", {
-      isError: true,
-    });
+    logger.printErr(`Unknown command '${commandName}'`);
+    logger.printErr("Run 'aibff --help' for usage information");
     Deno.exit(1);
   }
 
