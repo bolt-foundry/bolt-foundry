@@ -1,0 +1,676 @@
+{
+  "generatedAt": "2025-06-15T04:12:47.695Z",
+  "periodStart": "2025-06-13T04:12:12.108Z",
+  "periodEnd": "2025-06-15T04:12:47.695Z",
+  "totalPRsAnalyzed": 29,
+  "teamMembers": [
+    {
+      "username": "randallb",
+      "displayName": "randallb",
+      "currentFocus": "Feature development",
+      "recentWork": [
+        {
+          "prNumber": 1117,
+          "title": "Remove A-F grading system from evaluation output",
+          "description": "Simplify the evaluation system by removing letter grade conversions and focusing on numeric scores (-3 to 3) for clearer, more precise feedback",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-15T03:15:16.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality",
+            "breaking-change",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on score",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1116,
+          "title": "fix: eliminate 1Password popups during test runs",
+          "description": "- Move warmSecrets() calls from module-level to service startup in collector",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-15T02:35:33.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1115,
+          "title": "Update environment configurations for secret injection",
+          "description": "Add Bolt Foundry vault initialization support to Nix and Replit environments",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-15T02:12:03.000Z",
+          "mergedAt": "2025-06-15T02:20:36.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Aligns with company focus on foundry",
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1114,
+          "title": "Implement comprehensive secret management with file caching",
+          "description": "Address brittleness in get-configuration-var by adding file-based caching and shell integration support",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-15T02:12:02.000Z",
+          "mergedAt": "2025-06-15T02:20:35.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1113,
+          "title": "Add --silent flag to BFF CLI for clean shell evaluation",
+          "description": "Enable BFF commands to suppress logging output when used in shell evaluation contexts",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-15T02:12:01.000Z",
+          "mergedAt": "2025-06-15T02:20:36.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1112,
+          "title": "Add automated deployment workflow implementation plan",
+          "description": "Create phased implementation plan for automating deployments from GitHub to Replit via internal BF service",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-15T01:11:22.000Z",
+          "mergedAt": "2025-06-15T01:28:21.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1111,
+          "title": "refactor(logger): change println API to have separate println and printErr methods",
+          "description": "- Replace println options bag with two distinct methods - println(message, stripColors",
+          "category": "refactor",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-15T01:11:21.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "breaking-change",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: We\nmaintain four distinct categories of documentation, each serving a different\npurpose and audience...",
+            "companyAlignment": null,
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1110,
+          "title": "feat(logger): add message support to terminal spinner",
+          "description": "- startSpinner now accepts optional messages (string or string[]) - Single message displays static text with the spinner - Array of messages rotates through them every ~2 seconds - Clear line when stopping to clean up terminal output - Update aibff to use descriptive spinner messages - Add tests for new message functionality  This makes long-running operations more informative by showing what's currently happening alongside the spinner animation",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-14T22:32:57.000Z",
+          "mergedAt": "2025-06-15T01:34:52.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1109,
+          "title": "refactor(logger): change println API to have separate println and printErr methods",
+          "description": "- Replace println options bag with two distinct methods - println(message, stripColors",
+          "category": "refactor",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-14T22:32:56.000Z",
+          "mergedAt": "2025-06-15T01:23:19.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "breaking-change",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: We\nmaintain four distinct categories of documentation, each serving a different\npurpose and audience...",
+            "companyAlignment": null,
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1108,
+          "title": "refactor(aibff): replace logger with println for user-facing output",
+          "description": "- Replace logger",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-14T22:32:55.000Z",
+          "mergedAt": "2025-06-15T00:45:59.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "breaking-change",
+            "user-experience",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1107,
+          "title": "Add deck leads feature for transitional text elements",
+          "description": "Leads are paragraph text elements that help maintain LLM attention flow by providing context and transitions between specs and cards",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-14T21:52:51.000Z",
+          "mergedAt": "2025-06-14T23:44:33.000Z",
+          "nextSteps": [],
+          "externalRelevance": "New product feature or capability",
+          "majorUpdateFlags": [
+            "core-functionality"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: - Joseph Ferro, Head of Product, Velvet\n\n## The problem with prompts today 🧐\n\nVelvet's monolithic p...",
+            "companyAlignment": "Aligns with company focus on cards",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1106,
+          "title": "refactor(logger): replace chalk with @std/fmt/colors and add println method",
+          "description": "- Replace chalk npm dependency with @std/fmt/colors from JSR - Add println method to Logger interface for external output - Move terminalSpinner from lib/ to logger package - Update esbuild configuration to handle JSR imports using @deno/cache-dir - Export startSpinner from logger",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-14T21:52:50.000Z",
+          "mergedAt": "2025-06-14T23:44:33.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "breaking-change",
+            "user-experience",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on using",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1105,
+          "title": "readme update",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-14T20:29:34.000Z",
+          "mergedAt": "2025-06-14T20:39:06.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1104,
+          "title": "Improve aibff release workflow user experience",
+          "description": "Make the release workflow more user-friendly with better packaging and simpler installation process",
+          "category": "refactor",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-14T19:43:43.000Z",
+          "mergedAt": "2025-06-14T20:34:31.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Innovative approach to core capability: ai",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1103,
+          "title": "fix double tag",
+          "description": "",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-14T19:30:24.000Z",
+          "mergedAt": "2025-06-14T19:32:34.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1102,
+          "title": "write perms",
+          "description": "",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-14T19:17:52.000Z",
+          "mergedAt": "2025-06-14T19:18:52.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: When you make calibrating your actual data the first thing in your process, and\nthen grade the grade...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1101,
+          "title": "Simplify aibff release workflow to use single Linux runner",
+          "description": "Replace matrix build strategy with a single Linux runner that cross-compiles for all target platforms using Deno's built-in cross-compilation support",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-14T18:50:58.000Z",
+          "mergedAt": "2025-06-14T19:04:27.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Your first prompt should be your eval grader\n\nWe've built a number of LLM apps, and while we could s...",
+            "companyAlignment": "Aligns with company focus on using",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1100,
+          "title": "Update aibff GitHub release workflow",
+          "description": "- Fix outdated build command to use 'aibff rebuild' instead of 'bff aibff:build' - Add Windows x64 to the build matrix for cross-platform releases - Update installation instructions to include Windows  Changes: - Replace 'bff aibff:build' with 'deno run --allow-all apps/aibff/main",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-14T17:18:11.000Z",
+          "mergedAt": "2025-06-14T17:31:11.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: This is a git submodule\npointing to a private GitHub repository that only specific team members have...",
+            "companyAlignment": null,
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1099,
+          "title": "Fix aibff help flag handling to allow subcommands to show their own help",
+          "description": "Previously, 'aibff eval --help' would show the main command help instead of the eval command's help",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-14T04:54:51.000Z",
+          "mergedAt": "2025-06-14T05:07:39.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: The most common approach to fixing it would be to stuff the prompt with more\ncontext and examples, t...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1098,
+          "title": "Add aibff rebuild command",
+          "description": "Implement a convenient rebuild command that allows users to rebuild the aibff binary directly from the CLI without using the bff task runner",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-14T04:27:40.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: ## A 60-minute fix ⏰\n\nWithout even using our software and only using\n**[our prompt philosophy](docs/...",
+            "companyAlignment": "Aligns with company focus on using",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1097,
+          "title": "whoops too much",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-14T00:15:04.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1096,
+          "title": "Fix aibff build with npm dependency management",
+          "description": "Replace Deno-managed node_modules with npm for better compatibility",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-13T21:58:32.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1095,
+          "title": "Add CLI consolidation implementation plan",
+          "description": "Document approach for consolidating bff, bff-eval, and aibff into single standardized CLI tool with proper Unix conventions and namespace separation  Changes: - Create implementation plan following the standard template - Define goals for unified CLI with standardized argument parsing - Outline spike/prototype approach in aibff before package extraction - Include roadmap for phased migration of existing tools - Focus on discovering patterns through implementation  - Review plan against implementation-planning",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-13T20:45:46.000Z",
+          "mergedAt": "2025-06-13T20:47:43.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "breaking-change",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on focus",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1094,
+          "title": "Update aibff build configuration for multi-command architecture",
+          "description": "Update build",
+          "category": "infrastructure",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-13T20:33:54.000Z",
+          "mergedAt": "2025-06-13T20:47:43.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1093,
+          "title": "Add technical implementation plan for aibff command structure",
+          "description": "Create detailed plan to refactor aibff from single-command to multi-command CLI while maintaining perfect backward compatibility with existing eval functionality",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-13T19:39:19.000Z",
+          "mergedAt": "2025-06-13T20:02:10.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality",
+            "breaking-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Your first prompt should be your eval grader\n\nWe've built a number of LLM apps, and while we could s...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1092,
+          "title": "Add aibff product roadmap and command structure plan",
+          "description": "Define comprehensive command architecture for aibff including: - eval command for grading completions API outputs - grader namespace for calibration, generation, and refinement - prompt namespace for generation, synthesis, and comparison - sources namespace for data management - Priority rankings for implementation phases  Changes: - Create 2025-06-product-plan",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-13T19:39:18.000Z",
+          "mergedAt": "2025-06-13T20:02:10.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Your first prompt should be your eval grader\n\nWe've built a number of LLM apps, and while we could s...",
+            "companyAlignment": "Aligns with company focus on prompt",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1091,
+          "title": "Add aibff build script with optimized dependency extraction",
+          "description": "Implement a build script that compiles aibff with minimal dependencies, achieving a 24% size reduction (from 116MB to 88MB) through selective npm package inclusion",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-13T18:11:33.000Z",
+          "mergedAt": "2025-06-13T18:22:14.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "performance",
+            "user-experience",
+            "infrastructure",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Innovative approach to core capability: ai",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        }
+      ],
+      "nextSteps": [],
+      "externalImpact": [
+        "refactor(logger): change println API to have separate println and printErr methods: Public API or interface change",
+        "refactor(logger): change println API to have separate println and printErr methods: Public API or interface change",
+        "refactor(aibff): replace logger with println for user-facing output: Direct customer-facing improvement"
+      ],
+      "totalPRs": 27
+    },
+    {
+      "username": "justicart",
+      "displayName": "justicart",
+      "currentFocus": "Feature development",
+      "recentWork": [
+        {
+          "prNumber": 1090,
+          "title": "Run initial team status",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-13T16:33:01.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1089,
+          "title": "Add comprehensive team status tracking system",
+          "description": "Implement automated team status report generation from GitHub Pull Requests using AI-powered analysis and categorization to eliminate manual status meetings",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-13T16:33:00.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on system",
+            "suggestedContentType": "explainer"
+          }
+        }
+      ],
+      "nextSteps": [],
+      "externalImpact": [],
+      "totalPRs": 2
+    }
+  ],
+  "workCategorySummary": {
+    "feature": 18,
+    "bugfix": 4,
+    "refactor": 5,
+    "documentation": 0,
+    "infrastructure": 1,
+    "testing": 0,
+    "other": 1
+  },
+  "upcomingPriorities": [],
+  "blogWorthyHighlights": [
+    "New documentation standards that improve clarity",
+    "Introduction of more intuitive API functions",
+    "Improved CI/CD pipeline efficiency",
+    "Implemented new caching mechanism"
+  ],
+  "majorUpdatesOverview": [
+    "🔗 Integration: 10 PRs",
+    "🎨 User Experience: 10 PRs",
+    "💥 Breaking Changes: 7 PRs",
+    "🏗️ Core Functionality: 5 PRs",
+    "🏭 Infrastructure: 5 PRs",
+    "🔄 API Changes: 5 PRs",
+    "⚡ Performance: 1 PR"
+  ],
+  "exportedAt": "2025-06-15T04:13:01.447Z",
+  "version": "1.0"
+}

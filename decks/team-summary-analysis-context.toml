@@ -1,0 +1,44 @@
+[contexts.memberName]
+type = "string"
+question = "What is the team member's name?"
+description = "The display name or username of the team member"
+
+[contexts.totalPRs]
+type = "number"
+question = "How many PRs did they submit?"
+description = "Total number of pull requests in this period"
+
+[contexts.prTitles]
+type = "object"
+question = "What are the PR titles?"
+description = "Array of PR titles for analysis"
+
+[contexts.mainTheme]
+type = "string"
+question = "What is the main theme of their work?"
+description = "The primary area or project they focused on"
+
+[contexts.significantWorkTitle]
+type = "string"
+question = "What was their most significant contribution?"
+description = "Title of the most important work item"
+
+[contexts.significantWorkDescription]
+type = "string"
+question = "How would you describe the significant work?"
+description = "Detailed description of the significant contribution"
+
+[contexts.companyConnection]
+type = "string"
+question = "How does this connect to company goals?"
+description = "Connection between the work and company objectives"
+
+[contexts.workCategories]
+type = "object"
+question = "What categories of work did they do?"
+description = "Breakdown of work by category (features, bugs, etc.)"
+
+[contexts.companyGoals]
+type = "object"
+question = "What are the relevant company goals?"
+description = "Company differentiators and strategic objectives"
