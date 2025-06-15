@@ -9,8 +9,10 @@ across multiple underlying base models.
 
 ## Features
 
+- **Interactive REPL**: Build and refine graders interactively with immediate
+  feedback
 - **Custom Graders**: Create specialized graders using a standard DSL to easily
-  create and update criteria and output formats.
+  create and update criteria and output formats
 - **Multi-Model Evaluation**: Grader responses across multiple LLMs
   simultaneously to compare performance and consistency (powered by Open Router)
 - **Parallel Execution**: Run evaluations concurrently for faster results across
@@ -18,19 +20,37 @@ across multiple underlying base models.
 - **Meta Grader Analysis**: Calibrate and validate grader quality using ground
   truth scores to ensure consistent and accurate evaluations
 
-## Quickstart
+## Getting Started
+
+### Interactive Mode (Recommended)
+
+The easiest way to get started is with the interactive REPL:
+
+```bash
+aibff
+```
+
+This launches an interactive experience that guides you through:
+
+- Creating graders from examples
+- Testing graders against sample data
+- Refining evaluation criteria
+- Exporting production-ready code
+
+### Programmatic Usage
 
 Set your `OPENROUTER_API_KEY` environment variable.
 
-```bash
-npx bff-eval --help
-```
-
-Run evaluation with sample data:
+For automation and CI/CD workflows, you can use the command line interface:
 
 ```bash
+# Using aibff directly
+aibff eval --input packages/bolt-foundry/evals/examples/sample-data.jsonl \
+           --grader packages/bolt-foundry/evals/examples/json-validator.ts
+
+# Or using the npm wrapper
 npx bff-eval --input packages/bolt-foundry/evals/examples/sample-data.jsonl \
-         --grader packages/bolt-foundry/evals/examples/json-validator.ts
+             --grader packages/bolt-foundry/evals/examples/json-validator.ts
 ```
 
 ## Input data
@@ -110,13 +130,27 @@ export default makeGraderDeckBuilder("json-validator")
 // - Handles all the boilerplate for grader evaluation
 ```
 
-## Model Selection
+## Working with Evals
+
+### Interactive Workflow
+
+When using `aibff` in interactive mode:
+
+1. **Start with examples**: Provide examples of good and bad outputs with scores
+2. **Generate grader**: The system creates a grader based on your examples
+3. **Test immediately**: Run the grader against your samples
+4. **Refine iteratively**: Adjust criteria and re-test until satisfied
+5. **Export**: Save your grader and samples for production use
+
+### Command Line Workflow
+
+#### Model Selection
 
 Specify the model to use for evaluation using the `--model` flag:
 
 ```bash
-npx bff-eval --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
-npx bff-eval --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
+aibff eval --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
+aibff eval --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
 ```
 
 The evaluation uses OpenRouter API, so any model available on OpenRouter can be
@@ -172,12 +206,12 @@ against ground truth scores. This calibration feature helps you:
 
 ### Adding Ground Truth Scores
 
-Include a `groundTruthScore` field in your input samples:
+Include a `score` field in your input samples:
 
 ```jsonl
-{"userMessage": "Extract: name=John", "assistantResponse": "{\"name\":\"John\"}", "groundTruthScore": 3}
-{"userMessage": "Parse: color=red", "assistantResponse": "{'color': 'red'}", "groundTruthScore": 2}
-{"userMessage": "Convert: email=test@test.com", "assistantResponse": "test@test.com", "groundTruthScore": -3}
+{"userMessage": "Extract: name=John", "assistantResponse": "{\"name\":\"John\"}", "score": 3}
+{"userMessage": "Parse: color=red", "assistantResponse": "{'color': 'red'}", "score": 2}
+{"userMessage": "Convert: email=test@test.com", "assistantResponse": "test@test.com", "score": -3}
 ```
 
 ### Calibration Metrics

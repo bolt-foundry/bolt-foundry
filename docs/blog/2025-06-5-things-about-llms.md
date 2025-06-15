@@ -150,4 +150,4 @@ debugging them like code.
 You can run a demo of these principles yourself directly in your CLI. Try it
 out:
 
-`npx bff-eval --demo`
+`aibff eval --demo`
