@@ -1,7 +1,7 @@
 #! /usr/bin/env -S deno run -A
 
 import { friendMap } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { disableAllLogging, getLogger } from "packages/logger/logger.ts";
 import { dirname, join } from "@std/path";
 
 const logger = getLogger(import.meta);
@@ -25,8 +25,15 @@ async function findProjectRoot(): Promise<string> {
   return Deno.cwd();
 }
 if (import.meta.main) {
-  // 1) Force us to run from top-level directory
+  // Check for --silent flag
+  const silentIndex = Deno.args.indexOf("--silent");
+  if (silentIndex !== -1) {
+    disableAllLogging();
+    // Remove --silent from args so it doesn't interfere with commands
+    Deno.args.splice(silentIndex, 1);
+  }
 
+  // 1) Force us to run from top-level directory
   const rootDir = await findProjectRoot();
   if (rootDir !== Deno.cwd()) {
     logger.info(`Switching working directory to: ${rootDir}`);
