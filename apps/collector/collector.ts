@@ -12,8 +12,6 @@ import { trackLlmEvent } from "apps/collector/llm-event-tracker.ts";
 
 const logger = getLogger(import.meta);
 
-await warmSecrets();
-
 // Define routes for the collector service
 function registerCollectorRoutes(): Map<string, Handler> {
   const routes = new Map<string, Handler>();
@@ -86,6 +84,7 @@ const port = Number(getConfigurationVariable("COLLECTOR_PORT") ?? 8001);
 
 // Start the server if this is the main module
 if (import.meta.main) {
+  await warmSecrets();
   logger.info(`Starting Collector service on port ${port}...`);
   Deno.serve({ port }, handleCollectorRequest);
 }

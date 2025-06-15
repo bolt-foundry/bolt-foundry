@@ -9,6 +9,22 @@ const logger = getLogger(import.meta);
 let posthogClient: PostHog | null = null;
 
 /**
+ * Cleanup PostHog client - useful for tests
+ */
+export async function cleanupPosthog(): Promise<void> {
+  if (posthogClient) {
+    try {
+      await posthogClient.flush();
+      await posthogClient.shutdown();
+    } catch (error) {
+      logger.debug("Error cleaning up PostHog client", error);
+    } finally {
+      posthogClient = null;
+    }
+  }
+}
+
+/**
  * Initialize the PostHog client if not already initialized
  */
 export function initPosthog(): PostHog | null {
@@ -28,6 +44,8 @@ export function initPosthog(): PostHog | null {
   try {
     posthogClient = new PostHog(posthogApiKey, {
       host: "https://us.i.posthog.com",
+      flushAt: 1, // Flush immediately to avoid batching
+      flushInterval: 0, // Disable interval flushing
     });
     logger.debug("PostHog client initialized successfully");
     return posthogClient;
@@ -81,8 +99,13 @@ export async function trackBffCommand(
           const decoder = new TextDecoder();
           const userData = decoder.decode(stdout);
 
-          // Save the user data to file
-          await Deno.writeTextFile(userFilePath, userData);
+          // Save the user data to file (only if tmp directory exists)
+          try {
+            await Deno.mkdir("tmp", { recursive: true });
+            await Deno.writeTextFile(userFilePath, userData);
+          } catch (_writeError) {
+            // Ignore write errors
+          }
 
           // Parse the user data
           userJson = JSON.parse(userData);
@@ -117,6 +140,16 @@ export async function trackBffCommand(
 
     await client.flush();
     await client.shutdown();
+
+    // Clear the global reference after shutdown to prevent leaks
+    posthogClient = null;
+
+    // Give PostHog client time to fully clean up internal resources
+    await new Promise((resolve) => {
+      const timer = setTimeout(resolve, 10);
+      Deno.unrefTimer(timer);
+    });
+
     logger.debug(`Tracked BFF command: ${command}`);
   } catch (error) {
     // Don't let analytics errors affect BFF functionality
