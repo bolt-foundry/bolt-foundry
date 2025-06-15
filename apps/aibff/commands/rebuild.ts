@@ -77,7 +77,7 @@ export const rebuildCommand: Command = {
     }
 
     // Run the build script with spinner
-    const stopSpinner = startSpinner();
+    const stopSpinner = startSpinner("Rebuilding aibff binary...");
 
     const buildCommand = new Deno.Command("deno", {
       args: buildArgs,
@@ -90,7 +90,7 @@ export const rebuildCommand: Command = {
     stopSpinner();
 
     if (!success) {
-      logger.println("Build failed!", { isError: true });
+      logger.printErr("Build failed!");
       Deno.exit(1);
     }
 

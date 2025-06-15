@@ -50,16 +50,12 @@ async function validateNodeModules() {
   try {
     await Deno.stat(denoDir);
     // If we get here, .deno exists - fail the build
-    logger.println("❌ Detected node_modules/.deno directory!", {
-      isError: true,
-    });
-    logger.println("This project uses npm for dependency management.", {
-      isError: true,
-    });
-    logger.println("Please run:", { isError: true });
-    logger.println("  rm -rf node_modules", { isError: true });
-    logger.println("  npm install", { isError: true });
-    logger.println("\nThen try building again.", { isError: true });
+    logger.printErr("❌ Detected node_modules/.deno directory!");
+    logger.printErr("This project uses npm for dependency management.");
+    logger.printErr("Please run:");
+    logger.printErr("  rm -rf node_modules");
+    logger.printErr("  npm install");
+    logger.printErr("\nThen try building again.");
     Deno.exit(1);
   } catch {
     // Good - .deno doesn't exist, we can proceed
@@ -188,16 +184,19 @@ async function build() {
 
   // Get required npm packages
   logger.println("Collecting required npm packages...");
-  const stopPackageSpinner = startSpinner();
+  const stopPackageSpinner = startSpinner([
+    "Analyzing dependencies...",
+    "Resolving package tree...",
+    "Collecting npm packages...",
+  ]);
   const npmPackages = await getAllRequiredPackages();
   stopPackageSpinner();
 
   // Get the Deno target
   const denoTarget = getDenoTarget(platform, arch);
   if (!denoTarget) {
-    logger.println(
+    logger.printErr(
       `Unsupported platform/arch combination: ${platform}-${arch}`,
-      { isError: true },
     );
     Deno.exit(1);
   }
@@ -236,7 +235,12 @@ async function build() {
   );
   logger.debug(`Output will be: ${outputPath}`);
 
-  const stopCompileSpinner = startSpinner();
+  const stopCompileSpinner = startSpinner([
+    "Compiling TypeScript...",
+    "Bundling dependencies...",
+    "Creating executable...",
+    "Optimizing output...",
+  ]);
   const cmd = new Deno.Command("deno", {
     args: compileArgs,
     stdout: "inherit",
@@ -266,7 +270,7 @@ async function build() {
       logger.println(`Created symlink: ${latestLink} -> ${outputPath}`);
     }
   } else {
-    logger.println("❌ Build failed!", { isError: true });
+    logger.printErr("❌ Build failed!");
     Deno.exit(1);
   }
 }
