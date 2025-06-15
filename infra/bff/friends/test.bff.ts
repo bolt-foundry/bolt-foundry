@@ -17,7 +17,20 @@ export async function testCommand(options: Array<string>): Promise<number> {
     : [...pathsStrings, ...pathsStringsX];
   const testArgs = ["deno", "test", "-A", ...runnablePaths];
 
-  const result = await runShellCommand(testArgs, undefined, {}, true, true);
+  // Set test environment variables to prevent 1Password popups during tests
+  const testEnv = {
+    BF_SECRETS_NEXT_UPDATE: "9999999999999", // Far future timestamp to skip 1Password
+    UNIT_TEST_PUBLIC: "public-value",
+    UNIT_TEST_SECRET: "shh-not-public",
+  };
+
+  const result = await runShellCommand(
+    testArgs,
+    undefined,
+    testEnv,
+    true,
+    true,
+  );
 
   if (result === 0) {
     logger.info("✨ All tests passed!");

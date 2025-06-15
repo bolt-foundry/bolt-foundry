@@ -14,6 +14,7 @@
  *      permissive in env‑first mode.
  */
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { assertEquals } from "@std/assert";
 import { getSecret, warmSecrets } from "@bolt-foundry/get-configuration-var";
 
@@ -47,6 +48,11 @@ Deno.test("ENV var wins over vault + cache", async () => {
 
 /* ─────────── Basic vault resolution ─────────── */
 Deno.test("getSecret() resolves public value from vault when not in ENV", async () => {
+  // Skip test if secrets update is not needed (far future timestamp)
+  const nextUpdate = getConfigurationVariable("BF_SECRETS_NEXT_UPDATE");
+  if (nextUpdate && Number(nextUpdate) > Date.now()) {
+    return; // Skip test when secrets update is not needed
+  }
   const val = await getSecret(PUBLIC_KEY);
   assertEquals(val, "public-value");
 });

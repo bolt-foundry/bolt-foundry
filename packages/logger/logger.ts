@@ -62,32 +62,42 @@ function isBrowser() {
   return typeof Deno === "undefined";
 }
 
+// Lazy-loaded debug logger paths
+let debugLoggerPaths: Array<string> | null = null;
+
 // Parse debug loggers from environment variable
 function getDebugLoggers(): Array<string> {
-  const debugLoggerPaths = getConfigurationVariable("ENABLE_SPECIFIC_LOGGERS");
+  if (debugLoggerPaths !== null) {
+    return debugLoggerPaths;
+  }
 
-  if (!debugLoggerPaths) {
-    return [];
+  const debugLoggerPathsStr = getConfigurationVariable(
+    "ENABLE_SPECIFIC_LOGGERS",
+  );
+
+  if (!debugLoggerPathsStr) {
+    debugLoggerPaths = [];
+    return debugLoggerPaths;
   }
 
   // Split by comma, semicolon, or space
-  return debugLoggerPaths
+  debugLoggerPaths = debugLoggerPathsStr
     .split(/[,;\s]+/)
     .map((path) => path.trim())
     .filter((path) => path.length > 0);
-}
 
-// Store the list of debug-enabled logger paths
-const debugLoggerPaths = getDebugLoggers();
+  return debugLoggerPaths;
+}
 
 // Check if a logger should be set to debug level
 function shouldEnableDebugForLogger(loggerName: string): boolean {
-  if (debugLoggerPaths.length === 0) {
+  const paths = getDebugLoggers();
+  if (paths.length === 0) {
     return false;
   }
 
   // Check if the logger name matches any pattern in the debug logger paths
-  return debugLoggerPaths.some((path) => {
+  return paths.some((path) => {
     // Exact match
     if (path === loggerName) {
       return true;
@@ -103,7 +113,16 @@ function shouldEnableDebugForLogger(loggerName: string): boolean {
   });
 }
 
-if (!isBrowser()) {
+// Lazy initialization flag
+let isLoggerInitialized = false;
+
+// Initialize logger configuration
+function initializeLogger() {
+  if (isLoggerInitialized || isBrowser()) {
+    return;
+  }
+
+  isLoggerInitialized = true;
   const defaultLogLevelString = getConfigurationVariable("LOG_LEVEL") ?? "INFO";
   const defaultLogLevel =
     log.levels[defaultLogLevelString as keyof typeof log.levels];
@@ -122,7 +141,10 @@ if (!isBrowser()) {
       return `${dim(`↱ ${name || "global"}${callerInfo}\n`)}`;
     },
   });
+}
 
+if (!isBrowser()) {
+  // Don't initialize at module level - will be done lazily when needed
   // logLevelPrefixPlugin.reg(log);
   // logLevelPrefixPlugin.apply(log, {
   //   template: "%l:",
@@ -147,6 +169,9 @@ if (!isBrowser()) {
 const loggerCache = new Map<string, Logger>();
 
 export function getLogger(importMeta: ImportMeta | string): Logger {
+  // Ensure logger is initialized before creating any logger instances
+  initializeLogger();
+
   let loggerName: string;
 
   if (typeof importMeta === "string") {
@@ -167,9 +192,8 @@ export function getLogger(importMeta: ImportMeta | string): Logger {
     const newLogger = log.getLogger(loggerName);
 
     // Set default log level first
-    const defaultLogLevelString = getConfigurationVariable("LOG_LEVEL")
-      ? getConfigurationVariable("LOG_LEVEL")
-      : "INFO";
+    const defaultLogLevelString = getConfigurationVariable("LOG_LEVEL") ??
+      "INFO";
     const defaultLogLevel =
       log.levels[defaultLogLevelString as keyof typeof log.levels];
     newLogger.setDefaultLevel(defaultLogLevel);
