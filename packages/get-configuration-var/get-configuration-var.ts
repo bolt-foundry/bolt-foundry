@@ -76,9 +76,36 @@ async function firstVaultId(): Promise<string> {
   if (!success) {
     throw new Error(`Failed to list vaults: ${DECODER.decode(stderr).trim()}`);
   }
-  const list = JSON.parse(DECODER.decode(stdout)) as Array<{ id: string }>;
+  const list = JSON.parse(DECODER.decode(stdout)) as Array<{
+    id: string;
+    name: string;
+    content_version: number;
+  }>;
   if (!list.length) throw new Error("No 1Password vaults visible to CLI");
-  CACHED_VAULT_ID = list[0].id;
+
+  // Try to find a Bolt Foundry vault by name patterns
+  const bfVault = list.find((v) =>
+    v.name.toLowerCase().includes("bolt") ||
+    v.name.toLowerCase().includes("foundry") ||
+    v.name.toLowerCase().includes("bf")
+  );
+
+  if (bfVault) {
+    CACHED_VAULT_ID = bfVault.id;
+  } else {
+    // Fall back to first vault if no BF vault found
+    CACHED_VAULT_ID = list[0].id;
+
+    // Log available vaults to help user set BF_VAULT_ID
+    const { getLogger } = await import("packages/logger/logger.ts");
+    const logger = getLogger(import.meta);
+    logger.warn("No Bolt Foundry vault detected. Available vaults:");
+    list.forEach((v) => logger.warn(`  ${v.name} (${v.id})`));
+    logger.warn(
+      "Set BF_VAULT_ID environment variable to specify the correct vault",
+    );
+  }
+
   return CACHED_VAULT_ID;
 }
 
