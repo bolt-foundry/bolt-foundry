@@ -39,6 +39,22 @@ const runtimeEnv = (name: string): string | undefined =>
 const getEnv = (name: string): string | undefined =>
   browserEnv(name) ?? runtimeEnv(name);
 
+// Check if we're running in a test environment
+const isTestEnvironment = (): boolean => {
+  // Check for Deno test mode
+  if (isDeno && Deno.args.includes("test")) return true;
+  
+  // Check for test-specific environment variables
+  const nextUpdate = getEnv("BF_SECRETS_NEXT_UPDATE");
+  if (nextUpdate && Number(nextUpdate) > Date.now()) return true;
+  
+  // Check for common test environment indicators
+  if (getEnv("NODE_ENV") === "test") return true;
+  if (getEnv("DENO_TESTING")) return true;
+  
+  return false;
+};
+
 /* ─── constants ────────────────────────────────────────────────────────────── */
 const KNOWN_KEYS = [...PUBLIC_CONFIG_KEYS, ...PRIVATE_CONFIG_KEYS];
 const DECODER = new TextDecoder();
@@ -112,6 +128,12 @@ async function firstVaultId(): Promise<string> {
 /* ─── low‑level 1Password calls (Deno‑only) ───────────────────────────────── */
 async function opRead(key: string): Promise<string> {
   if (!isDeno) throw new Error("1Password CLI unavailable in browser");
+  
+  // Safety check: Don't call 1Password during test runs
+  if (isTestEnvironment()) {
+    throw new Error("1Password calls are disabled during test runs");
+  }
+  
   const vault = await firstVaultId();
   const { success, stdout, stderr } = await new Deno.Command("op", {
     args: ["read", `op://${vault}/${key}/value`],
@@ -129,6 +151,12 @@ async function opRead(key: string): Promise<string> {
 async function opInject(keys: Array<string>): Promise<Record<string, string>> {
   if (!isDeno) throw new Error("1Password CLI unavailable in browser");
   if (!keys.length) return {};
+  
+  // Safety check: Don't call 1Password during test runs
+  if (isTestEnvironment()) {
+    throw new Error("1Password calls are disabled during test runs");
+  }
+  
   const vault = await firstVaultId();
   const template: Record<string, string> = {};
   keys.forEach((k) => (template[k] = `op://${vault}/${k}/value`));
@@ -156,7 +184,25 @@ function isSecretsUpdateNeeded(): boolean {
   const nextUpdateTime = Number(nextUpdate);
   if (!Number.isFinite(nextUpdateTime)) return true;
 
-  return Date.now() >= nextUpdateTime;
+  const now = Date.now();
+  const updateNeeded = now >= nextUpdateTime;
+  
+  // Log debug info for troubleshooting
+  if (!updateNeeded && isDeno) {
+    try {
+      // Only import logger if we're skipping secrets to avoid circular dependency during normal operation
+      import("packages/logger/logger.ts").then(({ getLogger }) => {
+        const logger = getLogger(import.meta);
+        logger.debug(`Skipping secrets update: next update=${nextUpdateTime}, now=${now}`);
+      }).catch(() => {
+        // Ignore logger import errors during initialization
+      });
+    } catch {
+      // Ignore errors during logger import
+    }
+  }
+
+  return updateNeeded;
 }
 
 /* ─── public API ───────────────────────────────────────────────────────────── */

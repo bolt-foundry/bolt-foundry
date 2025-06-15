@@ -113,34 +113,40 @@ function shouldEnableDebugForLogger(loggerName: string): boolean {
   });
 }
 
-// Lazy initialization flag
+// Lazy initialization flag and lock for thread safety
 let isLoggerInitialized = false;
+let isInitializing = false;
 
-// Initialize logger configuration
-function initializeLogger() {
-  if (isLoggerInitialized || isBrowser()) {
+// Initialize logger configuration (thread-safe, synchronous)
+function initializeLoggerSync() {
+  if (isLoggerInitialized || isBrowser() || isInitializing) {
     return;
   }
 
-  isLoggerInitialized = true;
-  const defaultLogLevelString = getConfigurationVariable("LOG_LEVEL") ?? "INFO";
-  const defaultLogLevel =
-    log.levels[defaultLogLevelString as keyof typeof log.levels];
-  log.setDefaultLevel(defaultLogLevel);
-  logLevelPrefixPlugin.reg(log);
-  logLevelPrefixPlugin.apply(log, {
-    template: "%n%l:",
-    levelFormatter(level) {
-      if (globalLoggingDisabled) return "";
-      const LEVEL = level.toUpperCase() as keyof typeof colors;
-      return colors[LEVEL](LEVEL);
-    },
-    nameFormatter(name) {
-      if (globalLoggingDisabled) return "";
-      const callerInfo = getCallerInfo();
-      return `${dim(`↱ ${name || "global"}${callerInfo}\n`)}`;
-    },
-  });
+  isInitializing = true;
+  try {
+    const defaultLogLevelString = getConfigurationVariable("LOG_LEVEL") ?? "INFO";
+    const defaultLogLevel =
+      log.levels[defaultLogLevelString as keyof typeof log.levels];
+    log.setDefaultLevel(defaultLogLevel);
+    logLevelPrefixPlugin.reg(log);
+    logLevelPrefixPlugin.apply(log, {
+      template: "%n%l:",
+      levelFormatter(level) {
+        if (globalLoggingDisabled) return "";
+        const LEVEL = level.toUpperCase() as keyof typeof colors;
+        return colors[LEVEL](LEVEL);
+      },
+      nameFormatter(name) {
+        if (globalLoggingDisabled) return "";
+        const callerInfo = getCallerInfo();
+        return `${dim(`↱ ${name || "global"}${callerInfo}\n`)}`;
+      },
+    });
+    isLoggerInitialized = true;
+  } finally {
+    isInitializing = false;
+  }
 }
 
 if (!isBrowser()) {
@@ -170,7 +176,10 @@ const loggerCache = new Map<string, Logger>();
 
 export function getLogger(importMeta: ImportMeta | string): Logger {
   // Ensure logger is initialized before creating any logger instances
-  initializeLogger();
+  if (!isLoggerInitialized && !isBrowser()) {
+    // Synchronous initialization to avoid breaking API
+    initializeLoggerSync();
+  }
 
   let loggerName: string;
 

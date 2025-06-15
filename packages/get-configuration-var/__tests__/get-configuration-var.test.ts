@@ -51,6 +51,7 @@ Deno.test("getSecret() resolves public value from vault when not in ENV", async 
   // Skip test if secrets update is not needed (far future timestamp)
   const nextUpdate = getConfigurationVariable("BF_SECRETS_NEXT_UPDATE");
   if (nextUpdate && Number(nextUpdate) > Date.now()) {
+    console.log("Skipping vault test - BF_SECRETS_NEXT_UPDATE prevents 1Password access");
     return; // Skip test when secrets update is not needed
   }
   const val = await getSecret(PUBLIC_KEY);
