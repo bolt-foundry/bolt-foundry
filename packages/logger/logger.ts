@@ -13,6 +13,22 @@ import { getConfigurationVariable } from "../get-configuration-var/get-configura
 
 log.setDefaultLevel(log.levels.INFO);
 
+// Global flag to disable all logging
+let globalLoggingDisabled = false;
+
+// Functions to control global logging
+export function disableAllLogging(): void {
+  globalLoggingDisabled = true;
+}
+
+export function enableAllLogging(): void {
+  globalLoggingDisabled = false;
+}
+
+export function isLoggingDisabled(): boolean {
+  return globalLoggingDisabled;
+}
+
 const colors = {
   TRACE: magenta,
   DEBUG: cyan,
@@ -96,10 +112,12 @@ if (!isBrowser()) {
   logLevelPrefixPlugin.apply(log, {
     template: "%n%l:",
     levelFormatter(level) {
+      if (globalLoggingDisabled) return "";
       const LEVEL = level.toUpperCase() as keyof typeof colors;
       return colors[LEVEL](LEVEL);
     },
     nameFormatter(name) {
+      if (globalLoggingDisabled) return "";
       const callerInfo = getCallerInfo();
       return `${dim(`↱ ${name || "global"}${callerInfo}\n`)}`;
     },
@@ -161,11 +179,40 @@ export function getLogger(importMeta: ImportMeta | string): Logger {
       newLogger.setLevel(log.levels.DEBUG);
     }
 
-    const extendedLogger = addPrintln(newLogger);
+    const extendedLogger = addPrintln(wrapLoggerMethods(newLogger));
     loggerCache.set(loggerName, extendedLogger);
   }
 
   return loggerCache.get(loggerName)!;
+}
+
+// Wrap logger methods to check global disable flag
+function wrapLoggerMethods(logger: log.Logger): log.Logger {
+  const originalMethods = {
+    trace: logger.trace.bind(logger),
+    debug: logger.debug.bind(logger),
+    info: logger.info.bind(logger),
+    warn: logger.warn.bind(logger),
+    error: logger.error.bind(logger),
+  };
+
+  logger.trace = (...args: Array<unknown>) => {
+    if (!globalLoggingDisabled) originalMethods.trace(...args);
+  };
+  logger.debug = (...args: Array<unknown>) => {
+    if (!globalLoggingDisabled) originalMethods.debug(...args);
+  };
+  logger.info = (...args: Array<unknown>) => {
+    if (!globalLoggingDisabled) originalMethods.info(...args);
+  };
+  logger.warn = (...args: Array<unknown>) => {
+    if (!globalLoggingDisabled) originalMethods.warn(...args);
+  };
+  logger.error = (...args: Array<unknown>) => {
+    if (!globalLoggingDisabled) originalMethods.error(...args);
+  };
+
+  return logger;
 }
 
 export type Logger = log.Logger & {
