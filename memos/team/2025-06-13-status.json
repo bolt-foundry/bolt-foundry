@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2025-06-13T15:21:50.581Z",
+  "periodStart": "2025-06-13T15:21:47.971Z",
+  "periodEnd": "2025-06-13T15:21:50.581Z",
+  "totalPRsAnalyzed": 0,
+  "teamMembers": [],
+  "workCategorySummary": {
+    "feature": 0,
+    "bugfix": 0,
+    "refactor": 0,
+    "documentation": 0,
+    "infrastructure": 0,
+    "testing": 0,
+    "other": 0
+  },
+  "upcomingPriorities": [],
+  "blogWorthyHighlights": [],
+  "majorUpdatesOverview": [],
+  "exportedAt": "2025-06-13T15:21:51.640Z",
+  "version": "1.0"
+}
