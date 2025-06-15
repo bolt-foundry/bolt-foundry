@@ -80,6 +80,9 @@
           # Set DENO_DIR to keep cache out of repo
           export DENO_DIR="${builtins.getEnv "HOME"}/.cache/deno"
 
+          # Bolt Foundry secret injection
+          # Set default Bolt Foundry vault if not already set
+
           ${shellHookExtra}
         '';
       });
