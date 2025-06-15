@@ -81,7 +81,33 @@
           export DENO_DIR="${builtins.getEnv "HOME"}/.cache/deno"
 
           # Bolt Foundry secret injection
-          # Set default Bolt Foundry vault if not already set
+          if [ "${builtins.getEnv "BF_AUTO_INJECT_SECRETS"}" != "false" ]; then
+            # Set default Bolt Foundry vault if not already set
+            if [ -z "$BF_VAULT_ID" ]; then
+              if command -v op &>/dev/null && op whoami &>/dev/null 2>&1; then
+                echo "Detecting Bolt Foundry vault..."
+                # Try to auto-detect BF vault
+                BF_VAULT_ID=$(op vault list --format=json 2>/dev/null | jq -r '.[] | select(.name | test("bolt|foundry|bf"; "i")) | .id' | head -1)
+                if [ -n "$BF_VAULT_ID" ]; then
+                  export BF_VAULT_ID
+                  echo "Auto-detected vault: $BF_VAULT_ID"
+                fi
+              fi
+            fi
+            
+            # Inject secrets if authenticated
+            if command -v op &>/dev/null && op whoami &>/dev/null 2>&1; then
+              echo "Injecting Bolt Foundry secrets..."
+              eval "$(bff --silent secrets:inject --export 2>/dev/null || true)"
+              echo "Secrets loaded from 1Password"
+            else
+              if command -v op &>/dev/null; then
+                echo "1Password CLI not authenticated. Run 'op signin' to enable secret injection."
+              else
+                echo "1Password CLI not found. Secrets will not be available."
+              fi
+            fi
+          fi
 
           ${shellHookExtra}
         '';
