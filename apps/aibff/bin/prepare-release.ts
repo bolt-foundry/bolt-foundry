@@ -22,9 +22,8 @@ const newVersion = args.version;
 
 // Validate version format
 if (!/^\d+\.\d+\.\d+(-\w+)?$/.test(newVersion)) {
-  logger.println(
+  logger.printErr(
     "Invalid version format. Use semantic versioning (e.g., 1.0.0 or 1.0.0-beta)",
-    { isError: true },
   );
   Deno.exit(1);
 }
