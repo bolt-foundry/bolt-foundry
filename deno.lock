@@ -51,6 +51,7 @@
     "jsr:@std/internal@^1.0.6": "1.0.6",
     "jsr:@std/io@0.223": "0.223.0",
     "jsr:@std/io@0.225": "0.225.2",
+    "jsr:@std/io@~0.225.2": "0.225.2",
     "jsr:@std/media-types@^1.1.0": "1.1.0",
     "jsr:@std/net@^1.0.4": "1.0.4",
     "jsr:@std/path@0.213.1": "0.213.1",
@@ -71,7 +72,7 @@
     "jsr:@std/yaml@^1.0.5": "1.0.6",
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
-    "npm:@anthropic-ai/claude-code@latest": "1.0.22",
+    "npm:@anthropic-ai/claude-code@^1.0.24": "1.0.24",
     "npm:@hexagon/base64@^1.1.27": "1.1.28",
     "npm:@isograph/compiler@0.0.0-main-1fad6d74": "0.0.0-main-1fad6d74",
     "npm:@isograph/react@0.0.0-main-1fad6d74": "0.0.0-main-1fad6d74_react@19.1.0",
@@ -422,8 +423,8 @@
     }
   },
   "npm": {
-    "@anthropic-ai/claude-code@1.0.22": {
-      "integrity": "sha512-vqfDHq4KNtUzUiwdsls8+2aTrC1Rn96iH+yOyCrBjHjJwojzU6pt3MOAMkJHMeErKeGqve+I7HM6mFw0OgZgqw==",
+    "@anthropic-ai/claude-code@1.0.24": {
+      "integrity": "sha512-4S6ly2297ngNlto7IFZeEicS9u0yRDhocOzndWFovGBb+iUoEPKdZa/rhVk/tcyCADL6S+mMkiGQOlqFDrN3JQ==",
       "optionalDependencies": [
         "@img/sharp-darwin-arm64",
         "@img/sharp-darwin-x64",
@@ -4139,6 +4140,7 @@
       "jsr:@std/front-matter@^1.0.5",
       "jsr:@std/fs@^1.0.18",
       "jsr:@std/http@^1.0.12",
+      "jsr:@std/io@~0.225.2",
       "jsr:@std/path@^1.1.0",
       "jsr:@std/streams@^1.0.10",
       "jsr:@std/testing@^1.0.9",
@@ -4148,7 +4150,7 @@
     ],
     "packageJson": {
       "dependencies": [
-        "npm:@anthropic-ai/claude-code@latest",
+        "npm:@anthropic-ai/claude-code@^1.0.24",
         "npm:@isograph/compiler@0.0.0-main-1fad6d74",
         "npm:@isograph/react@0.0.0-main-1fad6d74",
         "npm:@lexical/mark@0.27.2",
