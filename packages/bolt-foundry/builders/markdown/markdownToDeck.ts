@@ -8,7 +8,7 @@ import type {
   Paragraph,
   Root,
   Text,
-} from "mdast";
+} from "@types/mdast";
 import type { Card, CardBuilder, DeckBuilder } from "../builders.ts";
 import { makeCardBuilder, makeDeckBuilder } from "../builders.ts";
 import { parse as parseToml } from "@std/toml";
