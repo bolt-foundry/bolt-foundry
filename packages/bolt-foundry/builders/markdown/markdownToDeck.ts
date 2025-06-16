@@ -8,7 +8,7 @@ import type {
   Paragraph,
   Root,
   Text,
-} from "mdast";
+} from "@types/mdast";
 import type { Card, CardBuilder, DeckBuilder } from "../builders.ts";
 import { makeCardBuilder, makeDeckBuilder } from "../builders.ts";
 import { parse as parseToml } from "@std/toml";
@@ -34,6 +34,9 @@ export interface TomlSample {
 }
 
 interface TomlFile {
+  meta?: Record<string, unknown> & {
+    renderedSamples?: Array<string>;
+  };
   contexts?: Record<string, TomlContext>;
   samples?: Record<string, TomlSample>;
 }
@@ -41,6 +44,7 @@ interface TomlFile {
 export interface ParsedDeck {
   deck: DeckBuilder;
   samples: Record<string, TomlSample>;
+  meta?: Record<string, unknown>;
 }
 
 /**
@@ -89,6 +93,7 @@ export async function parseMarkdownToDeck(
   // Collect all TOML contexts and markdown cards from image embeds
   const allContexts: Record<string, TomlContext> = {};
   const allSamples: Record<string, TomlSample> = {};
+  const allMeta: Record<string, unknown> = {};
   const embeddedCards: Array<Card> = [];
 
   // First pass: collect all embeds (TOML and markdown)
@@ -100,6 +105,9 @@ export async function parseMarkdownToDeck(
           // Try TOML embed first
           const tomlData = await processTomlEmbed(child as Image, basePath);
           if (tomlData) {
+            if (tomlData.meta) {
+              Object.assign(allMeta, tomlData.meta);
+            }
             if (tomlData.contexts) {
               Object.assign(allContexts, tomlData.contexts);
             }
@@ -342,7 +350,7 @@ export async function parseMarkdownToDeck(
     deck = deck.card(currentH2Name, () => currentH2Builder!);
   }
 
-  return { deck, samples: allSamples };
+  return { deck, samples: allSamples, meta: allMeta };
 }
 
 /**
@@ -530,6 +538,7 @@ async function processTomlEmbed(
   basePath?: string,
 ): Promise<
   {
+    meta?: Record<string, unknown>;
     contexts?: Record<string, TomlContext>;
     samples?: Record<string, TomlSample>;
   } | null
@@ -556,6 +565,7 @@ async function processTomlEmbed(
   // If there's a fragment identifier, only return that specific item
   if (fragment) {
     const result: {
+      meta?: Record<string, unknown>;
       contexts?: Record<string, TomlContext>;
       samples?: Record<string, TomlSample>;
     } = {};
@@ -573,8 +583,9 @@ async function processTomlEmbed(
     return result;
   }
 
-  // No fragment, return all contexts and samples
+  // No fragment, return all contexts, samples, and meta
   return {
+    meta: tomlData.meta,
     contexts: tomlData.contexts,
     samples: tomlData.samples,
   };

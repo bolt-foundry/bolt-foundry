@@ -18,7 +18,7 @@ Deno.test("aibff should show help when no command provided", async () => {
   assertStringIncludes(output, "Usage: aibff <command>");
   assertStringIncludes(output, "Available commands:");
   assertStringIncludes(output, "eval");
-  assertStringIncludes(output, "Evaluate a grader deck against sample prompts");
+  assertStringIncludes(output, "Evaluate grader decks against sample prompts");
 });
 
 Deno.test("aibff should handle unknown command", async () => {
