@@ -9,7 +9,7 @@ Deno.test("getCommand should return eval command", () => {
   assertEquals(evalCommand.name, "eval");
   assertEquals(
     evalCommand.description,
-    "Evaluate a grader deck against sample prompts",
+    "Evaluate grader decks against sample prompts",
   );
 });
 
