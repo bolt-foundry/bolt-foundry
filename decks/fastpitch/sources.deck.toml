@@ -1,3 +1,7 @@
+[meta]
+defaultModel = "anthropic/claude-3.5-sonnet"
+# renderedSamples = ["qb-draft-injury", "giannis-trade"]
+
 [samples.qb-draft-injury]
 userMessage = """{
 ID: draft-2025-qb-001
