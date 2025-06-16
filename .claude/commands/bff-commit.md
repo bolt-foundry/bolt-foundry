@@ -19,20 +19,32 @@ bff commit -m "Your commit message"
 - `-m "message"` - The commit message (required)
 - `--skip-pre-check` - Skip formatting, linting, and type checking
 - `--no-submit` - Create commit without submitting a pull request
+- `--verbose`, `-v` - Show full output from pre-commit checks (default: concise)
 - `file1 file2` - Commit only specific files
 
 ## Default Behavior
 
 By default, `bff commit` will:
 
-1. Run pre-commit checks:
+1. Run pre-commit checks with concise output:
    - `bff format` - Format code
    - `bff lint` - Run linting rules
    - `bff check` - Type checking
+   - `bff test` - Run tests
+   - Shows only pass/fail status with execution time
 2. Create the commit
 3. Submit a pull request
 
+Use `--verbose` to see full output from all pre-commit checks.
+
 ## When to Use Options
+
+### Use `--verbose` when:
+
+- You need to see detailed test output
+- Debugging why a pre-commit check is failing
+- Want to see all linting warnings and errors
+- Need full formatting changes details
 
 ### Use `--skip-pre-check` when:
 
