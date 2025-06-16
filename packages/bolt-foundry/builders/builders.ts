@@ -19,13 +19,15 @@ export type RenderOptions =
   };
 
 /**
- * Sample data for specifications with a rating from -3 to +3
+ * Sample data for specifications with a score from -3 to +3
  * Positive values indicate good examples, negative values indicate bad examples
  */
 export type Sample = {
-  text: string;
-  rating: number; // -3 to +3
+  id: string;
+  score: number; // -3 to +3
   description?: string;
+  userMessage?: string;
+  assistantResponse?: string;
 };
 
 /**
@@ -45,8 +47,8 @@ export type Card = {
  * Builder for adding samples to a spec
  */
 export type SampleBuilder = {
-  /** Add a sample with text and rating (-3 to +3) */
-  sample(text: string, rating: number): SampleBuilder;
+  /** Add a sample with id and score (-3 to +3) */
+  sample(id: string, score: number): SampleBuilder;
 
   /** Get the collected samples */
   getSamples(): Array<Sample>;
@@ -90,8 +92,8 @@ export type CardBuilder = {
  */
 export function makeSampleBuilder(samples: Array<Sample> = []): SampleBuilder {
   return {
-    sample(text: string, rating: number) {
-      return makeSampleBuilder([...samples, { text, rating }]);
+    sample(id: string, score: number) {
+      return makeSampleBuilder([...samples, { id, score }]);
     },
 
     getSamples() {
@@ -289,6 +291,30 @@ export function makeDeckBuilder(
       // Handle card value
       if (typeof card.value === "string" && card.value) {
         result += indent + card.value + "\n";
+
+        // Handle samples if present (only for specs, not leads)
+        if (!card.lead && card.samples && card.samples.length > 0) {
+          for (const sample of card.samples) {
+            // Skip samples with score 0
+            if (sample.score === 0) continue;
+
+            // Format: "  - (+3 example):" or "  - (-2 example):"
+            const scorePrefix = sample.score > 0
+              ? `+${sample.score}`
+              : `${sample.score}`;
+            result += indent + `  - (${scorePrefix} example):\n`;
+
+            // Add user message and assistant response as sub-bullets if present
+            if (sample.userMessage) {
+              result += indent +
+                `    - **User Message**: ${sample.userMessage}\n`;
+            }
+            if (sample.assistantResponse) {
+              result += indent +
+                `    - **Assistant Response**: ${sample.assistantResponse}\n`;
+            }
+          }
+        }
       } else if (Array.isArray(card.value)) {
         // Handle nested cards with optional grouping
         if (card.name) {
