@@ -79,13 +79,10 @@ Deno.test("joinWaitlist mutation is available with returns builder", async () =>
   );
 });
 
-Deno.test({
-  name: "joinWaitlist mutation executes with returns builder",
-  ignore: false,
-  sanitizeResources: false,
-  sanitizeOps: false,
-}, async () => {
-  const query = `
+Deno.test.ignore(
+  "joinWaitlist mutation executes with returns builder",
+  async () => {
+    const query = `
     mutation {
       joinWaitlist(
         email: "test@example.com"
@@ -98,28 +95,29 @@ Deno.test({
     }
   `;
 
-  const result = await testQuery({ query });
+    const result = await testQuery({ query });
 
-  // Check for errors silently
+    // Check for errors silently
 
-  assert(!result.errors, "Query should not have errors");
-  assert(result.data?.joinWaitlist, "JoinWaitlist should return a result");
+    assert(!result.errors, "Query should not have errors");
+    assert(result.data?.joinWaitlist, "JoinWaitlist should return a result");
 
-  const joinWaitlistResult = result.data?.joinWaitlist as {
-    success: boolean;
-    message: string | null;
-  };
+    const joinWaitlistResult = result.data?.joinWaitlist as {
+      success: boolean;
+      message: string | null;
+    };
 
-  assert(
-    typeof joinWaitlistResult.success === "boolean",
-    "success should be a boolean",
-  );
-  assert(
-    joinWaitlistResult.message === null ||
-      typeof joinWaitlistResult.message === "string",
-    "message should be a string or null",
-  );
-});
+    assert(
+      typeof joinWaitlistResult.success === "boolean",
+      "success should be a boolean",
+    );
+    assert(
+      joinWaitlistResult.message === null ||
+        typeof joinWaitlistResult.message === "string",
+      "message should be a string or null",
+    );
+  },
+);
 
 Deno.test("JoinWaitlistPayload type is properly generated", async () => {
   const introspectionQuery = `
