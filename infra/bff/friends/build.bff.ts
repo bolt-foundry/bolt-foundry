@@ -4,7 +4,6 @@ import { runShellCommand } from "infra/bff/shellBase.ts";
 import { register } from "infra/bff/bff.ts";
 import {
   getConfigurationVariable,
-  refreshAllSecrets,
 } from "packages/get-configuration-var/get-configuration-var.ts";
 import { getLogger } from "packages/logger/logger.ts";
 import { DeploymentEnvs } from "infra/constants/deploymentEnvs.ts";
@@ -14,8 +13,6 @@ import {
 } from "apps/boltFoundry/__generated__/configKeys.ts";
 
 const logger = getLogger(import.meta);
-
-await refreshAllSecrets();
 
 export const ENVIRONMENT_ONLY_KEYS = [
   "CI",
