@@ -14,7 +14,6 @@ register(
       : undefined;
     const force = args.includes("--force");
     const output = ".env.local";
-    const template = ".env.local.template";
 
     // Check if output file already exists
     if (!force) {
@@ -90,33 +89,9 @@ register(
       }
     }
 
-    // Create template content
+    // Use all known keys from generated config
+    const keysToInject = KNOWN_KEYS;
     const templateContent: Record<string, string> = {};
-
-    // Check if a template file exists
-    let keysToInject = KNOWN_KEYS;
-    try {
-      const existingTemplate = await Deno.readTextFile(template);
-      // Parse existing template to get keys
-      const lines = existingTemplate.split("\n");
-      const templateKeys: Array<typeof KNOWN_KEYS[number]> = [];
-      for (const line of lines) {
-        const match = line.match(/^([A-Z_]+)=/);
-        if (match) {
-          templateKeys.push(match[1] as typeof KNOWN_KEYS[number]);
-        }
-      }
-      if (templateKeys.length > 0) {
-        keysToInject = templateKeys;
-        logger.info(`Using keys from existing template: ${template}`);
-      }
-    } catch (e) {
-      if (!(e instanceof Deno.errors.NotFound)) {
-        throw e;
-      }
-      // Template doesn't exist, use all known keys
-      logger.info(`No template found at ${template}, using all known keys`);
-    }
 
     // Build template for op inject
     keysToInject.forEach((key) => {
@@ -145,7 +120,15 @@ register(
       logger.error(
         `1Password injection failed: ${new TextDecoder().decode(stderr)}`,
       );
-      return 1;
+      
+      // Generate .env.local file with empty values for users without 1Password access
+      logger.info("Generating .env.local file with empty values...");
+      const envLines = keysToInject.map((key) => `${key}=`);
+      await Deno.writeTextFile(output, envLines.join("\n") + "\n");
+      logger.info(`✅ Created ${output} with empty values`);
+      logger.info("Please fill in the values for the secrets you need");
+      
+      return 0; // Return success since we created the file
     }
 
     const injected = JSON.parse(new TextDecoder().decode(stdout));
@@ -172,12 +155,6 @@ register(
       logger.warn(`⚠️  ${failureCount} secrets were not found in 1Password`);
     }
 
-    // Also create/update template file if it doesn't exist
-    if (!(await Deno.stat(template).catch(() => false))) {
-      const templateLines = keysToInject.map((key) => `${key}=`);
-      await Deno.writeTextFile(template, templateLines.join("\n") + "\n");
-      logger.info(`✅ Created template file: ${template}`);
-    }
 
     return 0;
   },
