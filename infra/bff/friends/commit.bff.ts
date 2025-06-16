@@ -185,10 +185,38 @@ export async function commit(args: Array<string>): Promise<number> {
 
   logger.info("Creating commit...");
 
+  // If specific files were provided, include any files marked for removal
+  let allFilesToCommit = filesToCommit;
+  if (filesToCommit.length > 0) {
+    // Get status to find all files marked for removal
+    const { stdout: statusOutput } = await runShellCommandWithOutput([
+      "sl",
+      "status",
+    ]);
+    const removedFiles: Array<string> = [];
+
+    const lines = statusOutput.split("\n").filter((line) => line.trim());
+    for (const line of lines) {
+      const status = line.charAt(0);
+      const file = line.slice(2); // Skip status character and space
+
+      if (status === "R") {
+        removedFiles.push(file);
+      }
+    }
+
+    // Combine original files with any removed files (deduplicated)
+    allFilesToCommit = [...new Set([...filesToCommit, ...removedFiles])];
+
+    if (removedFiles.length > 0) {
+      logger.info(`Including ${removedFiles.length} removed files in commit`);
+    }
+  }
+
   // Create the commit
   const commitArgs = ["sl", "commit", "-m", commitMessage];
-  if (filesToCommit.length > 0) {
-    commitArgs.push(...filesToCommit);
+  if (allFilesToCommit.length > 0) {
+    commitArgs.push(...allFilesToCommit);
   }
 
   const commitResult = await runShellCommand(commitArgs);
