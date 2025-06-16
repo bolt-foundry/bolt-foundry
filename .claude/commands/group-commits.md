@@ -10,7 +10,7 @@ commits.
 
 ## Usage
 
-Run `sl diff` to see all changes, then analyze them to identify:
+Run `bff diff` to see all changes, then analyze them to identify:
 
 - Distinct features or fixes
 - Dependencies between changes
