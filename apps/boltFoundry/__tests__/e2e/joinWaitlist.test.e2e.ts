@@ -21,7 +21,7 @@ import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 // Flaky b/c it depends on an external service (waitlist API)
-Deno.test("User can join the waitlist successfully", async () => {
+Deno.test.ignore("User can join the waitlist successfully", async () => {
   const context = await setupE2ETest();
   const maxRetries = 3;
   let lastError: Error | null = null;
