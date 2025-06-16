@@ -4,6 +4,7 @@ import {
   type Card,
   card,
   makeCardBuilder,
+  makeDeckBuilder,
   makeSampleBuilder,
 } from "../builders.ts";
 
@@ -31,12 +32,12 @@ Deno.test("card API - basic usage", () => {
   assertEquals(needsCards[0].value, "water");
   assertEquals(needsCards[0].samples?.length, 2);
   assertEquals(needsCards[0].samples![0], {
-    text: "Clean drinking water",
-    rating: 3,
+    id: "Clean drinking water",
+    score: 3,
   });
   assertEquals(needsCards[0].samples![1], {
-    text: "Contaminated water",
-    rating: -3,
+    id: "Contaminated water",
+    score: -3,
   });
 });
 
@@ -55,8 +56,8 @@ Deno.test("CardBuilder - spec with samples", () => {
 
   assertEquals(result[1].value, "with-samples");
   assertEquals(result[1].samples?.length, 2);
-  assertEquals(result[1].samples![0], { text: "Good example", rating: 2 });
-  assertEquals(result[1].samples![1], { text: "Bad example", rating: -2 });
+  assertEquals(result[1].samples![0], { id: "Good example", score: 2 });
+  assertEquals(result[1].samples![1], { id: "Bad example", score: -2 });
 });
 
 Deno.test("SampleBuilder - various ratings", () => {
@@ -72,13 +73,13 @@ Deno.test("SampleBuilder - various ratings", () => {
     .getSamples();
 
   assertEquals(samples.length, 7);
-  assertEquals(samples[0], { text: "Excellent example", rating: 3 });
-  assertEquals(samples[1], { text: "Good example", rating: 2 });
-  assertEquals(samples[2], { text: "Okay example", rating: 1 });
-  assertEquals(samples[3], { text: "Neutral example", rating: 0 });
-  assertEquals(samples[4], { text: "Poor example", rating: -1 });
-  assertEquals(samples[5], { text: "Bad example", rating: -2 });
-  assertEquals(samples[6], { text: "Terrible example", rating: -3 });
+  assertEquals(samples[0], { id: "Excellent example", score: 3 });
+  assertEquals(samples[1], { id: "Good example", score: 2 });
+  assertEquals(samples[2], { id: "Okay example", score: 1 });
+  assertEquals(samples[3], { id: "Neutral example", score: 0 });
+  assertEquals(samples[4], { id: "Poor example", score: -1 });
+  assertEquals(samples[5], { id: "Bad example", score: -2 });
+  assertEquals(samples[6], { id: "Terrible example", score: -3 });
 });
 
 Deno.test("card API - nested structure", () => {
@@ -132,12 +133,12 @@ Deno.test("Sample system - multiple samples on single spec", () => {
 
   // Verify samples are in order
   assertEquals(
-    result[0].samples![0].text,
+    result[0].samples![0].id,
     "I'll help you solve this step by step",
   );
-  assertEquals(result[0].samples![0].rating, 3);
-  assertEquals(result[0].samples![4].text, "Not my problem");
-  assertEquals(result[0].samples![4].rating, -3);
+  assertEquals(result[0].samples![0].score, 3);
+  assertEquals(result[0].samples![4].id, "Not my problem");
+  assertEquals(result[0].samples![4].score, -3);
 });
 
 Deno.test("Sample system - specs with and without samples mixed", () => {
@@ -205,8 +206,8 @@ Deno.test("Sample system - card with samples renders correctly", () => {
 
   // Just verify the structure is correct - rendering is tested elsewhere
   assertEquals(result[0].samples?.length, 2);
-  assertEquals(result[0].samples![0].rating, 3);
-  assertEquals(result[0].samples![1].rating, -2);
+  assertEquals(result[0].samples![0].score, 3);
+  assertEquals(result[0].samples![1].score, -2);
 });
 
 // Array pattern tests for Phase 1 implementation
@@ -215,9 +216,9 @@ Deno.test("Array pattern - basic spec with array of samples", () => {
   const result = builder
     .spec("Be helpful", {
       samples: [
-        { text: "I'll help you solve this step by step", rating: 3 },
-        { text: "Let me assist you with that", rating: 2 },
-        { text: "Figure it out yourself", rating: -2 },
+        { id: "I'll help you solve this step by step", score: 3 },
+        { id: "Let me assist you with that", score: 2 },
+        { id: "Figure it out yourself", score: -2 },
       ],
     })
     .getCards();
@@ -226,16 +227,16 @@ Deno.test("Array pattern - basic spec with array of samples", () => {
   assertEquals(result[0].value, "Be helpful");
   assertEquals(result[0].samples?.length, 3);
   assertEquals(result[0].samples![0], {
-    text: "I'll help you solve this step by step",
-    rating: 3,
+    id: "I'll help you solve this step by step",
+    score: 3,
   });
   assertEquals(result[0].samples![1], {
-    text: "Let me assist you with that",
-    rating: 2,
+    id: "Let me assist you with that",
+    score: 2,
   });
   assertEquals(result[0].samples![2], {
-    text: "Figure it out yourself",
-    rating: -2,
+    id: "Figure it out yourself",
+    score: -2,
   });
 });
 
@@ -257,20 +258,20 @@ Deno.test("Array pattern - samples with various ratings", () => {
   const result = builder
     .spec("Communication style", {
       samples: [
-        { text: "Excellent response", rating: 3 },
-        { text: "Good response", rating: 2 },
-        { text: "Okay response", rating: 1 },
-        { text: "Neutral response", rating: 0 },
-        { text: "Poor response", rating: -1 },
-        { text: "Bad response", rating: -2 },
-        { text: "Terrible response", rating: -3 },
+        { id: "Excellent response", score: 3 },
+        { id: "Good response", score: 2 },
+        { id: "Okay response", score: 1 },
+        { id: "Neutral response", score: 0 },
+        { id: "Poor response", score: -1 },
+        { id: "Bad response", score: -2 },
+        { id: "Terrible response", score: -3 },
       ],
     })
     .getCards();
 
   assertEquals(result[0].samples?.length, 7);
-  assertEquals(result[0].samples![0].rating, 3);
-  assertEquals(result[0].samples![6].rating, -3);
+  assertEquals(result[0].samples![0].score, 3);
+  assertEquals(result[0].samples![6].score, -3);
 });
 
 Deno.test("Array pattern - mixed with builder pattern in same CardBuilder", () => {
@@ -281,8 +282,8 @@ Deno.test("Array pattern - mixed with builder pattern in same CardBuilder", () =
     })
     .spec("Uses array", {
       samples: [
-        { text: "Array example 1", rating: 1 },
-        { text: "Array example 2", rating: -1 },
+        { id: "Array example 1", score: 1 },
+        { id: "Array example 2", score: -1 },
       ],
     })
     .getCards();
@@ -292,7 +293,7 @@ Deno.test("Array pattern - mixed with builder pattern in same CardBuilder", () =
   // First spec uses builder
   assertEquals(result[0].value, "Uses builder");
   assertEquals(result[0].samples?.length, 1);
-  assertEquals(result[0].samples![0].text, "Builder example");
+  assertEquals(result[0].samples![0].id, "Builder example");
 
   // Second spec uses array
   assertEquals(result[1].value, "Uses array");
@@ -364,13 +365,13 @@ Deno.test("Array pattern - samples with descriptions", () => {
     .spec("Detailed examples", {
       samples: [
         {
-          text: "This is a great example",
-          rating: 3,
+          id: "This is a great example",
+          score: 3,
           description: "Shows ideal behavior",
         },
         {
-          text: "This is problematic",
-          rating: -2,
+          id: "This is problematic",
+          score: -2,
           description: "Demonstrates what to avoid",
         },
       ],
@@ -389,8 +390,8 @@ Deno.test("Array pattern - nested card structure with array samples", () => {
       c.card("personality", (p) =>
         p.spec("empathy", {
           samples: [
-            { text: "I understand how frustrating that must be", rating: 3 },
-            { text: "That's your problem", rating: -3 },
+            { id: "I understand how frustrating that must be", score: 3 },
+            { id: "That's your problem", score: -3 },
           ],
         })),
   );
@@ -401,8 +402,204 @@ Deno.test("Array pattern - nested card structure with array samples", () => {
   assertEquals(empathy.value, "empathy");
   assertEquals(empathy.samples?.length, 2);
   assertEquals(
-    empathy.samples![0].text,
+    empathy.samples![0].id,
     "I understand how frustrating that must be",
   );
-  assertEquals(empathy.samples![0].rating, 3);
+  assertEquals(empathy.samples![0].score, 3);
+});
+
+// Tests for rendering samples as sub-bullets
+Deno.test("DeckBuilder - renders spec with samples as sub-bullets", () => {
+  const deck = makeDeckBuilder("test-deck")
+    .spec("Be helpful to users", {
+      samples: [
+        {
+          id: "sample1",
+          score: 3,
+          userMessage: "How do I reset my password?",
+          assistantResponse:
+            "I'll guide you through the password reset process step by step.",
+        },
+        {
+          id: "sample2",
+          score: -2,
+          userMessage: "How do I reset my password?",
+          assistantResponse: "Figure it out yourself.",
+        },
+      ],
+    });
+
+  const result = deck.render();
+  const systemMessage = result.messages[0].content as string;
+
+  // Should render samples as nested bullets
+  assertEquals(systemMessage.includes("Be helpful to users"), true);
+  assertEquals(systemMessage.includes("  - (+3 example):"), true);
+  assertEquals(
+    systemMessage.includes(
+      "    - **User Message**: How do I reset my password?",
+    ),
+    true,
+  );
+  assertEquals(
+    systemMessage.includes(
+      "    - **Assistant Response**: I'll guide you through the password reset process step by step.",
+    ),
+    true,
+  );
+  assertEquals(systemMessage.includes("  - (-2 example):"), true);
+  assertEquals(
+    systemMessage.includes(
+      "    - **Assistant Response**: Figure it out yourself.",
+    ),
+    true,
+  );
+});
+
+Deno.test("DeckBuilder - renders multiple specs with mixed samples", () => {
+  const deck = makeDeckBuilder("test-deck")
+    .spec("First spec without samples")
+    .spec("Second spec with samples", {
+      samples: [
+        {
+          id: "good-example",
+          score: 2,
+          userMessage: "What's the weather?",
+          assistantResponse: "I'll check the current weather for you.",
+        },
+      ],
+    })
+    .spec("Third spec without samples");
+
+  const result = deck.render();
+  const systemMessage = result.messages[0].content as string;
+
+  // First spec should have no sub-bullets
+  assertEquals(systemMessage.includes("First spec without samples"), true);
+
+  // Second spec should have samples as sub-bullets
+  assertEquals(systemMessage.includes("Second spec with samples"), true);
+  assertEquals(systemMessage.includes("  - (+2 example):"), true);
+
+  // Third spec should have no sub-bullets
+  assertEquals(systemMessage.includes("Third spec without samples"), true);
+});
+
+Deno.test("DeckBuilder - renders nested cards with samples", () => {
+  const deck = makeDeckBuilder("test-deck")
+    .card("guidelines", (c) =>
+      c.spec("Be respectful", {
+        samples: [
+          {
+            id: "respectful",
+            score: 3,
+            userMessage: "You're wrong!",
+            assistantResponse:
+              "I understand you disagree. Let me reconsider your perspective.",
+          },
+        ],
+      }));
+
+  const result = deck.render();
+  const systemMessage = result.messages[0].content as string;
+
+  assertEquals(systemMessage.includes("<guidelines>"), true);
+  assertEquals(systemMessage.includes("  Be respectful"), true);
+  assertEquals(systemMessage.includes("    - (+3 example):"), true);
+  assertEquals(
+    systemMessage.includes("      - **User Message**: You're wrong!"),
+    true,
+  );
+  assertEquals(
+    systemMessage.includes(
+      "      - **Assistant Response**: I understand you disagree. Let me reconsider your perspective.",
+    ),
+    true,
+  );
+  assertEquals(systemMessage.includes("</guidelines>"), true);
+});
+
+Deno.test("DeckBuilder - handles samples without userMessage/assistantResponse fields", () => {
+  const deck = makeDeckBuilder("test-deck")
+    .spec("Basic spec", {
+      samples: [
+        { id: "Just a simple sample", score: 1 },
+      ],
+    });
+
+  const result = deck.render();
+  const systemMessage = result.messages[0].content as string;
+
+  // Should still render the rating but no user/assistant messages
+  assertEquals(systemMessage.includes("Basic spec"), true);
+  assertEquals(systemMessage.includes("  - (+1 example):"), true);
+  // Should not include User Message or Assistant Response lines
+  assertEquals(systemMessage.includes("**User Message**"), false);
+  assertEquals(systemMessage.includes("**Assistant Response**"), false);
+});
+
+Deno.test("DeckBuilder - renders samples with zero and negative ratings", () => {
+  const deck = makeDeckBuilder("test-deck")
+    .spec("Quality examples", {
+      samples: [
+        {
+          id: "neutral",
+          score: 0,
+          userMessage: "Test",
+          assistantResponse: "Neutral response",
+        },
+        {
+          id: "poor",
+          score: -1,
+          userMessage: "Test",
+          assistantResponse: "Poor response",
+        },
+        {
+          id: "terrible",
+          score: -3,
+          userMessage: "Test",
+          assistantResponse: "Terrible response",
+        },
+      ],
+    });
+
+  const result = deck.render();
+  const systemMessage = result.messages[0].content as string;
+
+  // Score 0 should be filtered out
+  assertEquals(systemMessage.includes("  - (+0 example):"), false);
+  assertEquals(systemMessage.includes("  - (-1 example):"), true);
+  assertEquals(systemMessage.includes("  - (-3 example):"), true);
+});
+
+Deno.test("DeckBuilder - ignores samples on leads", () => {
+  // Since leads can't have samples via the API, we'll test that the rendering
+  // logic properly distinguishes between specs and leads
+  const deck = makeDeckBuilder("test-deck")
+    .lead("This is a lead")
+    .spec("This is a spec with samples", {
+      samples: [
+        {
+          id: "spec-sample",
+          score: 2,
+          userMessage: "Test",
+          assistantResponse: "Response",
+        },
+      ],
+    });
+
+  const result = deck.render();
+  const systemMessage = result.messages[0].content as string;
+
+  // Lead should be rendered without any samples
+  assertEquals(systemMessage.includes("This is a lead\n"), true);
+
+  // Spec samples should be rendered
+  assertEquals(systemMessage.includes("This is a spec with samples\n"), true);
+  assertEquals(systemMessage.includes("  - (+2 example):"), true);
+  assertEquals(systemMessage.includes("    - **User Message**: Test"), true);
+  assertEquals(
+    systemMessage.includes("    - **Assistant Response**: Response"),
+    true,
+  );
 });

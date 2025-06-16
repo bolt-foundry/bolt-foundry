@@ -183,8 +183,8 @@ Deno.test("Deck with samples - structure and rendering", () => {
   // First card has samples
   assertEquals(cards[0].value, "You are a helpful AI assistant");
   assertEquals(cards[0].samples?.length, 2);
-  assertEquals(cards[0].samples![0].rating, 3);
-  assertEquals(cards[0].samples![1].rating, -3);
+  assertEquals(cards[0].samples![0].score, 3);
+  assertEquals(cards[0].samples![1].score, -3);
 
   // Second card group
   assertEquals(cards[1].name, "communication");
@@ -270,17 +270,17 @@ Deno.test("DeckBuilder with array pattern samples", () => {
     return b
       .spec("Be helpful and supportive", {
         samples: [
-          { text: "I'm here to help you succeed!", rating: 3 },
-          { text: "Let me guide you through this", rating: 2 },
-          { text: "You're on your own", rating: -3 },
+          { id: "I'm here to help you succeed!", score: 3 },
+          { id: "Let me guide you through this", score: 2 },
+          { id: "You're on your own", score: -3 },
         ],
       })
       .card("responses", (c) => {
         return c
           .spec("Acknowledge user feelings", {
             samples: [
-              { text: "I understand this can be frustrating", rating: 3 },
-              { text: "Whatever", rating: -2 },
+              { id: "I understand this can be frustrating", score: 3 },
+              { id: "Whatever", score: -2 },
             ],
           })
           .spec("Provide clear explanations");
@@ -294,14 +294,14 @@ Deno.test("DeckBuilder with array pattern samples", () => {
   // First spec with array samples
   assertEquals(cards[0].value, "Be helpful and supportive");
   assertEquals(cards[0].samples?.length, 3);
-  assertEquals(cards[0].samples![0].text, "I'm here to help you succeed!");
-  assertEquals(cards[0].samples![2].rating, -3);
+  assertEquals(cards[0].samples![0].id, "I'm here to help you succeed!");
+  assertEquals(cards[0].samples![2].score, -3);
 
   // Nested card with array samples
   const responseCards = cards[1].value as Array<Card>;
   assertEquals(responseCards[0].samples?.length, 2);
   assertEquals(
-    responseCards[0].samples![0].text,
+    responseCards[0].samples![0].id,
     "I understand this can be frustrating",
   );
 });
@@ -312,7 +312,7 @@ Deno.test("DeckBuilder mixing array and builder patterns", () => {
     return b
       .spec("Array pattern spec", {
         samples: [
-          { text: "Array example", rating: 1 },
+          { id: "Array example", score: 1 },
         ],
       })
       .spec("Builder pattern spec", {
@@ -326,11 +326,11 @@ Deno.test("DeckBuilder mixing array and builder patterns", () => {
 
   // Array pattern
   assertEquals(cards[0].samples?.length, 1);
-  assertEquals(cards[0].samples![0].text, "Array example");
+  assertEquals(cards[0].samples![0].id, "Array example");
 
   // Builder pattern
   assertEquals(cards[1].samples?.length, 1);
-  assertEquals(cards[1].samples![0].text, "Builder example");
+  assertEquals(cards[1].samples![0].id, "Builder example");
 
   // No samples
   assertEquals(cards[2].samples, undefined);
@@ -355,13 +355,13 @@ Deno.test("DeckBuilder array samples with descriptions", () => {
     return b.spec("Detailed examples", {
       samples: [
         {
-          text: "This demonstrates excellent behavior",
-          rating: 3,
+          id: "This demonstrates excellent behavior",
+          score: 3,
           description: "Gold standard example",
         },
         {
-          text: "This should be avoided",
-          rating: -3,
+          id: "This should be avoided",
+          score: -3,
           description: "Anti-pattern to avoid",
         },
       ],
