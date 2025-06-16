@@ -44,7 +44,7 @@ function spinner(
           : `\r${frame} Elapsed: ${formattedDuration}s - `;
 
         // Clear the line first to handle varying message lengths
-        await Deno.stdout.write(
+        await Deno.stderr.write(
           new TextEncoder().encode("\r\x1b[K" + output),
         );
       } catch (_) {
@@ -57,14 +57,14 @@ function spinner(
 export default function startSpinner(
   messages?: string | Array<string>,
 ): () => void {
-  const isATTY = Deno.stdout.isTerminal();
+  const isATTY = Deno.stderr.isTerminal();
   const spinnerInterval = spinner(isATTY, messages);
   return () => {
     clearInterval(spinnerInterval);
     if (isATTY) {
       // Clear the spinner line when stopping
       try {
-        Deno.stdout.writeSync(new TextEncoder().encode("\r\x1b[K"));
+        Deno.stderr.writeSync(new TextEncoder().encode("\r\x1b[K"));
       } catch (_) {
         // ignore
       }

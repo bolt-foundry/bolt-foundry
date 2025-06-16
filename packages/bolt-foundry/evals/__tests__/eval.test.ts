@@ -17,7 +17,7 @@ Deno.test("eval - should run end-to-end evaluation with mock API", async () => {
               message: {
                 content: JSON.stringify({
                   score: 2,
-                  notes: "Test evaluation passed",
+                  reason: "Test evaluation passed",
                 }),
               },
             }],
@@ -46,7 +46,7 @@ Deno.test("eval - should run end-to-end evaluation with mock API", async () => {
     assertEquals(firstResult.id, "test-1");
     assertEquals(firstResult.iteration, 1);
     assertEquals(firstResult.score, 2);
-    assertEquals(firstResult.output.notes, "Test evaluation passed");
+    assertEquals(firstResult.output.reason, "Test evaluation passed");
     assertEquals(typeof firstResult.latencyInMs, "number");
 
     // Verify fetch was called with OpenRouter URL
@@ -55,6 +55,95 @@ Deno.test("eval - should run end-to-end evaluation with mock API", async () => {
     assertEquals(
       firstCall.args[0],
       "https://openrouter.ai/api/v1/chat/completions",
+    );
+  } finally {
+    fetchStub.restore();
+  }
+});
+
+Deno.test("eval - should handle response with reason field", async () => {
+  // Stub fetch to return a response with 'reason' field
+  const fetchStub = stub(
+    globalThis,
+    "fetch",
+    () =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            choices: [{
+              message: {
+                content: JSON.stringify({
+                  score: 1,
+                  reason: "Evaluation reason",
+                }),
+              },
+            }],
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          },
+        ),
+      ),
+  );
+
+  try {
+    const results = await runEval({
+      inputFile: new URL("./test-data.jsonl", import.meta.url).pathname,
+      graderFile: new URL("./test-deck.ts", import.meta.url).pathname,
+      model: "openai/gpt-4o",
+    });
+
+    // Should have processed 1 sample from test-data.jsonl
+    assertEquals(results.length, 1);
+
+    // Check result structure
+    const firstResult = results[0];
+    assertEquals(firstResult.model, "openai/gpt-4o");
+    assertEquals(firstResult.score, 1);
+    assertEquals(firstResult.output.reason, "Evaluation reason");
+  } finally {
+    fetchStub.restore();
+  }
+});
+
+Deno.test("eval - should handle invalid JSON gracefully", async () => {
+  // Stub fetch to return invalid JSON
+  const fetchStub = stub(
+    globalThis,
+    "fetch",
+    () =>
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            choices: [{
+              message: {
+                content: "invalid json response",
+              },
+            }],
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          },
+        ),
+      ),
+  );
+
+  try {
+    const results = await runEval({
+      inputFile: new URL("./test-data.jsonl", import.meta.url).pathname,
+      graderFile: new URL("./test-deck.ts", import.meta.url).pathname,
+      model: "openai/gpt-4o",
+    });
+
+    const firstResult = results[0];
+
+    // Should handle invalid JSON gracefully with score 0
+    assertEquals(firstResult.score, 0);
+    assertEquals(
+      firstResult.output.reason?.includes("Grader failed to return valid JSON"),
+      true,
     );
   } finally {
     fetchStub.restore();
