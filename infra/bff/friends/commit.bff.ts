@@ -69,15 +69,62 @@ async function stageAllFiles(): Promise<number> {
 /**
  * Run the full precommit checks
  */
-async function runPrecommitChecks(): Promise<boolean> {
+async function runPrecommitChecks(verbose: boolean): Promise<boolean> {
   logger.info("Running precommit checks...");
-  const precommitResult = await runShellCommand(["bff", "precommit"]);
-  if (precommitResult !== 0) {
-    logger.error("❌ Precommit checks failed");
-    return false;
+
+  if (verbose) {
+    // In verbose mode, run precommit normally with full output
+    const precommitResult = await runShellCommand(["bff", "precommit"]);
+    if (precommitResult !== 0) {
+      logger.error("❌ Precommit checks failed");
+      return false;
+    }
+    logger.info("✅ Precommit checks passed");
+    return true;
+  } else {
+    // In concise mode, run each check with controlled output
+    const checks = [
+      { name: "Format", command: ["bff", "ai", "format"] },
+      { name: "Lint", command: ["bff", "ai", "lint", "--fix"] },
+      { name: "Type Check", command: ["bff", "ai", "check"] },
+      { name: "Test", command: ["bff", "ai", "test"] },
+    ];
+
+    // First, stage files
+    logger.info("🔍 Staging files...");
+    const stageResult = await stageAllFiles();
+    if (stageResult !== 0) {
+      logger.error("❌ Failed to stage files");
+      return false;
+    }
+
+    logger.info(`Running ${checks.length} pre-commit checks...`);
+
+    for (const check of checks) {
+      const start = Date.now();
+      const result = await runShellCommand(
+        check.command,
+        undefined,
+        {},
+        true,
+        true,
+      ); // silent = true
+      const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+
+      if (result !== 0) {
+        logger.error(`❌ ${check.name} failed (${elapsed}s)`);
+        logger.error(
+          "Pre-commit checks failed. Run with --verbose for full output.",
+        );
+        return false;
+      }
+
+      logger.info(`✅ ${check.name} passed (${elapsed}s)`);
+    }
+
+    logger.info("🎉 All pre-commit checks passed!");
+    return true;
   }
-  logger.info("✅ Precommit checks passed");
-  return true;
 }
 
 export async function commit(args: Array<string>): Promise<number> {
@@ -86,8 +133,9 @@ export async function commit(args: Array<string>): Promise<number> {
   const filesToCommit: Array<string> = [];
   let runPreCheck = true; // Default to true - run pre-checks by default
   let submitPR = true; // Default to true - submit PR by default
+  let verbose = false; // Default to false - concise output by default
 
-  // Parse arguments - look for -m flag, --skip-precommit flag, and --no-submit flag
+  // Parse arguments - look for -m flag, --skip-precommit flag, --no-submit flag, and --verbose flag
   const skipIndices = new Set<number>();
 
   for (let i = 0; i < args.length; i++) {
@@ -101,6 +149,9 @@ export async function commit(args: Array<string>): Promise<number> {
     } else if (args[i] === "--no-submit") {
       submitPR = false;
       skipIndices.add(i);
+    } else if (args[i] === "--verbose" || args[i] === "-v") {
+      verbose = true;
+      skipIndices.add(i);
     }
   }
 
@@ -113,15 +164,14 @@ export async function commit(args: Array<string>): Promise<number> {
 
   if (!commitMessage) {
     logger.error(
-      '❌ No commit message provided. Usage: bff commit -m "Your message" [--skip-precommit] [--no-submit] [files...]',
+      '❌ No commit message provided. Usage: bff commit -m "Your message" [--skip-precommit] [--no-submit] [--verbose] [files...]',
     );
     return 1;
   }
 
   // Run precommit checks by default (unless skipped)
   if (runPreCheck) {
-    logger.info("Running precommit checks...");
-    if (!await runPrecommitChecks()) {
+    if (!await runPrecommitChecks(verbose)) {
       return 1;
     }
   }
@@ -222,6 +272,11 @@ register(
       option: "--no-submit",
       description:
         "Skip PR submission. By default, PR is submitted automatically.",
+    },
+    {
+      option: "--verbose, -v",
+      description:
+        "Show full output from pre-commit checks. By default, shows concise output.",
     },
     {
       option: "[files...]",
