@@ -9,9 +9,10 @@ import { getLogger } from "packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 export async function amend(args: Array<string>): Promise<number> {
-  // Check for --skip-precommit and --no-submit flags
+  // Check for --skip-precommit, --no-submit, and --verbose flags
   let runPreCheck = true;
   let submitPR = true;
+  let verbose = false;
   const filteredArgs = args.filter((arg) => {
     if (arg === "--skip-precommit") {
       runPreCheck = false;
@@ -21,13 +22,21 @@ export async function amend(args: Array<string>): Promise<number> {
       submitPR = false;
       return false;
     }
+    if (arg === "--verbose" || arg === "-v") {
+      verbose = true;
+      return false;
+    }
     return true;
   });
 
   // Run precommit checks by default (unless skipped)
   if (runPreCheck) {
     logger.info("Running precommit checks...");
-    const precommitResult = await runShellCommand(["bff", "precommit"]);
+    const precommitArgs = ["bff", "precommit"];
+    if (verbose) {
+      precommitArgs.push("--verbose");
+    }
+    const precommitResult = await runShellCommand(precommitArgs);
     if (precommitResult !== 0) {
       logger.error("❌ Precommit checks failed");
       return precommitResult;
@@ -73,6 +82,11 @@ register(
     {
       option: "--no-submit",
       description: "Skip PR submission after amending the commit.",
+    },
+    {
+      option: "--verbose, -v",
+      description:
+        "Show full output from pre-commit checks. By default, shows concise output.",
     },
   ],
   false, // Not AI-safe - modifies commits

@@ -64,6 +64,8 @@ async function stageFiles(): Promise<number> {
 export async function precommitCommand(
   options: Array<string>,
 ): Promise<number> {
+  const verbose = options.includes("--verbose") || options.includes("-v");
+
   logger.info("Running AI-safe pre-commit checks...");
 
   // First, stage any unknown files and remove missing files
@@ -98,19 +100,41 @@ export async function precommitCommand(
   logger.info(`Running ${filteredChecks.length} pre-commit checks...`);
 
   for (const check of filteredChecks) {
-    logger.info(`🔍 Running ${check.name}...`);
+    if (verbose) {
+      logger.info(`🔍 Running ${check.name}...`);
+      const result = await runShellCommand(check.command);
 
-    const result = await runShellCommand(check.command);
+      if (result !== 0) {
+        logger.error(`❌ ${check.name} failed with exit code ${result}`);
+        logger.error(
+          "Pre-commit checks failed. Please fix the issues and try again.",
+        );
+        return result;
+      }
 
-    if (result !== 0) {
-      logger.error(`❌ ${check.name} failed with exit code ${result}`);
-      logger.error(
-        "Pre-commit checks failed. Please fix the issues and try again.",
-      );
-      return result;
+      logger.info(`✅ ${check.name} passed!`);
+    } else {
+      // Concise mode - suppress output and show timing
+      const start = Date.now();
+      const result = await runShellCommand(
+        check.command,
+        undefined,
+        {},
+        true,
+        true,
+      ); // silent = true
+      const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+
+      if (result !== 0) {
+        logger.error(`❌ ${check.name} failed (${elapsed}s)`);
+        logger.error(
+          "Pre-commit checks failed. Run with --verbose for full output.",
+        );
+        return result;
+      }
+
+      logger.info(`✅ ${check.name} passed (${elapsed}s)`);
     }
-
-    logger.info(`✅ ${check.name} passed!`);
   }
 
   logger.info("🎉 All pre-commit checks passed!");
@@ -137,6 +161,10 @@ register(
     {
       option: "--skip-test",
       description: "Skip running tests.",
+    },
+    {
+      option: "--verbose, -v",
+      description: "Show full output from all checks.",
     },
   ],
   true, // AI-safe - only runs other AI-safe commands
