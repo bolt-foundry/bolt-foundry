@@ -7,7 +7,7 @@
   inputs = {
     nixpkgs.url          = "github:NixOS/nixpkgs/26e168479fdc7a75fe55e457e713d8b5f794606a";
     flake-utils.url      = "github:numtide/flake-utils";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/086a1ea6747bb27e0f94709dd26d12d443fa4845";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/9276d3225945c544c6efab8210686bd7612a9115";
   };
 
   ########################
@@ -79,6 +79,17 @@
 
           # Set DENO_DIR to keep cache out of repo
           export DENO_DIR="${builtins.getEnv "HOME"}/.cache/deno"
+
+          # Load .env.local if it exists
+          if [ -f ".env.local" ]; then
+            echo "Loading environment from .env.local..."
+            set -a  # automatically export all variables
+            source .env.local
+            set +a
+            echo "Environment loaded from .env.local"
+          else
+            echo "No .env.local found. Run 'bff inject-secrets' to create it from 1Password."
+          fi
 
           ${shellHookExtra}
         '';

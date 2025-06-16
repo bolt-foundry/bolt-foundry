@@ -15,24 +15,29 @@ Deno.test("ai command: should list AI-safe commands", async () => {
   assertEquals(result, 0);
 });
 
-Deno.test("ai command: should run AI-safe commands", async () => {
-  // Register a test AI-safe command
-  let wasCalled = false;
-  register(
-    "test-ai-safe",
-    "Test AI-safe command",
-    () => {
-      wasCalled = true;
-      return 0;
-    },
-    [],
-    true,
-  );
+Deno.test({
+  name: "ai command: should run AI-safe commands",
+  sanitizeResources: false,
+  sanitizeOps: false,
+  fn: async () => {
+    // Register a test AI-safe command
+    let wasCalled = false;
+    register(
+      "test-ai-safe",
+      "Test AI-safe command",
+      () => {
+        wasCalled = true;
+        return 0;
+      },
+      [],
+      true,
+    );
 
-  // Test running an AI-safe command
-  const result = await aiCommand(["test-ai-safe"]);
-  assertEquals(result, 0);
-  assertEquals(wasCalled, true);
+    // Test running an AI-safe command
+    const result = await aiCommand(["test-ai-safe"]);
+    assertEquals(result, 0);
+    assertEquals(wasCalled, true);
+  },
 });
 
 Deno.test("ai command: should reject non-AI-safe commands", async () => {

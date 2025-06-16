@@ -58,6 +58,11 @@ export function makeGraderDeckBuilder(name: string): DeckBuilder {
       return this;
     },
 
+    lead(text: string) {
+      userDeck = userDeck.lead(text);
+      return this;
+    },
+
     context(builder: (c: ContextBuilder) => ContextBuilder) {
       userDeck = userDeck.context(builder);
       return this;
@@ -88,15 +93,22 @@ export function makeGraderDeckBuilder(name: string): DeckBuilder {
       // Add all user specs/cards first
       const userCards = userDeck.getCards();
       for (const card of userCards) {
-        if (typeof card.value === "string") {
+        // Handle leads
+        if (card.lead && !card.name) {
+          finalDeck = finalDeck.lead(card.lead);
+        } // Handle specs
+        else if (typeof card.value === "string" && card.value) {
           finalDeck = finalDeck.spec(card.value);
-        } else if (Array.isArray(card.value) && card.name) {
-          // Recreate nested cards
+        } // Handle nested cards
+        else if (Array.isArray(card.value) && card.name) {
           finalDeck = finalDeck.card(card.name, (c) => {
             let builder = c;
             const nestedCards = card.value as Array<Card>;
             for (const subCard of nestedCards) {
-              if (typeof subCard.value === "string") {
+              if (subCard.lead) {
+                builder = builder.lead(subCard.lead);
+              }
+              if (typeof subCard.value === "string" && subCard.value) {
                 builder = builder.spec(subCard.value);
               }
             }

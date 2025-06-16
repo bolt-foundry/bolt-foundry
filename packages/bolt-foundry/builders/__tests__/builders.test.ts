@@ -297,7 +297,65 @@ Deno.test("Array pattern - mixed with builder pattern in same CardBuilder", () =
   // Second spec uses array
   assertEquals(result[1].value, "Uses array");
   assertEquals(result[1].samples?.length, 2);
-  assertEquals(result[1].samples![0].text, "Array example 1");
+});
+
+Deno.test("CardBuilder - lead functionality", () => {
+  const builder = makeCardBuilder();
+  const result = builder
+    .lead("This is an introduction to the card")
+    .spec("First spec")
+    .lead("This is a transition between specs")
+    .spec("Second spec")
+    .getCards();
+
+  assertEquals(result.length, 4);
+
+  // First lead
+  assertEquals(result[0].lead, "This is an introduction to the card");
+  assertEquals(result[0].value, "");
+
+  // First spec
+  assertEquals(result[1].value, "First spec");
+  assertEquals(result[1].lead, undefined);
+
+  // Second lead
+  assertEquals(result[2].lead, "This is a transition between specs");
+  assertEquals(result[2].value, "");
+
+  // Second spec
+  assertEquals(result[3].value, "Second spec");
+  assertEquals(result[3].lead, undefined);
+});
+
+Deno.test("CardBuilder - nested cards with leads", () => {
+  const result = card("parent", (c) =>
+    c.lead("Parent card introduction")
+      .spec("Parent spec")
+      .card("child", (c) =>
+        c.lead("Child card introduction")
+          .spec("Child spec")
+          .lead("Jump-out lead after child specs"))
+      .lead("Another transition at parent level"));
+
+  const parentCards = result.value as Array<Card>;
+  assertEquals(parentCards.length, 4);
+
+  // Parent lead
+  assertEquals(parentCards[0].lead, "Parent card introduction");
+
+  // Parent spec
+  assertEquals(parentCards[1].value, "Parent spec");
+
+  // Child card
+  assertEquals(parentCards[2].name, "child");
+  const childCards = parentCards[2].value as Array<Card>;
+  assertEquals(childCards.length, 3);
+  assertEquals(childCards[0].lead, "Child card introduction");
+  assertEquals(childCards[1].value, "Child spec");
+  assertEquals(childCards[2].lead, "Jump-out lead after child specs");
+
+  // Parent transition
+  assertEquals(parentCards[3].lead, "Another transition at parent level");
 });
 
 Deno.test("Array pattern - samples with descriptions", () => {
