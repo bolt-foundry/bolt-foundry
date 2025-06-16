@@ -1,10 +1,8 @@
 #!/usr/bin/env -S deno run --allow-env --allow-read --allow-net --allow-write
 
-import {
-  type GradingResult,
-  runEval,
-} from "packages/bolt-foundry/evals/eval.ts";
+import { runEval } from "packages/bolt-foundry/evals/eval.ts";
 import { gray, green, red } from "@std/fmt/colors";
+import { stringify as stringifyToml } from "@std/toml";
 import type { Command } from "./types.ts";
 
 function printText(message: string, isError = false) {
@@ -22,116 +20,109 @@ function getConfigVar(key: string): string | undefined {
   return Deno.env.get(key);
 }
 
-function escapeTomlString(str: string): string {
-  return str
-    .replace(/\\/g, "\\\\")
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, "\\n")
-    .replace(/\r/g, "\\r")
-    .replace(/\t/g, "\\t");
+interface GraderResultsSection {
+  grader: string;
+  model: string;
+  timestamp: string;
+  samples: number;
+  average_distance: number;
+  results: Array<{
+    id: string;
+    grader_score: number;
+    truth_score?: number;
+    notes: string;
+  }>;
 }
 
-async function runEvaluation(graderFile: string, inputFile?: string) {
+interface OutputFile {
+  graderResults: Record<string, GraderResultsSection>;
+}
+
+function extractGraderName(graderPath: string): string {
+  // Extract grader name from path like "graders/tone-grader.deck.md" => "tone-grader"
+  const fileName = graderPath.split("/").pop() || graderPath;
+  return fileName.replace(/\.deck\.md$/, "");
+}
+
+function generateTimestampedFileName(baseFile: string): string {
+  const timestamp = Math.floor(Date.now() / 1000);
+  const lastDot = baseFile.lastIndexOf(".");
+  if (lastDot === -1) {
+    return `${baseFile}_${timestamp}`;
+  }
+  const name = baseFile.substring(0, lastDot);
+  const ext = baseFile.substring(lastDot);
+  return `${name}_${timestamp}${ext}`;
+}
+
+async function runMultipleEvaluations(
+  graderFiles: Array<string>,
+  inputFile: string | undefined,
+  outputFile: string,
+) {
+  // Check if output file exists, if so create timestamped version
+  let actualOutputFile = outputFile;
   try {
-    // Get model from environment or use default
-    const model = getConfigVar("ANTHROPIC_MODEL") ||
-      "anthropic/claude-3.5-sonnet";
+    await Deno.stat(outputFile);
+    // File exists, create timestamped version
+    actualOutputFile = generateTimestampedFileName(outputFile);
+    printText(
+      `Output file ${outputFile} already exists, creating ${actualOutputFile}`,
+      true,
+    );
+  } catch {
+    // File doesn't exist, use as is
+  }
 
-    // Check for API key
-    if (!getConfigVar("OPENROUTER_API_KEY")) {
-      printText(
-        "Error: OPENROUTER_API_KEY environment variable is required",
-        true,
-      );
-      Deno.exit(1);
-    }
+  // Get model from environment or use default
+  const model = getConfigVar("ANTHROPIC_MODEL") ||
+    "anthropic/claude-3.5-sonnet";
 
-    printText(`Running evaluation with grader: ${graderFile}`, true);
-    if (inputFile) {
-      printText(`Using input file: ${inputFile}`, true);
-    } else {
-      printText("Using embedded samples from grader deck", true);
-    }
-    printText(`Model: ${model}`, true);
-    printText("", true);
+  // Check for API key
+  if (!getConfigVar("OPENROUTER_API_KEY")) {
+    printText(
+      "Error: OPENROUTER_API_KEY environment variable is required",
+      true,
+    );
+    Deno.exit(1);
+  }
 
-    // Track results for summary calculation
-    const collectedResults: Array<GradingResult> = [];
+  printText(
+    `Running evaluation with ${graderFiles.length} grader${
+      graderFiles.length > 1 ? "s" : ""
+    }`,
+    true,
+  );
+  printText(`Output file: ${actualOutputFile}`, true);
+  if (inputFile) {
+    printText(`Using input file: ${inputFile}`, true);
+  }
+  printText(`Model: ${model}`, true);
+  printText("", true);
+
+  const output: OutputFile = { graderResults: {} };
+
+  // Run evaluation for each grader
+  for (let i = 0; i < graderFiles.length; i++) {
+    const graderFile = graderFiles[i];
+    const graderName = extractGraderName(graderFile);
+
+    printText(
+      `\n[${i + 1}/${graderFiles.length}] Evaluating ${graderFile}...`,
+      true,
+    );
 
     try {
-      // Print TOML header first
-      const tomlHeader = {
-        meta: {
-          version: "0.1.0",
-          deck: graderFile,
-          timestamp: new Date().toISOString(),
-          context_provided: { model },
-        },
-      };
-
-      // Output the meta section
-      printText("[meta]");
-      printText(`version = "${tomlHeader.meta.version}"`);
-      printText(`deck = "${tomlHeader.meta.deck}"`);
-      printText(`timestamp = "${tomlHeader.meta.timestamp}"`);
-      printText("");
-      printText("[meta.context_provided]");
-      printText(`model = "${model}"`);
-      printText("");
-
-      // Run evaluation with real-time TOML output
+      const startTime = Date.now();
       const results = await runEval({
         graderFile,
-        inputFile: inputFile,
+        inputFile,
         model,
         onSampleComplete: (result, index, total) => {
-          collectedResults.push(result);
-
-          // Output this result as TOML
-          printText("[[results]]");
-          const sampleId = result.sample.id || `sample-${index + 1}`;
-          printText(`id = "${sampleId}"`);
-          printText(`score = ${result.score}`);
-          if (result.output.reason) {
-            printText(`reason = "${escapeTomlString(result.output.reason)}"`);
-          }
-          if (result.sample.score !== undefined) {
-            printText(`truth_score = ${result.sample.score}`);
-          }
-          printText("");
-
-          printText("[results.sample]");
-          printText(
-            `userMessage = "${escapeTomlString(result.sample.userMessage)}"`,
-          );
-          printText(
-            `assistantResponse = "${
-              escapeTomlString(result.sample.assistantResponse)
-            }"`,
-          );
-
-          // Include any extra sample fields
-          const extraFields = Object.entries(result.sample).filter(([key]) =>
-            !["userMessage", "assistantResponse", "id", "expected"].includes(
-              key,
-            )
-          );
-          for (const [key, value] of extraFields) {
-            if (typeof value === "string") {
-              printText(`${key} = "${escapeTomlString(value)}"`);
-            } else if (typeof value === "number") {
-              printText(`${key} = ${value}`);
-            }
-          }
-          printText("");
-
-          printText("[results.evaluation]");
-          printText(`raw = "${escapeTomlString(result.rawOutput)}"`);
-          printText("");
-
           // Print progress to stderr
           const graderScore = result.score;
           const truthScore = result.sample.score;
+          const sampleId = result.sample.id || `sample-${index + 1}`;
           const progress = `[${index + 1}/${total}]`;
 
           if (truthScore !== undefined) {
@@ -149,55 +140,76 @@ async function runEvaluation(graderFile: string, inputFile?: string) {
         },
       });
 
-      // Calculate summary statistics
-      const totalSamples = results.length;
-      const scores = results.map((r) => r.score as number);
-      const avgScore = totalSamples > 0
-        ? scores.reduce((a, b) => a + b, 0) / totalSamples
-        : 0;
+      // Calculate average distance to ground truth
+      let totalDistance = 0;
+      let samplesWithTruth = 0;
 
-      // Calculate agreement between grader and ground truth
-      let passed = 0;
-      let failed = 0;
-
-      for (const result of results) {
+      const graderResultsArray = results.map((result) => {
         const graderScore = result.score;
         const truthScore = result.sample.score;
+        const sampleId = result.sample.id || "unknown";
 
         if (truthScore !== undefined) {
-          const agree = graderScore === truthScore;
-
-          if (agree) {
-            passed++;
-          } else {
-            failed++;
-          }
+          totalDistance += Math.abs(graderScore - truthScore);
+          samplesWithTruth++;
         }
-      }
 
-      // Output summary section at the end
-      printText("[summary]");
-      printText(`total_samples = ${totalSamples}`);
-      printText(`average_score = ${avgScore.toFixed(2)}`);
-      printText(`passed = ${passed}`);
-      printText(`failed = ${failed}`);
+        return {
+          id: sampleId,
+          grader_score: graderScore,
+          truth_score: truthScore,
+          notes: result.output.reason || "",
+        };
+      });
 
-      // Print summary to stderr
-      printText("", true);
-      printText("Summary:", true);
-      printText(`Total samples: ${totalSamples}`, true);
-      printText(`Average score: ${avgScore.toFixed(2)}`, true);
-      printText(`Agreements: ${passed} (grader matches ground truth)`, true);
+      const avgDistance = samplesWithTruth > 0
+        ? totalDistance / samplesWithTruth
+        : 0;
+
+      // Add to output structure
+      output.graderResults[graderName] = {
+        grader: graderFile,
+        model,
+        timestamp: new Date().toISOString(),
+        samples: results.length,
+        average_distance: Number(avgDistance.toFixed(2)),
+        results: graderResultsArray,
+      };
+
+      // Print summary for this grader
+      printText(`\nCompleted ${graderFile}:`, true);
+      printText(`  Total samples: ${results.length}`, true);
       printText(
-        `Disagreements: ${failed} (grader differs from ground truth)`,
+        `  Average distance from truth: ${avgDistance.toFixed(2)}`,
+        true,
+      );
+      printText(
+        `  Evaluation time: ${((Date.now() - startTime) / 1000).toFixed(1)}s`,
         true,
       );
     } catch (error) {
-      throw error;
+      printText(
+        `Error evaluating ${graderFile}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        true,
+      );
+      Deno.exit(1);
     }
+  }
+
+  // Write output to file
+  try {
+    const tomlContent = stringifyToml(
+      output as unknown as Record<string, unknown>,
+    );
+    await Deno.writeTextFile(actualOutputFile, tomlContent);
+    printText(`\nResults written to: ${actualOutputFile}`, true);
   } catch (error) {
     printText(
-      `Error: ${error instanceof Error ? error.message : String(error)}`,
+      `Error writing output file: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
       true,
     );
     Deno.exit(1);
@@ -206,32 +218,76 @@ async function runEvaluation(graderFile: string, inputFile?: string) {
 
 export const evalCommand: Command = {
   name: "eval",
-  description: "Evaluate a grader deck against sample prompts",
+  description: "Evaluate grader decks against sample prompts",
   run: async (args: Array<string>) => {
-    // Simple argument parsing
-    if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
-      printText(`Usage: aibff eval <grader.deck.md> [samples.jsonl|samples.toml]
+    // Check for help flag first
+    if (args.includes("--help") || args.includes("-h")) {
+      printText(
+        `Usage: aibff eval <grader1.deck.md> [grader2.deck.md ...] [samples.jsonl|samples.toml] --output results.toml
 
 Examples:
-  # Calibration mode (uses deck's internal samples)
-  aibff eval grader.deck.md
+  # Single grader with embedded samples
+  aibff eval grader.deck.md --output results.toml
   
-  # File input mode
-  aibff eval grader.deck.md samples.toml
-  aibff eval grader.deck.md samples.jsonl
+  # Multiple graders with external samples
+  aibff eval grader1.deck.md grader2.deck.md samples.toml --output results.toml
+  
+  # Multiple graders with embedded samples
+  aibff eval grader1.deck.md grader2.deck.md --output results.toml
 
 Environment:
   OPENROUTER_API_KEY    Required for LLM access
-  ANTHROPIC_MODEL      Model to use (default: anthropic/claude-3.5-sonnet)
-`);
+  ANTHROPIC_MODEL       Model to use (default: anthropic/claude-3.5-sonnet)
+
+Output:
+  Results are written to a TOML file with sections for each grader.
+  If the output file exists, a timestamped version is created.
+`,
+      );
       Deno.exit(0);
     }
 
-    const graderFile = args[0];
-    const inputFile = args[1]; // Optional
+    // Parse arguments
+    const outputIndex = args.indexOf("--output");
+    if (outputIndex === -1 || outputIndex === args.length - 1) {
+      printText("Error: --output flag is required", true);
+      printText(
+        "Usage: aibff eval <grader1.deck.md> [grader2.deck.md ...] [samples.jsonl|samples.toml] --output results.toml",
+        true,
+      );
+      Deno.exit(1);
+    }
 
-    // Normal file mode or calibration mode
-    await runEvaluation(graderFile, inputFile);
+    const outputFile = args[outputIndex + 1];
+
+    // Remove --output and its value from args
+    const filteredArgs = args.filter((_, i) =>
+      i !== outputIndex && i !== outputIndex + 1
+    );
+
+    // Determine graders and input file
+    let graderFiles: Array<string> = [];
+    let inputFile: string | undefined;
+
+    // Check if last argument is a samples file (ends with .jsonl or .toml but not .deck.md)
+    const lastArg = filteredArgs[filteredArgs.length - 1];
+    if (
+      lastArg.endsWith(".jsonl") ||
+      (lastArg.endsWith(".toml") && !lastArg.endsWith(".deck.md"))
+    ) {
+      inputFile = lastArg;
+      graderFiles = filteredArgs.slice(0, -1);
+    } else {
+      graderFiles = filteredArgs;
+    }
+
+    if (graderFiles.length === 0) {
+      printText("Error: At least one grader file is required", true);
+      Deno.exit(1);
+    }
+
+    // Run evaluations
+    await runMultipleEvaluations(graderFiles, inputFile, outputFile);
   },
 };
 

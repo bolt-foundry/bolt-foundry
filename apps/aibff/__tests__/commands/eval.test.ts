@@ -2,6 +2,7 @@
 
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { assertEquals, assertStringIncludes } from "@std/assert";
+import { parse as parseToml } from "@std/toml";
 
 /**
  * Integration tests for the aibff eval command
@@ -13,7 +14,7 @@ import { assertEquals, assertStringIncludes } from "@std/assert";
 const evalScript = new URL("../../commands/eval.ts", import.meta.url).pathname;
 const fixturesDir = new URL("../fixtures", import.meta.url).pathname;
 
-Deno.test("eval should show help when no arguments provided", async () => {
+Deno.test("eval should require --output flag when no arguments", async () => {
   const command = new Deno.Command(Deno.execPath(), {
     args: [
       "run",
@@ -25,14 +26,11 @@ Deno.test("eval should show help when no arguments provided", async () => {
     ],
   });
 
-  const { code, stdout } = await command.output();
-  const output = new TextDecoder().decode(stdout);
+  const { code, stderr } = await command.output();
+  const error = new TextDecoder().decode(stderr);
 
-  assertEquals(code, 0);
-  assertStringIncludes(output, "Usage: aibff eval");
-  assertStringIncludes(output, "Examples:");
-  assertStringIncludes(output, "Calibration mode");
-  assertStringIncludes(output, "File input mode");
+  assertEquals(code, 1);
+  assertStringIncludes(error, "--output flag is required");
 });
 
 Deno.test("eval should show help with --help flag", async () => {
@@ -53,93 +51,12 @@ Deno.test("eval should show help with --help flag", async () => {
 
   assertEquals(code, 0);
   assertStringIncludes(output, "Usage: aibff eval");
+  assertStringIncludes(output, "--output results.toml");
+  assertStringIncludes(output, "Examples:");
 });
 
 Deno.test("eval should fail when OPENROUTER_API_KEY is missing", async () => {
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "--allow-env",
-      "--allow-read",
-      "--allow-net",
-      "--allow-write",
-      evalScript,
-      `${fixturesDir}/test-grader.deck.md`,
-      `${fixturesDir}/test-samples.toml`, // Use existing file to bypass stdin
-    ],
-    stdin: "inherit",
-    env: {
-      PATH: getConfigurationVariable("PATH") || "",
-      OPENROUTER_API_KEY: "", // Explicitly set to empty string
-    },
-  });
-
-  const { code, stderr } = await command.output();
-  const error = new TextDecoder().decode(stderr);
-
-  assertEquals(code, 1);
-  assertStringIncludes(
-    error,
-    "OPENROUTER_API_KEY environment variable is required",
-  );
-});
-
-Deno.test("eval should fail when grader file doesn't exist", async () => {
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "--allow-env",
-      "--allow-read",
-      "--allow-net",
-      "--allow-write",
-      evalScript,
-      "non-existent-grader.deck.md",
-      "dummy.toml", // Add dummy input to bypass stdin detection
-    ],
-    stdin: "inherit",
-    env: {
-      ...Deno.env.toObject(),
-      OPENROUTER_API_KEY: "test-key",
-    },
-  });
-
-  const { code, stderr } = await command.output();
-  const error = new TextDecoder().decode(stderr);
-
-  assertEquals(code, 1);
-  assertStringIncludes(error, "No such file");
-});
-
-Deno.test("eval should fail when input file doesn't exist", async () => {
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "--allow-env",
-      "--allow-read",
-      "--allow-net",
-      evalScript,
-      `${fixturesDir}/test-grader.deck.md`,
-      "non-existent-samples.toml",
-    ],
-    stdin: "inherit",
-    env: {
-      ...Deno.env.toObject(),
-      OPENROUTER_API_KEY: "test-key",
-    },
-  });
-
-  const { code, stderr } = await command.output();
-  const error = new TextDecoder().decode(stderr);
-
-  assertEquals(code, 1);
-  assertStringIncludes(error, "No such file");
-});
-
-Deno.test("eval should display correct info messages for calibration mode", async () => {
-  // In subprocess environment, stdin detection is unreliable
-  // So we'll test with an explicit empty file to simulate no input
-  const emptyFile = await Deno.makeTempFile({ suffix: ".toml" });
-  await Deno.writeTextFile(emptyFile, "");
+  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
 
   try {
     const command = new Deno.Command(Deno.execPath(), {
@@ -151,7 +68,123 @@ Deno.test("eval should display correct info messages for calibration mode", asyn
         "--allow-write",
         evalScript,
         `${fixturesDir}/test-grader.deck.md`,
-        emptyFile, // Empty file to ensure we don't read from stdin
+        `${fixturesDir}/test-samples.toml`,
+        "--output",
+        outputFile,
+      ],
+      stdin: "inherit",
+      env: {
+        PATH: getConfigurationVariable("PATH") || "",
+        OPENROUTER_API_KEY: "", // Explicitly set to empty string
+      },
+    });
+
+    const { code, stderr } = await command.output();
+    const error = new TextDecoder().decode(stderr);
+
+    assertEquals(code, 1);
+    assertStringIncludes(
+      error,
+      "OPENROUTER_API_KEY environment variable is required",
+    );
+  } finally {
+    try {
+      await Deno.remove(outputFile);
+    } catch {
+      // Ignore errors
+    }
+  }
+});
+
+Deno.test("eval should fail when grader file doesn't exist", async () => {
+  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
+
+  try {
+    const command = new Deno.Command(Deno.execPath(), {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-net",
+        "--allow-write",
+        evalScript,
+        "non-existent-grader.deck.md",
+        "--output",
+        outputFile,
+      ],
+      stdin: "inherit",
+      env: {
+        ...Deno.env.toObject(),
+        OPENROUTER_API_KEY: "test-key",
+      },
+    });
+
+    const { code, stderr } = await command.output();
+    const error = new TextDecoder().decode(stderr);
+
+    assertEquals(code, 1);
+    assertStringIncludes(error, "No such file");
+  } finally {
+    try {
+      await Deno.remove(outputFile);
+    } catch {
+      // Ignore errors
+    }
+  }
+});
+
+Deno.test("eval should fail when input file doesn't exist", async () => {
+  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
+
+  try {
+    const command = new Deno.Command(Deno.execPath(), {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-net",
+        evalScript,
+        `${fixturesDir}/test-grader.deck.md`,
+        "non-existent-samples.toml",
+        "--output",
+        outputFile,
+      ],
+      stdin: "inherit",
+      env: {
+        ...Deno.env.toObject(),
+        OPENROUTER_API_KEY: "test-key",
+      },
+    });
+
+    const { code, stderr } = await command.output();
+    const error = new TextDecoder().decode(stderr);
+
+    assertEquals(code, 1);
+    assertStringIncludes(error, "No such file");
+  } finally {
+    try {
+      await Deno.remove(outputFile);
+    } catch {
+      // Ignore errors
+    }
+  }
+});
+
+Deno.test("eval should display correct info messages for embedded samples", async () => {
+  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
+
+  try {
+    const command = new Deno.Command(Deno.execPath(), {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-net",
+        "--allow-write",
+        evalScript,
+        `${fixturesDir}/test-grader.deck.md`,
+        "--output",
+        outputFile,
       ],
       env: {
         ...Deno.env.toObject(),
@@ -162,64 +195,90 @@ Deno.test("eval should display correct info messages for calibration mode", asyn
     const { stderr } = await command.output();
     const info = new TextDecoder().decode(stderr);
 
-    assertStringIncludes(info, "Running evaluation with grader:");
-    assertStringIncludes(info, "test-grader.deck.md");
-    assertStringIncludes(info, "Using input file:");
+    assertStringIncludes(info, "Running evaluation with 1 grader");
+    assertStringIncludes(info, "Output file:");
     assertStringIncludes(info, "Model: anthropic/claude-3.5-sonnet");
   } finally {
-    await Deno.remove(emptyFile);
+    try {
+      await Deno.remove(outputFile);
+    } catch {
+      // Ignore errors
+    }
   }
 });
 
 Deno.test("eval should display correct info messages for file input mode", async () => {
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "--allow-env",
-      "--allow-read",
-      "--allow-net",
-      evalScript,
-      `${fixturesDir}/test-grader.deck.md`,
-      `${fixturesDir}/test-samples.toml`,
-    ],
-    stdin: "inherit",
-    env: {
-      ...Deno.env.toObject(),
-      OPENROUTER_API_KEY: "test-key",
-    },
-  });
+  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
 
-  const { stderr } = await command.output();
-  const info = new TextDecoder().decode(stderr);
+  try {
+    const command = new Deno.Command(Deno.execPath(), {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-net",
+        evalScript,
+        `${fixturesDir}/test-grader.deck.md`,
+        `${fixturesDir}/test-samples.toml`,
+        "--output",
+        outputFile,
+      ],
+      stdin: "inherit",
+      env: {
+        ...Deno.env.toObject(),
+        OPENROUTER_API_KEY: "test-key",
+      },
+    });
 
-  assertStringIncludes(info, "Running evaluation with grader:");
-  assertStringIncludes(info, "test-grader.deck.md");
-  assertStringIncludes(info, "Using input file:");
-  assertStringIncludes(info, "test-samples.toml");
+    const { stderr } = await command.output();
+    const info = new TextDecoder().decode(stderr);
+
+    assertStringIncludes(info, "Running evaluation with 1 grader");
+    assertStringIncludes(info, "Using input file:");
+    assertStringIncludes(info, "test-samples.toml");
+  } finally {
+    try {
+      await Deno.remove(outputFile);
+    } catch {
+      // Ignore errors
+    }
+  }
 });
 
 Deno.test("eval should accept custom model via ANTHROPIC_MODEL env var", async () => {
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "--allow-env",
-      "--allow-read",
-      "--allow-net",
-      "--allow-write",
-      evalScript,
-      `${fixturesDir}/test-grader.deck.md`,
-    ],
-    env: {
-      ...Deno.env.toObject(),
-      OPENROUTER_API_KEY: "test-key",
-      ANTHROPIC_MODEL: "gpt-4-turbo",
-    },
-  });
+  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
 
-  const { stderr } = await command.output();
-  const info = new TextDecoder().decode(stderr);
+  try {
+    const command = new Deno.Command(Deno.execPath(), {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-net",
+        "--allow-write",
+        evalScript,
+        `${fixturesDir}/test-grader.deck.md`,
+        "--output",
+        outputFile,
+      ],
+      env: {
+        ...Deno.env.toObject(),
+        OPENROUTER_API_KEY: "test-key",
+        ANTHROPIC_MODEL: "gpt-4-turbo",
+      },
+    });
 
-  assertStringIncludes(info, "Model: gpt-4-turbo");
+    const { stderr } = await command.output();
+    const info = new TextDecoder().decode(stderr);
+
+    assertStringIncludes(info, "Model: gpt-4-turbo");
+  } finally {
+    try {
+      await Deno.remove(outputFile);
+    } catch {
+      // Ignore errors
+    }
+  }
 });
 
 Deno.test("eval summary statistics should calculate exact agreement - regression test", () => {
@@ -292,3 +351,326 @@ Deno.test("eval summary statistics should calculate exact agreement - regression
     );
   }
 });
+
+// Tests for multi-grader support and --output flag
+Deno.test("eval should require --output flag", async () => {
+  const command = new Deno.Command(Deno.execPath(), {
+    args: [
+      "run",
+      "--allow-env",
+      "--allow-read",
+      "--allow-net",
+      "--allow-write",
+      evalScript,
+      `${fixturesDir}/test-grader.deck.md`,
+    ],
+    env: {
+      ...Deno.env.toObject(),
+      OPENROUTER_API_KEY: "test-key",
+    },
+  });
+
+  const { code, stderr } = await command.output();
+  const error = new TextDecoder().decode(stderr);
+
+  assertEquals(code, 1);
+  assertStringIncludes(error, "--output flag is required");
+});
+
+Deno.test("eval should accept multiple graders with --output flag", async () => {
+  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
+
+  try {
+    const command = new Deno.Command(Deno.execPath(), {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-net",
+        "--allow-write",
+        evalScript,
+        `${fixturesDir}/test-grader.deck.md`,
+        `${fixturesDir}/test-grader.deck.md`, // Use same grader twice for testing
+        `--output`,
+        outputFile,
+      ],
+      env: {
+        ...Deno.env.toObject(),
+        OPENROUTER_API_KEY: "test-key",
+      },
+    });
+
+    const { stderr } = await command.output();
+    const info = new TextDecoder().decode(stderr);
+
+    assertStringIncludes(info, "Running evaluation with 2 graders");
+    assertStringIncludes(info, "Output file:");
+  } finally {
+    try {
+      await Deno.remove(outputFile);
+    } catch {
+      // Ignore errors if file doesn't exist
+    }
+  }
+});
+
+Deno.test("eval should create timestamped file if output already exists", async () => {
+  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
+  await Deno.writeTextFile(outputFile, "existing content");
+
+  try {
+    const command = new Deno.Command(Deno.execPath(), {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-net",
+        "--allow-write",
+        evalScript,
+        `${fixturesDir}/test-grader.deck.md`,
+        `--output`,
+        outputFile,
+      ],
+      env: {
+        ...Deno.env.toObject(),
+        OPENROUTER_API_KEY: "test-key",
+      },
+    });
+
+    const { stderr } = await command.output();
+    const info = new TextDecoder().decode(stderr);
+
+    // Should mention creating a new file with timestamp
+    assertStringIncludes(info, "already exists, creating");
+
+    // Original file should still have its content
+    const originalContent = await Deno.readTextFile(outputFile);
+    assertEquals(originalContent, "existing content");
+  } finally {
+    try {
+      await Deno.remove(outputFile);
+    } catch {
+      // Ignore errors if file doesn't exist
+    }
+    // Clean up any timestamped files created
+    const dir = outputFile.substring(0, outputFile.lastIndexOf("/"));
+    const base = outputFile.substring(
+      outputFile.lastIndexOf("/") + 1,
+      outputFile.lastIndexOf("."),
+    );
+    for await (const entry of Deno.readDir(dir)) {
+      if (entry.name.startsWith(base + "_") && entry.name.endsWith(".toml")) {
+        try {
+          await Deno.remove(`${dir}/${entry.name}`);
+        } catch {
+          // Ignore errors
+        }
+      }
+    }
+  }
+});
+
+Deno.test("eval should parse graders and samples correctly", async () => {
+  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
+
+  try {
+    const command = new Deno.Command(Deno.execPath(), {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-net",
+        "--allow-write",
+        evalScript,
+        `${fixturesDir}/test-grader.deck.md`,
+        `${fixturesDir}/test-samples.toml`,
+        `--output`,
+        outputFile,
+      ],
+      env: {
+        ...Deno.env.toObject(),
+        OPENROUTER_API_KEY: "test-key",
+      },
+    });
+
+    const { stderr } = await command.output();
+    const info = new TextDecoder().decode(stderr);
+
+    assertStringIncludes(info, "Running evaluation with 1 grader");
+    assertStringIncludes(info, "Using input file:");
+    assertStringIncludes(info, "test-samples.toml");
+  } finally {
+    try {
+      await Deno.remove(outputFile);
+    } catch {
+      // Ignore errors if file doesn't exist
+    }
+  }
+});
+
+// Test for TOML structure generation
+Deno.test("eval should generate correct TOML structure", () => {
+  // Test that we can generate the expected TOML structure
+  const graderName = "test-grader";
+  const graderPath = "graders/test-grader.deck.md";
+  const model = "anthropic/claude-3.5-sonnet";
+  const timestamp = new Date().toISOString();
+
+  const results = [
+    { id: "sample-1", grader_score: 2, truth_score: 3, notes: "Test note 1" },
+    { id: "sample-2", grader_score: 1, truth_score: 1, notes: "Test note 2" },
+    { id: "sample-3", grader_score: -1, truth_score: 0, notes: "Test note 3" },
+  ];
+
+  // Calculate average distance
+  const totalDistance = results.reduce(
+    (sum, r) => sum + Math.abs(r.grader_score - r.truth_score),
+    0,
+  );
+  const avgDistance = totalDistance / results.length;
+
+  // Build expected structure
+  const expectedStructure = {
+    graderResults: {
+      [graderName]: {
+        grader: graderPath,
+        model: model,
+        timestamp: timestamp,
+        samples: results.length,
+        average_distance: Number(avgDistance.toFixed(2)),
+        results: results,
+      },
+    },
+  };
+
+  // Verify structure can be converted to TOML
+  const tomlString = stringifyToml(expectedStructure);
+  assertStringIncludes(tomlString, `[graderResults."${graderName}"]`);
+  assertStringIncludes(tomlString, `grader = "${graderPath}"`);
+  assertStringIncludes(tomlString, `model = "${model}"`);
+  assertStringIncludes(
+    tomlString,
+    `average_distance = ${Number(avgDistance.toFixed(2))}`,
+  );
+
+  // Verify it can be parsed back
+  const parsed = parseToml(tomlString) as {
+    graderResults: Record<
+      string,
+      {
+        grader: string;
+        samples: number;
+        results: Array<unknown>;
+      }
+    >;
+  };
+  assertEquals(parsed.graderResults[graderName].grader, graderPath);
+  assertEquals(parsed.graderResults[graderName].samples, results.length);
+  assertEquals(parsed.graderResults[graderName].results.length, results.length);
+});
+
+// Test for average distance calculation
+Deno.test("eval should calculate average distance correctly", () => {
+  const testCases = [
+    {
+      name: "All exact matches",
+      results: [
+        { grader_score: 1, truth_score: 1 },
+        { grader_score: 2, truth_score: 2 },
+        { grader_score: -1, truth_score: -1 },
+      ],
+      expected: 0,
+    },
+    {
+      name: "Mixed differences",
+      results: [
+        { grader_score: 2, truth_score: 3 }, // distance = 1
+        { grader_score: 1, truth_score: -1 }, // distance = 2
+        { grader_score: 0, truth_score: 0 }, // distance = 0
+      ],
+      expected: 1, // (1 + 2 + 0) / 3 = 1
+    },
+    {
+      name: "All off by one",
+      results: [
+        { grader_score: 2, truth_score: 1 }, // distance = 1
+        { grader_score: 0, truth_score: 1 }, // distance = 1
+        { grader_score: -1, truth_score: 0 }, // distance = 1
+      ],
+      expected: 1,
+    },
+    {
+      name: "Large differences",
+      results: [
+        { grader_score: 3, truth_score: -3 }, // distance = 6
+        { grader_score: -3, truth_score: 3 }, // distance = 6
+      ],
+      expected: 6,
+    },
+    {
+      name: "Empty results",
+      results: [],
+      expected: 0,
+    },
+  ];
+
+  for (const testCase of testCases) {
+    const totalDistance = testCase.results.reduce(
+      (sum, r) => sum + Math.abs(r.grader_score - r.truth_score),
+      0,
+    );
+    const avgDistance = testCase.results.length > 0
+      ? totalDistance / testCase.results.length
+      : 0;
+
+    assertEquals(
+      avgDistance,
+      testCase.expected,
+      `${testCase.name}: expected average distance of ${testCase.expected}`,
+    );
+  }
+});
+
+// Helper function for TOML stringification (mimics the command's escapeTomlString)
+function stringifyToml(obj: Record<string, unknown>): string {
+  // Simple TOML stringifier for testing
+  let result = "";
+
+  for (const [section, data] of Object.entries(obj)) {
+    if (section === "graderResults") {
+      for (
+        const [graderName, graderData] of Object.entries(
+          data as Record<string, unknown>,
+        )
+      ) {
+        result += `[graderResults."${graderName}"]\n`;
+
+        for (
+          const [key, value] of Object.entries(
+            graderData as Record<string, unknown>,
+          )
+        ) {
+          if (key === "results") {
+            // Handle results array
+            for (const r of value as Array<Record<string, unknown>>) {
+              result += `\n[[graderResults."${graderName}".results]]\n`;
+              for (const [rKey, rValue] of Object.entries(r)) {
+                if (typeof rValue === "string") {
+                  result += `${rKey} = "${rValue}"\n`;
+                } else {
+                  result += `${rKey} = ${rValue}\n`;
+                }
+              }
+            }
+          } else if (typeof value === "string") {
+            result += `${key} = "${value}"\n`;
+          } else {
+            result += `${key} = ${value}\n`;
+          }
+        }
+      }
+    }
+  }
+
+  return result;
+}
