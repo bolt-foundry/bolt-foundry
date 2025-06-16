@@ -1,6 +1,7 @@
 import type { Command } from "./types.ts";
 import { evalCommand } from "./eval.ts";
 import { rebuildCommand } from "./rebuild.ts";
+import { replCommand } from "./repl.ts";
 
 export type CommandRegistry = Map<string, Command>;
 
@@ -11,6 +12,9 @@ registry.set("eval", evalCommand);
 
 // Register the rebuild command
 registry.set("rebuild", rebuildCommand);
+
+// Register the repl command
+registry.set("repl", replCommand);
 
 export function getCommand(name: string): Command | undefined {
   return registry.get(name);
