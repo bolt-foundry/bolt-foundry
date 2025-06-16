@@ -109,6 +109,10 @@ try {
   // Write to stdout
   await Deno.stdout.write(new TextEncoder().encode(output.join("\n")));
 } catch (error) {
-  logger.printErr(`Error generating release notes: ${error.message}`);
+  logger.printErr(
+    `Error generating release notes: ${
+      error instanceof Error ? error.message : String(error)
+    }`,
+  );
   Deno.exit(1);
 }
