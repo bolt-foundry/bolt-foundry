@@ -17,6 +17,8 @@ bff amend
 
 - `--no-submit` - Amend without submitting pull request
 - `-m "New message"` - Amend with a new commit message
+- `--verbose`, `-v` - Show full output from pre-commit checks (default: concise)
+- `--skip-precommit` - Skip formatting, linting, and type checking
 
 ## Default Behavior
 
