@@ -1,0 +1,652 @@
+{
+  "generatedAt": "2025-06-16T14:20:36.502Z",
+  "periodStart": "2025-06-15T14:20:06.512Z",
+  "periodEnd": "2025-06-16T14:20:36.502Z",
+  "totalPRsAnalyzed": 28,
+  "teamMembers": [
+    {
+      "username": "randallb",
+      "displayName": "randallb",
+      "currentFocus": "Feature development",
+      "recentWork": [
+        {
+          "prNumber": 1141,
+          "title": "Add --verbose flag to bff commit, precommit, and amend",
+          "description": "Improve output clarity by showing concise output by default: - Add --verbose flag to precommit command to control output verbosity - Update commit command to pass --verbose flag to precommit - Update amend command to support --verbose flag - Documentation updates for all three commands  By default, pre-commit checks now show only pass/fail with timing",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T14:08:04.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: The most common approach to fixing it would be to stuff the prompt with more\ncontext and examples, t...",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1140,
+          "title": "Test commit with PR",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T13:59:52.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1139,
+          "title": "Test commit",
+          "description": "--- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T13:59:51.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1138,
+          "title": "Add Claude command documentation for BFF tools",
+          "description": "Add documentation files for core BFF commands to improve AI assistant integration: - bff-amend",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T13:55:11.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Innovative approach to core capability: ai",
+            "companyAlignment": "Aligns with company focus on documentation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1137,
+          "title": "Add aibff repl command with basic conversation loop",
+          "description": "Implement the v0",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T13:33:58.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1136,
+          "title": "Add aibff REPL product plan with version roadmap",
+          "description": "Create comprehensive product plan for the aibff REPL, defining a clear path from v0",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T12:55:12.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "New product feature or capability",
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1135,
+          "title": "Remove .env.local.template support, always use generated config keys",
+          "description": "Simplified inject-secrets to always use the generated config keys from the codebase instead of supporting an optional template file",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T12:53:11.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality",
+            "breaking-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1134,
+          "title": "Update .env.local.template to match generated config keys",
+          "description": "Fixed deployment issue where inject-secrets was using outdated template with wrong secret names (e",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T12:40:47.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on using",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1133,
+          "title": "Update aibff REPL implementation plan with clarifications",
+          "description": "Updates the REPL implementation plan based on design discussions:  Changes: - Add technical decisions for file security (CWD-only access) and API key storage - Clarify separate files: progress",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-16T04:36:28.000Z",
+          "mergedAt": "2025-06-16T04:45:27.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "core-functionality",
+            "security",
+            "user-experience",
+            "infrastructure",
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1132,
+          "title": "Add aibff grader assistant deck and repl implementation plan",
+          "description": "Introduce conversational interface for grader creation workflow through aibff repl command",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T03:44:53.000Z",
+          "mergedAt": "2025-06-16T04:27:44.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "user-experience",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Aligns with company focus on grader",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1131,
+          "title": "Mark flaky joinWaitlist test as ignored",
+          "description": "Skip the joinWaitlist mutation test that intermittently fails due to external API timeouts",
+          "category": "testing",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-16T03:13:36.000Z",
+          "mergedAt": "2025-06-16T04:19:24.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Public API or interface change",
+          "majorUpdateFlags": [
+            "integration",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1130,
+          "title": "Update deployment to inject secrets before building",
+          "description": "Configure deployment process to use",
+          "category": "infrastructure",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T03:10:29.000Z",
+          "mergedAt": "2025-06-16T05:00:47.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Potentially relevant for external communication",
+          "majorUpdateFlags": [
+            "user-experience",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: When you make calibrating your actual data the first thing in your process, and\nthen grade the grade...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1129,
+          "title": "Update Nix shells to load .env.local instead of runtime injection",
+          "description": "Replace runtime secret injection with",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T03:09:38.000Z",
+          "mergedAt": "2025-06-16T04:57:35.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": null
+          }
+        },
+        {
+          "prNumber": 1128,
+          "title": "Add bff inject-secrets command for .env.local creation",
+          "description": "Create new command to populate",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T03:07:49.000Z",
+          "mergedAt": "2025-06-16T05:00:47.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1127,
+          "title": "Update code to use synchronous getSecret() calls",
+          "description": "Remove async/await from all getSecret() usage sites",
+          "category": "other",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T02:59:32.000Z",
+          "mergedAt": "2025-06-16T05:00:47.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1126,
+          "title": "Refactor secret management to use synchronous environment-based approach",
+          "description": "Convert getSecret() from async to sync, reading from environment variables only",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-16T02:58:29.000Z",
+          "mergedAt": "2025-06-16T04:57:35.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: The most common approach to fixing it would be to stuff the prompt with more\ncontext and examples, t...",
+            "companyAlignment": null,
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1125,
+          "title": "Add .env.local to gitignore and delete during land process",
+          "description": "Add security measures to prevent",
+          "category": "feature",
+          "impact": "high",
+          "author": "randallb",
+          "createdAt": "2025-06-16T02:56:05.000Z",
+          "mergedAt": "2025-06-16T04:19:24.000Z",
+          "nextSteps": [],
+          "externalRelevance": "Performance or security enhancement",
+          "majorUpdateFlags": [
+            "security"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1124,
+          "title": "Fix timer cleanup issue in AI command test",
+          "description": "Disable resource and operation sanitizers for the 'ai command: should run AI-safe commands' test to prevent leaks from PostHog analytics tracking",
+          "category": "bugfix",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-15T20:57:21.000Z",
+          "mergedAt": "2025-06-15T21:05:26.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Your first prompt should be your eval grader\n\nWe've built a number of LLM apps, and while we could s...",
+            "companyAlignment": "Aligns with company focus on should",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1123,
+          "title": "fix: move warmSecrets() to main entry points and improve cache handling",
+          "description": "- Move warmSecrets() calls from module top-level to main entry points in collector",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-15T20:12:21.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Innovative approach to core capability: ai",
+            "companyAlignment": null,
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1122,
+          "title": "test: improve test environment and PostHog client cleanup",
+          "description": "- Add test-specific environment variables to prevent 1Password popups during tests - Set BF_SECRETS_NEXT_UPDATE to far future timestamp in test environment - Add cleanupPosthog() function for proper client shutdown - Configure PostHog client to flush immediately (flushAt: 1, flushInterval: 0) - Clear global posthogClient reference after shutdown to prevent memory leaks - Save and restore friendMap state in ai",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-15T20:12:20.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": "Direct customer-facing improvement",
+          "majorUpdateFlags": [
+            "performance",
+            "user-experience",
+            "infrastructure",
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: This is a git submodule\npointing to a private GitHub repository that only specific team members have...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1121,
+          "title": "test: improve database test cleanup and connection handling",
+          "description": "- Add proper cleanup for metadata handling test to prevent orphaned nodes - Add connection close and delays between database backend tests to prevent conflicts - Store node IDs for cleanup and delete created test nodes - Ensure each backend test fully closes connections before proceeding to next - Add try/finally blocks to guarantee cleanup even on test failures  These changes prevent test flakiness and ensure proper resource cleanup between database backend tests (Neon, PostgreSQL, and SQLite)",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-15T20:12:20.000Z",
+          "mergedAt": "2025-06-15T20:44:14.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "infrastructure",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Better metadata organization\n2...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1120,
+          "title": "docs: rename plan files to use correct date format (YYYY-MM-DD)",
+          "description": "- Rename 2025-01-14-deck-leads-implementation",
+          "category": "feature",
+          "impact": "low",
+          "author": "randallb",
+          "createdAt": "2025-06-15T20:12:19.000Z",
+          "mergedAt": "2025-06-15T21:18:13.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "user-experience"
+          ],
+          "blogWorthiness": {
+            "isNovel": false,
+            "noveltyReason": null,
+            "companyAlignment": null,
+            "suggestedContentType": "feature-announcement"
+          }
+        },
+        {
+          "prNumber": 1119,
+          "title": "Remove deprecated bff-eval package and consolidate eval functionality in aibff",
+          "description": "Consolidate all evaluation functionality into the aibff tool with its new REPL-first approach",
+          "category": "feature",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-15T19:59:52.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "breaking-change",
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Your first prompt should be your eval grader\n\nWe've built a number of LLM apps, and while we could s...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1117,
+          "title": "Remove A-F grading system from evaluation output",
+          "description": "Simplify the evaluation system by removing letter grade conversions and focusing on numeric scores (-3 to 3) for clearer, more precise feedback",
+          "category": "refactor",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-15T03:15:16.000Z",
+          "mergedAt": "2025-06-15T16:07:45.000Z",
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "core-functionality",
+            "breaking-change",
+            "infrastructure"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on score",
+            "suggestedContentType": "technical-deep-dive"
+          }
+        },
+        {
+          "prNumber": 1116,
+          "title": "fix: eliminate 1Password popups during test runs",
+          "description": "- Move warmSecrets() calls from module-level to service startup in collector",
+          "category": "bugfix",
+          "impact": "medium",
+          "author": "randallb",
+          "createdAt": "2025-06-15T02:35:33.000Z",
+          "mergedAt": null,
+          "nextSteps": [
+            "List:**"
+          ],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "integration"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": "Supports technical philosophy around evaluation",
+            "suggestedContentType": "explainer"
+          }
+        }
+      ],
+      "nextSteps": [
+        "List:**"
+      ],
+      "externalImpact": [
+        "Add aibff REPL product plan with version roadmap: New product feature or capability",
+        "Update deployment to inject secrets before building: Potentially relevant for external communication",
+        "Update aibff REPL implementation plan with clarifications: Public API or interface change"
+      ],
+      "totalPRs": 25
+    },
+    {
+      "username": "justicart",
+      "displayName": "justicart",
+      "currentFocus": "Feature development",
+      "recentWork": [
+        {
+          "prNumber": 1118,
+          "title": "fix so it actually uses the deck system",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-15T04:16:22.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on system",
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1090,
+          "title": "Run initial team status",
+          "description": "Summary:  --- [//]: # (BEGIN SAPLING FOOTER) Stack created with [Sapling](https://sapling-scm",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-13T16:33:01.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Start by asking an LLM to generate synthetic data,\nthen you be the first judge creating scores, then...",
+            "companyAlignment": null,
+            "suggestedContentType": "explainer"
+          }
+        },
+        {
+          "prNumber": 1089,
+          "title": "Add comprehensive team status tracking system",
+          "description": "Implement automated team status report generation from GitHub Pull Requests using AI-powered analysis and categorization to eliminate manual status meetings",
+          "category": "feature",
+          "impact": "medium",
+          "author": "justicart",
+          "createdAt": "2025-06-13T16:33:00.000Z",
+          "mergedAt": null,
+          "nextSteps": [],
+          "externalRelevance": null,
+          "majorUpdateFlags": [
+            "api-change"
+          ],
+          "blogWorthiness": {
+            "isNovel": true,
+            "noveltyReason": "Aligns with company differentiator: Custom excerpts for better SEO\n\nThis makes our blog system more powerful and flexible...",
+            "companyAlignment": "Aligns with company focus on system",
+            "suggestedContentType": "explainer"
+          }
+        }
+      ],
+      "nextSteps": [],
+      "externalImpact": [],
+      "totalPRs": 3
+    }
+  ],
+  "workCategorySummary": {
+    "feature": 18,
+    "bugfix": 4,
+    "refactor": 2,
+    "documentation": 0,
+    "infrastructure": 1,
+    "testing": 1,
+    "other": 2
+  },
+  "upcomingPriorities": [],
+  "blogWorthyHighlights": [
+    "Improved API response time by 30%",
+    "Introduced new authentication methods that enhance security",
+    "New methods that simplify the API",
+    "Enhancements in user interaction and ease of integration"
+  ],
+  "majorUpdatesOverview": [
+    "🏭 Infrastructure: 7 PRs",
+    "🏗️ Core Functionality: 6 PRs",
+    "🔗 Integration: 6 PRs",
+    "🔄 API Changes: 5 PRs",
+    "💥 Breaking Changes: 5 PRs",
+    "🎨 User Experience: 5 PRs",
+    "🔒 Security: 2 PRs",
+    "⚡ Performance: 1 PR"
+  ],
+  "exportedAt": "2025-06-16T14:20:52.841Z",
+  "version": "1.0"
+}
