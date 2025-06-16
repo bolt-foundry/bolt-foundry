@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+# aibff wrapper script
+# Run aibff either from source or from compiled binary
+#
+# Usage:
+#   aibff [--build|--binary] [command] [args...]
+#
+# Options:
+#   --build    Build the aibff binary
+#   --binary   Run the compiled binary instead of source
+#
+# Examples:
+#   aibff --help              # Run from source, show help
+#   aibff repl                # Run repl command from source
+#   aibff --binary repl       # Run repl command from compiled binary
+#   aibff --build             # Build the binary
+
+set -euo pipefail
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# Default to running from source
+USE_BINARY=false
+BUILD_BINARY=false
+
+# Parse wrapper-specific flags
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --binary)
+            USE_BINARY=true
+            shift
+            ;;
+        --build)
+            BUILD_BINARY=true
+            shift
+            ;;
+        *)
+            break # Stop parsing when we hit a non-wrapper flag
+            ;;
+    esac
+done
+
+# Handle --build flag
+if $BUILD_BINARY; then
+    echo "Building aibff binary..."
+    BUILD_SCRIPT="$ROOT_DIR/apps/aibff/bin/build.ts"
+    
+    if [[ ! -f "$BUILD_SCRIPT" ]]; then
+        echo "Error: Build script not found at $BUILD_SCRIPT" >&2
+        exit 1
+    fi
+    
+    # Run the build script with any remaining arguments
+    exec deno run \
+        --allow-read \
+        --allow-run \
+        --allow-write \
+        --allow-env \
+        "$BUILD_SCRIPT" \
+        "$@"
+fi
+
+if $USE_BINARY; then
+    # Run compiled binary
+    BINARY_PATH="$ROOT_DIR/build/bin/aibff"
+    
+    # Check if binary exists
+    if [[ ! -f "$BINARY_PATH" ]]; then
+        echo "Error: Compiled binary not found at $BINARY_PATH" >&2
+        echo "Run 'deno run --allow-all apps/aibff/bin/build.ts' to build it first." >&2
+        exit 1
+    fi
+    
+    # Execute the binary with remaining arguments
+    exec "$BINARY_PATH" "$@"
+else
+    # Run from source using deno
+    MAIN_PATH="$ROOT_DIR/apps/aibff/main.ts"
+    
+    # Check if main.ts exists
+    if [[ ! -f "$MAIN_PATH" ]]; then
+        echo "Error: aibff main.ts not found at $MAIN_PATH" >&2
+        exit 1
+    fi
+    
+    # Execute with deno, providing all necessary permissions
+    exec deno run \
+        --allow-env \
+        --allow-read \
+        --allow-write \
+        --allow-net \
+        --allow-run \
+        "$MAIN_PATH" \
+        "$@"
+fi
