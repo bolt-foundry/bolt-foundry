@@ -2,6 +2,8 @@
 
 import { runEval } from "packages/bolt-foundry/evals/eval.ts";
 import { stringify as stringifyToml } from "@std/toml";
+import { startSpinner } from "packages/logger/logger.ts";
+import { gray, green, red } from "@std/fmt/colors";
 
 function printText(message: string, isError = false) {
   if (isError) {
@@ -18,29 +20,20 @@ function getConfigVar(key: string): string | undefined {
   return Deno.env.get(key);
 }
 
-function determineSource(inputFile?: string, actualInputFile?: string): string {
-  if (!inputFile && !actualInputFile) return "deck";
-  if (actualInputFile && actualInputFile.includes("/tmp/")) return "stdin";
-  return `file:${inputFile}`;
-}
-
 async function main() {
   const args = Deno.args;
 
   // Simple argument parsing
   if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
-    printText(`Usage: eval.ts <grader.deck.md> [samples.jsonl|samples.toml]
+    printText(`Usage: aibff eval <grader.deck.md> [samples.jsonl|samples.toml]
 
 Examples:
   # Calibration mode (uses deck's internal samples)
-  deno run --allow-env --allow-read --allow-net --allow-write eval.ts grader.deck.md
+  aibff eval grader.deck.md
   
   # File input mode
-  deno run --allow-env --allow-read --allow-net --allow-write eval.ts grader.deck.md samples.toml
-  deno run --allow-env --allow-read --allow-net --allow-write eval.ts grader.deck.md samples.jsonl
-  
-  # Stdin mode
-  echo '{"userMessage": "test", "assistantResponse": "response"}' | deno run --allow-env --allow-read --allow-net --allow-write eval.ts grader.deck.md
+  aibff eval grader.deck.md samples.toml
+  aibff eval grader.deck.md samples.jsonl
 
 Environment:
   OPENROUTER_API_KEY    Required for LLM access
@@ -71,59 +64,63 @@ async function runEvaluation(graderFile: string, inputFile?: string) {
       Deno.exit(1);
     }
 
-    // Check if we have stdin input and no input file
-    let actualInputFile = inputFile;
-    let tempFile: string | undefined;
-
-    if (!inputFile) {
-      // Check if stdin is piped
-      let hasStdinInput = false;
-      try {
-        hasStdinInput = !Deno.stdin.isTerminal();
-      } catch {
-        // Ignore errors, assume no stdin
-      }
-
-      if (hasStdinInput) {
-        // Create a temporary file for stdin input
-        tempFile = await Deno.makeTempFile({ suffix: ".jsonl" });
-        const decoder = new TextDecoder();
-        const lines: Array<string> = [];
-
-        for await (const chunk of Deno.stdin.readable) {
-          const text = decoder.decode(chunk);
-          lines.push(text.trim());
-        }
-
-        await Deno.writeTextFile(tempFile, lines.join("\n"));
-        actualInputFile = tempFile;
-      }
-    }
-
     printText(`Running evaluation with grader: ${graderFile}`, true);
-    if (actualInputFile) {
-      printText(`Using input file: ${actualInputFile}`, true);
+    if (inputFile) {
+      printText(`Using input file: ${inputFile}`, true);
     } else {
       printText("Using embedded samples from grader deck", true);
     }
     printText(`Model: ${model}`, true);
     printText("", true);
 
+    // Start spinner for the evaluation process
+    const stopSpinner = startSpinner([
+      "Loading grader deck...",
+      "Processing samples...",
+      "Evaluating responses...",
+      "Analyzing results...",
+    ]);
+
     try {
       const results = await runEval({
         graderFile,
-        inputFile: actualInputFile,
+        inputFile: inputFile,
         model,
       });
 
+      // Stop spinner before outputting results
+      stopSpinner();
+
       // Calculate summary statistics
+      // NOTE: "passed" = grader score EXACTLY matches ground truth, "failed" = any difference
       const totalSamples = results.length;
       const scores = results.map((r) => r.score as number);
       const avgScore = totalSamples > 0
         ? scores.reduce((a, b) => a + b, 0) / totalSamples
         : 0;
-      const passed = scores.filter((s) => s > 0).length;
-      const failed = scores.filter((s) => s <= 0).length;
+
+      // Calculate agreement between grader and ground truth
+      let passed = 0;
+      let failed = 0;
+
+      for (const result of results) {
+        const graderScore = result.score;
+        const truthScore = result.sample.score;
+
+        if (truthScore !== undefined) {
+          // Both scores exist - check if they agree (exact match)
+          const agree = graderScore === truthScore;
+
+          if (agree) {
+            passed++;
+          } else {
+            failed++;
+          }
+        } else {
+          // No ground truth available - cannot determine agreement
+          // For now, don't count in pass/fail statistics
+        }
+      }
 
       // Build TOML output structure
       const tomlOutput = {
@@ -139,43 +136,78 @@ async function runEvaluation(graderFile: string, inputFile?: string) {
           passed,
           failed,
         },
-        samples: results.map((result, idx) => {
-          // Parse feedback from notes if available
-          const feedback: Record<string, string> = {};
-          if (result.output.notes) {
-            feedback.overall = result.output.notes;
-          }
-
-          return {
+        results: results.map((result, idx) => {
+          const resultData: Record<string, unknown> = {
             id: result.sample.id || `sample-${idx + 1}`,
-            source: determineSource(inputFile, actualInputFile),
             score: result.score,
-            specs_passed: [], // TODO: Extract from grader output
-            specs_failed: [], // TODO: Extract from grader output
-            input: {
+            reason: result.output.reason || "",
+            sample: {
               userMessage: result.sample.userMessage,
               assistantResponse: result.sample.assistantResponse,
+              // Include any other original sample fields
+              ...Object.fromEntries(
+                Object.entries(result.sample).filter(([key]) =>
+                  !["userMessage", "assistantResponse", "id"].includes(key)
+                ),
+              ),
             },
-            feedback,
+            evaluation: {
+              raw: result.rawOutput,
+            },
           };
+
+          // Add truth_score if the original sample had a score
+          if (result.sample.score !== undefined) {
+            resultData.truth_score = result.sample.score;
+          }
+
+          return resultData;
         }),
       };
 
       // Output TOML format
       printText(stringifyToml(tomlOutput));
 
+      // Print detailed per-sample results to stderr
+      printText("", true);
+      printText("Sample Results:", true);
+      for (const result of results) {
+        const graderScore = result.score;
+        const truthScore = result.sample.score;
+        const sampleId = result.sample.id || "unnamed";
+
+        if (truthScore !== undefined) {
+          // Check agreement - scores must match exactly
+          const agree = graderScore === truthScore;
+
+          const symbol = agree ? "✓" : "✗";
+          const message =
+            `${symbol} ${sampleId}: grader=${graderScore}, truth=${truthScore}`;
+
+          // Color code: green for agreement, red for disagreement
+          const coloredMessage = agree ? green(message) : red(message);
+          printText(coloredMessage, true);
+        } else {
+          // No ground truth - show in gray
+          const message = `- ${sampleId}: grader=${graderScore}, truth=N/A`;
+          printText(gray(message), true);
+        }
+      }
+
       // Print summary to stderr
       printText("", true);
       printText("Summary:", true);
       printText(`Total samples: ${totalSamples}`, true);
       printText(`Average score: ${avgScore.toFixed(2)}`, true);
-      printText(`Passed: ${passed}`, true);
-      printText(`Failed: ${failed}`, true);
-    } finally {
-      // Clean up temp file if we created one
-      if (tempFile) {
-        await Deno.remove(tempFile).catch(() => {});
-      }
+      printText(`Agreements: ${passed} (grader matches ground truth)`, true);
+      printText(
+        `Disagreements: ${failed} (grader differs from ground truth)`,
+        true,
+      );
+    } catch (error) {
+      // Stop spinner on error
+      stopSpinner();
+      throw error;
     }
   } catch (error) {
     printText(
