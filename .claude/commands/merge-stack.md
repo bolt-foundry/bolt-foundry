@@ -6,7 +6,7 @@ description: Add stacked PRs to GitHub merge queue in dependency order
 # Merge Stack with GitHub Merge Queue
 
 Adds all PRs in your current Sapling stack to GitHub's merge queue in the
-correct order (bottom to top).
+correct order (bottom to top) using the GitHub API.
 
 ## Overview
 
@@ -43,7 +43,7 @@ For each commit, find its PR by matching commit titles:
 sl log -r <commit-hash> --template "{desc}" | head -1
 
 # List open PRs to match
-sl pr list
+gh pr list --repo=bolt-foundry/bolt-foundry --json number,title,headRefName
 ```
 
 ### 3. Check PR Status
@@ -51,7 +51,7 @@ sl pr list
 Before adding to queue, verify each PR:
 
 ```bash
-gh pr view <pr-number> --repo=bolt-foundry/bolt-foundry --json state,mergeable,mergeStateStatus
+gh pr view <pr-number> --repo=bolt-foundry/bolt-foundry --json state,mergeable,mergeStateStatus,statusCheckRollup
 ```
 
 ### 4. Add PRs to Merge Queue
@@ -77,11 +77,11 @@ Options for merge method:
 Check the status of your PRs in the queue:
 
 ```bash
-# See all your PRs
-gh pr status --repo=bolt-foundry/bolt-foundry
+# See all PRs in the merge queue
+gh api /repos/bolt-foundry/bolt-foundry/pulls --jq '.[] | select(.auto_merge != null) | {number, title, auto_merge}'
 
-# Check specific PR
-gh pr view <pr-number> --repo=bolt-foundry/bolt-foundry
+# Check specific PR queue status
+gh pr view <pr-number> --repo=bolt-foundry/bolt-foundry --json autoMergeRequest
 ```
 
 ## Dry Run Mode
@@ -106,7 +106,7 @@ sl log -r "ancestors(.) - ancestors(main)" --template "{node} {desc}"
 gh pr merge <pr-number> --auto --repo=bolt-foundry/bolt-foundry --rebase
 
 # 4. Monitor progress
-gh pr status --repo=bolt-foundry/bolt-foundry
+gh api /repos/bolt-foundry/bolt-foundry/pulls --jq '.[] | select(.auto_merge != null) | {number, title, auto_merge}'
 ```
 
 ## Troubleshooting
@@ -124,7 +124,9 @@ sl pr submit
 If a PR can't be added to the queue:
 
 - Check for merge conflicts:
-  `gh pr view <pr-number> --repo=bolt-foundry/bolt-foundry`
+  ```bash
+  gh pr view <pr-number> --repo=bolt-foundry/bolt-foundry --json mergeable,mergeStateStatus
+  ```
 - Ensure required checks are configured
 - Verify PR is not in draft state
 
@@ -133,11 +135,18 @@ If a PR can't be added to the queue:
 If PRs are stuck in the queue:
 
 ```bash
-# Check merge queue status
-gh pr view <pr-number> --repo=bolt-foundry/bolt-foundry --json mergeStateStatus
+# Check detailed merge queue status
+gh api /repos/bolt-foundry/bolt-foundry/pulls/<pr-number> --jq '.auto_merge'
 
 # Remove from queue if needed
 gh pr merge <pr-number> --disable-auto --repo=bolt-foundry/bolt-foundry
+```
+
+### View Merge Queue Configuration
+
+```bash
+# Check branch protection rules and merge queue settings
+gh api /repos/bolt-foundry/bolt-foundry/branches/main/protection --jq '.required_status_checks.contexts, .merge_queue_enforcement_level'
 ```
 
 ## Best Practices
@@ -153,3 +162,4 @@ gh pr merge <pr-number> --disable-auto --repo=bolt-foundry/bolt-foundry
 - Failed merges will be automatically retried
 - You can remove PRs from the queue with `--disable-auto`
 - The queue handles all timing and conflict resolution
+- All commands use `--repo=bolt-foundry/bolt-foundry` to target the correct repository
