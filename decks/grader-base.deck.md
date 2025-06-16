@@ -13,9 +13,18 @@ injected by the makeGraderDeckBuilder function into all grader decks.
 
 Return your evaluation as a JSON object with the following structure:
 
-- score: number between -3 and 3
-- notes: string explaining the evaluation
+- score: number between -3 and 3 (overall score)
+- reason: string explaining the overall evaluation
 - Return ONLY the JSON object, no other text
+
+Example:
+
+```json
+{
+  "score": 2,
+  "reason": "Good response overall but could be more concise"
+}
+```
 
 ## Context Variables
 

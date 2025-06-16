@@ -1,7 +1,10 @@
 #!/usr/bin/env -S deno run --allow-env --allow-read --allow-net --allow-write
 
-import { runEval } from "packages/bolt-foundry/evals/eval.ts";
-import { stringify as stringifyToml } from "@std/toml";
+import {
+  type GradingResult,
+  runEval,
+} from "packages/bolt-foundry/evals/eval.ts";
+import { gray, green, red } from "@std/fmt/colors";
 import type { Command } from "./types.ts";
 
 function printText(message: string, isError = false) {
@@ -19,10 +22,13 @@ function getConfigVar(key: string): string | undefined {
   return Deno.env.get(key);
 }
 
-function determineSource(inputFile?: string, actualInputFile?: string): string {
-  if (!inputFile && !actualInputFile) return "deck";
-  if (actualInputFile && actualInputFile.includes("/tmp/")) return "stdin";
-  return `file:${inputFile}`;
+function escapeTomlString(str: string): string {
+  return str
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\n/g, "\\n")
+    .replace(/\r/g, "\\r")
+    .replace(/\t/g, "\\t");
 }
 
 async function runEvaluation(graderFile: string, inputFile?: string) {
@@ -40,49 +46,107 @@ async function runEvaluation(graderFile: string, inputFile?: string) {
       Deno.exit(1);
     }
 
-    // Check if we have stdin input and no input file
-    let actualInputFile = inputFile;
-    let tempFile: string | undefined;
-
-    if (!inputFile) {
-      // Check if stdin is piped
-      let hasStdinInput = false;
-      try {
-        hasStdinInput = !Deno.stdin.isTerminal();
-      } catch {
-        // Ignore errors, assume no stdin
-      }
-
-      if (hasStdinInput) {
-        // Create a temporary file for stdin input
-        tempFile = await Deno.makeTempFile({ suffix: ".jsonl" });
-        const decoder = new TextDecoder();
-        const lines: Array<string> = [];
-
-        for await (const chunk of Deno.stdin.readable) {
-          const text = decoder.decode(chunk);
-          lines.push(text.trim());
-        }
-
-        await Deno.writeTextFile(tempFile, lines.join("\n"));
-        actualInputFile = tempFile;
-      }
-    }
-
     printText(`Running evaluation with grader: ${graderFile}`, true);
-    if (actualInputFile) {
-      printText(`Using input file: ${actualInputFile}`, true);
+    if (inputFile) {
+      printText(`Using input file: ${inputFile}`, true);
     } else {
       printText("Using embedded samples from grader deck", true);
     }
     printText(`Model: ${model}`, true);
     printText("", true);
 
+    // Track results for summary calculation
+    const collectedResults: Array<GradingResult> = [];
+
     try {
+      // Print TOML header first
+      const tomlHeader = {
+        meta: {
+          version: "0.1.0",
+          deck: graderFile,
+          timestamp: new Date().toISOString(),
+          context_provided: { model },
+        },
+      };
+
+      // Output the meta section
+      printText("[meta]");
+      printText(`version = "${tomlHeader.meta.version}"`);
+      printText(`deck = "${tomlHeader.meta.deck}"`);
+      printText(`timestamp = "${tomlHeader.meta.timestamp}"`);
+      printText("");
+      printText("[meta.context_provided]");
+      printText(`model = "${model}"`);
+      printText("");
+
+      // Run evaluation with real-time TOML output
       const results = await runEval({
         graderFile,
-        inputFile: actualInputFile,
+        inputFile: inputFile,
         model,
+        onSampleComplete: (result, index, total) => {
+          collectedResults.push(result);
+
+          // Output this result as TOML
+          printText("[[results]]");
+          const sampleId = result.sample.id || `sample-${index + 1}`;
+          printText(`id = "${sampleId}"`);
+          printText(`score = ${result.score}`);
+          if (result.output.reason) {
+            printText(`reason = "${escapeTomlString(result.output.reason)}"`);
+          }
+          if (result.sample.score !== undefined) {
+            printText(`truth_score = ${result.sample.score}`);
+          }
+          printText("");
+
+          printText("[results.sample]");
+          printText(
+            `userMessage = "${escapeTomlString(result.sample.userMessage)}"`,
+          );
+          printText(
+            `assistantResponse = "${
+              escapeTomlString(result.sample.assistantResponse)
+            }"`,
+          );
+
+          // Include any extra sample fields
+          const extraFields = Object.entries(result.sample).filter(([key]) =>
+            !["userMessage", "assistantResponse", "id", "expected"].includes(
+              key,
+            )
+          );
+          for (const [key, value] of extraFields) {
+            if (typeof value === "string") {
+              printText(`${key} = "${escapeTomlString(value)}"`);
+            } else if (typeof value === "number") {
+              printText(`${key} = ${value}`);
+            }
+          }
+          printText("");
+
+          printText("[results.evaluation]");
+          printText(`raw = "${escapeTomlString(result.rawOutput)}"`);
+          printText("");
+
+          // Print progress to stderr
+          const graderScore = result.score;
+          const truthScore = result.sample.score;
+          const progress = `[${index + 1}/${total}]`;
+
+          if (truthScore !== undefined) {
+            const agree = graderScore === truthScore;
+            const symbol = agree ? "✓" : "✗";
+            const message =
+              `${progress} ${symbol} ${sampleId}: grader=${graderScore}, truth=${truthScore}`;
+            const coloredMessage = agree ? green(message) : red(message);
+            printText(coloredMessage, true);
+          } else {
+            const message =
+              `${progress} - ${sampleId}: grader=${graderScore}, truth=N/A`;
+            printText(gray(message), true);
+          }
+        },
       });
 
       // Calculate summary statistics
@@ -91,60 +155,45 @@ async function runEvaluation(graderFile: string, inputFile?: string) {
       const avgScore = totalSamples > 0
         ? scores.reduce((a, b) => a + b, 0) / totalSamples
         : 0;
-      const passed = scores.filter((s) => s > 0).length;
-      const failed = scores.filter((s) => s <= 0).length;
 
-      // Build TOML output structure
-      const tomlOutput = {
-        meta: {
-          version: "0.1.0",
-          deck: graderFile,
-          timestamp: new Date().toISOString(),
-          total_samples: totalSamples,
-          context_provided: { model },
-        },
-        summary: {
-          average_score: Number(avgScore.toFixed(2)),
-          passed,
-          failed,
-        },
-        samples: results.map((result, idx) => {
-          // Parse feedback from notes if available
-          const feedback: Record<string, string> = {};
-          if (result.output.notes) {
-            feedback.overall = result.output.notes;
+      // Calculate agreement between grader and ground truth
+      let passed = 0;
+      let failed = 0;
+
+      for (const result of results) {
+        const graderScore = result.score;
+        const truthScore = result.sample.score;
+
+        if (truthScore !== undefined) {
+          const agree = graderScore === truthScore;
+
+          if (agree) {
+            passed++;
+          } else {
+            failed++;
           }
+        }
+      }
 
-          return {
-            id: result.sample.id || `sample-${idx + 1}`,
-            source: determineSource(inputFile, actualInputFile),
-            score: result.score,
-            specs_passed: [], // TODO: Extract from grader output
-            specs_failed: [], // TODO: Extract from grader output
-            input: {
-              userMessage: result.sample.userMessage,
-              assistantResponse: result.sample.assistantResponse,
-            },
-            feedback,
-          };
-        }),
-      };
-
-      // Output TOML format
-      printText(stringifyToml(tomlOutput));
+      // Output summary section at the end
+      printText("[summary]");
+      printText(`total_samples = ${totalSamples}`);
+      printText(`average_score = ${avgScore.toFixed(2)}`);
+      printText(`passed = ${passed}`);
+      printText(`failed = ${failed}`);
 
       // Print summary to stderr
       printText("", true);
       printText("Summary:", true);
       printText(`Total samples: ${totalSamples}`, true);
       printText(`Average score: ${avgScore.toFixed(2)}`, true);
-      printText(`Passed: ${passed}`, true);
-      printText(`Failed: ${failed}`, true);
-    } finally {
-      // Clean up temp file if we created one
-      if (tempFile) {
-        await Deno.remove(tempFile).catch(() => {});
-      }
+      printText(`Agreements: ${passed} (grader matches ground truth)`, true);
+      printText(
+        `Disagreements: ${failed} (grader differs from ground truth)`,
+        true,
+      );
+    } catch (error) {
+      throw error;
     }
   } catch (error) {
     printText(
@@ -161,18 +210,15 @@ export const evalCommand: Command = {
   run: async (args: Array<string>) => {
     // Simple argument parsing
     if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
-      printText(`Usage: eval.ts <grader.deck.md> [samples.jsonl|samples.toml]
+      printText(`Usage: aibff eval <grader.deck.md> [samples.jsonl|samples.toml]
 
 Examples:
   # Calibration mode (uses deck's internal samples)
-  deno run --allow-env --allow-read --allow-net --allow-write eval.ts grader.deck.md
+  aibff eval grader.deck.md
   
   # File input mode
-  deno run --allow-env --allow-read --allow-net --allow-write eval.ts grader.deck.md samples.toml
-  deno run --allow-env --allow-read --allow-net --allow-write eval.ts grader.deck.md samples.jsonl
-  
-  # Stdin mode
-  echo '{"userMessage": "test", "assistantResponse": "response"}' | deno run --allow-env --allow-read --allow-net --allow-write eval.ts grader.deck.md
+  aibff eval grader.deck.md samples.toml
+  aibff eval grader.deck.md samples.jsonl
 
 Environment:
   OPENROUTER_API_KEY    Required for LLM access

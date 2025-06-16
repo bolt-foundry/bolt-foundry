@@ -40,6 +40,42 @@ assistantResponse = "Travis Hunter among five first-round NFL picks still negoti
 score = -2
 description = "Extremely close to the original headline"
 
+[samples.paraphrase-example-1]
+userMessage = """{
+ID: example-paraphrase-1
+
+Title: Travis Hunter Among Five First-Round Picks Still Unsigned as Training Camps Near
+
+Content: [Not provided - example for paraphrasing]
+}"""
+assistantResponse = "Five first-round picks including Travis Hunter remain unsigned with training camps starting."
+score = -2
+description = "Unacceptable paraphrase - just rewords the headline with synonyms"
+
+[samples.paraphrase-example-2]
+userMessage = """{
+ID: example-paraphrase-2
+
+Title: Messi Scores Twice as Inter Miami Opens FIFA Club World Cup with 3-1 Victory
+
+Content: [Not provided - example for paraphrasing]
+}"""
+assistantResponse = "Messi nets two goals in Inter Miami's 3-1 FIFA Club World Cup opening win"
+score = -2
+description = "Unacceptable paraphrase - just uses different verbs but same information"
+
+[samples.paraphrase-example-3]
+userMessage = """{
+ID: example-paraphrase-3
+
+Title: Messi Scores Twice as Inter Miami Opens FIFA Club World Cup with 3-1 Victory
+
+Content: [Not provided - example for paraphrasing]
+}"""
+assistantResponse = "Inter Miami defeats Al Ahly 3-1 with Messi scoring twice in Club World Cup opener"
+score = -3
+description = "Unacceptable paraphrase - rearranges words but adds no value beyond headline"
+
 [samples.fifa-club-cup-kickoff]
 userMessage = """{
 ID: fifa-cwc-2025-opener
@@ -130,7 +166,7 @@ ID: nba-finals-game2-analysis
 
 Title: 2025 NBA Finals: Why Tyrese Haliburton's scoring is least of Pacers' problems if they can't slow down Thunder
 
-Content: The Indiana Pacers trail 2-0 in the NBA Finals after another devastating loss to the Oklahoma City Thunder, and while Tyrese Haliburton's offensive struggles have drawn criticism, the team's defensive collapse is the real story. Haliburton managed just 12 points on 4-of-15 shooting in Game 2, but the Pacers' inability to contain the Thunder's historic offensive explosion - including a Finals-record 22 three-pointers - exposed fundamental defensive breakdowns. The Thunder shot 58% from beyond the arc and scored 132 points, systematically exploiting Indiana's drop coverage and slow rotations. Unless the Pacers can find answers on the defensive end, Haliburton's scoring output becomes irrelevant in a series that's quickly slipping away.
+Content: The series is tied 1-1 after the Indiana Pacers dropped Game 2 to the Oklahoma City Thunder, and while Tyrese Haliburton's offensive struggles have drawn criticism, the team's defensive collapse is the real story. Haliburton managed just 12 points on 4-of-15 shooting in Game 2, but the Pacers' inability to contain the Thunder's historic offensive explosion - including a Finals-record 22 three-pointers - exposed fundamental defensive breakdowns. The Thunder shot 58% from beyond the arc and scored 132 points, systematically exploiting Indiana's drop coverage and slow rotations. The series heads back to Indianapolis tied, but unless the Pacers can find answers on the defensive end, Haliburton's scoring output becomes irrelevant.
 
 Published: 2025-06-08T23:45:00Z
 }"""

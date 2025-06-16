@@ -7,7 +7,7 @@ import {
   parseMarkdownToDeck,
   type TomlSample,
 } from "packages/bolt-foundry/builders/markdown/markdownToDeck.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger, startSpinner } from "packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -16,6 +16,11 @@ export interface EvalOptions {
   graderFile: string;
   model: string;
   context?: Record<string, JSONValue>; // Additional context variables
+  onSampleComplete?: (
+    result: GradingResult,
+    index: number,
+    total: number,
+  ) => void; // Callback for real-time updates
 }
 
 export interface GradingResult {
@@ -27,7 +32,7 @@ export interface GradingResult {
   rawOutput: string;
   output: {
     score: number;
-    notes?: string;
+    reason?: string;
   };
   sample: EvalSample;
   sampleMetadata?: Record<string, unknown>;
@@ -45,7 +50,13 @@ interface EvalSample {
 export async function runEval(
   options: EvalOptions,
 ): Promise<Array<GradingResult>> {
-  const { inputFile, graderFile, model, context: providedContext } = options;
+  const {
+    inputFile,
+    graderFile,
+    model,
+    context: providedContext,
+    onSampleComplete,
+  } = options;
 
   logger.debug(`Starting evaluation with options:`, {
     inputFile,
@@ -53,6 +64,8 @@ export async function runEval(
     model,
     providedContext,
   });
+
+  // Initialize spinner function that will be set by the processing loop
 
   // Resolve paths relative to current working directory if they're relative
   const resolveFilePath = (filePath: string): URL => {
@@ -283,12 +296,22 @@ export async function runEval(
 
   // Process each sample
   const results: Array<GradingResult> = [];
+  const totalSamples = samples.length;
 
-  for (const sample of samples) {
+  for (let sampleIndex = 0; sampleIndex < samples.length; sampleIndex++) {
+    const sample = samples[sampleIndex];
     const startTime = performance.now();
+    const sampleNumber = sampleIndex + 1;
+
+    // Start a spinner for this specific sample
+    const sampleSpinner = startSpinner(
+      `Evaluating sample ${sampleNumber}/${totalSamples}...`,
+    );
 
     logger.debug(
-      `\n========== Processing sample: ${sample.id || "unnamed"} ==========`,
+      `\n========== Processing sample: ${
+        sample.id || "unnamed"
+      } (${sampleNumber}/${totalSamples}) ==========`,
     );
     logger.debug(`Sample data:`, {
       id: sample.id,
@@ -305,7 +328,7 @@ export async function runEval(
       outputFormat: JSON.stringify(
         {
           score: "<number from -3 to 3>",
-          notes: "<brief explanation of your scoring>",
+          reason: "<brief explanation of your scoring>",
         },
         null,
         2,
@@ -332,6 +355,12 @@ export async function runEval(
       temperature: renderedGrader.temperature,
     });
 
+    // Update spinner message for API call
+    sampleSpinner();
+    const apiSpinner = startSpinner(
+      `Calling LLM API for sample ${sampleNumber}/${totalSamples}...`,
+    );
+
     // Call LLM API via OpenRouter
     const response = await fetch(
       `https://openrouter.ai/api/v1/chat/completions`,
@@ -351,6 +380,9 @@ export async function runEval(
     const endTime = performance.now();
     const latencyInMs = endTime - startTime;
 
+    // Stop API spinner
+    apiSpinner();
+
     if (!response.ok) {
       const errorBody = await response.text();
       logger.error(
@@ -366,16 +398,23 @@ export async function runEval(
     logger.debug(`Raw LLM output: "${rawOutput}"`);
 
     // Parse the evaluation result
-    let output: { score: number; notes?: string };
+    let output: { score: number; reason?: string };
     try {
-      output = JSON.parse(rawOutput);
+      const parsedOutput = JSON.parse(rawOutput);
+
+      // Validate and normalize the output structure
+      output = {
+        score: parsedOutput.score,
+        reason: parsedOutput.reason,
+      };
+
       logger.debug(`Successfully parsed output:`, output);
     } catch (parseError) {
       logger.error(`Failed to parse JSON output: ${parseError}`);
       // If the grader fails to return valid JSON, that's a score of 0
       output = {
         score: 0,
-        notes: `Grader failed to return valid JSON. Raw output: ${rawOutput}`,
+        reason: `Grader failed to return valid JSON. Raw output: ${rawOutput}`,
       };
     }
 
@@ -403,6 +442,14 @@ export async function runEval(
     };
 
     results.push(result);
+
+    // Stop the sample spinner
+    sampleSpinner();
+
+    // Call the callback if provided
+    if (onSampleComplete) {
+      onSampleComplete(result, sampleIndex, totalSamples);
+    }
   }
 
   return results;
