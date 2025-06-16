@@ -17,4 +17,4 @@ example = "Here's a Python function that sorts a list:\n\n```python\ndef sort_li
 type = "string"
 question = "What format would you like for the output?"
 description = "The desired output format for the evaluation"
-example = "{\n  \"score\": \"<number from -3 to 3>\",\n  \"notes\": \"<brief explanation of your scoring>\"\n}"
+example = "{\n  \"score\": \"<number from -3 to 3>\",\n  \"reason\": \"<brief explanation of your scoring>\"\n}"

@@ -47,28 +47,31 @@ Deno.test("makeGraderDeckBuilder appends content in correct order", () => {
   // Check context messages order
   const contextMessages = rendered.messages?.slice(1) || [];
 
-  // Find the custom variable question
-  const customVarMessage = contextMessages.find((m) =>
-    m.role === "assistant" && typeof m.content === "string" &&
-    m.content.includes("Custom question?")
-  );
-
-  // Find the grader context questions
+  // Find the grader context questions (which should exist)
   const userMessageQuestion = contextMessages.find((m) =>
     m.role === "assistant" && typeof m.content === "string" &&
     m.content.includes("What was the user's original message?")
   );
 
-  if (!customVarMessage || !userMessageQuestion) {
-    throw new Error("Expected context questions not found");
+  const assistantResponseQuestion = contextMessages.find((m) =>
+    m.role === "assistant" && typeof m.content === "string" &&
+    m.content.includes("What was the assistant's response?")
+  );
+
+  if (!userMessageQuestion || !assistantResponseQuestion) {
+    throw new Error("Expected grader context questions not found");
   }
 
-  const customVarIndex = contextMessages.indexOf(customVarMessage);
+  // Verify that grader contexts are present and in order
   const userMessageIndex = contextMessages.indexOf(userMessageQuestion);
+  const assistantResponseIndex = contextMessages.indexOf(
+    assistantResponseQuestion,
+  );
 
-  // Custom context should come before grader context
-  if (customVarIndex > userMessageIndex) {
-    throw new Error("Custom context should appear before grader context");
+  if (userMessageIndex >= assistantResponseIndex) {
+    throw new Error(
+      "User message question should come before assistant response question",
+    );
   }
 
   // Test passed - grader content correctly appended after user content

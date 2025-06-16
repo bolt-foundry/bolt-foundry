@@ -21,7 +21,7 @@ Deno.test("aibff eval should show help with no arguments", async () => {
   const output = new TextDecoder().decode(stdout);
 
   assertEquals(code, 0);
-  assertStringIncludes(output, "Usage: eval.ts");
+  assertStringIncludes(output, "Usage: aibff eval");
   assertStringIncludes(output, "Examples:");
   assertStringIncludes(output, "Calibration mode");
 });
@@ -37,7 +37,7 @@ Deno.test("aibff eval --help should show help", async () => {
   const output = new TextDecoder().decode(stdout);
 
   assertEquals(code, 0);
-  assertStringIncludes(output, "Usage: eval.ts");
+  assertStringIncludes(output, "Usage: aibff eval");
 });
 
 Deno.test("aibff eval should fail when OPENROUTER_API_KEY is missing", async () => {
