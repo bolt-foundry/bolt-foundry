@@ -153,3 +153,5 @@ gh pr merge <pr-number> --disable-auto --repo=bolt-foundry/bolt-foundry
 - Failed merges will be automatically retried
 - You can remove PRs from the queue with `--disable-auto`
 - The queue handles all timing and conflict resolution
+- All commands use `--repo=bolt-foundry/bolt-foundry` to target the correct
+  repository
