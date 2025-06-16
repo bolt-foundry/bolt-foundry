@@ -73,7 +73,7 @@ bff eval bff-eval bff $FRIEND bff ai $FRIEND ./apps/aibff/eval.ts
 aibff replaces bff ai, eval, bff-eval <-- robots bff $friend <-- humans aibff
 team <-- bff ai replacement
 
-aibff eval aibff grader * aibff team summary aibff team pingping aibff replit
+aibff eval aibff grader * aibff team summary aibff team pingping aibff repl
 aibff dev commit/serve/ start / build / whatever
 
 bff dev commit <-- humans run if they want to manually do what an ai does

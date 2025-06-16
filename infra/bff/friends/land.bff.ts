@@ -166,6 +166,23 @@ export async function land(): Promise<number> {
     logger.info("No .replit.local.toml file found, skipping merge step.");
   }
 
+  // Delete .env.local file if it exists
+  logger.info("Checking for .env.local file...");
+  const envLocalExists = await exists(".env.local");
+
+  if (envLocalExists) {
+    logger.info("Deleting .env.local file before git commit...");
+    try {
+      await Deno.remove(".env.local");
+      logger.info("Successfully deleted .env.local");
+    } catch (error) {
+      logger.error("Error deleting .env.local:", error);
+      // Continue with the process even if the delete fails
+    }
+  } else {
+    logger.info("No .env.local file found, skipping deletion.");
+  }
+
   // Create git commit with sapling commits and hash
   logger.info("Creating git commit...");
   const fullCommitMsg =
