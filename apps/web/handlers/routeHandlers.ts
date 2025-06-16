@@ -32,20 +32,9 @@ export async function handleAppRoute(
   const isographServerEnvironment = getIsographEnvironment(request);
   const configurationVariableKeys = PUBLIC_CONFIG_KEYS;
 
-  const configurationVariablePromises = configurationVariableKeys.map(
-    async (key) => {
-      const val = await getSecret(key);
-      return { key, val };
-    },
-  );
-
-  const configurationVariablesArray = await Promise.all(
-    configurationVariablePromises,
-  );
-
-  const configurationVariables = configurationVariablesArray.reduce(
-    (acc, { key, val }) => {
-      acc[key] = val;
+  const configurationVariables = configurationVariableKeys.reduce(
+    (acc, key) => {
+      acc[key] = getSecret(key);
       return acc;
     },
     {} as Record<string, string | undefined>,
@@ -102,20 +91,9 @@ export async function handleIsographRoute(
   const featureFlags = {};
   const configurationVariableKeys = PUBLIC_CONFIG_KEYS;
 
-  const configurationVariablePromises = configurationVariableKeys.map(
-    async (key) => {
-      const val = await getSecret(key);
-      return { key, val };
-    },
-  );
-
-  const configurationVariablesArray = await Promise.all(
-    configurationVariablePromises,
-  );
-
-  const configurationVariables = configurationVariablesArray.reduce(
-    (acc, { key, val }) => {
-      acc[key] = val;
+  const configurationVariables = configurationVariableKeys.reduce(
+    (acc, key) => {
+      acc[key] = getSecret(key);
       return acc;
     },
     {} as Record<string, string | undefined>,
