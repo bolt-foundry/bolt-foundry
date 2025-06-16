@@ -16,16 +16,19 @@ export type RenderOptions =
   & TelemetryOptions
   & {
     context?: Record<string, JSONValue>;
+    renderedSamples?: Array<string>;
   };
 
 /**
- * Sample data for specifications with a rating from -3 to +3
+ * Sample data for specifications with a score from -3 to +3
  * Positive values indicate good examples, negative values indicate bad examples
  */
 export type Sample = {
-  text: string;
-  rating: number; // -3 to +3
+  id: string;
+  score: number; // -3 to +3
   description?: string;
+  userMessage?: string;
+  assistantResponse?: string;
 };
 
 /**
@@ -45,8 +48,8 @@ export type Card = {
  * Builder for adding samples to a spec
  */
 export type SampleBuilder = {
-  /** Add a sample with text and rating (-3 to +3) */
-  sample(text: string, rating: number): SampleBuilder;
+  /** Add a sample with id and score (-3 to +3) */
+  sample(id: string, score: number): SampleBuilder;
 
   /** Get the collected samples */
   getSamples(): Array<Sample>;
@@ -90,8 +93,8 @@ export type CardBuilder = {
  */
 export function makeSampleBuilder(samples: Array<Sample> = []): SampleBuilder {
   return {
-    sample(text: string, rating: number) {
-      return makeSampleBuilder([...samples, { text, rating }]);
+    sample(id: string, score: number) {
+      return makeSampleBuilder([...samples, { id, score }]);
     },
 
     getSamples() {
@@ -277,6 +280,7 @@ export function makeDeckBuilder(
   const renderCards = (
     cardsToRender: Array<Card>,
     indent: string = "",
+    renderedSamples?: Array<string>,
   ): string => {
     return cardsToRender.map((card) => {
       let result = "";
@@ -289,14 +293,59 @@ export function makeDeckBuilder(
       // Handle card value
       if (typeof card.value === "string" && card.value) {
         result += indent + card.value + "\n";
+
+        // Handle samples if present (only for specs, not leads)
+        if (!card.lead && card.samples && card.samples.length > 0) {
+          // Check if the spec contains footnote references
+          const footnotePattern = /\[\^([^\]]+)\]/g;
+          const footnoteMatches = card.value.match(footnotePattern);
+          const footnoteIds = footnoteMatches
+            ? footnoteMatches.map((match) => match.slice(2, -1))
+            : [];
+
+          for (const sample of card.samples) {
+            // Skip samples with score 0
+            if (sample.score === 0) continue;
+
+            // Check if this is a footnote sample
+            const isFootnote = footnoteIds.includes(sample.id);
+
+            // Render logic:
+            // - If it's a footnote and renderedSamples is specified, only render if in renderedSamples
+            // - If it's a footnote and renderedSamples is NOT specified, skip it (current behavior)
+            // - If it's not a footnote, always render as a bullet
+            if (isFootnote) {
+              // Skip footnotes unless they're in renderedSamples
+              if (!renderedSamples || !renderedSamples.includes(sample.id)) {
+                continue;
+              }
+            }
+
+            // Format: "  - (+3 example):" or "  - (-2 example):"
+            const scorePrefix = sample.score > 0
+              ? `+${sample.score}`
+              : `${sample.score}`;
+            result += indent + `  - (${scorePrefix} example):\n`;
+
+            // Add user message and assistant response as sub-bullets if present
+            if (sample.userMessage) {
+              result += indent +
+                `    - **User Message**: ${sample.userMessage}\n`;
+            }
+            if (sample.assistantResponse) {
+              result += indent +
+                `    - **Assistant Response**: ${sample.assistantResponse}\n`;
+            }
+          }
+        }
       } else if (Array.isArray(card.value)) {
         // Handle nested cards with optional grouping
         if (card.name) {
           result += indent + `<${card.name}>\n`;
-          result += renderCards(card.value, indent + "  ");
+          result += renderCards(card.value, indent + "  ", renderedSamples);
           result += indent + `</${card.name}>\n`;
         } else {
-          result += renderCards(card.value, indent);
+          result += renderCards(card.value, indent, renderedSamples);
         }
       }
 
@@ -380,15 +429,20 @@ export function makeDeckBuilder(
     },
 
     render(options: RenderOptions = {}) {
-      const { messages = [], model = "gpt-4", context = {}, ...otherOptions } =
-        options;
+      const {
+        messages = [],
+        model = "gpt-4",
+        context = {},
+        renderedSamples,
+        ...otherOptions
+      } = options;
 
       // Build system message content
       let systemContent = "";
 
       // Render all cards
       if (cards.length > 0) {
-        systemContent = renderCards(cards).trim();
+        systemContent = renderCards(cards, "", renderedSamples).trim();
       }
 
       // Build system message

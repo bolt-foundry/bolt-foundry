@@ -106,6 +106,7 @@ interface Sample {
   - Tests cover: basic arrays, empty arrays, mixed patterns, descriptions
 - [x] Update one example to show array pattern
   - Created `arrayPatternExample.ts` demonstrating both patterns
+  - Removed `arrayPatternExample.ts` - focusing on markdown-based approaches
 - [x] Land this change - both APIs now work
 
 **Progress Notes**:
