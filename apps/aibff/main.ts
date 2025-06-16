@@ -22,9 +22,11 @@ function showHelp(): void {
 
 function showVersion(): void {
   logger.println(`aibff ${VERSION}`);
-  if (BUILD_TIME !== "development") {
+  if (BUILD_TIME) {
     logger.println(`Built: ${BUILD_TIME}`);
-    logger.println(`Commit: ${BUILD_COMMIT}`);
+    if (BUILD_COMMIT) {
+      logger.println(`Commit: ${BUILD_COMMIT}`);
+    }
   }
 }
 

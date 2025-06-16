@@ -93,6 +93,7 @@ export async function runEval(
   // Load grader - handle both TypeScript modules and Markdown files
   let grader: DeckBuilder;
   let embeddedSamples: Record<string, TomlSample> = {};
+  let graderMeta: Record<string, unknown> = {};
 
   if (graderFile.endsWith(".md")) {
     // Read and parse markdown file
@@ -218,6 +219,7 @@ export async function runEval(
 
     grader = combinedDeck;
     embeddedSamples = parsedDeck.samples;
+    graderMeta = parsedDeck.meta || {};
 
     logger.debug(
       `Created grader deck with ${
@@ -269,14 +271,15 @@ export async function runEval(
       }
     }
   } else if (Object.keys(embeddedSamples).length > 0) {
-    // Use embedded samples from TOML
+    // Use all embedded samples from TOML
+    const samplesToUse = Object.entries(embeddedSamples);
+
     logger.debug(
-      `Loading ${
-        Object.keys(embeddedSamples).length
-      } embedded samples from grader deck`,
+      `Loading ${samplesToUse.length} samples from grader deck`,
     );
+
     let sampleIndex = 0;
-    for (const [id, tomlSample] of Object.entries(embeddedSamples)) {
+    for (const [id, tomlSample] of samplesToUse) {
       logger.debug(`Loading sample ${id}:`, tomlSample);
       samples.push({
         ...tomlSample, // Include any extra fields
@@ -343,10 +346,16 @@ export async function runEval(
     logger.debug(`Context prepared for grader:`, context);
 
     // Render the grader with the evaluation context
+    // Use defaultModel from meta if available, otherwise use provided model
+    const effectiveModel = (graderMeta.defaultModel as string) || model;
+    const renderedSamples = graderMeta.renderedSamples as
+      | Array<string>
+      | undefined;
     const renderedGrader = grader.render({
-      model,
+      model: effectiveModel,
       context,
       temperature: 0,
+      renderedSamples,
     });
 
     logger.debug(`Rendered grader prompt:`, {
