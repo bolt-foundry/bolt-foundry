@@ -1,0 +1,5 @@
+{
+  "name": "@bolt-foundry/team-status-analyzer",
+  "version": "0.1.0",
+  "exports": "./mod.ts"
+}
