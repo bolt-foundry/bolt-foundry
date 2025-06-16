@@ -2,9 +2,10 @@
  * Tests for Team Status Generator Template functionality
  */
 
-import { assertEquals, assertExists } from "../deps.ts";
+import { assertEquals, assertExists, assertStringIncludes } from "../deps.ts";
 import { StatusTemplate } from "../template.ts";
 import type { TeamStatus } from "packages/team-status-analyzer/types.ts";
+import type { TeamMemberSummary } from "packages/team-status-analyzer/ai-summarizer.ts";
 
 const mockTeamStatus: TeamStatus = {
   generatedAt: new Date("2025-06-12"),
@@ -66,4 +67,65 @@ Deno.test("StatusTemplate - constructor works", () => {
 Deno.test("StatusTemplate - method exists", () => {
   const template = new StatusTemplate();
   assertEquals(typeof template.generateStatusDocument, "function");
+});
+
+Deno.test("StatusTemplate - shows rule-based indicator when no AI summaries", () => {
+  const template = new StatusTemplate();
+  const result = template.generateStatusDocument(mockTeamStatus);
+
+  assertStringIncludes(
+    result,
+    "📝 **Rule-based**: Team activity generated using rule-based analysis",
+  );
+});
+
+Deno.test("StatusTemplate - shows AI indicator when all summaries are AI-generated", () => {
+  const template = new StatusTemplate();
+  const aiSummaries: Array<TeamMemberSummary> = [{
+    username: "testuser",
+    displayName: "Test User",
+    workSummary: "AI-generated summary",
+    blogWorthyContent: [],
+    significantContributions: [],
+    totalPRs: 1,
+    generatedWithAI: true,
+  }];
+
+  const result = template.generateStatusDocument(mockTeamStatus, aiSummaries);
+
+  assertStringIncludes(
+    result,
+    "🤖 **AI Deck**: All summaries generated using AI deck system",
+  );
+});
+
+Deno.test("StatusTemplate - shows mixed indicator when some summaries are AI-generated", () => {
+  const template = new StatusTemplate();
+  const aiSummaries: Array<TeamMemberSummary> = [
+    {
+      username: "testuser1",
+      displayName: "Test User 1",
+      workSummary: "AI-generated summary",
+      blogWorthyContent: [],
+      significantContributions: [],
+      totalPRs: 1,
+      generatedWithAI: true,
+    },
+    {
+      username: "testuser2",
+      displayName: "Test User 2",
+      workSummary: "Rule-based summary",
+      blogWorthyContent: [],
+      significantContributions: [],
+      totalPRs: 1,
+      generatedWithAI: false,
+    },
+  ];
+
+  const result = template.generateStatusDocument(mockTeamStatus, aiSummaries);
+
+  assertStringIncludes(
+    result,
+    "🔄 **Mixed Generation**: 1/2 summaries generated using AI deck system",
+  );
 });

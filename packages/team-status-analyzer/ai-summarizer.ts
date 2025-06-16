@@ -7,6 +7,8 @@ import { getLogger } from "packages/logger/logger.ts";
 import { parseMarkdownToDeck } from "packages/bolt-foundry/builders/markdown/markdownToDeck.ts";
 import type { DeckBuilder } from "packages/bolt-foundry/builders/builders.ts";
 import type { CompanyContext, WorkItem } from "./types.ts";
+import type { ChatCompletionCreateParams } from "openai/resources/chat/completions";
+import { getSecret } from "packages/get-configuration-var/get-configuration-var.ts";
 
 const logger = getLogger(import.meta);
 
@@ -17,6 +19,7 @@ export interface TeamMemberSummary {
   blogWorthyContent: Array<string>;
   significantContributions: Array<string>;
   totalPRs: number;
+  generatedWithAI: boolean; // True if generated using AI deck, false if rule-based fallback
 }
 
 export class AISummarizer {
@@ -36,6 +39,76 @@ export class AISummarizer {
     } catch (error) {
       logger.warn("Could not load team summary deck:", error);
       this.deck = null;
+    }
+  }
+
+  /**
+   * Execute a rendered deck with an LLM provider
+   */
+  private async executeRenderedDeck(
+    renderedDeck: ChatCompletionCreateParams,
+  ): Promise<TeamMemberSummary> {
+    try {
+      logger.debug("Executing deck with LLM provider");
+
+      // Get API key from configuration
+      const apiKey = await getSecret("OPENAI_API_KEY");
+      if (!apiKey) {
+        throw new Error("OPENAI_API_KEY not found in configuration");
+      }
+
+      // Execute the rendered deck with OpenAI API
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify(renderedDeck),
+        },
+      );
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(
+          `OpenAI API request failed: ${response.statusText} - ${errorBody}`,
+        );
+      }
+
+      const apiResponse = await response.json();
+      const rawOutput = apiResponse.choices?.[0]?.message?.content;
+
+      if (!rawOutput) {
+        throw new Error("No content returned from LLM");
+      }
+
+      logger.debug("Raw LLM output:", rawOutput.substring(0, 200) + "...");
+
+      // Parse the structured output
+      try {
+        const aiSummary = JSON.parse(rawOutput) as TeamMemberSummary;
+
+        // Validate required fields
+        if (!aiSummary.username || !aiSummary.workSummary) {
+          throw new Error("Invalid AI summary structure");
+        }
+
+        // Mark as AI-generated
+        aiSummary.generatedWithAI = true;
+
+        logger.debug("Successfully parsed AI summary for:", aiSummary.username);
+        return aiSummary;
+      } catch (parseError) {
+        logger.warn("Failed to parse AI response as JSON:", parseError);
+        throw new Error(
+          `Invalid JSON response from LLM: ${rawOutput.substring(0, 100)}...`,
+        );
+      }
+    } catch (error) {
+      logger.error("AI execution failed:", error);
+      throw error;
     }
   }
 
@@ -65,23 +138,60 @@ export class AISummarizer {
         companyContext,
       );
 
-      // Render the deck with work context
+      // Render the deck with work context and add JSON format instruction
       const rendered = this.deck.render({
         model: "gpt-4o-mini", // Fast model for summarization
-        context: workContext,
+        context: workContext as Record<
+          string,
+          string | number | boolean | null
+        >,
+        messages: [{
+          role: "user",
+          content:
+            `Generate a team member summary for the provided work context. 
+
+CRITICAL: Your response must be ONLY valid JSON in exactly this format:
+
+{
+  "username": "${username}",
+  "displayName": "${displayName || username}",
+  "workSummary": "1-2 sentence plain English summary of their work",
+  "blogWorthyContent": ["array of notable items worth external communication"],
+  "significantContributions": ["array of key achievements or impacts"],
+  "totalPRs": ${workItems.length}
+}
+
+Do not include any text before or after the JSON. Start with { and end with }.`,
+        }],
       });
 
-      // Since we don't have LLM execution here, fallback to rule-based for now
-      // TODO: Integrate with Bolt Foundry's LLM execution system
-      logger.debug(
-        "Deck rendered successfully, falling back to rule-based generation",
-      );
-      return this.generateMemberSummary(
-        username,
-        displayName,
-        workItems,
-        companyContext,
-      );
+      // Log the rendered deck for debugging
+      logger.debug("Deck rendered for AI summarization:", {
+        model: rendered.model,
+        messageCount: rendered.messages?.length || 0,
+        systemMessage: typeof rendered.messages?.[0]?.content === "string"
+          ? rendered.messages[0].content.substring(0, 200) + "..."
+          : "Complex content",
+      });
+
+      // Execute the rendered deck with AI
+      try {
+        logger.debug("Attempting AI execution for user:", username);
+        const aiResult = await this.executeRenderedDeck(rendered);
+        logger.info("Successfully generated AI summary for:", username);
+        return aiResult;
+      } catch (aiError) {
+        logger.warn(
+          "AI execution failed, falling back to rule-based:",
+          aiError,
+        );
+        return this.generateMemberSummary(
+          username,
+          displayName,
+          workItems,
+          companyContext,
+        );
+      }
     } catch (error) {
       logger.warn(
         "Failed to use deck for AI summary, falling back to rule-based:",
@@ -113,6 +223,7 @@ export class AISummarizer {
         blogWorthyContent: [],
         significantContributions: [],
         totalPRs: 0,
+        generatedWithAI: false,
       };
     }
 
@@ -136,6 +247,7 @@ export class AISummarizer {
       blogWorthyContent,
       significantContributions,
       totalPRs: workItems.length,
+      generatedWithAI: false,
     };
   }
 

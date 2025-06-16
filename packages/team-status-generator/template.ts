@@ -8,6 +8,7 @@ import type {
   TeamMemberActivity,
   TeamStatus,
   WorkCategory,
+  WorkItem,
 } from "packages/team-status-analyzer/types.ts";
 import type { TeamMemberSummary } from "packages/team-status-analyzer/ai-summarizer.ts";
 
@@ -20,7 +21,7 @@ export class StatusTemplate {
     aiSummaries?: Array<TeamMemberSummary>,
   ): string {
     const sections = [
-      this.generateHeader(status),
+      this.generateHeader(status, aiSummaries),
       this.generateSummary(status),
       this.generateCustomerImpact(status, aiSummaries),
       aiSummaries
@@ -42,10 +43,39 @@ export class StatusTemplate {
   /**
    * Generate document header
    */
-  private generateHeader(status: TeamStatus): string {
+  private generateHeader(
+    status: TeamStatus,
+    aiSummaries?: Array<TeamMemberSummary>,
+  ): string {
     const period = this.formatDateRange(status.periodStart, status.periodEnd);
+
+    // Determine AI usage status
+    let aiUsageInfo = "";
+    if (aiSummaries && aiSummaries.length > 0) {
+      const aiGeneratedCount = aiSummaries.filter((s) =>
+        s.generatedWithAI
+      ).length;
+      const totalCount = aiSummaries.length;
+
+      if (aiGeneratedCount === totalCount) {
+        aiUsageInfo =
+          "🤖 **AI Deck**: All summaries generated using AI deck system";
+      } else if (aiGeneratedCount > 0) {
+        aiUsageInfo =
+          `🔄 **Mixed Generation**: ${aiGeneratedCount}/${totalCount} summaries generated using AI deck system`;
+      } else {
+        aiUsageInfo =
+          "📝 **Rule-based**: All summaries generated using rule-based fallback";
+      }
+    } else {
+      aiUsageInfo =
+        "📝 **Rule-based**: Team activity generated using rule-based analysis";
+    }
+
     return [
       "# Team Status Report",
+      aiUsageInfo,
+      "",
       `**Generated**: ${this.formatDateTime(status.generatedAt)}`,
       `**Period**: ${period}`,
       `**Total PRs Analyzed**: ${status.totalPRsAnalyzed}`,
@@ -509,7 +539,7 @@ export class StatusTemplate {
   /**
    * Check if work item is customer-facing using Bolt Foundry library impact criteria
    */
-  private isCustomerFacingFeature(work: any): boolean {
+  private isCustomerFacingFeature(work: WorkItem): boolean {
     const title = work.title.toLowerCase();
     const description = (work.description || "").toLowerCase();
     const text = `${title} ${description}`;
@@ -586,7 +616,7 @@ export class StatusTemplate {
   /**
    * Get customer benefit from work item using Bolt Foundry impact assessment
    */
-  private getCustomerBenefit(work: any): string {
+  private getCustomerBenefit(work: WorkItem): string {
     const title = work.title.toLowerCase();
     const description = (work.description || "").toLowerCase();
     const text = `${title} ${description}`;

@@ -195,6 +195,24 @@ This deck uses context variables to generate summaries:
 
 Context file: `team-summary-analysis-context.toml`
 
+## Output Format
+
+**IMPORTANT**: Your response MUST be valid JSON in exactly this format:
+
+```json
+{
+  "username": "string",
+  "displayName": "string (optional)",
+  "workSummary": "string - human-readable summary of their work",
+  "blogWorthyContent": ["array", "of", "strings"],
+  "significantContributions": ["array", "of", "strings"],
+  "totalPRs": number
+}
+```
+
+Do not include any text before or after the JSON. Do not use markdown formatting
+around the JSON. Return only the raw JSON object.
+
 ## Using This Deck
 
 1. **Read all recent PRs** for the team member
@@ -204,3 +222,4 @@ Context file: `team-summary-analysis-context.toml`
 5. **Write a plain-language summary** following the format
 6. **Identify any blog-worthy content** using the significance criteria
 7. **Keep it simple and human** - avoid metrics and jargon
+8. **Return the response as valid JSON** in the specified format
