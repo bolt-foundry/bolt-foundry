@@ -7,13 +7,18 @@ while maintaining perfect backward compatibility with the existing `aibff eval`
 functionality. This creates a foundation for future commands like `deck`,
 `grader`, and `samples` without implementing them yet.
 
+The default command when running `aibff` without arguments will be `repl`, which
+provides an interactive Claude-code-like experience for building and updating
+evals.
+
 ## Goals
 
 | Goal                   | Description                          | Success Criteria                                    |
 | ---------------------- | ------------------------------------ | --------------------------------------------------- |
 | Command structure      | Implement extensible command pattern | `commands/` folder with modular command files       |
 | Backward compatibility | Existing eval behavior unchanged     | `aibff eval grader.deck.md` works exactly as before |
-| Help system            | Clear command discovery              | `aibff` shows list of commands with descriptions    |
+| Default REPL           | Interactive mode as default          | `aibff` with no args launches REPL                  |
+| Help system            | Clear command discovery              | `aibff --help` shows list of commands               |
 | Error handling         | Graceful invalid command handling    | Invalid commands show error + help                  |
 | Future-ready           | Support for subcommands              | Structure allows `aibff deck create` pattern        |
 
@@ -32,7 +37,8 @@ The implementation uses a simple command dispatcher pattern:
 
 1. **Command Router**: `main.ts` becomes a router that:
    - Parses the first argument as command name
-   - Shows help if no command provided
+   - Launches REPL if no command provided (default behavior)
+   - Shows help if `--help` flag is provided
    - Delegates to appropriate command module
    - Handles errors with help display
 
@@ -42,13 +48,19 @@ The implementation uses a simple command dispatcher pattern:
    - Handles its own argument parsing
    - Can support subcommands internally
 
-3. **Eval Migration**: Move existing eval logic to `commands/eval.ts` unchanged
+3. **REPL Command**: New interactive mode in `commands/repl.ts`:
+   - Provides Claude-code-like experience
+   - Guides users through eval creation and refinement
+   - Integrates with other commands programmatically
+
+4. **Eval Migration**: Move existing eval logic to `commands/eval.ts` unchanged
 
 ## Components
 
 | Status | Component         | Purpose                             |
 | ------ | ----------------- | ----------------------------------- |
 | [ ]    | main.ts           | Command router and help display     |
+| [ ]    | commands/repl.ts  | Interactive REPL mode (default)     |
 | [ ]    | commands/eval.ts  | Existing eval functionality (moved) |
 | [ ]    | commands/types.ts | Shared command interface            |
 | [ ]    | commands/index.ts | Command registry                    |
@@ -82,6 +94,7 @@ apps/aibff/
 ├── commands/
 │   ├── index.ts        # Command registry
 │   ├── types.ts        # Shared interfaces
+│   ├── repl.ts         # Interactive REPL (default)
 │   └── eval.ts         # Eval command (moved from ../eval.ts)
 ├── eval.ts             # (deleted after move)
 └── types.ts            # (keep if has non-eval types)
@@ -90,8 +103,14 @@ apps/aibff/
 ### Usage Examples
 
 ```bash
-# Show help
+# Launch REPL (default)
 aibff
+
+# Launch REPL explicitly
+aibff repl
+
+# Show help
+aibff --help
 
 # Run eval (unchanged behavior)
 aibff eval grader.deck.md

@@ -18,12 +18,14 @@ Our deck system brings structured engineering to LLM applications:
 
 ## Getting Started with aibff
 
-aibff (AI BFF) is our command-line tool for evaluating and grading AI behaviors
-using the deck system. It helps you:
+aibff (AI BFF) is our interactive tool for building and testing AI evaluation
+graders. It provides:
 
-- Run evaluations against your deck specifications
-- Calibrate graders to ensure accuracy
-- Compare outputs across different LLMs
+- **Interactive REPL**: Build graders through conversation with immediate
+  feedback
+- **Evaluation Engine**: Run evaluations against your deck specifications
+- **Grader Calibration**: Ensure graders score accurately and consistently
+- **Multi-Model Testing**: Compare outputs across different LLMs
 
 ### Installation
 
@@ -42,13 +44,33 @@ curl -L https://github.com/content-foundry/content-foundry/releases/download/aib
 # Download the .zip file and extract aibff.exe
 ```
 
-### Quick Example
+### Quick Start
 
 ```bash
-# Run an evaluation
+# Set your API key
 export OPENROUTER_API_KEY=your-api-key
+
+# Launch interactive mode (recommended)
+./aibff
+
+# Or run an evaluation directly
 ./aibff eval grader.deck.md samples.jsonl
 ```
+
+### Interactive Mode
+
+The easiest way to get started is with the interactive REPL:
+
+```bash
+./aibff
+```
+
+This launches an interactive environment where you can:
+
+- Create graders from examples
+- Test and refine evaluation criteria
+- Get immediate feedback on your graders
+- Export production-ready code
 
 ## What are graders?
 
@@ -110,12 +132,44 @@ The scoring system (-3 to +3) helps achieve reliable outputs:
 - **-2**: Bad example
 - **-3**: Completely wrong behavior
 
+## Choosing Your Workflow
+
+### Interactive REPL (Development)
+
+Best for:
+
+- Creating new graders from scratch
+- Learning the deck system
+- Rapid prototyping and iteration
+- Getting immediate feedback
+
+```bash
+./aibff  # Launches interactive mode
+```
+
+### Command Line (Automation)
+
+Best for:
+
+- CI/CD pipelines
+- Batch evaluation runs
+- Automated testing
+- Production workflows
+
+```bash
+./aibff eval grader.deck.md samples.jsonl
+```
+
 ## Learn more
 
+- **[REPL Usage Guide](apps/aibff/memos/guides/repl-usage.md)**: Interactive
+  grader development
 - **[Company vision](docs/guides/company-vision.md)**: Making LLMs 99% reliable
   through structured prompt engineering
 - **[Deck system guide](memos/guides/deck-system.md)**: How graders and cards
   work together
+- **[Evals overview](memos/guides/evals-overview.md)**: Complete evaluation
+  framework documentation
 - **[Inference philosophy](docs/guides/improving-inference-philosophy.md)**: Why
   inference-time control matters
 - **[Team story](memos/guides/team-story.md)**: Who we are and why we're doing
