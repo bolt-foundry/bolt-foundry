@@ -47,5 +47,5 @@ Deno.test("aibff should delegate to eval command", async () => {
 
   assertEquals(code, 0);
   // The eval command shows help when called with --help
-  assertStringIncludes(output, "Usage: eval.ts");
+  assertStringIncludes(output, "Usage: aibff eval");
 });

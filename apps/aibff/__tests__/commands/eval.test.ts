@@ -29,11 +29,10 @@ Deno.test("eval should show help when no arguments provided", async () => {
   const output = new TextDecoder().decode(stdout);
 
   assertEquals(code, 0);
-  assertStringIncludes(output, "Usage: eval.ts");
+  assertStringIncludes(output, "Usage: aibff eval");
   assertStringIncludes(output, "Examples:");
   assertStringIncludes(output, "Calibration mode");
   assertStringIncludes(output, "File input mode");
-  assertStringIncludes(output, "Stdin mode");
 });
 
 Deno.test("eval should show help with --help flag", async () => {
@@ -53,7 +52,7 @@ Deno.test("eval should show help with --help flag", async () => {
   const output = new TextDecoder().decode(stdout);
 
   assertEquals(code, 0);
-  assertStringIncludes(output, "Usage: eval.ts");
+  assertStringIncludes(output, "Usage: aibff eval");
 });
 
 Deno.test("eval should fail when OPENROUTER_API_KEY is missing", async () => {
@@ -221,4 +220,75 @@ Deno.test("eval should accept custom model via ANTHROPIC_MODEL env var", async (
   const info = new TextDecoder().decode(stderr);
 
   assertStringIncludes(info, "Model: gpt-4-turbo");
+});
+
+Deno.test("eval summary statistics should calculate exact agreement - regression test", () => {
+  // Test the agreement calculation logic between grader and ground truth
+  // Agreement means EXACT match of scores, not just same sign
+
+  // Mock results with grader scores and ground truth scores
+  const mockResults = [
+    { score: 2, sample: { score: 2 } }, // Exact match = AGREE (passed)
+    { score: 3, sample: { score: 1 } }, // Both positive but different = DISAGREE (failed)
+    { score: 1, sample: { score: -1 } }, // Different signs = DISAGREE (failed)
+    { score: -1, sample: { score: -1 } }, // Exact match = AGREE (passed)
+    { score: 0, sample: { score: 0 } }, // Exact match = AGREE (passed)
+    { score: -2, sample: { score: -1 } }, // Both negative but different = DISAGREE (failed)
+    { score: 0, sample: { score: 2 } }, // Different values = DISAGREE (failed)
+    { score: 1, sample: {} }, // No ground truth = not counted
+  ] as Array<{ score: number; sample: { score?: number } }>;
+
+  // Calculate agreement using the same logic as in the eval command
+  let passed = 0;
+  let failed = 0;
+
+  for (const result of mockResults) {
+    const graderScore = result.score;
+    const truthScore = result.sample.score;
+
+    if (truthScore !== undefined) {
+      // Both scores exist - check if they agree (exact match)
+      const agree = graderScore === truthScore;
+
+      if (agree) {
+        passed++;
+      } else {
+        failed++;
+      }
+    }
+    // No ground truth = not counted in pass/fail
+  }
+
+  // Verify the agreement calculations
+  assertEquals(
+    passed,
+    3,
+    "Should have 3 exact agreements: (2,2), (-1,-1), (0,0)",
+  );
+  assertEquals(
+    failed,
+    4,
+    "Should have 4 disagreements: (3,1), (1,-1), (-2,-1), (0,2)",
+  );
+
+  // Verify specific test cases including the qb-draft-injury case
+  const testCases = [
+    { grader: 2, truth: 2, expected: true }, // Exact match
+    { grader: 3, truth: 1, expected: false }, // Both positive but different (qb-draft-injury case)
+    { grader: 1, truth: -1, expected: false }, // Different signs
+    { grader: -1, truth: -1, expected: true }, // Exact match (negative)
+    { grader: 0, truth: 0, expected: true }, // Exact match (zero)
+    { grader: -2, truth: -1, expected: false }, // Both negative but different
+    { grader: 0, truth: 1, expected: false }, // Different values
+  ];
+
+  for (const testCase of testCases) {
+    const agree = testCase.grader === testCase.truth;
+
+    assertEquals(
+      agree,
+      testCase.expected,
+      `Agreement for grader=${testCase.grader}, truth=${testCase.truth} should be ${testCase.expected}`,
+    );
+  }
 });

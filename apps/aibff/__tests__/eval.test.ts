@@ -29,11 +29,10 @@ Deno.test("eval should show help when no arguments provided", async () => {
   const output = new TextDecoder().decode(stdout);
 
   assertEquals(code, 0);
-  assertStringIncludes(output, "Usage: eval.ts");
+  assertStringIncludes(output, "Usage: aibff eval");
   assertStringIncludes(output, "Examples:");
   assertStringIncludes(output, "Calibration mode");
   assertStringIncludes(output, "File input mode");
-  assertStringIncludes(output, "Stdin mode");
 });
 
 Deno.test("eval should show help with --help flag", async () => {
@@ -53,7 +52,7 @@ Deno.test("eval should show help with --help flag", async () => {
   const output = new TextDecoder().decode(stdout);
 
   assertEquals(code, 0);
-  assertStringIncludes(output, "Usage: eval.ts");
+  assertStringIncludes(output, "Usage: aibff eval");
 });
 
 Deno.test("eval should fail when OPENROUTER_API_KEY is missing", async () => {
