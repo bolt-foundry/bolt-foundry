@@ -3,9 +3,18 @@
 ## Overview
 
 aibff is a public binary that provides tools for working with Bolt Foundry's
-deck evaluation system. Starting with `aibff eval`, it will run evaluations on
-markdown deck files (.deck.md) with support for TOML/JSONL sample inputs and
-produce structured TOML output.
+deck evaluation system.
+
+## Related Documents
+
+- [Product Plan](../../guides/product-plan.md) - Version roadmap and feature
+  breakdown
+- [REPL Implementation Plan](./2025-06-repl-implementation-plan.md) -
+  Interactive assistant details
+
+Starting with `aibff eval`, it will run evaluations on markdown deck files
+(.deck.md) with support for TOML/JSONL sample inputs and produce structured TOML
+output.
 
 ## Goals
 
