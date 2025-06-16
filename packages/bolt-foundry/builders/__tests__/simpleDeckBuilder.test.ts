@@ -23,8 +23,8 @@ Deno.test("createDeck API - basic usage", () => {
   const needsValue = personaValue[0].value as Array<Card>;
   assertEquals(needsValue[0].value, "water");
   assertEquals(needsValue[0].samples?.length, 2);
-  assertEquals(needsValue[0].samples![0], { text: "positive", rating: 3 });
-  assertEquals(needsValue[0].samples![1], { text: "negative", rating: -3 });
+  assertEquals(needsValue[0].samples![0], { id: "positive", score: 3 });
+  assertEquals(needsValue[0].samples![1], { id: "negative", score: -3 });
 });
 
 Deno.test("createDeck API - simple cards", () => {
