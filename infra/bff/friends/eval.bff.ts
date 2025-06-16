@@ -424,7 +424,7 @@ export async function evalCommand(options: Array<string>): Promise<number> {
 
             // Print grader notes below the table
             printLine("\nGrader Notes:");
-            printLine(result.output.notes || "No notes provided");
+            printLine(result.output.reason || "No notes provided");
           });
         }
       }
