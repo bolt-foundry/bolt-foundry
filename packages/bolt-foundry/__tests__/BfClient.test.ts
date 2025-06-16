@@ -123,7 +123,10 @@ Deno.test("BfClient.createAssistantDeck - renders assistant deck with context va
 
   // Check system message
   assertEquals(result.messages[0].role, "system");
-  assertEquals(result.messages[0].content, "You are a helpful assistant");
+  // The content now includes the sample
+  const systemMessage = result.messages[0].content as string;
+  assertEquals(systemMessage.includes("You are a helpful assistant"), true);
+  assertEquals(systemMessage.includes("  - (+3 example):"), true);
 
   // Check context Q&A pairs
   assertEquals(result.messages[1].role, "assistant");

@@ -14,6 +14,7 @@
     "jsr:@openai/openai@^4.78.1": "4.102.0",
     "jsr:@simplewebauthn/browser@^13.1.0": "13.1.0",
     "jsr:@simplewebauthn/server@^13.1.1": "13.1.1",
+    "jsr:@std/assert@*": "1.0.13",
     "jsr:@std/assert@0.223": "0.223.0",
     "jsr:@std/assert@0.226": "0.226.0",
     "jsr:@std/assert@^1.0.11": "1.0.13",
