@@ -3,10 +3,19 @@
 ## Overview
 
 Create an interactive AI assistant (similar to Claude Code) that helps users
-build graders through a conversational interface. The assistant will guide users
-through gathering samples, creating graders, running evaluations, and iterating
-until they have a working grader. This serves as both a demonstration of the
-Bolt Foundry system and a practical tool for grader creation.
+build graders through a conversational interface.
+
+## Related Documents
+
+- [Product Plan](../../guides/product-plan.md) - Version roadmap and feature
+  breakdown
+- [Main Implementation Plan](./implementation-plan.md) - Overall aibff
+  architecture
+
+The assistant will guide users through gathering samples, creating graders,
+running evaluations, and iterating until they have a working grader. This serves
+as both a demonstration of the Bolt Foundry system and a practical tool for
+grader creation.
 
 The assistant uses the existing deck system for its behavior definition and has
 access to execute aibff commands through tool calls, maintaining session state
