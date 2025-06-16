@@ -6,7 +6,6 @@ import {
   getConfigurationVariable,
   getSecret,
   warmSecrets,
-  writeEnv,
 } from "@bolt-foundry/get-configuration-var";
 import {
   PRIVATE_CONFIG_KEYS,
@@ -96,7 +95,7 @@ register(
       logger.info("Fetching secrets from 1Password...");
 
       // Warm the cache first
-      await warmSecrets(allKeys);
+      await warmSecrets();
 
       // Build export commands and prepare cache content
       const cacheLines: Array<string> = [
@@ -107,7 +106,7 @@ register(
       ];
 
       for (const key of allKeys) {
-        const value = await getSecret(key);
+        const value = getSecret(key);
         if (value) {
           // Escape single quotes for shell export
           const escapedValue = value.replace(/'/g, "'\\''");
@@ -170,7 +169,7 @@ register(
       }
     } else {
       // Warm the cache first
-      await warmSecrets(allKeys);
+      await warmSecrets();
 
       // Build cache content while outputting
       const cacheLines: Array<string> = [
@@ -182,7 +181,7 @@ register(
 
       // Output export commands directly for eval
       for (const key of allKeys) {
-        const value = await getSecret(key);
+        const value = getSecret(key);
         if (value) {
           // Escape single quotes in the value
           const escapedValue = value.replace(/'/g, "'\\''");
@@ -210,15 +209,11 @@ register(
 register(
   "secrets:env",
   "write secrets to .env file",
-  async (args) => {
-    const outputPath = args[0] || ".env";
-    logger.info(`Writing secrets to ${outputPath}...`);
-
-    const allKeys = [...PUBLIC_CONFIG_KEYS, ...PRIVATE_CONFIG_KEYS];
-    await writeEnv(outputPath, allKeys);
-
-    logger.info(`✅ Secrets written to ${outputPath}`);
-    return 0;
+  (_args) => {
+    logger.error(
+      "This command is deprecated. Use 'bff inject-secrets' to create .env.local",
+    );
+    return 1;
   },
 );
 
@@ -267,7 +262,7 @@ register(
       logger.info("Loading secrets from 1Password...");
 
       // Warm all secrets first
-      await warmSecrets(allKeys);
+      await warmSecrets();
 
       // Build cache content while adding to env
       const cacheLines: Array<string> = [
@@ -279,7 +274,7 @@ register(
 
       // Build environment with secrets
       for (const key of allKeys) {
-        const value = await getSecret(key);
+        const value = getSecret(key);
         if (value) {
           env[key] = value;
           cacheLines.push(`${key}=${value}`);
@@ -340,7 +335,7 @@ register(
     const allKeys = [...PUBLIC_CONFIG_KEYS, ...PRIVATE_CONFIG_KEYS];
 
     // Force fetch from 1Password
-    await warmSecrets(allKeys);
+    await warmSecrets();
 
     // Build cache content
     const cacheLines: Array<string> = [
@@ -352,7 +347,7 @@ register(
 
     let secretCount = 0;
     for (const key of allKeys) {
-      const value = await getSecret(key);
+      const value = getSecret(key);
       if (value) {
         cacheLines.push(`${key}=${value}`);
         secretCount++;
