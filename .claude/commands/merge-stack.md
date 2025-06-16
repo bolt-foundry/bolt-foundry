@@ -162,4 +162,5 @@ gh api /repos/bolt-foundry/bolt-foundry/branches/main/protection --jq '.required
 - Failed merges will be automatically retried
 - You can remove PRs from the queue with `--disable-auto`
 - The queue handles all timing and conflict resolution
-- All commands use `--repo=bolt-foundry/bolt-foundry` to target the correct repository
+- All commands use `--repo=bolt-foundry/bolt-foundry` to target the correct
+  repository
