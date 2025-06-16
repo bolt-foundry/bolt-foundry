@@ -51,6 +51,10 @@ interface SessionState {
   sessionPath: string;
   startTime: string;
   conversationCount: number;
+  lastModified: string;
+  sessionVersion: string;
+  purpose: string;
+  status: "active" | "completed";
 }
 
 async function createSession(): Promise<SessionState> {
@@ -59,18 +63,27 @@ async function createSession(): Promise<SessionState> {
 
   await ensureDir(sessionPath);
 
+  const now = new Date().toISOString();
   const state: SessionState = {
     sessionId,
     sessionPath,
-    startTime: new Date().toISOString(),
+    startTime: now,
     conversationCount: 0,
+    lastModified: now,
+    sessionVersion: "0.2.0",
+    purpose: "",
+    status: "active",
   };
 
   // Initialize progress.md with TOML frontmatter
   const progressContent = `+++
 sessionId = "${state.sessionId}"
 startTime = "${state.startTime}"
-status = "active"
+status = "${state.status}"
+lastModified = "${state.lastModified}"
+conversationCount = ${state.conversationCount}
+sessionVersion = "${state.sessionVersion}"
+purpose = "${state.purpose}"
 +++
 
 # Session Progress
@@ -110,6 +123,67 @@ ${message}
   await Deno.writeTextFile(conversationPath, content, { append: true });
 }
 
+async function loadSessionState(sessionPath: string): Promise<SessionState | null> {
+  try {
+    const progressPath = join(sessionPath, "progress.md");
+    const content = await Deno.readTextFile(progressPath);
+    
+    // Parse TOML frontmatter
+    const frontmatterMatch = content.match(/^\+\+\+\n([\s\S]*?)\n\+\+\+/);
+    if (!frontmatterMatch) return null;
+    
+    const frontmatter = frontmatterMatch[1];
+    const lines = frontmatter.split('\n');
+    const metadata: Record<string, string> = {};
+    
+    for (const line of lines) {
+      const match = line.match(/^(\w+)\s*=\s*(.+)$/);
+      if (match) {
+        const [_, key, value] = match;
+        metadata[key] = value.replace(/^["']|["']$/g, '');
+      }
+    }
+    
+    return {
+      sessionId: metadata.sessionId || '',
+      sessionPath,
+      startTime: metadata.startTime || '',
+      conversationCount: parseInt(metadata.conversationCount || '0'),
+      lastModified: metadata.lastModified || '',
+      sessionVersion: metadata.sessionVersion || '0.2.0',
+      purpose: metadata.purpose || '',
+      status: (metadata.status as "active" | "completed") || 'active',
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function updateSessionState(state: SessionState): Promise<void> {
+  const progressPath = join(state.sessionPath, "progress.md");
+  
+  // Update lastModified and write new progress.md
+  state.lastModified = new Date().toISOString();
+  
+  const progressContent = `+++
+sessionId = "${state.sessionId}"
+startTime = "${state.startTime}"
+status = "${state.status}"
+lastModified = "${state.lastModified}"
+conversationCount = ${state.conversationCount}
+sessionVersion = "${state.sessionVersion}"
+purpose = "${state.purpose}"
++++
+
+# Session Progress
+
+Session started at ${new Date(state.startTime).toLocaleString()}
+Last modified at ${new Date(state.lastModified).toLocaleString()}
+`;
+
+  await Deno.writeTextFile(progressPath, progressContent);
+}
+
 function printWelcome(): void {
   ui.println("");
   ui.printAssistant("Welcome to aibff REPL!");
@@ -139,9 +213,48 @@ async function conversationLoop(state: SessionState): Promise<void> {
 
     // Log assistant response
     await appendToConversation(state.sessionPath, "Assistant", response);
+    
+    // Update session state
+    await updateSessionState(state);
 
     // Show prompt for next input
     ui.printUser("\nYou: ");
+  }
+}
+
+async function listSessions(): Promise<void> {
+  const cwd = Deno.cwd();
+  const entries = [];
+  
+  for await (const entry of Deno.readDir(cwd)) {
+    if (entry.isDirectory && entry.name.startsWith("session-")) {
+      const sessionPath = join(cwd, entry.name);
+      const state = await loadSessionState(sessionPath);
+      if (state) {
+        entries.push({
+          name: entry.name,
+          startTime: state.startTime,
+          lastModified: state.lastModified,
+          status: state.status,
+        });
+      }
+    }
+  }
+  
+  if (entries.length === 0) {
+    ui.println("No sessions found.");
+    return;
+  }
+  
+  ui.println("Available sessions:");
+  ui.println("");
+  
+  for (const entry of entries.sort((a, b) => b.lastModified.localeCompare(a.lastModified))) {
+    ui.println(`  ${entry.name}`);
+    ui.printInfo(`    Started: ${new Date(entry.startTime).toLocaleString()}`);
+    ui.printInfo(`    Last modified: ${new Date(entry.lastModified).toLocaleString()}`);
+    ui.printInfo(`    Status: ${entry.status}`);
+    ui.println("");
   }
 }
 
@@ -151,7 +264,9 @@ async function runRepl(args: Array<string>): Promise<void> {
     ui.println("Usage: aibff repl [options]");
     ui.println("");
     ui.println("Options:");
-    ui.println("  --help, -h    Show this help message");
+    ui.println("  --help, -h          Show this help message");
+    ui.println("  --resume <path>     Resume an existing session");
+    ui.println("  --list              List available sessions");
     ui.println("");
     ui.println(
       "The REPL creates an interactive session for building graders through conversation.",
@@ -161,7 +276,44 @@ async function runRepl(args: Array<string>): Promise<void> {
     );
     ui.println("");
     ui.println("Examples:");
-    ui.println("  aibff repl    # Start a new REPL session");
+    ui.println("  aibff repl                         # Start a new REPL session");
+    ui.println("  aibff repl --resume session-123    # Resume an existing session");
+    ui.println("  aibff repl --list                  # List all sessions");
+    return;
+  }
+  
+  // Handle list flag
+  if (args.includes("--list")) {
+    await listSessions();
+    return;
+  }
+  
+  // Handle resume flag
+  const resumeIndex = args.indexOf("--resume");
+  if (resumeIndex !== -1) {
+    const sessionPath = args[resumeIndex + 1];
+    if (!sessionPath) {
+      ui.println("Error: --resume requires a session path");
+      Deno.exit(1);
+    }
+    
+    try {
+      const state = await loadSessionState(sessionPath);
+      if (!state) {
+        throw new Error("Session not found or invalid");
+      }
+      
+      // Show welcome message
+      printWelcome();
+      ui.printInfo(`Resuming session: ${state.sessionPath}\n`);
+      
+      // Start conversation loop
+      ui.printUser("You: ");
+      await conversationLoop(state);
+    } catch (error) {
+      Deno.stderr.writeSync(new TextEncoder().encode(`Error: Session not found or invalid: ${sessionPath}\n`));
+      Deno.exit(1);
+    }
     return;
   }
 
