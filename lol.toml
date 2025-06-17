@@ -1,0 +1,230 @@
+
+[graderResults.human_grader]
+grader = "decks/fastpitch/human_grader.deck.md"
+model = "anthropic/claude-3.5-sonnet"
+timestamp = "2025-06-17T14:09:55.495Z"
+samples = 18
+average_distance = 3.56
+
+[[graderResults.human_grader.results]]
+id = "qb-draft-injury"
+grader_score = 3
+truth_score = 1
+notes = "The summary perfectly captures the key information - who (Carson Beck), what (declaring for NFL Draft), when (2025), and the critical context (despite ACL injury in SEC Championship). It's concise while including the most newsworthy elements from the original article in a clear, straightforward manner."
+
+[[graderResults.human_grader.results]]
+id = "giannis-trade"
+grader_score = 2
+truth_score = 3
+notes = "The summary effectively captures the main point of the article - that trade talks between the Nets and Bucks for Giannis failed. It includes key details about Giannis (two-time MVP) and clearly states the outcome. While concise, it could have mentioned the Nets' offered package or Bucks' demands for context, but the core message is accurately conveyed."
+
+[[graderResults.human_grader.results]]
+id = "nfl-draft-contracts"
+grader_score = 3
+truth_score = -2
+notes = "The summary accurately captures the key information - that Travis Hunter and four other first-round NFL draft picks remain unsigned ahead of training camps. It's concise while highlighting the most newsworthy element (Hunter being the headline name) without including unnecessary details. The timing element is also correctly conveyed."
+
+[[graderResults.human_grader.results]]
+id = "paraphrase-example-1"
+grader_score = 2
+truth_score = -2
+notes = "The summary accurately captures the key information from the title - both the number of unsigned first-round picks (5) and specifically names Travis Hunter as one of them, while also noting the timing context (training camps). It's concise and maintains the essential facts without unnecessary details."
+
+[[graderResults.human_grader.results]]
+id = "paraphrase-example-2"
+grader_score = 2
+truth_score = -2
+notes = "The paraphrase effectively captures the key information (Messi scoring twice, Inter Miami winning 3-1, FIFA Club World Cup context) while being more concise than the original title. It maintains accuracy while using active voice ('nets' vs 'scores') and eliminates unnecessary words while preserving the essential meaning."
+
+[[graderResults.human_grader.results]]
+id = "paraphrase-example-3"
+grader_score = 2
+truth_score = -3
+notes = "The paraphrase accurately captures the key information from the title - Inter Miami's 3-1 victory and Messi's two goals in the Club World Cup match. It's concise and maintains the essential facts, though it slightly modifies the structure. The only minor point is that the original specified it was the 'FIFA Club World Cup' while the paraphrase just says 'Club World Cup', but this doesn't significantly impact the meaning."
+
+[[graderResults.human_grader.results]]
+id = "fifa-club-cup-kickoff"
+grader_score = 2
+truth_score = -3
+notes = "The summary captures the key information about Messi's two goals and the final score (3-1) in Inter Miami's victory over Al Ahly. However, it could have included additional important details like this being the first MLS club to win in the new 32-team format, or mentioned Luis Suarez's goal contribution. Still, it effectively communicates the main news in a concise way."
+
+[[graderResults.human_grader.results]]
+id = "nba-finals-update"
+grader_score = 2
+truth_score = -3
+notes = "The summary effectively captures the main highlight (Finals record 22 three-pointers) and the final score (132-114) in a concise headline format. However, it could have mentioned that OKC now leads 2-0 in the series for additional context. Overall, it's an accurate and clear summary of the key news."
+
+[[graderResults.human_grader.results]]
+id = "penix-sophomore-questions"
+grader_score = 2
+truth_score = -3
+notes = "The summary effectively captures the key points about Penix's situation - both his potential ('shows promise') and his areas needing improvement ('needs work on reads and decision-making'). It's concise while maintaining accuracy to the source material. The only minor limitation is it could have mentioned the small sample size of just three starts, but overall it's a strong, balanced summary."
+
+[[graderResults.human_grader.results]]
+id = "watt-contract-holdout"
+grader_score = 2
+truth_score = -1
+notes = "The summary captures the core message that T.J. Watt is seeking a new contract from the Steelers, though it omits specific details like his minicamp absence, current salary, and potential fines. While very concise, it accurately conveys the main point in an accessible way."
+
+[[graderResults.human_grader.results]]
+id = "draft-picks-unsigned"
+grader_score = -1
+truth_score = -3
+notes = "While technically accurate, the response is overly simplistic and omits key details from the article. The response fails to mention that specifically 5 first-round picks remain unsigned, doesn't name Travis Hunter as the headline player, and excludes important context about contract negotiations and offset language. A more complete summary would have provided better value to the reader."
+
+[[graderResults.human_grader.results]]
+id = "pacers-thunder-finals"
+grader_score = -2
+truth_score = -3
+notes = "The response was overly simplistic and missed key details from the original article. While technically accurate that the Pacers are losing to the Thunder, it omitted crucial information about the 2-0 series deficit, Haliburton's struggles (12 points, 4-15 shooting), the Thunder's record-breaking 22 three-pointers, and most importantly, the article's main thesis about defensive issues being the bigger problem than Haliburton's scoring."
+
+[[graderResults.human_grader.results]]
+id = "pacers-thunder-finals-good"
+grader_score = 1
+truth_score = 3
+notes = "The response captures the key outcome (Pacers losing Game 2, series tied 1-1) with a clever opening line about game timing. However, it misses important context about Haliburton's struggles and the Thunder's historic shooting performance that were central to the original article. The tone is engaging but lacks analytical depth."
+
+[[graderResults.human_grader.results]]
+id = "embiid-jokic-mvp"
+grader_score = -2
+truth_score = 3
+notes = "The suggested headline is inaccurate and misleading compared to the original article. The article is from February 2022 during All-Star break, not near playoffs. While it does discuss a close MVP race between Embiid and Jokic, the timing element is completely wrong. The original article also shows Embiid with a slight lead in the voter poll, not a dead even race."
+
+[[graderResults.human_grader.results]]
+id = "nfl-free-agency-jackson-rodgers"
+grader_score = -1
+truth_score = 3
+notes = "The summary captures the focus on the two QBs but oversimplifies the Lamar Jackson situation (omitting his contract demands and trade request drama) and mischaracterizes the Rodgers situation - while there may be fatigue around the story, the article presents it as an active negotiation between the Jets and Packers rather than just people being 'tired' of talking about it."
+
+[[graderResults.human_grader.results]]
+id = "golf-ball-rules"
+grader_score = 1
+truth_score = 3
+notes = "The summary captures the core news about proposed golf ball rule changes and opposition, but misses key specifics like DeChambeau's strong personal criticism ('most atrocious thing'), the 15-yard reduction detail, and the Model Local Rule aspect. It's accurate but oversimplified."
+
+[[graderResults.human_grader.results]]
+id = "baseball-rule-changes"
+grader_score = -1
+truth_score = 3
+notes = "While the summary captured two key outcomes of the rule changes (increased stolen bases and shorter games), it oversimplified a complex article that detailed multiple rule changes including the pitch clock, shift elimination, bigger bases, pickoff limits, and position player pitching restrictions. The specific percentages cited (40% for stolen bases, 30 minutes shorter) weren't actually mentioned in the original article."
+
+[[graderResults.human_grader.results]]
+id = "nba-all-star-game-2023"
+grader_score = -2
+truth_score = 3
+notes = "The response oversimplified and mischaracterized the article. While it did quote Michael Malone calling it 'the worst basketball game ever played,' the main focus of the article was about the record-low ratings and viewership numbers. The response ignored key statistics and context about the declining viewership, which was the primary news story."
+
+[graderResults.human_grader_v3]
+grader = "decks/fastpitch/human_grader_v3.deck.md"
+model = "anthropic/claude-3.5-sonnet"
+timestamp = "2025-06-17T14:11:09.966Z"
+samples = 18
+average_distance = 3.28
+
+[[graderResults.human_grader_v3.results]]
+id = "qb-draft-injury"
+grader_score = 2
+truth_score = 1
+notes = "The summary effectively captures the key news elements - who (Carson Beck), what (declaring for NFL Draft), and the critical context (despite ACL injury in SEC Championship). It's concise while including the most newsworthy aspects. Only minor deduction because it could have mentioned he's from Georgia more clearly in the text rather than just the prefix 'Georgia QB'."
+
+[[graderResults.human_grader_v3.results]]
+id = "giannis-trade"
+grader_score = 3
+truth_score = 3
+notes = "The summary is excellent - it captures the key information (failed Nets-Bucks trade talks regarding Giannis) concisely and accurately. It leads with the most important news element and includes Giannis's MVP status. The length is appropriate for a headline/summary, and it maintains clarity while avoiding unnecessary details."
+
+[[graderResults.human_grader_v3.results]]
+id = "nfl-draft-contracts"
+grader_score = 2
+truth_score = -2
+notes = "The summary effectively captures the key point about Travis Hunter and the five unsigned first-round picks ahead of training camps. While it's concise and accurate, it could have mentioned the contract value ($38.5M) or included some of the other notable unsigned players like Caleb Williams to provide more context. Overall, it's a solid, focused summary that delivers the main news point."
+
+[[graderResults.human_grader_v3.results]]
+id = "paraphrase-example-1"
+grader_score = -1
+truth_score = -2
+notes = "While the paraphrase captures the key point about Travis Hunter and five unsigned first-round picks, it loses some specificity by not mentioning that this is happening as training camps are 'near' or 'approaching'. The temporal element is slightly altered. The paraphrase is functional but could be more precise."
+
+[[graderResults.human_grader_v3.results]]
+id = "paraphrase-example-2"
+grader_score = 2
+truth_score = -2
+notes = "The paraphrase effectively captures the key information (Messi scoring twice, Inter Miami winning 3-1, FIFA Club World Cup context) while being more concise. It maintains accuracy while using active voice ('nets' vs 'scores'). Only minor points deducted for dropping 'opening' which provides helpful context about it being their first match."
+
+[[graderResults.human_grader_v3.results]]
+id = "paraphrase-example-3"
+grader_score = 2
+truth_score = -3
+notes = "The paraphrase accurately captures the key information - Inter Miami's 3-1 victory and Messi's two goals in the Club World Cup match. It's concise while maintaining the essential facts. However, it could have specified it was the FIFA Club World Cup for complete accuracy, which prevents it from getting a perfect score."
+
+[[graderResults.human_grader_v3.results]]
+id = "fifa-club-cup-kickoff"
+grader_score = 2
+truth_score = -3
+notes = "The summary effectively captures the key information about Messi's two goals and the final score (3-1) against Al Ahly in the FIFA Club World Cup opener. However, it could have included one or two additional important details like this being Inter Miami's historic first Club World Cup win as an MLS team, or the venue/timing of the match for more context."
+
+[[graderResults.human_grader_v3.results]]
+id = "nba-finals-update"
+grader_score = 2
+truth_score = -3
+notes = "The summary effectively captures the key highlight (Finals record 22 three-pointers) and the final score (132-114) in a concise manner. It maintains accuracy while condensing the essential information. However, it could have mentioned that OKC now leads 2-0 in the series for additional context, which prevents it from getting a perfect score."
+
+[[graderResults.human_grader_v3.results]]
+id = "penix-sophomore-questions"
+grader_score = 2
+truth_score = -3
+notes = "The summary effectively captures the key points about Penix's situation - both his potential ('shows promise') and his areas needing improvement ('needs work on reads and decision-making'). It's concise while maintaining accuracy to the source material, which discussed his arm talent alongside concerning tendencies in decision-making and field processing. The only minor limitation is that it could have mentioned the small sample size of just three starts, but overall it's a strong, balanced summary."
+
+[[graderResults.human_grader_v3.results]]
+id = "watt-contract-holdout"
+grader_score = 1
+truth_score = -1
+notes = "The summary captures the core point that T.J. Watt is seeking a new contract from the Steelers, but it omits important context like his absence from mandatory minicamp, potential fines, and the market context of Myles Garrett's deal. While accurate, it's overly simplified."
+
+[[graderResults.human_grader_v3.results]]
+id = "draft-picks-unsigned"
+grader_score = -1
+truth_score = -3
+notes = "While technically accurate, the response is overly simplistic and misses key details from the article. It fails to mention that specifically 5 first-round picks remain unsigned, doesn't name Travis Hunter as the headline player, and omits important context about contract negotiations and offset language. A more complete summary would have included these key elements."
+
+[[graderResults.human_grader_v3.results]]
+id = "pacers-thunder-finals"
+grader_score = -1
+truth_score = -3
+notes = "While the response captures the basic outcome (Pacers losing to Thunder), it misses several key details from the original article including: the 2-0 series deficit, Haliburton's scoring struggles (12 points, 4-15 shooting), the Thunder's record-breaking 3-point shooting (22 threes, 58%), and most importantly the article's main thesis about defensive issues being more concerning than offensive struggles. The response is factually accurate but overly simplistic."
+
+[[graderResults.human_grader_v3.results]]
+id = "pacers-thunder-finals-good"
+grader_score = -1
+truth_score = 3
+notes = "While the response captures the basic outcome (Pacers losing Game 2, series tied 1-1) in a somewhat clever way, it misses the main analytical points about defensive struggles being more significant than Haliburton's scoring issues. The response is too casual and fails to address the Thunder's record-breaking three-point shooting or the deeper defensive problems highlighted in the original article. It oversimplifies what was meant to be a serious analysis piece."
+
+[[graderResults.human_grader_v3.results]]
+id = "embiid-jokic-mvp"
+grader_score = -2
+truth_score = 3
+notes = "The proposed headline is inaccurate and misleading compared to the original article in two key ways: 1) The article is from February 2022 during All-Star break, not 'days away from playoffs', and 2) While the race was indeed very close, the article shows Embiid actually had a 35-point lead in the voter poll, so it wasn't exactly 'dead even'. The headline fails to accurately represent both the timing and the specific poll results discussed in the original piece."
+
+[[graderResults.human_grader_v3.results]]
+id = "nfl-free-agency-jackson-rodgers"
+grader_score = -1
+truth_score = 3
+notes = "The summary captures the main focus on the two QBs but oversimplifies the Lamar Jackson situation and mischaracterizes the Rodgers situation. The original text provided specific details about Jackson's contract demands and recent trade request, which were omitted. While there is fatigue around the Rodgers situation, the original text didn't express that 'everyone is tired' - it simply stated facts about negotiations between the Jets and Packers."
+
+[[graderResults.human_grader_v3.results]]
+id = "golf-ball-rules"
+grader_score = 2
+truth_score = 3
+notes = "The summary captures the main point about the new golf ball rules and the general negative reaction, particularly from players. However, it could have been more specific about the actual rule change (15-yard reduction for longest hitters) and mentioned Bryson DeChambeau by name since he was the central figure in the article. Still, it effectively conveys the key conflict in concise terms."
+
+[[graderResults.human_grader_v3.results]]
+id = "baseball-rule-changes"
+grader_score = -1
+truth_score = 3
+notes = "While the response captured the general spirit that MLB rule changes are having positive effects, it contained specific numerical claims (40% increase in stolen bases and 30 minute reduction in game length) that weren't directly stated in the article. The article discussed improvements in minor league stats but didn't provide these specific MLB figures. A more accurate summary would have focused on the key rule changes (pitch clock, shift elimination, bigger bases, pickoff limits) and their intended effects without making precise statistical claims."
+
+[[graderResults.human_grader_v3.results]]
+id = "nba-all-star-game-2023"
+grader_score = -2
+truth_score = 3
+notes = "The summary is overly negative and cherry-picks one quote while missing key context. While it includes the coach's quote calling it the 'worst basketball game ever played,' it fails to mention the crucial ratings data (2.2 rating, 4.59M viewers), the historical context (record low, 27-29% drop from 2022), and other important details about injured stars and broader All-Star weekend performance. A more balanced and complete summary was needed."
