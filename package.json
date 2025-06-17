@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@anthropic-ai/claude-code": "^1.0.24",
+    "@anthropic-ai/claude-code": "^1.0.25",
     "@isograph/compiler": "0.0.0-main-1fad6d74",
     "@isograph/react": "0.0.0-main-1fad6d74",
     "@lexical/mark": "0.27.2",
