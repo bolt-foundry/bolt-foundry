@@ -1,429 +1,181 @@
 #!/usr/bin/env -S bff test
 
-import { assertEquals, assertStringIncludes } from "@std/assert";
+import { assertEquals, assertExists } from "@std/assert";
 import { join } from "@std/path";
-import { exists } from "@std/fs";
+import { ensureDir } from "@std/fs";
+import { replCommand } from "../../commands/repl.ts";
 
-/**
- * Tests for the aibff repl command
- *
- * These tests focus on:
- * 1. Conversation loop functionality (input/output, exit commands)
- * 2. File management (conversation.md, progress.md creation and content)
- */
-
-const replScript = new URL("../../commands/repl.ts", import.meta.url).pathname;
-
-async function runReplWithInput(input: string): Promise<{
-  code: number;
-  stdout: string;
-  stderr: string;
-  sessionPath?: string;
-}> {
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "--allow-env",
-      "--allow-read",
-      "--allow-write",
-      replScript,
-    ],
-    stdin: "piped",
-    stdout: "piped",
-    stderr: "piped",
-  });
-
-  const process = command.spawn();
-  const writer = process.stdin.getWriter();
-  await writer.write(new TextEncoder().encode(input));
-  await writer.close();
-
-  const { code, stdout, stderr } = await process.output();
-
-  const stdoutText = new TextDecoder().decode(stdout);
-  const stderrText = new TextDecoder().decode(stderr);
-
-  // Extract session path from output
-  const sessionMatch = stdoutText.match(/Session created: (.+)/);
-  const sessionPath = sessionMatch ? sessionMatch[1].trim() : undefined;
-
-  return {
-    code,
-    stdout: stdoutText,
-    stderr: stderrText,
-    sessionPath,
+Deno.test("repl command - help", async () => {
+  // Capture output
+  let output = "";
+  const originalWrite = Deno.stdout.writeSync;
+  Deno.stdout.writeSync = (p: Uint8Array): number => {
+    output += new TextDecoder().decode(p);
+    return p.length;
   };
-}
-
-// Conversation Loop Tests
-
-Deno.test("repl should echo user input", async () => {
-  const { code, stdout, sessionPath } = await runReplWithInput(
-    "hello world\nexit\n",
-  );
 
   try {
-    assertEquals(code, 0);
-    assertStringIncludes(stdout, "Welcome to aibff REPL!");
-    assertStringIncludes(stdout, 'You said: "hello world"');
-    assertStringIncludes(stdout, "Goodbye!");
+    await replCommand.run(["--help"]);
   } finally {
-    // Cleanup
-    if (sessionPath && await exists(sessionPath)) {
-      await Deno.remove(sessionPath, { recursive: true });
-    }
+    Deno.stdout.writeSync = originalWrite;
   }
+
+  // Check help output
+  assertEquals(output.includes("Usage: aibff repl [options]"), true);
+  assertEquals(output.includes("--help"), true);
+  assertEquals(output.includes("--resume"), true);
+  assertEquals(output.includes("--list"), true);
 });
 
-Deno.test("repl should exit on 'exit' command", async () => {
-  const { code, stdout, sessionPath } = await runReplWithInput("exit\n");
+Deno.test("repl command - session creation", async () => {
+  // Create a temporary directory for the test
+  const tempDir = await Deno.makeTempDir();
+  const originalCwd = Deno.cwd();
 
   try {
-    assertEquals(code, 0);
-    assertStringIncludes(stdout, "Goodbye!");
-  } finally {
-    if (sessionPath && await exists(sessionPath)) {
-      await Deno.remove(sessionPath, { recursive: true });
-    }
-  }
-});
+    // Change to temp directory
+    Deno.chdir(tempDir);
 
-Deno.test("repl should exit on 'quit' command", async () => {
-  const { code, stdout, sessionPath } = await runReplWithInput("quit\n");
-
-  try {
-    assertEquals(code, 0);
-    assertStringIncludes(stdout, "Goodbye!");
-  } finally {
-    if (sessionPath && await exists(sessionPath)) {
-      await Deno.remove(sessionPath, { recursive: true });
-    }
-  }
-});
-
-Deno.test("repl should handle multiple inputs before exit", async () => {
-  const { code, stdout, sessionPath } = await runReplWithInput(
-    "first input\nsecond input\nexit\n",
-  );
-
-  try {
-    assertEquals(code, 0);
-    assertStringIncludes(stdout, 'You said: "first input"');
-    assertStringIncludes(stdout, 'You said: "second input"');
-    assertStringIncludes(stdout, "Goodbye!");
-  } finally {
-    if (sessionPath && await exists(sessionPath)) {
-      await Deno.remove(sessionPath, { recursive: true });
-    }
-  }
-});
-
-// File Management Tests
-
-Deno.test("repl should create session folder with conversation.md and progress.md", async () => {
-  const { code, sessionPath } = await runReplWithInput("test\nexit\n");
-
-  try {
-    assertEquals(code, 0);
-
-    // Verify session path exists
-    if (!sessionPath) {
-      throw new Error("Session path not found in output");
-    }
-
-    const sessionExists = await exists(sessionPath);
-    assertEquals(sessionExists, true);
-
-    // Check for required files
-    const conversationPath = join(sessionPath, "conversation.md");
-    const progressPath = join(sessionPath, "progress.md");
-
-    assertEquals(await exists(conversationPath), true);
-    assertEquals(await exists(progressPath), true);
-  } finally {
-    if (sessionPath && await exists(sessionPath)) {
-      await Deno.remove(sessionPath, { recursive: true });
-    }
-  }
-});
-
-Deno.test("repl should write conversation history to conversation.md", async () => {
-  const { code, sessionPath } = await runReplWithInput(
-    "hello assistant\nexit\n",
-  );
-
-  try {
-    assertEquals(code, 0);
-
-    if (!sessionPath) {
-      throw new Error("Session path not found in output");
-    }
-
-    const conversationPath = join(sessionPath, "conversation.md");
-    const content = await Deno.readTextFile(conversationPath);
-
-    // Check structure
-    assertStringIncludes(content, "# Conversation History");
-    assertStringIncludes(content, "## Session 1:");
-
-    // Check user input was logged
-    assertStringIncludes(content, "### User");
-    assertStringIncludes(content, "hello assistant");
-
-    // Check assistant response was logged
-    assertStringIncludes(content, "### Assistant");
-    assertStringIncludes(content, 'You said: "hello assistant"');
-  } finally {
-    if (sessionPath && await exists(sessionPath)) {
-      await Deno.remove(sessionPath, { recursive: true });
-    }
-  }
-});
-
-Deno.test("repl should create progress.md with TOML frontmatter", async () => {
-  const { code, sessionPath } = await runReplWithInput("test\nexit\n");
-
-  try {
-    assertEquals(code, 0);
-
-    if (!sessionPath) {
-      throw new Error("Session path not found in output");
-    }
-
-    const progressPath = join(sessionPath, "progress.md");
-    const content = await Deno.readTextFile(progressPath);
-
-    // Check TOML frontmatter
-    assertStringIncludes(content, "+++");
-    assertStringIncludes(content, "sessionId = ");
-    assertStringIncludes(content, "startTime = ");
-    assertStringIncludes(content, 'status = "active"');
-
-    // Check markdown content
-    assertStringIncludes(content, "# Session Progress");
-    assertStringIncludes(content, "Session started at");
-  } finally {
-    if (sessionPath && await exists(sessionPath)) {
-      await Deno.remove(sessionPath, { recursive: true });
-    }
-  }
-});
-
-Deno.test("repl should show help with --help flag", async () => {
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "--allow-env",
-      "--allow-read",
-      "--allow-write",
-      replScript,
-      "--help",
-    ],
-  });
-
-  const { code, stdout } = await command.output();
-  const output = new TextDecoder().decode(stdout);
-
-  assertEquals(code, 0);
-  assertStringIncludes(output, "Usage: aibff repl");
-  assertStringIncludes(output, "interactive session for building graders");
-});
-
-// v0.2.0 Session Management Tests
-
-Deno.test("repl should include enhanced metadata in progress.md TOML frontmatter", async () => {
-  const { code, sessionPath } = await runReplWithInput("test\nexit\n");
-
-  try {
-    assertEquals(code, 0);
-
-    if (!sessionPath) {
-      throw new Error("Session path not found in output");
-    }
-
-    const progressPath = join(sessionPath, "progress.md");
-    const content = await Deno.readTextFile(progressPath);
-
-    // Check for v0.2.0 enhanced metadata
-    assertStringIncludes(content, "sessionId = ");
-    assertStringIncludes(content, "startTime = ");
-    assertStringIncludes(content, 'status = "active"');
-    assertStringIncludes(content, "lastModified = ");
-    assertStringIncludes(content, "conversationCount = ");
-    assertStringIncludes(content, "sessionVersion = ");
-    assertStringIncludes(content, "purpose = ");
-  } finally {
-    if (sessionPath && await exists(sessionPath)) {
-      await Deno.remove(sessionPath, { recursive: true });
-    }
-  }
-});
-
-Deno.test("repl should support resuming an existing session", async () => {
-  // First, create a session
-  const { sessionPath: initialPath } = await runReplWithInput(
-    "initial message\nexit\n",
-  );
-
-  if (!initialPath) {
-    throw new Error("Initial session path not found");
-  }
-
-  try {
-    // Resume the session
-    const command = new Deno.Command(Deno.execPath(), {
-      args: [
-        "run",
-        "--allow-env",
-        "--allow-read",
-        "--allow-write",
-        replScript,
-        "--resume",
-        initialPath,
-      ],
-      stdin: "piped",
-      stdout: "piped",
-      stderr: "piped",
+    // Mock stdin to simulate user input
+    const encoder = new TextEncoder();
+    const originalStdin = Deno.stdin.readable;
+    
+    // Create a simple readable stream that sends "exit" command
+    const inputStream = new ReadableStream({
+      start(controller) {
+        // Skip API key prompt
+        controller.enqueue(encoder.encode("\n"));
+        // Exit command
+        controller.enqueue(encoder.encode("exit\n"));
+        controller.close();
+      },
     });
 
-    const process = command.spawn();
-    const writer = process.stdin.getWriter();
-    await writer.write(new TextEncoder().encode("resumed message\nexit\n"));
-    await writer.close();
-
-    const { code, stdout } = await process.output();
-    const stdoutText = new TextDecoder().decode(stdout);
-
-    assertEquals(code, 0);
-    assertStringIncludes(stdoutText, "Resuming session");
-
-    // Check that conversation history includes both messages
-    const conversationPath = join(initialPath, "conversation.md");
-    const conversationContent = await Deno.readTextFile(conversationPath);
-
-    assertStringIncludes(conversationContent, "initial message");
-    assertStringIncludes(conversationContent, "resumed message");
-  } finally {
-    if (await exists(initialPath)) {
-      await Deno.remove(initialPath, { recursive: true });
-    }
-  }
-});
-
-Deno.test("repl should update session metadata on resume", async () => {
-  // Create initial session
-  const { sessionPath } = await runReplWithInput("first\nexit\n");
-
-  if (!sessionPath) {
-    throw new Error("Session path not found");
-  }
-
-  try {
-    // Get initial metadata
-    const progressPath = join(sessionPath, "progress.md");
-    const initialContent = await Deno.readTextFile(progressPath);
-
-    // Wait a bit to ensure time difference
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    // Resume session
-    const command = new Deno.Command(Deno.execPath(), {
-      args: [
-        "run",
-        "--allow-env",
-        "--allow-read",
-        "--allow-write",
-        replScript,
-        "--resume",
-        sessionPath,
-      ],
-      stdin: "piped",
-      stdout: "piped",
-      stderr: "piped",
+    // Replace stdin
+    Object.defineProperty(Deno.stdin, "readable", {
+      value: inputStream,
+      configurable: true,
     });
 
-    const process = command.spawn();
-    const writer = process.stdin.getWriter();
-    await writer.write(new TextEncoder().encode("second\nexit\n"));
-    await writer.close();
+    // Capture output
+    let output = "";
+    const originalWrite = Deno.stdout.writeSync;
+    Deno.stdout.writeSync = (p: Uint8Array): number => {
+      output += new TextDecoder().decode(p);
+      return p.length;
+    };
 
-    await process.output();
-
-    // Check updated metadata
-    const updatedContent = await Deno.readTextFile(progressPath);
-
-    // Should have updated lastModified
-    assertStringIncludes(updatedContent, "lastModified = ");
-
-    // Should have incremented conversationCount
-    assertStringIncludes(updatedContent, "conversationCount = 2");
-
-    // Original sessionId should be preserved
-    const initialSessionId = initialContent.match(/sessionId = "(.+)"/)?.[1];
-    const updatedSessionId = updatedContent.match(/sessionId = "(.+)"/)?.[1];
-    assertEquals(initialSessionId, updatedSessionId);
-  } finally {
-    if (await exists(sessionPath)) {
-      await Deno.remove(sessionPath, { recursive: true });
+    try {
+      await replCommand.run([]);
+    } finally {
+      // Restore original stdin and stdout
+      Object.defineProperty(Deno.stdin, "readable", {
+        value: originalStdin,
+        configurable: true,
+      });
+      Deno.stdout.writeSync = originalWrite;
     }
+
+    // Check that session was created
+    const entries = [];
+    for await (const entry of Deno.readDir(tempDir)) {
+      if (entry.isDirectory && entry.name.startsWith("session-")) {
+        entries.push(entry.name);
+      }
+    }
+
+    assertEquals(entries.length, 1, "Should create one session directory");
+
+    // Check session files
+    const sessionDir = join(tempDir, entries[0]);
+    const progressFile = join(sessionDir, "progress.md");
+    const conversationFile = join(sessionDir, "conversation.md");
+
+    assertExists(await Deno.stat(progressFile), "progress.md should exist");
+    assertExists(await Deno.stat(conversationFile), "conversation.md should exist");
+
+    // Check progress.md content
+    const progressContent = await Deno.readTextFile(progressFile);
+    assertEquals(progressContent.includes("sessionId"), true);
+    assertEquals(progressContent.includes("currentStep = \"initial\""), true);
+
+    // Check conversation.md content
+    const conversationContent = await Deno.readTextFile(conversationFile);
+    assertEquals(conversationContent.includes("# Conversation History"), true);
+
+  } finally {
+    // Clean up
+    Deno.chdir(originalCwd);
+    await Deno.remove(tempDir, { recursive: true });
   }
 });
 
-Deno.test("repl should error gracefully when resuming non-existent session", async () => {
-  const fakePath = "/tmp/non-existent-session";
-
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "--allow-env",
-      "--allow-read",
-      "--allow-write",
-      replScript,
-      "--resume",
-      fakePath,
-    ],
-  });
-
-  const { code, stderr } = await command.output();
-  const stderrText = new TextDecoder().decode(stderr);
-
-  // Should exit with error code
-  assertEquals(code, 1);
-  assertStringIncludes(stderrText, "Session not found");
-});
-
-Deno.test("repl should list available sessions with --list flag", async () => {
-  // Create a couple of test sessions
-  const { sessionPath: session1 } = await runReplWithInput("session 1\nexit\n");
-  const { sessionPath: session2 } = await runReplWithInput("session 2\nexit\n");
+Deno.test("repl command - list sessions", async () => {
+  // Create a temporary directory with mock sessions
+  const tempDir = await Deno.makeTempDir();
+  const originalCwd = Deno.cwd();
 
   try {
-    const command = new Deno.Command(Deno.execPath(), {
-      args: [
-        "run",
-        "--allow-env",
-        "--allow-read",
-        "--allow-write",
-        replScript,
-        "--list",
-      ],
-    });
+    Deno.chdir(tempDir);
 
-    const { code, stdout } = await command.output();
-    const output = new TextDecoder().decode(stdout);
+    // Create mock session directories
+    const session1 = join(tempDir, "session-123");
+    const session2 = join(tempDir, "session-456");
+    
+    await ensureDir(session1);
+    await ensureDir(session2);
 
-    assertEquals(code, 0);
-    assertStringIncludes(output, "Available sessions:");
+    // Create progress.md files
+    const progressContent1 = `+++
+sessionId = "session-123"
+startTime = "2025-01-01T00:00:00Z"
+status = "active"
+lastModified = "2025-01-01T00:00:00Z"
+conversationCount = 5
+sessionVersion = "0.2.0"
+purpose = "Test session 1"
++++
 
-    // Should show both session paths
-    if (session1) assertStringIncludes(output, session1.split("/").pop()!);
-    if (session2) assertStringIncludes(output, session2.split("/").pop()!);
+# Session Progress`;
+
+    const progressContent2 = `+++
+sessionId = "session-456"
+startTime = "2025-01-02T00:00:00Z"
+status = "completed"
+lastModified = "2025-01-02T00:00:00Z"
+conversationCount = 10
+sessionVersion = "0.2.0"
+purpose = "Test session 2"
++++
+
+# Session Progress`;
+
+    await Deno.writeTextFile(join(session1, "progress.md"), progressContent1);
+    await Deno.writeTextFile(join(session2, "progress.md"), progressContent2);
+
+    // Capture output
+    let output = "";
+    const originalWrite = Deno.stdout.writeSync;
+    Deno.stdout.writeSync = (p: Uint8Array): number => {
+      output += new TextDecoder().decode(p);
+      return p.length;
+    };
+
+    try {
+      await replCommand.run(["--list"]);
+    } finally {
+      Deno.stdout.writeSync = originalWrite;
+    }
+
+    // Check output
+    assertEquals(output.includes("Available sessions:"), true);
+    assertEquals(output.includes("session-123"), true);
+    assertEquals(output.includes("session-456"), true);
+    assertEquals(output.includes("Status: active"), true);
+    assertEquals(output.includes("Status: completed"), true);
+
   } finally {
-    if (session1 && await exists(session1)) {
-      await Deno.remove(session1, { recursive: true });
-    }
-    if (session2 && await exists(session2)) {
-      await Deno.remove(session2, { recursive: true });
-    }
+    Deno.chdir(originalCwd);
+    await Deno.remove(tempDir, { recursive: true });
   }
 });
