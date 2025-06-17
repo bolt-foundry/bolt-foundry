@@ -42,3 +42,9 @@ description = "Breakdown of work by category (features, bugs, etc.)"
 type = "object"
 question = "What are the relevant company goals?"
 description = "Company differentiators and strategic objectives"
+
+[contexts.summaryFormat]
+type = "string"
+question = "What format should the summary follow?"
+description = "Template for writing team member summaries"
+default = "[Name] worked on [project/area]. They [implemented/fixed/improved] [specific thing] which [company connection if clear]."
