@@ -8,6 +8,8 @@ import {
   printParallelProgress,
   runParallelEval,
 } from "../lib/parallel-eval.ts";
+import { generateEvaluationHtml } from "../utils/toml-to-html.ts";
+import type { EvaluationData } from "../__tests__/fixtures/test-evaluation-results.ts";
 
 function printText(message: string, isError = false) {
   if (isError) {
@@ -35,6 +37,8 @@ interface GraderResultsSection {
     grader_score: number;
     truth_score?: number;
     notes: string;
+    userMessage?: string;
+    assistantResponse?: string;
   }>;
 }
 
@@ -62,24 +66,28 @@ function generateTimestampedFileName(baseFile: string): string {
 async function runMultipleEvaluations(
   graderFiles: Array<string>,
   inputFile: string | undefined,
-  outputFile: string,
+  outputFolder: string,
   options: {
     concurrency: number;
   },
 ) {
-  // Check if output file exists, if so create timestamped version
-  let actualOutputFile = outputFile;
+  // Create output folder if it doesn't exist
   try {
-    await Deno.stat(outputFile);
-    // File exists, create timestamped version
-    actualOutputFile = generateTimestampedFileName(outputFile);
-    printText(
-      `Output file ${outputFile} already exists, creating ${actualOutputFile}`,
-      true,
-    );
-  } catch {
-    // File doesn't exist, use as is
+    await Deno.mkdir(outputFolder, { recursive: true });
+  } catch (error) {
+    if (!(error instanceof Deno.errors.AlreadyExists)) {
+      printText(
+        `Error creating output folder: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        true,
+      );
+      Deno.exit(1);
+    }
   }
+
+  const tomlFile = `${outputFolder}/results.toml`;
+  const htmlFile = `${outputFolder}/results.html`;
 
   // Get model from environment or use default
   const model = getConfigVar("ANTHROPIC_MODEL") ||
@@ -100,7 +108,7 @@ async function runMultipleEvaluations(
     }`,
     true,
   );
-  printText(`Output file: ${actualOutputFile}`, true);
+  printText(`Output folder: ${outputFolder}`, true);
   if (inputFile) {
     printText(`Using input file: ${inputFile}`, true);
   }
@@ -173,6 +181,8 @@ async function runMultipleEvaluations(
             grader_score: graderScore,
             truth_score: truthScore,
             notes: result.output.reason || "",
+            userMessage: result.sample.userMessage,
+            assistantResponse: result.sample.assistantResponse,
           };
         });
 
@@ -243,6 +253,8 @@ async function runMultipleEvaluations(
             grader_score: graderScore,
             truth_score: truthScore,
             notes: result.output.reason || "",
+            userMessage: result.sample.userMessage,
+            assistantResponse: result.sample.assistantResponse,
           };
         });
 
@@ -282,16 +294,35 @@ async function runMultipleEvaluations(
     }
   }
 
-  // Write output to file
+  // Write output files
   try {
+    // Write TOML file
     const tomlContent = stringifyToml(
       output as unknown as Record<string, unknown>,
     );
-    await Deno.writeTextFile(actualOutputFile, tomlContent);
-    printText(`\nResults written to: ${actualOutputFile}`, true);
+    await Deno.writeTextFile(tomlFile, tomlContent);
+    
+    // Write HTML file
+    try {
+      const htmlContent = generateEvaluationHtml(output as unknown as EvaluationData);
+      await Deno.writeTextFile(htmlFile, htmlContent);
+    } catch (htmlError) {
+      printText(
+        `Warning: Failed to generate HTML visualization: ${
+          htmlError instanceof Error ? htmlError.message : String(htmlError)
+        }`,
+        true,
+      );
+    }
+    
+    printText(`\nResults written to:`, true);
+    printText(`  TOML: ${tomlFile}`, true);
+    if (await Deno.stat(htmlFile).then(() => true).catch(() => false)) {
+      printText(`  HTML: ${htmlFile}`, true);
+    }
   } catch (error) {
     printText(
-      `Error writing output file: ${
+      `Error writing output files: ${
         error instanceof Error ? error.message : String(error)
       }`,
       true,
@@ -307,34 +338,36 @@ export const evalCommand: Command = {
     // Check for help flag first
     if (args.includes("--help") || args.includes("-h")) {
       printText(
-        `Usage: aibff eval <grader1.deck.md> [grader2.deck.md ...] [samples.jsonl|samples.toml] --output results.toml
+        `Usage: aibff eval <grader1.deck.md> [grader2.deck.md ...] [samples.jsonl|samples.toml] [--output folder]
 
 Examples:
-  # Single grader with embedded samples
-  aibff eval grader.deck.md --output results.toml
+  # Single grader with embedded samples (creates results/ folder)
+  aibff eval grader.deck.md
   
-  # Multiple graders with external samples
-  aibff eval grader1.deck.md grader2.deck.md samples.toml --output results.toml
+  # Multiple graders with external samples (creates results/ folder)
+  aibff eval grader1.deck.md grader2.deck.md samples.toml
   
-  # Multiple graders with embedded samples
-  aibff eval grader1.deck.md grader2.deck.md --output results.toml
+  # Custom output folder
+  aibff eval grader.deck.md --output my-evaluation
   
   # Parallel execution with custom concurrency
-  aibff eval grader1.deck.md grader2.deck.md --output results.toml --concurrency 5
+  aibff eval grader.deck.md --output my-eval --concurrency 5
   
   # Sequential mode (concurrency = 1)
-  aibff eval grader.deck.md --output results.toml --concurrency 1
+  aibff eval grader.deck.md --concurrency 1
 
 Environment:
   OPENROUTER_API_KEY    Required for LLM access
   ANTHROPIC_MODEL       Model to use (default: anthropic/claude-3.5-sonnet)
 
 Options:
+  --output folder   Output folder name (default: results)
   --concurrency N   Number of graders to run in parallel (default: 5)
 
 Output:
-  Results are written to a TOML file with sections for each grader.
-  If the output file exists, a timestamped version is created.
+  Creates a folder containing:
+    - results.toml: Evaluation results in TOML format
+    - results.html: Visual report with color-coded results
 `,
       );
       Deno.exit(0);
@@ -342,16 +375,15 @@ Output:
 
     // Parse arguments
     const outputIndex = args.indexOf("--output");
-    if (outputIndex === -1 || outputIndex === args.length - 1) {
-      printText("Error: --output flag is required", true);
-      printText(
-        "Usage: aibff eval <grader1.deck.md> [grader2.deck.md ...] [samples.jsonl|samples.toml] --output results.toml",
-        true,
-      );
-      Deno.exit(1);
+    let outputFolder = "results"; // Default folder
+    
+    if (outputIndex !== -1) {
+      if (outputIndex === args.length - 1) {
+        printText("Error: --output flag requires a folder name", true);
+        Deno.exit(1);
+      }
+      outputFolder = args[outputIndex + 1];
     }
-
-    const outputFile = args[outputIndex + 1];
 
     // Parse concurrency option
     let concurrency = 5; // default
@@ -383,8 +415,10 @@ Output:
     // Check if last argument is a samples file (ends with .jsonl or .toml but not .deck.md)
     const lastArg = filteredArgs[filteredArgs.length - 1];
     if (
-      lastArg.endsWith(".jsonl") ||
-      (lastArg.endsWith(".toml") && !lastArg.endsWith(".deck.md"))
+      lastArg && (
+        lastArg.endsWith(".jsonl") ||
+        (lastArg.endsWith(".toml") && !lastArg.endsWith(".deck.md"))
+      )
     ) {
       inputFile = lastArg;
       graderFiles = filteredArgs.slice(0, -1);
@@ -398,7 +432,7 @@ Output:
     }
 
     // Run evaluations
-    await runMultipleEvaluations(graderFiles, inputFile, outputFile, {
+    await runMultipleEvaluations(graderFiles, inputFile, outputFolder, {
       concurrency,
     });
   },
