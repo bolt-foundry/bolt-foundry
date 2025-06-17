@@ -1,5 +1,6 @@
 import type { Command } from "./types.ts";
 import { evalCommand } from "./eval.ts";
+import { calibrateCommand } from "./calibrate.ts";
 import { rebuildCommand } from "./rebuild.ts";
 import { replCommand } from "./repl.ts";
 
@@ -9,6 +10,9 @@ const registry: CommandRegistry = new Map();
 
 // Register the eval command
 registry.set("eval", evalCommand);
+
+// Register the calibrate command
+registry.set("calibrate", calibrateCommand);
 
 // Register the rebuild command
 registry.set("rebuild", rebuildCommand);

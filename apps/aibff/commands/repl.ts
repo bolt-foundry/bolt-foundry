@@ -94,19 +94,21 @@ interface LLMResponse {
   toolCalls?: Array<ToolCall>;
 }
 
-// Load the grader assistant deck
+// Load the grader creation assistant deck
 let assistantDeck: DeckBuilder | null = null;
 
 async function loadAssistantDeck(): Promise<DeckBuilder> {
-  const deckPath = new URL("../decks/grader-assistant.deck.md", import.meta.url).pathname;
+  const deckPath = new URL("../decks/grader-creation-assistant.deck.md", import.meta.url).pathname;
   const deckContent = await Deno.readTextFile(deckPath);
   const basePath = dirname(deckPath);
   const { deck } = await parseMarkdownToDeck(deckContent, basePath);
   return deck;
 }
 
-async function createSession(): Promise<SessionState> {
-  const sessionId = `session-${Date.now()}`;
+async function createSession(sessionId?: string): Promise<SessionState> {
+  if (!sessionId) {
+    sessionId = `session-${Date.now()}`;
+  }
   const sessionPath = join(Deno.cwd(), sessionId);
 
   await ensureDir(sessionPath);
@@ -250,52 +252,112 @@ Last modified at ${new Date(state.lastModified).toLocaleString()}
 
 function printWelcome(): void {
   ui.println("");
-  ui.printAssistant("Welcome to aibff REPL!");
+  ui.printAssistant("🚀 Grader Creation Assistant v0.3.0 - Ready!");
   ui.printInfo("Type 'exit' or 'quit' to end the session.\n");
 }
 
+async function verifyApiKey(apiKey: string): Promise<boolean> {
+  try {
+    // Make a minimal request to OpenRouter to verify the key
+    const response = await fetch("https://openrouter.ai/api/v1/models", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": "https://boltfoundry.com",
+        "X-Title": "Bolt Foundry REPL",
+      },
+    });
+
+    if (response.ok) {
+      return true;
+    } else if (response.status === 401 || response.status === 403) {
+      const errorBody = await response.text();
+      ui.printInfo(`Invalid API key: ${errorBody}`);
+      return false;
+    } else {
+      ui.printInfo(`Unexpected response from OpenRouter: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    ui.printInfo(`Failed to connect to OpenRouter: ${error instanceof Error ? error.message : String(error)}`);
+    return false;
+  }
+}
+
 async function checkApiKey(): Promise<string | null> {
-  const apiKey = getConfigurationVariable("OPENROUTER_API_KEY");
-  if (apiKey) return apiKey;
+  const existingKey = getConfigurationVariable("OPENROUTER_API_KEY");
+  
+  // If we have a key, verify it works
+  if (existingKey) {
+    ui.printInfo("Verifying OpenRouter API key...");
+    if (await verifyApiKey(existingKey)) {
+      ui.printInfo("✓ API key verified");
+      return existingKey;
+    } else {
+      ui.printInfo("✗ Existing API key is invalid");
+      // Fall through to prompt for new key
+    }
+  }
 
   ui.println("");
-  ui.printInfo("No OpenRouter API key found.");
+  ui.printInfo("No valid OpenRouter API key found.");
   ui.println("To use the AI assistant, you'll need an OpenRouter API key.");
   ui.println("You can get one at: https://openrouter.ai/keys");
   ui.println("");
-  ui.print("Enter your API key (or press Enter to skip): ");
-
+  
   const lineStream = ui.getInputStream();
-  for await (const line of lineStream) {
-    const input = line.trim();
-    if (!input) {
-      ui.printInfo("Skipping API key setup. You can set OPENROUTER_API_KEY later.");
-      return null;
-    }
+  let attempts = 0;
+  const maxAttempts = 3;
+  
+  while (attempts < maxAttempts) {
+    ui.print("Enter your API key (or press Enter to skip): ");
     
-    // Optionally save to .env.local
-    ui.print("Save to .env.local for future sessions? (y/n): ");
-    const saveStream = ui.getInputStream();
-    for await (const saveLine of saveStream) {
-      if (saveLine.trim().toLowerCase() === 'y') {
-        const envPath = join(Deno.cwd(), ".env.local");
-        let envContent = "";
-        try {
-          envContent = await Deno.readTextFile(envPath);
-        } catch {
-          // File doesn't exist yet
+    for await (const line of lineStream) {
+      const input = line.trim();
+      if (!input) {
+        ui.printInfo("Skipping API key setup. You can set OPENROUTER_API_KEY later.");
+        return null;
+      }
+      
+      // Verify the key before proceeding
+      ui.printInfo("Verifying API key...");
+      if (await verifyApiKey(input)) {
+        ui.printInfo("✓ API key verified successfully!");
+        
+        // Optionally save to .env.local
+        ui.print("Save to .env.local for future sessions? (y/n): ");
+        const saveStream = ui.getInputStream();
+        for await (const saveLine of saveStream) {
+          if (saveLine.trim().toLowerCase() === 'y') {
+            const envPath = join(Deno.cwd(), ".env.local");
+            let envContent = "";
+            try {
+              envContent = await Deno.readTextFile(envPath);
+            } catch {
+              // File doesn't exist yet
+            }
+            
+            if (!envContent.includes("OPENROUTER_API_KEY")) {
+              envContent += `\nOPENROUTER_API_KEY=${input}\n`;
+              await Deno.writeTextFile(envPath, envContent);
+              ui.printInfo("API key saved to .env.local");
+            }
+          }
+          break;
         }
         
-        if (!envContent.includes("OPENROUTER_API_KEY")) {
-          envContent += `\nOPENROUTER_API_KEY=${input}\n`;
-          await Deno.writeTextFile(envPath, envContent);
-          ui.printInfo("API key saved to .env.local");
+        return input;
+      } else {
+        attempts++;
+        if (attempts < maxAttempts) {
+          ui.printInfo(`Please try again (${attempts}/${maxAttempts} attempts)`);
+          break; // Break inner loop to prompt again
+        } else {
+          ui.printInfo("Maximum attempts reached. You can set OPENROUTER_API_KEY later.");
+          return null;
         }
       }
-      break;
     }
-    
-    return input;
   }
   
   return null;
@@ -361,7 +423,7 @@ async function callLLM(
   }
 
   // Prepare context for the deck
-  const recentHistory = await getConversationHistory(sessionState.sessionPath);
+  // Don't reload history since we already have it in messages array
   const context: Record<string, unknown> = {
     session_id: sessionState.sessionId,
     session_path: sessionState.sessionPath,
@@ -370,12 +432,7 @@ async function callLLM(
     evaluation_domain: sessionState.evaluationDomain || "",
     grader_name: sessionState.graderName || "",
     sample_count: 0, // TODO: Track this
-    conversation_history: { 
-      messages: recentHistory.map(msg => ({
-        role: msg.role,
-        content: msg.content
-      }))
-    },
+    conversation_count: messages.length,
     last_command_result: ""
   };
 
@@ -602,10 +659,57 @@ async function conversationLoop(state: SessionState, apiKey: string | null): Pro
   const lineStream = ui.getInputStream();
   const conversationMessages: Array<ConversationMessage> = [];
 
-  // Add initial assistant message
-  const welcomeMessage = "Welcome! I'm here to help you create a grader for evaluating AI outputs. Could you tell me what kind of AI responses you'd like to evaluate? For example, are you working with customer support responses, code generation, content creation, or something else?";
-  ui.printAssistant(welcomeMessage);
-  await appendToConversation(state.sessionPath, "Assistant", welcomeMessage);
+  // Load existing conversation history if resuming a session
+  if (state.conversationCount > 0) {
+    const history = await getConversationHistory(state.sessionPath, 20); // Load up to 20 previous messages
+    conversationMessages.push(...history);
+    
+    if (apiKey && history.length > 0) {
+      ui.printInfo(`Resuming conversation with ${history.length} previous messages loaded.`);
+      
+      // Show a brief summary of the last exchange
+      if (history.length >= 2) {
+        const lastUserMsg = history.slice().reverse().find(m => m.role === "user");
+        const lastAssistantMsg = history.slice().reverse().find(m => m.role === "assistant");
+        
+        if (lastUserMsg && lastAssistantMsg) {
+          ui.printInfo("\nLast exchange:");
+          ui.printInfo(`You: ${lastUserMsg.content.substring(0, 100)}${lastUserMsg.content.length > 100 ? '...' : ''}`);
+          ui.printInfo(`Assistant: ${lastAssistantMsg.content.substring(0, 100)}${lastAssistantMsg.content.length > 100 ? '...' : ''}`);
+          ui.println("");
+        }
+      }
+    }
+  } else {
+    // Generate AI welcome message for new sessions
+    if (apiKey) {
+      // Add a system message to prompt for welcome
+      const systemMessage: ConversationMessage = {
+        role: "system",
+        content: "Start the conversation by greeting the user and asking what kind of AI outputs they want to evaluate. Be friendly and helpful."
+      };
+      
+      try {
+        // Generate the welcome message using the LLM
+        const welcomeResponse = await callLLM([systemMessage], state, apiKey);
+        
+        if (welcomeResponse.content) {
+          await appendToConversation(state.sessionPath, "Assistant", welcomeResponse.content);
+          conversationMessages.push({ role: "assistant", content: welcomeResponse.content });
+        }
+      } catch (error) {
+        // Fallback to default welcome if generation fails
+        const fallbackWelcome = "Hello! I'm here to help you create graders for evaluating AI outputs. What kind of AI responses would you like to evaluate?";
+        ui.printAssistant(fallbackWelcome);
+        await appendToConversation(state.sessionPath, "Assistant", fallbackWelcome);
+        conversationMessages.push({ role: "assistant", content: fallbackWelcome });
+      }
+    } else {
+      ui.printInfo("Running in limited mode without AI assistance.");
+      ui.printInfo("Set OPENROUTER_API_KEY environment variable to enable AI features.");
+    }
+  }
+  
   ui.printUser("\nYou: ");
 
   for await (const line of lineStream) {
@@ -700,7 +804,7 @@ async function listSessions(): Promise<void> {
   const entries = [];
 
   for await (const entry of Deno.readDir(cwd)) {
-    if (entry.isDirectory && entry.name.startsWith("session-")) {
+    if (entry.isDirectory) {
       const sessionPath = join(cwd, entry.name);
       const state = await loadSessionState(sessionPath);
       if (state) {
@@ -709,6 +813,7 @@ async function listSessions(): Promise<void> {
           startTime: state.startTime,
           lastModified: state.lastModified,
           status: state.status,
+          purpose: state.purpose || "",
         });
       }
     }
@@ -733,6 +838,9 @@ async function listSessions(): Promise<void> {
       `    Last modified: ${new Date(entry.lastModified).toLocaleString()}`,
     );
     ui.printInfo(`    Status: ${entry.status}`);
+    if (entry.purpose) {
+      ui.printInfo(`    Purpose: ${entry.purpose}`);
+    }
     ui.println("");
   }
 }
@@ -740,7 +848,10 @@ async function listSessions(): Promise<void> {
 async function runRepl(args: Array<string>): Promise<void> {
   // Handle help flag
   if (args.includes("--help") || args.includes("-h")) {
-    ui.println("Usage: aibff repl [options]");
+    ui.println("Usage: aibff repl [session-name] [options]");
+    ui.println("");
+    ui.println("Arguments:");
+    ui.println("  session-name        Optional session name (resumes if exists, creates if new)");
     ui.println("");
     ui.println("Options:");
     ui.println("  --help, -h          Show this help message");
@@ -756,10 +867,13 @@ async function runRepl(args: Array<string>): Promise<void> {
     ui.println("");
     ui.println("Examples:");
     ui.println(
-      "  aibff repl                         # Start a new REPL session",
+      "  aibff repl                         # Start a new REPL session with timestamp name",
     );
     ui.println(
-      "  aibff repl --resume session-123    # Resume an existing session",
+      "  aibff repl my-grader               # Start or resume 'my-grader' session",
+    );
+    ui.println(
+      "  aibff repl --resume session-123    # Resume specific session",
     );
     ui.println("  aibff repl --list                  # List all sessions");
     return;
@@ -773,6 +887,13 @@ async function runRepl(args: Array<string>): Promise<void> {
 
   // Check for API key early
   const apiKey = await checkApiKey();
+
+  // Check for custom session name as first non-flag argument
+  let sessionName: string | null = null;
+  const nonFlagArgs = args.filter(arg => !arg.startsWith('--'));
+  if (nonFlagArgs.length > 0 && !args.includes("--resume")) {
+    sessionName = nonFlagArgs[0];
+  }
 
   // Handle resume flag
   const resumeIndex = args.indexOf("--resume");
@@ -789,9 +910,13 @@ async function runRepl(args: Array<string>): Promise<void> {
         throw new Error("Session not found or invalid");
       }
 
-      // Show welcome message
-      printWelcome();
-      ui.printInfo(`Resuming session: ${state.sessionPath}\n`);
+      // Only show welcome if we have a valid API key
+      if (apiKey) {
+        printWelcome();
+        ui.printInfo(`Resuming session: ${state.sessionPath}\n`);
+      } else {
+        ui.printInfo("No valid API key available. Running in limited mode.\n");
+      }
 
       // Start conversation loop
       await conversationLoop(state, apiKey);
@@ -807,12 +932,89 @@ async function runRepl(args: Array<string>): Promise<void> {
   }
 
   try {
-    // Create new session
-    const state = await createSession();
+    // If session name provided, check if it exists
+    if (sessionName) {
+      const sessionPath = join(Deno.cwd(), sessionName);
+      try {
+        const state = await loadSessionState(sessionPath);
+        if (state) {
+          // Session exists, resume it
+          ui.printInfo(`Found existing session: ${sessionName}`);
+          
+          if (apiKey) {
+            printWelcome();
+            ui.printInfo(`Resuming session: ${state.sessionPath}\n`);
+          } else {
+            ui.printInfo("No valid API key available. Running in limited mode.\n");
+          }
 
-    // Show welcome message
-    printWelcome();
-    ui.printInfo(`Session created: ${state.sessionPath}\n`);
+          await conversationLoop(state, apiKey);
+          return;
+        }
+      } catch {
+        // Session doesn't exist, will create new one below
+      }
+    }
+
+    // Create new session with custom name or timestamp
+    const sessionId = sessionName || `session-${Date.now()}`;
+    const sessionPath = join(Deno.cwd(), sessionId);
+
+    await ensureDir(sessionPath);
+
+    const now = new Date().toISOString();
+    const state: SessionState = {
+      sessionId,
+      sessionPath,
+      startTime: now,
+      conversationCount: 0,
+      lastModified: now,
+      sessionVersion: "0.2.0",
+      purpose: "",
+      status: "active",
+    };
+
+    // Initialize progress.md with TOML frontmatter
+    const progressContent = `+++
+sessionId = "${state.sessionId}"
+startTime = "${state.startTime}"
+status = "${state.status}"
+lastModified = "${state.lastModified}"
+conversationCount = ${state.conversationCount}
+sessionVersion = "${state.sessionVersion}"
+purpose = "${state.purpose}"
+currentStep = "initial"
+graderName = ""
+evaluationDomain = ""
++++
+
+# Session Progress
+
+Session started at ${new Date().toLocaleString()}
+`;
+
+    await Deno.writeTextFile(join(sessionPath, "progress.md"), progressContent);
+
+    // Initialize conversation.md
+    const conversationContent = `# Conversation History
+
+## Session 1: ${new Date().toLocaleDateString()}
+
+`;
+
+    await Deno.writeTextFile(
+      join(sessionPath, "conversation.md"),
+      conversationContent,
+    );
+
+    // Only show welcome if we have a valid API key
+    if (apiKey) {
+      printWelcome();
+      ui.printInfo(`Session created: ${state.sessionPath}\n`);
+    } else {
+      ui.printInfo("No valid API key available. Running in limited mode.");
+      ui.printInfo(`Session created: ${state.sessionPath}\n`);
+    }
 
     // Start conversation loop
     await conversationLoop(state, apiKey);

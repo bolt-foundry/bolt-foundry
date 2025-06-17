@@ -10,6 +10,7 @@ export interface ParallelEvalOptions {
   inputFile?: string;
   model: string;
   concurrency: number;
+  verbose?: boolean;
   onGraderComplete?: (
     graderFile: string,
     results: Array<GradingResult>,
@@ -35,6 +36,7 @@ async function runGrader(
   graderFile: string,
   inputFile: string | undefined,
   model: string,
+  verbose?: boolean,
   onSampleComplete?: (
     result: GradingResult,
     index: number,
@@ -45,6 +47,7 @@ async function runGrader(
     graderFile,
     inputFile,
     model,
+    verbose,
     onSampleComplete,
   });
 
@@ -62,6 +65,7 @@ export async function runParallelEval(
     inputFile,
     model,
     concurrency,
+    verbose,
     onGraderComplete,
     onSampleComplete,
   } = options;
@@ -79,6 +83,7 @@ export async function runParallelEval(
                 graderFile,
                 inputFile,
                 model,
+                verbose,
                 (result, index, total) => {
                   onSampleComplete?.(graderFile, result, index, total);
                 },

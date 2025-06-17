@@ -5,6 +5,8 @@ export interface GraderResult {
   notes: string;
   userMessage?: string;
   assistantResponse?: string;
+  graderMetadata?: Record<string, unknown>;
+  rawOutput?: string;
 }
 
 export interface GraderSection {

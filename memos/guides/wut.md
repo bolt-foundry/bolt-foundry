@@ -15,18 +15,21 @@ you're like "wut does this mean?????"
 | Beta                  | Testing phase before production                                                   | "Join the private beta waitlist"                  | [more](#project-phases)                                                                                                |
 | BF                    | Bolt Foundry                                                                      | "BF is building the OS for LLMs"                  |                                                                                                                        |
 | BFF                   | Bolt Foundry Friend (CLI tool)                                                    | "Run `bff test` to run tests"                     |                                                                                                                        |
-| Card                  | Foundation of Bolt Foundry - contains specs and spec items                        | "Create a new card for that pattern"              | [more](#cards)                                                                                                         |
+| Card                  | Component of a deck - contains specs and spec items                               | "Create a new card for that pattern"              | [more](#decks)                                                                                                         |
 | CD                    | Continuous Deployment                                                             | "Our CD pipeline deploys on merge"                |                                                                                                                        |
 | CI                    | Continuous Integration                                                            | "CI failed on your PR"                            |                                                                                                                        |
 | CLI                   | Command Line Interface                                                            | "Install our CLI with npm"                        |                                                                                                                        |
 | Complete              | Project status: done, just maintaining                                            | "The collector is complete ✅"                    | [more](#project-status)                                                                                                |
-| Constitution          | Anthropic's concept that inspired our card system                                 | "Cards are like constitutions but more flexible"  | [more](#card-types)                                                                                                    |
+| Constitution          | Anthropic's concept that inspired our deck system                                 | "Cards are like constitutions but more flexible"  | [more](#card-types)                                                                                                    |
+| Context               | Environment and background information within a deck                               | "Add context about the user's domain"             | [more](#decks)                                                                                                         |
+| Deck                  | Foundation of Bolt Foundry - contains cards, specs, leads, and context            | "Deploy the customer service deck"                | [more](#decks)                                                                                                         |
 | Deprecated            | Project status: please stop using                                                 | "contacts app is deprecated 🚫"                   | [more](#project-status)                                                                                                |
 | DSL                   | Domain-Specific Language                                                          | "We built a DSL for prompts"                      |                                                                                                                        |
 | Example               | We use "sample" instead                                                           | "Don't say example, say sample"                   | [more](#sample-vs-example)                                                                                             |
 | GPT                   | Generative Pre-trained Transformer                                                | "GPT-4 powers our system"                         |                                                                                                                        |
 | Important             | Has significant long-term impact                                                  | "This feature is important for our strategy"      | [Eisenhower matrix](https://en.wikipedia.org/wiki/Time_management#The_Eisenhower_Method)                               |
 | In Progress           | Project status: actively working on it                                            | "bolt-foundry is in progress 🚀"                  | [more](#project-status)                                                                                                |
+| Leads                 | Entry points and examples that guide deck usage                                   | "The leads show common interaction patterns"      | [more](#decks)                                                                                                         |
 | KPI                   | Key Performance Indicator (use "metric" instead)                                  | "Track metrics weekly"                            |                                                                                                                        |
 | Production            | Launched and fully supported                                                      | "Version 1.0 is in production"                    | [more](#project-phases)                                                                                                |
 | LLM                   | Large Language Model                                                              | "LLMs need structured prompts"                    |                                                                                                                        |
@@ -39,7 +42,7 @@ you're like "wut does this mean?????"
 | P0                    | THE thing we're heading toward                                                    | "Fixing the NextJS example is P0"                 | [more](#priority-system)                                                                                               |
 | P1.x                  | Someone is actively working on this                                               | "Documentation is P1.1"                           | [more](#priority-system)                                                                                               |
 | P2.x                  | We should do this soon                                                            | "Performance optimization is P2.1"                | [more](#priority-system)                                                                                               |
-| Persona Card          | Type of card defining core essence and characteristics                            | "The assistant persona card defines tone"         | [more](#cards)                                                                                                         |
+| Persona Card          | Type of card defining core essence and characteristics                            | "The assistant persona card defines tone"         | [more](#decks)                                                                                                         |
 | PLG                   | Product-Led Growth                                                                | "We follow PLG principles"                        |                                                                                                                        |
 | POC                   | Proof of Concept                                                                  | "Built a POC in two days"                         |                                                                                                                        |
 | PR                    | Pull Request                                                                      | "Your PR needs review"                            |                                                                                                                        |
@@ -53,7 +56,7 @@ you're like "wut does this mean?????"
 | Specs (or spec group) | Groups of related specs or other spec groups (can have samples)                   | "The validation specs contain three rules"        |                                                                                                                        |
 | SQL                   | Structured Query Language                                                         | "Write SQL queries for reports"                   |                                                                                                                        |
 | Stable                | Project status: works, not changing much                                          | "Logger is stable 🟢"                             | [more](#project-status)                                                                                                |
-| Structured prompt     | Prompt built from composable cards with defined specs                             | "Use structured prompts for reliability"          | [more](#cards)                                                                                                         |
+| Structured prompt     | Prompt built from decks with defined specs, cards, leads, and context             | "Use structured prompts for reliability"          | [more](#decks)                                                                                                         |
 | TBD                   | To Be Determined                                                                  | "Launch date TBD"                                 |                                                                                                                        |
 | TDD                   | Test-Driven Development                                                           | "We practice TDD"                                 |                                                                                                                        |
 | UBN                   | See P🔥 (UBN)                                                                     | "This is a P🔥"                                   | [more](#priority-system)                                                                                               |
@@ -61,17 +64,21 @@ you're like "wut does this mean?????"
 | Urgent                | Needs immediate attention                                                         | "This bug is urgent"                              | [Eisenhower matrix](https://en.wikipedia.org/wiki/Time_management#The_Eisenhower_Method)                               |
 | UX                    | User Experience                                                                   | "Focus on developer UX"                           |                                                                                                                        |
 
-## Cards
+## Decks
 
-Cards are the foundation of Bolt Foundry. They can be represented as markdown
-text or in code. Each card contains:
+Decks are the foundation of Bolt Foundry. A deck is a complete system that contains four key components:
 
-1. A title
-2. A summary
-3. Specs (or spec groups) - groups of related specs or other spec groups (can
-   have samples attached)
-4. Spec (or spec items) - individual rules or guidelines within specs (can have
-   samples attached)
+1. **Cards** - Define personas and behaviors, can be represented as markdown text or in code
+2. **Specs** - Rules and guidelines organized into groups (spec groups) or individual items (spec items)
+3. **Leads** - Entry points and examples that guide how to use the deck
+4. **Context** - Environment and background information that shapes the deck's behavior
+
+### Cards
+
+Each card within a deck contains:
+- A title
+- A summary
+- Associated specs and spec items
 
 Both specs and individual spec items can have samples attached to demonstrate
 the principle in action. While spec groups can be nested, we recommend limiting
@@ -89,8 +96,8 @@ components that both humans and machines can understand.
 
 Anthropic's
 [constitutional AI](https://www.anthropic.com/news/claudes-constitution) concept
-was an inspiration for our card system. While constitutions define AI behavior
-through principles, we expanded this into a more flexible card system.
+was an inspiration for our deck system. While constitutions define AI behavior
+through principles, we expanded this into a more flexible deck system.
 
 ## Priority system
 

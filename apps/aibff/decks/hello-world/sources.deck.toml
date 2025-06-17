@@ -1,0 +1,26 @@
+# Ground truth samples for grader creation process completion
+
+[samples.happy-path-complete]
+userMessage = "hi"
+assistantResponse = "hello world"
+score = 3
+
+[samples.wrong-greeting-failure]
+userMessage = "hi"
+assistantResponse = "I like to move it move it"
+score = -3
+
+[samples.partial-response-failure]
+userMessage = "hi"
+assistantResponse = "World"
+score = -3
+
+[samples.incomplete-greeting-failure]
+userMessage = "hi"
+assistantResponse = "Hello"
+score = -3
+
+[samples.case-mismatch-failure]
+userMessage = "hi"
+assistantResponse = "Hello World"
+score = -3

@@ -1,5 +1,14 @@
 import type { EvaluationData } from "../__tests__/fixtures/test-evaluation-results.ts";
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function generateEvaluationHtml(data: EvaluationData): string {
   const graderCount = Object.keys(data.graderResults).length;
   const singleGrader = graderCount === 1;
@@ -94,7 +103,7 @@ export function generateEvaluationHtml(data: EvaluationData): string {
       background-color: white;
       border: 1px solid #e0e0e0;
     }
-    .grader-reasoning {
+    .grader-reasoning, .user-message, .assistant-response, .grader-raw-response {
       margin-top: 15px;
       padding: 10px;
       background-color: white;
@@ -129,6 +138,25 @@ export function generateEvaluationHtml(data: EvaluationData): string {
     }
     .tab-content.active {
       display: block;
+    }
+    .verbose-prompt {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    .verbose-prompt pre, .grader-raw-response pre {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
   </style>
 </head>
@@ -189,20 +217,27 @@ export function generateEvaluationHtml(data: EvaluationData): string {
                   <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
                 </summary>
                 <div class="expandable-content">
-                  ${result.userMessage || result.assistantResponse ? `
-                  <div class="conversation">
-                    ${result.userMessage ? `
-                    <div>
-                      <div class="message-label">💬 User Message:</div>
-                      <div class="message-content">${result.userMessage}</div>
-                    </div>
-                    ` : ''}
-                    ${result.assistantResponse ? `
-                    <div style="margin-top: 10px;">
-                      <div class="message-label">🤖 Assistant Response:</div>
-                      <div class="message-content">${result.assistantResponse}</div>
-                    </div>
-                    ` : ''}
+                  ${result.userMessage ? `
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">${result.userMessage}</div>
+                    </details>
+                  </div>
+                  ` : ''}
+                  
+                  ${result.assistantResponse ? `
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">${result.assistantResponse}</div>
+                    </details>
                   </div>
                   ` : ''}
                   
@@ -223,8 +258,37 @@ export function generateEvaluationHtml(data: EvaluationData): string {
                   
                   ${result.notes ? `
                   <div class="grader-reasoning">
-                    <div class="message-label">💭 Grader's Reasoning:</div>
-                    <div class="message-content">${result.notes}</div>
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">${result.notes}</div>
+                    </details>
+                  </div>
+                  ` : ''}
+                  
+                  ${result.graderMetadata?.verbosePrompt ? `
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>${escapeHtml(result.graderMetadata.verbosePrompt as string)}</pre>
+                    </details>
+                  </div>
+                  ` : ''}
+                  
+                  ${result.rawOutput ? `
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>${escapeHtml(result.rawOutput)}</pre>
+                    </details>
                   </div>
                   ` : ''}
                 </div>
