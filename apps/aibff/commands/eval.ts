@@ -4,6 +4,10 @@ import { runEval } from "packages/bolt-foundry/evals/eval.ts";
 import { gray, green, red } from "@std/fmt/colors";
 import { stringify as stringifyToml } from "@std/toml";
 import type { Command } from "./types.ts";
+import {
+  printParallelProgress,
+  runParallelEval,
+} from "../lib/parallel-eval.ts";
 
 function printText(message: string, isError = false) {
   if (isError) {
@@ -59,6 +63,9 @@ async function runMultipleEvaluations(
   graderFiles: Array<string>,
   inputFile: string | undefined,
   outputFile: string,
+  options: {
+    concurrency: number;
+  },
 ) {
   // Check if output file exists, if so create timestamped version
   let actualOutputFile = outputFile;
@@ -98,103 +105,180 @@ async function runMultipleEvaluations(
     printText(`Using input file: ${inputFile}`, true);
   }
   printText(`Model: ${model}`, true);
+  printText(
+    `Concurrency: ${options.concurrency} grader${
+      options.concurrency > 1 ? "s" : ""
+    }`,
+    true,
+  );
   printText("", true);
 
   const output: OutputFile = { graderResults: {} };
 
-  // Run evaluation for each grader
-  for (let i = 0; i < graderFiles.length; i++) {
-    const graderFile = graderFiles[i];
-    const graderName = extractGraderName(graderFile);
+  if (options.concurrency === 1) {
+    // Sequential implementation
+    for (let i = 0; i < graderFiles.length; i++) {
+      const graderFile = graderFiles[i];
+      const graderName = extractGraderName(graderFile);
 
-    printText(
-      `\n[${i + 1}/${graderFiles.length}] Evaluating ${graderFile}...`,
-      true,
-    );
+      printText(
+        `\n[${i + 1}/${graderFiles.length}] Evaluating ${graderFile}...`,
+        true,
+      );
 
-    try {
-      const startTime = Date.now();
-      const results = await runEval({
-        graderFile,
-        inputFile,
-        model,
-        onSampleComplete: (result, index, total) => {
-          // Print progress to stderr
+      try {
+        const startTime = Date.now();
+        const results = await runEval({
+          graderFile,
+          inputFile,
+          model,
+          onSampleComplete: (result, index, total) => {
+            // Print progress to stderr
+            const graderScore = result.score;
+            const truthScore = result.sample.score;
+            const sampleId = result.sample.id || `sample-${index + 1}`;
+            const progress = `[${index + 1}/${total}]`;
+
+            if (truthScore !== undefined) {
+              const agree = graderScore === truthScore;
+              const symbol = agree ? "✓" : "✗";
+              const message =
+                `${progress} ${symbol} ${sampleId}: grader=${graderScore}, truth=${truthScore}`;
+              const coloredMessage = agree ? green(message) : red(message);
+              printText(coloredMessage, true);
+            } else {
+              const message =
+                `${progress} - ${sampleId}: grader=${graderScore}, truth=N/A`;
+              printText(gray(message), true);
+            }
+          },
+        });
+
+        // Calculate average distance to ground truth
+        let totalDistance = 0;
+        let samplesWithTruth = 0;
+
+        const graderResultsArray = results.map((result) => {
           const graderScore = result.score;
           const truthScore = result.sample.score;
-          const sampleId = result.sample.id || `sample-${index + 1}`;
-          const progress = `[${index + 1}/${total}]`;
+          const sampleId = result.sample.id || "unknown";
 
           if (truthScore !== undefined) {
-            const agree = graderScore === truthScore;
-            const symbol = agree ? "✓" : "✗";
-            const message =
-              `${progress} ${symbol} ${sampleId}: grader=${graderScore}, truth=${truthScore}`;
-            const coloredMessage = agree ? green(message) : red(message);
-            printText(coloredMessage, true);
-          } else {
-            const message =
-              `${progress} - ${sampleId}: grader=${graderScore}, truth=N/A`;
-            printText(gray(message), true);
+            totalDistance += Math.abs(graderScore - truthScore);
+            samplesWithTruth++;
           }
-        },
-      });
 
-      // Calculate average distance to ground truth
-      let totalDistance = 0;
-      let samplesWithTruth = 0;
+          return {
+            id: sampleId,
+            grader_score: graderScore,
+            truth_score: truthScore,
+            notes: result.output.reason || "",
+          };
+        });
 
-      const graderResultsArray = results.map((result) => {
-        const graderScore = result.score;
-        const truthScore = result.sample.score;
-        const sampleId = result.sample.id || "unknown";
+        const avgDistance = samplesWithTruth > 0
+          ? totalDistance / samplesWithTruth
+          : 0;
 
-        if (truthScore !== undefined) {
-          totalDistance += Math.abs(graderScore - truthScore);
-          samplesWithTruth++;
-        }
-
-        return {
-          id: sampleId,
-          grader_score: graderScore,
-          truth_score: truthScore,
-          notes: result.output.reason || "",
+        // Add to output structure
+        output.graderResults[graderName] = {
+          grader: graderFile,
+          model,
+          timestamp: new Date().toISOString(),
+          samples: results.length,
+          average_distance: Number(avgDistance.toFixed(2)),
+          results: graderResultsArray,
         };
-      });
 
-      const avgDistance = samplesWithTruth > 0
-        ? totalDistance / samplesWithTruth
-        : 0;
+        // Print summary for this grader
+        printText(`\nCompleted ${graderFile}:`, true);
+        printText(`  Total samples: ${results.length}`, true);
+        printText(
+          `  Average distance from truth: ${avgDistance.toFixed(2)}`,
+          true,
+        );
+        printText(
+          `  Evaluation time: ${((Date.now() - startTime) / 1000).toFixed(1)}s`,
+          true,
+        );
+      } catch (error) {
+        printText(
+          `Error evaluating ${graderFile}: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          true,
+        );
+        Deno.exit(1);
+      }
+    }
+  } else {
+    // Parallel implementation
+    const parallelResults = await runParallelEval({
+      graderFiles,
+      inputFile,
+      model,
+      concurrency: options.concurrency,
+      onSampleComplete: (graderFile, result, index, total) => {
+        printParallelProgress(graderFile, result, index, total);
+      },
+      onGraderComplete: (graderFile, results) => {
+        const graderName = extractGraderName(graderFile);
 
-      // Add to output structure
-      output.graderResults[graderName] = {
-        grader: graderFile,
-        model,
-        timestamp: new Date().toISOString(),
-        samples: results.length,
-        average_distance: Number(avgDistance.toFixed(2)),
-        results: graderResultsArray,
-      };
+        // Calculate average distance to ground truth
+        let totalDistance = 0;
+        let samplesWithTruth = 0;
 
-      // Print summary for this grader
-      printText(`\nCompleted ${graderFile}:`, true);
-      printText(`  Total samples: ${results.length}`, true);
-      printText(
-        `  Average distance from truth: ${avgDistance.toFixed(2)}`,
-        true,
-      );
-      printText(
-        `  Evaluation time: ${((Date.now() - startTime) / 1000).toFixed(1)}s`,
-        true,
-      );
-    } catch (error) {
-      printText(
-        `Error evaluating ${graderFile}: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-        true,
-      );
-      Deno.exit(1);
+        const graderResultsArray = results.map((result) => {
+          const graderScore = result.score;
+          const truthScore = result.sample.score;
+          const sampleId = result.sample.id || "unknown";
+
+          if (truthScore !== undefined) {
+            totalDistance += Math.abs(graderScore - truthScore);
+            samplesWithTruth++;
+          }
+
+          return {
+            id: sampleId,
+            grader_score: graderScore,
+            truth_score: truthScore,
+            notes: result.output.reason || "",
+          };
+        });
+
+        const avgDistance = samplesWithTruth > 0
+          ? totalDistance / samplesWithTruth
+          : 0;
+
+        // Add to output structure
+        output.graderResults[graderName] = {
+          grader: graderFile,
+          model,
+          timestamp: new Date().toISOString(),
+          samples: results.length,
+          average_distance: Number(avgDistance.toFixed(2)),
+          results: graderResultsArray,
+        };
+
+        // Print summary for this grader
+        printText(`\nCompleted ${graderFile}:`, true);
+        printText(`  Total samples: ${results.length}`, true);
+        printText(
+          `  Average distance from truth: ${avgDistance.toFixed(2)}`,
+          true,
+        );
+      },
+    });
+
+    // Check for errors
+    for (const result of parallelResults) {
+      if (result.error) {
+        printText(
+          `Error evaluating ${result.graderFile}: ${result.error.message}`,
+          true,
+        );
+        Deno.exit(1);
+      }
     }
   }
 
@@ -234,10 +318,19 @@ Examples:
   
   # Multiple graders with embedded samples
   aibff eval grader1.deck.md grader2.deck.md --output results.toml
+  
+  # Parallel execution with custom concurrency
+  aibff eval grader1.deck.md grader2.deck.md --output results.toml --concurrency 5
+  
+  # Sequential mode (concurrency = 1)
+  aibff eval grader.deck.md --output results.toml --concurrency 1
 
 Environment:
   OPENROUTER_API_KEY    Required for LLM access
   ANTHROPIC_MODEL       Model to use (default: anthropic/claude-3.5-sonnet)
+
+Options:
+  --concurrency N   Number of graders to run in parallel (default: 5)
 
 Output:
   Results are written to a TOML file with sections for each grader.
@@ -260,10 +353,28 @@ Output:
 
     const outputFile = args[outputIndex + 1];
 
-    // Remove --output and its value from args
-    const filteredArgs = args.filter((_, i) =>
-      i !== outputIndex && i !== outputIndex + 1
-    );
+    // Parse concurrency option
+    let concurrency = 5; // default
+
+    const concurrencyIndex = args.indexOf("--concurrency");
+    if (concurrencyIndex !== -1 && concurrencyIndex < args.length - 1) {
+      concurrency = parseInt(args[concurrencyIndex + 1]);
+      if (isNaN(concurrency) || concurrency < 1) {
+        printText("Error: --concurrency must be a positive number", true);
+        Deno.exit(1);
+      }
+    }
+
+    // Remove all flags from args
+    const filteredArgs = args.filter((arg, i) => {
+      if (arg === "--output" || (i > 0 && args[i - 1] === "--output")) {
+        return false;
+      }
+      if (
+        arg === "--concurrency" || (i > 0 && args[i - 1] === "--concurrency")
+      ) return false;
+      return true;
+    });
 
     // Determine graders and input file
     let graderFiles: Array<string> = [];
@@ -287,7 +398,9 @@ Output:
     }
 
     // Run evaluations
-    await runMultipleEvaluations(graderFiles, inputFile, outputFile);
+    await runMultipleEvaluations(graderFiles, inputFile, outputFile, {
+      concurrency,
+    });
   },
 };
 

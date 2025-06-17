@@ -198,6 +198,7 @@ Deno.test("eval should display correct info messages for embedded samples", asyn
     assertStringIncludes(info, "Running evaluation with 1 grader");
     assertStringIncludes(info, "Output file:");
     assertStringIncludes(info, "Model: anthropic/claude-3.5-sonnet");
+    assertStringIncludes(info, "Concurrency:");
   } finally {
     try {
       await Deno.remove(outputFile);
@@ -628,6 +629,80 @@ Deno.test("eval should calculate average distance correctly", () => {
       testCase.expected,
       `${testCase.name}: expected average distance of ${testCase.expected}`,
     );
+  }
+});
+
+Deno.test("eval should require --output flag when not provided", async () => {
+  const tempDir = await Deno.makeTempDir();
+  const originalCwd = Deno.cwd();
+
+  try {
+    // Change to temp directory for test
+    Deno.chdir(tempDir);
+
+    const command = new Deno.Command(Deno.execPath(), {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-net",
+        "--allow-write",
+        evalScript,
+        `${fixturesDir}/test-grader.deck.md`,
+      ],
+      env: {
+        ...Deno.env.toObject(),
+        OPENROUTER_API_KEY: "test-key",
+      },
+    });
+
+    const { code, stderr } = await command.output();
+    const error = new TextDecoder().decode(stderr);
+
+    // Should fail and require --output flag
+    assertEquals(code, 1);
+    assertStringIncludes(error, "--output flag is required");
+  } finally {
+    Deno.chdir(originalCwd);
+    await Deno.remove(tempDir, { recursive: true });
+  }
+});
+
+Deno.test("eval should write to custom output file with --output", async () => {
+  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
+
+  try {
+    const command = new Deno.Command(Deno.execPath(), {
+      args: [
+        "run",
+        "--allow-env",
+        "--allow-read",
+        "--allow-net",
+        "--allow-write",
+        evalScript,
+        `${fixturesDir}/test-grader.deck.md`,
+        `${fixturesDir}/test-samples.toml`,
+        "--output",
+        outputFile,
+      ],
+      env: {
+        ...Deno.env.toObject(),
+        OPENROUTER_API_KEY: "test-key",
+      },
+    });
+
+    const { stderr } = await command.output();
+    const info = new TextDecoder().decode(stderr);
+
+    // Should show output file (may be timestamped if file exists)
+    assertStringIncludes(info, "Output file:");
+    assertStringIncludes(info, "Using input file:");
+  } finally {
+    try {
+      await Deno.remove(outputFile);
+    } catch {
+      // Ignore errors
+    }
   }
 });
 
