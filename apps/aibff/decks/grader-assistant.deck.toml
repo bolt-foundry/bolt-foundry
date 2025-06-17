@@ -1,0 +1,136 @@
+# grader-assistant.deck.toml
+# Context variables and samples for the grader creation assistant
+
+# Dynamic session variables
+[contexts.currentGraderPath]
+type = "string"
+question = "What is the path to the current grader file?"
+description = "File path where the grader is being developed"
+example = "./graders/tone-grader.deck.md"
+
+[contexts.sessionId]
+type = "string"
+question = "What is the current session ID?"
+description = "Unique identifier for this grader creation session"
+example = "session-2024-01-15-14-30"
+
+[contexts.userGoal]
+type = "string"
+question = "What type of grader does the user want to create?"
+description = "The user's stated goal for their grader"
+example = "evaluate customer support response helpfulness"
+
+[contexts.evaluationDimension]
+type = "string"
+question = "What single dimension will this grader evaluate?"
+description = "The focused evaluation criteria chosen for this grader"
+example = "helpfulness"
+
+[contexts.sampleCount]
+type = "number"
+question = "How many samples have been collected?"
+description = "Number of example samples provided by the user"
+example = 10
+
+[contexts.graderStage]
+type = "string"
+question = "What stage of grader creation are we in?"
+description = "Current phase: sample_collection, dimension_discovery, generation, refinement"
+example = "dimension_discovery"
+
+# Example interactions for different phases
+
+## Phase 1: Sample Collection
+[samples.initial-greeting]
+userMessage = "I want to create a grader for customer support responses"
+assistantResponse = "I'll help you create a grader for customer support responses. Let's start by gathering some examples.\n\nCould you share a few examples of good and bad customer support responses? You can paste them directly or point me to a file."
+score = 3
+description = "Friendly introduction that immediately asks for samples"
+
+[samples.sample-format-help]
+userMessage = "How should I format the samples?"
+assistantResponse = "Great question! Samples should be in JSONL format, with each line containing:\n```json\n{\"user\": \"customer question here\", \"assistant\": \"support response here\"}\n```\n\nFor example:\n```json\n{\"user\": \"My package hasn't arrived\", \"assistant\": \"I apologize for the delay. Let me track that for you right away.\"}\n```\n\nWould you like to paste some examples or do you have them in a file?"
+score = 3
+description = "Clear formatting explanation with example"
+
+[samples.reading-file]
+userMessage = "I have samples in support-samples.jsonl"
+assistantResponse = "Let me read those samples to understand what we're working with.\n\n[Reads file]\n\nI found 25 customer support interactions covering topics like:\n- Order issues (10 samples)\n- Technical problems (8 samples)  \n- Account questions (7 samples)\n\nWhat specific aspect of these responses would you like the grader to evaluate?"
+score = 3
+description = "Reads file, summarizes content, asks for dimension"
+
+## Phase 2: Dimension Discovery
+[samples.multiple-dimensions-redirect]
+userMessage = "I want to grade on helpfulness, accuracy, and tone"
+assistantResponse = "I understand you want to evaluate all three aspects. Graders work best when focused on a single dimension - this makes the scoring more consistent and easier to understand.\n\nOf helpfulness, accuracy, and tone, which one is most important for your current needs? We can create additional graders for the other dimensions later."
+score = 3
+description = "Gently redirects to single dimension focus"
+
+[samples.clarifying-dimension]
+userMessage = "What do you mean by a single dimension?"
+assistantResponse = "A single dimension means evaluating just one specific aspect of the response. For example:\n\n- **Helpfulness**: Does the response solve the customer's problem?\n- **Tone**: Is the response friendly and professional?\n- **Accuracy**: Is the information correct?\n\nBy focusing on one aspect, your grader can give clear, consistent scores. Think of it like a specialist rather than a generalist.\n\nWhich aspect matters most for your use case?"
+score = 3
+description = "Explains single dimension concept with examples"
+
+[samples.dimension-confirmation]
+userMessage = "Let's focus on helpfulness"
+assistantResponse = "Perfect! We'll create a grader focused on helpfulness - specifically evaluating how well the support response addresses and resolves the customer's issue.\n\nLooking at your samples, I can see responses ranging from very helpful (offering specific solutions) to unhelpful (generic responses that don't address the problem).\n\nLet me generate an initial grader based on this dimension."
+score = 3
+description = "Confirms dimension and sets up for generation"
+
+## Phase 3: Grader Generation
+[samples.generating-grader]
+userMessage = "Yes, please generate the grader"
+assistantResponse = "I'll create a helpfulness grader using your samples.\n\n[Running: aibff grader generate --samples support-samples.jsonl --dimension helpfulness]\n\nI've created an initial grader that evaluates helpfulness on a scale from -3 to +3:\n- **+3**: Directly solves the problem with clear steps\n- **+1**: Addresses the issue but could be clearer\n- **-1**: Generic response, minimal help\n- **-3**: Unhelpful or ignores the problem\n\nWould you like to test this on a few samples to see how it performs?"
+score = 3
+description = "Generates grader and explains scoring scale"
+
+[samples.grader-structure-explanation]
+userMessage = "Can you show me what the grader looks like?"
+assistantResponse = "Here's the structure of your helpfulness grader:\n\n```markdown\n# Customer Support Helpfulness Grader\n\n## Evaluation Criteria\nThis grader evaluates how effectively a support response helps resolve the customer's issue.\n\n## Scoring Guide\n- +3: Provides complete solution with clear action steps\n- +2: Addresses the issue well with minor gaps\n- +1: Somewhat helpful but lacks detail\n- 0: Neutral, neither helpful nor unhelpful\n- -1: Generic response that doesn't address specifics\n- -2: Minimal effort to help\n- -3: Actively unhelpful or dismissive\n```\n\nThe grader will analyze each response against these criteria. Should we test it?"
+score = 3
+description = "Shows grader structure clearly"
+
+## Phase 4: Testing and Refinement
+[samples.test-results]
+userMessage = "Yes, let's test it"
+assistantResponse = "I'll run the grader on a subset of your samples.\n\n[Running: aibff eval --grader helpfulness-grader.deck.md --samples test-samples.jsonl]\n\nResults from 5 test samples:\n- Sample 1: Score +3 ✓ (matches expected)\n- Sample 2: Score +2 ✓ (matches expected)\n- Sample 3: Score 0 ✗ (expected +2)\n- Sample 4: Score +3 ✓ (matches expected)\n- Sample 5: Score -1 ✓ (matches expected)\n\nThe grader is 80% aligned with expectations. Sample 3 seems to be scored too low - would you like to see why and adjust the grader?"
+score = 3
+description = "Shows test results with clear pass/fail indicators"
+
+[samples.analyzing-disagreement]
+userMessage = "Yes, why did sample 3 score low?"
+assistantResponse = "Let me show you sample 3:\n\n**Customer**: \"How do I reset my password?\"\n**Support**: \"You can reset your password from the login page.\"\n\nThe grader gave this a 0 (neutral) because while it mentions where to reset the password, it doesn't provide specific steps. Your expectation of +2 suggests you value any correct direction as helpful.\n\nWould you like to:\n1. Adjust the grader to be more lenient about step-by-step instructions\n2. Keep the grader strict and add more samples to clarify expectations\n3. Manually calibrate this specific case"
+score = 3
+description = "Analyzes disagreement and offers solutions"
+
+[samples.calibration]
+userMessage = "Let's calibrate to be more lenient"
+assistantResponse = "I'll adjust the grader to recognize that pointing users in the right direction is helpful, even without detailed steps.\n\n[Running: aibff grader calibrate --grader helpfulness-grader.deck.md --adjustment \"Value correct direction even without step-by-step instructions\"]\n\nCalibration complete. The updated scoring now considers:\n- Correct direction without steps: +1 to +2\n- Correct direction with clear steps: +2 to +3\n\nLet me re-test sample 3... It now scores +2 ✓\n\nWould you like to test on more samples or are you satisfied with this grader?"
+score = 3
+description = "Performs calibration and retests"
+
+## Edge Cases and Advanced Scenarios
+[samples.insufficient-samples]
+userMessage = "I only have 3 examples"
+assistantResponse = "Three examples is a good start, but for a reliable grader, I recommend at least 10-15 samples that show the full range of quality.\n\nWith your 3 examples, we can:\n1. Create an initial grader and iterate as you gather more samples\n2. I can help you generate synthetic examples based on your 3\n3. We can start simple and refine over time\n\nWhich approach would you prefer?"
+score = 3
+description = "Handles insufficient sample size gracefully"
+
+[samples.unclear-dimension]
+userMessage = "I want to grade if responses are 'good'"
+assistantResponse = "I understand you want to identify good responses. 'Good' can mean different things - let me help you get more specific.\n\nLooking at your samples, what makes a response 'good' to you?\n- Does it solve the problem? (helpfulness)\n- Is it polite and professional? (tone)  \n- Is the information accurate? (correctness)\n- Is it easy to understand? (clarity)\n\nWhich of these aspects is most important for determining if a response is 'good' in your context?"
+score = 3
+description = "Helps user clarify vague requirements"
+
+[samples.session-resume]
+userMessage = "Hi, I was working on a grader yesterday"
+assistantResponse = "Welcome back! Let me check your previous session.\n\nI found your session from yesterday where you were creating a helpfulness grader for customer support responses. You had:\n- Collected 25 samples\n- Chosen 'helpfulness' as your dimension\n- Generated an initial grader\n- Were in the testing phase with 80% accuracy\n\nWould you like to continue refining this grader, or start something new?"
+score = 3
+description = "Resumes previous session with context"
+
+[samples.export-grader]
+userMessage = "The grader looks good, what's next?"
+assistantResponse = "Great! Your helpfulness grader is ready to use. Here are the next steps:\n\n1. **Test on production data**: Run it on real examples from your system\n2. **Monitor performance**: Watch for edge cases you might have missed\n3. **Integration**: Use `aibff eval` in your pipeline or API\n4. **Create companion graders**: Consider graders for other dimensions like tone or accuracy\n\nYour grader is saved at: `./graders/helpfulness-grader.deck.md`\n\nWould you like help with any of these next steps?"
+score = 3
+description = "Provides clear next steps after completion"
