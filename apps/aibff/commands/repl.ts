@@ -4,7 +4,7 @@ import type { Command } from "./types.ts";
 import { TextLineStream } from "@std/streams/text-line-stream";
 import { ensureDir } from "@std/fs";
 import { join, dirname } from "@std/path";
-import { gray, white, yellow, green, red } from "@std/fmt/colors";
+import { gray, white, type yellow, type green, type red } from "@std/fmt/colors";
 import { parseMarkdownToDeck } from "packages/bolt-foundry/builders/markdown/markdownToDeck.ts";
 import type { DeckBuilder, JSONValue } from "packages/bolt-foundry/builders/builders.ts";
 import { getConfigurationVariable } from "packages/get-configuration-var/get-configuration-var.ts";

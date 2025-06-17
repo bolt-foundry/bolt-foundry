@@ -1,4 +1,35 @@
-import type { EvaluationData } from "../__tests__/fixtures/test-evaluation-results.ts";
+// Interface for evaluation results
+interface EvaluationResult {
+  id: string;
+  grader_score: number;
+  truth_score?: number;
+  notes: string;
+  userMessage?: string;
+  assistantResponse?: string;
+  graderMetadata?: Record<string, unknown>;
+  rawOutput?: string;
+}
+
+interface ModelResults {
+  model: string;
+  timestamp: string;
+  samples: number;
+  average_distance: number;
+  results: Array<EvaluationResult>;
+}
+
+interface GraderResults {
+  grader: string;
+  models: Record<string, ModelResults>;
+}
+
+interface EvaluationDataNested {
+  graderResults: Record<string, GraderResults>;
+}
+
+interface EvaluationDataFlat {
+  graderResults: Record<string, ModelResults & { grader: string }>;
+}
 
 function escapeHtml(text: string): string {
   return text
@@ -20,9 +51,38 @@ function formatJson(jsonString: string): string {
   }
 }
 
-export function generateEvaluationHtml(data: EvaluationData): string {
-  const graderCount = Object.keys(data.graderResults).length;
-  const singleGrader = graderCount === 1;
+export function generateEvaluationHtml(data: EvaluationDataNested | EvaluationDataFlat): string {
+  // Detect if we have nested structure (grader.models) or flat structure
+  const firstGrader = Object.values(data.graderResults)[0];
+  const isNested = firstGrader && 'models' in firstGrader;
+  
+  // Create tab entries based on structure
+  const tabEntries: Array<{key: string, label: string, graderName: string, modelName?: string}> = [];
+  
+  if (isNested) {
+    // Nested structure: create tabs for each grader-model combination
+    Object.entries((data as EvaluationDataNested).graderResults).forEach(([graderName, graderData]) => {
+      Object.entries(graderData.models || {}).forEach(([modelKey]) => {
+        tabEntries.push({
+          key: `${graderName}-${modelKey}`,
+          label: `${graderName}-${modelKey}`,
+          graderName,
+          modelName: modelKey
+        });
+      });
+    });
+  } else {
+    // Flat structure: create tabs for each grader
+    Object.keys(data.graderResults).forEach(graderName => {
+      tabEntries.push({
+        key: graderName,
+        label: graderName,
+        graderName
+      });
+    });
+  }
+  
+  const singleTab = tabEntries.length === 1;
   
   return `<!DOCTYPE html>
 <html>
@@ -179,27 +239,38 @@ export function generateEvaluationHtml(data: EvaluationData): string {
     ${JSON.stringify(data)}
     </script>
   
-    ${!singleGrader ? `
+    ${!singleTab ? `
     <div class="tabs">
-      ${Object.keys(data.graderResults).map((name, index) => `
-        <button class="tab ${index === 0 ? 'active' : ''}" onclick="showTab('${name}')">${name}</button>
+      ${tabEntries.map((entry, index) => `
+        <button class="tab ${index === 0 ? 'active' : ''}" onclick="showTab('${entry.key}')">${entry.label}</button>
       `).join('')}
     </div>
     ` : ''}
     
-    ${Object.entries(data.graderResults).map(([graderName, graderData], index) => {
-      const samplesWithTruth = graderData.results.filter(r => r.truth_score !== undefined).length;
-      const agreements = graderData.results.filter(r => r.grader_score === r.truth_score).length;
+    ${tabEntries.map((entry, index) => {
+      // Get the actual data based on nested or flat structure
+      let resultData: ModelResults;
+      if (isNested) {
+        const nestedData = data as EvaluationDataNested;
+        resultData = nestedData.graderResults[entry.graderName].models[entry.modelName!];
+      } else {
+        const flatData = data as EvaluationDataFlat;
+        resultData = flatData.graderResults[entry.graderName];
+      }
+      
+      const samplesWithTruth = resultData.results.filter(r => r.truth_score !== undefined).length;
+      const agreements = resultData.results.filter(r => r.grader_score === r.truth_score).length;
       const agreementPercent = samplesWithTruth > 0 ? (agreements / samplesWithTruth * 100).toFixed(1) : 0;
       
       return `
-    <div class="tab-content ${singleGrader || index === 0 ? 'active' : ''}" id="tab-${graderName}">
-      <h2>${graderName}</h2>
+    <div class="tab-content ${singleTab || index === 0 ? 'active' : ''}" id="tab-${entry.key}">
+      <h2>${entry.label}</h2>
       
       <div class="summary">
-        <p><strong>Model:</strong> ${graderData.model}</p>
-        <p><strong>Total Samples:</strong> ${graderData.samples}</p>
-        <p><strong>Average Distance:</strong> ${graderData.average_distance}</p>
+        <p><strong>Grader:</strong> ${entry.graderName}</p>
+        <p><strong>Model:</strong> ${resultData.model}</p>
+        <p><strong>Total Samples:</strong> ${resultData.samples}</p>
+        <p><strong>Average Distance:</strong> ${resultData.average_distance}</p>
         <p><strong>Agreement:</strong> ${agreementPercent}% (${agreements}/${samplesWithTruth})</p>
       </div>
     
@@ -213,7 +284,7 @@ export function generateEvaluationHtml(data: EvaluationData): string {
         </tr>
       </thead>
       <tbody>
-        ${graderData.results.map((result, resultIndex) => {
+        ${resultData.results.map((result, resultIndex) => {
           const distance = result.truth_score !== undefined
             ? Math.abs(result.grader_score - result.truth_score)
             : 0;
@@ -318,7 +389,7 @@ export function generateEvaluationHtml(data: EvaluationData): string {
     }).join("")}
   </div>
   
-  ${!singleGrader ? `
+  ${!singleTab ? `
   <script>
     function showTab(graderName) {
       // Hide all tabs

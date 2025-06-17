@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bff test
 
-import { assertEquals, assertExists, assertStringIncludes } from "@std/assert";
-import { parse as parseToml } from "@std/toml";
+import { assertEquals, type assertExists, assertStringIncludes } from "@std/assert";
+import type { parse as parseToml } from "@std/toml";
 
 const evalScript = new URL("../../commands/eval.ts", import.meta.url).pathname;
 const fixturesDir = new URL("../fixtures", import.meta.url).pathname;

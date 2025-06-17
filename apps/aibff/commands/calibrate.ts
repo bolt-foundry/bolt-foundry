@@ -4,7 +4,7 @@ import { runEval } from "packages/bolt-foundry/evals/eval.ts";
 import { gray, green, red } from "@std/fmt/colors";
 import { stringify as stringifyToml } from "@std/toml";
 import type { Command } from "./types.ts";
-import {
+import type {
   printParallelProgress,
   runParallelEval,
 } from "../lib/parallel-eval.ts";
@@ -26,8 +26,8 @@ function getConfigVar(key: string): string | undefined {
   return Deno.env.get(key);
 }
 
-interface GraderResultsSection {
-  grader: string;
+// Result for a single model evaluation
+interface ModelResultsSection {
   model: string;
   timestamp: string;
   samples: number;
@@ -40,9 +40,17 @@ interface GraderResultsSection {
     userMessage?: string;
     assistantResponse?: string;
     graderMetadata?: Record<string, unknown>;
+    rawOutput?: string;
   }>;
 }
 
+// Grader results always have nested structure
+interface GraderResultsSection {
+  grader: string;
+  models: Record<string, ModelResultsSection>;
+}
+
+// Output file structure
 interface OutputFile {
   graderResults: Record<string, GraderResultsSection>;
   graderOrder: Array<string>;
@@ -52,6 +60,20 @@ function extractGraderName(graderPath: string): string {
   // Extract grader name from path like "graders/tone-grader.deck.md" => "tone-grader"
   const fileName = graderPath.split("/").pop() || graderPath;
   return fileName.replace(/\.deck\.md$/, "");
+}
+
+function shortenModelName(model: string): string {
+  // Convert model names to shorter versions for display
+  // "anthropic/claude-3.5-sonnet" => "claude-3.5"
+  // "openai/gpt-4" => "gpt-4"
+  const parts = model.split("/");
+  const modelName = parts[parts.length - 1];
+  
+  // Remove common suffixes
+  return modelName
+    .replace(/-sonnet$/, "")
+    .replace(/-turbo$/, "")
+    .replace(/-preview$/, "");
 }
 
 function generateTimestampedFileName(baseFile: string): string {
@@ -69,7 +91,7 @@ async function runMultipleEvaluations(
   graderFiles: Array<string>,
   inputFile: string | undefined,
   outputFolder: string,
-  models: string[],
+  models: Array<string>,
   options: {
     concurrency: number;
     verbose?: boolean;
@@ -130,15 +152,34 @@ async function runMultipleEvaluations(
   // Initialize grader order based on command line order
   const graderOrder = graderFiles.map(extractGraderName);
   const output: OutputFile = { graderResults: {}, graderOrder };
+  
+  // Initialize grader sections
+  for (const graderFile of graderFiles) {
+    const graderName = extractGraderName(graderFile);
+    output.graderResults[graderName] = {
+      grader: graderFile,
+      models: {},
+    };
+  }
+
+  // Create all grader-model combinations
+  const combinations: Array<{ grader: string; model: string }> = [];
+  for (const graderFile of graderFiles) {
+    for (const model of models) {
+      combinations.push({ grader: graderFile, model });
+    }
+  }
 
   if (options.concurrency === 1) {
     // Sequential implementation
-    for (let i = 0; i < graderFiles.length; i++) {
-      const graderFile = graderFiles[i];
+    let combinationIndex = 0;
+    for (const { grader: graderFile, model } of combinations) {
+      combinationIndex++;
       const graderName = extractGraderName(graderFile);
+      const modelShortName = shortenModelName(model);
 
       printText(
-        `\n[${i + 1}/${graderFiles.length}] Calibrating ${graderFile}...`,
+        `\n[${combinationIndex}/${combinations.length}] Calibrating ${graderName} with ${model}...`,
         true,
       );
 
@@ -147,7 +188,7 @@ async function runMultipleEvaluations(
         const results = await runEval({
           graderFile,
           inputFile,
-          model: models[0], // TODO: Handle multiple models properly
+          model,
           verbose: options.verbose,
           onSampleComplete: (result, index, total) => {
             // Print progress to stderr
@@ -201,18 +242,17 @@ async function runMultipleEvaluations(
           ? totalDistance / samplesWithTruth
           : 0;
 
-        // Add to output structure
-        output.graderResults[graderName] = {
-          grader: graderFile,
-          model: models[0], // TODO: Handle multiple models properly
+        // Add to output structure - store under the model key
+        output.graderResults[graderName].models[modelShortName] = {
+          model,
           timestamp: new Date().toISOString(),
           samples: results.length,
           average_distance: Number(avgDistance.toFixed(2)),
           results: graderResultsArray,
         };
 
-        // Print summary for this grader
-        printText(`\nCompleted ${graderFile}:`, true);
+        // Print summary for this grader-model combination
+        printText(`\nCompleted ${graderName} with ${model}:`, true);
         printText(`  Total samples: ${results.length}`, true);
         printText(
           `  Average distance from truth: ${avgDistance.toFixed(2)}`,
@@ -224,7 +264,7 @@ async function runMultipleEvaluations(
         );
       } catch (error) {
         printText(
-          `Error calibrating ${graderFile}: ${
+          `Error calibrating ${graderName} with ${model}: ${
             error instanceof Error ? error.message : String(error)
           }`,
           true,
@@ -234,6 +274,12 @@ async function runMultipleEvaluations(
     }
   } else {
     // Parallel implementation
+    // TODO: Rewrite parallel implementation to handle grader×model combinations
+    printText("Parallel execution with multiple models not yet implemented", true);
+    printText("Please use --concurrency 1 for sequential execution", true);
+    Deno.exit(1);
+    
+    /*
     const parallelResults = await runParallelEval({
       graderFiles,
       inputFile,
@@ -306,6 +352,7 @@ async function runMultipleEvaluations(
         Deno.exit(1);
       }
     }
+    */
   }
 
   // Write output files
@@ -422,7 +469,7 @@ Output:
     const verbose = args.includes("--verbose");
 
     // Parse model option
-    let models: string[] = ["openai/gpt-3.5-turbo"]; // default
+    let models: Array<string> = ["openai/gpt-3.5-turbo"]; // default
     const modelIndex = args.indexOf("--model");
     if (modelIndex !== -1 && modelIndex < args.length - 1) {
       const modelArg = args[modelIndex + 1];

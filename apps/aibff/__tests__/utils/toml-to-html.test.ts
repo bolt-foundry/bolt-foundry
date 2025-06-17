@@ -108,7 +108,7 @@ Deno.test("generateEvaluationHtml should show model names as tabs for single gra
 Deno.test("generateEvaluationHtml should show grader-model as tabs for multiple graders + multiple models", () => {
   // Mock implementation for testing
   const mockGenerateHtmlForNestedData = (data: any) => {
-    const tabs: string[] = [];
+    const tabs: Array<string> = [];
     Object.entries(data.graderResults).forEach(([graderKey, grader]: [string, any]) => {
       Object.keys(grader.models || {}).forEach(modelKey => {
         tabs.push(`<button class="tab">${graderKey}-${modelKey}</button>`);

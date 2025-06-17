@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bff test
 
 import { assertEquals, assertStringIncludes } from "@std/assert";
-import { parse as parseToml } from "@std/toml";
+import type { parse as parseToml } from "@std/toml";
 
 /**
  * Integration tests for the aibff calibrate command
@@ -14,7 +14,7 @@ const calibrateScript = new URL("../../commands/calibrate.ts", import.meta.url).
 const fixturesDir = new URL("../fixtures", import.meta.url).pathname;
 
 // Helper to run calibrate command with args
-async function runCalibrate(args: string[]) {
+async function runCalibrate(args: Array<string>) {
   const command = new Deno.Command(Deno.execPath(), {
     args: [
       "run",
@@ -322,7 +322,7 @@ assistant = "Test answer"
   }
 });
 
-Deno.test("calibrate should maintain flat structure for single model (backward compatible)", async () => {
+Deno.test("calibrate should use nested structure even for single model", async () => {
   const tempGrader = await Deno.makeTempFile({
     suffix: ".deck.md",
     prefix: "test-grader-",
@@ -354,9 +354,8 @@ assistant = "Test answer"
     // In a real test, we would:
     // 1. Check that code === 0 (success)
     // 2. Read the output TOML file
-    // 3. Verify it has the flat structure:
-    //    [graderResults."test-grader"]
-    //    (no .models intermediate level)
+    // 3. Verify it has the nested structure:
+    //    [graderResults."test-grader".models."gpt-3.5"]
   } finally {
     await Deno.remove(tempGrader);
     await Deno.remove(tempDir, { recursive: true });
