@@ -9,6 +9,17 @@ function escapeHtml(text: string): string {
     .replace(/'/g, '&#39;');
 }
 
+function formatJson(jsonString: string): string {
+  try {
+    // Try to parse and prettify JSON
+    const parsed = JSON.parse(jsonString);
+    return JSON.stringify(parsed, null, 2);
+  } catch {
+    // If not valid JSON, return as-is
+    return jsonString;
+  }
+}
+
 export function generateEvaluationHtml(data: EvaluationData): string {
   const graderCount = Object.keys(data.graderResults).length;
   const singleGrader = graderCount === 1;
@@ -287,7 +298,7 @@ export function generateEvaluationHtml(data: EvaluationData): string {
                         <span class="message-label">🤖 Grader Raw Response</span>
                         <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
                       </summary>
-                      <pre>${escapeHtml(result.rawOutput)}</pre>
+                      <pre>${escapeHtml(formatJson(result.rawOutput))}</pre>
                     </details>
                   </div>
                   ` : ''}

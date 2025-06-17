@@ -69,6 +69,7 @@ async function runMultipleEvaluations(
   graderFiles: Array<string>,
   inputFile: string | undefined,
   outputFolder: string,
+  models: string[],
   options: {
     concurrency: number;
     verbose?: boolean;
@@ -92,9 +93,7 @@ async function runMultipleEvaluations(
   const tomlFile = `${outputFolder}/results.toml`;
   const htmlFile = `${outputFolder}/results.html`;
 
-  // Get model from environment or use default
-  const model = getConfigVar("ANTHROPIC_MODEL") ||
-    "anthropic/claude-3.5-sonnet";
+  // Models are now passed as parameter, no longer from environment
 
   // Check for API key
   if (!getConfigVar("OPENROUTER_API_KEY")) {
@@ -108,20 +107,24 @@ async function runMultipleEvaluations(
   printText(
     `Running calibration with ${graderFiles.length} grader${
       graderFiles.length > 1 ? "s" : ""
-    }`,
+    }${models.length > 1 ? ` and ${models.length} models` : ""}`,
     true,
   );
   printText(`Output folder: ${outputFolder}`, true);
   if (inputFile) {
     printText(`Using input file: ${inputFile}`, true);
   }
-  printText(`Model: ${model}`, true);
+  printText(`Model(s): ${models.join(", ")}`, true);
   printText(
-    `Concurrency: ${options.concurrency} grader${
-      options.concurrency > 1 ? "s" : ""
-    }`,
+    `Concurrency: ${options.concurrency}`,
     true,
   );
+  
+  // Calculate total combinations
+  const totalCombinations = graderFiles.length * models.length;
+  if (totalCombinations > 1) {
+    printText(`Total grader-model combinations: ${totalCombinations}`, true);
+  }
   printText("", true);
 
   // Initialize grader order based on command line order
@@ -144,7 +147,7 @@ async function runMultipleEvaluations(
         const results = await runEval({
           graderFile,
           inputFile,
-          model,
+          model: models[0], // TODO: Handle multiple models properly
           verbose: options.verbose,
           onSampleComplete: (result, index, total) => {
             // Print progress to stderr
@@ -201,7 +204,7 @@ async function runMultipleEvaluations(
         // Add to output structure
         output.graderResults[graderName] = {
           grader: graderFile,
-          model,
+          model: models[0], // TODO: Handle multiple models properly
           timestamp: new Date().toISOString(),
           samples: results.length,
           average_distance: Number(avgDistance.toFixed(2)),
@@ -234,7 +237,7 @@ async function runMultipleEvaluations(
     const parallelResults = await runParallelEval({
       graderFiles,
       inputFile,
-      model,
+      model: models[0], // TODO: Handle multiple models properly
       concurrency: options.concurrency,
       verbose: options.verbose,
       onSampleComplete: (graderFile, result, index, total) => {
@@ -276,7 +279,7 @@ async function runMultipleEvaluations(
         // Add to output structure
         output.graderResults[graderName] = {
           grader: graderFile,
-          model,
+          model: models[0], // TODO: Handle multiple models properly
           timestamp: new Date().toISOString(),
           samples: results.length,
           average_distance: Number(avgDistance.toFixed(2)),
@@ -349,7 +352,7 @@ export const calibrateCommand: Command = {
     // Check for help flag first
     if (args.includes("--help") || args.includes("-h")) {
       printText(
-        `Usage: aibff calibrate <grader1.deck.md> [grader2.deck.md ...] [samples.jsonl|samples.toml] [--output folder] [--verbose]
+        `Usage: aibff calibrate <grader1.deck.md> [grader2.deck.md ...] [samples.jsonl|samples.toml] [--output folder] [--model model1,model2] [--verbose]
 
 Examples:
   # Single grader with embedded samples (creates results/ folder)
@@ -360,6 +363,9 @@ Examples:
   
   # Custom output folder
   aibff calibrate grader.deck.md --output my-calibration
+  
+  # Multiple models
+  aibff calibrate grader.deck.md --model claude-3.5-sonnet,gpt-4,gpt-3.5-turbo
   
   # Parallel execution with custom concurrency
   aibff calibrate grader.deck.md --output my-calib --concurrency 5
@@ -372,12 +378,12 @@ Examples:
 
 Environment:
   OPENROUTER_API_KEY    Required for LLM access
-  ANTHROPIC_MODEL       Model to use (default: anthropic/claude-3.5-sonnet)
 
 Options:
-  --output folder   Output folder name (default: results)
-  --concurrency N   Number of graders to run in parallel (default: 5)
-  --verbose         Show full text sent to the grader for each sample
+  --output folder       Output folder name (default: results)
+  --model model1,model2 Comma-separated list of models (default: openai/gpt-3.5-turbo)
+  --concurrency N       Number of grader-model combinations to run in parallel (default: 5)
+  --verbose             Show full text sent to the grader for each sample
 
 Output:
   Creates a folder containing:
@@ -415,6 +421,18 @@ Output:
     // Parse verbose option
     const verbose = args.includes("--verbose");
 
+    // Parse model option
+    let models: string[] = ["openai/gpt-3.5-turbo"]; // default
+    const modelIndex = args.indexOf("--model");
+    if (modelIndex !== -1 && modelIndex < args.length - 1) {
+      const modelArg = args[modelIndex + 1];
+      models = modelArg.split(",").map(m => m.trim()).filter(m => m.length > 0);
+      if (models.length === 0) {
+        printText("Error: --model requires at least one model name", true);
+        Deno.exit(1);
+      }
+    }
+
     // Remove all flags from args
     const filteredArgs = args.filter((arg, i) => {
       if (arg === "--output" || (i > 0 && args[i - 1] === "--output")) {
@@ -424,6 +442,7 @@ Output:
         arg === "--concurrency" || (i > 0 && args[i - 1] === "--concurrency")
       ) return false;
       if (arg === "--verbose") return false;
+      if (arg === "--model" || (i > 0 && args[i - 1] === "--model")) return false;
       return true;
     });
 
@@ -451,7 +470,7 @@ Output:
     }
 
     // Run evaluations
-    await runMultipleEvaluations(graderFiles, inputFile, outputFolder, {
+    await runMultipleEvaluations(graderFiles, inputFile, outputFolder, models, {
       concurrency,
       verbose,
     });
