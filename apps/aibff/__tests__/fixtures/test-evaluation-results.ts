@@ -3,6 +3,8 @@ export interface GraderResult {
   grader_score: number;
   truth_score?: number;
   notes: string;
+  userMessage?: string;
+  assistantResponse?: string;
 }
 
 export interface GraderSection {
@@ -32,18 +34,24 @@ export const mockSingleGraderData: EvaluationData = {
           grader_score: 2,
           truth_score: 2,
           notes: "Perfect agreement",
+          userMessage: "What is JavaScript?",
+          assistantResponse: "JavaScript is a programming language commonly used for web development.",
         },
         {
           id: "off-by-one",
           grader_score: 1,
           truth_score: 2,
           notes: "Close but underscored",
+          userMessage: "How do I center a div?",
+          assistantResponse: "You can use CSS flexbox: display: flex; justify-content: center; align-items: center;",
         },
         {
           id: "big-difference",
           grader_score: -1,
           truth_score: 2,
           notes: "Major disagreement",
+          userMessage: "What's the capital of France?",
+          assistantResponse: "Paris is the capital of France.",
         },
       ],
     },

@@ -14,7 +14,7 @@ import { parse as parseToml } from "@std/toml";
 const evalScript = new URL("../../commands/eval.ts", import.meta.url).pathname;
 const fixturesDir = new URL("../fixtures", import.meta.url).pathname;
 
-Deno.test("eval should require --output flag when no arguments", async () => {
+Deno.test("eval should require grader file when no arguments", async () => {
   const command = new Deno.Command(Deno.execPath(), {
     args: [
       "run",
@@ -30,7 +30,7 @@ Deno.test("eval should require --output flag when no arguments", async () => {
   const error = new TextDecoder().decode(stderr);
 
   assertEquals(code, 1);
-  assertStringIncludes(error, "--output flag is required");
+  assertStringIncludes(error, "At least one grader file is required");
 });
 
 Deno.test("eval should show help with --help flag", async () => {
@@ -353,35 +353,15 @@ Deno.test("eval summary statistics should calculate exact agreement - regression
   }
 });
 
-// Tests for multi-grader support and --output flag
-Deno.test("eval should require --output flag", async () => {
-  const command = new Deno.Command(Deno.execPath(), {
-    args: [
-      "run",
-      "--allow-env",
-      "--allow-read",
-      "--allow-net",
-      "--allow-write",
-      evalScript,
-      `${fixturesDir}/test-grader.deck.md`,
-    ],
-    env: {
-      ...Deno.env.toObject(),
-      OPENROUTER_API_KEY: "test-key",
-    },
-  });
+// Tests for multi-grader support and folder output
 
-  const { code, stderr } = await command.output();
-  const error = new TextDecoder().decode(stderr);
-
-  assertEquals(code, 1);
-  assertStringIncludes(error, "--output flag is required");
-});
-
-Deno.test("eval should accept multiple graders with --output flag", async () => {
-  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
+Deno.test("eval should accept multiple graders", async () => {
+  const tempDir = await Deno.makeTempDir();
+  const originalCwd = Deno.cwd();
 
   try {
+    Deno.chdir(tempDir);
+    
     const command = new Deno.Command(Deno.execPath(), {
       args: [
         "run",
@@ -392,8 +372,6 @@ Deno.test("eval should accept multiple graders with --output flag", async () => 
         evalScript,
         `${fixturesDir}/test-grader.deck.md`,
         `${fixturesDir}/test-grader.deck.md`, // Use same grader twice for testing
-        `--output`,
-        outputFile,
       ],
       env: {
         ...Deno.env.toObject(),
@@ -405,76 +383,21 @@ Deno.test("eval should accept multiple graders with --output flag", async () => 
     const info = new TextDecoder().decode(stderr);
 
     assertStringIncludes(info, "Running evaluation with 2 graders");
-    assertStringIncludes(info, "Output file:");
+    assertStringIncludes(info, "Output folder: results");
   } finally {
-    try {
-      await Deno.remove(outputFile);
-    } catch {
-      // Ignore errors if file doesn't exist
-    }
+    Deno.chdir(originalCwd);
+    await Deno.remove(tempDir, { recursive: true });
   }
 });
 
-Deno.test("eval should create timestamped file if output already exists", async () => {
-  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
-  await Deno.writeTextFile(outputFile, "existing content");
-
-  try {
-    const command = new Deno.Command(Deno.execPath(), {
-      args: [
-        "run",
-        "--allow-env",
-        "--allow-read",
-        "--allow-net",
-        "--allow-write",
-        evalScript,
-        `${fixturesDir}/test-grader.deck.md`,
-        `--output`,
-        outputFile,
-      ],
-      env: {
-        ...Deno.env.toObject(),
-        OPENROUTER_API_KEY: "test-key",
-      },
-    });
-
-    const { stderr } = await command.output();
-    const info = new TextDecoder().decode(stderr);
-
-    // Should mention creating a new file with timestamp
-    assertStringIncludes(info, "already exists, creating");
-
-    // Original file should still have its content
-    const originalContent = await Deno.readTextFile(outputFile);
-    assertEquals(originalContent, "existing content");
-  } finally {
-    try {
-      await Deno.remove(outputFile);
-    } catch {
-      // Ignore errors if file doesn't exist
-    }
-    // Clean up any timestamped files created
-    const dir = outputFile.substring(0, outputFile.lastIndexOf("/"));
-    const base = outputFile.substring(
-      outputFile.lastIndexOf("/") + 1,
-      outputFile.lastIndexOf("."),
-    );
-    for await (const entry of Deno.readDir(dir)) {
-      if (entry.name.startsWith(base + "_") && entry.name.endsWith(".toml")) {
-        try {
-          await Deno.remove(`${dir}/${entry.name}`);
-        } catch {
-          // Ignore errors
-        }
-      }
-    }
-  }
-});
 
 Deno.test("eval should parse graders and samples correctly", async () => {
-  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
+  const tempDir = await Deno.makeTempDir();
+  const originalCwd = Deno.cwd();
 
   try {
+    Deno.chdir(tempDir);
+    
     const command = new Deno.Command(Deno.execPath(), {
       args: [
         "run",
@@ -485,8 +408,6 @@ Deno.test("eval should parse graders and samples correctly", async () => {
         evalScript,
         `${fixturesDir}/test-grader.deck.md`,
         `${fixturesDir}/test-samples.toml`,
-        `--output`,
-        outputFile,
       ],
       env: {
         ...Deno.env.toObject(),
@@ -501,11 +422,8 @@ Deno.test("eval should parse graders and samples correctly", async () => {
     assertStringIncludes(info, "Using input file:");
     assertStringIncludes(info, "test-samples.toml");
   } finally {
-    try {
-      await Deno.remove(outputFile);
-    } catch {
-      // Ignore errors if file doesn't exist
-    }
+    Deno.chdir(originalCwd);
+    await Deno.remove(tempDir, { recursive: true });
   }
 });
 
@@ -632,7 +550,7 @@ Deno.test("eval should calculate average distance correctly", () => {
   }
 });
 
-Deno.test("eval should require --output flag when not provided", async () => {
+Deno.test("eval should create default results folder when --output not provided", async () => {
   const tempDir = await Deno.makeTempDir();
   const originalCwd = Deno.cwd();
 
@@ -656,22 +574,25 @@ Deno.test("eval should require --output flag when not provided", async () => {
       },
     });
 
-    const { code, stderr } = await command.output();
-    const error = new TextDecoder().decode(stderr);
+    const { stderr } = await command.output();
+    const info = new TextDecoder().decode(stderr);
 
-    // Should fail and require --output flag
-    assertEquals(code, 1);
-    assertStringIncludes(error, "--output flag is required");
+    // Should create results folder
+    assertStringIncludes(info, "Output folder: results");
   } finally {
     Deno.chdir(originalCwd);
     await Deno.remove(tempDir, { recursive: true });
   }
 });
 
-Deno.test("eval should write to custom output file with --output", async () => {
-  const outputFile = await Deno.makeTempFile({ suffix: ".toml" });
+Deno.test("eval should use custom folder with --output", async () => {
+  const tempDir = await Deno.makeTempDir();
+  const originalCwd = Deno.cwd();
 
   try {
+    // Change to temp directory for test
+    Deno.chdir(tempDir);
+
     const command = new Deno.Command(Deno.execPath(), {
       args: [
         "run",
@@ -683,7 +604,7 @@ Deno.test("eval should write to custom output file with --output", async () => {
         `${fixturesDir}/test-grader.deck.md`,
         `${fixturesDir}/test-samples.toml`,
         "--output",
-        outputFile,
+        "my-evaluation",
       ],
       env: {
         ...Deno.env.toObject(),
@@ -694,15 +615,12 @@ Deno.test("eval should write to custom output file with --output", async () => {
     const { stderr } = await command.output();
     const info = new TextDecoder().decode(stderr);
 
-    // Should show output file (may be timestamped if file exists)
-    assertStringIncludes(info, "Output file:");
+    // Should show custom output folder
+    assertStringIncludes(info, "Output folder: my-evaluation");
     assertStringIncludes(info, "Using input file:");
   } finally {
-    try {
-      await Deno.remove(outputFile);
-    } catch {
-      // Ignore errors
-    }
+    Deno.chdir(originalCwd);
+    await Deno.remove(tempDir, { recursive: true });
   }
 });
 
