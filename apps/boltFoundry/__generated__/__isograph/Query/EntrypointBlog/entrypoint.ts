@@ -11,6 +11,7 @@ const queryText = 'query EntrypointBlog ($slug: String) {\
     content,\
     publishedAt,\
     tags,\
+    title,\
   },\
   blogPosts____first___l_10____sortDirection___s_DESC: blogPosts(first: 10, sortDirection: "DESC") {\
     edges {\
@@ -22,6 +23,7 @@ const queryText = 'query EntrypointBlog ($slug: String) {\
         excerpt,\
         publishedAt,\
         tags,\
+        title,\
       },\
     },\
     pageInfo {\
@@ -70,6 +72,11 @@ const normalizationAst: NormalizationAst = {
         {
           kind: "Scalar",
           fieldName: "tags",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
+          fieldName: "title",
           arguments: null,
         },
       ],
@@ -135,6 +142,11 @@ const normalizationAst: NormalizationAst = {
                 {
                   kind: "Scalar",
                   fieldName: "tags",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "title",
                   arguments: null,
                 },
               ],

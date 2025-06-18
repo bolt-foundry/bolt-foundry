@@ -38,6 +38,13 @@ const readerAst: ReaderAst<BlogPost__BlogPostView__param> = [
     arguments: null,
     isUpdatable: false,
   },
+  {
+    kind: "Scalar",
+    fieldName: "title",
+    alias: null,
+    arguments: null,
+    isUpdatable: false,
+  },
 ];
 
 const artifact: ComponentReaderArtifact<

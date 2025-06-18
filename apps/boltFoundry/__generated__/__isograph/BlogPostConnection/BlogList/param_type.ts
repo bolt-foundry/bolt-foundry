@@ -19,6 +19,7 @@ https://facebook.github.io/relay/graphql/connections.htm#sec-Node
         readonly publishedAt: (string | null),
         readonly excerpt: string,
         readonly tags: string,
+        readonly title: string,
       } | null),
     } | null)> | null),
     /**
