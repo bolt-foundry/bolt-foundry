@@ -104,6 +104,7 @@ export interface NexusGenFieldTypes {
     author: string | null; // String
     content: string; // String!
     excerpt: string; // String!
+    heroImage: string | null; // String
     id: string; // ID!
     publishedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
     tags: string; // String!
@@ -176,6 +177,7 @@ export interface NexusGenFieldTypeNames {
     author: 'String'
     content: 'String'
     excerpt: 'String'
+    heroImage: 'String'
     id: 'ID'
     publishedAt: 'IsoDate'
     tags: 'String'

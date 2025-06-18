@@ -35,13 +35,6 @@ const readerAst: ReaderAst<BlogPostConnection__BlogList__param> = [
           },
           {
             kind: "Scalar",
-            fieldName: "content",
-            alias: null,
-            arguments: null,
-            isUpdatable: false,
-          },
-          {
-            kind: "Scalar",
             fieldName: "author",
             alias: null,
             arguments: null,
@@ -71,6 +64,13 @@ const readerAst: ReaderAst<BlogPostConnection__BlogList__param> = [
           {
             kind: "Scalar",
             fieldName: "title",
+            alias: null,
+            arguments: null,
+            isUpdatable: false,
+          },
+          {
+            kind: "Scalar",
+            fieldName: "heroImage",
             alias: null,
             arguments: null,
             isUpdatable: false,

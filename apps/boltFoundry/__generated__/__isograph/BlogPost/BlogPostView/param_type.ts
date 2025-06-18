@@ -7,6 +7,7 @@ export type BlogPost__BlogPostView__param = {
     readonly publishedAt: (string | null),
     readonly tags: string,
     readonly title: string,
+    readonly heroImage: (string | null),
   },
   readonly parameters: Record<PropertyKey, never>,
 };
