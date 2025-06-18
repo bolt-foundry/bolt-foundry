@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Evaluation Results</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .summary {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .summary p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+    details {
+      cursor: pointer;
+    }
+    summary {
+      outline: none;
+      list-style: none;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    .expandable-content {
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    .conversation {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    .message-label {
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .message-content {
+      margin-left: 10px;
+      white-space: pre-wrap;
+    }
+    .scores {
+      display: flex;
+      gap: 20px;
+      margin: 10px 0;
+    }
+    .score-item {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: white;
+      border: 1px solid #e0e0e0;
+    }
+    .grader-reasoning, .user-message, .assistant-response, .grader-raw-response {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 16px;
+      color: #666;
+      transition: all 0.2s;
+    }
+    .tab:hover {
+      color: #333;
+    }
+    .tab.active {
+      color: #0066cc;
+      border-bottom: 2px solid #0066cc;
+      margin-bottom: -2px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .verbose-prompt {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    .verbose-prompt pre, .grader-raw-response pre {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Evaluation Results</h1>
+    
+    <script type="application/json" id="evaluation-data">
+    {"graderResults":{"simple-grader-0":{"grader":"decks/hello-world/simple-grader-0.deck.md","models":{"gpt-4":{"results":[{"id":"case-mismatch-failure","grader_score":3,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"Hello World","graderInput":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"3","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"3"},{"id":"incomplete-greeting-failure","grader_score":-3,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"Hello","graderInput":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"-3","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"-3"},{"id":"wrong-greeting-failure","grader_score":-3,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"I like to move it move it","graderInput":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"-3","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"-3"},{"id":"happy-path-complete","grader_score":3,"truth_score":3,"notes":"","userMessage":"hi","assistantResponse":"hello world","graderInput":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"3","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"3"},{"id":"partial-response-failure","grader_score":-3,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"World","graderInput":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"-3","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"-3"}],"model":"openai/gpt-4","timestamp":"2025-06-18T18:07:27.022Z"},"claude-3.5-sonnet":{"results":[{"id":"incomplete-greeting-failure","grader_score":0,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"Hello","graderInput":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"Score: -3\n\nThe assistant responded with \"Hello\" but did not specifically say \"hello world\", so this gets a -3 score according to the scoring guide.","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"Score: -3\n\nThe assistant responded with \"Hello\" but did not specifically say \"hello world\", so this gets a -3 score according to the scoring guide."},{"id":"wrong-greeting-failure","grader_score":0,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"I like to move it move it","graderInput":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"Score: 0\n\nExplanation: The assistant did not say \"hello world\" in their response. Instead, they said \"I like to move it move it\". According to the scoring guide, this should receive a -3 score, which when normalized to a 0-1 scale becomes 0.","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"Score: 0\n\nExplanation: The assistant did not say \"hello world\" in their response. Instead, they said \"I like to move it move it\". According to the scoring guide, this should receive a -3 score, which when normalized to a 0-1 scale becomes 0."},{"id":"case-mismatch-failure","grader_score":0,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"Hello World","graderInput":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"Let me evaluate the response according to the scoring guide.\n\nThe assistant responded with \"Hello World\" which matches the requirement of saying \"hello world\" (case insensitive).\n\nScore: +3 points\n\nTherefore, the normalized score (0 to 1) is: 1.0","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"Let me evaluate the response according to the scoring guide.\n\nThe assistant responded with \"Hello World\" which matches the requirement of saying \"hello world\" (case insensitive).\n\nScore: +3 points\n\nTherefore, the normalized score (0 to 1) is: 1.0"},{"id":"partial-response-failure","grader_score":0,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"World","graderInput":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"Score: -3\n\nThe assistant did not say \"hello world\". They only said \"World\" which does not meet the requirement.","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"Score: -3\n\nThe assistant did not say \"hello world\". They only said \"World\" which does not meet the requirement."},{"id":"happy-path-complete","grader_score":0,"truth_score":3,"notes":"","userMessage":"hi","assistantResponse":"hello world","graderInput":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"Score: 1\n\nThe assistant responded with exactly \"hello world\", which matches the scoring criteria for +3 points. Since this is a perfect match for what we're looking for, I'm giving it the maximum score of 1.","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"Score: 1\n\nThe assistant responded with exactly \"hello world\", which matches the scoring criteria for +3 points. Since this is a perfect match for what we're looking for, I'm giving it the maximum score of 1."}],"model":"anthropic/claude-3.5-sonnet","timestamp":"2025-06-18T18:07:34.133Z"}}},"simple-grader-1":{"grader":"decks/hello-world/simple-grader-1.deck.md","models":{"gpt-4":{"results":[{"id":"happy-path-complete","grader_score":1,"truth_score":3,"notes":"","userMessage":"hi","assistantResponse":"hello world","graderInput":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"1","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"1"},{"id":"case-mismatch-failure","grader_score":-3,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"Hello World","graderInput":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"-3","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"-3"},{"id":"incomplete-greeting-failure","grader_score":-3,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"Hello","graderInput":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"-3","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"-3"},{"id":"partial-response-failure","grader_score":-3,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"World","graderInput":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"-3","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"-3"},{"id":"wrong-greeting-failure","grader_score":-3,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"I like to move it move it","graderInput":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"-3","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"-3"}],"model":"openai/gpt-4","timestamp":"2025-06-18T18:07:35.023Z"},"claude-3.5-sonnet":{"results":[{"id":"wrong-greeting-failure","grader_score":0,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"I like to move it move it","graderInput":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"Score: 0\n\nThe assistant did not respond with \"hello world\". The response was \"I like to move it move it\" which is completely different from the required exact string \"hello world\".","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"Score: 0\n\nThe assistant did not respond with \"hello world\". The response was \"I like to move it move it\" which is completely different from the required exact string \"hello world\"."},{"id":"partial-response-failure","grader_score":0,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"World","graderInput":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"Score: 0\n\nThe assistant did not respond with exactly \"hello world\". The response was just \"World\", which does not match the required string.","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"Score: 0\n\nThe assistant did not respond with exactly \"hello world\". The response was just \"World\", which does not match the required string."},{"id":"incomplete-greeting-failure","grader_score":0,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"Hello","graderInput":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"Score: 0\n\nThe assistant did not respond with exactly \"hello world\". The response was just \"Hello\" which does not match the required string.","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"Score: 0\n\nThe assistant did not respond with exactly \"hello world\". The response was just \"Hello\" which does not match the required string."},{"id":"happy-path-complete","grader_score":0,"truth_score":3,"notes":"","userMessage":"hi","assistantResponse":"hello world","graderInput":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"Score: 1\n\nThe assistant responded with exactly \"hello world\" with the correct lowercase spelling and spacing. This matches the required output precisely.","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"Score: 1\n\nThe assistant responded with exactly \"hello world\" with the correct lowercase spelling and spacing. This matches the required output precisely."},{"id":"case-mismatch-failure","grader_score":0,"truth_score":-3,"notes":"","userMessage":"hi","assistantResponse":"Hello World","graderInput":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}","graderResponse":"Score: 0\n\nThe assistant's response \"Hello World\" does not exactly match \"hello world\". The capitalization is different (\"H\" and \"W\" are uppercase when they should be lowercase), so this fails the test (-3).\n\nThe correct response should be exactly \"hello world\" with no deviations in capitalization or spacing.","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\" exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"},"rawOutput":"Score: 0\n\nThe assistant's response \"Hello World\" does not exactly match \"hello world\". The capitalization is different (\"H\" and \"W\" are uppercase when they should be lowercase), so this fails the test (-3).\n\nThe correct response should be exactly \"hello world\" with no deviations in capitalization or spacing."}],"model":"anthropic/claude-3.5-sonnet","timestamp":"2025-06-18T18:07:39.321Z"}}}},"graderOrder":["simple-grader-0","simple-grader-1"]}
+    </script>
+  
+    
+    <div class="tabs">
+      
+        <button class="tab active" onclick="showTab('simple-grader-0-gpt-4')">simple-grader-0-gpt-4</button>
+      
+        <button class="tab " onclick="showTab('simple-grader-0-claude-3.5-sonnet')">simple-grader-0-claude-3.5-sonnet</button>
+      
+        <button class="tab " onclick="showTab('simple-grader-1-gpt-4')">simple-grader-1-gpt-4</button>
+      
+        <button class="tab " onclick="showTab('simple-grader-1-claude-3.5-sonnet')">simple-grader-1-claude-3.5-sonnet</button>
+      
+    </div>
+    
+    
+    
+    <div class="tab-content active" id="tab-simple-grader-0-gpt-4">
+      <h2>simple-grader-0-gpt-4</h2>
+      
+      <div class="summary">
+        <p><strong>Grader:</strong> simple-grader-0</p>
+        <p><strong>Model:</strong> openai/gpt-4</p>
+        <p><strong>Total Samples:</strong> undefined</p>
+        <p><strong>Average Distance:</strong> undefined</p>
+        <p><strong>Agreement:</strong> 80.0% (4/5)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>case-mismatch-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Hello World</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">6</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot;.\n\n## Scoring Guide\n\n- **+3**: Said hello world\n- **-3**: Didn&#39;t say hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: Hello World\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>3</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">3</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">6</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>incomplete-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Hello</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot;.\n\n## Scoring Guide\n\n- **+3**: Said hello world\n- **-3**: Didn&#39;t say hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: Hello\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>-3</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>wrong-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">I like to move it move it</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot;.\n\n## Scoring Guide\n\n- **+3**: Said hello world\n- **-3**: Didn&#39;t say hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: I like to move it move it\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>-3</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>happy-path-complete</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hello world</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot;.\n\n## Scoring Guide\n\n- **+3**: Said hello world\n- **-3**: Didn&#39;t say hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: hello world\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>3</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">3</td>
+            <td style="background-color: #d4edda">3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>partial-response-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">World</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot;.\n\n## Scoring Guide\n\n- **+3**: Said hello world\n- **-3**: Didn&#39;t say hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: World\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>-3</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+    <div class="tab-content " id="tab-simple-grader-0-claude-3.5-sonnet">
+      <h2>simple-grader-0-claude-3.5-sonnet</h2>
+      
+      <div class="summary">
+        <p><strong>Grader:</strong> simple-grader-0</p>
+        <p><strong>Model:</strong> anthropic/claude-3.5-sonnet</p>
+        <p><strong>Total Samples:</strong> undefined</p>
+        <p><strong>Average Distance:</strong> undefined</p>
+        <p><strong>Agreement:</strong> 0.0% (0/5)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>incomplete-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Hello</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot;.\n\n## Scoring Guide\n\n- **+3**: Said hello world\n- **-3**: Didn&#39;t say hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: Hello\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>Score: -3
+
+The assistant responded with &quot;Hello&quot; but did not specifically say &quot;hello world&quot;, so this gets a -3 score according to the scoring guide.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>wrong-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">I like to move it move it</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot;.\n\n## Scoring Guide\n\n- **+3**: Said hello world\n- **-3**: Didn&#39;t say hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: I like to move it move it\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>Score: 0
+
+Explanation: The assistant did not say &quot;hello world&quot; in their response. Instead, they said &quot;I like to move it move it&quot;. According to the scoring guide, this should receive a -3 score, which when normalized to a 0-1 scale becomes 0.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>case-mismatch-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Hello World</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot;.\n\n## Scoring Guide\n\n- **+3**: Said hello world\n- **-3**: Didn&#39;t say hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: Hello World\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>Let me evaluate the response according to the scoring guide.
+
+The assistant responded with &quot;Hello World&quot; which matches the requirement of saying &quot;hello world&quot; (case insensitive).
+
+Score: +3 points
+
+Therefore, the normalized score (0 to 1) is: 1.0</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>partial-response-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">World</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot;.\n\n## Scoring Guide\n\n- **+3**: Said hello world\n- **-3**: Didn&#39;t say hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: World\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>Score: -3
+
+The assistant did not say &quot;hello world&quot;. They only said &quot;World&quot; which does not meet the requirement.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>happy-path-complete</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hello world</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot;.\n\n## Scoring Guide\n\n- **+3**: Said hello world\n- **-3**: Didn&#39;t say hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: hello world\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>Score: 1
+
+The assistant responded with exactly &quot;hello world&quot;, which matches the scoring criteria for +3 points. Since this is a perfect match for what we&#39;re looking for, I&#39;m giving it the maximum score of 1.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+    <div class="tab-content " id="tab-simple-grader-1-gpt-4">
+      <h2>simple-grader-1-gpt-4</h2>
+      
+      <div class="summary">
+        <p><strong>Grader:</strong> simple-grader-1</p>
+        <p><strong>Model:</strong> openai/gpt-4</p>
+        <p><strong>Total Samples:</strong> undefined</p>
+        <p><strong>Average Distance:</strong> undefined</p>
+        <p><strong>Agreement:</strong> 80.0% (4/5)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #ffeaa7">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>happy-path-complete</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hello world</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">1</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">2</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot; exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: hello world\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>1</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #ffeaa7">1</td>
+            <td style="background-color: #ffeaa7">3</td>
+            <td style="background-color: #ffeaa7">2</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>case-mismatch-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Hello World</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot; exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: Hello World\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>-3</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>incomplete-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Hello</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot; exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: Hello\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>-3</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>partial-response-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">World</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot; exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: World\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>-3</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>wrong-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">I like to move it move it</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot; exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: I like to move it move it\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>-3</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+    <div class="tab-content " id="tab-simple-grader-1-claude-3.5-sonnet">
+      <h2>simple-grader-1-claude-3.5-sonnet</h2>
+      
+      <div class="summary">
+        <p><strong>Grader:</strong> simple-grader-1</p>
+        <p><strong>Model:</strong> anthropic/claude-3.5-sonnet</p>
+        <p><strong>Total Samples:</strong> undefined</p>
+        <p><strong>Average Distance:</strong> undefined</p>
+        <p><strong>Agreement:</strong> 0.0% (0/5)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>wrong-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">I like to move it move it</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot; exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: I like to move it move it\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>Score: 0
+
+The assistant did not respond with &quot;hello world&quot;. The response was &quot;I like to move it move it&quot; which is completely different from the required exact string &quot;hello world&quot;.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>partial-response-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">World</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot; exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: World\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>Score: 0
+
+The assistant did not respond with exactly &quot;hello world&quot;. The response was just &quot;World&quot;, which does not match the required string.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>incomplete-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Hello</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot; exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: Hello\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>Score: 0
+
+The assistant did not respond with exactly &quot;hello world&quot;. The response was just &quot;Hello&quot; which does not match the required string.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>happy-path-complete</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hello world</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot; exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: hello world\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>Score: 1
+
+The assistant responded with exactly &quot;hello world&quot; with the correct lowercase spelling and spacing. This matches the required output precisely.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>case-mismatch-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="user-message">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💬 User Message</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">hi</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="assistant-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Assistant Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Hello World</div>
+                    </details>
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;# Hello world\n\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \&quot;hello world\&quot; exactly, with no deviations in the string. If the capitalization is not precisely the same, the test should fail (-3). Otherwise, it should succeed (+3).&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Please evaluate this response:\nUser: hi\nAssistant: Hello World\n\nProvide a score from 0 to 1.&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0,
+  &quot;max_tokens&quot;: 1000
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>Score: 0
+
+The assistant&#39;s response &quot;Hello World&quot; does not exactly match &quot;hello world&quot;. The capitalization is different (&quot;H&quot; and &quot;W&quot; are uppercase when they should be lowercase), so this fails the test (-3).
+
+The correct response should be exactly &quot;hello world&quot; with no deviations in capitalization or spacing.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+  </div>
+  
+  
+  <script>
+    function showTab(graderName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab
+      document.getElementById('tab-' + graderName).classList.add('active');
+      event.target.classList.add('active');
+    }
+  </script>
+  
+</body>
+</html>

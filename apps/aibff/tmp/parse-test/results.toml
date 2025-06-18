@@ -1,0 +1,72 @@
+model = "gpt-4"
+timestamp = "2025-06-18T17:59:29.689Z"
+
+[[results]]
+id = "happy-path-complete"
+grader_score = 0
+truth_score = 3
+notes = ""
+userMessage = "hi"
+assistantResponse = "hello world"
+graderInput = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "(call failed)"
+rawOutput = "(call failed)"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+
+[[results]]
+id = "wrong-greeting-failure"
+grader_score = 0
+truth_score = -3
+notes = ""
+userMessage = "hi"
+assistantResponse = "I like to move it move it"
+graderInput = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "(call failed)"
+rawOutput = "(call failed)"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+
+[[results]]
+id = "partial-response-failure"
+grader_score = 0
+truth_score = -3
+notes = ""
+userMessage = "hi"
+assistantResponse = "World"
+graderInput = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "(call failed)"
+rawOutput = "(call failed)"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+
+[[results]]
+id = "incomplete-greeting-failure"
+grader_score = 0
+truth_score = -3
+notes = ""
+userMessage = "hi"
+assistantResponse = "Hello"
+graderInput = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "(call failed)"
+rawOutput = "(call failed)"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+
+[[results]]
+id = "case-mismatch-failure"
+grader_score = 0
+truth_score = -3
+notes = ""
+userMessage = "hi"
+assistantResponse = "Hello World"
+graderInput = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "(call failed)"
+rawOutput = "(call failed)"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
