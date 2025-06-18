@@ -37,7 +37,29 @@ export const BlogPostView = iso(`
   );
   const tagsArray = blogPost.tags ? JSON.parse(blogPost.tags) : [];
 
+  // Extract first image for hero display
+  let heroImage: string | undefined;
+  let firstImageSkipped = false;
+
   let firstH1Skipped = false;
+  // Extract first image and optionally skip it from content
+  renderer.image = function (href: string, title: string | null, text: string) {
+    // Capture the first image as hero image
+    if (!heroImage) {
+      heroImage = href;
+
+      // Skip the first image in content since we'll display it as hero
+      if (!firstImageSkipped) {
+        firstImageSkipped = true;
+        return "";
+      }
+    }
+
+    // For subsequent images, render normally
+    const titleAttr = title ? ` title="${title}"` : "";
+    return `<img style="height: 300px; width: 100%; object-fit: contain;" src="${href}" alt="${text}"${titleAttr} />`;
+  };
+
   renderer.heading = function (text: string, level: number) {
     // Skip the first h1 heading since we'll display the title separately
     if (level === 1 && !firstH1Skipped) {
@@ -95,10 +117,25 @@ export const BlogPostView = iso(`
   return (
     <main className="blog-main paper">
       <article ref={docRef} className="prose prose-lg">
+        {heroImage && (
+          <img
+            src={heroImage}
+            alt={blogPost.title}
+            style={{
+              height: "200px",
+              marginBottom: "2rem",
+              marginLeft: "16px",
+              marginRight: "-10px",
+              borderRadius: "4px",
+              objectFit: "contain",
+              float: "right",
+            }}
+          />
+        )}
         <h1 style={{ marginTop: 0 }}>{blogPost.title}</h1>
         {(metadata || tagsArray.length > 0) && (
           <div
-            className="metadata flexRow gapMedium"
+            className="metadata flexRow gapMedium flexWrap"
             style={{ marginBottom: "2rem" }}
           >
             {metadata ?? ""}
