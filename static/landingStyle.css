@@ -240,6 +240,11 @@ code.npm-command {
 .paper a {
   color: var(--alwaysDark);
 }
+.paper .metadata {
+  font-size: 0.8em;
+  margin-top: -0.5em;
+  color: var(--textSecondary);
+}
 
 .paper blockquote {
   border-left: 4px solid var(--primaryColor);

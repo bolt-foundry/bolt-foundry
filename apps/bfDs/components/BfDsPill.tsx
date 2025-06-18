@@ -4,6 +4,7 @@ import { classnames } from "lib/classnames.ts";
 
 type Props = {
   label?: string;
+  labelColor?: string;
   text?: string | number | undefined;
   icon?: BfDsIconType | undefined;
   color?: string;
@@ -11,7 +12,7 @@ type Props = {
 };
 
 export function BfDsPill(
-  { action, label, text, color = "fourtharyColor", icon }: Props,
+  { action, label, labelColor, text, color = "fourtharyColor", icon }: Props,
 ) {
   const labelClass = classnames([
     "ds-pillLabel",
@@ -22,14 +23,17 @@ export function BfDsPill(
   return (
     <div className="ds-pill" style={{ background: `var(--${color}015)` }}>
       {label && (
-        <div className={labelClass} style={{ color: `var(--${color})` }}>
+        <div
+          className={labelClass}
+          style={{ color: `var(--${labelColor ?? color})` }}
+        >
           {label}
         </div>
       )}
       {(text || icon || action) && (
         <div
           className="ds-pillContent"
-          style={{ borderColor: `var(--${color}015)` }}
+          style={{ borderColor: `var(--${color}005)` }}
         >
           {text}
           {icon && <BfDsIcon color={`var(--${color})`} name={icon} size={12} />}
