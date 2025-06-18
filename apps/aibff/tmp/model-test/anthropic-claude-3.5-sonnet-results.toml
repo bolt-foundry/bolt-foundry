@@ -1,0 +1,72 @@
+model = "anthropic/claude-3.5-sonnet"
+timestamp = "2025-06-18T18:01:46.960Z"
+
+[[results]]
+id = "wrong-greeting-failure"
+grader_score = 0
+truth_score = -3
+notes = ""
+userMessage = "hi"
+assistantResponse = "I like to move it move it"
+graderInput = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "Score: 0\n\nExplanation: The assistant did not say \"hello world\" in their response. Instead, they said \"I like to move it move it\". According to the scoring guide, this should receive a -3 score, which when normalized to a 0-1 scale becomes 0."
+rawOutput = "Score: 0\n\nExplanation: The assistant did not say \"hello world\" in their response. Instead, they said \"I like to move it move it\". According to the scoring guide, this should receive a -3 score, which when normalized to a 0-1 scale becomes 0."
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: I like to move it move it\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+
+[[results]]
+id = "happy-path-complete"
+grader_score = 0
+truth_score = 3
+notes = ""
+userMessage = "hi"
+assistantResponse = "hello world"
+graderInput = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "Let me evaluate the response according to the scoring guide.\n\nThe assistant responded with \"hello world\" which exactly matches what we're looking for.\n\nScore: +3 points for saying \"hello world\"\n\nTotal score: 3/3 = 1\n\nFinal normalized score: 1"
+rawOutput = "Let me evaluate the response according to the scoring guide.\n\nThe assistant responded with \"hello world\" which exactly matches what we're looking for.\n\nScore: +3 points for saying \"hello world\"\n\nTotal score: 3/3 = 1\n\nFinal normalized score: 1"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: hello world\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+
+[[results]]
+id = "incomplete-greeting-failure"
+grader_score = 0
+truth_score = -3
+notes = ""
+userMessage = "hi"
+assistantResponse = "Hello"
+graderInput = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "Score: -3\n\nThe assistant responded with \"Hello\" but did not specifically say \"hello world\", so this gets a -3 score according to the scoring guide."
+rawOutput = "Score: -3\n\nThe assistant responded with \"Hello\" but did not specifically say \"hello world\", so this gets a -3 score according to the scoring guide."
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+
+[[results]]
+id = "partial-response-failure"
+grader_score = 0
+truth_score = -3
+notes = ""
+userMessage = "hi"
+assistantResponse = "World"
+graderInput = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "Score: -3\n\nThe assistant did not say \"hello world\". They only said \"World\" which does not meet the requirement."
+rawOutput = "Score: -3\n\nThe assistant did not say \"hello world\". They only said \"World\" which does not meet the requirement."
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+
+[[results]]
+id = "case-mismatch-failure"
+grader_score = 0
+truth_score = -3
+notes = ""
+userMessage = "hi"
+assistantResponse = "Hello World"
+graderInput = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "Let me evaluate if the assistant replied with \"hello world\":\n\nThe assistant responded with \"Hello World\" which matches the criteria.\n\nScore: +3 points\n\nThis response meets the requirement of saying \"hello world\" (case insensitive).\n\nFinal score: 1"
+rawOutput = "Let me evaluate if the assistant replied with \"hello world\":\n\nThe assistant responded with \"Hello World\" which matches the criteria.\n\nScore: +3 points\n\nThis response meets the requirement of saying \"hello world\" (case insensitive).\n\nFinal score: 1"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Hello world\\n\\nYou are evaluating a conversation between a user and an AI assistant. Your task is to grade if the assistant replied \\\"hello world\\\".\\n\\n## Scoring Guide\\n\\n- **+3**: Said hello world\\n- **-3**: Didn't say hello world\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: hi\\nAssistant: Hello World\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"

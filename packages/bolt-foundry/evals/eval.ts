@@ -16,6 +16,7 @@ export interface EvalOptions {
   graderFile: string;
   model: string;
   context?: Record<string, JSONValue>; // Additional context variables
+  verbose?: boolean; // Show full grader prompt for debugging
   onSampleComplete?: (
     result: GradingResult,
     index: number,
@@ -36,6 +37,7 @@ export interface GradingResult {
   };
   sample: EvalSample;
   sampleMetadata?: Record<string, unknown>;
+  graderMetadata?: Record<string, unknown>;
 }
 
 interface EvalSample {
@@ -55,6 +57,7 @@ export async function runEval(
     graderFile,
     model,
     context: providedContext,
+    verbose,
     onSampleComplete,
   } = options;
 
@@ -364,6 +367,25 @@ export async function runEval(
       temperature: renderedGrader.temperature,
     });
 
+    // Prepare grader metadata for verbose mode
+    let graderMetadata: Record<string, unknown> | undefined;
+    if (verbose) {
+      graderMetadata = {
+        verbosePrompt: JSON.stringify(renderedGrader, null, 2),
+      };
+
+      console.error(`\n=== VERBOSE: Full grader prompt for sample ${sampleNumber}/${totalSamples} ===`);
+      console.error(`Model: ${renderedGrader.model}`);
+      console.error(`Temperature: ${renderedGrader.temperature}`);
+      console.error(`Messages:`);
+      for (let i = 0; i < renderedGrader.messages.length; i++) {
+        const message = renderedGrader.messages[i];
+        console.error(`  [${i + 1}] Role: ${message.role}`);
+        console.error(`      Content: ${message.content}`);
+      }
+      console.error(`=== END VERBOSE OUTPUT ===\n`);
+    }
+
     // Update spinner message for API call
     sampleSpinner();
     const apiSpinner = startSpinner(
@@ -448,6 +470,7 @@ export async function runEval(
           !["id", "userMessage", "assistantResponse", "expected"].includes(key)
         ),
       ),
+      graderMetadata,
     };
 
     results.push(result);

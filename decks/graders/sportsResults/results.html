@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Evaluation Results</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .summary {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .summary p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+    details {
+      cursor: pointer;
+    }
+    summary {
+      outline: none;
+      list-style: none;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    .expandable-content {
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    .conversation {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    .message-label {
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .message-content {
+      margin-left: 10px;
+      white-space: pre-wrap;
+    }
+    .scores {
+      display: flex;
+      gap: 20px;
+      margin: 10px 0;
+    }
+    .score-item {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: white;
+      border: 1px solid #e0e0e0;
+    }
+    .grader-reasoning, .user-message, .assistant-response, .grader-raw-response {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 16px;
+      color: #666;
+      transition: all 0.2s;
+    }
+    .tab:hover {
+      color: #333;
+    }
+    .tab.active {
+      color: #0066cc;
+      border-bottom: 2px solid #0066cc;
+      margin-bottom: -2px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .verbose-prompt {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    .verbose-prompt pre, .grader-raw-response pre {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Evaluation Results</h1>
+    
+    <script type="application/json" id="evaluation-data">
+    {"graderResults":{"sports-news-relevancy-grader":{"grader":"sports-news-relevancy-grader.deck.md","models":{"gpt-4o":{"model":"openai/gpt-4o","timestamp":"2025-06-17T22:44:22.083Z","samples":4,"average_distance":3.25,"results":[{"id":"perfect-selection","grader_score":3,"truth_score":3,"notes":"The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, with no inclusion of niche or irrelevant topics.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4o\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"{\n  \"score\": \"3\",\n  \"reason\": \"The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, with no inclusion of niche or irrelevant topics.\"\n}"},{"id":"good-but-flawed","grader_score":3,"truth_score":1,"notes":"The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered based on its significance and impact, covering shocking trades, unprecedented achievements by transcendent stars, active championship games, and marquee franchise stars returning. There are no borderline or questionable stories included.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4o\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"{\n  \"score\": \"3\",\n  \"reason\": \"The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered based on its significance and impact, covering shocking trades, unprecedented achievements by transcendent stars, active championship games, and marquee franchise stars returning. There are no borderline or questionable stories included.\"\n}"},{"id":"poor-selection","grader_score":3,"truth_score":-3,"notes":"The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, with no inclusion of niche or irrelevant topics.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4o\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"{\n  \"score\": \"3\",\n  \"reason\": \"The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, with no inclusion of niche or irrelevant topics.\"\n}"},{"id":"very-poor","grader_score":3,"truth_score":-2,"notes":"The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, ensuring maximum engagement and interest.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"openai/gpt-4o\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"{\n  \"score\": \"3\",\n  \"reason\": \"The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, ensuring maximum engagement and interest.\"\n}"}]},"claude-3.7-sonnet":{"timestamp":"2025-06-17T22:44:22.083Z","samples":4,"average_distance":2.25,"results":[{"id":"good-but-flawed","grader_score":0,"truth_score":1,"notes":"Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.7-sonnet:beta\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format."},{"id":"perfect-selection","grader_score":0,"truth_score":3,"notes":"Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.7-sonnet:beta\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format."},{"id":"poor-selection","grader_score":0,"truth_score":-3,"notes":"Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.7-sonnet:beta\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format."},{"id":"very-poor","grader_score":0,"truth_score":-2,"notes":"Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.7-sonnet:beta\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format."}]},"claude-3.7":{"model":"anthropic/claude-3.7-sonnet","timestamp":"2025-06-17T22:44:22.083Z","samples":4,"average_distance":2.25,"results":[{"id":"perfect-selection","grader_score":0,"truth_score":3,"notes":"Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the \"water cooler\" criteria.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.7-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the \"water cooler\" criteria."},{"id":"good-but-flawed","grader_score":0,"truth_score":1,"notes":"Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the \"water cooler\" criteria.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.7-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the \"water cooler\" criteria."},{"id":"poor-selection","grader_score":0,"truth_score":-3,"notes":"Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the \"water cooler\" criteria.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.7-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the \"water cooler\" criteria."},{"id":"very-poor","grader_score":0,"truth_score":-2,"notes":"Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the \"water cooler\" criteria.","userMessage":"","assistantResponse":"","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.7-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Main Criteria>\\n</Main Criteria>\\n<Story Value Categories>\\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\\n  Active championship games with major implications\\n  Marquee franchise stars returning (if unique/surprising)\\n  Superstar drama that results in actual news\\n  Routine star returns on premier franchises\\n  Superstar speculation without outcomes\\n  Championship games without drama\\n  Good players on average teams\\n  Minor trades or signings\\n  Individual achievements in niche sports (golf majors)\\n  Small market team news without stars\\n  Technical records requiring explanation\\n  Backup player signings\\n  Minor league callups (unless top prospect on marquee team)\\n  Practice squad moves\\n  International soccer friendlies\\n</Story Value Categories>\\n<Key Evaluation Factors>\\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\\n  : Something happened (1.3x) vs Nothing happened (0.7x)\\n  : Active NOW (1.3x) vs Past/Future (0.9x)\\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\\n</Key Evaluation Factors>\\n<Scoring Guidelines>\\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \\n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \\n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \\n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \\n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\\n</Scoring Guidelines>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"},"rawOutput":"I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the \"water cooler\" criteria."}]}}}},"graderOrder":["sports-news-relevancy-grader"]}
+    </script>
+  
+    
+    <div class="tabs">
+      
+        <button class="tab active" onclick="showTab('sports-news-relevancy-grader-gpt-4o')">sports-news-relevancy-grader-gpt-4o</button>
+      
+        <button class="tab " onclick="showTab('sports-news-relevancy-grader-claude-3.7-sonnet')">sports-news-relevancy-grader-claude-3.7-sonnet</button>
+      
+        <button class="tab " onclick="showTab('sports-news-relevancy-grader-claude-3.7')">sports-news-relevancy-grader-claude-3.7</button>
+      
+    </div>
+    
+    
+    
+    <div class="tab-content active" id="tab-sports-news-relevancy-grader-gpt-4o">
+      <h2>sports-news-relevancy-grader-gpt-4o</h2>
+      
+      <div class="summary">
+        <p><strong>Grader:</strong> sports-news-relevancy-grader</p>
+        <p><strong>Model:</strong> openai/gpt-4o</p>
+        <p><strong>Total Samples:</strong> 4</p>
+        <p><strong>Average Distance:</strong> 3.25</p>
+        <p><strong>Agreement:</strong> 25.0% (1/4)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>perfect-selection</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, with no inclusion of niche or irrelevant topics.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4o&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;score&quot;: &quot;3&quot;,
+  &quot;reason&quot;: &quot;The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, with no inclusion of niche or irrelevant topics.&quot;
+}</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">3</td>
+            <td style="background-color: #d4edda">3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #ffeaa7">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>good-but-flawed</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">1</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">2</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered based on its significance and impact, covering shocking trades, unprecedented achievements by transcendent stars, active championship games, and marquee franchise stars returning. There are no borderline or questionable stories included.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4o&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;score&quot;: &quot;3&quot;,
+  &quot;reason&quot;: &quot;The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered based on its significance and impact, covering shocking trades, unprecedented achievements by transcendent stars, active championship games, and marquee franchise stars returning. There are no borderline or questionable stories included.&quot;
+}</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #ffeaa7">3</td>
+            <td style="background-color: #ffeaa7">1</td>
+            <td style="background-color: #ffeaa7">2</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>poor-selection</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">6</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, with no inclusion of niche or irrelevant topics.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4o&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;score&quot;: &quot;3&quot;,
+  &quot;reason&quot;: &quot;The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, with no inclusion of niche or irrelevant topics.&quot;
+}</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">3</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">6</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>very-poor</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-2</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">5</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, ensuring maximum engagement and interest.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;openai/gpt-4o&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;score&quot;: &quot;3&quot;,
+  &quot;reason&quot;: &quot;The selection includes five highly relevant stories that are perfect water cooler moments. Each story is properly ordered according to its significance and impact, ensuring maximum engagement and interest.&quot;
+}</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">3</td>
+            <td style="background-color: #f8d7da">-2</td>
+            <td style="background-color: #f8d7da">5</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+    <div class="tab-content " id="tab-sports-news-relevancy-grader-claude-3.7-sonnet">
+      <h2>sports-news-relevancy-grader-claude-3.7-sonnet</h2>
+      
+      <div class="summary">
+        <p><strong>Grader:</strong> sports-news-relevancy-grader</p>
+        <p><strong>Model:</strong> undefined</p>
+        <p><strong>Total Samples:</strong> 4</p>
+        <p><strong>Average Distance:</strong> 2.25</p>
+        <p><strong>Agreement:</strong> 0.0% (0/4)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #fff3cd">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>good-but-flawed</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">1</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #ffc107">1</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.7-sonnet:beta&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>I need to see the original user message and the assistant&#39;s response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I&#39;ll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #fff3cd">0</td>
+            <td style="background-color: #fff3cd">1</td>
+            <td style="background-color: #fff3cd">1</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>perfect-selection</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.7-sonnet:beta&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>I need to see the original user message and the assistant&#39;s response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I&#39;ll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>poor-selection</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.7-sonnet:beta&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>I need to see the original user message and the assistant&#39;s response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I&#39;ll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #ffeaa7">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>very-poor</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-2</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">2</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I'll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.7-sonnet:beta&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>I need to see the original user message and the assistant&#39;s response before I can evaluate and score it. Please provide the conversation that needs to be graded, and I&#39;ll analyze it according to the sports news selection criteria and provide a score with explanation in the requested format.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #ffeaa7">0</td>
+            <td style="background-color: #ffeaa7">-2</td>
+            <td style="background-color: #ffeaa7">2</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+    <div class="tab-content " id="tab-sports-news-relevancy-grader-claude-3.7">
+      <h2>sports-news-relevancy-grader-claude-3.7</h2>
+      
+      <div class="summary">
+        <p><strong>Grader:</strong> sports-news-relevancy-grader</p>
+        <p><strong>Model:</strong> anthropic/claude-3.7-sonnet</p>
+        <p><strong>Total Samples:</strong> 4</p>
+        <p><strong>Average Distance:</strong> 2.25</p>
+        <p><strong>Agreement:</strong> 0.0% (0/4)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>perfect-selection</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the "water cooler" criteria.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.7-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>I need to see the original user message and the assistant&#39;s response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the &quot;water cooler&quot; criteria.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #fff3cd">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>good-but-flawed</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">1</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #ffc107">1</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the "water cooler" criteria.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.7-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>I need to see the original user message and the assistant&#39;s response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the &quot;water cooler&quot; criteria.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #fff3cd">0</td>
+            <td style="background-color: #fff3cd">1</td>
+            <td style="background-color: #fff3cd">1</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>poor-selection</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the "water cooler" criteria.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.7-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>I need to see the original user message and the assistant&#39;s response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the &quot;water cooler&quot; criteria.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #ffeaa7">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>very-poor</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-2</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">2</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">💭 Grader's Reasoning</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <div class="message-content" style="margin-top: 10px;">Grader failed to return valid JSON. Raw output: I need to see the original user message and the assistant's response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the "water cooler" criteria.</div>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.7-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Main Criteria&gt;\n&lt;/Main Criteria&gt;\n&lt;Story Value Categories&gt;\n  Shocking trades involving All-Stars (e.g., Devers to Giants)\n  Transcendent stars doing unprecedented things (e.g., Ohtani pitching)\n  Active championship games with major implications\n  Marquee franchise stars returning (if unique/surprising)\n  Superstar drama that results in actual news\n  Routine star returns on premier franchises\n  Superstar speculation without outcomes\n  Championship games without drama\n  Good players on average teams\n  Minor trades or signings\n  Individual achievements in niche sports (golf majors)\n  Small market team news without stars\n  Technical records requiring explanation\n  Backup player signings\n  Minor league callups (unless top prospect on marquee team)\n  Practice squad moves\n  International soccer friendlies\n&lt;/Story Value Categories&gt;\n&lt;Key Evaluation Factors&gt;\n  : Unexpected/unique (1.5x) vs Routine/predictable (0.8x)\n  : Something happened (1.3x) vs Nothing happened (0.7x)\n  : Active NOW (1.3x) vs Past/Future (0.9x)\n  : Yankees/Lakers/Cowboys (1.5x), Small market (0.7x)\n&lt;/Key Evaluation Factors&gt;\n&lt;Scoring Guidelines&gt;\n  Score 3: Perfect selection - all 5 stories are highly relevant water cooler moments, properly ordered \n  Score 2: Excellent selection with minor flaws in ordering or one borderline story\n  Score 1: Good selection but suboptimal ordering or includes 1-2 questionable choices \n  Score -1: Poor selection - includes obvious misses like niche sports in championship slots \n  Score -2: Very poor - only 2-3 relevant stories, terrible ordering \n  Score -3: Completely misses the mark - dominated by irrelevant niche stories\n&lt;/Scoring Guidelines&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                  <div class="grader-raw-response">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">🤖 Grader Raw Response</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>I need to see the original user message and the assistant&#39;s response before I can evaluate and score it. Please provide those messages so I can assess how well the assistant selected and ordered sports stories based on the &quot;water cooler&quot; criteria.</pre>
+                    </details>
+                  </div>
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #ffeaa7">0</td>
+            <td style="background-color: #ffeaa7">-2</td>
+            <td style="background-color: #ffeaa7">2</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+  </div>
+  
+  
+  <script>
+    function showTab(graderName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab
+      document.getElementById('tab-' + graderName).classList.add('active');
+      event.target.classList.add('active');
+    }
+  </script>
+  
+</body>
+</html>
