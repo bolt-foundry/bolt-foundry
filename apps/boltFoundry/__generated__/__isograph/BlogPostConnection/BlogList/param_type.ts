@@ -14,12 +14,12 @@ https://facebook.github.io/relay/graphql/connections.htm#sec-Node
       */
       readonly node: ({
         readonly id: string,
-        readonly content: string,
         readonly author: (string | null),
         readonly publishedAt: (string | null),
         readonly excerpt: string,
         readonly tags: string,
         readonly title: string,
+        readonly heroImage: (string | null),
       } | null),
     } | null)> | null),
     /**

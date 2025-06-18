@@ -11,12 +11,12 @@ export const BlogList = iso(`
       cursor
       node {
         id
-        content
         author
         publishedAt
         excerpt
         tags
         title
+        heroImage
       }
     }
     pageInfo {
@@ -41,9 +41,18 @@ export const BlogList = iso(`
         <div className="blog-posts">
           {edges.map((edge) => {
             if (!edge || !edge.node) return null;
-            const { id, author, publishedAt, excerpt, tags, title } = edge.node;
+            const {
+              id,
+              author,
+              publishedAt,
+              excerpt,
+              tags,
+              title,
+              heroImage,
+            } = edge.node;
 
             const metadata = blogMetadata(author, publishedAt);
+            const previewImage = heroImage;
             const tagsArray = tags ? JSON.parse(tags) : [];
             const renderTags = tagsArray.map((tag: string) => (
               <BfDsPill
@@ -62,31 +71,42 @@ export const BlogList = iso(`
                   marginBottom: "2rem",
                 }}
               >
-                <h2 style={{ marginTop: 0 }}>
-                  <RouterLink
-                    to={`/blog/${id}`}
-                    style={{ color: "inherit", textDecoration: "none" }}
-                  >
-                    {title}
-                  </RouterLink>
-                </h2>
-                {(metadata || renderTags.length > 0) && (
-                  <div className="metadata flexRow gapMedium">
-                    {metadata ?? ""}
-                    {renderTags}
+                <div className="rowReverse-column gapLarge">
+                  {previewImage && (
+                    <img
+                      className="blog-list-hero-image"
+                      src={previewImage}
+                      alt={title}
+                    />
+                  )}
+                  <div className="flex1">
+                    <h2 style={{ marginTop: 0 }}>
+                      <RouterLink
+                        to={`/blog/${id}`}
+                        style={{ color: "inherit", textDecoration: "none" }}
+                      >
+                        {title}
+                      </RouterLink>
+                    </h2>
+                    {(metadata || renderTags.length > 0) && (
+                      <div className="metadata flexRow gapMedium flexWrap">
+                        {metadata ?? ""}
+                        {renderTags}
+                      </div>
+                    )}
+                    {excerpt && (
+                      <p style={{ marginTop: "1rem" }}>
+                        {excerpt}
+                      </p>
+                    )}
+                    <RouterLink
+                      to={`/blog/${id}`}
+                      style={{ color: "var(--link)", textDecoration: "none" }}
+                    >
+                      Read more →
+                    </RouterLink>
                   </div>
-                )}
-                {excerpt && (
-                  <p style={{ marginTop: "1rem" }}>
-                    {excerpt}
-                  </p>
-                )}
-                <RouterLink
-                  to={`/blog/${id}`}
-                  style={{ color: "var(--link)", textDecoration: "none" }}
-                >
-                  Read more →
-                </RouterLink>
+                </div>
               </article>
             );
           })}
