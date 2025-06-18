@@ -1,0 +1,30 @@
+model = "gpt-4"
+timestamp = "2025-06-18T17:33:43.444Z"
+
+[[results]]
+id = "sample1"
+grader_score = 0.85
+truth_score = 1
+notes = ""
+userMessage = "What is 2+2?"
+assistantResponse = "4"
+graderInput = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Test Grader with Context\\n\\nYou are a response evaluator. You will be given context about what to evaluate and how to score responses.\\n\\n## Instructions\\n\\nGrade the response on a scale of 0 to 1 based on the criteria provided in our conversation.\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What topic should I evaluate responses for?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"mathematics\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"How much weight should I give to accuracy (0-100)?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"70\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"How much weight should I give to completeness (0-100)?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"30\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: What is 2+2?\\nAssistant: 4\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "This is a fake AI response for testing"
+rawOutput = "This is a fake AI response for testing"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Test Grader with Context\\n\\nYou are a response evaluator. You will be given context about what to evaluate and how to score responses.\\n\\n## Instructions\\n\\nGrade the response on a scale of 0 to 1 based on the criteria provided in our conversation.\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What topic should I evaluate responses for?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"mathematics\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"How much weight should I give to accuracy (0-100)?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"70\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"How much weight should I give to completeness (0-100)?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"30\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: What is 2+2?\\nAssistant: 4\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+
+[[results]]
+id = "sample2"
+grader_score = 0.85
+truth_score = 1
+notes = ""
+userMessage = "What is 10/5?"
+assistantResponse = "2"
+graderInput = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Test Grader with Context\\n\\nYou are a response evaluator. You will be given context about what to evaluate and how to score responses.\\n\\n## Instructions\\n\\nGrade the response on a scale of 0 to 1 based on the criteria provided in our conversation.\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What topic should I evaluate responses for?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"mathematics\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"How much weight should I give to accuracy (0-100)?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"70\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"How much weight should I give to completeness (0-100)?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"30\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: What is 10/5?\\nAssistant: 2\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "This is a fake AI response for testing"
+rawOutput = "This is a fake AI response for testing"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Test Grader with Context\\n\\nYou are a response evaluator. You will be given context about what to evaluate and how to score responses.\\n\\n## Instructions\\n\\nGrade the response on a scale of 0 to 1 based on the criteria provided in our conversation.\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What topic should I evaluate responses for?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"mathematics\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"How much weight should I give to accuracy (0-100)?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"70\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"How much weight should I give to completeness (0-100)?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"30\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: What is 10/5?\\nAssistant: 2\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
