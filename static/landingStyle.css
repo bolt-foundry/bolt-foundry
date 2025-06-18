@@ -214,6 +214,12 @@ code.npm-command {
   color: var(--alwaysLight);
 }
 
+.blog-layout {
+  width: 60rem;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
 .blog-list-hero-image {
   max-width: 100%;
   height: 200px;
