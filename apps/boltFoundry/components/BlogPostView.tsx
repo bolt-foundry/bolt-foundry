@@ -3,6 +3,7 @@ import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { PageError } from "apps/boltFoundry/pages/PageError.tsx";
 import { marked, Renderer } from "marked";
 import { blogMetadata } from "apps/boltFoundry/lib/blogHelper.ts";
+import { BfDsPill } from "apps/bfDs/components/BfDsPill.tsx";
 
 // Single blog post view component
 export const BlogPostView = iso(`
@@ -12,6 +13,7 @@ export const BlogPostView = iso(`
     author
     publishedAt
     tags
+    title
   }
 `)(function BlogPostView({ data }) {
   const docRef = useRef<HTMLDivElement>(null);
@@ -34,23 +36,13 @@ export const BlogPostView = iso(`
     blogPost.publishedAt,
   );
   const tagsArray = blogPost.tags ? JSON.parse(blogPost.tags) : [];
-  const renderTags = tagsArray.map((tag: string) => (
-    `<div class="ds-pill" style="background: var(--primaryColor015)">
-  <div class="ds-pillLabel noText" style="color: var(--textSecondary)">
-    ${tag}
-  </div>
-</div>`
-  ));
-  let metadataShown = false;
+
+  let firstH1Skipped = false;
   renderer.heading = function (text: string, level: number) {
-    // add metadata and tags after the first h1 heading
-    if (level === 1 && !metadataShown) {
-      metadataShown = true;
-      return `<h${level}>${text}</h${level}>
-  <div class="metadata flexRow gapMedium">
-    ${metadata}
-    ${renderTags && `${renderTags.join("")}`}
-  </div>`;
+    // Skip the first h1 heading since we'll display the title separately
+    if (level === 1 && !firstH1Skipped) {
+      firstH1Skipped = true;
+      return "";
     }
     const id = text
       .toLowerCase()
@@ -102,11 +94,26 @@ export const BlogPostView = iso(`
 
   return (
     <main className="blog-main paper">
-      <article
-        ref={docRef}
-        className="prose prose-lg"
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
-      />
+      <article ref={docRef} className="prose prose-lg">
+        <h1 style={{ marginTop: 0 }}>{blogPost.title}</h1>
+        {metadata && (
+          <div
+            className="metadata flexRow gapMedium"
+            style={{ marginBottom: "2rem" }}
+          >
+            {metadata}
+            {tagsArray.map((tag: string) => (
+              <BfDsPill
+                key={tag}
+                color="primaryColor"
+                labelColor="textSecondary"
+                label={tag}
+              />
+            ))}
+          </div>
+        )}
+        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </article>
     </main>
   );
 });

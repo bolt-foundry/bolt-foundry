@@ -21,6 +21,7 @@ export class BlogPost extends GraphQLNode {
   private _updatedAt?: Date;
   private _tags: Array<string>;
   private _excerpt: string;
+  private _title: string;
   private static _cache = new Map<string, Promise<BlogPost>>();
 
   constructor(
@@ -31,6 +32,7 @@ export class BlogPost extends GraphQLNode {
     updatedAt?: Date,
     tags?: Array<string>,
     excerpt?: string,
+    title?: string,
   ) {
     super();
     this._id = id;
@@ -40,23 +42,7 @@ export class BlogPost extends GraphQLNode {
     this._updatedAt = updatedAt;
     this._tags = tags || [];
     this._excerpt = excerpt || generateExcerpt(content);
-  }
-
-  /**
-   * Extract date from filename format YYYY-MM-DD-slug
-   */
-  private static extractDateFromFilename(filename: string): Date {
-    const dateMatch = filename.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-    if (dateMatch) {
-      const [, year, month, day] = dateMatch;
-      return new Date(
-        `${year}-${month.padStart(2, "0")}-${
-          day.padStart(2, "0")
-        }T00:00:00.000Z`,
-      );
-    }
-    // Default to today if no date in filename
-    return new Date(new Date().toISOString().split("T")[0] + "T00:00:00.000Z");
+    this._title = title || this.extractTitleFromContent(content, id);
   }
 
   /**
@@ -109,6 +95,27 @@ export class BlogPost extends GraphQLNode {
   }
 
   /**
+   * Post title.
+   */
+  get title(): string {
+    return this._title;
+  }
+
+  /**
+   * Extract title from content or generate from ID.
+   */
+  private extractTitleFromContent(content: string, id: string): string {
+    // Look for title (first # heading)
+    const titleMatch = content.match(/^#\s+(.+)$/m);
+    if (titleMatch) {
+      return titleMatch[1];
+    }
+
+    // Fallback: generate from ID
+    return id.replace(/-/g, " ").replace(/^\d{4} \d{2} /, "");
+  }
+
+  /**
    * Load a blog post by slug. Alias for findX.
    */
   static load(slug: string): Promise<BlogPost> {
@@ -148,6 +155,7 @@ export class BlogPost extends GraphQLNode {
             attrs.updatedAt,
             attrs.tags,
             attrs.excerpt,
+            attrs.title,
           );
         } else {
           throw new BfErrorNodeNotFound(`Blog post not found: ${slug}`);
@@ -239,5 +247,6 @@ export class BlogPost extends GraphQLNode {
         resolve: (root) => JSON.stringify(root.tags),
       })
       .nonNull.string("excerpt")
+      .nonNull.string("title")
   );
 }

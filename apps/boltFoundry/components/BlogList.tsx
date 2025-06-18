@@ -16,6 +16,7 @@ export const BlogList = iso(`
         publishedAt
         excerpt
         tags
+        title
       }
     }
     pageInfo {
@@ -33,31 +34,6 @@ export const BlogList = iso(`
   const connection = data;
   const edges = connection.edges!; // Non-null assertion since we checked above
 
-  // Extract title and date from markdown content
-  const extractMetadata = (
-    content: string,
-    id: string,
-  ) => {
-    // const lines = content.split("\n");
-    let title = id.replace(/-/g, " ").replace(/^\d{4} \d{2} /, "");
-    let excerpt = "";
-
-    // Look for title (first # heading)
-    const titleMatch = content.match(/^#\s+(.+)$/m);
-    if (titleMatch) {
-      title = titleMatch[1];
-    }
-
-    // Extract excerpt (first paragraph after title and date)
-    const excerptMatch = content.match(/^[^#\n_].*$/m);
-    if (excerptMatch) {
-      excerpt = excerptMatch[0].substring(0, 200) +
-        (excerptMatch[0].length > 200 ? "..." : "");
-    }
-
-    return { title, excerptFallback: excerpt };
-  };
-
   return (
     <main className="blog-main">
       <div className="blog-list">
@@ -65,12 +41,7 @@ export const BlogList = iso(`
         <div className="blog-posts">
           {edges.map((edge) => {
             if (!edge || !edge.node) return null;
-            const { id, content, author, publishedAt, excerpt, tags } =
-              edge.node;
-            const { title, excerptFallback } = extractMetadata(
-              content,
-              id,
-            );
+            const { id, author, publishedAt, excerpt, tags, title } = edge.node;
 
             const metadata = blogMetadata(author, publishedAt);
             const tagsArray = tags ? JSON.parse(tags) : [];
@@ -99,7 +70,7 @@ export const BlogList = iso(`
                     {title}
                   </RouterLink>
                 </h2>
-                {metadata && (
+                {(metadata || renderTags.length > 0) && (
                   <div className="metadata flexRow gapMedium">
                     {metadata}
                     {renderTags}
@@ -107,7 +78,7 @@ export const BlogList = iso(`
                 )}
                 {excerpt && (
                   <p style={{ marginTop: "1rem" }}>
-                    {excerpt ?? excerptFallback}
+                    {excerpt}
                   </p>
                 )}
                 <RouterLink
