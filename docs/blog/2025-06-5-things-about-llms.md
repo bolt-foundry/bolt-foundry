@@ -6,6 +6,8 @@ tags = ["llm", "prompts", "reliability", "engineering"]
 excerpt = "Most teams are building LLM prompts wrong. Here are 5 essential concepts for building reliable LLM applications."
 +++
 
+![image](/static/blog/2025-06-5-image.jpg)
+
 # 5 things about LLM prompts we think everyone should know
 
 Most teams are building LLM prompts wrong.
