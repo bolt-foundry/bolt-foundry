@@ -17,6 +17,27 @@ const readerAst: ReaderAst<BlogPost__BlogPostView__param> = [
     arguments: null,
     isUpdatable: false,
   },
+  {
+    kind: "Scalar",
+    fieldName: "author",
+    alias: null,
+    arguments: null,
+    isUpdatable: false,
+  },
+  {
+    kind: "Scalar",
+    fieldName: "publishedAt",
+    alias: null,
+    arguments: null,
+    isUpdatable: false,
+  },
+  {
+    kind: "Scalar",
+    fieldName: "tags",
+    alias: null,
+    arguments: null,
+    isUpdatable: false,
+  },
 ];
 
 const artifact: ComponentReaderArtifact<

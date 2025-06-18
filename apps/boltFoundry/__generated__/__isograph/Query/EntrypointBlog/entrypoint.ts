@@ -7,14 +7,21 @@ const nestedRefetchQueries: RefetchQueryNormalizationArtifactWrapper[] = [];
 const queryText = 'query EntrypointBlog ($slug: String) {\
   blogPost____slug___v_slug: blogPost(slug: $slug) {\
     id,\
+    author,\
     content,\
+    publishedAt,\
+    tags,\
   },\
   blogPosts____first___l_10____sortDirection___s_DESC: blogPosts(first: 10, sortDirection: "DESC") {\
     edges {\
       cursor,\
       node {\
         id,\
+        author,\
         content,\
+        excerpt,\
+        publishedAt,\
+        tags,\
       },\
     },\
     pageInfo {\
@@ -47,7 +54,22 @@ const normalizationAst: NormalizationAst = {
         },
         {
           kind: "Scalar",
+          fieldName: "author",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
           fieldName: "content",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
+          fieldName: "publishedAt",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
+          fieldName: "tags",
           arguments: null,
         },
       ],
@@ -92,7 +114,27 @@ const normalizationAst: NormalizationAst = {
                 },
                 {
                   kind: "Scalar",
+                  fieldName: "author",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
                   fieldName: "content",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "excerpt",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "publishedAt",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "tags",
                   arguments: null,
                 },
               ],

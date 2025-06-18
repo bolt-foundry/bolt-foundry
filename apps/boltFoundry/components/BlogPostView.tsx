@@ -2,12 +2,16 @@ import { useEffect, useRef } from "react";
 import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { PageError } from "apps/boltFoundry/pages/PageError.tsx";
 import { marked, Renderer } from "marked";
+import { blogMetadata } from "apps/boltFoundry/lib/blogHelper.ts";
 
 // Single blog post view component
 export const BlogPostView = iso(`
   field BlogPost.BlogPostView @component {
     id
     content
+    author
+    publishedAt
+    tags
   }
 `)(function BlogPostView({ data }) {
   const docRef = useRef<HTMLDivElement>(null);
@@ -25,7 +29,29 @@ export const BlogPostView = iso(`
   };
 
   // Add IDs to headings for anchor links
+  const metadata = blogMetadata(
+    blogPost.author,
+    blogPost.publishedAt,
+  );
+  const tagsArray = blogPost.tags ? JSON.parse(blogPost.tags) : [];
+  const renderTags = tagsArray.map((tag: string) => (
+    `<div class="ds-pill" style="background: var(--primaryColor015)">
+  <div class="ds-pillLabel noText" style="color: var(--textSecondary)">
+    ${tag}
+  </div>
+</div>`
+  ));
+  let metadataShown = false;
   renderer.heading = function (text: string, level: number) {
+    // add metadata and tags after the first h1 heading
+    if (level === 1 && !metadataShown) {
+      metadataShown = true;
+      return `<h${level}>${text}</h${level}>
+  <div class="metadata flexRow gapMedium">
+    ${metadata}
+    ${renderTags && `${renderTags.join("")}`}
+  </div>`;
+    }
     const id = text
       .toLowerCase()
       .replace(/[^\w\s-]/g, "") // Remove special characters except spaces and hyphens
