@@ -27,6 +27,7 @@ type BlogPost {
   author: String
   content: String!
   excerpt: String!
+  heroImage: String
   id: ID!
   publishedAt: IsoDate
   tags: String!

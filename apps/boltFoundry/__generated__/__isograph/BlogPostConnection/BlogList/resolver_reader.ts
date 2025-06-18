@@ -75,6 +75,13 @@ const readerAst: ReaderAst<BlogPostConnection__BlogList__param> = [
             arguments: null,
             isUpdatable: false,
           },
+          {
+            kind: "Scalar",
+            fieldName: "heroImage",
+            alias: null,
+            arguments: null,
+            isUpdatable: false,
+          },
         ],
       },
     ],

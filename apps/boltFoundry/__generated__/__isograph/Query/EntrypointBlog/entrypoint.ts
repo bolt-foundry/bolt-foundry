@@ -9,6 +9,7 @@ const queryText = 'query EntrypointBlog ($slug: String) {\
     id,\
     author,\
     content,\
+    heroImage,\
     publishedAt,\
     tags,\
     title,\
@@ -21,6 +22,7 @@ const queryText = 'query EntrypointBlog ($slug: String) {\
         author,\
         content,\
         excerpt,\
+        heroImage,\
         publishedAt,\
         tags,\
         title,\
@@ -62,6 +64,11 @@ const normalizationAst: NormalizationAst = {
         {
           kind: "Scalar",
           fieldName: "content",
+          arguments: null,
+        },
+        {
+          kind: "Scalar",
+          fieldName: "heroImage",
           arguments: null,
         },
         {
@@ -132,6 +139,11 @@ const normalizationAst: NormalizationAst = {
                 {
                   kind: "Scalar",
                   fieldName: "excerpt",
+                  arguments: null,
+                },
+                {
+                  kind: "Scalar",
+                  fieldName: "heroImage",
                   arguments: null,
                 },
                 {

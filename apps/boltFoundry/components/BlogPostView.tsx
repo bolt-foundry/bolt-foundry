@@ -14,6 +14,7 @@ export const BlogPostView = iso(`
     publishedAt
     tags
     title
+    heroImage
   }
 `)(function BlogPostView({ data }) {
   const docRef = useRef<HTMLDivElement>(null);
@@ -37,7 +38,24 @@ export const BlogPostView = iso(`
   );
   const tagsArray = blogPost.tags ? JSON.parse(blogPost.tags) : [];
 
+  // Use the hero image from GraphQL for hero display
+  const heroImage = blogPost.heroImage;
+  let firstImageSkipped = false;
+
   let firstH1Skipped = false;
+  // Skip first image from content since we'll display it as hero
+  renderer.image = function (href: string, title: string | null, text: string) {
+    // Skip the first image in content since we'll display it as hero
+    if (href === heroImage && !firstImageSkipped) {
+      firstImageSkipped = true;
+      return "";
+    }
+
+    // For subsequent images, render normally
+    const titleAttr = title ? ` title="${title}"` : "";
+    return `<img class="blog-post-image" src="${href}" alt="${text}"${titleAttr} />`;
+  };
+
   renderer.heading = function (text: string, level: number) {
     // Skip the first h1 heading since we'll display the title separately
     if (level === 1 && !firstH1Skipped) {
@@ -95,10 +113,17 @@ export const BlogPostView = iso(`
   return (
     <main className="blog-main paper">
       <article ref={docRef} className="prose prose-lg">
+        {heroImage && (
+          <img
+            className="blog-post-hero-image"
+            src={heroImage}
+            alt={blogPost.title}
+          />
+        )}
         <h1 style={{ marginTop: 0 }}>{blogPost.title}</h1>
         {(metadata || tagsArray.length > 0) && (
           <div
-            className="metadata flexRow gapMedium"
+            className="metadata flexRow gapMedium flexWrap"
             style={{ marginBottom: "2rem" }}
           >
             {metadata ?? ""}
