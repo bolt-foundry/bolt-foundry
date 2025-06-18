@@ -107,6 +107,7 @@ export interface NexusGenFieldTypes {
     id: string; // ID!
     publishedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
     tags: string; // String!
+    title: string; // String!
     updatedAt: NexusGenScalars['IsoDate'] | null; // IsoDate
   }
   BlogPostConnection: { // field return type
@@ -178,6 +179,7 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     publishedAt: 'IsoDate'
     tags: 'String'
+    title: 'String'
     updatedAt: 'IsoDate'
   }
   BlogPostConnection: { // field return type name
