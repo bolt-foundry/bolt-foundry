@@ -42,3 +42,4 @@ that the reader would have to dig more deeply to find.
   helpful.
 
 ![sources and context](./sources.deck.toml)
+

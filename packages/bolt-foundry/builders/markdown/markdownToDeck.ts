@@ -388,12 +388,24 @@ function extractTextFromListItem(item: ListItem): string {
   // Find the first paragraph or text node
   for (const child of item.children) {
     if (child.type === "paragraph") {
-      const textNodes = child.children.filter((c) =>
-        c.type === "text"
-      ) as Array<Text>;
-      return textNodes.map((t) => t.value).join("");
+      return extractAllTextFromNode(child);
     }
   }
+  return "";
+}
+
+/**
+ * Recursively extract all text from a node, including nested inline content
+ */
+function extractAllTextFromNode(node: any): string {
+  if (node.type === "text") {
+    return node.value;
+  }
+  
+  if (node.children && Array.isArray(node.children)) {
+    return node.children.map((child: any) => extractAllTextFromNode(child)).join("");
+  }
+  
   return "";
 }
 
