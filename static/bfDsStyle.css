@@ -155,12 +155,13 @@ a.dark:visited {
   display: flex;
   flex-direction: row;
 }
-.top-center {
-  align-items: flex-start;
+.rowReverse-column {
+  display: flex;
+  flex-direction: row-reverse;
 }
 
-.rowReverse-column {
-  flex-direction: row-reverse;
+.top-center {
+  align-items: flex-start;
 }
 
 .start-center {
@@ -168,7 +169,6 @@ a.dark:visited {
 }
 
 @media (max-width: 1024px) {
-  /* These styles will apply when the viewport width is 600px or less */
   .mobile-show {
     display: initial;
   }
@@ -180,12 +180,12 @@ a.dark:visited {
   .row-column {
     flex-direction: column;
   }
-  .top-center {
-    align-items: center;
-  }
-
   .rowReverse-column {
     flex-direction: column;
+  }
+
+  .top-center {
+    align-items: center;
   }
 
   .start-center {
