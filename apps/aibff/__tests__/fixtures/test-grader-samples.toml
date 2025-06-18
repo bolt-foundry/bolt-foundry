@@ -1,17 +1,35 @@
+[[samples.good-response.messages]]
+role = "user"
+content = "What is 2+2?"
+
+[[samples.good-response.messages]]
+role = "assistant"
+content = "4"
+
 [samples.good-response]
-userMessage = "What is 2+2?"
-assistantResponse = "4"
 score = 3
 description = "Direct and accurate response"
 
+[[samples.verbose-response.messages]]
+role = "user"
+content = "What is the capital of France?"
+
+[[samples.verbose-response.messages]]
+role = "assistant"
+content = "The capital of France is Paris, which has been the capital since the 10th century and is home to over 2 million people in the city proper."
+
 [samples.verbose-response]
-userMessage = "What is the capital of France?"
-assistantResponse = "The capital of France is Paris, which has been the capital since the 10th century and is home to over 2 million people in the city proper."
 score = 1
 description = "Accurate but too verbose"
 
+[[samples.wrong-response.messages]]
+role = "user"
+content = "What color is the sky?"
+
+[[samples.wrong-response.messages]]
+role = "assistant"
+content = "The sky is green"
+
 [samples.wrong-response]
-userMessage = "What color is the sky?"
-assistantResponse = "The sky is green"
 score = -2
 description = "Incorrect response"

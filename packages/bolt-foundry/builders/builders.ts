@@ -1,4 +1,5 @@
 import type { ChatCompletionCreateParams } from "openai/resources/chat/completions";
+import { extract } from "@std/front-matter/toml";
 
 type TelemetryOptions = Record<string, unknown>;
 
@@ -506,5 +507,35 @@ export function card(
   return {
     name,
     value: cardBuilder.getCards(),
+  };
+}
+
+/**
+ * Simple function to create a deck from markdown content
+ */
+export function makeDeckFromMarkdown(markdown: string) {
+  return {
+    render(options?: { model?: string }) {
+      let body: string;
+      
+      // Try to extract frontmatter, but if there's none, just use the whole content
+      try {
+        const result = extract(markdown);
+        body = result.body;
+      } catch {
+        // No frontmatter, use entire content
+        body = markdown;
+      }
+      
+      return {
+        model: options?.model || "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: body.trim()
+          }
+        ]
+      };
+    }
   };
 }

@@ -1,0 +1,269 @@
+graderOrder = ["simple-grader-0","simple-grader-1","simple-grader-2","simple-grader-3"]
+
+[graderResults.simple-grader-2]
+grader = "simple-grader-2.deck.md"
+model = "anthropic/claude-3.5-sonnet"
+timestamp = "2025-06-17T19:21:21.081Z"
+samples = 5
+average_distance = 0.4
+
+[[graderResults.simple-grader-2.results]]
+id = "happy-path-complete"
+grader_score = 3
+truth_score = 3
+notes = "The assistant's response was exactly 'hello world' in lowercase with no extra text, matching the scoring guide requirements perfectly"
+userMessage = "hi"
+assistantResponse = "hello world"
+rawOutput = "{\n  \"score\": \"3\",\n  \"reason\": \"The assistant's response was exactly 'hello world' in lowercase with no extra text, matching the scoring guide requirements perfectly\"\n}"
+
+[graderResults.simple-grader-2.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Scoring Guide>\\n<Specifications>\\n</Specifications>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hello world\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-2.results]]
+id = "wrong-greeting-failure"
+grader_score = -3
+truth_score = -3
+notes = "The assistant's response was a question rather than 'hello world' as required"
+userMessage = "hi"
+assistantResponse = "I like to move it move it"
+rawOutput = "{\n  \"score\": \"-3\",\n  \"reason\": \"The assistant's response was a question rather than 'hello world' as required\"\n}"
+
+[graderResults.simple-grader-2.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Scoring Guide>\\n<Specifications>\\n</Specifications>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"I like to move it move it\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-2.results]]
+id = "partial-response-failure"
+grader_score = -3
+truth_score = -3
+notes = "The assistant responded 'World' instead of exactly 'hello world'"
+userMessage = "hi"
+assistantResponse = "World"
+rawOutput = "{\n  \"score\": \"-3\",\n  \"reason\": \"The assistant responded 'World' instead of exactly 'hello world'\"\n}"
+
+[graderResults.simple-grader-2.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Scoring Guide>\\n<Specifications>\\n</Specifications>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-2.results]]
+id = "incomplete-greeting-failure"
+grader_score = -3
+truth_score = -3
+notes = "The assistant responded with 'Hello' instead of exactly 'hello world'"
+userMessage = "hi"
+assistantResponse = "Hello"
+rawOutput = "{\n  \"score\": \"-3\",\n  \"reason\": \"The assistant responded with 'Hello' instead of exactly 'hello world'\"\n}"
+
+[graderResults.simple-grader-2.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Scoring Guide>\\n<Specifications>\\n</Specifications>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-2.results]]
+id = "case-mismatch-failure"
+grader_score = -1
+truth_score = -3
+notes = "The assistant responded 'Hello World' with capital letters instead of the exact required format 'hello world' in lowercase"
+userMessage = "hi"
+assistantResponse = "Hello World"
+rawOutput = "{\n  \"score\": \"-1\",\n  \"reason\": \"The assistant responded 'Hello World' with capital letters instead of the exact required format 'hello world' in lowercase\"\n}"
+
+[graderResults.simple-grader-2.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Scoring Guide>\\n<Specifications>\\n</Specifications>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[graderResults.simple-grader-3]
+grader = "simple-grader-3.deck.md"
+model = "anthropic/claude-3.5-sonnet"
+timestamp = "2025-06-17T19:21:21.353Z"
+samples = 5
+average_distance = 0
+
+[[graderResults.simple-grader-3.results]]
+id = "happy-path-complete"
+grader_score = 3
+truth_score = 3
+notes = "The assistant's response was exactly 'hello world' - all lowercase, no extra text, spaces, or punctuation, matching the requirements perfectly"
+userMessage = "hi"
+assistantResponse = "hello world"
+rawOutput = "{\n  \"score\": \"3\",\n  \"reason\": \"The assistant's response was exactly 'hello world' - all lowercase, no extra text, spaces, or punctuation, matching the requirements perfectly\"\n}"
+
+[graderResults.simple-grader-3.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Critical Scoring Rules>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text, no extra spaces)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Critical Scoring Rules>\\n<Exact Match Requirements>\\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\\n  No additional words before or after\\n  No punctuation (periods, commas, exclamation marks = FAIL)\\n  No extra spaces or formatting\\n  Any deviation whatsoever = automatic -3 score\\n</Exact Match Requirements>\\n<Test Cases Reference>\\n</Test Cases Reference>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hello world\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-3.results]]
+id = "wrong-greeting-failure"
+grader_score = -3
+truth_score = -3
+notes = "The response 'I like to move it move it' does not match the required exact output of 'hello world'. Any deviation from the exact lowercase 'hello world' results in a -3 score per the critical scoring rules."
+userMessage = "hi"
+assistantResponse = "I like to move it move it"
+rawOutput = "{\n  \"score\": \"-3\",\n  \"reason\": \"The response 'I like to move it move it' does not match the required exact output of 'hello world'. Any deviation from the exact lowercase 'hello world' results in a -3 score per the critical scoring rules.\"\n}"
+
+[graderResults.simple-grader-3.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Critical Scoring Rules>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text, no extra spaces)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Critical Scoring Rules>\\n<Exact Match Requirements>\\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\\n  No additional words before or after\\n  No punctuation (periods, commas, exclamation marks = FAIL)\\n  No extra spaces or formatting\\n  Any deviation whatsoever = automatic -3 score\\n</Exact Match Requirements>\\n<Test Cases Reference>\\n</Test Cases Reference>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"I like to move it move it\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-3.results]]
+id = "partial-response-failure"
+grader_score = -3
+truth_score = -3
+notes = "The response 'World' does not match the exact required output 'hello world'. It is missing 'hello' and uses capitalization."
+userMessage = "hi"
+assistantResponse = "World"
+rawOutput = "{\n  \"score\": \"-3\",\n  \"reason\": \"The response 'World' does not match the exact required output 'hello world'. It is missing 'hello' and uses capitalization.\"\n}"
+
+[graderResults.simple-grader-3.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Critical Scoring Rules>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text, no extra spaces)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Critical Scoring Rules>\\n<Exact Match Requirements>\\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\\n  No additional words before or after\\n  No punctuation (periods, commas, exclamation marks = FAIL)\\n  No extra spaces or formatting\\n  Any deviation whatsoever = automatic -3 score\\n</Exact Match Requirements>\\n<Test Cases Reference>\\n</Test Cases Reference>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-3.results]]
+id = "incomplete-greeting-failure"
+grader_score = -3
+truth_score = -3
+notes = "The assistant responded with 'Hello' which does not match the exact required output of 'hello world'. Any deviation from the exact lowercase 'hello world' results in an automatic -3 score."
+userMessage = "hi"
+assistantResponse = "Hello"
+rawOutput = "{\n  \"score\": \"-3\",\n  \"reason\": \"The assistant responded with 'Hello' which does not match the exact required output of 'hello world'. Any deviation from the exact lowercase 'hello world' results in an automatic -3 score.\"\n}"
+
+[graderResults.simple-grader-3.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Critical Scoring Rules>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text, no extra spaces)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Critical Scoring Rules>\\n<Exact Match Requirements>\\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\\n  No additional words before or after\\n  No punctuation (periods, commas, exclamation marks = FAIL)\\n  No extra spaces or formatting\\n  Any deviation whatsoever = automatic -3 score\\n</Exact Match Requirements>\\n<Test Cases Reference>\\n</Test Cases Reference>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-3.results]]
+id = "case-mismatch-failure"
+grader_score = -3
+truth_score = -3
+notes = "The response 'Hello World' fails because it uses capitalization. The only acceptable response is exactly 'hello world' in lowercase with one space between words."
+userMessage = "hi"
+assistantResponse = "Hello World"
+rawOutput = "{\n  \"score\": \"-3\",\n  \"reason\": \"The response 'Hello World' fails because it uses capitalization. The only acceptable response is exactly 'hello world' in lowercase with one space between words.\"\n}"
+
+[graderResults.simple-grader-3.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Critical Scoring Rules>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text, no extra spaces)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Critical Scoring Rules>\\n<Exact Match Requirements>\\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\\n  No additional words before or after\\n  No punctuation (periods, commas, exclamation marks = FAIL)\\n  No extra spaces or formatting\\n  Any deviation whatsoever = automatic -3 score\\n</Exact Match Requirements>\\n<Test Cases Reference>\\n</Test Cases Reference>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[graderResults.simple-grader-1]
+grader = "simple-grader-1.deck.md"
+model = "anthropic/claude-3.5-sonnet"
+timestamp = "2025-06-17T19:21:21.982Z"
+samples = 5
+average_distance = 3.2
+
+[[graderResults.simple-grader-1.results]]
+id = "happy-path-complete"
+grader_score = 1
+truth_score = 3
+notes = "The response was polite and welcoming, though very basic. A simple 'hello world' is friendly but could have been more engaging or personalized to the user's greeting."
+userMessage = "hi"
+assistantResponse = "hello world"
+rawOutput = "{\n  \"score\": \"1\",\n  \"reason\": \"The response was polite and welcoming, though very basic. A simple 'hello world' is friendly but could have been more engaging or personalized to the user's greeting.\"\n}"
+
+[graderResults.simple-grader-1.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hello world\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-1.results]]
+id = "wrong-greeting-failure"
+grader_score = 0
+truth_score = -3
+notes = "The message 'I like to move it move it' appears to be a casual, playful reference to a song lyric. It's neither particularly constructive nor problematic - just a neutral, lighthearted statement."
+userMessage = "hi"
+assistantResponse = "I like to move it move it"
+rawOutput = "{\n  \"score\": \"0\",\n  \"reason\": \"The message 'I like to move it move it' appears to be a casual, playful reference to a song lyric. It's neither particularly constructive nor problematic - just a neutral, lighthearted statement.\"\n}"
+
+[graderResults.simple-grader-1.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"I like to move it move it\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-1.results]]
+id = "partial-response-failure"
+grader_score = 0
+truth_score = -3
+notes = "The exchange was too brief and simple to meaningfully evaluate - just 'hi' and 'World' without any real interaction or assistance provided."
+userMessage = "hi"
+assistantResponse = "World"
+rawOutput = "{\n  \"score\": \"0\",\n  \"reason\": \"The exchange was too brief and simple to meaningfully evaluate - just 'hi' and 'World' without any real interaction or assistance provided.\"\n}"
+
+[graderResults.simple-grader-1.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-1.results]]
+id = "incomplete-greeting-failure"
+grader_score = 1
+truth_score = -3
+notes = "The response was polite and appropriate for a simple greeting, though fairly minimal. A slightly more engaging response could have scored higher."
+userMessage = "hi"
+assistantResponse = "Hello"
+rawOutput = "{\n  \"score\": \"1\",\n  \"reason\": \"The response was polite and appropriate for a simple greeting, though fairly minimal. A slightly more engaging response could have scored higher.\"\n}"
+
+[graderResults.simple-grader-1.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-1.results]]
+id = "case-mismatch-failure"
+grader_score = 1
+truth_score = -3
+notes = "The response 'Hello World' to 'hi' was polite and welcoming, though fairly generic and minimal. It acknowledged the greeting but didn't add much engagement value."
+userMessage = "hi"
+assistantResponse = "Hello World"
+rawOutput = "{\n  \"score\": \"1\",\n  \"reason\": \"The response 'Hello World' to 'hi' was polite and welcoming, though fairly generic and minimal. It acknowledged the greeting but didn't add much engagement value.\"\n}"
+
+[graderResults.simple-grader-1.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[graderResults.simple-grader-0]
+grader = "simple-grader-0.deck.md"
+model = "anthropic/claude-3.5-sonnet"
+timestamp = "2025-06-17T19:21:24.427Z"
+samples = 5
+average_distance = 2.6
+
+[[graderResults.simple-grader-0.results]]
+id = "happy-path-complete"
+grader_score = 3
+truth_score = 3
+notes = "The assistant responded with exactly 'hello world' as expected"
+userMessage = "hi"
+assistantResponse = "hello world"
+rawOutput = "{\n  \"score\": \"3\",\n  \"reason\": \"The assistant responded with exactly 'hello world' as expected\"\n}"
+
+[graderResults.simple-grader-0.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Said hello world\\n  : Didn't say hello world\\n</Scoring Guide>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hello world\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-0.results]]
+id = "wrong-greeting-failure"
+grader_score = -2
+truth_score = -3
+notes = "The response 'I like to move it move it' did not say hello world as required by the scoring guide"
+userMessage = "hi"
+assistantResponse = "I like to move it move it"
+rawOutput = "{\n  \"score\": \"-2\",\n  \"reason\": \"The response 'I like to move it move it' did not say hello world as required by the scoring guide\"\n}"
+
+[graderResults.simple-grader-0.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Said hello world\\n  : Didn't say hello world\\n</Scoring Guide>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"I like to move it move it\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-0.results]]
+id = "partial-response-failure"
+grader_score = 1
+truth_score = -3
+notes = "The user and assistant exchanged greetings with 'hi' and 'World', which is close to but not exactly 'hello world'"
+userMessage = "hi"
+assistantResponse = "World"
+rawOutput = "{\n  \"score\": \"1\",\n  \"reason\": \"The user and assistant exchanged greetings with 'hi' and 'World', which is close to but not exactly 'hello world'\"\n}"
+
+[graderResults.simple-grader-0.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Said hello world\\n  : Didn't say hello world\\n</Scoring Guide>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-0.results]]
+id = "incomplete-greeting-failure"
+grader_score = -1
+truth_score = -3
+notes = "The assistant responded with just 'Hello' rather than saying 'hello world' as specified in the scoring guide"
+userMessage = "hi"
+assistantResponse = "Hello"
+rawOutput = "{\n  \"score\": \"-1\",\n  \"reason\": \"The assistant responded with just 'Hello' rather than saying 'hello world' as specified in the scoring guide\"\n}"
+
+[graderResults.simple-grader-0.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Said hello world\\n  : Didn't say hello world\\n</Scoring Guide>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
+
+[[graderResults.simple-grader-0.results]]
+id = "case-mismatch-failure"
+grader_score = 3
+truth_score = -3
+notes = "The assistant responded with exactly 'Hello World' which directly matches the scoring criteria for saying hello world"
+userMessage = "hi"
+assistantResponse = "Hello World"
+rawOutput = "{\n  \"score\": \"3\",\n  \"reason\": \"The assistant responded with exactly 'Hello World' which directly matches the scoring criteria for saying hello world\"\n}"
+
+[graderResults.simple-grader-0.results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Said hello world\\n  : Didn't say hello world\\n</Scoring Guide>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"
