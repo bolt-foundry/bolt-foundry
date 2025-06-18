@@ -1,6 +1,8 @@
 import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { RouterLink } from "apps/boltFoundry/components/Router/RouterLink.tsx";
 import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import { blogMetadata } from "apps/boltFoundry/lib/blogHelper.ts";
+import { BfDsPill } from "apps/bfDs/components/BfDsPill.tsx";
 
 // Blog list component for BlogPostConnection
 export const BlogList = iso(`
@@ -10,6 +12,10 @@ export const BlogList = iso(`
       node {
         id
         content
+        author
+        publishedAt
+        excerpt
+        tags
       }
     }
     pageInfo {
@@ -28,22 +34,18 @@ export const BlogList = iso(`
   const edges = connection.edges!; // Non-null assertion since we checked above
 
   // Extract title and date from markdown content
-  const extractMetadata = (content: string, id: string) => {
+  const extractMetadata = (
+    content: string,
+    id: string,
+  ) => {
     // const lines = content.split("\n");
     let title = id.replace(/-/g, " ").replace(/^\d{4} \d{2} /, "");
-    let date = "";
     let excerpt = "";
 
     // Look for title (first # heading)
     const titleMatch = content.match(/^#\s+(.+)$/m);
     if (titleMatch) {
       title = titleMatch[1];
-    }
-
-    // Look for date (italic text starting with date pattern)
-    const dateMatch = content.match(/^_([A-Za-z]+ \d{1,2}, \d{4})_$/m);
-    if (dateMatch) {
-      date = dateMatch[1];
     }
 
     // Extract excerpt (first paragraph after title and date)
@@ -53,7 +55,7 @@ export const BlogList = iso(`
         (excerptMatch[0].length > 200 ? "..." : "");
     }
 
-    return { title, date, excerpt };
+    return { title, excerptFallback: excerpt };
   };
 
   return (
@@ -63,8 +65,23 @@ export const BlogList = iso(`
         <div className="blog-posts">
           {edges.map((edge) => {
             if (!edge || !edge.node) return null;
-            const { id, content } = edge.node;
-            const { title, date, excerpt } = extractMetadata(content, id);
+            const { id, content, author, publishedAt, excerpt, tags } =
+              edge.node;
+            const { title, excerptFallback } = extractMetadata(
+              content,
+              id,
+            );
+
+            const metadata = blogMetadata(author, publishedAt);
+            const tagsArray = tags ? JSON.parse(tags) : [];
+            const renderTags = tagsArray.map((tag: string) => (
+              <BfDsPill
+                color="primaryColor"
+                labelColor="textSecondary"
+                label={tag}
+                key={tag}
+              />
+            ));
 
             return (
               <article
@@ -82,12 +99,17 @@ export const BlogList = iso(`
                     {title}
                   </RouterLink>
                 </h2>
-                {date && (
-                  <time style={{ color: "var(--textDim)", fontSize: "0.9rem" }}>
-                    {date}
-                  </time>
+                {metadata && (
+                  <div className="metadata flexRow gapMedium">
+                    {metadata}
+                    {renderTags}
+                  </div>
                 )}
-                {excerpt && <p style={{ marginTop: "1rem" }}>{excerpt}</p>}
+                {excerpt && (
+                  <p style={{ marginTop: "1rem" }}>
+                    {excerpt ? excerpt : excerptFallback}
+                  </p>
+                )}
                 <RouterLink
                   to={`/blog/${id}`}
                   style={{ color: "var(--link)", textDecoration: "none" }}
