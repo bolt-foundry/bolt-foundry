@@ -1,358 +1,114 @@
-#!/usr/bin/env -S deno run --allow-env --allow-read --allow-write --allow-run
+#!/usr/bin/env -S deno run --allow-env --allow-read --allow-net
 
-import type { Command } from "./types.ts";
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { TextLineStream } from "@std/streams/text-line-stream";
-import { ensureDir } from "@std/fs";
-import { join } from "@std/path";
-import { gray, white } from "@std/fmt/colors";
+import { gray } from "@std/fmt/colors";
+import { renderDeck } from "./render.ts";
+import type { Command } from "./types.ts";
+import { streamFromOpenRouter } from "../lib/openrouter-client.ts";
+import type { OpenRouterMessage } from "../lib/openrouter-client.ts";
 
-// Minimal UI abstraction
-interface UI {
-  print(message: string): void;
-  println(message: string): void;
-  printUser(message: string): void;
-  printAssistant(message: string): void;
-  printInfo(message: string): void;
-  getInputStream(): ReadableStream<string>;
-}
 
-class TerminalUI implements UI {
-  print(message: string): void {
-    Deno.stdout.writeSync(new TextEncoder().encode(message));
-  }
+const pirateDeck = `
+You are an assistant who is helping thwart a fraudster. The fraudster is claiming to represent the powerball lottery.
 
-  println(message: string): void {
-    this.print(message + "\n");
-  }
-
-  printUser(message: string): void {
-    this.print(gray(message));
-  }
-
-  printAssistant(message: string): void {
-    this.println(white(message));
-  }
-
-  printInfo(message: string): void {
-    this.println(gray(message));
-  }
-
-  getInputStream(): ReadableStream<string> {
-    return Deno.stdin.readable
-      .pipeThrough(new TextDecoderStream())
-      .pipeThrough(new TextLineStream());
-  }
-}
-
-const ui = new TerminalUI();
-
-interface SessionState {
-  sessionId: string;
-  sessionPath: string;
-  startTime: string;
-  conversationCount: number;
-  lastModified: string;
-  sessionVersion: string;
-  purpose: string;
-  status: "active" | "completed";
-}
-
-async function createSession(): Promise<SessionState> {
-  const sessionId = `session-${Date.now()}`;
-  const sessionPath = join(Deno.cwd(), sessionId);
-
-  await ensureDir(sessionPath);
-
-  const now = new Date().toISOString();
-  const state: SessionState = {
-    sessionId,
-    sessionPath,
-    startTime: now,
-    conversationCount: 0,
-    lastModified: now,
-    sessionVersion: "0.2.0",
-    purpose: "",
-    status: "active",
-  };
-
-  // Initialize progress.md with TOML frontmatter
-  const progressContent = `+++
-sessionId = "${state.sessionId}"
-startTime = "${state.startTime}"
-status = "${state.status}"
-lastModified = "${state.lastModified}"
-conversationCount = ${state.conversationCount}
-sessionVersion = "${state.sessionVersion}"
-purpose = "${state.purpose}"
-+++
-
-# Session Progress
-
-Session started at ${new Date().toLocaleString()}
+	The user will give you a message from the fraudster, and your job is to keep them talking as long as they can, giving them hope that they'll get the scam to work, and that the user is an elderly man from new york named randall.
 `;
 
-  await Deno.writeTextFile(join(sessionPath, "progress.md"), progressContent);
+async function runRepl(_args: Array<string>): Promise<void> {
+  const apiKey = getConfigurationVariable("OPENROUTER_API_KEY");
+  if (!apiKey) {
+    await Deno.stdout.write(new TextEncoder().encode("Please set OPENROUTER_API_KEY environment variable\n"));
+    return;
+  }
 
-  // Initialize conversation.md
-  const conversationContent = `# Conversation History
+  await Deno.stdout.write(new TextEncoder().encode("Chat started. Type 'exit' to quit.\n\n"));
+  
+  // Use renderDeck to create the initial messages with the pirate deck
+  const rendered = renderDeck(pirateDeck, {}, {}, {
+    model: "openai/gpt-4o-mini",
+    temperature: 0.7,
+    stream: true
+  });
+  
+  const messages: Array<OpenRouterMessage> = rendered.messages as Array<OpenRouterMessage>;
 
-## Session 1: ${new Date().toLocaleDateString()}
-
-`;
-
-  await Deno.writeTextFile(
-    join(sessionPath, "conversation.md"),
-    conversationContent,
-  );
-
-  return state;
-}
-
-async function appendToConversation(
-  sessionPath: string,
-  speaker: "User" | "Assistant",
-  message: string,
-): Promise<void> {
-  const conversationPath = join(sessionPath, "conversation.md");
-  const content = `### ${speaker}
-
-${message}
-
-`;
-
-  await Deno.writeTextFile(conversationPath, content, { append: true });
-}
-
-async function loadSessionState(
-  sessionPath: string,
-): Promise<SessionState | null> {
+  // Get initial assistant greeting
   try {
-    const progressPath = join(sessionPath, "progress.md");
-    const content = await Deno.readTextFile(progressPath);
+    // Show assistant prefix
+    await Deno.stdout.write(new TextEncoder().encode("🤖> "));
 
-    // Parse TOML frontmatter
-    const frontmatterMatch = content.match(/^\+\+\+\n([\s\S]*?)\n\+\+\+/);
-    if (!frontmatterMatch) return null;
-
-    const frontmatter = frontmatterMatch[1];
-    const lines = frontmatter.split("\n");
-    const metadata: Record<string, string> = {};
-
-    for (const line of lines) {
-      const match = line.match(/^(\w+)\s*=\s*(.+)$/);
-      if (match) {
-        const [_, key, value] = match;
-        metadata[key] = value.replace(/^["']|["']$/g, "");
-      }
+    let assistantMessage = "";
+    
+    for await (const chunk of streamFromOpenRouter(rendered)) {
+      Deno.stdout.writeSync(new TextEncoder().encode(chunk));
+      assistantMessage += chunk;
     }
 
-    return {
-      sessionId: metadata.sessionId || "",
-      sessionPath,
-      startTime: metadata.startTime || "",
-      conversationCount: parseInt(metadata.conversationCount || "0"),
-      lastModified: metadata.lastModified || "",
-      sessionVersion: metadata.sessionVersion || "0.2.0",
-      purpose: metadata.purpose || "",
-      status: (metadata.status as "active" | "completed") || "active",
-    };
-  } catch {
-    return null;
+    await Deno.stdout.write(new TextEncoder().encode("\n\n"));
+    messages.push({ role: "assistant", content: assistantMessage });
+  } catch (error) {
+    await Deno.stdout.write(new TextEncoder().encode(`\nError: ${error instanceof Error ? error.message : String(error)}\n`));
   }
-}
 
-async function updateSessionState(state: SessionState): Promise<void> {
-  const progressPath = join(state.sessionPath, "progress.md");
+  // Show initial prompt
+  await Deno.stdout.write(new TextEncoder().encode(gray("> ")));
 
-  // Update lastModified and write new progress.md
-  state.lastModified = new Date().toISOString();
-
-  const progressContent = `+++
-sessionId = "${state.sessionId}"
-startTime = "${state.startTime}"
-status = "${state.status}"
-lastModified = "${state.lastModified}"
-conversationCount = ${state.conversationCount}
-sessionVersion = "${state.sessionVersion}"
-purpose = "${state.purpose}"
-+++
-
-# Session Progress
-
-Session started at ${new Date(state.startTime).toLocaleString()}
-Last modified at ${new Date(state.lastModified).toLocaleString()}
-`;
-
-  await Deno.writeTextFile(progressPath, progressContent);
-}
-
-function printWelcome(): void {
-  ui.println("");
-  ui.printAssistant("Welcome to aibff REPL!");
-  ui.printInfo("Type 'exit' or 'quit' to end the session.\n");
-}
-
-async function conversationLoop(state: SessionState): Promise<void> {
-  const lineStream = ui.getInputStream();
+  const lineStream = Deno.stdin.readable
+    .pipeThrough(new TextDecoderStream())
+    .pipeThrough(new TextLineStream());
 
   for await (const line of lineStream) {
-    const input = line.trim();
-
-    // Check for exit commands
-    if (input.toLowerCase() === "exit" || input.toLowerCase() === "quit") {
-      ui.println("");
-      ui.printAssistant("Goodbye!");
+    if (line.trim().toLowerCase() === "exit") {
+      // Move up one line to remove the prompt line, then show the dim message
+      await Deno.stdout.write(new TextEncoder().encode("\x1b[A\r\x1b[K"));
+      await Deno.stdout.write(new TextEncoder().encode(gray(`> ${line}\n`)));
+      await Deno.stdout.write(new TextEncoder().encode("Goodbye!\n"));
       break;
     }
 
-    // Log user input
-    await appendToConversation(state.sessionPath, "User", input);
-    state.conversationCount++;
+    // Move up one line to remove the prompt line, then show the dim message
+    await Deno.stdout.write(new TextEncoder().encode("\x1b[A\r\x1b[K"));
+    await Deno.stdout.write(new TextEncoder().encode(gray(`> ${line}\n`)));
 
-    // Simple echo response for v0.1.0
-    const response = `You said: "${input}"`;
-    ui.printAssistant(response);
+    messages.push({ role: "user", content: line });
 
-    // Log assistant response
-    await appendToConversation(state.sessionPath, "Assistant", response);
-
-    // Update session state
-    await updateSessionState(state);
-
-    // Show prompt for next input
-    ui.printUser("\nYou: ");
-  }
-}
-
-async function listSessions(): Promise<void> {
-  const cwd = Deno.cwd();
-  const entries = [];
-
-  for await (const entry of Deno.readDir(cwd)) {
-    if (entry.isDirectory && entry.name.startsWith("session-")) {
-      const sessionPath = join(cwd, entry.name);
-      const state = await loadSessionState(sessionPath);
-      if (state) {
-        entries.push({
-          name: entry.name,
-          startTime: state.startTime,
-          lastModified: state.lastModified,
-          status: state.status,
-        });
-      }
-    }
-  }
-
-  if (entries.length === 0) {
-    ui.println("No sessions found.");
-    return;
-  }
-
-  ui.println("Available sessions:");
-  ui.println("");
-
-  for (
-    const entry of entries.sort((a, b) =>
-      b.lastModified.localeCompare(a.lastModified)
-    )
-  ) {
-    ui.println(`  ${entry.name}`);
-    ui.printInfo(`    Started: ${new Date(entry.startTime).toLocaleString()}`);
-    ui.printInfo(
-      `    Last modified: ${new Date(entry.lastModified).toLocaleString()}`,
-    );
-    ui.printInfo(`    Status: ${entry.status}`);
-    ui.println("");
-  }
-}
-
-async function runRepl(args: Array<string>): Promise<void> {
-  // Handle help flag
-  if (args.includes("--help") || args.includes("-h")) {
-    ui.println("Usage: aibff repl [options]");
-    ui.println("");
-    ui.println("Options:");
-    ui.println("  --help, -h          Show this help message");
-    ui.println("  --resume <path>     Resume an existing session");
-    ui.println("  --list              List available sessions");
-    ui.println("");
-    ui.println(
-      "The REPL creates an interactive session for building graders through conversation.",
-    );
-    ui.println(
-      "Each session is saved in a timestamped folder with conversation history and progress tracking.",
-    );
-    ui.println("");
-    ui.println("Examples:");
-    ui.println(
-      "  aibff repl                         # Start a new REPL session",
-    );
-    ui.println(
-      "  aibff repl --resume session-123    # Resume an existing session",
-    );
-    ui.println("  aibff repl --list                  # List all sessions");
-    return;
-  }
-
-  // Handle list flag
-  if (args.includes("--list")) {
-    await listSessions();
-    return;
-  }
-
-  // Handle resume flag
-  const resumeIndex = args.indexOf("--resume");
-  if (resumeIndex !== -1) {
-    const sessionPath = args[resumeIndex + 1];
-    if (!sessionPath) {
-      ui.println("Error: --resume requires a session path");
-      Deno.exit(1);
+    // Keep only last 10 messages to avoid context overflow
+    if (messages.length > 11) {
+      messages.splice(1, messages.length - 11);
     }
 
+    // Make API call and stream response
     try {
-      const state = await loadSessionState(sessionPath);
-      if (!state) {
-        throw new Error("Session not found or invalid");
+      // Show assistant prefix
+      await Deno.stdout.write(new TextEncoder().encode("🤖> "));
+
+      let assistantMessage = "";
+      
+      for await (const chunk of streamFromOpenRouter({
+        model: "openai/gpt-4o-mini",
+        messages: messages,
+        temperature: 0.7,
+        stream: true
+      })) {
+        Deno.stdout.writeSync(new TextEncoder().encode(chunk));
+        assistantMessage += chunk;
       }
 
-      // Show welcome message
-      printWelcome();
-      ui.printInfo(`Resuming session: ${state.sessionPath}\n`);
-
-      // Start conversation loop
-      ui.printUser("You: ");
-      await conversationLoop(state);
-    } catch (_error) {
-      Deno.stderr.writeSync(
-        new TextEncoder().encode(
-          `Error: Session not found or invalid: ${sessionPath}\n`,
-        ),
-      );
-      Deno.exit(1);
+      await Deno.stdout.write(new TextEncoder().encode("\n\n"));
+      messages.push({ role: "assistant", content: assistantMessage });
+    } catch (error) {
+      await Deno.stdout.write(new TextEncoder().encode(`\nError: ${error instanceof Error ? error.message : String(error)}\n`));
     }
-    return;
-  }
-
-  try {
-    // Create new session
-    const state = await createSession();
-
-    // Show welcome message
-    printWelcome();
-    ui.printInfo(`Session created: ${state.sessionPath}\n`);
-
-    // Start conversation loop
-    ui.printUser("You: ");
-    await conversationLoop(state);
-  } catch (error) {
-    ui.println(`Error running REPL: ${error}`);
-    Deno.exit(1);
+    
+    // Show prompt for next input
+    await Deno.stdout.write(new TextEncoder().encode(gray("> ")));
   }
 }
 
 export const replCommand: Command = {
   name: "repl",
-  description: "Start an interactive REPL session for building graders",
+  description: "Start a simple chat session",
   run: runRepl,
 };
 

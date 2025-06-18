@@ -1,0 +1,2295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Evaluation Results</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .summary {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .summary p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+    details {
+      cursor: pointer;
+    }
+    summary {
+      outline: none;
+      list-style: none;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    .expandable-content {
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    .conversation {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    .message-label {
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .message-content {
+      margin-left: 10px;
+      white-space: pre-wrap;
+    }
+    .scores {
+      display: flex;
+      gap: 20px;
+      margin: 10px 0;
+    }
+    .score-item {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: white;
+      border: 1px solid #e0e0e0;
+    }
+    .grader-reasoning {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 16px;
+      color: #666;
+      transition: all 0.2s;
+    }
+    .tab:hover {
+      color: #333;
+    }
+    .tab.active {
+      color: #0066cc;
+      border-bottom: 2px solid #0066cc;
+      margin-bottom: -2px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .verbose-prompt {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: white;
+      border-radius: 5px;
+      border: 1px solid #e0e0e0;
+    }
+    .verbose-prompt pre {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Evaluation Results</h1>
+    
+    <script type="application/json" id="evaluation-data">
+    {"graderResults":{"simple-grader-0":{"grader":"simple-grader-0.deck.md","model":"anthropic/claude-3.5-sonnet","timestamp":"2025-06-17T19:17:12.159Z","samples":5,"average_distance":2.6,"results":[{"id":"happy-path-complete","grader_score":3,"truth_score":3,"notes":"The assistant responded with exactly 'hello world' as required by the scoring guide","userMessage":"hi","assistantResponse":"hello world","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Said hello world\\n  : Didn't say hello world\\n</Scoring Guide>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hello world\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"wrong-greeting-failure","grader_score":-2,"truth_score":-3,"notes":"The response 'I like to move it move it' did not say hello world as required by the scoring guide","userMessage":"hi","assistantResponse":"I like to move it move it","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Said hello world\\n  : Didn't say hello world\\n</Scoring Guide>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"I like to move it move it\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"partial-response-failure","grader_score":1,"truth_score":-3,"notes":"The user and assistant exchanged greetings with 'hi' and 'World', which is close to but not exactly 'hello world'","userMessage":"hi","assistantResponse":"World","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Said hello world\\n  : Didn't say hello world\\n</Scoring Guide>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"incomplete-greeting-failure","grader_score":-1,"truth_score":-3,"notes":"The assistant only said 'Hello' rather than 'Hello world' as specified in the scoring guide","userMessage":"hi","assistantResponse":"Hello","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Said hello world\\n  : Didn't say hello world\\n</Scoring Guide>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"case-mismatch-failure","grader_score":3,"truth_score":-3,"notes":"The assistant responded with 'Hello World' which exactly matches the scoring guide requirement to say hello world","userMessage":"hi","assistantResponse":"Hello World","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Said hello world\\n  : Didn't say hello world\\n</Scoring Guide>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}}]},"simple-grader-2":{"grader":"simple-grader-2.deck.md","model":"anthropic/claude-3.5-sonnet","timestamp":"2025-06-17T19:17:15.303Z","samples":5,"average_distance":0.4,"results":[{"id":"happy-path-complete","grader_score":3,"truth_score":3,"notes":"The assistant's response was exactly 'hello world' in lowercase with no extra text, matching the scoring guide requirements perfectly","userMessage":"hi","assistantResponse":"hello world","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Scoring Guide>\\n<Specifications>\\n</Specifications>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hello world\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"wrong-greeting-failure","grader_score":-3,"truth_score":-3,"notes":"The assistant's response was a question rather than 'hello world' as required","userMessage":"hi","assistantResponse":"I like to move it move it","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Scoring Guide>\\n<Specifications>\\n</Specifications>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"I like to move it move it\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"partial-response-failure","grader_score":-3,"truth_score":-3,"notes":"The assistant's response 'World' does not match the required exact output of 'hello world'","userMessage":"hi","assistantResponse":"World","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Scoring Guide>\\n<Specifications>\\n</Specifications>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"incomplete-greeting-failure","grader_score":-3,"truth_score":-3,"notes":"The assistant responded with 'Hello' instead of exactly 'hello world'","userMessage":"hi","assistantResponse":"Hello","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Scoring Guide>\\n<Specifications>\\n</Specifications>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"case-mismatch-failure","grader_score":-1,"truth_score":-3,"notes":"The assistant responded 'Hello World' with capital letters instead of the exact required format 'hello world' in lowercase","userMessage":"hi","assistantResponse":"Hello World","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Scoring Guide>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Scoring Guide>\\n<Specifications>\\n</Specifications>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}}]},"simple-grader-1":{"grader":"simple-grader-1.deck.md","model":"anthropic/claude-3.5-sonnet","timestamp":"2025-06-17T19:17:16.640Z","samples":5,"average_distance":3.2,"results":[{"id":"happy-path-complete","grader_score":1,"truth_score":3,"notes":"The response was polite and welcoming, though very basic. A simple 'hello world' is friendly but could have been more engaging or personalized to the user's greeting.","userMessage":"hi","assistantResponse":"hello world","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hello world\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"wrong-greeting-failure","grader_score":0,"truth_score":-3,"notes":"The message 'I like to move it move it' appears to be a casual/playful reference to a song lyric, but doesn't provide enough context to evaluate meaningfully in terms of positive or negative impact.","userMessage":"hi","assistantResponse":"I like to move it move it","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"I like to move it move it\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"partial-response-failure","grader_score":0,"truth_score":-3,"notes":"The exchange was too brief and simple ('hi' followed by 'World') to meaningfully evaluate. Neither message showed particular effort or problematic behavior.","userMessage":"hi","assistantResponse":"World","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"incomplete-greeting-failure","grader_score":1,"truth_score":-3,"notes":"The response was polite and appropriate for a simple greeting, though fairly minimal. A more engaging response could have scored higher.","userMessage":"hi","assistantResponse":"Hello","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"case-mismatch-failure","grader_score":1,"truth_score":-3,"notes":"The response was polite and welcoming, though fairly generic and minimal. A simple 'Hello World' is appropriate for a 'hi' greeting but doesn't add much engagement value.","userMessage":"hi","assistantResponse":"Hello World","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}}]},"simple-grader-3":{"grader":"simple-grader-3.deck.md","model":"anthropic/claude-3.5-sonnet","timestamp":"2025-06-17T19:17:16.910Z","samples":5,"average_distance":0,"results":[{"id":"happy-path-complete","grader_score":3,"truth_score":3,"notes":"The assistant's response was exactly 'hello world' - all lowercase, no extra spaces, no punctuation, no additional text, matching the exact requirements perfectly.","userMessage":"hi","assistantResponse":"hello world","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Critical Scoring Rules>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text, no extra spaces)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Critical Scoring Rules>\\n<Exact Match Requirements>\\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\\n  No additional words before or after\\n  No punctuation (periods, commas, exclamation marks = FAIL)\\n  No extra spaces or formatting\\n  Any deviation whatsoever = automatic -3 score\\n</Exact Match Requirements>\\n<Test Cases Reference>\\n</Test Cases Reference>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hello world\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"wrong-greeting-failure","grader_score":-3,"truth_score":-3,"notes":"The response 'I like to move it move it' does not match the required exact output of 'hello world'. Any deviation from the exact lowercase 'hello world' results in an automatic -3 score per the critical scoring rules.","userMessage":"hi","assistantResponse":"I like to move it move it","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Critical Scoring Rules>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text, no extra spaces)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Critical Scoring Rules>\\n<Exact Match Requirements>\\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\\n  No additional words before or after\\n  No punctuation (periods, commas, exclamation marks = FAIL)\\n  No extra spaces or formatting\\n  Any deviation whatsoever = automatic -3 score\\n</Exact Match Requirements>\\n<Test Cases Reference>\\n</Test Cases Reference>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"I like to move it move it\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"partial-response-failure","grader_score":-3,"truth_score":-3,"notes":"The response 'World' does not match the exact required output 'hello world'. It is missing 'hello' and uses capitalization.","userMessage":"hi","assistantResponse":"World","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Critical Scoring Rules>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text, no extra spaces)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Critical Scoring Rules>\\n<Exact Match Requirements>\\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\\n  No additional words before or after\\n  No punctuation (periods, commas, exclamation marks = FAIL)\\n  No extra spaces or formatting\\n  Any deviation whatsoever = automatic -3 score\\n</Exact Match Requirements>\\n<Test Cases Reference>\\n</Test Cases Reference>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"incomplete-greeting-failure","grader_score":-3,"truth_score":-3,"notes":"The assistant responded with 'Hello' which fails the exact match requirement for 'hello world'. It is capitalized, missing the word 'world', and does not match the required lowercase format.","userMessage":"hi","assistantResponse":"Hello","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Critical Scoring Rules>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text, no extra spaces)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Critical Scoring Rules>\\n<Exact Match Requirements>\\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\\n  No additional words before or after\\n  No punctuation (periods, commas, exclamation marks = FAIL)\\n  No extra spaces or formatting\\n  Any deviation whatsoever = automatic -3 score\\n</Exact Match Requirements>\\n<Test Cases Reference>\\n</Test Cases Reference>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}},{"id":"case-mismatch-failure","grader_score":-3,"truth_score":-3,"notes":"The response 'Hello World' fails because it uses capitalization. The only acceptable response is exactly 'hello world' in lowercase with one space between words.","userMessage":"hi","assistantResponse":"Hello World","graderMetadata":{"verbosePrompt":"{\n  \"model\": \"anthropic/claude-3.5-sonnet\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"<Critical Scoring Rules>\\n  : Assistant response is EXACTLY \\\"hello world\\\" (lowercase, no extra text, no extra spaces)\\n  : Assistant response is ANYTHING other than exactly \\\"hello world\\\"\\n</Critical Scoring Rules>\\n<Exact Match Requirements>\\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\\n  No additional words before or after\\n  No punctuation (periods, commas, exclamation marks = FAIL)\\n  No extra spaces or formatting\\n  Any deviation whatsoever = automatic -3 score\\n</Exact Match Requirements>\\n<Test Cases Reference>\\n</Test Cases Reference>\\n<Sample Analysis>\\n</Sample Analysis>\\n<Footnoted Samples>\\n</Footnoted Samples>\\n<grader evaluation>\\n  <Grading process>\\n  </Grading process>\\n</grader evaluation>\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the user's original message?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"hi\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What was the assistant's response?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Hello World\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"What format would you like for the output?\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{\\n  \\\"score\\\": \\\"<number from -3 to 3>\\\",\\n  \\\"reason\\\": \\\"<brief explanation of your scoring>\\\"\\n}\"\n    }\n  ],\n  \"temperature\": 0\n}"}}]}},"graderOrder":["simple-grader-0","simple-grader-1","simple-grader-2","simple-grader-3"]}
+    </script>
+  
+    
+    <div class="tabs">
+      
+        <button class="tab active" onclick="showTab('simple-grader-0')">simple-grader-0</button>
+      
+        <button class="tab " onclick="showTab('simple-grader-2')">simple-grader-2</button>
+      
+        <button class="tab " onclick="showTab('simple-grader-1')">simple-grader-1</button>
+      
+        <button class="tab " onclick="showTab('simple-grader-3')">simple-grader-3</button>
+      
+    </div>
+    
+    
+    
+    <div class="tab-content active" id="tab-simple-grader-0">
+      <h2>simple-grader-0</h2>
+      
+      <div class="summary">
+        <p><strong>Model:</strong> anthropic/claude-3.5-sonnet</p>
+        <p><strong>Total Samples:</strong> 5</p>
+        <p><strong>Average Distance:</strong> 2.6</p>
+        <p><strong>Agreement:</strong> 20.0% (1/5)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>happy-path-complete</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">hello world</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The assistant responded with exactly 'hello world' as required by the scoring guide</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Scoring Guide&gt;\n  : Said hello world\n  : Didn&#39;t say hello world\n&lt;/Scoring Guide&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">3</td>
+            <td style="background-color: #d4edda">3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #fff3cd">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>wrong-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">I like to move it move it</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-2</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #ffc107">1</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The response 'I like to move it move it' did not say hello world as required by the scoring guide</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Scoring Guide&gt;\n  : Said hello world\n  : Didn&#39;t say hello world\n&lt;/Scoring Guide&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;I like to move it move it&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #fff3cd">-2</td>
+            <td style="background-color: #fff3cd">-3</td>
+            <td style="background-color: #fff3cd">1</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>partial-response-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">World</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">1</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">4</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The user and assistant exchanged greetings with 'hi' and 'World', which is close to but not exactly 'hello world'</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Scoring Guide&gt;\n  : Said hello world\n  : Didn&#39;t say hello world\n&lt;/Scoring Guide&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;World&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">1</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">4</td>
+          </tr>
+          <tr>
+            <td style="background-color: #ffeaa7">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>incomplete-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">Hello</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-1</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">2</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The assistant only said 'Hello' rather than 'Hello world' as specified in the scoring guide</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Scoring Guide&gt;\n  : Said hello world\n  : Didn&#39;t say hello world\n&lt;/Scoring Guide&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Hello&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #ffeaa7">-1</td>
+            <td style="background-color: #ffeaa7">-3</td>
+            <td style="background-color: #ffeaa7">2</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>case-mismatch-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">Hello World</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">6</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The assistant responded with 'Hello World' which exactly matches the scoring guide requirement to say hello world</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Scoring Guide&gt;\n  : Said hello world\n  : Didn&#39;t say hello world\n&lt;/Scoring Guide&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Hello World&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">3</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">6</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+    <div class="tab-content " id="tab-simple-grader-2">
+      <h2>simple-grader-2</h2>
+      
+      <div class="summary">
+        <p><strong>Model:</strong> anthropic/claude-3.5-sonnet</p>
+        <p><strong>Total Samples:</strong> 5</p>
+        <p><strong>Average Distance:</strong> 0.4</p>
+        <p><strong>Agreement:</strong> 80.0% (4/5)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>happy-path-complete</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">hello world</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The assistant's response was exactly 'hello world' in lowercase with no extra text, matching the scoring guide requirements perfectly</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Scoring Guide&gt;\n  : Assistant response is EXACTLY \&quot;hello world\&quot; (lowercase, no extra text)\n  : Assistant response is ANYTHING other than exactly \&quot;hello world\&quot;\n&lt;/Scoring Guide&gt;\n&lt;Specifications&gt;\n&lt;/Specifications&gt;\n&lt;Sample Analysis&gt;\n&lt;/Sample Analysis&gt;\n&lt;Footnoted Samples&gt;\n&lt;/Footnoted Samples&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">3</td>
+            <td style="background-color: #d4edda">3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>wrong-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">I like to move it move it</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The assistant's response was a question rather than 'hello world' as required</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Scoring Guide&gt;\n  : Assistant response is EXACTLY \&quot;hello world\&quot; (lowercase, no extra text)\n  : Assistant response is ANYTHING other than exactly \&quot;hello world\&quot;\n&lt;/Scoring Guide&gt;\n&lt;Specifications&gt;\n&lt;/Specifications&gt;\n&lt;Sample Analysis&gt;\n&lt;/Sample Analysis&gt;\n&lt;Footnoted Samples&gt;\n&lt;/Footnoted Samples&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;I like to move it move it&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>partial-response-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">World</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The assistant's response 'World' does not match the required exact output of 'hello world'</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Scoring Guide&gt;\n  : Assistant response is EXACTLY \&quot;hello world\&quot; (lowercase, no extra text)\n  : Assistant response is ANYTHING other than exactly \&quot;hello world\&quot;\n&lt;/Scoring Guide&gt;\n&lt;Specifications&gt;\n&lt;/Specifications&gt;\n&lt;Sample Analysis&gt;\n&lt;/Sample Analysis&gt;\n&lt;Footnoted Samples&gt;\n&lt;/Footnoted Samples&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;World&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>incomplete-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">Hello</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The assistant responded with 'Hello' instead of exactly 'hello world'</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Scoring Guide&gt;\n  : Assistant response is EXACTLY \&quot;hello world\&quot; (lowercase, no extra text)\n  : Assistant response is ANYTHING other than exactly \&quot;hello world\&quot;\n&lt;/Scoring Guide&gt;\n&lt;Specifications&gt;\n&lt;/Specifications&gt;\n&lt;Sample Analysis&gt;\n&lt;/Sample Analysis&gt;\n&lt;Footnoted Samples&gt;\n&lt;/Footnoted Samples&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Hello&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #ffeaa7">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>case-mismatch-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">Hello World</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-1</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">2</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The assistant responded 'Hello World' with capital letters instead of the exact required format 'hello world' in lowercase</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Scoring Guide&gt;\n  : Assistant response is EXACTLY \&quot;hello world\&quot; (lowercase, no extra text)\n  : Assistant response is ANYTHING other than exactly \&quot;hello world\&quot;\n&lt;/Scoring Guide&gt;\n&lt;Specifications&gt;\n&lt;/Specifications&gt;\n&lt;Sample Analysis&gt;\n&lt;/Sample Analysis&gt;\n&lt;Footnoted Samples&gt;\n&lt;/Footnoted Samples&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Hello World&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #ffeaa7">-1</td>
+            <td style="background-color: #ffeaa7">-3</td>
+            <td style="background-color: #ffeaa7">2</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+    <div class="tab-content " id="tab-simple-grader-1">
+      <h2>simple-grader-1</h2>
+      
+      <div class="summary">
+        <p><strong>Model:</strong> anthropic/claude-3.5-sonnet</p>
+        <p><strong>Total Samples:</strong> 5</p>
+        <p><strong>Average Distance:</strong> 3.2</p>
+        <p><strong>Agreement:</strong> 0.0% (0/5)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #ffeaa7">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>happy-path-complete</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">hello world</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">1</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">2</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The response was polite and welcoming, though very basic. A simple 'hello world' is friendly but could have been more engaging or personalized to the user's greeting.</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #ffeaa7">1</td>
+            <td style="background-color: #ffeaa7">3</td>
+            <td style="background-color: #ffeaa7">2</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>wrong-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">I like to move it move it</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The message 'I like to move it move it' appears to be a casual/playful reference to a song lyric, but doesn't provide enough context to evaluate meaningfully in terms of positive or negative impact.</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;I like to move it move it&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>partial-response-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">World</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">0</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">3</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The exchange was too brief and simple ('hi' followed by 'World') to meaningfully evaluate. Neither message showed particular effort or problematic behavior.</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;World&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">0</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">3</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>incomplete-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">Hello</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">1</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">4</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The response was polite and appropriate for a simple greeting, though fairly minimal. A more engaging response could have scored higher.</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Hello&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">1</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">4</td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8d7da">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>case-mismatch-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">Hello World</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">1</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #dc3545">4</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The response was polite and welcoming, though fairly generic and minimal. A simple 'Hello World' is appropriate for a 'hi' greeting but doesn't add much engagement value.</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Hello World&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #f8d7da">1</td>
+            <td style="background-color: #f8d7da">-3</td>
+            <td style="background-color: #f8d7da">4</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+    <div class="tab-content " id="tab-simple-grader-3">
+      <h2>simple-grader-3</h2>
+      
+      <div class="summary">
+        <p><strong>Model:</strong> anthropic/claude-3.5-sonnet</p>
+        <p><strong>Total Samples:</strong> 5</p>
+        <p><strong>Average Distance:</strong> 0</p>
+        <p><strong>Agreement:</strong> 100.0% (5/5)</p>
+      </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Grader Score</th>
+          <th>Truth Score</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>happy-path-complete</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">hello world</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The assistant's response was exactly 'hello world' - all lowercase, no extra spaces, no punctuation, no additional text, matching the exact requirements perfectly.</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Critical Scoring Rules&gt;\n  : Assistant response is EXACTLY \&quot;hello world\&quot; (lowercase, no extra text, no extra spaces)\n  : Assistant response is ANYTHING other than exactly \&quot;hello world\&quot;\n&lt;/Critical Scoring Rules&gt;\n&lt;Exact Match Requirements&gt;\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\n  No additional words before or after\n  No punctuation (periods, commas, exclamation marks = FAIL)\n  No extra spaces or formatting\n  Any deviation whatsoever = automatic -3 score\n&lt;/Exact Match Requirements&gt;\n&lt;Test Cases Reference&gt;\n&lt;/Test Cases Reference&gt;\n&lt;Sample Analysis&gt;\n&lt;/Sample Analysis&gt;\n&lt;Footnoted Samples&gt;\n&lt;/Footnoted Samples&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hello world&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">3</td>
+            <td style="background-color: #d4edda">3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>wrong-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">I like to move it move it</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The response 'I like to move it move it' does not match the required exact output of 'hello world'. Any deviation from the exact lowercase 'hello world' results in an automatic -3 score per the critical scoring rules.</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Critical Scoring Rules&gt;\n  : Assistant response is EXACTLY \&quot;hello world\&quot; (lowercase, no extra text, no extra spaces)\n  : Assistant response is ANYTHING other than exactly \&quot;hello world\&quot;\n&lt;/Critical Scoring Rules&gt;\n&lt;Exact Match Requirements&gt;\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\n  No additional words before or after\n  No punctuation (periods, commas, exclamation marks = FAIL)\n  No extra spaces or formatting\n  Any deviation whatsoever = automatic -3 score\n&lt;/Exact Match Requirements&gt;\n&lt;Test Cases Reference&gt;\n&lt;/Test Cases Reference&gt;\n&lt;Sample Analysis&gt;\n&lt;/Sample Analysis&gt;\n&lt;Footnoted Samples&gt;\n&lt;/Footnoted Samples&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;I like to move it move it&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>partial-response-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">World</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The response 'World' does not match the exact required output 'hello world'. It is missing 'hello' and uses capitalization.</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Critical Scoring Rules&gt;\n  : Assistant response is EXACTLY \&quot;hello world\&quot; (lowercase, no extra text, no extra spaces)\n  : Assistant response is ANYTHING other than exactly \&quot;hello world\&quot;\n&lt;/Critical Scoring Rules&gt;\n&lt;Exact Match Requirements&gt;\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\n  No additional words before or after\n  No punctuation (periods, commas, exclamation marks = FAIL)\n  No extra spaces or formatting\n  Any deviation whatsoever = automatic -3 score\n&lt;/Exact Match Requirements&gt;\n&lt;Test Cases Reference&gt;\n&lt;/Test Cases Reference&gt;\n&lt;Sample Analysis&gt;\n&lt;/Sample Analysis&gt;\n&lt;Footnoted Samples&gt;\n&lt;/Footnoted Samples&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;World&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>incomplete-greeting-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">Hello</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The assistant responded with 'Hello' which fails the exact match requirement for 'hello world'. It is capitalized, missing the word 'world', and does not match the required lowercase format.</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Critical Scoring Rules&gt;\n  : Assistant response is EXACTLY \&quot;hello world\&quot; (lowercase, no extra text, no extra spaces)\n  : Assistant response is ANYTHING other than exactly \&quot;hello world\&quot;\n&lt;/Critical Scoring Rules&gt;\n&lt;Exact Match Requirements&gt;\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\n  No additional words before or after\n  No punctuation (periods, commas, exclamation marks = FAIL)\n  No extra spaces or formatting\n  Any deviation whatsoever = automatic -3 score\n&lt;/Exact Match Requirements&gt;\n&lt;Test Cases Reference&gt;\n&lt;/Test Cases Reference&gt;\n&lt;Sample Analysis&gt;\n&lt;/Sample Analysis&gt;\n&lt;Footnoted Samples&gt;\n&lt;/Footnoted Samples&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Hello&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+          <tr>
+            <td style="background-color: #d4edda">
+              <details>
+                <summary style="display: flex; align-items: center; justify-content: space-between;">
+                  <span>case-mismatch-failure</span>
+                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                </summary>
+                <div class="expandable-content">
+                  
+                  <div class="conversation">
+                    
+                    <div>
+                      <div class="message-label">💬 User Message:</div>
+                      <div class="message-content">hi</div>
+                    </div>
+                    
+                    
+                    <div style="margin-top: 10px;">
+                      <div class="message-label">🤖 Assistant Response:</div>
+                      <div class="message-content">Hello World</div>
+                    </div>
+                    
+                  </div>
+                  
+                  
+                  <div class="scores">
+                    <div class="score-item">
+                      <div class="message-label">Grader Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Truth Score</div>
+                      <div style="font-size: 24px; font-weight: bold;">-3</div>
+                    </div>
+                    <div class="score-item">
+                      <div class="message-label">Distance</div>
+                      <div style="font-size: 24px; font-weight: bold; color: #28a745">0</div>
+                    </div>
+                  </div>
+                  
+                  
+                  <div class="grader-reasoning">
+                    <div class="message-label">💭 Grader's Reasoning:</div>
+                    <div class="message-content">The response 'Hello World' fails because it uses capitalization. The only acceptable response is exactly 'hello world' in lowercase with one space between words.</div>
+                  </div>
+                  
+                  
+                  
+                  <div class="verbose-prompt">
+                    <details>
+                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                        <span class="message-label">⚙️ Grader Input</span>
+                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+                      </summary>
+                      <pre>{
+  &quot;model&quot;: &quot;anthropic/claude-3.5-sonnet&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;system&quot;,
+      &quot;content&quot;: &quot;&lt;Critical Scoring Rules&gt;\n  : Assistant response is EXACTLY \&quot;hello world\&quot; (lowercase, no extra text, no extra spaces)\n  : Assistant response is ANYTHING other than exactly \&quot;hello world\&quot;\n&lt;/Critical Scoring Rules&gt;\n&lt;Exact Match Requirements&gt;\n  Lowercase letters only: h-e-l-l-o space w-o-r-l-d\n  No capitalization anywhere (Hello, HELLO, World, WORLD = FAIL)\n  No additional words before or after\n  No punctuation (periods, commas, exclamation marks = FAIL)\n  No extra spaces or formatting\n  Any deviation whatsoever = automatic -3 score\n&lt;/Exact Match Requirements&gt;\n&lt;Test Cases Reference&gt;\n&lt;/Test Cases Reference&gt;\n&lt;Sample Analysis&gt;\n&lt;/Sample Analysis&gt;\n&lt;Footnoted Samples&gt;\n&lt;/Footnoted Samples&gt;\n&lt;grader evaluation&gt;\n  &lt;Grading process&gt;\n  &lt;/Grading process&gt;\n&lt;/grader evaluation&gt;&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the user&#39;s original message?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;hi&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What was the assistant&#39;s response?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Hello World&quot;
+    },
+    {
+      &quot;role&quot;: &quot;assistant&quot;,
+      &quot;content&quot;: &quot;What format would you like for the output?&quot;
+    },
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;{\n  \&quot;score\&quot;: \&quot;&lt;number from -3 to 3&gt;\&quot;,\n  \&quot;reason\&quot;: \&quot;&lt;brief explanation of your scoring&gt;\&quot;\n}&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0
+}</pre>
+                    </details>
+                  </div>
+                  
+                  
+                  
+                </div>
+              </details>
+            </td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">-3</td>
+            <td style="background-color: #d4edda">0</td>
+          </tr>
+      </tbody>
+      </tbody>
+    </table>
+    </div>
+  
+  </div>
+  
+  
+  <script>
+    function showTab(graderName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab
+      document.getElementById('tab-' + graderName).classList.add('active');
+      event.target.classList.add('active');
+    }
+  </script>
+  
+</body>
+</html>

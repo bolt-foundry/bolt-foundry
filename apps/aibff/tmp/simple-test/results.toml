@@ -1,0 +1,30 @@
+model = "gpt-4"
+timestamp = "2025-06-18T17:36:09.968Z"
+
+[[results]]
+id = "sample1"
+grader_score = 0.85
+truth_score = 1
+notes = ""
+userMessage = "What is 2+2?"
+assistantResponse = "4"
+graderInput = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Simple Test Grader\\n\\nYou are evaluating mathematical responses.\\n\\n## Instructions\\n\\nGrade the response on a scale of 0 to 1 based on correctness.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: What is 2+2?\\nAssistant: 4\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "This is a fake AI response for testing"
+rawOutput = "This is a fake AI response for testing"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Simple Test Grader\\n\\nYou are evaluating mathematical responses.\\n\\n## Instructions\\n\\nGrade the response on a scale of 0 to 1 based on correctness.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: What is 2+2?\\nAssistant: 4\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+
+[[results]]
+id = "sample2"
+grader_score = 0.85
+truth_score = 1
+notes = ""
+userMessage = "What is 10/5?"
+assistantResponse = "2"
+graderInput = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Simple Test Grader\\n\\nYou are evaluating mathematical responses.\\n\\n## Instructions\\n\\nGrade the response on a scale of 0 to 1 based on correctness.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: What is 10/5?\\nAssistant: 2\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
+graderResponse = "This is a fake AI response for testing"
+rawOutput = "This is a fake AI response for testing"
+
+[results.graderMetadata]
+verbosePrompt = "{\n  \"model\": \"gpt-4\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"# Simple Test Grader\\n\\nYou are evaluating mathematical responses.\\n\\n## Instructions\\n\\nGrade the response on a scale of 0 to 1 based on correctness.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Please evaluate this response:\\nUser: What is 10/5?\\nAssistant: 2\\n\\nProvide a score from 0 to 1.\"\n    }\n  ],\n  \"temperature\": 0,\n  \"max_tokens\": 1000\n}"
