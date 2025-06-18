@@ -9,6 +9,7 @@ import {
   generateExcerpt,
   safeExtractFrontmatter,
 } from "apps/bfDb/utils/contentUtils.ts";
+import { marked, Renderer } from "marked";
 
 /**
  * BlogPost node representing a blog post with front matter metadata and content.
@@ -113,6 +114,26 @@ export class BlogPost extends GraphQLNode {
 
     // Fallback: generate from ID
     return id.replace(/-/g, " ").replace(/^\d{4} \d{2} /, "");
+  }
+
+  /**
+   * Extract first image URL from markdown content for hero display.
+   */
+  get heroImage(): string | undefined {
+    let extractedImage: string | undefined;
+    
+    const renderer = new Renderer();
+    renderer.image = function (href: string) {
+      if (!extractedImage) {
+        extractedImage = href;
+      }
+      return ''; // We don't need HTML output, just extraction
+    };
+    
+    // Process the content to trigger image extraction
+    marked(this._content, { renderer });
+    
+    return extractedImage;
   }
 
   /**
@@ -248,5 +269,6 @@ export class BlogPost extends GraphQLNode {
       })
       .nonNull.string("excerpt")
       .nonNull.string("title")
+      .string("heroImage")
   );
 }
