@@ -1,17 +1,23 @@
 name: Publish aibff Release
 
+# DISABLED - NPM publishing workflows have been disabled
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       version:
+#         description: "Version to publish (e.g., 1.0.0)"
+#         required: true
+#         type: string
+#       prerelease:
+#         description: "Mark as pre-release"
+#         required: false
+#         type: boolean
+#         default: false
+
+# Workflow is disabled - uncomment the 'on:' section above to re-enable
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to publish (e.g., 1.0.0)"
-        required: true
-        type: string
-      prerelease:
-        description: "Mark as pre-release"
-        required: false
-        type: boolean
-        default: false
+    if: false
 
 jobs:
   build-and-release:
