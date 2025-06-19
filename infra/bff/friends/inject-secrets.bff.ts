@@ -123,7 +123,7 @@ register(
 
       // Generate .env.local file with empty values for users without 1Password access
       logger.info("Generating .env.local file with empty values...");
-      const envLines = keysToInject.map((key) => `${key}=`);
+      const envLines = keysToInject.map((key) => `${key}=""`);
       await Deno.writeTextFile(output, envLines.join("\n") + "\n");
       logger.info(`✅ Created ${output} with empty values`);
       logger.info("Please fill in the values for the secrets you need");
@@ -140,7 +140,7 @@ register(
 
     for (const [key, value] of Object.entries(injected)) {
       if (value && value !== `op://${vault}/${key}/value`) {
-        envLines.push(`${key}=${value}`);
+        envLines.push(`${key}="${value}"`);
         successCount++;
       } else {
         logger.debug(`Secret not found in 1Password: ${key}`);
