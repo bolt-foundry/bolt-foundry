@@ -18,6 +18,16 @@ import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
 
+// UI helper (to be extracted later)
+const ui = {
+  // deno-lint-ignore no-console
+  printLn: (msg: string) => console.log(msg),
+  // deno-lint-ignore no-console
+  printWarn: (msg: string) => console.warn(msg),
+  // deno-lint-ignore no-console
+  printErr: (msg: string) => console.error(msg),
+};
+
 // Import ExtractedContext type
 interface ExtractedContext {
   [variableName: string]: {
@@ -147,7 +157,7 @@ async function runEvaluationWithConcurrency(
     modelResults.set(model, []);
   }
 
-  logger.debug(
+  ui.printLn(
     `Evaluating ${samples.length} samples across ${models.length} model(s) with concurrency ${concurrency}...`,
   );
 
@@ -197,7 +207,7 @@ async function runEvaluationWithConcurrency(
 
             const graderInput = JSON.stringify(graderRequest, null, 2);
 
-            logger.debug(
+            ui.printLn(
               `[${model}] Processing sample ${
                 taskIndex + 1
               }/${samples.length}: ${sample.id}`,
@@ -290,7 +300,7 @@ async function runEvaluationWithConcurrency(
     // Calculate average score for logging
     const averageScore = results.reduce((sum, r) => sum + r.grader_score, 0) /
       results.length;
-    logger.debug(
+    ui.printLn(
       `[${model}] Completed evaluation. Average score: ${
         averageScore.toFixed(2)
       }`,
@@ -325,8 +335,8 @@ async function runCalibrate(
 
   // Check if we found any samples
   if (samples.length === 0) {
-    logger.debug("Error: No samples found in deck or embedded TOML files");
-    logger.debug(
+    ui.printErr("Error: No samples found in deck or embedded TOML files");
+    ui.printErr(
       "The deck must include samples for calibration using ![description](samples.toml) syntax",
     );
     Deno.exit(1);
@@ -336,7 +346,7 @@ async function runCalibrate(
   const models = options.model.split(",").map((m) => m.trim());
 
   // Start prefetching model pricing for all models
-  logger.debug("Fetching model pricing information...");
+  ui.printLn("Fetching model pricing information...");
   const pricingPromises = models.map((model) => getModelPricing(model));
 
   // 4. Extract context from markdown (including TOML files)
@@ -397,7 +407,7 @@ export const calibrateCommand: Command = {
 
     // Show help if requested or no arguments
     if (flags.help || flags._.length === 0) {
-      logger.debug(`Usage: aibff calibrate <deck.md> [<deck2.md> ...] [options]
+      ui.printErr(`Usage: aibff calibrate <deck.md> [<deck2.md> ...] [options]
 
 Options:
   -m, --model <models>      Comma-separated list of models (default: gpt-4)
@@ -419,14 +429,14 @@ Examples:
 
     // Validate format
     if (flags.format !== "toml" && flags.format !== "html") {
-      logger.debug("Error: Format must be 'toml' or 'html'");
+      ui.printErr("Error: Format must be 'toml' or 'html'");
       Deno.exit(1);
     }
 
     // Parse and validate concurrency
     const concurrency = parseInt(flags.concurrency, 10);
     if (isNaN(concurrency) || concurrency < 1) {
-      logger.debug("Error: Concurrency must be a positive number");
+      ui.printErr("Error: Concurrency must be a positive number");
       Deno.exit(1);
     }
 
@@ -449,7 +459,7 @@ Examples:
         graderOrder.push(graderName);
       }
 
-      logger.debug(
+      ui.printLn(
         `Processing ${deckPaths.length} grader(s) simultaneously...`,
       );
 
@@ -548,7 +558,7 @@ Examples:
               modelData as unknown as Record<string, unknown>,
             );
             await Deno.writeTextFile(outputPath, tomlContent);
-            logger.debug(`Results written to: ${outputPath}`);
+            ui.printLn(`Results written to: ${outputPath}`);
           }
         }
       } else {
@@ -562,10 +572,10 @@ Examples:
         );
         const outputPath = `${outputDir}/results.html`;
         await Deno.writeTextFile(outputPath, htmlContent);
-        logger.debug(`Results written to: ${outputPath}`);
+        ui.printLn(`Results written to: ${outputPath}`);
       }
     } catch (error) {
-      logger.debug(
+      ui.printErr(
         `Error: ${error instanceof Error ? error.message : String(error)}`,
       );
       Deno.exit(1);
