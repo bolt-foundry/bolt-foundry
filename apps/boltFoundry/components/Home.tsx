@@ -86,7 +86,7 @@ field Query.Home @component {
   };
 
   // const bfCode = "npm install @bolt-foundry/bolt-foundry";
-  const bfCode = "npx bff-eval --demo";
+  const bfCode = "aibff calibrate grader.deck.md";
 
   return (
     <div className="landing-page">
