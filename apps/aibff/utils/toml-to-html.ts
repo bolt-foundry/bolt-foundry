@@ -103,7 +103,7 @@ export function generateEvaluationHtml(
   return `<!DOCTYPE html>
 <html>
 <head>
-  <title>Evaluation Results</title>
+  <title>Evaluation results</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -283,7 +283,7 @@ export function generateEvaluationHtml(
 </head>
 <body>
   <div class="container">
-    <h1>Evaluation Results</h1>
+    <h1>Evaluation results</h1>
     
     <script type="application/json" id="evaluation-data">
     ${JSON.stringify(data)}
@@ -345,13 +345,13 @@ export function generateEvaluationHtml(
             <span style="font-size: 12px; color: #666;">Show details ▼</span>
           </summary>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px; font-size: 14px;">
-            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Average Distance</div><div>${resultData.average_distance}</div></div>
-            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Average Latency</div><div>${
+            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Average distance</div><div>${resultData.average_distance}</div></div>
+            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Average latency</div><div>${
         resultData.average_latency
           ? `${(resultData.average_latency / 1000).toFixed(2)}s`
           : "N/A"
       }</div></div>
-            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Average Tokens</div><div>${
+            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Average tokens</div><div>${
         resultData.average_total_tokens
           ? `${resultData.average_total_tokens.toFixed(0)} (${
             resultData.average_prompt_tokens?.toFixed(0) || 0
@@ -360,7 +360,7 @@ export function generateEvaluationHtml(
           } completion)`
           : "N/A"
       }</div></div>
-            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Total Cost</div><div>${
+            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Total cost</div><div>${
         resultData.total_cost !== undefined && resultData.total_cost > 0
           ? `$${resultData.total_cost.toFixed(4)}`
           : "N/A"
@@ -372,8 +372,8 @@ export function generateEvaluationHtml(
     <div class="results-container">
       <div class="header-row" style="display: flex; background-color: #f8f9fa; font-weight: 600; border-bottom: 1px solid #ddd; border: 1px solid #ddd; border-radius: 5px 5px 0 0; align-items: center;">
         <div style="flex: 3; min-width: clamp(120px, 20vw, 300px); padding: 10px; display: flex; align-items: center;">ID</div>
-        <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">Grader Score</div>
-        <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">Truth Score</div>
+        <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">Grader score</div>
+        <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">Truth score</div>
         <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">Distance</div>
         <div style="flex: 0.8; min-width: clamp(60px, 7vw, 90px); padding: 10px; display: flex; align-items: center;">Latency</div>
         <div style="flex: 0.8; min-width: clamp(60px, 7vw, 90px); padding: 10px; display: flex; align-items: center;">Tokens</div>
@@ -423,7 +423,7 @@ export function generateEvaluationHtml(
               result.notes
                 ? `
           <div class="grader-reasoning">
-            <div class="message-label" style="margin-bottom: 10px;">💭 Grader's Reasoning</div>
+            <div class="message-label" style="margin-bottom: 10px;">💭 Grader's reasoning</div>
             <div class="message-content">${result.notes}</div>
           </div>
           `
@@ -477,7 +477,7 @@ export function generateEvaluationHtml(
                   result.graderMetadata?.verbosePrompt
                     ? `
               <div style="margin-bottom: 15px; padding: 10px; background-color: white; border-radius: 5px; border: 1px solid #e0e0e0;">
-                <div class="message-label" style="margin-bottom: 10px;">⚙️ Grader Input</div>
+                <div class="message-label" style="margin-bottom: 10px;">⚙️ Grader input</div>
                 <pre style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 12px; line-height: 1.4; margin: 0; white-space: pre-wrap; word-wrap: break-word;">${
                       escapeHtml(result.graderMetadata.verbosePrompt as string)
                     }</pre>
@@ -489,7 +489,7 @@ export function generateEvaluationHtml(
                   result.rawOutput
                     ? `
               <div style="padding: 10px; background-color: white; border-radius: 5px; border: 1px solid #e0e0e0;">
-                <div class="message-label" style="margin-bottom: 10px;">🤖 Grader Response</div>
+                <div class="message-label" style="margin-bottom: 10px;">🤖 Grader response</div>
                 <pre style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 12px; line-height: 1.4; margin: 0; white-space: pre-wrap; word-wrap: break-word;">${
                       escapeHtml(formatJson(result.rawOutput))
                     }</pre>

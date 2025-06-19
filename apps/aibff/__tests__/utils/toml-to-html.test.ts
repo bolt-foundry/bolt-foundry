@@ -19,7 +19,7 @@ Deno.test("generateEvaluationHtml should include evaluation data", () => {
   // Key data points are visible
   assertStringIncludes(html, "exact-match");
   assertStringIncludes(html, "off-by-one");
-  assertStringIncludes(html, "Average Distance</div><div>1.33");
+  assertStringIncludes(html, "Average distance</div><div>1.33");
 });
 
 Deno.test("generateEvaluationHtml should color-code rows by distance", () => {
