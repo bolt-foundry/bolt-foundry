@@ -1,3 +1,0 @@
-{"userMessage":"Extract user info from: 'John Doe, 30, NYC'","assistantResponse":"{\"name\":\"John Doe\",\"age\":30,\"city\":\"NYC\"}","id":"sample-001","score":3,"description":"Perfect extraction of all fields with correct data types"}
-{"userMessage":"Parse address: '123 Main St, Apt 4B'","assistantResponse":"{\"street\":\"123 Main St\",\"unit\":\"Apt 4B\"}","id":"sample-002","score":3,"description":"Clean address parsing into structured components"}
-{"userMessage":"Extract email from: 'Contact me at john@example.com'","assistantResponse":"{\"email\":\"john@example.com\"}","id":"sample-003","score":3,"description":"Correct email extraction in JSON format"}
