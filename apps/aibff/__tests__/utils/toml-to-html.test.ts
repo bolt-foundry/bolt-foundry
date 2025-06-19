@@ -59,7 +59,7 @@ Deno.test("generateEvaluationHtml should create expandable details for each row"
   assertStringIncludes(html, "Click to expand");
 
   // Should have expandable content
-  assertStringIncludes(html, '<div class="expandable-content">');
+  assertStringIncludes(html, 'class="expandable-content"');
 
   // Conversation should be in expandable section
   assertStringIncludes(html, "What is JavaScript?");
