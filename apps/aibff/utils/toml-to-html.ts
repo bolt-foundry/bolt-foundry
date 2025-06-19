@@ -203,28 +203,28 @@ export function generateEvaluationHtml(
       margin-bottom: 20px;
       border-bottom: 2px solid #e0e0e0;
     }
-    .tab {
+    .tab-radio {
+      display: none;
+    }
+    .tab-label {
       padding: 10px 20px;
       cursor: pointer;
-      border: none;
-      background: none;
       font-size: 16px;
       color: #666;
       transition: all 0.2s;
+      border: none;
+      background: none;
+      display: block;
     }
-    .tab:hover {
+    .tab-label:hover {
       color: #333;
-    }
-    .tab.active {
-      color: #0066cc;
-      border-bottom: 2px solid #0066cc;
-      margin-bottom: -2px;
     }
     .tab-content {
       display: none;
     }
-    .tab-content.active {
-      display: block;
+    .tab-container {
+      display: flex;
+      flex-direction: column;
     }
     .verbose-prompt {
       margin-top: 15px;
@@ -245,6 +245,19 @@ export function generateEvaluationHtml(
       white-space: pre-wrap;
       word-wrap: break-word;
     }
+    
+    /* Dynamic CSS rules for tabs */
+    ${
+    tabEntries.map((entry) => `
+    #tab-radio-${entry.key}:checked ~ .tabs label[for="tab-radio-${entry.key}"] {
+      color: #0066cc;
+      border-bottom: 2px solid #0066cc;
+      margin-bottom: -2px;
+    }
+    #tab-radio-${entry.key}:checked ~ .tab-container #tab-${entry.key} {
+      display: block;
+    }`).join("\n    ")
+  }
   </style>
 </head>
 <body>
@@ -258,12 +271,17 @@ export function generateEvaluationHtml(
     ${
     !singleTab
       ? `
+    ${
+        tabEntries.map((entry, index) => `
+      <input type="radio" class="tab-radio" id="tab-radio-${entry.key}" name="tabs" ${
+          index === 0 ? "checked" : ""
+        }>
+    `).join("")
+      }
     <div class="tabs">
       ${
-        tabEntries.map((entry, index) => `
-        <button class="tab ${
-          index === 0 ? "active" : ""
-        }" onclick="showTab('${entry.key}')">${entry.label}</button>
+        tabEntries.map((entry) => `
+        <label class="tab-label" for="tab-radio-${entry.key}">${entry.label}</label>
       `).join("")
       }
     </div>
@@ -271,8 +289,9 @@ export function generateEvaluationHtml(
       : ""
   }
     
+    <div class="tab-container">
     ${
-    tabEntries.map((entry, index) => {
+    tabEntries.map((entry) => {
       // Get the actual data based on nested or flat structure
       let resultData: ModelResults;
       if (isNested) {
@@ -295,9 +314,7 @@ export function generateEvaluationHtml(
         : 0;
 
       return `
-    <div class="tab-content ${
-        singleTab || index === 0 ? "active" : ""
-      }" id="tab-${entry.key}">
+    <div class="tab-content" id="tab-${entry.key}">
       <h2>${entry.label}</h2>
       
       <div class="summary">
@@ -492,29 +509,8 @@ export function generateEvaluationHtml(
   `;
     }).join("")
   }
+    </div>
   </div>
-  
-  ${
-    !singleTab
-      ? `
-  <script>
-    function showTab(graderName) {
-      // Hide all tabs
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      
-      // Show selected tab
-      document.getElementById('tab-' + graderName).classList.add('active');
-      event.target.classList.add('active');
-    }
-  </script>
-  `
-      : ""
-  }
 </body>
 </html>`;
 }
