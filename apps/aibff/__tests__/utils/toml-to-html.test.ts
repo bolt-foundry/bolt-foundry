@@ -46,7 +46,8 @@ Deno.test("generateEvaluationHtml should handle multiple graders", () => {
 
   // Should have tabs for multiple graders
   assertStringIncludes(html, '<div class="tabs">');
-  assertStringIncludes(html, 'onclick="showTab(');
+  assertStringIncludes(html, 'class="tab-radio"');
+  assertStringIncludes(html, 'type="radio"');
 });
 
 Deno.test("generateEvaluationHtml should create expandable details for each row", () => {
