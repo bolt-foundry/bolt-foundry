@@ -19,7 +19,7 @@ Deno.test("generateEvaluationHtml should include evaluation data", () => {
   // Key data points are visible
   assertStringIncludes(html, "exact-match");
   assertStringIncludes(html, "off-by-one");
-  assertStringIncludes(html, "Average Distance:</strong> 1.33");
+  assertStringIncludes(html, "Average Distance</div><div>1.33");
 });
 
 Deno.test("generateEvaluationHtml should color-code rows by distance", () => {
@@ -69,9 +69,8 @@ Deno.test("generateEvaluationHtml should create expandable details for each row"
 Deno.test("generateEvaluationHtml should calculate agreement percentage", () => {
   const html = generateEvaluationHtml(mockSingleGraderData);
 
-  // With 1 exact match out of 3 samples = 33.3%
-  assertStringIncludes(html, "Agreement:</strong> 33.3%");
-  assertStringIncludes(html, "(1/3)");
+  // With 1 exact match out of 3 samples = 33.3% - now in compact summary format
+  assertStringIncludes(html, "33.3% agreement");
 });
 
 Deno.test("generateEvaluationHtml should not show tabs for single grader", () => {
