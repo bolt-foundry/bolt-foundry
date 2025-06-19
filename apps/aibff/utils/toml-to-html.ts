@@ -163,10 +163,6 @@ export function generateEvaluationHtml(
       grid-column: 1 / -1;
       border-bottom: 1px solid #ddd;
     }
-    .results-container details:last-child {
-      border-bottom: 1px solid #ddd;
-      border-radius: 0 0 5px 5px;
-    }
     details {
       cursor: pointer;
     }
@@ -180,8 +176,7 @@ export function generateEvaluationHtml(
     .expandable-content {
       padding: 15px;
       background-color: #f8f9fa;
-      border-radius: 5px;
-      margin-top: 10px;
+      cursor: initial;
     }
     .conversation {
       margin: 10px 0;
@@ -341,7 +336,7 @@ export function generateEvaluationHtml(
 
       return `
     <div class="tab-content" id="tab-${entry.key}">
-      <h2>${entry.label}</h2>
+      ${singleTab ? `<h2>${entry.label}</h2>` : ""}
       
       <div class="summary">
         <p><strong>Grader:</strong> ${entry.graderName}</p>
@@ -372,13 +367,13 @@ export function generateEvaluationHtml(
     
     <div class="results-container">
       <div class="header-row" style="display: flex; background-color: #f8f9fa; font-weight: 600; border-bottom: 1px solid #ddd; border: 1px solid #ddd; border-radius: 5px 5px 0 0; align-items: center;">
-        <div style="flex: 2; min-width: clamp(120px, 15vw, 200px); padding: 10px; display: flex; align-items: center;">ID</div>
-        <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">Grader Score</div>
-        <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">Truth Score</div>
-        <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">Distance</div>
-        <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">Latency</div>
-        <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">Tokens</div>
-        <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">Cost</div>
+        <div style="flex: 3; min-width: clamp(120px, 20vw, 300px); padding: 10px; display: flex; align-items: center;">ID</div>
+        <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">Grader Score</div>
+        <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">Truth Score</div>
+        <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">Distance</div>
+        <div style="flex: 0.8; min-width: clamp(60px, 7vw, 90px); padding: 10px; display: flex; align-items: center;">Latency</div>
+        <div style="flex: 0.8; min-width: clamp(60px, 7vw, 90px); padding: 10px; display: flex; align-items: center;">Tokens</div>
+        <div style="flex: 0.8; min-width: clamp(60px, 7vw, 90px); padding: 10px; display: flex; align-items: center;">Cost</div>
         <div style="width: 30px; padding: 10px; display: flex; align-items: center; justify-content: center;"></div>
       </div>
       
@@ -395,21 +390,21 @@ export function generateEvaluationHtml(
             return `
       <details style="border-left: 1px solid #ddd; border-right: 1px solid #ddd;">
         <summary style="display: flex; cursor: pointer; list-style: none; background-color: ${bgColor}; border-bottom: 1px solid #ddd; padding: 0; align-items: center;">
-          <div style="flex: 2; min-width: clamp(120px, 15vw, 200px); padding: 10px; display: flex; align-items: center;">
+          <div style="flex: 3; min-width: clamp(120px, 20vw, 300px); padding: 10px; display: flex; align-items: center;">
             <span>${result.id}</span>
           </div>
-          <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">${result.grader_score}</div>
-          <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">${
+          <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">${result.grader_score}</div>
+          <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">${
               result.truth_score ?? "N/A"
             }</div>
-          <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">${distance}</div>
-          <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">${
+          <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">${distance}</div>
+          <div style="flex: 0.8; min-width: clamp(60px, 7vw, 90px); padding: 10px; display: flex; align-items: center;">${
               result.latencyMs ? `${result.latencyMs}ms` : "N/A"
             }</div>
-          <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">${
+          <div style="flex: 0.8; min-width: clamp(60px, 7vw, 90px); padding: 10px; display: flex; align-items: center;">${
               result.totalTokens ? `${result.totalTokens}` : "N/A"
             }</div>
-          <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">${
+          <div style="flex: 0.8; min-width: clamp(60px, 7vw, 90px); padding: 10px; display: flex; align-items: center;">${
               result.totalCost !== undefined
                 ? `$${result.totalCost.toFixed(6)}`
                 : "N/A"
@@ -417,72 +412,49 @@ export function generateEvaluationHtml(
           <div style="width: 30px; padding: 10px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 12px;">▼</div>
         </summary>
           
-        <div class="expandable-content" style="padding: 15px; background-color: #f8f9fa; border-top: 1px solid #ddd;">
-          ${
-              result.userMessage
-                ? `
-          <div class="user-message">
-            <details>
-              <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                <span class="message-label">💬 User Message</span>
-                <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
-              </summary>
-              <div class="message-content" style="margin-top: 10px;">${result.userMessage}</div>
-            </details>
-          </div>
-          `
-                : ""
-            }
-          
-          ${
-              result.assistantResponse
-                ? `
-          <div class="assistant-response">
-            <details>
-              <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                <span class="message-label">🤖 Assistant Response</span>
-                <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
-              </summary>
-              <div class="message-content" style="margin-top: 10px;">${result.assistantResponse}</div>
-            </details>
-          </div>
-          `
-                : ""
-            }
-          
-          <div class="scores">
-            <div class="score-item">
-              <div class="message-label">Grader Score</div>
-              <div style="font-size: 24px; font-weight: bold;">${result.grader_score}</div>
-            </div>
-            <div class="score-item">
-              <div class="message-label">Truth Score</div>
-              <div style="font-size: 24px; font-weight: bold;">${
-              result.truth_score ?? "N/A"
-            }</div>
-            </div>
-            <div class="score-item">
-              <div class="message-label">Distance</div>
-              <div style="font-size: 24px; font-weight: bold; color: ${
-              distance === 0
-                ? "#28a745"
-                : distance === 1
-                ? "#ffc107"
-                : "#dc3545"
-            }">${distance}</div>
-            </div>
-          </div>
-          
+        <div class="expandable-content">
           ${
               result.notes
                 ? `
           <div class="grader-reasoning">
+            <div class="message-label" style="margin-bottom: 10px;">💭 Grader's Reasoning</div>
+            <div class="message-content">${result.notes}</div>
+          </div>
+          `
+                : ""
+            }
+          
+          ${
+              result.userMessage || result.assistantResponse
+                ? `
+          <div class="messages" style="margin-top: 15px;">
             <details>
               <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                <span class="message-label">💭 Grader's Reasoning</span>
+                <span class="message-label">💬 Messages</span>
                 <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
               </summary>
-              <div class="message-content" style="margin-top: 10px;">${result.notes}</div>
+              <div style="margin-top: 10px;">
+                ${
+                  result.userMessage
+                    ? `
+                <div style="margin-bottom: 15px; padding: 10px; background-color: white; border-radius: 5px; border: 1px solid #e0e0e0;">
+                  <div class="message-label" style="margin-bottom: 5px;">User:</div>
+                  <div class="message-content">${result.userMessage}</div>
+                </div>
+                `
+                    : ""
+                }
+                ${
+                  result.assistantResponse
+                    ? `
+                <div style="padding: 10px; background-color: white; border-radius: 5px; border: 1px solid #e0e0e0;">
+                  <div class="message-label" style="margin-bottom: 5px;">Assistant:</div>
+                  <div class="message-content">${result.assistantResponse}</div>
+                </div>
+                `
+                    : ""
+                }
+              </div>
             </details>
           </div>
           `
@@ -490,34 +462,36 @@ export function generateEvaluationHtml(
             }
           
           ${
-              result.graderMetadata?.verbosePrompt
+              result.graderMetadata?.verbosePrompt || result.rawOutput
                 ? `
-          <div class="verbose-prompt">
-            <details>
-              <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                <span class="message-label">⚙️ Grader Input</span>
-                <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
-              </summary>
-              <pre>${
-                  escapeHtml(result.graderMetadata.verbosePrompt as string)
-                }</pre>
-            </details>
-          </div>
-          `
-                : ""
-            }
-          
-          ${
-              result.rawOutput
-                ? `
-          <div class="grader-raw-response">
-            <details>
-              <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                <span class="message-label">🤖 Grader Raw Response</span>
-                <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
-              </summary>
-              <pre>${escapeHtml(formatJson(result.rawOutput))}</pre>
-            </details>
+          <div style="margin-top: 15px; font-size: 14px;">
+            <a href="#" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; return false;" style="color: #666; text-decoration: none;">🔧 Advanced</a>
+            <div style="display: none; margin-top: 10px;">
+              ${
+                  result.graderMetadata?.verbosePrompt
+                    ? `
+              <div style="margin-bottom: 15px; padding: 10px; background-color: white; border-radius: 5px; border: 1px solid #e0e0e0;">
+                <div class="message-label" style="margin-bottom: 10px;">⚙️ Grader Input</div>
+                <pre style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 12px; line-height: 1.4; margin: 0; white-space: pre-wrap; word-wrap: break-word;">${
+                      escapeHtml(result.graderMetadata.verbosePrompt as string)
+                    }</pre>
+              </div>
+              `
+                    : ""
+                }
+              ${
+                  result.rawOutput
+                    ? `
+              <div style="padding: 10px; background-color: white; border-radius: 5px; border: 1px solid #e0e0e0;">
+                <div class="message-label" style="margin-bottom: 10px;">🤖 Grader Response</div>
+                <pre style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; font-size: 12px; line-height: 1.4; margin: 0; white-space: pre-wrap; word-wrap: break-word;">${
+                      escapeHtml(formatJson(result.rawOutput))
+                    }</pre>
+              </div>
+              `
+                    : ""
+                }
+            </div>
           </div>
           `
                 : ""
