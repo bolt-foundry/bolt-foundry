@@ -2,7 +2,6 @@
 import type { OpenAI } from "@openai/openai";
 
 export { BfClient } from "./BfClient.ts";
-export * from "./evals/evals.ts";
 
 let logger = console;
 const enableLogging = false;

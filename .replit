@@ -7,8 +7,8 @@ channel = "stable-24_11"
 
 [deployment]
 deploymentTarget = "cloudrun"
-build = ["sh", "-c", "bff inject-secrets && source .env.local && bff build"]
-run = ["sh", "-c", "source .env.local && WEB_PORT=9999 ./build/web"]
+build = ["./scripts/build.sh"]
+run = ["sh", "-c", "WEB_PORT=9999 ./build/web"]
 
 # Deno LSP handles the entire monorepo but only performs formatting in examples/
 # (configured via deno.jsonc to exclude examples/ from linting and type checking)

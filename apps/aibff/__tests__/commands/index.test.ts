@@ -3,13 +3,13 @@
 import { assertEquals, assertExists } from "@std/assert";
 import { getAllCommands, getCommand } from "../../commands/index.ts";
 
-Deno.test("getCommand should return eval command", () => {
-  const evalCommand = getCommand("eval");
-  assertExists(evalCommand);
-  assertEquals(evalCommand.name, "eval");
+Deno.test("getCommand should return calibrate command", () => {
+  const calibrateCommand = getCommand("calibrate");
+  assertExists(calibrateCommand);
+  assertEquals(calibrateCommand.name, "calibrate");
   assertEquals(
-    evalCommand.description,
-    "Evaluate grader decks against sample prompts",
+    calibrateCommand.description,
+    "Calibrate AI models against test samples",
   );
 });
 
@@ -20,8 +20,11 @@ Deno.test("getCommand should return undefined for unknown command", () => {
 
 Deno.test("getAllCommands should return all registered commands", () => {
   const commands = getAllCommands();
-  assertEquals(commands.length >= 1, true);
-  assertEquals(commands.some((command) => command.name === "eval"), true);
+  assertEquals(commands.length >= 4, true);
+  assertEquals(commands.some((command) => command.name === "calibrate"), true);
+  assertEquals(commands.some((command) => command.name === "render"), true);
+  assertEquals(commands.some((command) => command.name === "repl"), true);
+  assertEquals(commands.some((command) => command.name === "rebuild"), true);
 });
 
 Deno.test("getAllCommands should return sorted list by name", () => {

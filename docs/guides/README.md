@@ -1,1 +1,3 @@
-../../memos/guides/README.md
+# Bolt Foundry Documentation
+
+Docs coming soon.

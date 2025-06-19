@@ -1,5 +1,4 @@
 import { connectBoltFoundry } from "./bolt-foundry.ts";
-import { type DeckBuilder, makeDeckBuilder } from "./builders/builders.ts";
 
 /**
  * Main Bolt Foundry client for all SDK functionality
@@ -23,26 +22,6 @@ export class BfClient {
       options.collectorEndpoint,
     );
     return new BfClient(wrappedFetch);
-  }
-
-  /**
-   * Create a new deck specification using the builder pattern
-   */
-  createDeck(
-    name: string,
-    builder: (b: DeckBuilder) => DeckBuilder,
-  ): DeckBuilder {
-    return builder(makeDeckBuilder(name));
-  }
-
-  /**
-   * Create a new assistant deck specification using the builder pattern
-   */
-  createAssistantDeck(
-    name: string,
-    builder: (b: DeckBuilder) => DeckBuilder,
-  ): DeckBuilder {
-    return this.createDeck(name, builder);
   }
 
   /**

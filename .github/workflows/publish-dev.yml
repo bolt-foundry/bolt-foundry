@@ -1,12 +1,18 @@
 name: Publish Dev Version
 
+# DISABLED - NPM publishing workflows have been disabled
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - "packages/**"
+#   workflow_dispatch:
+
+# Workflow is disabled - uncomment the 'on:' section above to re-enable
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "packages/**"
   workflow_dispatch:
+    if: false
 
 jobs:
   build-and-publish:
