@@ -4,13 +4,17 @@
  */
 
 import { getLogger } from "packages/logger/logger.ts";
-import { parseMarkdownToDeck } from "packages/bolt-foundry/builders/markdown/markdownToDeck.ts";
-import type { DeckBuilder } from "packages/bolt-foundry/builders/builders.ts";
+import { renderDeck } from "apps/aibff/index.ts";
 import type { CompanyContext, WorkItem } from "./types.ts";
-import type { ChatCompletionCreateParams } from "openai/resources/chat/completions";
 import { getSecret } from "packages/get-configuration-var/get-configuration-var.ts";
 
 const logger = getLogger(import.meta);
+
+interface OpenAIRequest {
+  messages: Array<{ role: string; content: string }>;
+  model?: string;
+  [key: string]: unknown;
+}
 
 export interface TeamMemberSummary {
   username: string;
@@ -23,22 +27,21 @@ export interface TeamMemberSummary {
 }
 
 export class AISummarizer {
-  private deck: DeckBuilder | null = null;
+  private deckPath: string | null = null;
 
   /**
-   * Initialize by loading and parsing the team summary analysis deck
+   * Initialize by setting the path to the team summary analysis deck
    */
   async initialize(): Promise<void> {
     try {
-      const deckPath =
+      this.deckPath =
         "/home/runner/workspace/decks/team-summary-analysis.deck.md";
-      const deckContent = await Deno.readTextFile(deckPath);
-      const { deck } = await parseMarkdownToDeck(deckContent);
-      this.deck = deck;
-      logger.debug("Successfully loaded team summary analysis deck");
+      // Verify the deck file exists
+      await Deno.stat(this.deckPath);
+      logger.debug("Successfully found team summary analysis deck");
     } catch (error) {
-      logger.warn("Could not load team summary deck:", error);
-      this.deck = null;
+      logger.warn("Could not find team summary deck:", error);
+      this.deckPath = null;
     }
   }
 
@@ -46,7 +49,7 @@ export class AISummarizer {
    * Execute a rendered deck with an LLM provider
    */
   private async executeRenderedDeck(
-    renderedDeck: ChatCompletionCreateParams,
+    renderedDeck: OpenAIRequest,
   ): Promise<TeamMemberSummary> {
     try {
       logger.debug("Executing deck with LLM provider");
@@ -121,7 +124,7 @@ export class AISummarizer {
     workItems: Array<WorkItem>,
     companyContext: CompanyContext,
   ): Promise<TeamMemberSummary> {
-    if (!this.deck || workItems.length === 0) {
+    if (!this.deckPath || workItems.length === 0) {
       return this.generateMemberSummary(
         username,
         displayName,
@@ -138,17 +141,11 @@ export class AISummarizer {
         companyContext,
       );
 
-      // Render the deck with work context and add JSON format instruction
-      const rendered = this.deck.render({
-        model: "gpt-4o-mini", // Fast model for summarization
-        context: workContext as Record<
-          string,
-          string | number | boolean | null
-        >,
-        messages: [{
-          role: "user",
-          content:
-            `Generate a team member summary for the provided work context. 
+      // Add the JSON format instruction to the context
+      const contextWithInstructions = {
+        ...workContext,
+        formatInstructions:
+          `Generate a team member summary for the provided work context. 
 
 CRITICAL: Your response must be ONLY valid JSON in exactly this format:
 
@@ -162,22 +159,31 @@ CRITICAL: Your response must be ONLY valid JSON in exactly this format:
 }
 
 Do not include any text before or after the JSON. Start with { and end with }.`,
-        }],
-      });
+      };
+
+      // Render the deck with work context
+      const chatCompletionParams = renderDeck(
+        this.deckPath,
+        contextWithInstructions,
+        {
+          model: "gpt-4o-mini", // Fast model for summarization
+        },
+      );
 
       // Log the rendered deck for debugging
       logger.debug("Deck rendered for AI summarization:", {
-        model: rendered.model,
-        messageCount: rendered.messages?.length || 0,
-        systemMessage: typeof rendered.messages?.[0]?.content === "string"
-          ? rendered.messages[0].content.substring(0, 200) + "..."
-          : "Complex content",
+        model: chatCompletionParams.model || "gpt-4o-mini",
+        messageCount: chatCompletionParams.messages?.length || 0,
+        systemMessage:
+          typeof chatCompletionParams.messages?.[0]?.content === "string"
+            ? chatCompletionParams.messages[0].content.substring(0, 200) + "..."
+            : "Complex content",
       });
 
       // Execute the rendered deck with AI
       try {
         logger.debug("Attempting AI execution for user:", username);
-        const aiResult = await this.executeRenderedDeck(rendered);
+        const aiResult = await this.executeRenderedDeck(chatCompletionParams);
         logger.info("Successfully generated AI summary for:", username);
         return aiResult;
       } catch (aiError) {
