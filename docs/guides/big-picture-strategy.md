@@ -1,1 +1,0 @@
-../../memos/guides/big-picture-strategy.md

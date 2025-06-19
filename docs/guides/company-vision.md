@@ -1,1 +1,0 @@
-../../memos/guides/company-vision.md
