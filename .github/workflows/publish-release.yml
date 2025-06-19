@@ -17,6 +17,7 @@ jobs:
   build-and-publish:
     name: Build and Publish Release
     runs-on: ubuntu-latest
+    if: false # DISABLED: npm publishing temporarily disabled
     permissions:
       id-token: write
       contents: read

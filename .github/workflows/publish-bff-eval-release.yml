@@ -17,6 +17,7 @@ jobs:
   build-and-publish:
     name: Build and Publish bff-eval Release
     runs-on: ubuntu-latest
+    if: false # DISABLED: npm publishing temporarily disabled
     steps:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
