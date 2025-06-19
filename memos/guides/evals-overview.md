@@ -23,7 +23,7 @@ across multiple underlying base models.
 Set your `OPENROUTER_API_KEY` environment variable.
 
 ```bash
-npx bff-eval --help
+aibff calibrate --help
 ```
 
 Run evaluation with sample data:
@@ -116,8 +116,8 @@ export default makeGraderDeckBuilder("json-validator")
 Specify the model to use for evaluation using the `--model` flag:
 
 ```bash
-npx bff-eval --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
-npx bff-eval --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
+aibff calibrate --input data.jsonl --grader grader.ts --model openai/gpt-4o  # Default
+aibff calibrate --input data.jsonl --grader grader.ts --model anthropic/claude-3-opus
 ```
 
 The evaluation uses OpenRouter API, so any model available on OpenRouter can be
