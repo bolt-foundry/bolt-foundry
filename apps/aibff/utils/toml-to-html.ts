@@ -131,19 +131,41 @@ export function generateEvaluationHtml(
       margin: 5px 0;
       font-size: 14px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 80px 80px 80px 100px 100px 100px;
+      gap: 0;
       margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
     }
-    th, td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    th {
+    .grid-header {
       background-color: #f8f9fa;
       font-weight: 600;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      display: flex;
+      align-items: center;
+    }
+    .grid-cell {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      min-height: 40px;
+    }
+    .grid-row {
+      display: contents;
+    }
+    .expandable-row {
+      grid-column: 1 / -1;
+      border-bottom: 1px solid #ddd;
+    }
+    .results-container details:last-child {
+      border-bottom: 1px solid #ddd;
+      border-radius: 0 0 5px 5px;
     }
     details {
       cursor: pointer;
@@ -293,7 +315,7 @@ export function generateEvaluationHtml(
       : ""
   }
     
-    <div class="tab-container${singleTab ? ' single-tab' : ''}">
+    <div class="tab-container${singleTab ? " single-tab" : ""}">
     ${
     tabEntries.map((entry) => {
       // Get the actual data based on nested or flat structure
@@ -348,20 +370,19 @@ export function generateEvaluationHtml(
         <p><strong>Agreement:</strong> ${agreementPercent}% (${agreements}/${samplesWithTruth})</p>
       </div>
     
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Grader Score</th>
-          <th>Truth Score</th>
-          <th>Distance</th>
-          <th>Latency</th>
-          <th>Tokens</th>
-          <th>Cost</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${
+    <div class="results-container">
+      <div class="header-row" style="display: flex; background-color: #f8f9fa; font-weight: 600; border-bottom: 1px solid #ddd; border: 1px solid #ddd; border-radius: 5px 5px 0 0; align-items: center;">
+        <div style="flex: 2; min-width: clamp(120px, 15vw, 200px); padding: 10px; display: flex; align-items: center;">ID</div>
+        <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">Grader Score</div>
+        <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">Truth Score</div>
+        <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">Distance</div>
+        <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">Latency</div>
+        <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">Tokens</div>
+        <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">Cost</div>
+        <div style="width: 30px; padding: 10px; display: flex; align-items: center; justify-content: center;"></div>
+      </div>
+      
+      ${
         resultData.results
           .slice() // Create a copy to avoid mutating the original
           .sort((a, b) => a.id.localeCompare(b.id)) // Sort by ID alphabetically
@@ -372,143 +393,140 @@ export function generateEvaluationHtml(
             const bgColor = getColorForDistance(distance);
 
             return `
-          <tr>
-            <td style="background-color: ${bgColor}">
-              <details>
-                <summary style="display: flex; align-items: center; justify-content: space-between;">
-                  <span>${result.id}</span>
-                  <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
-                </summary>
-                <div class="expandable-content">
-                  ${
-              result.userMessage
-                ? `
-                  <div class="user-message">
-                    <details>
-                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                        <span class="message-label">💬 User Message</span>
-                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
-                      </summary>
-                      <div class="message-content" style="margin-top: 10px;">${result.userMessage}</div>
-                    </details>
-                  </div>
-                  `
-                : ""
-            }
-                  
-                  ${
-              result.assistantResponse
-                ? `
-                  <div class="assistant-response">
-                    <details>
-                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                        <span class="message-label">🤖 Assistant Response</span>
-                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
-                      </summary>
-                      <div class="message-content" style="margin-top: 10px;">${result.assistantResponse}</div>
-                    </details>
-                  </div>
-                  `
-                : ""
-            }
-                  
-                  <div class="scores">
-                    <div class="score-item">
-                      <div class="message-label">Grader Score</div>
-                      <div style="font-size: 24px; font-weight: bold;">${result.grader_score}</div>
-                    </div>
-                    <div class="score-item">
-                      <div class="message-label">Truth Score</div>
-                      <div style="font-size: 24px; font-weight: bold;">${
+      <details style="border-left: 1px solid #ddd; border-right: 1px solid #ddd;">
+        <summary style="display: flex; cursor: pointer; list-style: none; background-color: ${bgColor}; border-bottom: 1px solid #ddd; padding: 0; align-items: center;">
+          <div style="flex: 2; min-width: clamp(120px, 15vw, 200px); padding: 10px; display: flex; align-items: center;">
+            <span>${result.id}</span>
+          </div>
+          <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">${result.grader_score}</div>
+          <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">${
               result.truth_score ?? "N/A"
             }</div>
-                    </div>
-                    <div class="score-item">
-                      <div class="message-label">Distance</div>
-                      <div style="font-size: 24px; font-weight: bold; color: ${
+          <div style="flex: 1; min-width: clamp(80px, 10vw, 120px); padding: 10px; display: flex; align-items: center;">${distance}</div>
+          <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">${
+              result.latencyMs ? `${result.latencyMs}ms` : "N/A"
+            }</div>
+          <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">${
+              result.totalTokens ? `${result.totalTokens}` : "N/A"
+            }</div>
+          <div style="flex: 1; min-width: clamp(100px, 12vw, 140px); padding: 10px; display: flex; align-items: center;">${
+              result.totalCost !== undefined
+                ? `$${result.totalCost.toFixed(6)}`
+                : "N/A"
+            }</div>
+          <div style="width: 30px; padding: 10px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 12px;">▼</div>
+        </summary>
+          
+        <div class="expandable-content" style="padding: 15px; background-color: #f8f9fa; border-top: 1px solid #ddd;">
+          ${
+              result.userMessage
+                ? `
+          <div class="user-message">
+            <details>
+              <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                <span class="message-label">💬 User Message</span>
+                <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+              </summary>
+              <div class="message-content" style="margin-top: 10px;">${result.userMessage}</div>
+            </details>
+          </div>
+          `
+                : ""
+            }
+          
+          ${
+              result.assistantResponse
+                ? `
+          <div class="assistant-response">
+            <details>
+              <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                <span class="message-label">🤖 Assistant Response</span>
+                <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+              </summary>
+              <div class="message-content" style="margin-top: 10px;">${result.assistantResponse}</div>
+            </details>
+          </div>
+          `
+                : ""
+            }
+          
+          <div class="scores">
+            <div class="score-item">
+              <div class="message-label">Grader Score</div>
+              <div style="font-size: 24px; font-weight: bold;">${result.grader_score}</div>
+            </div>
+            <div class="score-item">
+              <div class="message-label">Truth Score</div>
+              <div style="font-size: 24px; font-weight: bold;">${
+              result.truth_score ?? "N/A"
+            }</div>
+            </div>
+            <div class="score-item">
+              <div class="message-label">Distance</div>
+              <div style="font-size: 24px; font-weight: bold; color: ${
               distance === 0
                 ? "#28a745"
                 : distance === 1
                 ? "#ffc107"
                 : "#dc3545"
             }">${distance}</div>
-                    </div>
-                  </div>
-                  
-                  ${
+            </div>
+          </div>
+          
+          ${
               result.notes
                 ? `
-                  <div class="grader-reasoning">
-                    <details>
-                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                        <span class="message-label">💭 Grader's Reasoning</span>
-                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
-                      </summary>
-                      <div class="message-content" style="margin-top: 10px;">${result.notes}</div>
-                    </details>
-                  </div>
-                  `
+          <div class="grader-reasoning">
+            <details>
+              <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                <span class="message-label">💭 Grader's Reasoning</span>
+                <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+              </summary>
+              <div class="message-content" style="margin-top: 10px;">${result.notes}</div>
+            </details>
+          </div>
+          `
                 : ""
             }
-                  
-                  ${
+          
+          ${
               result.graderMetadata?.verbosePrompt
                 ? `
-                  <div class="verbose-prompt">
-                    <details>
-                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                        <span class="message-label">⚙️ Grader Input</span>
-                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
-                      </summary>
-                      <pre>${
+          <div class="verbose-prompt">
+            <details>
+              <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                <span class="message-label">⚙️ Grader Input</span>
+                <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+              </summary>
+              <pre>${
                   escapeHtml(result.graderMetadata.verbosePrompt as string)
                 }</pre>
-                    </details>
-                  </div>
-                  `
+            </details>
+          </div>
+          `
                 : ""
             }
-                  
-                  ${
+          
+          ${
               result.rawOutput
                 ? `
-                  <div class="grader-raw-response">
-                    <details>
-                      <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
-                        <span class="message-label">🤖 Grader Raw Response</span>
-                        <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
-                      </summary>
-                      <pre>${escapeHtml(formatJson(result.rawOutput))}</pre>
-                    </details>
-                  </div>
-                  `
+          <div class="grader-raw-response">
+            <details>
+              <summary style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                <span class="message-label">🤖 Grader Raw Response</span>
+                <span style="font-size: 12px; color: #666;">Click to expand ▼</span>
+              </summary>
+              <pre>${escapeHtml(formatJson(result.rawOutput))}</pre>
+            </details>
+          </div>
+          `
                 : ""
             }
-                </div>
-              </details>
-            </td>
-            <td style="background-color: ${bgColor}">${result.grader_score}</td>
-            <td style="background-color: ${bgColor}">${
-              result.truth_score ?? "N/A"
-            }</td>
-            <td style="background-color: ${bgColor}">${distance}</td>
-            <td style="background-color: ${bgColor}">${
-              result.latencyMs ? `${result.latencyMs}ms` : "N/A"
-            }</td>
-            <td style="background-color: ${bgColor}">${
-              result.totalTokens ? `${result.totalTokens}` : "N/A"
-            }</td>
-            <td style="background-color: ${bgColor}">${
-              result.totalCost !== undefined
-                ? `$${result.totalCost.toFixed(6)}`
-                : "N/A"
-            }</td>
-          </tr>`;
+        </div>
+      </details>`;
           }).join("")
       }
-      </tbody>
-      </tbody>
-    </table>
+    </div>
     </div>
   `;
     }).join("")
