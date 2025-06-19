@@ -339,16 +339,19 @@ export function generateEvaluationHtml(
       ${singleTab ? `<h2>${entry.label}</h2>` : ""}
       
       <div class="summary">
-        <p><strong>Grader:</strong> ${entry.graderName}</p>
-        <p><strong>Model:</strong> ${resultData.model}</p>
-        <p><strong>Total Samples:</strong> ${resultData.samples}</p>
-        <p><strong>Average Distance:</strong> ${resultData.average_distance}</p>
-        <p><strong>Average Latency:</strong> ${
+        <details>
+          <summary style="display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0; cursor: pointer; outline: none; list-style: none;">
+            <span style="font-size: 16px;"><strong>${entry.graderName}</strong> • ${resultData.model} • ${resultData.samples} samples • ${agreementPercent}% agreement (${agreements}/${samplesWithTruth})</span>
+            <span style="font-size: 12px; color: #666;">Show details ▼</span>
+          </summary>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px; font-size: 14px;">
+            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Average Distance</div><div>${resultData.average_distance}</div></div>
+            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Average Latency</div><div>${
         resultData.average_latency
-          ? `${resultData.average_latency.toFixed(0)}ms`
+          ? `${(resultData.average_latency / 1000).toFixed(2)}s`
           : "N/A"
-      }</p>
-        <p><strong>Average Tokens:</strong> ${
+      }</div></div>
+            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Average Tokens</div><div>${
         resultData.average_total_tokens
           ? `${resultData.average_total_tokens.toFixed(0)} (${
             resultData.average_prompt_tokens?.toFixed(0) || 0
@@ -356,13 +359,14 @@ export function generateEvaluationHtml(
             resultData.average_completion_tokens?.toFixed(0) || 0
           } completion)`
           : "N/A"
-      }</p>
-        <p><strong>Total Cost:</strong> ${
+      }</div></div>
+            <div style="text-align: center; padding: 8px;"><div style="font-weight: 600;">Total Cost</div><div>${
         resultData.total_cost !== undefined && resultData.total_cost > 0
           ? `$${resultData.total_cost.toFixed(4)}`
           : "N/A"
-      }</p>
-        <p><strong>Agreement:</strong> ${agreementPercent}% (${agreements}/${samplesWithTruth})</p>
+      }</div></div>
+          </div>
+        </details>
       </div>
     
     <div class="results-container">
@@ -399,7 +403,9 @@ export function generateEvaluationHtml(
             }</div>
           <div style="flex: 0.8; min-width: clamp(50px, 6vw, 80px); padding: 10px; display: flex; align-items: center;">${distance}</div>
           <div style="flex: 0.8; min-width: clamp(60px, 7vw, 90px); padding: 10px; display: flex; align-items: center;">${
-              result.latencyMs ? `${result.latencyMs}ms` : "N/A"
+              result.latencyMs
+                ? `${(result.latencyMs / 1000).toFixed(2)}s`
+                : "N/A"
             }</div>
           <div style="flex: 0.8; min-width: clamp(60px, 7vw, 90px); padding: 10px; display: flex; align-items: center;">${
               result.totalTokens ? `${result.totalTokens}` : "N/A"
