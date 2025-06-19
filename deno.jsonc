@@ -83,16 +83,14 @@
     "**/npm",
     "node_modules",
     "examples/**",
-    "**/dist/**",
-    "packages/bff-eval/**"
+    "**/dist/**"
   ],
   "lint": {
     "exclude": [
       "**/__generated__/**",
       "examples/**",
       "apps/contacts/**",
-      "**/dist/**",
-      "packages/bff-eval/**"
+      "**/dist/**"
     ],
     "plugins": ["./infra/lint/bolt-foundry.ts"],
 
