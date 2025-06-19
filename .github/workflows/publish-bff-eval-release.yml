@@ -1,17 +1,23 @@
 name: Publish bff-eval Release
 
+# DISABLED - NPM publishing workflows have been disabled
+# on:
+#   workflow_dispatch:
+#     inputs:
+#       version:
+#         description: "Version to publish (e.g., 1.0.0)"
+#         required: true
+#         type: string
+#       tag:
+#         description: "NPM tag (e.g., latest, beta, next)"
+#         required: true
+#         default: "latest"
+#         type: string
+
+# Workflow is disabled - uncomment the 'on:' section above to re-enable
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version to publish (e.g., 1.0.0)"
-        required: true
-        type: string
-      tag:
-        description: "NPM tag (e.g., latest, beta, next)"
-        required: true
-        default: "latest"
-        type: string
+    if: false
 
 jobs:
   build-and-publish:
