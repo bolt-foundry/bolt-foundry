@@ -83,7 +83,8 @@
     "**/npm",
     "node_modules",
     "examples/**",
-    "**/dist/**"
+    "**/dist/**",
+    "packages/aibff"
   ],
   "lint": {
     "exclude": [
