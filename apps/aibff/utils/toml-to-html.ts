@@ -50,6 +50,10 @@ function escapeHtml(text: string): string {
     .replace(/'/g, "&#39;");
 }
 
+function sanitizeId(id: string): string {
+  return id.replace(/[^a-zA-Z0-9_-]/g, "_");
+}
+
 function formatJson(jsonString: string): string {
   try {
     // Try to parse and prettify JSON
@@ -70,7 +74,13 @@ export function generateEvaluationHtml(
 
   // Create tab entries based on structure
   const tabEntries: Array<
-    { key: string; label: string; graderName: string; modelName?: string }
+    {
+      key: string;
+      sanitizedKey: string;
+      label: string;
+      graderName: string;
+      modelName?: string;
+    }
   > = [];
 
   if (isNested) {
@@ -78,8 +88,10 @@ export function generateEvaluationHtml(
     Object.entries((data as EvaluationDataNested).graderResults).forEach(
       ([graderName, graderData]) => {
         Object.entries(graderData.models || {}).forEach(([modelKey]) => {
+          const key = `${graderName}-${modelKey}`;
           tabEntries.push({
-            key: `${graderName}-${modelKey}`,
+            key,
+            sanitizedKey: sanitizeId(key),
             label: `${graderName}-${modelKey}`,
             graderName,
             modelName: modelKey,
@@ -92,6 +104,7 @@ export function generateEvaluationHtml(
     Object.keys(data.graderResults).forEach((graderName) => {
       tabEntries.push({
         key: graderName,
+        sanitizedKey: sanitizeId(graderName),
         label: graderName,
         graderName,
       });
@@ -270,12 +283,12 @@ export function generateEvaluationHtml(
     /* Dynamic CSS rules for tabs */
     ${
     tabEntries.map((entry) => `
-    #tab-radio-${entry.key}:checked ~ .tabs label[for="tab-radio-${entry.key}"] {
+    #tab-radio-${entry.sanitizedKey}:checked ~ .tabs label[for="tab-radio-${entry.sanitizedKey}"] {
       color: #0066cc;
       border-bottom: 2px solid #0066cc;
       margin-bottom: -2px;
     }
-    #tab-radio-${entry.key}:checked ~ .tab-container #tab-${entry.key} {
+    #tab-radio-${entry.sanitizedKey}:checked ~ .tab-container #tab-${entry.sanitizedKey} {
       display: block;
     }`).join("\n    ")
   }
@@ -294,7 +307,7 @@ export function generateEvaluationHtml(
       ? `
     ${
         tabEntries.map((entry, index) => `
-      <input type="radio" class="tab-radio" id="tab-radio-${entry.key}" name="tabs" ${
+      <input type="radio" class="tab-radio" id="tab-radio-${entry.sanitizedKey}" name="tabs" ${
           index === 0 ? "checked" : ""
         }>
     `).join("")
@@ -302,7 +315,7 @@ export function generateEvaluationHtml(
     <div class="tabs">
       ${
         tabEntries.map((entry) => `
-        <label class="tab-label" for="tab-radio-${entry.key}">${entry.label}</label>
+        <label class="tab-label" for="tab-radio-${entry.sanitizedKey}">${entry.label}</label>
       `).join("")
       }
     </div>
@@ -335,7 +348,7 @@ export function generateEvaluationHtml(
         : 0;
 
       return `
-    <div class="tab-content" id="tab-${entry.key}">
+    <div class="tab-content" id="tab-${entry.sanitizedKey}">
       ${singleTab ? `<h2>${entry.label}</h2>` : ""}
       
       <div class="summary">
