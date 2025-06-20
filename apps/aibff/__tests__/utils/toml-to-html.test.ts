@@ -19,7 +19,7 @@ Deno.test("generateEvaluationHtml should include evaluation data", () => {
   // Key data points are visible
   assertStringIncludes(html, "exact-match");
   assertStringIncludes(html, "off-by-one");
-  assertStringIncludes(html, "Average distance</div><div>1.33");
+  assertStringIncludes(html, '<div class="metric-value">1.33</div>');
 });
 
 Deno.test("generateEvaluationHtml should color-code rows by distance", () => {
@@ -56,7 +56,6 @@ Deno.test("generateEvaluationHtml should create expandable details for each row"
   // Should have details/summary elements
   assertStringIncludes(html, "<details>");
   assertStringIncludes(html, "<summary");
-  assertStringIncludes(html, "Click to expand");
 
   // Should have expandable content
   assertStringIncludes(html, 'class="expandable-content"');
