@@ -152,3 +152,75 @@ Deno.test("generateEvaluationHtml should handle nested model structure in data",
     "claude-3.5-sonnet",
   );
 });
+
+Deno.test("generateEvaluationHtml should sanitize tab IDs with periods while preserving labels", () => {
+  // Create test data with periods in grader names
+  const testData = {
+    graderResults: {
+      "grader.with.periods": {
+        grader: "grader.with.periods.deck.md",
+        model: "gpt-4",
+        timestamp: "2023-01-01T00:00:00Z",
+        samples: 2,
+        average_distance: 0.5,
+        results: [
+          {
+            id: "test-1",
+            grader_score: 3,
+            truth_score: 3,
+            notes: "Test note",
+          },
+          {
+            id: "test-2",
+            grader_score: 2,
+            truth_score: 3,
+            notes: "Another test",
+          },
+        ],
+      },
+      "another.grader.name": {
+        grader: "another.grader.name.deck.md",
+        model: "claude-3.5",
+        timestamp: "2023-01-01T00:00:00Z",
+        samples: 1,
+        average_distance: 1.0,
+        results: [
+          {
+            id: "test-3",
+            grader_score: 1,
+            truth_score: 2,
+            notes: "Third test",
+          },
+        ],
+      },
+    },
+  };
+
+  const html = generateEvaluationHtml(testData);
+
+  // Should have sanitized IDs (periods replaced with underscores)
+  assertStringIncludes(html, 'id="tab-radio-grader_with_periods"');
+  assertStringIncludes(html, 'id="tab-radio-another_grader_name"');
+  assertStringIncludes(html, 'for="tab-radio-grader_with_periods"');
+  assertStringIncludes(html, 'for="tab-radio-another_grader_name"');
+
+  // CSS selectors should use sanitized IDs
+  assertStringIncludes(html, "#tab-radio-grader_with_periods:checked");
+  assertStringIncludes(html, "#tab-radio-another_grader_name:checked");
+
+  // Tab content divs should use sanitized IDs
+  assertStringIncludes(html, 'id="tab-grader_with_periods"');
+  assertStringIncludes(html, 'id="tab-another_grader_name"');
+
+  // But labels should preserve original names with periods
+  assertStringIncludes(html, ">grader.with.periods</label>");
+  assertStringIncludes(html, ">another.grader.name</label>");
+
+  // Should have radio buttons and tabs
+  assertStringIncludes(html, 'type="radio"');
+  assertStringIncludes(html, 'class="tab-radio"');
+  assertStringIncludes(html, 'class="tab-label"');
+
+  // Should have tab content containers
+  assertStringIncludes(html, 'class="tab-content"');
+});
