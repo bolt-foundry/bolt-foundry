@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+
+const binaryPath = path.join(__dirname, 'aibff');
+
+// Check if binary exists
+if (!fs.existsSync(binaryPath)) {
+  console.error('aibff binary not found!');
+  console.error('This usually means the post-install script failed.');
+  console.error('Try running: npm install');
+  console.error('');
+  console.error('If the problem persists, you can manually run:');
+  console.error('  cd ' + path.dirname(__dirname));
+  console.error('  node install.js');
+  process.exit(1);
+}
+
+// Check if binary is executable
+try {
+  fs.accessSync(binaryPath, fs.constants.X_OK);
+} catch (err) {
+  console.error('aibff binary is not executable!');
+  if (process.platform !== 'win32') {
+    console.error('Try running: chmod +x ' + binaryPath);
+  }
+  process.exit(1);
+}
+
+// Run the binary with all arguments
+const child = spawn(binaryPath, process.argv.slice(2), {
+  stdio: 'inherit',
+  env: process.env,
+  cwd: process.cwd()
+});
+
+child.on('error', (err) => {
+  if (err.code === 'ENOENT') {
+    console.error('Failed to execute aibff binary');
+    console.error('Binary path:', binaryPath);
+  } else {
+    console.error('Error running aibff:', err.message);
+  }
+  process.exit(1);
+});
+
+child.on('exit', (code, signal) => {
+  if (signal) {
+    process.kill(process.pid, signal);
+  } else {
+    process.exit(code);
+  }
+});

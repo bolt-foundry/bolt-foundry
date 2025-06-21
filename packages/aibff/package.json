@@ -1,0 +1,40 @@
+{
+  "name": "aibff",
+  "version": "0.0.1",
+  "description": "AI Best Friend - Create and refine graders for LLM evaluation",
+  "bin": {
+    "aibff": "./bin/aibff"
+  },
+  "scripts": {
+    "postinstall": "node install.js",
+    "download": "node install.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bolt-foundry/bolt-foundry.git"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "evaluation",
+    "grader",
+    "bolt-foundry",
+    "aibff"
+  ],
+  "author": "Content Foundry, Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bolt-foundry/bolt-foundry/issues"
+  },
+  "homepage": "https://github.com/bolt-foundry/bolt-foundry#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "bin/aibff",
+    "install.js",
+    "index.js",
+    "README.md"
+  ]
+}
