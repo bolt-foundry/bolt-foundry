@@ -94,8 +94,10 @@ async function sendToAI(
     return response;
   } catch (error) {
     // Log error but return a minimal error response
-    logger.debug("OpenRouter API error:", error);
-    return { content: "(call failed)" };
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.debug("OpenRouter API error:", errorMessage);
+    // Include the error in the response so we can see what's happening
+    return { content: `(call failed: ${errorMessage})` };
   }
 }
 
@@ -297,13 +299,18 @@ async function runEvaluationWithConcurrency(
       return aIndex - bIndex;
     });
 
-    // Calculate average score for logging
-    const averageScore = results.reduce((sum, r) => sum + r.grader_score, 0) /
-      results.length;
+    // Calculate average distance and total cost for logging
+    const averageDistance = results.reduce((sum, r) => {
+      const distance = Math.abs(r.grader_score - r.truth_score);
+      return sum + distance;
+    }, 0) / results.length;
+
+    const totalCost = results.reduce((sum, r) => sum + (r.totalCost || 0), 0);
+
     ui.printLn(
-      `[${model}] Completed evaluation. Average score: ${
-        averageScore.toFixed(2)
-      }`,
+      `[${model}] Completed evaluation. Average distance: ${
+        averageDistance.toFixed(2)
+      }, Cost: $${totalCost.toFixed(4)}`,
     );
 
     allResults.push({
@@ -399,7 +406,7 @@ export const calibrateCommand: Command = {
         c: "concurrency",
       },
       default: {
-        model: "gpt-4o",
+        model: "openai/gpt-4o",
         format: "html",
         concurrency: "5",
       },
@@ -431,7 +438,7 @@ export const calibrateCommand: Command = {
        aibff calibrate demo [options]
 
 Options:
-  -m, --model <models>      Comma-separated list of models (default: gpt-4o)
+  -m, --model <models>      Comma-separated list of models (default: openai/gpt-4o)
   -c, --concurrency <n>     Number of concurrent requests (default: 5)
   -f, --format <format>     Output format: toml or html (default: html)
   -o, --output <dir>        Output directory (default: current directory)
