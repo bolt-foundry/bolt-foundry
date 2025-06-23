@@ -1,21 +1,16 @@
-name: Publish aibff Release
+name: Publish aibff Dev Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Version number (e.g., 0.1.0)"
-        required: true
-        type: string
-      prerelease:
-        description: "Is this a prerelease?"
-        required: false
-        type: boolean
-        default: false
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/aibff/**"
+      - ".github/workflows/publish-aibff-dev.yml"
 
 jobs:
   build-and-release:
-    name: Build and Release aibff
+    name: Build and Release aibff Dev
     runs-on: ubuntu-latest
     permissions:
       contents: write # Required for creating releases and tags
@@ -58,13 +53,29 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Get version info
+        id: version
+        run: |
+          # Get the base version from version.ts
+          BASE_VERSION=$(grep 'VERSION = ' apps/aibff/version.ts | cut -d'"' -f2 | sed 's/-dev$//')
+
+          # Get short git hash
+          GIT_HASH=$(git rev-parse --short HEAD)
+
+          # Create dev version
+          DEV_VERSION="${BASE_VERSION}-dev-${GIT_HASH}"
+
+          echo "version=${DEV_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "git_hash=${GIT_HASH}" >> "$GITHUB_OUTPUT"
+          echo "Dev version: ${DEV_VERSION}"
+
       - name: Update version
         run: |
-          # Update version.ts
-          sed -i.bak 's/VERSION = ".*"/VERSION = "${{ github.event.inputs.version }}"/' apps/aibff/version.ts
+          # Update version.ts with dev version
+          sed -i.bak "s/VERSION = \".*\"/VERSION = \"${{ steps.version.outputs.version }}\"/" apps/aibff/version.ts
           rm apps/aibff/version.ts.bak
 
-          echo "Updated version to ${{ github.event.inputs.version }}"
+          echo "Updated version to ${{ steps.version.outputs.version }}"
           cat apps/aibff/version.ts
 
       - name: Build aibff binaries for all platforms
@@ -147,7 +158,7 @@ jobs:
             build/bin/aibff-darwin-aarch64.tar.gz.sha256
 
   create-release:
-    name: Create GitHub Release
+    name: Create GitHub Dev Release
     needs: build-and-release
     runs-on: ubuntu-latest
     permissions:
@@ -159,39 +170,61 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get version info
+        id: version
+        run: |
+          # Get the base version from version.ts
+          BASE_VERSION=$(grep 'VERSION = ' apps/aibff/version.ts | cut -d'"' -f2 | sed 's/-dev$//')
+
+          # Get short git hash
+          GIT_HASH=$(git rev-parse --short HEAD)
+
+          # Create dev version
+          DEV_VERSION="${BASE_VERSION}-dev-${GIT_HASH}"
+
+          echo "version=${DEV_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "git_hash=${GIT_HASH}" >> "$GITHUB_OUTPUT"
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts/
 
+      - name: Get commit info
+        id: commit
+        run: |
+          # Get commit message and author
+          COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
+          COMMIT_HASH=$(git rev-parse HEAD)
+
+          # Export for use in release notes
+          echo "message=${COMMIT_MSG}" >> "$GITHUB_OUTPUT"
+          echo "author=${COMMIT_AUTHOR}" >> "$GITHUB_OUTPUT"
+          echo "hash=${COMMIT_HASH}" >> "$GITHUB_OUTPUT"
+
       - name: Create release notes
         run: |
           cat > release-notes.md << EOF
-          # aibff v${{ github.event.inputs.version }}
+          # aibff ${{ steps.version.outputs.version }}
+
+          This is a development release built from commit [\`${{ steps.version.outputs.git_hash }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.hash }}).
+
+          **Latest commit:** ${{ steps.commit.outputs.message }} by @${{ steps.commit.outputs.author }}
 
           ## Installation
-
-          ### Via npm (recommended)
-
-          \`\`\`bash
-          npm install -g aibff@${{ github.event.inputs.version }}
-          # or
-          npx aibff@${{ github.event.inputs.version }}
-          \`\`\`
-
-          ### Manual download
 
           Download the appropriate binary for your platform and extract it:
 
           \`\`\`bash
           # Linux x64
-          curl -L https://github.com/${{ github.repository }}/releases/download/aibff-v${{ github.event.inputs.version }}/aibff-linux-x86_64.tar.gz | tar xz
+          curl -L https://github.com/${{ github.repository }}/releases/download/aibff-dev-${{ steps.version.outputs.git_hash }}/aibff-linux-x86_64.tar.gz | tar xz
 
           # macOS ARM64
-          curl -L https://github.com/${{ github.repository }}/releases/download/aibff-v${{ github.event.inputs.version }}/aibff-darwin-aarch64.tar.gz | tar xz
+          curl -L https://github.com/${{ github.repository }}/releases/download/aibff-dev-${{ steps.version.outputs.git_hash }}/aibff-darwin-aarch64.tar.gz | tar xz
 
           # Windows x64 (PowerShell)
-          Invoke-WebRequest https://github.com/${{ github.repository }}/releases/download/aibff-v${{ github.event.inputs.version }}/aibff-windows-x86_64.zip -OutFile aibff-windows-x86_64.zip
+          Invoke-WebRequest https://github.com/${{ github.repository }}/releases/download/aibff-dev-${{ steps.version.outputs.git_hash }}/aibff-windows-x86_64.zip -OutFile aibff-windows-x86_64.zip
           Expand-Archive aibff-windows-x86_64.zip -DestinationPath .
           \`\`\`
 
@@ -212,43 +245,24 @@ jobs:
           \`\`\`
           $(cat artifacts/*/*.sha256)
           \`\`\`
+
+          ---
+
+          ⚠️ **This is a development release and may be unstable. For production use, please use the [latest stable release](https://github.com/${{ github.repository }}/releases/latest).**
           EOF
-
-      - name: Prepare raw binaries for release
-        run: |
-          # Extract raw binaries from archives for npm installer
-          cd artifacts
-
-          # Linux binary
-          tar -xzf aibff-linux-x86_64/aibff-linux-x86_64.tar.gz
-          mv aibff aibff-linux-x86_64/aibff-linux-x86_64
-
-          # macOS binary
-          tar -xzf aibff-darwin-aarch64/aibff-darwin-aarch64.tar.gz
-          mv aibff aibff-darwin-aarch64/aibff-darwin-aarch64
-
-          # Windows binary
-          unzip -q aibff-windows-x86_64/aibff-windows-x86_64.zip
-          mv aibff.exe aibff-windows-x86_64/aibff-windows-x86_64.exe
-
-          # List all files to be uploaded
-          find . -type f -ls
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: aibff-v${{ github.event.inputs.version }}
-          name: aibff v${{ github.event.inputs.version }}
+          tag_name: aibff-dev-${{ steps.version.outputs.git_hash }}
+          name: aibff dev-${{ steps.version.outputs.git_hash }}
           body_path: release-notes.md
           draft: false
-          prerelease: ${{ github.event.inputs.prerelease }}
+          prerelease: true
           files: |
             artifacts/*/*.tar.gz
             artifacts/*/*.tar.gz.sha256
             artifacts/*/*.zip
             artifacts/*/*.zip.sha256
-            artifacts/*/aibff-linux-x86_64
-            artifacts/*/aibff-darwin-aarch64
-            artifacts/*/aibff-windows-x86_64.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
