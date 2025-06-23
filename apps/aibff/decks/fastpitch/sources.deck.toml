@@ -49,7 +49,7 @@ content = """{
 
 [samples.mixed-relevance-sample]
 score = -3
-description = "Gymnastics news is probably less interesting and relevant than other available stories, the WNBA story is interesting but not as interesting as the Caitlin Clark story (which didn't make the cut). Also the third and fourth stories are not that interesting (typically return from injury stories are unimportant and should be deprioritized). And the final story about the Transfer Portal doesn't have a lot of relevance."
+description = "Despite Simone Biles starpower, gymnastics news in general is less interesting and relevant than other leagues' stories, and this story in particular is about an apology not actually anything substantive. The WNBA story is not interesting or relevant. The third and fourth stories are uninteresting (typically return from injury stories are unimportant and should be deprioritized). And the final story about the Transfer Portal doesn't have a lot of relevance, college sports should not be prioritized."
 
 [[samples.mixed-relevance-sample.messages]]
 role = "user"
