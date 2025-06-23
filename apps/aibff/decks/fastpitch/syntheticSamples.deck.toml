@@ -1,6 +1,25 @@
 [meta]
 defaultModel = "anthropic/claude-3.5-sonnet"
 
+[samples.real-data-06-19]
+score = -1
+
+[[samples.real-data-06-19.messages]]
+role = "user"
+content = """
+ID,Title,Source Name,Source URL,Article URL,Published Date,Scraped Date,Relevance Score,Content Preview
+252,"Tyrese Haliburton injury: Pacers' Rick Carlisle updates status for star guard ahead of NBA Finals Game 6","CBS Sports","https://www.cbssports.com/","https://www.cbssports.com/nba/news/tyrese-haliburton-injury-pacers-rick-carlisle-updates-status-for-star-guard-ahead-of-nba-finals-game-6/","2025-06-18T14:44:24.000Z","2025-06-18T15:28:42.978Z",80,"Haliburton is dealing with a calf injury, and it's unclear if he'll play in the must-win game..."
+223,"US hockey announces initial 6 players for 2026 Milan Olympics","Yahoo Sports","https://sports.yahoo.com/","https://sports.yahoo.com/article/us-hockey-announces-initial-6-193402190.html","2025-06-16T19:34:02.000Z","2025-06-16T19:48:09.335Z",60,"The U.S. named Matthew and Brady Tkachuk, Auston Matthews, Jack Eichel, Quinn Hughes and Charlie McAvoy as its first six players for the 2026 Olympics, avoiding goaltenders on the initial roster unvei..."
+221,"David Ortiz responds to Red Sox's Rafael Devers trade: 'You've got to put your ego aside'","Yahoo Sports","https://sports.yahoo.com/","https://sports.yahoo.com/mlb/article/david-ortiz-responds-to-red-soxs-rafael-devers-trade-youve-got-to-put-your-ego-aside-193444836.html","2025-06-16T19:34:44.000Z","2025-06-16T19:48:09.214Z",60,"David Ortiz changed course after supporting Rafael Devers in early June...."
+235,"The ultimate NFL team from past 25 years: Who makes the 53-man roster, practice squad and coaching staff?","ESPN","https://www.espn.com/","https://www.espn.com/nfl/story/_/id/45042048/nfl-best-all-quarter-century-team-25-years-tom-brady-randy-moss-ray-lewis","2025-06-18T14:52:52.000Z","2025-06-18T15:28:37.061Z",60,"In honor of hitting the quarter-century mark, we built a 53-man roster of the best NFL players from the past 25 years. Who makes the team?..."
+267,"The WNBA Had Too Much Going On Last Night","Defector","https://defector.com/","https://defector.com/the-wnba-had-too-much-going-on-last-night","2025-06-18T18:53:26.000Z","2025-06-19T18:44:11.343Z",60,"'Wow,' Kahleah Copper tweeted yesterday evening. She was the rare WNBA player with the time to post and spectate on Wednesday. The final day of the group play stage of the league's in-season Commissio..."
+"""
+
+[[samples.real-data-06-19.messages]]
+role = "assistant"
+content = """{"stories": [{"articleId": 252, "summary": "Tyrese Haliburton's calf injury puts Pacers' NBA Finals hopes in jeopardy ahead of Game 6", "emoji": "🏀"}, {"articleId": 223, "summary": "US Hockey names star players for 2026 Milan Olympics, includes Matthews and Tkachuk brothers", "emoji": "🏒"}, {"articleId": 221, "summary": "David Ortiz advises Red Sox after Rafael Devers trade, urging egos be set aside", "emoji": "⚾"}, {"articleId": 235, "summary": "NFL 25-year best: Curated 53-man roster celebrates league's top performers and moments", "emoji": "🏈"}, {"articleId": 267, "summary": "WNBA in-season Commissioner's Cup excites with action-packed games in a single night", "emoji": "🏀"}]}"""
+
+
 [samples.synthetic-1]
 score = 3
 
@@ -55,7 +74,7 @@ role = "assistant"
 content = """{"stories": [{"articleId": 215, "summary": "Red Sox trade All-Star slugger Rafael Devers to Giants in blockbuster deal for multiple prospects", "emoji": "⚾"}, {"articleId": 237, "summary": "Panthers defeat Oilers in Game 6 to win second consecutive Stanley Cup championship", "emoji": "🏒"}, {"articleId": 252, "summary": "Pacers star Tyrese Haliburton's injury status uncertain for must-win NBA Finals Game 6", "emoji": "🏀"}, {"articleId": 230, "summary": "Yankees activate Giancarlo Stanton from IL, set to make 2025 season debut Monday", "emoji": "⚾"}, {"articleId": 218, "summary": "J.J. Spaun captures first major title with dramatic comeback victory at U.S. Open", "emoji": "⛳"}]}"""
 
 [samples.synthetic-2]
-score = -2
+score = -3
 [[samples.synthetic-2.messages]]
 role = "user"
 content = """
@@ -159,7 +178,7 @@ role = "assistant"
 content = """{"stories": [{"articleId": 250, "summary": "PGA expert backs Robert MacIntyre for Travelers Championship 2025", "emoji": "⛳"}, {"articleId": 240, "summary": "Michael Bisping returns from movie set for UFC on ABC 8 commentary", "emoji": "🥊"}, {"articleId": 244, "summary": "Oklahoma announces SEC basketball opponents for 2025-26 season", "emoji": "🏀"}, {"articleId": 243, "summary": "Sean Payton thinks Broncos helping Bo Nix by building good defense", "emoji": "🏈"}, {"articleId": 220, "summary": "Astros place Lance McCullers Jr. on IL with sprained foot", "emoji": "⚾"}]}"""
 
 [samples.synthetic-4]
-score = 2
+score = 3
 
 [[samples.synthetic-4.messages]]
 role = "user"
