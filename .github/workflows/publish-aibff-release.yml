@@ -60,8 +60,13 @@ jobs:
 
       - name: Update version
         run: |
-          # Update version.ts
+          # Update version.ts with version and build metadata
+          BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+          BUILD_COMMIT=$(git rev-parse --short HEAD)
+
           sed -i.bak 's/VERSION = ".*"/VERSION = "${{ github.event.inputs.version }}"/' apps/aibff/version.ts
+          sed -i.bak "s/BUILD_TIME = \".*\"/BUILD_TIME = \"$BUILD_TIME\"/" apps/aibff/version.ts
+          sed -i.bak "s/BUILD_COMMIT = \".*\"/BUILD_COMMIT = \"$BUILD_COMMIT\"/" apps/aibff/version.ts
           rm apps/aibff/version.ts.bak
 
           echo "Updated version to ${{ github.event.inputs.version }}"
