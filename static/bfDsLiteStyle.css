@@ -185,3 +185,191 @@
   width: 44px;
   height: 44px;
 }
+
+/* Tabs */
+
+.bfds-lite-tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.bfds-lite-tabs__header {
+  display: flex;
+  border-bottom: 2px solid var(--bfds-lite-border);
+  background-color: var(--bfds-lite-background);
+}
+
+.bfds-lite-tabs__subheader {
+  display: flex;
+  border-bottom: 1px solid var(--bfds-lite-border);
+  background-color: var(--bfds-lite-background-hover);
+  padding-left: 16px;
+}
+
+.bfds-lite-tabs__content {
+  flex: 1;
+  background-color: var(--bfds-lite-background);
+  min-height: 200px;
+}
+
+.bfds-lite-tabs__panel {
+  animation: bfds-lite-fade-in 0.2s ease-in-out;
+}
+
+.bfds-lite-tabs__subpanel {
+  animation: bfds-lite-fade-in 0.15s ease-in-out;
+}
+
+@keyframes bfds-lite-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tab buttons */
+.bfds-lite-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  color: var(--bfds-lite-text-secondary);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-bottom: 2px solid transparent;
+  position: relative;
+  outline: none;
+}
+
+.bfds-lite-tab:hover:not(:disabled) {
+  color: var(--bfds-lite-text);
+  background-color: var(--bfds-lite-background-hover);
+}
+
+.bfds-lite-tab:focus-visible {
+  outline: 2px solid var(--bfds-lite-primary);
+  outline-offset: -2px;
+}
+
+.bfds-lite-tab--active {
+  color: var(--bfds-lite-primary);
+  border-bottom-color: var(--bfds-lite-primary);
+}
+
+.bfds-lite-tab--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--bfds-lite-text-muted);
+}
+
+/* Tab sizes */
+.bfds-lite-tab--small {
+  padding: 8px 16px;
+  font-size: 12px;
+}
+
+.bfds-lite-tab--medium {
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+.bfds-lite-tab--large {
+  padding: 16px 24px;
+  font-size: 16px;
+}
+
+/* Tab variants */
+.bfds-lite-tab--primary.bfds-lite-tab--active {
+  color: var(--bfds-lite-primary);
+  border-bottom-color: var(--bfds-lite-primary);
+}
+
+.bfds-lite-tab--secondary.bfds-lite-tab--active {
+  color: var(--bfds-lite-secondary);
+  border-bottom-color: var(--bfds-lite-secondary);
+}
+
+/* Subtab buttons */
+.bfds-lite-subtab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: var(--bfds-lite-text-muted);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-bottom: 1px solid transparent;
+  position: relative;
+  outline: none;
+}
+
+.bfds-lite-subtab:hover:not(:disabled) {
+  color: var(--bfds-lite-text-secondary);
+  background-color: var(--bfds-lite-background-active);
+}
+
+.bfds-lite-subtab:focus-visible {
+  outline: 2px solid var(--bfds-lite-primary);
+  outline-offset: -2px;
+}
+
+.bfds-lite-subtab--active {
+  color: var(--bfds-lite-text);
+  border-bottom-color: var(--bfds-lite-primary);
+  background-color: var(--bfds-lite-background);
+}
+
+.bfds-lite-subtab--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--bfds-lite-text-muted);
+}
+
+/* Subtab sizes */
+.bfds-lite-subtab--small {
+  padding: 6px 12px;
+  font-size: 11px;
+}
+
+.bfds-lite-subtab--medium {
+  padding: 8px 16px;
+  font-size: 12px;
+}
+
+.bfds-lite-subtab--large {
+  padding: 10px 20px;
+  font-size: 13px;
+}
+
+/* Subtab variants */
+.bfds-lite-subtab--primary.bfds-lite-subtab--active {
+  border-bottom-color: var(--bfds-lite-primary);
+}
+
+.bfds-lite-subtab--secondary.bfds-lite-subtab--active {
+  border-bottom-color: var(--bfds-lite-secondary);
+}
+
+/* Tab container variants */
+.bfds-lite-tabs--secondary .bfds-lite-tab--active {
+  color: var(--bfds-lite-secondary);
+  border-bottom-color: var(--bfds-lite-secondary);
+}
+
+.bfds-lite-tabs--secondary .bfds-lite-subtab--active {
+  border-bottom-color: var(--bfds-lite-secondary);
+}

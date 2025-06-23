@@ -11,3 +11,10 @@ export type {
   BfDsLiteIconProps,
   BfDsLiteIconSize,
 } from "./components/BfDsLiteIcon.tsx";
+
+export { BfDsLiteTabs } from "./components/BfDsLiteTabs.tsx";
+export type {
+  BfDsLiteTabItem,
+  BfDsLiteTabsProps,
+  BfDsLiteTabsState,
+} from "./components/BfDsLiteTabs.tsx";
