@@ -1,6 +1,5 @@
 import type { Command } from "./types.ts";
-// import { calibrateCommand } from "./calibrate.ts";
-import { calibrateCommand } from "./calibrate_render_style.ts";
+import { calibrateCommand } from "./calibrate.ts";
 import { rebuildCommand } from "./rebuild.ts";
 import { replCommand } from "./repl.ts";
 import { renderCommand } from "./render.ts";
