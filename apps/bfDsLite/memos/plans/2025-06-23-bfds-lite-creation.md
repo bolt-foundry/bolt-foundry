@@ -50,9 +50,18 @@ Starting with core components and building up incrementally.
   - Color customization with CSS variable integration
   - TypeScript-safe icon names using `keyof typeof icons`
   - Searchable example component with grid layout
+- [x] **BfDsLiteTabs** component with:
+  - Multiple tab support with controlled/uncontrolled modes
+  - **Nested subtabs** for hierarchical navigation
+  - **Keyboard navigation** (arrow keys, Home/End, Enter/Space)
+  - **Icon support** in both main tabs and subtabs
+  - **Disabled tab states** with proper styling
+  - **Smooth content transitions** with fade-in animations
+  - **2 variants** (primary, secondary) and **3 sizes** (small, medium, large)
+  - **Comprehensive accessibility** with ARIA attributes and roles
 - [x] CSS variables system for theming
 - [x] Example component pattern (`Component.Example`)
-- [x] Demo page setup with both Button and Icon examples
+- [x] Demo page setup with Button, Icon, and Tabs examples
 - [x] CSS moved to static folder (per system requirements)
 - [x] Main index.ts exports
 - [x] Icon library moved to `lib/icons.ts`
@@ -63,18 +72,6 @@ Starting with core components and building up incrementally.
 
 ### 📋 Todo
 
-- [ ] **Next Priority**: Tab Navigation component
-  - [ ] BfDsLiteTabs with multiple tab support
-  - [ ] Tab content panels with smooth transitions
-  - [ ] Keyboard navigation (arrow keys, tab)
-  - [ ] Icons in tabs support
-  - [ ] Disabled tab states
-  - [ ] Controlled/uncontrolled modes
-  - [ ] **Nested subtabs** support for hierarchical navigation
-    - [ ] Secondary tab level styling (smaller, different visual weight)
-    - [ ] Parent-child tab relationship management
-    - [ ] Subtab content panels within main tab content
-    - [ ] Independent state management for subtabs
 - [ ] Additional core components:
   - [ ] Input/TextField
   - [ ] Select/Dropdown
@@ -97,7 +94,8 @@ Starting with core components and building up incrementally.
 apps/bfDsLite/
 ├── components/
 │   ├── BfDsLiteButton.tsx (with .Example and icon support)
-│   └── BfDsLiteIcon.tsx (with .Example)
+│   ├── BfDsLiteIcon.tsx (with .Example)
+│   └── BfDsLiteTabs.tsx (with .Example and subtabs support)
 ├── lib/
 │   └── icons.ts (80+ icon definitions)
 ├── demo/
@@ -146,6 +144,10 @@ CSS: static/bfDsLiteStyle.css (comprehensive styling)
   theming
 - ✅ **Enhanced demo experience** with searchable icon grid and interactive
   examples
+- ✅ **Advanced tab navigation system** with nested subtabs, keyboard
+  navigation, and comprehensive accessibility features
+- ✅ **Hierarchical UI patterns** supporting complex application layouts with
+  main tabs and contextual subtabs
 
 ## Notes
 
