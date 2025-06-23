@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import process from "node:process";
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
