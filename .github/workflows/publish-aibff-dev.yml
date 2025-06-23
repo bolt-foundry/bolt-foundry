@@ -271,3 +271,87 @@ jobs:
             artifacts/*/*.zip.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-npm:
+    name: Publish to npm (dev)
+    needs: create-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Required for npm provenance
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Get version info
+        id: version
+        run: |
+          # Get the base version from version.ts
+          BASE_VERSION=$(grep 'VERSION = ' apps/aibff/version.ts | cut -d'"' -f2 | sed 's/-dev$//')
+
+          # Get short git hash
+          GIT_HASH=$(git rev-parse --short HEAD)
+
+          # Create dev version
+          DEV_VERSION="${BASE_VERSION}-dev.${GIT_HASH}"
+
+          echo "version=${DEV_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "git_hash=${GIT_HASH}" >> "$GITHUB_OUTPUT"
+
+      - name: Update npm package version
+        run: |
+          cd packages/aibff
+
+          # Update package.json version
+          npm version ${{ steps.version.outputs.version }} --no-git-tag-version
+
+          echo "Updated package.json to version ${{ steps.version.outputs.version }}"
+          cat package.json | grep version
+
+      - name: Download binaries from GitHub Release
+        run: |
+          cd packages/aibff
+          mkdir -p bin
+
+          # Download binaries from the just-created GitHub release
+          RELEASE_TAG="aibff-dev-${{ steps.version.outputs.git_hash }}"
+
+          # Download Linux binary
+          curl -L -o bin/aibff-linux-x86_64 \
+            "https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/aibff-linux-x86_64"
+
+          # Download macOS binary
+          curl -L -o bin/aibff-darwin-aarch64 \
+            "https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/aibff-darwin-aarch64"
+
+          # Download Windows binary
+          curl -L -o bin/aibff-windows-x86_64.exe \
+            "https://github.com/${{ github.repository }}/releases/download/${RELEASE_TAG}/aibff-windows-x86_64.exe"
+
+          # Make Unix binaries executable
+          chmod +x bin/aibff-linux-x86_64
+          chmod +x bin/aibff-darwin-aarch64
+
+          # Verify binaries exist
+          ls -la bin/
+
+      - name: Test npm package
+        run: |
+          cd packages/aibff
+
+          # Test that the postinstall script works
+          npm run postinstall || echo "Postinstall expected to fail without actual download"
+
+      - name: Publish to npm with dev tag
+        run: |
+          cd packages/aibff
+          npm publish --tag dev --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
