@@ -4,6 +4,7 @@ import { calibrateCommand } from "./calibrate_render_style.ts";
 import { rebuildCommand } from "./rebuild.ts";
 import { replCommand } from "./repl.ts";
 import { renderCommand } from "./render.ts";
+import { web } from "./web.ts";
 
 export type CommandRegistry = Map<string, Command>;
 
@@ -20,6 +21,9 @@ registry.set("repl", replCommand);
 
 // Register the render command
 registry.set("render", renderCommand);
+
+// Register the web command
+registry.set("web", web);
 
 export function getCommand(name: string): Command | undefined {
   return registry.get(name);

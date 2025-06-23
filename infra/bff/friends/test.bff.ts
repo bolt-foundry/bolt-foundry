@@ -15,7 +15,7 @@ export async function testCommand(options: Array<string>): Promise<number> {
   const runnablePaths = options.length > 0
     ? options
     : [...pathsStrings, ...pathsStringsX];
-  const testArgs = ["deno", "test", "-A", ...runnablePaths];
+  const testArgs = ["deno", "test", "-A", "--trace-leaks", ...runnablePaths];
 
   const result = await runShellCommand(testArgs, undefined, {}, true, true);
 
