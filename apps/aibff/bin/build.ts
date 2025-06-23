@@ -9,7 +9,6 @@ const logger = getLogger(import.meta);
 const ROOT_DIR = join(import.meta.dirname!, "../../..");
 const MAIN_ENTRY = join(ROOT_DIR, "apps/aibff/main.ts");
 const BUILD_DIR = join(ROOT_DIR, "build/bin");
-const VERSION_FILE = join(ROOT_DIR, "apps/aibff/version.ts");
 
 // Parse command line arguments
 const args = parseArgs(Deno.args, {
@@ -139,32 +138,6 @@ async function getAllRequiredPackages(): Promise<Array<string>> {
   return Array.from(allRequired);
 }
 
-async function updateVersionFile() {
-  const gitCommit = await getGitCommit();
-  const buildTime = new Date().toISOString();
-
-  const versionContent = await Deno.readTextFile(VERSION_FILE);
-  const updatedContent = versionContent
-    .replace(/BUILD_TIME = ".*"/, `BUILD_TIME = "${buildTime}"`)
-    .replace(/BUILD_COMMIT = ".*"/, `BUILD_COMMIT = "${gitCommit}"`);
-
-  await Deno.writeTextFile(VERSION_FILE, updatedContent);
-  logger.debug("Updated version file with build metadata");
-}
-
-async function getGitCommit(): Promise<string> {
-  try {
-    const cmd = new Deno.Command("git", {
-      args: ["rev-parse", "--short", "HEAD"],
-      stdout: "piped",
-    });
-    const { stdout } = await cmd.output();
-    return new TextDecoder().decode(stdout).trim();
-  } catch {
-    return "unknown";
-  }
-}
-
 async function build() {
   const platform = args.platform as string;
   const arch = args.arch as string;
@@ -175,9 +148,6 @@ async function build() {
 
   // Validate node_modules structure first
   await validateNodeModules();
-
-  // Update version file with build metadata
-  await updateVersionFile();
 
   // Ensure build directory exists
   await Deno.mkdir(BUILD_DIR, { recursive: true });

@@ -19,7 +19,7 @@ Deno.test("generateEvaluationHtml should include evaluation data", () => {
   // Key data points are visible
   assertStringIncludes(html, "exact-match");
   assertStringIncludes(html, "off-by-one");
-  assertStringIncludes(html, "Average Distance:</strong> 1.33");
+  assertStringIncludes(html, '<div class="metric-value">1.33</div>');
 });
 
 Deno.test("generateEvaluationHtml should color-code rows by distance", () => {
@@ -46,7 +46,8 @@ Deno.test("generateEvaluationHtml should handle multiple graders", () => {
 
   // Should have tabs for multiple graders
   assertStringIncludes(html, '<div class="tabs">');
-  assertStringIncludes(html, 'onclick="showTab(');
+  assertStringIncludes(html, 'class="tab-radio"');
+  assertStringIncludes(html, 'type="radio"');
 });
 
 Deno.test("generateEvaluationHtml should create expandable details for each row", () => {
@@ -55,10 +56,9 @@ Deno.test("generateEvaluationHtml should create expandable details for each row"
   // Should have details/summary elements
   assertStringIncludes(html, "<details>");
   assertStringIncludes(html, "<summary");
-  assertStringIncludes(html, "Click to expand");
 
   // Should have expandable content
-  assertStringIncludes(html, '<div class="expandable-content">');
+  assertStringIncludes(html, 'class="expandable-content"');
 
   // Conversation should be in expandable section
   assertStringIncludes(html, "What is JavaScript?");
@@ -68,9 +68,8 @@ Deno.test("generateEvaluationHtml should create expandable details for each row"
 Deno.test("generateEvaluationHtml should calculate agreement percentage", () => {
   const html = generateEvaluationHtml(mockSingleGraderData);
 
-  // With 1 exact match out of 3 samples = 33.3%
-  assertStringIncludes(html, "Agreement:</strong> 33.3%");
-  assertStringIncludes(html, "(1/3)");
+  // With 1 exact match out of 3 samples = 33.3% - now in compact summary format
+  assertStringIncludes(html, "33.3% agreement (1/3)");
 });
 
 Deno.test("generateEvaluationHtml should not show tabs for single grader", () => {
@@ -151,4 +150,76 @@ Deno.test("generateEvaluationHtml should handle nested model structure in data",
     firstGrader.models["claude-3.5"].model,
     "claude-3.5-sonnet",
   );
+});
+
+Deno.test("generateEvaluationHtml should sanitize tab IDs with periods while preserving labels", () => {
+  // Create test data with periods in grader names
+  const testData = {
+    graderResults: {
+      "grader.with.periods": {
+        grader: "grader.with.periods.deck.md",
+        model: "gpt-4",
+        timestamp: "2023-01-01T00:00:00Z",
+        samples: 2,
+        average_distance: 0.5,
+        results: [
+          {
+            id: "test-1",
+            grader_score: 3,
+            truth_score: 3,
+            notes: "Test note",
+          },
+          {
+            id: "test-2",
+            grader_score: 2,
+            truth_score: 3,
+            notes: "Another test",
+          },
+        ],
+      },
+      "another.grader.name": {
+        grader: "another.grader.name.deck.md",
+        model: "claude-3.5",
+        timestamp: "2023-01-01T00:00:00Z",
+        samples: 1,
+        average_distance: 1.0,
+        results: [
+          {
+            id: "test-3",
+            grader_score: 1,
+            truth_score: 2,
+            notes: "Third test",
+          },
+        ],
+      },
+    },
+  };
+
+  const html = generateEvaluationHtml(testData);
+
+  // Should have sanitized IDs (periods replaced with underscores)
+  assertStringIncludes(html, 'id="tab-radio-grader_with_periods"');
+  assertStringIncludes(html, 'id="tab-radio-another_grader_name"');
+  assertStringIncludes(html, 'for="tab-radio-grader_with_periods"');
+  assertStringIncludes(html, 'for="tab-radio-another_grader_name"');
+
+  // CSS selectors should use sanitized IDs
+  assertStringIncludes(html, "#tab-radio-grader_with_periods:checked");
+  assertStringIncludes(html, "#tab-radio-another_grader_name:checked");
+
+  // Tab content divs should use sanitized IDs
+  assertStringIncludes(html, 'id="tab-grader_with_periods"');
+  assertStringIncludes(html, 'id="tab-another_grader_name"');
+
+  // But labels should preserve original names with periods
+  assertStringIncludes(html, ">grader.with.periods</label>");
+  assertStringIncludes(html, ">another.grader.name</label>");
+
+  // Should have radio buttons and tabs
+  assertStringIncludes(html, 'type="radio"');
+  assertStringIncludes(html, 'class="tab-radio"');
+  assertStringIncludes(html, 'class="tab-label"');
+
+  // Should have tab content containers
+  assertStringIncludes(html, 'class="tab-content"');
 });

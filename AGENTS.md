@@ -48,6 +48,8 @@ bff ai                 # List AI-safe commands
 2. **No direct env access** - Use `packages/get-configuration-var/`
 3. **Test first** - Follow TDD practices in testing card
 4. **Use BFF commands** - Prefer `bff` over direct commands
+5. **TypeScript array syntax** - Always use `Array<T>` instead of `T[]` for
+   array types (e.g., `Array<BfDsLiteTabItem>` not `BfDsLiteTabItem[]`)
 
 ## Dependency Management
 
