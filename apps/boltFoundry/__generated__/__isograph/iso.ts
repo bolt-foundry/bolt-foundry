@@ -7,14 +7,17 @@ import { type Query__Docs__param } from './Query/Docs/param_type.ts';
 import { type Query__EntrypointBlog__param } from './Query/EntrypointBlog/param_type.ts';
 import { type Query__EntrypointDocs__param } from './Query/EntrypointDocs/param_type.ts';
 import { type Query__EntrypointFormatter__param } from './Query/EntrypointFormatter/param_type.ts';
+import { type Query__EntrypointGrader__param } from './Query/EntrypointGrader/param_type.ts';
 import { type Query__EntrypointHome__param } from './Query/EntrypointHome/param_type.ts';
 import { type Query__EntrypointLogin__param } from './Query/EntrypointLogin/param_type.ts';
 import { type Query__Formatter__param } from './Query/Formatter/param_type.ts';
+import { type Query__Grader__param } from './Query/Grader/param_type.ts';
 import { type Query__Home__param } from './Query/Home/param_type.ts';
 import entrypoint_Mutation__JoinWaitlist from '../__isograph/Mutation/JoinWaitlist/entrypoint.ts';
 import entrypoint_Query__EntrypointBlog from '../__isograph/Query/EntrypointBlog/entrypoint.ts';
 import entrypoint_Query__EntrypointDocs from '../__isograph/Query/EntrypointDocs/entrypoint.ts';
 import entrypoint_Query__EntrypointFormatter from '../__isograph/Query/EntrypointFormatter/entrypoint.ts';
+import entrypoint_Query__EntrypointGrader from '../__isograph/Query/EntrypointGrader/entrypoint.ts';
 import entrypoint_Query__EntrypointHome from '../__isograph/Query/EntrypointHome/entrypoint.ts';
 import entrypoint_Query__EntrypointLogin from '../__isograph/Query/EntrypointLogin/entrypoint.ts';
 
@@ -99,6 +102,10 @@ export function iso<T>(
 ): IdentityWithParam<Query__EntrypointFormatter__param>;
 
 export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Query.EntrypointGrader', T>
+): IdentityWithParam<Query__EntrypointGrader__param>;
+
+export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.EntrypointHome', T>
 ): IdentityWithParam<Query__EntrypointHome__param>;
 
@@ -109,6 +116,10 @@ export function iso<T>(
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.Formatter', T>
 ): IdentityWithParamComponent<Query__Formatter__param>;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'field Query.Grader', T>
+): IdentityWithParamComponent<Query__Grader__param>;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'field Query.Home', T>
@@ -129,6 +140,10 @@ export function iso<T>(
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointFormatter', T>
 ): typeof entrypoint_Query__EntrypointFormatter;
+
+export function iso<T>(
+  param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointGrader', T>
+): typeof entrypoint_Query__EntrypointGrader;
 
 export function iso<T>(
   param: T & MatchesWhitespaceAndString<'entrypoint Query.EntrypointHome', T>
@@ -152,6 +167,8 @@ export function iso(isographLiteralText: string):
       return entrypoint_Query__EntrypointDocs;
     case 'entrypoint Query.EntrypointFormatter':
       return entrypoint_Query__EntrypointFormatter;
+    case 'entrypoint Query.EntrypointGrader':
+      return entrypoint_Query__EntrypointGrader;
     case 'entrypoint Query.EntrypointHome':
       return entrypoint_Query__EntrypointHome;
     case 'entrypoint Query.EntrypointLogin':
