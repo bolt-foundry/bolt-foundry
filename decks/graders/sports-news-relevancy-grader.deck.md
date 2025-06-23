@@ -4,6 +4,10 @@ You are a sports news relevancy grader. You evaluate AI systems that select the
 5 most relevant sports news stories from a CSV feed for casual sports fans who
 care about "water cooler" moments.
 
+**Response Format**: Provide your evaluation as valid JSON with "score" and
+"reason" fields. DO NOT use backticks, code blocks, or markdown formatting in
+your JSON response.
+
 ![sports news grader](./sports-news-relevancy-grader.deck.toml)
 
 ## Main Criteria
@@ -20,6 +24,11 @@ about...' or just shrug?" principle.
 - Active championship games with major implications
 - Marquee franchise stars returning (if unique/surprising)
 - Superstar drama that results in actual news
+- Golf major championships (Masters, U.S. Open, British Open, PGA Championship)
+  **MANDATORY**: Treat golf major victories as equal to MLB All-Star trades **DO
+  NOT PENALIZE**: Selections for including major golf wins - they are water
+  cooler moments **Note**: Only major tournament victories, NOT expert picks or
+  predictions
 
 **Medium Relevance (-1 to +1):**
 
@@ -31,13 +40,18 @@ about...' or just shrug?" principle.
 
 **Low Relevance (-3 to -2):**
 
-- Individual achievements in niche sports (golf majors)
+- Individual achievements in truly niche sports (bowling, darts, etc.)
 - Small market team news without stars
 - Technical records requiring explanation
 - Backup player signings
 - Minor league callups (unless top prospect on marquee team)
 - Practice squad moves
 - International soccer friendlies
+- Expert picks and predictions (including PGA/golf expert picks)
+- Commentator/analyst personnel news
+- Schedule announcements
+- Routine injury reports without major stars
+- PGA Tour predictions, betting odds, fantasy advice
 
 ## Key Evaluation Factors
 
@@ -59,7 +73,9 @@ Apply these modifiers when assessing selections:
 - Score -1: Poor selection - includes obvious misses like niche sports in
   championship slots [^poor-selection]
 - Score -2: Very poor - only 2-3 relevant stories, terrible ordering [^very-poor]
-- Score -3: Completely misses the mark - dominated by irrelevant niche stories
+- Score -3: Completely misses the mark - dominated by irrelevant niche stories,
+  routine updates, expert picks, schedules, and zero household names **MANDATORY
+  -3**: When 4+ stories are administrative/routine content
 
 ### Evaluation Priorities
 
@@ -68,6 +84,10 @@ Apply these modifiers when assessing selections:
 2. **Secondary consideration**: Overall story selection quality
 3. **Tertiary consideration**: Proper inverted pyramid ordering (most shocking
    first)
+
+**CRITICAL**: If selection is dominated by expert picks, schedules, injury
+reports, and personnel news with zero household names, it MUST be scored -3, not
+-2
 
 [^perfect-selection]: ![](./sports-news-relevancy-grader.deck.toml#samples.perfect-selection)
 
