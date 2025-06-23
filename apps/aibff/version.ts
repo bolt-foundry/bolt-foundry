@@ -1,6 +1,6 @@
 // This file is updated during the release process
-export const VERSION = "0.1.0-dev";
+export const VERSION = "unpublished";
 
-// Build metadata - will be replaced during build
-export const BUILD_TIME = "2025-06-16T13:45:22.590Z";
+// Build metadata - only updated during CI builds
+export const BUILD_TIME = "";
 export const BUILD_COMMIT = "";
