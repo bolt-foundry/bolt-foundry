@@ -5,7 +5,9 @@ description: Create a commit using BFF with automatic formatting, linting, and P
 
 Please help me create a commit for the current uncommitted changes.
 
-First, run bff ai diff to see the uncommitted changes.
+First, run bff ai status to see all modified and untracked files.
+
+Then, run bff ai diff to see the details of the uncommitted changes.
 
 Then, see if the changes can be logically grouped.
 
