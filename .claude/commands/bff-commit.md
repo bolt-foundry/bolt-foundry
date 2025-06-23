@@ -3,77 +3,14 @@ name: bff-commit
 description: Create a commit using BFF with automatic formatting, linting, and PR submission
 ---
 
-# BFF Commit
+Please help me create a commit for the current uncommitted changes.
 
-Creates a commit using the Bolt Foundry Friend (BFF) tool with automatic
-pre-commit checks and PR submission.
+First, run bff ai diff to see the uncommitted changes.
 
-## Usage
+Then, see if the changes can be logically grouped.
 
-```bash
-bff commit -m "Your commit message"
-```
-
-## Options
-
-- `-m "message"` - The commit message (required)
-- `--skip-pre-check` - Skip formatting, linting, and type checking
-- `--no-submit` - Create commit without submitting a pull request
-- `--verbose`, `-v` - Show full output from pre-commit checks (default: concise)
-- `file1 file2` - Commit only specific files
-
-## Default Behavior
-
-By default, `bff commit` will:
-
-1. Run pre-commit checks with concise output:
-   - `bff format` - Format code
-   - `bff lint` - Run linting rules
-   - `bff check` - Type checking
-   - `bff test` - Run tests
-   - Shows only pass/fail status with execution time
-2. Create the commit
-3. Submit a pull request
-
-Use `--verbose` to see full output from all pre-commit checks including detailed
-test results.
-
-## When to Use Options
-
-### Use `--verbose` when:
-
-- You need to see detailed test output
-- Debugging why a pre-commit check is failing
-- Want to see all linting warnings and errors
-- Need full formatting changes details
-
-### Use `--skip-pre-check` when:
-
-- Committing generated files that might not pass linting
-- In the middle of a refactor and need to save progress
-- You've already run checks manually
-- Committing documentation-only changes
-
-### Use `--no-submit` when:
-
-- Creating multiple commits before submitting a stack
-- Want to review commits locally first
-- Working on experimental changes
-- Need to amend or rebase before creating a PR
-
-## Best Practices
-
-1. **Review before committing**
-   - Use `bff status` to verify which files will be included
-   - Use `bff diff` to review the actual content changes
-   - Make sure to `sl add` new files and `sl remove` deleted files
-
-2. **Commit message structure**
-   - First line: concise summary (50-72 characters)
-   - Empty line after summary
-   - Body: detailed explanation of what and why
-   - List specific changes with bullet points
-   - Include test plans where appropriate
+Finally, commit each logical grouping using "bff commit -m 'use the style from
+the example commit message below' filepath-1.md filepath-2.md
 
 ## Example Commit Message
 
@@ -96,8 +33,3 @@ Test plan:
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
-
-## AI-Safe Alternative
-
-For AI agents, use: `bff precommit` to stage files and run pre-commit checks.
-The precommit command also supports `--verbose` for detailed output.
