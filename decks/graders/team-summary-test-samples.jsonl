@@ -1,5 +1,0 @@
-{"userMessage": "Generate a summary for Alice's work on team status tracking features", "assistantResponse": "Alice worked on team status tracking. She built the GitHub analysis system which helps the team stay informed about what everyone is working on.", "id": "team-001", "score": 3}
-{"userMessage": "Generate a summary for Bob's authentication work", "assistantResponse": "Bob focused on authentication improvements. He fixed several timeout issues that were affecting users and updated the security flow.", "id": "team-002", "score": 2}
-{"userMessage": "Generate a summary for Carol's infrastructure work", "assistantResponse": "Carol has been pioneering our revolutionary approach to next-generation authentication paradigms.", "id": "team-003", "score": -2}
-{"userMessage": "Generate a summary for Dave's recent work", "assistantResponse": "Dave submitted 8 PRs this week covering features, bugfixes, and documentation.", "id": "team-004", "score": -3}
-{"userMessage": "Generate a summary for Carol's infrastructure work", "assistantResponse": "Carol worked on infrastructure.", "id": "team-005", "score": -1}

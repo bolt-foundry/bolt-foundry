@@ -7,13 +7,20 @@ Please help me create a commit for the current uncommitted changes.
 
 First, run bff ai diff to see the uncommitted changes.
 
-Then, see if the changes can be logically grouped.
+Then, see if the changes can be logically grouped. We should be grouping
+according to features / breakage, not just by "items that fit together." For
+instance, if there are documentation updates and functionality updates, if the
+documentation updates are for the functions, they should be committed together.
+If committing part of something would cause breakage, it should be committed as
+a whole unit to prevent the app from failing.
 
 Then, commit each logical grouping using "bff commit -m 'use the style from the
 example commit message below' filepath-1.md filepath-2.md
 
 The linter runs as part of the bff commit command, so if the files are updated,
-don't worry, that' expected.
+don't worry, that's expected. There might be test failures. We should try to fix
+those test failures as part of the commit. After fixing them, run
+`bff ai precommit` to ensure they're fixed before trying a commit again.
 
 Finally, submit all the pull requests using "sl pr submit".
 
