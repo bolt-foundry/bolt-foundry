@@ -9,8 +9,10 @@ First, run bff ai diff to see the uncommitted changes.
 
 Then, see if the changes can be logically grouped.
 
-Finally, commit each logical grouping using "bff commit -m 'use the style from
-the example commit message below' filepath-1.md filepath-2.md
+Then, commit each logical grouping using "bff commit -m 'use the style from the
+example commit message below' filepath-1.md filepath-2.md
+
+Finally, submit all the pull requests using "sl pr submit".
 
 ## Example Commit Message
 
