@@ -432,6 +432,17 @@ export const calibrateCommand: Command = {
 
       // Override the deck paths with demo decks
       flags._ = demoDecks;
+
+      // For demo, default to testing both models if user didn't explicitly set --model
+      // Check if --model or -m was in the original args
+      const modelFlagProvided = args.some((arg) =>
+        arg === "--model" || arg === "-m" || arg.startsWith("--model=") ||
+        arg.startsWith("-m=")
+      );
+      if (!modelFlagProvided) {
+        flags.model = "openai/gpt-4o,openai/gpt-4.1";
+        ui.printLn("Testing models: gpt-4o and gpt-4.1");
+      }
     } else if (flags.help || flags._.length === 0) {
       // Show help if requested or no arguments
       ui.printErr(`Usage: aibff calibrate <deck.md> [<deck2.md> ...] [options]
