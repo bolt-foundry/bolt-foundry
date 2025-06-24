@@ -94,8 +94,10 @@ async function sendToAI(
     return response;
   } catch (error) {
     // Log error but return a minimal error response
-    logger.debug("OpenRouter API error:", error);
-    return { content: "(call failed)" };
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.debug("OpenRouter API error:", errorMessage);
+    // Include the error in the response so we can see what's happening
+    return { content: `(call failed: ${errorMessage})` };
   }
 }
 
@@ -297,13 +299,18 @@ async function runEvaluationWithConcurrency(
       return aIndex - bIndex;
     });
 
-    // Calculate average score for logging
-    const averageScore = results.reduce((sum, r) => sum + r.grader_score, 0) /
-      results.length;
+    // Calculate average distance and total cost for logging
+    const averageDistance = results.reduce((sum, r) => {
+      const distance = Math.abs(r.grader_score - r.truth_score);
+      return sum + distance;
+    }, 0) / results.length;
+
+    const totalCost = results.reduce((sum, r) => sum + (r.totalCost || 0), 0);
+
     ui.printLn(
-      `[${model}] Completed evaluation. Average score: ${
-        averageScore.toFixed(2)
-      }`,
+      `[${model}] Completed evaluation. Average distance: ${
+        averageDistance.toFixed(2)
+      }, Cost: $${totalCost.toFixed(4)}`,
     );
 
     allResults.push({
@@ -399,24 +406,58 @@ export const calibrateCommand: Command = {
         c: "concurrency",
       },
       default: {
-        model: "gpt-4",
+        model: "openai/gpt-4o",
         format: "html",
         concurrency: "5",
       },
     });
 
-    // Show help if requested or no arguments
-    if (flags.help || flags._.length === 0) {
+    // Check if this is the demo subcommand
+    if (flags._.length > 0 && flags._[0] === "demo") {
+      // Run the fastpitch demo
+      // Use import.meta.resolve to get paths relative to this file
+      const grader1Path = new URL(
+        "../decks/fastpitch/sports-relevance-grader.deck.md",
+        import.meta.url,
+      ).pathname;
+      const grader2Path = new URL(
+        "../decks/fastpitch/sports-relevance-grader-v2.deck.md",
+        import.meta.url,
+      ).pathname;
+
+      const demoDecks = [grader1Path, grader2Path];
+
+      ui.printLn("Running fastpitch grader demo...");
+      ui.printLn(`Using graders: ${demoDecks.join(", ")}`);
+
+      // Override the deck paths with demo decks
+      flags._ = demoDecks;
+
+      // For demo, default to testing both models if user didn't explicitly set --model
+      // Check if --model or -m was in the original args
+      const modelFlagProvided = args.some((arg) =>
+        arg === "--model" || arg === "-m" || arg.startsWith("--model=") ||
+        arg.startsWith("-m=")
+      );
+      if (!modelFlagProvided) {
+        flags.model = "openai/gpt-4o,openai/gpt-4.1";
+        ui.printLn("Testing models: gpt-4o and gpt-4.1");
+      }
+    } else if (flags.help || flags._.length === 0) {
+      // Show help if requested or no arguments
       ui.printErr(`Usage: aibff calibrate <deck.md> [<deck2.md> ...] [options]
+       aibff calibrate demo [options]
 
 Options:
-  -m, --model <models>      Comma-separated list of models (default: gpt-4)
+  -m, --model <models>      Comma-separated list of models (default: openai/gpt-4o)
   -c, --concurrency <n>     Number of concurrent requests (default: 5)
   -f, --format <format>     Output format: toml or html (default: html)
   -o, --output <dir>        Output directory (default: current directory)
   -h, --help                Show this help message
 
 Examples:
+  aibff calibrate demo                     # Run fastpitch grader demo
+  aibff calibrate demo --model gpt-3.5-turbo
   aibff calibrate deck.md
   aibff calibrate deck.md deck2.md --model gpt-4,gpt-3.5-turbo
   aibff calibrate deck.md -c 10 -f html

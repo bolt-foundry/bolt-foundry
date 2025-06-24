@@ -182,6 +182,9 @@ async function build() {
     outputPath,
     "--exclude",
     "node_modules",
+    // Include the decks folder for embedded resources
+    "--include",
+    "apps/aibff/decks",
   ];
 
   // Add includes for each npm package

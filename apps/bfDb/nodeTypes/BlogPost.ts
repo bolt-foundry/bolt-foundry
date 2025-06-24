@@ -118,8 +118,18 @@ export class BlogPost extends GraphQLNode {
 
   /**
    * Extract first image URL from markdown content for hero display.
+   * Only extracts images that appear before the first header.
    */
   get heroImage(): string | undefined {
+    // Find the position of the first header
+    const headerMatch = this._content.match(/^#+\s/m);
+    const headerPosition = headerMatch
+      ? this._content.indexOf(headerMatch[0])
+      : this._content.length;
+
+    // Only process content before the first header
+    const contentBeforeHeader = this._content.substring(0, headerPosition);
+
     let extractedImage: string | undefined;
 
     const renderer = new Renderer();
@@ -130,8 +140,8 @@ export class BlogPost extends GraphQLNode {
       return ""; // We don't need HTML output, just extraction
     };
 
-    // Process the content to trigger image extraction
-    marked(this._content, { renderer });
+    // Process only the content before the header to trigger image extraction
+    marked(contentBeforeHeader, { renderer });
 
     return extractedImage;
   }
