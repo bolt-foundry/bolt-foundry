@@ -29,13 +29,37 @@ Evaluate the 5 selected stories based on:
 
 ## Scoring Guide
 
-- **+3**: All 5 stories have high starpower/prominence and high casual fan
+**Critical**: Focus on the WEAKEST stories in the selection. A few good stories
+cannot compensate for multiple poor choices.
+
+- **+3**: All 5 stories feature major stars/teams AND have high casual fan
   interest
-- **+2**: Most stories have good starpower/prominence or interest
-- **+1**: Some stories have decent relevance but others are weak
-- **-1**: Most stories lack starpower/prominence and interest
-- **-2**: Stories are mostly irrelevant with low starpower and little casual fan
-  interest
-- **-3**: All stories are completely irrelevant
+- **+2**: 4+ stories have genuine starpower/prominence AND strong interest
+- **+1**: 3+ stories have decent relevance, but selection has notable weak spots
+- **0**: Mixed bag with both strong and weak stories, neither clearly good nor
+  bad
+- **-1**: 2+ stories lack starpower/prominence, overall selection below average
+- **-2**: Most stories are minor/niche with little broad appeal, few redeeming
+  stories
+- **-3**: Nearly all stories are irrelevant to casual fans, poor starpower
+  throughout
+
+## Penalty Guidelines
+
+**Apply harsh penalties when selections include:**
+
+- **2+ minor conference/college stories** (automatic -2 or worse)
+- **2+ routine injury/personnel updates** (automatic -2 or worse)
+- **3+ stories with minimal starpower** (automatic -3)
+- **Multiple international/niche sports** without major stars (automatic -1 or
+  worse)
+
+## Starpower Hierarchy (for reference)
+
+**Tier 1 (Major Stars)**: LeBron, Brady, Mahomes, Ohtani, etc. **Tier 2
+(Prominent)**: All-Stars, major team players, Olympic medalists **Tier 3
+(Moderate)**: Starting players on major teams, rising prospects **Tier 4
+(Low)**: Bench players, minor college athletes, conference-level stars **Tier 5
+(Minimal)**: Transfer portal moves, minor league, backup players
 
 ![](./sources.deck.toml) ![](./syntheticSamples.deck.toml)
