@@ -6,7 +6,7 @@ tags = ["evals", "labs", "reliability"]
 excerpt = "We built a reliable eval system using Markdown, TOML, and a command-line tool that adapts when you change prompts, demonstrated through creating graders for an AI-powered sports newsletter."
 +++
 
-![image.png]()
+![image.png](/static/blog/2025-06-23-sports-news.jpg)
 
 # Evals from scratch: Building LLM evals with aibff from Markdown and TOML
 
@@ -100,11 +100,11 @@ to `results.html` and asked it to look for inconsistencies between the Grader
 and Ground Truth samples, and to update the Grader accordingly.
 
 In this case, we created a
-[Grader-v2](https://github.com/bolt-foundry/bolt-foundry/blob/main/static/examples/fastpitch-results/results_25_.html)
+[Grader-v2](https://github.com/bolt-foundry/bolt-foundry/blob/main/apps/aibff/decks/fastpitch/sports-relevance-grader-v2.deck.md)
 to measure changes against a baseline. After
-[a few (dozen) iterations](https://github.com/bolt-foundry/bolt-foundry/tree/main/apps/aibff/decks/fastpitch/results),
-we ended up with a Grader that agreed with the Ground Truth scores 100% of the
-time using both GPT-4o and GPT-4.1.
+[a few (dozen) iterations](https://github.com/bolt-foundry/bolt-foundry/tree/main/static/examples/fastpitch-results)
+and refinement, we ended up with a Grader that agreed with the Ground Truth
+scores 100% of the time using both GPT-4o and GPT-4.1.
 
 ![image.png](/static/blog/2025-06-23-results-2.png)
 
