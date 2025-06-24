@@ -313,13 +313,6 @@ jobs:
           # Verify binaries exist
           ls -la bin/
 
-      - name: Test npm package
-        run: |
-          cd packages/aibff
-
-          # Test that the postinstall script works
-          npm run postinstall || echo "Postinstall expected to fail without actual download"
-
       - name: Publish to npm
         run: |
           cd packages/aibff
