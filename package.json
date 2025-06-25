@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@anthropic-ai/claude-code": "^1.0.25",
+    "@babel/preset-react": "^7.27.1",
+    "@isograph/babel-plugin": "^0.0.0-main-1fad6d74",
     "@isograph/compiler": "0.0.0-main-1fad6d74",
     "@isograph/react": "0.0.0-main-1fad6d74",
     "@lexical/mark": "0.27.2",
@@ -23,6 +25,7 @@
     "@types/pg": "^8.11.11",
     "@types/react": "^19.0",
     "@types/react-dom": "^19.0",
+    "@vitejs/plugin-react": "^4.6.0",
     "assemblyai": "^4.9.0",
     "discord.js": "^14.18.0",
     "esbuild": "^0.24.2",
