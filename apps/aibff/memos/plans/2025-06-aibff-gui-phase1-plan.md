@@ -406,10 +406,10 @@ Each milestone should be completed and tested before moving to the next:
 
 ### Milestone 1: Project Setup
 
-- [ ] Vite project created with deno-react-swc template
-- [ ] Added to root workspace in deno.jsonc
-- [ ] Basic App.tsx with "Hello aibff GUI"
-- [ ] Manual Vite build works: `cd gui && deno run -A npm:vite build`
+- [x] Vite project created with deno-react-swc template
+- [x] Added to root workspace in deno.jsonc
+- [x] Basic App.tsx with "Hello aibff GUI"
+- [x] Manual Vite build works: `cd gui && deno run -A npm:vite build`
 
 ### Milestone 2: Basic Server
 
