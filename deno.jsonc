@@ -2,6 +2,7 @@
   "unstable": ["temporal", "webgpu"],
   "nodeModulesDir": "manual",
   "imports": {
+    "@bfmono/": "./",
     "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
     "@bolt-foundry/bolt-foundry/": "./packages/bolt-foundry/",
     "@bolt-foundry/logger": "./packages/logger/logger.ts",
@@ -104,6 +105,7 @@
         "bolt-foundry/prefer-generic-array-syntax",
         "bolt-foundry/ensure-file-ends-with-newline",
         "bolt-foundry/ts-expect-error-description",
+        "bolt-foundry/no-parent-directory-traversal",
         "no-slow-types",
         "no-console",
         "no-external-import",

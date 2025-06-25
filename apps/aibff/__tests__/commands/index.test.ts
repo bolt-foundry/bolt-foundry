@@ -1,7 +1,10 @@
 #!/usr/bin/env -S bff test
 
 import { assertEquals, assertExists } from "@std/assert";
-import { getAllCommands, getCommand } from "../../commands/index.ts";
+import {
+  getAllCommands,
+  getCommand,
+} from "@bfmono/apps/aibff/commands/index.ts";
 
 Deno.test("getCommand should return calibrate command", () => {
   const calibrateCommand = getCommand("calibrate");
