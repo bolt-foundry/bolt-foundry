@@ -369,6 +369,102 @@ const plugin: Deno.lint.Plugin = {
         };
       },
     },
+
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    /*  8. No parent directory traversal - enforce repository-relative URLs   */
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    "no-parent-directory-traversal": {
+      create(context) {
+        const { filename } = context;
+
+        // Helper to convert relative path to repository-relative
+        function convertToRepoRelative(
+          relativePath: string,
+          currentFile: string,
+        ): string {
+          // Count how many directories up we need to go
+          const upCount = (relativePath.match(/\.\.\//g) || []).length;
+          if (upCount === 0) return relativePath;
+
+          // For files in the monorepo, we can calculate based on known structure
+          // Remove any leading absolute path to get relative path
+          let filePath = currentFile;
+          const monorepoIndex = filePath.lastIndexOf("/bolt-foundry-monorepo/");
+          if (monorepoIndex !== -1) {
+            filePath = filePath.slice(
+              monorepoIndex + "/bolt-foundry-monorepo/".length,
+            );
+          }
+
+          // Get the current file's directory segments
+          const currentDir = filePath.split("/").slice(0, -1);
+
+          // Go up the required number of directories
+          const baseDir = currentDir.slice(0, -upCount);
+
+          // Get the remaining path after all ../
+          const remainingPath = relativePath.replace(/^(\.\.\/)+/, "");
+
+          // Construct the new path with @bfmono/ prefix
+          if (baseDir.length === 0) {
+            return "@bfmono/" + remainingPath;
+          }
+
+          return "@bfmono/" + baseDir.join("/") + "/" + remainingPath;
+        }
+
+        // For TypeScript/JavaScript files only
+        return {
+          ImportDeclaration(node) {
+            const importPath = node.source.value;
+            if (
+              typeof importPath === "string" && importPath.includes("../..")
+            ) {
+              context.report({
+                node: node.source,
+                message:
+                  "Use repository-relative imports instead of parent directory traversal",
+                fix(fixer) {
+                  const newPath = convertToRepoRelative(importPath, filename);
+                  return [
+                    fixer.replaceText(
+                      node.source,
+                      `"${newPath}"`,
+                    ),
+                  ];
+                },
+              });
+            }
+          },
+          // Also check dynamic imports
+          'CallExpression[callee.name="import"]'(node) {
+            if (
+              node.arguments.length > 0 && node.arguments[0].type === "Literal"
+            ) {
+              const importPath = node.arguments[0].value;
+              if (
+                typeof importPath === "string" && importPath.includes("../..")
+              ) {
+                context.report({
+                  node: node.arguments[0],
+                  message:
+                    "Use repository-relative imports instead of parent directory traversal",
+                  fix(fixer) {
+                    const newPath = convertToRepoRelative(importPath, filename);
+                    return [
+                      fixer.replaceText(
+                        node.arguments[0],
+                        `"${newPath}"`,
+                      ),
+                    ];
+                  },
+                });
+              }
+            }
+          },
+        };
+      },
+    },
   },
 };
 

@@ -1,4 +1,4 @@
-import { getLogger } from "../../../packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { BUILD_COMMIT, BUILD_TIME, VERSION } from "../version.ts";
 
 const logger = getLogger(import.meta);

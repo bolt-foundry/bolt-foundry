@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { rebuildCommand } from "../../commands/rebuild.ts";
+import { rebuildCommand } from "@bfmono/apps/aibff/commands/rebuild.ts";
 
 Deno.test("rebuild command should have correct metadata", () => {
   assertEquals(rebuildCommand.name, "rebuild");

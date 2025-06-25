@@ -1,6 +1,6 @@
 #! /usr/bin/env -S bff test
 import { assertEquals, assertThrows } from "@std/assert";
-import { AdapterRegistry } from "../../storage/AdapterRegistry.ts";
+import { AdapterRegistry } from "@bfmono/apps/bfDb/storage/AdapterRegistry.ts";
 
 // Dummy adapter that fulfils the (aliased) interface shape at compile‑time.
 // Cast as `never` for now – we never call its methods in this test.
