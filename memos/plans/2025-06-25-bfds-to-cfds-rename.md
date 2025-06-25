@@ -129,5 +129,5 @@ This plan sets up for Phase 2 where bfDsLite will be renamed to bfDs, creating a
 cleaner naming hierarchy:
 
 - Current: bfDs (→ cfDs), bfDsLite
-- Phase 1: cfDs, bfDsLite
-- Phase 2: cfDs, bfDs (renamed from bfDsLite)
+- Phase 1: cfDs, bfDsLite ✅
+- Phase 2: cfDs, bfDs (renamed from bfDsLite) ✅
