@@ -99,7 +99,7 @@ h1.formatter-nav-text {
   /* margin-bottom: 16px; */
 }
 
-.formatter-card-expanded .bfds-form-label {
+.formatter-card-expanded .cfds-form-label {
   font-weight: 500;
   color: var(--text);
   margin-bottom: 6px;
