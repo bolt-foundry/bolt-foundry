@@ -1,6 +1,7 @@
 import { parseArgs } from "@std/cli";
 import { getLogger } from "@bolt-foundry/logger";
 import type { Command } from "./types.ts";
+import { createGraphQLServer } from "./graphql-schema.ts";
 
 const logger = getLogger(import.meta);
 
@@ -85,11 +86,19 @@ Options:
     // Start the server
     logger.println(`Starting aibff GUI server on port ${port}...`);
 
+    // Create GraphQL server
+    const graphQLServer = createGraphQLServer(flags.dev);
+
     const handler = async (request: Request): Promise<Response> => {
       const url = new URL(request.url);
 
       if (url.pathname === "/health") {
         return new Response("OK", { status: 200 });
+      }
+
+      // Handle GraphQL endpoint
+      if (url.pathname === "/graphql") {
+        return await graphQLServer.handle(request);
       }
 
       // In dev mode, proxy all other requests to Vite
