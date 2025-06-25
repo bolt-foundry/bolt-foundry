@@ -45,7 +45,7 @@ Options:
 
       // Run vite build
       const buildCommand = new Deno.Command("deno", {
-        args: ["run", "-A", "npm:vite", "build"],
+        args: ["run", "-A", "--node-modules-dir", "npm:vite", "build"],
         cwd: guiPath,
         stdout: "inherit",
         stderr: "inherit",
@@ -71,7 +71,7 @@ Options:
 
       const guiPath = new URL("../gui", import.meta.url).pathname;
       const viteCommand = new Deno.Command("deno", {
-        args: ["run", "-A", "npm:vite", "--port", vitePort.toString()],
+        args: ["run", "-A", "--node-modules-dir", "npm:vite", "--port", vitePort.toString()],
         cwd: guiPath,
         stdout: "inherit",
         stderr: "inherit",
