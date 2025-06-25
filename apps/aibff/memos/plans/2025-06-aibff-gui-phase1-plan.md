@@ -25,7 +25,7 @@ From the main implementation plan:
 
 ### 1. GUI Command Structure
 
-- **Location**: `apps/aibff/src/commands/gui.ts`
+- **Location**: `apps/aibff/commands/gui.ts`
 - **Pattern**: Follows existing aibff command structure
 - **Aliases**: `gui`, `web`
 - **Flags**:
@@ -33,6 +33,7 @@ From the main implementation plan:
   - `--build`: Build GUI assets without starting server
   - `--port`: Specify server port (default: 3000)
   - `--no-open`: Don't auto-open browser on startup
+  - `--help`: Show help message
 
 ### 2. Embedded Server Architecture
 
@@ -114,21 +115,25 @@ All in `apps/bfDb/nodeTypes/aibff/`:
 
 ## Implementation Steps
 
-### Step 1: Create GUI Command
+### Step 1: Create GUI Command ✅
 
 ```typescript
-// apps/aibff/src/commands/gui.ts
+// apps/aibff/commands/gui.ts (location differs from plan)
 export const guiCommand: Command = {
   name: "gui",
-  aliases: ["web"],
   description: "Launch the aibff GUI web interface",
-  run: async (args: string[]) => {
-    // Implementation
+  run: async (args: Array<string>) => {
+    // Implementation complete with:
+    // - Full flag parsing (--dev, --build, --port, --no-open, --help)
+    // - Development mode with Vite proxy
+    // - Production mode with static serving
+    // - Health check endpoint
+    // - Proper logging with getLogger
   },
 };
 ```
 
-### Step 2: Set Up Vite Project
+### Step 2: Set Up Vite Project ✅
 
 ```bash
 cd apps/aibff
@@ -155,17 +160,7 @@ Note: The deno-react-swc template provides:
 - Deno-compatible module resolution
 - No package.json needed (uses Deno's import maps)
 
-**Important**: After creating the Vite project, add it to the root workspace:
-
-```jsonc
-// In root deno.jsonc, add to workspace array:
-{
-  "workspace": [
-    // ... existing entries ...
-    "apps/aibff/gui"
-  ]
-}
-```
+**Completed**: Vite project created and added to root workspace in deno.jsonc.
 
 ### Step 3: Create AibffNode Classes
 
@@ -264,13 +259,10 @@ if (config.posthogKey) {
 
 ```
 apps/aibff/
-├── src/
-│   ├── commands/
-│   │   └── gui.ts
-│   └── gui/
-│       ├── graphql/
-│       │   └── schema.ts
-│       └── server.ts
+├── commands/              # Note: Not under src/
+│   ├── gui.ts
+│   └── __tests__/
+│       └── gui.test.ts
 ├── gui/
 │   ├── index.html
 │   ├── deno.json
@@ -299,13 +291,13 @@ apps/bfDb/nodeTypes/aibff/
 We'll use minimal TDD with Deno.test, focusing on three core tests that drive
 the implementation:
 
-### 1. GUI Command Test
+### 1. GUI Command Test ✅
 
 ```typescript
-// apps/aibff/src/commands/__tests__/gui.test.ts
+// apps/aibff/commands/__tests__/gui.test.ts (location differs from plan)
 Deno.test("gui command starts server and responds to health check", async () => {
   // Start server in test mode on port 3001
-  const process = await startGuiCommand(["--port", "3001"]);
+  const process = startGuiCommand(["--port", "3001", "--no-open"]);
 
   // Wait for server to be ready
   await waitForServer("http://localhost:3001/health");
@@ -314,10 +306,19 @@ Deno.test("gui command starts server and responds to health check", async () => 
   const response = await fetch("http://localhost:3001/health");
   assertEquals(response.status, 200);
 
-  // Cleanup
+  // Cleanup with proper stream closing
   process.kill();
+  await process.stdout?.cancel();
+  await process.stderr?.cancel();
+  await process.status;
 });
 ```
+
+**Additional tests implemented**:
+
+- Command structure test (name, description)
+- Build flag test (verifies Vite build runs)
+- Dev mode test (verifies proxy to Vite dev server)
 
 ### 2. Message Flow Test
 
@@ -413,12 +414,12 @@ Each milestone should be completed and tested before moving to the next:
 
 ### Milestone 2: Basic Server
 
-- [ ] `aibff gui` launches a web server
-- [ ] Server responds to health check at `/health`
-- [ ] `aibff gui --build` runs Vite build
-- [ ] `aibff gui --dev` starts Vite dev server and proxies to it
-- [ ] Browser opens to localhost:3000
-- [ ] GUI command test passes
+- [x] `aibff gui` launches a web server
+- [x] Server responds to health check at `/health`
+- [x] `aibff gui --build` runs Vite build
+- [x] `aibff gui --dev` starts Vite dev server and proxies to it
+- [ ] Browser opens to localhost:3000 (not implemented yet)
+- [x] GUI command test passes
 
 ### Milestone 3: BfDs Integration
 
@@ -504,3 +505,36 @@ YouTube comments for helpfulness
 - Document any Vite/Deno compatibility issues encountered
 - Working directory context: GUI creates files relative to where `aibff gui` is
   run
+
+## Phase 1 Progress Summary (as of 2025-01-26)
+
+### Completed Items:
+
+1. ✅ GUI command created with all flags (--dev, --build, --port, --no-open,
+   --help)
+2. ✅ Basic server with health check endpoint
+3. ✅ Development mode with Vite proxy
+4. ✅ Build flag runs Vite build
+5. ✅ Vite project initialized with React and TypeScript
+6. ✅ Tests implemented using TDD approach
+7. ✅ Command registered with both "gui" and "web" aliases
+8. ✅ Proper logging with getLogger instead of console
+9. ✅ All lint and type checks passing
+
+### Remaining Phase 1 Items:
+
+- [ ] Browser auto-open functionality (--no-open flag recognized but open not
+      implemented)
+- [ ] AibffNode base class and concrete implementations
+- [ ] GraphQL/Isograph setup
+- [ ] BfDs component integration
+- [ ] SSE endpoint for streaming
+- [ ] AI integration with aibff render
+- [ ] PostHog analytics
+- [ ] Update rebuild command to include GUI assets in binary
+
+### Key Implementation Differences from Plan:
+
+- Commands located in `apps/aibff/commands/` not `apps/aibff/src/commands/`
+- Used `@std/async` for test utilities (added to dependencies)
+- Implemented comprehensive error handling and resource cleanup in tests
