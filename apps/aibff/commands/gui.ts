@@ -82,7 +82,14 @@ Examples:
 
       const guiPath = new URL(import.meta.resolve("../gui")).pathname;
       const viteCommand = new Deno.Command("deno", {
-        args: ["run", "-A", "--node-modules-dir", "npm:vite", "--port", vitePort.toString()],
+        args: [
+          "run",
+          "-A",
+          "--node-modules-dir",
+          "npm:vite",
+          "--port",
+          vitePort.toString(),
+        ],
         cwd: guiPath,
         stdout: "inherit",
         stderr: "inherit",
