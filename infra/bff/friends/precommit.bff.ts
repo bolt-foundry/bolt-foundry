@@ -64,7 +64,19 @@ async function stageFiles(): Promise<number> {
 export async function precommitCommand(
   options: Array<string>,
 ): Promise<number> {
-  const verbose = options.includes("--verbose") || options.includes("-v");
+  // Separate flags from file arguments
+  const flags: Array<string> = [];
+  const files: Array<string> = [];
+
+  for (const option of options) {
+    if (option.startsWith("--") || option.startsWith("-")) {
+      flags.push(option);
+    } else {
+      files.push(option);
+    }
+  }
+
+  const verbose = flags.includes("--verbose") || flags.includes("-v");
 
   logger.info("Running AI-safe pre-commit checks...");
 
@@ -76,18 +88,19 @@ export async function precommitCommand(
     return stageResult;
   }
 
+  // Build check commands with file arguments if provided
   const checks = [
-    { name: "Format", command: ["bff", "ai", "format"] },
-    { name: "Lint", command: ["bff", "ai", "lint", "--fix"] },
-    { name: "Type Check", command: ["bff", "ai", "check"] },
-    { name: "Test", command: ["bff", "ai", "test"] },
+    { name: "Format", command: ["bff", "ai", "format", ...files] },
+    { name: "Lint", command: ["bff", "ai", "lint", "--fix", ...files] },
+    { name: "Type Check", command: ["bff", "ai", "check", ...files] },
+    { name: "Test", command: ["bff", "ai", "test"] }, // Tests don't take file args
   ];
 
   // Allow skipping specific checks with options
-  const skipFormat = options.includes("--skip-format");
-  const skipCheck = options.includes("--skip-check");
-  const skipLint = options.includes("--skip-lint");
-  const skipTest = options.includes("--skip-test");
+  const skipFormat = flags.includes("--skip-format");
+  const skipCheck = flags.includes("--skip-check");
+  const skipLint = flags.includes("--skip-lint");
+  const skipTest = flags.includes("--skip-test");
 
   const filteredChecks = checks.filter((check) => {
     if (skipFormat && check.name === "Format") return false;
@@ -97,7 +110,10 @@ export async function precommitCommand(
     return true;
   });
 
-  logger.info(`Running ${filteredChecks.length} pre-commit checks...`);
+  const filesInfo = files.length > 0 ? ` on ${files.length} file(s)` : "";
+  logger.info(
+    `Running ${filteredChecks.length} pre-commit checks${filesInfo}...`,
+  );
 
   for (const check of filteredChecks) {
     if (verbose) {
