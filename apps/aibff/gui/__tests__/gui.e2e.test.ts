@@ -48,11 +48,11 @@ Deno.test("aibff gui --dev loads successfully", async () => {
     const appResponse = await fetch("http://localhost:3006/src/App.tsx");
     assertEquals(appResponse.status, 200);
 
-    // Verify the App component loads without errors
+    // Verify App component loads (basic smoke test)
     const appCode = await appResponse.text();
     assertExists(
-      appCode.match(/count is/),
-      "Should include count button text",
+      appCode.match(/aibff GUI/),
+      "Should include aibff GUI heading",
     );
   } finally {
     // Cleanup
