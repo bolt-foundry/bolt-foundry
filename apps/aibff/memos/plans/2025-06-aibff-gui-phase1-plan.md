@@ -25,7 +25,7 @@ From the main implementation plan:
 
 ### 1. GUI Command Structure
 
-- **Location**: `apps/aibff/src/commands/gui.ts`
+- **Location**: `apps/aibff/commands/gui.ts`
 - **Pattern**: Follows existing aibff command structure
 - **Aliases**: `gui`, `web`
 - **Flags**:
@@ -33,6 +33,7 @@ From the main implementation plan:
   - `--build`: Build GUI assets without starting server
   - `--port`: Specify server port (default: 3000)
   - `--no-open`: Don't auto-open browser on startup
+  - `--help`: Show help message
 
 ### 2. Embedded Server Architecture
 
@@ -114,21 +115,25 @@ All in `apps/bfDb/nodeTypes/aibff/`:
 
 ## Implementation Steps
 
-### Step 1: Create GUI Command
+### Step 1: Create GUI Command ✅
 
 ```typescript
-// apps/aibff/src/commands/gui.ts
+// apps/aibff/commands/gui.ts (location differs from plan)
 export const guiCommand: Command = {
   name: "gui",
-  aliases: ["web"],
   description: "Launch the aibff GUI web interface",
-  run: async (args: string[]) => {
-    // Implementation
+  run: async (args: Array<string>) => {
+    // Implementation complete with:
+    // - Full flag parsing (--dev, --build, --port, --no-open, --help)
+    // - Development mode with Vite proxy
+    // - Production mode with static serving
+    // - Health check endpoint
+    // - Proper logging with getLogger
   },
 };
 ```
 
-### Step 2: Set Up Vite Project
+### Step 2: Set Up Vite Project ✅
 
 ```bash
 cd apps/aibff
@@ -155,19 +160,28 @@ Note: The deno-react-swc template provides:
 - Deno-compatible module resolution
 - No package.json needed (uses Deno's import maps)
 
-**Important**: After creating the Vite project, add it to the root workspace:
+**Completed**: Vite project created and added to root workspace in deno.jsonc.
 
-```jsonc
-// In root deno.jsonc, add to workspace array:
-{
-  "workspace": [
-    // ... existing entries ...
-    "apps/aibff/gui"
-  ]
-}
-```
+### Step 3: Set Up GraphQL with Hello World
 
-### Step 3: Create AibffNode Classes
+- Install GraphQL Yoga: `deno add npm:graphql-yoga npm:graphql`
+- Create basic schema with hello world query
+- Set up GraphQL endpoint at `/graphql`
+- Enable GraphiQL in dev mode
+- Test with simple query
+
+### Step 4: Implement Server Routing
+
+- Parse dev/prod mode
+- Set up URLPattern-based routing
+- Set up SSE endpoint at `/api/stream`
+- Integrate GraphQL Yoga at `/graphql`
+- Add `/api/config` endpoint for runtime configuration (PostHog key, etc.)
+- Serve static assets or proxy to Vite
+- Route requests appropriately
+- Implement graceful shutdown handler
+
+### Step 5: Create AibffNode Classes
 
 ```typescript
 // apps/bfDb/nodeTypes/aibff/AibffNode.ts
@@ -176,18 +190,7 @@ export abstract class AibffNode extends GraphQLNode {
 }
 ```
 
-### Step 4: Implement Server
-
-- Parse dev/prod mode
-- Set up URLPattern-based routing
-- Set up SSE endpoint at `/api/stream`
-- Set up GraphQL Yoga at `/graphql`
-- Add `/api/config` endpoint for runtime configuration (PostHog key, etc.)
-- Serve static assets or proxy to Vite
-- Route requests appropriately
-- Implement graceful shutdown handler
-
-### Step 5: Create Hello World Deck
+### Step 6: Create Hello World Deck
 
 ```markdown
 <!-- apps/aibff/gui/decks/hello-world.deck.md -->
@@ -196,13 +199,13 @@ You are a helpful AI assistant in the aibff GUI. Greet the user and explain that
 you're here to help them build graders.
 ```
 
-### Step 6: Update Build Process
+### Step 7: Update Build Process
 
 - Modify `apps/aibff/src/commands/rebuild.ts`
 - Run `aibff gui --build` before compilation
 - Update `--include` paths to include gui/dist
 
-### Step 7: Frontend Components
+### Step 8: Frontend Components
 
 Start with a minimal test to ensure BfDs integration works:
 
@@ -229,7 +232,7 @@ Once BfDs renders correctly, implement:
 - Input field with send button
 - SSE connection management
 
-### Step 8: PostHog Integration
+### Step 9: PostHog Integration
 
 ```typescript
 // Get config from server
@@ -264,13 +267,10 @@ if (config.posthogKey) {
 
 ```
 apps/aibff/
-├── src/
-│   ├── commands/
-│   │   └── gui.ts
-│   └── gui/
-│       ├── graphql/
-│       │   └── schema.ts
-│       └── server.ts
+├── commands/              # Note: Not under src/
+│   ├── gui.ts
+│   └── __tests__/
+│       └── gui.test.ts
 ├── gui/
 │   ├── index.html
 │   ├── deno.json
@@ -299,13 +299,13 @@ apps/bfDb/nodeTypes/aibff/
 We'll use minimal TDD with Deno.test, focusing on three core tests that drive
 the implementation:
 
-### 1. GUI Command Test
+### 1. GUI Command Test ✅
 
 ```typescript
-// apps/aibff/src/commands/__tests__/gui.test.ts
+// apps/aibff/commands/__tests__/gui.test.ts (location differs from plan)
 Deno.test("gui command starts server and responds to health check", async () => {
   // Start server in test mode on port 3001
-  const process = await startGuiCommand(["--port", "3001"]);
+  const process = startGuiCommand(["--port", "3001", "--no-open"]);
 
   // Wait for server to be ready
   await waitForServer("http://localhost:3001/health");
@@ -314,10 +314,19 @@ Deno.test("gui command starts server and responds to health check", async () => 
   const response = await fetch("http://localhost:3001/health");
   assertEquals(response.status, 200);
 
-  // Cleanup
+  // Cleanup with proper stream closing
   process.kill();
+  await process.stdout?.cancel();
+  await process.stderr?.cancel();
+  await process.status;
 });
 ```
+
+**Additional tests implemented**:
+
+- Command structure test (name, description)
+- Build flag test (verifies Vite build runs)
+- Dev mode test (verifies proxy to Vite dev server)
 
 ### 2. Message Flow Test
 
@@ -406,35 +415,37 @@ Each milestone should be completed and tested before moving to the next:
 
 ### Milestone 1: Project Setup
 
-- [ ] Vite project created with deno-react-swc template
-- [ ] Added to root workspace in deno.jsonc
-- [ ] Basic App.tsx with "Hello aibff GUI"
-- [ ] Manual Vite build works: `cd gui && deno run -A npm:vite build`
+- [x] Vite project created with deno-react-swc template
+- [x] Added to root workspace in deno.jsonc
+- [x] Basic App.tsx with "Hello aibff GUI"
+- [x] Manual Vite build works: `cd gui && deno run -A npm:vite build`
 
 ### Milestone 2: Basic Server
 
-- [ ] `aibff gui` launches a web server
-- [ ] Server responds to health check at `/health`
-- [ ] `aibff gui --build` runs Vite build
-- [ ] `aibff gui --dev` starts Vite dev server and proxies to it
-- [ ] Browser opens to localhost:3000
-- [ ] GUI command test passes
+- [x] `aibff gui` launches a web server
+- [x] Server responds to health check at `/health`
+- [x] `aibff gui --build` runs Vite build
+- [x] `aibff gui --dev` starts Vite dev server and proxies to it
+- [ ] Browser opens to localhost:3000 (not implemented yet)
+- [x] GUI command test passes
 
-### Milestone 3: BfDs Integration
+### Milestone 3: GraphQL Hello World
+
+- [ ] GraphQL Yoga installed and configured
+- [ ] Basic schema with hello query
+- [ ] GraphQL endpoint serves at `/graphql`
+- [ ] GraphiQL available in dev mode
+- [ ] Simple query test passes
+
+### Milestone 4: BfDs Integration
 
 - [ ] Import BfDsButton from packages
 - [ ] BfDsButton renders successfully
 - [ ] HMR works with BfDs components
 
-### Milestone 4: GraphQL Setup
+### Milestone 5: AibffNode and Message Persistence
 
-- [ ] GraphQL Yoga serves at `/graphql`
-- [ ] GraphiQL available in dev mode
 - [ ] AibffNode base class implemented
-- [ ] Basic query/mutation works
-
-### Milestone 5: Message Persistence
-
 - [ ] AibffConversation node saves to disk (Markdown with TOML frontmatter)
 - [ ] GraphQL mutation creates messages
 - [ ] Message flow test passes
@@ -504,3 +515,38 @@ YouTube comments for helpfulness
 - Document any Vite/Deno compatibility issues encountered
 - Working directory context: GUI creates files relative to where `aibff gui` is
   run
+
+## Phase 1 Progress Summary (as of 2025-01-26)
+
+### Completed Items:
+
+1. ✅ GUI command created with all flags (--dev, --build, --port, --no-open,
+   --help)
+2. ✅ Basic server with health check endpoint
+3. ✅ Development mode with Vite proxy
+4. ✅ Build flag runs Vite build
+5. ✅ Vite project initialized with React and TypeScript
+6. ✅ Tests implemented using TDD approach
+7. ✅ Command registered with both "gui" and "web" aliases
+8. ✅ Proper logging with getLogger instead of console
+9. ✅ All lint and type checks passing
+
+### Remaining Phase 1 Items (in order):
+
+1. [ ] GraphQL Hello World setup (next priority)
+   - [ ] Install GraphQL Yoga
+   - [ ] Create basic schema
+   - [ ] Integrate with existing server
+2. [ ] BfDs component integration
+3. [ ] AibffNode base class and concrete implementations
+4. [ ] SSE endpoint for streaming
+5. [ ] AI integration with aibff render
+6. [ ] PostHog analytics
+7. [ ] Update rebuild command to include GUI assets in binary
+8. [ ] Browser auto-open functionality (nice to have)
+
+### Key Implementation Differences from Plan:
+
+- Commands located in `apps/aibff/commands/` not `apps/aibff/src/commands/`
+- Used `@std/async` for test utilities (added to dependencies)
+- Implemented comprehensive error handling and resource cleanup in tests
