@@ -162,13 +162,16 @@ Note: The deno-react-swc template provides:
 
 **Completed**: Vite project created and added to root workspace in deno.jsonc.
 
-### Step 3: Set Up GraphQL with Hello World
+### Step 3: Set Up GraphQL with Hello World ✅
 
 - Install GraphQL Yoga: `deno add npm:graphql-yoga npm:graphql`
 - Create basic schema with hello world query
 - Set up GraphQL endpoint at `/graphql`
 - Enable GraphiQL in dev mode
 - Test with simple query
+
+**Completed**: GraphQL endpoint implemented with GraphQL Yoga, hello query
+returns "Hello from aibff GUI!", GraphiQL enabled in dev mode.
 
 ### Step 4: Implement Server Routing
 
@@ -431,11 +434,11 @@ Each milestone should be completed and tested before moving to the next:
 
 ### Milestone 3: GraphQL Hello World
 
-- [ ] GraphQL Yoga installed and configured
-- [ ] Basic schema with hello query
-- [ ] GraphQL endpoint serves at `/graphql`
-- [ ] GraphiQL available in dev mode
-- [ ] Simple query test passes
+- [x] GraphQL Yoga installed and configured
+- [x] Basic schema with hello query
+- [x] GraphQL endpoint serves at `/graphql`
+- [x] GraphiQL available in dev mode
+- [x] Simple query test passes
 
 ### Milestone 4: BfDs Integration
 
@@ -533,11 +536,11 @@ YouTube comments for helpfulness
 
 ### Remaining Phase 1 Items (in order):
 
-1. [ ] GraphQL Hello World setup (next priority)
-   - [ ] Install GraphQL Yoga
-   - [ ] Create basic schema
-   - [ ] Integrate with existing server
-2. [ ] BfDs component integration
+1. [x] GraphQL Hello World setup ✅
+   - [x] Install GraphQL Yoga (used from node_modules)
+   - [x] Create basic schema with hello query
+   - [x] Integrate with existing server at /graphql endpoint
+2. [ ] BfDs component integration (next priority)
 3. [ ] AibffNode base class and concrete implementations
 4. [ ] SSE endpoint for streaming
 5. [ ] AI integration with aibff render
