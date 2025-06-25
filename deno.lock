@@ -4499,7 +4499,7 @@
       "apps/aibff/gui": {
         "dependencies": [
           "npm:@deno/vite-plugin@^1.0.4",
-          "npm:@isograph/react@0.10",
+          "npm:@isograph/react@0.0.0-main-1fad6d74",
           "npm:@types/react-dom@^19.0.4",
           "npm:@types/react@^19.0.10",
           "npm:@vitejs/plugin-react@^4.3.4",
