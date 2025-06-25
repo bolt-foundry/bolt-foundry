@@ -42,7 +42,7 @@ Deno.test("aibff gui --dev loads successfully", async () => {
 
     // Verify basic page structure
     assertExists(html.match(/<div id="root">/), "Should have root div");
-    assertExists(html.match(/Vite \+ React/), "Should have page title");
+    assertExists(html.match(/aibff GUI/), "Should have page title");
 
     // Test that App.tsx loads without errors
     const appResponse = await fetch("http://localhost:3006/src/App.tsx");

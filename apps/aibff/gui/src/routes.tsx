@@ -1,4 +1,5 @@
-import type * as React from "react";
+import * as React from "react";
+import { BfDsLiteButton } from "@bfmono/apps/bfDsLite";
 // import { Hello } from "./components/Hello.tsx";
 
 export type RouteConfig = {
@@ -9,12 +10,28 @@ export type RouteConfig = {
 
 // Placeholder components - we'll implement these next
 function ChatView() {
+  const [clickCount, setClickCount] = React.useState(0);
+
   return (
     <div>
       <h2>Chat Interface</h2>
       <p>AI conversation interface will go here</p>
       {/* <Hello hello="Hello from GraphQL!" /> */}
       <div>GraphQL integration coming soon...</div>
+
+      {/* Test BfDsLite integration */}
+      <div style={{ marginTop: "2rem" }}>
+        <h3>BfDsLite Test</h3>
+        <p>Button clicked: {clickCount} times</p>
+        <BfDsLiteButton
+          onClick={() => {
+            setClickCount(clickCount + 1);
+          }}
+          variant="primary"
+        >
+          Test BfDsLite Button
+        </BfDsLiteButton>
+      </div>
     </div>
   );
 }
