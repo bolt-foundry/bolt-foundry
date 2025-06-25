@@ -1,41 +1,70 @@
+import { IsographEnvironmentProvider } from "@isograph/react";
+import { Router, RouterProvider } from "./contexts/RouterContext.tsx";
+import { routes } from "./routes.tsx";
+import { getEnvironment } from "./isographEnvironment.ts";
 import "./App.css";
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
 
-function App() {
-  const [count, setCount] = useState(0);
+function Navigation() {
+  const navStyle = {
+    display: "flex",
+    gap: "1rem",
+    padding: "1rem",
+    borderBottom: "1px solid #e0e0e0",
+    marginBottom: "1rem",
+  };
+
+  const linkStyle = {
+    textDecoration: "none",
+    color: "#333",
+    padding: "0.5rem 1rem",
+    borderRadius: "4px",
+    transition: "background-color 0.2s",
+  };
 
   return (
-    <>
-      <img src="/vite-deno.svg" alt="Vite with Deno" />
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button type="button" onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <button
-          type="button"
-          onClick={() => setCount((count) => count + 1)}
-          style={{ marginLeft: "1rem" }}
+    <nav style={navStyle}>
+      {routes.map((route) => (
+        <a
+          key={route.path}
+          href={`#${route.path}`}
+          style={linkStyle}
+          onMouseOver={(
+            e,
+          ) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
+          onMouseOut={(
+            e,
+          ) => (e.currentTarget.style.backgroundColor = "transparent")}
         >
-          Styled count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+          {route.title}
+        </a>
+      ))}
+    </nav>
+  );
+}
+
+function App() {
+  const environment = getEnvironment();
+
+  return (
+    <IsographEnvironmentProvider environment={environment}>
+      <RouterProvider>
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <header>
+            <h1 style={{ margin: "1rem" }}>aibff GUI</h1>
+            <Navigation />
+          </header>
+          <main style={{ flex: 1, padding: "1rem" }}>
+            <Router />
+          </main>
+        </div>
+      </RouterProvider>
+    </IsographEnvironmentProvider>
   );
 }
 
