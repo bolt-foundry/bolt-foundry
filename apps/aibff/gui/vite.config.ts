@@ -17,4 +17,13 @@ export default defineConfig({
   optimizeDeps: {
     include: ["@isograph/react"],
   },
+  publicDir: "public", // Use public directory
+  server: {
+    fs: {
+      allow: [
+        // Allow serving files from the monorepo root
+        new URL("../../../", import.meta.url).pathname,
+      ],
+    },
+  },
 });

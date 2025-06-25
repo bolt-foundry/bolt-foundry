@@ -2,6 +2,7 @@ import { IsographEnvironmentProvider } from "@isograph/react";
 import { Router, RouterProvider } from "./contexts/RouterContext.tsx";
 import { routes } from "./routes.tsx";
 import { getEnvironment } from "./isographEnvironment.ts";
+// import type { BfDsLiteButton } from "@bfmono/apps/bfDsLite";
 import "./App.css";
 
 function Navigation() {
@@ -56,7 +57,7 @@ function App() {
           }}
         >
           <header>
-            <h1 style={{ margin: "1rem" }}>aibff GUI</h1>
+            <h1 style={{ margin: "1rem" }}>aibff GUI!!</h1>
             <Navigation />
           </header>
           <main style={{ flex: 1, padding: "1rem" }}>
