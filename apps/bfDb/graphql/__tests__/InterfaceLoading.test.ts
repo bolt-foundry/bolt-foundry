@@ -13,7 +13,7 @@ import { GraphQLInterface, isGraphQLInterface } from "../decorators.ts";
 import * as allInterfaces from "../__generated__/interfacesList.ts";
 import { GraphQLObjectBase } from "../GraphQLObjectBase.ts";
 import { gqlSpecToNexus } from "@bfmono/apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

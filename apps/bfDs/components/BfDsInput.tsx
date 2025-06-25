@@ -1,6 +1,6 @@
 import * as React from "react";
-import { fonts } from "apps/bfDs/const.tsx";
-import { BfDsSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
+import { fonts } from "@bfmono/apps/bfDs/const.tsx";
+import { BfDsSpinner } from "@bfmono/apps/bfDs/components/BfDsSpinner.tsx";
 
 export type InputBaseProps = {
   autoFocus?: boolean;

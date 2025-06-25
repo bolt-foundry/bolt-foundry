@@ -1,6 +1,6 @@
 import { getSecret } from "@bolt-foundry/get-configuration-var";
 import { decodeBase64Url, encodeBase64Url } from "@std/encoding/base64url";
-import type { BfGid } from "lib/types.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 /* ------------------------------------------------------------------------- */
 /*  Types                                                                    */

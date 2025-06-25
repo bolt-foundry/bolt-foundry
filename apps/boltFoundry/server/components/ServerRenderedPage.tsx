@@ -1,5 +1,5 @@
-import { colors, colorsDark, fonts } from "apps/bfDs/const.tsx";
-import { getLogger } from "packages/logger/logger.ts";
+import { colors, colorsDark, fonts } from "@bfmono/apps/bfDs/const.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const _logger = getLogger(import.meta);
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(

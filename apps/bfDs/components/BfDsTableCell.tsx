@@ -1,4 +1,4 @@
-import { BfDsProgress } from "apps/bfDs/components/BfDsProgress.tsx";
+import { BfDsProgress } from "@bfmono/apps/bfDs/components/BfDsProgress.tsx";
 
 type Props = {
   align?: "left" | "center" | "right";

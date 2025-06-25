@@ -5,8 +5,8 @@ import {
   navigateTo,
   setupE2ETest,
   teardownE2ETest,
-} from "infra/testing/e2e/setup.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/testing/e2e/setup.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 // End‑to‑end test: verifies that a visitor can successfully submit the
 // "Join the waitlist" form on the home page.

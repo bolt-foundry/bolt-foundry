@@ -1,6 +1,6 @@
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { RouterLink } from "apps/boltFoundry/components/Router/RouterLink.tsx";
-import { CfLogo } from "apps/boltFoundry/resources/CfLogo.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { RouterLink } from "@bfmono/apps/boltFoundry/components/Router/RouterLink.tsx";
+import { CfLogo } from "@bfmono/apps/boltFoundry/resources/CfLogo.tsx";
 
 export function MarketingFooter() {
   return (

@@ -3,10 +3,10 @@
  * Uses the team summary analysis deck to generate human-readable work summaries
  */
 
-import { getLogger } from "packages/logger/logger.ts";
-import { renderDeck } from "apps/aibff/index.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { renderDeck } from "@bfmono/apps/aibff/index.ts";
 import type { CompanyContext, WorkItem } from "./types.ts";
-import { getSecret } from "packages/get-configuration-var/get-configuration-var.ts";
+import { getSecret } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
 
 const logger = getLogger(import.meta);
 

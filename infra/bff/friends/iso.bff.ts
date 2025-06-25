@@ -1,12 +1,12 @@
 #! /usr/bin/env -S bff
 
 // ./infra/bff/friends/iso.bff.ts
-import { register } from "infra/bff/bff.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   runShellCommand,
   runShellCommandWithOutput,
-} from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

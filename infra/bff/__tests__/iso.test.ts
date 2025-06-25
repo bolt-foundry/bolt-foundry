@@ -5,7 +5,7 @@
  */
 
 import { assertEquals } from "@std/assert";
-import { isoCommand } from "infra/bff/friends/iso.bff.ts";
+import { isoCommand } from "@bfmono/infra/bff/friends/iso.bff.ts";
 
 /**
  * When invoked without options the helper exports the same numeric exit-code

@@ -1,6 +1,6 @@
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import type { DatabaseBackend } from "apps/bfDb/backend/DatabaseBackend.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import type { DatabaseBackend } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

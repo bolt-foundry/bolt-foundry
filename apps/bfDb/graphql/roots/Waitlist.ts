@@ -1,6 +1,6 @@
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
+import { GraphQLObjectBase } from "@bfmono/apps/bfDb/graphql/GraphQLObjectBase.ts";
 
 const logger = getLogger(import.meta);
 

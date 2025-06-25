@@ -1,13 +1,13 @@
 #! /usr/bin/env -S bff
 
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { register } from "infra/bff/bff.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   runningProcesses,
   runShellCommand,
   runShellCommandWithOutput,
-} from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

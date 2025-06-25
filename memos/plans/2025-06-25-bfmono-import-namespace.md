@@ -59,3 +59,40 @@ This is not a migration from `@bolt-foundry/` (which remains for published
 packages) but from the current bare import paths. The change enables standard
 tooling to work with our monorepo structure without requiring custom
 configuration for each tool.
+
+## Lint Rule
+
+A new lint rule `bolt-foundry/no-cornercased-imports` has been implemented to
+enforce this convention:
+
+- **Rule name**: `bolt-foundry/no-cornercased-imports`
+- **Description**: Enforces the use of `@bfmono/` prefix for internal imports
+- **Auto-fixable**: Yes - the rule will automatically convert imports
+
+The rule catches imports that start with these cornercased directory names:
+
+- `apps/`
+- `packages/`
+- `infra/`
+- `lib/`
+- `util/`
+- `experimental/`
+- `content/`
+- `docs/`
+- `static/`
+- `tmp/`
+
+Example transformations:
+
+```typescript
+// Before (will trigger lint error)
+import { getLogger } from "packages/logger/logger.ts";
+import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+
+// After (auto-fixed)
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+```
+
+The lint rule is configured in `deno.jsonc` and implemented in
+`infra/lint/bolt-foundry.ts`.

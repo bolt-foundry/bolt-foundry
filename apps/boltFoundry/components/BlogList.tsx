@@ -1,8 +1,8 @@
-import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { RouterLink } from "apps/boltFoundry/components/Router/RouterLink.tsx";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { blogMetadata } from "apps/boltFoundry/lib/blogHelper.ts";
-import { BfDsPill } from "apps/bfDs/components/BfDsPill.tsx";
+import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
+import { RouterLink } from "@bfmono/apps/boltFoundry/components/Router/RouterLink.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { blogMetadata } from "@bfmono/apps/boltFoundry/lib/blogHelper.ts";
+import { BfDsPill } from "@bfmono/apps/bfDs/components/BfDsPill.tsx";
 
 // Blog list component for BlogPostConnection
 export const BlogList = iso(`

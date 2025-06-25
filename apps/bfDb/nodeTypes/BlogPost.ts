@@ -1,14 +1,14 @@
-import { GraphQLNode } from "apps/bfDb/classes/GraphQLNode.ts";
+import { GraphQLNode } from "@bfmono/apps/bfDb/classes/GraphQLNode.ts";
 import { join } from "@std/path";
 import { exists } from "@std/fs";
-import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorsBfNode.ts";
+import { BfErrorNodeNotFound } from "@bfmono/apps/bfDb/classes/BfErrorsBfNode.ts";
 import type { Connection, ConnectionArguments } from "graphql-relay";
 import { connectionFromArray } from "graphql-relay";
 import {
   type BlogFrontMatter,
   generateExcerpt,
   safeExtractFrontmatter,
-} from "apps/bfDb/utils/contentUtils.ts";
+} from "@bfmono/apps/bfDb/utils/contentUtils.ts";
 import { marked, Renderer } from "marked";
 
 /**

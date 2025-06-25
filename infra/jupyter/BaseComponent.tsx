@@ -1,4 +1,4 @@
-import { colors, colorsDark, fonts } from "apps/bfDs/const.tsx";
+import { colors, colorsDark, fonts } from "@bfmono/apps/bfDs/const.tsx";
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(
   (acc, [key, value]) => {

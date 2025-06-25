@@ -1,7 +1,10 @@
-import { generateUUID } from "lib/generateUUID.ts";
-import type { BfEdgeMetadata, BfMetadata } from "apps/bfDb/classes/BfNode.ts";
-import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
-import type { BfGid } from "lib/types.ts";
+import { generateUUID } from "@bfmono/lib/generateUUID.ts";
+import type {
+  BfEdgeMetadata,
+  BfMetadata,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 /** Generate base node metadata */
 export function generateNodeMetadata<T extends BfMetadata>(
