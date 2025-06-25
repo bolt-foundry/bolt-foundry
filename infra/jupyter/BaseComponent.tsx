@@ -1,4 +1,4 @@
-import { colors, colorsDark, fonts } from "@bfmono/apps/bfDs/const.tsx";
+import { colors, colorsDark, fonts } from "@bfmono/apps/cfDs/const.tsx";
 
 const varsString = Object.entries({ ...colors, ...fonts }).reduce(
   (acc, [key, value]) => {
@@ -37,7 +37,7 @@ export function BaseComponent(
           }}
         />
         <link rel="stylesheet" href="/static/marketingpagestyle.css" />
-        <link rel="stylesheet" href="/static/bfDsStyle.css" />
+        <link rel="stylesheet" href="/static/cfDsStyle.css" />
         <link rel="stylesheet" href="/static/blogStyle.css" />
         <link rel="stylesheet" href="/static/appStyle.css" />
         <link rel="stylesheet" href="/static/toolsStyle.css" />
