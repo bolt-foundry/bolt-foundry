@@ -1,17 +1,17 @@
 import * as React from "react";
-import { BfDsLiteIcon, type BfDsLiteIconName } from "./BfDsLiteIcon.tsx";
+import { BfDsIcon, type BfDsIconName } from "./BfDsIcon.tsx";
 
-export type BfDsLiteTabItem = {
+export type BfDsTabItem = {
   id: string;
   label: string;
   content: React.ReactNode;
-  icon?: BfDsLiteIconName;
+  icon?: BfDsIconName;
   disabled?: boolean;
-  subtabs?: Array<BfDsLiteTabItem>;
+  subtabs?: Array<BfDsTabItem>;
 };
 
-export type BfDsLiteTabsProps = {
-  tabs: Array<BfDsLiteTabItem>;
+export type BfDsTabsProps = {
+  tabs: Array<BfDsTabItem>;
   activeTab?: string;
   defaultActiveTab?: string;
   onTabChange?: (tabId: string) => void;
@@ -20,12 +20,12 @@ export type BfDsLiteTabsProps = {
   size?: "small" | "medium" | "large";
 };
 
-export type BfDsLiteTabsState = {
+export type BfDsTabsState = {
   activeTab: string;
   activeSubtabs: Record<string, string>; // parentTabId -> activeSubtabId
 };
 
-export function BfDsLiteTabs({
+export function BfDsTabs({
   tabs,
   activeTab,
   defaultActiveTab,
@@ -33,12 +33,12 @@ export function BfDsLiteTabs({
   className,
   variant = "primary",
   size = "medium",
-}: BfDsLiteTabsProps) {
+}: BfDsTabsProps) {
   // Determine if this is controlled or uncontrolled
   const isControlled = activeTab !== undefined;
 
   // Initialize state
-  const [state, setState] = React.useState<BfDsLiteTabsState>(() => {
+  const [state, setState] = React.useState<BfDsTabsState>(() => {
     const initialActiveTab = activeTab || defaultActiveTab || tabs[0]?.id || "";
     const activeSubtabs: Record<string, string> = {};
 
@@ -95,17 +95,17 @@ export function BfDsLiteTabs({
   };
 
   const renderTab = (
-    tab: BfDsLiteTabItem,
+    tab: BfDsTabItem,
     isActive: boolean,
     _index: number,
     _tabIds: Array<string>,
   ) => {
     const classes = [
-      "bfds-lite-tab",
-      `bfds-lite-tab--${variant}`,
-      `bfds-lite-tab--${size}`,
-      isActive && "bfds-lite-tab--active",
-      tab.disabled && "bfds-lite-tab--disabled",
+      "bfds-tab",
+      `bfds-tab--${variant}`,
+      `bfds-tab--${size}`,
+      isActive && "bfds-tab--active",
+      tab.disabled && "bfds-tab--disabled",
     ].filter(Boolean).join(" ");
 
     return (
@@ -120,7 +120,7 @@ export function BfDsLiteTabs({
         aria-controls={`panel-${tab.id}`}
       >
         {tab.icon && (
-          <BfDsLiteIcon
+          <BfDsIcon
             name={tab.icon}
             size={size === "small"
               ? "small"
@@ -135,18 +135,18 @@ export function BfDsLiteTabs({
   };
 
   const renderSubtab = (
-    subtab: BfDsLiteTabItem,
-    parentTab: BfDsLiteTabItem,
+    subtab: BfDsTabItem,
+    parentTab: BfDsTabItem,
     isActive: boolean,
     _index: number,
     _subtabIds: Array<string>,
   ) => {
     const classes = [
-      "bfds-lite-subtab",
-      `bfds-lite-subtab--${variant}`,
-      `bfds-lite-subtab--${size}`,
-      isActive && "bfds-lite-subtab--active",
-      subtab.disabled && "bfds-lite-subtab--disabled",
+      "bfds-subtab",
+      `bfds-subtab--${variant}`,
+      `bfds-subtab--${size}`,
+      isActive && "bfds-subtab--active",
+      subtab.disabled && "bfds-subtab--disabled",
     ].filter(Boolean).join(" ");
 
     return (
@@ -161,7 +161,7 @@ export function BfDsLiteTabs({
         aria-controls={`subpanel-${parentTab.id}-${subtab.id}`}
       >
         {subtab.icon && (
-          <BfDsLiteIcon
+          <BfDsIcon
             name={subtab.icon}
             size="small"
           />
@@ -184,9 +184,9 @@ export function BfDsLiteTabs({
   const subtabIds = activeTabData?.subtabs?.map((sub) => sub.id) || [];
 
   const containerClasses = [
-    "bfds-lite-tabs",
-    `bfds-lite-tabs--${variant}`,
-    `bfds-lite-tabs--${size}`,
+    "bfds-tabs",
+    `bfds-tabs--${variant}`,
+    `bfds-tabs--${size}`,
     className,
   ].filter(Boolean).join(" ");
 
@@ -194,7 +194,7 @@ export function BfDsLiteTabs({
     <div className={containerClasses}>
       {/* Main tabs */}
       <div
-        className="bfds-lite-tabs__header"
+        className="bfds-tabs__header"
         role="tablist"
         aria-orientation="horizontal"
       >
@@ -206,7 +206,7 @@ export function BfDsLiteTabs({
       {/* Subtabs */}
       {hasSubtabs && activeTabData?.subtabs && (
         <div
-          className="bfds-lite-tabs__subheader"
+          className="bfds-tabs__subheader"
           role="tablist"
           aria-orientation="horizontal"
         >
@@ -223,14 +223,14 @@ export function BfDsLiteTabs({
       )}
 
       {/* Content panels */}
-      <div className="bfds-lite-tabs__content">
+      <div className="bfds-tabs__content">
         {/* Main tab content or subtab content */}
         {hasSubtabs && activeSubtabData
           ? (
             <div
               key={`${currentActiveTab}-${activeSubtabId}`}
               id={`subpanel-${currentActiveTab}-${activeSubtabId}`}
-              className="bfds-lite-tabs__panel bfds-lite-tabs__subpanel"
+              className="bfds-tabs__panel bfds-tabs__subpanel"
               role="tabpanel"
               aria-labelledby={`subtab-${activeSubtabId}`}
             >
@@ -241,7 +241,7 @@ export function BfDsLiteTabs({
             <div
               key={currentActiveTab}
               id={`panel-${currentActiveTab}`}
-              className="bfds-lite-tabs__panel"
+              className="bfds-tabs__panel"
               role="tabpanel"
               aria-labelledby={`tab-${currentActiveTab}`}
             >
@@ -253,10 +253,10 @@ export function BfDsLiteTabs({
   );
 }
 
-BfDsLiteTabs.Example = function BfDsLiteTabsExample() {
+BfDsTabs.Example = function BfDsTabsExample() {
   const [controlledActiveTab, setControlledActiveTab] = React.useState("tab1");
 
-  const basicTabs: Array<BfDsLiteTabItem> = [
+  const basicTabs: Array<BfDsTabItem> = [
     {
       id: "tab1",
       label: "Overview",
@@ -299,7 +299,7 @@ BfDsLiteTabs.Example = function BfDsLiteTabsExample() {
     },
   ];
 
-  const tabsWithSubtabs: Array<BfDsLiteTabItem> = [
+  const tabsWithSubtabs: Array<BfDsTabItem> = [
     {
       id: "docs",
       label: "Documentation",
@@ -416,16 +416,16 @@ DELETE /api/users/:id`}
     <div
       style={{
         padding: "24px",
-        backgroundColor: "var(--bfds-lite-background)",
-        color: "var(--bfds-lite-text)",
+        backgroundColor: "var(--bfds-background)",
+        color: "var(--bfds-text)",
         fontFamily: "system-ui, -apple-system, sans-serif",
       }}
     >
-      <h2>BfDsLiteTabs Examples</h2>
+      <h2>BfDsTabs Examples</h2>
 
       <div style={{ marginBottom: "32px" }}>
         <h3>Basic Tabs</h3>
-        <BfDsLiteTabs tabs={basicTabs} defaultActiveTab="tab1" />
+        <BfDsTabs tabs={basicTabs} defaultActiveTab="tab1" />
       </div>
 
       <div style={{ marginBottom: "32px" }}>
@@ -434,12 +434,12 @@ DELETE /api/users/:id`}
           style={{
             marginBottom: "16px",
             fontSize: "14px",
-            color: "var(--bfds-lite-text-secondary)",
+            color: "var(--bfds-text-secondary)",
           }}
         >
           Active tab: {controlledActiveTab}
         </p>
-        <BfDsLiteTabs
+        <BfDsTabs
           tabs={basicTabs}
           activeTab={controlledActiveTab}
           onTabChange={setControlledActiveTab}
@@ -448,7 +448,7 @@ DELETE /api/users/:id`}
 
       <div style={{ marginBottom: "32px" }}>
         <h3>Tabs with Subtabs</h3>
-        <BfDsLiteTabs tabs={tabsWithSubtabs} defaultActiveTab="docs" />
+        <BfDsTabs tabs={tabsWithSubtabs} defaultActiveTab="docs" />
       </div>
 
       <div style={{ marginBottom: "32px" }}>
@@ -456,7 +456,7 @@ DELETE /api/users/:id`}
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
           <div>
             <h4>Small</h4>
-            <BfDsLiteTabs
+            <BfDsTabs
               tabs={basicTabs.slice(0, 2)}
               size="small"
               defaultActiveTab="tab1"
@@ -464,7 +464,7 @@ DELETE /api/users/:id`}
           </div>
           <div>
             <h4>Medium (Default)</h4>
-            <BfDsLiteTabs
+            <BfDsTabs
               tabs={basicTabs.slice(0, 2)}
               size="medium"
               defaultActiveTab="tab1"
@@ -472,7 +472,7 @@ DELETE /api/users/:id`}
           </div>
           <div>
             <h4>Large</h4>
-            <BfDsLiteTabs
+            <BfDsTabs
               tabs={basicTabs.slice(0, 2)}
               size="large"
               defaultActiveTab="tab1"
@@ -486,7 +486,7 @@ DELETE /api/users/:id`}
         <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
           <div>
             <h4>Primary (Default)</h4>
-            <BfDsLiteTabs
+            <BfDsTabs
               tabs={basicTabs.slice(0, 2)}
               variant="primary"
               defaultActiveTab="tab1"
@@ -494,7 +494,7 @@ DELETE /api/users/:id`}
           </div>
           <div>
             <h4>Secondary</h4>
-            <BfDsLiteTabs
+            <BfDsTabs
               tabs={basicTabs.slice(0, 2)}
               variant="secondary"
               defaultActiveTab="tab1"

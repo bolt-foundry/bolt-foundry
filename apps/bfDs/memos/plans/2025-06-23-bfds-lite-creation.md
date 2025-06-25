@@ -1,4 +1,4 @@
-# BfDs Lite Creation Plan
+# BfDs Creation Plan (formerly BfDs Lite)
 
 **Date**: 2025-06-23\
 **Status**: In Progress\
@@ -6,8 +6,11 @@
 
 ## Overview
 
-Creating a new lightweight design system (bfDsLite) to replace the bloated bfDs.
-Starting with core components and building up incrementally.
+Created a new lightweight design system (bfDs) to replace the bloated legacy
+design system. Starting with core components and building up incrementally.
+
+**Note**: This was originally created as bfDsLite but has been renamed to bfDs
+as part of the 2025-06-25 design system migration.
 
 ## Goals
 
@@ -29,7 +32,7 @@ Starting with core components and building up incrementally.
 ### CSS Variables Structure
 
 - Base colors with hover/active variations
-- Semantic naming convention: `--bfds-lite-{color}-{state}`
+- Semantic naming convention: `--bfds-{color}-{state}`
 
 ## Progress
 

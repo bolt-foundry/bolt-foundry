@@ -1,27 +1,27 @@
 import * as React from "react";
 import { icons } from "../lib/icons.ts";
-import { BfDsLiteButton } from "./BfDsLiteButton.tsx";
+import { BfDsButton } from "./BfDsButton.tsx";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-export type BfDsLiteIconName = keyof typeof icons;
-export type BfDsLiteIconSize = "small" | "medium" | "large";
+export type BfDsIconName = keyof typeof icons;
+export type BfDsIconSize = "small" | "medium" | "large";
 
-export type BfDsLiteIconProps = {
-  name: BfDsLiteIconName;
-  size?: BfDsLiteIconSize;
+export type BfDsIconProps = {
+  name: BfDsIconName;
+  size?: BfDsIconSize;
   color?: string;
   className?: string;
 } & Omit<React.SVGProps<SVGSVGElement>, "children">;
 
-export function BfDsLiteIcon({
+export function BfDsIcon({
   name,
   size = "medium",
   color,
   className,
   ...props
-}: BfDsLiteIconProps) {
+}: BfDsIconProps) {
   const icon = icons[name];
 
   if (!icon) {
@@ -30,8 +30,8 @@ export function BfDsLiteIcon({
   }
 
   const classes = [
-    "bfds-lite-icon",
-    `bfds-lite-icon--${size}`,
+    "bfds-icon",
+    `bfds-icon--${size}`,
     className,
   ].filter(Boolean).join(" ");
 
@@ -52,13 +52,13 @@ export function BfDsLiteIcon({
   );
 }
 
-BfDsLiteIcon.Example = function BfDsLiteIconExample() {
+BfDsIcon.Example = function BfDsIconExample() {
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [selectedSize, setSelectedSize] = React.useState<BfDsLiteIconSize>(
+  const [selectedSize, setSelectedSize] = React.useState<BfDsIconSize>(
     "medium",
   );
 
-  const iconNames = Object.keys(icons) as Array<BfDsLiteIconName>;
+  const iconNames = Object.keys(icons) as Array<BfDsIconName>;
   const filteredIcons = iconNames.filter((name) =>
     name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -67,47 +67,47 @@ BfDsLiteIcon.Example = function BfDsLiteIconExample() {
     <div
       style={{
         padding: "24px",
-        backgroundColor: "var(--bfds-lite-background)",
-        color: "var(--bfds-lite-text)",
+        backgroundColor: "var(--bfds-background)",
+        color: "var(--bfds-text)",
         fontFamily: "system-ui, -apple-system, sans-serif",
       }}
     >
-      <h2>BfDsLiteIcon Examples</h2>
+      <h2>BfDsIcon Examples</h2>
 
       <div style={{ marginBottom: "24px" }}>
         <h3>Size Comparison</h3>
         <div style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}>
           <div style={{ textAlign: "center" }}>
-            <BfDsLiteIcon name="arrowRight" size="small" />
+            <BfDsIcon name="arrowRight" size="small" />
             <div
               style={{
                 fontSize: "12px",
                 marginTop: "4px",
-                color: "var(--bfds-lite-text-secondary)",
+                color: "var(--bfds-text-secondary)",
               }}
             >
               Small
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <BfDsLiteIcon name="arrowRight" size="medium" />
+            <BfDsIcon name="arrowRight" size="medium" />
             <div
               style={{
                 fontSize: "12px",
                 marginTop: "4px",
-                color: "var(--bfds-lite-text-secondary)",
+                color: "var(--bfds-text-secondary)",
               }}
             >
               Medium
             </div>
           </div>
           <div style={{ textAlign: "center" }}>
-            <BfDsLiteIcon name="arrowRight" size="large" />
+            <BfDsIcon name="arrowRight" size="large" />
             <div
               style={{
                 fontSize: "12px",
                 marginTop: "4px",
-                color: "var(--bfds-lite-text-secondary)",
+                color: "var(--bfds-text-secondary)",
               }}
             >
               Large
@@ -126,18 +126,18 @@ BfDsLiteIcon.Example = function BfDsLiteIconExample() {
             flexWrap: "wrap",
           }}
         >
-          <BfDsLiteIcon name="brand-github" size="large" />
-          <BfDsLiteIcon
+          <BfDsIcon name="brand-github" size="large" />
+          <BfDsIcon
             name="brand-github"
             size="large"
-            color="var(--bfds-lite-primary)"
+            color="var(--bfds-primary)"
           />
-          <BfDsLiteIcon
+          <BfDsIcon
             name="brand-github"
             size="large"
-            color="var(--bfds-lite-secondary)"
+            color="var(--bfds-secondary)"
           />
-          <BfDsLiteIcon name="brand-github" size="large" color="#ff4444" />
+          <BfDsIcon name="brand-github" size="large" color="#ff4444" />
         </div>
       </div>
 
@@ -171,9 +171,9 @@ BfDsLiteIcon.Example = function BfDsLiteIconExample() {
               style={{
                 padding: "8px 12px",
                 borderRadius: "4px",
-                border: "1px solid var(--bfds-lite-border)",
-                backgroundColor: "var(--bfds-lite-background)",
-                color: "var(--bfds-lite-text)",
+                border: "1px solid var(--bfds-border)",
+                backgroundColor: "var(--bfds-background)",
+                color: "var(--bfds-text)",
                 fontSize: "14px",
               }}
             />
@@ -191,13 +191,13 @@ BfDsLiteIcon.Example = function BfDsLiteIconExample() {
             </label>
             <div style={{ display: "flex", gap: "8px" }}>
               {(["small", "medium", "large"] as const).map((size) => (
-                <BfDsLiteButton
+                <BfDsButton
                   key={size}
                   onClick={() => setSelectedSize(size)}
                   variant={selectedSize === size ? "primary" : "ghost"}
                 >
                   {size}
-                </BfDsLiteButton>
+                </BfDsButton>
               ))}
             </div>
           </div>
@@ -222,18 +222,18 @@ BfDsLiteIcon.Example = function BfDsLiteIconExample() {
                 flexDirection: "column",
                 alignItems: "center",
                 padding: "12px",
-                border: "1px solid var(--bfds-lite-border)",
+                border: "1px solid var(--bfds-border)",
                 borderRadius: "6px",
-                backgroundColor: "var(--bfds-lite-background-hover)",
+                backgroundColor: "var(--bfds-background-hover)",
                 textAlign: "center",
               }}
             >
-              <BfDsLiteIcon name={iconName} size={selectedSize} />
+              <BfDsIcon name={iconName} size={selectedSize} />
               <div
                 style={{
                   fontSize: "11px",
                   marginTop: "8px",
-                  color: "var(--bfds-lite-text-secondary)",
+                  color: "var(--bfds-text-secondary)",
                   wordBreak: "break-word",
                 }}
               >

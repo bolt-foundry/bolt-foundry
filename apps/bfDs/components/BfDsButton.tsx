@@ -1,26 +1,26 @@
 import * as React from "react";
-import { BfDsLiteIcon, type BfDsLiteIconName } from "./BfDsLiteIcon.tsx";
+import { BfDsIcon, type BfDsIconName } from "./BfDsIcon.tsx";
 
-export type BfDsLiteButtonSize = "small" | "medium" | "large";
-export type BfDsLiteButtonVariant =
+export type BfDsButtonSize = "small" | "medium" | "large";
+export type BfDsButtonVariant =
   | "primary"
   | "secondary"
   | "outline"
   | "ghost";
 
-export type BfDsLiteButtonProps = {
+export type BfDsButtonProps = {
   children?: React.ReactNode;
-  size?: BfDsLiteButtonSize;
-  variant?: BfDsLiteButtonVariant;
+  size?: BfDsButtonSize;
+  variant?: BfDsButtonVariant;
   disabled?: boolean;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
-  icon?: BfDsLiteIconName | React.ReactNode;
+  icon?: BfDsIconName | React.ReactNode;
   iconPosition?: "left" | "right";
   iconOnly?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export function BfDsLiteButton({
+export function BfDsButton({
   children,
   size = "medium",
   variant = "primary",
@@ -31,17 +31,17 @@ export function BfDsLiteButton({
   iconPosition = "left",
   iconOnly = false,
   ...props
-}: BfDsLiteButtonProps) {
+}: BfDsButtonProps) {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
     onClick?.(e);
   };
 
   const classes = [
-    "bfds-lite-button",
-    `bfds-lite-button--${variant}`,
-    `bfds-lite-button--${size}`,
-    iconOnly && "bfds-lite-button--icon-only",
+    "bfds-button",
+    `bfds-button--${variant}`,
+    `bfds-button--${size}`,
+    iconOnly && "bfds-button--icon-only",
     className,
   ].filter(Boolean).join(" ");
 
@@ -56,7 +56,7 @@ export function BfDsLiteButton({
   const iconElement = icon
     ? (
       typeof icon === "string"
-        ? <BfDsLiteIcon name={icon as BfDsLiteIconName} size={iconSize} />
+        ? <BfDsIcon name={icon as BfDsIconName} size={iconSize} />
         : icon
     )
     : null;
@@ -75,7 +75,7 @@ export function BfDsLiteButton({
   );
 }
 
-BfDsLiteButton.Example = function BfDsLiteButtonExample() {
+BfDsButton.Example = function BfDsButtonExample() {
   const [clickCount, setClickCount] = React.useState(0);
 
   return (
@@ -85,25 +85,25 @@ BfDsLiteButton.Example = function BfDsLiteButtonExample() {
         flexDirection: "column",
         gap: "24px",
         padding: "24px",
-        backgroundColor: "var(--bfds-lite-background)",
-        color: "var(--bfds-lite-text)",
+        backgroundColor: "var(--bfds-background)",
+        color: "var(--bfds-text)",
         fontFamily: "system-ui, -apple-system, sans-serif",
       }}
     >
-      <h2>BfDsLiteButton Examples</h2>
+      <h2>BfDsButton Examples</h2>
 
       <div>
         <h3>Variants</h3>
         <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsLiteButton
+          <BfDsButton
             variant="primary"
             onClick={() => setClickCount((c) => c + 1)}
           >
             Primary ({clickCount})
-          </BfDsLiteButton>
-          <BfDsLiteButton variant="secondary">Secondary</BfDsLiteButton>
-          <BfDsLiteButton variant="outline">Outline</BfDsLiteButton>
-          <BfDsLiteButton variant="ghost">Ghost</BfDsLiteButton>
+          </BfDsButton>
+          <BfDsButton variant="secondary">Secondary</BfDsButton>
+          <BfDsButton variant="outline">Outline</BfDsButton>
+          <BfDsButton variant="ghost">Ghost</BfDsButton>
         </div>
       </div>
 
@@ -117,47 +117,47 @@ BfDsLiteButton.Example = function BfDsLiteButtonExample() {
             flexWrap: "wrap",
           }}
         >
-          <BfDsLiteButton size="small">Small</BfDsLiteButton>
-          <BfDsLiteButton size="medium">Medium</BfDsLiteButton>
-          <BfDsLiteButton size="large">Large</BfDsLiteButton>
+          <BfDsButton size="small">Small</BfDsButton>
+          <BfDsButton size="medium">Medium</BfDsButton>
+          <BfDsButton size="large">Large</BfDsButton>
         </div>
       </div>
 
       <div>
         <h3>States</h3>
         <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsLiteButton disabled>Disabled</BfDsLiteButton>
-          <BfDsLiteButton variant="outline" disabled>
+          <BfDsButton disabled>Disabled</BfDsButton>
+          <BfDsButton variant="outline" disabled>
             Disabled Outline
-          </BfDsLiteButton>
+          </BfDsButton>
         </div>
       </div>
 
       <div>
         <h3>Icons</h3>
         <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsLiteButton icon="arrowRight">Next</BfDsLiteButton>
-          <BfDsLiteButton icon="arrowLeft" iconPosition="left">
+          <BfDsButton icon="arrowRight">Next</BfDsButton>
+          <BfDsButton icon="arrowLeft" iconPosition="left">
             Previous
-          </BfDsLiteButton>
-          <BfDsLiteButton icon="brand-github" variant="outline">
+          </BfDsButton>
+          <BfDsButton icon="brand-github" variant="outline">
             GitHub
-          </BfDsLiteButton>
-          <BfDsLiteButton icon="burgerMenu" variant="ghost">
+          </BfDsButton>
+          <BfDsButton icon="burgerMenu" variant="ghost">
             Menu
-          </BfDsLiteButton>
+          </BfDsButton>
         </div>
       </div>
 
       <div>
         <h3>Icon Positions</h3>
         <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsLiteButton icon="arrowRight" iconPosition="left">
+          <BfDsButton icon="arrowRight" iconPosition="left">
             Left Icon
-          </BfDsLiteButton>
-          <BfDsLiteButton icon="arrowRight" iconPosition="right">
+          </BfDsButton>
+          <BfDsButton icon="arrowRight" iconPosition="right">
             Right Icon
-          </BfDsLiteButton>
+          </BfDsButton>
         </div>
       </div>
 
@@ -171,11 +171,11 @@ BfDsLiteButton.Example = function BfDsLiteButtonExample() {
             flexWrap: "wrap",
           }}
         >
-          <BfDsLiteButton icon="arrowLeft" iconOnly size="small" />
-          <BfDsLiteButton icon="burgerMenu" iconOnly />
-          <BfDsLiteButton icon="arrowRight" iconOnly size="large" />
-          <BfDsLiteButton icon="brand-github" iconOnly variant="outline" />
-          <BfDsLiteButton icon="back" iconOnly variant="ghost" />
+          <BfDsButton icon="arrowLeft" iconOnly size="small" />
+          <BfDsButton icon="burgerMenu" iconOnly />
+          <BfDsButton icon="arrowRight" iconOnly size="large" />
+          <BfDsButton icon="brand-github" iconOnly variant="outline" />
+          <BfDsButton icon="back" iconOnly variant="ghost" />
         </div>
       </div>
     </div>
