@@ -82,14 +82,12 @@ export async function runLintWithGithubAnnotations(): Promise<number> {
 
     // 1) diagnostics
     for (const diag of parsed.diagnostics ?? []) {
-      const filePath = normalizeFilePath(diag.location?.filename);
-      const start = diag.location?.range?.start;
+      const filePath = normalizeFilePath(diag.filename);
+      const start = diag.range?.start;
       const line = (typeof start?.line === "number")
         ? start.line + 1
         : undefined;
-      const col = (typeof start?.character === "number")
-        ? start.character + 1
-        : undefined;
+      const col = (typeof start?.col === "number") ? start.col + 1 : undefined;
       const message = stripArrowLines(diag.message);
       printGitHubAnnotation("error", message, filePath, line, col);
       code = 1;
