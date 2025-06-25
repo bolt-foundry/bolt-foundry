@@ -9,8 +9,8 @@ import type {
   TeamStatus,
   WorkCategory,
   WorkItem,
-} from "packages/team-status-analyzer/types.ts";
-import type { TeamMemberSummary } from "packages/team-status-analyzer/ai-summarizer.ts";
+} from "@bfmono/packages/team-status-analyzer/types.ts";
+import type { TeamMemberSummary } from "@bfmono/packages/team-status-analyzer/ai-summarizer.ts";
 
 export class StatusTemplate {
   /**

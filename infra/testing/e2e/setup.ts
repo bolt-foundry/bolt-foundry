@@ -1,6 +1,6 @@
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { type Browser, launch, type Page } from "puppeteer-core";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { ensureDir } from "@std/fs";
 import { join } from "@std/path";
 

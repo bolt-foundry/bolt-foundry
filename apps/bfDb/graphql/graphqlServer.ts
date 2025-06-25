@@ -3,17 +3,17 @@
 import { makeSchema } from "nexus";
 import { createYoga } from "graphql-yoga";
 
-import { createContext } from "apps/bfDb/graphql/graphqlContext.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { createContext } from "@bfmono/apps/bfDb/graphql/graphqlContext.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 // Let's create our own loadModelTypes function
 // import { loadModelTypes } from "apps/bfDb/builders/graphql/loadSpecs.ts";
 
 const _logger = getLogger(import.meta);
 
 // Import our GraphQL builder tools - imported only for types but not used directly yet
-import type { makeGqlSpec as _makeGqlSpec } from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
-import type { gqlSpecToNexus as _gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
-import { generateGqlTypes } from "infra/bff/friends/genGqlTypes.bff.ts";
+import type { makeGqlSpec as _makeGqlSpec } from "@bfmono/apps/bfDb/builders/graphql/makeGqlSpec.ts";
+import type { gqlSpecToNexus as _gqlSpecToNexus } from "@bfmono/apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
+import { generateGqlTypes } from "@bfmono/infra/bff/friends/genGqlTypes.bff.ts";
 import { getSchemaOptions } from "./schemaConfig.ts";
 
 export const schema = await makeSchema(await getSchemaOptions());

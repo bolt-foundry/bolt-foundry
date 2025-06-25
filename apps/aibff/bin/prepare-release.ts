@@ -2,7 +2,7 @@
 
 import { join } from "@std/path";
 import { parseArgs } from "@std/cli";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

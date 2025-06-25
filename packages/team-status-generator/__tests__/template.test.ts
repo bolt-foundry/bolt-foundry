@@ -4,8 +4,8 @@
 
 import { assertEquals, assertExists, assertStringIncludes } from "../deps.ts";
 import { StatusTemplate } from "../template.ts";
-import type { TeamStatus } from "packages/team-status-analyzer/types.ts";
-import type { TeamMemberSummary } from "packages/team-status-analyzer/ai-summarizer.ts";
+import type { TeamStatus } from "@bfmono/packages/team-status-analyzer/types.ts";
+import type { TeamMemberSummary } from "@bfmono/packages/team-status-analyzer/ai-summarizer.ts";
 
 const mockTeamStatus: TeamStatus = {
   generatedAt: new Date("2025-06-12"),

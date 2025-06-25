@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { BfDsInput } from "apps/bfDs/components/BfDsInput.tsx";
-import { BfDsPill } from "apps/bfDs/components/BfDsPill.tsx";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
-import { getLogger } from "packages/logger/logger.ts";
+import { BfDsInput } from "@bfmono/apps/bfDs/components/BfDsInput.tsx";
+import { BfDsPill } from "@bfmono/apps/bfDs/components/BfDsPill.tsx";
+import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 export interface TagInputProps {

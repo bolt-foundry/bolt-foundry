@@ -1,4 +1,4 @@
-import type { BfGid } from "lib/types.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 /**
  * Converts a file path to a BfGid with file:// scheme

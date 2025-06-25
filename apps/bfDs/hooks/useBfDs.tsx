@@ -2,7 +2,7 @@ import * as React from "react";
 import {
   BfDsContext,
   type BfDsContextType,
-} from "apps/bfDs/contexts/BfDsContext.tsx";
+} from "@bfmono/apps/bfDs/contexts/BfDsContext.tsx";
 const { useContext } = React;
 
 export const useBfDs = (): BfDsContextType => {

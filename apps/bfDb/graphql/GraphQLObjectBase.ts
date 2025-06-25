@@ -1,8 +1,8 @@
-import type { GraphqlNode } from "apps/bfDb/graphql/helpers.ts";
+import type { GraphqlNode } from "@bfmono/apps/bfDb/graphql/helpers.ts";
 import {
   type GqlNodeSpec,
   makeGqlSpec,
-} from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
+} from "@bfmono/apps/bfDb/builders/graphql/makeGqlSpec.ts";
 
 export abstract class GraphQLObjectBase {
   /* ────────────────────────────────

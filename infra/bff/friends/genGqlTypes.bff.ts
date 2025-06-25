@@ -1,9 +1,9 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { makeSchema } from "nexus";
-import { getSchemaOptions } from "apps/bfDb/graphql/schemaConfig.ts";
+import { getSchemaOptions } from "@bfmono/apps/bfDb/graphql/schemaConfig.ts";
 
 const logger = getLogger(import.meta);
 

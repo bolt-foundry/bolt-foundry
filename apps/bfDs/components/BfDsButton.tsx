@@ -1,22 +1,22 @@
 import * as React from "react";
-import { fonts } from "apps/bfDs/const.tsx";
+import { fonts } from "@bfmono/apps/bfDs/const.tsx";
 import {
   BfDsIcon,
   type BfDsIconType,
   type IconSizeType,
-} from "apps/bfDs/components/BfDsIcon.tsx";
-import { RouterLink } from "apps/boltFoundry/components/Router/RouterLink.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { RouterLink } from "@bfmono/apps/boltFoundry/components/Router/RouterLink.tsx";
 import {
   BfDsTooltip,
   type BfDsTooltipJustification,
   type BfDsTooltipPosition,
-} from "apps/bfDs/components/BfDsTooltip.tsx";
-import { BfDsProgress } from "apps/bfDs/components/BfDsProgress.tsx";
-import { BfDsSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsTooltip.tsx";
+import { BfDsProgress } from "@bfmono/apps/bfDs/components/BfDsProgress.tsx";
+import { BfDsSpinner } from "@bfmono/apps/bfDs/components/BfDsSpinner.tsx";
 import {
   BfDsTooltipMenu,
   type BfDsTooltipMenuType,
-} from "apps/bfDs/components/BfDsTooltipMenu.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsTooltipMenu.tsx";
 
 // Types
 export type ButtonSizeType = "xlarge" | "large" | "medium" | "small";

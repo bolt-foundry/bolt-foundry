@@ -1,11 +1,11 @@
 import {
   type BfDsFormElementProps,
   useBfDsFormContext,
-} from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsForm/BfDsForm.tsx";
 import {
   BfDsRange,
   type RangeBaseProps,
-} from "apps/bfDs/components/BfDsRange.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsRange.tsx";
 
 export function BfDsFormRange(
   { id, title, min = 0, max = 100, step = 1, ...props }:

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

@@ -12,8 +12,8 @@
  */
 
 import type { GraphQLResolveInfo } from "graphql";
-import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
-import type { AnyBfNodeCtor } from "apps/bfDb/builders/bfDb/types.ts";
+import type { BfGraphqlContext } from "@bfmono/apps/bfDb/graphql/graphqlContext.ts";
+import type { AnyBfNodeCtor } from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
 import { type ArgsBuilder, makeArgBuilder } from "./makeArgBuilder.ts";
 import {
   makeReturnsBuilder,

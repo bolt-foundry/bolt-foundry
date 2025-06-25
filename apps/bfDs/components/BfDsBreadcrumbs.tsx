@@ -1,5 +1,5 @@
-import { RouterLink } from "apps/boltFoundry/components/Router/RouterLink.tsx";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
+import { RouterLink } from "@bfmono/apps/boltFoundry/components/Router/RouterLink.tsx";
+import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
 
 type Crumb = {
   name: string;

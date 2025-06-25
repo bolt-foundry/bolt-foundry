@@ -1,7 +1,7 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
-import { runShellCommand } from "infra/bff/shellBase.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
 
 export async function formatCommand(_options: Array<string>): Promise<number> {
   return await runShellCommand(["deno", "fmt"]);

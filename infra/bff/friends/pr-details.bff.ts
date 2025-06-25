@@ -1,9 +1,9 @@
 #! /usr/bin/env -S bff
 
 // infra/bff/friends/pr-details.bff.ts
-import { register } from "infra/bff/bff.ts";
-import { runShellCommandWithOutput } from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { runShellCommandWithOutput } from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

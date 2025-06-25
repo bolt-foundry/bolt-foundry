@@ -1,7 +1,7 @@
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { KNOWN_KEYS } from "packages/get-configuration-var/get-configuration-var.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import { register } from "infra/bff/bff.ts";
+import { KNOWN_KEYS } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 
 const logger = getLogger(import.meta);
 

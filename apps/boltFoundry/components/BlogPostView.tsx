@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
-import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { PageError } from "apps/boltFoundry/pages/PageError.tsx";
+import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
+import { PageError } from "@bfmono/apps/boltFoundry/pages/PageError.tsx";
 import { marked, Renderer } from "marked";
-import { blogMetadata } from "apps/boltFoundry/lib/blogHelper.ts";
-import { BfDsPill } from "apps/bfDs/components/BfDsPill.tsx";
+import { blogMetadata } from "@bfmono/apps/boltFoundry/lib/blogHelper.ts";
+import { BfDsPill } from "@bfmono/apps/bfDs/components/BfDsPill.tsx";
 
 // Single blog post view component
 export const BlogPostView = iso(`
