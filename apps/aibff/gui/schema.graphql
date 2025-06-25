@@ -1,0 +1,28 @@
+type Query {
+  hello: String!
+  conversation(id: ID!): Conversation
+  conversations: [Conversation!]!
+}
+
+type Mutation {
+  createConversation: Conversation!
+  sendMessage(conversationId: ID!, content: String!): Message!
+}
+
+type Conversation {
+  id: ID!
+  createdAt: String!
+  messages: [Message!]!
+}
+
+type Message {
+  id: ID!
+  content: String!
+  role: MessageRole!
+  createdAt: String!
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}
