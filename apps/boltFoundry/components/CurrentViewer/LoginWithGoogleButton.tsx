@@ -1,7 +1,7 @@
 /// <reference types="@types/google.accounts" />
 // import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
 // import { useEffect, useRef, useState } from "react";
-// import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+// import { CfDsButton } from "apps/cfDs/components/CfDsButton.tsx";
 // import { getConfigurationVariable } from "packages/get-configuration-var/get-configuration-var.ts";
 // import { getLogger } from "packages/logger/logger.ts";
 
@@ -110,7 +110,7 @@
 //   // If user is already logged in, show logout button
 //   if (data.asCurrentViewerLoggedIn) {
 //     return (
-//       <BfDsButton
+//       <CfDsButton
 //         text="Sign Out"
 //         onClick={() => {
 //           // Redirect to logout endpoint

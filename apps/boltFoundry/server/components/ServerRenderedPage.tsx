@@ -1,4 +1,4 @@
-import { colors, colorsDark, fonts } from "@bfmono/apps/bfDs/const.tsx";
+import { colors, colorsDark, fonts } from "@bfmono/apps/cfDs/const.tsx";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const _logger = getLogger(import.meta);
 
@@ -50,7 +50,7 @@ export function ServerRenderedPage(
         </script>
 
         <link rel="stylesheet" href="/static/marketingpagestyle.css" />
-        <link rel="stylesheet" href="/static/bfDsStyle.css" />
+        <link rel="stylesheet" href="/static/cfDsStyle.css" />
         <link rel="stylesheet" href="/static/bfDsLiteStyle.css" />
         <link rel="stylesheet" href="/static/blogStyle.css" />
         <link rel="stylesheet" href="/static/formatterStyle.css" />
