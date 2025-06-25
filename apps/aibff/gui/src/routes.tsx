@@ -1,5 +1,4 @@
 import * as React from "react";
-import { BfDsLiteButton } from "@bfmono/apps/bfDsLite";
 // import { Hello } from "./components/Hello.tsx";
 
 export type RouteConfig = {
@@ -23,14 +22,14 @@ function ChatView() {
       <div style={{ marginTop: "2rem" }}>
         <h3>BfDsLite Test</h3>
         <p>Button clicked: {clickCount} times</p>
-        <BfDsLiteButton
+        <button
+          type="button"
           onClick={() => {
             setClickCount(clickCount + 1);
           }}
-          variant="primary"
         >
-          Test BfDsLite Button
-        </BfDsLiteButton>
+          Test Button
+        </button>
       </div>
     </div>
   );

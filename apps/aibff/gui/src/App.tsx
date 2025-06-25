@@ -1,7 +1,6 @@
 import "./App.css";
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
-import { BfDsLiteButton } from "@bfmono/apps/bfDsLite/index.ts";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -22,13 +21,13 @@ function App() {
         <button type="button" onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button>
-        <BfDsLiteButton
-          variant="primary"
+        <button
+          type="button"
           onClick={() => setCount((count) => count + 1)}
           style={{ marginLeft: "1rem" }}
         >
-          BfDs count is {count}
-        </BfDsLiteButton>
+          Styled count is {count}
+        </button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
