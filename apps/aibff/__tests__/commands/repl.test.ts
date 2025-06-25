@@ -2,7 +2,7 @@
 
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { assertEquals } from "@std/assert";
-import { replCommand } from "../../commands/repl.ts";
+import { replCommand } from "@bfmono/apps/aibff/commands/repl.ts";
 
 Deno.test("repl command - exits without API key", async () => {
   // Remove API key if set
