@@ -1,6 +1,6 @@
 import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
 import { BlogSimple } from "./BlogSimple.tsx";
 import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
 
@@ -46,14 +46,14 @@ export const Blog = iso(`
             <div className="flex1">
               &copy; 2025 Bolt Foundry. All rights reserved.
             </div>
-            <BfDsButton
+            <CfDsButton
               size="medium"
               kind="danDim"
               iconLeft="brand-discord"
               href="https://discord.gg/tU5ksTBfEj"
               hrefTarget="_blank"
             />
-            <BfDsButton
+            <CfDsButton
               size="medium"
               kind="danDim"
               iconLeft="brand-github"

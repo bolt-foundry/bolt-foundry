@@ -66,9 +66,9 @@ import Button from "@bfmono/apps/boltFoundry/components/lexical/ui/Button.tsx";
 import ContentEditable from "@bfmono/apps/boltFoundry/components/lexical/ui/ContentEditable.tsx";
 import Placeholder from "@bfmono/apps/boltFoundry/components/lexical/ui/Placeholder.tsx";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
 import { classnames } from "@bfmono/lib/classnames.ts";
-import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { CfDsIcon } from "@bfmono/apps/cfDs/components/CfDsIcon.tsx";
 const logger = getLogger(import.meta);
 
 export const INSERT_INLINE_COMMAND: LexicalCommand<void> = createCommand();
@@ -108,7 +108,7 @@ function AddSampleBox({
 
   return (
     <div className="ContentFoundryPlugin_AddSampleBox" ref={boxRef}>
-      <BfDsButton
+      <CfDsButton
         shadow
         kind="filledSuccess"
         iconLeft="plus"
@@ -257,14 +257,14 @@ function Rating({ value, onChange, xclass = "" }: {
 
   return (
     <div className={`flex1 flexRow mediumGap ${xclass}`}>
-      <BfDsButton
+      <CfDsButton
         kind={value === -3 ? "filledAlert" : "outlineAlert"}
         textIconLeft="-3"
         onClick={() => onChange(-3)}
         size="medium"
         tooltip="Sample of what not to do"
       />
-      <BfDsButton
+      <CfDsButton
         kind="custom"
         customSettings={getButtonSettings(-2)}
         textIconLeft="-2"
@@ -272,7 +272,7 @@ function Rating({ value, onChange, xclass = "" }: {
         size="medium"
         tooltip="Sample of what not to do"
       />
-      <BfDsButton
+      <CfDsButton
         kind="custom"
         customSettings={getButtonSettings(-1)}
         textIconLeft="-1"
@@ -280,7 +280,7 @@ function Rating({ value, onChange, xclass = "" }: {
         size="medium"
         tooltip="Sample of what not to do"
       />
-      <BfDsButton
+      <CfDsButton
         kind="custom"
         customSettings={getButtonSettings(1)}
         textIconLeft="1"
@@ -288,7 +288,7 @@ function Rating({ value, onChange, xclass = "" }: {
         size="medium"
         tooltip="Sample of what to do"
       />
-      <BfDsButton
+      <CfDsButton
         kind="custom"
         customSettings={getButtonSettings(2)}
         textIconLeft="2"
@@ -296,7 +296,7 @@ function Rating({ value, onChange, xclass = "" }: {
         size="medium"
         tooltip="Sample of what to do"
       />
-      <BfDsButton
+      <CfDsButton
         kind={value === 3 ? "filledSuccess" : "outlineSuccess"}
         textIconLeft="3"
         onClick={() => onChange(3)}
@@ -445,13 +445,13 @@ function SampleInputBox({
       />
       <div className="flexRow gapMedium ContentFoundryPlugin_SampleInputBox_Buttons">
         <div className="flex1">
-          <BfDsButton
+          <CfDsButton
             kind="outline"
             onClick={cancelAddSample}
             text="Cancel"
           />
         </div>
-        <BfDsButton
+        <CfDsButton
           iconLeft="plus"
           onClick={submitSample}
           disabled={!canSubmit}
@@ -511,7 +511,7 @@ function SamplesComposer({
       />
       <div className="flexRow mediumGap alignItemsCenter">
         <Rating value={rating} onChange={setRating} />
-        <BfDsButton
+        <CfDsButton
           kind="secondary"
           text="Submit"
           disabled={!canSubmit}
@@ -634,7 +634,7 @@ function SamplesPanelListSample({
       </div>
       {!sample.deleted && (
         <>
-          <BfDsButton
+          <CfDsButton
             iconLeft="trash"
             kind="overlayAlert"
             onClick={() => {
@@ -749,14 +749,14 @@ function SamplesPanelList({
             >
               <div className={quoteClasses}>
                 <blockquote className="flex1 ContentFoundryPlugin_SamplesPanel_List_Thread_Quote">
-                  <BfDsIcon
+                  <CfDsIcon
                     color="var(--textSecondary)"
                     name="arrowRight"
                     size={12}
                   />
                   <span>{sampleOrThread.quote}</span>
                 </blockquote>
-                <BfDsButton
+                <CfDsButton
                   iconLeft="trash"
                   kind="overlayAlert"
                   onClick={() => {
