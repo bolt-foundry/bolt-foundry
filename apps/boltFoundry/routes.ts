@@ -1,5 +1,5 @@
 import { PageUIDemo } from "@bfmono/apps/boltFoundry/pages/PageUIDemo.tsx";
-import { BfDsLiteDemo } from "@bfmono/apps/bfDsLite/demo/Demo.tsx";
+import { BfDsDemo } from "@bfmono/apps/bfDs/demo/Demo.tsx";
 import { EditorPage as LexicalDemo } from "@bfmono/apps/boltFoundry/components/lexical/LexicalDemo.tsx";
 import { Plinko } from "@bfmono/apps/boltFoundry/pages/Plinko.tsx";
 
@@ -21,7 +21,7 @@ export type RouteMap = Map<string, RouteGuts>;
 
 export const appRoutes: RouteMap = new Map([
   ["/ui", { Component: PageUIDemo }],
-  ["/ui-lite", { Component: BfDsLiteDemo }],
+  ["/ui-lite", { Component: BfDsDemo }],
   ["/justin", { Component: LexicalDemo }],
   ["/plinko", { Component: Plinko }],
   ["/deckDemo", { Component: Decks }],
