@@ -48,11 +48,11 @@ Deno.test("aibff gui --dev loads successfully", async () => {
     const appResponse = await fetch("http://localhost:3006/src/App.tsx");
     assertEquals(appResponse.status, 200);
 
-    // Verify BfDsLiteButton import is in the transformed code
+    // Verify App component loads (basic smoke test)
     const appCode = await appResponse.text();
     assertExists(
-      appCode.match(/BfDsLiteButton/),
-      "Should include BfDsLiteButton component",
+      appCode.match(/aibff GUI/),
+      "Should include aibff GUI heading",
     );
   } finally {
     // Cleanup
