@@ -4,7 +4,7 @@ import {
 } from "@bfmono/apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
 import { AppRoot } from "@bfmono/apps/boltFoundry/AppRoot.tsx";
 import { hydrateRoot } from "react-dom/client";
-import { BfDsProvider } from "@bfmono/apps/bfDs/contexts/BfDsContext.tsx";
+import { CfDsProvider } from "@bfmono/apps/cfDs/contexts/CfDsContext.tsx";
 import { ErrorBoundary } from "@bfmono/apps/boltFoundry/components/ErrorBoundary.tsx";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { AppSidebar } from "@bfmono/apps/boltFoundry/components/AppSidebar.tsx";
@@ -20,7 +20,7 @@ export function ClientRoot({
   ...props
 }: ClientRootProps) {
   return (
-    <BfDsProvider>
+    <CfDsProvider>
       <ErrorBoundary>
         <AppEnvironmentProvider {...props}>
           <AppSidebar>
@@ -28,7 +28,7 @@ export function ClientRoot({
           </AppSidebar>
         </AppEnvironmentProvider>
       </ErrorBoundary>
-    </BfDsProvider>
+    </CfDsProvider>
   );
 }
 

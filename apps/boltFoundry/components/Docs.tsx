@@ -3,7 +3,7 @@ import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
 import { PageError } from "@bfmono/apps/boltFoundry/pages/PageError.tsx";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { marked, Renderer } from "marked";
-import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
 import { DocsSidebar } from "@bfmono/apps/boltFoundry/components/DocsSidebar.tsx";
 import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
 
@@ -134,7 +134,7 @@ export const Docs = iso(`
             />
             <div className="mobile-show docs-navbar">
               <div className="flexRow gapMedium alignItemsCenter">
-                <BfDsButton
+                <CfDsButton
                   kind={showSidebar ? "primary" : "secondary"}
                   iconLeft={showSidebar ? "sidebarClose" : "sidebarOpen"}
                   onClick={() => {
@@ -165,14 +165,14 @@ export const Docs = iso(`
             <div className="flex1">
               &copy; 2025 Bolt Foundry. All rights reserved.
             </div>
-            <BfDsButton
+            <CfDsButton
               size="medium"
               kind="danDim"
               iconLeft="brand-discord"
               href="https://discord.gg/tU5ksTBfEj"
               hrefTarget="_blank"
             />
-            <BfDsButton
+            <CfDsButton
               size="medium"
               kind="danDim"
               iconLeft="brand-github"

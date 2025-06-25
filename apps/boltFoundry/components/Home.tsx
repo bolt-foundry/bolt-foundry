@@ -1,14 +1,14 @@
 import { useRef, useState } from "react";
 import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
-import { BfDsCopyButton } from "@bfmono/apps/bfDs/components/BfDsCopyButton.tsx";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
+import { CfDsCopyButton } from "@bfmono/apps/cfDs/components/CfDsCopyButton.tsx";
 import { useMutation } from "@bfmono/apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
 import joinWaitlistMutation from "@bfmono/apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
 
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
-import { BfDsForm } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsForm.tsx";
-import { BfDsFormTextInput } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormTextInput.tsx";
-import { BfDsFormSubmitButton } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
+import { CfDsForm } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsForm.tsx";
+import { CfDsFormTextInput } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormTextInput.tsx";
+import { CfDsFormSubmitButton } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormSubmitButton.tsx";
 import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
 
 const logger = getLogger(import.meta);
@@ -98,7 +98,7 @@ field Query.Home @component {
         <div className="landing-content">
           <div className="hero-content">
             {/* Github button */}
-            <BfDsButton
+            <CfDsButton
               kind="dan"
               iconLeft="brand-github"
               text={data?.githubRepoStats?.stars.toString() ?? "--"}
@@ -119,7 +119,7 @@ field Query.Home @component {
                 <code className="npm-command">
                   {bfCode}
                 </code>
-                <BfDsCopyButton
+                <CfDsCopyButton
                   aria-label="Copy npm command"
                   textToCopy={bfCode}
                 />
@@ -128,7 +128,7 @@ field Query.Home @component {
           </div>
         </div>
         <div className="more-content flexCenter flexColumn mobile-hide">
-          <BfDsButton iconLeft="arrowDown" onClick={scrollToSubstack} />
+          <CfDsButton iconLeft="arrowDown" onClick={scrollToSubstack} />
         </div>
       </main>
 
@@ -147,7 +147,7 @@ field Query.Home @component {
                     <h3>Thanks for joining the waitlist!</h3>
                     We'll be in touch soon.
                     <div style={{ marginTop: 12 }}>
-                      <BfDsButton
+                      <CfDsButton
                         kind="dan"
                         iconLeft="arrowUp"
                         text="Back to top"
@@ -157,7 +157,7 @@ field Query.Home @component {
                   </div>
                 )
                 : (
-                  <BfDsForm
+                  <CfDsForm
                     testId="waitlist-form"
                     initialData={initialFormData}
                     onSubmit={submitWaitlistForm}
@@ -167,13 +167,13 @@ field Query.Home @component {
                       flexDirection: "column",
                     }}
                   >
-                    <BfDsFormTextInput id="name" title="What is your name?" />
-                    <BfDsFormTextInput id="email" title="What is your email?" />
-                    <BfDsFormTextInput
+                    <CfDsFormTextInput id="name" title="What is your name?" />
+                    <CfDsFormTextInput id="email" title="What is your email?" />
+                    <CfDsFormTextInput
                       id="company"
                       title="Where do you work?"
                     />
-                    <BfDsFormSubmitButton
+                    <CfDsFormSubmitButton
                       testId="waitlist-submit"
                       disabled={formSubmitting}
                       text="Submit"
@@ -187,7 +187,7 @@ field Query.Home @component {
                         and we'll get in touch.
                       </div>
                     )}
-                  </BfDsForm>
+                  </CfDsForm>
                 )}
             </div>
           </div>
@@ -197,14 +197,14 @@ field Query.Home @component {
             <div className="flex1">
               &copy; 2025 Bolt Foundry. All rights reserved.
             </div>
-            <BfDsButton
+            <CfDsButton
               size="medium"
               kind="danDim"
               iconLeft="brand-discord"
               href="https://discord.gg/tU5ksTBfEj"
               hrefTarget="_blank"
             />
-            <BfDsButton
+            <CfDsButton
               size="medium"
               kind="danDim"
               iconLeft="brand-github"

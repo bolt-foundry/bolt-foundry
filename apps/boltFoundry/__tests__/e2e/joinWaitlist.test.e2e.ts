@@ -74,10 +74,10 @@ async function runWaitlistTest(context: E2ETestContext) {
     await context.page.waitForFunction(
       (selector) => {
         const form = document.querySelector(selector);
-        const nameInput = document.querySelector("#bfDsFormInput-name");
-        const emailInput = document.querySelector("#bfDsFormInput-email");
+        const nameInput = document.querySelector("#cfDsFormInput-name");
+        const emailInput = document.querySelector("#cfDsFormInput-email");
         const submitButton = document.querySelector(
-          "[data-bf-testid='waitlist-submit']",
+          "[data-cf-testid='waitlist-submit']",
         );
         return form && nameInput && emailInput && submitButton &&
           !submitButton.disabled;
@@ -97,9 +97,9 @@ async function runWaitlistTest(context: E2ETestContext) {
 
     // 3️⃣  Fill the form fields with test data (use dry run email format)
     // Clear fields first and type with delay to ensure proper input
-    const nameInput = "#bfDsFormInput-name";
-    const emailInput = "#bfDsFormInput-email";
-    const companyInput = "#bfDsFormInput-company";
+    const nameInput = "#cfDsFormInput-name";
+    const emailInput = "#cfDsFormInput-email";
+    const companyInput = "#cfDsFormInput-company";
 
     await context.page.click(nameInput);
     await context.page.evaluate(
@@ -127,7 +127,7 @@ async function runWaitlistTest(context: E2ETestContext) {
     await context.takeScreenshot("waitlist‑form‑filled");
 
     // 4️⃣  Submit the form via the submit button
-    const submitSelector = "[data-bf-testid='waitlist-submit']";
+    const submitSelector = "[data-cf-testid='waitlist-submit']";
 
     // Ensure submit button is enabled before clicking
     await context.page.waitForFunction(
@@ -170,7 +170,7 @@ async function runWaitlistTest(context: E2ETestContext) {
         formVisible: !!document.querySelector('[data-testid="waitlist-form"]'),
         submitButtonState: (() => {
           const btn = document.querySelector(
-            "[data-bf-testid='waitlist-submit']",
+            "[data-cf-testid='waitlist-submit']",
           );
           return btn ? { disabled: btn.disabled, text: btn.textContent } : null;
         })(),

@@ -1,7 +1,7 @@
-import { BfDsList } from "@bfmono/apps/bfDs/components/BfDsList.tsx";
-import { BfDsListItem } from "@bfmono/apps/bfDs/components/BfDsListItem.tsx";
+import { CfDsList } from "@bfmono/apps/cfDs/components/CfDsList.tsx";
+import { CfDsListItem } from "@bfmono/apps/cfDs/components/CfDsListItem.tsx";
 import React from "react";
-import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { CfDsIcon } from "@bfmono/apps/cfDs/components/CfDsIcon.tsx";
 import { classnames } from "@bfmono/lib/classnames.ts";
 import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 import { useFeatureFlagEnabled } from "@bfmono/apps/boltFoundry/hooks/useFeatureFlagHooks.ts";
@@ -55,21 +55,21 @@ export function AppSidebar({ children }: React.PropsWithChildren) {
           className="sidebarButton"
           onClick={() => setShowSidebar(!showSidebar)}
         >
-          <BfDsIcon
+          <CfDsIcon
             name={showSidebar ? "sidebarClose" : "sidebarOpen"}
             color="var(--alwaysLight)"
           />
         </div>
-        <BfDsList>
+        <CfDsList>
           {sidebarRoutes.map((route) => (
-            <BfDsListItem
+            <CfDsListItem
               content={route.name}
               key={route.rootPath}
               isHighlighted={pathForHighlighting === route.rootPath}
               onClick={() => navigate(`/${route.rootPath}`)}
             />
           ))}
-        </BfDsList>
+        </CfDsList>
       </div>
       <div className="AppContent">{children}</div>
     </div>
