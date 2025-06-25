@@ -14,6 +14,7 @@
     "jsr:@openai/openai@^4.78.1": "4.102.0",
     "jsr:@simplewebauthn/browser@^13.1.0": "13.1.0",
     "jsr:@simplewebauthn/server@^13.1.1": "13.1.1",
+    "jsr:@std/assert@*": "1.0.13",
     "jsr:@std/assert@0.223": "0.223.0",
     "jsr:@std/assert@0.226": "0.226.0",
     "jsr:@std/assert@^1.0.11": "1.0.13",
@@ -100,7 +101,6 @@
     "npm:@types/react-dom@^19.0.4": "19.1.6_@types+react@19.1.8",
     "npm:@types/react@19": "19.1.8",
     "npm:@types/react@^19.0.10": "19.1.8",
-    "npm:@vitejs/plugin-react-swc@^3.8.0": "3.10.2_vite@6.3.5__@types+node@22.15.33__picomatch@4.0.2_@types+node@22.15.33",
     "npm:assemblyai@^4.9.0": "4.13.3",
     "npm:chalk@^5.4.1": "5.4.1",
     "npm:discord.js@^14.18.0": "14.20.0",
@@ -1354,9 +1354,6 @@
         "@google-cloud/storage"
       ]
     },
-    "@rolldown/pluginutils@1.0.0-beta.11": {
-      "integrity": "sha512-L/gAA/hyCSuzTF1ftlzUSI/IKr2POHsv1Dd78GfqkR83KMNuswWD61JxGV2L7nRwBBBSDr6R1gCkdTmoN7W4ag=="
-    },
     "@rollup/rollup-android-arm-eabi@4.44.0": {
       "integrity": "sha512-xEiEE5oDW6tK4jXCAyliuntGR+amEMO7HLtdSshVuhFnKTYoeYMyXQK7pLouAJJj5KHdwdn87bfHAR2nSdNAUA==",
       "os": ["android"],
@@ -1533,35 +1530,6 @@
       "os": ["win32"],
       "cpu": ["x64"]
     },
-    "@swc/core@1.12.6": {
-      "integrity": "sha512-TEpta6Gi02X1b2yDIzBOIr7dFprvq9jD8RbEVI2OcMrwklbCUx0Dz9TrAnklSOwRvYvH5JjCx8ht9E94oWiG7A==",
-      "dependencies": [
-        "@swc/counter",
-        "@swc/types"
-      ],
-      "optionalDependencies": [
-        "@swc/core-darwin-arm64",
-        "@swc/core-darwin-x64",
-        "@swc/core-linux-arm-gnueabihf",
-        "@swc/core-linux-arm64-gnu",
-        "@swc/core-linux-arm64-musl",
-        "@swc/core-linux-x64-gnu",
-        "@swc/core-linux-x64-musl",
-        "@swc/core-win32-arm64-msvc",
-        "@swc/core-win32-ia32-msvc",
-        "@swc/core-win32-x64-msvc"
-      ],
-      "scripts": true
-    },
-    "@swc/counter@0.1.3": {
-      "integrity": "sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ=="
-    },
-    "@swc/types@0.1.23": {
-      "integrity": "sha512-u1iIVZV9Q0jxY+yM2vw/hZGDNudsN85bBpTqzAQ9rzkxW9D+e3aEM4Han+ow518gSewkXgjmEK0BD79ZcNVgPw==",
-      "dependencies": [
-        "@swc/counter"
-      ]
-    },
     "@tootallnate/once@2.0.0": {
       "integrity": "sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A=="
     },
@@ -1708,14 +1676,6 @@
     },
     "@ungap/structured-clone@1.3.0": {
       "integrity": "sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g=="
-    },
-    "@vitejs/plugin-react-swc@3.10.2_vite@6.3.5__@types+node@22.15.33__picomatch@4.0.2_@types+node@22.15.33": {
-      "integrity": "sha512-xD3Rdvrt5LgANug7WekBn1KhcvLn1H3jNBfJRL3reeOIua/WnZOEV5qi5qIBq5T8R0jUDmRtxuvk4bPhzGHDWw==",
-      "dependencies": [
-        "@rolldown/pluginutils",
-        "@swc/core",
-        "vite"
-      ]
     },
     "@vladfrangu/async_event_emitter@2.4.6": {
       "integrity": "sha512-RaI5qZo6D2CVS6sTHFKg1v5Ohq/+Bo2LZ5gzUEwZ/WkHhwtGTCB/sVLw8ijOkAUxasZ+WshN/Rzj4ywsABJ5ZA=="
@@ -4483,6 +4443,8 @@
     "packageJson": {
       "dependencies": [
         "npm:@anthropic-ai/claude-code@^1.0.25",
+        "npm:@babel/preset-react@^7.27.1",
+        "npm:@isograph/babel-plugin@^0.0.0-main-1fad6d74",
         "npm:@isograph/compiler@0.0.0-main-1fad6d74",
         "npm:@isograph/react@0.0.0-main-1fad6d74",
         "npm:@lexical/mark@0.27.2",
@@ -4505,6 +4467,7 @@
         "npm:@types/pg@^8.11.11",
         "npm:@types/react-dom@19",
         "npm:@types/react@19",
+        "npm:@vitejs/plugin-react@^4.6.0",
         "npm:assemblyai@^4.9.0",
         "npm:discord.js@^14.18.0",
         "npm:esbuild@~0.24.2",
@@ -4536,9 +4499,10 @@
       "apps/aibff/gui": {
         "dependencies": [
           "npm:@deno/vite-plugin@^1.0.4",
+          "npm:@isograph/react@0.10",
           "npm:@types/react-dom@^19.0.4",
           "npm:@types/react@^19.0.10",
-          "npm:@vitejs/plugin-react-swc@^3.8.0",
+          "npm:@vitejs/plugin-react@^4.3.4",
           "npm:react-dom@19",
           "npm:react@19",
           "npm:vite@^6.1.1"
