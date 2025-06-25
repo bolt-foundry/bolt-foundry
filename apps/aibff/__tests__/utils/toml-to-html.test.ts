@@ -5,7 +5,7 @@ import {
   type EvaluationDataNested,
   generateEvaluationHtml,
   type GraderResults,
-} from "../../utils/toml-to-html.ts";
+} from "@bfmono/apps/aibff/utils/toml-to-html.ts";
 import {
   mockMultiGraderData,
   mockMultiGraderMultiModelData,

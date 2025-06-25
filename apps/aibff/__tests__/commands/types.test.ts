@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bff test
 
 import { assertEquals } from "@std/assert";
-import type { Command } from "../../commands/types.ts";
+import type { Command } from "@bfmono/apps/aibff/commands/types.ts";
 
 Deno.test("Command interface should have required properties", () => {
   const mockCommand: Command = {

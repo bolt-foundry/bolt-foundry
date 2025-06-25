@@ -230,12 +230,12 @@ code.npm-command {
 
 .blog-post-hero-image {
   height: 200px;
-  margin-bottom: 2rem;
-  margin-left: 16px;
+  width: calc(100% + 20px);
+  margin-bottom: 1rem;
+  margin-left: -10px;
   margin-right: -10px;
   border-radius: 4px;
-  object-fit: contain;
-  float: right;
+  object-fit: cover;
 }
 .blog-post-image {
   height: 300px; 
