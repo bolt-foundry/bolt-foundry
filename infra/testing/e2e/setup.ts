@@ -90,25 +90,70 @@ export async function setupE2ETest(options: {
   );
 
   try {
-    // Find the chromium executable path
+    // Find the browser executable path
     let chromiumPath = "chromium";
-    try {
-      const command = new Deno.Command("which", {
-        args: ["chromium"],
-        stdout: "piped",
-      });
-      const output = await command.output();
-      const path = new TextDecoder().decode(output.stdout).trim();
-      if (path) {
-        chromiumPath = path;
-        logger.info(`Found Chromium at: ${chromiumPath}`);
-      }
-    } catch (error) {
-      logger.warn(
-        `Could not detect Chromium path: ${
-          (error as Error).message
-        }. Using default.`,
+
+    // First check for environment variable
+    const envPath = getConfigurationVariable("PUPPETEER_EXECUTABLE_PATH");
+    if (envPath) {
+      chromiumPath = envPath;
+      logger.info(
+        `Using browser from PUPPETEER_EXECUTABLE_PATH: ${chromiumPath}`,
       );
+    } else {
+      // Try chromium first, then chrome - check both PATH and known locations
+      const browsersToCheck = [
+        // Check PATH first
+        { name: "chromium", checkType: "which" },
+        { name: "google-chrome", checkType: "which" },
+        { name: "google-chrome-stable", checkType: "which" },
+        // Check macOS application paths
+        {
+          name: "Chromium",
+          checkType: "path",
+          path: "/Applications/Chromium.app/Contents/MacOS/Chromium",
+        },
+        {
+          name: "Google Chrome",
+          checkType: "path",
+          path: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        },
+      ];
+
+      for (const browser of browsersToCheck) {
+        try {
+          if (browser.checkType === "which") {
+            const command = new Deno.Command("which", {
+              args: [browser.name],
+              stdout: "piped",
+            });
+            const output = await command.output();
+            if (output.success) {
+              const path = new TextDecoder().decode(output.stdout).trim();
+              if (path) {
+                chromiumPath = path;
+                logger.info(`Found ${browser.name} at: ${chromiumPath}`);
+                break;
+              }
+            }
+          } else if (browser.checkType === "path" && browser.path) {
+            const stat = await Deno.stat(browser.path);
+            if (stat.isFile) {
+              chromiumPath = browser.path;
+              logger.info(`Found ${browser.name} at: ${chromiumPath}`);
+              break;
+            }
+          }
+        } catch {
+          // Try next browser
+        }
+      }
+
+      if (chromiumPath === "chromium") {
+        logger.warn(
+          "No Chromium or Chrome found. Please install one or set PUPPETEER_EXECUTABLE_PATH",
+        );
+      }
     }
 
     // Ensure screenshots directory exists, using environment variable if available
