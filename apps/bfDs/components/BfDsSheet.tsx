@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import { classnames } from "lib/classnames.ts";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import { classnames } from "@bfmono/lib/classnames.ts";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 
 type Props = {
   active: boolean;

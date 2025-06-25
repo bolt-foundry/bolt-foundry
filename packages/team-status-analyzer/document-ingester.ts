@@ -3,7 +3,7 @@
  * Reads and analyzes company vision, strategy, and roadmap documents
  */
 
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type { CompanyContext, DocumentSource } from "./types.ts";
 
 const logger = getLogger(import.meta);

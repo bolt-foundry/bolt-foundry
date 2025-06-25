@@ -1,11 +1,11 @@
 import {
   type BfDsFormElementProps,
   useBfDsFormContext,
-} from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsForm/BfDsForm.tsx";
 import {
   BfDsInput,
   type InputBaseProps,
-} from "apps/bfDs/components/BfDsInput.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsInput.tsx";
 
 export function BfDsFormTextInput(
   { id, title, ...props }: BfDsFormElementProps & InputBaseProps,

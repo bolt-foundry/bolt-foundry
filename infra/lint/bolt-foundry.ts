@@ -465,6 +465,70 @@ const plugin: Deno.lint.Plugin = {
         };
       },
     },
+
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    /*  9. Enforce @bfmono/ prefix for cornercased imports                    */
+    /* ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
+    "no-cornercased-imports": {
+      create(context) {
+        // Pattern to match cornercased imports (apps/, packages/, infra/, etc.)
+        const cornercasedPattern =
+          /^(apps|packages|infra|lib|util|experimental|content|docs|static|tmp)\//;
+
+        return {
+          ImportDeclaration(node) {
+            const importPath = node.source.value;
+
+            if (
+              typeof importPath === "string" &&
+              cornercasedPattern.test(importPath)
+            ) {
+              context.report({
+                node: node.source,
+                message:
+                  `Use @bfmono/ prefix for internal imports instead of bare "${
+                    importPath.split("/")[0]
+                  }/" paths`,
+                fix(fixer) {
+                  const newPath = "@bfmono/" + importPath;
+                  return [
+                    fixer.replaceText(node.source, `"${newPath}"`),
+                  ];
+                },
+              });
+            }
+          },
+
+          // Also check dynamic imports
+          'CallExpression[callee.name="import"]'(node) {
+            if (
+              node.arguments.length > 0 && node.arguments[0].type === "Literal"
+            ) {
+              const importPath = node.arguments[0].value;
+
+              if (
+                typeof importPath === "string" &&
+                cornercasedPattern.test(importPath)
+              ) {
+                context.report({
+                  node: node.arguments[0],
+                  message:
+                    `Use @bfmono/ prefix for internal imports instead of bare "${
+                      importPath.split("/")[0]
+                    }/" paths`,
+                  fix(fixer) {
+                    const newPath = "@bfmono/" + importPath;
+                    return [
+                      fixer.replaceText(node.arguments[0], `"${newPath}"`),
+                    ];
+                  },
+                });
+              }
+            }
+          },
+        };
+      },
+    },
   },
 };
 

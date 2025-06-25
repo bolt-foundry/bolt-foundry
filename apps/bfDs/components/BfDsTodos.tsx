@@ -1,8 +1,8 @@
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { BfDsList } from "apps/bfDs/components/BfDsList.tsx";
-import { BfDsInput } from "apps/bfDs/components/BfDsInput.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsList } from "@bfmono/apps/bfDs/components/BfDsList.tsx";
+import { BfDsInput } from "@bfmono/apps/bfDs/components/BfDsInput.tsx";
 import { useRef, useState } from "react";
-import { BfDsListItem } from "apps/bfDs/components/BfDsListItem.tsx";
+import { BfDsListItem } from "@bfmono/apps/bfDs/components/BfDsListItem.tsx";
 
 type Todo = {
   text: string;

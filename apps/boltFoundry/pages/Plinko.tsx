@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import Matter from "matter-js";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
-import { paletteForPlinko } from "apps/bfDs/const.tsx";
-import { BfDsSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
-import { classnames } from "lib/classnames.ts";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { paletteForPlinko } from "@bfmono/apps/bfDs/const.tsx";
+import { BfDsSpinner } from "@bfmono/apps/bfDs/components/BfDsSpinner.tsx";
+import { classnames } from "@bfmono/lib/classnames.ts";
 
 // Game configuration
 const GAME_CONFIG = {

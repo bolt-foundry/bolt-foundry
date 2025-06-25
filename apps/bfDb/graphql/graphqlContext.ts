@@ -1,12 +1,12 @@
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import {
   CurrentViewer,
   type CurrentViewerLoggedIn,
   type CurrentViewerTypenames,
-} from "apps/bfDb/classes/CurrentViewer.ts";
-import type { BfNode } from "apps/bfDb/classes/BfNode.ts";
-import { setLoginSuccessHeaders } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
-import type { BfGid } from "lib/types.ts";
+} from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
+import type { BfNode } from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import { setLoginSuccessHeaders } from "@bfmono/apps/bfDb/graphql/utils/graphqlContextUtils.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 // import { setLoginSuccessHeaders } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
 

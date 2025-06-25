@@ -1,11 +1,11 @@
 import {
   type BfDsFormElementProps,
   useBfDsFormContext,
-} from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsForm/BfDsForm.tsx";
 import {
   BfDsTextArea,
   type TextAreaProps,
-} from "apps/bfDs/components/BfDsTextArea.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsTextArea.tsx";
 
 export function BfDsFormTextArea(
   { id, title, ...props }: BfDsFormElementProps & TextAreaProps,

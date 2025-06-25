@@ -7,12 +7,12 @@
 import { AdapterRegistry } from "./AdapterRegistry.ts";
 import { registerDefaultAdapter } from "./registerDefaultAdapter.ts";
 
-import type { BfGid } from "lib/types.ts";
-import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
+import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
 import type {
   BfEdgeMetadata,
   BfNodeMetadata,
-} from "apps/bfDb/classes/BfNode.ts";
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
 
 /**
  * Ensures an adapter is available and returns it.

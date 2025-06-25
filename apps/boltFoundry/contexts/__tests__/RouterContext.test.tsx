@@ -4,7 +4,7 @@ import { assertEquals } from "@std/assert";
 import {
   dynamicRoutes,
   matchRouteWithParams,
-} from "apps/boltFoundry/contexts/RouterContext.tsx";
+} from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 
 Deno.test("matchRouteWithParams - dynamic route with optional param", () => {
   // For a route like "/blog/:slug?"

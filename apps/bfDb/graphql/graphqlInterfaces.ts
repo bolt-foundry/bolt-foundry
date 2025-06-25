@@ -14,7 +14,7 @@
  */
 
 import { interfaceType } from "nexus";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import {
   getGraphQLInterfaceMetadata,
   isGraphQLInterface,

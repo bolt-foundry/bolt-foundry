@@ -1,13 +1,13 @@
 import type { GraphQLInputFieldMap, GraphQLResolveInfo } from "graphql";
-import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
+import type { BfGraphqlContext } from "@bfmono/apps/bfDb/graphql/graphqlContext.ts";
 import type { GqlNodeSpec } from "./makeGqlBuilder.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import type { BfEdgeMetadata } from "apps/bfDb/classes/BfNode.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import type { BfEdgeMetadata } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import type {
   AnyBfNodeCtor,
   AnyConstructor,
   AnyGraphqlObjectBaseCtor,
-} from "apps/bfDb/builders/bfDb/types.ts";
+} from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
 import type { ReturnSpec } from "./makeReturnsBuilder.ts";
 import { convertArgsToNexus } from "./utils/nexusConverters.ts";
 import type {
@@ -24,7 +24,7 @@ import type {
 import {
   getGraphQLInterfaceMetadata,
   isGraphQLInterface,
-} from "apps/bfDb/graphql/decorators.ts";
+} from "@bfmono/apps/bfDb/graphql/decorators.ts";
 
 // Logger for this module
 const logger = getLogger(import.meta);

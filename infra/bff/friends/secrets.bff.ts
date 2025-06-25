@@ -1,7 +1,7 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import {
   getConfigurationVariable,
   getSecret,
@@ -10,7 +10,7 @@ import {
 import {
   PRIVATE_CONFIG_KEYS,
   PUBLIC_CONFIG_KEYS,
-} from "apps/boltFoundry/__generated__/configKeys.ts";
+} from "@bfmono/apps/boltFoundry/__generated__/configKeys.ts";
 import { dirname } from "@std/path";
 import { exists } from "@std/fs";
 

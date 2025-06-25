@@ -1,5 +1,5 @@
-import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const _logger = getLogger(import.meta);
 

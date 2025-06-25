@@ -3,8 +3,8 @@ import {
   navigateTo,
   setupE2ETest,
   teardownE2ETest,
-} from "infra/testing/e2e/setup.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/testing/e2e/setup.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

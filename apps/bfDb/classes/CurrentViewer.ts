@@ -1,11 +1,11 @@
-import { GraphQLObjectBase } from "apps/bfDb/graphql/GraphQLObjectBase.ts";
-import { claimsFromRequest } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import type { BfGid } from "lib/types.ts";
-import type { GoogleTokenInfo } from "lib/types/googleTokenInfo.ts";
-import { BfOrganization } from "apps/bfDb/nodeTypes/BfOrganization.ts";
-import { BfError } from "lib/BfError.ts";
-import { BfPerson } from "apps/bfDb/nodeTypes/BfPerson.ts";
+import { GraphQLObjectBase } from "@bfmono/apps/bfDb/graphql/GraphQLObjectBase.ts";
+import { claimsFromRequest } from "@bfmono/apps/bfDb/graphql/utils/graphqlContextUtils.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
+import type { GoogleTokenInfo } from "@bfmono/lib/types/googleTokenInfo.ts";
+import { BfOrganization } from "@bfmono/apps/bfDb/nodeTypes/BfOrganization.ts";
+import { BfError } from "@bfmono/lib/BfError.ts";
+import { BfPerson } from "@bfmono/apps/bfDb/nodeTypes/BfPerson.ts";
 
 const logger = getLogger(import.meta);
 

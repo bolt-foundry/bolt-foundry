@@ -1,6 +1,6 @@
 import type * as React from "react";
-import { RouterLink } from "apps/boltFoundry/components/Router/RouterLink.tsx";
-import { CfLogo } from "apps/boltFoundry/resources/CfLogo.tsx";
+import { RouterLink } from "@bfmono/apps/boltFoundry/components/Router/RouterLink.tsx";
+import { CfLogo } from "@bfmono/apps/boltFoundry/resources/CfLogo.tsx";
 
 export function MarketingFrame({ children }: React.PropsWithChildren) {
   return (

@@ -1,10 +1,10 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { fonts } from "apps/bfDs/const.tsx";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { classnames } from "lib/classnames.ts";
-import { useClickOutside } from "apps/boltFoundry/hooks/useClickOutside.ts";
-import { useBfDs } from "apps/bfDs/hooks/useBfDs.tsx";
+import { fonts } from "@bfmono/apps/bfDs/const.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { classnames } from "@bfmono/lib/classnames.ts";
+import { useClickOutside } from "@bfmono/apps/boltFoundry/hooks/useClickOutside.ts";
+import { useBfDs } from "@bfmono/apps/bfDs/hooks/useBfDs.tsx";
 
 const { useEffect, useRef, useState, forwardRef, useImperativeHandle } = React;
 

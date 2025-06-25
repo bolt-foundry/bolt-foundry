@@ -1,4 +1,4 @@
-import { BfDsTableCell } from "apps/bfDs/components/BfDsTableCell.tsx";
+import { BfDsTableCell } from "@bfmono/apps/bfDs/components/BfDsTableCell.tsx";
 
 // Utility function to create unique keys for React elements
 const createKey = (key: unknown, index: unknown) => `${key}-${index}`;

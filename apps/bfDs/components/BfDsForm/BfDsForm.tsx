@@ -1,12 +1,12 @@
 import * as React from "react";
-import { BfDsFormNumberInput } from "apps/bfDs/components/BfDsForm/BfDsFormNumberInput.tsx";
-import { BfDsFormTextInput } from "apps/bfDs/components/BfDsForm/BfDsFormTextInput.tsx";
-import { BfDsFormSubmitButton } from "apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
-import { BfDsFormToggle } from "apps/bfDs/components/BfDsForm/BfDsFormToggle.tsx";
-import { BfDsFormTextArea } from "apps/bfDs/components/BfDsForm/BfDsFormTextArea.tsx";
+import { BfDsFormNumberInput } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormNumberInput.tsx";
+import { BfDsFormTextInput } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormTextInput.tsx";
+import { BfDsFormSubmitButton } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
+import { BfDsFormToggle } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormToggle.tsx";
+import { BfDsFormTextArea } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormTextArea.tsx";
 const { useState, createContext, useContext } = React;
 
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 type FormError = {

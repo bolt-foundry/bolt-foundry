@@ -2,13 +2,13 @@ import * as React from "react";
 import {
   BfDsButton,
   type ButtonSizeType,
-} from "apps/bfDs/components/BfDsButton.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import {
   BfDsIcon,
   type BfDsIconType,
   type IconSizeType,
-} from "apps/bfDs/components/BfDsIcon.tsx";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

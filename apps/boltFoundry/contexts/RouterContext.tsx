@@ -12,11 +12,11 @@ import {
   type ComponentWithHeader,
   isographAppRoutes,
   type RouteGuts,
-} from "apps/boltFoundry/routes.ts";
+} from "@bfmono/apps/boltFoundry/routes.ts";
 import { createPortal } from "react-dom";
-import { BfDsFullPageSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
+import { BfDsFullPageSpinner } from "@bfmono/apps/bfDs/components/BfDsSpinner.tsx";
 
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 import { usePostHog } from "posthog-js/react";

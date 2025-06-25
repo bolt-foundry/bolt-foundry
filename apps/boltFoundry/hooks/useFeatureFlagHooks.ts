@@ -1,8 +1,8 @@
 import {
   type FeatureFlagsEnabled,
   featureFlagsEnabled,
-} from "apps/boltFoundry/featureFlags/featureFlagsList.ts";
-import { useAppEnvironment } from "apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
+} from "@bfmono/apps/boltFoundry/featureFlags/featureFlagsList.ts";
+import { useAppEnvironment } from "@bfmono/apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
 
 export function useFeatureFlagEnabled(
   flag: keyof FeatureFlagsEnabled,

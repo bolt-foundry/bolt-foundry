@@ -1,5 +1,5 @@
-import type { BfGid } from "lib/types.ts";
-import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
+import { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 
 type BaseOpts = {
   orgSlug?: string;

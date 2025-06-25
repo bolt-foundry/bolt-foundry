@@ -1,7 +1,7 @@
 import { useLazyReference, useResult } from "@isograph/react";
-import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
-import type { ServerProps } from "apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
-import { AppEnvironmentProvider } from "apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
+import type { BfIsographEntrypoint } from "@bfmono/lib/BfIsographEntrypoint.ts";
+import type { ServerProps } from "@bfmono/apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
+import { AppEnvironmentProvider } from "@bfmono/apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
 
 export function IsographHeaderComponent(
   { entrypoint }: {

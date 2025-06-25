@@ -3,12 +3,12 @@ import * as React from "react";
 import {
   BfDsModal,
   type ModalHandles,
-} from "apps/bfDs/components/BfDsModal.tsx";
-import { useLocalStorage } from "apps/boltFoundry/hooks/useLocalStorage.ts";
+} from "@bfmono/apps/bfDs/components/BfDsModal.tsx";
+import { useLocalStorage } from "@bfmono/apps/boltFoundry/hooks/useLocalStorage.ts";
 import {
   BfDsToast,
   TRANSITION_DURATION,
-} from "apps/bfDs/components/BfDsToast.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsToast.tsx";
 
 const { createContext, useEffect, useState } = React;
 

@@ -1,8 +1,8 @@
 import * as React from "react";
-import { classnames } from "lib/classnames.ts";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
-import { BfDsListItem } from "apps/bfDs/components/BfDsListItem.tsx";
-import { getLogger } from "packages/logger/logger.ts";
+import { classnames } from "@bfmono/lib/classnames.ts";
+import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { BfDsListItem } from "@bfmono/apps/bfDs/components/BfDsListItem.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 const BfError = Error;
 

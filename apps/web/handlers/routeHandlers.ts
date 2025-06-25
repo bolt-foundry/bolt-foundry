@@ -1,23 +1,23 @@
 import React from "react";
 import { renderToReadableStream } from "react-dom/server";
-import { appRoutes } from "apps/boltFoundry/routes.ts";
-import { ServerRenderedPage } from "apps/boltFoundry/server/components/ServerRenderedPage.tsx";
-import { AppRoot } from "apps/boltFoundry/AppRoot.tsx";
-import { ClientRoot } from "apps/boltFoundry/ClientRoot.tsx";
-import { getIsographEnvironment } from "apps/boltFoundry/server/isographEnvironment.ts";
-import type { ServerProps } from "apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
-import { getLogger } from "packages/logger/logger.ts";
+import { appRoutes } from "@bfmono/apps/boltFoundry/routes.ts";
+import { ServerRenderedPage } from "@bfmono/apps/boltFoundry/server/components/ServerRenderedPage.tsx";
+import { AppRoot } from "@bfmono/apps/boltFoundry/AppRoot.tsx";
+import { ClientRoot } from "@bfmono/apps/boltFoundry/ClientRoot.tsx";
+import { getIsographEnvironment } from "@bfmono/apps/boltFoundry/server/isographEnvironment.ts";
+import type { ServerProps } from "@bfmono/apps/boltFoundry/contexts/AppEnvironmentContext.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import {
   getConfigurationVariable,
   getSecret,
 } from "@bolt-foundry/get-configuration-var";
-import { getIsographHeaderComponent } from "apps/boltFoundry/components/IsographHeader.tsx";
-import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
+import { getIsographHeaderComponent } from "@bfmono/apps/boltFoundry/components/IsographHeader.tsx";
+import type { BfIsographEntrypoint } from "@bfmono/lib/BfIsographEntrypoint.ts";
 import { AssemblyAI } from "assemblyai";
 import {
   clearAuthCookies,
-} from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
-import { PUBLIC_CONFIG_KEYS } from "apps/boltFoundry/__generated__/configKeys.ts";
+} from "@bfmono/apps/bfDb/graphql/utils/graphqlContextUtils.ts";
+import { PUBLIC_CONFIG_KEYS } from "@bfmono/apps/boltFoundry/__generated__/configKeys.ts";
 
 const logger = getLogger(import.meta);
 

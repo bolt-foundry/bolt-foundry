@@ -3,7 +3,7 @@ import { PostHog } from "posthog-node";
 
 const logger = getLogger(import.meta);
 
-import type { TelemetryData } from "packages/bolt-foundry/bolt-foundry.ts";
+import type { TelemetryData } from "@bfmono/packages/bolt-foundry/bolt-foundry.ts";
 
 /**
  * Logs LLM-related events to console and sends data to PostHog
