@@ -1,14 +1,14 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
-import { useCopyToClipboard } from "apps/boltFoundry/hooks/useCopyToClipboard.ts";
+import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { useCopyToClipboard } from "@bfmono/apps/boltFoundry/hooks/useCopyToClipboard.ts";
 import {
   type BfDsTooltipJustification,
   type BfDsTooltipPosition,
   createTooltipArrowStyle,
   createTooltipStyle,
   getStyles,
-} from "apps/bfDs/lib/tooltips.ts";
+} from "@bfmono/apps/bfDs/lib/tooltips.ts";
 
 const { useEffect, useMemo, useRef, useState } = React;
 

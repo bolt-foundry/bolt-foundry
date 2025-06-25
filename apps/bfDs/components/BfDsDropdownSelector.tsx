@@ -2,13 +2,13 @@ import * as React from "react";
 import type {
   BfDsTooltipJustification,
   BfDsTooltipPosition,
-} from "apps/bfDs/components/BfDsTooltip.tsx";
-import type { BfDsTooltipMenuType } from "apps/bfDs/components/BfDsTooltipMenu.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsTooltip.tsx";
+import type { BfDsTooltipMenuType } from "@bfmono/apps/bfDs/components/BfDsTooltipMenu.tsx";
 import {
   BfDsButton,
   type ButtonKind,
   type ButtonXStyle,
-} from "apps/bfDs/components/BfDsButton.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 const { useEffect, useState } = React;
 
 const styles: Record<string, React.CSSProperties> = {

@@ -49,7 +49,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import useLayoutEffect from "apps/boltFoundry/components/lexical/hooks/useLayoutEffect.tsx";
+import useLayoutEffect from "@bfmono/apps/boltFoundry/components/lexical/hooks/useLayoutEffect.tsx";
 
 import {
   createSample,
@@ -59,16 +59,16 @@ import {
   SampleStore,
   type Thread,
   useSampleStore,
-} from "apps/boltFoundry/components/lexical/plugins/ContentFoundry.ts";
-import useModal from "apps/boltFoundry/components/lexical/hooks/useModal.tsx";
-import SampleEditorTheme from "apps/boltFoundry/components/lexical/themes/SampleEditorTheme.ts";
-import Button from "apps/boltFoundry/components/lexical/ui/Button.tsx";
-import ContentEditable from "apps/boltFoundry/components/lexical/ui/ContentEditable.tsx";
-import Placeholder from "apps/boltFoundry/components/lexical/ui/Placeholder.tsx";
-import { getLogger } from "packages/logger/logger.ts";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { classnames } from "lib/classnames.ts";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
+} from "@bfmono/apps/boltFoundry/components/lexical/plugins/ContentFoundry.ts";
+import useModal from "@bfmono/apps/boltFoundry/components/lexical/hooks/useModal.tsx";
+import SampleEditorTheme from "@bfmono/apps/boltFoundry/components/lexical/themes/SampleEditorTheme.ts";
+import Button from "@bfmono/apps/boltFoundry/components/lexical/ui/Button.tsx";
+import ContentEditable from "@bfmono/apps/boltFoundry/components/lexical/ui/ContentEditable.tsx";
+import Placeholder from "@bfmono/apps/boltFoundry/components/lexical/ui/Placeholder.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { classnames } from "@bfmono/lib/classnames.ts";
+import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
 const logger = getLogger(import.meta);
 
 export const INSERT_INLINE_COMMAND: LexicalCommand<void> = createCommand();

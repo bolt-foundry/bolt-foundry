@@ -1,5 +1,5 @@
 import * as React from "react";
-import { fonts } from "apps/bfDs/const.tsx";
+import { fonts } from "@bfmono/apps/bfDs/const.tsx";
 
 export type TextAreaProps = {
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;

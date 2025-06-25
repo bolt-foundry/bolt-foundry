@@ -1,11 +1,11 @@
 import {
   type BfDsFormElementProps,
   useBfDsFormContext,
-} from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsForm/BfDsForm.tsx";
 import {
   BfDsCheckbox,
   type CheckboxBaseProps,
-} from "apps/bfDs/components/BfDsCheckbox.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsCheckbox.tsx";
 
 export function BfDsFormCheckbox(
   { id, title, ...props }: BfDsFormElementProps & CheckboxBaseProps,

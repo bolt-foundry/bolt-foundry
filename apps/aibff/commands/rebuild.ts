@@ -1,5 +1,5 @@
 import type { Command } from "./types.ts";
-import { getLogger, startSpinner } from "packages/logger/logger.ts";
+import { getLogger, startSpinner } from "@bfmono/packages/logger/logger.ts";
 import { join } from "@std/path";
 import { parseArgs } from "@std/cli";
 

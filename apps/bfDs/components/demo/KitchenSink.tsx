@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { BfDsInput } from "apps/bfDs/components/BfDsInput.tsx";
-import { BfDsSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsInput } from "@bfmono/apps/bfDs/components/BfDsInput.tsx";
+import { BfDsSpinner } from "@bfmono/apps/bfDs/components/BfDsSpinner.tsx";
 
 export function KitchenSink() {
   const [percent, setPercent] = useState<string>("65");

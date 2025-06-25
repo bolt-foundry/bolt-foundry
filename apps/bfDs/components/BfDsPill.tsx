@@ -1,6 +1,6 @@
-import type { BfDsIconType } from "apps/bfDs/components/BfDsIcon.tsx";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
-import { classnames } from "lib/classnames.ts";
+import type { BfDsIconType } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { classnames } from "@bfmono/lib/classnames.ts";
 
 type Props = {
   label?: string;

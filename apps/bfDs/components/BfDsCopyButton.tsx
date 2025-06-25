@@ -2,8 +2,8 @@ import * as React from "react";
 import {
   BfDsButton,
   type ButtonKind,
-} from "apps/bfDs/components/BfDsButton.tsx";
-import { useCopyToClipboard } from "apps/bfDs/hooks/useCopyToClipboard.ts";
+} from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { useCopyToClipboard } from "@bfmono/apps/bfDs/hooks/useCopyToClipboard.ts";
 type Props = {
   textToCopy: string;
   buttonText?: string;

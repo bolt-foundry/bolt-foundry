@@ -1,10 +1,10 @@
-import { Example as ExampleDropdown } from "apps/bfDs/components/BfDsDropdownSelector.tsx";
-import { Example as ExampleInput } from "apps/bfDs/components/BfDsInput.tsx";
-import { Example as ExampleToggle } from "apps/bfDs/components/BfDsToggle.tsx";
-import { Example as ExampleCheckbox } from "apps/bfDs/components/BfDsCheckbox.tsx";
-import { Example as ExampleRange } from "apps/bfDs/components/BfDsRange.tsx";
-import { Example as ExampleForm } from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
-import { Example as ExampleTag } from "apps/bfDs/components/BfDsTagInput.tsx";
+import { Example as ExampleDropdown } from "@bfmono/apps/bfDs/components/BfDsDropdownSelector.tsx";
+import { Example as ExampleInput } from "@bfmono/apps/bfDs/components/BfDsInput.tsx";
+import { Example as ExampleToggle } from "@bfmono/apps/bfDs/components/BfDsToggle.tsx";
+import { Example as ExampleCheckbox } from "@bfmono/apps/bfDs/components/BfDsCheckbox.tsx";
+import { Example as ExampleRange } from "@bfmono/apps/bfDs/components/BfDsRange.tsx";
+import { Example as ExampleForm } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsForm.tsx";
+import { Example as ExampleTag } from "@bfmono/apps/bfDs/components/BfDsTagInput.tsx";
 
 export function Form() {
   return (

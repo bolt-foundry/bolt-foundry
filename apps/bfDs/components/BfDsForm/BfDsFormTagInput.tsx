@@ -1,8 +1,8 @@
-import { useBfDsFormContext } from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
+import { useBfDsFormContext } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsForm.tsx";
 import {
   BfDsTagInput,
   type TagInputProps,
-} from "apps/bfDs/components/BfDsTagInput.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsTagInput.tsx";
 
 type Props = { id: string; title: string } & TagInputProps;
 

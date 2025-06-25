@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import { BfLogo } from "@bfmono/apps/bfDs/static/BfLogo.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 
-import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
+import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 
 type Props = {
   page?: string;

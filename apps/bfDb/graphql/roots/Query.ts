@@ -1,7 +1,7 @@
 import { GraphQLObjectBase } from "../GraphQLObjectBase.ts";
-import { PublishedDocument } from "apps/bfDb/nodeTypes/PublishedDocument.ts";
-import { BlogPost } from "apps/bfDb/nodeTypes/BlogPost.ts";
-import { GithubRepoStats } from "apps/bfDb/nodeTypes/GithubRepoStats.ts";
+import { PublishedDocument } from "@bfmono/apps/bfDb/nodeTypes/PublishedDocument.ts";
+import { BlogPost } from "@bfmono/apps/bfDb/nodeTypes/BlogPost.ts";
+import { GithubRepoStats } from "@bfmono/apps/bfDb/nodeTypes/GithubRepoStats.ts";
 
 export class Query extends GraphQLObjectBase {
   static override gqlSpec = this.defineGqlNode((field) =>

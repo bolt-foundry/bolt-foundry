@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run -A
 
 import * as esbuild from "esbuild";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 import { denoFileResolver } from "./plugins/denoFileResolver.ts";

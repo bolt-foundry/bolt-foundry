@@ -1,15 +1,15 @@
 import { useRef, useState } from "react";
-import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { BfDsCopyButton } from "apps/bfDs/components/BfDsCopyButton.tsx";
-import { useMutation } from "apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
-import joinWaitlistMutation from "apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
+import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsCopyButton } from "@bfmono/apps/bfDs/components/BfDsCopyButton.tsx";
+import { useMutation } from "@bfmono/apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
+import joinWaitlistMutation from "@bfmono/apps/boltFoundry/__generated__/__isograph/Mutation/JoinWaitlist/entrypoint.ts";
 
-import { getLogger } from "packages/logger/logger.ts";
-import { BfDsForm } from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
-import { BfDsFormTextInput } from "apps/bfDs/components/BfDsForm/BfDsFormTextInput.tsx";
-import { BfDsFormSubmitButton } from "apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
-import { Nav } from "apps/boltFoundry/components/Nav.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfDsForm } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsForm.tsx";
+import { BfDsFormTextInput } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormTextInput.tsx";
+import { BfDsFormSubmitButton } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
+import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
 
 const logger = getLogger(import.meta);
 

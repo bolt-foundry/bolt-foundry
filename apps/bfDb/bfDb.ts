@@ -1,18 +1,18 @@
-import { getLogger } from "packages/logger/logger.ts";
-import { BfErrorDb } from "apps/bfDb/classes/BfErrorDb.ts";
-import type { BfGid } from "lib/types.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfErrorDb } from "@bfmono/apps/bfDb/classes/BfErrorDb.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 import type {
   BfEdgeMetadata,
   BfNodeMetadata,
-} from "apps/bfDb/classes/BfNode.ts";
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
 import type {
   Connection,
   ConnectionArguments,
   Edge,
   PageInfo,
 } from "graphql-relay";
-import type { BfDbMetadata } from "apps/bfDb/backend/DatabaseBackend.ts";
-import { closeBackend, getBackend } from "apps/bfDb/bfDbBackend.ts";
+import type { BfDbMetadata } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
+import { closeBackend, getBackend } from "@bfmono/apps/bfDb/bfDbBackend.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 const logger = getLogger(import.meta);

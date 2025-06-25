@@ -1,8 +1,8 @@
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import * as OriginalReact from "react";
 import * as ReactDOMServer from "react-dom/server";
-import { BaseComponent } from "infra/jupyter/BaseComponent.tsx";
-import { build } from "infra/appBuild/appBuild.ts";
+import { BaseComponent } from "@bfmono/infra/jupyter/BaseComponent.tsx";
+import { build } from "@bfmono/infra/appBuild/appBuild.ts";
 
 const logger = getLogger(import.meta);
 

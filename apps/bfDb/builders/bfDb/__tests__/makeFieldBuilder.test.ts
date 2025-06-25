@@ -9,8 +9,8 @@
 import { assertEquals } from "@std/assert";
 import { makeBfDbSpec } from "../makeBfDbSpec.ts";
 import type { FieldBuilder } from "../makeFieldBuilder.ts";
-import type { AnyBfNodeCtor } from "apps/bfDb/classes/BfNode.ts";
-import type { PropsFromFieldSpec } from "apps/bfDb/builders/bfDb/types.ts";
+import type { AnyBfNodeCtor } from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type { PropsFromFieldSpec } from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
 
 /* -------------------------------------------------------------------------- */
 /*  Minimal dummy node for relation targets                                   */

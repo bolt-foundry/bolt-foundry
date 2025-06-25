@@ -1,5 +1,8 @@
-import { BfDsIcon, type BfDsIconType } from "apps/bfDs/components/BfDsIcon.tsx";
-import { classnames } from "lib/classnames.ts";
+import {
+  BfDsIcon,
+  type BfDsIconType,
+} from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { classnames } from "@bfmono/lib/classnames.ts";
 
 type Props = {
   kind: "info" | "warning" | "error" | "success";

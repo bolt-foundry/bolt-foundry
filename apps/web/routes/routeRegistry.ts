@@ -1,7 +1,7 @@
-import type { Handler } from "apps/web/web.tsx";
+import type { Handler } from "@bfmono/apps/web/web.tsx";
 import { registerAppRoutes } from "./appRoutes.ts";
 import { registerIsographRoutes } from "./isographRoutes.ts";
-import { graphQLHandler } from "apps/bfDb/graphql/graphqlServer.ts";
+import { graphQLHandler } from "@bfmono/apps/bfDb/graphql/graphqlServer.ts";
 import { handleAssemblyAI, handleLogout } from "../handlers/routeHandlers.ts";
 import { serveDir } from "@std/http";
 

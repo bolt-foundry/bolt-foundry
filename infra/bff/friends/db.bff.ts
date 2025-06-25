@@ -1,11 +1,11 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   __DANGEROUSLY_DESTROY_THE_DATABASE__,
   cleanModelsExcept,
   upsertBfDb,
-} from "apps/bfDb/bfDbUtils.ts";
+} from "@bfmono/apps/bfDb/bfDbUtils.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 export async function dbReset(): Promise<number> {

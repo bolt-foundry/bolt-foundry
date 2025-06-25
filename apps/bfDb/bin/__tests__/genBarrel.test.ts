@@ -1,7 +1,7 @@
 #! /usr/bin/env -S bff test
 
 import { assertEquals, assertExists } from "@std/assert";
-import { generateAllBarrels } from "apps/bfDb/bin/genBarrel.ts";
+import { generateAllBarrels } from "@bfmono/apps/bfDb/bin/genBarrel.ts";
 
 // 1️⃣  Re‑run the generator so we’re comparing fresh output
 await generateAllBarrels();

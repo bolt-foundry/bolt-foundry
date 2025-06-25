@@ -103,7 +103,7 @@ jobs:
             deno cache deno.jsonc || echo \"Failed to cache, continuing anyway\"
             npm install
             deno install
-            bff ci --include-bolt-foundry --skip-build
+            bff ci --include-bolt-foundry
           "
 
       # Debug before save

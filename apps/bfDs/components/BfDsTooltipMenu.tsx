@@ -1,17 +1,20 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { BfDsIcon, type BfDsIconType } from "apps/bfDs/components/BfDsIcon.tsx";
-import type { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { BfDsSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
+import {
+  BfDsIcon,
+  type BfDsIconType,
+} from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import type { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsSpinner } from "@bfmono/apps/bfDs/components/BfDsSpinner.tsx";
 import type {
   BfDsTooltipJustification,
   BfDsTooltipPosition,
-} from "apps/bfDs/components/BfDsTooltip.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsTooltip.tsx";
 import {
   createTooltipArrowStyle,
   createTooltipStyle,
   getStyles as getTooltipStyles,
-} from "apps/bfDs/lib/tooltips.ts";
+} from "@bfmono/apps/bfDs/lib/tooltips.ts";
 
 const { useEffect, useMemo, useRef, useState } = React;
 

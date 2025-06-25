@@ -9,7 +9,7 @@
 
 import type { JSX, ReactNode } from "react";
 
-import joinClasses from "apps/boltFoundry/components/lexical/utils/join-classes.ts";
+import joinClasses from "@bfmono/apps/boltFoundry/components/lexical/utils/join-classes.ts";
 
 export default function Button({
   "data-test-id": dataTestId,

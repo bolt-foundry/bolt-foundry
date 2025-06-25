@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageError } from "apps/boltFoundry/pages/PageError.tsx";
+import { PageError } from "@bfmono/apps/boltFoundry/pages/PageError.tsx";
 
 type ErrorProps = {
   fallback?: React.ReactNode | ((error?: Error) => React.ReactNode);

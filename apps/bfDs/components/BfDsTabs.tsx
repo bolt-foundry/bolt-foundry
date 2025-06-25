@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 
 const { useEffect, useState } = React;
 

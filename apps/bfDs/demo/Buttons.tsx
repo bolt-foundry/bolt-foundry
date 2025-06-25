@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { classnames } from "lib/classnames.ts";
+import { classnames } from "@bfmono/lib/classnames.ts";
 import {
   BfDsButton,
   type ButtonKind,
   type ButtonSizeType,
-} from "apps/bfDs/components/BfDsButton.tsx";
-import { BfDsButtonGroup } from "apps/bfDs/components/BfDsButtonGroup.tsx";
-import { BfDsButtonConfirmation } from "apps/bfDs/components/BfDsButtonConfirmation.tsx";
-import { BfDsCopyButton } from "apps/bfDs/components/BfDsCopyButton.tsx";
-import { getLogger } from "packages/logger/logger.ts";
-import type { BfDsIconType } from "apps/bfDs/components/BfDsIcon.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsButtonGroup } from "@bfmono/apps/bfDs/components/BfDsButtonGroup.tsx";
+import { BfDsButtonConfirmation } from "@bfmono/apps/bfDs/components/BfDsButtonConfirmation.tsx";
+import { BfDsCopyButton } from "@bfmono/apps/bfDs/components/BfDsCopyButton.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import type { BfDsIconType } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
 
 const logger = getLogger(import.meta);
 
