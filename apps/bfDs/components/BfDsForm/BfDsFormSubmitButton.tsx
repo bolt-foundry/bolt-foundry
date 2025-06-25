@@ -1,7 +1,7 @@
 import {
   BfDsButton,
   type ButtonType,
-} from "apps/bfDs/components/BfDsButton.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 
 type Props = ButtonType;
 

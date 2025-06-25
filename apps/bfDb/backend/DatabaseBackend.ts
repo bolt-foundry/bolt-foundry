@@ -1,9 +1,9 @@
-import type { BfGid } from "lib/types.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 import type {
   BfEdgeMetadata,
   BfNodeMetadata,
-} from "apps/bfDb/classes/BfNode.ts";
-import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
 
 export type BfDbMetadata = BfNodeMetadata & Partial<BfEdgeMetadata>;
 

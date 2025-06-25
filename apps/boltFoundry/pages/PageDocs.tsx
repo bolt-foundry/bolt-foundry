@@ -1,5 +1,5 @@
 import { PageError } from "./PageError.tsx";
-import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
+import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 
 export function PageDocs() {
   const { routeParams } = useRouter();

@@ -1,4 +1,4 @@
-import { BfNode, type InferProps } from "apps/bfDb/classes/BfNode.ts";
+import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 
 export class BfExamplePerson
   extends BfNode<InferProps<typeof BfExamplePerson>> {

@@ -1,7 +1,7 @@
-import { isographAppRoutes } from "apps/boltFoundry/routes.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import { handleIsographRoute } from "apps/web/handlers/routeHandlers.ts";
-import type { Handler } from "apps/web/web.tsx";
+import { isographAppRoutes } from "@bfmono/apps/boltFoundry/routes.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { handleIsographRoute } from "@bfmono/apps/web/handlers/routeHandlers.ts";
+import type { Handler } from "@bfmono/apps/web/web.tsx";
 
 const logger = getLogger(import.meta);
 

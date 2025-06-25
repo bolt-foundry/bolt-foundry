@@ -1,4 +1,4 @@
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 
 export function Tooltips() {
   return (

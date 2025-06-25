@@ -1,5 +1,5 @@
 import type * as esbuild from "esbuild";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { createCache } from "@deno/cache-dir";
 
 const logger = getLogger(import.meta);

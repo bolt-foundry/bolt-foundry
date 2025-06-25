@@ -26,8 +26,8 @@
 //
 // Needs an authenticated `op` CLI session (or service-account token).
 
-import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const td = new TextDecoder();
 const logger = getLogger(import.meta);

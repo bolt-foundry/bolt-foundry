@@ -1,8 +1,8 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
-import { classnames } from "lib/classnames.ts";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { useBfDs } from "apps/bfDs/hooks/useBfDs.tsx";
+import { classnames } from "@bfmono/lib/classnames.ts";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { useBfDs } from "@bfmono/apps/bfDs/hooks/useBfDs.tsx";
 
 const { useState, useEffect } = React;
 

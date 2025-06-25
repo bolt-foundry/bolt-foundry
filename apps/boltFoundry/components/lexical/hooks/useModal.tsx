@@ -7,7 +7,7 @@
 
 import { type JSX, useCallback, useMemo, useState } from "react";
 
-import Modal from "apps/boltFoundry/components/lexical/ui/Modal.tsx";
+import Modal from "@bfmono/apps/boltFoundry/components/lexical/ui/Modal.tsx";
 
 export default function useModal(): [
   JSX.Element | null,

@@ -1,7 +1,7 @@
 #! /usr/bin/env -S bff
 
-import { runShellCommand } from "infra/bff/shellBase.ts";
-import { register } from "infra/bff/bff.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 
 export function buildNix(profile = "."): Promise<number> {
   return runShellCommand([

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type {
   Card,
   DeckData,
   Sample,
   Spec,
-} from "apps/boltFoundry/lib/deckTypes.ts";
+} from "@bfmono/apps/boltFoundry/lib/deckTypes.ts";
 
 const logger = getLogger(import.meta);
 

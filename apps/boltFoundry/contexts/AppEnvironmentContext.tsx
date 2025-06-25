@@ -1,18 +1,18 @@
 import {
   RouterProvider,
   type RouterProviderProps,
-} from "apps/boltFoundry/contexts/RouterContext.tsx";
+} from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 
 import * as React from "react";
 import {
   type IsographEnvironment,
   IsographEnvironmentProvider,
 } from "@isograph/react";
-import { getEnvironment } from "apps/boltFoundry/isographEnvironment.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { getEnvironment } from "@bfmono/apps/boltFoundry/isographEnvironment.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import type {
   ClientEnvironment,
-} from "apps/boltFoundry/__generated__/configKeys.ts";
+} from "@bfmono/apps/boltFoundry/__generated__/configKeys.ts";
 
 const logger = getLogger(import.meta);
 

@@ -1,8 +1,8 @@
-import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { BlogSimple } from "./BlogSimple.tsx";
-import { Nav } from "apps/boltFoundry/components/Nav.tsx";
+import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
 
 const _logger = getLogger(import.meta);
 

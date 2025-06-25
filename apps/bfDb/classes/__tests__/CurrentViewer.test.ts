@@ -14,17 +14,20 @@
  */
 
 import { assert, assertEquals, assertExists } from "@std/assert";
-import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
-import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
-import { makeLoggedInCv, makeLoggedOutCv } from "apps/bfDb/utils/testUtils.ts";
+import { withIsolatedDb } from "@bfmono/apps/bfDb/bfDb.ts";
+import { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
+import {
+  makeLoggedInCv,
+  makeLoggedOutCv,
+} from "@bfmono/apps/bfDb/utils/testUtils.ts";
 import {
   ACCESS_COOKIE,
   buildAuthCookies,
   REFRESH_COOKIE,
   verifySession,
-} from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
-import { createContext } from "apps/bfDb/graphql/graphqlContext.ts";
-import { yoga } from "apps/bfDb/graphql/graphqlServer.ts";
+} from "@bfmono/apps/bfDb/graphql/utils/graphqlContextUtils.ts";
+import { createContext } from "@bfmono/apps/bfDb/graphql/graphqlContext.ts";
+import { yoga } from "@bfmono/apps/bfDb/graphql/graphqlServer.ts";
 
 /* -------------------------------------------------------------------------- */
 /*  Helpers                                                                   */

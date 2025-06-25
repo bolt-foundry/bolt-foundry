@@ -3,8 +3,8 @@ import {
   type ConnectionArguments,
   connectionFromArray,
 } from "graphql-relay";
-import type { JSONValue } from "apps/bfDb/bfDb.ts";
-import type { BfNode } from "apps/bfDb/classes/BfNode.ts";
+import type { JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
+import type { BfNode } from "@bfmono/apps/bfDb/classes/BfNode.ts";
 
 export type GraphqlNode<
   T extends Record<string, JSONValue> = Record<string, JSONValue>,

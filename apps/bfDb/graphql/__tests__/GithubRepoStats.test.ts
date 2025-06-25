@@ -1,6 +1,6 @@
 import { assertEquals, assertExists } from "@std/assert";
-import { GithubRepoStats } from "apps/bfDb/nodeTypes/GithubRepoStats.ts";
-import { testQuery } from "apps/bfDb/graphql/__tests__/TestHelpers.test.ts";
+import { GithubRepoStats } from "@bfmono/apps/bfDb/nodeTypes/GithubRepoStats.ts";
+import { testQuery } from "@bfmono/apps/bfDb/graphql/__tests__/TestHelpers.test.ts";
 
 Deno.test("GithubRepoStats - should return a valid GithubRepoStats instance", async () => {
   const stats = await GithubRepoStats.findX();

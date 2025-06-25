@@ -2,9 +2,9 @@
 
 import { assert } from "@std/assert";
 import { extendType, objectType } from "nexus";
-import { gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
-import { Waitlist } from "apps/bfDb/graphql/roots/Waitlist.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { gqlSpecToNexus } from "@bfmono/apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
+import { Waitlist } from "@bfmono/apps/bfDb/graphql/roots/Waitlist.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

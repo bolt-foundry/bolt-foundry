@@ -1,7 +1,7 @@
-import { GraphQLNode } from "apps/bfDb/classes/GraphQLNode.ts";
+import { GraphQLNode } from "@bfmono/apps/bfDb/classes/GraphQLNode.ts";
 import { join } from "@std/path";
 import { exists } from "@std/fs";
-import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorsBfNode.ts";
+import { BfErrorNodeNotFound } from "@bfmono/apps/bfDb/classes/BfErrorsBfNode.ts";
 
 /**
  * PublishedDocument node representing a published document with content.

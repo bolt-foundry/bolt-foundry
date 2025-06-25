@@ -2,7 +2,7 @@
 
 // Direct test of LSP client
 import { LSPClient } from "./lsp-client.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 const client = new LSPClient();

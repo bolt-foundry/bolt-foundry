@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { BfDsForm } from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
-import { BfDsFormTextArea } from "apps/bfDs/components/BfDsForm/BfDsFormTextArea.tsx";
-import { BfDsFormSubmitButton } from "apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
-import { DeckVisualization } from "apps/boltFoundry/components/DeckVisualization.tsx";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import { BfDsForm } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsForm.tsx";
+import { BfDsFormTextArea } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormTextArea.tsx";
+import { BfDsFormSubmitButton } from "@bfmono/apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
+import { DeckVisualization } from "@bfmono/apps/boltFoundry/components/DeckVisualization.tsx";
+import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 
 const deckExamples = [
   {

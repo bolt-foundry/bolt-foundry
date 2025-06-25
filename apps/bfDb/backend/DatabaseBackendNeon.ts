@@ -1,14 +1,14 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
-import { getLogger } from "packages/logger/logger.ts";
-import { BfErrorDb } from "apps/bfDb/classes/BfErrorDb.ts";
-import type { DatabaseBackend } from "apps/bfDb/backend/DatabaseBackend.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfErrorDb } from "@bfmono/apps/bfDb/classes/BfErrorDb.ts";
+import type { DatabaseBackend } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import type {
   BfEdgeMetadata,
   BfNodeMetadata,
-} from "apps/bfDb/classes/BfNode.ts";
-import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
-import type { BfGid } from "lib/types.ts";
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 const logger = getLogger(import.meta);
 

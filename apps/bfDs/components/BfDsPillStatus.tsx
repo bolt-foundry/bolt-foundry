@@ -1,5 +1,5 @@
-import { BfDsPill } from "apps/bfDs/components/BfDsPill.tsx";
-import type { BfDsIconType } from "apps/bfDs/components/BfDsIcon.tsx";
+import { BfDsPill } from "@bfmono/apps/bfDs/components/BfDsPill.tsx";
+import type { BfDsIconType } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
 
 type Props = { label: string; status: string; percent?: number };
 

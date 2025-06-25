@@ -2,12 +2,12 @@
 
 // ./infra/bff/friends/llm.bff.ts
 
-import { register } from "infra/bff/bff.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import { walk } from "@std/fs/walk";
 import { basename, dirname, extname, join } from "@std/path";
 import { globToRegExp } from "@std/path";
 import { exists } from "@std/fs/exists";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

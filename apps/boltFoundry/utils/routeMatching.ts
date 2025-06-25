@@ -1,5 +1,5 @@
-import { appRoutes, type RouteGuts } from "apps/boltFoundry/routes.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { appRoutes, type RouteGuts } from "@bfmono/apps/boltFoundry/routes.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

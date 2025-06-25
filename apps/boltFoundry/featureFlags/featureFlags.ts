@@ -3,9 +3,9 @@ import {
   featureFlagsEnabled,
   type FeatureFlagsVariant,
   featureFlagsVariant,
-} from "apps/boltFoundry/featureFlags/featureFlagsList.ts";
+} from "@bfmono/apps/boltFoundry/featureFlags/featureFlagsList.ts";
 
-import { getCurrentClients } from "lib/posthog.ts";
+import { getCurrentClients } from "@bfmono/lib/posthog.ts";
 
 /**
  * Return the boolean value of a feature flag from PostHog if possible;

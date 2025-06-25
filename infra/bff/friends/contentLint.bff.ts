@@ -1,11 +1,11 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { extractYaml } from "@std/front-matter";
 import { walk } from "@std/fs";
 import { join } from "@std/path";
-import type { JSONValue } from "apps/bfDb/bfDb.ts";
+import type { JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
 
 const logger = getLogger(import.meta);
 
