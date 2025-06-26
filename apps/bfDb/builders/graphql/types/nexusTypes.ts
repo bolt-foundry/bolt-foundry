@@ -3,7 +3,7 @@
  */
 
 import type { GraphQLResolveInfo } from "graphql";
-import type { BfGraphqlContext } from "apps/bfDb/graphql/graphqlContext.ts";
+import type { BfGraphqlContext } from "@bfmono/apps/bfDb/graphql/graphqlContext.ts";
 import type { GraphQLResolverArgs } from "./resolverTypes.ts";
 
 /**

@@ -1,5 +1,5 @@
-import { BfNode, type InferProps } from "apps/bfDb/classes/BfNode.ts";
-import { BfExamplePerson } from "apps/bfDb/CircularNodeExample.ts";
+import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import { BfExamplePerson } from "@bfmono/apps/bfDb/CircularNodeExample.ts";
 
 export class BfExampleOrg extends BfNode<InferProps<typeof BfExampleOrg>> {
   static override gqlSpec = this.defineGqlNode((gql) =>

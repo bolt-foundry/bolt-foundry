@@ -1,6 +1,6 @@
-import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
-import { BfDsList } from "apps/bfDs/components/BfDsList.tsx";
-import { BfDsListItem } from "apps/bfDs/components/BfDsListItem.tsx";
+import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
+import { BfDsList } from "@bfmono/apps/bfDs/components/BfDsList.tsx";
+import { BfDsListItem } from "@bfmono/apps/bfDs/components/BfDsListItem.tsx";
 
 interface DocSection {
   title: string;

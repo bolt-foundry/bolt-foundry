@@ -1,8 +1,8 @@
 #! /usr/bin/env -S bff
 
-import type { Handler } from "apps/web/web.tsx";
-import { getLogger } from "packages/logger/logger.ts";
-import { BfError } from "lib/BfError.ts";
+import type { Handler } from "@bfmono/apps/web/web.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfError } from "@bfmono/lib/BfError.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 const logger = getLogger(import.meta);
 

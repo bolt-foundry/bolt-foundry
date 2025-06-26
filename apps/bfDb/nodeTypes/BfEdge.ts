@@ -3,9 +3,9 @@ import {
   BfNode,
   type InferProps,
   type PropsBase,
-} from "apps/bfDb/classes/BfNode.ts";
-import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 const logger = getLogger(import.meta);
 
 type BfEdgeBaseProps = PropsBase & {

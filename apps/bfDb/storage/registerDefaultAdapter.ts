@@ -7,8 +7,8 @@ import { AdapterRegistry } from "./AdapterRegistry.ts";
 import { InMemoryAdapter } from "./InMemoryAdapter.ts";
 import { DatabaseBackendPg } from "../backend/DatabaseBackendPg.ts";
 import { DatabaseBackendSqlite } from "../backend/DatabaseBackendSqlite.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import { DatabaseBackendNeon } from "apps/bfDb/backend/DatabaseBackendNeon.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { DatabaseBackendNeon } from "@bfmono/apps/bfDb/backend/DatabaseBackendNeon.ts";
 
 const logger = getLogger(import.meta);
 

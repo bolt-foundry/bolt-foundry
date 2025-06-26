@@ -1,11 +1,11 @@
 import {
   type BfDsFormElementProps,
   useBfDsFormContext,
-} from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsForm/BfDsForm.tsx";
 import {
   BfDsToggle,
   type ToggleBaseProps,
-} from "apps/bfDs/components/BfDsToggle.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsToggle.tsx";
 
 export function BfDsFormToggle(
   { id, title, ...props }: BfDsFormElementProps & ToggleBaseProps,

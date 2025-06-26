@@ -1,6 +1,6 @@
 import * as React from "react";
-import { BfDsTooltip } from "apps/bfDs/components/BfDsTooltip.tsx";
-import { BfDsInput } from "apps/bfDs/components/BfDsInput.tsx";
+import { BfDsTooltip } from "@bfmono/apps/bfDs/components/BfDsTooltip.tsx";
+import { BfDsInput } from "@bfmono/apps/bfDs/components/BfDsInput.tsx";
 
 const { useEffect } = React;
 

@@ -1,5 +1,5 @@
 import { GraphQLObjectBase } from "./GraphQLObjectBase.ts";
-import type { GqlNodeSpec } from "apps/bfDb/builders/graphql/makeGqlSpec.ts";
+import type { GqlNodeSpec } from "@bfmono/apps/bfDb/builders/graphql/makeGqlSpec.ts";
 import { GraphQLInterface } from "./decorators.ts";
 
 /**

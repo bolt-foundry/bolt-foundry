@@ -3,8 +3,8 @@
  * Handles saving and backing up team status documents with dated versions
  */
 
-import { getLogger } from "packages/logger/logger.ts";
-import type { TeamStatus } from "packages/team-status-analyzer/types.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import type { TeamStatus } from "@bfmono/packages/team-status-analyzer/types.ts";
 
 const logger = getLogger(import.meta);
 

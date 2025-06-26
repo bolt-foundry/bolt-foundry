@@ -6,10 +6,13 @@ import {
   useImperativeHandle,
   useState,
 } from "react";
-import { BfDsIcon, type BfDsIconType } from "apps/bfDs/components/BfDsIcon.tsx";
-import { classnames } from "lib/classnames.ts";
-import { BfDsToggle } from "apps/bfDs/components/BfDsToggle.tsx";
-import { ListItemExpandContext } from "apps/bfDs/components/BfDsList.tsx";
+import {
+  BfDsIcon,
+  type BfDsIconType,
+} from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { classnames } from "@bfmono/lib/classnames.ts";
+import { BfDsToggle } from "@bfmono/apps/bfDs/components/BfDsToggle.tsx";
+import { ListItemExpandContext } from "@bfmono/apps/bfDs/components/BfDsList.tsx";
 
 export type BfDsListItemHandle = {
   setExpand: (value: boolean) => void;

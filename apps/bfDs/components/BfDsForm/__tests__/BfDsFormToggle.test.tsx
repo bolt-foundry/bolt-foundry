@@ -1,4 +1,4 @@
-import { render } from "infra/testing/ui-testing.ts";
+import { render } from "@bfmono/infra/testing/ui-testing.ts";
 import { assertEquals, assertExists } from "@std/assert";
 import { BfDsForm } from "../BfDsForm.tsx";
 import { BfDsFormToggle } from "../BfDsFormToggle.tsx";

@@ -1,5 +1,5 @@
-import { useMutation } from "apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
-import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
+import { useMutation } from "@bfmono/apps/boltFoundry/hooks/isographPrototypes/useMutation.tsx";
+import type { BfIsographEntrypoint } from "@bfmono/lib/BfIsographEntrypoint.ts";
 
 export function useEntrypoint<T extends BfIsographEntrypoint>(
   entrypoint: T,

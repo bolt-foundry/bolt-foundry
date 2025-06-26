@@ -1,14 +1,14 @@
-import { GraphQLNode } from "apps/bfDb/classes/GraphQLNode.ts";
+import { GraphQLNode } from "@bfmono/apps/bfDb/classes/GraphQLNode.ts";
 import { join } from "@std/path";
 import { exists } from "@std/fs";
-import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorsBfNode.ts";
+import { BfErrorNodeNotFound } from "@bfmono/apps/bfDb/classes/BfErrorsBfNode.ts";
 import type { Connection, ConnectionArguments } from "graphql-relay";
 import { connectionFromArray } from "graphql-relay";
 import {
   type BlogFrontMatter,
   generateExcerpt,
   safeExtractFrontmatter,
-} from "apps/bfDb/utils/contentUtils.ts";
+} from "@bfmono/apps/bfDb/utils/contentUtils.ts";
 import { marked, Renderer } from "marked";
 
 /**
@@ -118,8 +118,18 @@ export class BlogPost extends GraphQLNode {
 
   /**
    * Extract first image URL from markdown content for hero display.
+   * Only extracts images that appear before the first header.
    */
   get heroImage(): string | undefined {
+    // Find the position of the first header
+    const headerMatch = this._content.match(/^#+\s/m);
+    const headerPosition = headerMatch
+      ? this._content.indexOf(headerMatch[0])
+      : this._content.length;
+
+    // Only process content before the first header
+    const contentBeforeHeader = this._content.substring(0, headerPosition);
+
     let extractedImage: string | undefined;
 
     const renderer = new Renderer();
@@ -130,8 +140,8 @@ export class BlogPost extends GraphQLNode {
       return ""; // We don't need HTML output, just extraction
     };
 
-    // Process the content to trigger image extraction
-    marked(this._content, { renderer });
+    // Process only the content before the header to trigger image extraction
+    marked(contentBeforeHeader, { renderer });
 
     return extractedImage;
   }

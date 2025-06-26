@@ -1,13 +1,16 @@
-import { HeaderTitle } from "apps/boltFoundry/components/Header/HeaderTitle.tsx";
+import { HeaderTitle } from "@bfmono/apps/boltFoundry/components/Header/HeaderTitle.tsx";
 import {
   matchRouteWithParams,
   useRouter,
-} from "apps/boltFoundry/contexts/RouterContext.tsx";
-import { appRoutes, isographAppRoutes } from "apps/boltFoundry/routes.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
+import {
+  appRoutes,
+  isographAppRoutes,
+} from "@bfmono/apps/boltFoundry/routes.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { useLazyReference } from "@isograph/react";
-import { ErrorBoundary } from "apps/boltFoundry/components/ErrorBoundary.tsx";
-import { BfIsographFragmentReader } from "lib/BfIsographFragmentReader.tsx";
+import { ErrorBoundary } from "@bfmono/apps/boltFoundry/components/ErrorBoundary.tsx";
+import { BfIsographFragmentReader } from "@bfmono/lib/BfIsographFragmentReader.tsx";
 const logger = getLogger(import.meta);
 
 export function AppRoot() {

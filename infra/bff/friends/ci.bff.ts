@@ -2,11 +2,11 @@
 
 // FILE: infra/bff/friends/ci.bff.ts
 
-import { register } from "infra/bff/bff.ts";
-import { runShellCommandWithOutput } from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import { loggerGithub } from "infra/bff/githubLogger.ts";
-import { refreshAllSecrets } from "packages/get-configuration-var/get-configuration-var.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { runShellCommandWithOutput } from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { loggerGithub } from "@bfmono/infra/bff/githubLogger.ts";
+import { refreshAllSecrets } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
 
 const logger = getLogger(import.meta);
 

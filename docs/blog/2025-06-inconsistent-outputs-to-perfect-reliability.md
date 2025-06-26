@@ -86,7 +86,7 @@ board.
 
 Without even using our software and only using
 [our prompt philosophy](docs/blog/2025-06-5-things-about-llms.md), Velvet
-increased their citation XML output reliability from 20% to 100%.
+increased their citation XML output reliability from 86% to 100%.
 
 It literally never failed.
 

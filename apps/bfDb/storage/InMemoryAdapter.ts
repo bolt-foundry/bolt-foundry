@@ -7,9 +7,9 @@
 import type {
   BfDbMetadata,
   DatabaseBackend,
-} from "apps/bfDb/backend/DatabaseBackend.ts";
-import type { DbItem, Props } from "apps/bfDb/bfDb.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
+import type { DbItem, Props } from "@bfmono/apps/bfDb/bfDb.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

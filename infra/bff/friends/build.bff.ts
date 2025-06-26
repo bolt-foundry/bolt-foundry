@@ -1,16 +1,16 @@
 #! /usr/bin/env -S bff
 
-import { runShellCommand } from "infra/bff/shellBase.ts";
-import { register } from "infra/bff/bff.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   getConfigurationVariable,
-} from "packages/get-configuration-var/get-configuration-var.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import { DeploymentEnvs } from "infra/constants/deploymentEnvs.ts";
+} from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { DeploymentEnvs } from "@bfmono/infra/constants/deploymentEnvs.ts";
 import {
   PRIVATE_CONFIG_KEYS,
   PUBLIC_CONFIG_KEYS,
-} from "apps/boltFoundry/__generated__/configKeys.ts";
+} from "@bfmono/apps/boltFoundry/__generated__/configKeys.ts";
 
 const logger = getLogger(import.meta);
 

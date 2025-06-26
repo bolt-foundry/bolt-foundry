@@ -1,10 +1,10 @@
-import { BfDsList } from "apps/bfDs/components/BfDsList.tsx";
-import { BfDsListItem } from "apps/bfDs/components/BfDsListItem.tsx";
+import { BfDsList } from "@bfmono/apps/bfDs/components/BfDsList.tsx";
+import { BfDsListItem } from "@bfmono/apps/bfDs/components/BfDsListItem.tsx";
 import React from "react";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
-import { classnames } from "lib/classnames.ts";
-import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
-import { useFeatureFlagEnabled } from "apps/boltFoundry/hooks/useFeatureFlagHooks.ts";
+import { BfDsIcon } from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
+import { classnames } from "@bfmono/lib/classnames.ts";
+import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
+import { useFeatureFlagEnabled } from "@bfmono/apps/boltFoundry/hooks/useFeatureFlagHooks.ts";
 
 const sidebarRoutes = [
   {

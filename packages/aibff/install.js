@@ -159,6 +159,12 @@ async function downloadBinary(url, destPath) {
 
 async function install() {
   try {
+    // Skip postinstall in CI environments where binaries are pre-built
+    if (process.env.CI || process.env.GITHUB_ACTIONS) {
+      console.log('Skipping postinstall in CI environment');
+      process.exit(0);
+    }
+    
     // Read version from package.json
     const packagePath = path.join(__dirname, 'package.json');
     const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));

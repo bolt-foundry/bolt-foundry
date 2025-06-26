@@ -1,5 +1,8 @@
 import * as React from "react";
-import { BfDsIcon, type IconSizeType } from "apps/bfDs/components/BfDsIcon.tsx";
+import {
+  BfDsIcon,
+  type IconSizeType,
+} from "@bfmono/apps/bfDs/components/BfDsIcon.tsx";
 
 export type CheckboxBaseProps = {
   disabled?: boolean;

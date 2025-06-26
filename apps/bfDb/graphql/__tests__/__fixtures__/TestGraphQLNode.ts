@@ -1,4 +1,4 @@
-import { GraphQLNode } from "apps/bfDb/graphql/GraphQLNode.ts";
+import { GraphQLNode } from "@bfmono/apps/bfDb/graphql/GraphQLNode.ts";
 
 /**
  * Example implementation of GraphQLNode for testing purposes.

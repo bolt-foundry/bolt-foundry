@@ -3,8 +3,8 @@
 // infra/bff/friends/githubAnnotations.ts
 
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { getLogger } from "packages/logger/logger.ts";
-import { runShellCommandWithOutput } from "infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { runShellCommandWithOutput } from "@bfmono/infra/bff/shellBase.ts";
 
 const logger = getLogger(import.meta);
 

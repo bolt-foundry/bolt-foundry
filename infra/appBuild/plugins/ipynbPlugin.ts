@@ -1,7 +1,7 @@
 import type * as esbuild from "esbuild";
 import { compile } from "@mdx-js/mdx";
-import { getLogger } from "packages/logger/logger.ts";
-import { processNotebookContent } from "infra/appBuild/utils/notebookUtils.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { processNotebookContent } from "@bfmono/infra/appBuild/utils/notebookUtils.ts";
 
 const logger = getLogger(import.meta);
 

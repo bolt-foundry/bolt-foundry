@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-read --allow-run
 
 import { parseArgs } from "@std/cli";
-import { getLogger, startSpinner } from "packages/logger/logger.ts";
+import { getLogger, startSpinner } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

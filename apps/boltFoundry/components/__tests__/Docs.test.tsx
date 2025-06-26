@@ -1,7 +1,7 @@
 #!/usr/bin/env -S bff test
 
 import { assertEquals } from "@std/assert";
-import { render } from "infra/testing/ui-testing.ts";
+import { render } from "@bfmono/infra/testing/ui-testing.ts";
 // TODO: Import Docs once it's updated to handle the import map
 // import { Docs } from "../Docs.tsx";
 

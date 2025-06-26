@@ -1,4 +1,4 @@
-import { GraphQLNode } from "apps/bfDb/classes/GraphQLNode.ts";
+import { GraphQLNode } from "@bfmono/apps/bfDb/classes/GraphQLNode.ts";
 import { getLogger } from "@bolt-foundry/logger";
 
 /**

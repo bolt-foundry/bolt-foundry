@@ -7,7 +7,7 @@
 
 import type { EditorThemeClasses } from "lexical";
 
-import baseTheme from "apps/boltFoundry/components/lexical/themes/PlaygroundEditorTheme.ts";
+import baseTheme from "@bfmono/apps/boltFoundry/components/lexical/themes/PlaygroundEditorTheme.ts";
 
 const theme: EditorThemeClasses = {
   ...baseTheme,

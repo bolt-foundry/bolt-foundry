@@ -1,6 +1,6 @@
 #! /usr/bin/env -S bff
 
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { PostHog } from "posthog-node";
 

@@ -2,12 +2,12 @@
 
 import { assertEquals } from "@std/assert";
 import { afterEach } from "@std/testing/bdd";
-import { getLogger } from "packages/logger/logger.ts";
-import { DatabaseBackendNeon } from "apps/bfDb/backend/DatabaseBackendNeon.ts";
-import { DatabaseBackendPg } from "apps/bfDb/backend/DatabaseBackendPg.ts";
-import type { DatabaseBackend } from "apps/bfDb/backend/DatabaseBackend.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { DatabaseBackendNeon } from "@bfmono/apps/bfDb/backend/DatabaseBackendNeon.ts";
+import { DatabaseBackendPg } from "@bfmono/apps/bfDb/backend/DatabaseBackendPg.ts";
+import type { DatabaseBackend } from "@bfmono/apps/bfDb/backend/DatabaseBackend.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
-import { DatabaseBackendSqlite } from "apps/bfDb/backend/DatabaseBackendSqlite.ts";
+import { DatabaseBackendSqlite } from "@bfmono/apps/bfDb/backend/DatabaseBackendSqlite.ts";
 import {
   bfCloseConnection,
   bfDeleteItem,
@@ -15,10 +15,13 @@ import {
   bfPutItem,
   bfQueryItems,
   type Props,
-} from "apps/bfDb/bfDb.ts";
-import { BfNode, type BfNodeMetadata } from "apps/bfDb/classes/BfNode.ts";
-import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
-import type { BfGid } from "lib/types.ts";
+} from "@bfmono/apps/bfDb/bfDb.ts";
+import {
+  BfNode,
+  type BfNodeMetadata,
+} from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
 
 const logger = getLogger(import.meta);
 

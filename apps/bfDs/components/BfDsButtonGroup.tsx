@@ -2,7 +2,7 @@ import * as React from "react";
 import type {
   BfDsButton,
   ButtonType,
-} from "apps/bfDs/components/BfDsButton.tsx";
+} from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 const styles: Record<string, React.CSSProperties> = {
   buttonGroup: {
     display: "flex",
