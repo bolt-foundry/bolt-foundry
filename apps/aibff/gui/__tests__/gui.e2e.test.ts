@@ -211,14 +211,30 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
       "Should show Chat Interface heading",
     );
 
-    // Check for the GraphQL placeholder text
-    const hasGraphQLPlaceholder = await context.page.evaluate(() => {
+    // Check for the chat interface elements
+    const hasAIGreeting = await context.page.evaluate(() => {
       const divs = Array.from(document.querySelectorAll("div"));
       return divs.some((div) =>
-        div.textContent === "GraphQL integration coming soon..."
+        div.textContent?.includes("Hello! I'm here to help you create graders")
       );
     });
-    assert(hasGraphQLPlaceholder, "Should show GraphQL placeholder message");
+    assert(hasAIGreeting, "Should show AI assistant greeting message");
+
+    // Check for input textarea
+    const hasTextarea = await context.page.evaluate(() => {
+      const textarea = document.querySelector(
+        'textarea[placeholder="Type your message here..."]',
+      );
+      return !!textarea;
+    });
+    assert(hasTextarea, "Should have message input textarea");
+
+    // Check for send button
+    const hasSendButton = await context.page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll("button"));
+      return buttons.some((button) => button.textContent === "Send");
+    });
+    assert(hasSendButton, "Should have Send button");
 
     // Navigate to Samples page
     await context.page.click('a[href="#/samples"]');
