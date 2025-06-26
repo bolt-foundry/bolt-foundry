@@ -9,16 +9,18 @@ function Navigation() {
     display: "flex",
     gap: "1rem",
     padding: "1rem",
-    borderBottom: "1px solid #e0e0e0",
+    borderBottom: "1px solid var(--bfds-border)",
     marginBottom: "1rem",
+    backgroundColor: "#1a1b1c",
   };
 
   const linkStyle = {
     textDecoration: "none",
-    color: "#333",
+    color: "var(--bfds-text-secondary)",
     padding: "0.5rem 1rem",
     borderRadius: "4px",
-    transition: "background-color 0.2s",
+    transition: "all 0.2s",
+    border: "1px solid transparent",
   };
 
   return (
@@ -28,12 +30,17 @@ function Navigation() {
           key={route.path}
           href={`#${route.path}`}
           style={linkStyle}
-          onMouseOver={(
-            e,
-          ) => (e.currentTarget.style.backgroundColor = "#f0f0f0")}
-          onMouseOut={(
-            e,
-          ) => (e.currentTarget.style.backgroundColor = "transparent")}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor =
+              "var(--bfds-background-hover)";
+            e.currentTarget.style.color = "var(--bfds-text)";
+            e.currentTarget.style.borderColor = "var(--bfds-border)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent";
+            e.currentTarget.style.color = "var(--bfds-text-secondary)";
+            e.currentTarget.style.borderColor = "transparent";
+          }}
         >
           {route.title}
         </a>
@@ -53,10 +60,14 @@ function App() {
             minHeight: "100vh",
             display: "flex",
             flexDirection: "column",
+            backgroundColor: "var(--bfds-background)",
+            color: "var(--bfds-text)",
           }}
         >
-          <header>
-            <h1 style={{ margin: "1rem" }}>aibff GUI</h1>
+          <header style={{ backgroundColor: "#0f1011" }}>
+            <h1 style={{ margin: "1rem", color: "var(--bfds-text)" }}>
+              aibff GUI
+            </h1>
             <Navigation />
           </header>
           <main style={{ flex: 1, padding: "1rem" }}>
