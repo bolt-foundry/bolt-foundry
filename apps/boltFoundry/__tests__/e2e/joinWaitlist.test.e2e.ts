@@ -64,10 +64,10 @@ async function runWaitlistTest(context: E2ETestContext) {
     // 2️⃣  Wait for and scroll to the waitlist form with retry logic
     const formSelector = '[data-testid="waitlist-form"]';
 
-    // Increase timeout and add state check
+    // Increase timeout
     await context.page.waitForSelector(formSelector, {
       timeout: 30_000,
-      state: "visible",
+      visible: true,
     });
 
     // Wait for form to be fully interactive
@@ -80,7 +80,7 @@ async function runWaitlistTest(context: E2ETestContext) {
           "[data-cf-testid='waitlist-submit']",
         );
         return form && nameInput && emailInput && submitButton &&
-          !submitButton.disabled;
+          !(submitButton as HTMLButtonElement).disabled;
       },
       { timeout: 20_000 },
       formSelector,
@@ -103,14 +103,16 @@ async function runWaitlistTest(context: E2ETestContext) {
 
     await context.page.click(nameInput);
     await context.page.evaluate(
-      (selector) => document.querySelector(selector).value = "",
+      (selector) =>
+        (document.querySelector(selector) as HTMLInputElement).value = "",
       nameInput,
     );
     await context.page.type(nameInput, "Test User", { delay: 50 });
 
     await context.page.click(emailInput);
     await context.page.evaluate(
-      (selector) => document.querySelector(selector).value = "",
+      (selector) =>
+        (document.querySelector(selector) as HTMLInputElement).value = "",
       emailInput,
     );
     await context.page.type(emailInput, "test.dryrun@example.com", {
@@ -119,7 +121,8 @@ async function runWaitlistTest(context: E2ETestContext) {
 
     await context.page.click(companyInput);
     await context.page.evaluate(
-      (selector) => document.querySelector(selector).value = "",
+      (selector) =>
+        (document.querySelector(selector) as HTMLInputElement).value = "",
       companyInput,
     );
     await context.page.type(companyInput, "Bolt Foundry", { delay: 50 });
@@ -133,7 +136,7 @@ async function runWaitlistTest(context: E2ETestContext) {
     await context.page.waitForFunction(
       (selector) => {
         const btn = document.querySelector(selector);
-        return btn && !btn.disabled;
+        return btn && !(btn as HTMLButtonElement).disabled;
       },
       { timeout: 10_000 },
       submitSelector,
@@ -172,7 +175,12 @@ async function runWaitlistTest(context: E2ETestContext) {
           const btn = document.querySelector(
             "[data-cf-testid='waitlist-submit']",
           );
-          return btn ? { disabled: btn.disabled, text: btn.textContent } : null;
+          return btn
+            ? {
+              disabled: (btn as HTMLButtonElement).disabled,
+              text: btn.textContent,
+            }
+            : null;
         })(),
         errorMessages: Array.from(
           document.querySelectorAll('.error, [class*="error"]'),
@@ -181,7 +189,7 @@ async function runWaitlistTest(context: E2ETestContext) {
     });
 
     logger.error("Join waitlist e2e test failed", {
-      error: error.message,
+      error: (error as Error).message,
       pageState: pageContent,
       timestamp: new Date().toISOString(),
     });
