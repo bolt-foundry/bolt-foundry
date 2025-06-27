@@ -1,0 +1,9 @@
+type Query {
+  dashboard: Dashboard!
+}
+
+type Dashboard {
+  customerCount: Int!
+  githubStars: Int!
+  githubRecentPRs: Int!
+}
