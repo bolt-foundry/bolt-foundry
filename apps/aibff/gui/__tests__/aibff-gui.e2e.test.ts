@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno test -A
+#!/usr/bin/env -S deno test -A --no-check
 
 import { assert, assertEquals } from "@std/assert";
 import { delay } from "@std/async";
@@ -400,6 +400,17 @@ This demonstrates manual editing of the grader.`;
     // Stop the server process
     try {
       serverProcess.kill("SIGKILL");
+      
+      // Try to consume any remaining data from streams to prevent leaks
+      try {
+        const reader = serverProcess.stderr.getReader();
+        reader.cancel();
+      } catch { /* ignore */ }
+      
+      try {
+        const reader = serverProcess.stdout.getReader();
+        reader.cancel();
+      } catch { /* ignore */ }
     } catch {
       // Process may have already exited
     }
