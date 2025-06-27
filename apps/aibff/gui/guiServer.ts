@@ -5,6 +5,7 @@ import { parseArgs } from "@std/cli";
 import { getLogger } from "@bolt-foundry/logger";
 import { createGraphQLServer } from "../commands/graphql-schema.ts";
 import { renderDeck } from "../index.ts";
+import { AibffConversation } from "@bfmono/apps/bfDb/nodeTypes/aibff/AibffConversation.ts";
 
 const logger = getLogger(import.meta);
 
@@ -164,67 +165,15 @@ const routes = [
       }
 
       try {
-        const filename = `conversations/${conversationId}.md`;
-        const markdown = await Deno.readTextFile(filename);
-
-        // Parse the markdown to extract messages
-        const lines = markdown.split("\n");
-        const messages: Array<ChatMessage> = [];
-        let currentMessage: ChatMessage | null = null;
-        let inFrontmatter = false;
-
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i];
-
-          // Skip frontmatter
-          if (line === "+++") {
-            inFrontmatter = !inFrontmatter;
-            continue;
-          }
-          if (inFrontmatter) continue;
-
-          // Check for message headers
-          if (line.startsWith("## User") || line.startsWith("## Assistant")) {
-            // Save previous message if exists
-            if (currentMessage) {
-              messages.push(currentMessage);
-            }
-
-            // Start new message
-            const role = line.includes("User") ? "user" : "assistant";
-            const timestampLine = lines[i + 1];
-            const timestamp = timestampLine?.match(/_(.+)_/)?.[1] || "";
-
-            currentMessage = {
-              id: `msg-${i}`,
-              role,
-              timestamp,
-              content: "",
-            };
-
-            i++; // Skip timestamp line
-          } else if (currentMessage && line.trim()) {
-            // Add content to current message
-            currentMessage.content += (currentMessage.content ? "\n" : "") +
-              line;
-          }
-        }
-
-        // Don't forget the last message
-        if (currentMessage) {
-          messages.push(currentMessage);
-        }
-
-        // Clean up content
-        messages.forEach((msg) => {
-          msg.content = msg.content.trim();
-        });
+        // Try to load existing conversation
+        const conversation = await AibffConversation.load(conversationId);
+        const messages = conversation.getMessages();
 
         return new Response(JSON.stringify({ conversationId, messages }), {
           headers: { "Content-Type": "application/json" },
         });
       } catch (error) {
-        if (error instanceof Deno.errors.NotFound) {
+        if (error instanceof Error && error.message.includes("not found")) {
           // Check if this is a newly created conversation ID
           if (
             conversationId.startsWith("conv-") &&
@@ -240,42 +189,19 @@ const routes = [
                 const initialContent = await generateInitialMessage();
 
                 // Create initial conversation with generated greeting
-                const initialMessages = [{
+                const conversation = new AibffConversation(conversationId);
+                conversation.addMessage({
                   id: "1",
                   role: "assistant",
                   content: initialContent,
                   timestamp: new Date().toISOString(),
-                }];
+                });
+                await conversation.save();
 
-                // Save the initial conversation
-                const conversationsDir = "conversations";
-                try {
-                  await Deno.mkdir(conversationsDir, { recursive: true });
-                } catch {
-                  // Directory might already exist
-                }
-
-                const frontmatter = `+++
-id = "${conversationId}"
-created_at = "${new Date().toISOString()}"
-updated_at = "${new Date().toISOString()}"
-+++`;
-
-                const markdownContent = initialMessages.map((msg) => {
-                  const role = msg.role === "user" ? "User" : "Assistant";
-                  return `## ${role}
-_${msg.timestamp}_
-
-${msg.content}`;
-                }).join("\n\n");
-
-                const fullContent =
-                  `${frontmatter}\n\n# Conversation ${conversationId}\n\n${markdownContent}`;
-                const filename = `${conversationsDir}/${conversationId}.md`;
-                await Deno.writeTextFile(filename, fullContent);
+                const messages = conversation.getMessages();
 
                 return new Response(
-                  JSON.stringify({ conversationId, messages: initialMessages }),
+                  JSON.stringify({ conversationId, messages }),
                   {
                     headers: { "Content-Type": "application/json" },
                   },
@@ -351,42 +277,24 @@ ${msg.content}`;
           return new Response("Failed to get AI response", { status: 500 });
         }
 
-        // Helper function to save conversation
-        const saveConversation = async (messages: Array<ChatMessage>) => {
-          if (!conversationId) return;
+        // Load or create conversation
+        let conversation: AibffConversation;
+        try {
+          conversation = await AibffConversation.load(conversationId);
+        } catch {
+          // Create new conversation if it doesn't exist
+          conversation = new AibffConversation(conversationId);
+        }
 
-          const conversationsDir = "conversations";
-          try {
-            await Deno.mkdir(conversationsDir, { recursive: true });
-          } catch {
-            // Directory might already exist
+        // Add all messages to the conversation
+        for (const msg of messages) {
+          if (!conversation.getMessages().some((m) => m.id === msg.id)) {
+            conversation.addMessage(msg);
           }
-
-          // Create TOML frontmatter
-          const frontmatter = `+++
-id = "${conversationId}"
-created_at = "${messages[0]?.timestamp || new Date().toISOString()}"
-updated_at = "${new Date().toISOString()}"
-+++`;
-
-          // Create markdown content
-          const markdownContent = messages.map((msg) => {
-            const role = msg.role === "user" ? "User" : "Assistant";
-            return `## ${role}
-_${msg.timestamp || new Date().toISOString()}_
-
-${msg.content}`;
-          }).join("\n\n");
-
-          const fullContent =
-            `${frontmatter}\n\n# Conversation ${conversationId}\n\n${markdownContent}`;
-
-          const filename = `${conversationsDir}/${conversationId}.md`;
-          await Deno.writeTextFile(filename, fullContent);
-        };
+        }
 
         // Save the conversation with the user's message
-        await saveConversation(messages);
+        await conversation.save();
 
         // Create SSE stream
         const encoder = new TextEncoder();
@@ -411,14 +319,12 @@ ${msg.content}`;
                   if (line.startsWith("data: ")) {
                     const data = line.slice(6);
                     if (data === "[DONE]") {
-                      // Save the complete conversation with assistant's response
-                      const completeMessages = [...messages, {
-                        id: (Date.now() + 1).toString(),
+                      // Add the assistant's response and save
+                      conversation.addMessage({
                         role: "assistant",
                         content: assistantMessage,
-                        timestamp: new Date().toISOString(),
-                      }];
-                      await saveConversation(completeMessages);
+                      });
+                      await conversation.save();
 
                       controller.enqueue(
                         encoder.encode("event: done\ndata: {}\n\n"),
