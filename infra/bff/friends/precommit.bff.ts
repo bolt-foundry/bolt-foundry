@@ -93,8 +93,26 @@ export async function precommitCommand(
     { name: "Format", command: ["bff", "ai", "format", ...files] },
     { name: "Lint", command: ["bff", "ai", "lint", "--fix", ...files] },
     { name: "Type Check", command: ["bff", "ai", "check", ...files] },
-    { name: "Test", command: ["bff", "ai", "test"] }, // Tests don't take file args
   ];
+
+  // Only add test command if:
+  // 1. No specific files were provided (running on all changes), OR
+  // 2. At least one of the provided files is a test file
+  const hasTestFiles = files.length === 0 ||
+    files.some((file) =>
+      file.endsWith(".test.ts") || file.endsWith(".test.tsx")
+    );
+
+  if (hasTestFiles) {
+    // If specific test files were provided, run only those tests
+    const testFiles = files.filter((file) =>
+      file.endsWith(".test.ts") || file.endsWith(".test.tsx")
+    );
+    checks.push({
+      name: "Test",
+      command: ["bff", "ai", "test", ...testFiles],
+    });
+  }
 
   // Allow skipping specific checks with options
   const skipFormat = flags.includes("--skip-format");

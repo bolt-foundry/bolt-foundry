@@ -17,4 +17,5 @@ export default defineConfig({
   optimizeDeps: {
     include: ["@isograph/react"],
   },
+  publicDir: new URL(import.meta.resolve("@bfmono/static")).pathname,
 });
