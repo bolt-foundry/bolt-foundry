@@ -94,6 +94,10 @@ Examples:
         cwd: guiPath,
         stdout: "inherit",
         stderr: "inherit",
+        env: {
+          ...Deno.env.toObject(),
+          VITE_HMR_PORT: (vitePort + 1).toString(),
+        },
       });
 
       viteProcess = viteCommand.spawn();

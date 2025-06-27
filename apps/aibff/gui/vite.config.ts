@@ -1,3 +1,4 @@
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { defineConfig } from "vite";
 import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
@@ -6,8 +7,23 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [
     deno(),
-    react(),
+    react({
+      babel: {
+        babelrc: true,
+      },
+    }),
   ],
+  server: {
+    hmr: (() => {
+      // Get HMR port from environment variable if set
+      const hmrPort = getConfigurationVariable("VITE_HMR_PORT");
+      if (hmrPort) {
+        return { port: parseInt(hmrPort) };
+      }
+      // Let Vite auto-assign port
+      return true;
+    })(),
+  },
   resolve: {
     alias: {
       "@bfmono/": new URL("../../../", import.meta.url).pathname,
