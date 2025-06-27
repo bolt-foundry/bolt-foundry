@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# BFT (Bolt Foundry Task) - Main executable wrapper
+# This script executes the bft command line tool
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Execute the bft.ts file with deno
+exec deno run -A "$SCRIPT_DIR/../bft/bin/bft.ts" "$@"
