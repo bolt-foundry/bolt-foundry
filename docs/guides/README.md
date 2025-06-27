@@ -1,3 +1,3 @@
 # Bolt Foundry Documentation
 
-Docs coming soon.
+Welcome to Bolt Foundry. Click

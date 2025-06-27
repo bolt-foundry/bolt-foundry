@@ -10,7 +10,7 @@ export class Query extends GraphQLObjectBase {
       .object("documentsBySlug", () => PublishedDocument, {
         args: (a) => a.string("slug"),
         resolve: async (_root, args, _ctx, _info) => {
-          const slug = (args.slug as string) || "README";
+          const slug = (args.slug as string) || "getting-started";
           const post = await PublishedDocument.findX(slug).catch(() => null);
           return post;
         },

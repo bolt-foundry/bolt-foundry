@@ -20,7 +20,7 @@ export const Docs = iso(`
   const [showSidebar, setShowSidebar] = useState(false);
   const docRef = useRef<HTMLDivElement>(null);
   const blogPost = data.documentsBySlug;
-  const currentSlug = parameters.slug || "README";
+  const currentSlug = parameters.slug || "getting-started";
 
   useEffect(() => {
     if (docRef.current) {
