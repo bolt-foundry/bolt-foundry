@@ -85,8 +85,8 @@ board.
 ## A 60-minute fix ⏰
 
 Without even using our software and only using
-[our prompt philosophy](docs/blog/2025-06-5-things-about-llms.md), Velvet
-increased their citation XML output reliability from 86% to 100%.
+[our prompt philosophy](2025-06-5-things-about-llms), Velvet increased their
+citation XML output reliability from 86% to 100%.
 
 It literally never failed.
 
@@ -96,7 +96,7 @@ remained unbreakable.
 ## As the user turns 🌎
 
 In this case, the most important part of the hourglass shape was moving the
-context to [synthetic user turns](docs/guides/deck-system.md).
+context to [synthetic user turns](/docs/deck-system).
 
 For Velvet, adding the variables into the top of the user turn, and the
 formatting at the bottom as the last user turn before generation, meant that the
