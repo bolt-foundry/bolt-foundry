@@ -101,6 +101,18 @@ export async function land(): Promise<number> {
     return buildResult;
   }
 
+  // Generate Claude commands for BFT
+  logger.info("Generating Claude commands for BFT...");
+  const claudifyResult = await runShellCommand([
+    "bft",
+    "claudify",
+  ]);
+
+  if (claudifyResult !== 0) {
+    logger.error("Failed to generate Claude commands");
+    return claudifyResult;
+  }
+
   const currentSaplingHash = await getCurrentSaplingHash();
   const lastSaplingHash = await getLastSaplingHashFromGit();
 

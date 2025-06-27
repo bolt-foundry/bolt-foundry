@@ -1,5 +1,8 @@
 # BFF to BFT Rename Implementation Plan
 
+_Last Updated: 2025-06-27 - Added implementation insights from Phase 1
+completion and AI deck system_
+
 ## Overview
 
 This plan documents the comprehensive rename of the `bff` (Bolt Foundry Friend)
@@ -28,56 +31,168 @@ command when working with AI assistants like Claude Code.
 - No functional changes to commands
 - No changes to command behavior
 
-## Implementation Strategy
+## Completed Phases
 
-### Phase 1: Create Parallel Structure with Clean Implementation
+### Phase 1: Core BFT Implementation ✅
 
-1. Create `/infra/bft/` directory alongside `/infra/bff/`
-2. Create new cleanroom implementation of core files in `/infra/bft/`:
-   - `bft.ts` (minimal implementation with help functionality and command
-     loading)
-   - `bin/bft.ts` (executable file that loads and runs commands)
-   - Basic command registration system
-3. Create `bft` executable in `/infra/bin/` pointing to new implementation
-4. Configure `bft` to load and execute `.bff.ts` files from
-   `/infra/bff/friends/`
-5. Implement `--help` command that lists all available commands from current
-   location
-6. Test that `bft --help` shows all commands and `bft <command>` executes them
+Created a cleanroom implementation of BFT with modern architecture:
 
-### Phase 2: Migrate Friend Commands
+1. **Directory Structure**:
+   - Created `/infra/bft/` with clean separation from BFF
+   - Tasks live in `/infra/bft/tasks/` (not "friends")
+   - Created `/packages/cli-ui/` for shared output handling
 
-1. Move all friend files from `/infra/bff/friends/` to `/infra/bft/friends/`
-2. Rename all `.bff.ts` files to `.bft.ts` in the new location
-3. Update imports in friend files to use new `/infra/bft/` paths
-4. Update function names (e.g., `trackBffCommand` to `trackBftCommand`)
-5. Add deprecation warnings to `bff` command
-6. Configure `bff` to also load friends from `/infra/bft/friends/` for backward
-   compatibility
-7. Verify `bft --help` now shows all migrated commands
-8. Test both commands work with all friends
+2. **Export-Based Discovery**:
+   ```typescript
+   // Each task exports its definition
+   export const bftDefinition = {
+     description: "Task description",
+     fn: taskFunction,
+     aiSafe?: boolean
+   } satisfies TaskDefinition;
+   ```
 
-### Phase 3: Update Documentation and CI
+3. **Built-in Tasks**:
+   - `help` - Lists all available tasks with AI-safe indicators
+   - `run` - Executes .bft.ts files with shebang support
+   - `echo` - Simple example task
+   - `deck` - AI deck file management
 
-1. Update all documentation files (README, CLAUDE.md, etc.)
-2. Update GitHub Actions workflows
-3. Update shell scripts and examples
-4. Update analytics tracking references
+4. **Key Features**:
+   - Autodiscovery of both `.bft.ts` and `.bft.deck.md` files
+   - Proper stdout/stderr separation via cli-ui package
+   - Support for executable scripts with `#!/usr/bin/env -S bft run`
 
-### Phase 4: Update Shebang Lines via Lint Rule
+### Phase 2: AI Deck System ✅
 
-1. Create a lint rule that automatically updates shebang lines from
-   `#! /usr/bin/env -S bff` to `#! /usr/bin/env -S bft`
-2. Run `bft lint --fix` to automatically update all `.bft.ts` files
-3. This ensures consistent updates across all files
-4. Test that files execute correctly with new shebang
+Implemented native support for AI-powered deck files:
 
-### Phase 5: Deprecation and Cleanup
+1. **Deck Format** (`.bft.deck.md`):
+   ```markdown
+   +++
+   [meta]
+   version = "1.0"
+   purpose = "Deck purpose"
+   +++
 
-1. Keep `bff` as alias with deprecation warning for 30 days
-2. Monitor usage and assist teams with migration
-3. Remove old `/infra/bff/` directory after confirming everything works
-4. Final removal of `bff` command
+   # System Prompt
+
+   Markdown content becomes the system prompt.
+
+   ![](./context-file.toml)
+   ```
+
+2. **Context Injection**:
+   - TOML files define contexts with `assistantQuestion` and `description`
+   - Contexts injected as assistant/user message pairs
+   - Support for default values and required parameters
+
+3. **Deck Commands**:
+   - `bft deck run` - Execute with context parameters
+   - `bft deck render` - Convert to OpenAI format
+   - `bft deck list` - Find deck files
+   - `bft deck validate` - Check syntax
+
+4. **Example Decks**:
+   - `commit.bft.deck.md` - Bolt Foundry style commit messages
+   - `code-reviewer.bft.deck.md` - Code review assistant
+   - `commit-message.bft.deck.md` - Conventional commits
+
+### Phase 3: Claude Integration ✅
+
+Built integration with Claude Code through command generation:
+
+1. **BFT Claudify**:
+   - `bft claudify` generates `.claude/commands/bft/`
+   - One command file per BFT task
+   - Extracts context parameters from TOML files
+
+2. **Command Templates**:
+   - Simple format: description + run instruction
+   - Parameter hints for deck commands
+   - `$ARGUMENTS` placeholder for user input
+
+## Future Phases
+
+### Phase 4: Enhanced Claude Integration
+
+1. **Deck Render Markdown Format**:
+   - Add `--format markdown` option to deck render
+   - Execute shell commands to inject real context
+   - Output ready-to-execute prompts for Claude
+
+2. **Automatic Command Generation**:
+   - Integrate claudify into `bff land` workflow
+   - Add `.claude/commands/bft/` to `.gitignore`
+   - Treat Claude commands as build artifacts
+
+### Phase 5: Migrate Existing BFF Tasks
+
+1. **Task Migration**:
+   - Move tasks from `/infra/bff/friends/` to `/infra/bft/tasks/`
+   - Convert from `register()` to `export const bftDefinition`
+   - Update imports and function names
+
+2. **File Updates**:
+   - Rename `.bff.ts` to `.bft.ts`
+   - Update shebang lines via lint rule
+   - Update all import paths
+
+3. **Compatibility**:
+   - Add deprecation warning to `bff` command
+   - Both commands work during transition
+   - Monitor usage analytics
+
+### Phase 6: Documentation and CI Updates
+
+1. **Documentation**:
+   - Update README.md and CLAUDE.md files
+   - Update all cards in `/decks/cards/`
+   - Update onboarding guides
+
+2. **CI/CD**:
+   - Update GitHub Actions workflows
+   - Update build scripts
+   - Update deployment processes
+
+### Phase 7: Final Cleanup
+
+1. **Remove BFF**:
+   - 30-day deprecation period
+   - Remove `/infra/bff/` directory
+   - Remove `bff` executable
+
+2. **Verification**:
+   - All tasks migrated successfully
+   - No remaining BFF references
+   - Analytics confirm zero BFF usage
+
+## Key Architectural Differences (BFF vs BFT)
+
+### Task Discovery
+
+- **BFF**: Uses `register()` function calls within task files
+- **BFT**: Uses export-based discovery with `export const bftDefinition`
+
+### File Organization
+
+- **BFF**: Tasks in `/infra/bff/friends/` directory
+- **BFT**: Tasks in `/infra/bft/tasks/` directory
+
+### Task Types
+
+- **BFF**: Only supports `.bff.ts` executable files
+- **BFT**: Supports both `.bft.ts` executables and `.bft.deck.md` AI decks
+
+### Output Handling
+
+- **BFF**: Direct console.log usage throughout
+- **BFT**: Centralized CLI UI package for proper stdout/stderr separation
+
+### AI Integration
+
+- **BFF**: No built-in AI support
+- **BFT**: Native support for AI deck files with context injection
 
 ## Technical Changes
 
@@ -90,8 +205,11 @@ command when working with AI assistants like Claude Code.
 # Main directory
 /infra/bff/ → /infra/bft/
 
-# Friend commands (40+ files)
-/infra/bff/friends/*.bff.ts → /infra/bft/friends/*.bft.ts
+# Task files (40+ files)
+/infra/bff/friends/*.bff.ts → /infra/bft/tasks/*.bft.ts
+
+# New AI deck files
+/infra/bft/tasks/*.bft.deck.md
 
 # Core files
 /infra/bff/bff.ts → /infra/bft/bft.ts
@@ -104,13 +222,19 @@ command when working with AI assistants like Claude Code.
    #! /usr/bin/env -S bft
    ```
 
-2. **Import Updates**:
+2. **Import and Export Updates**:
    ```typescript
-   // Before
+   // Before (BFF style)
    import { register } from "@bfmono/infra/bff/bff.ts";
+   register("taskname", "description", taskFn);
 
-   // After
-   import { register } from "@bfmono/infra/bft/bft.ts";
+   // After (BFT style)
+   import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
+   export const bftDefinition = {
+     description: "Task description",
+     fn: taskFn,
+     aiSafe: true,
+   } satisfies TaskDefinition;
    ```
 
 3. **Function Renames**:
@@ -174,25 +298,58 @@ bft ai <command>
 
 ## Success Criteria
 
-- [ ] All developers can use `bft` without issues
-- [ ] CI/CD pipelines work with `bft`
-- [ ] No confusion between `bft` and `aibff` in AI tools
-- [ ] Clean removal of `bff` after transition period
+### Completed ✅
+
+- [x] Core BFT implementation with export-based task discovery
+- [x] Support for both `.bft.ts` and `.bft.deck.md` files
+- [x] AI deck system with context injection
+- [x] CLI UI package for proper output handling
+- [x] BFT claudify command for Claude integration
+- [x] Clear separation between `bft` and `aibff` in design
+
+### Remaining
+
+- [ ] Deck render --format markdown for Claude
+- [ ] Integration with `bff land` for auto-generating Claude commands
+- [ ] All existing BFF tasks migrated to BFT format
+- [ ] CI/CD pipelines updated to use `bft`
 - [ ] All documentation updated
+- [ ] Clean removal of `bff` after transition period
 
-## Timeline
+## Timeline Summary
 
-- **Phase 1**: Create parallel structure, add deprecation warnings
-- **Phase 2**: Core infrastructure updates
-- **Phase 3**: Documentation and CI updates
-- **Phase 4**: Update shebang lines only
-- **Phase 5**: Transition period with both commands
-- **Final**: Cleanup and removal of `bff`
+### Completed (2025-06-27)
+
+- ✅ Phase 1: Core BFT Implementation
+- ✅ Phase 2: AI Deck System
+- ✅ Phase 3: Claude Integration (claudify command)
+
+### In Progress
+
+- 🔄 Phase 4: Enhanced Claude Integration (markdown format)
+
+### Upcoming
+
+- ⏳ Phase 5: Migrate Existing BFF Tasks
+- ⏳ Phase 6: Documentation and CI Updates
+- ⏳ Phase 7: Final Cleanup
 
 ## Notes
+
+### Original Planning Notes
 
 - Lint rule in Phase 4 automates shebang updates, avoiding manual errors
 - Consider additional lint rules for import path updates
 - Monitor PostHog analytics for `bff` usage during transition
 - Coordinate with teams using automated tooling
 - Update onboarding documentation immediately
+
+### Implementation Insights (Added 2025-06-27)
+
+- Export-based task discovery proved cleaner than register() pattern
+- AI deck system enables powerful LLM integration without complex code
+- CLI UI separation essential for proper command piping
+- Claude integration through generated commands avoids tight coupling
+- Treating Claude commands as build artifacts (gitignored) simplifies
+  maintenance
+- "Tasks" terminology more intuitive than "friends" for CLI commands

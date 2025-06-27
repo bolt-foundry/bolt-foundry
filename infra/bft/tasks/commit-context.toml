@@ -1,0 +1,72 @@
+# Context definitions for Bolt Foundry commit message generation
+
+[contexts.status]
+type = "string"
+assistantQuestion = "What is the output of 'sl status' showing modified and untracked files?"
+description = "The Sapling status output showing all changed files"
+example = """
+M infra/bft/tasks/echo.bft.ts
+A infra/bft/tasks/commit.bft.deck.md
+? infra/bft/tasks/new-file.ts
+! infra/bft/tasks/deleted-file.ts
+"""
+
+[contexts.diff]
+type = "string"
+assistantQuestion = "What is the output of 'sl diff' showing the detailed changes?"
+description = "The Sapling diff output showing what was changed in each file"
+example = """
+diff --git a/infra/bft/tasks/echo.bft.ts b/infra/bft/tasks/echo.bft.ts
+--- a/infra/bft/tasks/echo.bft.ts
++++ b/infra/bft/tasks/echo.bft.ts
+@@ -1,5 +1,6 @@
+ #!/usr/bin/env -S bft run
+ 
+ import type { TaskDefinition } from "../bft.ts";
++import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
+ 
+ function echo(args: string[]): number {
+-  console.log(args.join(" "));
++  ui.output(args.join(" "));
+   return 0;
+ }
+"""
+
+[contexts.files]
+type = "string"
+assistantQuestion = "Which specific files should be included in this commit?"
+description = "Space-separated list of files to commit (empty means all changes)"
+default = ""
+
+[contexts.recentCommits]
+type = "string"
+assistantQuestion = "What are the recent commit messages from 'sl log --limit 5'?"
+description = "Recent commit messages to understand the project's commit style"
+example = """
+@  4a5b6c7d  randallb  2 hours ago
+│  Add CLI UI module for separating output streams
+│
+o  3d2e1f0a  randallb  3 hours ago
+│  Implement deck-based task system for bft
+│
+o  2c1b0a9b  randallb  4 hours ago
+│  Convert from register() to export-based task discovery
+│
+o  1a0b9c8d  randallb  5 hours ago
+│  Create initial bft implementation with TDD
+│
+o  0z9y8x7w  randallb  6 hours ago
+   Rename bff friends to tasks throughout codebase
+"""
+
+[contexts.prePlan]
+type = "boolean"
+assistantQuestion = "Should we create multiple commits for logical groupings?"
+description = "Whether to analyze changes and suggest splitting into multiple commits"
+default = false
+
+[contexts.skipTests]
+type = "boolean"
+assistantQuestion = "Should we skip mentioning the test plan?"
+description = "Whether to omit the test plan section from the commit message"
+default = false
