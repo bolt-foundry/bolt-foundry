@@ -59,9 +59,8 @@ exactly what Karpathy is describing.
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Merely crafting prompts does not seem like a real fulltime role, but figuring out how to compress context, chain prompts, recover from errors, and measure improvements is super challenging.”</p>&mdash; Amjad Masad (@amasad) <a href="https://twitter.com/amasad/status/1616670863373512705?ref_src=twsrc%5Etfw">January 21, 2023</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 We recently implemented this approach with Fastpitch, an AI-generated sports
-newsletter. We wrote about it
-**[here](docs/blog/2025-06-23-llm-evals-with-aibff.md)**, but the highlights
-are:
+newsletter. We wrote about it [here](2025-06-23-llm-evals-with-aibff), but the
+highlights are:
 
 1. We started by creating Ground Truth samples of stories collected by the LLM,
    scored by a human
@@ -75,7 +74,7 @@ Proper information hierarchy also helps LLMs perform better. We've seen this
 over and over with customers.
 
 We took one customer from
-[86% reliability on XML output to 100%](docs/blog/2025-06-inconsistent-outputs-to-perfect-reliability.md)
+[86% reliability on XML output to 100%](2025-06-inconsistent-outputs-to-perfect-reliability)
 in less than an hour with some basic prompt tweaks.
 
 This approach to giving the model "just the right information" with human-graded

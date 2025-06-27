@@ -11,32 +11,32 @@ const docSections: Array<DocSection> = [
   {
     title: "Getting Started",
     items: [
-      { slug: "README", title: "Overview" },
-      { slug: "quickstart", title: "Quickstart" },
+      // { slug: "README", title: "Overview" },
+      // { slug: "quickstart", title: "Quickstart" },
       { slug: "getting-started", title: "Getting Started" },
     ],
   },
-  {
-    title: "Planning & Strategy",
-    items: [
-      { slug: "big-picture-strategy", title: "Big picture strategy" },
-      { slug: "company-vision", title: "Company vision" },
-    ],
-  },
+  // {
+  //   title: "Planning & Strategy",
+  //   items: [
+  //     { slug: "big-picture-strategy", title: "Big picture strategy" },
+  //     { slug: "company-vision", title: "Company vision" },
+  //   ],
+  // },
   {
     title: "Development",
     items: [
       { slug: "deck-system", title: "Deck system" },
-      { slug: "improving-inference-philosophy", title: "Improving inference" },
-      { slug: "evals-overview", title: "Evals" },
+      //     { slug: "improving-inference-philosophy", title: "Improving inference" },
+      //     { slug: "evals-overview", title: "Evals" },
     ],
   },
-  {
-    title: "Reference",
-    items: [
-      { slug: "wut", title: "wut" },
-    ],
-  },
+  // {
+  //   title: "Reference",
+  //   items: [
+  //     { slug: "wut", title: "wut" },
+  //   ],
+  // },
 ];
 
 interface DocsSidebarProps {
