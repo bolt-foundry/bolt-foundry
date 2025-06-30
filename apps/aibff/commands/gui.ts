@@ -1,7 +1,8 @@
+#!/usr/bin/env -S deno run --allow-all
+
 import { parseArgs } from "@std/cli";
 import { getLogger } from "@bolt-foundry/logger";
 import type { Command } from "./types.ts";
-import { createGraphQLServer } from "./graphql-schema.ts";
 
 const logger = getLogger(import.meta);
 
@@ -42,7 +43,7 @@ Examples:
     const port = parseInt(flags.port);
     if (isNaN(port)) {
       logger.printErr(`Invalid port: ${flags.port}`);
-      Deno.exit(1);
+      throw new Error(`Invalid port: ${flags.port}`);
     }
 
     // Continue with foreground execution
@@ -65,7 +66,7 @@ Examples:
 
       if (!buildProcess.success) {
         logger.printErr("Build failed");
-        Deno.exit(1);
+        throw new Error("Build failed");
       }
 
       logger.println("Build completed successfully");
@@ -101,170 +102,42 @@ Examples:
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
 
-    // Start the server
+    // Start the GUI server subprocess
     logger.println(`Starting aibff GUI server on port ${port}...`);
 
-    // Create GraphQL server
-    const graphQLServer = createGraphQLServer(flags.dev);
-
-    // Define routes using URLPattern
-    const routes = [
-      {
-        pattern: new URLPattern({ pathname: "/health" }),
-        handler: () => new Response("OK", { status: 200 }),
-      },
-      {
-        pattern: new URLPattern({ pathname: "/graphql" }),
-        handler: (request: Request) => graphQLServer.handle(request),
-      },
-      {
-        pattern: new URLPattern({ pathname: "/api/stream" }),
-        handler: () => {
-          // SSE endpoint for streaming AI responses
-          const body = new ReadableStream({
-            start(controller) {
-              // Send initial connection message
-              controller.enqueue(
-                new TextEncoder().encode(
-                  `: Connected to aibff GUI SSE endpoint\n\n`,
-                ),
-              );
-
-              // Keep connection alive with periodic comments
-              const keepAlive = setInterval(() => {
-                try {
-                  controller.enqueue(
-                    new TextEncoder().encode(`: keepalive\n\n`),
-                  );
-                } catch {
-                  // Stream closed, cleanup
-                  clearInterval(keepAlive);
-                }
-              }, 30000);
-            },
-          });
-
-          return new Response(body, {
-            headers: {
-              "Content-Type": "text/event-stream",
-              "Cache-Control": "no-cache",
-              "Connection": "keep-alive",
-            },
-          });
-        },
-      },
+    const guiServerPath =
+      new URL(import.meta.resolve("../gui/guiServer.ts")).pathname;
+    const serverArgs = [
+      "--port",
+      port.toString(),
+      "--mode",
+      flags.dev ? "development" : "production",
     ];
 
-    const handler = async (request: Request): Promise<Response> => {
-      const url = new URL(request.url);
+    // In dev mode, also pass the vite port for proxying
+    if (flags.dev) {
+      serverArgs.push("--vite-port", vitePort.toString());
+    }
 
-      // Try to match against defined routes
-      for (const route of routes) {
-        if (route.pattern.test(url)) {
-          return await route.handler(request);
-        }
-      }
+    const serverCommand = new Deno.Command(guiServerPath, {
+      args: serverArgs,
+      stdout: "inherit",
+      stderr: "inherit",
+    });
 
-      // In dev mode, proxy all other requests to Vite
-      if (flags.dev) {
-        try {
-          const viteUrl =
-            `http://localhost:${vitePort}${url.pathname}${url.search}`;
-          const viteResponse = await fetch(viteUrl, {
-            method: request.method,
-            headers: request.headers,
-            body: request.body,
-          });
-
-          // Create new headers to avoid immutable headers issue
-          const headers = new Headers();
-          viteResponse.headers.forEach((value, key) => {
-            // Skip hop-by-hop headers
-            if (
-              !["connection", "keep-alive", "transfer-encoding"].includes(
-                key.toLowerCase(),
-              )
-            ) {
-              headers.set(key, value);
-            }
-          });
-
-          return new Response(viteResponse.body, {
-            status: viteResponse.status,
-            statusText: viteResponse.statusText,
-            headers,
-          });
-        } catch (error) {
-          logger.error("Error proxying to Vite:", error);
-          return new Response("Error proxying to Vite dev server", {
-            status: 502,
-          });
-        }
-      }
-
-      // In production mode, serve static assets
-      if (!flags.dev) {
-        const distPath = new URL(import.meta.resolve("../gui/dist")).pathname;
-
-        // API routes should return 404 if not found
-        if (url.pathname.startsWith("/api/")) {
-          return new Response("Not Found", { status: 404 });
-        }
-
-        // Default to index.html for root
-        let filePath = url.pathname;
-        if (filePath === "/") {
-          filePath = "/index.html";
-        }
-
-        const fullPath = `${distPath}${filePath}`;
-
-        try {
-          const file = await Deno.open(fullPath);
-          const stat = await file.stat();
-
-          // Determine content type
-          let contentType = "application/octet-stream";
-          if (filePath.endsWith(".html")) contentType = "text/html";
-          else if (filePath.endsWith(".js")) {
-            contentType = "application/javascript";
-          } else if (filePath.endsWith(".css")) contentType = "text/css";
-          else if (filePath.endsWith(".json")) contentType = "application/json";
-
-          return new Response(file.readable, {
-            headers: {
-              "Content-Type": contentType,
-              "Content-Length": stat.size.toString(),
-            },
-          });
-        } catch (error) {
-          if (error instanceof Deno.errors.NotFound) {
-            // For client-side routes (not starting with /api/ or containing a file extension)
-            if (
-              !url.pathname.includes(".") && !url.pathname.startsWith("/api/")
-            ) {
-              try {
-                const indexPath = `${distPath}/index.html`;
-                const file = await Deno.open(indexPath);
-                return new Response(file.readable, {
-                  headers: { "Content-Type": "text/html" },
-                });
-              } catch {
-                // Fall through to 404
-              }
-            }
-          }
-        }
-      }
-
-      return new Response("Not Found", { status: 404 });
-    };
-
-    const server = Deno.serve({ port }, handler);
+    const serverProcess = serverCommand.spawn();
 
     // Set up graceful shutdown handler
     const shutdown = async () => {
       logger.println("\nShutting down gracefully...");
+
+      // Clean up server process
+      try {
+        serverProcess.kill();
+        await serverProcess.status;
+      } catch {
+        // Process may have already exited
+      }
 
       // Clean up Vite process if it was started
       if (viteProcess) {
@@ -277,7 +150,7 @@ Examples:
       }
 
       // Exit cleanly
-      Deno.exit(0);
+      return;
     };
 
     // Handle SIGTERM and SIGINT for graceful shutdown
@@ -300,7 +173,8 @@ Examples:
     logger.println("Press Ctrl+C to stop");
 
     try {
-      await server.finished;
+      // Wait for server process to finish
+      await serverProcess.status;
     } finally {
       // Clean up Vite process if it was started
       if (viteProcess) {
