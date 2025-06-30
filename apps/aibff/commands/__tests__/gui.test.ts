@@ -59,8 +59,12 @@ Deno.test("gui command starts server and responds to health check", async () => 
     const response = await fetch("http://localhost:3001/health");
     assertEquals(response.status, 200);
 
-    const body = await response.text();
-    assertEquals(body, "OK");
+    const body = await response.json();
+    assertEquals(body.status, "OK");
+    assert(body.timestamp);
+    assertEquals(body.mode, "production");
+    assertEquals(body.port, 3001);
+    assert(body.uptime);
   } finally {
     // Cleanup - ensure process is killed and streams are closed
     try {
@@ -143,8 +147,12 @@ Deno.test("gui command --dev starts vite dev server and proxies requests", async
     // Test that health endpoint still works
     const healthResponse = await fetch("http://localhost:3002/health");
     assertEquals(healthResponse.status, 200);
-    const healthBody = await healthResponse.text();
-    assertEquals(healthBody, "OK");
+    const healthBody = await healthResponse.json();
+    assertEquals(healthBody.status, "OK");
+    assert(healthBody.timestamp);
+    assertEquals(healthBody.mode, "development");
+    assertEquals(healthBody.port, 3002);
+    assert(healthBody.uptime);
 
     // Test that root path proxies to Vite (should return HTML)
     const rootResponse = await fetch("http://localhost:3002/");
