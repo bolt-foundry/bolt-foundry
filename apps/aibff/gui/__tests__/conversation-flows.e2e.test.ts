@@ -51,13 +51,19 @@ async function startGuiServer(port: number) {
 }
 
 // Shared test utilities
-async function waitForGreeting(context: E2ETestContext) {
+async function waitForChatInterface(context: E2ETestContext) {
   await context.page.waitForFunction(
     () => {
-      const divs = Array.from(document.querySelectorAll("div"));
-      return divs.some((div) =>
-        div.textContent?.includes("Hi! I'm here to help you build a grader")
+      // Check if the textarea is present
+      const textarea = document.querySelector(
+        'textarea[placeholder="Type a message..."]',
       );
+      // Check if send button is present
+      const buttons = Array.from(document.querySelectorAll("button"));
+      const hasSendButton = buttons.some((button) =>
+        button.textContent === "Send"
+      );
+      return textarea && hasSendButton;
     },
     { timeout: 5000 },
   );
@@ -136,7 +142,7 @@ Deno.test("aibff GUI conversation flows", async (t) => {
       );
 
       // Should see greeting message
-      await waitForGreeting(context);
+      await waitForChatInterface(context);
 
       // No loading message should be visible for new conversation
       const hasLoadingMessage = await context.page.evaluate(() => {
@@ -162,12 +168,15 @@ Deno.test("aibff GUI conversation flows", async (t) => {
       await delay(3000);
 
       // Verify the conversation file was saved
-      let conversationFile = `conversations/${conversationId}.md`;
+      const conversationsDir = new URL(
+        import.meta.resolve("@bfmono/tmp/conversations"),
+      ).pathname;
+      let conversationFile = `${conversationsDir}/${conversationId}.md`;
       let fileExists = await exists(conversationFile);
 
       if (!fileExists) {
         // Try .toml extension for backwards compatibility
-        conversationFile = `conversations/${conversationId}.toml`;
+        conversationFile = `${conversationsDir}/${conversationId}.toml`;
         fileExists = await exists(conversationFile);
       }
 
@@ -201,9 +210,13 @@ Deno.test("aibff GUI conversation flows", async (t) => {
         assert(body.includes("## User"), "Should have User section");
         assert(body.includes("## Assistant"), "Should have Assistant section");
         assert(body.includes(testMessage), "Should contain the test message");
+        // Note: The initial assistant greeting is dynamically generated from assistant.deck.md
+        // so we just check that there is some assistant content
+        const assistantSectionIndex = body.indexOf("## Assistant");
+        const assistantContent = body.substring(assistantSectionIndex);
         assert(
-          body.includes("Hi! I'm here to help you build a grader"),
-          "Should contain the greeting message",
+          assistantContent.length > 50,
+          "Should have assistant content in the conversation",
         );
       }
     });
@@ -252,7 +265,7 @@ Deno.test("aibff GUI conversation flows", async (t) => {
       );
 
       // Verify greeting is also there
-      await waitForGreeting(context);
+      await waitForChatInterface(context);
     });
 
     await t.step("shows error for non-existent conversation", async () => {
@@ -301,7 +314,7 @@ Deno.test("aibff GUI conversation flows", async (t) => {
       );
 
       const conversationId = await getConversationId(context);
-      await waitForGreeting(context);
+      await waitForChatInterface(context);
 
       // Send a message
       const reloadTestMessage = "Testing reload functionality";
@@ -394,7 +407,7 @@ Deno.test("aibff GUI conversation flows", async (t) => {
         );
 
         // Should see greeting in new conversation
-        await waitForGreeting(context);
+        await waitForChatInterface(context);
       }
     });
 
