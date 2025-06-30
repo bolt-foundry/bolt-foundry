@@ -23,7 +23,7 @@ function generateConversationId(): string {
   return `conv-${timestamp}-${random}`;
 }
 
-export function Chat() {
+export function ChatWithIsograph() {
   const router = useRouter();
   const { navigate, params } = router;
   const conversationId = params?.conversationId;
@@ -38,6 +38,10 @@ export function Chat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { graderContent, updateGraderContent } = useGrader();
+
+  // TODO: Replace this with Isograph query
+  // This will be something like:
+  // const conversation = useQuery(ConversationQuery, { conversationId });
 
   // Load existing conversation or create new one
   useEffect(() => {

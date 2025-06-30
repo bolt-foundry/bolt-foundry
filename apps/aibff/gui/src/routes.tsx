@@ -1,5 +1,9 @@
 import type * as React from "react";
 import { Chat } from "./components/Chat.tsx";
+import { ChatWithIsograph } from "./components/ChatWithIsograph.tsx";
+
+// Toggle this flag to switch between implementations
+const useIsograph = true;
 
 export type RouteConfig = {
   path: string;
@@ -39,12 +43,12 @@ function EvaluationsView() {
 export const routes: Array<RouteConfig> = [
   {
     path: "/",
-    Component: Chat,
+    Component: useIsograph ? ChatWithIsograph : Chat,
     title: "Chat",
   },
   {
     path: "/chat/:conversationId",
-    Component: Chat,
+    Component: useIsograph ? ChatWithIsograph : Chat,
     title: "Chat",
   },
   {

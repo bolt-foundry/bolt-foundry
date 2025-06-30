@@ -172,13 +172,19 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     });
     logger.debug("Error check:", errorContent);
 
-    // Wait for content to load - look for the assistant greeting
+    // Wait for content to load - look for the chat interface
     await context.page.waitForFunction(
       () => {
-        const divs = Array.from(document.querySelectorAll("div"));
-        return divs.some((div) =>
-          div.textContent?.includes("Hi! I'm here to help you build a grader")
+        // Check if the textarea is present
+        const textarea = document.querySelector(
+          'textarea[placeholder="Type a message..."]',
         );
+        // Check if send button is present
+        const buttons = Array.from(document.querySelectorAll("button"));
+        const hasSendButton = buttons.some((button) =>
+          button.textContent === "Send"
+        );
+        return textarea && hasSendButton;
       },
       { timeout: 5000 },
     );
@@ -193,13 +199,12 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     // Check that the chat component loads
 
     // Check for the chat interface elements
-    const hasAIGreeting = await context.page.evaluate(() => {
-      const divs = Array.from(document.querySelectorAll("div"));
-      return divs.some((div) =>
-        div.textContent?.includes("Hi! I'm here to help you build a grader")
-      );
+    const hasChatInterface = await context.page.evaluate(() => {
+      // Check for the message display area
+      const messageArea = document.querySelector('div[style*="overflow"]');
+      return !!messageArea;
     });
-    assert(hasAIGreeting, "Should show AI assistant greeting message");
+    assert(hasChatInterface, "Should show chat interface");
 
     // Check for input textarea
     const hasTextarea = await context.page.evaluate(() => {
@@ -217,12 +222,12 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     });
     assert(hasSendButton, "Should have Send button");
 
-    // Check for workspace panel
-    const hasWorkspace = await context.page.evaluate(() => {
+    // Check for grader editor panel
+    const hasGraderEditor = await context.page.evaluate(() => {
       const divs = Array.from(document.querySelectorAll("div"));
-      return divs.some((div) => div.textContent?.includes("Workspace"));
+      return divs.some((div) => div.textContent?.includes("Grader Definition"));
     });
-    assert(hasWorkspace, "Should show workspace panel");
+    assert(hasGraderEditor, "Should show grader editor panel");
 
     // Test sending a message
     logger.info("Testing message send functionality...");

@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../node_modules/@isograph/compiler/isograph-config-schema.json",
+  "$schema": "../../node_modules/@isograph/compiler/isograph-config-schema.json",
   "project_root": "./src",
   "schema": "./schema.graphql",
   "artifact_directory": "./src/__isograph",
