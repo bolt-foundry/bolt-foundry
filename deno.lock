@@ -72,9 +72,12 @@
     "npm:@babel/preset-react@^7.27.1": "7.27.1_@babel+core@7.27.4",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.5_vite@6.3.5__@types+node@22.15.33__picomatch@4.0.2_@types+node@22.15.33",
     "npm:@hexagon/base64@^1.1.27": "1.1.28",
+    "npm:@isograph/babel-plugin@0.3.1": "0.3.1",
     "npm:@isograph/babel-plugin@^0.0.0-main-1fad6d74": "0.0.0-main-ffab3426",
     "npm:@isograph/compiler@0.0.0-main-1fad6d74": "0.0.0-main-1fad6d74",
+    "npm:@isograph/compiler@0.3.1": "0.3.1",
     "npm:@isograph/react@0.0.0-main-1fad6d74": "0.0.0-main-1fad6d74_react@19.1.0",
+    "npm:@isograph/react@0.3.1": "0.3.1_react@19.1.0",
     "npm:@levischuck/tiny-cbor@~0.2.2": "0.2.11",
     "npm:@lexical/mark@0.27.2": "0.27.2",
     "npm:@lexical/react@0.27.2": "0.27.2_react@19.1.0_react-dom@19.1.0__react@19.1.0",
@@ -1191,33 +1194,71 @@
         "graphql@15.3.0"
       ]
     },
+    "@isograph/babel-plugin@0.3.1": {
+      "integrity": "sha512-mJBWHiYBLpAVKLJ+GkBISidPUUk322nJEbxmwAMHGIagTOWr956Ac1L2z6KGkqki3Op+yXrE8Qgxkr7NiKKpCQ==",
+      "dependencies": [
+        "@babel/helper-module-imports",
+        "babel-plugin-macros",
+        "cosmiconfig@5.2.1",
+        "graphql@15.3.0"
+      ]
+    },
     "@isograph/compiler@0.0.0-main-1fad6d74": {
       "integrity": "sha512-atSTCGLFVFBxX6e9uoO+f18WMBEO3XEcMlewaS/SetPZG0ab8YYlS8d+ujgw4uhGBAiFI7gOIOU7pyWF4CfNKg==",
+      "bin": true
+    },
+    "@isograph/compiler@0.3.1": {
+      "integrity": "sha512-W8ITrI2sGtw60PhqD4gjl0GNxQEI0rWYiIxuHh13zqijVjpQySHLUAQErIeaCFFTcuxITBoqgFDwREUyjaMpaw==",
       "bin": true
     },
     "@isograph/disposable-types@0.0.0-main-1fad6d74": {
       "integrity": "sha512-kMX7/FinBl11/w6njgiBs+dZB2t18MXoITX8y7lzEvEmEsOzaHo74HlOtm6kJdENV0pQgQfbsMkyDdoPY5p2dA=="
     },
+    "@isograph/disposable-types@0.3.1": {
+      "integrity": "sha512-oCTu1Y7tsjSDRUqNo5EDH12GGHEIrPAa8ZSHl/ranm8WQPzcghhDUQM4+Lakgzq2qMcS/4LdENJ1dKPqwjph/w=="
+    },
     "@isograph/react-disposable-state@0.0.0-main-1fad6d74_react@19.1.0": {
       "integrity": "sha512-grUgCIYeQ7JRCo3D91RFCNQ53aRnPvEIFe7eosLXWjuODChF1MNv2Z3WvUtzF3G8WmqqpJYwi08hbx0QYOEKcQ==",
       "dependencies": [
-        "@isograph/disposable-types",
+        "@isograph/disposable-types@0.0.0-main-1fad6d74",
+        "react"
+      ]
+    },
+    "@isograph/react-disposable-state@0.3.1_react@19.1.0": {
+      "integrity": "sha512-eDVYU37HqgLfRVrqk7Xw957lOCfyUVga4nTAAf6LLHG/BD1+kOZepkTBEb0E6zijJE8C9kpkpBxbWHYC/+uTiQ==",
+      "dependencies": [
+        "@isograph/disposable-types@0.3.1",
         "react"
       ]
     },
     "@isograph/react@0.0.0-main-1fad6d74_react@19.1.0": {
       "integrity": "sha512-FCzt7IvHNy6HhJZggqLUTnL3O/PWbsGByQRNn+Wmve6X/f8+ObJYux+MuV6orhKagGKQQIxbyg+PQE0offa7lw==",
       "dependencies": [
-        "@isograph/disposable-types",
-        "@isograph/react-disposable-state",
-        "@isograph/reference-counted-pointer",
+        "@isograph/disposable-types@0.0.0-main-1fad6d74",
+        "@isograph/react-disposable-state@0.0.0-main-1fad6d74_react@19.1.0",
+        "@isograph/reference-counted-pointer@0.0.0-main-1fad6d74",
+        "react"
+      ]
+    },
+    "@isograph/react@0.3.1_react@19.1.0": {
+      "integrity": "sha512-ucuxDZXgUEZ6pR1I79zp9WHrOE08h8ptoQ9XVdK5kyfkCfrIw8MD49tHCdGJNBtIa0sYHzsgFuqYwAUgdj4MOg==",
+      "dependencies": [
+        "@isograph/disposable-types@0.3.1",
+        "@isograph/react-disposable-state@0.3.1_react@19.1.0",
+        "@isograph/reference-counted-pointer@0.3.1",
         "react"
       ]
     },
     "@isograph/reference-counted-pointer@0.0.0-main-1fad6d74": {
       "integrity": "sha512-64HQQ2XDR9iZHEb6g3oCb0+/DkGL0xgvvikksmq3PZdrPi6S8mXriI8u10Eyk5pxSXeQVp21ijWZSrZdpqvrFg==",
       "dependencies": [
-        "@isograph/disposable-types"
+        "@isograph/disposable-types@0.0.0-main-1fad6d74"
+      ]
+    },
+    "@isograph/reference-counted-pointer@0.3.1": {
+      "integrity": "sha512-TgqOi2NARGE7VFfdOd60wtHJjVOSgiWwz6s+7wB2OweHMkA8ile7T3d/Ao6TGEZkLtC1OIvvd/2ubel9sryDIQ==",
+      "dependencies": [
+        "@isograph/disposable-types@0.3.1"
       ]
     },
     "@jridgewell/gen-mapping@0.3.8": {
@@ -5001,7 +5042,9 @@
       "apps/aibff/gui": {
         "dependencies": [
           "npm:@deno/vite-plugin@^1.0.4",
-          "npm:@isograph/react@0.0.0-main-1fad6d74",
+          "npm:@isograph/babel-plugin@0.3.1",
+          "npm:@isograph/compiler@0.3.1",
+          "npm:@isograph/react@0.3.1",
           "npm:@types/react-dom@^19.0.4",
           "npm:@types/react@19",
           "npm:@types/react@^19.0.10",

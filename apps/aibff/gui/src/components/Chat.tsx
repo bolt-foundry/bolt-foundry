@@ -4,6 +4,7 @@ import { useRouter } from "../contexts/RouterContext.tsx";
 import { useGrader } from "../contexts/GraderContext.tsx";
 import { GraderEditor } from "./GraderEditor.tsx";
 import { MessageContent } from "./MessageContent.tsx";
+import { MessageInputUI } from "./MessageInput.tsx";
 import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
@@ -23,18 +24,17 @@ function generateConversationId(): string {
 }
 
 export function Chat() {
-  const { navigate, params } = useRouter();
+  const router = useRouter();
+  const { navigate, params } = router;
   const conversationId = params?.conversationId;
   const conversationIdRef = useRef<string | undefined>(conversationId);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [messages, setMessages] = useState<Array<Message>>([]);
-  const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const streamingMessageIdRef = useRef<string | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { graderContent, updateGraderContent } = useGrader();
@@ -112,14 +112,7 @@ export function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Auto-resize textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height =
-        `${textareaRef.current.scrollHeight}px`;
-    }
-  }, [input]);
+  // Auto-resize textarea is now handled in MessageInputUI component
 
   // Handle escape key to cancel streaming
   useEffect(() => {
@@ -144,134 +137,7 @@ export function Chat() {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isStreaming]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input.trim(),
-      timestamp: new Date().toISOString(),
-    };
-
-    const updatedMessages = [...messages, newMessage];
-    setMessages(updatedMessages);
-    setInput("");
-
-    // Create a placeholder for the assistant's response
-    const assistantMessageId = (Date.now() + 1).toString();
-    streamingMessageIdRef.current = assistantMessageId;
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: assistantMessageId,
-        role: "assistant",
-        content: "",
-        timestamp: new Date().toISOString(),
-      },
-    ]);
-
-    // Create new abort controller for this request
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
-    setIsStreaming(true);
-
-    try {
-      // Send to the SSE endpoint
-      const response = await fetch("/api/chat/stream", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          messages: updatedMessages,
-          conversationId: conversationIdRef.current,
-        }),
-        signal: abortController.signal,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Set up SSE reader
-      const reader = response.body!.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = line.slice(6);
-            try {
-              const parsed = JSON.parse(data);
-              if (parsed.content) {
-                // Update the assistant's message with the new content
-                setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === assistantMessageId
-                      ? { ...msg, content: msg.content + parsed.content }
-                      : msg
-                  )
-                );
-              }
-            } catch {
-              // Ignore parse errors
-            }
-          } else if (line.startsWith("event: done")) {
-            // Stream is complete
-            break;
-          } else if (line.startsWith("event: error")) {
-            const errorLine = lines[lines.indexOf(line) + 1];
-            if (errorLine?.startsWith("data: ")) {
-              const errorData = JSON.parse(errorLine.slice(6));
-              throw new Error(errorData.error || "Stream error");
-            }
-          }
-        }
-      }
-
-      // Streaming completed successfully
-      setIsStreaming(false);
-      streamingMessageIdRef.current = null;
-    } catch (error) {
-      // Check if the error was due to abort
-      if (error instanceof Error && error.name === "AbortError") {
-        logger.debug("Stream cancelled by user");
-        return;
-      }
-
-      logger.error("Error getting AI response:", error);
-      // Update the assistant message with an error
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === assistantMessageId
-            ? {
-              ...msg,
-              content:
-                "I'm sorry, I encountered an error. Please make sure your OpenRouter API key is configured and try again.",
-            }
-            : msg
-        )
-      );
-      setIsStreaming(false);
-      streamingMessageIdRef.current = null;
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  // These handlers have been moved into the MessageInputUI component
 
   if (loading) {
     return (
@@ -440,45 +306,136 @@ export function Chat() {
         </div>
 
         {/* Input area */}
-        <div
-          style={{
-            padding: "1rem",
-            borderTop: "1px solid #3a3b3c",
-            display: "flex",
-            gap: "0.5rem",
-            alignItems: "center",
+        <MessageInputUI
+          conversationId={conversationIdRef.current || ""}
+          onSendMessage={async (content) => {
+            // Use the existing handleSend logic
+            if (!content.trim()) return;
+
+            const newMessage: Message = {
+              id: Date.now().toString(),
+              role: "user",
+              content: content.trim(),
+              timestamp: new Date().toISOString(),
+            };
+
+            const updatedMessages = [...messages, newMessage];
+            setMessages(updatedMessages);
+
+            // Create a placeholder for the assistant's response
+            const assistantMessageId = (Date.now() + 1).toString();
+            streamingMessageIdRef.current = assistantMessageId;
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: assistantMessageId,
+                role: "assistant",
+                content: "",
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+
+            setIsStreaming(true);
+            abortControllerRef.current = new AbortController();
+
+            try {
+              const response = await fetch("/api/chat/stream", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  messages: updatedMessages,
+                  conversationId: conversationIdRef.current,
+                }),
+                signal: abortControllerRef.current.signal,
+              });
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
+              const reader = response.body?.getReader();
+              const decoder = new TextDecoder();
+
+              if (!reader) {
+                throw new Error("No response body");
+              }
+
+              const processStream = async () => {
+                try {
+                  while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split("\n");
+
+                    for (const line of lines) {
+                      if (line.startsWith("data: ")) {
+                        const data = line.slice(6);
+                        if (data === "[DONE]") {
+                          return;
+                        }
+
+                        try {
+                          const parsed = JSON.parse(data);
+
+                          if (
+                            parsed.conversationId && !conversationIdRef.current
+                          ) {
+                            conversationIdRef.current = parsed.conversationId;
+                            router.navigate(`/chat/${parsed.conversationId}`);
+                          }
+
+                          if (parsed.content) {
+                            setMessages((prev) =>
+                              prev.map((msg) =>
+                                msg.id === streamingMessageIdRef.current
+                                  ? {
+                                    ...msg,
+                                    content: msg.content + parsed.content,
+                                  }
+                                  : msg
+                              )
+                            );
+                          }
+                        } catch (e) {
+                          logger.error("Failed to parse SSE data:", e);
+                        }
+                      } else if (line.startsWith("event: done")) {
+                        return;
+                      }
+                    }
+                  }
+                } catch (error: unknown) {
+                  if (error instanceof Error && error.name === "AbortError") {
+                    logger.info("Stream aborted");
+                  } else {
+                    throw error;
+                  }
+                } finally {
+                  reader.releaseLock();
+                }
+              };
+
+              await processStream();
+            } catch (error) {
+              logger.error("Failed to send message:", error);
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === streamingMessageIdRef.current
+                    ? { ...msg, content: "Error: Failed to get response" }
+                    : msg
+                )
+              );
+            } finally {
+              setIsStreaming(false);
+              streamingMessageIdRef.current = null;
+            }
           }}
-        >
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
-            style={{
-              flex: 1,
-              resize: "none",
-              minHeight: "2.5rem",
-              maxHeight: "10rem",
-              padding: "0.5rem",
-              border: "1px solid #3a3b3c",
-              borderRadius: "0.25rem",
-              backgroundColor: "#141516",
-              color: "#fafaff",
-              fontFamily: "inherit",
-              fontSize: "inherit",
-              lineHeight: "1.5",
-              outline: "none",
-            }}
-          />
-          <BfDsButton
-            onClick={handleSend}
-            disabled={!input.trim()}
-            variant="primary"
-          >
-            Send
-          </BfDsButton>
-        </div>
+          disabled={isStreaming}
+        />
       </div>
 
       {/* Right panel - Grader Editor */}
