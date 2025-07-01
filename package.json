@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@anthropic-ai/claude-code": "^1.0.25",
+    "@anthropic-ai/claude-code": "^1.0.38",
     "@babel/preset-react": "^7.27.1",
     "@isograph/babel-plugin": "^0.0.0-main-1fad6d74",
     "@isograph/compiler": "0.0.0-main-1fad6d74",

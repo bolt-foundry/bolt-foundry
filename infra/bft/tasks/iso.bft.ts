@@ -1,47 +1,40 @@
-#!/usr/bin/env -S bft run
+import {
+  runShellCommand,
+  type runShellCommandWithOutput as _runShellCommandWithOutput,
+} from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 
-import type { TaskDefinition } from "../bft.ts";
-import { exists } from "@std/fs";
-import { join } from "@std/path";
+const logger = getLogger(import.meta);
 
-async function iso(args: Array<string>): Promise<number> {
-  // Get the actual current working directory (where the user ran the command from)
-  const cwd = Deno.cwd();
+export async function isoCommand(options: Array<string>): Promise<number> {
+  logger.info("Running isograph compiler...");
 
-  // Check if there's a local isograph.config.json in the current directory
-  const localConfig = join(cwd, "isograph.config.json");
-  const hasLocalConfig = await exists(localConfig);
+  // Default working directory is apps/boltFoundry where the isograph config lives
+  const workingDir = "apps/boltFoundry";
 
-  // If there's a local config and no --config flag was provided, add it
-  const finalArgs = [...args];
-  if (
-    hasLocalConfig &&
-    !args.some((arg) => arg === "--config" || arg.startsWith("--config="))
-  ) {
-    finalArgs.unshift("--config", localConfig);
+  try {
+    // Standard execution for build pipeline (--verbose flag not needed for our use case)
+    const result = await runShellCommand(
+      ["deno", "run", "-A", "npm:@isograph/compiler", ...options],
+      workingDir,
+    );
+
+    if (result === 0) {
+      logger.info("✅ Isograph compilation completed successfully");
+    } else {
+      logger.error(`❌ Isograph compilation failed with code ${result}`);
+    }
+
+    return result;
+  } catch (error) {
+    logger.error("Error running isograph compiler:", error);
+    return 1;
   }
-
-  const cmd = new Deno.Command("deno", {
-    args: ["run", "-A", "npm:@isograph/compiler", ...finalArgs],
-    cwd: cwd, // Run the compiler in the user's current directory
-    stdout: "inherit",
-    stderr: "inherit",
-    stdin: "inherit",
-  });
-
-  const process = cmd.spawn();
-  const status = await process.status;
-
-  return status.code;
 }
 
 export const bftDefinition = {
-  description: "Run the Isograph compiler",
+  description: "Run the isograph compiler to generate code from GraphQL",
+  fn: isoCommand,
   aiSafe: true,
-  fn: iso,
 } satisfies TaskDefinition;
-
-if (import.meta.main) {
-  const scriptArgs = Deno.args.slice(2);
-  Deno.exit(await iso(scriptArgs));
-}
