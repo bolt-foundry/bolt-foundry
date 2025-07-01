@@ -25,8 +25,7 @@ export type BfDsFormValue<T = Record<string, string | number | boolean>> = {
   data?: T;
 } & BfDsFormCallbacks<T>;
 
-// deno-lint-ignore no-explicit-any
-const BfDsFormContext = createContext<BfDsFormValue<any> | null>(null);
+const BfDsFormContext = createContext<BfDsFormValue<unknown> | null>(null);
 
 type BfDsFormProps<T = Record<string, string | number | boolean | null>> =
   & React.PropsWithChildren<BfDsFormCallbacks<T>>
@@ -71,7 +70,7 @@ export function BfDsForm<T>({
 
   return (
     <BfDsFormContext.Provider
-      value={{ data, errors, onChange, onError, onSubmit }}
+      value={{ data, errors, onChange, onError, onSubmit } as BfDsFormValue<unknown>}
     >
       <form
         data-testid={testId}
