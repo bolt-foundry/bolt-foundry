@@ -1,0 +1,28 @@
+# Hello World Classifier Ground Truth
+
+# Example ground truth scores for the hello world classifier
+# This shows expected behavior for the grader
+
+[[examples]]
+input = '{"message": "hello world"}'
+expected_output = "YES"
+score = 3
+reasoning = "Exact match should return YES"
+
+[[examples]]
+input = '{"message": "Hello World"}'
+expected_output = "NO" 
+score = 3
+reasoning = "Case mismatch should return NO"
+
+[[examples]]
+input = '{"message": "hello"}'
+expected_output = "NO"
+score = 3  
+reasoning = "Partial match should return NO"
+
+[[examples]]
+input = '{"message": "hi there"}'
+expected_output = "NO"
+score = 3
+reasoning = "Different message should return NO"
