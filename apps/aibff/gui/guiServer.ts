@@ -231,7 +231,39 @@ const routes = [
     pattern: new URLPattern({ pathname: "/api/chat/stream" }),
     handler: async (request: Request) => {
       // Parse the conversation from request body
-      const { messages, conversationId } = await request.json();
+      const { messages, conversationId, saveOnly } = await request.json();
+
+      // If this is just a save request, save the messages and return
+      if (saveOnly) {
+        if (!conversationId) {
+          return new Response("No conversation ID provided", { status: 400 });
+        }
+
+        try {
+          // Create a new conversation with the updated messages
+          // This effectively replaces all existing messages
+          const conversation = new AibffConversation(conversationId);
+
+          // Add all the messages from the frontend
+          for (const msg of messages) {
+            conversation.addMessage(msg);
+          }
+
+          // Save the conversation (this will overwrite the existing file)
+          await conversation.save();
+
+          logger.info(
+            `Saved ${messages.length} messages for conversation ${conversationId}`,
+          );
+
+          return new Response(JSON.stringify({ success: true }), {
+            headers: { "Content-Type": "application/json" },
+          });
+        } catch (error) {
+          logger.error("Failed to save messages:", error);
+          return new Response("Failed to save messages", { status: 500 });
+        }
+      }
 
       // Load the assistant deck
       const deckPath = new URL(
