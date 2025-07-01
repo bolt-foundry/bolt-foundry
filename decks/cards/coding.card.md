@@ -109,11 +109,11 @@ testing patterns.
 
 ### Common Commands
 
-- Use BFF commands for common tasks
-- Run `bff format` and `bff ci` before committing
-- Build with `bff build`
-- Type check with `bff check [file_path]`
-- Test with `bff test path/to/test/file.test.ts`
+- Use BFT commands for common tasks
+- Run `bft format` and `bft ci` before committing
+- Build with `bft build`
+- Type check with `bft check [file_path]`
+- Test with `bft test path/to/test/file.test.ts`
 
 ## Process Execution
 
