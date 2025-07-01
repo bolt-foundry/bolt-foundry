@@ -17,7 +17,7 @@ When analyzing changes for commit messages, always use these commands:
 - `bft sl status` - To see the current status of changes
 - `bft sl diff` - To view the detailed diff of changes
 - `bft sl log` - To view recent commit history for style reference
-- `bft commit` - To create the actual commit (instead of direct Sapling
+- `bft sl commit` - To create the actual commit (instead of direct Sapling
   commands)
 
 ## Commit Message Format
@@ -49,7 +49,9 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 2. Then run `bft sl diff` to see detailed changes
 3. Run `bft sl log` to see recent commit style for consistency
 4. Analyze the changes and generate appropriate commit message(s)
-5. Use `bft commit` to create the commit with your generated message
+5. Use `bft sl commit` to create the commit with your generated message
+   - Include specific files to be committed in the command
+   - Example: `bft sl commit -m "message" file1.ts file2.ts` for targeted commits
 
 ## Key Guidelines
 

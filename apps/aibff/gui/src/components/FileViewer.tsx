@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getLogger } from "@bolt-foundry/logger";
+import { useGrader } from "../contexts/GraderContext.tsx";
 
 const logger = getLogger(import.meta);
 
@@ -25,10 +26,40 @@ export function FileViewer({ conversationId }: FileViewerProps) {
   const [selectedFile, setSelectedFile] = useState<string>("actor-deck.md");
   const [fileContent, setFileContent] = useState<string>("");
   const [files, _setFiles] = useState<Array<string>>(defaultFiles);
+  const { graderContent, updateGraderContent } = useGrader();
+
+  // Initialize grader context with content from file system
+  useEffect(() => {
+    if (!conversationId || graderContent) return; // Don't reload if already has content
+
+    const loadInitialGraderContent = async () => {
+      try {
+        const response = await fetch(
+          `/api/conversations/${conversationId}/files/grader-deck.md`,
+        );
+        if (response.ok) {
+          const data = await response.json();
+          updateGraderContent(data.content || "");
+          logger.debug("Initialized grader context from file");
+        }
+      } catch (error) {
+        logger.debug("Could not load initial grader content:", error);
+      }
+    };
+
+    loadInitialGraderContent();
+  }, [conversationId, graderContent, updateGraderContent]);
 
   // Load file content when selectedFile changes
   useEffect(() => {
     if (!conversationId || !selectedFile) return;
+
+    // Special handling for grader-deck.md - use context instead of API
+    if (selectedFile === "grader-deck.md") {
+      setFileContent(graderContent);
+      logger.debug("Loaded grader-deck.md from context");
+      return;
+    }
 
     const loadFileContent = async () => {
       try {
@@ -61,7 +92,7 @@ export function FileViewer({ conversationId }: FileViewerProps) {
     };
 
     loadFileContent();
-  }, [conversationId, selectedFile]);
+  }, [conversationId, selectedFile, graderContent]);
 
   const renderEditTab = () => (
     <div style={{ padding: "1rem", height: "100%" }}>
@@ -125,7 +156,14 @@ export function FileViewer({ conversationId }: FileViewerProps) {
         </h4>
         <textarea
           value={fileContent}
-          onChange={(e) => setFileContent(e.target.value)}
+          onChange={(e) => {
+            const newContent = e.target.value;
+            setFileContent(newContent);
+            // Update grader context if editing grader-deck.md
+            if (selectedFile === "grader-deck.md") {
+              updateGraderContent(newContent);
+            }
+          }}
           style={{
             flex: 1,
             minHeight: "300px",
