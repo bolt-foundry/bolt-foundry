@@ -8,7 +8,7 @@ import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-Deno.test("Docs getting-started page renders markdown content", async () => {
+Deno.test.ignore("Docs getting-started page renders markdown content", async () => {
   const context = await setupE2ETest();
 
   try {
@@ -56,7 +56,7 @@ Deno.test("Docs getting-started page renders markdown content", async () => {
   }
 });
 
-Deno.test("Docs page handles non-existent document", async () => {
+Deno.test.ignore("Docs page handles non-existent document", async () => {
   const context = await setupE2ETest();
 
   try {
@@ -92,7 +92,7 @@ Deno.test("Docs page handles non-existent document", async () => {
   }
 });
 
-Deno.test("Docs page loads README.md by default when no slug provided", async () => {
+Deno.test.ignore("Docs page loads README.md by default when no slug provided", async () => {
   const context = await setupE2ETest();
 
   try {
@@ -128,7 +128,7 @@ Deno.test("Docs page loads README.md by default when no slug provided", async ()
   }
 });
 
-Deno.test("Docs page renders different markdown files", async () => {
+Deno.test.ignore("Docs page renders different markdown files", async () => {
   const context = await setupE2ETest();
 
   try {

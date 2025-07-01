@@ -211,8 +211,7 @@ async function generateCommandForDeck(
     deckContent = await fallbackDeckContent(taskName, deckPath);
   }
 
-  const content =
-    `${description}\n\n${deckContent}`;
+  const content = `${description}\n\n${deckContent}`;
 
   return { name, description, content };
 }
