@@ -1,5 +1,8 @@
 {
-  "unstable": ["temporal", "webgpu"],
+  "unstable": {
+    "temporal": true,
+    "webgpu": true
+  },
   "nodeModulesDir": "manual",
   "imports": {
     "@bfmono/": "./",
