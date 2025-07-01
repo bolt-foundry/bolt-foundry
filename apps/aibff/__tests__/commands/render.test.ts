@@ -184,3 +184,135 @@ A simple test deck for rendering.`;
     await Deno.remove(tempDir, { recursive: true });
   }
 });
+
+Deno.test("render command - --format openai outputs JSON", async () => {
+  let output = "";
+  // deno-lint-ignore no-console
+  const originalPrintln = console.log;
+
+  // Mock console.log to capture output
+  // deno-lint-ignore no-console
+  console.log = (msg: string) => {
+    output += msg + "\n";
+  };
+
+  // Create a temporary directory
+  const tempDir = await Deno.makeTempDir();
+  const deckPath = join(tempDir, "test.deck.md");
+
+  const deckContent = `# Test Deck
+
+A simple test deck for rendering.`;
+
+  await Deno.writeTextFile(deckPath, deckContent);
+
+  try {
+    await renderCommand.run([deckPath, "--format", "openai"]);
+
+    // Verify output is valid JSON with OpenAI structure
+    const parsed = JSON.parse(output);
+    assertEquals(typeof parsed, "object");
+    assertEquals(Array.isArray(parsed.messages), true);
+    assertEquals(parsed.messages[0].role, "system");
+    assertStringIncludes(parsed.messages[0].content, "# Test Deck");
+  } finally {
+    // Restore original function
+    // deno-lint-ignore no-console
+    console.log = originalPrintln;
+
+    // Clean up
+    await Deno.remove(tempDir, { recursive: true });
+  }
+});
+
+Deno.test("render command - --format markdown outputs system message content", async () => {
+  let output = "";
+  // deno-lint-ignore no-console
+  const originalPrintln = console.log;
+
+  // Mock console.log to capture output
+  // deno-lint-ignore no-console
+  console.log = (msg: string) => {
+    output += msg + "\n";
+  };
+
+  // Create a temporary directory
+  const tempDir = await Deno.makeTempDir();
+  const deckPath = join(tempDir, "test.deck.md");
+
+  const deckContent = `# Test Deck
+
+A simple test deck for rendering.`;
+
+  await Deno.writeTextFile(deckPath, deckContent);
+
+  try {
+    await renderCommand.run([deckPath, "--format", "markdown"]);
+
+    // Verify output is plain markdown (not JSON)
+    assertStringIncludes(output, "# Test Deck");
+    assertStringIncludes(output, "A simple test deck for rendering.");
+    
+    // Should not be JSON
+    try {
+      JSON.parse(output);
+      throw new Error("Output should not be valid JSON");
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        // This is expected - output should not be JSON
+      } else {
+        throw e;
+      }
+    }
+  } finally {
+    // Restore original function
+    // deno-lint-ignore no-console
+    console.log = originalPrintln;
+
+    // Clean up
+    await Deno.remove(tempDir, { recursive: true });
+  }
+});
+
+Deno.test("render command - invalid format shows error", async () => {
+  let errorOutput = "";
+  // deno-lint-ignore no-console
+  const originalPrintErr = console.error;
+  const originalExit = Deno.exit;
+
+  // Mock console.error to capture output
+  // deno-lint-ignore no-console
+  console.error = (msg: string) => {
+    errorOutput += msg + "\n";
+  };
+
+  // Mock Deno.exit
+  let exitCode: number | undefined;
+  // deno-lint-ignore no-explicit-any
+  (Deno as any).exit = (code: number) => {
+    exitCode = code;
+    throw new Error("exit");
+  };
+
+  // Create a temporary directory
+  const tempDir = await Deno.makeTempDir();
+  const deckPath = join(tempDir, "test.deck.md");
+  await Deno.writeTextFile(deckPath, "# Test");
+
+  try {
+    await renderCommand.run([deckPath, "--format", "invalid"]);
+  } catch (e) {
+    if (e instanceof Error && e.message !== "exit") throw e;
+  } finally {
+    // Restore original functions
+    // deno-lint-ignore no-console
+    console.error = originalPrintErr;
+    Deno.exit = originalExit;
+
+    // Clean up
+    await Deno.remove(tempDir, { recursive: true });
+  }
+
+  assertStringIncludes(errorOutput, "--format must be 'openai' or 'markdown'");
+  assertEquals(exitCode, 1);
+});

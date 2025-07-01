@@ -17,6 +17,51 @@ interface ChatMessage {
   timestamp: string;
 }
 
+// Function to copy default files to a new conversation
+async function copyDefaultsToConversation(conversationId: string): Promise<void> {
+  const conversationsPath = getConversationsDir();
+  const conversationFolder = `${conversationsPath}/${conversationId}`;
+  const defaultsPath = new URL(import.meta.resolve("./defaults")).pathname;
+
+  // Ensure conversation directory exists
+  try {
+    await Deno.mkdir(conversationFolder, { recursive: true });
+  } catch (error) {
+    if (!(error instanceof Deno.errors.AlreadyExists)) {
+      throw error;
+    }
+  }
+
+  // List of default files to copy
+  const defaultFiles = [
+    "input-samples.jsonl",
+    "actor-deck.md", 
+    "grader-deck.md",
+    "grader-base.deck.md",
+    "grader-base.deck.toml",
+    "ground-truth.deck.toml",
+    "notes.md"
+  ];
+
+  // Copy each default file
+  for (const fileName of defaultFiles) {
+    try {
+      const defaultFilePath = `${defaultsPath}/${fileName}`;
+      const conversationFilePath = `${conversationFolder}/${fileName}`;
+      
+      const content = await Deno.readTextFile(defaultFilePath);
+      await Deno.writeTextFile(conversationFilePath, content);
+      
+      logger.debug(`Copied default ${fileName} to conversation ${conversationId}`);
+    } catch (error) {
+      logger.warn(`Failed to copy default ${fileName}:`, error);
+      // Continue with other files even if one fails
+    }
+  }
+
+  logger.info(`Copied default files to conversation ${conversationId}`);
+}
+
 // Function to generate initial assistant message
 async function generateInitialMessage(): Promise<string> {
   // Load the assistant deck
@@ -208,6 +253,9 @@ const routes = [
                   timestamp: new Date().toISOString(),
                 });
                 await conversation.save();
+
+                // Copy default files to the new conversation
+                await copyDefaultsToConversation(conversationId);
 
                 const messages = conversation.getMessages();
 
@@ -585,6 +633,44 @@ const routes = [
             status: 500,
           },
         );
+      }
+    },
+  },
+  {
+    pattern: new URLPattern({
+      pathname: "/api/conversations/:conversationId/files/:filename",
+    }),
+    handler: async (request: Request) => {
+      if (request.method !== "GET") {
+        return new Response("Method not allowed", { status: 405 });
+      }
+
+      const url = new URL(request.url);
+      const pathParts = url.pathname.split("/");
+      const conversationId = pathParts[3]; // /api/conversations/{id}/files/{filename}
+      const filename = pathParts[5];
+
+      if (!conversationId || !filename) {
+        return new Response("Conversation ID and filename required", { status: 400 });
+      }
+
+      try {
+        // Create the file path
+        const conversationsPath = getConversationsDir();
+        const filePath = `${conversationsPath}/${conversationId}/${filename}`;
+
+        // Read the file content
+        const content = await Deno.readTextFile(filePath);
+
+        return new Response(JSON.stringify({ content }), {
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (error) {
+        if (error instanceof Deno.errors.NotFound) {
+          return new Response("File not found", { status: 404 });
+        }
+        logger.error(`Failed to load file ${filename} for conversation ${conversationId}:`, error);
+        return new Response("Internal server error", { status: 500 });
       }
     },
   },

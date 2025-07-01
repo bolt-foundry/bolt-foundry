@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { useRouter } from "../contexts/RouterContext.tsx";
 import { useGrader } from "../contexts/GraderContext.tsx";
-import { TabbedEditor } from "./TabbedEditor.tsx";
+import { FileViewer } from "./FileViewer.tsx";
 import { MessageContent } from "./MessageContent.tsx";
 import { MessageInputUI } from "./MessageInput.tsx";
 import { getLogger } from "@bolt-foundry/logger";
@@ -328,16 +328,14 @@ Error formatting arguments: ${
           </div>
         </div>
 
-        {/* Right panel - Tabbed Editor */}
+        {/* Right panel - File Viewer */}
         <div
           style={{
             flex: 1,
             backgroundColor: "#1f2021",
           }}
         >
-          <TabbedEditor
-            initialGraderContent={graderContent}
-            onGraderContentChange={updateGraderContent}
+          <FileViewer
             conversationId={conversationIdRef.current}
           />
         </div>
@@ -954,7 +952,7 @@ Generated at: ${new Date().toISOString()}`,
         />
       </div>
 
-      {/* Right panel - Tabbed Editor */}
+      {/* Right panel - File Viewer */}
       <div
         style={{
           flex: "1 1 50%",
@@ -962,9 +960,7 @@ Generated at: ${new Date().toISOString()}`,
           backgroundColor: "#1f2021",
         }}
       >
-        <TabbedEditor
-          initialGraderContent={graderContent}
-          onGraderContentChange={updateGraderContent}
+        <FileViewer
           conversationId={conversationIdRef.current}
         />
       </div>
