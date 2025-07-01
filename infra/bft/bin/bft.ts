@@ -97,8 +97,24 @@ async function main(): Promise<number> {
     return 0;
   }
 
-  const commandName = args[0];
-  const commandArgs = args.slice(1);
+  // Handle "unsafe" subcommand
+  let isUnsafeMode = false;
+  let commandName: string;
+  let commandArgs: Array<string>;
+
+  if (args[0] === "unsafe") {
+    if (args.length < 2) {
+      ui.error("Usage: bft unsafe <command> [arguments...]");
+      ui.error("The unsafe flag allows running AI-unsafe commands");
+      return 1;
+    }
+    isUnsafeMode = true;
+    commandName = args[1];
+    commandArgs = args.slice(2);
+  } else {
+    commandName = args[0];
+    commandArgs = args.slice(1);
+  }
 
   // Look up the command
   const task = taskMap.get(commandName);
@@ -106,6 +122,32 @@ async function main(): Promise<number> {
   if (!task) {
     ui.error(`Unknown command: ${commandName}`);
     ui.error(`Run 'bft --help' for available commands`);
+    return 1;
+  }
+
+  // Check AI safety
+  let isCommandSafe = true;
+  if (typeof task.aiSafe === "boolean") {
+    isCommandSafe = task.aiSafe;
+  } else if (typeof task.aiSafe === "function") {
+    isCommandSafe = task.aiSafe(commandArgs);
+  } else {
+    isCommandSafe = true; // default is safe
+  }
+
+  if (!isCommandSafe && !isUnsafeMode) {
+    ui.error(
+      `❌ Command '${commandName}' is not AI-safe and requires the unsafe flag`,
+    );
+    ui.error("");
+    ui.error(
+      "This command can potentially make destructive changes to your system.",
+    );
+    ui.error("If you understand the risks and want to proceed, use:");
+    ui.error("");
+    ui.error(`  bft unsafe ${commandName} ${commandArgs.join(" ")}`);
+    ui.error("");
+    ui.error("Available AI-safe commands can be listed with: bft help");
     return 1;
   }
 
