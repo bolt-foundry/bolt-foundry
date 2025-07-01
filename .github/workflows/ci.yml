@@ -106,7 +106,6 @@ jobs:
             deno --version
             deno info
             # Pre-cache dependencies
-            deno cache deno.jsonc || echo \"Failed to cache, continuing anyway\"
             npm install
             deno install
             bff ci --include-bolt-foundry -g
