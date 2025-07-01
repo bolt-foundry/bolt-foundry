@@ -172,8 +172,14 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     });
     logger.debug("Error check:", errorContent);
 
-    // Wait for content to load - look for the new header
-    await context.page.waitForSelector("h1", { timeout: 5000 });
+    // Wait for content to load - look for the "New Conversation" header
+    await context.page.waitForFunction(
+      () => {
+        const elements = Array.from(document.querySelectorAll("*"));
+        return elements.some((el) => el.textContent?.trim() === "New Conversation");
+      },
+      { timeout: 5000 }
+    );
 
     // Wait a bit more for React to hydrate
     await delay(500);
@@ -182,48 +188,44 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     logger.info(`Page title: ${title}`);
     assertEquals(title, "aibff GUI");
 
-    // Check that the header exists with correct text
-    const headerText = await context.page.evaluate(() => {
-      const h1 = document.querySelector("h1");
-      return h1?.textContent;
+    // Check that the "New Conversation" header exists
+    const hasNewConversationHeader = await context.page.evaluate(() => {
+      const elements = Array.from(document.querySelectorAll("*"));
+      return elements.some((el) => el.textContent?.trim() === "New Conversation");
     });
-    assertEquals(headerText, "aibff GUI", "Header should show 'aibff GUI'");
+    assert(hasNewConversationHeader, "Should show 'New Conversation' header");
 
-    // Check that navigation links exist
-    const navLinks = await context.page.evaluate(() => {
-      const links = Array.from(document.querySelectorAll("nav a"));
-      return links.map((link) => link.textContent);
+    // Check that the chat interface tabs exist
+    const tabLabels = await context.page.evaluate(() => {
+      // Look for tab-like elements that contain the expected text
+      const elements = Array.from(document.querySelectorAll("*"));
+      const tabs = [];
+      for (const el of elements) {
+        const text = el.textContent?.trim();
+        if (text === "Input Samples" || text === "Actor Deck" || text === "Grader Deck" || text === "Ground Truth" || text === "Notes") {
+          tabs.push(text);
+        }
+      }
+      return [...new Set(tabs)]; // Remove duplicates
     });
-    logger.info("Found navigation links:", navLinks);
-    assert(navLinks.includes("Chat"), "Should have Chat link");
-    assert(navLinks.includes("Samples"), "Should have Samples link");
-    assert(navLinks.includes("Graders"), "Should have Graders link");
-    assert(navLinks.includes("Evaluations"), "Should have Evaluations link");
+    logger.info("Found tab labels:", tabLabels);
+    assert(tabLabels.includes("Input Samples"), "Should have Input Samples tab");
+    assert(tabLabels.includes("Actor Deck"), "Should have Actor Deck tab");
+    assert(tabLabels.includes("Grader Deck"), "Should have Grader Deck tab");
+    assert(tabLabels.includes("Ground Truth"), "Should have Ground Truth tab");
+    assert(tabLabels.includes("Notes"), "Should have Notes tab");
 
-    // Check that we're on the Chat page by default
-    const chatHeading = await context.page.evaluate(() => {
-      const h2 = document.querySelector("h2");
-      return h2?.textContent;
+    // Check for the chat interface elements - look for Assistant message div
+    const hasAssistantMessage = await context.page.evaluate(() => {
+      const elements = Array.from(document.querySelectorAll("*"));
+      return elements.some((el) => el.textContent?.trim() === "Assistant");
     });
-    assertEquals(
-      chatHeading,
-      "Chat Interface",
-      "Should show Chat Interface heading",
-    );
-
-    // Check for the chat interface elements
-    const hasAIGreeting = await context.page.evaluate(() => {
-      const divs = Array.from(document.querySelectorAll("div"));
-      return divs.some((div) =>
-        div.textContent?.includes("Hello! I'm here to help you create graders")
-      );
-    });
-    assert(hasAIGreeting, "Should show AI assistant greeting message");
+    assert(hasAssistantMessage, "Should show Assistant message area");
 
     // Check for input textarea
     const hasTextarea = await context.page.evaluate(() => {
       const textarea = document.querySelector(
-        'textarea[placeholder="Type your message here..."]',
+        'textarea[placeholder="Type a message..."]',
       );
       return !!textarea;
     });
@@ -236,19 +238,18 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     });
     assert(hasSendButton, "Should have Send button");
 
-    // Navigate to Samples page
-    await context.page.click('a[href="#/samples"]');
-    await delay(100);
-
-    const samplesHeading = await context.page.evaluate(() => {
-      const h2 = document.querySelector("h2");
-      return h2?.textContent;
+    // Test tab interaction by clicking on Input Samples tab
+    const inputSamplesTabClicked = await context.page.evaluate(() => {
+      const elements = Array.from(document.querySelectorAll("*"));
+      const inputSamplesTab = elements.find((el) => el.textContent?.trim() === "Input Samples");
+      if (inputSamplesTab && inputSamplesTab instanceof HTMLElement) {
+        inputSamplesTab.click();
+        return true;
+      }
+      return false;
     });
-    assertEquals(
-      samplesHeading,
-      "Samples",
-      "Should show Samples heading after navigation",
-    );
+    assert(inputSamplesTabClicked, "Should be able to click Input Samples tab");
+    await delay(100);
 
     // Take screenshot after interaction
     await context.takeScreenshot("aibff-gui-after-click");
