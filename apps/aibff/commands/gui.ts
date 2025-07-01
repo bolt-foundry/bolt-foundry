@@ -27,7 +27,7 @@ Options:
   --dev              Run in development mode with Vite HMR
   --build            Build GUI assets without starting server
   --port             Specify server port (default: 3000)
-  --conversations-dir Specify directory for storing conversations (default: ./conversations)
+  --conversations-dir Specify directory for storing conversations (default: ./aibff-conversations)
   --no-open          Don't auto-open browser on startup
   --help             Show this help message
 
