@@ -13,6 +13,9 @@ dist-ssr
 .vite
 *.local
 
+# Conversations directory
+aibff-conversations/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -100,8 +100,8 @@ const getConversationsDir = () => {
     // Flag value is already resolved to absolute path by gui.ts
     return flags["conversations-dir"];
   }
-  // Default to ./conversations relative to the GUI directory
-  return new URL(import.meta.resolve("./conversations")).pathname;
+  // Default to ./aibff-conversations relative to the GUI directory
+  return new URL(import.meta.resolve("./aibff-conversations")).pathname;
 };
 
 // Create GraphQL server
@@ -231,7 +231,39 @@ const routes = [
     pattern: new URLPattern({ pathname: "/api/chat/stream" }),
     handler: async (request: Request) => {
       // Parse the conversation from request body
-      const { messages, conversationId } = await request.json();
+      const { messages, conversationId, saveOnly } = await request.json();
+
+      // If this is just a save request, save the messages and return
+      if (saveOnly) {
+        if (!conversationId) {
+          return new Response("No conversation ID provided", { status: 400 });
+        }
+
+        try {
+          // Create a new conversation with the updated messages
+          // This effectively replaces all existing messages
+          const conversation = new AibffConversation(conversationId);
+
+          // Add all the messages from the frontend
+          for (const msg of messages) {
+            conversation.addMessage(msg);
+          }
+
+          // Save the conversation (this will overwrite the existing file)
+          await conversation.save();
+
+          logger.info(
+            `Saved ${messages.length} messages for conversation ${conversationId}`,
+          );
+
+          return new Response(JSON.stringify({ success: true }), {
+            headers: { "Content-Type": "application/json" },
+          });
+        } catch (error) {
+          logger.error("Failed to save messages:", error);
+          return new Response("Failed to save messages", { status: 500 });
+        }
+      }
 
       // Load the assistant deck
       const deckPath = new URL(
@@ -288,7 +320,7 @@ const routes = [
 
         // Log the final request (excluding sensitive data)
         logger.debug("Final request to OpenRouter:", {
-          model: finalRequest.model,
+          model: (finalRequest as Record<string, unknown>).model,
           messages: finalRequest.messages?.length,
           tools: finalRequest.tools?.length,
           stream: finalRequest.stream,
@@ -501,15 +533,15 @@ const routes = [
           inputSamples || "",
         );
 
-        // Save actor.deck.md
+        // Save actor-deck.md
         await Deno.writeTextFile(
-          `${conversationFolder}/actor.deck.md`,
+          `${conversationFolder}/actor-deck.md`,
           actorDeck || "",
         );
 
-        // Save grader.deck.md
+        // Save grader-deck.md
         await Deno.writeTextFile(
-          `${conversationFolder}/grader.deck.md`,
+          `${conversationFolder}/grader-deck.md`,
           graderDeck || "",
         );
 
@@ -533,8 +565,8 @@ const routes = [
             files: [
               "conversation.md",
               "input-samples.jsonl",
-              "actor.deck.md",
-              "grader.deck.md",
+              "actor-deck.md",
+              "grader-deck.md",
               "ground-truth.deck.toml",
               "notes.md",
             ],
@@ -545,9 +577,14 @@ const routes = [
         );
       } catch (error) {
         logger.error("Failed to save conversation:", error);
-        return new Response(`Failed to save conversation: ${error.message}`, {
-          status: 500,
-        });
+        return new Response(
+          `Failed to save conversation: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          {
+            status: 500,
+          },
+        );
       }
     },
   },
@@ -584,8 +621,8 @@ const routes = [
         // Try to load each file, but don't fail if they don't exist
         const fileMap = {
           inputSamples: "input-samples.jsonl",
-          actorDeck: "actor.deck.md",
-          graderDeck: "grader.deck.md",
+          actorDeck: "actor-deck.md",
+          graderDeck: "grader-deck.md",
           groundTruth: "ground-truth.deck.toml",
           notes: "notes.md",
         };
@@ -610,7 +647,9 @@ const routes = [
       } catch (error) {
         logger.error("Failed to load conversation data:", error);
         return new Response(
-          `Failed to load conversation data: ${error.message}`,
+          `Failed to load conversation data: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
           { status: 500 },
         );
       }
