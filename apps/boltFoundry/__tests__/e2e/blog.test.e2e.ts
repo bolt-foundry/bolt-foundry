@@ -49,7 +49,7 @@ Deno.test("Blog list page at /blog shows all blog posts", async () => {
 
       // Just verify that some blog content is shown
       assert(
-        bodyText?.length > 100,
+        (bodyText?.length ?? 0) > 100,
         "Should show blog content",
       );
     } else {
