@@ -172,8 +172,22 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     });
     logger.debug("Error check:", errorContent);
 
-    // Wait for content to load - look for the new header
-    await context.page.waitForSelector("h1", { timeout: 5000 });
+    // Wait for content to load - look for the chat interface
+    await context.page.waitForFunction(
+      () => {
+        // Check if the textarea is present
+        const textarea = document.querySelector(
+          'textarea[placeholder="Type a message..."]',
+        );
+        // Check if send button is present
+        const buttons = Array.from(document.querySelectorAll("button"));
+        const hasSendButton = buttons.some((button) =>
+          button.textContent === "Send"
+        );
+        return textarea && hasSendButton;
+      },
+      { timeout: 5000 },
+    );
 
     // Wait a bit more for React to hydrate
     await delay(500);
@@ -182,48 +196,20 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     logger.info(`Page title: ${title}`);
     assertEquals(title, "aibff GUI");
 
-    // Check that the header exists with correct text
-    const headerText = await context.page.evaluate(() => {
-      const h1 = document.querySelector("h1");
-      return h1?.textContent;
-    });
-    assertEquals(headerText, "aibff GUI", "Header should show 'aibff GUI'");
-
-    // Check that navigation links exist
-    const navLinks = await context.page.evaluate(() => {
-      const links = Array.from(document.querySelectorAll("nav a"));
-      return links.map((link) => link.textContent);
-    });
-    logger.info("Found navigation links:", navLinks);
-    assert(navLinks.includes("Chat"), "Should have Chat link");
-    assert(navLinks.includes("Samples"), "Should have Samples link");
-    assert(navLinks.includes("Graders"), "Should have Graders link");
-    assert(navLinks.includes("Evaluations"), "Should have Evaluations link");
-
-    // Check that we're on the Chat page by default
-    const chatHeading = await context.page.evaluate(() => {
-      const h2 = document.querySelector("h2");
-      return h2?.textContent;
-    });
-    assertEquals(
-      chatHeading,
-      "Chat Interface",
-      "Should show Chat Interface heading",
-    );
+    // Check that the chat component loads
 
     // Check for the chat interface elements
-    const hasAIGreeting = await context.page.evaluate(() => {
-      const divs = Array.from(document.querySelectorAll("div"));
-      return divs.some((div) =>
-        div.textContent?.includes("Hello! I'm here to help you create graders")
-      );
+    const hasChatInterface = await context.page.evaluate(() => {
+      // Check for the message display area
+      const messageArea = document.querySelector('div[style*="overflow"]');
+      return !!messageArea;
     });
-    assert(hasAIGreeting, "Should show AI assistant greeting message");
+    assert(hasChatInterface, "Should show chat interface");
 
     // Check for input textarea
     const hasTextarea = await context.page.evaluate(() => {
       const textarea = document.querySelector(
-        'textarea[placeholder="Type your message here..."]',
+        'textarea[placeholder="Type a message..."]',
       );
       return !!textarea;
     });
@@ -236,22 +222,101 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     });
     assert(hasSendButton, "Should have Send button");
 
-    // Navigate to Samples page
-    await context.page.click('a[href="#/samples"]');
-    await delay(100);
-
-    const samplesHeading = await context.page.evaluate(() => {
-      const h2 = document.querySelector("h2");
-      return h2?.textContent;
+    // Check for tabbed editor panel
+    const hasTabbedEditor = await context.page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll("button"));
+      const hasInputSamples = buttons.some((button) =>
+        button.textContent === "Input Samples"
+      );
+      const hasActorDeck = buttons.some((button) =>
+        button.textContent === "Actor Deck"
+      );
+      const hasGraderDeck = buttons.some((button) =>
+        button.textContent === "Grader Deck"
+      );
+      const hasGroundTruth = buttons.some((button) =>
+        button.textContent === "Ground Truth"
+      );
+      return hasInputSamples && hasActorDeck && hasGraderDeck && hasGroundTruth;
     });
-    assertEquals(
-      samplesHeading,
-      "Samples",
-      "Should show Samples heading after navigation",
+    assert(
+      hasTabbedEditor,
+      "Should show tabbed editor panel with all four tabs",
     );
 
-    // Take screenshot after interaction
-    await context.takeScreenshot("aibff-gui-after-click");
+    // Test sending a message
+    logger.info("Testing message send functionality...");
+
+    // Type a message in the textarea
+    const testMessage = "Hello, can you help me create a grader?";
+    await context.page.type(
+      'textarea[placeholder="Type a message..."]',
+      testMessage,
+    );
+
+    // Take screenshot with typed message
+    await context.takeScreenshot("aibff-gui-with-message");
+
+    // Click the send button using evaluate
+    await context.page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll("button"));
+      const sendButton = buttons.find((btn) => btn.textContent === "Send");
+      if (sendButton) {
+        (sendButton as HTMLButtonElement).click();
+      }
+    });
+
+    // Wait for the user message to appear
+    await context.page.waitForFunction(
+      (msg) => {
+        const divs = Array.from(document.querySelectorAll("div"));
+        return divs.some((div) => div.textContent === msg);
+      },
+      { timeout: 5000 },
+      testMessage,
+    );
+
+    // Verify the message appears in the chat
+    const userMessageExists = await context.page.evaluate((msg) => {
+      const divs = Array.from(document.querySelectorAll("div"));
+      return divs.some((div) => div.textContent === msg);
+    }, testMessage);
+    assert(userMessageExists, "User message should appear in chat");
+
+    // Wait a bit for AI response to start streaming
+    await delay(2000);
+
+    // Check that an assistant response is being added
+    const hasAssistantResponse = await context.page.evaluate(() => {
+      const messages = Array.from(document.querySelectorAll("div")).filter(
+        (div) => {
+          const text = div.textContent || "";
+          return (text === "You" || text === "Assistant") && div.parentElement;
+        },
+      );
+
+      // Count assistant messages (should be at least 2 now - initial greeting + response)
+      const assistantCount = messages.filter((m) =>
+        m.textContent === "Assistant"
+      ).length;
+      return assistantCount >= 2;
+    });
+    assert(
+      hasAssistantResponse,
+      "Should have assistant response after sending message",
+    );
+
+    // Check that textarea is cleared after sending
+    const textareaValue = await context.page.evaluate(() => {
+      const textarea = document.querySelector(
+        'textarea[placeholder="Type a message..."]',
+      ) as HTMLTextAreaElement;
+      return textarea?.value;
+    });
+    assertEquals(textareaValue, "", "Textarea should be cleared after sending");
+
+    // Take screenshot after sending message
+    await context.takeScreenshot("aibff-gui-after-message");
 
     logger.info("aibff GUI e2e test completed successfully");
   } catch (error) {
