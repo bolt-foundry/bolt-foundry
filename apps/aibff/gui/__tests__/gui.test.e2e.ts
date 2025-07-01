@@ -278,15 +278,15 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     try {
       // Kill the process first
       serverProcess.kill("SIGTERM");
-      
+
       // Streams will be closed automatically when process exits
-      
+
       // Wait for process to exit with timeout
       const statusPromise = serverProcess.status;
-      const timeoutPromise = new Promise((_, reject) => 
+      const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error("Process cleanup timeout")), 5000)
       );
-      
+
       await Promise.race([statusPromise, timeoutPromise]);
     } catch (error) {
       logger.debug("Error cleaning up server process:", error);
@@ -497,16 +497,19 @@ Deno.test("debug tool call execution should replace grader deck content", async 
         );
         return graderTextarea?.value || "";
       });
-      
-      logger.info(`Attempt ${attempt + 1} - Updated grader deck content:`, updatedGraderContent.substring(0, 100));
-      
+
+      logger.info(
+        `Attempt ${attempt + 1} - Updated grader deck content:`,
+        updatedGraderContent.substring(0, 100),
+      );
+
       if (updatedGraderContent.trim() === "lol we did it") {
         break;
       }
-      
+
       await delay(2000); // Wait between attempts
     }
-    
+
     logger.info("Final updated grader deck content:", updatedGraderContent);
 
     // Verify the tool call successfully updated the grader deck content
@@ -525,15 +528,15 @@ Deno.test("debug tool call execution should replace grader deck content", async 
     try {
       // Kill the process first
       serverProcess.kill("SIGTERM");
-      
+
       // Streams will be closed automatically when process exits
-      
+
       // Wait for process to exit with timeout
       const statusPromise = serverProcess.status;
-      const timeoutPromise = new Promise((_, reject) => 
+      const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error("Process cleanup timeout")), 5000)
       );
-      
+
       await Promise.race([statusPromise, timeoutPromise]);
     } catch (error) {
       logger.debug("Error cleaning up server process:", error);

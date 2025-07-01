@@ -37,9 +37,21 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
 
   // Parse options
   const shouldBuild = options.includes("--build") || options.includes("-b");
+  const headlessOption = options.find(opt => opt.startsWith("--headless="));
+  const shouldForceHeadless = headlessOption ? headlessOption === "--headless=true" : true;
+  
   const testFiles = options.filter((opt) =>
     !opt.startsWith("--") && !opt.startsWith("-") && opt.endsWith(".e2e.ts")
   );
+
+  // Set headless mode via environment variable
+  if (shouldForceHeadless) {
+    Deno.env.set("BF_E2E_HEADLESS", "true");
+    logger.info("🕶️  Running in headless mode (use --headless=false to see browser)");
+  } else {
+    Deno.env.set("BF_E2E_HEADLESS", "false");
+    logger.info("🖥️  Running with visible browser (--headless=false)");
+  }
 
   // Build if requested
   if (shouldBuild) {
@@ -64,10 +76,29 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
       logger.info("✅ Server already running on port 8000");
     } else {
       logger.info("No server detected on port 8000");
-      logger.info(
-        "💡 For full E2E tests, start your server manually or use --build",
-      );
-      // Continue without server for now - some e2e tests might not need it
+      logger.info("🚀 Starting server automatically...");
+      
+      // Start the server process
+      serverProcess = new Deno.Command("./build/web", {
+        cwd: Deno.cwd(),
+        stdout: "piped",
+        stderr: "piped",
+      }).spawn();
+      
+      // Wait for server to be ready
+      logger.info("⏳ Waiting for server to start...");
+      const serverStarted = await waitForPort(8000, 30000);
+      
+      if (!serverStarted) {
+        logger.error("❌ Server failed to start on port 8000");
+        if (serverProcess) {
+          serverProcess.kill();
+          await serverProcess.status;
+        }
+        return 1;
+      }
+      
+      logger.info("✅ Server started successfully on port 8000");
     }
 
     // Run E2E tests
@@ -78,8 +109,8 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     if (testFiles.length > 0) {
       testArgs.push(...testFiles);
     } else {
-      // Default pattern for e2e tests
-      testArgs.push("--filter", "e2e");
+      // Default pattern for e2e tests - match files ending in .e2e.ts
+      testArgs.push("**/*.e2e.ts");
     }
 
     const testResult = await runShellCommand(testArgs);
@@ -94,15 +125,33 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
   } finally {
     // Cleanup: kill server if we started it
     if (serverProcess) {
-      logger.info("Stopping server...");
-      serverProcess.kill();
-      await serverProcess.status;
+      logger.info("🛑 Stopping server...");
+      try {
+        serverProcess.kill("SIGTERM");
+        
+        // Wait for process to exit with timeout
+        const statusPromise = serverProcess.status;
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Server cleanup timeout")), 5000)
+        );
+        
+        await Promise.race([statusPromise, timeoutPromise]);
+        logger.info("✅ Server stopped successfully");
+      } catch (error) {
+        logger.debug("Error stopping server:", error);
+        // Force kill if graceful shutdown failed
+        try {
+          serverProcess.kill("SIGKILL");
+        } catch {
+          // Process may already be terminated
+        }
+      }
     }
   }
 }
 
 export const bftDefinition = {
-  description: "Run end-to-end tests (simplified)",
+  description: "Run end-to-end tests with automatic server management. Options: --build, --headless=false",
   fn: e2eCommand,
   aiSafe: true,
 } satisfies TaskDefinition;
