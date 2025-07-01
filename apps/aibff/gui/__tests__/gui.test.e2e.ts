@@ -276,15 +276,26 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
 
     // Stop the server process and close streams
     try {
-      // Close the streams first
-      await serverProcess.stdout.cancel();
-      await serverProcess.stderr.cancel();
-
-      // Then kill the process
-      serverProcess.kill();
-      await serverProcess.status;
-    } catch {
-      // Process may have already exited
+      // Kill the process first
+      serverProcess.kill("SIGTERM");
+      
+      // Streams will be closed automatically when process exits
+      
+      // Wait for process to exit with timeout
+      const statusPromise = serverProcess.status;
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Process cleanup timeout")), 5000)
+      );
+      
+      await Promise.race([statusPromise, timeoutPromise]);
+    } catch (error) {
+      logger.debug("Error cleaning up server process:", error);
+      // Force kill if graceful shutdown failed
+      try {
+        serverProcess.kill("SIGKILL");
+      } catch {
+        // Process may already be terminated
+      }
     }
   }
 });
@@ -356,33 +367,33 @@ Deno.test("debug tool call execution should replace grader deck content", async 
 
     await delay(500);
 
-    // Wait for the Grader Deck tab to be available and click it
+    // Wait for the grader-deck.md file to be available in the Files list
     await context.page.waitForFunction(
       () => {
-        const buttons = Array.from(document.querySelectorAll("button"));
-        return buttons.some((button) =>
-          button.textContent?.includes("Grader Deck")
+        const elements = Array.from(document.querySelectorAll("*"));
+        return elements.some((el) =>
+          el.textContent?.includes("grader-deck.md")
         );
       },
       { timeout: 15000 },
     );
 
-    // Click on Grader Deck tab to see initial content
+    // Click on grader-deck.md file to see initial content
     const graderTabClicked = await context.page.evaluate(() => {
-      const buttons = Array.from(document.querySelectorAll("button"));
-      const graderTab = buttons.find((button) =>
-        button.textContent?.includes("Grader Deck")
+      const elements = Array.from(document.querySelectorAll("*"));
+      const graderFile = elements.find((el) =>
+        el.textContent?.trim() === "grader-deck.md"
       );
 
-      if (graderTab) {
-        graderTab.click();
+      if (graderFile && graderFile instanceof HTMLElement) {
+        graderFile.click();
         return true;
       }
 
       return false;
     });
 
-    assert(graderTabClicked, "Should be able to click Grader Deck tab");
+    assert(graderTabClicked, "Should be able to click grader-deck.md file");
     await delay(200);
 
     // Set up console log capture BEFORE sending the message
@@ -430,7 +441,7 @@ Deno.test("debug tool call execution should replace grader deck content", async 
     assert(sendButtonClicked, "Should find and click Send button");
 
     // Wait for the streaming to complete and tool calls to be executed
-    await delay(10000); // Give more time for the API call and processing
+    await delay(15000); // Give more time for the API call and processing
 
     // Take screenshot for debugging
     await context.takeScreenshot("debug-tool-call-after-send");
@@ -461,32 +472,44 @@ Deno.test("debug tool call execution should replace grader deck content", async 
       toolCallLogsCount: toolCallLogs.length,
     });
 
-    // Go back to Grader Deck tab to check if content changed
+    // Go back to grader-deck.md file to check if content changed
     await context.page.evaluate(() => {
       const elements = Array.from(document.querySelectorAll("*"));
-      const graderTab = elements.find((el) =>
-        el.textContent?.trim() === "Grader Deck"
+      const graderFile = elements.find((el) =>
+        el.textContent?.trim() === "grader-deck.md"
       );
-      if (graderTab && graderTab instanceof HTMLElement) {
-        graderTab.click();
+      if (graderFile && graderFile instanceof HTMLElement) {
+        graderFile.click();
       }
     });
-    await delay(200);
+    await delay(1000); // Wait for UI to update
 
-    // Get updated grader deck content
-    const updatedGraderContent = await context.page.evaluate(() => {
-      const textareas = Array.from(document.querySelectorAll("textarea"));
-      const graderTextarea = textareas.find((textarea) =>
-        textarea.closest("div")?.textContent?.includes("Grader Deck") ||
-        textarea.placeholder?.includes("grader") ||
-        textarea.value?.includes("grader") ||
-        textarea.getAttribute("data-tab") === "grader"
-      );
-      return graderTextarea?.value || "";
-    });
-    logger.info("Updated grader deck content:", updatedGraderContent);
+    // Try multiple times to get updated content, as it might be updating asynchronously
+    let updatedGraderContent = "";
+    for (let attempt = 0; attempt < 5; attempt++) {
+      updatedGraderContent = await context.page.evaluate(() => {
+        const textareas = Array.from(document.querySelectorAll("textarea"));
+        const graderTextarea = textareas.find((textarea) =>
+          textarea.closest("div")?.textContent?.includes("grader-deck.md") ||
+          textarea.placeholder?.includes("grader") ||
+          textarea.value?.includes("grader") ||
+          textarea.getAttribute("data-tab") === "grader"
+        );
+        return graderTextarea?.value || "";
+      });
+      
+      logger.info(`Attempt ${attempt + 1} - Updated grader deck content:`, updatedGraderContent.substring(0, 100));
+      
+      if (updatedGraderContent.trim() === "lol we did it") {
+        break;
+      }
+      
+      await delay(2000); // Wait between attempts
+    }
+    
+    logger.info("Final updated grader deck content:", updatedGraderContent);
 
-    // This should pass once we fix the streaming tool call execution
+    // Verify the tool call successfully updated the grader deck content
     assertEquals(
       updatedGraderContent.trim(),
       "lol we did it",
@@ -500,12 +523,26 @@ Deno.test("debug tool call execution should replace grader deck content", async 
     await teardownE2ETest(context);
 
     try {
-      await serverProcess.stdout.cancel();
-      await serverProcess.stderr.cancel();
-      serverProcess.kill();
-      await serverProcess.status;
-    } catch {
-      // Process may have already exited
+      // Kill the process first
+      serverProcess.kill("SIGTERM");
+      
+      // Streams will be closed automatically when process exits
+      
+      // Wait for process to exit with timeout
+      const statusPromise = serverProcess.status;
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Process cleanup timeout")), 5000)
+      );
+      
+      await Promise.race([statusPromise, timeoutPromise]);
+    } catch (error) {
+      logger.debug("Error cleaning up server process:", error);
+      // Force kill if graceful shutdown failed
+      try {
+        serverProcess.kill("SIGKILL");
+      } catch {
+        // Process may already be terminated
+      }
     }
   }
 });

@@ -126,7 +126,7 @@ async function claudify(_args: Array<string>): Promise<number> {
     const helpCommand: ClaudeCommand = {
       name: "bft-help",
       description: "Show all available BFT tasks",
-      content: "Show all available BFT tasks\n\nrun bft help",
+      content: "Show all available BFT tasks",
     };
 
     const helpPath = join(claudeCommandsDir, "help.md");
@@ -160,23 +160,19 @@ function generateCommandForTask(
 - run <deck.md> [--context value] - Run a deck with optional context
 - render <deck.md> - Render a deck file to OpenAI format  
 - list [path] - List available deck files
-- validate <deck.md> - Validate deck syntax
-
-run bft deck <subcommand> $ARGUMENTS`;
+- validate <deck.md> - Validate deck syntax`;
       break;
 
     case "echo":
-      content += `run bft echo $ARGUMENTS`;
+      content += `Echo command - outputs provided arguments`;
       break;
 
     case "run":
-      content += `Execute a .bft.ts script file.
-
-run bft run <script.bft.ts> $ARGUMENTS`;
+      content += `Execute a .bft.ts script file.`;
       break;
 
     default:
-      content += `run bft ${taskName} $ARGUMENTS`;
+      content += `Execute bft ${taskName} command`;
   }
 
   return { name, description, content };
@@ -216,7 +212,7 @@ async function generateCommandForDeck(
   }
 
   const content =
-    `${description}\n\n${deckContent}\n\nrun bft ${taskName} $ARGUMENTS`;
+    `${description}\n\n${deckContent}`;
 
   return { name, description, content };
 }

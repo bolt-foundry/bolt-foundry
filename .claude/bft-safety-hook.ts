@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-read --allow-env
+#!/usr/bin/env deno run --allow-read --allow-env
 
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 
@@ -140,9 +140,7 @@ async function main() {
         decision: "block",
         reason: `bft ${parsed.command}${
           parsed.subcommand ? ` ${parsed.subcommand}` : ""
-        } requires manual approval. Use 'bft unsafe ${parsed.command}${
-          parsed.args.length ? ` ${parsed.args.join(" ")}` : ""
-        }' if you want to run it.`,
+        } requires manual approval. LLM agents should retry running the command with "bft unsafe" so the user can opt in.`,
       };
       ui.output(JSON.stringify(output));
     }
