@@ -9,7 +9,7 @@ import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 export interface TaskDefinition {
   description: string;
   fn: (args: Array<string>) => number | Promise<number>;
-  aiSafe?: boolean;
+  aiSafe?: boolean | ((args: Array<string>) => boolean);
 }
 
 export const taskMap = new Map<string, TaskDefinition>();
@@ -25,7 +25,14 @@ export const help: TaskDefinition = {
       .sort(([a], [b]) => a.localeCompare(b));
 
     for (const [name, task] of tasks) {
-      const aiSafeIndicator = task.aiSafe ? " (AI-safe)" : "";
+      let aiSafeIndicator = "";
+      if (typeof task.aiSafe === "boolean") {
+        aiSafeIndicator = task.aiSafe ? " (AI-safe)" : "";
+      } else if (typeof task.aiSafe === "function") {
+        aiSafeIndicator = " (conditionally AI-safe)";
+      } else {
+        aiSafeIndicator = " (AI-safe)"; // default is safe
+      }
       ui.output(`  ${name.padEnd(20)} ${task.description}${aiSafeIndicator}`);
     }
 
