@@ -57,7 +57,70 @@ export function ChatWithIsograph() {
   const { graderContent, updateGraderContent } = useGrader();
 
   // Execute tool calls
-  const executeToolCall = (toolCall: ToolCall) => {
+  // Function to save messages to server for persistence
+  const saveMessagesToServer = async (messages: Array<Message>) => {
+    if (!conversationIdRef.current) {
+      logger.warn("No conversation ID available for saving messages");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/chat/stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: messages,
+          conversationId: conversationIdRef.current,
+          saveOnly: true, // Flag to indicate we only want to save, not stream
+        }),
+      });
+
+      if (!response.ok) {
+        logger.error("Failed to save messages to server:", response.statusText);
+      } else {
+        logger.debug("Messages saved to server successfully");
+      }
+    } catch (error) {
+      logger.error("Error saving messages to server:", error);
+    }
+  };
+
+  // Format tool call as XML block for conversation persistence
+  const formatToolCallXML = (toolCall: ToolCall, result: string): string => {
+    try {
+      const args = JSON.parse(toolCall.function.arguments);
+      const parametersXML = Object.entries(args).map(([key, value]) =>
+        `<parameter name="${key}">${value}</parameter>`
+      ).join("\n");
+
+      return `<function_calls>
+<invoke name="${toolCall.function.name}">
+${parametersXML}
+</invoke>
+</function_calls>
+
+<function_results>
+${result}
+</function_results>`;
+    } catch (error) {
+      logger.error("Error formatting tool call XML:", error);
+      return `<function_calls>
+<invoke name="${toolCall.function.name}">
+<parameter name="arguments">${toolCall.function.arguments}</parameter>
+</invoke>
+</function_calls>
+
+<function_results>
+Error formatting arguments: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }
+</function_results>`;
+    }
+  };
+
+  const executeToolCall = (toolCall: ToolCall): string => {
     logger.info("executeToolCall called with:", toolCall);
     try {
       if (toolCall.function.name === "replaceGraderDeck") {
@@ -76,11 +139,14 @@ export function ChatWithIsograph() {
           // Update the grader content in the context
           updateGraderContent(args.content);
           logger.info("Grader deck updated via tool call successfully");
+          return "Successfully updated grader deck content";
         } else {
           logger.warn("No content found in arguments:", args);
+          return "Error: No content found in arguments";
         }
       } else {
         logger.warn("Unknown tool call:", toolCall.function.name);
+        return `Error: Unknown tool call: ${toolCall.function.name}`;
       }
     } catch (error) {
       logger.error(
@@ -89,6 +155,9 @@ export function ChatWithIsograph() {
         "Arguments:",
         toolCall.function.arguments,
       );
+      return `Error: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`;
     }
   };
 
@@ -772,8 +841,7 @@ Generated at: ${new Date().toISOString()}`,
                 })),
               );
 
-              // Execute any pending tool calls
-              const executedToolCalls: Array<string> = [];
+              // Execute tool calls individually and update message content
               for (const toolCall of currentToolCalls) {
                 logger.info("Checking tool call for execution:", {
                   id: toolCall.id,
@@ -793,11 +861,78 @@ Generated at: ${new Date().toISOString()}`,
                 ) {
                   logger.info("Executing tool call:", toolCall.function.name);
                   try {
-                    await executeToolCall(toolCall);
-                    executedToolCalls.push(toolCall.function.name);
+                    // Execute the tool call and get the result
+                    const result = executeToolCall(toolCall);
+
+                    // Format the tool call as XML for conversation persistence
+                    const toolCallXML = formatToolCallXML(toolCall, result);
+
+                    // Update the assistant message content with the tool call
+                    setMessages((prevMessages) => {
+                      const updatedMessages = prevMessages.map((msg) => {
+                        if (msg.id === streamingMessageIdRef.current) {
+                          // Remove the "executing tool calls" text and add the actual tool call
+                          const baseContent = msg.content.replace(
+                            /🔧 Executing tool calls\.\.\./,
+                            "",
+                          ).trim();
+                          const newContent = baseContent
+                            ? `${baseContent}\n\n${toolCallXML}`
+                            : toolCallXML;
+
+                          return {
+                            ...msg,
+                            content: newContent,
+                          };
+                        }
+                        return msg;
+                      });
+
+                      // Save the updated messages to server after each tool call
+                      saveMessagesToServer(updatedMessages);
+
+                      return updatedMessages;
+                    });
+
+                    logger.info(
+                      `Tool call ${toolCall.function.name} executed and saved`,
+                    );
                   } catch (error) {
                     logger.error("Failed to execute tool call:", error);
-                    // Continue with other tool calls
+
+                    // Still save the failed tool call attempt
+                    const errorResult = `Error: ${
+                      error instanceof Error ? error.message : "Unknown error"
+                    }`;
+                    const toolCallXML = formatToolCallXML(
+                      toolCall,
+                      errorResult,
+                    );
+
+                    setMessages((prevMessages) => {
+                      const updatedMessages = prevMessages.map((msg) => {
+                        if (msg.id === streamingMessageIdRef.current) {
+                          const baseContent = msg.content.replace(
+                            /🔧 Executing tool calls\.\.\./,
+                            "",
+                          ).trim();
+                          const newContent = baseContent
+                            ? `${baseContent}\n\n${toolCallXML}`
+                            : toolCallXML;
+
+                          return {
+                            ...msg,
+                            content: newContent,
+                          };
+                        }
+                        return msg;
+                      });
+
+                      // Save even failed tool calls for transparency
+                      saveMessagesToServer(updatedMessages);
+
+                      return updatedMessages;
+                    });
                   }
                 } else {
                   logger.warn("Skipping incomplete tool call:", {
@@ -808,27 +943,7 @@ Generated at: ${new Date().toISOString()}`,
                 }
               }
 
-              logger.info(
-                "All tool calls processed. Executed:",
-                executedToolCalls,
-              );
-
-              // Add a message showing tool call execution if any were executed
-              if (executedToolCalls.length > 0) {
-                const toolCallMessage: Message = {
-                  id: (Date.now() + 2).toString(),
-                  role: "assistant",
-                  content: `✅ Tool call${
-                    executedToolCalls.length > 1 ? "s" : ""
-                  } executed: ${executedToolCalls.join(", ")}`,
-                  timestamp: new Date().toISOString(),
-                };
-
-                setMessages((prev) => [...prev, toolCallMessage]);
-                logger.info("Added tool execution message to UI");
-              } else {
-                logger.info("No tool calls were executed");
-              }
+              logger.info("All tool calls processed and saved individually");
 
               // Clear pending tool calls
               setPendingToolCalls(new Map());
