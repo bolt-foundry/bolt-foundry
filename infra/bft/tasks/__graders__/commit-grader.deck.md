@@ -27,9 +27,9 @@ You will receive:
 
 ### 2. Sapling Awareness (20% weight)
 
-- Uses `bff ai status` and `bff ai diff` commands (NOT git commands)
+- Uses `bft ai status` and `bft ai diff` commands (NOT git commands)
 - Does NOT attempt to stage files (Sapling doesn't use staging)
-- Uses `bff commit` for the actual commit
+- Uses `bft commit` for the actual commit
 - Demonstrates understanding of Sapling workflow
 
 ### 3. Content Quality (30% weight)
@@ -51,7 +51,7 @@ You will receive:
 **+3 (Excellent)**
 
 - Perfect format compliance with all sections
-- Correctly uses all bff ai commands
+- Correctly uses all bft ai commands
 - Clear, informative content that captures intent perfectly
 - Suggests appropriate commit splits for unrelated changes
 - Test plan is specific and executable
@@ -59,7 +59,7 @@ You will receive:
 **+2 (Very Good)**
 
 - Minor format issues but all sections present
-- Uses bff commands but might miss one
+- Uses bft commands but might miss one
 - Good content quality with minor improvements possible
 - Recognizes when to split commits
 - Test plan is reasonable

@@ -2,7 +2,7 @@
 
 **Use Sapling SCM, not git.** This project doesn't use git at all.
 
-Always use BFF commands over direct Sapling commands when possible. BFF commands
+Always use BFT commands over direct Sapling commands when possible. BFT commands
 handle formatting, linting, and type checking automatically.
 
 ## Commit creation
@@ -34,7 +34,7 @@ Changes:
 - Create placeholder for gqlSpecToNexus.ts with TODOs
 
 Test plan:
-1. Run tests: `bff test apps/bfDb/builders/graphql/__tests__/makeGqlBuilder.test.ts`
+1. Run tests: `bft test apps/bfDb/builders/graphql/__tests__/makeGqlBuilder.test.ts`
 2. Verify builder supports scalar fields, objects, and mutations
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
@@ -44,20 +44,20 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Version control commands
 
-### BFF commit helpers (preferred)
+### BFT commit helpers (preferred)
 
-BFF commands streamline your workflow with automatic formatting, linting, and PR
+BFT commands streamline your workflow with automatic formatting, linting, and PR
 submission:
 
 #### Creating commits
 
-- `bff commit -m "message"` - Run pre-checks then commit and submit PR (default)
-- `bff commit -m "message" --skip-pre-check` - Commit without pre-checks
-- `bff commit -m "message" --no-submit` - Commit without submitting PR
-- `bff commit -m "message" file1 file2` - Commit specific files
-- `bff precommit` - Stage files and run pre-commit checks (AI-safe)
+- `bft commit -m "message"` - Run pre-checks then commit and submit PR (default)
+- `bft commit -m "message" --skip-pre-check` - Commit without pre-checks
+- `bft commit -m "message" --no-submit` - Commit without submitting PR
+- `bft commit -m "message" file1 file2` - Commit specific files
+- `bft precommit` - Stage files and run pre-commit checks (AI-safe)
 
-**Note:** By default, `bff commit` will:
+**Note:** By default, `bft commit` will:
 
 1. Run pre-commit checks (format, lint, type check)
 2. Create the commit
@@ -78,30 +78,30 @@ When to modify default behavior:
 
 The pre-checks include:
 
-1. `bff format` - Format code (AI-safe)
-2. `bff lint` - Run linting rules (AI-safe)
-3. `bff check` - Type checking (AI-safe)
+1. `bft format` - Format code (AI-safe)
+2. `bft lint` - Run linting rules (AI-safe)
+3. `bft check` - Type checking (AI-safe)
 
 #### Amending commits
 
-- `bff amend` - Amend current commit and submit PR
-- `bff amend --no-submit` - Amend without submitting PR
-- `bff amend -m "New message"` - Amend with new message
+- `bft amend` - Amend current commit and submit PR
+- `bft amend --no-submit` - Amend without submitting PR
+- `bft amend -m "New message"` - Amend with new message
 
 #### Viewing changes and status (AI-safe commands)
 
-- `bff status` - Show working directory status using `sl status`
-- `bff diff` - Show diff of current changes using `sl diff`
-- `bff log` - Show commit history using `sl log`
+- `bft status` - Show working directory status using `sl status`
+- `bft diff` - Show diff of current changes using `sl diff`
+- `bft log` - Show commit history using `sl log`
 
 #### Pull request management
 
-- `bff merge <PR-number>` - Merge a GitHub PR
-- `bff merge-stack` - Merge all PRs in current stack bottom-to-top
-- `bff merge-stack_dry-run` - Preview what would be merged (AI-safe)
-- `bff ci-status` - Check CI status for current commit (AI-safe)
-- `bff pr-details <PR-number>` - Get PR information
-- `bff pr-comments <PR-number>` - Fetch PR comments
+- `bft merge <PR-number>` - Merge a GitHub PR
+- `bft merge-stack` - Merge all PRs in current stack bottom-to-top
+- `bft merge-stack_dry-run` - Preview what would be merged (AI-safe)
+- `bft ci-status` - Check CI status for current commit (AI-safe)
+- `bft pr-details <PR-number>` - Get PR information
+- `bft pr-comments <PR-number>` - Fetch PR comments
 
 ### Direct Sapling commands (when needed)
 
@@ -178,33 +178,33 @@ automation. For mixed changes within files, consider:
 
 ## AI-safe commands
 
-When working with AI agents, use these AI-safe BFF commands:
+When working with AI agents, use these AI-safe BFT commands:
 
-- `bff ai status` - Check repository status
-- `bff ai diff` - View current changes
-- `bff ai log` - View commit history
-- `bff ai format` - Format code
-- `bff ai lint` - Run linting
-- `bff ai check` - Type check
-- `bff ai test` - Run tests
-- `bff ai precommit` - Stage files and run all checks
-- `bff ai ci-status` - Check CI status
-- `bff ai merge-stack_dry-run` - Preview stack merges
+- `bft ai status` - Check repository status
+- `bft ai diff` - View current changes
+- `bft ai log` - View commit history
+- `bft ai format` - Format code
+- `bft ai lint` - Run linting
+- `bft ai check` - Type check
+- `bft ai test` - Run tests
+- `bft ai precommit` - Stage files and run all checks
+- `bft ai ci-status` - Check CI status
+- `bft ai merge-stack_dry-run` - Preview stack merges
 
 ## Best practices
 
 1. **Review before committing**
-   - Use `bff status` (or `bff ai status`) to verify which files will be
+   - Use `bft status` (or `bft ai status`) to verify which files will be
      included
-   - Use `bff diff` (or `bff ai diff`) to review the actual content changes
-   - Run `bff format` (or use `bff commit` which includes formatting)
+   - Use `bft diff` (or `bft ai diff`) to review the actual content changes
+   - Run `bft format` (or use `bft commit` which includes formatting)
    - Make sure to `sl add` new files and `sl remove` deleted files
 
 2. **Commit organization**
    - Group related changes together in logical commits by feature
    - Include code, tests, and docs for a feature in the same commit
    - Keep these in separate commits:
-     - Code generation changes (e.g., from `bff genGqlTypes`)
+     - Code generation changes (e.g., from `bft genGqlTypes`)
      - Dependency updates
      - Large refactoring separate from feature work
 

@@ -9,7 +9,7 @@ system generates a TypeScript grader that can evaluate similar interactions. The
 tool allows iterative refinement - users can test their grader immediately, see
 results, adjust their examples or grader logic, and repeat until they're
 satisfied. Once ready, they can download everything to run locally with the
-bff-eval framework.
+bft-eval framework.
 
 Think of it as a grader generator - you show it what good and bad look like
 through examples, and it creates evaluation logic that can judge new outputs by
@@ -61,7 +61,7 @@ eval.builders will be a new app in the Bolt Foundry monorepo at
 - **React** for the UI (following boltFoundry patterns)
 - **GraphQL** for API layer
 - **bfDs** for UI components
-- **packages/bff-eval** as the evaluation runtime
+- **packages/bft-eval** as the evaluation runtime
 - **LLM integration** for analyzing examples and generating graders
 - **No persistence** - everything happens in-memory/client-side
 
@@ -69,7 +69,7 @@ The core flow:
 
 1. Parse markdown table input
 2. Analyze examples to infer evaluation criteria
-3. Generate TypeScript grader following bff-eval patterns
+3. Generate TypeScript grader following bft-eval patterns
 4. Execute grader against provided examples
 5. Allow iterative refinement
 6. Package for download with curl command
@@ -109,7 +109,7 @@ The core flow:
 4. **Download**
    - Get curl command that downloads a gzip file
    - Gzip contains:
-     - The bff-eval binary
+     - The bft-eval binary
      - `eval/` folder with:
        - `grader.ts` - The generated grader
        - `samples.jsonl` - The example data
@@ -133,7 +133,7 @@ interface ExampleRow {
 
 | System           | Integration Type | Purpose                               |
 | ---------------- | ---------------- | ------------------------------------- |
-| bff-eval package | Code generation  | Generate compatible graders           |
+| bft-eval package | Code generation  | Generate compatible graders           |
 | LLM API          | Analysis         | Understand examples and generate code |
 | CDN/Storage      | File hosting     | Serve downloadable packages           |
 
