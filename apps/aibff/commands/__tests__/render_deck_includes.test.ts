@@ -295,3 +295,153 @@ assistantQuestion = "What is your API key?"`;
     await Deno.remove(tempDir, { recursive: true });
   }
 });
+
+Deno.test("processMarkdownIncludes - should extract tools from TOML frontmatter", async () => {
+  const tempDir = await Deno.makeTempDir();
+  const mainDeckPath = `${tempDir}/main.deck.md`;
+  const toolsDeckPath = `${tempDir}/tools.deck.md`;
+
+  const mainContent = `# Main Deck
+![tools](tools.deck.md)
+
+Main content here.`;
+
+  const toolsContent = `+++
+[[tools]]
+type = "function"
+[tools.function]
+name = "replaceContent"
+description = "Replace content with new text"
+[tools.function.parameters]
+type = "object"
+required = ["content"]
+[tools.function.parameters.properties.content]
+type = "string"
+description = "The new content"
++++
+
+# Tools Documentation
+
+This defines the tools available.`;
+
+  await Deno.writeTextFile(mainDeckPath, mainContent);
+  await Deno.writeTextFile(toolsDeckPath, toolsContent);
+
+  try {
+    const result = renderDeck(mainDeckPath, {}, {});
+
+    // Should have tools in the result
+    assertEquals(Array.isArray(result.tools), true);
+    assertEquals(result.tools!.length, 1);
+    assertEquals(result.tools![0].type, "function");
+    assertEquals(result.tools![0].function.name, "replaceContent");
+    assertEquals(
+      result.tools![0].function.description,
+      "Replace content with new text",
+    );
+
+    // System message should not contain TOML frontmatter
+    const expectedContent = `# Main Deck
+# Tools Documentation
+
+This defines the tools available.
+
+Main content here.`;
+
+    assertEquals(result.messages[0].content, expectedContent);
+  } finally {
+    await Deno.remove(tempDir, { recursive: true });
+  }
+});
+
+Deno.test("processMarkdownIncludes - should extract multiple tools from multiple embedded decks", async () => {
+  const tempDir = await Deno.makeTempDir();
+  const mainDeckPath = `${tempDir}/main.deck.md`;
+  const toolsAPath = `${tempDir}/toolsA.deck.md`;
+  const toolsBPath = `${tempDir}/toolsB.deck.md`;
+
+  const mainContent = `# Main Deck
+![tools A](toolsA.deck.md)
+![tools B](toolsB.deck.md)`;
+
+  const toolsAContent = `+++
+[[tools]]
+type = "function"
+[tools.function]
+name = "toolA"
+description = "Tool A function"
+[tools.function.parameters]
+type = "object"
+required = ["param"]
+[tools.function.parameters.properties.param]
+type = "string"
+description = "Parameter for tool A"
++++
+
+# Tool A`;
+
+  const toolsBContent = `+++
+[[tools]]
+type = "function"
+[tools.function]
+name = "toolB"
+description = "Tool B function"
+[tools.function.parameters]
+type = "object"
+required = ["value"]
+[tools.function.parameters.properties.value]
+type = "number"
+description = "Value for tool B"
++++
+
+# Tool B`;
+
+  await Deno.writeTextFile(mainDeckPath, mainContent);
+  await Deno.writeTextFile(toolsAPath, toolsAContent);
+  await Deno.writeTextFile(toolsBPath, toolsBContent);
+
+  try {
+    const result = renderDeck(mainDeckPath, {}, {});
+
+    // Should have both tools
+    assertEquals(Array.isArray(result.tools), true);
+    assertEquals(result.tools!.length, 2);
+
+    // Check tool A
+    const toolA = result.tools!.find((t) => t.function.name === "toolA");
+    assertEquals(toolA?.function.description, "Tool A function");
+
+    // Check tool B
+    const toolB = result.tools!.find((t) => t.function.name === "toolB");
+    assertEquals(toolB?.function.description, "Tool B function");
+
+    // System message should not contain TOML frontmatter
+    assertEquals(result.messages[0].content, "# Main Deck\n# Tool A\n# Tool B");
+  } finally {
+    await Deno.remove(tempDir, { recursive: true });
+  }
+});
+
+Deno.test("processMarkdownIncludes - should handle deck with no tools", async () => {
+  const tempDir = await Deno.makeTempDir();
+  const mainDeckPath = `${tempDir}/main.deck.md`;
+
+  const mainContent = `# Main Deck
+
+No tools here, just content.`;
+
+  await Deno.writeTextFile(mainDeckPath, mainContent);
+
+  try {
+    const result = renderDeck(mainDeckPath, {}, {});
+
+    // Should not have tools field if no tools found
+    assertEquals(result.tools, undefined);
+    assertEquals(
+      result.messages[0].content,
+      "# Main Deck\n\nNo tools here, just content.",
+    );
+  } finally {
+    await Deno.remove(tempDir, { recursive: true });
+  }
+});

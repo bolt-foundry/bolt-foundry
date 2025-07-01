@@ -91,6 +91,7 @@
   "lint": {
     "exclude": [
       "**/__generated__/**",
+      "**/__isograph/**",
       "examples/**",
       "apps/contacts/**",
       "**/dist/**"
