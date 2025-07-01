@@ -4974,7 +4974,7 @@
     ],
     "packageJson": {
       "dependencies": [
-        "npm:@anthropic-ai/claude-code@^1.0.25",
+        "npm:@anthropic-ai/claude-code@^1.0.38",
         "npm:@babel/preset-react@^7.27.1",
         "npm:@isograph/babel-plugin@^0.0.0-main-1fad6d74",
         "npm:@isograph/compiler@0.0.0-main-1fad6d74",
@@ -5001,6 +5001,7 @@
         "npm:@types/react@19",
         "npm:@vitejs/plugin-react@^4.6.0",
         "npm:assemblyai@^4.9.0",
+        "npm:claude@~0.1.1",
         "npm:discord.js@^14.18.0",
         "npm:esbuild@~0.24.2",
         "npm:graphql-relay@~0.10.2",
