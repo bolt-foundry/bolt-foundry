@@ -1,13 +1,13 @@
 import log from "loglevel";
-import {
-  blue,
-  cyan,
-  dim,
-  magenta,
-  red,
-  stripAnsiCode,
-  yellow,
-} from "@std/fmt/colors";
+// import {
+//   blue,
+//   cyan,
+//   dim,
+//   magenta,
+//   red,
+//   stripAnsiCode,
+//   yellow,
+// } from "@std/fmt/colors";
 import logLevelPrefixPlugin from "loglevel-plugin-prefix";
 import { getConfigurationVariable } from "../get-configuration-var/get-configuration-var.ts";
 
@@ -29,13 +29,13 @@ export function isLoggingDisabled(): boolean {
   return globalLoggingDisabled;
 }
 
-const colors = {
-  TRACE: magenta,
-  DEBUG: cyan,
-  INFO: blue,
-  WARN: yellow,
-  ERROR: red,
-};
+// const colors = {
+//   TRACE: magenta,
+//   DEBUG: cyan,
+//   INFO: blue,
+//   WARN: yellow,
+//   ERROR: red,
+// };
 
 function getCallerInfo() {
   const error = new Error();
@@ -113,13 +113,13 @@ if (!isBrowser()) {
     template: "%n%l:",
     levelFormatter(level) {
       if (globalLoggingDisabled) return "";
-      const LEVEL = level.toUpperCase() as keyof typeof colors;
-      return colors[LEVEL](LEVEL);
+      const LEVEL = level.toUpperCase();
+      return LEVEL;
     },
     nameFormatter(name) {
       if (globalLoggingDisabled) return "";
       const callerInfo = getCallerInfo();
-      return `${dim(`↱ ${name || "global"}${callerInfo}\n`)}`;
+      return `↱ ${name || "global"}${callerInfo}\n`;
     },
   });
 
@@ -224,13 +224,19 @@ function addPrintln(logger: log.Logger): Logger {
   const extendedLogger = logger as Logger;
 
   extendedLogger.println = (message: string, stripColors = false) => {
-    const output = stripColors ? stripAnsiCode(message) : message;
+    const output = stripColors
+      // deno-lint-ignore no-control-regex
+      ? message.replace(/\x1b\[[0-9;]*m/g, "")
+      : message;
     // deno-lint-ignore no-console
     console.log(output);
   };
 
   extendedLogger.printErr = (message: string, stripColors = false) => {
-    const output = stripColors ? stripAnsiCode(message) : message;
+    const output = stripColors
+      // deno-lint-ignore no-control-regex
+      ? message.replace(/\x1b\[[0-9;]*m/g, "")
+      : message;
     // deno-lint-ignore no-console
     console.error(output);
   };

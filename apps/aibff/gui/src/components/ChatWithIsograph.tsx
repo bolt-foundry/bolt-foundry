@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { useRouter } from "../contexts/RouterContext.tsx";
 import { useGrader } from "../contexts/GraderContext.tsx";
-import { GraderEditor } from "./GraderEditor.tsx";
+import { TabbedEditor } from "./TabbedEditor.tsx";
 import { MessageContent } from "./MessageContent.tsx";
 import { MessageInputUI } from "./MessageInput.tsx";
 import { getLogger } from "@bolt-foundry/logger";
@@ -32,7 +32,7 @@ function generateConversationId(): string {
   return `conv-${timestamp}-${random}`;
 }
 
-export function Chat() {
+export function ChatWithIsograph() {
   const router = useRouter();
   const { navigate, params } = router;
   const conversationId = params?.conversationId;
@@ -88,6 +88,10 @@ export function Chat() {
       );
     }
   };
+
+  // TODO: Replace this with Isograph query
+  // This will be something like:
+  // const conversation = useQuery(ConversationQuery, { conversationId });
 
   // Load existing conversation or create new one
   useEffect(() => {
@@ -252,16 +256,17 @@ export function Chat() {
           </div>
         </div>
 
-        {/* Right panel - Grader Editor */}
+        {/* Right panel - Tabbed Editor */}
         <div
           style={{
             flex: 1,
             backgroundColor: "#1f2021",
           }}
         >
-          <GraderEditor
-            initialContent={graderContent}
-            onContentChange={updateGraderContent}
+          <TabbedEditor
+            initialGraderContent={graderContent}
+            onGraderContentChange={updateGraderContent}
+            conversationId={conversationIdRef.current}
           />
         </div>
       </div>
@@ -359,27 +364,12 @@ export function Chat() {
         <MessageInputUI
           conversationId={conversationIdRef.current || ""}
           onSendMessage={async (content) => {
-            logger.info(
-              "onSendMessage START with raw content:",
-              JSON.stringify(content),
-            );
-            logger.info("content.trim():", JSON.stringify(content.trim()));
-            logger.info("!content.trim():", !content.trim());
-
             // Use the existing handleSend logic
-            if (!content.trim()) {
-              logger.info("Empty content, returning early");
-              return;
-            }
+            if (!content.trim()) return;
 
-            let messageContent = content.trim();
+            const messageContent = content.trim();
 
             logger.info("onSendMessage called with:", messageContent);
-            logger.info("Current conversation state:", {
-              conversationId: conversationIdRef.current,
-              messageCount: messages.length,
-              isStreaming,
-            });
 
             // Handle /test command - simulate a tool call locally
             if (messageContent.startsWith("/test")) {
@@ -452,24 +442,6 @@ Generated at: ${new Date().toISOString()}`,
               }
             }
 
-            // Handle /force command
-            if (messageContent.startsWith("/force")) {
-              const toolName = messageContent.slice(6).trim() ||
-                "replaceGraderDeck";
-
-              if (toolName === "replaceGraderDeck") {
-                messageContent =
-                  "IMPORTANT: You MUST use the replaceGraderDeck tool now. Create a complete grader deck for evaluating customer support responses on helpfulness. Do not respond with text - only use the tool call.";
-              } else {
-                messageContent =
-                  `IMPORTANT: You MUST use the ${toolName} tool now. Do not respond with text - only use the tool call.`;
-              }
-
-              logger.info(`Force command detected: ${toolName}`);
-            }
-
-            logger.info("Creating user message with content:", messageContent);
-
             const newMessage: Message = {
               id: Date.now().toString(),
               role: "user",
@@ -479,11 +451,6 @@ Generated at: ${new Date().toISOString()}`,
 
             const updatedMessages = [...messages, newMessage];
             setMessages(updatedMessages);
-
-            logger.info(
-              "Messages updated, updatedMessages length:",
-              updatedMessages.length,
-            );
 
             // Create a placeholder for the assistant's response
             const assistantMessageId = (Date.now() + 1).toString();
@@ -498,41 +465,20 @@ Generated at: ${new Date().toISOString()}`,
               },
             ]);
 
-            logger.info("About to start streaming...");
             setIsStreaming(true);
             abortControllerRef.current = new AbortController();
-            logger.info("Streaming state set, abort controller created");
 
             try {
-              // Filter out empty assistant messages that might cause server errors
-              const cleanMessages = updatedMessages.filter((msg) =>
-                !(msg.role === "assistant" &&
-                  (!msg.content || msg.content.trim() === ""))
-              );
-
-              logger.info("Starting fetch to /api/chat/stream with messages:", {
-                total: updatedMessages.length,
-                clean: cleanMessages.length,
-                filtered: updatedMessages.length - cleanMessages.length,
-              });
-
               const response = await fetch("/api/chat/stream", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                  messages: cleanMessages,
+                  messages: updatedMessages,
                   conversationId: conversationIdRef.current,
                 }),
                 signal: abortControllerRef.current.signal,
-              });
-
-              logger.info("Fetch response received:", {
-                ok: response.ok,
-                status: response.status,
-                statusText: response.statusText,
-                headers: Object.fromEntries(response.headers.entries()),
               });
 
               if (!response.ok) {
@@ -540,56 +486,82 @@ Generated at: ${new Date().toISOString()}`,
               }
 
               const reader = response.body?.getReader();
-              const decoder = new TextDecoder();
-
-              logger.info("Stream reader created:", !!reader);
+              const decoder = new TextDecoder("utf-8", { stream: true });
 
               if (!reader) {
                 throw new Error("No response body");
               }
 
               const processStream = async () => {
-                logger.info("Starting processStream function");
+                let buffer = "";
                 try {
-                  let chunkCount = 0;
                   while (true) {
-                    logger.info("Reading chunk", chunkCount++);
                     const { done, value } = await reader.read();
-                    logger.info("Chunk read result:", {
-                      done,
-                      hasValue: !!value,
-                      valueLength: value?.length,
-                    });
-
                     if (done) {
-                      logger.info("Stream done, breaking");
+                      // Flush any remaining bytes and process final buffer
+                      const finalChunk = decoder.decode();
+                      if (finalChunk) {
+                        buffer += finalChunk;
+                      }
+                      if (buffer.trim()) {
+                        const lines = buffer.split("\n");
+                        for (const line of lines) {
+                          if (line.startsWith("data: ")) {
+                            const data = line.slice(6);
+                            if (data === "[DONE]") {
+                              break;
+                            }
+                            try {
+                              const parsed = JSON.parse(data);
+                              logger.debug("Final chunk parsed:", parsed);
+                            } catch (e) {
+                              logger.error(
+                                "Failed to parse final SSE data:",
+                                e,
+                              );
+                            }
+                          }
+                        }
+                      }
                       break;
                     }
 
-                    const chunk = decoder.decode(value);
-                    logger.info(
-                      "Decoded chunk:",
-                      chunk.substring(0, 200) +
-                        (chunk.length > 200 ? "..." : ""),
-                    );
-                    const lines = chunk.split("\n");
-                    logger.info("Split into lines:", lines.length);
+                    const chunk = decoder.decode(value, { stream: true });
+                    buffer += chunk;
+                    const lines = buffer.split("\n");
+
+                    // Keep the last line in buffer if it doesn't end with newline
+                    buffer = lines.pop() || "";
 
                     for (const line of lines) {
+                      logger.debug("Processing line:", line.substring(0, 50));
                       if (line.startsWith("data: ")) {
                         const data = line.slice(6);
                         if (data === "[DONE]") {
-                          logger.info("Stream received [DONE]");
                           return;
+                        }
+
+                        // Skip empty data lines
+                        if (!data.trim()) {
+                          continue;
                         }
 
                         try {
                           const parsed = JSON.parse(data);
-                          logger.info("Stream data received:", {
+
+                          // Debug log to see what we're receiving
+                          logger.debug("Raw SSE data received:", {
+                            data: data.substring(0, 100),
+                            hasToolCalls: !!parsed.tool_calls,
+                            toolCallsCount: parsed.tool_calls?.length || 0,
+                          });
+
+                          // Log all parsed data for debugging
+                          logger.debug("Parsed SSE data:", {
                             hasContent: !!parsed.content,
                             hasToolCalls: !!parsed.tool_calls,
-                            conversationId: parsed.conversationId,
-                            toolCallsCount: parsed.tool_calls?.length || 0,
+                            hasConversationId: !!parsed.conversationId,
+                            keys: Object.keys(parsed),
                           });
 
                           if (
@@ -597,17 +569,9 @@ Generated at: ${new Date().toISOString()}`,
                           ) {
                             conversationIdRef.current = parsed.conversationId;
                             router.navigate(`/chat/${parsed.conversationId}`);
-                            logger.info(
-                              "Conversation ID set:",
-                              parsed.conversationId,
-                            );
                           }
 
                           if (parsed.content) {
-                            logger.info(
-                              "Adding content to message:",
-                              parsed.content,
-                            );
                             setMessages((prev) =>
                               prev.map((msg) =>
                                 msg.id === streamingMessageIdRef.current
@@ -628,48 +592,118 @@ Generated at: ${new Date().toISOString()}`,
                             );
                             let hasNewToolCall = false;
                             for (const toolCallDelta of parsed.tool_calls) {
+                              // Log the entire delta structure first
+                              logger.info(
+                                "Raw tool call delta:",
+                                toolCallDelta,
+                              );
+
                               const { index, id, type, function: func } =
                                 toolCallDelta;
-                              logger.info("Tool call delta:", {
+                              logger.info("Extracted tool call delta fields:", {
                                 index,
                                 id,
                                 type,
                                 func,
+                                allKeys: Object.keys(toolCallDelta),
                               });
 
-                              if (id && type === "function" && func) {
+                              // For tool calls, we need to use index as the primary key since
+                              // OpenAI streaming sends the first delta with ID, then subsequent deltas without ID
+                              // but with the same index. We'll use index as the consistent identifier.
+                              const toolCallKey = `tool_call_${index}`;
+
+                              logger.info("Using tool call key:", {
+                                originalId: id,
+                                index,
+                                toolCallKey,
+                              });
+
+                              // More permissive condition - index and type are sufficient to start building
+                              if (index !== undefined && type === "function") {
+                                // Use a ref to avoid race conditions with rapid state updates
                                 setPendingToolCalls((prev) => {
                                   const updated = new Map(prev);
-                                  const existing = updated.get(id) || {
-                                    id,
+                                  const existing = updated.get(toolCallKey) || {
+                                    id: id || toolCallKey,
                                     type: "function",
                                     function: {
-                                      name: func.name || "",
+                                      name: "",
                                       arguments: "",
                                     },
                                   };
 
+                                  // Track if we made any updates to this tool call
+                                  let wasUpdated = false;
+                                  const beforeArgsLength =
+                                    existing.function.arguments.length;
+
                                   // Accumulate function name and arguments
-                                  if (func.name) {
+                                  if (func?.name && !existing.function.name) {
                                     existing.function.name = func.name;
-                                    hasNewToolCall = true;
+                                    wasUpdated = true;
                                     logger.info(
                                       "Tool call name set:",
                                       func.name,
                                     );
                                   }
-                                  if (func.arguments) {
-                                    existing.function.arguments +=
-                                      func.arguments;
+                                  if (func?.arguments) {
+                                    // Only add if this chunk isn't already at the end
+                                    if (
+                                      !existing.function.arguments.endsWith(
+                                        func.arguments,
+                                      )
+                                    ) {
+                                      existing.function.arguments +=
+                                        func.arguments;
+                                      wasUpdated = true;
+                                      logger.info(
+                                        "Tool call args updated:",
+                                        {
+                                          beforeLength: beforeArgsLength,
+                                          afterLength:
+                                            existing.function.arguments.length,
+                                          addedChunk: func.arguments,
+                                        },
+                                      );
+                                    } else {
+                                      logger.debug(
+                                        "Skipping duplicate chunk:",
+                                        func.arguments,
+                                      );
+                                    }
+                                  }
+
+                                  // Mark as new tool call if we made updates
+                                  if (wasUpdated) {
+                                    hasNewToolCall = true;
                                     logger.info(
-                                      "Tool call args updated:",
-                                      existing.function.arguments,
+                                      "Tool call state after update:",
+                                      {
+                                        id: existing.id,
+                                        name: existing.function.name,
+                                        argsLength:
+                                          existing.function.arguments.length,
+                                        hasName: !!existing.function.name,
+                                        hasArgs:
+                                          existing.function.arguments !== "",
+                                      },
                                     );
                                   }
 
-                                  updated.set(id, existing);
+                                  updated.set(toolCallKey, existing);
                                   return updated;
                                 });
+                              } else {
+                                logger.warn(
+                                  "Skipping tool call delta - missing index or type:",
+                                  {
+                                    originalId: id || "<missing>",
+                                    index: index ?? "<missing>",
+                                    type: type || "<missing>",
+                                    hasFunc: !!func,
+                                  },
+                                );
                               }
                             }
 
@@ -710,16 +744,9 @@ Generated at: ${new Date().toISOString()}`,
                 }
               };
 
-              logger.info("About to call processStream");
               await processStream();
-              logger.info("processStream completed");
             } catch (error) {
               logger.error("Failed to send message:", error);
-              logger.error("Error details:", {
-                name: error instanceof Error ? error.name : "Unknown",
-                message: error instanceof Error ? error.message : String(error),
-                stack: error instanceof Error ? error.stack : undefined,
-              });
               setMessages((prev) =>
                 prev.map((msg) =>
                   msg.id === streamingMessageIdRef.current
@@ -733,24 +760,47 @@ Generated at: ${new Date().toISOString()}`,
 
               logger.info(
                 "Stream finished. Pending tool calls:",
-                Array.from(pendingToolCalls.values()),
+                Array.from(pendingToolCalls.values()).map((tc) => ({
+                  id: tc.id,
+                  name: tc.function.name,
+                  argsLength: tc.function.arguments.length,
+                  firstChars: tc.function.arguments.substring(0, 50),
+                })),
               );
 
               // Execute any pending tool calls
               const executedToolCalls: Array<string> = [];
               for (const toolCall of pendingToolCalls.values()) {
                 logger.info("Checking tool call for execution:", {
+                  id: toolCall.id,
                   name: toolCall.function.name,
                   hasArguments: !!toolCall.function.arguments,
                   argumentsLength: toolCall.function.arguments?.length || 0,
+                  argumentsValid: toolCall.function.arguments
+                    ? "valid"
+                    : "empty/null",
                 });
 
-                if (toolCall.function.name && toolCall.function.arguments) {
+                // Execute if we have a name and arguments (even if empty string)
+                // Some tool calls might have empty arguments, which is valid
+                if (
+                  toolCall.function.name &&
+                  toolCall.function.arguments !== undefined
+                ) {
                   logger.info("Executing tool call:", toolCall.function.name);
-                  await executeToolCall(toolCall);
-                  executedToolCalls.push(toolCall.function.name);
+                  try {
+                    await executeToolCall(toolCall);
+                    executedToolCalls.push(toolCall.function.name);
+                  } catch (error) {
+                    logger.error("Failed to execute tool call:", error);
+                    // Continue with other tool calls
+                  }
                 } else {
-                  logger.warn("Skipping incomplete tool call:", toolCall);
+                  logger.warn("Skipping incomplete tool call:", {
+                    id: toolCall.id,
+                    name: toolCall.function.name || "<missing>",
+                    argumentsDefined: toolCall.function.arguments !== undefined,
+                  });
                 }
               }
 
@@ -784,7 +834,7 @@ Generated at: ${new Date().toISOString()}`,
         />
       </div>
 
-      {/* Right panel - Grader Editor */}
+      {/* Right panel - Tabbed Editor */}
       <div
         style={{
           flex: "1 1 50%",
@@ -792,9 +842,10 @@ Generated at: ${new Date().toISOString()}`,
           backgroundColor: "#1f2021",
         }}
       >
-        <GraderEditor
-          initialContent={graderContent}
-          onContentChange={updateGraderContent}
+        <TabbedEditor
+          initialGraderContent={graderContent}
+          onGraderContentChange={updateGraderContent}
+          conversationId={conversationIdRef.current}
         />
       </div>
     </div>
