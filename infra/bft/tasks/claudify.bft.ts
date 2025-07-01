@@ -190,23 +190,54 @@ async function generateCommandForDeck(
   const name = `bft-${taskName}`;
   const description = purpose;
 
+  // Use aibff render to get the full deck content in markdown format
+  let deckContent = "";
+  try {
+    const renderProcess = new Deno.Command("bft", {
+      args: ["aibff", "render", deckPath, "--format", "markdown"],
+      stdout: "piped",
+      stderr: "piped",
+    });
+
+    const { code, stdout, stderr } = await renderProcess.output();
+
+    if (code === 0) {
+      deckContent = new TextDecoder().decode(stdout);
+    } else {
+      const errorText = new TextDecoder().decode(stderr);
+      ui.warn(`Failed to render deck ${deckPath}: ${errorText}`);
+      // Fall back to simple parameter extraction
+      deckContent = await fallbackDeckContent(taskName, deckPath);
+    }
+  } catch (error) {
+    ui.warn(`Failed to run aibff render for ${deckPath}: ${error}`);
+    // Fall back to simple parameter extraction
+    deckContent = await fallbackDeckContent(taskName, deckPath);
+  }
+
+  const content =
+    `${description}\n\n${deckContent}\n\nrun bft ${taskName} $ARGUMENTS`;
+
+  return { name, description, content };
+}
+
+async function fallbackDeckContent(
+  taskName: string,
+  deckPath: string,
+): Promise<string> {
   // Try to extract context parameters from TOML file
   const contextParams = await getContextParamsForDeck(taskName, deckPath);
 
-  let content = `${description}\n\n`;
-
+  let content = "";
   if (contextParams.length > 0) {
     content += `This deck accepts the following parameters:\n`;
     for (const param of contextParams) {
       content += `- ${param.name}: ${param.description}\n`;
     }
-    content += `\nAsk the user for any needed context parameters, then run:\n`;
-    content += `bft ${taskName} --<param> <value> $ARGUMENTS`;
-  } else {
-    content += `run bft ${taskName} $ARGUMENTS`;
+    content += `\nAsk the user for any needed context parameters.`;
   }
 
-  return { name, description, content };
+  return content;
 }
 
 interface ContextParam {
