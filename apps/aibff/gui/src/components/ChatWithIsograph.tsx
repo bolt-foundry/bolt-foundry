@@ -47,9 +47,12 @@ export function ChatWithIsograph() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Tool call state
-  const [pendingToolCalls, setPendingToolCalls] = useState<
+  const [_pendingToolCalls, setPendingToolCalls] = useState<
     Map<string, ToolCall>
   >(new Map());
+
+  // Use ref for immediate access to tool calls in finally block
+  const pendingToolCallsRef = useRef<Map<string, ToolCall>>(new Map());
 
   const { graderContent, updateGraderContent } = useGrader();
 
@@ -486,7 +489,7 @@ Generated at: ${new Date().toISOString()}`,
               }
 
               const reader = response.body?.getReader();
-              const decoder = new TextDecoder("utf-8", { stream: true });
+              const decoder = new TextDecoder();
 
               if (!reader) {
                 throw new Error("No response body");
@@ -621,10 +624,11 @@ Generated at: ${new Date().toISOString()}`,
 
                               // More permissive condition - index and type are sufficient to start building
                               if (index !== undefined && type === "function") {
-                                // Use a ref to avoid race conditions with rapid state updates
-                                setPendingToolCalls((prev) => {
-                                  const updated = new Map(prev);
-                                  const existing = updated.get(toolCallKey) || {
+                                // Update both state and ref for tool calls
+                                const existing =
+                                  pendingToolCallsRef.current.get(
+                                    toolCallKey,
+                                  ) || {
                                     id: id || toolCallKey,
                                     type: "function",
                                     function: {
@@ -633,67 +637,64 @@ Generated at: ${new Date().toISOString()}`,
                                     },
                                   };
 
-                                  // Track if we made any updates to this tool call
-                                  let wasUpdated = false;
-                                  const beforeArgsLength =
-                                    existing.function.arguments.length;
+                                // Track if we made any updates to this tool call
+                                let wasUpdated = false;
+                                const beforeArgsLength =
+                                  existing.function.arguments.length;
 
-                                  // Accumulate function name and arguments
-                                  if (func?.name && !existing.function.name) {
-                                    existing.function.name = func.name;
+                                // Accumulate function name and arguments
+                                if (func?.name && !existing.function.name) {
+                                  existing.function.name = func.name;
+                                  wasUpdated = true;
+                                  logger.info("Tool call name set:", func.name);
+                                }
+                                if (func?.arguments) {
+                                  // Only add if this chunk isn't already at the end
+                                  if (
+                                    !existing.function.arguments.endsWith(
+                                      func.arguments,
+                                    )
+                                  ) {
+                                    existing.function.arguments +=
+                                      func.arguments;
                                     wasUpdated = true;
-                                    logger.info(
-                                      "Tool call name set:",
-                                      func.name,
+                                    logger.info("Tool call args updated:", {
+                                      beforeLength: beforeArgsLength,
+                                      afterLength:
+                                        existing.function.arguments.length,
+                                      addedChunk: func.arguments,
+                                    });
+                                  } else {
+                                    logger.debug(
+                                      "Skipping duplicate chunk:",
+                                      func.arguments,
                                     );
                                   }
-                                  if (func?.arguments) {
-                                    // Only add if this chunk isn't already at the end
-                                    if (
-                                      !existing.function.arguments.endsWith(
-                                        func.arguments,
-                                      )
-                                    ) {
-                                      existing.function.arguments +=
-                                        func.arguments;
-                                      wasUpdated = true;
-                                      logger.info(
-                                        "Tool call args updated:",
-                                        {
-                                          beforeLength: beforeArgsLength,
-                                          afterLength:
-                                            existing.function.arguments.length,
-                                          addedChunk: func.arguments,
-                                        },
-                                      );
-                                    } else {
-                                      logger.debug(
-                                        "Skipping duplicate chunk:",
-                                        func.arguments,
-                                      );
-                                    }
-                                  }
+                                }
 
-                                  // Mark as new tool call if we made updates
-                                  if (wasUpdated) {
-                                    hasNewToolCall = true;
-                                    logger.info(
-                                      "Tool call state after update:",
-                                      {
-                                        id: existing.id,
-                                        name: existing.function.name,
-                                        argsLength:
-                                          existing.function.arguments.length,
-                                        hasName: !!existing.function.name,
-                                        hasArgs:
-                                          existing.function.arguments !== "",
-                                      },
-                                    );
-                                  }
+                                // Mark as new tool call if we made updates
+                                if (wasUpdated) {
+                                  hasNewToolCall = true;
+                                  logger.info("Tool call state after update:", {
+                                    id: existing.id,
+                                    name: existing.function.name,
+                                    argsLength:
+                                      existing.function.arguments.length,
+                                    hasName: !!existing.function.name,
+                                    hasArgs: existing.function.arguments !== "",
+                                  });
 
-                                  updated.set(toolCallKey, existing);
-                                  return updated;
-                                });
+                                  // Update both ref and state
+                                  pendingToolCallsRef.current.set(
+                                    toolCallKey,
+                                    existing,
+                                  );
+                                  setPendingToolCalls((prev) => {
+                                    const updated = new Map(prev);
+                                    updated.set(toolCallKey, existing);
+                                    return updated;
+                                  });
+                                }
                               } else {
                                 logger.warn(
                                   "Skipping tool call delta - missing index or type:",
@@ -748,19 +749,22 @@ Generated at: ${new Date().toISOString()}`,
             } catch (error) {
               logger.error("Failed to send message:", error);
               setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === streamingMessageIdRef.current
-                    ? { ...msg, content: "Error: Failed to get response" }
-                    : msg
+                prev.map((msg) => msg.id === streamingMessageIdRef.current
+                  ? { ...msg, content: "Error: Failed to get response" }
+                  : msg
                 )
               );
             } finally {
               setIsStreaming(false);
               streamingMessageIdRef.current = null;
 
+              // Use the ref to get the current tool calls (not stale state)
+              const currentToolCalls = Array.from(
+                pendingToolCallsRef.current.values(),
+              );
               logger.info(
                 "Stream finished. Pending tool calls:",
-                Array.from(pendingToolCalls.values()).map((tc) => ({
+                currentToolCalls.map((tc) => ({
                   id: tc.id,
                   name: tc.function.name,
                   argsLength: tc.function.arguments.length,
@@ -770,7 +774,7 @@ Generated at: ${new Date().toISOString()}`,
 
               // Execute any pending tool calls
               const executedToolCalls: Array<string> = [];
-              for (const toolCall of pendingToolCalls.values()) {
+              for (const toolCall of currentToolCalls) {
                 logger.info("Checking tool call for execution:", {
                   id: toolCall.id,
                   name: toolCall.function.name,
@@ -828,6 +832,7 @@ Generated at: ${new Date().toISOString()}`,
 
               // Clear pending tool calls
               setPendingToolCalls(new Map());
+              pendingToolCallsRef.current.clear();
             }
           }}
           disabled={isStreaming}
