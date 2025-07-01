@@ -11,7 +11,9 @@ export async function testCommand(options: Array<string>): Promise<number> {
   const args = ["deno", "test", "-A"];
 
   // Exclude E2E tests by default unless specifically requested
-  const hasE2EFlag = options.some(opt => opt.includes("e2e") || opt.includes("E2E"));
+  const hasE2EFlag = options.some((opt) =>
+    opt.includes("e2e") || opt.includes("E2E")
+  );
   if (!hasE2EFlag) {
     args.push("--ignore=**/*.e2e.ts");
     logger.debug("Added E2E exclusion");

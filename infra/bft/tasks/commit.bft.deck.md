@@ -51,7 +51,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 4. Analyze the changes and generate appropriate commit message(s)
 5. Use `bft sl commit` to create the commit with your generated message
    - Include specific files to be committed in the command
-   - Example: `bft sl commit -m "message" file1.ts file2.ts` for targeted commits
+   - Example: `bft sl commit -m "message" file1.ts file2.ts` for targeted
+     commits
 
 ## Key Guidelines
 
