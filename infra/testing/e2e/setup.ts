@@ -9,7 +9,7 @@ const logger = getLogger(import.meta);
 /**
  * Detects if the current environment is a CI environment
  */
-function isCI(): boolean {
+function _isCI(): boolean {
   // Check if this is Replit - Replit has display server and should not be treated as CI
   if (
     getConfigurationVariable("REPL_ID") ||
@@ -68,21 +68,15 @@ export async function setupE2ETest(options: {
 } = {}): Promise<E2ETestContext> {
   const baseUrl = options.baseUrl || "http://localhost:8000";
 
-  // Determine headless mode with the following precedence:
-  // 1. Explicit option passed to the function
-  // 2. BF_E2E_HEADLESS environment variable (if set)
-  // 3. Default based on CI detection (headless in CI, non-headless locally)
+  // Force headless mode for consistency and performance
+  // Only allow override via BF_E2E_HEADLESS environment variable
   let headless: boolean;
-  if (options.headless !== undefined) {
-    headless = options.headless;
+  const headlessEnv = getConfigurationVariable("BF_E2E_HEADLESS");
+  if (headlessEnv !== undefined) {
+    headless = headlessEnv !== "false";
   } else {
-    const headlessEnv = getConfigurationVariable("BF_E2E_HEADLESS");
-    if (headlessEnv !== undefined) {
-      headless = headlessEnv !== "false";
-    } else {
-      // Default: headless in CI, non-headless for local development
-      headless = isCI();
-    }
+    // Always default to headless for automated testing
+    headless = true;
   }
 
   logger.info(

@@ -4,7 +4,7 @@ import { useGrader } from "../contexts/GraderContext.tsx";
 
 const logger = getLogger(import.meta);
 
-type MainTabType = "edit" | "RLHF" | "calibrate" | "update";
+type MainTabType = "edit" | "run" | "calibrate" | "fix";
 
 interface FileViewerProps {
   conversationId?: string;
@@ -214,7 +214,7 @@ export function FileViewer({ conversationId }: FileViewerProps) {
           backgroundColor: "#1a1b1c",
         }}
       >
-        {(["edit", "RLHF", "calibrate", "update"] as const).map((tab) => (
+        {(["edit", "run", "calibrate", "fix"] as const).map((tab) => (
           <button
             key={tab}
             type="button"
@@ -241,9 +241,9 @@ export function FileViewer({ conversationId }: FileViewerProps) {
       {/* Tab Content */}
       <div style={{ flex: 1, overflow: "hidden" }}>
         {activeMainTab === "edit" && renderEditTab()}
-        {activeMainTab === "RLHF" && renderPlaceholderTab("RLHF")}
+        {activeMainTab === "run" && renderPlaceholderTab("Run")}
         {activeMainTab === "calibrate" && renderPlaceholderTab("Calibrate")}
-        {activeMainTab === "update" && renderPlaceholderTab("Update")}
+        {activeMainTab === "fix" && renderPlaceholderTab("Fix")}
       </div>
     </div>
   );
