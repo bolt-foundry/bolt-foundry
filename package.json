@@ -27,6 +27,7 @@
     "@types/react-dom": "^19.0",
     "@vitejs/plugin-react": "^4.6.0",
     "assemblyai": "^4.9.0",
+    "claude": "^0.1.1",
     "discord.js": "^14.18.0",
     "esbuild": "^0.24.2",
     "graphql": "^16.10.0",
