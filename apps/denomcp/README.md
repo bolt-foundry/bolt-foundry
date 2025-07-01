@@ -64,7 +64,7 @@ Get diagnostics for one or more files.
 Run tests:
 
 ```bash
-bff test apps/denomcp/
+bft test apps/denomcp/
 ```
 
 ## Implementation Notes
