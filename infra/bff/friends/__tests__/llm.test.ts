@@ -4,8 +4,8 @@
 import { assert, assertStringIncludes } from "@std/assert";
 import { join } from "@std/path";
 import { emptyDir } from "@std/fs";
-import { llm } from "infra/bff/friends/llm.bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { llm } from "@bfmono/infra/bff/friends/llm.bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 async function runLlmAndCapture(args: Array<string>): Promise<Array<string>> {
   const bffLlmLogger = getLogger(

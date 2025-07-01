@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-run
 
 // Manual test for the MCP server
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 const encoder = new TextEncoder();

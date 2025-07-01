@@ -2,12 +2,12 @@
 
 // ./infra/bff/friends/commit.bff.ts
 
-import { register } from "infra/bff/bff.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   runShellCommand,
   runShellCommandWithOutput,
-} from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -69,12 +69,19 @@ async function stageAllFiles(): Promise<number> {
 /**
  * Run the full precommit checks
  */
-async function runPrecommitChecks(verbose: boolean): Promise<boolean> {
+async function runPrecommitChecks(
+  verbose: boolean,
+  files: Array<string>,
+): Promise<boolean> {
   logger.info("Running precommit checks...");
 
   const precommitArgs = ["bff", "precommit"];
   if (verbose) {
     precommitArgs.push("--verbose");
+  }
+  // Add file arguments if provided
+  if (files.length > 0) {
+    precommitArgs.push(...files);
   }
 
   const precommitResult = await runShellCommand(precommitArgs);
@@ -130,7 +137,7 @@ export async function commit(args: Array<string>): Promise<number> {
 
   // Run precommit checks by default (unless skipped)
   if (runPreCheck) {
-    if (!await runPrecommitChecks(verbose)) {
+    if (!await runPrecommitChecks(verbose, filesToCommit)) {
       return 1;
     }
   }

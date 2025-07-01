@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import Matter from "matter-js";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
-import { paletteForPlinko } from "apps/bfDs/const.tsx";
-import { BfDsSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
-import { classnames } from "lib/classnames.ts";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
+import { CfDsIcon } from "@bfmono/apps/cfDs/components/CfDsIcon.tsx";
+import { paletteForPlinko } from "@bfmono/apps/cfDs/const.tsx";
+import { CfDsSpinner } from "@bfmono/apps/cfDs/components/CfDsSpinner.tsx";
+import { classnames } from "@bfmono/lib/classnames.ts";
 
 // Game configuration
 const GAME_CONFIG = {
@@ -520,7 +520,7 @@ export function Plinko() {
           Use arrows to adjust temperature
         </div>
         <div className="flexRow gapMedium alignItemsCenter">
-          <BfDsButton
+          <CfDsButton
             kind="outlineAccent"
             onMouseDown={() => setIsLeftPressed(true)}
             onMouseUp={() => setIsLeftPressed(false)}
@@ -529,7 +529,7 @@ export function Plinko() {
             shadow={isLeftPressed}
           />
           <div className="temperature">{temp}</div>
-          <BfDsButton
+          <CfDsButton
             kind="outlineAccent"
             onMouseDown={() => setIsRightPressed(true)}
             onMouseUp={() => setIsRightPressed(false)}
@@ -543,7 +543,7 @@ export function Plinko() {
           Choose the number of pucks to drop
         </div>
         <div className="flexRow gapMedium">
-          <BfDsButton
+          <CfDsButton
             kind={numBalls === 1 ? "filledAccent" : "secondary"}
             onClick={() => {
               setNumBalls(1);
@@ -551,7 +551,7 @@ export function Plinko() {
             textIconLeft="1"
             shadow={(isUpPressed || isDownPressed) && numBalls === 1}
           />
-          <BfDsButton
+          <CfDsButton
             kind={numBalls === 3 ? "filledAccent" : "secondary"}
             onClick={() => {
               setNumBalls(3);
@@ -559,7 +559,7 @@ export function Plinko() {
             textIconLeft="3"
             shadow={(isUpPressed || isDownPressed) && numBalls === 3}
           />
-          <BfDsButton
+          <CfDsButton
             kind={numBalls === 10 ? "filledAccent" : "secondary"}
             onClick={() => {
               setNumBalls(10);
@@ -572,7 +572,7 @@ export function Plinko() {
         <div className="plinko-controls-text">
           Fine tuning helps focus the puck's path
         </div>
-        <BfDsButton
+        <CfDsButton
           kind={fineTuned ? "success" : "outlineSuccess"}
           onClick={() => {
             setNumBalls(1);
@@ -598,7 +598,7 @@ export function Plinko() {
                 : "--"}
             </div>
           </div>
-          <BfDsButton
+          <CfDsButton
             kind="outlineAlert"
             iconLeft="cross"
             onClick={clearBalls}
@@ -629,7 +629,7 @@ export function Plinko() {
       >
         {isLoading && (
           <div className="plinko-spinner">
-            <BfDsSpinner size={48} spinnerColor={`rgba(${colors.blue}, 1)`} />
+            <CfDsSpinner size={48} spinnerColor={`rgba(${colors.blue}, 1)`} />
           </div>
         )}
         {/* Prompt container */}
@@ -707,7 +707,7 @@ export function Plinko() {
               }}
             >
               <div>
-                <BfDsIcon
+                <CfDsIcon
                   name="starSolid"
                   color={`rgba(${colors.yellow}, 1)`}
                   size={32}
@@ -731,14 +731,14 @@ export function Plinko() {
               }}
             >
               <div>
-                <BfDsIcon
+                <CfDsIcon
                   name="starSolid"
                   color={`rgba(${colors.yellow}, 1)`}
                   size={32}
                 />
               </div>
               <div>
-                <BfDsIcon
+                <CfDsIcon
                   name="starSolid"
                   color={`rgba(${colors.yellow}, 1)`}
                   size={32}
@@ -760,21 +760,21 @@ export function Plinko() {
               }}
             >
               <div>
-                <BfDsIcon
+                <CfDsIcon
                   name="starSolid"
                   color={`rgba(${colors.yellow}, 1)`}
                   size={32}
                 />
               </div>
               <div>
-                <BfDsIcon
+                <CfDsIcon
                   name="starSolid"
                   color={`rgba(${colors.yellow}, 1)`}
                   size={32}
                 />
               </div>
               <div>
-                <BfDsIcon
+                <CfDsIcon
                   name="starSolid"
                   color={`rgba(${colors.yellow}, 1)`}
                   size={32}
@@ -798,14 +798,14 @@ export function Plinko() {
               }}
             >
               <div>
-                <BfDsIcon
+                <CfDsIcon
                   name="starSolid"
                   color={`rgba(${colors.yellow}, 1)`}
                   size={32}
                 />
               </div>
               <div>
-                <BfDsIcon
+                <CfDsIcon
                   name="starSolid"
                   color={`rgba(${colors.yellow}, 1)`}
                   size={32}
@@ -827,7 +827,7 @@ export function Plinko() {
               }}
             >
               <div>
-                <BfDsIcon
+                <CfDsIcon
                   name="starSolid"
                   color={`rgba(${colors.yellow}, 1)`}
                   size={32}
@@ -848,7 +848,7 @@ export function Plinko() {
             }}
             onMouseDown={(e) => handleDragPuck(e.nativeEvent)}
           >
-            <BfDsIcon name="arrowsLeftRight" color="var(--fourtharyColor)" />
+            <CfDsIcon name="arrowsLeftRight" color="var(--fourtharyColor)" />
           </div>
         </div>
       </div>

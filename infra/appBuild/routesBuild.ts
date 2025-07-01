@@ -2,7 +2,7 @@
 
 import { walk } from "@std/fs/walk";
 import { join } from "@std/path";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

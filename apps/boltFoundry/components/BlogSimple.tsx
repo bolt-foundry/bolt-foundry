@@ -1,22 +1,22 @@
 import { useState } from "react";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
-import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
+import { BfLogo } from "@bfmono/apps/cfDs/static/BfLogo.tsx";
+import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 
 const NavButtons = () => {
   return (
     <>
-      <BfDsButton
+      <CfDsButton
         kind="danSelected"
         href="/blog"
         text="Blog"
       />
-      <BfDsButton
+      <CfDsButton
         kind="dan"
         href="/docs"
         text="Docs"
       />
-      <BfDsButton
+      <CfDsButton
         kind="dan"
         href="https://discord.gg/tU5ksTBfEj"
         hrefTarget="_blank"
@@ -58,7 +58,7 @@ export const BlogSimple = ({ slug }: { slug?: string }) => {
             </nav>
           </div>
           <nav className="mobile-show">
-            <BfDsButton
+            <CfDsButton
               kind="dan"
               iconLeft="menu"
               onClick={() => {
@@ -70,7 +70,7 @@ export const BlogSimple = ({ slug }: { slug?: string }) => {
             <div className="mobile-show">
               <div className="flexColumn gapLarge sidebar-nav">
                 <div className="selfAlignEnd">
-                  <BfDsButton
+                  <CfDsButton
                     kind="dan"
                     iconLeft="cross"
                     onClick={() => {
@@ -115,7 +115,7 @@ export const BlogSimple = ({ slug }: { slug?: string }) => {
             <div className="flex1">
               &copy; 2025 Bolt Foundry. All rights reserved.
             </div>
-            <BfDsButton
+            <CfDsButton
               kind="dan"
               href="mailto:hello@boltfoundry.com"
               text="Contact"

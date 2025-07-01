@@ -1,12 +1,12 @@
 #! /usr/bin/env -S bff
 
 import { parse as parseToml, stringify as stringifyToml } from "@std/toml";
-import { register } from "infra/bff/bff.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   runShellCommand,
   runShellCommandWithOutput,
-} from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -99,6 +99,18 @@ export async function land(): Promise<number> {
   if (buildResult !== 0) {
     logger.error("Failed to build BFF");
     return buildResult;
+  }
+
+  // Generate Claude commands for BFT
+  logger.info("Generating Claude commands for BFT...");
+  const claudifyResult = await runShellCommand([
+    "bft",
+    "claudify",
+  ]);
+
+  if (claudifyResult !== 0) {
+    logger.error("Failed to generate Claude commands");
+    return claudifyResult;
   }
 
   const currentSaplingHash = await getCurrentSaplingHash();

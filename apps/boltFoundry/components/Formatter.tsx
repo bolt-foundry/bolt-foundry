@@ -1,22 +1,22 @@
 import { useEffect, useState } from "react";
-import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
-import { BfDsForm } from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
-import { BfDsFormTextArea } from "apps/bfDs/components/BfDsForm/BfDsFormTextArea.tsx";
-import { BfDsFormSubmitButton } from "apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
-import { BfDsCopyButton } from "apps/bfDs/components/BfDsCopyButton.tsx";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { BfDsFormDropdownSelector } from "apps/bfDs/components/BfDsForm/BfDsFormDropdownSelector.tsx";
-import { getLogger } from "packages/logger/logger.ts";
-import { BfDsFormTextInput } from "apps/bfDs/components/BfDsForm/BfDsFormTextInput.tsx";
-import { BfSymbol } from "apps/bfDs/static/BfSymbol.tsx";
-import { BfDsIcon } from "apps/bfDs/components/BfDsIcon.tsx";
-import { BfDsRange } from "apps/bfDs/components/BfDsRange.tsx";
-import { BfDsTooltipMenu } from "apps/bfDs/components/BfDsTooltipMenu.tsx";
-import { BfDsInput } from "apps/bfDs/components/BfDsInput.tsx";
-import { BfDsDropdownSelector } from "apps/bfDs/components/BfDsDropdownSelector.tsx";
-import { BfDsTabs } from "apps/bfDs/components/BfDsTabs.tsx";
-import { BfDsSpinner } from "apps/bfDs/components/BfDsSpinner.tsx";
+import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
+import { BfLogo } from "@bfmono/apps/cfDs/static/BfLogo.tsx";
+import { CfDsForm } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsForm.tsx";
+import { CfDsFormTextArea } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormTextArea.tsx";
+import { CfDsFormSubmitButton } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormSubmitButton.tsx";
+import { CfDsCopyButton } from "@bfmono/apps/cfDs/components/CfDsCopyButton.tsx";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
+import { CfDsFormDropdownSelector } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormDropdownSelector.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { CfDsFormTextInput } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormTextInput.tsx";
+import { BfSymbol } from "@bfmono/apps/cfDs/static/BfSymbol.tsx";
+import { CfDsIcon } from "@bfmono/apps/cfDs/components/CfDsIcon.tsx";
+import { CfDsRange } from "@bfmono/apps/cfDs/components/CfDsRange.tsx";
+import { CfDsTooltipMenu } from "@bfmono/apps/cfDs/components/CfDsTooltipMenu.tsx";
+import { CfDsInput } from "@bfmono/apps/cfDs/components/CfDsInput.tsx";
+import { CfDsDropdownSelector } from "@bfmono/apps/cfDs/components/CfDsDropdownSelector.tsx";
+import { CfDsTabs } from "@bfmono/apps/cfDs/components/CfDsTabs.tsx";
+import { CfDsSpinner } from "@bfmono/apps/cfDs/components/CfDsSpinner.tsx";
 
 const logger = getLogger(import.meta);
 
@@ -138,39 +138,39 @@ field Query.Formatter @component {
       {!ogPrompt
         ? (
           <div className="formatter-content flexColumn flex1 alignItemsCenter">
-            <BfDsForm
+            <CfDsForm
               initialData={{ prompt: "" }}
               onSubmit={(value: PromptForm) => setOgPrompt(value.prompt)}
               xstyle={{ ...formStyle, maxWidth: "600px" }}
             >
-              <BfDsFormTextArea
+              <CfDsFormTextArea
                 id="prompt"
                 title={`Paste your prompt here. We'll apply the "Bolt Foundry Way" to it. Click "Make this good™" to compare.`}
                 rows={16}
                 placeholder="Paste your prompt here..."
               />
-              <BfDsFormSubmitButton
+              <CfDsFormSubmitButton
                 kind="accent"
                 text="Make this good™"
               />
-            </BfDsForm>
+            </CfDsForm>
           </div>
         )
         : (
           <>
             <div className="flex1 flexColumn">
               <div className="formatter-toolbar flexRow gapMedium">
-                <BfDsButton
+                <CfDsButton
                   kind="overlay"
                   iconLeft="arrowLeft"
                   onClick={() => setOgPrompt(null)}
                 />
-                <BfDsButton
+                <CfDsButton
                   kind="overlay"
                   text="Expand"
                   onClick={() => handleForceExpand("open")}
                 />
-                <BfDsButton
+                <CfDsButton
                   kind="overlay"
                   text="Collapse"
                   onClick={() => handleForceExpand("close")}
@@ -181,10 +181,10 @@ field Query.Formatter @component {
                   <div className="formatter-section-header flexRow gapMedium alignItemsCenter">
                     <h2 className="flex1">Cards</h2>
                     <div>
-                      <BfDsCopyButton textToCopy="TODO" />
+                      <CfDsCopyButton textToCopy="TODO" />
                     </div>
                     <div>
-                      <BfDsButton
+                      <CfDsButton
                         iconLeft="plus"
                         kind="overlay"
                         onClick={() => logger.info("TODO: Add card")}
@@ -232,7 +232,7 @@ field Query.Formatter @component {
                   <div className="formatter-section-header flexRow gapMedium alignItemsCenter">
                     <h2 className="flex1">Variable turns</h2>
                     <div>
-                      <BfDsButton
+                      <CfDsButton
                         iconLeft="plus"
                         kind="overlay"
                         onClick={() => logger.info("TODO: Add variable")}
@@ -265,43 +265,43 @@ field Query.Formatter @component {
                       />
                     );
                   })}
-                  <BfDsForm
+                  <CfDsForm
                     initialData={{ message: "", speaker: "assistant" }}
                     onSubmit={() => logger.info("TODO: Add turn")}
                   >
                     <div className="formatter-section-footer flexRow gapMedium alignItemsCenter">
-                      <BfDsFormTextArea
+                      <CfDsFormTextArea
                         id="message"
                         rows={1}
                         placeholder="Enter what the participant should say in this turn..."
                         xstyle={{ flex: 1 }}
                       />
-                      <BfDsFormDropdownSelector
+                      <CfDsFormDropdownSelector
                         id="speaker"
                         options={{ "Assistant": "assistant", "User": "user" }}
                         onChange={() => logger.info("TODO: Change speaker")}
                       />
-                      <BfDsFormSubmitButton
+                      <CfDsFormSubmitButton
                         kind="secondary"
                         iconLeft="plus"
                         text="Turn"
                       />
                     </div>
-                  </BfDsForm>
+                  </CfDsForm>
                 </div>
               </div>
               <div className="formatter-content-main-footer">
                 <div className="formatter-content-main-footer-inner flexRow gapMedium alignItemsCenter">
                   <div className="flex1 flexRow gapMedium alignItemsCenter">
                     <div>Bolt name</div>
-                    <BfDsButton iconLeft="pencil" kind="overlayDark" />
+                    <CfDsButton iconLeft="pencil" kind="overlayDark" />
                   </div>
-                  <BfDsButton
+                  <CfDsButton
                     kind="secondary"
                     text="Save as new"
                     onClick={() => logger.info("TODO: Save as new")}
                   />
-                  <BfDsButton
+                  <CfDsButton
                     kind="accent"
                     text="Save"
                     onClick={() => logger.info("TODO: Save")}
@@ -351,7 +351,7 @@ function Card({ forceExpand, title, kind, transition, text }: CardProps) {
         className="formatter-card-header-row flexRow gapMedium alignItemsCenter"
         onClick={() => setExpanded(!expanded)}
       >
-        <BfDsButton
+        <CfDsButton
           iconLeft="drag"
           kind="overlay"
           onClick={() => logger.info("TODO: drag")}
@@ -360,17 +360,17 @@ function Card({ forceExpand, title, kind, transition, text }: CardProps) {
           {kindText && <span className="bold">{kindText}:&nbsp;</span>}
           {title}
         </div>
-        <BfDsButton
+        <CfDsButton
           kind="overlay"
           iconLeft={expanded ? "arrowDown" : "arrowLeft"}
           onClick={() => setExpanded(!expanded)}
         />
-        {kind && <BfDsButton kind="overlay" iconLeft="trash" />}
+        {kind && <CfDsButton kind="overlay" iconLeft="trash" />}
       </div>
       {expanded && (
         <div className="formatter-card-expanded">
           <div className="formatter-card-expanded-title">Edit {title}</div>
-          <BfDsForm
+          <CfDsForm
             initialData={{ transition: transition ?? "", text: text }}
             onSubmit={(value) =>
               logger.info(
@@ -383,7 +383,7 @@ function Card({ forceExpand, title, kind, transition, text }: CardProps) {
           >
             {transition && (
               <div className="formatter-card-input-group">
-                <BfDsFormTextArea
+                <CfDsFormTextArea
                   id="transition"
                   rows={2}
                   value={transition}
@@ -393,7 +393,7 @@ function Card({ forceExpand, title, kind, transition, text }: CardProps) {
               </div>
             )}
             <div className="formatter-card-input-group">
-              <BfDsFormTextArea
+              <CfDsFormTextArea
                 id="text"
                 rows={6}
                 value={text}
@@ -401,8 +401,8 @@ function Card({ forceExpand, title, kind, transition, text }: CardProps) {
                 placeholder={`Enter the main content for ${title}...`}
               />
             </div>
-            <BfDsFormSubmitButton text="Save Changes" kind="accent" />
-          </BfDsForm>
+            <CfDsFormSubmitButton text="Save Changes" kind="accent" />
+          </CfDsForm>
         </div>
       )}
     </div>
@@ -436,7 +436,7 @@ function VariableCard(
         className="formatter-card-header-row flexRow gapMedium alignItemsCenter"
         onClick={() => setExpanded(!expanded)}
       >
-        <BfDsButton
+        <CfDsButton
           iconLeft="drag"
           kind="overlay"
           onClick={() => logger.info("TODO: drag")}
@@ -444,19 +444,19 @@ function VariableCard(
         <div className="formatter-card-title flex1">
           {name}
         </div>
-        <BfDsButton
+        <CfDsButton
           kind="overlay"
           iconLeft={expanded ? "arrowDown" : "arrowLeft"}
           onClick={() => setExpanded(!expanded)}
         />
-        <BfDsButton kind="overlay" iconLeft="trash" />
+        <CfDsButton kind="overlay" iconLeft="trash" />
       </div>
       {expanded && (
         <div className="formatter-card-expanded">
           <div className="formatter-card-expanded-title">
             Edit Variable: {name}
           </div>
-          <BfDsForm
+          <CfDsForm
             initialData={{ assistantTurn, userTurn }}
             onSubmit={(value) =>
               logger.info(
@@ -468,7 +468,7 @@ function VariableCard(
             xstyle={formStyle}
           >
             <div className="formatter-card-input-group">
-              <BfDsFormTextArea
+              <CfDsFormTextArea
                 id="assistantTurn"
                 rows={1}
                 value={assistantTurn}
@@ -477,7 +477,7 @@ function VariableCard(
               />
             </div>
             <div className="formatter-card-input-group">
-              <BfDsFormTextArea
+              <CfDsFormTextArea
                 id="userTurn"
                 rows={1}
                 value={userTurn}
@@ -485,8 +485,8 @@ function VariableCard(
                 placeholder="Enter the default value that the user might provide..."
               />
             </div>
-            <BfDsFormSubmitButton text="Save Changes" kind="accent" />
-          </BfDsForm>
+            <CfDsFormSubmitButton text="Save Changes" kind="accent" />
+          </CfDsForm>
         </div>
       )}
     </div>
@@ -513,7 +513,7 @@ function TurnCard({ forceExpand, speaker, message }: TurnCardProps) {
 
   return (
     <div className="formatter-card">
-      <BfDsForm
+      <CfDsForm
         initialData={{ message, speaker }}
         onSubmit={(value) =>
           logger.info(
@@ -526,24 +526,24 @@ function TurnCard({ forceExpand, speaker, message }: TurnCardProps) {
           className="formatter-card-header-row flexRow gapMedium alignItemsCenter"
           onClick={() => setExpanded(!expanded)}
         >
-          <BfDsButton
+          <CfDsButton
             iconLeft="drag"
             kind="overlay"
             onClick={() => logger.info("TODO: drag")}
           />
           <div className="formatter-card-title flex1">
-            <BfDsFormDropdownSelector
+            <CfDsFormDropdownSelector
               id="speaker"
               options={{ "Assistant": "assistant", "User": "user" }}
               onChange={() => logger.info("TODO: Change speaker")}
             />
           </div>
-          <BfDsButton
+          <CfDsButton
             kind="overlay"
             iconLeft={expanded ? "arrowDown" : "arrowLeft"}
             onClick={() => setExpanded(!expanded)}
           />
-          <BfDsButton kind="overlay" iconLeft="trash" />
+          <CfDsButton kind="overlay" iconLeft="trash" />
         </div>
         {expanded && (
           <div className="formatter-card-expanded">
@@ -551,18 +551,18 @@ function TurnCard({ forceExpand, speaker, message }: TurnCardProps) {
               Edit {speaker} Turn
             </div>
             <div className="formatter-card-input-group" style={formStyle}>
-              <BfDsFormTextArea
+              <CfDsFormTextArea
                 id="message"
                 rows={2}
                 value={message}
                 title={`Turn Content`}
                 placeholder="Enter what the participant should say in this turn..."
               />
-              <BfDsFormSubmitButton kind="accent" text="Save Changes" />
+              <CfDsFormSubmitButton kind="accent" text="Save Changes" />
             </div>
           </div>
         )}
-      </BfDsForm>
+      </CfDsForm>
     </div>
   );
 }
@@ -571,7 +571,7 @@ function RightSidebar() {
   const [activeTab, setActiveTab] = useState("Testing");
   return (
     <div className="flexColumn gapLarge">
-      <BfDsTabs
+      <CfDsTabs
         kind="header"
         tabs={[{ name: "Testing" }, { name: "Results" }]}
         onTabSelected={(tab: string) => setActiveTab(tab)}
@@ -618,33 +618,33 @@ function ModelPicker(
       {editing
         ? (
           <div className="formatter-model-picker-form">
-            <BfDsForm
+            <CfDsForm
               initialData={model}
               onSubmit={(value) => handleSubmit(value)}
               xstyle={formStyle}
             >
-              <BfDsFormDropdownSelector
+              <CfDsFormDropdownSelector
                 id="provider"
                 options={{ "OpenAI": "openai", "Anthropic": "anthropic" }}
                 onChange={(value) => setProvider(value as ProviderType)}
                 title="Provider"
                 xstyle={{ width: "100%" }}
               />
-              <BfDsFormDropdownSelector
+              <CfDsFormDropdownSelector
                 id="model"
                 options={options[provider]}
                 title="Model"
                 placeholder="Select a model..."
                 xstyle={{ width: "100%" }}
               />
-              <BfDsFormTextInput
+              <CfDsFormTextInput
                 id="key"
                 title="API Key"
                 placeholder="Enter your API key..."
                 meta="Your API key will only be sent to the provider's API and never stored on our servers."
               />
-              <BfDsFormSubmitButton kind="success" text="Save Changes" />
-            </BfDsForm>
+              <CfDsFormSubmitButton kind="success" text="Save Changes" />
+            </CfDsForm>
           </div>
         )
         : (
@@ -655,12 +655,12 @@ function ModelPicker(
             {noKey
               ? (
                 <div>
-                  <BfDsIcon name="cross" color="var(--alert)" />
+                  <CfDsIcon name="cross" color="var(--alert)" />
                 </div>
               )
               : (
                 <div>
-                  <BfDsIcon name="check" color="var(--secondaryColor)" />
+                  <CfDsIcon name="check" color="var(--secondaryColor)" />
                 </div>
               )}
             <div className="bold">
@@ -698,7 +698,7 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
             Each test will compare the output of the current bolt to the output
             of the base bolt
           </div>
-          <BfDsTooltipMenu
+          <CfDsTooltipMenu
             menu={data.bolts.map((bolt) => ({ label: bolt.name }))}
             position="bottom"
             justification="end"
@@ -709,17 +709,17 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
               </div>
               <div className="flex1">Original prompt</div>
               <div className="ver">
-                <BfDsIcon name="arrowDown" color="var(--secondaryColor)" />
+                <CfDsIcon name="arrowDown" color="var(--secondaryColor)" />
               </div>
             </div>
-          </BfDsTooltipMenu>
+          </CfDsTooltipMenu>
           <ModelPicker
             model={model}
             setModel={setModel}
           />
         </div>
         <div className="formatter-testing-options flexColumn gapMedium">
-          <BfDsRange
+          <CfDsRange
             meta="Running more iterations may increase execution time but will provide more reliable statistical insights"
             value={runs}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -728,7 +728,7 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
             max={100}
             label="Number of iterations"
           />
-          <BfDsDropdownSelector
+          <CfDsDropdownSelector
             label="Validation type"
             value="json"
             onChange={() => logger.info("TODO: Change validation type")}
@@ -743,7 +743,7 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
             <div className="bold">Variables</div>
             {data.variables.map((variable) => {
               return (
-                <BfDsInput
+                <CfDsInput
                   label={variable.name}
                   value={variable.defaultValue}
                   onChange={() => logger.info("TODO: Change variable value")}
@@ -752,7 +752,7 @@ function TestingTab({ setTabTEMP }: { setTabTEMP: () => void }) {
             })}
           </div>
         </div>
-        <BfDsButton
+        <CfDsButton
           kind="primary"
           text="Run test"
           onClick={setTabTEMP}
@@ -797,7 +797,7 @@ function ResultsTab() {
       {results.length === 0
         ? (
           <div className="formatter-results-waiting flexRow gapMedium alignItemsCenter">
-            <BfDsSpinner size={32} />
+            <CfDsSpinner size={32} />
             <div className="flex1">Waiting for results...</div>
           </div>
         )

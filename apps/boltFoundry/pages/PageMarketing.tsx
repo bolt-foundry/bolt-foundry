@@ -1,6 +1,6 @@
 import type * as React from "react";
-import { MarketingFrame } from "apps/boltFoundry/components/Marketing/MarketingFrame.tsx";
-import { MarketingFooter } from "apps/boltFoundry/components/Marketing/MarketingFooter.tsx";
+import { MarketingFrame } from "@bfmono/apps/boltFoundry/components/Marketing/MarketingFrame.tsx";
+import { MarketingFooter } from "@bfmono/apps/boltFoundry/components/Marketing/MarketingFooter.tsx";
 
 export function PageMarketing(): React.ReactElement {
   const titleWords = [

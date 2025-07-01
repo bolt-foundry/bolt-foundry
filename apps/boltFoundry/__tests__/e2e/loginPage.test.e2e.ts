@@ -4,10 +4,10 @@ import {
   navigateTo,
   setupE2ETest,
   teardownE2ETest,
-} from "infra/testing/e2e/setup.ts";
-import { signSession } from "apps/bfDb/graphql/utils/graphqlContextUtils.ts";
-import { graphQLHandler } from "apps/bfDb/graphql/graphqlServer.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/testing/e2e/setup.ts";
+import { signSession } from "@bfmono/apps/bfDb/graphql/utils/graphqlContextUtils.ts";
+import { graphQLHandler } from "@bfmono/apps/bfDb/graphql/graphqlServer.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 /**
  * This E2E verifies that a user can log in with Google and that the access

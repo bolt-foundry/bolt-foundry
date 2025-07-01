@@ -3,8 +3,8 @@ import {
   navigateTo,
   setupE2ETest,
   teardownE2ETest,
-} from "infra/testing/e2e/setup.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/testing/e2e/setup.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -49,7 +49,7 @@ Deno.test("Blog list page at /blog shows all blog posts", async () => {
 
       // Just verify that some blog content is shown
       assert(
-        bodyText?.length > 100,
+        (bodyText?.length ?? 0) > 100,
         "Should show blog content",
       );
     } else {

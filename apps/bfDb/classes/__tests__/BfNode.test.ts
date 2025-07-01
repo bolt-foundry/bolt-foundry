@@ -7,9 +7,9 @@
  */
 
 import { assertEquals } from "@std/assert";
-import { BfNode, type InferProps } from "apps/bfDb/classes/BfNode.ts";
-import { withIsolatedDb } from "apps/bfDb/bfDb.ts";
-import { makeLoggedInCv } from "apps/bfDb/utils/testUtils.ts";
+import { BfNode, type InferProps } from "@bfmono/apps/bfDb/classes/BfNode.ts";
+import { withIsolatedDb } from "@bfmono/apps/bfDb/bfDb.ts";
+import { makeLoggedInCv } from "@bfmono/apps/bfDb/utils/testUtils.ts";
 
 class BfExamplePerson extends BfNode<InferProps<typeof BfExamplePerson>> {
   static override gqlSpec = this.defineGqlNode((f) =>

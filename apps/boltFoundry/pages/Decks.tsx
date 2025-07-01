@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { BfDsForm } from "apps/bfDs/components/BfDsForm/BfDsForm.tsx";
-import { BfDsFormTextArea } from "apps/bfDs/components/BfDsForm/BfDsFormTextArea.tsx";
-import { BfDsFormSubmitButton } from "apps/bfDs/components/BfDsForm/BfDsFormSubmitButton.tsx";
-import { DeckVisualization } from "apps/boltFoundry/components/DeckVisualization.tsx";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import { CfDsForm } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsForm.tsx";
+import { CfDsFormTextArea } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormTextArea.tsx";
+import { CfDsFormSubmitButton } from "@bfmono/apps/cfDs/components/CfDsForm/CfDsFormSubmitButton.tsx";
+import { DeckVisualization } from "@bfmono/apps/boltFoundry/components/DeckVisualization.tsx";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
 
 const deckExamples = [
   {
@@ -76,7 +76,7 @@ export function Decks() {
           <h1>Decks Demo</h1>
           <div className="flexColumn gapLarge">
             <div>
-              <BfDsForm
+              <CfDsForm
                 key={deckExampleIndex}
                 initialData={{ deck: deckString }}
                 onSubmit={(data) => {
@@ -90,7 +90,7 @@ export function Decks() {
                   gap: 8,
                 }}
               >
-                <BfDsFormTextArea
+                <CfDsFormTextArea
                   id="deck"
                   rows={12}
                   xstyle={{ alignSelf: "stretch", maxHeight: 340 }}
@@ -99,7 +99,7 @@ export function Decks() {
                   <div>Presets:</div>
                   {deckExamples.map((example, index) => {
                     return (
-                      <BfDsButton
+                      <CfDsButton
                         kind={index === deckExampleIndex
                           ? "danSelected"
                           : "dan"}
@@ -113,9 +113,9 @@ export function Decks() {
                     );
                   })}
                   <div className="vertical-separator" />
-                  <BfDsFormSubmitButton text="Update Visualization" />
+                  <CfDsFormSubmitButton text="Update Visualization" />
                 </div>
-              </BfDsForm>
+              </CfDsForm>
             </div>
             <div>
               <DeckVisualization deckString={deckString} />

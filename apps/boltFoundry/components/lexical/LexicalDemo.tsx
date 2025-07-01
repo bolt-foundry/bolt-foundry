@@ -24,16 +24,16 @@ import {
   TextNode,
 } from "lexical";
 
-import SampleEditorTheme from "apps/boltFoundry/components/lexical/themes/SampleEditorTheme.ts";
-import ToolbarPlugin from "apps/boltFoundry/components/lexical/plugins/ToolbarPlugin.tsx";
+import SampleEditorTheme from "@bfmono/apps/boltFoundry/components/lexical/themes/SampleEditorTheme.ts";
+import ToolbarPlugin from "@bfmono/apps/boltFoundry/components/lexical/plugins/ToolbarPlugin.tsx";
 import {
   parseAllowedColor,
   parseAllowedFontSize,
-} from "apps/boltFoundry/components/lexical/styleConfig.ts";
-import TreeViewPlugin from "apps/boltFoundry/components/lexical/plugins/TreeViewPlugin.tsx";
-import { ContentFoundryPlugin } from "apps/boltFoundry/components/lexical/plugins/ContentFoundryPlugin.tsx";
+} from "@bfmono/apps/boltFoundry/components/lexical/styleConfig.ts";
+import TreeViewPlugin from "@bfmono/apps/boltFoundry/components/lexical/plugins/TreeViewPlugin.tsx";
+import { ContentFoundryPlugin } from "@bfmono/apps/boltFoundry/components/lexical/plugins/ContentFoundryPlugin.tsx";
 import { MarkNode } from "@lexical/mark";
-import { SubpageHeaderTitle } from "apps/boltFoundry/components/Header/SubpageHeaderTitle.tsx";
+import { SubpageHeaderTitle } from "@bfmono/apps/boltFoundry/components/Header/SubpageHeaderTitle.tsx";
 
 const placeholder = "Enter some rich text...";
 

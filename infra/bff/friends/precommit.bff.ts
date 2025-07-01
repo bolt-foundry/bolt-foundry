@@ -1,11 +1,11 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
 import {
   runShellCommand,
   runShellCommandWithOutput,
-} from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+} from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -64,7 +64,19 @@ async function stageFiles(): Promise<number> {
 export async function precommitCommand(
   options: Array<string>,
 ): Promise<number> {
-  const verbose = options.includes("--verbose") || options.includes("-v");
+  // Separate flags from file arguments
+  const flags: Array<string> = [];
+  const files: Array<string> = [];
+
+  for (const option of options) {
+    if (option.startsWith("--") || option.startsWith("-")) {
+      flags.push(option);
+    } else {
+      files.push(option);
+    }
+  }
+
+  const verbose = flags.includes("--verbose") || flags.includes("-v");
 
   logger.info("Running AI-safe pre-commit checks...");
 
@@ -76,18 +88,37 @@ export async function precommitCommand(
     return stageResult;
   }
 
+  // Build check commands with file arguments if provided
   const checks = [
-    { name: "Format", command: ["bff", "ai", "format"] },
-    { name: "Lint", command: ["bff", "ai", "lint", "--fix"] },
-    { name: "Type Check", command: ["bff", "ai", "check"] },
-    { name: "Test", command: ["bff", "ai", "test"] },
+    { name: "Format", command: ["bff", "ai", "format", ...files] },
+    { name: "Lint", command: ["bff", "ai", "lint", "--fix", ...files] },
+    { name: "Type Check", command: ["bff", "ai", "check", ...files] },
   ];
 
+  // Only add test command if:
+  // 1. No specific files were provided (running on all changes), OR
+  // 2. At least one of the provided files is a test file
+  const hasTestFiles = files.length === 0 ||
+    files.some((file) =>
+      file.endsWith(".test.ts") || file.endsWith(".test.tsx")
+    );
+
+  if (hasTestFiles) {
+    // If specific test files were provided, run only those tests
+    const testFiles = files.filter((file) =>
+      file.endsWith(".test.ts") || file.endsWith(".test.tsx")
+    );
+    checks.push({
+      name: "Test",
+      command: ["bff", "ai", "test", ...testFiles],
+    });
+  }
+
   // Allow skipping specific checks with options
-  const skipFormat = options.includes("--skip-format");
-  const skipCheck = options.includes("--skip-check");
-  const skipLint = options.includes("--skip-lint");
-  const skipTest = options.includes("--skip-test");
+  const skipFormat = flags.includes("--skip-format");
+  const skipCheck = flags.includes("--skip-check");
+  const skipLint = flags.includes("--skip-lint");
+  const skipTest = flags.includes("--skip-test");
 
   const filteredChecks = checks.filter((check) => {
     if (skipFormat && check.name === "Format") return false;
@@ -97,7 +128,10 @@ export async function precommitCommand(
     return true;
   });
 
-  logger.info(`Running ${filteredChecks.length} pre-commit checks...`);
+  const filesInfo = files.length > 0 ? ` on ${files.length} file(s)` : "";
+  logger.info(
+    `Running ${filteredChecks.length} pre-commit checks${filesInfo}...`,
+  );
 
   for (const check of filteredChecks) {
     if (verbose) {

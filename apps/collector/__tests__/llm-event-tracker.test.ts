@@ -1,13 +1,13 @@
 #! /usr/bin/env -S bff test
 import { assertEquals, assertObjectMatch } from "@std/assert";
 import { calculateLlmCost, trackLlmEvent } from "../llm-event-tracker.ts";
-import type { JSONValue } from "apps/bfDb/bfDb.ts";
+import type { JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
 import type { PostHog } from "posthog-node";
 import type {
   OpenAIRequestBody,
   OpenAIResponseBody,
   TelemetryData,
-} from "packages/bolt-foundry/bolt-foundry.ts";
+} from "@bfmono/packages/bolt-foundry/bolt-foundry.ts";
 
 type PostHogEvent = {
   event: string;

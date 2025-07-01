@@ -28,3 +28,6 @@ generated-icon.png
 .env.local
 *.local.*
 .DS_Store
+
+# Generated Claude commands for BFT
+.claude/commands/bft/

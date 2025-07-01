@@ -1,7 +1,6 @@
-import { PageUIDemo } from "apps/boltFoundry/pages/PageUIDemo.tsx";
-import { BfDsLiteDemo } from "apps/bfDsLite/demo/Demo.tsx";
-import { EditorPage as LexicalDemo } from "apps/boltFoundry/components/lexical/LexicalDemo.tsx";
-import { Plinko } from "apps/boltFoundry/pages/Plinko.tsx";
+import { PageUIDemo } from "@bfmono/apps/boltFoundry/pages/PageUIDemo.tsx";
+import { EditorPage as LexicalDemo } from "@bfmono/apps/boltFoundry/components/lexical/LexicalDemo.tsx";
+import { Plinko } from "@bfmono/apps/boltFoundry/pages/Plinko.tsx";
 
 function fileHandlerFactory(url: string) {
   return function FileHandler() {
@@ -21,7 +20,6 @@ export type RouteMap = Map<string, RouteGuts>;
 
 export const appRoutes: RouteMap = new Map([
   ["/ui", { Component: PageUIDemo }],
-  ["/ui-lite", { Component: BfDsLiteDemo }],
   ["/justin", { Component: LexicalDemo }],
   ["/plinko", { Component: Plinko }],
   ["/deckDemo", { Component: Decks }],
@@ -39,9 +37,9 @@ import {
   entrypointDocs,
   entrypointGrader,
   entrypointHome,
-} from "apps/boltFoundry/__generated__/builtRoutes.ts";
-import type { BfIsographEntrypoint } from "lib/BfIsographEntrypoint.ts";
-import { Decks } from "apps/boltFoundry/pages/Decks.tsx";
+} from "@bfmono/apps/boltFoundry/__generated__/builtRoutes.ts";
+import type { BfIsographEntrypoint } from "@bfmono/lib/BfIsographEntrypoint.ts";
+import { Decks } from "@bfmono/apps/boltFoundry/pages/Decks.tsx";
 
 export const loggedInAppRoutes = new Map<string, IsographRoute>([]);
 

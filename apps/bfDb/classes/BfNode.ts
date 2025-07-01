@@ -1,18 +1,21 @@
 import { GraphQLNode } from "./GraphQLNode.ts";
-import type { FieldBuilder } from "apps/bfDb/builders/bfDb/makeFieldBuilder.ts";
-import { GraphQLInterface } from "apps/bfDb/graphql/decorators.ts";
+import type { FieldBuilder } from "@bfmono/apps/bfDb/builders/bfDb/makeFieldBuilder.ts";
+import { GraphQLInterface } from "@bfmono/apps/bfDb/graphql/decorators.ts";
 
-import type { BfGid } from "lib/types.ts";
-import type { GraphqlNode } from "apps/bfDb/graphql/helpers.ts";
-import type { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
-import { BfErrorNotImplemented } from "lib/BfError.ts";
-import { storage } from "apps/bfDb/storage/storage.ts";
-import type { JSONValue } from "apps/bfDb/bfDb.ts";
-import { BfErrorNodeNotFound } from "apps/bfDb/classes/BfErrorsBfNode.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import { generateUUID } from "lib/generateUUID.ts";
-import type { FieldSpec, RelationSpec } from "apps/bfDb/builders/bfDb/types.ts";
-import { makeBfDbSpec } from "apps/bfDb/builders/bfDb/makeBfDbSpec.ts";
+import type { BfGid } from "@bfmono/lib/types.ts";
+import type { GraphqlNode } from "@bfmono/apps/bfDb/graphql/helpers.ts";
+import type { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
+import { BfErrorNotImplemented } from "@bfmono/lib/BfError.ts";
+import { storage } from "@bfmono/apps/bfDb/storage/storage.ts";
+import type { JSONValue } from "@bfmono/apps/bfDb/bfDb.ts";
+import { BfErrorNodeNotFound } from "@bfmono/apps/bfDb/classes/BfErrorsBfNode.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { generateUUID } from "@bfmono/lib/generateUUID.ts";
+import type {
+  FieldSpec,
+  RelationSpec,
+} from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
+import { makeBfDbSpec } from "@bfmono/apps/bfDb/builders/bfDb/makeBfDbSpec.ts";
 
 const logger = getLogger(import.meta);
 

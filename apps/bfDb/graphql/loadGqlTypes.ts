@@ -6,15 +6,15 @@
  */
 
 import { extendType, objectType } from "nexus";
-import { gqlSpecToNexus } from "apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
-import * as rootsModule from "apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts";
-import * as nodeTypesModule from "apps/bfDb/models/__generated__/nodeTypesList.ts";
+import { gqlSpecToNexus } from "@bfmono/apps/bfDb/builders/graphql/gqlSpecToNexus.ts";
+import * as rootsModule from "@bfmono/apps/bfDb/graphql/roots/__generated__/rootObjectsList.ts";
+import * as nodeTypesModule from "@bfmono/apps/bfDb/models/__generated__/nodeTypesList.ts";
 // Import the loadInterfaces function to register GraphQL interfaces
-import { loadInterfaces } from "apps/bfDb/graphql/graphqlInterfaces.ts";
+import { loadInterfaces } from "@bfmono/apps/bfDb/graphql/graphqlInterfaces.ts";
 // Import the correct type for GraphQL object constructors
-import type { AnyGraphqlObjectBaseCtor } from "apps/bfDb/builders/bfDb/types.ts";
+import type { AnyGraphqlObjectBaseCtor } from "@bfmono/apps/bfDb/builders/bfDb/types.ts";
 // Import custom scalars
-import { IsoDate } from "apps/bfDb/graphql/scalars/IsoDate.ts";
+import { IsoDate } from "@bfmono/apps/bfDb/graphql/scalars/IsoDate.ts";
 // Interface classes are automatically loaded via the barrel file in __generated__/interfacesList.ts
 
 const roots = Object.values(rootsModule);

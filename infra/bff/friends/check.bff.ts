@@ -1,9 +1,9 @@
 #! /usr/bin/env -S bff
 
 // infra/bff/friends/check.bff.ts
-import { register } from "infra/bff/bff.ts";
-import { runShellCommand } from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -14,7 +14,20 @@ export async function checkCommand(options: Array<string>): Promise<number> {
 
   // Add files to check
   if (options.length > 0) {
-    args.push(...options);
+    // Filter out non-TypeScript/JavaScript files
+    const tsFiles = options.filter((file) => {
+      return file.endsWith(".ts") || file.endsWith(".tsx") ||
+        file.endsWith(".js") || file.endsWith(".jsx") ||
+        file.endsWith(".mjs") || file.endsWith(".mts") ||
+        file.startsWith("--"); // Keep flags
+    });
+
+    if (tsFiles.length === 0) {
+      logger.info("No TypeScript/JavaScript files to check");
+      return 0;
+    }
+
+    args.push(...tsFiles);
   } else {
     // Default to check important directories if no files specified
     args.push(

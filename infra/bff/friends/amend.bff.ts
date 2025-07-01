@@ -2,9 +2,9 @@
 
 // ./infra/bff/friends/amend.bff.ts
 
-import { register } from "infra/bff/bff.ts";
-import { runShellCommand } from "infra/bff/shellBase.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
@@ -29,12 +29,28 @@ export async function amend(args: Array<string>): Promise<number> {
     return true;
   });
 
+  // Separate files from other arguments for precommit
+  const files: Array<string> = [];
+  const otherArgs: Array<string> = [];
+
+  for (const arg of filteredArgs) {
+    if (!arg.startsWith("-")) {
+      files.push(arg);
+    } else {
+      otherArgs.push(arg);
+    }
+  }
+
   // Run precommit checks by default (unless skipped)
   if (runPreCheck) {
     logger.info("Running precommit checks...");
     const precommitArgs = ["bff", "precommit"];
     if (verbose) {
       precommitArgs.push("--verbose");
+    }
+    // Add file arguments if provided
+    if (files.length > 0) {
+      precommitArgs.push(...files);
     }
     const precommitResult = await runShellCommand(precommitArgs);
     if (precommitResult !== 0) {
@@ -44,7 +60,7 @@ export async function amend(args: Array<string>): Promise<number> {
     logger.info("✅ Precommit checks passed");
   }
 
-  // Run sl amend with filtered arguments
+  // Run sl amend with all filtered arguments (including files)
   const amendArgs = ["sl", "amend", ...filteredArgs];
   const amendResult = await runShellCommand(amendArgs);
 

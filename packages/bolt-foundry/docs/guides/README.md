@@ -140,14 +140,20 @@ const codingHelper = createDeck(
         .spec("Explains code clearly", {
           samples: [
             {
-              userMessage: "Can you explain this function?",
-              assistantResponse:
-                "Here's how this function works step by step...",
+              messages: [
+                { role: "user", content: "Can you explain this function?" },
+                {
+                  role: "assistant",
+                  content: "Here's how this function works step by step...",
+                },
+              ],
               score: 3,
             },
             {
-              userMessage: "Can you explain this function?",
-              assistantResponse: "It just works",
+              messages: [
+                { role: "user", content: "Can you explain this function?" },
+                { role: "assistant", content: "It just works" },
+              ],
               score: -3,
             },
           ],

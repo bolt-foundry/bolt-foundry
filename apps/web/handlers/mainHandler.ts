@@ -1,8 +1,8 @@
-import { getLogger } from "packages/logger/logger.ts";
-import { handleMatchedRoute } from "apps/web/handlers/requestHandler.ts";
-import { serveStaticFiles } from "apps/web/handlers/staticHandler.ts";
-import type { Handler } from "apps/web/web.tsx";
-import { CurrentViewer } from "apps/bfDb/classes/CurrentViewer.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { handleMatchedRoute } from "@bfmono/apps/web/handlers/requestHandler.ts";
+import { serveStaticFiles } from "@bfmono/apps/web/handlers/staticHandler.ts";
+import type { Handler } from "@bfmono/apps/web/web.tsx";
+import { CurrentViewer } from "@bfmono/apps/bfDb/classes/CurrentViewer.ts";
 
 const logger = getLogger(import.meta);
 

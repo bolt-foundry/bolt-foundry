@@ -1,3 +1,3 @@
-import { BfError } from "lib/BfError.ts";
+import { BfError } from "@bfmono/lib/BfError.ts";
 
 export class BfErrorDb extends BfError {}

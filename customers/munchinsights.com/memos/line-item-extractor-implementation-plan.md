@@ -48,15 +48,15 @@ Key design decisions:
 
 | Component              | Description                                                                                                               | Status |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------ |
-| Grader update          | Modify grader to accept 'CT' as valid default unit                                                                        | [ ]    |
 | Vendor extraction card | Extract vendor name, invoice number, date, total                                                                          | [ ]    |
 | Line item parsing card | Parse Quantity, Unit, Pack, Pack Unit, Pack Size, Pack Size Unit, Unit Price, and Price                                   | [ ]    |
 | Unit extraction card   | Extract and normalize units (CS, BX, BG, etc.)                                                                            | [ ]    |
-| Complex unit card      | Handle format such as: 6CS 12/6oz --> 6 (quantity) CS (unit) 12 (pack) pack (pack unit) 6 (pack size) oz (pack size unit) |        |
+| Complex unit card      | Handle format such as: 6CS 12/6oz --> 6 (quantity) CS (unit) 12 (pack) pack (pack unit) 6 (pack size) oz (pack size unit) | [ ]    |
+| Output format card     | Define JSON structure for results                                                                                         | [ ]    |
+| Integration tests      | Test full extraction against sample invoices                                                                              | [ ]    |
 
 Pack, pack unit, pack size, and pack size unit can be null and may be missing at
-times | [ ] | | Output format card | Define JSON structure for results | [ ] | |
-Integration tests | Test full extraction against sample invoices | [ ] |
+times.
 
 ## Technical Decisions
 
@@ -69,9 +69,10 @@ Integration tests | Test full extraction against sample invoices | [ ] |
 
 ## Next Steps
 
-| Task                       | Open Questions                                                   |
-| -------------------------- | ---------------------------------------------------------------- |
-| Find sample invoices       | Do we have test invoices with varied formats?                    |
-| Review existing extractors | Are there patterns from other Bolt Foundry extractors to follow? |
-| Define JSON schema         | Should we create a formal schema for validation?                 |
-| Error handling             | How should the prompt handle partially readable invoices?        |
+| Task                                            | Status |
+| ----------------------------------------------- | ------ |
+| Set up aibff deck structure                     | [ ]    |
+| Create initial extraction cards                 | [ ]    |
+| Test with sample spatial text files from Extend | [ ]    |
+| Define JSON output schema                       | [ ]    |
+| Build integration tests                         | [ ]    |

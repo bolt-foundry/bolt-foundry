@@ -1,6 +1,6 @@
-import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
-import { BfDsList } from "apps/bfDs/components/BfDsList.tsx";
-import { BfDsListItem } from "apps/bfDs/components/BfDsListItem.tsx";
+import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
+import { CfDsList } from "@bfmono/apps/cfDs/components/CfDsList.tsx";
+import { CfDsListItem } from "@bfmono/apps/cfDs/components/CfDsListItem.tsx";
 
 interface DocSection {
   title: string;
@@ -11,32 +11,32 @@ const docSections: Array<DocSection> = [
   {
     title: "Getting Started",
     items: [
-      { slug: "README", title: "Overview" },
-      { slug: "quickstart", title: "Quickstart" },
+      // { slug: "README", title: "Overview" },
+      // { slug: "quickstart", title: "Quickstart" },
       { slug: "getting-started", title: "Getting Started" },
     ],
   },
-  {
-    title: "Planning & Strategy",
-    items: [
-      { slug: "big-picture-strategy", title: "Big picture strategy" },
-      { slug: "company-vision", title: "Company vision" },
-    ],
-  },
+  // {
+  //   title: "Planning & Strategy",
+  //   items: [
+  //     { slug: "big-picture-strategy", title: "Big picture strategy" },
+  //     { slug: "company-vision", title: "Company vision" },
+  //   ],
+  // },
   {
     title: "Development",
     items: [
       { slug: "deck-system", title: "Deck system" },
-      { slug: "improving-inference-philosophy", title: "Improving inference" },
-      { slug: "evals-overview", title: "Evals" },
+      //     { slug: "improving-inference-philosophy", title: "Improving inference" },
+      //     { slug: "evals-overview", title: "Evals" },
     ],
   },
-  {
-    title: "Reference",
-    items: [
-      { slug: "wut", title: "wut" },
-    ],
-  },
+  // {
+  //   title: "Reference",
+  //   items: [
+  //     { slug: "wut", title: "wut" },
+  //   ],
+  // },
 ];
 
 interface DocsSidebarProps {
@@ -54,9 +54,9 @@ export function DocsSidebar(
     <div className={`docs-sidebar ${xClassName}`}>
       <nav className=" flexColumn gapLarge">
         {docSections.map((section) => (
-          <BfDsList key={section.title} header={section.title}>
+          <CfDsList key={section.title} header={section.title}>
             {section.items.map((item) => (
-              <BfDsListItem
+              <CfDsListItem
                 key={item.slug}
                 content={item.title}
                 isHighlighted={currentSlug === item.slug}
@@ -66,7 +66,7 @@ export function DocsSidebar(
                 }}
               />
             ))}
-          </BfDsList>
+          </CfDsList>
         ))}
       </nav>
     </div>

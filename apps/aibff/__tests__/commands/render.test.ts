@@ -1,5 +1,5 @@
 import { assertEquals, assertStringIncludes } from "@std/assert";
-import { renderCommand } from "../../commands/render.ts";
+import { renderCommand } from "@bfmono/apps/aibff/commands/render.ts";
 import { join } from "@std/path";
 
 // Test removed - render command doesn't show help, just exits

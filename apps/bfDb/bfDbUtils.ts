@@ -1,7 +1,7 @@
 // import { IBfCurrentViewerInternalAdminOmni } from "apps/bfDb/classes/BfCurrentViewer.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { neon } from "@neondatabase/serverless";
-import { BfErrorDb } from "apps/bfDb/classes/BfErrorDb.ts";
+import { BfErrorDb } from "@bfmono/apps/bfDb/classes/BfErrorDb.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
 const logger = getLogger(import.meta);

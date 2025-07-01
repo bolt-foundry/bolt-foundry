@@ -1,11 +1,11 @@
 #! /usr/bin/env -S bff
 
-import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
-import { getSecret } from "packages/get-configuration-var/get-configuration-var.ts";
-import { TeamStatusAnalyzer } from "packages/team-status-analyzer/mod.ts";
-import { TeamStatusGenerator } from "packages/team-status-generator/mod.ts";
-import type { AnalyzerConfig } from "packages/team-status-analyzer/types.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { getSecret } from "@bfmono/packages/get-configuration-var/get-configuration-var.ts";
+import { TeamStatusAnalyzer } from "@bfmono/packages/team-status-analyzer/mod.ts";
+import { TeamStatusGenerator } from "@bfmono/packages/team-status-generator/mod.ts";
+import type { AnalyzerConfig } from "@bfmono/packages/team-status-analyzer/types.ts";
 
 const logger = getLogger(import.meta);
 

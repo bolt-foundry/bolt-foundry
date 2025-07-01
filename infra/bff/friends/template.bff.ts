@@ -1,8 +1,8 @@
 #! /usr/bin/env -S bff
 
 // ./infra/bff/friends/template.bff.ts
-import { register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import * as path from "@std/path";
 
 const logger = getLogger(import.meta);

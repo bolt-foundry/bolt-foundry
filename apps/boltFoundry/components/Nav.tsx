@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import { BfLogo } from "apps/bfDs/static/BfLogo.tsx";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import { BfLogo } from "@bfmono/apps/cfDs/static/BfLogo.tsx";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
 
-import { useRouter } from "apps/boltFoundry/contexts/RouterContext.tsx";
+import { useRouter } from "@bfmono/apps/boltFoundry/contexts/RouterContext.tsx";
 
 type Props = {
   page?: string;
@@ -17,17 +17,17 @@ export function Nav({ page }: Props) {
   const NavButtons = () => {
     return (
       <>
-        <BfDsButton
+        <CfDsButton
           kind={page === "blog" ? "danSelected" : "dan"}
           href="/blog"
           text="Blog"
         />
-        <BfDsButton
+        <CfDsButton
           kind={page === "docs" ? "danSelected" : "dan"}
           href="/docs"
           text="Docs"
         />
-        <BfDsButton
+        <CfDsButton
           kind="dan"
           href="https://discord.gg/tU5ksTBfEj"
           hrefTarget="_blank"
@@ -35,7 +35,7 @@ export function Nav({ page }: Props) {
           text="Discord"
         />
         {
-          /* <BfDsButton
+          /* <CfDsButton
         kind="outline"
         text="Login"
         link="/login"
@@ -68,7 +68,7 @@ export function Nav({ page }: Props) {
           </nav>
         </div>
         <nav className="mobile-show">
-          <BfDsButton
+          <CfDsButton
             kind="dan"
             iconLeft="menu"
             onClick={() => {
@@ -80,7 +80,7 @@ export function Nav({ page }: Props) {
           <div className="mobile-show">
             <div className="flexColumn gapLarge sidebar-nav">
               <div className="selfAlignEnd">
-                <BfDsButton
+                <CfDsButton
                   kind="dan"
                   iconLeft="cross"
                   onClick={() => {

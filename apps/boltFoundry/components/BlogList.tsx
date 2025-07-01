@@ -1,8 +1,8 @@
-import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { RouterLink } from "apps/boltFoundry/components/Router/RouterLink.tsx";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { blogMetadata } from "apps/boltFoundry/lib/blogHelper.ts";
-import { BfDsPill } from "apps/bfDs/components/BfDsPill.tsx";
+import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
+import { RouterLink } from "@bfmono/apps/boltFoundry/components/Router/RouterLink.tsx";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
+import { blogMetadata } from "@bfmono/apps/boltFoundry/lib/blogHelper.ts";
+import { CfDsPill } from "@bfmono/apps/cfDs/components/CfDsPill.tsx";
 
 // Blog list component for BlogPostConnection
 export const BlogList = iso(`
@@ -55,7 +55,7 @@ export const BlogList = iso(`
             const previewImage = heroImage;
             const tagsArray = tags ? JSON.parse(tags) : [];
             const renderTags = tagsArray.map((tag: string) => (
-              <BfDsPill
+              <CfDsPill
                 color="primaryColor"
                 labelColor="textSecondary"
                 label={tag}
@@ -113,7 +113,7 @@ export const BlogList = iso(`
         </div>
         {connection.pageInfo.hasNextPage && (
           <div style={{ marginTop: "2rem" }}>
-            <BfDsButton
+            <CfDsButton
               kind="dan"
               text="Load more posts"
               disabled

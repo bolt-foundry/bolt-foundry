@@ -1,166 +1,507 @@
 import * as React from "react";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
+import { BfDsIcon, type BfDsIconName } from "./BfDsIcon.tsx";
 
-const { useEffect, useState } = React;
-
-export type Tab = {
-  name: string;
-  count?: number;
-  hidden?: boolean;
-  testId?: string; // for identifying the tab in posthog
-};
-type Props = {
-  kind?: "header" | "subheader";
-  tabs: Array<Tab>;
-  onTabSelected: (tabName: string) => void;
-  overrideSelectedTab?: string; // External control for selected tab
+export type BfDsTabItem = {
+  id: string;
+  label: string;
+  content: React.ReactNode;
+  icon?: BfDsIconName;
+  disabled?: boolean;
+  subtabs?: Array<BfDsTabItem>;
 };
 
-const styles: Record<string, React.CSSProperties> = {
-  container: {},
-  tabs: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  tabsHeader: {
-    gap: 16,
-  },
-  tab: {
-    padding: "16px 24px 12px",
-    fontSize: 16,
-    color: "var(--textSecondary)",
-    cursor: "pointer",
-    borderBottomWidth: 4,
-    borderBottomStyle: "solid",
-    borderBottomColor: "transparent",
-  },
-  tabHeader: {
-    padding: "0 0 10px",
-    fontSize: "1.5em",
-    fontWeight: 600,
-  },
-  tabSelected: {
-    color: "var(--text)",
-    borderBottomColor: "var(--secondaryColor)",
-  },
-  tabHover: {
-    color: "var(--text)",
-  },
-  tabNumber: {
-    opacity: 0.5,
-    fontSize: "0.8em",
-    marginLeft: "0.5em",
-  },
+export type BfDsTabsProps = {
+  tabs: Array<BfDsTabItem>;
+  activeTab?: string;
+  defaultActiveTab?: string;
+  onTabChange?: (tabId: string) => void;
+  className?: string;
+  variant?: "primary" | "secondary";
+  size?: "small" | "medium" | "large";
 };
 
-export function BfDsTabs(
-  { kind = "subheader", tabs, onTabSelected, overrideSelectedTab }: Props,
-) {
-  const [internalSelectedTab, setInternalSelectedTab] = useState<string>(
-    tabs[0].name,
-  );
-  const [hoveredTab, setHoveredTab] = useState<number | null>(null);
+export type BfDsTabsState = {
+  activeTab: string;
+  activeSubtabs: Record<string, string>; // parentTabId -> activeSubtabId
+};
 
-  if (!tabs || tabs.length === 0) {
-    return null;
-  }
+export function BfDsTabs({
+  tabs,
+  activeTab,
+  defaultActiveTab,
+  onTabChange,
+  className,
+  variant = "primary",
+  size = "medium",
+}: BfDsTabsProps) {
+  // Determine if this is controlled or uncontrolled
+  const isControlled = activeTab !== undefined;
 
-  // Use the external overrideSelectedTab if provided, otherwise use internal state
-  const selectedTabName = overrideSelectedTab !== undefined
-    ? overrideSelectedTab
-    : internalSelectedTab;
+  // Initialize state
+  const [state, setState] = React.useState<BfDsTabsState>(() => {
+    const initialActiveTab = activeTab || defaultActiveTab || tabs[0]?.id || "";
+    const activeSubtabs: Record<string, string> = {};
 
-  useEffect(() => {
-    // Only trigger the callback when the internal selection changes
-    if (overrideSelectedTab === undefined) {
-      onTabSelected(internalSelectedTab);
+    // Initialize subtab states
+    tabs.forEach((tab) => {
+      if (tab.subtabs && tab.subtabs.length > 0) {
+        activeSubtabs[tab.id] = tab.subtabs[0].id;
+      }
+    });
+
+    return {
+      activeTab: initialActiveTab,
+      activeSubtabs,
+    };
+  });
+
+  // Update state when controlled activeTab changes
+  React.useEffect(() => {
+    if (isControlled && activeTab !== undefined) {
+      setState((prev) => ({
+        ...prev,
+        activeTab,
+      }));
     }
-  }, [internalSelectedTab, overrideSelectedTab, onTabSelected]);
+  }, [activeTab, isControlled]);
+
+  const currentActiveTab = isControlled ? activeTab! : state.activeTab;
+
+  const handleTabClick = (tabId: string) => {
+    if (tabs.find((tab) => tab.id === tabId)?.disabled) return;
+
+    if (!isControlled) {
+      setState((prev) => ({
+        ...prev,
+        activeTab: tabId,
+      }));
+    }
+
+    onTabChange?.(tabId);
+  };
+
+  const handleSubtabClick = (parentTabId: string, subtabId: string) => {
+    const parentTab = tabs.find((tab) => tab.id === parentTabId);
+    const subtab = parentTab?.subtabs?.find((sub) => sub.id === subtabId);
+    if (subtab?.disabled) return;
+
+    setState((prev) => ({
+      ...prev,
+      activeSubtabs: {
+        ...prev.activeSubtabs,
+        [parentTabId]: subtabId,
+      },
+    }));
+  };
+
+  const renderTab = (
+    tab: BfDsTabItem,
+    isActive: boolean,
+    _index: number,
+    _tabIds: Array<string>,
+  ) => {
+    const classes = [
+      "bfds-tab",
+      `bfds-tab--${variant}`,
+      `bfds-tab--${size}`,
+      isActive && "bfds-tab--active",
+      tab.disabled && "bfds-tab--disabled",
+    ].filter(Boolean).join(" ");
+
+    return (
+      <button
+        key={tab.id}
+        type="button"
+        className={classes}
+        onClick={() => handleTabClick(tab.id)}
+        disabled={tab.disabled}
+        role="tab"
+        aria-selected={isActive}
+        aria-controls={`panel-${tab.id}`}
+      >
+        {tab.icon && (
+          <BfDsIcon
+            name={tab.icon}
+            size={size === "small"
+              ? "small"
+              : size === "large"
+              ? "large"
+              : "medium"}
+          />
+        )}
+        <span>{tab.label}</span>
+      </button>
+    );
+  };
+
+  const renderSubtab = (
+    subtab: BfDsTabItem,
+    parentTab: BfDsTabItem,
+    isActive: boolean,
+    _index: number,
+    _subtabIds: Array<string>,
+  ) => {
+    const classes = [
+      "bfds-subtab",
+      `bfds-subtab--${variant}`,
+      `bfds-subtab--${size}`,
+      isActive && "bfds-subtab--active",
+      subtab.disabled && "bfds-subtab--disabled",
+    ].filter(Boolean).join(" ");
+
+    return (
+      <button
+        key={subtab.id}
+        type="button"
+        className={classes}
+        onClick={() => handleSubtabClick(parentTab.id, subtab.id)}
+        disabled={subtab.disabled}
+        role="tab"
+        aria-selected={isActive}
+        aria-controls={`subpanel-${parentTab.id}-${subtab.id}`}
+      >
+        {subtab.icon && (
+          <BfDsIcon
+            name={subtab.icon}
+            size="small"
+          />
+        )}
+        <span>{subtab.label}</span>
+      </button>
+    );
+  };
+
+  const activeTabData = tabs.find((tab) => tab.id === currentActiveTab);
+  const hasSubtabs = activeTabData?.subtabs && activeTabData.subtabs.length > 0;
+  const activeSubtabId = hasSubtabs
+    ? state.activeSubtabs[currentActiveTab]
+    : null;
+  const activeSubtabData = hasSubtabs
+    ? activeTabData?.subtabs?.find((sub) => sub.id === activeSubtabId)
+    : null;
+
+  const tabIds = tabs.map((tab) => tab.id);
+  const subtabIds = activeTabData?.subtabs?.map((sub) => sub.id) || [];
+
+  const containerClasses = [
+    "bfds-tabs",
+    `bfds-tabs--${variant}`,
+    `bfds-tabs--${size}`,
+    className,
+  ].filter(Boolean).join(" ");
 
   return (
-    <div style={styles.container}>
+    <div className={containerClasses}>
+      {/* Main tabs */}
       <div
-        style={{ ...styles.tabs, ...(kind === "header" && styles.tabsHeader) }}
+        className="bfds-tabs__header"
+        role="tablist"
+        aria-orientation="horizontal"
       >
-        {tabs.map((tab, index) => {
-          if (tab.hidden === true) return null;
-          return (
+        {tabs.map((tab, index) =>
+          renderTab(tab, tab.id === currentActiveTab, index, tabIds)
+        )}
+      </div>
+
+      {/* Subtabs */}
+      {hasSubtabs && activeTabData?.subtabs && (
+        <div
+          className="bfds-tabs__subheader"
+          role="tablist"
+          aria-orientation="horizontal"
+        >
+          {activeTabData.subtabs.map((subtab, index) =>
+            renderSubtab(
+              subtab,
+              activeTabData,
+              subtab.id === activeSubtabId,
+              index,
+              subtabIds,
+            )
+          )}
+        </div>
+      )}
+
+      {/* Content panels */}
+      <div className="bfds-tabs__content">
+        {/* Main tab content or subtab content */}
+        {hasSubtabs && activeSubtabData
+          ? (
             <div
-              key={index}
-              style={{
-                ...styles.tab,
-                ...(kind === "header" && styles.tabHeader),
-                ...(hoveredTab === index && styles.tabHover),
-                ...(selectedTabName === tab.name && styles.tabSelected),
-              }}
-              onClick={() =>
-                overrideSelectedTab === undefined
-                  ? setInternalSelectedTab(tab.name)
-                  : onTabSelected(tab.name)}
-              onMouseEnter={() => setHoveredTab(index)}
-              onMouseLeave={() => setHoveredTab(null)}
-              data-bf-testid={tab.testId ?? `tab-${tab.name.toLowerCase()}`}
+              key={`${currentActiveTab}-${activeSubtabId}`}
+              id={`subpanel-${currentActiveTab}-${activeSubtabId}`}
+              className="bfds-tabs__panel bfds-tabs__subpanel"
+              role="tabpanel"
+              aria-labelledby={`subtab-${activeSubtabId}`}
             >
-              {tab.name}
-              {Number(tab.count) > 0 && (
-                <span style={styles.tabNumber}>{tab.count}</span>
-              )}
+              {activeSubtabData.content}
             </div>
-          );
-        })}
+          )
+          : (
+            <div
+              key={currentActiveTab}
+              id={`panel-${currentActiveTab}`}
+              className="bfds-tabs__panel"
+              role="tabpanel"
+              aria-labelledby={`tab-${currentActiveTab}`}
+            >
+              {activeTabData?.content}
+            </div>
+          )}
       </div>
     </div>
   );
 }
 
-// Example component to demonstrate usage of BfDsTabs
-export function Example() {
-  const [selectedHeaderTab, setSelectedHeaderTab] = useState<string>("Tab 1");
-  const [selectedTab, setSelectedTab] = useState<string>("Tab 1");
-  const demoTabs: Array<Tab> = [
-    { name: "Tab 1", count: 15 },
-    { name: "Tab 2" },
-    { name: "Tab 3", hidden: true },
-    { name: "Tab 4", count: 1, testId: "tab-4" },
+BfDsTabs.Example = function BfDsTabsExample() {
+  const [controlledActiveTab, setControlledActiveTab] = React.useState("tab1");
+
+  const basicTabs: Array<BfDsTabItem> = [
+    {
+      id: "tab1",
+      label: "Overview",
+      icon: "autoframe",
+      content: (
+        <div style={{ padding: "20px" }}>
+          <h3>Overview Content</h3>
+          <p>
+            This is the overview tab content. It provides a general summary of
+            the application features and functionality.
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: "tab2",
+      label: "Settings",
+      icon: "burgerMenu",
+      content: (
+        <div style={{ padding: "20px" }}>
+          <h3>Settings Content</h3>
+          <p>
+            Configure your application settings here. Adjust preferences,
+            themes, and other options.
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: "tab3",
+      label: "Analytics",
+      icon: "arrowsLeftRight",
+      disabled: true,
+      content: (
+        <div style={{ padding: "20px" }}>
+          <h3>Analytics Content</h3>
+          <p>View your analytics and performance metrics here.</p>
+        </div>
+      ),
+    },
   ];
 
-  // Example of how to switch tabs programmatically
-  const selectNextTab = () => {
-    const visibleTabs = demoTabs.filter((tab) => !tab.hidden);
-    const currentIndex = visibleTabs.findIndex((tab) =>
-      tab.name === selectedTab
-    );
-    const nextIndex = (currentIndex + 1) % visibleTabs.length;
-    setSelectedTab(visibleTabs[nextIndex].name);
-  };
+  const tabsWithSubtabs: Array<BfDsTabItem> = [
+    {
+      id: "docs",
+      label: "Documentation",
+      icon: "brand-github",
+      content: (
+        <div style={{ padding: "20px" }}>
+          Documentation main content
+        </div>
+      ),
+      subtabs: [
+        {
+          id: "getting-started",
+          label: "Getting Started",
+          content: (
+            <div style={{ padding: "20px" }}>
+              <h3>Getting Started</h3>
+              <p>
+                Welcome to our documentation! Here's how to get started with the
+                platform.
+              </p>
+              <ul>
+                <li>Create an account</li>
+                <li>Set up your first project</li>
+                <li>Invite team members</li>
+              </ul>
+            </div>
+          ),
+        },
+        {
+          id: "api-reference",
+          label: "API Reference",
+          icon: "arrowRight",
+          content: (
+            <div style={{ padding: "20px" }}>
+              <h3>API Reference</h3>
+              <p>Complete API documentation with examples and code snippets.</p>
+              <pre
+                style={{
+                  background: "#f5f5f5",
+                  padding: "10px",
+                  borderRadius: "4px",
+                }}
+              >
+{`GET /api/users
+POST /api/users
+PUT /api/users/:id
+DELETE /api/users/:id`}
+              </pre>
+            </div>
+          ),
+        },
+        {
+          id: "examples",
+          label: "Examples",
+          content: (
+            <div style={{ padding: "20px" }}>
+              <h3>Code Examples</h3>
+              <p>
+                Real-world examples and use cases to help you implement features
+                quickly.
+              </p>
+            </div>
+          ),
+        },
+      ],
+    },
+    {
+      id: "support",
+      label: "Support",
+      icon: "brand-discord",
+      content: <div style={{ padding: "20px" }}>Support main content</div>,
+      subtabs: [
+        {
+          id: "faq",
+          label: "FAQ",
+          content: (
+            <div style={{ padding: "20px" }}>
+              <h3>Frequently Asked Questions</h3>
+              <p>
+                Find answers to commonly asked questions about our platform.
+              </p>
+            </div>
+          ),
+        },
+        {
+          id: "contact",
+          label: "Contact Us",
+          disabled: true,
+          content: (
+            <div style={{ padding: "20px" }}>
+              <h3>Contact Support</h3>
+              <p>
+                Get in touch with our support team for personalized assistance.
+              </p>
+            </div>
+          ),
+        },
+      ],
+    },
+    {
+      id: "account",
+      label: "Account",
+      icon: "arrowUp",
+      content: (
+        <div style={{ padding: "20px" }}>
+          <h3>Account Management</h3>
+          <p>Manage your account settings, billing, and profile information.</p>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <>
-      {/* Uncontrolled header tabs */}
-      <BfDsTabs
-        kind="header"
-        tabs={demoTabs}
-        onTabSelected={(tabName: string) => setSelectedHeaderTab(tabName)}
-      />
-      <div style={{ marginTop: 20, marginBottom: 20 }}>
-        Selected header tab: {selectedHeaderTab}
+    <div
+      style={{
+        padding: "24px",
+        backgroundColor: "var(--bfds-background)",
+        color: "var(--bfds-text)",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+      }}
+    >
+      <h2>BfDsTabs Examples</h2>
+
+      <div style={{ marginBottom: "32px" }}>
+        <h3>Basic Tabs</h3>
+        <BfDsTabs tabs={basicTabs} defaultActiveTab="tab1" />
       </div>
 
-      {/* Controlled tabs with external state */}
-      <BfDsTabs
-        tabs={demoTabs}
-        overrideSelectedTab={selectedTab}
-        onTabSelected={(tabName: string) => setSelectedTab(tabName)}
-      />
-      <div style={{ marginTop: 20, marginBottom: 20 }}>
-        Selected tab: {selectedTab}
+      <div style={{ marginBottom: "32px" }}>
+        <h3>Controlled Tabs</h3>
+        <p
+          style={{
+            marginBottom: "16px",
+            fontSize: "14px",
+            color: "var(--bfds-text-secondary)",
+          }}
+        >
+          Active tab: {controlledActiveTab}
+        </p>
+        <BfDsTabs
+          tabs={basicTabs}
+          activeTab={controlledActiveTab}
+          onTabChange={setControlledActiveTab}
+        />
       </div>
 
-      {/* Button to demonstrate programmatic tab switching */}
-      <BfDsButton
-        onClick={selectNextTab}
-        text="Switch to Next Tab"
-      />
-    </>
+      <div style={{ marginBottom: "32px" }}>
+        <h3>Tabs with Subtabs</h3>
+        <BfDsTabs tabs={tabsWithSubtabs} defaultActiveTab="docs" />
+      </div>
+
+      <div style={{ marginBottom: "32px" }}>
+        <h3>Size Variants</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div>
+            <h4>Small</h4>
+            <BfDsTabs
+              tabs={basicTabs.slice(0, 2)}
+              size="small"
+              defaultActiveTab="tab1"
+            />
+          </div>
+          <div>
+            <h4>Medium (Default)</h4>
+            <BfDsTabs
+              tabs={basicTabs.slice(0, 2)}
+              size="medium"
+              defaultActiveTab="tab1"
+            />
+          </div>
+          <div>
+            <h4>Large</h4>
+            <BfDsTabs
+              tabs={basicTabs.slice(0, 2)}
+              size="large"
+              defaultActiveTab="tab1"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: "32px" }}>
+        <h3>Variant Styles</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+          <div>
+            <h4>Primary (Default)</h4>
+            <BfDsTabs
+              tabs={basicTabs.slice(0, 2)}
+              variant="primary"
+              defaultActiveTab="tab1"
+            />
+          </div>
+          <div>
+            <h4>Secondary</h4>
+            <BfDsTabs
+              tabs={basicTabs.slice(0, 2)}
+              variant="secondary"
+              defaultActiveTab="tab1"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   );
-}
+};

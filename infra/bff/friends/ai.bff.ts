@@ -1,7 +1,7 @@
 #! /usr/bin/env -S bff
 
-import { friendMap, register } from "infra/bff/bff.ts";
-import { getLogger } from "packages/logger/logger.ts";
+import { friendMap, register } from "@bfmono/infra/bff/bff.ts";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 

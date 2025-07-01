@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { iso } from "apps/boltFoundry/__generated__/__isograph/iso.ts";
-import { PageError } from "apps/boltFoundry/pages/PageError.tsx";
-import { getLogger } from "packages/logger/logger.ts";
+import { iso } from "@bfmono/apps/boltFoundry/__generated__/__isograph/iso.ts";
+import { PageError } from "@bfmono/apps/boltFoundry/pages/PageError.tsx";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { marked, Renderer } from "marked";
-import { BfDsButton } from "apps/bfDs/components/BfDsButton.tsx";
-import { DocsSidebar } from "apps/boltFoundry/components/DocsSidebar.tsx";
-import { Nav } from "apps/boltFoundry/components/Nav.tsx";
+import { CfDsButton } from "@bfmono/apps/cfDs/components/CfDsButton.tsx";
+import { DocsSidebar } from "@bfmono/apps/boltFoundry/components/DocsSidebar.tsx";
+import { Nav } from "@bfmono/apps/boltFoundry/components/Nav.tsx";
 
 const _logger = getLogger(import.meta);
 
@@ -20,7 +20,7 @@ export const Docs = iso(`
   const [showSidebar, setShowSidebar] = useState(false);
   const docRef = useRef<HTMLDivElement>(null);
   const blogPost = data.documentsBySlug;
-  const currentSlug = parameters.slug || "README";
+  const currentSlug = parameters.slug || "getting-started";
 
   useEffect(() => {
     if (docRef.current) {
@@ -134,7 +134,7 @@ export const Docs = iso(`
             />
             <div className="mobile-show docs-navbar">
               <div className="flexRow gapMedium alignItemsCenter">
-                <BfDsButton
+                <CfDsButton
                   kind={showSidebar ? "primary" : "secondary"}
                   iconLeft={showSidebar ? "sidebarClose" : "sidebarOpen"}
                   onClick={() => {
@@ -165,14 +165,14 @@ export const Docs = iso(`
             <div className="flex1">
               &copy; 2025 Bolt Foundry. All rights reserved.
             </div>
-            <BfDsButton
+            <CfDsButton
               size="medium"
               kind="danDim"
               iconLeft="brand-discord"
               href="https://discord.gg/tU5ksTBfEj"
               hrefTarget="_blank"
             />
-            <BfDsButton
+            <CfDsButton
               size="medium"
               kind="danDim"
               iconLeft="brand-github"
