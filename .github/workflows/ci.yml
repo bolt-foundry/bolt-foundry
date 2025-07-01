@@ -97,6 +97,12 @@ jobs:
           nix develop . --accept-flake-config --command bash -euc "
             export DENO_DIR=\"/home/runner/.cache/deno\"
             echo \"Using Deno cache directory: \${DENO_DIR}\"
+            echo \"Checking for Chromium installation:\"
+            which chromium || echo \"chromium not found in PATH\"
+            which google-chrome || echo \"google-chrome not found in PATH\"
+            which google-chrome-stable || echo \"google-chrome-stable not found in PATH\"
+            ls -la /nix/store/*chromium*/bin/ 2>/dev/null || echo \"No chromium in nix store\"
+            echo \"PATH: \$PATH\"
             deno --version
             deno info
             # Pre-cache dependencies
