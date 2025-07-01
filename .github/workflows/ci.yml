@@ -94,7 +94,7 @@ jobs:
       - name: Enter dev-shell & run tests
         run: |
           # Pass DENO_DIR into the Nix environment to ensure cache sharing
-          nix develop . --accept-flake-config --command bash -euc "
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
             export DENO_DIR=\"/home/runner/.cache/deno\"
             echo \"Using Deno cache directory: \${DENO_DIR}\"
             echo \"Checking for Chromium installation:\"
