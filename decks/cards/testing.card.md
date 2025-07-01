@@ -122,9 +122,9 @@ Deno.test("Component behavior", () => {
 
 ## Running Tests
 
-- Run all tests: `bff test`
-- Run specific test: `bff test path/to/file.test.ts`
-- Make tests executable: `#! /usr/bin/env -S bff test`
+- Run all tests: `bft test`
+- Run specific test: `bft test path/to/file.test.ts`
+- Make tests executable: `#! /usr/bin/env -S bft test`
 - Use `--filter` for running specific tests
 - Prefer `Deno.test.ignore` over `ignore: true` for tests to skip
 
