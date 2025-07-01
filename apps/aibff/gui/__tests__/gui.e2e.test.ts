@@ -289,3 +289,225 @@ Deno.test("aibff gui --dev loads successfully with routing and Isograph", async 
     }
   }
 });
+
+Deno.test("debug tool call execution should replace grader deck content", async () => {
+  // Start the aibff gui dev server
+  const serverPort = 3007; // Use different port to avoid conflicts
+  const command = new Deno.Command("aibff", {
+    args: ["gui", "--dev", "--port", String(serverPort), "--no-open"],
+    stdout: "piped",
+    stderr: "piped",
+  });
+
+  const serverProcess = command.spawn();
+
+  // Wait for server to be ready
+  let serverReady = false;
+  const maxRetries = 50;
+
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(`http://localhost:${serverPort}/health`);
+      await response.body?.cancel();
+      if (response.ok) {
+        serverReady = true;
+        break;
+      }
+    } catch {
+      // Server not ready yet
+    }
+    await delay(100);
+  }
+
+  assertEquals(
+    serverReady,
+    true,
+    "Dev server failed to start within timeout",
+  );
+
+  // Setup Puppeteer e2e test
+  const context = await setupE2ETest({
+    baseUrl: `http://localhost:${serverPort}`,
+    headless: false, // Show browser for debugging
+  });
+
+  try {
+    // Navigate to the GUI
+    await context.page.goto(context.baseUrl, {
+      waitUntil: "networkidle2",
+    });
+
+    // Wait for initial load - look for React root or any content
+    await context.page.waitForFunction(
+      () => {
+        // Check if React app has loaded by looking for the root element or any meaningful content
+        const root = document.getElementById("root");
+        if (root && root.children.length > 0) {
+          return true;
+        }
+        // Also check for any elements that might contain our text
+        const elements = Array.from(document.querySelectorAll("*"));
+        return elements.some((el) =>
+          el.textContent?.includes("New Conversation") ||
+          el.textContent?.includes("Loading") ||
+          el.textContent?.includes("Assistant")
+        );
+      },
+      { timeout: 10000 },
+    );
+
+    await delay(500);
+
+    // Wait for the Grader Deck tab to be available and click it
+    await context.page.waitForFunction(
+      () => {
+        const buttons = Array.from(document.querySelectorAll("button"));
+        return buttons.some((button) =>
+          button.textContent?.includes("Grader Deck")
+        );
+      },
+      { timeout: 15000 },
+    );
+
+    // Click on Grader Deck tab to see initial content
+    const graderTabClicked = await context.page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll("button"));
+      const graderTab = buttons.find((button) =>
+        button.textContent?.includes("Grader Deck")
+      );
+      
+      if (graderTab) {
+        graderTab.click();
+        return true;
+      }
+      
+      return false;
+    });
+    
+    assert(graderTabClicked, "Should be able to click Grader Deck tab");
+    await delay(200);
+
+    // Set up console log capture BEFORE sending the message
+    const consoleLogs: Array<string> = [];
+    context.page.on("console", (msg) => {
+      consoleLogs.push(msg.text());
+    });
+
+    // Get initial grader deck content
+    const initialGraderContent = await context.page.evaluate(() => {
+      const textareas = Array.from(document.querySelectorAll("textarea"));
+      const graderTextarea = textareas.find((textarea) =>
+        textarea.closest("div")?.textContent?.includes("Grader Deck") ||
+        textarea.placeholder?.includes("grader") ||
+        textarea.value?.includes("grader") ||
+        textarea.getAttribute("data-tab") === "grader"
+      );
+      return graderTextarea?.value || "";
+    });
+    logger.info("Initial grader deck content:", initialGraderContent);
+
+    // Find and click the chat textarea
+    const chatTextarea = await context.page.$(
+      'textarea[placeholder="Type a message..."]',
+    );
+    assert(chatTextarea, "Should find chat textarea");
+
+    // Type the debug command to test streaming tool calls
+    const debugCommand = '⚡️debug⚡️ replaceGraderDeck "lol we did it"';
+    await chatTextarea.focus();
+    await chatTextarea.type(debugCommand);
+
+    // Find and click send button
+    const sendButtonClicked = await context.page.evaluate(() => {
+      const buttons = Array.from(document.querySelectorAll("button"));
+      const sendButton = buttons.find((button) =>
+        button.textContent === "Send"
+      );
+      if (sendButton) {
+        sendButton.click();
+        return true;
+      }
+      return false;
+    });
+    assert(sendButtonClicked, "Should find and click Send button");
+
+    // Wait for the streaming to complete and tool calls to be executed
+    await delay(10000); // Give more time for the API call and processing
+
+    // Take screenshot for debugging
+    await context.takeScreenshot("debug-tool-call-after-send");
+
+    // Check console logs for tool call processing
+    const toolCallLogs = consoleLogs.filter((log) =>
+      log.includes("tool") || log.includes("Tool") ||
+      log.includes("replaceGraderDeck") || log.includes("executeToolCall")
+    );
+    logger.info("All console logs related to tool calls:", toolCallLogs);
+
+    // Look for specific completion messages
+    const hasStreamFinished = consoleLogs.some((log) =>
+      log.includes("Stream finished")
+    );
+    const hasToolCallsExecuted = consoleLogs.some((log) =>
+      log.includes("All tool calls processed")
+    );
+    const hasExecuteToolCall = consoleLogs.some((log) =>
+      log.includes("executeToolCall called with")
+    );
+
+    logger.info("Tool call execution status:", {
+      hasStreamFinished,
+      hasToolCallsExecuted,
+      hasExecuteToolCall,
+      totalLogs: consoleLogs.length,
+      toolCallLogsCount: toolCallLogs.length,
+    });
+
+    // Go back to Grader Deck tab to check if content changed
+    await context.page.evaluate(() => {
+      const elements = Array.from(document.querySelectorAll("*"));
+      const graderTab = elements.find((el) =>
+        el.textContent?.trim() === "Grader Deck"
+      );
+      if (graderTab && graderTab instanceof HTMLElement) {
+        graderTab.click();
+      }
+    });
+    await delay(200);
+
+    // Get updated grader deck content
+    const updatedGraderContent = await context.page.evaluate(() => {
+      const textareas = Array.from(document.querySelectorAll("textarea"));
+      const graderTextarea = textareas.find((textarea) =>
+        textarea.closest("div")?.textContent?.includes("Grader Deck") ||
+        textarea.placeholder?.includes("grader") ||
+        textarea.value?.includes("grader") ||
+        textarea.getAttribute("data-tab") === "grader"
+      );
+      return graderTextarea?.value || "";
+    });
+    logger.info("Updated grader deck content:", updatedGraderContent);
+
+    // This should pass once we fix the streaming tool call execution
+    assertEquals(
+      updatedGraderContent.trim(),
+      "lol we did it",
+      "Grader deck content should be updated by debug tool call",
+    );
+  } catch (error) {
+    await context.takeScreenshot("debug-tool-call-error");
+    logger.error("Debug tool call test failed:", error);
+    throw error;
+  } finally {
+    await teardownE2ETest(context);
+
+    try {
+      await serverProcess.stdout.cancel();
+      await serverProcess.stderr.cancel();
+      serverProcess.kill();
+      await serverProcess.status;
+    } catch {
+      // Process may have already exited
+    }
+  }
+});
