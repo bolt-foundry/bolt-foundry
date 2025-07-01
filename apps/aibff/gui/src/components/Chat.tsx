@@ -4,6 +4,7 @@ import { useRouter } from "../contexts/RouterContext.tsx";
 import { useGrader } from "../contexts/GraderContext.tsx";
 import { GraderEditor } from "./GraderEditor.tsx";
 import { MessageContent } from "./MessageContent.tsx";
+import { MessageInputUI } from "./MessageInput.tsx";
 import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
@@ -15,6 +16,15 @@ interface Message {
   timestamp?: string;
 }
 
+interface ToolCall {
+  id: string;
+  type: "function";
+  function: {
+    name: string;
+    arguments: string;
+  };
+}
+
 // Generate a simple conversation ID
 function generateConversationId(): string {
   const timestamp = Date.now();
@@ -23,21 +33,61 @@ function generateConversationId(): string {
 }
 
 export function Chat() {
-  const { navigate, params } = useRouter();
+  const router = useRouter();
+  const { navigate, params } = router;
   const conversationId = params?.conversationId;
   const conversationIdRef = useRef<string | undefined>(conversationId);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [messages, setMessages] = useState<Array<Message>>([]);
-  const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const streamingMessageIdRef = useRef<string | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Tool call state
+  const [pendingToolCalls, setPendingToolCalls] = useState<
+    Map<string, ToolCall>
+  >(new Map());
+
   const { graderContent, updateGraderContent } = useGrader();
+
+  // Execute tool calls
+  const executeToolCall = (toolCall: ToolCall) => {
+    logger.info("executeToolCall called with:", toolCall);
+    try {
+      if (toolCall.function.name === "replaceGraderDeck") {
+        logger.info(
+          "Parsing arguments for replaceGraderDeck:",
+          toolCall.function.arguments,
+        );
+        const args = JSON.parse(toolCall.function.arguments);
+        logger.info("Parsed arguments:", args);
+
+        if (args.content) {
+          logger.info(
+            "Updating grader content with:",
+            args.content.substring(0, 100) + "...",
+          );
+          // Update the grader content in the context
+          updateGraderContent(args.content);
+          logger.info("Grader deck updated via tool call successfully");
+        } else {
+          logger.warn("No content found in arguments:", args);
+        }
+      } else {
+        logger.warn("Unknown tool call:", toolCall.function.name);
+      }
+    } catch (error) {
+      logger.error(
+        "Error executing tool call:",
+        error,
+        "Arguments:",
+        toolCall.function.arguments,
+      );
+    }
+  };
 
   // Load existing conversation or create new one
   useEffect(() => {
@@ -112,14 +162,7 @@ export function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Auto-resize textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height =
-        `${textareaRef.current.scrollHeight}px`;
-    }
-  }, [input]);
+  // Auto-resize textarea is now handled in MessageInputUI component
 
   // Handle escape key to cancel streaming
   useEffect(() => {
@@ -144,134 +187,7 @@ export function Chat() {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isStreaming]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input.trim(),
-      timestamp: new Date().toISOString(),
-    };
-
-    const updatedMessages = [...messages, newMessage];
-    setMessages(updatedMessages);
-    setInput("");
-
-    // Create a placeholder for the assistant's response
-    const assistantMessageId = (Date.now() + 1).toString();
-    streamingMessageIdRef.current = assistantMessageId;
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: assistantMessageId,
-        role: "assistant",
-        content: "",
-        timestamp: new Date().toISOString(),
-      },
-    ]);
-
-    // Create new abort controller for this request
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
-    setIsStreaming(true);
-
-    try {
-      // Send to the SSE endpoint
-      const response = await fetch("/api/chat/stream", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          messages: updatedMessages,
-          conversationId: conversationIdRef.current,
-        }),
-        signal: abortController.signal,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Set up SSE reader
-      const reader = response.body!.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = line.slice(6);
-            try {
-              const parsed = JSON.parse(data);
-              if (parsed.content) {
-                // Update the assistant's message with the new content
-                setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === assistantMessageId
-                      ? { ...msg, content: msg.content + parsed.content }
-                      : msg
-                  )
-                );
-              }
-            } catch {
-              // Ignore parse errors
-            }
-          } else if (line.startsWith("event: done")) {
-            // Stream is complete
-            break;
-          } else if (line.startsWith("event: error")) {
-            const errorLine = lines[lines.indexOf(line) + 1];
-            if (errorLine?.startsWith("data: ")) {
-              const errorData = JSON.parse(errorLine.slice(6));
-              throw new Error(errorData.error || "Stream error");
-            }
-          }
-        }
-      }
-
-      // Streaming completed successfully
-      setIsStreaming(false);
-      streamingMessageIdRef.current = null;
-    } catch (error) {
-      // Check if the error was due to abort
-      if (error instanceof Error && error.name === "AbortError") {
-        logger.debug("Stream cancelled by user");
-        return;
-      }
-
-      logger.error("Error getting AI response:", error);
-      // Update the assistant message with an error
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === assistantMessageId
-            ? {
-              ...msg,
-              content:
-                "I'm sorry, I encountered an error. Please make sure your OpenRouter API key is configured and try again.",
-            }
-            : msg
-        )
-      );
-      setIsStreaming(false);
-      streamingMessageIdRef.current = null;
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  // These handlers have been moved into the MessageInputUI component
 
   if (loading) {
     return (
@@ -440,45 +356,432 @@ export function Chat() {
         </div>
 
         {/* Input area */}
-        <div
-          style={{
-            padding: "1rem",
-            borderTop: "1px solid #3a3b3c",
-            display: "flex",
-            gap: "0.5rem",
-            alignItems: "center",
+        <MessageInputUI
+          conversationId={conversationIdRef.current || ""}
+          onSendMessage={async (content) => {
+            logger.info(
+              "onSendMessage START with raw content:",
+              JSON.stringify(content),
+            );
+            logger.info("content.trim():", JSON.stringify(content.trim()));
+            logger.info("!content.trim():", !content.trim());
+
+            // Use the existing handleSend logic
+            if (!content.trim()) {
+              logger.info("Empty content, returning early");
+              return;
+            }
+
+            let messageContent = content.trim();
+
+            logger.info("onSendMessage called with:", messageContent);
+            logger.info("Current conversation state:", {
+              conversationId: conversationIdRef.current,
+              messageCount: messages.length,
+              isStreaming,
+            });
+
+            // Handle /test command - simulate a tool call locally
+            if (messageContent.startsWith("/test")) {
+              const toolName = messageContent.slice(5).trim() ||
+                "replaceGraderDeck";
+
+              logger.info("Processing /test command:", {
+                messageContent,
+                toolName,
+              });
+
+              if (toolName === "replaceGraderDeck") {
+                // Create the user message first
+                const userMessage: Message = {
+                  id: Date.now().toString(),
+                  role: "user",
+                  content: messageContent,
+                  timestamp: new Date().toISOString(),
+                };
+
+                // Simulate a fake tool call execution
+                const fakeToolCall = {
+                  id: "test_call_123",
+                  type: "function" as const,
+                  function: {
+                    name: "replaceGraderDeck",
+                    arguments: JSON.stringify({
+                      content: `# Test Grader Deck - Generated by /test Command
+
+## Overview
+This is a test grader deck created by the /test command to verify that tool call execution works properly.
+
+## Evaluation Criteria
+- **Helpfulness**: Does the response address the customer's question?
+- **Clarity**: Is the response easy to understand?
+- **Completeness**: Does it provide all necessary information?
+
+## Grading Scale
+- **+3**: Excellent response
+- **+2**: Good response  
+- **+1**: Adequate response
+- **0**: Neutral or invalid
+- **-1**: Poor response
+- **-2**: Bad response
+- **-3**: Harmful response
+
+Generated at: ${new Date().toISOString()}`,
+                    }),
+                  },
+                };
+
+                // Execute the fake tool call immediately
+                logger.info(
+                  "Executing fake tool call:",
+                  fakeToolCall.function.name,
+                );
+                await executeToolCall(fakeToolCall);
+
+                // Add both user message and system response
+                const systemMessage: Message = {
+                  id: (Date.now() + 1).toString(),
+                  role: "assistant",
+                  content: `✅ Test tool call executed! Tool: ${toolName}`,
+                  timestamp: new Date().toISOString(),
+                };
+
+                logger.info("Adding /test messages to UI and returning early");
+                setMessages((prev) => [...prev, userMessage, systemMessage]);
+                return;
+              }
+            }
+
+            // Handle /force command
+            if (messageContent.startsWith("/force")) {
+              const toolName = messageContent.slice(6).trim() ||
+                "replaceGraderDeck";
+
+              if (toolName === "replaceGraderDeck") {
+                messageContent =
+                  "IMPORTANT: You MUST use the replaceGraderDeck tool now. Create a complete grader deck for evaluating customer support responses on helpfulness. Do not respond with text - only use the tool call.";
+              } else {
+                messageContent =
+                  `IMPORTANT: You MUST use the ${toolName} tool now. Do not respond with text - only use the tool call.`;
+              }
+
+              logger.info(`Force command detected: ${toolName}`);
+            }
+
+            logger.info("Creating user message with content:", messageContent);
+
+            const newMessage: Message = {
+              id: Date.now().toString(),
+              role: "user",
+              content: messageContent,
+              timestamp: new Date().toISOString(),
+            };
+
+            const updatedMessages = [...messages, newMessage];
+            setMessages(updatedMessages);
+
+            logger.info(
+              "Messages updated, updatedMessages length:",
+              updatedMessages.length,
+            );
+
+            // Create a placeholder for the assistant's response
+            const assistantMessageId = (Date.now() + 1).toString();
+            streamingMessageIdRef.current = assistantMessageId;
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: assistantMessageId,
+                role: "assistant",
+                content: "",
+                timestamp: new Date().toISOString(),
+              },
+            ]);
+
+            logger.info("About to start streaming...");
+            setIsStreaming(true);
+            abortControllerRef.current = new AbortController();
+            logger.info("Streaming state set, abort controller created");
+
+            try {
+              // Filter out empty assistant messages that might cause server errors
+              const cleanMessages = updatedMessages.filter((msg) =>
+                !(msg.role === "assistant" &&
+                  (!msg.content || msg.content.trim() === ""))
+              );
+
+              logger.info("Starting fetch to /api/chat/stream with messages:", {
+                total: updatedMessages.length,
+                clean: cleanMessages.length,
+                filtered: updatedMessages.length - cleanMessages.length,
+              });
+
+              const response = await fetch("/api/chat/stream", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  messages: cleanMessages,
+                  conversationId: conversationIdRef.current,
+                }),
+                signal: abortControllerRef.current.signal,
+              });
+
+              logger.info("Fetch response received:", {
+                ok: response.ok,
+                status: response.status,
+                statusText: response.statusText,
+                headers: Object.fromEntries(response.headers.entries()),
+              });
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
+              const reader = response.body?.getReader();
+              const decoder = new TextDecoder();
+
+              logger.info("Stream reader created:", !!reader);
+
+              if (!reader) {
+                throw new Error("No response body");
+              }
+
+              const processStream = async () => {
+                logger.info("Starting processStream function");
+                try {
+                  let chunkCount = 0;
+                  while (true) {
+                    logger.info("Reading chunk", chunkCount++);
+                    const { done, value } = await reader.read();
+                    logger.info("Chunk read result:", {
+                      done,
+                      hasValue: !!value,
+                      valueLength: value?.length,
+                    });
+
+                    if (done) {
+                      logger.info("Stream done, breaking");
+                      break;
+                    }
+
+                    const chunk = decoder.decode(value);
+                    logger.info(
+                      "Decoded chunk:",
+                      chunk.substring(0, 200) +
+                        (chunk.length > 200 ? "..." : ""),
+                    );
+                    const lines = chunk.split("\n");
+                    logger.info("Split into lines:", lines.length);
+
+                    for (const line of lines) {
+                      if (line.startsWith("data: ")) {
+                        const data = line.slice(6);
+                        if (data === "[DONE]") {
+                          logger.info("Stream received [DONE]");
+                          return;
+                        }
+
+                        try {
+                          const parsed = JSON.parse(data);
+                          logger.info("Stream data received:", {
+                            hasContent: !!parsed.content,
+                            hasToolCalls: !!parsed.tool_calls,
+                            conversationId: parsed.conversationId,
+                            toolCallsCount: parsed.tool_calls?.length || 0,
+                          });
+
+                          if (
+                            parsed.conversationId && !conversationIdRef.current
+                          ) {
+                            conversationIdRef.current = parsed.conversationId;
+                            router.navigate(`/chat/${parsed.conversationId}`);
+                            logger.info(
+                              "Conversation ID set:",
+                              parsed.conversationId,
+                            );
+                          }
+
+                          if (parsed.content) {
+                            logger.info(
+                              "Adding content to message:",
+                              parsed.content,
+                            );
+                            setMessages((prev) =>
+                              prev.map((msg) =>
+                                msg.id === streamingMessageIdRef.current
+                                  ? {
+                                    ...msg,
+                                    content: msg.content + parsed.content,
+                                  }
+                                  : msg
+                              )
+                            );
+                          }
+
+                          // Handle tool calls
+                          if (parsed.tool_calls) {
+                            logger.info(
+                              "Processing tool calls:",
+                              parsed.tool_calls,
+                            );
+                            let hasNewToolCall = false;
+                            for (const toolCallDelta of parsed.tool_calls) {
+                              const { index, id, type, function: func } =
+                                toolCallDelta;
+                              logger.info("Tool call delta:", {
+                                index,
+                                id,
+                                type,
+                                func,
+                              });
+
+                              if (id && type === "function" && func) {
+                                setPendingToolCalls((prev) => {
+                                  const updated = new Map(prev);
+                                  const existing = updated.get(id) || {
+                                    id,
+                                    type: "function",
+                                    function: {
+                                      name: func.name || "",
+                                      arguments: "",
+                                    },
+                                  };
+
+                                  // Accumulate function name and arguments
+                                  if (func.name) {
+                                    existing.function.name = func.name;
+                                    hasNewToolCall = true;
+                                    logger.info(
+                                      "Tool call name set:",
+                                      func.name,
+                                    );
+                                  }
+                                  if (func.arguments) {
+                                    existing.function.arguments +=
+                                      func.arguments;
+                                    logger.info(
+                                      "Tool call args updated:",
+                                      existing.function.arguments,
+                                    );
+                                  }
+
+                                  updated.set(id, existing);
+                                  return updated;
+                                });
+                              }
+                            }
+
+                            // Add visual feedback for tool calls in the message content
+                            if (hasNewToolCall) {
+                              logger.info(
+                                "Adding tool call visual feedback to message",
+                              );
+                              setMessages((prev) =>
+                                prev.map((msg) =>
+                                  msg.id === streamingMessageIdRef.current
+                                    ? {
+                                      ...msg,
+                                      content: msg.content ||
+                                        "🔧 Executing tool calls...",
+                                    }
+                                    : msg
+                                )
+                              );
+                            }
+                          }
+                        } catch (e) {
+                          logger.error("Failed to parse SSE data:", e);
+                        }
+                      } else if (line.startsWith("event: done")) {
+                        return;
+                      }
+                    }
+                  }
+                } catch (error: unknown) {
+                  if (error instanceof Error && error.name === "AbortError") {
+                    logger.info("Stream aborted");
+                  } else {
+                    throw error;
+                  }
+                } finally {
+                  reader.releaseLock();
+                }
+              };
+
+              logger.info("About to call processStream");
+              await processStream();
+              logger.info("processStream completed");
+            } catch (error) {
+              logger.error("Failed to send message:", error);
+              logger.error("Error details:", {
+                name: error instanceof Error ? error.name : "Unknown",
+                message: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+              });
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === streamingMessageIdRef.current
+                    ? { ...msg, content: "Error: Failed to get response" }
+                    : msg
+                )
+              );
+            } finally {
+              setIsStreaming(false);
+              streamingMessageIdRef.current = null;
+
+              logger.info(
+                "Stream finished. Pending tool calls:",
+                Array.from(pendingToolCalls.values()),
+              );
+
+              // Execute any pending tool calls
+              const executedToolCalls: Array<string> = [];
+              for (const toolCall of pendingToolCalls.values()) {
+                logger.info("Checking tool call for execution:", {
+                  name: toolCall.function.name,
+                  hasArguments: !!toolCall.function.arguments,
+                  argumentsLength: toolCall.function.arguments?.length || 0,
+                });
+
+                if (toolCall.function.name && toolCall.function.arguments) {
+                  logger.info("Executing tool call:", toolCall.function.name);
+                  await executeToolCall(toolCall);
+                  executedToolCalls.push(toolCall.function.name);
+                } else {
+                  logger.warn("Skipping incomplete tool call:", toolCall);
+                }
+              }
+
+              logger.info(
+                "All tool calls processed. Executed:",
+                executedToolCalls,
+              );
+
+              // Add a message showing tool call execution if any were executed
+              if (executedToolCalls.length > 0) {
+                const toolCallMessage: Message = {
+                  id: (Date.now() + 2).toString(),
+                  role: "assistant",
+                  content: `✅ Tool call${
+                    executedToolCalls.length > 1 ? "s" : ""
+                  } executed: ${executedToolCalls.join(", ")}`,
+                  timestamp: new Date().toISOString(),
+                };
+
+                setMessages((prev) => [...prev, toolCallMessage]);
+                logger.info("Added tool execution message to UI");
+              } else {
+                logger.info("No tool calls were executed");
+              }
+
+              // Clear pending tool calls
+              setPendingToolCalls(new Map());
+            }
           }}
-        >
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
-            style={{
-              flex: 1,
-              resize: "none",
-              minHeight: "2.5rem",
-              maxHeight: "10rem",
-              padding: "0.5rem",
-              border: "1px solid #3a3b3c",
-              borderRadius: "0.25rem",
-              backgroundColor: "#141516",
-              color: "#fafaff",
-              fontFamily: "inherit",
-              fontSize: "inherit",
-              lineHeight: "1.5",
-              outline: "none",
-            }}
-          />
-          <BfDsButton
-            onClick={handleSend}
-            disabled={!input.trim()}
-            variant="primary"
-          >
-            Send
-          </BfDsButton>
-        </div>
+          disabled={isStreaming}
+        />
       </div>
 
       {/* Right panel - Grader Editor */}

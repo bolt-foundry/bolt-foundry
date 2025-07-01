@@ -2,6 +2,7 @@
 
 import type { Command } from "./types.ts";
 import { parse as parseTOML } from "@std/toml";
+import { extractToml as extractFrontmatter } from "@std/front-matter";
 import * as path from "@std/path";
 
 // UI helper (to be extracted later)
@@ -49,8 +50,22 @@ interface OpenAIMessage {
   content: string;
 }
 
+interface OpenAITool {
+  type: "function";
+  function: {
+    name: string;
+    description: string;
+    parameters: {
+      type: "object";
+      properties: Record<string, unknown>;
+      required?: Array<string>;
+    };
+  };
+}
+
 interface OpenAICompletionRequest {
   messages: Array<OpenAIMessage>;
+  tools?: Array<OpenAITool>;
   [key: string]: unknown; // Additional OpenAI parameters
 }
 
@@ -288,6 +303,7 @@ export function extractSamplesFromMarkdown(
 interface ProcessedMarkdown {
   content: string;
   tomlReferences: Array<{ filePath: string; basePath: string }>;
+  tools: Array<OpenAITool>;
 }
 
 function processMarkdownIncludes(
@@ -296,6 +312,7 @@ function processMarkdownIncludes(
 ): ProcessedMarkdown {
   const deckDir = path.dirname(basePath);
   const tomlReferences: Array<{ filePath: string; basePath: string }> = [];
+  const tools: Array<OpenAITool> = [];
 
   // Replace markdown includes with their content
   const content = markdown.replace(
@@ -318,10 +335,29 @@ function processMarkdownIncludes(
 
       try {
         const fileContent = Deno.readTextFileSync(absolutePath);
+
+        // Extract tools from this file's frontmatter before processing includes
+        const fileTools = extractToolsFromMarkdown(fileContent);
+        tools.push(...fileTools);
+
+        // Extract content without frontmatter
+        let cleanFileContent: string;
+        try {
+          const { body } = extractFrontmatter(fileContent);
+          cleanFileContent = body;
+        } catch (_error) {
+          // No frontmatter, use content as-is
+          cleanFileContent = fileContent;
+        }
+
         // Recursively process includes in the included file
-        const processed = processMarkdownIncludes(fileContent, absolutePath);
-        // Merge TOML references from included files
+        const processed = processMarkdownIncludes(
+          cleanFileContent,
+          absolutePath,
+        );
+        // Merge TOML references and tools from included files
         tomlReferences.push(...processed.tomlReferences);
+        tools.push(...processed.tools);
         return processed.content;
       } catch (error) {
         if (error instanceof Deno.errors.NotFound) {
@@ -332,7 +368,52 @@ function processMarkdownIncludes(
     },
   );
 
-  return { content, tomlReferences };
+  return { content, tomlReferences, tools };
+}
+
+function extractToolsFromMarkdown(markdown: string): Array<OpenAITool> {
+  const tools: Array<OpenAITool> = [];
+
+  // Extract all TOML frontmatter blocks (there might be multiple from embedded content)
+  const tomlBlocks = markdown.match(/\+\+\+\n([\s\S]*?)\n\+\+\+/g);
+
+  if (!tomlBlocks) {
+    return tools;
+  }
+
+  for (const block of tomlBlocks) {
+    // Remove the +++ delimiters
+    const tomlContent = block.slice(4, -4);
+
+    try {
+      const tomlData = parseTOML(tomlContent);
+
+      // Check if this TOML block contains tools
+      if (tomlData.tools && Array.isArray(tomlData.tools)) {
+        for (const tool of tomlData.tools) {
+          if (tool.type === "function" && tool.function) {
+            const openAITool: OpenAITool = {
+              type: "function",
+              function: {
+                name: tool.function.name,
+                description: tool.function.description,
+                parameters: tool.function.parameters || {
+                  type: "object",
+                  properties: {},
+                },
+              },
+            };
+            tools.push(openAITool);
+          }
+        }
+      }
+    } catch (_error) {
+      // Skip invalid TOML blocks - they might be context definitions
+      continue;
+    }
+  }
+
+  return tools;
 }
 
 function renderDeck(
@@ -343,7 +424,7 @@ function renderDeck(
   // Read the deck file content
   const deckMarkdown = Deno.readTextFileSync(deckFileSystemPath);
 
-  // Process markdown includes to build the full content first
+  // Process markdown includes to build the full content first and extract tools
   const processed = processMarkdownIncludes(deckMarkdown, deckFileSystemPath);
 
   // Extract context definitions from the fully assembled markdown with proper path resolution
@@ -353,8 +434,19 @@ function renderDeck(
     processed.tomlReferences,
   );
 
-  // Remove all ![alt](file) embeds from markdown to get clean system message
-  const systemContent = processed.content.replace(/!\[.*?\]\(.*?\)/g, "")
+  // Remove frontmatter and ![alt](file) embeds from markdown to get clean system message
+  let systemContent: string;
+  try {
+    const { body } = extractFrontmatter(processed.content);
+    systemContent = body;
+  } catch (_error) {
+    // No frontmatter, use content as-is
+    systemContent = processed.content;
+  }
+
+  // Remove markdown embeds and clean up
+  systemContent = systemContent
+    .replace(/!\[.*?\]\(.*?\)/g, "") // Remove markdown embeds
     .trim();
 
   // Build messages array starting with system message
@@ -394,10 +486,17 @@ function renderDeck(
   }
 
   // Return complete OpenAI request with options spread last
-  return {
+  const request: OpenAICompletionRequest = {
     messages,
     ...openAiCompletionOptions,
   };
+
+  // Add tools if any were found
+  if (processed.tools.length > 0) {
+    request.tools = processed.tools;
+  }
+
+  return request;
 }
 
 // Export functions and types for use by other modules
