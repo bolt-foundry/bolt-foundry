@@ -111,7 +111,6 @@
     "npm:@vitejs/plugin-react@^4.6.0": "4.6.0_vite@6.3.5__@types+node@22.15.33__picomatch@4.0.2_@babel+core@7.27.4_@types+node@22.15.33",
     "npm:assemblyai@^4.9.0": "4.13.3",
     "npm:chalk@^5.4.1": "5.4.1",
-    "npm:claude@~0.1.1": "0.1.2",
     "npm:discord.js@^14.18.0": "14.20.0",
     "npm:esbuild@~0.24.2": "0.24.2",
     "npm:graphql-relay@~0.10.2": "0.10.2_graphql@16.11.0",
@@ -2327,10 +2326,6 @@
         "mitt",
         "zod"
       ]
-    },
-    "claude@0.1.2": {
-      "integrity": "sha512-Qjrrs+G1pwovbIgGh5R1Ni4Al79AfpbkvfonpHH0yj86cfOq3AoAzNbEeD9TQ980hrog8TM0vh1CNn+7uf/zYA==",
-      "deprecated": true
     },
     "cliui@8.0.1": {
       "integrity": "sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==",
