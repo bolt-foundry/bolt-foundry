@@ -5013,7 +5013,6 @@
         "npm:@types/react@19",
         "npm:@vitejs/plugin-react@^4.6.0",
         "npm:assemblyai@^4.9.0",
-        "npm:claude@~0.1.1",
         "npm:discord.js@^14.18.0",
         "npm:esbuild@~0.24.2",
         "npm:graphql-relay@~0.10.2",
