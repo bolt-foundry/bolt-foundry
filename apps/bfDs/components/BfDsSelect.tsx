@@ -4,22 +4,40 @@ import { BfDsIcon } from "./BfDsIcon.tsx";
 import { BfDsFormSubmitButton } from "./BfDsFormSubmitButton.tsx";
 
 export type BfDsSelectOption = {
+  /** The value submitted when this option is selected */
   value: string;
+  /** Display text shown for this option */
   label: string;
+  /** When true, this option cannot be selected */
   disabled?: boolean;
 };
 
 export type BfDsSelectProps = {
+  // Form context props
+  /** Form field name for data binding */
   name?: string;
+
+  // Standalone props
+  /** Currently selected value */
   value?: string;
+  /** Selection change callback */
   onChange?: (value: string) => void;
+
+  // Common props
+  /** Array of selectable options */
   options: Array<BfDsSelectOption>;
+  /** Placeholder when nothing selected */
   placeholder?: string;
-  disabled?: boolean;
-  required?: boolean;
-  className?: string;
-  id?: string;
+  /** Field label */
   label?: string;
+  /** Required for validation */
+  required?: boolean;
+  /** Disables component */
+  disabled?: boolean;
+  /** Additional CSS classes */
+  className?: string;
+  /** Element ID */
+  id?: string;
 };
 
 export function BfDsSelect({
