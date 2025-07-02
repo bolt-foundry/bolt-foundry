@@ -17,6 +17,55 @@ interface ChatMessage {
   timestamp: string;
 }
 
+// Function to copy default files to a new conversation
+async function copyDefaultsToConversation(
+  conversationId: string,
+): Promise<void> {
+  const conversationsPath = getConversationsDir();
+  const conversationFolder = `${conversationsPath}/${conversationId}`;
+  const defaultsPath = new URL(import.meta.resolve("./defaults")).pathname;
+
+  // Ensure conversation directory exists
+  try {
+    await Deno.mkdir(conversationFolder, { recursive: true });
+  } catch (error) {
+    if (!(error instanceof Deno.errors.AlreadyExists)) {
+      throw error;
+    }
+  }
+
+  // List of default files to copy
+  const defaultFiles = [
+    "input-samples.jsonl",
+    "actor-deck.md",
+    "grader-deck.md",
+    "grader-base.deck.md",
+    "grader-base.deck.toml",
+    "ground-truth.deck.toml",
+    "notes.md",
+  ];
+
+  // Copy each default file
+  for (const fileName of defaultFiles) {
+    try {
+      const defaultFilePath = `${defaultsPath}/${fileName}`;
+      const conversationFilePath = `${conversationFolder}/${fileName}`;
+
+      const content = await Deno.readTextFile(defaultFilePath);
+      await Deno.writeTextFile(conversationFilePath, content);
+
+      logger.debug(
+        `Copied default ${fileName} to conversation ${conversationId}`,
+      );
+    } catch (error) {
+      logger.warn(`Failed to copy default ${fileName}:`, error);
+      // Continue with other files even if one fails
+    }
+  }
+
+  logger.info(`Copied default files to conversation ${conversationId}`);
+}
+
 // Function to generate initial assistant message
 async function generateInitialMessage(): Promise<string> {
   // Load the assistant deck
@@ -208,6 +257,9 @@ const routes = [
                   timestamp: new Date().toISOString(),
                 });
                 await conversation.save();
+
+                // Copy default files to the new conversation
+                await copyDefaultsToConversation(conversationId);
 
                 const messages = conversation.getMessages();
 
@@ -480,7 +532,7 @@ const routes = [
 
       try {
         const saveData = await request.json();
-        const { inputSamples, actorDeck, graderDeck, groundTruth, notes } =
+        const { inputSamples, actorDeck, graderDeck, groundTruth, notes, actorData } =
           saveData;
 
         // Create the conversation folder path
@@ -554,6 +606,12 @@ const routes = [
         // Save notes.md
         await Deno.writeTextFile(`${conversationFolder}/notes.md`, notes || "");
 
+        // Save actor-data.jsonl
+        await Deno.writeTextFile(
+          `${conversationFolder}/actor-data.jsonl`,
+          actorData || "",
+        );
+
         logger.info(
           `Saved conversation ${conversationId} to ${conversationFolder}`,
         );
@@ -569,6 +627,7 @@ const routes = [
               "grader-deck.md",
               "ground-truth.deck.toml",
               "notes.md",
+              "actor-data.jsonl",
             ],
           }),
           {
@@ -585,6 +644,49 @@ const routes = [
             status: 500,
           },
         );
+      }
+    },
+  },
+  {
+    pattern: new URLPattern({
+      pathname: "/api/conversations/:conversationId/files/:filename",
+    }),
+    handler: async (request: Request) => {
+      if (request.method !== "GET") {
+        return new Response("Method not allowed", { status: 405 });
+      }
+
+      const url = new URL(request.url);
+      const pathParts = url.pathname.split("/");
+      const conversationId = pathParts[3]; // /api/conversations/{id}/files/{filename}
+      const filename = pathParts[5];
+
+      if (!conversationId || !filename) {
+        return new Response("Conversation ID and filename required", {
+          status: 400,
+        });
+      }
+
+      try {
+        // Create the file path
+        const conversationsPath = getConversationsDir();
+        const filePath = `${conversationsPath}/${conversationId}/${filename}`;
+
+        // Read the file content
+        const content = await Deno.readTextFile(filePath);
+
+        return new Response(JSON.stringify({ content }), {
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (error) {
+        if (error instanceof Deno.errors.NotFound) {
+          return new Response("File not found", { status: 404 });
+        }
+        logger.error(
+          `Failed to load file ${filename} for conversation ${conversationId}:`,
+          error,
+        );
+        return new Response("Internal server error", { status: 500 });
       }
     },
   },
@@ -616,6 +718,7 @@ const routes = [
           graderDeck: "",
           groundTruth: "",
           notes: "",
+          actorData: "",
         };
 
         // Try to load each file, but don't fail if they don't exist
@@ -625,6 +728,7 @@ const routes = [
           graderDeck: "grader-deck.md",
           groundTruth: "ground-truth.deck.toml",
           notes: "notes.md",
+          actorData: "actor-data.jsonl",
         };
 
         for (const [key, fileName] of Object.entries(fileMap)) {
@@ -652,6 +756,80 @@ const routes = [
           }`,
           { status: 500 },
         );
+      }
+    },
+  },
+  {
+    pattern: new URLPattern({
+      pathname: "/api/conversations/:conversationId/files/:filename/write",
+    }),
+    handler: async (request: Request) => {
+      if (request.method !== "POST") {
+        return new Response("Method not allowed", { status: 405 });
+      }
+
+      const url = new URL(request.url);
+      const pathParts = url.pathname.split("/");
+      const conversationId = pathParts[3]; // /api/conversations/{id}/files/{filename}/write
+      const filename = pathParts[5];
+
+      if (!conversationId || !filename) {
+        return new Response("Conversation ID and filename required", {
+          status: 400,
+        });
+      }
+
+      try {
+        const { content } = await request.json();
+
+        if (content === undefined) {
+          return new Response("Content is required", { status: 400 });
+        }
+
+        // Create the conversation folder path
+        const conversationsPath = getConversationsDir();
+        const conversationFolder = `${conversationsPath}/${conversationId}`;
+
+        // Ensure conversation folder exists
+        await Deno.mkdir(conversationFolder, { recursive: true });
+
+        // Map path names to actual filenames for common cases
+        const pathMapping: { [key: string]: string } = {
+          "grader-deck": "grader-deck.md",
+          "actor-deck": "actor-deck.md",
+          "input-samples": "input-samples.jsonl",
+          "ground-truth": "ground-truth.deck.toml",
+          "notes": "notes.md",
+          "actor-data": "actor-data.jsonl",
+          "grader-base": "grader-base.deck.md",
+          "grader-base-toml": "grader-base.deck.toml",
+        };
+
+        const actualFilename = pathMapping[filename] || filename;
+        const filePath = `${conversationFolder}/${actualFilename}`;
+
+        // Write the file
+        await Deno.writeTextFile(filePath, content);
+
+        logger.info(
+          `Wrote file ${actualFilename} for conversation ${conversationId}`,
+        );
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            filename: actualFilename,
+            path: filePath,
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      } catch (error) {
+        logger.error(`Failed to write file:`, error);
+        return new Response(`Failed to write file: ${error.message}`, {
+          status: 500,
+        });
       }
     },
   },

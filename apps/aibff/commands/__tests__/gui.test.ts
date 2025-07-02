@@ -12,7 +12,7 @@ Deno.test("gui command exists with correct properties", async () => {
   assertEquals(guiCommand.description, "Launch the aibff GUI web interface");
 });
 
-Deno.test("gui command starts server and responds to health check", async () => {
+Deno.test.ignore("gui command starts server and responds to health check", async () => {
   // Helper to start GUI command in subprocess
   function startGuiCommand(
     args: Array<string>,

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { useRouter } from "../contexts/RouterContext.tsx";
 import { useGrader } from "../contexts/GraderContext.tsx";
-import { TabbedEditor } from "./TabbedEditor.tsx";
+import { FileViewer } from "./FileViewer.tsx";
 import { MessageContent } from "./MessageContent.tsx";
 import { MessageInputUI } from "./MessageInput.tsx";
 import { getLogger } from "@bolt-foundry/logger";
@@ -54,7 +54,7 @@ export function ChatWithIsograph() {
   // Use ref for immediate access to tool calls in finally block
   const pendingToolCallsRef = useRef<Map<string, ToolCall>>(new Map());
 
-  const { graderContent, updateGraderContent } = useGrader();
+  const { graderContent: _graderContent, updateGraderContent } = useGrader();
 
   // Execute tool calls
   // Function to save messages to server for persistence
@@ -120,29 +120,62 @@ Error formatting arguments: ${
     }
   };
 
-  const executeToolCall = (toolCall: ToolCall): string => {
+  const executeToolCall = async (toolCall: ToolCall): Promise<string> => {
     logger.info("executeToolCall called with:", toolCall);
     try {
-      if (toolCall.function.name === "replaceGraderDeck") {
+      if (toolCall.function.name === "replaceFileContent") {
         logger.info(
-          "Parsing arguments for replaceGraderDeck:",
+          "Parsing arguments for replaceFileContent:",
           toolCall.function.arguments,
         );
         const args = JSON.parse(toolCall.function.arguments);
         logger.info("Parsed arguments:", args);
 
-        if (args.content) {
+        if (args.path && args.content !== undefined) {
           logger.info(
-            "Updating grader content with:",
-            args.content.substring(0, 100) + "...",
+            "Writing file content to path:",
+            args.path,
+            "with content length:",
+            args.content.length,
           );
-          // Update the grader content in the context
-          updateGraderContent(args.content);
-          logger.info("Grader deck updated via tool call successfully");
-          return "Successfully updated grader deck content";
+
+          // Call the backend API to write the file
+          try {
+            const response = await fetch(
+              `/api/conversations/${conversationIdRef.current}/files/${args.path}/write`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: args.content }),
+              },
+            );
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(
+                `Failed to write file: ${response.status} ${errorText}`,
+              );
+            }
+
+            const result = await response.json();
+            logger.info("File written successfully:", result);
+
+            // For grader-deck, also update the grader context for UI display
+            if (args.path === "grader-deck") {
+              updateGraderContent(args.content);
+              logger.info("Grader deck context updated for UI display");
+            }
+
+            return `Successfully wrote content to file: ${result.filename}`;
+          } catch (error) {
+            logger.error("Failed to write file via API:", error);
+            return `Error writing file: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`;
+          }
         } else {
-          logger.warn("No content found in arguments:", args);
-          return "Error: No content found in arguments";
+          logger.warn("Missing path or content in arguments:", args);
+          return "Error: Both 'path' and 'content' parameters are required";
         }
       } else {
         logger.warn("Unknown tool call:", toolCall.function.name);
@@ -328,16 +361,14 @@ Error formatting arguments: ${
           </div>
         </div>
 
-        {/* Right panel - Tabbed Editor */}
+        {/* Right panel - File Viewer */}
         <div
           style={{
             flex: 1,
             backgroundColor: "#1f2021",
           }}
         >
-          <TabbedEditor
-            initialGraderContent={graderContent}
-            onGraderContentChange={updateGraderContent}
+          <FileViewer
             conversationId={conversationIdRef.current}
           />
         </div>
@@ -442,77 +473,6 @@ Error formatting arguments: ${
             const messageContent = content.trim();
 
             logger.info("onSendMessage called with:", messageContent);
-
-            // Handle /test command - simulate a tool call locally
-            if (messageContent.startsWith("/test")) {
-              const toolName = messageContent.slice(5).trim() ||
-                "replaceGraderDeck";
-
-              logger.info("Processing /test command:", {
-                messageContent,
-                toolName,
-              });
-
-              if (toolName === "replaceGraderDeck") {
-                // Create the user message first
-                const userMessage: Message = {
-                  id: Date.now().toString(),
-                  role: "user",
-                  content: messageContent,
-                  timestamp: new Date().toISOString(),
-                };
-
-                // Simulate a fake tool call execution
-                const fakeToolCall = {
-                  id: "test_call_123",
-                  type: "function" as const,
-                  function: {
-                    name: "replaceGraderDeck",
-                    arguments: JSON.stringify({
-                      content: `# Test Grader Deck - Generated by /test Command
-
-## Overview
-This is a test grader deck created by the /test command to verify that tool call execution works properly.
-
-## Evaluation Criteria
-- **Helpfulness**: Does the response address the customer's question?
-- **Clarity**: Is the response easy to understand?
-- **Completeness**: Does it provide all necessary information?
-
-## Grading Scale
-- **+3**: Excellent response
-- **+2**: Good response  
-- **+1**: Adequate response
-- **0**: Neutral or invalid
-- **-1**: Poor response
-- **-2**: Bad response
-- **-3**: Harmful response
-
-Generated at: ${new Date().toISOString()}`,
-                    }),
-                  },
-                };
-
-                // Execute the fake tool call immediately
-                logger.info(
-                  "Executing fake tool call:",
-                  fakeToolCall.function.name,
-                );
-                await executeToolCall(fakeToolCall);
-
-                // Add both user message and system response
-                const systemMessage: Message = {
-                  id: (Date.now() + 1).toString(),
-                  role: "assistant",
-                  content: `✅ Test tool call executed! Tool: ${toolName}`,
-                  timestamp: new Date().toISOString(),
-                };
-
-                logger.info("Adding /test messages to UI and returning early");
-                setMessages((prev) => [...prev, userMessage, systemMessage]);
-                return;
-              }
-            }
 
             const newMessage: Message = {
               id: Date.now().toString(),
@@ -862,7 +822,7 @@ Generated at: ${new Date().toISOString()}`,
                   logger.info("Executing tool call:", toolCall.function.name);
                   try {
                     // Execute the tool call and get the result
-                    const result = executeToolCall(toolCall);
+                    const result = await executeToolCall(toolCall);
 
                     // Format the tool call as XML for conversation persistence
                     const toolCallXML = formatToolCallXML(toolCall, result);
@@ -954,7 +914,7 @@ Generated at: ${new Date().toISOString()}`,
         />
       </div>
 
-      {/* Right panel - Tabbed Editor */}
+      {/* Right panel - File Viewer */}
       <div
         style={{
           flex: "1 1 50%",
@@ -962,9 +922,7 @@ Generated at: ${new Date().toISOString()}`,
           backgroundColor: "#1f2021",
         }}
       >
-        <TabbedEditor
-          initialGraderContent={graderContent}
-          onGraderContentChange={updateGraderContent}
+        <FileViewer
           conversationId={conversationIdRef.current}
         />
       </div>
