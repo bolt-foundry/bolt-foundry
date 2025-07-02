@@ -72,12 +72,30 @@ as part of the 2025-06-25 design system migration.
     usage
   - **TypeScript-first**: Strong typing with proper form data integration
   - **Complete accessibility**: ARIA attributes and semantic HTML
+- [x] **BfDsList** and **BfDsListItem** components with:
+  - **BfDsList**: Simple `<ul>` wrapper with optional className
+  - **BfDsListItem**: Smart list item that renders as `<li>` or `<button>` based
+    on onClick prop
+  - **States**: active, disabled, clickable (auto-detected from onClick)
+  - **TypeScript safety**: Proper prop typing
+  - **Semantic HTML**: Uses appropriate element types
+- [x] **BfDsSelect**, **BfDsCheckbox**, **BfDsRadio**, and **BfDsToggle**
+      components with:
+  - **BfDsSelect**: Dropdown selector with form integration and disabled options
+  - **BfDsCheckbox**: Checkbox with keyboard navigation and ARIA support
+  - **BfDsRadio**: Radio button groups with flexible layouts and sizes
+  - **BfDsToggle**: Toggle switch with smooth animations and multiple sizes
+  - **Full form integration**: All components work with BfDsForm context
+  - **Accessibility**: ARIA attributes, keyboard navigation, semantic HTML
+  - **Multiple states**: disabled, required, checked/unchecked variants
+  - **TypeScript-first**: Strong typing with proper prop interfaces
 - [x] CSS variables system for theming with additional form states (error,
       success, focus)
 - [x] Example component pattern (`Component.Example`)
-- [x] Demo page setup with Button, Icon, Tabs, and Form examples
+- [x] Demo page setup with Button, Icon, Tabs, Form, List, Select, Checkbox,
+      Radio, and Toggle examples
 - [x] CSS moved to static folder (per system requirements)
-- [x] Main index.ts exports with all form components
+- [x] Main index.ts exports with all components
 - [x] Icon library moved to `lib/icons.ts`
 
 ### 🔄 In Progress
@@ -90,11 +108,25 @@ as part of the 2025-06-25 design system migration.
   - [x] ~~Input/TextField~~ ✅ **Completed** (BfDsInput with dual-mode
         operation)
   - [x] ~~TextArea~~ ✅ **Completed** (BfDsTextArea with resize options)
-  - [ ] Select/Dropdown
-  - [ ] Checkbox
-  - [ ] Radio
+  - [x] ~~List/ListItem~~ ✅ **Completed** (BfDsList and BfDsListItem with basic
+        states)
+  - [x] ~~Select/Dropdown~~ ✅ **Completed** (BfDsSelect with form integration)
+  - [x] ~~Checkbox~~ ✅ **Completed** (BfDsCheckbox with accessibility)
+  - [x] ~~Radio~~ ✅ **Completed** (BfDsRadio with flexible layouts)
+  - [x] ~~Toggle~~ ✅ **Completed** (BfDsToggle with smooth animations)
   - [ ] Modal
   - [ ] Toast/Notification
+- [ ] Enhanced List components:
+  - [ ] Icon support in BfDsListItem
+  - [ ] Multiple layout orientations (horizontal/vertical)
+  - [ ] Nested list support
+  - [ ] Drag and drop functionality
+  - [ ] Keyboard navigation (arrow keys)
+  - [ ] Multi-select capabilities
+  - [ ] Search/filter integration
+  - [ ] Virtual scrolling for large lists
+  - [ ] Sortable list items
+  - [ ] Expandable/collapsible list sections
 - [ ] Layout components:
   - [ ] Container
   - [ ] Grid
@@ -116,7 +148,13 @@ apps/bfDs/
 │   ├── BfDsForm.tsx (with .Example and context provider)
 │   ├── BfDsInput.tsx (with .Example and dual-mode operation)
 │   ├── BfDsTextArea.tsx (with .Example and resize options)
-│   └── BfDsFormSubmitButton.tsx (with .Example and form integration)
+│   ├── BfDsFormSubmitButton.tsx (with .Example and form integration)
+│   ├── BfDsList.tsx (with .Example)
+│   ├── BfDsListItem.tsx (with .Example)
+│   ├── BfDsSelect.tsx (with .Example and form integration)
+│   ├── BfDsCheckbox.tsx (with .Example and accessibility)
+│   ├── BfDsRadio.tsx (with .Example and flexible layouts)
+│   └── BfDsToggle.tsx (with .Example and animations)
 ├── lib/
 │   └── icons.ts (80+ icon definitions)
 ├── demo/
@@ -186,6 +224,19 @@ CSS: static/bfDsStyle.css (comprehensive styling with form states)
 - ✅ **Comprehensive examples** demonstrating both standalone and form context
   usage
 - ✅ **Production ready** with successful PRs submitted and integrated
+
+## Recent Achievements (2025-07-02)
+
+- ✅ **Four additional form components completed** expanding the design system
+- ✅ **BfDsSelect component** with dropdown functionality and form integration
+- ✅ **BfDsCheckbox component** with keyboard navigation and ARIA support
+- ✅ **BfDsRadio component** with flexible layouts, sizes, and fieldset support
+- ✅ **BfDsToggle component** with smooth animations and multiple sizes
+- ✅ **Enhanced demo integration** showcasing all new components
+- ✅ **Comprehensive CSS styling** for all form input states and interactions
+- ✅ **Full TypeScript typing** with proper prop interfaces and option types
+- ✅ **Accessibility compliance** with semantic HTML and keyboard navigation
+- ✅ **Form context integration** for all components with automatic detection
 
 ## Notes
 
