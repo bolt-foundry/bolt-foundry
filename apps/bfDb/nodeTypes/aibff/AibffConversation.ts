@@ -97,20 +97,18 @@ export class AibffConversation {
 
   // Persistence methods
   async save(): Promise<void> {
-    try {
-      await Deno.mkdir(this.conversationsDir, { recursive: true });
-    } catch {
-      // Directory might already exist
-    }
+    await this.ensureConversationDirectory();
 
     const content = this.toMarkdown();
-    const filename = `${this.conversationsDir}/${this.metadata.id}.md`;
+    const filename =
+      `${this.getConversationDirectory()}/${this.metadata.id}.md`;
     await Deno.writeTextFile(filename, content);
     logger.debug(`Saved conversation ${this.metadata.id}`);
   }
 
   async loadFromFile(): Promise<void> {
-    const filename = `${this.conversationsDir}/${this.metadata.id}.md`;
+    const filename =
+      `${this.getConversationDirectory()}/${this.metadata.id}.md`;
 
     try {
       const markdown = await Deno.readTextFile(filename);
@@ -126,7 +124,8 @@ export class AibffConversation {
 
   async exists(): Promise<boolean> {
     try {
-      const filename = `${this.conversationsDir}/${this.metadata.id}.md`;
+      const filename =
+        `${this.getConversationDirectory()}/${this.metadata.id}.md`;
       await Deno.stat(filename);
       return true;
     } catch {
@@ -261,5 +260,111 @@ ${msg.content}`;
   // Static method to get conversations directory
   static getConversationsDirectory(): string {
     return AibffConversation.conversationsDir;
+  }
+
+  // Workflow file methods
+  private getConversationDirectory(): string {
+    return `${this.conversationsDir}/${this.metadata.id}`;
+  }
+
+  private getWorkflowFilePath(filename: string): string {
+    return `${this.getConversationDirectory()}/${filename}`;
+  }
+
+  private async ensureConversationDirectory(): Promise<void> {
+    try {
+      await Deno.mkdir(this.getConversationDirectory(), { recursive: true });
+    } catch {
+      // Directory might already exist
+    }
+  }
+
+  private async readWorkflowFile(filename: string): Promise<string> {
+    try {
+      const filePath = this.getWorkflowFilePath(filename);
+      return await Deno.readTextFile(filePath);
+    } catch (error) {
+      if (error instanceof Deno.errors.NotFound) {
+        return "";
+      }
+      throw error;
+    }
+  }
+
+  private async writeWorkflowFile(
+    filename: string,
+    content: string,
+  ): Promise<void> {
+    await this.ensureConversationDirectory();
+    const filePath = this.getWorkflowFilePath(filename);
+    await Deno.writeTextFile(filePath, content);
+  }
+
+  async getInputSamples(): Promise<string> {
+    return await this.readWorkflowFile("input-samples.jsonl");
+  }
+
+  async setInputSamples(content: string): Promise<void> {
+    await this.writeWorkflowFile("input-samples.jsonl", content);
+  }
+
+  async getSystemPrompt(): Promise<string> {
+    return await this.readWorkflowFile("system-prompt.md");
+  }
+
+  async setSystemPrompt(content: string): Promise<void> {
+    await this.writeWorkflowFile("system-prompt.md", content);
+  }
+
+  async getOutputSamples(): Promise<string> {
+    return await this.readWorkflowFile("output-samples.jsonl");
+  }
+
+  async setOutputSamples(content: string): Promise<void> {
+    await this.writeWorkflowFile("output-samples.jsonl", content);
+  }
+
+  async getEvalPrompt(): Promise<string> {
+    return await this.readWorkflowFile("eval-prompt.md");
+  }
+
+  async setEvalPrompt(content: string): Promise<void> {
+    await this.writeWorkflowFile("eval-prompt.md", content);
+  }
+
+  async getEvalOutput(): Promise<string> {
+    return await this.readWorkflowFile("eval-output.json");
+  }
+
+  async setEvalOutput(content: string): Promise<void> {
+    await this.writeWorkflowFile("eval-output.json", content);
+  }
+
+  async listFiles(): Promise<
+    Array<{ name: string; size: number; modified: string }>
+  > {
+    try {
+      await this.ensureConversationDirectory();
+      const files: Array<{ name: string; size: number; modified: string }> = [];
+
+      for await (const entry of Deno.readDir(this.getConversationDirectory())) {
+        if (entry.isFile) {
+          const filePath = this.getWorkflowFilePath(entry.name);
+          const stat = await Deno.stat(filePath);
+          files.push({
+            name: entry.name,
+            size: stat.size,
+            modified: stat.mtime?.toISOString() || new Date().toISOString(),
+          });
+        }
+      }
+
+      return files;
+    } catch (error) {
+      if (error instanceof Deno.errors.NotFound) {
+        return [];
+      }
+      throw error;
+    }
   }
 }
