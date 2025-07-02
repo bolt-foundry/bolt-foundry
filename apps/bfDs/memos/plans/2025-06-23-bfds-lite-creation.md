@@ -187,6 +187,16 @@ CSS: static/bfDsStyle.css (comprehensive styling with form states)
    and adapt between standalone and form-integrated modes
 10. **Form state management**: Centralized form context with TypeScript-safe
     data handling and error management
+11. **JSDoc documentation style**: Comprehensive inline documentation using
+    JSDoc comments for all component props with organized structure for form
+    components:
+    - **Form context props**: Props used for form integration (`name`)
+    - **Standalone props**: Props for controlled component usage (`value`,
+      `onChange`)
+    - **Common props**: Shared props for styling and behavior (`label`,
+      `disabled`, etc.)
+    - **Developer experience**: Documentation appears in VS Code IntelliSense
+      and TypeScript hover tooltips without runtime overhead or build complexity
 
 ## Next Steps
 
