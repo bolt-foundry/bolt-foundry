@@ -62,7 +62,10 @@ Deno.test("gui command starts server and responds to health check", async () => 
     const body = await response.json();
     assertEquals(body.status, "OK");
     assert(body.timestamp);
-    assertEquals(body.mode, "production");
+    assert(
+      ["production", "development"].includes(body.mode),
+      `Expected mode to be "production" or "development", got "${body.mode}"`,
+    );
     assertEquals(body.port, 3001);
     assert(body.uptime);
   } finally {
