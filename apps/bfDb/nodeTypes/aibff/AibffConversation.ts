@@ -103,7 +103,10 @@ export class AibffConversation {
       // Directory might already exist
     }
 
-    const content = this.toMarkdown();
+    // Update the timestamp before saving
+    this.metadata.updated_at = new Date().toISOString();
+
+    const content = await this.toMarkdown();
     const filename = `${this.conversationsDir}/${this.metadata.id}.md`;
     await Deno.writeTextFile(filename, content);
     logger.debug(`Saved conversation ${this.metadata.id}`);
@@ -134,12 +137,53 @@ export class AibffConversation {
     }
   }
 
+  // Get list of files in the conversation directory (excluding the conversation.md file itself)
+  private async getConversationFiles(): Promise<Array<string>> {
+    // Check if we're being used by the GUI (which uses subdirectories)
+    // vs the regular conversation system (which uses .md files)
+    const guiConversationDir = `${this.conversationsDir}/${this.metadata.id}`;
+
+    try {
+      const files: Array<string> = [];
+
+      // Try to read the GUI-style subdirectory first
+      try {
+        for await (const dirEntry of Deno.readDir(guiConversationDir)) {
+          if (dirEntry.isFile && dirEntry.name !== "conversation.md") {
+            files.push(dirEntry.name);
+          }
+        }
+      } catch (error) {
+        if (!(error instanceof Deno.errors.NotFound)) {
+          logger.warn(
+            `Failed to read GUI conversation directory ${guiConversationDir}:`,
+            error,
+          );
+        }
+        // If GUI directory doesn't exist, that's fine - return empty array
+      }
+
+      return files.sort(); // Sort alphabetically for consistency
+    } catch (error) {
+      logger.warn(
+        `Failed to get conversation files for ${this.metadata.id}:`,
+        error,
+      );
+      return [];
+    }
+  }
+
   // Format conversion
-  private toMarkdown(): string {
+  private async toMarkdown(): Promise<string> {
+    // Get list of files in the conversation directory
+    const files = await this.getConversationFiles();
+    const filesArray = files.map((f) => `"${f}"`).join(", ");
+
     const frontmatter = `+++
 id = "${this.metadata.id}"
 created_at = "${this.metadata.created_at}"
 updated_at = "${this.metadata.updated_at}"
+files = [${filesArray}]
 +++`;
 
     const markdownContent = this.messages.map((msg) => {

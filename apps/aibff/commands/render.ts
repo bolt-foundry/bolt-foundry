@@ -507,12 +507,31 @@ export const renderCommand: Command = {
   name: "render",
   description: "Render a deck file to see the generated prompt structure",
   run: async (args: Array<string>) => {
-    if (args.length === 0) {
-      ui.printLn("Usage: aibff render <deck.md>");
+    // Parse arguments
+    let deckPath = "";
+    let format = "openai";
+
+    for (let i = 0; i < args.length; i++) {
+      if (args[i] === "--help") {
+        ui.printLn("Usage: aibff render <deck.md> [--format openai|markdown]");
+        Deno.exit(0);
+      } else if (args[i] === "--format" && i + 1 < args.length) {
+        format = args[i + 1];
+        i++; // Skip the format value
+      } else if (!deckPath && !args[i].startsWith("--")) {
+        deckPath = args[i];
+      }
+    }
+
+    if (!deckPath) {
+      ui.printLn("Usage: aibff render <deck.md> [--format openai|markdown]");
       Deno.exit(1);
     }
 
-    const deckPath = args[0];
+    if (format !== "openai" && format !== "markdown") {
+      ui.printErr("Error: --format must be 'openai' or 'markdown'");
+      Deno.exit(1);
+    }
 
     try {
       const deckContent = await Deno.readTextFile(deckPath);
@@ -542,7 +561,20 @@ export const renderCommand: Command = {
       // Render the deck with context injection
       const openAiRequest = renderDeck(deckPath, contextValues, {});
 
-      ui.printLn(JSON.stringify(openAiRequest, null, 2));
+      if (format === "openai") {
+        ui.printLn(JSON.stringify(openAiRequest, null, 2));
+      } else if (format === "markdown") {
+        // Extract the system message content for markdown format
+        const systemMessage = openAiRequest.messages.find((m) =>
+          m.role === "system"
+        );
+        if (systemMessage) {
+          ui.printLn(systemMessage.content);
+        } else {
+          ui.printErr("Error: No system message found in rendered deck");
+          Deno.exit(1);
+        }
+      }
     } catch (error) {
       if (error instanceof Deno.errors.NotFound) {
         ui.printErr(`Error: File not found: ${deckPath}`);
