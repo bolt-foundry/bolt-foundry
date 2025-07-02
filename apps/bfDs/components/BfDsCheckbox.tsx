@@ -4,13 +4,26 @@ import { BfDsIcon } from "./BfDsIcon.tsx";
 import { BfDsFormSubmitButton } from "./BfDsFormSubmitButton.tsx";
 
 export type BfDsCheckboxProps = {
+  // Form context props
+  /** Form field name for data binding */
   name?: string;
+
+  // Standalone props
+  /** Whether the checkbox is checked */
   checked?: boolean;
+  /** Callback when check state changes */
   onChange?: (checked: boolean) => void;
+
+  // Common props
+  /** Label text displayed next to checkbox */
   label?: string;
-  disabled?: boolean;
+  /** Required for validation */
   required?: boolean;
+  /** Disables component */
+  disabled?: boolean;
+  /** Additional CSS classes */
   className?: string;
+  /** Element ID */
   id?: string;
 };
 

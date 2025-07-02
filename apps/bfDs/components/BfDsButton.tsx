@@ -9,14 +9,23 @@ export type BfDsButtonVariant =
   | "ghost";
 
 export type BfDsButtonProps = {
+  /** Button content text or elements */
   children?: React.ReactNode;
+  /** Size variant for button */
   size?: BfDsButtonSize;
+  /** Visual style variant */
   variant?: BfDsButtonVariant;
+  /** Disables button interaction */
   disabled?: boolean;
+  /** Click event handler */
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  /** Additional CSS classes */
   className?: string;
+  /** Icon name or custom icon element */
   icon?: BfDsIconName | React.ReactNode;
+  /** Position of icon relative to text */
   iconPosition?: "left" | "right";
+  /** When true, shows only icon without text */
   iconOnly?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 

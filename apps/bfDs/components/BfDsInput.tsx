@@ -5,20 +5,31 @@ export type BfDsInputState = "default" | "error" | "success" | "disabled";
 
 export type BfDsInputProps = {
   // Form context props
+  /** Form field name for data binding */
   name?: string;
 
   // Standalone props
+  /** Current input value */
   value?: string;
+  /** Change event handler */
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 
   // Common props
+  /** Label text displayed above input */
   label?: string;
+  /** Placeholder text when empty */
   placeholder?: string;
+  /** Required for validation */
   required?: boolean;
+  /** Visual state of the input */
   state?: BfDsInputState;
+  /** Error message to display */
   errorMessage?: string;
+  /** Success message to display */
   successMessage?: string;
+  /** Help text displayed below input */
   helpText?: string;
+  /** Additional CSS classes */
   className?: string;
 } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange">;
 

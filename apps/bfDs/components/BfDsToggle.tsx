@@ -5,15 +5,29 @@ import { BfDsFormSubmitButton } from "./BfDsFormSubmitButton.tsx";
 export type BfDsToggleSize = "small" | "medium" | "large";
 
 export type BfDsToggleProps = {
+  // Form context props
+  /** Form field name for data binding */
   name?: string;
+
+  // Standalone props
+  /** Whether the toggle is on/off */
   checked?: boolean;
+  /** Callback when toggle state changes */
   onChange?: (checked: boolean) => void;
+
+  // Common props
+  /** Label text displayed next to toggle */
   label?: string;
-  disabled?: boolean;
+  /** Required for validation */
   required?: boolean;
-  className?: string;
-  id?: string;
+  /** Disables component */
+  disabled?: boolean;
+  /** Size variant for toggle switch */
   size?: BfDsToggleSize;
+  /** Additional CSS classes */
+  className?: string;
+  /** Element ID */
+  id?: string;
 };
 
 export function BfDsToggle({

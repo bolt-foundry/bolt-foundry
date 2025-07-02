@@ -2,21 +2,34 @@ import * as React from "react";
 import { BfDsIcon, type BfDsIconName } from "./BfDsIcon.tsx";
 
 export type BfDsTabItem = {
+  /** Unique identifier for the tab */
   id: string;
+  /** Display text for the tab */
   label: string;
+  /** Content to show when tab is active */
   content: React.ReactNode;
+  /** Optional icon to display in tab */
   icon?: BfDsIconName;
+  /** When true, tab cannot be selected */
   disabled?: boolean;
+  /** Optional nested subtabs */
   subtabs?: Array<BfDsTabItem>;
 };
 
 export type BfDsTabsProps = {
+  /** Array of tab items to display */
   tabs: Array<BfDsTabItem>;
+  /** Currently active tab ID (controlled) */
   activeTab?: string;
+  /** Default active tab ID (uncontrolled) */
   defaultActiveTab?: string;
+  /** Callback when tab selection changes */
   onTabChange?: (tabId: string) => void;
+  /** Additional CSS classes */
   className?: string;
+  /** Visual style variant */
   variant?: "primary" | "secondary";
+  /** Size variant for tabs */
   size?: "small" | "medium" | "large";
 };
 

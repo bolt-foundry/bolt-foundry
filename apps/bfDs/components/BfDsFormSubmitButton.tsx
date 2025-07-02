@@ -4,7 +4,9 @@ import { BfDsButton, type BfDsButtonProps } from "./BfDsButton.tsx";
 export type BfDsFormSubmitButtonProps =
   & Omit<BfDsButtonProps, "type" | "onClick">
   & {
+    /** Button text (defaults to "Submit") */
     text?: string;
+    /** Optional click handler called before form submission */
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   };
 

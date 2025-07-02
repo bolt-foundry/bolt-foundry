@@ -30,8 +30,11 @@ const BfDsFormContext = createContext<BfDsFormValue<unknown> | null>(null);
 type BfDsFormProps<T = Record<string, string | number | boolean | null>> =
   & React.PropsWithChildren<BfDsFormCallbacks<T>>
   & {
+    /** Initial form data values */
     initialData: T;
+    /** Additional CSS classes */
     className?: string;
+    /** Test ID for testing purposes */
     testId?: string;
   };
 
