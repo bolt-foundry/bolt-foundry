@@ -2,6 +2,11 @@
   --bfds-primary: #ffd700;
   --bfds-primary-hover: #e6c200;
   --bfds-primary-active: #ccad00;
+  --bfds-primary-08: rgba(255, 215, 0, 0.08);
+  --bfds-primary-06: rgba(255, 215, 0, 0.06);
+  --bfds-primary-04: rgba(255, 215, 0, 0.04);
+  --bfds-primary-02: rgba(255, 215, 0, 0.02);
+  --bfds-primary-01: rgba(255, 215, 0, 0.01);
 
   --bfds-background: #141516;
   --bfds-background-hover: #1f2021;
@@ -28,6 +33,53 @@
   
   --bfds-focus: #3b82f6;
   --bfds-focus-outline: rgba(59, 130, 246, 0.3);
+}
+
+/* List */
+
+.bfds-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background-color: var(--bfds-background);
+}
+
+.bfds-list-item {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--bfds-text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease-in-out;
+  cursor: default;
+}
+
+.bfds-list-item--clickable {
+  cursor: pointer;
+}
+
+.bfds-list-item--clickable:hover:not(.bfds-list-item--disabled):not(.bfds-list-item--active) {
+  background-color: var(--bfds-primary-08);
+}
+
+.bfds-list-item--active {
+  background-color: var(--bfds-primary);
+  color: var(--bfds-background);
+  border-left-color: var(--bfds-primary);
+  font-weight: 500;
+}
+
+.bfds-list-item--disabled {
+  color: var(--bfds-text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Icon */

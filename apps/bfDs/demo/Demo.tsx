@@ -6,6 +6,8 @@ import { BfDsForm } from "../components/BfDsForm.tsx";
 import { BfDsInput } from "../components/BfDsInput.tsx";
 import { BfDsTextArea } from "../components/BfDsTextArea.tsx";
 import { BfDsFormSubmitButton } from "../components/BfDsFormSubmitButton.tsx";
+import { BfDsList } from "../components/BfDsList.tsx";
+import { BfDsListItem } from "../components/BfDsListItem.tsx";
 
 type ComponentSection = {
   id: string;
@@ -64,6 +66,20 @@ const componentSections: Array<ComponentSection> = [
     description: "Form submission buttons with automatic integration",
     component: BfDsFormSubmitButton.Example,
     category: "Form",
+  },
+  {
+    id: "list",
+    name: "List",
+    description: "Simple, clean lists with navigation patterns",
+    component: BfDsList.Example,
+    category: "Navigation",
+  },
+  {
+    id: "list-item",
+    name: "List Item",
+    description: "Individual list items with states and interactions",
+    component: BfDsListItem.Example,
+    category: "Navigation",
   },
 ];
 
@@ -138,56 +154,29 @@ export function BfDsDemo() {
             >
               {categoryName}
             </h3>
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                type="button"
-                onClick={() => setActiveSection(section.id)}
-                style={{
-                  width: "100%",
-                  padding: "12px 24px",
-                  border: "none",
-                  background: activeSection === section.id
-                    ? "var(--bfds-primary)"
-                    : "transparent",
-                  color: activeSection === section.id
-                    ? "var(--bfds-background)"
-                    : "var(--bfds-text)",
-                  textAlign: "left",
-                  cursor: "pointer",
-                  borderLeft: activeSection === section.id
-                    ? "3px solid var(--bfds-primary)"
-                    : "3px solid transparent",
-                  transition: "all 0.2s ease-in-out",
-                  fontSize: "14px",
-                  fontWeight: activeSection === section.id ? "500" : "400",
-                }}
-                onMouseEnter={(e) => {
-                  if (activeSection !== section.id) {
-                    e.currentTarget.style.backgroundColor =
-                      "var(--bfds-background-active)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (activeSection !== section.id) {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }
-                }}
-              >
-                <div style={{ marginBottom: "4px" }}>{section.name}</div>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: activeSection === section.id
-                      ? "var(--bfds-background)"
-                      : "var(--bfds-text-secondary)",
-                    lineHeight: "1.3",
-                  }}
+            <BfDsList>
+              {sections.map((section) => (
+                <BfDsListItem
+                  key={section.id}
+                  active={activeSection === section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  className="demo-sidebar-item"
                 >
-                  {section.description}
-                </div>
-              </button>
-            ))}
+                  <div style={{ marginBottom: "4px" }}>{section.name}</div>
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      color: activeSection === section.id
+                        ? "var(--bfds-background)"
+                        : "var(--bfds-text-secondary)",
+                      lineHeight: "1.3",
+                    }}
+                  >
+                    {section.description}
+                  </div>
+                </BfDsListItem>
+              ))}
+            </BfDsList>
           </div>
         ))}
       </nav>
