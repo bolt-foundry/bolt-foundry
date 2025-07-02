@@ -135,6 +135,7 @@
   },
   "workspace": [
     "apps/aibff/gui",
+    "apps/boltFoundry.com",
     "packages/bolt-foundry",
     "packages/logger",
     "packages/get-configuration-var"
