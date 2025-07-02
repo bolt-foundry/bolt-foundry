@@ -66,7 +66,9 @@ export async function setupE2ETest(options: {
   baseUrl?: string;
   headless?: boolean;
 } = {}): Promise<E2ETestContext> {
-  const baseUrl = options.baseUrl || "http://localhost:8000";
+  const baseUrl = options.baseUrl ||
+    getConfigurationVariable("BF_E2E_BASE_URL") ||
+    "http://localhost:8000";
 
   // Force headless mode for consistency and performance
   // Only allow override via BF_E2E_HEADLESS environment variable

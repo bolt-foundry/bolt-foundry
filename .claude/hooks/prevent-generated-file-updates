@@ -55,6 +55,9 @@ GENERATED_PATTERNS=(
     # Generated assets
     "generated-icon.png"
     
+    # Claude commands (BFT wrapper commands)
+    ".claude/commands/bft/**"
+    
     # Test artifacts
     "**/screenshots/**"
     "results.html"
