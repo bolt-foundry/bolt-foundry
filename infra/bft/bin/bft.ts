@@ -98,7 +98,6 @@ async function main(): Promise<number> {
   }
 
   // Handle "unsafe" subcommand
-  let isUnsafeMode = false;
   let commandName: string;
   let commandArgs: Array<string>;
 
@@ -108,7 +107,6 @@ async function main(): Promise<number> {
       ui.error("The unsafe flag allows running AI-unsafe commands");
       return 1;
     }
-    isUnsafeMode = true;
     commandName = args[1];
     commandArgs = args.slice(2);
   } else {
@@ -125,31 +123,7 @@ async function main(): Promise<number> {
     return 1;
   }
 
-  // Check AI safety
-  let isCommandSafe = true;
-  if (typeof task.aiSafe === "boolean") {
-    isCommandSafe = task.aiSafe;
-  } else if (typeof task.aiSafe === "function") {
-    isCommandSafe = task.aiSafe(commandArgs);
-  } else {
-    isCommandSafe = true; // default is safe
-  }
-
-  if (!isCommandSafe && !isUnsafeMode) {
-    ui.error(
-      `❌ Command '${commandName}' is not AI-safe and requires the unsafe flag`,
-    );
-    ui.error("");
-    ui.error(
-      "This command can potentially make destructive changes to your system.",
-    );
-    ui.error("If you understand the risks and want to proceed, use:");
-    ui.error("");
-    ui.error(`  bft unsafe ${commandName} ${commandArgs.join(" ")}`);
-    ui.error("");
-    ui.error("Available AI-safe commands can be listed with: bft help");
-    return 1;
-  }
+  // AI safety is now handled by hooks, not by BFT framework
 
   // Execute the command
   try {

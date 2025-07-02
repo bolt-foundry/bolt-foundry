@@ -8,18 +8,18 @@ symlink to this file for compatibility with Claude Code (claude.ai/code).
 - **Project**: Bolt Foundry - Open-source platform for reliable LLM systems
 - **Runtime**: Deno 2.x with TypeScript
 - **Source Control**: Sapling SCM (not Git)
-- **Task Runner**: `bff <command>` (Bolt Foundry Friend)
+- **Task Runner**: `bft <command>` (Bolt Foundry Tool)
 - **Package Management**: npm (NOT deno install - see below)
 
 ## Essential Commands
 
 ```bash
-bff build              # Full project build
-bff test               # Run tests
-bff e2e --build        # Run end-to-end tests
-bff ci                 # Full CI pipeline
-bff devTools           # Start development environment
-bff ai                 # List AI-safe commands
+bft build              # Full project build
+bft test               # Run tests
+bft e2e --build        # Run end-to-end tests
+bft ci                 # Full CI pipeline
+bft devTools           # Start development environment
+bft ai                 # List AI-safe commands
 ```
 
 ## Key Resources
@@ -47,7 +47,7 @@ bff ai                 # List AI-safe commands
 1. **No MDX** - Use plain Markdown (`.md`) only
 2. **No direct env access** - Use `packages/get-configuration-var/`
 3. **Test first** - Follow TDD practices in testing card
-4. **Use BFF commands** - Prefer `bff` over direct commands
+4. **Use BFT commands** - Prefer `bft` over direct commands
 5. **TypeScript array syntax** - Always use `Array<T>` instead of `T[]` for
    array types (e.g., `Array<BfDsLiteTabItem>` not `BfDsLiteTabItem[]`)
 
