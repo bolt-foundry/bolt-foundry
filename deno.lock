@@ -69,7 +69,7 @@
     "jsr:@std/yaml@^1.0.5": "1.0.8",
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
-    "npm:@anthropic-ai/claude-code@^1.0.25": "1.0.31",
+    "npm:@anthropic-ai/claude-code@^1.0.38": "1.0.38",
     "npm:@babel/preset-react@^7.27.1": "7.27.1_@babel+core@7.27.4",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.5_vite@6.3.5__@types+node@22.15.33__picomatch@4.0.2_@types+node@22.15.33",
     "npm:@hexagon/base64@^1.1.27": "1.1.28",
@@ -107,10 +107,12 @@
     "npm:@types/react-dom@^19.0.4": "19.1.6_@types+react@19.1.8",
     "npm:@types/react@19": "19.1.8",
     "npm:@types/react@^19.0.10": "19.1.8",
+    "npm:@vitejs/plugin-react@^4.3.0": "4.6.0_vite@6.3.5__@types+node@22.15.33__picomatch@4.0.2_@babel+core@7.27.4_@types+node@22.15.33",
     "npm:@vitejs/plugin-react@^4.3.4": "4.6.0_vite@6.3.5__@types+node@22.15.33__picomatch@4.0.2_@babel+core@7.27.4_@types+node@22.15.33",
     "npm:@vitejs/plugin-react@^4.6.0": "4.6.0_vite@6.3.5__@types+node@22.15.33__picomatch@4.0.2_@babel+core@7.27.4_@types+node@22.15.33",
     "npm:assemblyai@^4.9.0": "4.13.3",
     "npm:chalk@^5.4.1": "5.4.1",
+    "npm:claude@~0.1.1": "0.1.2",
     "npm:discord.js@^14.18.0": "14.20.0",
     "npm:esbuild@~0.24.2": "0.24.2",
     "npm:graphql-relay@~0.10.2": "0.10.2_graphql@16.11.0",
@@ -137,6 +139,7 @@
     "npm:remark@^15.0.1": "15.0.1",
     "npm:vite@*": "6.3.5_@types+node@22.15.33_picomatch@4.0.2",
     "npm:vite@^6.1.1": "6.3.5_@types+node@22.15.33_picomatch@4.0.2",
+    "npm:vite@^6.3.1": "6.3.5_@types+node@22.15.33_picomatch@4.0.2",
     "npm:zod@3": "3.25.67",
     "npm:zod@^3.24.1": "3.25.67"
   },
@@ -416,8 +419,8 @@
         "@jridgewell/trace-mapping"
       ]
     },
-    "@anthropic-ai/claude-code@1.0.31": {
-      "integrity": "sha512-prn3DEIBm5ALgCjp0sCcXwNbfBR5w98bEOXQbWViow/3BwkTgW784V8i0S/kfIWDVorz0o4cqR5D0fB4hbjNIg==",
+    "@anthropic-ai/claude-code@1.0.38": {
+      "integrity": "sha512-hPZbJCt7O8T872wbCXGiwF210DzMBo/k3EVKB6EZQB10b73ZQIEflAWGTC2ZvBcMp79qAR4F6c82V0+Cc6o0sg==",
       "optionalDependencies": [
         "@img/sharp-darwin-arm64",
         "@img/sharp-darwin-x64",
@@ -2326,6 +2329,10 @@
         "mitt",
         "zod"
       ]
+    },
+    "claude@0.1.2": {
+      "integrity": "sha512-Qjrrs+G1pwovbIgGh5R1Ni4Al79AfpbkvfonpHH0yj86cfOq3AoAzNbEeD9TQ980hrog8TM0vh1CNn+7uf/zYA==",
+      "deprecated": true
     },
     "cliui@8.0.1": {
       "integrity": "sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==",
@@ -4986,7 +4993,7 @@
     ],
     "packageJson": {
       "dependencies": [
-        "npm:@anthropic-ai/claude-code@^1.0.25",
+        "npm:@anthropic-ai/claude-code@^1.0.38",
         "npm:@babel/preset-react@^7.27.1",
         "npm:@isograph/babel-plugin@^0.0.0-main-1fad6d74",
         "npm:@isograph/compiler@0.0.0-main-1fad6d74",
