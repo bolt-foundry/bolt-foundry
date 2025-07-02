@@ -66,6 +66,7 @@ async function getValidationTasks(
 
   // Add validation tasks based on what changed
   if (hasCodeFiles) {
+    tasks.push({ name: "Format", command: ["bft", "format"] });
     tasks.push({ name: "Lint", command: ["bft", "lint"] });
   }
 
