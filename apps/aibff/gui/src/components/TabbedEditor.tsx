@@ -7,11 +7,11 @@ const logger = getLogger(import.meta);
 
 type TabType =
   | "inputSamples"
-  | "actor"
-  | "grader"
-  | "groundTruth"
-  | "notes"
-  | "debug";
+  | "runPrompt"
+  | "outputSamples"
+  | "calibrate"
+  | "fix"
+  | "edit";
 
 interface TabbedEditorProps {
   initialGraderContent?: string;
@@ -25,18 +25,19 @@ export function TabbedEditor(
 ) {
   const [activeTab, setActiveTab] = useState<TabType>("inputSamples");
   const [inputSamplesContent, setInputSamplesContent] = useState("");
-  const [actorContent, setActorContent] = useState("");
-  const [graderContent, setGraderContent] = useState(initialGraderContent);
-  const [groundTruthContent, setGroundTruthContent] = useState("");
-  const [notesContent, setNotesContent] = useState("");
+  const [runPromptContent, setRunPromptContent] = useState("");
+  const [outputSamplesContent, setOutputSamplesContent] = useState("");
+  const [calibrateContent, setCalibrateContent] = useState("");
+  const [fixContent, setFixContent] = useState("");
+  const [editContent, setEditContent] = useState(initialGraderContent);
   const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "unsaved">(
     "saved",
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Update grader content when initialGraderContent changes
+  // Update edit content when initialGraderContent changes
   useEffect(() => {
-    setGraderContent(initialGraderContent);
+    setEditContent(initialGraderContent);
   }, [initialGraderContent]);
 
   // Load saved tab contents when conversation changes
@@ -56,12 +57,11 @@ export function TabbedEditor(
           if (savedData.inputSamples) {
             setInputSamplesContent(savedData.inputSamples);
           }
-          if (savedData.actorDeck) setActorContent(savedData.actorDeck);
-          if (savedData.graderDeck) setGraderContent(savedData.graderDeck);
-          if (savedData.groundTruth) {
-            setGroundTruthContent(savedData.groundTruth);
-          }
-          if (savedData.notes) setNotesContent(savedData.notes);
+          if (savedData.runPrompt) setRunPromptContent(savedData.runPrompt);
+          if (savedData.outputSamples) setOutputSamplesContent(savedData.outputSamples);
+          if (savedData.calibrate) setCalibrateContent(savedData.calibrate);
+          if (savedData.fix) setFixContent(savedData.fix);
+          if (savedData.edit) setEditContent(savedData.edit);
 
           logger.debug(
             "Loaded saved tab contents for conversation:",
@@ -96,10 +96,11 @@ export function TabbedEditor(
     }
   }, [
     inputSamplesContent,
-    actorContent,
-    graderContent,
-    groundTruthContent,
-    notesContent,
+    runPromptContent,
+    outputSamplesContent,
+    calibrateContent,
+    fixContent,
+    editContent,
     activeTab,
   ]);
 
@@ -111,30 +112,34 @@ export function TabbedEditor(
     markUnsavedAndAutoSave();
   };
 
-  const handleActorChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleRunPromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
-    setActorContent(newContent);
+    setRunPromptContent(newContent);
     markUnsavedAndAutoSave();
   };
 
-  const handleGraderChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleOutputSamplesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
-    setGraderContent(newContent);
+    setOutputSamplesContent(newContent);
+    markUnsavedAndAutoSave();
+  };
+
+  const handleCalibrateChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newContent = e.target.value;
+    setCalibrateContent(newContent);
+    markUnsavedAndAutoSave();
+  };
+
+  const handleFixChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newContent = e.target.value;
+    setFixContent(newContent);
+    markUnsavedAndAutoSave();
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newContent = e.target.value;
+    setEditContent(newContent);
     onGraderContentChange?.(newContent);
-    markUnsavedAndAutoSave();
-  };
-
-  const handleGroundTruthChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-  ) => {
-    const newContent = e.target.value;
-    setGroundTruthContent(newContent);
-    markUnsavedAndAutoSave();
-  };
-
-  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newContent = e.target.value;
-    setNotesContent(newContent);
     markUnsavedAndAutoSave();
   };
 
@@ -150,10 +155,11 @@ export function TabbedEditor(
 
       const saveData = {
         inputSamples: inputSamplesContent,
-        actorDeck: actorContent,
-        graderDeck: graderContent,
-        groundTruth: groundTruthContent,
-        notes: notesContent,
+        runPrompt: runPromptContent,
+        outputSamples: outputSamplesContent,
+        calibrate: calibrateContent,
+        fix: fixContent,
+        edit: editContent,
       };
 
       const response = await fetch(
@@ -194,14 +200,16 @@ export function TabbedEditor(
     switch (activeTab) {
       case "inputSamples":
         return inputSamplesContent;
-      case "actor":
-        return actorContent;
-      case "grader":
-        return graderContent;
-      case "groundTruth":
-        return groundTruthContent;
-      case "notes":
-        return notesContent;
+      case "runPrompt":
+        return runPromptContent;
+      case "outputSamples":
+        return outputSamplesContent;
+      case "calibrate":
+        return calibrateContent;
+      case "fix":
+        return fixContent;
+      case "edit":
+        return editContent;
       default:
         return "";
     }
@@ -211,14 +219,16 @@ export function TabbedEditor(
     switch (activeTab) {
       case "inputSamples":
         return handleInputSamplesChange;
-      case "actor":
-        return handleActorChange;
-      case "grader":
-        return handleGraderChange;
-      case "groundTruth":
-        return handleGroundTruthChange;
-      case "notes":
-        return handleNotesChange;
+      case "runPrompt":
+        return handleRunPromptChange;
+      case "outputSamples":
+        return handleOutputSamplesChange;
+      case "calibrate":
+        return handleCalibrateChange;
+      case "fix":
+        return handleFixChange;
+      case "edit":
+        return handleEditChange;
       default:
         return handleInputSamplesChange;
     }
@@ -228,14 +238,16 @@ export function TabbedEditor(
     switch (activeTab) {
       case "inputSamples":
         return "Your input samples will appear here...";
-      case "actor":
-        return "Your actor definition will appear here as we build it together...";
-      case "grader":
+      case "runPrompt":
+        return "The prompt used to run the actor will appear here...";
+      case "outputSamples":
+        return "Output samples from running the actor will appear here...";
+      case "calibrate":
+        return "Calibration data and results will appear here...";
+      case "fix":
+        return "Fixes and improvements will appear here...";
+      case "edit":
         return "Your grader definition will appear here as we build it together...";
-      case "groundTruth":
-        return "Your ground truth data will appear here...";
-      case "notes":
-        return "Your notes and observations will appear here...";
       default:
         return "";
     }
@@ -245,14 +257,16 @@ export function TabbedEditor(
     switch (activeTab) {
       case "inputSamples":
         return "Input Samples";
-      case "actor":
-        return "Actor";
-      case "grader":
-        return "Grader";
-      case "groundTruth":
-        return "Ground Truth";
-      case "notes":
-        return "Notes";
+      case "runPrompt":
+        return "Run Prompt";
+      case "outputSamples":
+        return "Output Samples";
+      case "calibrate":
+        return "Calibrate";
+      case "fix":
+        return "Fix";
+      case "edit":
+        return "Edit";
       default:
         return "";
     }
@@ -301,14 +315,14 @@ export function TabbedEditor(
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("actor")}
-            aria-selected={activeTab === "actor"}
+            onClick={() => setActiveTab("runPrompt")}
+            aria-selected={activeTab === "runPrompt"}
             style={{
               padding: "0.5rem 1rem",
-              backgroundColor: activeTab === "actor"
+              backgroundColor: activeTab === "runPrompt"
                 ? "#2a2b2c"
                 : "transparent",
-              color: activeTab === "actor" ? "#fafaff" : "#b8b8c0",
+              color: activeTab === "runPrompt" ? "#fafaff" : "#b8b8c0",
               border: "1px solid #3a3b3c",
               borderRadius: "0.25rem",
               fontSize: "0.875rem",
@@ -317,18 +331,18 @@ export function TabbedEditor(
               outline: "none",
             }}
           >
-            Actor Deck
+            Run Prompt
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("grader")}
-            aria-selected={activeTab === "grader"}
+            onClick={() => setActiveTab("outputSamples")}
+            aria-selected={activeTab === "outputSamples"}
             style={{
               padding: "0.5rem 1rem",
-              backgroundColor: activeTab === "grader"
+              backgroundColor: activeTab === "outputSamples"
                 ? "#2a2b2c"
                 : "transparent",
-              color: activeTab === "grader" ? "#fafaff" : "#b8b8c0",
+              color: activeTab === "outputSamples" ? "#fafaff" : "#b8b8c0",
               border: "1px solid #3a3b3c",
               borderRadius: "0.25rem",
               fontSize: "0.875rem",
@@ -337,18 +351,18 @@ export function TabbedEditor(
               outline: "none",
             }}
           >
-            Grader Deck
+            Output Samples
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("groundTruth")}
-            aria-selected={activeTab === "groundTruth"}
+            onClick={() => setActiveTab("calibrate")}
+            aria-selected={activeTab === "calibrate"}
             style={{
               padding: "0.5rem 1rem",
-              backgroundColor: activeTab === "groundTruth"
+              backgroundColor: activeTab === "calibrate"
                 ? "#2a2b2c"
                 : "transparent",
-              color: activeTab === "groundTruth" ? "#fafaff" : "#b8b8c0",
+              color: activeTab === "calibrate" ? "#fafaff" : "#b8b8c0",
               border: "1px solid #3a3b3c",
               borderRadius: "0.25rem",
               fontSize: "0.875rem",
@@ -357,18 +371,18 @@ export function TabbedEditor(
               outline: "none",
             }}
           >
-            Ground Truth
+            Calibrate
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("notes")}
-            aria-selected={activeTab === "notes"}
+            onClick={() => setActiveTab("fix")}
+            aria-selected={activeTab === "fix"}
             style={{
               padding: "0.5rem 1rem",
-              backgroundColor: activeTab === "notes"
+              backgroundColor: activeTab === "fix"
                 ? "#2a2b2c"
                 : "transparent",
-              color: activeTab === "notes" ? "#fafaff" : "#b8b8c0",
+              color: activeTab === "fix" ? "#fafaff" : "#b8b8c0",
               border: "1px solid #3a3b3c",
               borderRadius: "0.25rem",
               fontSize: "0.875rem",
@@ -377,7 +391,27 @@ export function TabbedEditor(
               outline: "none",
             }}
           >
-            Notes
+            Fix
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("edit")}
+            aria-selected={activeTab === "edit"}
+            style={{
+              padding: "0.5rem 1rem",
+              backgroundColor: activeTab === "edit"
+                ? "#2a2b2c"
+                : "transparent",
+              color: activeTab === "edit" ? "#fafaff" : "#b8b8c0",
+              border: "1px solid #3a3b3c",
+              borderRadius: "0.25rem",
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              cursor: "pointer",
+              outline: "none",
+            }}
+          >
+            Edit
           </button>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
@@ -443,10 +477,11 @@ export function TabbedEditor(
           }}
         >
           {getCurrentLabel()}{" "}
-          {activeTab === "inputSamples" || activeTab === "groundTruth" ||
-              activeTab === "notes"
-            ? "Data"
-            : "Deck"} {activeTab === "inputSamples" ? "(JSONL)" : "(Markdown)"}
+          {activeTab === "inputSamples" || activeTab === "outputSamples"
+            ? "Data (JSONL)"
+            : activeTab === "runPrompt" || activeTab === "edit"
+            ? "Content (Markdown)"
+            : "Data"}
         </label>
         <textarea
           ref={textareaRef}
@@ -482,14 +517,16 @@ export function TabbedEditor(
             switch (activeTab) {
               case "inputSamples":
                 return "Input samples for testing and evaluation.";
-              case "actor":
-                return "This actor defines the behavior and personality for the AI assistant.";
-              case "grader":
-                return "This grader uses the gradient scale: +3 (correct) to -3 (incorrect), with 0 for invalid input.";
-              case "groundTruth":
-                return "Expected correct outputs for comparison and evaluation.";
-              case "notes":
-                return "Notes shared with the assistant but not used in calibration or evaluation.";
+              case "runPrompt":
+                return "The prompt used to run the actor against input samples.";
+              case "outputSamples":
+                return "Output samples from running the actor - ready for fine-tuning.";
+              case "calibrate":
+                return "Calibration data and grading results for evaluation.";
+              case "fix":
+                return "Fixes and improvements based on calibration results.";
+              case "edit":
+                return "Edit the grader definition and evaluation criteria.";
               default:
                 return "";
             }
