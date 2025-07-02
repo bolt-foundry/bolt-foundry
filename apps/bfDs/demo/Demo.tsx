@@ -8,6 +8,10 @@ import { BfDsTextArea } from "../components/BfDsTextArea.tsx";
 import { BfDsFormSubmitButton } from "../components/BfDsFormSubmitButton.tsx";
 import { BfDsList } from "../components/BfDsList.tsx";
 import { BfDsListItem } from "../components/BfDsListItem.tsx";
+import { BfDsSelect } from "../components/BfDsSelect.tsx";
+import { BfDsCheckbox } from "../components/BfDsCheckbox.tsx";
+import { BfDsRadio } from "../components/BfDsRadio.tsx";
+import { BfDsToggle } from "../components/BfDsToggle.tsx";
 
 type ComponentSection = {
   id: string;
@@ -80,6 +84,34 @@ const componentSections: Array<ComponentSection> = [
     description: "Individual list items with states and interactions",
     component: BfDsListItem.Example,
     category: "Navigation",
+  },
+  {
+    id: "select",
+    name: "Select",
+    description: "Dropdown selectors with form integration",
+    component: BfDsSelect.Example,
+    category: "Form",
+  },
+  {
+    id: "checkbox",
+    name: "Checkbox",
+    description: "Checkboxes with form integration and accessibility",
+    component: BfDsCheckbox.Example,
+    category: "Form",
+  },
+  {
+    id: "radio",
+    name: "Radio",
+    description: "Radio button groups with flexible layouts",
+    component: BfDsRadio.Example,
+    category: "Form",
+  },
+  {
+    id: "toggle",
+    name: "Toggle",
+    description: "Toggle switches with smooth animations and sizes",
+    component: BfDsToggle.Example,
+    category: "Form",
   },
 ];
 
