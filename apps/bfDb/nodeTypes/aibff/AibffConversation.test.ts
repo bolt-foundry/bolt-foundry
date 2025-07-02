@@ -7,7 +7,7 @@ async function cleanupTestConversations() {
     const dir = AibffConversation.getConversationsDirectory();
     for await (const entry of Deno.readDir(dir)) {
       if (entry.name.startsWith("conv-test-")) {
-        await Deno.remove(`${dir}/${entry.name}`);
+        await Deno.remove(`${dir}/${entry.name}`, { recursive: true });
       }
     }
   } catch {
@@ -172,7 +172,7 @@ Deno.test("AibffConversation - isRecentlyCreated", async () => {
 
   // Manually modify the created_at in the file
   const filename =
-    `${AibffConversation.getConversationsDirectory()}/conv-test-old.md`;
+    `${AibffConversation.getConversationsDirectory()}/conv-test-old/conv-test-old.md`;
   const content = await Deno.readTextFile(filename);
   const oldDate = new Date(Date.now() - 20000).toISOString(); // 20 seconds ago
   const modifiedContent = content.replace(
@@ -210,7 +210,7 @@ Deno.test("AibffConversation - markdown format", async () => {
 
   // Read the raw file to check format
   const filename =
-    `${AibffConversation.getConversationsDirectory()}/conv-test-markdown.md`;
+    `${AibffConversation.getConversationsDirectory()}/conv-test-markdown/conv-test-markdown.md`;
   const content = await Deno.readTextFile(filename);
 
   // Check frontmatter
@@ -248,6 +248,121 @@ Deno.test("AibffConversation - static create method", async () => {
 
   // Verify it was saved
   assertEquals(await conv2.exists(), true);
+
+  await cleanupTestConversations();
+});
+
+// Workflow file method tests
+Deno.test("AibffConversation - workflow files - input samples", async () => {
+  await cleanupTestConversations();
+
+  const conversation = await AibffConversation.create();
+  const inputSamples = '{"input": "test sample 1"}\n{"input": "test sample 2"}';
+
+  // Set input samples
+  await conversation.setInputSamples(inputSamples);
+
+  // Get input samples
+  const retrieved = await conversation.getInputSamples();
+  assertEquals(retrieved, inputSamples);
+
+  await cleanupTestConversations();
+});
+
+Deno.test("AibffConversation - workflow files - system prompt", async () => {
+  await cleanupTestConversations();
+
+  const conversation = await AibffConversation.create();
+  const systemPrompt =
+    "You are a helpful AI assistant that provides clear and concise answers.";
+
+  // Set system prompt
+  await conversation.setSystemPrompt(systemPrompt);
+
+  // Get system prompt
+  const retrieved = await conversation.getSystemPrompt();
+  assertEquals(retrieved, systemPrompt);
+
+  await cleanupTestConversations();
+});
+
+Deno.test("AibffConversation - workflow files - output samples", async () => {
+  await cleanupTestConversations();
+
+  const conversation = await AibffConversation.create();
+  const outputSamples =
+    '{"choices": [{"message": {"content": "response 1"}}]}\n{"choices": [{"message": {"content": "response 2"}}]}';
+
+  // Set output samples
+  await conversation.setOutputSamples(outputSamples);
+
+  // Get output samples
+  const retrieved = await conversation.getOutputSamples();
+  assertEquals(retrieved, outputSamples);
+
+  await cleanupTestConversations();
+});
+
+Deno.test("AibffConversation - workflow files - eval prompt", async () => {
+  await cleanupTestConversations();
+
+  const conversation = await AibffConversation.create();
+  const evalPrompt =
+    "# Evaluation Criteria\n\nRate the response on accuracy and helpfulness.";
+
+  // Set eval prompt
+  await conversation.setEvalPrompt(evalPrompt);
+
+  // Get eval prompt
+  const retrieved = await conversation.getEvalPrompt();
+  assertEquals(retrieved, evalPrompt);
+
+  await cleanupTestConversations();
+});
+
+Deno.test("AibffConversation - workflow files - eval output", async () => {
+  await cleanupTestConversations();
+
+  const conversation = await AibffConversation.create();
+  const evalOutput =
+    '{"results": [{"score": 8, "reasoning": "Good response"}]}';
+
+  // Set eval output
+  await conversation.setEvalOutput(evalOutput);
+
+  // Get eval output
+  const retrieved = await conversation.getEvalOutput();
+  assertEquals(retrieved, evalOutput);
+
+  await cleanupTestConversations();
+});
+
+Deno.test("AibffConversation - workflow files - list files", async () => {
+  await cleanupTestConversations();
+
+  const conversation = await AibffConversation.create();
+  await conversation.save(); // Save the main conversation file
+
+  // Create some workflow files
+  await conversation.setInputSamples('{"test": "input"}');
+  await conversation.setSystemPrompt("Test system prompt");
+  await conversation.setOutputSamples('{"test": "output"}');
+
+  // List files
+  const files = await conversation.listFiles();
+
+  // Should include the main conversation file and workflow files
+  const fileNames = files.map((f) => f.name).sort();
+  assertEquals(fileNames.includes(`${conversation.getId()}.md`), true);
+  assertEquals(fileNames.includes("input-samples.jsonl"), true);
+  assertEquals(fileNames.includes("system-prompt.md"), true);
+  assertEquals(fileNames.includes("output-samples.jsonl"), true);
+
+  // Check file properties
+  const inputFile = files.find((f) => f.name === "input-samples.jsonl");
+  assertExists(inputFile);
+  assertExists(inputFile.size);
+  assertExists(inputFile.modified);
 
   await cleanupTestConversations();
 });
