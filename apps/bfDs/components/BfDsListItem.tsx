@@ -1,10 +1,15 @@
 import * as React from "react";
 
 export type BfDsListItemProps = {
+  /** Content to display in the list item */
   children: React.ReactNode;
+  /** When true, shows active state styling */
   active?: boolean;
+  /** When true, disables interaction and shows disabled styling */
   disabled?: boolean;
+  /** Click handler - when provided, renders as button instead of li */
   onClick?: () => void;
+  /** Additional CSS classes */
   className?: string;
 };
 

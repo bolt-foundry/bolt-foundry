@@ -9,9 +9,13 @@ export type BfDsIconName = keyof typeof icons;
 export type BfDsIconSize = "small" | "medium" | "large";
 
 export type BfDsIconProps = {
+  /** Name of the icon to display */
   name: BfDsIconName;
+  /** Size variant for icon */
   size?: BfDsIconSize;
+  /** Custom color override */
   color?: string;
+  /** Additional CSS classes */
   className?: string;
 } & Omit<React.SVGProps<SVGSVGElement>, "children">;
 

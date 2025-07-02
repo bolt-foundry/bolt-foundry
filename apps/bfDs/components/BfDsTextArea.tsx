@@ -6,21 +6,33 @@ export type BfDsTextAreaState = "default" | "error" | "success" | "disabled";
 export type BfDsTextAreaProps =
   & {
     // Form context props
+    /** Form field name for data binding */
     name?: string;
 
     // Standalone props
+    /** Current textarea value */
     value?: string;
+    /** Change event handler */
     onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 
     // Common props
+    /** Label text displayed above textarea */
     label?: string;
+    /** Placeholder text when empty */
     placeholder?: string;
+    /** Required for validation */
     required?: boolean;
+    /** Visual state of the textarea */
     state?: BfDsTextAreaState;
+    /** Error message to display */
     errorMessage?: string;
+    /** Success message to display */
     successMessage?: string;
+    /** Help text displayed below textarea */
     helpText?: string;
+    /** Additional CSS classes */
     className?: string;
+    /** Resize behavior for textarea */
     resize?: "none" | "both" | "horizontal" | "vertical";
   }
   & Omit<

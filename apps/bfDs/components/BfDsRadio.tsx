@@ -3,24 +3,42 @@ import { BfDsForm, useBfDsFormContext } from "./BfDsForm.tsx";
 import { BfDsFormSubmitButton } from "./BfDsFormSubmitButton.tsx";
 
 export type BfDsRadioOption = {
+  /** The value submitted when this option is selected */
   value: string;
+  /** Display text shown for this option */
   label: string;
+  /** When true, this option cannot be selected */
   disabled?: boolean;
 };
 
 export type BfDsRadioSize = "small" | "medium" | "large";
 
 export type BfDsRadioProps = {
+  // Form context props
+  /** Form field name for data binding (required for radio groups) */
   name: string;
+
+  // Standalone props
+  /** Currently selected value */
   value?: string;
+  /** Selection change callback */
   onChange?: (value: string) => void;
+
+  // Common props
+  /** Array of radio button options */
   options: Array<BfDsRadioOption>;
-  disabled?: boolean;
-  required?: boolean;
-  className?: string;
-  orientation?: "vertical" | "horizontal";
-  size?: BfDsRadioSize;
+  /** Group label displayed above radio buttons */
   label?: string;
+  /** Required for validation */
+  required?: boolean;
+  /** Disables entire radio group */
+  disabled?: boolean;
+  /** Layout direction of radio buttons */
+  orientation?: "vertical" | "horizontal";
+  /** Size variant for radio buttons */
+  size?: BfDsRadioSize;
+  /** Additional CSS classes */
+  className?: string;
 };
 
 export function BfDsRadio({

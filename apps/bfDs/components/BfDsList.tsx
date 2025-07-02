@@ -1,7 +1,9 @@
 import * as React from "react";
 
 type BfDsListProps = {
+  /** List items (typically BfDsListItem components) */
   children: React.ReactNode;
+  /** Additional CSS classes */
   className?: string;
 };
 
