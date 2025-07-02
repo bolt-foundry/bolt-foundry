@@ -3,7 +3,7 @@
 ## Overview
 
 This plan outlines the implementation of an automated deployment workflow that
-replaces the current manual process of running `bff land` and clicking "Deploy"
+replaces the current manual process of running `bft land` and clicking "Deploy"
 in Replit. The new system will enable GitHub Actions to trigger deployments
 through a secure internal BF service (running on its own Replit), which will
 handle SSH connections to the main monorepo Replit and execute deployment
@@ -16,9 +16,9 @@ incremental validation.
 
 | Goal                 | Description                                          | Success Criteria                                    |
 | -------------------- | ---------------------------------------------------- | --------------------------------------------------- |
-| Automate deployments | Replace manual `bff land` + deploy click process     | GitHub push triggers automatic deployment to Replit |
+| Automate deployments | Replace manual `bft land` + deploy click process     | GitHub push triggers automatic deployment to Replit |
 | Secure communication | Protect deployment pipeline from unauthorized access | Authentication tokens validate all requests         |
-| Start simple         | Get basic automation working before adding features  | Phase 1 successfully runs `bff land` via webhook    |
+| Start simple         | Get basic automation working before adding features  | Phase 1 successfully runs `bft land` via webhook    |
 
 ## Anti-Goals
 
@@ -33,10 +33,10 @@ incremental validation.
 ## Technical Approach
 
 The deployment pipeline follows a simple webhook architecture where GitHub
-Actions notify internal BF to run `bff land`. Later phases add authentication,
+Actions notify internal BF to run `bft land`. Later phases add authentication,
 error handling, and the Replit deployment API.
 
-All automated operations will use a dedicated "bff bot" user
+All automated operations will use a dedicated "bft bot" user
 (support@boltfoundry.com) with appropriate SSH and 1Password access, ensuring
 clear separation between human and automated actions.
 
@@ -44,7 +44,7 @@ clear separation between human and automated actions.
 
 ### Phase 1: Basic Automation (MVP)
 
-**Goal**: GitHub webhook triggers `bff land` via SSH from internal BF Replit to
+**Goal**: GitHub webhook triggers `bft land` via SSH from internal BF Replit to
 main monorepo Replit
 
 | Status | Component                      | Purpose                                     |
@@ -72,7 +72,7 @@ main monorepo Replit
 | [ ]    | SSH key management          | Integrate with 1Password for credential storage |
 | [ ]    | Enhanced logging            | Add deployment metadata to logs                 |
 | [ ]    | Error handling              | Graceful failures with clear messages           |
-| [ ]    | Deployment status tracking  | Know when `bff land` completes                  |
+| [ ]    | Deployment status tracking  | Know when `bft land` completes                  |
 
 ### Phase 3: Full Automation
 
@@ -80,7 +80,7 @@ main monorepo Replit
 
 | Status | Component                   | Purpose                             |
 | ------ | --------------------------- | ----------------------------------- |
-| [ ]    | Replit GraphQL client       | Trigger deployment after `bff land` |
+| [ ]    | Replit GraphQL client       | Trigger deployment after `bft land` |
 | [ ]    | Status tracking             | Monitor deployment progress         |
 | [ ]    | Error notifications         | Alert on failures                   |
 | [ ]    | Concurrent request handling | Queue or reject overlapping deploys |
@@ -91,7 +91,7 @@ main monorepo Replit
 | ---------------------------- | ------------------------------------------ | ----------------------------------- |
 | Start with simple webhook    | Reduce initial complexity, prove concept   | Full authentication from start      |
 | Phased implementation        | Lower risk, faster initial delivery        | Build everything at once            |
-| Use Sapling (sl) for updates | Consistent with existing bff land workflow | Git commands, fresh clones          |
+| Use Sapling (sl) for updates | Consistent with existing bft land workflow | Git commands, fresh clones          |
 | Replit-to-Replit SSH         | Both services run on Replit infrastructure | External hosting, API-only approach |
 | Dedicated bot user           | Clear audit trail, limited permissions     | Using personal accounts             |
 
@@ -133,7 +133,7 @@ app.post("/deploy-webhook-:key", async (req, res) => {
       cd /home/runner/bolt-foundry-monorepo && 
       sl pull && 
       sl goto ${req.body.branch} && 
-      bff land
+      bft land
     `;
 
     // SSH format: ssh -i ~/.ssh/replit -p 22 {repl-id}@{repl-id}-{suffix}.kirk.replit.dev
@@ -157,7 +157,7 @@ app.post("/deploy-webhook-:key", async (req, res) => {
 
 | Question                                  | How to Explore                                         |
 | ----------------------------------------- | ------------------------------------------------------ |
-| How to set up bff bot user in Replit?     | Create support@boltfoundry.com account with SSH access |
+| How to set up bft bot user in Replit?     | Create support@boltfoundry.com account with SSH access |
 | How to configure 1Password for bot user?  | Set up service account or shared vault access          |
 | How to grant bot appropriate permissions? | Configure minimal required access for deployment       |
 
@@ -179,14 +179,14 @@ app.post("/deploy-webhook-:key", async (req, res) => {
 ### Phase 1 Success
 
 - GitHub push triggers webhook to internal BF
-- Internal BF runs `bff land` successfully
+- Internal BF runs `bft land` successfully
 - Basic logs show deployment attempts
 - Manual Replit deploy still required
 
 ### Phase 2 Success
 
 - Webhook requires authentication token
-- `bff land` runs in actual Replit environment via SSH
+- `bft land` runs in actual Replit environment via SSH
 - Structured logs capture all deployment steps
 - Manual Replit deploy still required
 
