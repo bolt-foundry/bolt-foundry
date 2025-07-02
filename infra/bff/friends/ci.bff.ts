@@ -303,7 +303,7 @@ async function runTestStep(_useGithub: boolean): Promise<number> {
   return code;
 }
 
-async function runE2ETestStep(useGithub: boolean): Promise<number> {
+async function runE2ETestStep(_useGithub: boolean): Promise<number> {
   logger.info("Running E2E tests...");
 
   // We'll use the BFF e2e command that's already implemented
@@ -316,7 +316,7 @@ async function runE2ETestStep(useGithub: boolean): Promise<number> {
     e2eArgs,
     {},
     true,
-    useGithub,
+    false, // Always show e2e output for debugging
   );
   return code;
 }
