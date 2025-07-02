@@ -43,3 +43,8 @@ export type {
 } from "./components/BfDsFormSubmitButton.tsx";
 
 export { useBfDsFormContext } from "./components/BfDsForm.tsx";
+
+export { BfDsList } from "./components/BfDsList.tsx";
+
+export { BfDsListItem } from "./components/BfDsListItem.tsx";
+export type { BfDsListItemProps } from "./components/BfDsListItem.tsx";
