@@ -1,25 +1,29 @@
 #!/usr/bin/env -S bft run
 
 import type { TaskDefinition } from "../bft.ts";
-import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 
-function echo(args: Array<string>): number {
-  ui.output(args.join(" "));
-  return 0;
+function aibff(args: Array<string>): number {
+  const command = new Deno.Command("aibff", {
+    args,
+    stdin: "inherit",
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+
+  const result = command.outputSync();
+  return result.code;
 }
 
 // Export the task definition for autodiscovery
 export const bftDefinition = {
-  description: "Echo arguments to stdout",
+  description: "Forward to aibff command",
   aiSafe: true,
-  fn: echo,
+  fn: aibff,
 } satisfies TaskDefinition;
 
 // When run directly as a script
 if (import.meta.main) {
   // Skip "run" and script name from args
   const scriptArgs = Deno.args.slice(2);
-  Deno.exit(echo(scriptArgs));
+  Deno.exit(aibff(scriptArgs));
 }
-
-// Test comment for smart validation

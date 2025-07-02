@@ -12,7 +12,7 @@ excerpt = "Context engineering is the new term for what we've been working on at
 
 We’ve…been working on this for over a year…and…he just…he tweeted it out.
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">I really like the term “context engineering” over prompt engineering. <br><br>It describes the core skill better: the art of providing all the context for the task to be plausibly solvable by the LLM.</p>&mdash; tobi lutke (@tobi) <a href="https://twitter.com/tobi/status/1935533422589399127?ref_src=twsrc%5Etfw">June 19, 2025</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">I really like the term “context engineering” over prompt engineering. <br><br>It describes the core skill better: the art of providing all the context for the task to be plausibly solvable by the LLM.</p>&mdash; tobi lutke (@tobi) <a href="https://twitter.com/tobi/status/1935533422589399127?ref_src=twsrc%5Etfw">June 19, 2025</a></blockquote>
 
 Context engineering is the new hotness, and we’re so excited there’s a term for
 this now!
@@ -33,7 +33,7 @@ filling in gaps, which is similarly unreliable.
 
 ## Why does this matter?
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">In every industrial-strength LLM app, context engineering is the delicate art and science of filling the context window with just the right information for the next step</p>&mdash; Andrej Karpathy (@karpathy) <a href="https://twitter.com/karpathy/status/1937902205765607626?ref_src=twsrc%5Etfw">June 25, 2025</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">In every industrial-strength LLM app, context engineering is the delicate art and science of filling the context window with just the right information for the next step></p>&mdash; Andrej Karpathy (@karpathy) <a href="https://twitter.com/karpathy/status/1937902205765607626?ref_src=twsrc%5Etfw">June 25, 2025</a></blockquote>
 
 In human-to-human communication, context is key. We get context through dozens
 of verbal and nonverbal cues, like body language, tone of voice, eye contact,
@@ -48,7 +48,7 @@ We’ve found the best way to provide this context is:
 2. Build graders from those samples that reinforce what you want the LLM to do
 3. Structure your prompt with clear information hierarchy
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">The difference between ai slop and magical experiences is the context you give to the model </p>&mdash; boris tane (@boristane) <a href="https://twitter.com/boristane/status/1937133556444127429?ref_src=twsrc%5Etfw">June 23, 2025</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">The difference between ai slop and magical experiences is the context you give to the model </p>&mdash; boris tane (@boristane) <a href="https://twitter.com/boristane/status/1937133556444127429?ref_src=twsrc%5Etfw">June 23, 2025</a></blockquote>
 
 Our work with samples, graders, and evals is context engineering at its core.
 We’re structuring feedback and examples to optimize LLM performance, which is
@@ -56,7 +56,7 @@ exactly what Karpathy is describing.
 
 ## What does this look like in practice?
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Merely crafting prompts does not seem like a real fulltime role, but figuring out how to compress context, chain prompts, recover from errors, and measure improvements is super challenging.”</p>&mdash; Amjad Masad (@amasad) <a href="https://twitter.com/amasad/status/1616670863373512705?ref_src=twsrc%5Etfw">January 21, 2023</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Merely crafting prompts does not seem like a real fulltime role, but figuring out how to compress context, chain prompts, recover from errors, and measure improvements is super challenging.”</p>&mdash; Amjad Masad (@amasad) <a href="https://twitter.com/amasad/status/1616670863373512705?ref_src=twsrc%5Etfw">January 21, 2023</a></blockquote>
 
 We recently implemented this approach with Fastpitch, an AI-generated sports
 newsletter. We wrote about it [here](2025-06-23-llm-evals-with-aibff), but the
