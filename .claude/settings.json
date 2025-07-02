@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/randallb/randallb.com/areas/bolt-foundry-monorepo/.claude/bft-safety-hook.ts"
+            "command": ".claude/bft-safety-hook.ts"
           }
         ]
       }
