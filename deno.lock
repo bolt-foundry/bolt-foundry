@@ -69,7 +69,6 @@
     "jsr:@std/yaml@^1.0.5": "1.0.8",
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
-    "npm:@anthropic-ai/claude-code@^1.0.25": "1.0.31",
     "npm:@babel/preset-react@^7.27.1": "7.27.1_@babel+core@7.27.4",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.5_vite@6.3.5__@types+node@22.15.33__picomatch@4.0.2_@types+node@22.15.33",
     "npm:@hexagon/base64@^1.1.27": "1.1.28",
@@ -415,19 +414,6 @@
         "@jridgewell/gen-mapping",
         "@jridgewell/trace-mapping"
       ]
-    },
-    "@anthropic-ai/claude-code@1.0.31": {
-      "integrity": "sha512-prn3DEIBm5ALgCjp0sCcXwNbfBR5w98bEOXQbWViow/3BwkTgW784V8i0S/kfIWDVorz0o4cqR5D0fB4hbjNIg==",
-      "optionalDependencies": [
-        "@img/sharp-darwin-arm64",
-        "@img/sharp-darwin-x64",
-        "@img/sharp-linux-arm",
-        "@img/sharp-linux-arm64",
-        "@img/sharp-linux-x64",
-        "@img/sharp-win32-x64"
-      ],
-      "scripts": true,
-      "bin": true
     },
     "@asamuzakjp/css-color@3.2.0_@csstools+css-parser-algorithms@3.0.5__@csstools+css-tokenizer@3.0.4_@csstools+css-tokenizer@3.0.4": {
       "integrity": "sha512-K1A6z8tS3XsmCMM86xoWdn7Fkdn9m6RSVtocUrJYIwZnFVkng/PvkEoWtOWmP+Scc6saYWHWZYbndEEXxl24jw==",
