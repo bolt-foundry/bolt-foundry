@@ -114,8 +114,9 @@ as part of the 2025-06-25 design system migration.
   - [x] ~~Checkbox~~ ✅ **Completed** (BfDsCheckbox with accessibility)
   - [x] ~~Radio~~ ✅ **Completed** (BfDsRadio with flexible layouts)
   - [x] ~~Toggle~~ ✅ **Completed** (BfDsToggle with smooth animations)
+  - [x] ~~Toast/Notification~~ ✅ **Completed** (BfDsCallout with variants and
+        auto-dismiss)
   - [ ] Modal
-  - [ ] Toast/Notification
 - [ ] Enhanced List components:
   - [ ] Icon support in BfDsListItem
   - [ ] Multiple layout orientations (horizontal/vertical)
@@ -157,7 +158,8 @@ apps/bfDs/
 │   ├── BfDsSelect.tsx (with .Example and form integration)
 │   ├── BfDsCheckbox.tsx (with .Example and accessibility)
 │   ├── BfDsRadio.tsx (with .Example and flexible layouts)
-│   └── BfDsToggle.tsx (with .Example and animations)
+│   ├── BfDsToggle.tsx (with .Example and animations)
+│   └── BfDsCallout.tsx (with .Example and notification variants)
 ├── lib/
 │   └── icons.ts (80+ icon definitions)
 ├── demo/
@@ -167,7 +169,7 @@ apps/bfDs/
 │       └── 2025-06-23-bfds-lite-creation.md
 └── index.ts (complete exports)
 
-CSS: static/bfDsStyle.css (comprehensive styling with form states)
+CSS: static/bfDsStyle.css (comprehensive styling with form states and notifications)
 ```
 
 ## Design Decisions
@@ -269,6 +271,37 @@ CSS: static/bfDsStyle.css (comprehensive styling with form states)
 - ✅ **Code quality improvements** with documented interfaces and comprehensive
   examples
 - ✅ **Production readiness** with both documentation and testing complete
+
+## Recent Achievements (2025-07-03)
+
+- ✅ **BfDsCallout notification component** implemented with elegant UX
+  improvements
+- ✅ **Complete alert() replacement** throughout all bfDs components with
+  BfDsCallout notifications
+- ✅ **Four semantic variants** (info, success, warning, error) with appropriate
+  icons and colors
+- ✅ **Auto-dismiss functionality** with configurable timeout and manual dismiss
+  options
+- ✅ **Expandable details support** for displaying JSON data and complex
+  information
+- ✅ **Enhanced form examples** with comprehensive component integration
+  showcasing all input types
+- ✅ **React.lazy removal** eliminating circular dependency issues and suspense
+  re-rendering problems
+- ✅ **Browser validation UI fixes** for checkboxes and radios with proper CSS
+  positioning
+- ✅ **Toggle component UX improvements** removing inappropriate required prop
+  functionality
+- ✅ **Demo page integration** with BfDsCallout component added to component
+  showcase
+- ✅ **CSS validation states** with user-friendly styling that only appears
+  after interaction
+- ✅ **TypeScript safety improvements** with proper type annotations and error
+  handling
+- ✅ **Component reliability enhancements** ensuring stable loading and
+  consistent behavior
+- ✅ **Production-ready notification system** replacing browser alerts with
+  modern UX patterns
 
 ## Notes
 
