@@ -97,13 +97,14 @@ jobs:
           nix develop .#github-actions --accept-flake-config --command bash -euc "
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
             echo \"Using Deno cache directory: \${DENO_DIR}\"
             deno --version
             deno info
             # Pre-cache dependencies
             npm install
             deno install
-            bff ci --include-bolt-foundry -g
+            bft ci -g
           "
 
       # Debug before save
