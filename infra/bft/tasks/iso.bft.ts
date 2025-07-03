@@ -10,27 +10,46 @@ const logger = getLogger(import.meta);
 export async function isoCommand(options: Array<string>): Promise<number> {
   logger.info("Running isograph compiler...");
 
-  // Default working directory is apps/boltFoundry where the isograph config lives
-  const workingDir = "apps/boltFoundry";
+  // Working directories with isograph configs
+  const workingDirs = [
+    "apps/boltFoundry",
+    "apps/aibff/gui",
+  ];
 
-  try {
-    // Standard execution for build pipeline (--verbose flag not needed for our use case)
-    const result = await runShellCommand(
-      ["deno", "run", "-A", "npm:@isograph/compiler", ...options],
-      workingDir,
-    );
+  let overallResult = 0;
 
-    if (result === 0) {
-      logger.info("✅ Isograph compilation completed successfully");
-    } else {
-      logger.error(`❌ Isograph compilation failed with code ${result}`);
+  for (const workingDir of workingDirs) {
+    logger.info(`Running isograph compiler in ${workingDir}...`);
+
+    try {
+      const result = await runShellCommand(
+        ["deno", "run", "-A", "npm:@isograph/compiler", ...options],
+        workingDir,
+      );
+
+      if (result === 0) {
+        logger.info(
+          `✅ Isograph compilation completed successfully in ${workingDir}`,
+        );
+      } else {
+        logger.error(
+          `❌ Isograph compilation failed in ${workingDir} with code ${result}`,
+        );
+        overallResult = result; // Track any failures
+      }
+    } catch (error) {
+      logger.error(`Error running isograph compiler in ${workingDir}:`, error);
+      overallResult = 1;
     }
-
-    return result;
-  } catch (error) {
-    logger.error("Error running isograph compiler:", error);
-    return 1;
   }
+
+  if (overallResult === 0) {
+    logger.info("✅ All Isograph compilations completed successfully");
+  } else {
+    logger.error("❌ One or more Isograph compilations failed");
+  }
+
+  return overallResult;
 }
 
 export const bftDefinition = {

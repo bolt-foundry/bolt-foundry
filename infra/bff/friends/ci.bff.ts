@@ -266,10 +266,7 @@ async function runBuildStep(
   args: Array<string>,
 ): Promise<number> {
   logger.info("Running bff build");
-  // Include bolt-foundry in CI builds if the flag is passed
-  const buildArgs = args.includes("--include-bolt-foundry")
-    ? ["bff", "build", "--include-bolt-foundry"]
-    : ["bff", "build"];
+  const buildArgs = ["bff", "build"];
 
   const { code } = await runShellCommandWithOutput(
     buildArgs,
