@@ -1,7 +1,7 @@
 import * as React from "react";
 import { icons } from "../lib/icons.ts";
-import { BfDsButton } from "./BfDsButton.tsx";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfDsButton } from "./BfDsButton.tsx";
 
 const logger = getLogger(import.meta);
 

@@ -297,12 +297,6 @@ BfDsTextArea.Example = function BfDsTextAreaExample() {
           onChange={() => {}}
         />
       </div>
-
-      <p>
-        <strong>Note:</strong>{" "}
-        Form context integration will be demonstrated in the BfDsForm examples
-        once complete.
-      </p>
     </div>
   );
 };
