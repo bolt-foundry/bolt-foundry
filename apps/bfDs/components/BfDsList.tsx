@@ -1,4 +1,6 @@
 import * as React from "react";
+import { BfDsCallout } from "./BfDsCallout.tsx";
+import { BfDsListItem } from "./BfDsListItem.tsx";
 
 type BfDsListProps = {
   /** List items (typically BfDsListItem components) */
@@ -21,9 +23,10 @@ export function BfDsList({ children, className }: BfDsListProps) {
 }
 
 BfDsList.Example = function BfDsListExample() {
-  const BfDsListItem = React.lazy(() =>
-    import("./BfDsListItem.tsx").then((m) => ({ default: m.BfDsListItem }))
-  );
+  const [notification, setNotification] = React.useState({
+    message: "",
+    visible: false,
+  });
 
   return (
     <div
@@ -42,43 +45,53 @@ BfDsList.Example = function BfDsListExample() {
 
       <div>
         <h3>Simple List</h3>
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <BfDsList>
-            <BfDsListItem>Home</BfDsListItem>
-            <BfDsListItem>About</BfDsListItem>
-            <BfDsListItem>Services</BfDsListItem>
-            <BfDsListItem>Contact</BfDsListItem>
-          </BfDsList>
-        </React.Suspense>
+        <BfDsList>
+          <BfDsListItem>Home</BfDsListItem>
+          <BfDsListItem>About</BfDsListItem>
+          <BfDsListItem>Services</BfDsListItem>
+          <BfDsListItem>Contact</BfDsListItem>
+        </BfDsList>
       </div>
 
       <div>
         <h3>Navigation List</h3>
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <BfDsList>
-            <BfDsListItem active>Dashboard</BfDsListItem>
-            <BfDsListItem>Projects</BfDsListItem>
-            <BfDsListItem>Team</BfDsListItem>
-            <BfDsListItem disabled>Settings</BfDsListItem>
-          </BfDsList>
-        </React.Suspense>
+        <BfDsList>
+          <BfDsListItem active>Dashboard</BfDsListItem>
+          <BfDsListItem>Projects</BfDsListItem>
+          <BfDsListItem>Team</BfDsListItem>
+          <BfDsListItem disabled>Settings</BfDsListItem>
+        </BfDsList>
       </div>
 
       <div>
         <h3>Clickable List</h3>
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <BfDsList>
-            <BfDsListItem onClick={() => alert("Clicked Item 1")}>
-              Clickable Item 1
-            </BfDsListItem>
-            <BfDsListItem onClick={() => alert("Clicked Item 2")}>
-              Clickable Item 2
-            </BfDsListItem>
-            <BfDsListItem onClick={() => alert("Clicked Item 3")}>
-              Clickable Item 3
-            </BfDsListItem>
-          </BfDsList>
-        </React.Suspense>
+        <BfDsList>
+          <BfDsListItem
+            onClick={() =>
+              setNotification({ message: "Clicked Item 1", visible: true })}
+          >
+            Clickable Item 1
+          </BfDsListItem>
+          <BfDsListItem
+            onClick={() =>
+              setNotification({ message: "Clicked Item 2", visible: true })}
+          >
+            Clickable Item 2
+          </BfDsListItem>
+          <BfDsListItem
+            onClick={() =>
+              setNotification({ message: "Clicked Item 3", visible: true })}
+          >
+            Clickable Item 3
+          </BfDsListItem>
+        </BfDsList>
+        <BfDsCallout
+          message={notification.message}
+          variant="info"
+          visible={notification.visible}
+          onDismiss={() => setNotification({ message: "", visible: false })}
+          autoDismiss={3000}
+        />
       </div>
     </div>
   );
