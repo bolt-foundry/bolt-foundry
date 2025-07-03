@@ -103,7 +103,7 @@ jobs:
             # Pre-cache dependencies
             npm install
             deno install
-            bff ci --include-bolt-foundry -g
+            bft ci --include-bolt-foundry -g
           "
 
       # Debug before save

@@ -42,7 +42,7 @@ async function main() {
 
     Deno.exit(0);
   } catch (error) {
-    ui.error(`Post-update hook error: ${error.message}`);
+    ui.error(`Post-update hook error: ${(error as Error).message}`);
     Deno.exit(1);
   }
 }
@@ -129,7 +129,7 @@ async function runBftCommands(filePath: string): Promise<void> {
         }
       }
     } catch (error) {
-      errors.push(`Failed to run ${name}: ${error.message}`);
+      errors.push(`Failed to run ${name}: ${(error as Error).message}`);
     }
   }
 
