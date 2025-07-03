@@ -1,12 +1,12 @@
-import * as React from "react";
+import { useState } from "react";
 import { BfDsTextArea } from "../BfDsTextArea.tsx";
 
 export function BfDsTextAreaExample() {
-  const [value1, setValue1] = React.useState("");
-  const [value2, setValue2] = React.useState(
+  const [value1, setValue1] = useState("");
+  const [value2, setValue2] = useState(
     "This is some existing content in the textarea that demonstrates how it looks with text.",
   );
-  const [value3, setValue3] = React.useState(
+  const [value3, setValue3] = useState(
     "Valid content that passed validation",
   );
 

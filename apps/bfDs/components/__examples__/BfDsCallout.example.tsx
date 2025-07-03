@@ -1,8 +1,8 @@
-import * as React from "react";
+import { useState } from "react";
 import { BfDsCallout, type BfDsCalloutVariant } from "../BfDsCallout.tsx";
 
 export function BfDsCalloutExample() {
-  const [notifications, setNotifications] = React.useState<
+  const [notifications, setNotifications] = useState<
     Array<{
       id: number;
       message: string;
@@ -10,7 +10,7 @@ export function BfDsCalloutExample() {
       details?: string;
     }>
   >([]);
-  const [nextId, setNextId] = React.useState(1);
+  const [nextId, setNextId] = useState(1);
 
   const addNotification = (
     message: string,
@@ -150,7 +150,6 @@ export function BfDsCalloutExample() {
               variant={notification.variant}
               details={notification.details}
               onDismiss={() => removeNotification(notification.id)}
-              autoDismiss={5000}
             />
           ))}
         </div>

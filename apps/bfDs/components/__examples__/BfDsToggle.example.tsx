@@ -1,17 +1,17 @@
-import * as React from "react";
+import { useState } from "react";
 import { BfDsToggle } from "../BfDsToggle.tsx";
 import { BfDsForm } from "../BfDsForm.tsx";
 import { BfDsCallout } from "../BfDsCallout.tsx";
 import { BfDsFormSubmitButton } from "../BfDsFormSubmitButton.tsx";
 
 export function BfDsToggleExample() {
-  const [standaloneChecked, setStandaloneChecked] = React.useState(false);
-  const [formData, setFormData] = React.useState({
+  const [standaloneChecked, setStandaloneChecked] = useState(false);
+  const [formData, setFormData] = useState({
     darkMode: false,
     notifications: false,
     autoSave: false,
   });
-  const [notification, setNotification] = React.useState({
+  const [notification, setNotification] = useState({
     message: "",
     details: "",
     visible: false,

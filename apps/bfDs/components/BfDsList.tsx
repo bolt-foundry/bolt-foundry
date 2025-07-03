@@ -1,4 +1,11 @@
-import * as React from "react";
+import type * as React from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
 type BfDsListProps = {
   /** List items (typically BfDsListItem components) */
@@ -16,13 +23,13 @@ type BfDsListContextType = {
   getItemIndex: (ref: React.RefObject<HTMLElement | null>) => number | null;
 };
 
-const BfDsListContext = React.createContext<BfDsListContextType | null>(null);
+const BfDsListContext = createContext<BfDsListContextType | null>(null);
 
 export function BfDsList(
   { children, className, accordion = false }: BfDsListProps,
 ) {
-  const [expandedIndex, setExpandedIndex] = React.useState<number | null>(null);
-  const listRef = React.useRef<HTMLUListElement>(null);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   const listClasses = [
     "bfds-list",
@@ -30,7 +37,7 @@ export function BfDsList(
     className,
   ].filter(Boolean).join(" ");
 
-  const getItemIndex = React.useCallback(
+  const getItemIndex = useCallback(
     (ref: React.RefObject<HTMLElement | null>) => {
       if (!ref.current || !listRef.current) return null;
 
@@ -58,6 +65,6 @@ export function BfDsList(
 }
 
 export function useBfDsList() {
-  const context = React.useContext(BfDsListContext);
+  const context = useContext(BfDsListContext);
   return context;
 }
