@@ -1,5 +1,6 @@
 import * as React from "react";
 import { BfDsForm, useBfDsFormContext } from "./BfDsForm.tsx";
+import { BfDsCallout } from "./BfDsCallout.tsx";
 import { BfDsFormSubmitButton } from "./BfDsFormSubmitButton.tsx";
 
 export type BfDsRadioOption = {
@@ -150,6 +151,11 @@ BfDsRadio.Example = function BfDsRadioExample() {
     theme: "",
     plan: "",
   });
+  const [notification, setNotification] = React.useState({
+    message: "",
+    details: "",
+    visible: false,
+  });
 
   const sizeOptions: Array<BfDsRadioOption> = [
     { value: "small", label: "Small" },
@@ -204,9 +210,13 @@ BfDsRadio.Example = function BfDsRadioExample() {
         <h3>With BfDsForm Integration</h3>
         <BfDsForm
           initialData={formData}
-          onSubmit={(data) => {
-            alert(`Form submitted: ${JSON.stringify(data, null, 2)}`);
-            setFormData(data);
+          onSubmit={(data: unknown) => {
+            setNotification({
+              message: "Form submitted successfully!",
+              details: JSON.stringify(data, null, 2),
+              visible: true,
+            });
+            setFormData(data as typeof formData);
           }}
         >
           <div
@@ -235,6 +245,15 @@ BfDsRadio.Example = function BfDsRadioExample() {
             <BfDsFormSubmitButton text="Submit Form" />
           </div>
         </BfDsForm>
+        <BfDsCallout
+          message={notification.message}
+          variant="success"
+          details={notification.details}
+          visible={notification.visible}
+          onDismiss={() =>
+            setNotification({ message: "", details: "", visible: false })}
+          autoDismiss={5000}
+        />
       </div>
 
       <div>

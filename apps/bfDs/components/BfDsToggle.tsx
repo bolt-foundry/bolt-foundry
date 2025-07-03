@@ -1,5 +1,6 @@
 import * as React from "react";
 import { BfDsForm, useBfDsFormContext } from "./BfDsForm.tsx";
+import { BfDsCallout } from "./BfDsCallout.tsx";
 import { BfDsFormSubmitButton } from "./BfDsFormSubmitButton.tsx";
 
 export type BfDsToggleSize = "small" | "medium" | "large";
@@ -18,8 +19,6 @@ export type BfDsToggleProps = {
   // Common props
   /** Label text displayed next to toggle */
   label?: string;
-  /** Required for validation */
-  required?: boolean;
   /** Disables component */
   disabled?: boolean;
   /** Size variant for toggle switch */
@@ -36,7 +35,6 @@ export function BfDsToggle({
   onChange,
   label,
   disabled = false,
-  required = false,
   className,
   id,
   size = "medium",
@@ -91,7 +89,6 @@ export function BfDsToggle({
         checked={actualChecked}
         onChange={handleChange}
         disabled={disabled}
-        required={required}
         className="bfds-toggle-input"
       />
       <div
@@ -108,7 +105,6 @@ export function BfDsToggle({
       {label && (
         <span className="bfds-toggle-label">
           {label}
-          {required && <span className="bfds-toggle-required">*</span>}
         </span>
       )}
     </label>
@@ -121,6 +117,11 @@ BfDsToggle.Example = function BfDsToggleExample() {
     darkMode: false,
     notifications: false,
     autoSave: false,
+  });
+  const [notification, setNotification] = React.useState({
+    message: "",
+    details: "",
+    visible: false,
   });
 
   return (
@@ -155,8 +156,12 @@ BfDsToggle.Example = function BfDsToggleExample() {
         <BfDsForm
           initialData={formData}
           onSubmit={(data) => {
-            alert(`Form submitted: ${JSON.stringify(data, null, 2)}`);
-            setFormData(data);
+            setNotification({
+              message: "Form submitted successfully!",
+              details: JSON.stringify(data, null, 2),
+              visible: true,
+            });
+            setFormData(data as typeof formData);
           }}
         >
           <div
@@ -175,12 +180,20 @@ BfDsToggle.Example = function BfDsToggleExample() {
             <BfDsToggle
               name="autoSave"
               label="Auto-save documents"
-              required
             />
 
             <BfDsFormSubmitButton text="Submit Form" />
           </div>
         </BfDsForm>
+        <BfDsCallout
+          message={notification.message}
+          variant="success"
+          details={notification.details}
+          visible={notification.visible}
+          onDismiss={() =>
+            setNotification({ message: "", details: "", visible: false })}
+          autoDismiss={5000}
+        />
       </div>
 
       <div>
@@ -238,11 +251,7 @@ BfDsToggle.Example = function BfDsToggleExample() {
             onChange={() => {}}
           />
 
-          <BfDsToggle
-            label="Required"
-            required
-            onChange={() => {}}
-          />
+          <BfDsToggle label="Without onChange Handler" />
 
           <BfDsToggle
             label="No Label"

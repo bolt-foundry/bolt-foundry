@@ -1,6 +1,7 @@
 import * as React from "react";
 import { BfDsForm, useBfDsFormContext } from "./BfDsForm.tsx";
 import { BfDsIcon } from "./BfDsIcon.tsx";
+import { BfDsCallout } from "./BfDsCallout.tsx";
 import { BfDsFormSubmitButton } from "./BfDsFormSubmitButton.tsx";
 
 export type BfDsCheckboxProps = {
@@ -121,6 +122,11 @@ BfDsCheckbox.Example = function BfDsCheckboxExample() {
     newsletter: false,
     notifications: false,
   });
+  const [notification, setNotification] = React.useState({
+    message: "",
+    details: "",
+    visible: false,
+  });
 
   return (
     <div
@@ -153,9 +159,13 @@ BfDsCheckbox.Example = function BfDsCheckboxExample() {
         <h3>With BfDsForm Integration</h3>
         <BfDsForm
           initialData={formData}
-          onSubmit={(data) => {
-            alert(`Form submitted: ${JSON.stringify(data, null, 2)}`);
-            setFormData(data);
+          onSubmit={(data: unknown) => {
+            setNotification({
+              message: "Form submitted successfully!",
+              details: JSON.stringify(data, null, 2),
+              visible: true,
+            });
+            setFormData(data as typeof formData);
           }}
         >
           <div
@@ -180,6 +190,15 @@ BfDsCheckbox.Example = function BfDsCheckboxExample() {
             <BfDsFormSubmitButton text="Submit Form" />
           </div>
         </BfDsForm>
+        <BfDsCallout
+          message={notification.message}
+          variant="success"
+          details={notification.details}
+          visible={notification.visible}
+          onDismiss={() =>
+            setNotification({ message: "", details: "", visible: false })}
+          autoDismiss={5000}
+        />
       </div>
 
       <div>
