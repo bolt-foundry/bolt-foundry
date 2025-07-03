@@ -31,7 +31,11 @@ async function handleRequestWrapper(req: Request): Promise<Response> {
 }
 
 // Use the port from environment or default 8000
-const port = Number(getConfigurationVariable("WEB_PORT") ?? 8000);
+const port = Number(
+  getConfigurationVariable("PORT") ??
+    getConfigurationVariable("WEB_PORT") ??
+    8000,
+);
 
 // Start the server if this is the main module
 if (import.meta.main) {
