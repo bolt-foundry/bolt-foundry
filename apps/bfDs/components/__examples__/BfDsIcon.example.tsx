@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
   BfDsIcon,
   type BfDsIconName,
@@ -8,8 +8,8 @@ import { BfDsButton } from "../BfDsButton.tsx";
 import { icons } from "@bfmono/apps/bfDs/lib/icons.ts";
 
 export function BfDsIconExample() {
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [selectedSize, setSelectedSize] = React.useState<BfDsIconSize>(
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSize, setSelectedSize] = useState<BfDsIconSize>(
     "medium",
   );
 

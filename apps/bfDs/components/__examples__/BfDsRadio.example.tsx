@@ -1,17 +1,17 @@
-import * as React from "react";
+import { useState } from "react";
 import { BfDsRadio, type BfDsRadioOption } from "../BfDsRadio.tsx";
 import { BfDsForm } from "../BfDsForm.tsx";
 import { BfDsCallout } from "../BfDsCallout.tsx";
 import { BfDsFormSubmitButton } from "../BfDsFormSubmitButton.tsx";
 
 export function BfDsRadioExample() {
-  const [standaloneValue, setStandaloneValue] = React.useState("");
-  const [formData, setFormData] = React.useState({
+  const [standaloneValue, setStandaloneValue] = useState("");
+  const [formData, setFormData] = useState({
     size: "",
     theme: "",
     plan: "",
   });
-  const [notification, setNotification] = React.useState({
+  const [notification, setNotification] = useState({
     message: "",
     details: "",
     visible: false,

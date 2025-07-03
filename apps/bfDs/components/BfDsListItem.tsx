@@ -1,4 +1,5 @@
-import * as React from "react";
+import type * as React from "react";
+import { useEffect, useRef, useState } from "react";
 import { BfDsIcon } from "./BfDsIcon.tsx";
 import { useBfDsList } from "./BfDsList.tsx";
 
@@ -25,14 +26,14 @@ export function BfDsListItem({
   className,
   expandContents,
 }: BfDsListItemProps) {
-  const [localIsExpanded, setLocalIsExpanded] = React.useState(false);
+  const [localIsExpanded, setLocalIsExpanded] = useState(false);
   const listContext = useBfDsList();
-  const itemRef = React.useRef<HTMLLIElement>(null);
-  const [listIndex, setListIndex] = React.useState<number | null>(null);
+  const itemRef = useRef<HTMLLIElement>(null);
+  const [listIndex, setListIndex] = useState<number | null>(null);
   const isExpandable = !!expandContents;
 
   // Get the item index from the list context after mounting
-  React.useEffect(() => {
+  useEffect(() => {
     if (listContext && itemRef.current) {
       const index = listContext.getItemIndex(itemRef);
       setListIndex(index);
@@ -73,14 +74,6 @@ export function BfDsListItem({
       onClick();
     }
   };
-
-  const element = onClick && !disabled ? "button" : "li";
-  const buttonProps = element === "button"
-    ? {
-      type: "button" as const,
-      onClick: handleMainClick,
-    }
-    : {};
 
   const mainContent = (
     <div className="bfds-list-item__content">
@@ -145,14 +138,21 @@ export function BfDsListItem({
     );
   }
 
-  // For non-expandable items, use the original structure
-  return React.createElement(
-    element,
-    {
-      ref: itemRef,
-      className: itemClasses,
-      ...buttonProps,
-    },
-    mainContent,
+  // For non-expandable items, always render as li with optional button child
+  return (
+    <li ref={itemRef} className={itemClasses}>
+      {onClick && !disabled
+        ? (
+          <button
+            type="button"
+            className="bfds-list-item__button"
+            onClick={handleMainClick}
+            disabled={disabled}
+          >
+            {mainContent}
+          </button>
+        )
+        : mainContent}
+    </li>
   );
 }
