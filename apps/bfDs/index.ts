@@ -5,6 +5,12 @@ export type {
   BfDsButtonVariant,
 } from "./components/BfDsButton.tsx";
 
+export { BfDsCallout } from "./components/BfDsCallout.tsx";
+export type {
+  BfDsCalloutProps,
+  BfDsCalloutVariant,
+} from "./components/BfDsCallout.tsx";
+
 export { BfDsIcon } from "./components/BfDsIcon.tsx";
 export type {
   BfDsIconName,
