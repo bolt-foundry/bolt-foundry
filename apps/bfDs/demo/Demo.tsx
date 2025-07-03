@@ -1,13 +1,20 @@
 import * as React from "react";
-import { BfDsButton } from "../components/BfDsButton.tsx";
-import { BfDsIcon } from "../components/BfDsIcon.tsx";
-import { BfDsTabs } from "../components/BfDsTabs.tsx";
-import { BfDsForm } from "../components/BfDsForm.tsx";
-import { BfDsInput } from "../components/BfDsInput.tsx";
-import { BfDsTextArea } from "../components/BfDsTextArea.tsx";
-import { BfDsFormSubmitButton } from "../components/BfDsFormSubmitButton.tsx";
 import { BfDsList } from "../components/BfDsList.tsx";
 import { BfDsListItem } from "../components/BfDsListItem.tsx";
+import { BfDsButtonExample } from "../components/__examples__/BfDsButton.example.tsx";
+import { BfDsIconExample } from "../components/__examples__/BfDsIcon.example.tsx";
+import { BfDsTabsExample } from "../components/__examples__/BfDsTabs.example.tsx";
+import { BfDsFormExample } from "../components/__examples__/BfDsForm.example.tsx";
+import { BfDsInputExample } from "../components/__examples__/BfDsInput.example.tsx";
+import { BfDsTextAreaExample } from "../components/__examples__/BfDsTextArea.example.tsx";
+import { BfDsFormSubmitButtonExample } from "../components/__examples__/BfDsFormSubmitButton.example.tsx";
+import { BfDsListExample } from "../components/__examples__/BfDsList.example.tsx";
+import { BfDsListItemExample } from "../components/__examples__/BfDsListItem.example.tsx";
+import { BfDsSelectExample } from "../components/__examples__/BfDsSelect.example.tsx";
+import { BfDsCheckboxExample } from "../components/__examples__/BfDsCheckbox.example.tsx";
+import { BfDsRadioExample } from "../components/__examples__/BfDsRadio.example.tsx";
+import { BfDsToggleExample } from "../components/__examples__/BfDsToggle.example.tsx";
+import { BfDsCalloutExample } from "../components/__examples__/BfDsCallout.example.tsx";
 
 type ComponentSection = {
   id: string;
@@ -22,64 +29,99 @@ const componentSections: Array<ComponentSection> = [
     id: "button",
     name: "Button",
     description: "Interactive buttons with variants, sizes, and icon support",
-    component: BfDsButton.Example,
+    component: BfDsButtonExample,
     category: "Core",
   },
   {
     id: "icon",
     name: "Icon",
     description: "SVG icons with customizable sizes and colors",
-    component: BfDsIcon.Example,
+    component: BfDsIconExample,
     category: "Core",
   },
   {
     id: "tabs",
     name: "Tabs",
     description: "Tab navigation with nested subtabs and keyboard support",
-    component: BfDsTabs.Example,
+    component: BfDsTabsExample,
     category: "Navigation",
   },
   {
     id: "form",
     name: "Form",
     description: "Complete form system with context and validation",
-    component: BfDsForm.Example,
+    component: BfDsFormExample,
     category: "Form",
   },
   {
     id: "input",
     name: "Input",
     description: "Text inputs with states and dual-mode operation",
-    component: BfDsInput.Example,
+    component: BfDsInputExample,
     category: "Form",
   },
   {
     id: "textarea",
     name: "TextArea",
     description: "Multi-line text inputs with resize options",
-    component: BfDsTextArea.Example,
+    component: BfDsTextAreaExample,
     category: "Form",
   },
   {
     id: "submit-button",
     name: "Submit Button",
     description: "Form submission buttons with automatic integration",
-    component: BfDsFormSubmitButton.Example,
+    component: BfDsFormSubmitButtonExample,
     category: "Form",
   },
   {
     id: "list",
     name: "List",
     description: "Simple, clean lists with navigation patterns",
-    component: BfDsList.Example,
+    component: BfDsListExample,
     category: "Navigation",
   },
   {
     id: "list-item",
     name: "List Item",
     description: "Individual list items with states and interactions",
-    component: BfDsListItem.Example,
+    component: BfDsListItemExample,
     category: "Navigation",
+  },
+  {
+    id: "select",
+    name: "Select",
+    description: "Dropdown selectors with form integration",
+    component: BfDsSelectExample,
+    category: "Form",
+  },
+  {
+    id: "checkbox",
+    name: "Checkbox",
+    description: "Checkboxes with form integration and accessibility",
+    component: BfDsCheckboxExample,
+    category: "Form",
+  },
+  {
+    id: "radio",
+    name: "Radio",
+    description: "Radio button groups with flexible layouts",
+    component: BfDsRadioExample,
+    category: "Form",
+  },
+  {
+    id: "toggle",
+    name: "Toggle",
+    description: "Toggle switches with smooth animations and sizes",
+    component: BfDsToggleExample,
+    category: "Form",
+  },
+  {
+    id: "callout",
+    name: "Callout",
+    description: "Notification system with variants and auto-dismiss",
+    component: BfDsCalloutExample,
+    category: "Core",
   },
 ];
 
@@ -97,7 +139,7 @@ export function BfDsDemo() {
 
   const ActiveComponent =
     componentSections.find((s) => s.id === activeSection)?.component ||
-    BfDsButton.Example;
+    BfDsButtonExample;
 
   return (
     <div

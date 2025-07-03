@@ -72,17 +72,35 @@ as part of the 2025-06-25 design system migration.
     usage
   - **TypeScript-first**: Strong typing with proper form data integration
   - **Complete accessibility**: ARIA attributes and semantic HTML
+- [x] **BfDsList** and **BfDsListItem** components with:
+  - **BfDsList**: Simple `<ul>` wrapper with optional className
+  - **BfDsListItem**: Smart list item that renders as `<li>` or `<button>` based
+    on onClick prop
+  - **States**: active, disabled, clickable (auto-detected from onClick)
+  - **TypeScript safety**: Proper prop typing
+  - **Semantic HTML**: Uses appropriate element types
+- [x] **BfDsSelect**, **BfDsCheckbox**, **BfDsRadio**, and **BfDsToggle**
+      components with:
+  - **BfDsSelect**: Dropdown selector with form integration and disabled options
+  - **BfDsCheckbox**: Checkbox with keyboard navigation and ARIA support
+  - **BfDsRadio**: Radio button groups with flexible layouts and sizes
+  - **BfDsToggle**: Toggle switch with smooth animations and multiple sizes
+  - **Full form integration**: All components work with BfDsForm context
+  - **Accessibility**: ARIA attributes, keyboard navigation, semantic HTML
+  - **Multiple states**: disabled, required, checked/unchecked variants
+  - **TypeScript-first**: Strong typing with proper prop interfaces
 - [x] CSS variables system for theming with additional form states (error,
       success, focus)
 - [x] Example component pattern (`Component.Example`)
-- [x] Demo page setup with Button, Icon, Tabs, and Form examples
+- [x] Demo page setup with Button, Icon, Tabs, Form, List, Select, Checkbox,
+      Radio, and Toggle examples
 - [x] CSS moved to static folder (per system requirements)
-- [x] Main index.ts exports with all form components
+- [x] Main index.ts exports with all components
 - [x] Icon library moved to `lib/icons.ts`
 
 ### 🔄 In Progress
 
-- [ ] Documentation of component API
+- [ ] Integration with existing apps
 
 ### 📋 Todo
 
@@ -90,11 +108,26 @@ as part of the 2025-06-25 design system migration.
   - [x] ~~Input/TextField~~ ✅ **Completed** (BfDsInput with dual-mode
         operation)
   - [x] ~~TextArea~~ ✅ **Completed** (BfDsTextArea with resize options)
-  - [ ] Select/Dropdown
-  - [ ] Checkbox
-  - [ ] Radio
+  - [x] ~~List/ListItem~~ ✅ **Completed** (BfDsList and BfDsListItem with basic
+        states)
+  - [x] ~~Select/Dropdown~~ ✅ **Completed** (BfDsSelect with form integration)
+  - [x] ~~Checkbox~~ ✅ **Completed** (BfDsCheckbox with accessibility)
+  - [x] ~~Radio~~ ✅ **Completed** (BfDsRadio with flexible layouts)
+  - [x] ~~Toggle~~ ✅ **Completed** (BfDsToggle with smooth animations)
+  - [x] ~~Toast/Notification~~ ✅ **Completed** (BfDsCallout with variants and
+        auto-dismiss)
   - [ ] Modal
-  - [ ] Toast/Notification
+- [ ] Enhanced List components:
+  - [ ] Icon support in BfDsListItem
+  - [ ] Multiple layout orientations (horizontal/vertical)
+  - [ ] Nested list support
+  - [ ] Drag and drop functionality
+  - [ ] Keyboard navigation (arrow keys)
+  - [ ] Multi-select capabilities
+  - [ ] Search/filter integration
+  - [ ] Virtual scrolling for large lists
+  - [ ] Sortable list items
+  - [ ] Expandable/collapsible list sections
 - [ ] Layout components:
   - [ ] Container
   - [ ] Grid
@@ -102,7 +135,10 @@ as part of the 2025-06-25 design system migration.
 - [x] ~~Form components integration~~ ✅ **Completed** (Full form system with
       context)
 - [ ] Typography system
-- [ ] Testing setup
+- [x] ~~Testing setup~~ ✅ **Completed** (Comprehensive test suites added for
+      all components)
+- [x] ~~Documentation of component API~~ ✅ **Completed** (Inline JSDoc
+      documentation added to all components)
 - [ ] Integration with existing apps
 
 ## File Structure
@@ -116,7 +152,14 @@ apps/bfDs/
 │   ├── BfDsForm.tsx (with .Example and context provider)
 │   ├── BfDsInput.tsx (with .Example and dual-mode operation)
 │   ├── BfDsTextArea.tsx (with .Example and resize options)
-│   └── BfDsFormSubmitButton.tsx (with .Example and form integration)
+│   ├── BfDsFormSubmitButton.tsx (with .Example and form integration)
+│   ├── BfDsList.tsx (with .Example)
+│   ├── BfDsListItem.tsx (with .Example)
+│   ├── BfDsSelect.tsx (with .Example and form integration)
+│   ├── BfDsCheckbox.tsx (with .Example and accessibility)
+│   ├── BfDsRadio.tsx (with .Example and flexible layouts)
+│   ├── BfDsToggle.tsx (with .Example and animations)
+│   └── BfDsCallout.tsx (with .Example and notification variants)
 ├── lib/
 │   └── icons.ts (80+ icon definitions)
 ├── demo/
@@ -126,7 +169,7 @@ apps/bfDs/
 │       └── 2025-06-23-bfds-lite-creation.md
 └── index.ts (complete exports)
 
-CSS: static/bfDsStyle.css (comprehensive styling with form states)
+CSS: static/bfDsStyle.css (comprehensive styling with form states and notifications)
 ```
 
 ## Design Decisions
@@ -149,6 +192,25 @@ CSS: static/bfDsStyle.css (comprehensive styling with form states)
    and adapt between standalone and form-integrated modes
 10. **Form state management**: Centralized form context with TypeScript-safe
     data handling and error management
+11. **JSDoc documentation style**: Comprehensive inline documentation using
+    JSDoc comments for all component props with organized structure for form
+    components:
+    - **Form context props**: Props used for form integration (`name`)
+    - **Standalone props**: Props for controlled component usage (`value`,
+      `onChange`)
+    - **Common props**: Shared props for styling and behavior (`label`,
+      `disabled`, etc.)
+    - **Developer experience**: Documentation appears in VS Code IntelliSense
+      and TypeScript hover tooltips without runtime overhead or build complexity
+12. **Comprehensive testing strategy**: Complete test coverage for all
+    components with behavior validation, accessibility testing, and TypeScript
+    integration:
+    - **Component behavior tests**: Validate all interactive states and props
+    - **Accessibility compliance**: Screen reader support and keyboard
+      navigation
+    - **Form integration tests**: Dual-mode operation and context detection
+    - **TypeScript safety**: Proper type checking and prop validation
+    - **Production readiness**: Ensuring reliability and maintainability
 
 ## Next Steps
 
@@ -186,6 +248,60 @@ CSS: static/bfDsStyle.css (comprehensive styling with form states)
 - ✅ **Comprehensive examples** demonstrating both standalone and form context
   usage
 - ✅ **Production ready** with successful PRs submitted and integrated
+
+## Recent Achievements (2025-07-02)
+
+- ✅ **Four additional form components completed** expanding the design system
+- ✅ **BfDsSelect component** with dropdown functionality and form integration
+- ✅ **BfDsCheckbox component** with keyboard navigation and ARIA support
+- ✅ **BfDsRadio component** with flexible layouts, sizes, and fieldset support
+- ✅ **BfDsToggle component** with smooth animations and multiple sizes
+- ✅ **Enhanced demo integration** showcasing all new components
+- ✅ **Comprehensive CSS styling** for all form input states and interactions
+- ✅ **Full TypeScript typing** with proper prop interfaces and option types
+- ✅ **Accessibility compliance** with semantic HTML and keyboard navigation
+- ✅ **Form context integration** for all components with automatic detection
+- ✅ **Comprehensive inline documentation** added to all components using JSDoc
+- ✅ **Complete test suites** implemented for all form and UI components
+- ✅ **TypeScript documentation** with organized prop groups and IntelliSense
+  support
+- ✅ **Developer experience enhancements** with detailed component API
+  documentation
+- ✅ **Testing infrastructure** established with component behavior validation
+- ✅ **Code quality improvements** with documented interfaces and comprehensive
+  examples
+- ✅ **Production readiness** with both documentation and testing complete
+
+## Recent Achievements (2025-07-03)
+
+- ✅ **BfDsCallout notification component** implemented with elegant UX
+  improvements
+- ✅ **Complete alert() replacement** throughout all bfDs components with
+  BfDsCallout notifications
+- ✅ **Four semantic variants** (info, success, warning, error) with appropriate
+  icons and colors
+- ✅ **Auto-dismiss functionality** with configurable timeout and manual dismiss
+  options
+- ✅ **Expandable details support** for displaying JSON data and complex
+  information
+- ✅ **Enhanced form examples** with comprehensive component integration
+  showcasing all input types
+- ✅ **React.lazy removal** eliminating circular dependency issues and suspense
+  re-rendering problems
+- ✅ **Browser validation UI fixes** for checkboxes and radios with proper CSS
+  positioning
+- ✅ **Toggle component UX improvements** removing inappropriate required prop
+  functionality
+- ✅ **Demo page integration** with BfDsCallout component added to component
+  showcase
+- ✅ **CSS validation states** with user-friendly styling that only appears
+  after interaction
+- ✅ **TypeScript safety improvements** with proper type annotations and error
+  handling
+- ✅ **Component reliability enhancements** ensuring stable loading and
+  consistent behavior
+- ✅ **Production-ready notification system** replacing browser alerts with
+  modern UX patterns
 
 ## Notes
 

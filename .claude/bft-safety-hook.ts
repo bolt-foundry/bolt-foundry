@@ -1,4 +1,4 @@
-#!/usr/bin/env deno run --allow-read --allow-env
+#!/usr/bin/env -S deno run --allow-read --allow-env
 
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 
