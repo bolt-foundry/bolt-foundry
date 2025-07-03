@@ -12,7 +12,9 @@ import {
 const logger = getLogger(import.meta);
 
 Deno.test("aibff GUI loads successfully with routing and Isograph", async () => {
-  const context = await setupE2ETest();
+  const context = await setupE2ETest({
+    baseUrl: "http://localhost:3001",
+  });
 
   try {
     // Navigate to the GUI
@@ -20,6 +22,16 @@ Deno.test("aibff GUI loads successfully with routing and Isograph", async () => 
 
     // Take initial screenshot
     await context.takeScreenshot("aibff-gui-initial");
+
+    // Wait for the loading to complete and UI to be ready
+    await context.page.waitForFunction(
+      () => {
+        const bodyText = document.body.textContent || "";
+        // Wait for loading to complete (no "Loading conversation..." text)
+        return !bodyText.includes("Loading conversation...");
+      },
+      { timeout: 10000 },
+    );
 
     // Wait for content to load - look for the "New Conversation" header
     await context.page.waitForFunction(
@@ -29,11 +41,11 @@ Deno.test("aibff GUI loads successfully with routing and Isograph", async () => 
           el.textContent?.trim() === "New Conversation"
         );
       },
-      { timeout: 5000 },
+      { timeout: 10000 },
     );
 
-    // Wait a bit more for React to hydrate
-    await delay(500);
+    // Wait a bit more for React to hydrate and all components to load
+    await delay(2000);
 
     const title = await context.page.title();
     logger.info(`Page title: ${title}`);
@@ -48,16 +60,16 @@ Deno.test("aibff GUI loads successfully with routing and Isograph", async () => 
     });
     assert(hasNewConversationHeader, "Should show 'New Conversation' header");
 
-    // Check that the simplified interface exists (no more tabs since we removed TabbedEditor)
+    // Check that the WorkflowPanel with correct tabs exists
     const hasWorkflowPanel = await context.page.evaluate(() => {
       const elements = Array.from(document.querySelectorAll("*"));
       return elements.some((el) =>
-        el.textContent?.includes("Workflow panel placeholder") ||
         el.textContent?.includes("Input Samples") ||
-        el.textContent?.includes("Tool")
+        el.textContent?.includes("Actor Deck") ||
+        el.textContent?.includes("Grader Deck")
       );
     });
-    assert(hasWorkflowPanel, "Should show workflow panel or tool interface");
+    assert(hasWorkflowPanel, "Should show workflow panel with correct tabs");
 
     // Check for the chat interface elements - look for Assistant message div
     const hasAssistantMessage = await context.page.evaluate(() => {
