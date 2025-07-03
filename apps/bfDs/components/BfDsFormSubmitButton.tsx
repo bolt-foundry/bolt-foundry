@@ -1,5 +1,8 @@
-import type * as React from "react";
+import * as React from "react";
 import { BfDsButton, type BfDsButtonProps } from "./BfDsButton.tsx";
+import { BfDsCallout } from "./BfDsCallout.tsx";
+import { BfDsForm } from "./BfDsForm.tsx";
+import { BfDsInput } from "./BfDsInput.tsx";
 
 export type BfDsFormSubmitButtonProps =
   & Omit<BfDsButtonProps, "type" | "onClick">
@@ -36,10 +39,12 @@ export function BfDsFormSubmitButton({
 }
 
 BfDsFormSubmitButton.Example = function BfDsFormSubmitButtonExample() {
-  const handleStandaloneClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    alert("Standalone submit button clicked!");
-  };
+  const [formData, setFormData] = React.useState({ name: "" });
+  const [notification, setNotification] = React.useState({
+    message: "",
+    details: "",
+    visible: false,
+  });
 
   return (
     <div
@@ -57,113 +62,44 @@ BfDsFormSubmitButton.Example = function BfDsFormSubmitButtonExample() {
       <h2>BfDsFormSubmitButton Examples</h2>
 
       <div>
-        <h3>Standalone Mode</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsFormSubmitButton
-            text="Submit Form"
-            onClick={handleStandaloneClick}
-          />
-          <BfDsFormSubmitButton
-            text="Save"
-            variant="secondary"
-            onClick={handleStandaloneClick}
-          />
-          <BfDsFormSubmitButton
-            variant="outline"
-            onClick={handleStandaloneClick}
-          >
-            Custom Content
-          </BfDsFormSubmitButton>
-        </div>
-      </div>
-
-      <div>
-        <h3>Different Variants</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsFormSubmitButton
-            text="Primary Submit"
-            variant="primary"
-            onClick={handleStandaloneClick}
-          />
-          <BfDsFormSubmitButton
-            text="Secondary Submit"
-            variant="secondary"
-            onClick={handleStandaloneClick}
-          />
-          <BfDsFormSubmitButton
-            text="Outline Submit"
-            variant="outline"
-            onClick={handleStandaloneClick}
-          />
-          <BfDsFormSubmitButton
-            text="Ghost Submit"
-            variant="ghost"
-            onClick={handleStandaloneClick}
-          />
-        </div>
-      </div>
-
-      <div>
-        <h3>Different Sizes</h3>
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            alignItems: "center",
-            flexWrap: "wrap",
+        <h3>Form Integration</h3>
+        <p style={{ margin: "0 0 16px 0", color: "var(--bfds-text-muted)" }}>
+          Submit button automatically integrates with form context for
+          submission handling.
+        </p>
+        <BfDsForm
+          initialData={formData}
+          onSubmit={(data) => {
+            setNotification({
+              message: "Form submitted successfully!",
+              details: JSON.stringify(data, null, 2),
+              visible: true,
+            });
+            setFormData(data as typeof formData);
           }}
         >
-          <BfDsFormSubmitButton
-            text="Small"
-            size="small"
-            onClick={handleStandaloneClick}
-          />
-          <BfDsFormSubmitButton
-            text="Medium"
-            size="medium"
-            onClick={handleStandaloneClick}
-          />
-          <BfDsFormSubmitButton
-            text="Large"
-            size="large"
-            onClick={handleStandaloneClick}
-          />
-        </div>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+          >
+            <BfDsInput
+              name="name"
+              label="Your Name"
+              placeholder="Enter your name"
+              required
+            />
+            <BfDsFormSubmitButton text="Submit Form" />
+          </div>
+        </BfDsForm>
+        <BfDsCallout
+          message={notification.message}
+          variant="success"
+          details={notification.details}
+          visible={notification.visible}
+          onDismiss={() =>
+            setNotification({ message: "", details: "", visible: false })}
+          autoDismiss={5000}
+        />
       </div>
-
-      <div>
-        <h3>With Icons</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsFormSubmitButton
-            text="Save"
-            icon="checkmark"
-            onClick={handleStandaloneClick}
-          />
-          <BfDsFormSubmitButton
-            text="Send"
-            icon="arrowRight"
-            iconPosition="right"
-            onClick={handleStandaloneClick}
-          />
-        </div>
-      </div>
-
-      <div>
-        <h3>States</h3>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-          <BfDsFormSubmitButton
-            text="Disabled"
-            disabled
-            onClick={handleStandaloneClick}
-          />
-        </div>
-      </div>
-
-      <p>
-        <strong>Note:</strong>{" "}
-        Form context integration will be demonstrated in the BfDsForm examples
-        once complete.
-      </p>
     </div>
   );
 };
