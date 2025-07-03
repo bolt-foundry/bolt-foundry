@@ -1,4 +1,4 @@
-import { iso } from "@iso";
+import { iso } from "@bfmono/apps/aibff/gui/__generated__/__isograph/iso.ts";
 
 export const ConversationDisplay = iso(`
   field Query.ConversationDisplay @component {
@@ -19,9 +19,9 @@ export const ConversationDisplay = iso(`
       style={{ padding: "1rem", backgroundColor: "#1c1c1c", color: "#fafaff" }}
     >
       <h2>Conversations</h2>
-      {data.conversations.length === 0 ? <p>No conversations yet</p> : (
+      {data.data.conversations.length === 0 ? <p>No conversations yet</p> : (
         <ul>
-          {data.conversations.map((conv) => (
+          {data.data.conversations.map((conv) => (
             <li key={conv.id}>
               <strong>Conversation {conv.id}</strong> - {conv.createdAt}
               <ul>
