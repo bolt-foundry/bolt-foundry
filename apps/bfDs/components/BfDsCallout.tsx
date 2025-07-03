@@ -61,8 +61,8 @@ export function BfDsCallout({
   const iconName = {
     info: "infoCircle" as const,
     success: "checkCircle" as const,
-    warning: "infoCircle" as const,
-    error: "cross" as const,
+    warning: "exclamationTriangle" as const,
+    error: "exclamationStop" as const,
   }[variant];
 
   const calloutClasses = [

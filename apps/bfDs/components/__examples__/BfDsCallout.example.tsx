@@ -150,7 +150,6 @@ export function BfDsCalloutExample() {
               variant={notification.variant}
               details={notification.details}
               onDismiss={() => removeNotification(notification.id)}
-              autoDismiss={5000}
             />
           ))}
         </div>
