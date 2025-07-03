@@ -67,43 +67,99 @@ export interface E2ETestContext {
   page: Page;
   baseUrl: string;
   takeScreenshot: (name: string) => Promise<string>;
-  // New video recording methods
-  startVideoRecording: () => Promise<void>;
-  stopVideoRecording: () => Promise<string>;
+  // New video recording methods - returns stop function for better API design
+  startVideoRecording: (name: string) => Promise<() => Promise<string | null>>;
 }
 ```
 
-### 3. GitHub Upload Integration
+**API Design Decision**: `startVideoRecording` returns a stop function for
+better coupling and type safety, preventing orphaned recordings.
+
+### 3. Video File Management
 
 ```typescript
-// github-video-uploader.ts
-export class GitHubVideoUploader {
-  async uploadVideo(videoPath: string): Promise<string> {
-    // 1. Create draft issue using GitHub API
-    // 2. Upload video as attachment
-    // 3. Extract CDN URL from response
-    // 4. Delete draft issue (optional)
-    // 5. Return permanent CDN URL
+// video-utils.ts
+export async function saveVideo(
+  frames: Buffer[],
+  name: string,
+): Promise<string> {
+  // 1. Create video directory structure
+  // 2. Convert frames to video format
+  // 3. Apply compression settings
+  // 4. Save to local storage
+  // 5. Return local file path
+}
+```
+
+### 4. Enhanced Mouse Movement for Video Recording
+
+```typescript
+// smooth-mouse.ts
+export async function smoothMoveTo(
+  page: Page,
+  targetX: number,
+  targetY: number,
+  duration = 1000,
+): Promise<void> {
+  const currentPos = await page.evaluate(() => ({
+    x: window.mouseX || 0,
+    y: window.mouseY || 0,
+  }));
+
+  const steps = 20;
+  const stepDelay = duration / steps;
+
+  for (let i = 0; i <= steps; i++) {
+    const progress = i / steps;
+    // Easing function (ease-out)
+    const eased = 1 - Math.pow(1 - progress, 3);
+
+    const x = currentPos.x + (targetX - currentPos.x) * eased;
+    const y = currentPos.y + (targetY - currentPos.y) * eased;
+
+    await page.mouse.move(x, y);
+    await new Promise((resolve) => setTimeout(resolve, stepDelay));
   }
 }
+
+export async function smoothClick(page: Page, selector: string): Promise<void> {
+  const element = await page.$(selector);
+  const box = await element.boundingBox();
+  const centerX = box.x + box.width / 2;
+  const centerY = box.y + box.height / 2;
+
+  await smoothMoveTo(page, centerX, centerY);
+  await page.mouse.click(centerX, centerY);
+}
+
+export async function smoothHover(page: Page, selector: string): Promise<void> {
+  const element = await page.$(selector);
+  const box = await element.boundingBox();
+  const centerX = box.x + box.width / 2;
+  const centerY = box.y + box.height / 2;
+
+  await smoothMoveTo(page, centerX, centerY);
+}
 ```
 
-### 4. Test Recording Workflow
+### 5. Test Recording Workflow
 
 ```typescript
-// Example test with video recording
+// Example test with video recording and smooth mouse movement
 Deno.test("Home page with video", async () => {
   const context = await setupE2ETest({ recordVideo: true });
 
   try {
-    await context.startVideoRecording();
+    const stopRecording = await context.startVideoRecording("home-page-test");
 
-    // Run test steps
+    // Run test steps with smooth mouse movement
     await navigateTo(context, "/");
+    await smoothClick(context.page, ".login-button");
+    await smoothClick(context.page, "#username");
     // ... test assertions ...
 
-    const videoPath = await context.stopVideoRecording();
-    // Video saved to tmp/videos/[timestamp]_home-page.mp4
+    const videoPath = await stopRecording();
+    // Video saved to tmp/videos/[timestamp]_home-page-test.mp4
   } finally {
     await teardownE2ETest(context);
   }
@@ -112,36 +168,27 @@ Deno.test("Home page with video", async () => {
 
 ## Implementation Phases
 
-### Phase 1: Basic Recording (Week 1)
+### Phase 1: Basic Recording
 
 - [ ] Create `infra/testing/video-recording/` directory structure
 - [ ] Implement ScreencastRecorder using Chrome DevTools Protocol
+- [ ] Create smooth mouse movement utilities (`smooth-mouse.ts`)
 - [ ] Extend E2ETestContext with recording methods
 - [ ] Save frames as image sequence initially
-- [ ] Update one test as proof of concept
+- [ ] Update one test as proof of concept with smooth mouse movement
 
-### Phase 2: Video Conversion (Week 2)
+### Phase 2: Video Conversion
 
 - [ ] Add ffmpeg integration for frame-to-video conversion
 - [ ] Support multiple output formats (WebM for immediate use, AV1 for final)
 - [ ] Implement video compression settings
 - [ ] Add progress logging for long recordings
 
-### Phase 3: GitHub Integration (Week 3)
+### Phase 3: Local Video Management
 
-- [ ] Implement GitHub API client for draft issues
-- [ ] Create video upload functionality
-- [ ] Extract and validate CDN URLs
-- [ ] Add retry logic for failed uploads
-- [ ] Create upload CLI command for testing
-
-### Phase 4: AI Assistant Integration (Week 4)
-
-- [ ] Create test relevance analyzer
-- [ ] Integrate with commit workflow
-- [ ] Automatically run relevant tests with recording
-- [ ] Format commit messages with video links
-- [ ] Add configuration for video inclusion rules
+- [ ] Implement video file compression and optimization
+- [ ] Add video playback utilities for local review
+- [ ] Create video indexing and search capabilities
 
 ## Configuration
 
@@ -173,12 +220,22 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Future Enhancements
 
+### Video Recording Features
+
 1. **Parallel recording** - Record multiple test runs simultaneously
 2. **Selective recording** - Record only on test failure or specific steps
 3. **Video annotations** - Add timestamps and step descriptions
 4. **Diff videos** - Show before/after for visual regression tests
 5. **Performance metrics** - Overlay performance data on videos
 6. **Video thumbnails** - Generate preview images for commit messages
+
+### GitHub Integration (Future Work)
+
+7. **GitHub API client** - Upload videos to GitHub CDN via draft issues
+8. **Video upload functionality** - Extract and validate CDN URLs
+9. **Commit message integration** - Format commit messages with video links
+10. **AI Assistant Integration** - Automatically run relevant tests with
+    recording and include videos in commits
 
 ## Success Metrics
 
