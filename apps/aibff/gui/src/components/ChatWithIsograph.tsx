@@ -442,7 +442,7 @@ Error formatting arguments: ${
       {/* Main Chat Area */}
       <div
         style={{
-          flex: 1,
+          width: "50%",
           display: "flex",
           flexDirection: "column",
         }}
@@ -1059,7 +1059,13 @@ Generated at: ${new Date().toISOString()}`,
       </div>
 
       {/* Workflow Panel */}
-      <WorkflowPanel />
+      <div
+        style={{
+          width: "50%",
+        }}
+      >
+        <WorkflowPanel />
+      </div>
     </div>
   );
 }
