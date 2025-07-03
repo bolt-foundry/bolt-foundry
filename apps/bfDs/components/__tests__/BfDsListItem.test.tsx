@@ -49,7 +49,7 @@ Deno.test("BfDsListItem renders in disabled state", () => {
   );
 });
 
-Deno.test("BfDsListItem renders as button when onClick provided", () => {
+Deno.test("BfDsListItem renders as li with button when onClick provided", () => {
   const { doc } = render(
     <BfDsListItem onClick={() => {}}>Clickable Item</BfDsListItem>,
   );
@@ -58,7 +58,7 @@ Deno.test("BfDsListItem renders as button when onClick provided", () => {
   const listItem = doc?.querySelector("li");
 
   assertExists(button, "Button element should exist");
-  assertEquals(listItem, null, "Li element should not exist");
+  assertExists(listItem, "Li element should exist");
   assertEquals(
     button?.textContent,
     "Clickable Item",
@@ -70,9 +70,9 @@ Deno.test("BfDsListItem renders as button when onClick provided", () => {
     "Button should have correct type",
   );
   assertEquals(
-    button?.className.includes("bfds-list-item--clickable"),
+    listItem?.className.includes("bfds-list-item--clickable"),
     true,
-    "Button should have clickable class",
+    "Li should have clickable class",
   );
 });
 
@@ -129,16 +129,18 @@ Deno.test("BfDsListItem renders with combined states", () => {
   );
 
   const button = doc?.querySelector("button");
+  const listItem = doc?.querySelector("li");
   assertExists(button, "Button element should exist");
+  assertExists(listItem, "Li element should exist");
   assertEquals(
-    button?.className.includes("bfds-list-item--active"),
+    listItem?.className.includes("bfds-list-item--active"),
     true,
-    "Button should have active class",
+    "Li should have active class",
   );
   assertEquals(
-    button?.className.includes("bfds-list-item--clickable"),
+    listItem?.className.includes("bfds-list-item--clickable"),
     true,
-    "Button should have clickable class",
+    "Li should have clickable class",
   );
 });
 

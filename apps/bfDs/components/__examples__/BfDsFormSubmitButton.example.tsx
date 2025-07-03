@@ -1,12 +1,12 @@
-import * as React from "react";
+import { useState } from "react";
 import { BfDsFormSubmitButton } from "../BfDsFormSubmitButton.tsx";
 import { BfDsCallout } from "../BfDsCallout.tsx";
 import { BfDsForm } from "../BfDsForm.tsx";
 import { BfDsInput } from "../BfDsInput.tsx";
 
 export function BfDsFormSubmitButtonExample() {
-  const [formData, setFormData] = React.useState({ name: "" });
-  const [notification, setNotification] = React.useState({
+  const [formData, setFormData] = useState({ name: "" });
+  const [notification, setNotification] = useState({
     message: "",
     details: "",
     visible: false,

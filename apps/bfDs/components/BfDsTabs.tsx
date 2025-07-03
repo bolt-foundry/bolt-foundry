@@ -1,4 +1,5 @@
-import * as React from "react";
+import type * as React from "react";
+import { useEffect, useState } from "react";
 import { BfDsIcon, type BfDsIconName } from "./BfDsIcon.tsx";
 
 export type BfDsTabItem = {
@@ -51,7 +52,7 @@ export function BfDsTabs({
   const isControlled = activeTab !== undefined;
 
   // Initialize state
-  const [state, setState] = React.useState<BfDsTabsState>(() => {
+  const [state, setState] = useState<BfDsTabsState>(() => {
     const initialActiveTab = activeTab || defaultActiveTab || tabs[0]?.id || "";
     const activeSubtabs: Record<string, string> = {};
 
@@ -69,7 +70,7 @@ export function BfDsTabs({
   });
 
   // Update state when controlled activeTab changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (isControlled && activeTab !== undefined) {
       setState((prev) => ({
         ...prev,
