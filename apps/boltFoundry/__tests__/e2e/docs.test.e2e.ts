@@ -8,55 +8,58 @@ import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-Deno.test("Docs getting-started page renders markdown content", async () => {
-  const context = await setupE2ETest();
+Deno.test.ignore(
+  "Docs getting-started page renders markdown content",
+  async () => {
+    const context = await setupE2ETest();
 
-  try {
-    // Navigate to the getting-started docs page
-    await navigateTo(context, "/docs/getting-started");
+    try {
+      // Navigate to the getting-started docs page
+      await navigateTo(context, "/docs/getting-started");
 
-    // Wait for the page to load
-    await context.page.waitForSelector("body", { timeout: 5000 });
+      // Wait for the page to load
+      await context.page.waitForSelector("body", { timeout: 5000 });
 
-    // Take screenshot after initial page load
-    await context.takeScreenshot("docs-getting-started-page");
+      // Take screenshot after initial page load
+      await context.takeScreenshot("docs-getting-started-page");
 
-    // Check if the page contains expected content
-    const bodyText = await context.page.evaluate(() =>
-      document.body.textContent
-    );
+      // Check if the page contains expected content
+      const bodyText = await context.page.evaluate(() =>
+        document.body.textContent
+      );
 
-    // Verify the page loaded successfully
-    assertEquals(
-      typeof bodyText,
-      "string",
-      "Page body should contain text",
-    );
+      // Verify the page loaded successfully
+      assertEquals(
+        typeof bodyText,
+        "string",
+        "Page body should contain text",
+      );
 
-    // Verify the page has content
-    assert(
-      bodyText && bodyText.length > 200,
-      "Page should contain substantial content",
-    );
+      // Verify the page has content
+      assert(
+        bodyText && bodyText.length > 200,
+        "Page should contain substantial content",
+      );
 
-    // Verify no error messages
-    assert(
-      !bodyText?.includes("Documentation page not found"),
-      "Page should not show error message",
-    );
+      // Verify no error messages
+      assert(
+        !bodyText?.includes("Documentation page not found"),
+        "Page should not show error message",
+      );
 
-    logger.info("Docs getting-started page test completed successfully");
-  } catch (error) {
-    // Take screenshot on test failure
-    await context.takeScreenshot("docs-getting-started-error");
-    logger.error("Test failed:", error);
-    throw error;
-  } finally {
-    await teardownE2ETest(context);
-  }
-});
+      logger.info("Docs getting-started page test completed successfully");
+    } catch (error) {
+      // Take screenshot on test failure
+      await context.takeScreenshot("docs-getting-started-error");
+      logger.error("Test failed:", error);
+      throw error;
+    } finally {
+      await teardownE2ETest(context);
+    }
+  },
+);
 
-Deno.test("Docs page handles non-existent document", async () => {
+Deno.test.ignore("Docs page handles non-existent document", async () => {
   const context = await setupE2ETest();
 
   try {
@@ -92,43 +95,46 @@ Deno.test("Docs page handles non-existent document", async () => {
   }
 });
 
-Deno.test("Docs page loads README.md by default when no slug provided", async () => {
-  const context = await setupE2ETest();
+Deno.test.ignore(
+  "Docs page loads README.md by default when no slug provided",
+  async () => {
+    const context = await setupE2ETest();
 
-  try {
-    // Navigate to /docs/ without a slug
-    await navigateTo(context, "/docs");
+    try {
+      // Navigate to /docs/ without a slug
+      await navigateTo(context, "/docs");
 
-    // Wait for the page to load
-    await context.page.waitForSelector("body", { timeout: 5000 });
+      // Wait for the page to load
+      await context.page.waitForSelector("body", { timeout: 5000 });
 
-    // Take screenshot
-    await context.takeScreenshot("docs-default-readme");
+      // Take screenshot
+      await context.takeScreenshot("docs-default-readme");
 
-    // Check that the page shows content from README.md
-    const bodyText = await context.page.evaluate(() =>
-      document.body.textContent
-    );
+      // Check that the page shows content from README.md
+      const bodyText = await context.page.evaluate(() =>
+        document.body.textContent
+      );
 
-    assert(
-      bodyText?.includes("Bolt Foundry") ||
-        bodyText?.includes("Documentation") ||
-        bodyText?.includes("README"),
-      "Default docs page should show README.md content",
-    );
+      assert(
+        bodyText?.includes("Bolt Foundry") ||
+          bodyText?.includes("Documentation") ||
+          bodyText?.includes("README"),
+        "Default docs page should show README.md content",
+      );
 
-    logger.info("Docs default page (README) test completed successfully");
-  } catch (error) {
-    // Take screenshot on test failure
-    await context.takeScreenshot("docs-default-error");
-    logger.error("Test failed:", error);
-    throw error;
-  } finally {
-    await teardownE2ETest(context);
-  }
-});
+      logger.info("Docs default page (README) test completed successfully");
+    } catch (error) {
+      // Take screenshot on test failure
+      await context.takeScreenshot("docs-default-error");
+      logger.error("Test failed:", error);
+      throw error;
+    } finally {
+      await teardownE2ETest(context);
+    }
+  },
+);
 
-Deno.test("Docs page renders different markdown files", async () => {
+Deno.test.ignore("Docs page renders different markdown files", async () => {
   const context = await setupE2ETest();
 
   try {

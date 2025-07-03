@@ -93,9 +93,10 @@ jobs:
       # 👇 Everything below now runs *inside* the dev-shell
       - name: Enter dev-shell & run tests
         run: |
-          # Pass DENO_DIR into the Nix environment to ensure cache sharing
+          # Pass DENO_DIR and secrets into the Nix environment
           nix develop .#github-actions --accept-flake-config --command bash -euc "
             export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             echo \"Using Deno cache directory: \${DENO_DIR}\"
             deno --version
             deno info
