@@ -1,5 +1,13 @@
 import * as React from "react";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { BfDsCallout } from "./BfDsCallout.tsx";
+import { BfDsInput } from "./BfDsInput.tsx";
+import { BfDsTextArea } from "./BfDsTextArea.tsx";
+import { BfDsSelect } from "./BfDsSelect.tsx";
+import { BfDsCheckbox } from "./BfDsCheckbox.tsx";
+import { BfDsRadio } from "./BfDsRadio.tsx";
+import { BfDsToggle } from "./BfDsToggle.tsx";
+import { BfDsFormSubmitButton } from "./BfDsFormSubmitButton.tsx";
 
 const { useState, createContext, useContext } = React;
 const logger = getLogger(import.meta);
@@ -100,34 +108,39 @@ export type BfDsFormElementProps<
 };
 
 BfDsForm.Example = function BfDsFormExample() {
-  // Import components dynamically to avoid circular dependencies
-  const BfDsInput = React.lazy(() =>
-    import("./BfDsInput.tsx").then((m) => ({ default: m.BfDsInput }))
-  );
-  const BfDsTextArea = React.lazy(() =>
-    import("./BfDsTextArea.tsx").then((m) => ({ default: m.BfDsTextArea }))
-  );
-  const BfDsFormSubmitButton = React.lazy(() =>
-    import("./BfDsFormSubmitButton.tsx").then((m) => ({
-      default: m.BfDsFormSubmitButton,
-    }))
-  );
-
   type ExampleFormData = {
     name: string;
     email: string;
     message: string;
+    country: string;
+    newsletter: boolean;
+    contactMethod: string;
+    notifications: boolean;
   };
 
   const exampleInitialFormData: ExampleFormData = {
     name: "John Doe",
     email: "john@example.com",
     message: "Hello world!",
+    country: "us",
+    newsletter: false,
+    contactMethod: "email",
+    notifications: true,
   };
+
+  const [notification, setNotification] = useState({
+    message: "",
+    details: "",
+    visible: false,
+  });
 
   function exampleOnSubmit(value: ExampleFormData) {
     logger.info("Form submitted:", value);
-    alert(`Form submitted with: ${JSON.stringify(value, null, 2)}`);
+    setNotification({
+      message: "Form submitted successfully!",
+      details: JSON.stringify(value, null, 2),
+      visible: true,
+    });
   }
 
   function exampleOnChange(value: ExampleFormData) {
@@ -151,40 +164,76 @@ BfDsForm.Example = function BfDsFormExample() {
 
       <div>
         <h3>Complete Form with Context Integration</h3>
-        <React.Suspense fallback={<div>Loading form components...</div>}>
-          <BfDsForm<ExampleFormData>
-            onSubmit={exampleOnSubmit}
-            onChange={exampleOnChange}
-            initialData={exampleInitialFormData}
+        <p style={{ margin: "0 0 16px 0", color: "var(--bfds-text-muted)" }}>
+          All form fields automatically sync with centralized form state without
+          individual value/onChange props.
+        </p>
+        <BfDsForm<ExampleFormData>
+          onSubmit={exampleOnSubmit}
+          onChange={exampleOnChange}
+          initialData={exampleInitialFormData}
+        >
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
           >
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
-            >
-              <BfDsInput
-                name="name"
-                label="Your Name"
-                placeholder="Enter your name"
-                required
-                helpText="This input gets its value from form context"
-              />
-              <BfDsInput
-                name="email"
-                label="Email Address"
-                type="email"
-                placeholder="email@example.com"
-                required
-              />
-              <BfDsTextArea
-                name="message"
-                label="Message"
-                placeholder="Enter your message..."
-                rows={4}
-                helpText="This textarea also uses form context"
-              />
-              <BfDsFormSubmitButton text="Submit Form" />
-            </div>
-          </BfDsForm>
-        </React.Suspense>
+            <BfDsInput
+              name="name"
+              label="Your Name"
+              placeholder="Enter your name"
+              required
+            />
+            <BfDsInput
+              name="email"
+              label="Email Address"
+              type="email"
+              placeholder="email@example.com"
+              required
+            />
+            <BfDsTextArea
+              name="message"
+              label="Message"
+              placeholder="Enter your message..."
+              rows={4}
+            />
+            <BfDsSelect
+              name="country"
+              label="Country"
+              options={[
+                { value: "us", label: "United States" },
+                { value: "ca", label: "Canada" },
+                { value: "uk", label: "United Kingdom" },
+                { value: "au", label: "Australia" },
+              ]}
+            />
+            <BfDsCheckbox
+              name="newsletter"
+              label="Subscribe to newsletter"
+            />
+            <BfDsRadio
+              name="contactMethod"
+              label="Preferred Contact Method"
+              options={[
+                { value: "email", label: "Email" },
+                { value: "phone", label: "Phone" },
+                { value: "text", label: "Text Message" },
+              ]}
+            />
+            <BfDsToggle
+              name="notifications"
+              label="Push notifications"
+            />
+            <BfDsFormSubmitButton text="Submit Complete Form" />
+          </div>
+        </BfDsForm>
+        <BfDsCallout
+          message={notification.message}
+          variant="success"
+          details={notification.details}
+          visible={notification.visible}
+          onDismiss={() =>
+            setNotification({ message: "", details: "", visible: false })}
+          autoDismiss={5000}
+        />
       </div>
 
       <div>
@@ -194,6 +243,10 @@ BfDsForm.Example = function BfDsFormExample() {
           <li>No need to pass value/onChange to each field</li>
           <li>Form-level validation and error handling</li>
           <li>Centralized form submission logic</li>
+          <li>
+            Support for all input types: text, select, checkbox, radio, toggle
+          </li>
+          <li>TypeScript-safe form data with proper type inference</li>
         </ul>
       </div>
     </div>
