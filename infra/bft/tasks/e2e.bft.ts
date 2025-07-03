@@ -35,14 +35,19 @@ async function waitForPort(port: number, timeoutMs = 30000): Promise<boolean> {
 export async function e2eCommand(options: Array<string>): Promise<number> {
   logger.info("Running E2E tests...");
 
-  // Parse options
+  // Parse options - extract bft-specific options and forward the rest to deno test
   const shouldBuild = options.includes("--build") || options.includes("-b");
   const headlessOption = options.find((opt) => opt.startsWith("--headless="));
   const shouldForceHeadless = headlessOption
     ? headlessOption === "--headless=true"
     : true;
 
-  const testFiles = options.filter((opt) =>
+  // Filter out bft-specific options and pass everything else to deno test
+  const denoTestOptions = options.filter((opt) =>
+    opt !== "--build" && opt !== "-b" && !opt.startsWith("--headless=")
+  );
+
+  const testFiles = denoTestOptions.filter((opt) =>
     !opt.startsWith("--") && !opt.startsWith("-") && opt.endsWith(".e2e.ts")
   );
 
@@ -177,6 +182,12 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     logger.info("Running E2E tests...");
     const testArgs = ["deno", "test", "-A"];
 
+    // Add all deno test options (including --no-check, etc.)
+    const denoFlags = denoTestOptions.filter((opt) =>
+      opt.startsWith("--") || opt.startsWith("-")
+    );
+    testArgs.push(...denoFlags);
+
     // All tests now use port 8000
     Deno.env.set("BF_E2E_BASE_URL", "http://localhost:8000");
 
@@ -265,7 +276,7 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
 
 export const bftDefinition = {
   description:
-    "Run end-to-end tests with automatic server management. Options: --build, --headless=false",
+    "Run end-to-end tests with automatic server management. Options: --build, --headless=false, plus all deno test flags (--no-check, etc.)",
   fn: e2eCommand,
   aiSafe: true,
 } satisfies TaskDefinition;
