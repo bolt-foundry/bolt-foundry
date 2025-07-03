@@ -29,3 +29,7 @@ user's requirements.
 
 **Usage:** Call this function when you need to generate or update the complete
 grader deck for the user's evaluation workflow.
+
+## Input Samples Tools
+
+![Input Samples Tools](tools/inputSamples.md)
