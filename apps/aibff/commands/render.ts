@@ -324,11 +324,6 @@ function processMarkdownIncludes(
         return match; // Keep TOML references in the content
       }
 
-      // Only process .deck.md files for inclusion
-      if (!filePath.endsWith(".deck.md")) {
-        return ""; // Remove other non-markdown includes
-      }
-
       const absolutePath = path.isAbsolute(filePath)
         ? filePath
         : path.join(deckDir, filePath);
@@ -336,11 +331,16 @@ function processMarkdownIncludes(
       try {
         const fileContent = Deno.readTextFileSync(absolutePath);
 
-        // Extract tools from this file's frontmatter before processing includes
+        // Extract tools from any markdown file (both .md and .deck.md)
         const fileTools = extractToolsFromMarkdown(fileContent);
         tools.push(...fileTools);
 
-        // Extract content without frontmatter
+        // Include content for any markdown file (.md or .deck.md)
+        if (!filePath.endsWith(".md")) {
+          return ""; // Remove other non-markdown includes from content
+        }
+
+        // Extract content without frontmatter for deck files
         let cleanFileContent: string;
         try {
           const { body } = extractFrontmatter(fileContent);
@@ -485,6 +485,35 @@ function renderDeck(
     );
   }
 
+  // Extract tools from the main deck file
+  const mainFileTools = extractToolsFromMarkdown(deckMarkdown);
+
+  // Combine tools from main file and embedded files, checking for collisions
+  const allTools: Array<OpenAITool> = [];
+  const toolNames = new Set<string>();
+
+  // Add main file tools first
+  for (const tool of mainFileTools) {
+    if (toolNames.has(tool.function.name)) {
+      throw new Error(
+        `Tool name collision: '${tool.function.name}' is defined multiple times`,
+      );
+    }
+    toolNames.add(tool.function.name);
+    allTools.push(tool);
+  }
+
+  // Add embedded tools, checking for collisions
+  for (const tool of processed.tools) {
+    if (toolNames.has(tool.function.name)) {
+      throw new Error(
+        `Tool name collision: '${tool.function.name}' is defined multiple times`,
+      );
+    }
+    toolNames.add(tool.function.name);
+    allTools.push(tool);
+  }
+
   // Return complete OpenAI request with options spread last
   const request: OpenAICompletionRequest = {
     messages,
@@ -492,8 +521,8 @@ function renderDeck(
   };
 
   // Add tools if any were found
-  if (processed.tools.length > 0) {
-    request.tools = processed.tools;
+  if (allTools.length > 0) {
+    request.tools = allTools;
   }
 
   return request;
