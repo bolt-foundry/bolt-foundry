@@ -12,7 +12,7 @@ export default defineConfig({
         babelrc: true,
       },
     }),
-  ],
+  ] as Array<unknown>,
   server: {
     hmr: (() => {
       // Get HMR port from environment variable if set
