@@ -90,7 +90,7 @@ async function main() {
     // File is safe to edit, allow the operation
     Deno.exit(0);
   } catch (error) {
-    ui.error(`Block generated files hook error: ${error.message}`);
+    ui.error(`Block generated files hook error: ${(error as Error).message}`);
     Deno.exit(1);
   }
 }
