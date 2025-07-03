@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { WorkflowTextArea } from "./WorkflowTextArea.tsx";
+import { TestConversation } from "./TestConversation.tsx";
 
 interface WorkflowSection {
   id: string;
@@ -23,32 +24,17 @@ export function WorkflowPanel() {
   const [evalPrompt, setEvalPrompt] = useState("");
   const [runEval, setRunEval] = useState("");
   const [files, setFiles] = useState("");
+  const [selectedModel, setSelectedModel] = useState("openai/gpt-4o");
 
   const sections: Array<WorkflowSection> = [
     {
       id: "system-prompt",
       label: "System Prompt",
-      description: "Define the system prompt for the AI.",
+      description:
+        "Define the system prompt, input variables, and test conversation.",
       value: systemPrompt,
       onChange: setSystemPrompt,
       placeholder: "You are a helpful assistant...",
-    },
-    {
-      id: "input-variables",
-      label: "Input Variables",
-      description: "Define input variables as JSONL for prompt testing.",
-      value: inputVariables,
-      onChange: setInputVariables,
-      placeholder:
-        '{"variable1": "value1", "variable2": "value2"}\n{"variable1": "value3", "variable2": "value4"}',
-    },
-    {
-      id: "test-conversation",
-      label: "Test Conversation",
-      description: "Test your system prompt in an ephemeral conversation.",
-      value: testConversation,
-      onChange: setTestConversation,
-      placeholder: "Test conversation will appear here...",
     },
     {
       id: "saved-results",
@@ -116,10 +102,35 @@ export function WorkflowPanel() {
     // });
   };
 
+  const handleSaveTestResult = (
+    messages: Array<
+      {
+        id: string;
+        role: "user" | "assistant";
+        content: string;
+        timestamp: string;
+      }
+    >,
+  ) => {
+    // Convert test conversation to JSONL format and add to saved results
+    const jsonlResult = messages.map((msg) =>
+      JSON.stringify({
+        role: msg.role,
+        content: msg.content,
+        timestamp: msg.timestamp,
+      })
+    ).join("\n");
+
+    const timestamp = new Date().toISOString();
+    const newResult =
+      `# Test Result - ${timestamp}\n\n\`\`\`jsonl\n${jsonlResult}\n\`\`\`\n\n`;
+
+    setSavedResults((prev) => prev + newResult);
+  };
+
   return (
     <div
       style={{
-        width: "400px",
         height: "100vh",
         backgroundColor: "#1a1b1c",
         borderLeft: "1px solid #3a3b3c",
@@ -187,13 +198,40 @@ export function WorkflowPanel() {
               {/* Accordion Content */}
               {isExpanded && (
                 <div style={{ padding: "0" }}>
-                  <WorkflowTextArea
-                    label={section.label}
-                    description={section.description}
-                    value={section.value}
-                    onChange={section.onChange}
-                    placeholder={section.placeholder}
-                  />
+                  {section.id === "system-prompt"
+                    ? (
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <WorkflowTextArea
+                          label="System Prompt"
+                          description="Define the system prompt for the AI."
+                          value={systemPrompt}
+                          onChange={setSystemPrompt}
+                          placeholder="You are a helpful assistant..."
+                        />
+                        <WorkflowTextArea
+                          label="Input Variables"
+                          description="Define input variables as JSONL for prompt testing."
+                          value={inputVariables}
+                          onChange={setInputVariables}
+                          placeholder='{"variable1": "value1", "variable2": "value2"}\n{"variable1": "value3", "variable2": "value4"}'
+                        />
+                        <TestConversation
+                          systemPrompt={systemPrompt}
+                          onSaveResult={handleSaveTestResult}
+                          selectedModel={selectedModel}
+                          onModelChange={setSelectedModel}
+                        />
+                      </div>
+                    )
+                    : (
+                      <WorkflowTextArea
+                        label={section.label}
+                        description={section.description}
+                        value={section.value}
+                        onChange={section.onChange}
+                        placeholder={section.placeholder}
+                      />
+                    )}
                 </div>
               )}
             </div>

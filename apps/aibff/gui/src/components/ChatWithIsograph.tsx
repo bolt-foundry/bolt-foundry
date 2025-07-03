@@ -46,6 +46,9 @@ export function ChatWithIsograph() {
   const streamingMessageIdRef = useRef<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Panel layout state
+  const [isRightPanelExpanded, setIsRightPanelExpanded] = useState(false);
+
   // Tool call state
   const [_pendingToolCalls, setPendingToolCalls] = useState<
     Map<string, ToolCall>
@@ -442,9 +445,10 @@ Error formatting arguments: ${
       {/* Main Chat Area */}
       <div
         style={{
-          flex: 1,
+          width: isRightPanelExpanded ? "100%" : "400px",
           display: "flex",
           flexDirection: "column",
+          transition: "width 0.3s ease",
         }}
       >
         {/* Header with New Conversation button */}
@@ -453,7 +457,7 @@ Error formatting arguments: ${
             padding: "1rem",
             borderBottom: "1px solid #3a3b3c",
             display: "flex",
-            justifyContent: "flex-start",
+            justifyContent: "space-between",
             alignItems: "center",
           }}
         >
@@ -472,6 +476,18 @@ Error formatting arguments: ${
           >
             New Conversation
           </a>
+          <BfDsButton
+            onClick={() => setIsRightPanelExpanded(!isRightPanelExpanded)}
+            variant="secondary"
+            style={{
+              fontSize: "0.875rem",
+              padding: "0.5rem 1rem",
+            }}
+          >
+            {isRightPanelExpanded
+              ? "Show Workflow Panel"
+              : "Hide Workflow Panel"}
+          </BfDsButton>
         </div>
 
         {/* Messages */}
@@ -1059,7 +1075,16 @@ Generated at: ${new Date().toISOString()}`,
       </div>
 
       {/* Workflow Panel */}
-      <WorkflowPanel />
+      {!isRightPanelExpanded && (
+        <div
+          style={{
+            flex: 1,
+            transition: "width 0.3s ease",
+          }}
+        >
+          <WorkflowPanel />
+        </div>
+      )}
     </div>
   );
 }
