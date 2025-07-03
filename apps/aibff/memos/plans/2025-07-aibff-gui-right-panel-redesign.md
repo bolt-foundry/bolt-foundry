@@ -1,45 +1,64 @@
 # aibff GUI Right Panel Redesign Implementation Memo
 
-**Date:** 2025-07-02\
-**Status:** Planning\
-**Phase:** Design & Implementation
+**Date:** 2025-07-02 (Updated: 2025-07-03)\
+**Status:** Phase 1 Complete - Accordion Implemented\
+**Phase:** Tool Call Enhancement
 
 ## Overview
 
-Complete redesign of the aibff GUI right panel to support a comprehensive 7-step
-workflow for building LLM evaluation graders. This will replace the existing
-`TabbedEditor` component with an entirely new component built from scratch.
+✅ **COMPLETED**: Successfully redesigned the aibff GUI right panel with an
+8-section radio-style accordion workflow for building LLM evaluation graders.
+The existing `TabbedEditor` component has been replaced with the new
+`WorkflowPanel` accordion.
 
-## Current State Analysis
+## Implementation Completed (July 2025)
 
-### Existing Right Panel Structure (To Be Removed)
+### New WorkflowPanel Accordion ✅
 
-- `TabbedEditor` component with 5 tabs:
-  - Input Samples (JSONL editor)
-  - Actor Deck (Markdown editor)
-  - Grader Deck (Markdown editor)
-  - Ground Truth (Data editor)
-  - Notes (Markdown editor)
+Successfully implemented radio-style accordion with 8 sections:
 
-### Issues with Current Implementation
+1. **System Prompt** (default expanded) - AI behavior definition
+2. **Input Variables** - JSONL input data for testing
+3. **Test Conversation** - Ephemeral conversation testing
+4. **Saved Results** - Saved conversation outputs
+5. **Calibration** - Parameter tuning settings
+6. **Eval Prompt** - Evaluation criteria and instructions
+7. **Run Eval** - Evaluation execution and results
+8. **Files** - File management and workflow settings
 
-- Static text editors without workflow integration
-- No specialized UI for different content types
-- Missing key workflow steps (calibration, feedback, file management)
-- No AI assistance integration in right panel
+### Key Features Implemented ✅
 
-## New 7-Step Workflow Design
+- **Radio behavior**: Only one section open at a time for focused workflow
+- **Smooth animations**: Arrow rotation and background transitions
+- **Visual feedback**: Active section highlighting with blue background
+- **Logical progression**: System Prompt → Input Variables workflow order
+- **Space efficiency**: Accordion maximizes content area in 400px sidebar
+- **State persistence**: Each section maintains content when collapsed
 
-### Step-by-Step Process
+## Accordion Architecture (Implemented)
 
-1. **Input Samples** - Collect evaluation input data (JSONL format)
-2. **System Prompt** - Define AI assistant behavior (text/markdown)
-3. **Output Samples** - AI-generated outputs matching OpenAI completions format
-   (JSONL)
-4. **Eval Prompt** - Evaluation criteria and grader instructions (text/markdown)
-5. **Eval Output** - Calibration results and evaluation data (read-only display)
-6. **Fix** - AI-powered feedback and improvement suggestions (interactive UI)
-7. **Edit** - Directory browser and file management (file explorer UI)
+### Technical Implementation ✅
+
+**Component Structure:**
+
+```
+WorkflowPanel (radio-style accordion)
+├── Accordion Headers (clickable, with arrow indicators)
+├── Single Expanded Section (radio behavior)
+├── WorkflowTextArea (reused for all content)
+└── State Management (single expandedSection string)
+```
+
+**Key Technical Decisions:**
+
+- **Radio-style**: `expandedSection` string instead of `Set<string>` for
+  multi-open
+- **Section reordering**: System Prompt moved to position 1 (most logical
+  starting point)
+- **Unified content**: All sections use `WorkflowTextArea` component for
+  consistency
+- **State management**: Each section has independent state hooks for content
+  persistence
 
 ## Technical Implementation Plan
 
@@ -181,35 +200,41 @@ input ConversationUpdateInput {
 
 ## Implementation Phases
 
-### Phase 1: Core Tab Structure
+### Phase 1: Core Accordion Structure ✅ COMPLETED
 
-- [ ] Extend `AibffConversation` class with workflow file methods
-- [ ] Replace `replaceGraderDeck` tool call with new workflow tool calls
-- [ ] Create new `WorkflowPanel` component
-- [ ] Implement basic tab navigation
-- [ ] Migrate InputSamples and SystemPrompt tabs
-- [ ] Update GraphQL resolvers to use extended conversation methods
+- [x] ~~Extend `AibffConversation` class with workflow file methods~~ (Deferred)
+- [x] ~~Replace `replaceGraderDeck` tool call with new workflow tool calls~~
+      (Enhanced existing)
+- [x] **Create new `WorkflowPanel` component** - Accordion with radio behavior
+- [x] **Implement accordion navigation** - Clickable headers with arrow
+      indicators
+- [x] **All 8 sections implemented** - System Prompt, Input Variables, Test
+      Conversation, Saved Results, Calibration, Eval Prompt, Run Eval, Files
+- [x] **State management** - Each section has independent content state
 
-### Phase 2: New Content Tabs
+### Phase 2: Tool Call Enhancement (CURRENT PRIORITY)
 
-- [ ] Implement OutputSamplesTab (validation deferred)
-- [ ] Migrate EvalPromptTab from Grader Deck
-- [ ] Create placeholder EvalOutputTab
-- [ ] Add remaining workflow file methods to AibffConversation
-- [ ] Update GraphQL schema and resolvers for all workflow fields
+- [ ] **Implement placeholder tool functions** - Connect to actual file
+      operations
+- [ ] **Enhanced tool call integration** - System Prompt and Input Variables
+      tool calls
+- [ ] **Test Conversation functionality** - Ephemeral chat interface for prompt
+      testing
+- [ ] **Saved Results implementation** - Save/load conversation outputs as JSONL
 
-### Phase 3: Advanced Features
+### Phase 3: File Integration (NEXT)
 
-- [ ] Create EditTab file browser
-- [ ] Enhanced file operations and management
-- [ ] FixTab placeholder (AI feedback deferred)
+- [ ] **Files tab implementation** - Directory browser and file management
+- [ ] **AibffConversation file methods** - Read/write workflow section content
+      to files
+- [ ] **File persistence** - Auto-save accordion content to conversation
+      directory
 
-### Phase 4: Polish & Integration
+### Phase 4: Evaluation Pipeline (FUTURE)
 
-- [ ] UI/UX improvements and consistency
-- [ ] Error handling and validation
-- [ ] Performance optimizations
-- [ ] Integration testing with existing chat interface
+- [ ] **Run Eval functionality** - Execute evaluations and display results
+- [ ] **Calibration integration** - Parameter tuning and feedback
+- [ ] **End-to-end workflow** - Complete prompt → test → eval → iterate cycle
 
 ## Technical Considerations
 
@@ -285,18 +310,34 @@ getConversationFiles() -> Array<{name: string, size: number, modified: string}>
 
 ## Success Criteria
 
-1. **Complete Right Panel Redesign**: Replace TabbedEditor with new
-   WorkflowPanel component
-2. **7-Step Workflow Implementation**: All tabs functional (Input Samples,
-   System Prompt, Output Samples, Eval Prompt, Eval Output, Fix, Edit)
-3. **File-Based Storage**: Extended AibffConversation class with separate
+### Phase 1 Complete ✅
+
+1. **Complete Right Panel Redesign**: ✅ Replaced TabbedEditor with
+   WorkflowPanel accordion
+2. **8-Section Workflow Implementation**: ✅ All accordion sections functional
+   with radio behavior
+3. **UI/UX Excellence**: ✅ Smooth animations, visual feedback, logical section
+   ordering
+4. **State Management**: ✅ Independent content state for each section with
+   persistence
+5. **E2E Testing**: ✅ Screenshot-based verification of accordion functionality
+
+### Phase 2 Goals (Tool Call Enhancement)
+
+1. **Tool Call Implementation**: Implement placeholder tool functions for real
+   workflow integration
+2. **Test Conversation**: Build ephemeral chat interface within accordion
+   section
+3. **Saved Results**: JSONL save/load functionality for conversation outputs
+4. **File Operations**: Connect accordion sections to actual file persistence
+
+### Future Goals
+
+1. **File-Based Storage**: Extended AibffConversation class with separate
    workflow files
-4. **AI Tool Call Integration**: New workflow-specific tool calls replace
-   replaceGraderDeck
-5. **Placeholder Tabs**: Eval Output and Fix tabs show "Coming soon"
-   placeholders
-6. **Directory Browser**: Edit tab displays conversation files with basic
-   operations
+2. **AI Tool Call Integration**: Enhanced workflow-specific tool calls
+3. **Directory Browser**: Files tab with conversation file management
+4. **Evaluation Pipeline**: Complete prompt development and testing workflow
 
 ## Risks & Mitigation
 
