@@ -6,19 +6,21 @@
 
 ## Overview
 
-✅ **COMPLETED**: Successfully redesigned the aibff GUI right panel with an 8-section
-radio-style accordion workflow for building LLM evaluation graders. The existing
-`TabbedEditor` component has been replaced with the new `WorkflowPanel` accordion.
+✅ **COMPLETED**: Successfully redesigned the aibff GUI right panel with an
+8-section radio-style accordion workflow for building LLM evaluation graders.
+The existing `TabbedEditor` component has been replaced with the new
+`WorkflowPanel` accordion.
 
 ## Implementation Completed (July 2025)
 
 ### New WorkflowPanel Accordion ✅
 
 Successfully implemented radio-style accordion with 8 sections:
+
 1. **System Prompt** (default expanded) - AI behavior definition
 2. **Input Variables** - JSONL input data for testing
 3. **Test Conversation** - Ephemeral conversation testing
-4. **Saved Results** - Saved conversation outputs  
+4. **Saved Results** - Saved conversation outputs
 5. **Calibration** - Parameter tuning settings
 6. **Eval Prompt** - Evaluation criteria and instructions
 7. **Run Eval** - Evaluation execution and results
@@ -38,6 +40,7 @@ Successfully implemented radio-style accordion with 8 sections:
 ### Technical Implementation ✅
 
 **Component Structure:**
+
 ```
 WorkflowPanel (radio-style accordion)
 ├── Accordion Headers (clickable, with arrow indicators)
@@ -47,10 +50,15 @@ WorkflowPanel (radio-style accordion)
 ```
 
 **Key Technical Decisions:**
-- **Radio-style**: `expandedSection` string instead of `Set<string>` for multi-open
-- **Section reordering**: System Prompt moved to position 1 (most logical starting point)
-- **Unified content**: All sections use `WorkflowTextArea` component for consistency
-- **State management**: Each section has independent state hooks for content persistence
+
+- **Radio-style**: `expandedSection` string instead of `Set<string>` for
+  multi-open
+- **Section reordering**: System Prompt moved to position 1 (most logical
+  starting point)
+- **Unified content**: All sections use `WorkflowTextArea` component for
+  consistency
+- **State management**: Each section has independent state hooks for content
+  persistence
 
 ## Technical Implementation Plan
 
@@ -195,24 +203,32 @@ input ConversationUpdateInput {
 ### Phase 1: Core Accordion Structure ✅ COMPLETED
 
 - [x] ~~Extend `AibffConversation` class with workflow file methods~~ (Deferred)
-- [x] ~~Replace `replaceGraderDeck` tool call with new workflow tool calls~~ (Enhanced existing)
+- [x] ~~Replace `replaceGraderDeck` tool call with new workflow tool calls~~
+      (Enhanced existing)
 - [x] **Create new `WorkflowPanel` component** - Accordion with radio behavior
-- [x] **Implement accordion navigation** - Clickable headers with arrow indicators
-- [x] **All 8 sections implemented** - System Prompt, Input Variables, Test Conversation, Saved Results, Calibration, Eval Prompt, Run Eval, Files
+- [x] **Implement accordion navigation** - Clickable headers with arrow
+      indicators
+- [x] **All 8 sections implemented** - System Prompt, Input Variables, Test
+      Conversation, Saved Results, Calibration, Eval Prompt, Run Eval, Files
 - [x] **State management** - Each section has independent content state
 
 ### Phase 2: Tool Call Enhancement (CURRENT PRIORITY)
 
-- [ ] **Implement placeholder tool functions** - Connect to actual file operations
-- [ ] **Enhanced tool call integration** - System Prompt and Input Variables tool calls
-- [ ] **Test Conversation functionality** - Ephemeral chat interface for prompt testing
+- [ ] **Implement placeholder tool functions** - Connect to actual file
+      operations
+- [ ] **Enhanced tool call integration** - System Prompt and Input Variables
+      tool calls
+- [ ] **Test Conversation functionality** - Ephemeral chat interface for prompt
+      testing
 - [ ] **Saved Results implementation** - Save/load conversation outputs as JSONL
 
 ### Phase 3: File Integration (NEXT)
 
 - [ ] **Files tab implementation** - Directory browser and file management
-- [ ] **AibffConversation file methods** - Read/write workflow section content to files
-- [ ] **File persistence** - Auto-save accordion content to conversation directory
+- [ ] **AibffConversation file methods** - Read/write workflow section content
+      to files
+- [ ] **File persistence** - Auto-save accordion content to conversation
+      directory
 
 ### Phase 4: Evaluation Pipeline (FUTURE)
 
@@ -296,22 +312,29 @@ getConversationFiles() -> Array<{name: string, size: number, modified: string}>
 
 ### Phase 1 Complete ✅
 
-1. **Complete Right Panel Redesign**: ✅ Replaced TabbedEditor with WorkflowPanel accordion
-2. **8-Section Workflow Implementation**: ✅ All accordion sections functional with radio behavior
-3. **UI/UX Excellence**: ✅ Smooth animations, visual feedback, logical section ordering
-4. **State Management**: ✅ Independent content state for each section with persistence
+1. **Complete Right Panel Redesign**: ✅ Replaced TabbedEditor with
+   WorkflowPanel accordion
+2. **8-Section Workflow Implementation**: ✅ All accordion sections functional
+   with radio behavior
+3. **UI/UX Excellence**: ✅ Smooth animations, visual feedback, logical section
+   ordering
+4. **State Management**: ✅ Independent content state for each section with
+   persistence
 5. **E2E Testing**: ✅ Screenshot-based verification of accordion functionality
 
 ### Phase 2 Goals (Tool Call Enhancement)
 
-1. **Tool Call Implementation**: Implement placeholder tool functions for real workflow integration
-2. **Test Conversation**: Build ephemeral chat interface within accordion section
+1. **Tool Call Implementation**: Implement placeholder tool functions for real
+   workflow integration
+2. **Test Conversation**: Build ephemeral chat interface within accordion
+   section
 3. **Saved Results**: JSONL save/load functionality for conversation outputs
 4. **File Operations**: Connect accordion sections to actual file persistence
 
 ### Future Goals
 
-1. **File-Based Storage**: Extended AibffConversation class with separate workflow files
+1. **File-Based Storage**: Extended AibffConversation class with separate
+   workflow files
 2. **AI Tool Call Integration**: Enhanced workflow-specific tool calls
 3. **Directory Browser**: Files tab with conversation file management
 4. **Evaluation Pipeline**: Complete prompt development and testing workflow
