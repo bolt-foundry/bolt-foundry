@@ -1,10 +1,10 @@
-import * as React from "react";
+import { useState } from "react";
 import { BfDsInput } from "../BfDsInput.tsx";
 
 export function BfDsInputExample() {
-  const [value1, setValue1] = React.useState("");
-  const [value2, setValue2] = React.useState("test@example.com");
-  const [value3, setValue3] = React.useState("Valid input");
+  const [value1, setValue1] = useState("");
+  const [value2, setValue2] = useState("test@example.com");
+  const [value3, setValue3] = useState("Valid input");
 
   return (
     <div

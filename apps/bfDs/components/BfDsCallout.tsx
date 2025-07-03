@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import { BfDsIcon } from "./BfDsIcon.tsx";
 
 export type BfDsCalloutVariant = "info" | "success" | "warning" | "error";
@@ -32,11 +32,11 @@ export function BfDsCallout({
   autoDismiss = 0,
   className,
 }: BfDsCalloutProps) {
-  const [isExpanded, setIsExpanded] = React.useState(defaultExpanded);
-  const [isVisible, setIsVisible] = React.useState(visible);
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const [isVisible, setIsVisible] = useState(visible);
 
   // Auto-dismiss functionality
-  React.useEffect(() => {
+  useEffect(() => {
     if (visible && autoDismiss > 0) {
       const timer = setTimeout(() => {
         setIsVisible(false);
@@ -47,7 +47,7 @@ export function BfDsCallout({
   }, [visible, autoDismiss, onDismiss]);
 
   // Update visibility when prop changes
-  React.useEffect(() => {
+  useEffect(() => {
     setIsVisible(visible);
   }, [visible]);
 
@@ -61,8 +61,8 @@ export function BfDsCallout({
   const iconName = {
     info: "infoCircle" as const,
     success: "checkCircle" as const,
-    warning: "infoCircle" as const,
-    error: "cross" as const,
+    warning: "exclamationTriangle" as const,
+    error: "exclamationStop" as const,
   }[variant];
 
   const calloutClasses = [

@@ -1,17 +1,17 @@
-import * as React from "react";
+import { useState } from "react";
 import { BfDsSelect, type BfDsSelectOption } from "../BfDsSelect.tsx";
 import { BfDsForm } from "../BfDsForm.tsx";
 import { BfDsCallout } from "../BfDsCallout.tsx";
 import { BfDsFormSubmitButton } from "../BfDsFormSubmitButton.tsx";
 
 export function BfDsSelectExample() {
-  const [standaloneValue, setStandaloneValue] = React.useState("");
-  const [formData, setFormData] = React.useState({
+  const [standaloneValue, setStandaloneValue] = useState("");
+  const [formData, setFormData] = useState({
     country: "",
     size: "",
     priority: "",
   });
-  const [notification, setNotification] = React.useState({
+  const [notification, setNotification] = useState({
     message: "",
     details: "",
     visible: false,
