@@ -225,3 +225,6 @@ export async function createContext(
 
   return ctx;
 }
+
+// Export alias for generated types
+export type Context = BfGraphqlContext;

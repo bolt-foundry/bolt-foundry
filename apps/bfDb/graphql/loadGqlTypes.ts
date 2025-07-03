@@ -68,7 +68,8 @@ export async function loadGqlTypes() {
 
     // Create the mutation type if it exists
     if (nexusTypes.mutationType) {
-      const mutationType = extendType(nexusTypes.mutationType);
+      // deno-lint-ignore no-explicit-any
+      const mutationType = extendType(nexusTypes.mutationType as any);
       mutationTypes.push(mutationType);
     }
   }
@@ -106,7 +107,8 @@ export async function loadGqlTypes() {
 
     // Create the mutation type if it exists
     if (nexusTypes.mutationType) {
-      const mutationType = extendType(nexusTypes.mutationType);
+      // deno-lint-ignore no-explicit-any
+      const mutationType = extendType(nexusTypes.mutationType as any);
       mutationTypes.push(mutationType);
     }
   }
