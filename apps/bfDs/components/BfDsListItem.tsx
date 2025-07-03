@@ -1,4 +1,5 @@
 import * as React from "react";
+import { BfDsCallout } from "./BfDsCallout.tsx";
 
 export type BfDsListItemProps = {
   /** Content to display in the list item */
@@ -53,6 +54,10 @@ export function BfDsListItem({
 }
 
 BfDsListItem.Example = function BfDsListItemExample() {
+  const [notification, setNotification] = React.useState({
+    message: "",
+    visible: false,
+  });
   return (
     <div
       style={{
@@ -80,13 +85,23 @@ BfDsListItem.Example = function BfDsListItemExample() {
       <div>
         <h3>Clickable Items</h3>
         <ul className="bfds-list">
-          <BfDsListItem onClick={() => alert("Clicked Item 1")}>
+          <BfDsListItem
+            onClick={() =>
+              setNotification({ message: "Clicked Item 1", visible: true })}
+          >
             Clickable Item 1
           </BfDsListItem>
-          <BfDsListItem onClick={() => alert("Clicked Item 2")}>
+          <BfDsListItem
+            onClick={() =>
+              setNotification({ message: "Clicked Item 2", visible: true })}
+          >
             Clickable Item 2
           </BfDsListItem>
-          <BfDsListItem onClick={() => alert("Clicked Item 3")} disabled>
+          <BfDsListItem
+            onClick={() =>
+              setNotification({ message: "Clicked Item 3", visible: true })}
+            disabled
+          >
             Disabled Clickable Item
           </BfDsListItem>
         </ul>
@@ -96,15 +111,32 @@ BfDsListItem.Example = function BfDsListItemExample() {
         <h3>Mixed Usage</h3>
         <ul className="bfds-list">
           <BfDsListItem>Static Item</BfDsListItem>
-          <BfDsListItem active onClick={() => alert("Active and clickable")}>
+          <BfDsListItem
+            active
+            onClick={() =>
+              setNotification({
+                message: "Active and clickable",
+                visible: true,
+              })}
+          >
             Active Clickable Item
           </BfDsListItem>
-          <BfDsListItem onClick={() => alert("Just clickable")}>
+          <BfDsListItem
+            onClick={() =>
+              setNotification({ message: "Just clickable", visible: true })}
+          >
             Clickable Item
           </BfDsListItem>
           <BfDsListItem disabled>Disabled Item</BfDsListItem>
         </ul>
       </div>
+      <BfDsCallout
+        message={notification.message}
+        variant="info"
+        visible={notification.visible}
+        onDismiss={() => setNotification({ message: "", visible: false })}
+        autoDismiss={3000}
+      />
     </div>
   );
 };
