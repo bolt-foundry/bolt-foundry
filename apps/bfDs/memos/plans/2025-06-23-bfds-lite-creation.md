@@ -73,12 +73,15 @@ as part of the 2025-06-25 design system migration.
   - **TypeScript-first**: Strong typing with proper form data integration
   - **Complete accessibility**: ARIA attributes and semantic HTML
 - [x] **BfDsList** and **BfDsListItem** components with:
-  - **BfDsList**: Simple `<ul>` wrapper with optional className
-  - **BfDsListItem**: Smart list item that renders as `<li>` or `<button>` based
-    on onClick prop
-  - **States**: active, disabled, clickable (auto-detected from onClick)
-  - **TypeScript safety**: Proper prop typing
-  - **Semantic HTML**: Uses appropriate element types
+  - **BfDsList**: Smart `<ul>` wrapper with optional accordion functionality
+  - **BfDsListItem**: Versatile list item that renders as `<li>` or `<button>`
+    based on onClick prop, with expandable content support
+  - **Expandable content**: `expandContents` prop for collapsible sections with
+    arrow icons
+  - **Accordion behavior**: Single-item expansion when `accordion` prop is true
+  - **States**: active, disabled, clickable, expandable, expanded
+  - **TypeScript safety**: Proper prop typing with React context integration
+  - **Semantic HTML**: Uses appropriate element types with ARIA support
 - [x] **BfDsSelect**, **BfDsCheckbox**, **BfDsRadio**, and **BfDsToggle**
       components with:
   - **BfDsSelect**: Dropdown selector with form integration and disabled options
@@ -91,7 +94,7 @@ as part of the 2025-06-25 design system migration.
   - **TypeScript-first**: Strong typing with proper prop interfaces
 - [x] CSS variables system for theming with additional form states (error,
       success, focus)
-- [x] Example component pattern (`Component.Example`)
+- [x] Separate example files pattern (`Component.example.tsx`)
 - [x] Demo page setup with Button, Icon, Tabs, Form, List, Select, Checkbox,
       Radio, and Toggle examples
 - [x] CSS moved to static folder (per system requirements)
@@ -117,7 +120,11 @@ as part of the 2025-06-25 design system migration.
   - [x] ~~Toast/Notification~~ ✅ **Completed** (BfDsCallout with variants and
         auto-dismiss)
   - [ ] Modal
-- [ ] Enhanced List components:
+- [x] **Enhanced List components**:
+  - [x] ~~Expandable/collapsible list sections~~ ✅ **Completed** (BfDsListItem
+        with `expandContents` prop)
+  - [x] ~~Accordion functionality~~ ✅ **Completed** (BfDsList with `accordion`
+        prop for single-open behavior)
   - [ ] Icon support in BfDsListItem
   - [ ] Multiple layout orientations (horizontal/vertical)
   - [ ] Nested list support
@@ -127,7 +134,6 @@ as part of the 2025-06-25 design system migration.
   - [ ] Search/filter integration
   - [ ] Virtual scrolling for large lists
   - [ ] Sortable list items
-  - [ ] Expandable/collapsible list sections
 - [ ] Layout components:
   - [ ] Container
   - [ ] Grid
@@ -146,20 +152,35 @@ as part of the 2025-06-25 design system migration.
 ```
 apps/bfDs/
 ├── components/
-│   ├── BfDsButton.tsx (with .Example and icon support)
-│   ├── BfDsIcon.tsx (with .Example)
-│   ├── BfDsTabs.tsx (with .Example and subtabs support)
-│   ├── BfDsForm.tsx (with .Example and context provider)
-│   ├── BfDsInput.tsx (with .Example and dual-mode operation)
-│   ├── BfDsTextArea.tsx (with .Example and resize options)
-│   ├── BfDsFormSubmitButton.tsx (with .Example and form integration)
-│   ├── BfDsList.tsx (with .Example)
-│   ├── BfDsListItem.tsx (with .Example)
-│   ├── BfDsSelect.tsx (with .Example and form integration)
-│   ├── BfDsCheckbox.tsx (with .Example and accessibility)
-│   ├── BfDsRadio.tsx (with .Example and flexible layouts)
-│   ├── BfDsToggle.tsx (with .Example and animations)
-│   └── BfDsCallout.tsx (with .Example and notification variants)
+│   ├── BfDsButton.tsx (with icon support)
+│   ├── BfDsIcon.tsx
+│   ├── BfDsTabs.tsx (with subtabs support)
+│   ├── BfDsForm.tsx (context provider)
+│   ├── BfDsInput.tsx (dual-mode operation)
+│   ├── BfDsTextArea.tsx (resize options)
+│   ├── BfDsFormSubmitButton.tsx (form integration)
+│   ├── BfDsList.tsx (with accordion support)
+│   ├── BfDsListItem.tsx (with expandable content)
+│   ├── BfDsSelect.tsx (form integration)
+│   ├── BfDsCheckbox.tsx (accessibility)
+│   ├── BfDsRadio.tsx (flexible layouts)
+│   ├── BfDsToggle.tsx (animations)
+│   ├── BfDsCallout.tsx (notification variants)
+│   └── __examples__/
+│       ├── BfDsButton.example.tsx
+│       ├── BfDsIcon.example.tsx
+│       ├── BfDsTabs.example.tsx
+│       ├── BfDsForm.example.tsx
+│       ├── BfDsInput.example.tsx
+│       ├── BfDsTextArea.example.tsx
+│       ├── BfDsFormSubmitButton.example.tsx
+│       ├── BfDsList.example.tsx (with expandable and accordion examples)
+│       ├── BfDsListItem.example.tsx (with rich expandable content)
+│       ├── BfDsSelect.example.tsx
+│       ├── BfDsCheckbox.example.tsx
+│       ├── BfDsRadio.example.tsx
+│       ├── BfDsToggle.example.tsx
+│       └── BfDsCallout.example.tsx
 ├── lib/
 │   └── icons.ts (80+ icon definitions)
 ├── demo/
@@ -176,8 +197,8 @@ CSS: static/bfDsStyle.css (comprehensive styling with form states and notificati
 
 1. **CSS-in-CSS over CSS-in-JS**: Using external CSS files with CSS variables
    for better performance and easier theming
-2. **Component.Example pattern**: Each component has an attached Example
-   component for demos
+2. **Separate example files**: Each component has a dedicated `.example.tsx`
+   file in `__examples__/` directory for comprehensive demos
 3. **BEM-like naming**: `.bfds-button--variant` for clear CSS class structure
 4. **TypeScript-first**: Strong typing for all props and variants using
    `keyof typeof` patterns
@@ -271,9 +292,6 @@ CSS: static/bfDsStyle.css (comprehensive styling with form states and notificati
 - ✅ **Code quality improvements** with documented interfaces and comprehensive
   examples
 - ✅ **Production readiness** with both documentation and testing complete
-
-## Recent Achievements (2025-07-03)
-
 - ✅ **BfDsCallout notification component** implemented with elegant UX
   improvements
 - ✅ **Complete alert() replacement** throughout all bfDs components with
@@ -303,10 +321,42 @@ CSS: static/bfDsStyle.css (comprehensive styling with form states and notificati
 - ✅ **Production-ready notification system** replacing browser alerts with
   modern UX patterns
 
+## Recent Achievements (2025-07-03 - Expandable Lists & Accordion)
+
+- ✅ **BfDsList accordion functionality** implemented with smart state
+  management
+- ✅ **BfDsListItem expandable content** with automatic arrow icon integration
+- ✅ **React Context-based index tracking** for accordion behavior without prop
+  drilling
+- ✅ **Dual expansion modes**: Independent item expansion vs. accordion
+  single-open behavior
+- ✅ **Arrow icon integration** showing `arrowLeft` (collapsed) and `arrowDown`
+  (expanded) states
+- ✅ **CSS class system** with `--expandable`, `--expanded`, and `--accordion`
+  modifiers
+- ✅ **TypeScript-safe implementation** with proper context typing and ref
+  management
+- ✅ **Comprehensive example updates** showcasing both independent and accordion
+  usage:
+  - **BfDsList examples**: Independent expandable lists and accordion sections
+  - **BfDsListItem examples**: Basic expandable items and rich content
+    demonstrations
+  - **Real-world use cases**: Project management, user accounts, configuration
+    panels
+- ✅ **Production-ready testing** with complete test coverage for new
+  functionality
+- ✅ **Backward compatibility** maintaining all existing BfDsList and
+  BfDsListItem features
+- ✅ **Performance optimization** using DOM refs and element indexing for
+  accordion state
+- ✅ **Accessibility compliance** with proper ARIA states and semantic HTML
+  structure
+
 ## Notes
 
 - CSS files moved to static folder per system architecture
 - Following existing Bolt Foundry patterns and conventions
 - Maintaining compatibility with Deno/TypeScript setup
 - Icon system reuses existing bfDs icon library for consistency
-- All components follow the Component.Example pattern for comprehensive demos
+- All components have dedicated example files in `__examples__/` directory for
+  comprehensive demos
