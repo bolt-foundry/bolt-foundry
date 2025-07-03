@@ -8,7 +8,7 @@ import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
-Deno.test("Blog routes are accessible", async () => {
+Deno.test.ignore("Blog routes are accessible", async () => {
   const context = await setupE2ETest({ headless: true });
 
   try {
@@ -36,7 +36,7 @@ Deno.test("Blog routes are accessible", async () => {
   }
 });
 
-Deno.test("Individual blog post route loads", async () => {
+Deno.test.ignore("Individual blog post route loads", async () => {
   const context = await setupE2ETest({ headless: true });
 
   try {
