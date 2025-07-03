@@ -655,6 +655,137 @@ const routes = [
       }
     },
   },
+  {
+    pattern: new URLPattern({ pathname: "/api/test-conversation" }),
+    handler: async (request: Request) => {
+      if (request.method !== "POST") {
+        return new Response("Method not allowed", { status: 405 });
+      }
+
+      try {
+        const { messages } = await request.json();
+
+        // Call OpenRouter API with streaming for test conversation
+        const apiKey = getConfigurationVariable("OPENROUTER_API_KEY");
+        if (!apiKey) {
+          return new Response("OpenRouter API key not configured", {
+            status: 500,
+          });
+        }
+
+        const openRouterRequest = {
+          model: "openai/gpt-4o",
+          messages: messages,
+          stream: true,
+          temperature: 0.7,
+        };
+
+        logger.info("Sending test conversation request to OpenRouter");
+
+        const openRouterResponse = await fetch(
+          "https://openrouter.ai/api/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+              "HTTP-Referer": "https://github.com/boltfoundry/bolt-foundry",
+              "X-Title": "aibff GUI Test Conversation",
+            },
+            body: JSON.stringify(openRouterRequest),
+          },
+        );
+
+        if (!openRouterResponse.ok) {
+          throw new Error(`OpenRouter API error: ${openRouterResponse.status}`);
+        }
+
+        // Create SSE stream from OpenRouter response
+        const body = new ReadableStream({
+          async start(controller) {
+            const encoder = new TextEncoder();
+            const reader = openRouterResponse.body?.getReader();
+
+            if (!reader) {
+              controller.enqueue(
+                encoder.encode(
+                  `event: error\ndata: ${
+                    JSON.stringify({ error: "No response body" })
+                  }\n\n`,
+                ),
+              );
+              controller.close();
+              return;
+            }
+
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                  if (line.startsWith("data: ")) {
+                    const data = line.slice(6);
+                    if (data === "[DONE]") {
+                      controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+                      controller.close();
+                      return;
+                    }
+                    if (!data.trim()) continue;
+
+                    try {
+                      const parsed = JSON.parse(data);
+                      const delta = parsed.choices?.[0]?.delta;
+                      if (delta?.content) {
+                        controller.enqueue(
+                          encoder.encode(
+                            `data: ${
+                              JSON.stringify({ content: delta.content })
+                            }\n\n`,
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      logger.error("Failed to parse OpenRouter response:", e);
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              logger.error("Test conversation stream error:", error);
+              controller.enqueue(
+                encoder.encode(
+                  `event: error\ndata: ${
+                    JSON.stringify({ error: "Stream interrupted" })
+                  }\n\n`,
+                ),
+              );
+            } finally {
+              controller.close();
+            }
+          },
+        });
+
+        return new Response(body, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+          },
+        });
+      } catch (error) {
+        logger.error("Test conversation error:", error);
+        return new Response("Internal server error", { status: 500 });
+      }
+    },
+  },
 ];
 
 const handler = async (request: Request): Promise<Response> => {

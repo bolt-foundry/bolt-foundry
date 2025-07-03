@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { WorkflowTextArea } from "./WorkflowTextArea.tsx";
+import { TestConversation } from "./TestConversation.tsx";
 
 interface WorkflowSection {
   id: string;
@@ -116,6 +117,32 @@ export function WorkflowPanel() {
     // });
   };
 
+  const handleSaveTestResult = (
+    messages: Array<
+      {
+        id: string;
+        role: "user" | "assistant";
+        content: string;
+        timestamp: string;
+      }
+    >,
+  ) => {
+    // Convert test conversation to JSONL format and add to saved results
+    const jsonlResult = messages.map((msg) =>
+      JSON.stringify({
+        role: msg.role,
+        content: msg.content,
+        timestamp: msg.timestamp,
+      })
+    ).join("\n");
+
+    const timestamp = new Date().toISOString();
+    const newResult =
+      `# Test Result - ${timestamp}\n\n\`\`\`jsonl\n${jsonlResult}\n\`\`\`\n\n`;
+
+    setSavedResults((prev) => prev + newResult);
+  };
+
   return (
     <div
       style={{
@@ -187,13 +214,22 @@ export function WorkflowPanel() {
               {/* Accordion Content */}
               {isExpanded && (
                 <div style={{ padding: "0" }}>
-                  <WorkflowTextArea
-                    label={section.label}
-                    description={section.description}
-                    value={section.value}
-                    onChange={section.onChange}
-                    placeholder={section.placeholder}
-                  />
+                  {section.id === "test-conversation"
+                    ? (
+                      <TestConversation
+                        systemPrompt={systemPrompt}
+                        onSaveResult={handleSaveTestResult}
+                      />
+                    )
+                    : (
+                      <WorkflowTextArea
+                        label={section.label}
+                        description={section.description}
+                        value={section.value}
+                        onChange={section.onChange}
+                        placeholder={section.placeholder}
+                      />
+                    )}
                 </div>
               )}
             </div>
