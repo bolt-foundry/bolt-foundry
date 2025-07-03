@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useMemo, useState } from "react";
 import { BfDsList } from "../components/BfDsList.tsx";
 import { BfDsListItem } from "../components/BfDsListItem.tsx";
 import { BfDsButtonExample } from "../components/__examples__/BfDsButton.example.tsx";
@@ -126,9 +126,9 @@ const componentSections: Array<ComponentSection> = [
 ];
 
 export function BfDsDemo() {
-  const [activeSection, setActiveSection] = React.useState<string>("button");
+  const [activeSection, setActiveSection] = useState<string>("button");
 
-  const categories = React.useMemo(() => {
+  const categories = useMemo(() => {
     const categoryMap = new Map<string, Array<ComponentSection>>();
     componentSections.forEach((section) => {
       const existing = categoryMap.get(section.category) || [];

@@ -1,9 +1,9 @@
-import * as React from "react";
+import { useState } from "react";
 import { BfDsListItem } from "../BfDsListItem.tsx";
 import { BfDsCallout } from "../BfDsCallout.tsx";
 
 export function BfDsListItemExample() {
-  const [notification, setNotification] = React.useState({
+  const [notification, setNotification] = useState({
     message: "",
     visible: false,
   });

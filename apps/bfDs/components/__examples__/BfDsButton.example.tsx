@@ -1,8 +1,8 @@
-import * as React from "react";
+import { useState } from "react";
 import { BfDsButton } from "../BfDsButton.tsx";
 
 export function BfDsButtonExample() {
-  const [clickCount, setClickCount] = React.useState(0);
+  const [clickCount, setClickCount] = useState(0);
 
   return (
     <div
