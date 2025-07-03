@@ -820,6 +820,7 @@
   background-color: var(--bfds-background);
   border: 1px solid var(--bfds-border);
   border-radius: 6px;
+  box-sizing: border-box;
   cursor: pointer;
   outline: none;
   transition: all 0.2s ease-in-out;
@@ -854,6 +855,101 @@
 
 .bfds-select--disabled + .bfds-select-icon {
   opacity: 0.6;
+}
+
+.bfds-select-icon--open {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.bfds-select-icon--clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.bfds-select--open {
+  border-radius: 6px 6px 0 0;
+  border-bottom-color: transparent;
+}
+
+.bfds-select--open-above {
+  border-radius: 0 0 6px 6px;
+  border-top-color: transparent;
+}
+
+.bfds-select-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: var(--bfds-background);
+  border: 1px solid var(--bfds-border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.bfds-select-dropdown--below {
+  top: 100%;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+}
+
+.bfds-select-dropdown--above {
+  bottom: 100%;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+
+.bfds-select-option {
+  padding: 12px 16px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--bfds-text);
+  cursor: pointer;
+  border-bottom: 1px solid var(--bfds-border);
+  transition: background-color 0.15s ease-in-out;
+}
+
+.bfds-select-option:last-child {
+  border-bottom: none;
+}
+
+.bfds-select-option:hover {
+  background-color: var(--bfds-background-hover);
+}
+
+/* Disable hover when in keyboard navigation mode */
+.bfds-select-dropdown--keyboard-nav .bfds-select-option:hover {
+  background-color: transparent;
+}
+
+.bfds-select-option--highlighted {
+  background-color: var(--bfds-background-hover);
+}
+
+/* Ensure highlighted takes precedence over disabled hover */
+.bfds-select-dropdown--keyboard-nav .bfds-select-option--highlighted {
+  background-color: var(--bfds-background-hover) !important;
+}
+
+.bfds-select-option--selected {
+  background-color: var(--bfds-primary-02);
+  color: var(--bfds-primary);
+}
+
+.bfds-select-option--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: transparent !important;
+}
+
+.bfds-select-option--no-results {
+  color: var(--bfds-text-muted);
+  font-style: italic;
+  cursor: default;
+  background-color: transparent !important;
 }
 
 /* Checkbox */
