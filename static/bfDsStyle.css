@@ -579,7 +579,7 @@
   line-height: 1.5;
   transition: all 0.2s ease-in-out;
   outline: none;
-  min-height: 80px;
+  min-height: 2.5em;
 }
 
 .bfds-textarea::placeholder {
@@ -759,13 +759,17 @@
   font-weight: 400;
   line-height: 1.4;
   color: var(--bfds-text);
+  position: relative;
 }
 
 .bfds-checkbox-input {
   position: absolute;
   opacity: 0;
-  width: 0;
-  height: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  z-index: 1;
+  cursor: pointer;
 }
 
 .bfds-checkbox {
@@ -826,6 +830,17 @@
   opacity: 0.6;
 }
 
+/* Checkbox validation states - only show error styling when focused and invalid */
+.bfds-checkbox-input:invalid:focus + .bfds-checkbox {
+  outline: 2px solid var(--bfds-error);
+  outline-offset: 2px;
+}
+
+/* Show error styling after user has tried to submit (when form has was-validated class) */
+.was-validated .bfds-checkbox-input:invalid + .bfds-checkbox {
+  border-color: var(--bfds-error);
+}
+
 /* Radio */
 
 .bfds-radio-group {
@@ -857,13 +872,17 @@
   font-weight: 400;
   line-height: 1.4;
   color: var(--bfds-text);
+  position: relative;
 }
 
 .bfds-radio-input {
   position: absolute;
   opacity: 0;
-  width: 0;
-  height: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  z-index: 1;
+  cursor: pointer;
 }
 
 .bfds-radio {
@@ -925,6 +944,17 @@
 
 .bfds-radio-wrapper:has(.bfds-radio--disabled) .bfds-radio-label {
   opacity: 0.6;
+}
+
+/* Radio validation states - only show error styling when focused and invalid */
+.bfds-radio-input:invalid:focus + .bfds-radio {
+  outline: 2px solid var(--bfds-error);
+  outline-offset: 2px;
+}
+
+/* Show error styling after user has tried to submit (when form has was-validated class) */
+.was-validated .bfds-radio-input:invalid + .bfds-radio {
+  border-color: var(--bfds-error);
 }
 
 /* Radio sizes */
@@ -1065,16 +1095,130 @@
   user-select: none;
 }
 
-.bfds-toggle-required {
-  color: var(--bfds-error);
-}
-
 .bfds-toggle-wrapper:has(.bfds-toggle--disabled) {
   cursor: not-allowed;
 }
 
 .bfds-toggle-wrapper:has(.bfds-toggle--disabled) .bfds-toggle-label {
   opacity: 0.6;
+}
+
+/* Callout */
+
+.bfds-callout {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid;
+  margin: 8px 0;
+  animation: bfds-callout-fade-in 0.3s ease-in-out;
+}
+
+@keyframes bfds-callout-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bfds-callout-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.bfds-callout-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bfds-callout-content {
+  flex: 1;
+}
+
+.bfds-callout-message {
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.bfds-callout-toggle {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+.bfds-callout-toggle:hover {
+  opacity: 1;
+}
+
+.bfds-callout-dismiss {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.bfds-callout-dismiss:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.bfds-callout-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bfds-callout-details pre {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Callout variants */
+
+.bfds-callout--info {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+
+.bfds-callout--success {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+.bfds-callout--warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
+.bfds-callout--error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
 }
 
 /* Toggle sizes */
@@ -1118,4 +1262,125 @@
 
 .bfds-toggle--large.bfds-toggle--checked .bfds-toggle-thumb {
   transform: translateX(24px);
+}
+
+/* Callout */
+
+.bfds-callout {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid;
+  margin: 8px 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  transition: all 0.2s ease-in-out;
+}
+
+.bfds-callout-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.bfds-callout-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.bfds-callout-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.bfds-callout-message {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  margin: 0 0 8px 0;
+}
+
+.bfds-callout-toggle {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: underline;
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.bfds-callout-toggle:hover {
+  opacity: 1;
+}
+
+.bfds-callout-dismiss {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0.6;
+  transition: all 0.2s ease-in-out;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bfds-callout-dismiss:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.bfds-callout-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid;
+  border-color: inherit;
+  opacity: 0.8;
+}
+
+.bfds-callout-details pre {
+  margin: 0;
+  padding: 8px 12px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Callout variants */
+.bfds-callout--info {
+  background-color: #f0f9ff;
+  border-color: #0ea5e9;
+  color: #0c4a6e;
+}
+
+.bfds-callout--success {
+  background-color: #f0fdf4;
+  border-color: #22c55e;
+  color: #14532d;
+}
+
+.bfds-callout--warning {
+  background-color: #fefce8;
+  border-color: #eab308;
+  color: #713f12;
+}
+
+.bfds-callout--error {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+  color: #7f1d1d;
 }

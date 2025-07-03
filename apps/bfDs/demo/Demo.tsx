@@ -12,6 +12,7 @@ import { BfDsSelect } from "../components/BfDsSelect.tsx";
 import { BfDsCheckbox } from "../components/BfDsCheckbox.tsx";
 import { BfDsRadio } from "../components/BfDsRadio.tsx";
 import { BfDsToggle } from "../components/BfDsToggle.tsx";
+import { BfDsCallout } from "../components/BfDsCallout.tsx";
 
 type ComponentSection = {
   id: string;
@@ -112,6 +113,13 @@ const componentSections: Array<ComponentSection> = [
     description: "Toggle switches with smooth animations and sizes",
     component: BfDsToggle.Example,
     category: "Form",
+  },
+  {
+    id: "callout",
+    name: "Callout",
+    description: "Notification system with variants and auto-dismiss",
+    component: BfDsCallout.Example,
+    category: "Core",
   },
 ];
 
