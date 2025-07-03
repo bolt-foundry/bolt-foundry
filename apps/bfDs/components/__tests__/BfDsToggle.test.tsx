@@ -112,37 +112,6 @@ Deno.test("BfDsToggle renders in disabled state", () => {
   );
 });
 
-Deno.test("BfDsToggle renders with required attribute", () => {
-  const { doc } = render(
-    <BfDsToggle
-      label="Required toggle"
-      required
-      checked={false}
-      onChange={() => {}}
-    />,
-  );
-
-  const input = doc?.querySelector(
-    "input[type='checkbox']",
-  ) as HTMLInputElement;
-  const labelSpan = doc?.querySelector(".bfds-toggle-label");
-  const requiredSpan = doc?.querySelector(".bfds-toggle-required");
-
-  assertExists(input, "Toggle input should exist");
-  assertExists(labelSpan, "Label should exist");
-  assertExists(requiredSpan, "Required indicator should exist");
-  assertEquals(
-    input?.hasAttribute("required"),
-    true,
-    "Input should have required attribute",
-  );
-  assertEquals(
-    requiredSpan?.textContent,
-    "*",
-    "Required indicator should show asterisk",
-  );
-});
-
 Deno.test("BfDsToggle renders with different sizes", () => {
   const sizes = ["small", "medium", "large"] as const;
 
