@@ -1,6 +1,7 @@
 import { render } from "@bfmono/infra/testing/ui-testing.ts";
 import { assertEquals, assertExists } from "@std/assert";
 import { BfDsList } from "../BfDsList.tsx";
+import { BfDsListItem } from "../BfDsListItem.tsx";
 
 Deno.test("BfDsList renders with default classes", () => {
   const { doc } = render(
@@ -203,4 +204,69 @@ Deno.test("BfDsList className filtering", () => {
     "bfds-list",
     "Empty className should be filtered out, only base class remains",
   );
+});
+
+Deno.test("BfDsList accordion mode adds accordion class", () => {
+  const { doc } = render(
+    <BfDsList accordion>
+      <BfDsListItem>Item 1</BfDsListItem>
+      <BfDsListItem>Item 2</BfDsListItem>
+    </BfDsList>,
+  );
+
+  const list = doc?.querySelector("ul");
+  assertExists(list, "List element should exist");
+  assertEquals(
+    list?.className.includes("bfds-list--accordion"),
+    true,
+    "Accordion list should have accordion class",
+  );
+});
+
+Deno.test("BfDsListItem renders expandable content", () => {
+  const { doc } = render(
+    <BfDsList>
+      <BfDsListItem expandContents={<div>Expanded content</div>}>
+        Main content
+      </BfDsListItem>
+    </BfDsList>,
+  );
+
+  const listItem = doc?.querySelector(".bfds-list-item");
+  const expandableClasses = listItem?.className.includes(
+    "bfds-list-item--expandable",
+  );
+  const icon = doc?.querySelector(".bfds-icon");
+
+  assertExists(listItem, "List item should exist");
+  assertEquals(
+    expandableClasses,
+    true,
+    "List item should have expandable class",
+  );
+  assertExists(icon, "Arrow icon should exist");
+});
+
+Deno.test("BfDsListItem without expandContents is not expandable", () => {
+  const { doc } = render(
+    <BfDsList>
+      <BfDsListItem>
+        Main content only
+      </BfDsListItem>
+    </BfDsList>,
+  );
+
+  const listItem = doc?.querySelector(".bfds-list-item");
+  const expandableClasses = listItem?.className.includes(
+    "bfds-list-item--expandable",
+  );
+  const icon = doc?.querySelector(".bfds-icon");
+
+  assertExists(listItem, "List item should exist");
+  assertEquals(
+    expandableClasses,
+    false,
+    "List item should not have expandable class",
+  );
+  assertEquals(icon, null, "Arrow icon should not exist");
 });
