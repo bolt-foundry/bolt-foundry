@@ -26,6 +26,11 @@ export class AibffConversation {
     return AibffConversation.conversationsDir;
   }
 
+  // Method to set conversations directory (used by GUI server)
+  static setConversationsDirectory(path: string): void {
+    AibffConversation.conversationsDir = path;
+  }
+
   constructor(id?: string) {
     const now = new Date().toISOString();
     this.metadata = {
