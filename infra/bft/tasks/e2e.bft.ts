@@ -188,8 +188,8 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     );
     testArgs.push(...denoFlags);
 
-    // All tests now use port 8000
-    Deno.env.set("BF_E2E_BASE_URL", "http://localhost:8000");
+    // Set legacy environment variable for backward compatibility
+    Deno.env.set("BF_E2E_BASE_URL", `http://localhost:${boltFoundryPort}`);
 
     // Add test file patterns or specific files
     if (testFiles.length > 0) {

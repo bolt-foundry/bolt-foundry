@@ -3,9 +3,9 @@
 import {
   type E2ETestContext,
   navigateTo,
-  setupE2ETest,
   teardownE2ETest,
 } from "@bfmono/infra/testing/e2e/setup.ts";
+import { setupBoltFoundryTest } from "../helpers.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 // End‑to‑end test: verifies that a visitor can successfully submit the
@@ -22,7 +22,7 @@ const logger = getLogger(import.meta);
 
 // Flaky b/c it depends on an external service (waitlist API)
 Deno.test.ignore("User can join the waitlist successfully", async () => {
-  const context = await setupE2ETest();
+  const context = await setupBoltFoundryTest();
   const maxRetries = 3;
   let lastError: Error | null = null;
 

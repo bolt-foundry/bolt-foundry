@@ -6,6 +6,8 @@ import { join } from "@std/path";
 
 const logger = getLogger(import.meta);
 
+// Simple server startup without global registry - each test gets its own server
+
 /**
  * Checks if a server is already running on the given port
  */
@@ -63,6 +65,8 @@ async function startServer(
 
   const process = command.spawn();
 
+  // Note: We'll close streams after server startup to avoid interfering with startup detection
+
   // Wait for server to be ready
   const maxAttempts = 30; // 30 seconds
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -70,6 +74,9 @@ async function startServer(
 
     if (await isServerRunning(port)) {
       logger.info(`Server is ready at ${url}`);
+
+      // Streams will be automatically closed when process is terminated
+
       return { url, process };
     }
 
@@ -149,7 +156,8 @@ export interface E2ETestContext {
   page: Page;
   baseUrl: string;
   takeScreenshot: (name: string) => Promise<string>;
-  serverProcess?: Deno.ChildProcess;
+  navigateTo: (path: string) => Promise<void>;
+  teardown: () => Promise<void>;
 }
 
 /**
@@ -157,24 +165,35 @@ export interface E2ETestContext {
  */
 export async function setupE2ETest(options: {
   baseUrl?: string;
-  headless?: boolean;
   server?: string;
 } = {}): Promise<E2ETestContext> {
-  let baseUrl = options.baseUrl ||
-    getConfigurationVariable("BF_E2E_BASE_URL");
+  let baseUrl = options.baseUrl;
 
-  let serverProcess: Deno.ChildProcess | undefined;
-
-  // If server option is provided, start the server
+  // If server option is provided, check if it's already running first
   if (options.server) {
-    const { url, process } = await startServer(options.server);
-    baseUrl = url;
-    serverProcess = process;
+    // Check if we're in the bft e2e environment with pre-started servers
+    const bfE2eBaseUrl = getConfigurationVariable("BF_E2E_BASE_URL");
+
+    if (bfE2eBaseUrl && options.server.includes("guiServer.ts")) {
+      // aibff GUI server - use port 3001 from bft e2e
+      baseUrl = "http://localhost:3001";
+      logger.info(`Using pre-started aibff GUI server: ${baseUrl}`);
+    } else if (bfE2eBaseUrl && options.server.includes("boltFoundry")) {
+      // Bolt Foundry server - use the BF_E2E_BASE_URL
+      baseUrl = bfE2eBaseUrl;
+      logger.info(`Using pre-started Bolt Foundry server: ${baseUrl}`);
+    } else {
+      // No pre-started server available, start our own
+      const { url } = await startServer(options.server);
+      baseUrl = url;
+      logger.info(`Started server for test: ${baseUrl}`);
+    }
   }
 
-  // Fallback to default URL if no server started and no baseUrl provided
+  // Fallback to environment variable if no server started and no baseUrl provided
   if (!baseUrl) {
-    baseUrl = "http://localhost:8000";
+    baseUrl = getConfigurationVariable("BF_E2E_BASE_URL") ||
+      "http://localhost:8000";
   }
 
   // Force headless mode for consistency and performance
@@ -305,7 +324,48 @@ export async function setupE2ETest(options: {
       }
     };
 
-    return { browser, page, baseUrl, takeScreenshot, serverProcess };
+    // Create context methods
+    const context = {
+      browser,
+      page,
+      baseUrl,
+      takeScreenshot,
+      navigateTo: async (path: string): Promise<void> => {
+        const url = new URL(path, baseUrl).toString();
+        logger.info(`Navigating to ${url}`);
+        await page.goto(url, {
+          waitUntil: "networkidle2",
+          timeout: 30000,
+        });
+      },
+      teardown: async (): Promise<void> => {
+        try {
+          // First close any open pages
+          if (page && !page.isClosed()) {
+            await page.close();
+          }
+
+          // Then close the browser completely
+          if (browser) {
+            await browser.close();
+          }
+
+          // NOTE: Server cleanup is intentionally NOT done here to avoid
+          // resource conflicts. Servers will be cleaned up when the test
+          // process exits. This matches the original teardownE2ETest behavior.
+
+          // Give time for all resources to be released
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          logger.info("E2E test environment torn down (browser only)");
+        } catch (error) {
+          logger.error("Error during teardown:", error);
+          throw error;
+        }
+      },
+    };
+
+    return context;
   } catch (error) {
     logger.error("Failed to setup e2e test:", error);
     throw error;
@@ -327,16 +387,9 @@ export async function teardownE2ETest(context: E2ETestContext): Promise<void> {
       await context.browser.close();
     }
 
-    // Clean up server process if it was started
-    if (context.serverProcess) {
-      try {
-        context.serverProcess.kill();
-        await context.serverProcess.status;
-        logger.info("Server process cleaned up");
-      } catch (error) {
-        logger.warn("Error cleaning up server process:", error);
-      }
-    }
+    // NOTE: We don't kill server processes here because they might be
+    // shared by other tests. Server cleanup happens globally via
+    // cleanupAllServers() or when the test process exits.
 
     // Give time for all resources to be released
     await new Promise((resolve) => setTimeout(resolve, 100));
