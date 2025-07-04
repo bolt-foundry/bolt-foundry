@@ -6,11 +6,8 @@ import {
 /**
  * Sets up e2e test for aibff GUI with automatic server startup
  */
-export async function setupAibffGuiTest(options: {
-  headless?: boolean;
-} = {}): Promise<E2ETestContext> {
+export async function setupAibffGuiTest(): Promise<E2ETestContext> {
   return await setupE2ETest({
     server: import.meta.resolve("../guiServer.ts"),
-    headless: options.headless,
   });
 }
