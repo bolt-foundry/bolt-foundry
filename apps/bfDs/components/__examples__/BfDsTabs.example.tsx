@@ -1,8 +1,8 @@
-import * as React from "react";
+import { useState } from "react";
 import { type BfDsTabItem, BfDsTabs } from "../BfDsTabs.tsx";
 
 export function BfDsTabsExample() {
-  const [controlledActiveTab, setControlledActiveTab] = React.useState("tab1");
+  const [controlledActiveTab, setControlledActiveTab] = useState("tab1");
 
   const basicTabs: Array<BfDsTabItem> = [
     {
