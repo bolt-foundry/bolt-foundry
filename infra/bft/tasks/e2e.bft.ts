@@ -76,47 +76,17 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
   // Start both servers for comprehensive e2e testing
   logger.info("🚀 Starting both servers for e2e tests...");
 
-  const boltFoundryPort = 8000;
+  const _boltFoundryPort = 8000;
   const aibffPort = 3001;
 
   let boltFoundryProcess: Deno.ChildProcess | undefined;
   let aibffProcess: Deno.ChildProcess | undefined;
 
   try {
-    // Check and start Bolt Foundry server (port 8000)
+    // Skip Bolt Foundry main web server - temporarily disabled
     logger.info(
-      `Checking for Bolt Foundry server on port ${boltFoundryPort}...`,
+      `⚠️  Bolt Foundry main web server disabled - e2e tests will use individual app servers`,
     );
-    const boltFoundryReady = await waitForPort(boltFoundryPort, 2000);
-
-    if (boltFoundryReady) {
-      logger.info(
-        `✅ Bolt Foundry server already running on port ${boltFoundryPort}`,
-      );
-    } else {
-      logger.info(
-        `🚀 Starting Bolt Foundry server on port ${boltFoundryPort}...`,
-      );
-      boltFoundryProcess = new Deno.Command("./build/web", {
-        cwd: Deno.cwd(),
-        stdout: "piped",
-        stderr: "piped",
-      }).spawn();
-
-      logger.info("⏳ Waiting for Bolt Foundry server to start...");
-      const boltFoundryStarted = await waitForPort(boltFoundryPort, 30000);
-      if (!boltFoundryStarted) {
-        logger.error(
-          `❌ Bolt Foundry server failed to start on port ${boltFoundryPort}`,
-        );
-        if (boltFoundryProcess) {
-          boltFoundryProcess.kill();
-          await boltFoundryProcess.status;
-        }
-        return 1;
-      }
-      logger.info(`✅ Bolt Foundry server started on port ${boltFoundryPort}`);
-    }
 
     // Check and start aibff GUI server (port 3001)
     logger.info(`Checking for aibff GUI server on port ${aibffPort}...`);

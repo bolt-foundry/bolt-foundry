@@ -1,7 +1,7 @@
 # Implementation Memo: New boltFoundry.com App
 
 **Date**: 2025-07-01\
-**Status**: Planning\
+**Status**: Implemented\
 **Phase**: 1 (Hello World)
 
 ## Overview
@@ -192,11 +192,11 @@ bft app boltfoundry.com --port 4000  # Custom port
 
 ### Phase 1 Complete When:
 
-- [ ] `bft app boltfoundry.com` launches working landing page
-- [ ] `--dev` mode provides hot reload experience
-- [ ] `--build` mode creates production-ready assets
-- [ ] Single executable serves both static and dynamic content
-- [ ] Basic landing page displays correctly in browser
+- [x] `bft app boltfoundry.com` launches working landing page
+- [x] `--dev` mode provides hot reload experience
+- [x] `--build` mode creates production-ready assets
+- [x] Single executable serves both static and dynamic content
+- [x] Basic landing page displays correctly in browser
 
 ### Definition of Done
 
