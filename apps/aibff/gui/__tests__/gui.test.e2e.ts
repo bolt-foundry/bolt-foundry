@@ -5,18 +5,16 @@ import { delay } from "@std/async";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import {
   navigateTo,
-  setupE2ETest,
   teardownE2ETest,
 } from "@bfmono/infra/testing/e2e/setup.ts";
+import { setupAibffGuiTest } from "./helpers.ts";
 
 const logger = getLogger(import.meta);
 
 Deno.test.ignore(
   "aibff GUI loads successfully with routing and Isograph",
   async () => {
-    const context = await setupE2ETest({
-      baseUrl: "http://localhost:3001",
-    });
+    const context = await setupAibffGuiTest();
 
     try {
       // Navigate to the GUI
