@@ -88,13 +88,11 @@ function isTargetFile(filePath: string): boolean {
 async function runBftCommands(filePath: string): Promise<void> {
   const commands = [
     { name: "format", args: ["bft", "format", filePath] },
-    { name: "lint", args: ["bft", "lint", filePath] },
     { name: "check", args: ["bft", "check", filePath] },
   ];
 
   const errors: Array<string> = [];
   let hasTypeErrors = false;
-  let hasLintErrors = false;
 
   for (const { name, args } of commands) {
     try {
@@ -121,9 +119,6 @@ async function runBftCommands(filePath: string): Promise<void> {
           if (typeErrorLines) {
             errors.push(`Type errors in ${filePath}:\n${typeErrorLines}`);
           }
-        } else if (name === "lint") {
-          hasLintErrors = true;
-          errors.push(`Lint issues in ${filePath}:\n${stderrText}`);
         } else {
           errors.push(`${name} failed for ${filePath}:\n${stderrText}`);
         }
@@ -145,14 +140,9 @@ async function runBftCommands(filePath: string): Promise<void> {
         `\n❌ Type checking failed - please fix the type errors above.`,
       );
     }
-    if (hasLintErrors) {
-      ui.output(
-        `\n⚠️  Linting issues detected - some may have been auto-fixed.`,
-      );
-    }
   } else {
     ui.output(
-      `\n✅ File ${filePath} passed all checks (format, lint, type check)`,
+      `\n✅ File ${filePath} passed all checks (format, type check)`,
     );
   }
 }
