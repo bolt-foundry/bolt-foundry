@@ -3,6 +3,25 @@ import { type Browser, launch, type Page } from "puppeteer-core";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { ensureDir } from "@std/fs";
 import { join } from "@std/path";
+import {
+  startScreencastRecording,
+  stopScreencastRecording,
+  stopScreencastRecordingWithVideo,
+  type VideoRecordingSession as _VideoRecordingSession,
+} from "../video-recording/recorder.ts";
+import {
+  startTimeBasedRecording,
+  stopTimeBasedRecordingWithVideo,
+  type TimeBasedRecordingSession as _TimeBasedRecordingSession,
+} from "../video-recording/time-based-recorder.ts";
+import type {
+  VideoConversionOptions,
+  VideoConversionResult,
+} from "../video-recording/video-converter.ts";
+import {
+  injectCursorOverlay,
+  removeCursorOverlay,
+} from "../video-recording/cursor-overlay.ts";
 
 const logger = getLogger(import.meta);
 
@@ -157,6 +176,16 @@ export interface E2ETestContext {
   baseUrl: string;
   takeScreenshot: (name: string) => Promise<string>;
   navigateTo: (path: string) => Promise<void>;
+  startVideoRecording: (name: string) => Promise<() => Promise<string | null>>;
+  startVideoRecordingWithConversion: (
+    name: string,
+    options?: VideoConversionOptions,
+  ) => Promise<() => Promise<VideoConversionResult | null>>;
+  startTimeBasedVideoRecording: (
+    name: string,
+    targetFps?: number,
+    options?: VideoConversionOptions,
+  ) => Promise<() => Promise<VideoConversionResult | null>>;
   teardown: () => Promise<void>;
 }
 
@@ -337,6 +366,149 @@ export async function setupE2ETest(options: {
           waitUntil: "networkidle2",
           timeout: 30000,
         });
+      },
+      startVideoRecording: async (
+        name: string,
+      ): Promise<() => Promise<string | null>> => {
+        const videosDir = getConfigurationVariable("BF_E2E_VIDEO_DIR") ||
+          "/tmp/videos";
+
+        // Inject cursor overlay for better video visibility
+        try {
+          await injectCursorOverlay(page);
+          logger.debug("Cursor overlay injected for video recording");
+        } catch (error) {
+          logger.warn("Failed to inject cursor overlay:", error);
+        }
+
+        const session = await startScreencastRecording(page, name, videosDir);
+
+        return async (): Promise<string | null> => {
+          try {
+            const videoPath = await stopScreencastRecording(page, session);
+
+            // Clean up cursor overlay
+            try {
+              await removeCursorOverlay(page);
+            } catch (error) {
+              logger.debug("Failed to remove cursor overlay:", error);
+            }
+
+            logger.info(`Video recording saved to: ${videoPath}`);
+            return videoPath;
+          } catch (error) {
+            logger.error(
+              `Failed to stop video recording: ${(error as Error).message}`,
+            );
+            return null;
+          }
+        };
+      },
+      startVideoRecordingWithConversion: async (
+        name: string,
+        options?: VideoConversionOptions,
+      ): Promise<() => Promise<VideoConversionResult | null>> => {
+        const videosDir = getConfigurationVariable("BF_E2E_VIDEO_DIR") ||
+          "/tmp/videos";
+
+        // Inject cursor overlay for better video visibility
+        try {
+          await injectCursorOverlay(page);
+          logger.debug(
+            "Cursor overlay injected for video recording with conversion",
+          );
+        } catch (error) {
+          logger.warn("Failed to inject cursor overlay:", error);
+        }
+
+        const session = await startScreencastRecording(page, name, videosDir);
+
+        return async (): Promise<VideoConversionResult | null> => {
+          try {
+            const videoResult = await stopScreencastRecordingWithVideo(
+              page,
+              session,
+              options,
+            );
+
+            // Clean up cursor overlay
+            try {
+              await removeCursorOverlay(page);
+            } catch (error) {
+              logger.debug("Failed to remove cursor overlay:", error);
+            }
+
+            logger.info(
+              `Video recording completed: ${videoResult.videoPath} (${videoResult.fileSize} bytes)`,
+            );
+            return videoResult;
+          } catch (error) {
+            logger.error(
+              `Failed to convert video recording: ${(error as Error).message}`,
+            );
+            return null;
+          }
+        };
+      },
+      startTimeBasedVideoRecording: async (
+        name: string,
+        targetFps = 20,
+        options?: VideoConversionOptions,
+      ): Promise<() => Promise<VideoConversionResult | null>> => {
+        const videosDir = getConfigurationVariable("BF_E2E_VIDEO_DIR") ||
+          "/tmp/videos";
+
+        // Inject cursor overlay for better video visibility
+        try {
+          const { injectCursorOverlayOnAllPages } = await import(
+            "../video-recording/cursor-overlay-page-injection.ts"
+          );
+          await injectCursorOverlayOnAllPages(page);
+          logger.debug(
+            "Page injection cursor overlay injected for time-based video recording",
+          );
+        } catch (error) {
+          logger.warn("Failed to inject cursor overlay:", error);
+        }
+
+        const session = await startTimeBasedRecording(
+          page,
+          name,
+          targetFps,
+          videosDir,
+        );
+
+        return async (): Promise<VideoConversionResult | null> => {
+          try {
+            const videoResult = await stopTimeBasedRecordingWithVideo(
+              page,
+              session,
+              options,
+            );
+
+            // Clean up cursor overlay
+            try {
+              const { removeCursorOverlay } = await import(
+                "../video-recording/cursor-overlay-page-injection.ts"
+              );
+              await removeCursorOverlay(page);
+            } catch (error) {
+              logger.debug("Failed to remove cursor overlay:", error);
+            }
+
+            logger.info(
+              `Time-based video recording completed: ${videoResult.videoPath} (${videoResult.fileSize} bytes)`,
+            );
+            return videoResult;
+          } catch (error) {
+            logger.error(
+              `Failed to convert time-based video recording: ${
+                (error as Error).message
+              }`,
+            );
+            return null;
+          }
+        };
       },
       teardown: async (): Promise<void> => {
         try {
