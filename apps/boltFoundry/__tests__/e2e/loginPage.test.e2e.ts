@@ -2,9 +2,9 @@
 
 import {
   navigateTo,
-  setupE2ETest,
   teardownE2ETest,
 } from "@bfmono/infra/testing/e2e/setup.ts";
+import { setupBoltFoundryTest } from "../helpers.ts";
 import { signSession } from "@bfmono/apps/bfDb/graphql/utils/graphqlContextUtils.ts";
 import { graphQLHandler } from "@bfmono/apps/bfDb/graphql/graphqlServer.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
@@ -39,7 +39,7 @@ const TEST_JWT = await signSession(
 Deno.test.ignore(
   "user can sign in with Google and see CurrentViewerLoggedIn",
   async () => {
-    const ctx = await setupE2ETest();
+    const ctx = await setupBoltFoundryTest();
     const { page } = ctx;
 
     /* ── 1️⃣ Stub Google token verification so Yoga accepts our fake credential ── */

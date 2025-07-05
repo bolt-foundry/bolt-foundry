@@ -1,15 +1,12 @@
 import { assert } from "@std/assert";
-import {
-  navigateTo,
-  setupE2ETest,
-  teardownE2ETest,
-} from "@bfmono/infra/testing/e2e/setup.ts";
+import { navigateTo } from "@bfmono/infra/testing/e2e/setup.ts";
+import { setupBoltFoundryTest } from "../helpers.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
 Deno.test.ignore("Blog list page at /blog shows all blog posts", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupBoltFoundryTest();
 
   try {
     // Navigate to the blog list page
@@ -87,12 +84,12 @@ Deno.test.ignore("Blog list page at /blog shows all blog posts", async () => {
     logger.error("Test failed:", error);
     throw error;
   } finally {
-    await teardownE2ETest(context);
+    await context.teardown();
   }
 });
 
 Deno.test.ignore("Can navigate from blog list to individual post", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupBoltFoundryTest();
 
   try {
     // Navigate to the blog list page
@@ -151,12 +148,12 @@ Deno.test.ignore("Can navigate from blog list to individual post", async () => {
     logger.error("Test failed:", error);
     throw error;
   } finally {
-    await teardownE2ETest(context);
+    await context.teardown();
   }
 });
 
 Deno.test.ignore("Can read individual blog post", async () => {
-  const context = await setupE2ETest();
+  const context = await setupBoltFoundryTest();
 
   try {
     // First, check if there are any blog posts
@@ -212,12 +209,12 @@ Deno.test.ignore("Can read individual blog post", async () => {
     logger.error("Test failed:", error);
     throw error;
   } finally {
-    await teardownE2ETest(context);
+    await context.teardown();
   }
 });
 
 Deno.test.ignore("Blog post shows proper content structure", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupBoltFoundryTest();
 
   try {
     // First, check if there are any blog posts
@@ -269,12 +266,12 @@ Deno.test.ignore("Blog post shows proper content structure", async () => {
     logger.error("Test failed:", error);
     throw error;
   } finally {
-    await teardownE2ETest(context);
+    await context.teardown();
   }
 });
 
 Deno.test.ignore("Blog list shows posts if available", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupBoltFoundryTest();
 
   try {
     // Navigate to the blog list
@@ -317,6 +314,6 @@ Deno.test.ignore("Blog list shows posts if available", async () => {
     logger.error("Test failed:", error);
     throw error;
   } finally {
-    await teardownE2ETest(context);
+    await context.teardown();
   }
 });

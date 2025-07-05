@@ -1,15 +1,15 @@
 import { assert } from "@std/assert";
 import {
   navigateTo,
-  setupE2ETest,
   teardownE2ETest,
 } from "@bfmono/infra/testing/e2e/setup.ts";
+import { setupBoltFoundryTest } from "../helpers.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
 
 Deno.test.ignore("Blog routes are accessible", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupBoltFoundryTest();
 
   try {
     // Test that /blog route loads without error
@@ -37,7 +37,7 @@ Deno.test.ignore("Blog routes are accessible", async () => {
 });
 
 Deno.test.ignore("Individual blog post route loads", async () => {
-  const context = await setupE2ETest({ headless: true });
+  const context = await setupBoltFoundryTest();
 
   try {
     // First, check if there are any blog posts

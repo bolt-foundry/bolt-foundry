@@ -9,6 +9,16 @@ import { AibffConversation } from "@bfmono/apps/bfDb/nodeTypes/aibff/AibffConver
 
 const logger = getLogger(import.meta);
 
+// Get conversations directory - either from flag (already resolved) or default to ./conversations
+const getConversationsDir = () => {
+  if (flags["conversations-dir"]) {
+    // Flag value is already resolved to absolute path by gui.ts
+    return flags["conversations-dir"];
+  }
+  // Default to ./aibff-conversations relative to the GUI directory
+  return new URL(import.meta.resolve("./aibff-conversations")).pathname;
+};
+
 // Type definitions
 interface ChatMessage {
   id: string;
@@ -79,7 +89,7 @@ async function generateInitialMessage(): Promise<string> {
 const flags = parseArgs(Deno.args, {
   string: ["port", "mode", "vite-port", "conversations-dir"],
   default: {
-    port: "3000",
+    port: getConfigurationVariable("PORT") || "3000",
     mode: "production",
     "conversations-dir": undefined,
   },
@@ -94,15 +104,9 @@ if (isNaN(port)) {
 const isDev = flags.mode === "development";
 const vitePort = flags["vite-port"] ? parseInt(flags["vite-port"]) : undefined;
 
-// Get conversations directory - either from flag (already resolved) or default to ./conversations
-const getConversationsDir = () => {
-  if (flags["conversations-dir"]) {
-    // Flag value is already resolved to absolute path by gui.ts
-    return flags["conversations-dir"];
-  }
-  // Default to ./aibff-conversations relative to the GUI directory
-  return new URL(import.meta.resolve("./aibff-conversations")).pathname;
-};
+// Set up conversations directory for AibffConversation class
+const conversationsDir = getConversationsDir();
+AibffConversation.setConversationsDirectory(conversationsDir);
 
 // Create GraphQL server
 const graphQLServer = createGraphQLServer(isDev);
@@ -480,8 +484,15 @@ const routes = [
 
       try {
         const saveData = await request.json();
-        const { inputSamples, actorDeck, graderDeck, groundTruth, notes } =
-          saveData;
+        const {
+          inputVariables,
+          systemPrompt,
+          savedResults,
+          calibration,
+          evalPrompt,
+          runEval,
+          files,
+        } = saveData;
 
         // Create the conversation folder path
         const conversationsPath = getConversationsDir();
@@ -505,16 +516,23 @@ const routes = [
           }
         }
 
-        // Load the conversation to get the messages
+        // Load the conversation to get the messages, or create empty if not found
         let conversation: AibffConversation;
+        let messages: Array<
+          { role: string; content: string; timestamp: string }
+        > = [];
+
         try {
           conversation = await AibffConversation.load(conversationId);
-        } catch (error) {
-          logger.error("Failed to load conversation for saving:", error);
-          return new Response("Conversation not found", { status: 404 });
+          messages = conversation.getMessages();
+        } catch {
+          // Conversation doesn't exist yet, create empty conversation for saving workflow files
+          logger.debug(
+            `Creating new conversation ${conversationId} for workflow save`,
+          );
+          conversation = new AibffConversation(conversationId);
+          messages = [];
         }
-
-        const messages = conversation.getMessages();
 
         // Save conversation.md
         const conversationMd = messages.map((msg) => {
@@ -527,32 +545,44 @@ const routes = [
           conversationMd,
         );
 
-        // Save input-samples.jsonl
+        // Save input-samples.jsonl (from inputVariables)
         await Deno.writeTextFile(
           `${conversationFolder}/input-samples.jsonl`,
-          inputSamples || "",
+          inputVariables || "",
         );
 
-        // Save actor-deck.md
+        // Save actor-deck.md (from systemPrompt)
         await Deno.writeTextFile(
           `${conversationFolder}/actor-deck.md`,
-          actorDeck || "",
+          systemPrompt || "",
         );
 
-        // Save grader-deck.md
+        // Save grader-deck.md (from evalPrompt)
         await Deno.writeTextFile(
           `${conversationFolder}/grader-deck.md`,
-          graderDeck || "",
+          evalPrompt || "",
         );
 
-        // Save ground-truth.deck.toml
+        // Save ground-truth.deck.toml (from calibration)
         await Deno.writeTextFile(
           `${conversationFolder}/ground-truth.deck.toml`,
-          groundTruth || "",
+          calibration || "",
         );
 
-        // Save notes.md
-        await Deno.writeTextFile(`${conversationFolder}/notes.md`, notes || "");
+        // Save notes.md (from files)
+        await Deno.writeTextFile(`${conversationFolder}/notes.md`, files || "");
+
+        // Save saved-results.md (from savedResults)
+        await Deno.writeTextFile(
+          `${conversationFolder}/saved-results.md`,
+          savedResults || "",
+        );
+
+        // Save run-eval.md (from runEval)
+        await Deno.writeTextFile(
+          `${conversationFolder}/run-eval.md`,
+          runEval || "",
+        );
 
         logger.info(
           `Saved conversation ${conversationId} to ${conversationFolder}`,
@@ -569,6 +599,8 @@ const routes = [
               "grader-deck.md",
               "ground-truth.deck.toml",
               "notes.md",
+              "saved-results.md",
+              "run-eval.md",
             ],
           }),
           {
@@ -609,22 +641,26 @@ const routes = [
         const conversationsPath = getConversationsDir();
         const conversationFolder = `${conversationsPath}/${conversationId}`;
 
-        // Initialize response data
+        // Initialize response data with frontend field names
         const loadData = {
-          inputSamples: "",
-          actorDeck: "",
-          graderDeck: "",
-          groundTruth: "",
-          notes: "",
+          inputVariables: "",
+          systemPrompt: "",
+          savedResults: "",
+          calibration: "",
+          evalPrompt: "",
+          runEval: "",
+          files: "",
         };
 
         // Try to load each file, but don't fail if they don't exist
         const fileMap = {
-          inputSamples: "input-samples.jsonl",
-          actorDeck: "actor-deck.md",
-          graderDeck: "grader-deck.md",
-          groundTruth: "ground-truth.deck.toml",
-          notes: "notes.md",
+          inputVariables: "input-samples.jsonl",
+          systemPrompt: "actor-deck.md",
+          evalPrompt: "grader-deck.md",
+          calibration: "ground-truth.deck.toml",
+          files: "notes.md",
+          savedResults: "saved-results.md",
+          runEval: "run-eval.md",
         };
 
         for (const [key, fileName] of Object.entries(fileMap)) {
@@ -652,6 +688,137 @@ const routes = [
           }`,
           { status: 500 },
         );
+      }
+    },
+  },
+  {
+    pattern: new URLPattern({ pathname: "/api/test-conversation" }),
+    handler: async (request: Request) => {
+      if (request.method !== "POST") {
+        return new Response("Method not allowed", { status: 405 });
+      }
+
+      try {
+        const { messages, model = "openai/gpt-4o" } = await request.json();
+
+        // Call OpenRouter API with streaming for test conversation
+        const apiKey = getConfigurationVariable("OPENROUTER_API_KEY");
+        if (!apiKey) {
+          return new Response("OpenRouter API key not configured", {
+            status: 500,
+          });
+        }
+
+        const openRouterRequest = {
+          model: model,
+          messages: messages,
+          stream: true,
+          temperature: 0.7,
+        };
+
+        logger.info("Sending test conversation request to OpenRouter");
+
+        const openRouterResponse = await fetch(
+          "https://openrouter.ai/api/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+              "HTTP-Referer": "https://github.com/boltfoundry/bolt-foundry",
+              "X-Title": "aibff GUI Test Conversation",
+            },
+            body: JSON.stringify(openRouterRequest),
+          },
+        );
+
+        if (!openRouterResponse.ok) {
+          throw new Error(`OpenRouter API error: ${openRouterResponse.status}`);
+        }
+
+        // Create SSE stream from OpenRouter response
+        const body = new ReadableStream({
+          async start(controller) {
+            const encoder = new TextEncoder();
+            const reader = openRouterResponse.body?.getReader();
+
+            if (!reader) {
+              controller.enqueue(
+                encoder.encode(
+                  `event: error\ndata: ${
+                    JSON.stringify({ error: "No response body" })
+                  }\n\n`,
+                ),
+              );
+              controller.close();
+              return;
+            }
+
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                  if (line.startsWith("data: ")) {
+                    const data = line.slice(6);
+                    if (data === "[DONE]") {
+                      controller.enqueue(encoder.encode(`data: [DONE]\n\n`));
+                      controller.close();
+                      return;
+                    }
+                    if (!data.trim()) continue;
+
+                    try {
+                      const parsed = JSON.parse(data);
+                      const delta = parsed.choices?.[0]?.delta;
+                      if (delta?.content) {
+                        controller.enqueue(
+                          encoder.encode(
+                            `data: ${
+                              JSON.stringify({ content: delta.content })
+                            }\n\n`,
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      logger.error("Failed to parse OpenRouter response:", e);
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              logger.error("Test conversation stream error:", error);
+              controller.enqueue(
+                encoder.encode(
+                  `event: error\ndata: ${
+                    JSON.stringify({ error: "Stream interrupted" })
+                  }\n\n`,
+                ),
+              );
+            } finally {
+              controller.close();
+            }
+          },
+        });
+
+        return new Response(body, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+          },
+        });
+      } catch (error) {
+        logger.error("Test conversation error:", error);
+        return new Response("Internal server error", { status: 500 });
       }
     },
   },

@@ -1,9 +1,6 @@
 import { assert, assertEquals } from "@std/assert";
-import {
-  navigateTo,
-  setupE2ETest,
-  teardownE2ETest,
-} from "@bfmono/infra/testing/e2e/setup.ts";
+import { navigateTo } from "@bfmono/infra/testing/e2e/setup.ts";
+import { setupBoltFoundryTest } from "../helpers.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 
 const logger = getLogger(import.meta);
@@ -11,7 +8,7 @@ const logger = getLogger(import.meta);
 Deno.test.ignore(
   "Docs getting-started page renders markdown content",
   async () => {
-    const context = await setupE2ETest();
+    const context = await setupBoltFoundryTest();
 
     try {
       // Navigate to the getting-started docs page
@@ -54,13 +51,13 @@ Deno.test.ignore(
       logger.error("Test failed:", error);
       throw error;
     } finally {
-      await teardownE2ETest(context);
+      await context.teardown();
     }
   },
 );
 
 Deno.test.ignore("Docs page handles non-existent document", async () => {
-  const context = await setupE2ETest();
+  const context = await setupBoltFoundryTest();
 
   try {
     // Navigate to a non-existent docs page
@@ -91,14 +88,14 @@ Deno.test.ignore("Docs page handles non-existent document", async () => {
     logger.error("Test failed:", error);
     throw error;
   } finally {
-    await teardownE2ETest(context);
+    await context.teardown();
   }
 });
 
 Deno.test.ignore(
   "Docs page loads README.md by default when no slug provided",
   async () => {
-    const context = await setupE2ETest();
+    const context = await setupBoltFoundryTest();
 
     try {
       // Navigate to /docs/ without a slug
@@ -129,13 +126,13 @@ Deno.test.ignore(
       logger.error("Test failed:", error);
       throw error;
     } finally {
-      await teardownE2ETest(context);
+      await context.teardown();
     }
   },
 );
 
 Deno.test.ignore("Docs page renders different markdown files", async () => {
-  const context = await setupE2ETest();
+  const context = await setupBoltFoundryTest();
 
   try {
     // Get list of docs from the docs/guides directory
@@ -222,6 +219,6 @@ Deno.test.ignore("Docs page renders different markdown files", async () => {
     logger.error("Test failed:", error);
     throw error;
   } finally {
-    await teardownE2ETest(context);
+    await context.teardown();
   }
 });
