@@ -11,17 +11,17 @@ async function app(args: Array<string>): Promise<number> {
   if (args.length === 0) {
     ui.error("Usage: bft app <app-name> [OPTIONS]");
     ui.output("Available apps:");
-    ui.output("  boltfoundry.com    Bolt Foundry landing page");
+    ui.output("  boltfoundry-com    Bolt Foundry landing page");
     return 1;
   }
 
   const appName = args[0];
   const appArgs = args.slice(1);
 
-  if (appName !== "boltfoundry.com") {
+  if (appName !== "boltfoundry-com") {
     ui.error(`Unknown app: ${appName}`);
     ui.output("Available apps:");
-    ui.output("  boltfoundry.com    Bolt Foundry landing page");
+    ui.output("  boltfoundry-com    Bolt Foundry landing page");
     return 1;
   }
 
@@ -35,7 +35,7 @@ async function app(args: Array<string>): Promise<number> {
   });
 
   if (flags.help) {
-    ui.output(`Usage: bft app boltfoundry.com [OPTIONS]
+    ui.output(`Usage: bft app boltfoundry-com [OPTIONS]
 
 Launch the Bolt Foundry landing page
 
@@ -47,10 +47,10 @@ Options:
   --help             Show this help message
 
 Examples:
-  bft app boltfoundry.com                   # Run production server
-  bft app boltfoundry.com --dev             # Run in development mode
-  bft app boltfoundry.com --build           # Build assets only
-  bft app boltfoundry.com --port 4000       # Run on port 4000`);
+  bft app boltfoundry-com                   # Run production server
+  bft app boltfoundry-com --dev             # Run in development mode
+  bft app boltfoundry-com --build           # Build assets only
+  bft app boltfoundry-com --port 4000       # Run on port 4000`);
     return 0;
   }
 
@@ -61,10 +61,10 @@ Examples:
   }
 
   const appPath =
-    new URL(import.meta.resolve("../../../apps/boltFoundry.com")).pathname;
+    new URL(import.meta.resolve("../../../apps/boltfoundry-com")).pathname;
 
   if (flags.build) {
-    ui.output("Building boltFoundry.com assets...");
+    ui.output("Building boltfoundry-com assets...");
 
     // Run vite build
     const buildCommand = new Deno.Command("deno", {
@@ -143,22 +143,19 @@ Examples:
   }
 
   // Start the backend server
-  ui.output(`Starting boltFoundry.com server on http://localhost:${port}`);
+  ui.output(`Starting boltfoundry-com server on http://localhost:${port}`);
 
   const serverArgs = [
     "run",
     "-A",
     "--watch",
-    new URL(import.meta.resolve("../../../apps/boltFoundry.com/server.ts"))
+    new URL(import.meta.resolve("../../../apps/boltfoundry-com/server.ts"))
       .pathname,
-    "--port",
-    String(port),
-    "--mode",
-    flags.dev ? "development" : "production",
+    `--port=${port}`,
   ];
 
-  if (vitePort) {
-    serverArgs.push("--vite-port", String(vitePort));
+  if (flags.dev) {
+    serverArgs.push("--dev");
   }
 
   const serverCommand = new Deno.Command("deno", {
