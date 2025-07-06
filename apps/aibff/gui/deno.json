@@ -19,7 +19,7 @@
     "@isograph/react": "npm:@isograph/react@0.3.1",
     "@types/react": "npm:@types/react@^19.0.10",
     "@types/react-dom": "npm:@types/react-dom@^19.0.4",
-    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@^4.3.4",
+    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@^4.6.0",
     "react": "npm:react@^19.0.0",
     "react-dom": "npm:react-dom@^19.0.0",
     "react/jsx-runtime": "npm:react/jsx-runtime",
