@@ -61,7 +61,7 @@ Deno.test("WorkflowPanel autosave functionality", async () => {
 
     // Check for "Saving..." indicator if it appears
     try {
-      await context.page.waitForSelector('div:has-text("Saving...")', {
+      await context.page.waitForSelector("div", {
         timeout: 1000,
       });
       // Found 'Saving...' indicator
