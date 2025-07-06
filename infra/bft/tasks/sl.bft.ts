@@ -131,88 +131,20 @@ async function runSmartValidation(
  * Stage files for commit
  */
 async function stageFiles(files?: Array<string>): Promise<number> {
+  // Always run addremove first to discover new files and removed files
+  logger.info("Discovering new and removed files...");
+  const addremoveResult = await runShellCommand(["sl", "addremove"]);
+  if (addremoveResult !== 0) {
+    logger.error("❌ Failed to discover new/removed files");
+    return addremoveResult;
+  }
+
+  // If specific files are provided, add them explicitly
   if (files && files.length > 0) {
-    // Stage specific files
     logger.info("Staging specified files...");
-
-    // Check which files exist and which are deleted
-    const existingFiles: Array<string> = [];
-    const deletedFiles: Array<string> = [];
-
-    for (const file of files) {
-      try {
-        await Deno.stat(file);
-        existingFiles.push(file);
-      } catch {
-        // File doesn't exist, assume it's deleted
-        deletedFiles.push(file);
-      }
-    }
-
-    // Add existing files
-    if (existingFiles.length > 0) {
-      const addResult = await runShellCommand(["sl", "add", ...existingFiles]);
-      if (addResult !== 0) {
-        return addResult;
-      }
-    }
-
-    // Mark deleted files for removal
-    if (deletedFiles.length > 0) {
-      const removeResult = await runShellCommand([
-        "sl",
-        "remove",
-        "--mark",
-        ...deletedFiles,
-      ]);
-      if (removeResult !== 0) {
-        return removeResult;
-      }
-    }
-  } else {
-    // Stage all changes
-    logger.info("Staging all changes...");
-
-    const { stdout: statusOutput, code: statusCode } =
-      await runShellCommandWithOutput(["sl", "status"]);
-    if (statusCode !== 0) {
-      logger.error("Failed to get repository status");
-      return statusCode;
-    }
-
-    const lines = statusOutput.split("\n").filter((line) => line.trim());
-    const unknownFiles: Array<string> = [];
-    const missingFiles: Array<string> = [];
-
-    for (const line of lines) {
-      const status = line.charAt(0);
-      const file = line.slice(2);
-
-      if (status === "?") {
-        unknownFiles.push(file);
-      } else if (status === "!") {
-        missingFiles.push(file);
-      }
-    }
-
-    // Add unknown files
-    if (unknownFiles.length > 0) {
-      for (const file of unknownFiles) {
-        const result = await runShellCommand(["sl", "add", file]);
-        if (result !== 0) {
-          return result;
-        }
-      }
-    }
-
-    // Remove missing files
-    if (missingFiles.length > 0) {
-      for (const file of missingFiles) {
-        const result = await runShellCommand(["sl", "remove", file]);
-        if (result !== 0) {
-          return result;
-        }
-      }
+    const addResult = await runShellCommand(["sl", "add", ...files]);
+    if (addResult !== 0) {
+      return addResult;
     }
   }
 
