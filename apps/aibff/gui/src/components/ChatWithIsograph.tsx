@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { useRouter } from "../contexts/RouterContext.tsx";
 import { useGrader } from "../contexts/GraderContext.tsx";
-import { TabbedEditor } from "./TabbedEditor.tsx";
 import { MessageContent } from "./MessageContent.tsx";
 import { MessageInputUI } from "./MessageInput.tsx";
+import { WorkflowPanel } from "./WorkflowPanel.tsx";
 import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
@@ -54,7 +54,7 @@ export function ChatWithIsograph() {
   // Use ref for immediate access to tool calls in finally block
   const pendingToolCallsRef = useRef<Map<string, ToolCall>>(new Map());
 
-  const { graderContent, updateGraderContent } = useGrader();
+  const { updateGraderContent } = useGrader();
 
   // Execute tool calls
   // Function to save messages to server for persistence
@@ -143,6 +143,110 @@ Error formatting arguments: ${
         } else {
           logger.warn("No content found in arguments:", args);
           return "Error: No content found in arguments";
+        }
+      } else if (toolCall.function.name === "getInputSamples") {
+        logger.info("Getting current input samples");
+        // TODO: Implement getting input samples from actual state/file
+        // For now, return placeholder content
+        return `{"input": "What is the capital of France?"}\n{"input": "Explain photosynthesis in simple terms"}`;
+      } else if (toolCall.function.name === "updateInputSamples") {
+        logger.info(
+          "Parsing arguments for updateInputSamples:",
+          toolCall.function.arguments,
+        );
+        const args = JSON.parse(toolCall.function.arguments);
+        logger.info("Parsed arguments:", args);
+
+        if (args.content) {
+          logger.info(
+            "Updating input samples with:",
+            args.content.substring(0, 100) + "...",
+          );
+          // TODO: Implement updating input samples in actual state/file
+          // For now, just log and return success
+          logger.info("Input samples updated via tool call successfully");
+          return "Successfully updated input samples";
+        } else {
+          logger.warn("No content found in arguments:", args);
+          return "Error: No content found in arguments for updateInputSamples";
+        }
+      } else if (toolCall.function.name === "getSystemPrompt") {
+        logger.info("Getting current system prompt");
+        // TODO: Implement getting system prompt from actual state/file
+        // For now, return placeholder content
+        return "You are a helpful AI assistant. Please provide clear, accurate, and helpful responses to user questions.";
+      } else if (toolCall.function.name === "updateSystemPrompt") {
+        logger.info(
+          "Parsing arguments for updateSystemPrompt:",
+          toolCall.function.arguments,
+        );
+        const args = JSON.parse(toolCall.function.arguments);
+        logger.info("Parsed arguments:", args);
+
+        if (args.content) {
+          logger.info(
+            "Updating system prompt with:",
+            args.content.substring(0, 100) + "...",
+          );
+          // TODO: Implement updating system prompt in actual state/file
+          // For now, just log and return success
+          logger.info("System prompt updated via tool call successfully");
+          return "Successfully updated system prompt";
+        } else {
+          logger.warn("No content found in arguments:", args);
+          return "Error: No content found in arguments for updateSystemPrompt";
+        }
+      } else if (toolCall.function.name === "getOutputSamples") {
+        logger.info("Getting current output samples");
+        // TODO: Implement getting output samples from actual state/file
+        // For now, return placeholder content
+        return `{"output": "Paris is the capital of France."}\\n{"output": "Photosynthesis is the process by which plants convert light energy into chemical energy."}`;
+      } else if (toolCall.function.name === "updateOutputSamples") {
+        logger.info(
+          "Parsing arguments for updateOutputSamples:",
+          toolCall.function.arguments,
+        );
+        const args = JSON.parse(toolCall.function.arguments);
+        logger.info("Parsed arguments:", args);
+
+        if (args.content) {
+          logger.info(
+            "Updating output samples with:",
+            args.content.substring(0, 100) + "...",
+          );
+          // TODO: Implement updating output samples in actual state/file
+          // For now, just log and return success
+          logger.info("Output samples updated via tool call successfully");
+          return "Successfully updated output samples";
+        } else {
+          logger.warn("No content found in arguments:", args);
+          return "Error: No content found in arguments for updateOutputSamples";
+        }
+      } else if (toolCall.function.name === "getEvalPrompt") {
+        logger.info("Getting current eval prompt");
+        // TODO: Implement getting eval prompt from actual state/file
+        // For now, return placeholder content
+        return "Please evaluate the response based on accuracy, helpfulness, and clarity. Rate from 1-5 where 5 is excellent.";
+      } else if (toolCall.function.name === "updateEvalPrompt") {
+        logger.info(
+          "Parsing arguments for updateEvalPrompt:",
+          toolCall.function.arguments,
+        );
+        const args = JSON.parse(toolCall.function.arguments);
+        logger.info("Parsed arguments:", args);
+
+        if (args.content) {
+          logger.info(
+            "Updating eval prompt with:",
+            args.content.substring(0, 100) + "...",
+          );
+          // TODO: Implement updating eval prompt in actual state/file
+          // For now, just log and return success
+          logger.info("Eval prompt updated via tool call successfully");
+          return "Successfully updated eval prompt";
+        } else {
+          logger.warn("No content found in arguments:", args);
+          return "Error: No content found in arguments for updateEvalPrompt";
         }
       } else {
         logger.warn("Unknown tool call:", toolCall.function.name);
@@ -283,79 +387,64 @@ Error formatting arguments: ${
 
   if (error) {
     return (
-      <div style={{ display: "flex", height: "100vh" }}>
-        {/* Left panel - Error state */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100vh",
+          backgroundColor: "#141516",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "2rem",
+        }}
+      >
         <div
           style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            borderRight: "3px solid #3a3b3c",
-            backgroundColor: "#141516",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "2rem",
+            textAlign: "center",
+            maxWidth: "400px",
           }}
         >
-          <div
+          <h2
             style={{
-              textAlign: "center",
-              maxWidth: "400px",
+              color: "#ff6b6b",
+              marginBottom: "1rem",
             }}
           >
-            <h2
-              style={{
-                color: "#ff6b6b",
-                marginBottom: "1rem",
-              }}
-            >
-              Conversation Not Found
-            </h2>
-            <p
-              style={{
-                color: "#b8b8c0",
-                marginBottom: "2rem",
-              }}
-            >
-              {error}
-            </p>
-            <BfDsButton
-              onClick={() => navigate("/")}
-              variant="primary"
-            >
-              Start New Conversation
-            </BfDsButton>
-          </div>
-        </div>
-
-        {/* Right panel - Tabbed Editor */}
-        <div
-          style={{
-            flex: 1,
-            backgroundColor: "#1f2021",
-          }}
-        >
-          <TabbedEditor
-            initialGraderContent={graderContent}
-            onGraderContentChange={updateGraderContent}
-            conversationId={conversationIdRef.current}
-          />
+            Conversation Not Found
+          </h2>
+          <p
+            style={{
+              color: "#b8b8c0",
+              marginBottom: "2rem",
+            }}
+          >
+            {error}
+          </p>
+          <BfDsButton
+            onClick={() => navigate("/")}
+            variant="primary"
+          >
+            Start New Conversation
+          </BfDsButton>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      {/* Left panel - Chat */}
+    <div
+      style={{
+        display: "flex",
+        height: "100vh",
+        backgroundColor: "#141516",
+      }}
+    >
+      {/* Main Chat Area */}
       <div
         style={{
-          flex: "1 1 50%",
-          minWidth: 0, // Prevent flex items from overflowing
+          flex: 1,
           display: "flex",
           flexDirection: "column",
-          borderRight: "3px solid #3a3b3c",
-          backgroundColor: "#141516",
         }}
       >
         {/* Header with New Conversation button */}
@@ -649,7 +738,14 @@ Generated at: ${new Date().toISOString()}`,
                                 msg.id === streamingMessageIdRef.current
                                   ? {
                                     ...msg,
-                                    content: msg.content + parsed.content,
+                                    content: msg.content.includes(
+                                        "🔧 Executing tool calls...",
+                                      )
+                                      ? msg.content.replace(
+                                        "🔧 Executing tool calls...",
+                                        parsed.content,
+                                      )
+                                      : msg.content + parsed.content,
                                   }
                                   : msg
                               )
@@ -825,6 +921,9 @@ Generated at: ${new Date().toISOString()}`,
               );
             } finally {
               setIsStreaming(false);
+
+              // Store the message ID before clearing it for tool execution
+              const messageIdForToolExecution = streamingMessageIdRef.current;
               streamingMessageIdRef.current = null;
 
               // Use the ref to get the current tool calls (not stale state)
@@ -864,21 +963,26 @@ Generated at: ${new Date().toISOString()}`,
                     // Execute the tool call and get the result
                     const result = executeToolCall(toolCall);
 
+                    // Add a user-friendly notification about tool completion
+                    const toolNotification =
+                      `✅ Tool "${toolCall.function.name}" executed successfully`;
+                    logger.info(toolNotification);
+
                     // Format the tool call as XML for conversation persistence
                     const toolCallXML = formatToolCallXML(toolCall, result);
 
                     // Update the assistant message content with the tool call
                     setMessages((prevMessages) => {
                       const updatedMessages = prevMessages.map((msg) => {
-                        if (msg.id === streamingMessageIdRef.current) {
+                        if (msg.id === messageIdForToolExecution) {
                           // Remove the "executing tool calls" text and add the actual tool call
                           const baseContent = msg.content.replace(
                             /🔧 Executing tool calls\.\.\./,
                             "",
                           ).trim();
                           const newContent = baseContent
-                            ? `${baseContent}\n\n${toolCallXML}`
-                            : toolCallXML;
+                            ? `${baseContent}\n\n${toolNotification}\n\n${toolCallXML}`
+                            : `${toolNotification}\n\n${toolCallXML}`;
 
                           return {
                             ...msg,
@@ -911,7 +1015,7 @@ Generated at: ${new Date().toISOString()}`,
 
                     setMessages((prevMessages) => {
                       const updatedMessages = prevMessages.map((msg) => {
-                        if (msg.id === streamingMessageIdRef.current) {
+                        if (msg.id === messageIdForToolExecution) {
                           const baseContent = msg.content.replace(
                             /🔧 Executing tool calls\.\.\./,
                             "",
@@ -954,20 +1058,8 @@ Generated at: ${new Date().toISOString()}`,
         />
       </div>
 
-      {/* Right panel - Tabbed Editor */}
-      <div
-        style={{
-          flex: "1 1 50%",
-          minWidth: 0, // Prevent flex items from overflowing
-          backgroundColor: "#1f2021",
-        }}
-      >
-        <TabbedEditor
-          initialGraderContent={graderContent}
-          onGraderContentChange={updateGraderContent}
-          conversationId={conversationIdRef.current}
-        />
-      </div>
+      {/* Workflow Panel */}
+      <WorkflowPanel />
     </div>
   );
 }

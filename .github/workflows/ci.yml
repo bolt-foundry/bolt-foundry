@@ -12,6 +12,7 @@ concurrency:
 jobs:
   bff-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
       id-token: write # OIDC for FlakeHub
@@ -93,17 +94,18 @@ jobs:
       # 👇 Everything below now runs *inside* the dev-shell
       - name: Enter dev-shell & run tests
         run: |
-          # Pass DENO_DIR into the Nix environment to ensure cache sharing
-          nix develop . --accept-flake-config --command bash -euc "
+          # Pass DENO_DIR and secrets into the Nix environment
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
             export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
             echo \"Using Deno cache directory: \${DENO_DIR}\"
             deno --version
             deno info
             # Pre-cache dependencies
-            deno cache deno.jsonc || echo \"Failed to cache, continuing anyway\"
             npm install
             deno install
-            bff ci --include-bolt-foundry -g
+            bft ci -g
           "
 
       # Debug before save

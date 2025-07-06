@@ -263,13 +263,10 @@ function parseDenoFmtOutput(fullOutput: string) {
 
 async function runBuildStep(
   useGithub: boolean,
-  args: Array<string>,
+  _args: Array<string>,
 ): Promise<number> {
   logger.info("Running bff build");
-  // Include bolt-foundry in CI builds if the flag is passed
-  const buildArgs = args.includes("--include-bolt-foundry")
-    ? ["bff", "build", "--include-bolt-foundry"]
-    : ["bff", "build"];
+  const buildArgs = ["bff", "build"];
 
   const { code } = await runShellCommandWithOutput(
     buildArgs,
@@ -303,20 +300,21 @@ async function runTestStep(_useGithub: boolean): Promise<number> {
   return code;
 }
 
-async function runE2ETestStep(useGithub: boolean): Promise<number> {
+async function runE2ETestStep(_useGithub: boolean): Promise<number> {
   logger.info("Running E2E tests...");
 
-  // We'll use the BFF e2e command that's already implemented
+  // Use the newer BFT e2e command that supports dual server setup
   const e2eArgs = [
-    "bff",
+    "bft",
     "e2e",
+    "--build",
   ];
 
   const { code } = await runShellCommandWithOutput(
     e2eArgs,
     {},
     true,
-    useGithub,
+    false, // Always show e2e output for debugging
   );
   return code;
 }

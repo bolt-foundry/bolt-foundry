@@ -170,7 +170,7 @@ Deno.test("processMarkdownIncludes - should throw error for missing deck include
   }
 });
 
-Deno.test("processMarkdownIncludes - should only include .deck.md files, not other markdown", async () => {
+Deno.test("processMarkdownIncludes - should include .md files", async () => {
   const tempDir = await Deno.makeTempDir();
   const mainDeckPath = `${tempDir}/main.deck.md`;
   const readmePath = `${tempDir}/readme.md`;
@@ -180,7 +180,7 @@ Deno.test("processMarkdownIncludes - should only include .deck.md files, not oth
 Content`;
 
   const readmeContent = `# Readme
-This should not be included`;
+This should be included`;
 
   await Deno.writeTextFile(mainDeckPath, mainContent);
   await Deno.writeTextFile(readmePath, readmeContent);
@@ -188,8 +188,11 @@ This should not be included`;
   try {
     const result = renderDeck(mainDeckPath, {}, {});
 
-    // Should not include readme.md content
-    assertEquals(result.messages[0].content, "# Main\n\nContent");
+    // Should include readme.md content
+    assertEquals(
+      result.messages[0].content,
+      "# Main\n# Readme\nThis should be included\nContent",
+    );
   } finally {
     await Deno.remove(tempDir, { recursive: true });
   }

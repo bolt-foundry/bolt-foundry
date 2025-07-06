@@ -2,7 +2,7 @@
 
 Hello world
 
-![grader base deck](../grader-base/grader-base.deck.md)
+![grader base deck](../../decks/grader-base/grader-base.deck.md)
 
 ## Specific Task
 

@@ -32,7 +32,27 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/randallb/randallb.com/areas/bolt-foundry-monorepo/.claude/bft-safety-hook.ts"
+            "command": ".claude/bft-safety-hook.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/block-generated-files-hook.ts"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write|Update",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/post-update-hook.ts"
           }
         ]
       }

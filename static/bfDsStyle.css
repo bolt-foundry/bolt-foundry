@@ -2,6 +2,12 @@
   --bfds-primary: #ffd700;
   --bfds-primary-hover: #e6c200;
   --bfds-primary-active: #ccad00;
+  --bfds-primary-09: rgba(255, 215, 0, 0.9);
+  --bfds-primary-08: rgba(255, 215, 0, 0.8);
+  --bfds-primary-06: rgba(255, 215, 0, 0.6);
+  --bfds-primary-04: rgba(255, 215, 0, 0.4);
+  --bfds-primary-02: rgba(255, 215, 0, 0.2);
+  --bfds-primary-01: rgba(255, 215, 0, 0.1);
 
   --bfds-background: #141516;
   --bfds-background-hover: #1f2021;
@@ -17,6 +23,172 @@
 
   --bfds-border: #3a3b3c;
   --bfds-border-hover: #4a4b4c;
+  
+  --bfds-error: #ef4444;
+  --bfds-error-hover: #dc2626;
+  --bfds-error-background: #1f1415;
+  
+  --bfds-success: #10b981;
+  --bfds-success-hover: #059669;
+  --bfds-success-background: #0f1f1a;
+  
+  --bfds-focus: #3b82f6;
+  --bfds-focus-outline: rgba(59, 130, 246, 0.3);
+}
+
+/* List */
+
+.bfds-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background-color: var(--bfds-background);
+}
+
+.bfds-list-item {
+  display: block;
+  width: 100%;
+  margin: 0;
+  list-style: none;
+}
+
+/* For non-expandable items without button - apply padding directly to li */
+.bfds-list-item:not(.bfds-list-item--expandable):not(.bfds-list-item--clickable) {
+  padding: 12px 16px;
+  color: var(--bfds-text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  cursor: default;
+}
+
+/* For active non-expandable items without button */
+.bfds-list-item--active:not(.bfds-list-item--expandable):not(.bfds-list-item--clickable) {
+  background-color: var(--bfds-primary);
+  color: var(--bfds-background);
+  font-weight: 500;
+}
+
+/* For disabled non-expandable items without button */
+.bfds-list-item--disabled:not(.bfds-list-item--expandable):not(.bfds-list-item--clickable) {
+  color: var(--bfds-text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Expandable List Items */
+
+.bfds-list-item--expandable {
+  padding: 0;
+  position: relative;
+}
+
+.bfds-list-item__button {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  margin: 0;
+  background: none;
+  border: none;
+  color: var(--bfds-text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.bfds-list-item__button:hover:not(:disabled) {
+  background-color: var(--bfds-primary-01);
+}
+
+.bfds-list-item__button:disabled {
+  color: var(--bfds-text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.bfds-list-item--active .bfds-list-item__button {
+  background-color: var(--bfds-primary);
+  color: var(--bfds-background);
+  font-weight: 500;
+}
+
+.bfds-list-item--active .bfds-list-item__button:hover:not(:disabled) {
+  background-color: var(--bfds-primary-09);
+  color: var(--bfds-background);
+}
+
+.bfds-list-item__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.bfds-list-item__main {
+  flex: 1;
+}
+
+.bfds-list-item__icon {
+  flex-shrink: 0;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.bfds-list-item__expanded-content {
+  margin-bottom: 8px;
+  background-color: var(--bfds-background-hover);
+  overflow: hidden;
+  animation: bfds-expand 0.2s ease-out;
+  color: var(--bfds-text);
+  /* Prevent expanded content from inheriting hover styles */
+  pointer-events: auto;
+}
+
+@keyframes bfds-expand {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+.bfds-list-item__expand-button {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: var(--bfds-background);
+  border: none;
+  color: var(--bfds-text);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bfds-list-item__expand-button:hover:not(:disabled) {
+  background-color: var(--bfds-primary);
+  color: var(--bfds-background);
+}
+
+.bfds-list-item__expand-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* When there's both onClick and expandContents, add padding to main button */
+.bfds-list-item--expandable.bfds-list-item--has-separate-expand .bfds-list-item__button {
+  padding-right: 48px;
 }
 
 /* Icon */
@@ -372,4 +544,930 @@
 
 .bfds-tabs--secondary .bfds-subtab--active {
   border-bottom-color: var(--bfds-secondary);
+}
+
+/* Form */
+
+.bfds-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Input */
+
+.bfds-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bfds-input-label {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--bfds-text);
+  line-height: 1.4;
+}
+
+.bfds-input-required {
+  color: var(--bfds-error);
+  margin-left: 2px;
+}
+
+.bfds-input {
+  padding: 12px 16px;
+  border: 1px solid var(--bfds-border);
+  border-radius: 6px;
+  background-color: var(--bfds-background);
+  color: var(--bfds-text);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
+
+.bfds-input::placeholder {
+  color: var(--bfds-text-muted);
+}
+
+.bfds-input:focus {
+  border-color: var(--bfds-focus);
+  box-shadow: 0 0 0 3px var(--bfds-focus-outline);
+}
+
+.bfds-input:hover:not(:disabled):not(:focus) {
+  border-color: var(--bfds-border-hover);
+}
+
+/* Input states */
+.bfds-input--error {
+  border-color: var(--bfds-error);
+  background-color: var(--bfds-error-background);
+}
+
+.bfds-input--error:focus {
+  border-color: var(--bfds-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+}
+
+.bfds-input--success {
+  border-color: var(--bfds-success);
+  background-color: var(--bfds-success-background);
+}
+
+.bfds-input--success:focus {
+  border-color: var(--bfds-success);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+}
+
+.bfds-input--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--bfds-background-hover);
+}
+
+/* Input help text */
+.bfds-input-help {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: var(--bfds-text-secondary);
+  line-height: 1.3;
+}
+
+.bfds-input-error {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: var(--bfds-error);
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bfds-input-success {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: var(--bfds-success);
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* TextArea */
+
+.bfds-textarea-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bfds-textarea-label {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--bfds-text);
+  line-height: 1.4;
+}
+
+.bfds-textarea-required {
+  color: var(--bfds-error);
+  margin-left: 2px;
+}
+
+.bfds-textarea {
+  padding: 12px 16px;
+  border: 1px solid var(--bfds-border);
+  border-radius: 6px;
+  background-color: var(--bfds-background);
+  color: var(--bfds-text);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  min-height: 2.5em;
+}
+
+.bfds-textarea::placeholder {
+  color: var(--bfds-text-muted);
+}
+
+.bfds-textarea:focus {
+  border-color: var(--bfds-focus);
+  box-shadow: 0 0 0 3px var(--bfds-focus-outline);
+}
+
+.bfds-textarea:hover:not(:disabled):not(:focus) {
+  border-color: var(--bfds-border-hover);
+}
+
+/* TextArea resize options */
+.bfds-textarea--resize-none {
+  resize: none;
+}
+
+.bfds-textarea--resize-both {
+  resize: both;
+}
+
+.bfds-textarea--resize-horizontal {
+  resize: horizontal;
+}
+
+.bfds-textarea--resize-vertical {
+  resize: vertical;
+}
+
+/* TextArea states */
+.bfds-textarea--error {
+  border-color: var(--bfds-error);
+  background-color: var(--bfds-error-background);
+}
+
+.bfds-textarea--error:focus {
+  border-color: var(--bfds-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+}
+
+.bfds-textarea--success {
+  border-color: var(--bfds-success);
+  background-color: var(--bfds-success-background);
+}
+
+.bfds-textarea--success:focus {
+  border-color: var(--bfds-success);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+}
+
+.bfds-textarea--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--bfds-background-hover);
+}
+
+/* TextArea help text */
+.bfds-textarea-help {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: var(--bfds-text-secondary);
+  line-height: 1.3;
+}
+
+.bfds-textarea-error {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: var(--bfds-error);
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bfds-textarea-success {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: var(--bfds-success);
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Select */
+
+.bfds-select-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.bfds-select-label {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--bfds-text);
+  line-height: 1.4;
+}
+
+.bfds-select-required {
+  color: var(--bfds-error);
+  margin-left: 2px;
+}
+
+.bfds-select-container--disabled .bfds-select-label {
+  opacity: 0.6;
+}
+
+.bfds-select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.bfds-select {
+  display: block;
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--bfds-text);
+  background-color: var(--bfds-background);
+  border: 1px solid var(--bfds-border);
+  border-radius: 6px;
+  box-sizing: border-box;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.bfds-select:hover:not(:disabled) {
+  border-color: var(--bfds-border-hover);
+}
+
+.bfds-select:focus {
+  border-color: var(--bfds-focus);
+  box-shadow: 0 0 0 3px var(--bfds-focus-outline);
+}
+
+.bfds-select--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--bfds-background-hover);
+}
+
+.bfds-select-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--bfds-text-secondary);
+}
+
+.bfds-select--disabled + .bfds-select-icon {
+  opacity: 0.6;
+}
+
+.bfds-select-icon--open {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.bfds-select-icon--clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.bfds-select--open {
+  border-radius: 6px 6px 0 0;
+  border-bottom-color: transparent;
+}
+
+.bfds-select--open-above {
+  border-radius: 0 0 6px 6px;
+  border-top-color: transparent;
+}
+
+.bfds-select-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: var(--bfds-background);
+  border: 1px solid var(--bfds-border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.bfds-select-dropdown--below {
+  top: 100%;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+}
+
+.bfds-select-dropdown--above {
+  bottom: 100%;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+}
+
+.bfds-select-option {
+  padding: 12px 16px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--bfds-text);
+  cursor: pointer;
+  border-bottom: 1px solid var(--bfds-border);
+  transition: background-color 0.15s ease-in-out;
+}
+
+.bfds-select-option:last-child {
+  border-bottom: none;
+}
+
+.bfds-select-option:hover {
+  background-color: var(--bfds-background-hover);
+}
+
+/* Disable hover when in keyboard navigation mode */
+.bfds-select-dropdown--keyboard-nav .bfds-select-option:hover {
+  background-color: transparent;
+}
+
+.bfds-select-option--highlighted {
+  background-color: var(--bfds-background-hover);
+}
+
+/* Ensure highlighted takes precedence over disabled hover */
+.bfds-select-dropdown--keyboard-nav .bfds-select-option--highlighted {
+  background-color: var(--bfds-background-hover) !important;
+}
+
+.bfds-select-option--selected {
+  background-color: var(--bfds-primary-02);
+  color: var(--bfds-primary);
+}
+
+.bfds-select-option--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: transparent !important;
+}
+
+.bfds-select-option--no-results {
+  color: var(--bfds-text-muted);
+  font-style: italic;
+  cursor: default;
+  background-color: transparent !important;
+}
+
+/* Checkbox */
+
+.bfds-checkbox-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--bfds-text);
+  position: relative;
+}
+
+.bfds-checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.bfds-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--bfds-border);
+  border-radius: 3px;
+  background-color: var(--bfds-background);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.bfds-checkbox:hover:not(.bfds-checkbox--disabled) {
+  border-color: var(--bfds-border-hover);
+}
+
+.bfds-checkbox:focus-visible {
+  outline: 2px solid var(--bfds-focus);
+  outline-offset: 2px;
+}
+
+.bfds-checkbox--checked {
+  border-color: var(--bfds-primary);
+  background-color: var(--bfds-primary);
+}
+
+.bfds-checkbox--checked:hover:not(.bfds-checkbox--disabled) {
+  border-color: var(--bfds-primary-hover);
+  background-color: var(--bfds-primary-hover);
+}
+
+.bfds-checkbox--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--bfds-background-hover);
+}
+
+.bfds-checkbox-icon {
+  color: var(--bfds-background);
+}
+
+.bfds-checkbox-label {
+  user-select: none;
+}
+
+.bfds-checkbox-required {
+  color: var(--bfds-error);
+}
+
+.bfds-checkbox-wrapper:has(.bfds-checkbox--disabled) {
+  cursor: not-allowed;
+}
+
+.bfds-checkbox-wrapper:has(.bfds-checkbox--disabled) .bfds-checkbox-label {
+  opacity: 0.6;
+}
+
+/* Checkbox validation states - only show error styling when focused and invalid */
+.bfds-checkbox-input:invalid:focus + .bfds-checkbox {
+  outline: 2px solid var(--bfds-error);
+  outline-offset: 2px;
+}
+
+/* Show error styling after user has tried to submit (when form has was-validated class) */
+.was-validated .bfds-checkbox-input:invalid + .bfds-checkbox {
+  border-color: var(--bfds-error);
+}
+
+/* Radio */
+
+.bfds-radio-group {
+  display: flex;
+  gap: 16px;
+}
+
+.bfds-radio-group--vertical {
+  flex-direction: column;
+}
+
+.bfds-radio-group--horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.bfds-radio-group--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bfds-radio-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--bfds-text);
+  position: relative;
+}
+
+.bfds-radio-input {
+  position: absolute;
+  opacity: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.bfds-radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--bfds-border);
+  border-radius: 50%;
+  background-color: var(--bfds-background);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  position: relative;
+}
+
+.bfds-radio:hover:not(.bfds-radio--disabled) {
+  border-color: var(--bfds-border-hover);
+}
+
+.bfds-radio:focus-visible {
+  outline: 2px solid var(--bfds-focus);
+  outline-offset: 2px;
+}
+
+.bfds-radio--checked {
+  border-color: var(--bfds-primary);
+}
+
+.bfds-radio--checked:hover:not(.bfds-radio--disabled) {
+  border-color: var(--bfds-primary-hover);
+}
+
+.bfds-radio--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--bfds-background-hover);
+}
+
+.bfds-radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--bfds-primary);
+  transition: all 0.2s ease-in-out;
+}
+
+.bfds-radio--disabled .bfds-radio-dot {
+  background-color: var(--bfds-text-muted);
+}
+
+.bfds-radio-label {
+  user-select: none;
+}
+
+.bfds-radio-wrapper:has(.bfds-radio--disabled) {
+  cursor: not-allowed;
+}
+
+.bfds-radio-wrapper:has(.bfds-radio--disabled) .bfds-radio-label {
+  opacity: 0.6;
+}
+
+/* Radio validation states - only show error styling when focused and invalid */
+.bfds-radio-input:invalid:focus + .bfds-radio {
+  outline: 2px solid var(--bfds-error);
+  outline-offset: 2px;
+}
+
+/* Show error styling after user has tried to submit (when form has was-validated class) */
+.was-validated .bfds-radio-input:invalid + .bfds-radio {
+  border-color: var(--bfds-error);
+}
+
+/* Radio sizes */
+.bfds-radio-group--small .bfds-radio-wrapper {
+  font-size: 12px;
+  gap: 6px;
+}
+
+.bfds-radio-group--small .bfds-radio {
+  width: 12px;
+  height: 12px;
+}
+
+.bfds-radio-group--small .bfds-radio-dot {
+  width: 6px;
+  height: 6px;
+}
+
+.bfds-radio-group--medium .bfds-radio-wrapper {
+  font-size: 14px;
+  gap: 8px;
+}
+
+.bfds-radio-group--medium .bfds-radio {
+  width: 16px;
+  height: 16px;
+}
+
+.bfds-radio-group--medium .bfds-radio-dot {
+  width: 8px;
+  height: 8px;
+}
+
+.bfds-radio-group--large .bfds-radio-wrapper {
+  font-size: 16px;
+  gap: 10px;
+}
+
+.bfds-radio-group--large .bfds-radio {
+  width: 20px;
+  height: 20px;
+}
+
+.bfds-radio-group--large .bfds-radio-dot {
+  width: 10px;
+  height: 10px;
+}
+
+/* Radio fieldset */
+.bfds-radio-fieldset {
+  border: 1px solid var(--bfds-border);
+  border-radius: 6px;
+  background-color: var(--bfds-background);
+  padding: 16px;
+  margin: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+.bfds-radio-fieldset:hover {
+  border-color: var(--bfds-border-hover);
+}
+
+.bfds-radio-fieldset:focus-within {
+  border-color: var(--bfds-focus);
+  box-shadow: 0 0 0 3px var(--bfds-focus-outline);
+}
+
+/* Toggle */
+
+.bfds-toggle-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--bfds-text);
+}
+
+.bfds-toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.bfds-toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.bfds-toggle:focus-visible {
+  outline: 2px solid var(--bfds-focus);
+  outline-offset: 2px;
+}
+
+.bfds-toggle-track {
+  position: relative;
+  background-color: var(--bfds-secondary);
+  border-radius: 12px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.bfds-toggle--checked .bfds-toggle-track {
+  background-color: var(--bfds-primary);
+}
+
+.bfds-toggle--disabled .bfds-toggle-track {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--bfds-background-hover);
+}
+
+.bfds-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  background-color: var(--bfds-text);
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.bfds-toggle--checked .bfds-toggle-thumb {
+  background-color: var(--bfds-background);
+}
+
+.bfds-toggle--disabled .bfds-toggle-thumb {
+  background-color: var(--bfds-text-muted);
+}
+
+.bfds-toggle-label {
+  user-select: none;
+}
+
+.bfds-toggle-wrapper:has(.bfds-toggle--disabled) {
+  cursor: not-allowed;
+}
+
+.bfds-toggle-wrapper:has(.bfds-toggle--disabled) .bfds-toggle-label {
+  opacity: 0.6;
+}
+
+/* Callout */
+
+.bfds-callout {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid;
+  margin: 8px 0;
+  animation: bfds-callout-fade-in 0.3s ease-in-out;
+}
+
+@keyframes bfds-callout-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bfds-callout-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.bfds-callout-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.bfds-callout-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bfds-callout-message {
+  font-weight: 500;
+}
+
+.bfds-callout-toggle {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+.bfds-callout-toggle:hover {
+  opacity: 1;
+}
+
+.bfds-callout-dismiss {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 6px;
+  margin: -6px;
+  border-radius: 4px;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.bfds-callout-dismiss:hover {
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.bfds-callout-details {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bfds-callout-details pre {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Callout variants */
+
+.bfds-callout--info {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+
+.bfds-callout--success {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+.bfds-callout--warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
+.bfds-callout--error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+/* Toggle sizes */
+.bfds-toggle--small .bfds-toggle-track {
+  width: 32px;
+  height: 16px;
+}
+
+.bfds-toggle--small .bfds-toggle-thumb {
+  width: 12px;
+  height: 12px;
+}
+
+.bfds-toggle--small.bfds-toggle--checked .bfds-toggle-thumb {
+  transform: translateX(16px);
+}
+
+.bfds-toggle--medium .bfds-toggle-track {
+  width: 40px;
+  height: 20px;
+}
+
+.bfds-toggle--medium .bfds-toggle-thumb {
+  width: 16px;
+  height: 16px;
+}
+
+.bfds-toggle--medium.bfds-toggle--checked .bfds-toggle-thumb {
+  transform: translateX(20px);
+}
+
+.bfds-toggle--large .bfds-toggle-track {
+  width: 48px;
+  height: 24px;
+}
+
+.bfds-toggle--large .bfds-toggle-thumb {
+  width: 20px;
+  height: 20px;
+}
+
+.bfds-toggle--large.bfds-toggle--checked .bfds-toggle-thumb {
+  transform: translateX(24px);
 }

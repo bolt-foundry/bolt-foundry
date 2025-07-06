@@ -77,23 +77,25 @@
     ".sl",
     ".direnv",
     ".git",
+    ".deno/**",
     "build",
     "static",
     "**/__TEMPLATE__.*",
     "**/*.disabled.*",
     "thirdParty",
     "**/npm",
-    "node_modules",
+    "node_modules/**",
+    "**/node_modules/**",
     "examples/**",
     "**/dist/**",
-    "packages/aibff"
+    "packages/aibff",
+    "apps/contacts/**"
   ],
   "lint": {
     "exclude": [
       "**/__generated__/**",
       "**/__isograph/**",
       "examples/**",
-      "apps/contacts/**",
       "**/dist/**"
     ],
     "plugins": ["./infra/lint/bolt-foundry.ts"],

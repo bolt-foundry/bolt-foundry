@@ -35,14 +35,19 @@ async function waitForPort(port: number, timeoutMs = 30000): Promise<boolean> {
 export async function e2eCommand(options: Array<string>): Promise<number> {
   logger.info("Running E2E tests...");
 
-  // Parse options
+  // Parse options - extract bft-specific options and forward the rest to deno test
   const shouldBuild = options.includes("--build") || options.includes("-b");
   const headlessOption = options.find((opt) => opt.startsWith("--headless="));
   const shouldForceHeadless = headlessOption
     ? headlessOption === "--headless=true"
     : true;
 
-  const testFiles = options.filter((opt) =>
+  // Filter out bft-specific options and pass everything else to deno test
+  const denoTestOptions = options.filter((opt) =>
+    opt !== "--build" && opt !== "-b" && !opt.startsWith("--headless=")
+  );
+
+  const testFiles = denoTestOptions.filter((opt) =>
     !opt.startsWith("--") && !opt.startsWith("-") && opt.endsWith(".e2e.ts")
   );
 
@@ -68,46 +73,123 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     logger.info("✅ Build complete");
   }
 
-  // Check if server is needed (look for e2e test files that might need it)
-  logger.info("Checking for server on port 8000...");
-  let serverProcess: Deno.ChildProcess | undefined;
+  // Start both servers for comprehensive e2e testing
+  logger.info("🚀 Starting both servers for e2e tests...");
+
+  const boltFoundryPort = 8000;
+  const aibffPort = 3001;
+
+  let boltFoundryProcess: Deno.ChildProcess | undefined;
+  let aibffProcess: Deno.ChildProcess | undefined;
 
   try {
-    // Check if server is already running
-    const serverReady = await waitForPort(8000, 2000);
+    // Check and start Bolt Foundry server (port 8000)
+    logger.info(
+      `Checking for Bolt Foundry server on port ${boltFoundryPort}...`,
+    );
+    const boltFoundryReady = await waitForPort(boltFoundryPort, 2000);
 
-    if (serverReady) {
-      logger.info("✅ Server already running on port 8000");
+    if (boltFoundryReady) {
+      logger.info(
+        `✅ Bolt Foundry server already running on port ${boltFoundryPort}`,
+      );
     } else {
-      logger.info("No server detected on port 8000");
-      logger.info("🚀 Starting server automatically...");
-
-      // Start the server process
-      serverProcess = new Deno.Command("./build/web", {
+      logger.info(
+        `🚀 Starting Bolt Foundry server on port ${boltFoundryPort}...`,
+      );
+      boltFoundryProcess = new Deno.Command("./build/web", {
         cwd: Deno.cwd(),
         stdout: "piped",
         stderr: "piped",
       }).spawn();
 
-      // Wait for server to be ready
-      logger.info("⏳ Waiting for server to start...");
-      const serverStarted = await waitForPort(8000, 30000);
-
-      if (!serverStarted) {
-        logger.error("❌ Server failed to start on port 8000");
-        if (serverProcess) {
-          serverProcess.kill();
-          await serverProcess.status;
+      logger.info("⏳ Waiting for Bolt Foundry server to start...");
+      const boltFoundryStarted = await waitForPort(boltFoundryPort, 30000);
+      if (!boltFoundryStarted) {
+        logger.error(
+          `❌ Bolt Foundry server failed to start on port ${boltFoundryPort}`,
+        );
+        if (boltFoundryProcess) {
+          boltFoundryProcess.kill();
+          await boltFoundryProcess.status;
         }
         return 1;
       }
+      logger.info(`✅ Bolt Foundry server started on port ${boltFoundryPort}`);
+    }
 
-      logger.info("✅ Server started successfully on port 8000");
+    // Check and start aibff GUI server (port 3001)
+    logger.info(`Checking for aibff GUI server on port ${aibffPort}...`);
+    const aibffReady = await waitForPort(aibffPort, 2000);
+
+    if (aibffReady) {
+      logger.info(`✅ aibff GUI server already running on port ${aibffPort}`);
+    } else {
+      logger.info(`🚀 Starting aibff GUI server on port ${aibffPort}...`);
+      try {
+        aibffProcess = new Deno.Command("aibff", {
+          args: ["gui", "--port", aibffPort.toString(), "--no-open"],
+          cwd: Deno.cwd(),
+          stdout: "piped",
+          stderr: "piped",
+        }).spawn();
+
+        logger.info("⏳ Waiting for aibff GUI server to start...");
+        const aibffStarted = await waitForPort(aibffPort, 30000);
+        if (!aibffStarted) {
+          logger.error(
+            `❌ aibff GUI server failed to start on port ${aibffPort}`,
+          );
+
+          // Try to get error output from the process
+          if (aibffProcess) {
+            try {
+              const { stdout, stderr } = await aibffProcess.output();
+              const stdoutText = new TextDecoder().decode(stdout);
+              const stderrText = new TextDecoder().decode(stderr);
+
+              if (stdoutText) {
+                logger.error("aibff GUI stdout:", stdoutText);
+              }
+              if (stderrText) {
+                logger.error("aibff GUI stderr:", stderrText);
+              }
+            } catch (outputError) {
+              logger.debug("Failed to capture aibff output:", outputError);
+            }
+
+            aibffProcess.kill();
+            await aibffProcess.status;
+          }
+
+          logger.warn(
+            "⚠️  Continuing without aibff GUI server - aibff tests will fail",
+          );
+          aibffProcess = undefined; // Clear so we don't try to clean it up
+        } else {
+          logger.info(`✅ aibff GUI server started on port ${aibffPort}`);
+        }
+      } catch (error) {
+        logger.error(`❌ Failed to start aibff GUI server:`, error);
+        logger.warn(
+          "⚠️  Continuing without aibff GUI server - aibff tests will fail",
+        );
+        aibffProcess = undefined;
+      }
     }
 
     // Run E2E tests
     logger.info("Running E2E tests...");
     const testArgs = ["deno", "test", "-A"];
+
+    // Add all deno test options (including --no-check, etc.)
+    const denoFlags = denoTestOptions.filter((opt) =>
+      opt.startsWith("--") || opt.startsWith("-")
+    );
+    testArgs.push(...denoFlags);
+
+    // All tests now use port 8000
+    Deno.env.set("BF_E2E_BASE_URL", "http://localhost:8000");
 
     // Add test file patterns or specific files
     if (testFiles.length > 0) {
@@ -128,36 +210,73 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
 
     return testResult;
   } finally {
-    // Cleanup: kill server if we started it
-    if (serverProcess) {
-      logger.info("🛑 Stopping server...");
-      try {
-        serverProcess.kill("SIGTERM");
+    // Cleanup: kill servers if we started them
+    const cleanupPromises = [];
 
-        // Wait for process to exit with timeout
-        const statusPromise = serverProcess.status;
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Server cleanup timeout")), 5000)
-        );
+    if (boltFoundryProcess) {
+      logger.info("🛑 Stopping Bolt Foundry server...");
+      cleanupPromises.push(
+        (async () => {
+          try {
+            boltFoundryProcess.kill("SIGTERM");
+            const statusPromise = boltFoundryProcess.status;
+            const timeoutPromise = new Promise((_, reject) =>
+              setTimeout(
+                () => reject(new Error("Bolt Foundry server cleanup timeout")),
+                5000,
+              )
+            );
+            await Promise.race([statusPromise, timeoutPromise]);
+            logger.info("✅ Bolt Foundry server stopped successfully");
+          } catch (error) {
+            logger.debug("Error stopping Bolt Foundry server:", error);
+            try {
+              boltFoundryProcess.kill("SIGKILL");
+            } catch {
+              // Process may already be terminated
+            }
+          }
+        })(),
+      );
+    }
 
-        await Promise.race([statusPromise, timeoutPromise]);
-        logger.info("✅ Server stopped successfully");
-      } catch (error) {
-        logger.debug("Error stopping server:", error);
-        // Force kill if graceful shutdown failed
-        try {
-          serverProcess.kill("SIGKILL");
-        } catch {
-          // Process may already be terminated
-        }
-      }
+    if (aibffProcess) {
+      logger.info("🛑 Stopping aibff GUI server...");
+      cleanupPromises.push(
+        (async () => {
+          try {
+            aibffProcess.kill("SIGTERM");
+            const statusPromise = aibffProcess.status;
+            const timeoutPromise = new Promise((_, reject) =>
+              setTimeout(
+                () => reject(new Error("aibff GUI server cleanup timeout")),
+                5000,
+              )
+            );
+            await Promise.race([statusPromise, timeoutPromise]);
+            logger.info("✅ aibff GUI server stopped successfully");
+          } catch (error) {
+            logger.debug("Error stopping aibff GUI server:", error);
+            try {
+              aibffProcess.kill("SIGKILL");
+            } catch {
+              // Process may already be terminated
+            }
+          }
+        })(),
+      );
+    }
+
+    // Wait for all cleanup to complete
+    if (cleanupPromises.length > 0) {
+      await Promise.all(cleanupPromises);
     }
   }
 }
 
 export const bftDefinition = {
   description:
-    "Run end-to-end tests with automatic server management. Options: --build, --headless=false",
+    "Run end-to-end tests with automatic server management. Options: --build, --headless=false, plus all deno test flags (--no-check, etc.)",
   fn: e2eCommand,
   aiSafe: true,
 } satisfies TaskDefinition;

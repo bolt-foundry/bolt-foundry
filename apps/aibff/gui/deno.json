@@ -23,7 +23,7 @@
     "react": "npm:react@^19.0.0",
     "react-dom": "npm:react-dom@^19.0.0",
     "react/jsx-runtime": "npm:react/jsx-runtime",
-    "vite": "npm:vite@^6.1.1",
+    "vite": "npm:vite@^7.0.0",
     "@std/fmt": "jsr:@std/fmt"
   }
 }
