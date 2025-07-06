@@ -26,6 +26,7 @@
     "@types/react": "^19.0",
     "@types/react-dom": "^19.0",
     "@vitejs/plugin-react": "^4.6.0",
+    "vite": "^6.0.0",
     "assemblyai": "^4.9.0",
     "claude": "^0.1.1",
     "discord.js": "^14.18.0",
