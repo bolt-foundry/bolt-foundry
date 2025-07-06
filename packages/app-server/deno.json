@@ -1,0 +1,10 @@
+{
+  "name": "@bolt-foundry/app-server",
+  "version": "0.0.0-dev.0",
+  "exports": {
+    ".": "./app-server.ts"
+  },
+  "imports": {
+    "@bolt-foundry/logger": "jsr:@bolt-foundry/logger@0.0.0-dev.0"
+  }
+}

@@ -72,6 +72,7 @@
     "npm:@anthropic-ai/claude-code@^1.0.40": "1.0.40",
     "npm:@babel/preset-react@^7.27.1": "7.27.1_@babel+core@7.27.4",
     "npm:@deno/vite-plugin@^1.0.4": "1.0.5_vite@7.0.0__@types+node@22.15.33__picomatch@4.0.2_@types+node@22.15.33",
+    "npm:@deno/vite-plugin@^1.0.5": "1.0.5_vite@7.0.0__@types+node@22.15.33__picomatch@4.0.2_@types+node@22.15.33",
     "npm:@hexagon/base64@^1.1.27": "1.1.28",
     "npm:@isograph/babel-plugin@0.3.1": "0.3.1",
     "npm:@isograph/babel-plugin@^0.0.0-main-1fad6d74": "0.0.0-main-ffab3426",
@@ -107,7 +108,6 @@
     "npm:@types/react-dom@^19.0.4": "19.1.6_@types+react@19.1.8",
     "npm:@types/react@19": "19.1.8",
     "npm:@types/react@^19.0.10": "19.1.8",
-    "npm:@vitejs/plugin-react@^4.3.4": "4.6.0_vite@7.0.0__@types+node@22.15.33__picomatch@4.0.2_@babel+core@7.27.4_@types+node@22.15.33",
     "npm:@vitejs/plugin-react@^4.6.0": "4.6.0_vite@7.0.0__@types+node@22.15.33__picomatch@4.0.2_@babel+core@7.27.4_@types+node@22.15.33",
     "npm:assemblyai@^4.9.0": "4.13.3",
     "npm:chalk@^5.4.1": "5.4.1",
@@ -5251,10 +5251,21 @@
           "npm:@types/react-dom@^19.0.4",
           "npm:@types/react@19",
           "npm:@types/react@^19.0.10",
-          "npm:@vitejs/plugin-react@^4.3.4",
+          "npm:@vitejs/plugin-react@^4.6.0",
           "npm:react-dom@19",
           "npm:react@*",
           "npm:react@19",
+          "npm:vite@7"
+        ]
+      },
+      "apps/boltfoundry-com": {
+        "dependencies": [
+          "npm:@deno/vite-plugin@^1.0.5",
+          "npm:@types/react-dom@^19.1.6",
+          "npm:@types/react@^19.1.8",
+          "npm:@vitejs/plugin-react@^4.6.0",
+          "npm:react-dom@^19.1.0",
+          "npm:react@^19.1.0",
           "npm:vite@7"
         ]
       },
