@@ -7,7 +7,7 @@
   inputs = {
     nixpkgs.url          = "github:NixOS/nixpkgs/26e168479fdc7a75fe55e457e713d8b5f794606a";
     flake-utils.url      = "github:numtide/flake-utils";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/9276d3225945c544c6efab8210686bd7612a9115";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/1e968849c167dd400b51e2d87083d19242c1c315";
   };
 
   ########################
@@ -42,6 +42,7 @@
           pkgs.nodejs_22
           pkgs._1password-cli
           pkgs.typescript-language-server
+          pkgs.ffmpeg
         ] ++ lib.optionals (!pkgs.stdenv.isDarwin) [
           # Linux-only packages
           pkgs.chromium
