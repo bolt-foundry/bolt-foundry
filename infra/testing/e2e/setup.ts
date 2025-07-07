@@ -32,7 +32,7 @@ const logger = getLogger(import.meta);
  */
 async function isServerRunning(port: number): Promise<boolean> {
   try {
-    const response = await fetch(`http://localhost:${port}`, {
+    const response = await fetch(`http://localhost:${port}/health`, {
       method: "HEAD",
       signal: AbortSignal.timeout(1000),
     });
@@ -67,6 +67,11 @@ async function startServer(
   const executablePath = serverPath.startsWith("file://")
     ? new URL(serverPath).pathname
     : serverPath;
+
+  const _serverDir = executablePath.substring(
+    0,
+    executablePath.lastIndexOf("/"),
+  );
 
   logger.info(`Starting server from ${executablePath} on port ${port}`);
 
@@ -198,25 +203,13 @@ export async function setupE2ETest(options: {
 } = {}): Promise<E2ETestContext> {
   let baseUrl = options.baseUrl;
 
-  // If server option is provided, check if it's already running first
+  // Always require servers to be pre-started by bft e2e
   if (options.server) {
-    // Check if we're in the bft e2e environment with pre-started servers
-    const bfE2eBaseUrl = getConfigurationVariable("BF_E2E_BASE_URL");
-
-    if (bfE2eBaseUrl && options.server.includes("guiServer.ts")) {
-      // aibff GUI server - use port 3001 from bft e2e
-      baseUrl = "http://localhost:3001";
-      logger.info(`Using pre-started aibff GUI server: ${baseUrl}`);
-    } else if (bfE2eBaseUrl && options.server.includes("boltFoundry")) {
-      // Bolt Foundry server - use the BF_E2E_BASE_URL
-      baseUrl = bfE2eBaseUrl;
-      logger.info(`Using pre-started Bolt Foundry server: ${baseUrl}`);
-    } else {
-      // No pre-started server available, start our own
-      const { url } = await startServer(options.server);
-      baseUrl = url;
-      logger.info(`Started server for test: ${baseUrl}`);
-    }
+    throw new Error(
+      `Server startup requested but setup.ts no longer handles server management. ` +
+        `Please run tests through 'bft e2e' which will start required servers automatically ` +
+        `based on the server registry. Server requested: ${options.server}`,
+    );
   }
 
   // Fallback to environment variable if no server started and no baseUrl provided
@@ -319,7 +312,19 @@ export async function setupE2ETest(options: {
       headless,
       executablePath: chromiumPath,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      dumpio: false, // Don't dump Chrome's stdio to prevent resource leaks
     });
+
+    // Unref the browser process to prevent it from keeping the event loop alive
+    try {
+      const process = (browser as any).process();
+      if (process && process.unref) {
+        process.unref();
+        logger.debug("Browser process unref'd to prevent resource leaks");
+      }
+    } catch (error) {
+      logger.debug("Could not unref browser process:", error);
+    }
 
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
@@ -371,7 +376,10 @@ export async function setupE2ETest(options: {
         name: string,
       ): Promise<() => Promise<string | null>> => {
         const videosDir = getConfigurationVariable("BF_E2E_VIDEO_DIR") ||
-          "/tmp/videos";
+          join(Deno.cwd(), "tmp", "videos");
+
+        // Ensure videos directory exists
+        await ensureDir(videosDir);
 
         // Inject cursor overlay for better video visibility
         try {
@@ -409,7 +417,10 @@ export async function setupE2ETest(options: {
         options?: VideoConversionOptions,
       ): Promise<() => Promise<VideoConversionResult | null>> => {
         const videosDir = getConfigurationVariable("BF_E2E_VIDEO_DIR") ||
-          "/tmp/videos";
+          join(Deno.cwd(), "tmp", "videos");
+
+        // Ensure videos directory exists
+        await ensureDir(videosDir);
 
         // Inject cursor overlay for better video visibility
         try {
@@ -456,7 +467,10 @@ export async function setupE2ETest(options: {
         options?: VideoConversionOptions,
       ): Promise<() => Promise<VideoConversionResult | null>> => {
         const videosDir = getConfigurationVariable("BF_E2E_VIDEO_DIR") ||
-          "/tmp/videos";
+          join(Deno.cwd(), "tmp", "videos");
+
+        // Ensure videos directory exists
+        await ensureDir(videosDir);
 
         // Inject cursor overlay for better video visibility
         try {
@@ -522,10 +536,6 @@ export async function setupE2ETest(options: {
             await browser.close();
           }
 
-          // NOTE: Server cleanup is intentionally NOT done here to avoid
-          // resource conflicts. Servers will be cleaned up when the test
-          // process exits. This matches the original teardownE2ETest behavior.
-
           // Give time for all resources to be released
           await new Promise((resolve) => setTimeout(resolve, 100));
 
@@ -559,12 +569,10 @@ export async function teardownE2ETest(context: E2ETestContext): Promise<void> {
       await context.browser.close();
     }
 
-    // NOTE: Server cleanup is intentionally NOT done here to avoid
-    // resource conflicts. Servers will be cleaned up when the test
-    // process exits. This matches the original teardownE2ETest behavior.
-
     // Give time for all resources to be released
     await new Promise((resolve) => setTimeout(resolve, 100));
+
+    logger.info("E2E test environment torn down (browser only)");
   } catch (error) {
     logger.error("Error during teardown:", error);
   }

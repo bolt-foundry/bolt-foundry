@@ -79,15 +79,21 @@ async function generateInitialMessage(): Promise<string> {
 const flags = parseArgs(Deno.args, {
   string: ["port", "mode", "vite-port", "conversations-dir"],
   default: {
-    port: "3000",
     mode: "production",
     "conversations-dir": undefined,
   },
 });
 
-const port = parseInt(flags.port);
+// Check for port from environment variables if not provided via command line
+// This supports both PORT and WEB_PORT for compatibility with different deployment environments
+const portValue = flags.port ||
+  getConfigurationVariable("PORT") ||
+  getConfigurationVariable("WEB_PORT") ||
+  "3000";
+
+const port = parseInt(portValue);
 if (isNaN(port)) {
-  logger.printErr(`Invalid port: ${flags.port}`);
+  logger.printErr(`Invalid port: ${portValue}`);
   Deno.exit(1);
 }
 
@@ -153,6 +159,9 @@ const routes = [
               clearInterval(keepAlive);
             }
           }, 30000);
+
+          // Don't let this timer keep the process alive
+          keepAlive.unref();
         },
       });
 

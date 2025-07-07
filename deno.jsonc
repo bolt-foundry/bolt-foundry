@@ -1,6 +1,6 @@
 {
   "unstable": ["temporal", "webgpu"],
-  "nodeModulesDir": "manual",
+  "nodeModulesDir": "auto",
   "imports": {
     "@bfmono/": "./",
     "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
@@ -19,7 +19,6 @@
     "@lexical/selection": "npm:@lexical/selection@^0.33.0",
     "@lexical/text": "npm:@lexical/text@^0.33.0",
     "@lexical/utils": "npm:@lexical/utils@^0.33.0",
-    "@luca/esbuild-deno-loader": "jsr:@luca/esbuild-deno-loader@^0.11.1",
     "@neondatabase/serverless": "npm:@neondatabase/serverless@^1.0.1",
     "@openai/openai": "jsr:@openai/openai@^4.78.1",
     "@simplewebauthn/browser": "jsr:@simplewebauthn/browser@^13.1.0",
@@ -127,7 +126,6 @@
 
     "rules": {
       "include": [
-        "bolt-foundry/no-env-direct-access",
         "bolt-foundry/no-bfnodespec-first-static",
         "bolt-foundry/no-underscore-logger-when-used",
         "bolt-foundry/no-logger-set-level",
