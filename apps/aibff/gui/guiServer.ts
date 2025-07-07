@@ -79,15 +79,21 @@ async function generateInitialMessage(): Promise<string> {
 const flags = parseArgs(Deno.args, {
   string: ["port", "mode", "vite-port", "conversations-dir"],
   default: {
-    port: "3000",
     mode: "production",
     "conversations-dir": undefined,
   },
 });
 
-const port = parseInt(flags.port);
+// Check for port from environment variables if not provided via command line
+// This supports both PORT and WEB_PORT for compatibility with different deployment environments
+const portValue = flags.port ||
+  getConfigurationVariable("PORT") ||
+  getConfigurationVariable("WEB_PORT") ||
+  "3000";
+
+const port = parseInt(portValue);
 if (isNaN(port)) {
-  logger.printErr(`Invalid port: ${flags.port}`);
+  logger.printErr(`Invalid port: ${portValue}`);
   Deno.exit(1);
 }
 
@@ -153,6 +159,9 @@ const routes = [
               clearInterval(keepAlive);
             }
           }, 30000);
+
+          // Don't let this timer keep the process alive
+          keepAlive.unref();
         },
       });
 
@@ -459,6 +468,218 @@ const routes = [
       } catch (error) {
         logger.error("Chat stream error:", error);
         return new Response("Internal server error", { status: 500 });
+      }
+    },
+  },
+  {
+    pattern: new URLPattern({ pathname: "/api/test-conversation/stream" }),
+    handler: async (request: Request) => {
+      // Parse the test conversation request from body
+      const { systemPrompt, messages } = await request.json();
+
+      if (!systemPrompt) {
+        return new Response("System prompt is required", { status: 400 });
+      }
+
+      try {
+        // Create a simple OpenAI request for test conversation
+        const openAiRequest = {
+          model: "openai/gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
+            ...messages.map((m: ChatMessage) => ({
+              role: m.role,
+              content: m.content,
+            })),
+          ],
+          stream: true,
+          temperature: 0.7,
+        };
+
+        // Call OpenRouter API with streaming
+        const apiKey = getConfigurationVariable("OPENROUTER_API_KEY");
+        if (!apiKey) {
+          return new Response("OpenRouter API key not configured", {
+            status: 500,
+          });
+        }
+
+        const openRouterResponse = await fetch(
+          "https://openrouter.ai/api/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+              "HTTP-Referer": "https://github.com/boltfoundry/bolt-foundry",
+              "X-Title": "aibff GUI Test Conversation",
+            },
+            body: JSON.stringify(openAiRequest),
+          },
+        );
+
+        if (!openRouterResponse.ok) {
+          return new Response("Failed to get AI response", { status: 500 });
+        }
+
+        // Create SSE stream (simplified version without persistence or tool calls)
+        const encoder = new TextEncoder();
+        let fullCompletionData: Record<string, unknown> | null = null;
+
+        const body = new ReadableStream({
+          async start(controller) {
+            const reader = openRouterResponse.body!.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                  if (line.startsWith("data: ")) {
+                    const data = line.slice(6);
+                    if (data === "[DONE]") {
+                      // Send the full completion data at the end
+                      if (fullCompletionData) {
+                        controller.enqueue(
+                          encoder.encode(
+                            `data: ${
+                              JSON.stringify({
+                                content: "",
+                                completion: fullCompletionData,
+                              })
+                            }\n\n`,
+                          ),
+                        );
+                      }
+
+                      controller.enqueue(
+                        encoder.encode("event: done\ndata: {}\n\n"),
+                      );
+                      break;
+                    }
+
+                    try {
+                      const parsed = JSON.parse(data);
+
+                      // Store the full completion data for saving
+                      if (!fullCompletionData) {
+                        fullCompletionData = {
+                          ...openAiRequest,
+                          choices: parsed.choices,
+                          usage: parsed.usage,
+                          model: parsed.model,
+                          created: parsed.created,
+                          id: parsed.id,
+                          object: parsed.object,
+                          system_fingerprint: parsed.system_fingerprint,
+                          timestamp: new Date().toISOString(),
+                        };
+                      } else {
+                        // Update completion data with final values
+                        fullCompletionData.choices = parsed.choices;
+                        fullCompletionData.usage = parsed.usage;
+                      }
+
+                      const delta = parsed.choices?.[0]?.delta;
+
+                      // Only handle content - no tool calls for test conversations
+                      if (delta?.content) {
+                        controller.enqueue(
+                          encoder.encode(
+                            `data: ${
+                              JSON.stringify({ content: delta.content })
+                            }\n\n`,
+                          ),
+                        );
+                      }
+                    } catch {
+                      // Ignore parse errors
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              logger.error("Test conversation stream error:", error);
+              controller.enqueue(
+                encoder.encode(
+                  `event: error\ndata: ${
+                    JSON.stringify({
+                      error: "Stream interrupted",
+                    })
+                  }\n\n`,
+                ),
+              );
+            } finally {
+              controller.close();
+            }
+          },
+        });
+
+        return new Response(body, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+          },
+        });
+      } catch (error) {
+        logger.error("Test conversation error:", error);
+        return new Response("Internal server error", { status: 500 });
+      }
+    },
+  },
+  {
+    pattern: new URLPattern({
+      pathname: "/api/conversations/:conversationId/save-test-result",
+    }),
+    handler: async (request: Request) => {
+      if (request.method !== "POST") {
+        return new Response("Method not allowed", { status: 405 });
+      }
+
+      const url = new URL(request.url);
+      const conversationId = url.pathname.split("/")[3]; // /api/conversations/{id}/save-test-result
+
+      if (!conversationId) {
+        return new Response("No conversation ID provided", { status: 400 });
+      }
+
+      try {
+        const { completionData } = await request.json();
+
+        if (!completionData) {
+          return new Response("No completion data provided", { status: 400 });
+        }
+
+        // Load the conversation
+        const conversation = await AibffConversation.load(conversationId);
+
+        // Append the completion data to saved results
+        await conversation.appendSavedResult(completionData);
+
+        logger.info(`Saved test result for conversation ${conversationId}`);
+
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (error) {
+        logger.error("Failed to save test result:", error);
+        return new Response(
+          `Failed to save test result: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`,
+          { status: 500 },
+        );
       }
     },
   },

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsCallout } from "@bfmono/apps/bfDs/components/BfDsCallout.tsx";
 import { useRouter } from "../contexts/RouterContext.tsx";
 import { useGrader } from "../contexts/GraderContext.tsx";
 import { MessageContent } from "./MessageContent.tsx";
@@ -371,62 +372,32 @@ Error formatting arguments: ${
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          height: "100vh",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#b8b8c0",
-        }}
-      >
-        Loading conversation...
+      <div className="chat-loading-container">
+        <BfDsCallout variant="info">
+          Loading conversation...
+        </BfDsCallout>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh",
-          backgroundColor: "#141516",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "2rem",
-        }}
-      >
-        <div
-          style={{
-            textAlign: "center",
-            maxWidth: "400px",
-          }}
+      <div className="chat-error-container">
+        <BfDsCallout 
+          variant="error"
+          title="Conversation Not Found"
+          expandableDetails={error}
         >
-          <h2
-            style={{
-              color: "#ff6b6b",
-              marginBottom: "1rem",
-            }}
-          >
-            Conversation Not Found
-          </h2>
-          <p
-            style={{
-              color: "#b8b8c0",
-              marginBottom: "2rem",
-            }}
-          >
-            {error}
-          </p>
-          <BfDsButton
-            onClick={() => navigate("/")}
-            variant="primary"
-          >
-            Start New Conversation
-          </BfDsButton>
-        </div>
+          <div className="chat-error-content">
+            <p>Unable to load the conversation. You can start a new one instead.</p>
+            <BfDsButton
+              onClick={() => navigate("/")}
+              variant="primary"
+            >
+              Start New Conversation
+            </BfDsButton>
+          </div>
+        </BfDsCallout>
       </div>
     );
   }
