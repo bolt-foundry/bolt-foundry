@@ -54,18 +54,21 @@ export async function smoothClick(page: Page, selector: string): Promise<void> {
 
   await smoothMoveTo(page, centerX, centerY);
 
+  // Brief pause to let hover state settle and be visible
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
   // Show click animation
   try {
     await setCursorStyle(page, "click");
-    await new Promise((resolve) => setTimeout(resolve, 200));
   } catch {
     // Cursor overlay might not be available
   }
 
   await page.mouse.click(centerX, centerY);
 
-  // Reset cursor style
+  // Reset cursor style after click
   try {
+    await new Promise((resolve) => setTimeout(resolve, 200));
     await setCursorStyle(page, "default");
   } catch {
     // Cursor overlay might not be available
