@@ -1,3 +1,4 @@
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { runLintWithGithubAnnotations } from "@bfmono/infra/bff/friends/githubAnnotations.ts";
@@ -10,8 +11,9 @@ export async function lintCommand(options: Array<string>): Promise<number> {
 
   const args = ["deno", "lint"];
 
-  // Check for GitHub annotations mode
-  const githubMode = options.includes("--github") || options.includes("-g");
+  // Check for GitHub annotations mode - either explicit flag or GitHub Actions environment
+  const githubMode = options.includes("--github") || options.includes("-g") ||
+    getConfigurationVariable("GITHUB_ACTIONS") === "true";
   if (githubMode) {
     logger.info("Running in GitHub annotations mode...");
     return await runLintWithGithubAnnotations();

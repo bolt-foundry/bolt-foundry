@@ -1,5 +1,7 @@
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { runShellCommand } from "@bfmono/infra/bff/shellBase.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
+import { runTestWithGithubAnnotations } from "@bfmono/infra/bff/friends/githubAnnotations.ts";
 import type { TaskDefinition } from "@bfmono/infra/bft/bft.ts";
 
 const logger = getLogger(import.meta);
@@ -7,6 +9,15 @@ const logger = getLogger(import.meta);
 export async function testCommand(options: Array<string>): Promise<number> {
   logger.info("Running tests...");
   logger.debug("Test command options:", options);
+
+  // Check for GitHub Actions environment or explicit GitHub flag
+  const githubMode = options.includes("--github") || options.includes("-g") ||
+    getConfigurationVariable("GITHUB_ACTIONS") === "true";
+
+  if (githubMode) {
+    logger.info("Running tests in GitHub annotations mode...");
+    return await runTestWithGithubAnnotations();
+  }
 
   const args = ["deno", "test", "-A"];
 

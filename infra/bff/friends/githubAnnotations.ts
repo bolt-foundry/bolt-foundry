@@ -120,7 +120,14 @@ export async function runLintWithGithubAnnotations(): Promise<number> {
 export async function runTestWithGithubAnnotations(): Promise<number> {
   let code = 0;
   try {
-    const cmd = ["deno", "test", "-A", "--json"];
+    const cmd = [
+      "deno",
+      "test",
+      "-A",
+      "--json",
+      "--ignore=**/*.e2e.ts",
+      "--ignore=.sl/**",
+    ];
     const { stdout: rawOutput } = await runShellCommandWithOutput(
       cmd,
       {},
@@ -147,6 +154,91 @@ export async function runTestWithGithubAnnotations(): Promise<number> {
     }
   } catch (err) {
     logger.error("Error parsing deno test --json output:", err);
+    code = 1;
+  }
+  return code;
+}
+
+/**
+ * Run `deno fmt --check` and emit GitHub Annotations for formatting errors.
+ */
+export async function runFormatWithGithubAnnotations(): Promise<number> {
+  let code = 0;
+  try {
+    const { stderr: errors } = await runShellCommandWithOutput(
+      ["deno", "fmt", "--check"],
+      {},
+      false,
+      true,
+    );
+
+    // deno fmt --check outputs to stderr when files need formatting
+    if (errors) {
+      const lines = errors.split("\n").filter(Boolean);
+      for (const line of lines) {
+        // Format error lines typically look like: "Some /path/to/file.ts"
+        const match = line.match(/^(.+?)\s+(.+)$/);
+        if (match) {
+          const [, status, filePath] = match;
+          const normalizedPath = normalizeFilePath(filePath);
+          printGitHubAnnotation(
+            "error",
+            `[FORMAT] File needs formatting: ${status}`,
+            normalizedPath,
+          );
+          code = 1;
+        }
+      }
+    }
+  } catch (err) {
+    logger.error("Error running deno fmt --check:", err);
+    code = 1;
+  }
+  return code;
+}
+
+/**
+ * Run `deno check` and emit GitHub Annotations for type check errors.
+ */
+export async function runCheckWithGithubAnnotations(): Promise<number> {
+  let code = 0;
+  try {
+    const { stderr: errors } = await runShellCommandWithOutput(
+      ["deno", "check", "--all"],
+      {},
+      false,
+      true,
+    );
+
+    // deno check outputs errors to stderr
+    if (errors) {
+      const lines = errors.split("\n").filter(Boolean);
+      for (const line of lines) {
+        // Type error lines typically look like: "error: TS2322 [ERROR]: Type 'string' is not assignable to type 'number'."
+        // or "at file:///path/to/file.ts:10:5"
+        if (line.includes("error:") || line.includes("TS")) {
+          const message = stripArrowLines(line);
+          // Try to extract file path and line number
+          const fileMatch = line.match(/at file:\/\/([^:]+):(\d+):(\d+)/);
+          if (fileMatch) {
+            const [, filePath, lineNum, colNum] = fileMatch;
+            const normalizedPath = normalizeFilePath(`file://${filePath}`);
+            printGitHubAnnotation(
+              "error",
+              `[TYPE CHECK] ${message}`,
+              normalizedPath,
+              parseInt(lineNum),
+              parseInt(colNum),
+            );
+          } else {
+            printGitHubAnnotation("error", `[TYPE CHECK] ${message}`);
+          }
+          code = 1;
+        }
+      }
+    }
+  } catch (err) {
+    logger.error("Error running deno check:", err);
     code = 1;
   }
   return code;

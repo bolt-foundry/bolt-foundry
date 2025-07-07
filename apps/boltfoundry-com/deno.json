@@ -11,5 +11,8 @@
     "jsxImportSource": "react",
     "jsxImportSourceTypes": "@types/react"
   },
-  "imports": {}
+  "imports": {
+    "@iso": "./__generated__/__isograph/iso.ts",
+    "@iso/": "./__generated__/__isograph/"
+  }
 }
