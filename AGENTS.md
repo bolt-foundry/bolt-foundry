@@ -9,7 +9,7 @@ symlink to this file for compatibility with Claude Code (claude.ai/code).
 - **Runtime**: Deno 2.x with TypeScript
 - **Source Control**: Sapling SCM (not Git)
 - **Task Runner**: `bft <command>` (Bolt Foundry Tool)
-- **Package Management**: npm (NOT deno install - see below)
+- **Package Management**: Deno automatic node modules (see below)
 
 ## Essential Commands
 
@@ -53,14 +53,13 @@ bft ai                 # List AI-safe commands
 
 ## Dependency Management
 
-This project uses **npm** for managing dependencies, not Deno's built-in package
-management:
+This project uses **Deno's automatic node modules management** for dependencies:
 
-- Run `npm install` to install dependencies (NOT `deno install`)
-- The project is configured with `"nodeModulesDir": "manual"` in deno.jsonc
-- If you see errors about `.deno` directory, delete node_modules and run
-  `npm install`
-- This approach ensures compatibility with all npm packages and standard module
-  resolution
+- Dependencies are automatically managed via `"nodeModulesDir": "auto"` in
+  deno.jsonc
+- No need to run `npm install` - Deno handles node_modules automatically
+- Dependencies are declared in deno.jsonc imports map with `npm:` prefixes
+- This approach provides seamless compatibility with npm packages while
+  leveraging Deno's dependency management
 
 For detailed technical documentation, see the memos and cards referenced above.
