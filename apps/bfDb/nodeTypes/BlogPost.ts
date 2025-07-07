@@ -133,9 +133,11 @@ export class BlogPost extends GraphQLNode {
     let extractedImage: string | undefined;
 
     const renderer = new Renderer();
-    renderer.image = function (href: string) {
+    renderer.image = function (
+      token: { href: string; title: string | null; text: string },
+    ) {
       if (!extractedImage) {
-        extractedImage = href;
+        extractedImage = token.href;
       }
       return ""; // We don't need HTML output, just extraction
     };

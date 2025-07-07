@@ -68,7 +68,9 @@ export async function loadGqlTypes() {
 
     // Create the mutation type if it exists
     if (nexusTypes.mutationType) {
-      const mutationType = extendType(nexusTypes.mutationType);
+      const mutationType = extendType(
+        nexusTypes.mutationType as Parameters<typeof extendType>[0],
+      );
       mutationTypes.push(mutationType);
     }
   }
@@ -106,7 +108,9 @@ export async function loadGqlTypes() {
 
     // Create the mutation type if it exists
     if (nexusTypes.mutationType) {
-      const mutationType = extendType(nexusTypes.mutationType);
+      const mutationType = extendType(
+        nexusTypes.mutationType as Parameters<typeof extendType>[0],
+      );
       mutationTypes.push(mutationType);
     }
   }

@@ -4,10 +4,6 @@ import * as esbuild from "esbuild";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 
-import { denoFileResolver } from "./plugins/denoFileResolver.ts";
-import { contentPathRewriter } from "./plugins/contentPathRewriter.ts";
-import { ipynbPlugin } from "./plugins/ipynbPlugin.ts";
-
 const logger = getLogger(import.meta);
 
 import mdx from "@mdx-js/esbuild";
@@ -27,10 +23,7 @@ const defaultOptions: esbuild.BuildOptions = {
   publicPath: "/static/build",
   assetNames: "assets/[name]-[hash]",
   plugins: [
-    ipynbPlugin,
     mdx(),
-    contentPathRewriter,
-    denoFileResolver,
   ],
   treeShaking: true,
 

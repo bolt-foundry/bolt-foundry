@@ -34,6 +34,21 @@ export function BfDsButtonExample() {
       </div>
 
       <div>
+        <h3>Overlay Buttons</h3>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <BfDsButton variant="primary" overlay>
+            Primary Overlay
+          </BfDsButton>
+          <BfDsButton variant="secondary" overlay>
+            Secondary Overlay
+          </BfDsButton>
+          <BfDsButton variant="outline" overlay>
+            Outline Overlay
+          </BfDsButton>
+        </div>
+      </div>
+
+      <div>
         <h3>Sizes</h3>
         <div
           style={{
@@ -72,6 +87,9 @@ export function BfDsButtonExample() {
           <BfDsButton icon="burgerMenu" variant="ghost">
             Menu
           </BfDsButton>
+          <BfDsButton icon="burgerMenu" variant="primary" overlay>
+            Primary Overlay
+          </BfDsButton>
         </div>
       </div>
 
@@ -102,6 +120,7 @@ export function BfDsButtonExample() {
           <BfDsButton icon="arrowRight" iconOnly size="large" />
           <BfDsButton icon="brand-github" iconOnly variant="outline" />
           <BfDsButton icon="back" iconOnly variant="ghost" />
+          <BfDsButton icon="back" iconOnly variant="primary" overlay />
         </div>
       </div>
     </div>

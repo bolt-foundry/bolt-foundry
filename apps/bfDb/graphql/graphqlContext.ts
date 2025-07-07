@@ -225,3 +225,6 @@ export async function createContext(
 
   return ctx;
 }
+
+// Type alias for compatibility with generated Nexus types
+export type Context = BfGraphqlContext;

@@ -6,5 +6,8 @@
   },
   "imports": {
     "@bolt-foundry/logger": "../logger/logger.ts"
+  },
+  "compilerOptions": {
+    "lib": ["deno.ns", "es2022", "dom"]
   }
 }

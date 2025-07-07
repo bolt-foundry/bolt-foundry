@@ -410,37 +410,37 @@ function reportResults(
   };
 
   if (grouped.high.length > 0) {
-    ui.printLn(`\n🔴 HIGH CONFIDENCE (${grouped.high.length} files):`);
+    ui.output(`\n🔴 HIGH CONFIDENCE (${grouped.high.length} files):`);
     for (const file of grouped.high) {
-      ui.printLn(`  ${file.path}${showDetails ? ` - ${file.reason}` : ""}`);
+      ui.output(`  ${file.path}${showDetails ? ` - ${file.reason}` : ""}`);
     }
   }
 
   if (grouped.medium.length > 0) {
-    ui.printLn(`\n🟡 MEDIUM CONFIDENCE (${grouped.medium.length} files):`);
+    ui.output(`\n🟡 MEDIUM CONFIDENCE (${grouped.medium.length} files):`);
     for (const file of grouped.medium) {
-      ui.printLn(`  ${file.path}${showDetails ? ` - ${file.reason}` : ""}`);
+      ui.output(`  ${file.path}${showDetails ? ` - ${file.reason}` : ""}`);
     }
   }
 
   if (grouped.low.length > 0) {
-    ui.printLn(`\n🟢 LOW CONFIDENCE (${grouped.low.length} files):`);
+    ui.output(`\n🟢 LOW CONFIDENCE (${grouped.low.length} files):`);
     for (const file of grouped.low) {
-      ui.printLn(`  ${file.path}${showDetails ? ` - ${file.reason}` : ""}`);
+      ui.output(`  ${file.path}${showDetails ? ` - ${file.reason}` : ""}`);
     }
   }
 
   if (dryRun) {
-    ui.printLn(
+    ui.output(
       "\n💡 This is a dry run. Use --delete to remove files (use with caution!)",
     );
   }
 
-  ui.printLn("\n📊 Summary:");
-  ui.printLn(`  Total files analyzed: ${deadFiles.length}`);
-  ui.printLn(`  High confidence: ${grouped.high.length}`);
-  ui.printLn(`  Medium confidence: ${grouped.medium.length}`);
-  ui.printLn(`  Low confidence: ${grouped.low.length}`);
+  ui.output("\n📊 Summary:");
+  ui.output(`  Total files analyzed: ${deadFiles.length}`);
+  ui.output(`  High confidence: ${grouped.high.length}`);
+  ui.output(`  Medium confidence: ${grouped.medium.length}`);
+  ui.output(`  Low confidence: ${grouped.low.length}`);
 }
 
 export const bftDefinition = {

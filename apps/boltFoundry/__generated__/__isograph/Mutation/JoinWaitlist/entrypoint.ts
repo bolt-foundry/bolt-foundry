@@ -2,53 +2,10 @@ import type {IsographEntrypoint, NormalizationAst, RefetchQueryNormalizationArti
 import {Mutation__JoinWaitlist__param} from './param_type.ts';
 import {Mutation__JoinWaitlist__output_type} from './output_type.ts';
 import readerResolver from './resolver_reader.ts';
+import queryText from './query_text.ts';
+import normalizationAst from './normalization_ast.ts';
 const nestedRefetchQueries: RefetchQueryNormalizationArtifactWrapper[] = [];
 
-const queryText = 'mutation JoinWaitlist ($name: String!, $email: String!, $company: String!) {\
-  joinWaitlist____name___v_name____email___v_email____company___v_company: joinWaitlist(name: $name, email: $email, company: $company) {\
-    message,\
-    success,\
-  },\
-}';
-
-const normalizationAst: NormalizationAst = {
-  kind: "NormalizationAst",
-  selections: [
-    {
-      kind: "Linked",
-      fieldName: "joinWaitlist",
-      arguments: [
-        [
-          "name",
-          { kind: "Variable", name: "name" },
-        ],
-
-        [
-          "email",
-          { kind: "Variable", name: "email" },
-        ],
-
-        [
-          "company",
-          { kind: "Variable", name: "company" },
-        ],
-      ],
-      concreteType: "JoinWaitlistPayload",
-      selections: [
-        {
-          kind: "Scalar",
-          fieldName: "message",
-          arguments: null,
-        },
-        {
-          kind: "Scalar",
-          fieldName: "success",
-          arguments: null,
-        },
-      ],
-    },
-  ],
-};
 const artifact: IsographEntrypoint<
   Mutation__JoinWaitlist__param,
   Mutation__JoinWaitlist__output_type,

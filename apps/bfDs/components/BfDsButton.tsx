@@ -15,6 +15,8 @@ export type BfDsButtonProps = {
   size?: BfDsButtonSize;
   /** Visual style variant */
   variant?: BfDsButtonVariant;
+  /** When true, shows transparent background with variant style on hover */
+  overlay?: boolean;
   /** Disables button interaction */
   disabled?: boolean;
   /** Click event handler */
@@ -33,6 +35,7 @@ export function BfDsButton({
   children,
   size = "medium",
   variant = "primary",
+  overlay = false,
   disabled = false,
   onClick,
   className,
@@ -48,7 +51,7 @@ export function BfDsButton({
 
   const classes = [
     "bfds-button",
-    `bfds-button--${variant}`,
+    overlay ? `bfds-button--overlay-${variant}` : `bfds-button--${variant}`,
     `bfds-button--${size}`,
     iconOnly && "bfds-button--icon-only",
     className,
