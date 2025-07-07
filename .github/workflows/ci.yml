@@ -99,13 +99,56 @@ jobs:
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
+            export BF_E2E_SCREENSHOT_DIR=\"\$PWD/tmp/screenshots\"
+            export BF_E2E_VIDEO_DIR=\"\$PWD/tmp/videos\"
             echo \"Using Deno cache directory: \${DENO_DIR}\"
+            echo \"E2E artifacts will be saved to: screenshots=\${BF_E2E_SCREENSHOT_DIR}, videos=\${BF_E2E_VIDEO_DIR}\"
             deno --version
             deno info
             # Pre-cache dependencies
             deno install
             bft ci -g
           "
+
+      # Debug: Check what E2E artifacts were created
+      - name: Debug E2E artifacts
+        if: always()
+        run: |
+          echo "=== E2E Artifacts Summary ==="
+          echo "Screenshots: $(find tmp/screenshots/ -name "*.png" 2>/dev/null | wc -l) files"
+          echo "Videos: $(find tmp/videos/ -name "*.webm" -o -name "*.mp4" 2>/dev/null | wc -l) files"
+          echo ""
+          if [ -d tmp/screenshots/ ]; then
+            echo "Screenshot files:"
+            ls -la tmp/screenshots/*.png 2>/dev/null | head -5 || echo "No PNG files in tmp/screenshots/"
+          fi
+          if [ -d tmp/videos/ ]; then
+            echo "Video files:"
+            ls -la tmp/videos/*.{webm,mp4} 2>/dev/null | head -5 || echo "No video files in tmp/videos/"
+          fi
+
+      # Upload E2E test artifacts (screenshots and videos)
+      - name: Upload E2E Screenshots
+        if: always() # Upload even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots-${{ github.run_number }}
+          path: |
+            tmp/screenshots/
+            **/tmp/screenshots/
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload E2E Videos
+        if: always() # Upload even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-videos-${{ github.run_number }}
+          path: |
+            tmp/videos/
+            **/tmp/videos/
+          retention-days: 30
+          if-no-files-found: ignore
 
       # Debug before save
       - name: Debug directories pre-save
