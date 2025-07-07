@@ -13,6 +13,7 @@
   },
   "imports": {
     "@bfmono/": "../../../",
+    "@babel/preset-react": "npm:@babel/preset-react@^7.25.7",
     "@deno/vite-plugin": "npm:@deno/vite-plugin@^1.0.4",
     "@isograph/babel-plugin": "npm:@isograph/babel-plugin@0.3.1",
     "@isograph/compiler": "npm:@isograph/compiler@0.3.1",
