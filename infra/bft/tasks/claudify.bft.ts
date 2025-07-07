@@ -190,7 +190,7 @@ async function generateCommandForDeck(
   let deckContent = "";
   try {
     const renderProcess = new Deno.Command("bft", {
-      args: ["aibff", "render", deckPath, "--format", "markdown"],
+      args: ["aibff", "render", deckPath, "--format=markdown"],
       stdout: "piped",
       stderr: "piped",
     });
