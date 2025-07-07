@@ -99,13 +99,73 @@ jobs:
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
+            export BF_E2E_SCREENSHOT_DIR=\"\$PWD/tmp/screenshots\"
+            export BF_E2E_VIDEO_DIR=\"\$PWD/tmp/videos\"
             echo \"Using Deno cache directory: \${DENO_DIR}\"
+            echo \"E2E artifacts will be saved to: screenshots=\${BF_E2E_SCREENSHOT_DIR}, videos=\${BF_E2E_VIDEO_DIR}\"
             deno --version
             deno info
             # Pre-cache dependencies
             deno install
             bft ci -g
           "
+
+      # Debug: Check what E2E artifacts were created
+      - name: Debug E2E artifacts
+        if: always()
+        run: |
+          echo "=== Checking for E2E artifacts ==="
+          echo "Current working directory: $(pwd)"
+          echo "Environment variables:"
+          echo "  BF_E2E_SCREENSHOT_DIR: ${BF_E2E_SCREENSHOT_DIR:-not set}"
+          echo "  BF_E2E_VIDEO_DIR: ${BF_E2E_VIDEO_DIR:-not set}"
+          echo ""
+          echo "Looking for screenshot directories:"
+          find . -name "screenshots" -type d 2>/dev/null || echo "No screenshot directories found"
+          echo ""
+          echo "Looking for video directories:"
+          find . -name "videos" -type d 2>/dev/null || echo "No video directories found"
+          echo ""
+          echo "Looking for PNG files (screenshots):"
+          find . -name "*.png" -type f 2>/dev/null | head -10 || echo "No PNG files found"
+          echo ""
+          echo "Looking for video files:"
+          find . -name "*.webm" -o -name "*.mp4" -type f 2>/dev/null | head -10 || echo "No video files found"
+          echo ""
+          echo "Contents of tmp/ directory:"
+          ls -la tmp/ 2>/dev/null || echo "No tmp/ directory found"
+          echo ""
+          echo "Contents of expected screenshot directory:"
+          ls -la tmp/screenshots/ 2>/dev/null || echo "No tmp/screenshots/ directory found"
+          echo ""
+          echo "Contents of expected video directory:"
+          ls -la tmp/videos/ 2>/dev/null || echo "No tmp/videos/ directory found"
+
+      # Upload E2E test artifacts (screenshots and videos)
+      - name: Upload E2E Screenshots
+        if: always() # Upload even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots-${{ github.run_number }}
+          path: |
+            tmp/screenshots/
+            **/screenshots/
+            **/*.png
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload E2E Videos
+        if: always() # Upload even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-videos-${{ github.run_number }}
+          path: |
+            tmp/videos/
+            **/videos/
+            **/*.webm
+            **/*.mp4
+          retention-days: 30
+          if-no-files-found: ignore
 
       # Debug before save
       - name: Debug directories pre-save
