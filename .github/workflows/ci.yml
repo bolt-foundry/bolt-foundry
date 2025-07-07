@@ -10,7 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  bff-tests:
+  # Setup shared environment and dependencies
+  setup:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -28,21 +29,6 @@ jobs:
 
       - uses: DeterminateSystems/flakehub-cache-action@main
 
-      # Debug cache paths before restore
-      - name: Debug directories pre-restore
-        run: |
-          echo "Checking if directories exist before restore:"
-          ls -la . || true
-          echo "Where is deno installed:"
-          which deno || echo "deno not found"
-          echo "Deno version:"
-          deno --version || echo "deno command not available"
-          echo "Default deno locations:"
-          ls -la ~/.deno 2>/dev/null || echo "~/.deno does not exist"
-          ls -la ~/.cache/deno 2>/dev/null || echo "~/.cache/deno does not exist"
-          echo "Symlinks in current directory:"
-          find . -maxdepth 3 -type l -ls || true
-
       # 1️⃣ RESTORE
       - name: Restore Deno / vendored / node cache
         id: cache-deno
@@ -56,58 +42,302 @@ jobs:
           restore-keys: |
             deno-${{ runner.os }}-
 
-      # Debug cache after restore
-      - name: Debug directories post-restore
+      - name: Put repo tools on PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
+
+      - name: Setup dependencies
         run: |
-          echo "Cache hit: ${{ steps.cache-deno.outputs.cache-hit }}"
-          echo "Cache primary key: ${{ steps.cache-deno.outputs.cache-primary-key }}"
-          echo "Checking directories after restore:"
-          ls -la . || true
-          echo "Node modules existence: $(test -d node_modules && echo 'exists' || echo 'does not exist')"
-          echo "Vendor existence: $(test -d vendor && echo 'exists' || echo 'does not exist')"
-          echo "Deno cache existence: $(test -d /home/runner/.cache/deno && echo 'exists' || echo 'does not exist')"
-          echo "Symlinks in node_modules (if exists):"
-          test -d node_modules && find node_modules -type l -ls | head -n 20 || echo "No node_modules directory"
-          echo "Symlinks in vendor (if exists):"
-          test -d vendor && find vendor -type l -ls | head -n 20 || echo "No vendor directory"
-          echo "Deno cache directory structure (if exists):"
-          test -d /home/runner/.cache/deno && find /home/runner/.cache/deno -type d -maxdepth 2 | sort || echo "No Deno cache directory"
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
+            deno --version
+            deno install
+          "
+
+      # 2️⃣ SAVE (only if we didn't hit above)
+      - name: Save Deno / vendored / node cache
+        if: ${{ steps.cache-deno.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            vendor
+            node_modules
+            /home/runner/.cache/deno
+          key: ${{ steps.cache-deno.outputs.cache-primary-key }}
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: setup
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Restore Deno / vendored / node cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vendor
+            node_modules
+            /home/runner/.cache/deno
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
 
       - name: Put repo tools on PATH
         run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
 
-      - name: Analyze Deno dependencies
+      - name: Run lint
         run: |
-          echo "Deno lock file analysis:"
-          if [ -f deno.lock ]; then
-            echo "Lock file exists"
-            echo "First 20 npm dependencies:"
-            grep -A1 "\"npm:" deno.lock | head -n 20 || true
-            echo "Number of npm dependencies:"
-            grep -c "\"npm:" deno.lock || true
-            echo "Number of jsr dependencies:"
-            grep -c "\"jsr:" deno.lock || true
-          else
-            echo "No deno.lock file found"
-          fi
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
+            bft lint
+          "
 
-      # 👇 Everything below now runs *inside* the dev-shell
-      - name: Enter dev-shell & run tests
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: setup
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Restore Deno / vendored / node cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vendor
+            node_modules
+            /home/runner/.cache/deno
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
+
+      - name: Put repo tools on PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
+
+      - name: Run format check
         run: |
-          # Pass DENO_DIR and secrets into the Nix environment
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
+            bft fmt --check
+          "
+
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: setup
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Restore Deno / vendored / node cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vendor
+            node_modules
+            /home/runner/.cache/deno
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
+
+      - name: Put repo tools on PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
+
+      - name: Run type check
+        run: |
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
+            bft check
+          "
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: setup
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Restore Deno / vendored / node cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vendor
+            node_modules
+            /home/runner/.cache/deno
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
+
+      - name: Put repo tools on PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
+
+      - name: Run tests
+        run: |
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
+            bft test
+          "
+
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: setup
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Restore Deno / vendored / node cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vendor
+            node_modules
+            /home/runner/.cache/deno
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
+
+      - name: Put repo tools on PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
+
+      - name: Run build
+        run: |
+          nix develop .#github-actions --accept-flake-config --command bash -euc "
+            export DENO_DIR=\"/home/runner/.cache/deno\"
+            export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
+            export PATH=\"\$PATH:\$PWD/infra/bin\"
+            bft build
+          "
+
+      # Upload build artifacts for e2e tests
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ github.run_number }}
+          path: |
+            dist/
+            build/
+            .build/
+          retention-days: 1
+          if-no-files-found: ignore
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: DeterminateSystems/nix-installer-action@main
+        with: { determinate: true }
+
+      - uses: DeterminateSystems/flakehub-cache-action@main
+
+      - name: Restore Deno / vendored / node cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            vendor
+            node_modules
+            /home/runner/.cache/deno
+          key: deno-${{ runner.os }}-${{ hashFiles('**/deno.json*', '**/package.json', '**/deno.lock') }}
+          restore-keys: |
+            deno-${{ runner.os }}-
+
+      # Download build artifacts from build job
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts-${{ github.run_number }}
+          path: .
+
+      - name: Put repo tools on PATH
+        run: echo "$GITHUB_WORKSPACE/infra/bin" >> "$GITHUB_PATH"
+
+      - name: Run E2E tests
+        run: |
           nix develop .#github-actions --accept-flake-config --command bash -euc "
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
             export BF_E2E_SCREENSHOT_DIR=\"\$PWD/tmp/screenshots\"
             export BF_E2E_VIDEO_DIR=\"\$PWD/tmp/videos\"
-            echo \"Using Deno cache directory: \${DENO_DIR}\"
             echo \"E2E artifacts will be saved to: screenshots=\${BF_E2E_SCREENSHOT_DIR}, videos=\${BF_E2E_VIDEO_DIR}\"
-            deno --version
-            deno info
-            # Pre-cache dependencies
-            deno install
-            bft ci -g
+            bft e2e --build
           "
 
       # Debug: Check what E2E artifacts were created
@@ -149,54 +379,3 @@ jobs:
             **/tmp/videos/
           retention-days: 30
           if-no-files-found: ignore
-
-      # Debug before save
-      - name: Debug directories pre-save
-        if: ${{ steps.cache-deno.outputs.cache-hit != 'true' }}
-        run: |
-          echo "Checking directories before save:"
-          ls -la . || true
-          echo "Node modules existence: $(test -d node_modules && echo 'exists' || echo 'does not exist')"
-          echo "Vendor existence: $(test -d vendor && echo 'exists' || echo 'does not exist')"
-          echo "Deno cache existence: $(test -d /home/runner/.cache/deno && echo 'exists' || echo 'does not exist')"
-          echo "Symlinks in node_modules (if exists):"
-          test -d node_modules && find node_modules -type l -ls | head -n 20 || echo "No node_modules directory"
-          echo "Symlinks in vendor (if exists):"
-          test -d vendor && find vendor -type l -ls | head -n 20 || echo "No vendor directory"
-          echo "Symlink count in node_modules:"
-          test -d node_modules && find node_modules -type l | wc -l || echo "No node_modules directory"
-          echo "Symlink count in vendor:"
-          test -d vendor && find vendor -type l | wc -l || echo "No vendor directory"
-          echo "Deno cache directory structure (if exists):"
-          test -d /home/runner/.cache/deno && find /home/runner/.cache/deno -type d -maxdepth 2 | sort || echo "No Deno cache directory"
-          echo "Deno cache directory size:"
-          test -d /home/runner/.cache/deno && du -sh /home/runner/.cache/deno || echo "No Deno cache directory"
-          echo "Deno npm cache contents:"
-          test -d /home/runner/.cache/deno/npm && ls -la /home/runner/.cache/deno/npm | head -n 10 || echo "No npm cache directory"
-          echo "File permissions:"
-          find node_modules vendor -type f -name "*.js" | head -n 5 | xargs ls -la 2>/dev/null || true
-          echo "Folders that might be problematic for caching:"
-          find node_modules vendor -type d \( -name ".git" -o -name "node_modules" \) 2>/dev/null || true
-
-      # 2️⃣ SAVE (only if we didn't hit above)
-      - name: Save Deno / vendored / node cache
-        if: ${{ steps.cache-deno.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            vendor
-            node_modules
-            /home/runner/.cache/deno
-          key: ${{ steps.cache-deno.outputs.cache-primary-key }}
-
-      # Debug after save attempt
-      - name: Debug post-save
-        if: ${{ steps.cache-deno.outputs.cache-hit != 'true' }}
-        run: |
-          echo "Cache save completed"
-          echo "Final directory status:"
-          du -sh node_modules vendor /home/runner/.cache/deno 2>/dev/null || echo "Could not get directory sizes"
-          echo "Deno cache contents details:"
-          find /home/runner/.cache/deno -type d -not -path "*/\.*" | sort | head -n 20 || true
-          test -d /home/runner/.cache/deno/npm && echo "Number of npm packages cached:" && ls /home/runner/.cache/deno/npm | wc -l || echo "No npm packages cached"
-          test -d /home/runner/.cache/deno/deps && echo "Deps directory exists" && du -sh /home/runner/.cache/deno/deps || echo "No deps directory"
