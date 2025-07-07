@@ -1,7 +1,9 @@
 #!/usr/bin/env -S deno run --allow-env --allow-read --allow-write --allow-net --watch
 
+import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { parseArgs } from "@std/cli";
 import { getLogger } from "@bolt-foundry/logger";
+import { createGraphQLServer } from "./src/server/graphql.ts";
 
 const logger = getLogger(import.meta);
 
@@ -9,19 +11,28 @@ const logger = getLogger(import.meta);
 const flags = parseArgs(Deno.args, {
   string: ["port", "mode", "vite-port"],
   default: {
-    port: "3000",
     mode: "production",
   },
 });
 
-const port = parseInt(flags.port);
+// Check for port from environment variables if not provided via command line
+// This supports both PORT and WEB_PORT for compatibility with different deployment environments
+const portValue = flags.port ||
+  getConfigurationVariable("PORT") ||
+  getConfigurationVariable("WEB_PORT") ||
+  "3000";
+
+const port = parseInt(portValue);
 if (isNaN(port)) {
-  logger.printErr(`Invalid port: ${flags.port}`);
+  logger.printErr(`Invalid port: ${portValue}`);
   Deno.exit(1);
 }
 
 const isDev = flags.mode === "development";
 const vitePort = flags["vite-port"] ? parseInt(flags["vite-port"]) : undefined;
+
+// Create GraphQL server
+const graphQLServer = createGraphQLServer(isDev);
 
 // Define routes using URLPattern
 const routes = [
@@ -41,6 +52,10 @@ const routes = [
       });
     },
   },
+  {
+    pattern: new URLPattern({ pathname: "/graphql" }),
+    handler: (request: Request) => graphQLServer.handle(request),
+  },
 ];
 
 const handler = async (request: Request): Promise<Response> => {
@@ -49,7 +64,7 @@ const handler = async (request: Request): Promise<Response> => {
   // Try to match against defined routes
   for (const route of routes) {
     if (route.pattern.test(url)) {
-      return await route.handler();
+      return await route.handler(request);
     }
   }
 
@@ -91,8 +106,6 @@ const handler = async (request: Request): Promise<Response> => {
   }
 
   // In production mode, serve static assets
-  const distPath = new URL(import.meta.resolve("./dist")).pathname;
-
   // API routes should return 404 if not found
   if (url.pathname.startsWith("/api/")) {
     return new Response("Not Found", { status: 404 });
@@ -104,11 +117,10 @@ const handler = async (request: Request): Promise<Response> => {
     filePath = "/index.html";
   }
 
-  const fullPath = `${distPath}${filePath}`;
-
   try {
-    const file = await Deno.open(fullPath);
-    const stat = await file.stat();
+    // Use import.meta.resolve to get the URL, then read with Deno.readFile
+    const fileUrl = new URL(`./dist${filePath}`, import.meta.url);
+    const fileContent = await Deno.readFile(fileUrl);
 
     // Determine content type
     let contentType = "application/octet-stream";
@@ -121,10 +133,10 @@ const handler = async (request: Request): Promise<Response> => {
     else if (filePath.endsWith(".png")) contentType = "image/png";
     else if (filePath.endsWith(".ico")) contentType = "image/x-icon";
 
-    return new Response(file.readable, {
+    return new Response(fileContent, {
       headers: {
         "Content-Type": contentType,
-        "Content-Length": stat.size.toString(),
+        "Content-Length": fileContent.length.toString(),
       },
     });
   } catch (error) {
@@ -132,9 +144,9 @@ const handler = async (request: Request): Promise<Response> => {
       // For client-side routes (not containing a file extension)
       if (!url.pathname.includes(".")) {
         try {
-          const indexPath = `${distPath}/index.html`;
-          const file = await Deno.open(indexPath);
-          return new Response(file.readable, {
+          const indexUrl = new URL("./dist/index.html", import.meta.url);
+          const indexContent = await Deno.readFile(indexUrl);
+          return new Response(indexContent, {
             headers: { "Content-Type": "text/html" },
           });
         } catch {
