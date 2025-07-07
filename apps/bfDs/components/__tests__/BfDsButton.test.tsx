@@ -160,6 +160,62 @@ Deno.test("BfDsButton with all variants", () => {
   });
 });
 
+Deno.test("BfDsButton with overlay prop", () => {
+  const { doc } = render(
+    <BfDsButton variant="primary" overlay>
+      Overlay Button
+    </BfDsButton>,
+  );
+
+  const button = doc?.querySelector("button");
+  assertExists(button, "Button element should exist");
+  assertEquals(
+    button?.className.includes("bfds-button--overlay-primary"),
+    true,
+    "Button should have overlay variant class",
+  );
+});
+
+Deno.test("BfDsButton with overlay prop and different variants", () => {
+  const variants = ["primary", "secondary", "outline"] as const;
+
+  variants.forEach((variant) => {
+    const { doc } = render(
+      <BfDsButton variant={variant} overlay>
+        {variant} overlay
+      </BfDsButton>,
+    );
+    const button = doc?.querySelector("button");
+    assertExists(button, `Button with ${variant} overlay should exist`);
+    assertEquals(
+      button?.className.includes(`bfds-button--overlay-${variant}`),
+      true,
+      `Button should have overlay-${variant} class`,
+    );
+  });
+});
+
+Deno.test("BfDsButton without overlay prop uses regular variant", () => {
+  const { doc } = render(
+    <BfDsButton variant="primary">
+      Regular Button
+    </BfDsButton>,
+  );
+
+  const button = doc?.querySelector("button");
+  assertExists(button, "Button element should exist");
+  assertEquals(
+    button?.className.includes("bfds-button--primary"),
+    true,
+    "Button should have regular variant class",
+  );
+  assertEquals(
+    button?.className.includes("bfds-button--overlay-primary"),
+    false,
+    "Button should not have overlay variant class",
+  );
+});
+
 Deno.test("BfDsButton with all sizes", () => {
   const sizes = ["small", "medium", "large"] as const;
 
@@ -173,4 +229,22 @@ Deno.test("BfDsButton with all sizes", () => {
       `Button should have ${size} class`,
     );
   });
+});
+
+Deno.test("BfDsButton with overlay and icon", () => {
+  const { doc } = render(
+    <BfDsButton variant="primary" overlay icon="arrowRight">
+      Overlay with Icon
+    </BfDsButton>,
+  );
+
+  const button = doc?.querySelector("button");
+  const icon = doc?.querySelector("svg");
+  assertExists(button, "Button element should exist");
+  assertExists(icon, "Icon should be rendered");
+  assertEquals(
+    button?.className.includes("bfds-button--overlay-primary"),
+    true,
+    "Button should have overlay variant class",
+  );
 });
