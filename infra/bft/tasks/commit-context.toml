@@ -63,7 +63,7 @@ o  0z9y8x7w  randallb  6 hours ago
 type = "boolean"
 assistantQuestion = "Should we create multiple commits for logical groupings?"
 description = "Whether to analyze changes and suggest splitting into multiple commits"
-default = false
+default = true
 
 [contexts.skipTests]
 type = "boolean"

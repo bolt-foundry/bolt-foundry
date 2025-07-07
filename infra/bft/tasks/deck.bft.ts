@@ -3,6 +3,7 @@
 import type { TaskDefinition } from "../bft.ts";
 import { parse as parseTOML } from "@std/toml";
 import * as path from "@std/path";
+import { extract } from "@std/front-matter";
 import { ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 
 interface OpenAIMessage {
@@ -77,18 +78,10 @@ async function runDeck(args: Array<string>): Promise<number> {
   }
 
   try {
-    const deckContent = await Deno.readTextFile(deckPath);
+    const deckRawContent = await Deno.readTextFile(deckPath);
 
-    // Extract frontmatter
-    const frontmatterMatch = deckContent.match(/^\+\+\+\n([\s\S]*?)\n\+\+\+/);
-    let frontmatter: Record<string, unknown> = {};
-    if (frontmatterMatch) {
-      try {
-        frontmatter = parseTOML(frontmatterMatch[1]);
-      } catch (e) {
-        ui.warn(`Failed to parse frontmatter: ${e}`);
-      }
-    }
+    // Extract and remove frontmatter from content
+    const { body: deckContent } = extract(deckRawContent);
 
     // Extract context definitions from embedded TOML files
     const contexts = await extractContextsFromDeck(deckContent, deckPath);
@@ -101,24 +94,34 @@ async function runDeck(args: Array<string>): Promise<number> {
       contextValues,
     );
 
-    // For now, just show what would be sent
+    // Display deck content in markdown format
     ui.output("=== DECK EXECUTION PREVIEW ===");
-    ui.output("Frontmatter: " + JSON.stringify(frontmatter, null, 2));
-    ui.output("\nContext definitions found:");
-    for (const [key, def] of Object.entries(contexts)) {
-      ui.output(`  - ${key}: ${def.description || def.assistantQuestion}`);
-      if (contextValues[key]) {
-        ui.output(`    Value: ${contextValues[key]}`);
-      } else if (def.default) {
-        ui.output(`    Default: ${def.default}`);
-      } else {
-        ui.output(`    WARNING: No value provided`);
+    ui.output("");
+
+    // Show the processed system content as markdown
+    const systemMessage = request.messages.find((m) => m.role === "system");
+    if (systemMessage) {
+      ui.output(systemMessage.content);
+    }
+
+    // Show context values if any
+    if (Object.keys(contextValues).length > 0) {
+      ui.output("\n## Context Values");
+      for (const [key, value] of Object.entries(contextValues)) {
+        ui.output(`- **${key}**: ${value}`);
       }
     }
-    ui.output("\nOpenAI Request:");
-    ui.output(JSON.stringify(request, null, 2));
 
-    ui.info("[In a real implementation, this would call the OpenAI API]");
+    // Show any missing context warnings
+    const missingContexts = Object.entries(contexts).filter(([key, def]) =>
+      !contextValues[key] && !def.default
+    );
+    if (missingContexts.length > 0) {
+      ui.output("\n## Missing Context Values");
+      for (const [key, def] of missingContexts) {
+        ui.output(`- **${key}**: ${def.description || def.assistantQuestion}`);
+      }
+    }
 
     return 0;
   } catch (error) {

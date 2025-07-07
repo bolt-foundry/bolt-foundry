@@ -1,12 +1,12 @@
 # Implementation Memo: New boltFoundry.com App
 
 **Date**: 2025-07-01\
-**Status**: Planning\
+**Status**: Implemented (Phase 1)\
 **Phase**: 1 (Hello World)
 
 ## Overview
 
-Create a new `apps/boltFoundry.com` application based on the aibff GUI
+Create a new `apps/boltfoundry-com` application based on the aibff GUI
 architecture, serving as a clean landing page that compiles to a single
 executable. This will be a two-phase implementation starting with a simple hello
 world.
@@ -27,35 +27,32 @@ Deno architecture:
 
 - Create minimal working landing page
 - Establish Vite + Deno architecture foundation
-- Implement `bft app boltfoundry.com` command
+- Implement `bft app boltfoundry-com` command
 - Single executable build process
 
 ### Directory Structure
 
 ```
-apps/boltFoundry.com/
+apps/boltfoundry-com/
 ├── vite.config.ts           # Vite configuration
 ├── deno.json                # Deno configuration with tasks
 ├── index.html               # HTML entry point
 ├── server.ts                # Backend server
 ├── src/                     # React frontend source
 │   ├── main.tsx            # React entry point
-│   ├── App.tsx             # Main app component
-│   └── components/         # React components
-├── dist/                   # Built frontend assets (generated)
-├── commands/app.ts          # CLI command handler
-└── main.ts                 # CLI entry point integration
+│   └── App.tsx             # Main app component
+└── dist/                   # Built frontend assets (generated)
 ```
 
 ### Implementation Steps
 
 #### 1. Create CLI Command (`infra/bft/tasks/app.bft.ts`)
 
-- Hardcoded to handle `boltfoundry.com` argument
+- Hardcoded to handle `boltfoundry-com` argument
 - Support `--dev`, `--build`, `--port`, `--no-open` flags
 - Process management for Vite dev server and backend server
 
-#### 2. Create Backend Server (`apps/boltFoundry.com/server.ts`)
+#### 2. Create Backend Server (`apps/boltfoundry-com/server.ts`)
 
 - Basic Deno HTTP server
 - Static file serving from `dist/` in production
@@ -63,7 +60,7 @@ apps/boltFoundry.com/
 - Health check endpoint (`/health`)
 - SPA fallback for client-side routing
 
-#### 3. Create Vite Configuration (`apps/boltFoundry.com/vite.config.ts`)
+#### 3. Create Vite Configuration (`apps/boltfoundry-com/vite.config.ts`)
 
 - Deno plugin integration
 - React plugin with Babel support
@@ -117,10 +114,10 @@ export default defineConfig({
 #### CLI Command Structure
 
 ```bash
-bft app boltfoundry.com           # Run production server
-bft app boltfoundry.com --dev     # Run development mode with HMR
-bft app boltfoundry.com --build   # Build assets only
-bft app boltfoundry.com --port 4000  # Custom port
+bft app boltfoundry-com           # Run production server
+bft app boltfoundry-com --dev     # Run development mode with HMR
+bft app boltfoundry-com --build   # Build assets only
+bft app boltfoundry-com --port 4000  # Custom port
 ```
 
 ### Dependencies
@@ -192,11 +189,11 @@ bft app boltfoundry.com --port 4000  # Custom port
 
 ### Phase 1 Complete When:
 
-- [ ] `bft app boltfoundry.com` launches working landing page
-- [ ] `--dev` mode provides hot reload experience
-- [ ] `--build` mode creates production-ready assets
-- [ ] Single executable serves both static and dynamic content
-- [ ] Basic landing page displays correctly in browser
+- [x] `bft app boltfoundry-com` launches working landing page
+- [x] `--dev` mode provides hot reload experience
+- [x] `--build` mode creates production-ready assets
+- [x] Single executable serves both static and dynamic content
+- [x] Basic landing page displays correctly in browser
 
 ### Definition of Done
 
