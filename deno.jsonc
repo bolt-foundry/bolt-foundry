@@ -1,6 +1,6 @@
 {
   "unstable": ["temporal", "webgpu"],
-  "nodeModulesDir": "manual",
+  "nodeModulesDir": "auto",
   "imports": {
     "@bfmono/": "./",
     "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
