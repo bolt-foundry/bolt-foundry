@@ -34,12 +34,26 @@ export const Docs = iso(`
 
   // Convert markdown to HTML
   const renderer = new Renderer();
-  renderer.table = function (header: string, body: string) {
-    return `<div class="table-wrapper"><table>${header}${body}</table></div>`;
+  renderer.table = function (
+    token: {
+      header: Array<{ text: string }>;
+      rows: Array<Array<{ text: string }>>;
+    },
+  ) {
+    const headerHtml = token.header.map((cell) => `<th>${cell.text}</th>`).join(
+      "",
+    );
+    const rowsHtml = token.rows.map((row) =>
+      `<tr>${row.map((cell) => `<td>${cell.text}</td>`).join("")}</tr>`
+    ).join("");
+    return `<div class="table-wrapper"><table><thead><tr>${headerHtml}</tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
   };
 
   // Add IDs to headings for anchor links
-  renderer.heading = function (text: string, level: number) {
+  renderer.heading = function (
+    token: { tokens: Array<{ text?: string; raw?: string }>; depth: number },
+  ) {
+    const text = token.tokens.map((t) => t.text || t.raw || "").join("");
     const id = text
       .toLowerCase()
       .replace(/[^\w\s-]/g, "") // Remove special characters except spaces and hyphens
@@ -47,11 +61,16 @@ export const Docs = iso(`
       .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
       .trim();
 
-    return `<h${level} id="${id}">${text}</h${level}>`;
+    return `<h${token.depth} id="${id}">${text}</h${token.depth}>`;
   };
 
   // Make external links open in new tab and fix internal doc links
-  renderer.link = function (href: string, title: string | null, text: string) {
+  renderer.link = function ({ href, title, tokens }: {
+    href: string;
+    title?: string | null;
+    tokens: Array<{ text?: string; raw?: string }>;
+  }) {
+    const text = tokens.map((t) => t.text || t.raw || "").join("");
     const isExternal = href.startsWith("http://") ||
       href.startsWith("https://");
     const isAnchor = href.startsWith("#");
