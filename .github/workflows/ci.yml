@@ -103,7 +103,6 @@ jobs:
             deno --version
             deno info
             # Pre-cache dependencies
-            npm install
             deno install
             bft ci -g
           "
