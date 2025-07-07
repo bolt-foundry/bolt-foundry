@@ -79,15 +79,21 @@ async function generateInitialMessage(): Promise<string> {
 const flags = parseArgs(Deno.args, {
   string: ["port", "mode", "vite-port", "conversations-dir"],
   default: {
-    port: "3000",
     mode: "production",
     "conversations-dir": undefined,
   },
 });
 
-const port = parseInt(flags.port);
+// Check for port from environment variables if not provided via command line
+// This supports both PORT and WEB_PORT for compatibility with different deployment environments
+const portValue = flags.port ||
+  getConfigurationVariable("PORT") ||
+  getConfigurationVariable("WEB_PORT") ||
+  "3000";
+
+const port = parseInt(portValue);
 if (isNaN(port)) {
-  logger.printErr(`Invalid port: ${flags.port}`);
+  logger.printErr(`Invalid port: ${portValue}`);
   Deno.exit(1);
 }
 
@@ -153,6 +159,9 @@ const routes = [
               clearInterval(keepAlive);
             }
           }, 30000);
+
+          // Don't let this timer keep the process alive
+          keepAlive.unref();
         },
       });
 
@@ -458,6 +467,138 @@ const routes = [
         });
       } catch (error) {
         logger.error("Chat stream error:", error);
+        return new Response("Internal server error", { status: 500 });
+      }
+    },
+  },
+  {
+    pattern: new URLPattern({ pathname: "/api/test-conversation/stream" }),
+    handler: async (request: Request) => {
+      // Parse the test conversation request from body
+      const { systemPrompt, messages } = await request.json();
+
+      if (!systemPrompt) {
+        return new Response("System prompt is required", { status: 400 });
+      }
+
+      try {
+        // Create a simple OpenAI request for test conversation
+        const openAiRequest = {
+          model: "openai/gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
+            ...messages.map((m: ChatMessage) => ({
+              role: m.role,
+              content: m.content,
+            })),
+          ],
+          stream: true,
+          temperature: 0.7,
+        };
+
+        // Call OpenRouter API with streaming
+        const apiKey = getConfigurationVariable("OPENROUTER_API_KEY");
+        if (!apiKey) {
+          return new Response("OpenRouter API key not configured", {
+            status: 500,
+          });
+        }
+
+        const openRouterResponse = await fetch(
+          "https://openrouter.ai/api/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+              "HTTP-Referer": "https://github.com/boltfoundry/bolt-foundry",
+              "X-Title": "aibff GUI Test Conversation",
+            },
+            body: JSON.stringify(openAiRequest),
+          },
+        );
+
+        if (!openRouterResponse.ok) {
+          return new Response("Failed to get AI response", { status: 500 });
+        }
+
+        // Create SSE stream (simplified version without persistence or tool calls)
+        const encoder = new TextEncoder();
+
+        const body = new ReadableStream({
+          async start(controller) {
+            const reader = openRouterResponse.body!.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                  if (line.startsWith("data: ")) {
+                    const data = line.slice(6);
+                    if (data === "[DONE]") {
+                      controller.enqueue(
+                        encoder.encode("event: done\ndata: {}\n\n"),
+                      );
+                      break;
+                    }
+
+                    try {
+                      const parsed = JSON.parse(data);
+                      const delta = parsed.choices?.[0]?.delta;
+
+                      // Only handle content - no tool calls for test conversations
+                      if (delta?.content) {
+                        controller.enqueue(
+                          encoder.encode(
+                            `data: ${
+                              JSON.stringify({ content: delta.content })
+                            }\n\n`,
+                          ),
+                        );
+                      }
+                    } catch {
+                      // Ignore parse errors
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              logger.error("Test conversation stream error:", error);
+              controller.enqueue(
+                encoder.encode(
+                  `event: error\ndata: ${
+                    JSON.stringify({
+                      error: "Stream interrupted",
+                    })
+                  }\n\n`,
+                ),
+              );
+            } finally {
+              controller.close();
+            }
+          },
+        });
+
+        return new Response(body, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+          },
+        });
+      } catch (error) {
+        logger.error("Test conversation error:", error);
         return new Response("Internal server error", { status: 500 });
       }
     },
