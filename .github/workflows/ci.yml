@@ -99,13 +99,35 @@ jobs:
             export DENO_DIR=\"/home/runner/.cache/deno\"
             export OP_SERVICE_ACCOUNT_TOKEN=\"$OP_SERVICE_ACCOUNT_TOKEN\"
             export PATH=\"\$PATH:\$PWD/infra/bin\"
+            export BF_E2E_SCREENSHOT_DIR=\"\$PWD/tmp/screenshots\"
+            export BF_E2E_VIDEO_DIR=\"\$PWD/tmp/videos\"
             echo \"Using Deno cache directory: \${DENO_DIR}\"
+            echo \"E2E artifacts will be saved to: screenshots=\${BF_E2E_SCREENSHOT_DIR}, videos=\${BF_E2E_VIDEO_DIR}\"
             deno --version
             deno info
             # Pre-cache dependencies
             deno install
             bft ci -g
           "
+
+      # Upload E2E test artifacts (screenshots and videos)
+      - name: Upload E2E Screenshots
+        if: always() # Upload even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots-${{ github.run_number }}
+          path: tmp/screenshots/
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload E2E Videos
+        if: always() # Upload even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-videos-${{ github.run_number }}
+          path: tmp/videos/
+          retention-days: 30
+          if-no-files-found: ignore
 
       # Debug before save
       - name: Debug directories pre-save
