@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsCallout } from "@bfmono/apps/bfDs/components/BfDsCallout.tsx";
 import { getLogger } from "@bolt-foundry/logger";
-import { useDebounced } from "../hooks/useDebounced.ts";
 
 const logger = getLogger(import.meta);
 
@@ -12,35 +12,17 @@ interface GraderEditorProps {
 }
 
 export function GraderEditor(
-  { initialContent = "", onContentChange, onSave }: GraderEditorProps,
+  { initialContent = "", onSave }: GraderEditorProps,
 ) {
   const [content, setContent] = useState(initialContent);
   const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "unsaved">(
     "saved",
   );
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Update content when initialContent changes
   useEffect(() => {
     setContent(initialContent);
   }, [initialContent]);
-
-  // Auto-resize textarea based on content
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height =
-        `${textareaRef.current.scrollHeight}px`;
-    }
-  }, [content]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newContent = e.target.value;
-    setContent(newContent);
-    onContentChange?.(newContent);
-    setSaveStatus("unsaved");
-    debouncedSave();
-  };
 
   const handleSave = async () => {
     if (onSave) {
@@ -56,66 +38,34 @@ export function GraderEditor(
     }
   };
 
-  // Create debounced save function (auto-saves after 2 seconds of inactivity)
-  const debouncedSave = useDebounced(handleSave, 2000);
+  const getStatusVariant = () => {
+    switch (saveStatus) {
+      case "saved": return "success";
+      case "saving": return "warning";
+      case "unsaved": return "error";
+      default: return "info";
+    }
+  };
+
+  const getStatusMessage = () => {
+    switch (saveStatus) {
+      case "saved": return "Saved";
+      case "saving": return "Saving...";
+      case "unsaved": return "Unsaved changes";
+      default: return "";
+    }
+  };
 
   return (
-    <div
-      style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        padding: "1rem",
-      }}
-    >
+    <div className="grader-editor-container">
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem",
-          paddingBottom: "0.5rem",
-          borderBottom: "1px solid #3a3b3c",
-        }}
-      >
-        <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#fafaff" }}>
-          Grader Definition
-        </h2>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          {/* Save status indicator */}
-          <div
-            style={{
-              fontSize: "0.75rem",
-              color: saveStatus === "saved"
-                ? "#4ade80"
-                : saveStatus === "saving"
-                ? "#fbbf24"
-                : "#f87171",
-              fontWeight: 500,
-              display: "flex",
-              alignItems: "center",
-              gap: "0.25rem",
-            }}
-          >
-            <div
-              style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                backgroundColor: saveStatus === "saved"
-                  ? "#4ade80"
-                  : saveStatus === "saving"
-                  ? "#fbbf24"
-                  : "#f87171",
-              }}
-            />
-            {saveStatus === "saved"
-              ? "Saved"
-              : saveStatus === "saving"
-              ? "Saving..."
-              : "Unsaved"}
-          </div>
+      <div className="grader-editor-header">
+        <h2 className="grader-editor-title">Grader Definition</h2>
+        <div className="grader-editor-controls">
+          <BfDsCallout 
+            variant={getStatusVariant()} 
+            message={getStatusMessage()}
+          />
           <BfDsButton
             onClick={handleSave}
             variant="primary"
@@ -127,57 +77,22 @@ export function GraderEditor(
         </div>
       </div>
 
-      {/* Editor */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.5rem",
-          overflow: "auto",
-        }}
-      >
-        <label
-          style={{
-            fontSize: "0.875rem",
-            color: "#b8b8c0",
-            fontWeight: 500,
-          }}
-        >
-          Grader Deck (Markdown)
-        </label>
-        <textarea
-          ref={textareaRef}
-          value={content}
-          onChange={handleChange}
-          placeholder="Your grader definition will appear here as we build it together..."
-          style={{
-            flex: 1,
-            width: "100%",
-            minHeight: "200px",
-            padding: "1rem",
-            border: "1px solid #3a3b3c",
-            borderRadius: "0.25rem",
-            backgroundColor: "#1a1b1c",
-            color: "#fafaff",
-            fontFamily: "monospace",
-            fontSize: "0.875rem",
-            lineHeight: "1.5",
-            resize: "vertical",
-            outline: "none",
-          }}
-        />
-
-        {/* Help text */}
-        <div
-          style={{
-            fontSize: "0.75rem",
-            color: "#b8b8c0",
-            marginTop: "0.5rem",
-          }}
-        >
-          This grader uses the gradient scale: +3 (correct) to -3 (incorrect),
-          with 0 for invalid input.
+      {/* Simplified static content display */}
+      <div className="grader-editor-content">
+        <div className="grader-editor-static">
+          <h3>Grader Deck (Static)</h3>
+          <p>This grader uses the gradient scale: +3 (correct) to -3 (incorrect), with 0 for invalid input.</p>
+          <div 
+            style={{ 
+              border: "1px solid #ccc", 
+              padding: "1rem", 
+              backgroundColor: "#f5f5f5",
+              minHeight: "200px",
+              fontFamily: "Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace"
+            }}
+          >
+            {content || "Your grader definition will appear here as we build it together..."}
+          </div>
         </div>
       </div>
     </div>
