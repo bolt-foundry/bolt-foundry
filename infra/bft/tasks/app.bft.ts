@@ -27,32 +27,12 @@ async function app(args: Array<string>): Promise<number> {
 
   // Handle boltfoundry.com app
   const flags = parseArgs(appArgs, {
-    boolean: ["dev", "build", "no-open", "help"],
+    boolean: ["dev", "build", "no-open"],
     string: ["port"],
     default: {
       port: "3000",
     },
   });
-
-  if (flags.help) {
-    ui.output(`Usage: bft app boltfoundry-com [OPTIONS]
-
-Launch the Bolt Foundry landing page
-
-Options:
-  --dev              Run in development mode with Vite HMR
-  --build            Build assets without starting server
-  --port             Specify server port (default: 3000)
-  --no-open          Don't auto-open browser on startup
-  --help             Show this help message
-
-Examples:
-  bft app boltfoundry-com                   # Run production server
-  bft app boltfoundry-com --dev             # Run in development mode
-  bft app boltfoundry-com --build           # Build assets only
-  bft app boltfoundry-com --port 4000       # Run on port 4000`);
-    return 0;
-  }
 
   const port = parseInt(flags.port);
   if (isNaN(port)) {
@@ -222,6 +202,24 @@ export const bftDefinition = {
   description: "Launch web applications",
   aiSafe: true,
   fn: app,
+  helpText: `Usage: bft app <app-name> [OPTIONS]
+
+Launch web applications
+
+Available apps:
+  boltfoundry-com    Bolt Foundry landing page
+
+App-specific options for boltfoundry-com:
+  --dev              Run in development mode with Vite HMR
+  --build            Build assets without starting server
+  --port             Specify server port (default: 3000)
+  --no-open          Don't auto-open browser on startup
+
+Examples:
+  bft app boltfoundry-com                   # Run production server
+  bft app boltfoundry-com --dev             # Run in development mode
+  bft app boltfoundry-com --build           # Build assets only
+  bft app boltfoundry-com --port 4000       # Run on port 4000`,
 } satisfies TaskDefinition;
 
 // When run directly as a script
