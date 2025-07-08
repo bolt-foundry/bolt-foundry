@@ -79,7 +79,7 @@ async function generateInitialMessage(): Promise<string> {
 const flags = parseArgs(Deno.args, {
   string: ["port", "mode", "vite-port", "conversations-dir"],
   default: {
-    port: "3000",
+    port: "4000",
     mode: "production",
     "conversations-dir": undefined,
   },

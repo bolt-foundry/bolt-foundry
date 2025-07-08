@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsCallout } from "@bfmono/apps/bfDs/components/BfDsCallout.tsx";
 import { getLogger } from "@bolt-foundry/logger";
 import { useDebounced } from "../hooks/useDebounced.ts";
 
@@ -82,50 +83,28 @@ export function GraderEditor(
         <h2 style={{ margin: 0, fontSize: "1.25rem", color: "#fafaff" }}>
           Grader Definition
         </h2>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          {/* Save status indicator */}
-          <div
-            style={{
-              fontSize: "0.75rem",
-              color: saveStatus === "saved"
-                ? "#4ade80"
-                : saveStatus === "saving"
-                ? "#fbbf24"
-                : "#f87171",
-              fontWeight: 500,
-              display: "flex",
-              alignItems: "center",
-              gap: "0.25rem",
-            }}
-          >
-            <div
-              style={{
-                width: "6px",
-                height: "6px",
-                borderRadius: "50%",
-                backgroundColor: saveStatus === "saved"
-                  ? "#4ade80"
-                  : saveStatus === "saving"
-                  ? "#fbbf24"
-                  : "#f87171",
-              }}
-            />
-            {saveStatus === "saved"
-              ? "Saved"
-              : saveStatus === "saving"
-              ? "Saving..."
-              : "Unsaved"}
-          </div>
-          <BfDsButton
-            onClick={handleSave}
-            variant="primary"
-            size="small"
-            disabled={saveStatus === "saving"}
-          >
-            Save Now
-          </BfDsButton>
-        </div>
+        <BfDsButton
+          onClick={handleSave}
+          variant="primary"
+          size="small"
+          disabled={saveStatus === "saving"}
+        >
+          Save Now
+        </BfDsButton>
       </div>
+
+      {/* Save status callout */}
+      <BfDsCallout
+        variant={saveStatus === "saved"
+          ? "success"
+          : saveStatus === "saving"
+          ? "info"
+          : "warning"}
+        visible={saveStatus !== "saved"}
+        autoDismiss={saveStatus === "saved" ? 3000 : 0}
+      >
+        {saveStatus === "saving" ? "Saving..." : "Unsaved changes"}
+      </BfDsCallout>
 
       {/* Editor */}
       <div
