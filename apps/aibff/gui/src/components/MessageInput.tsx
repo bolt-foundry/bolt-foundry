@@ -1,37 +1,28 @@
 import type * as React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
 import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
 
-// First, let's create a component that can display and handle message input
-// This will be a regular React component that we'll use with Isograph
+// Simplified message input without BfDsForm
 export function MessageInputUI(props: {
   conversationId: string;
   onSendMessage: (content: string) => Promise<void>;
   disabled?: boolean;
 }) {
-  const [input, setInput] = useState("");
+  const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height =
-        `${textareaRef.current.scrollHeight}px`;
-    }
-  }, [input]);
-
-  const handleSend = async () => {
-    if (!input.trim() || isSending || props.disabled) return;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const content = message.trim();
+    if (!content || isSending || props.disabled) return;
 
     setIsSending(true);
     try {
-      await props.onSendMessage(input.trim());
-      setInput("");
+      await props.onSendMessage(content);
+      setMessage(""); // Clear input after sending
     } catch (error) {
       logger.error("Failed to send message:", error);
     } finally {
@@ -42,55 +33,44 @@ export function MessageInputUI(props: {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      handleSubmit(e);
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "0.5rem",
-        alignItems: "flex-end",
-        padding: "1rem",
-        borderTop: "1px solid #3a3b3c",
-        backgroundColor: "#1c1c1c",
-      }}
-    >
-      <textarea
-        ref={textareaRef}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Type a message..."
-        disabled={props.disabled || isSending}
-        style={{
-          flex: 1,
-          resize: "none",
-          minHeight: "2.5rem",
-          maxHeight: "10rem",
-          padding: "0.5rem",
-          border: "1px solid #3a3b3c",
-          borderRadius: "0.25rem",
-          backgroundColor: "#141516",
-          color: "#fafaff",
-          fontFamily: "inherit",
-          fontSize: "inherit",
-          lineHeight: "1.5",
-          outline: "none",
-          opacity: props.disabled || isSending ? 0.5 : 1,
-        }}
-      />
-      <BfDsButton
-        onClick={handleSend}
-        disabled={!input.trim() || isSending || props.disabled}
-        variant="primary"
-      >
-        {isSending ? "Sending..." : "Send"}
-      </BfDsButton>
+    <div className="message-input-container">
+      <form onSubmit={handleSubmit} className="message-input-form">
+        <div
+          className="message-input-content"
+          style={{ display: "flex", gap: "0.5rem", padding: "1rem" }}
+        >
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type a message..."
+            disabled={props.disabled || isSending}
+            onKeyDown={handleKeyDown}
+            style={{
+              flex: 1,
+              minHeight: "2.5rem",
+              maxHeight: "10rem",
+              padding: "0.5rem",
+              border: "1px solid #ccc",
+              borderRadius: "0.25rem",
+              backgroundColor: "#1a1b1c",
+              color: "#fafaff",
+              resize: "vertical",
+            }}
+          />
+          <BfDsButton
+            type="submit"
+            disabled={isSending || props.disabled || !message.trim()}
+            variant="primary"
+          >
+            {isSending ? "Sending..." : "Send"}
+          </BfDsButton>
+        </div>
+      </form>
     </div>
   );
 }
-
-// TODO: Add Isograph component once @iso is properly configured
-// This will be used to integrate with GraphQL queries and mutations
