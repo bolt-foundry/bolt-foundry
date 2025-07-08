@@ -11,6 +11,9 @@
 The existing `TabbedEditor` component has been replaced with the new
 `WorkflowPanel` accordion.
 
+🔄 **UPDATE**: The accordion workflow will be restructured into a cleaner 4-tab
+interface based on user feedback and workflow optimization.
+
 ## Implementation Completed (July 2025)
 
 ### New WorkflowPanel Accordion ✅
@@ -60,21 +63,58 @@ WorkflowPanel (radio-style accordion)
 - **State management**: Each section has independent state hooks for content
   persistence
 
-## Technical Implementation Plan
+## Updated Technical Implementation Plan
 
-### 1. New Component Architecture
+### 1. New Four-Tab Component Architecture
 
 ```
-WorkflowPanel (new root component)
-├── WorkflowTabs (tab navigation)
-├── InputSamplesTab (existing functionality)
-├── SystemPromptTab (renamed from Actor Deck)
-├── OutputSamplesTab (new JSONL editor)
-├── EvalPromptTab (renamed from Grader Deck)
-├── EvalOutputTab (new results display)
-├── FixTab (new AI feedback UI)
-└── EditTab (new file browser)
+WorkflowPanel (updated root component)
+├── BfDs Tab Navigation (using BfDs tab components)
+├── SystemPromptTab (consolidates system prompt, input variables, test conversation)
+├── CalibrateTab (saved results → ground truth grading workflow)
+├── EvalTab (grader creation and execution per dimension)
+└── FixTab (outlier analysis and grader/prompt refinement)
 ```
+
+### 2. Detailed Tab Workflow Structure
+
+#### Tab 1: System Prompt
+
+**Purpose**: Core prompt development and testing **Content**: Consolidates first
+3 accordion sections:
+
+- System Prompt editor
+- Input Variables (JSONL format)
+- Test Conversation (ephemeral chat interface)
+- Saved Results (conversation save/load)
+- Ground Truth (graded samples with explanations)
+
+#### Tab 2: Calibrate
+
+**Purpose**: Sample grading and ground truth generation **Content**:
+
+- Display saved conversation results
+- Grading interface (+3 to -3 scale)
+- Description field for grading rationale
+- Move graded samples to ground truth collection
+
+#### Tab 3: Eval
+
+**Purpose**: Grader creation and execution **Content**:
+
+- Multiple grader management (one per dimension)
+- Grader editor for each dimension
+- Execution interface against ground truth data
+- Results display and metrics
+
+#### Tab 4: Fix
+
+**Purpose**: Iterative improvement based on results **Content**:
+
+- Evaluation results analysis
+- Outlier identification and filtering
+- Grader refinement interface
+- System prompt adjustment tools
 
 ### 2. Tab-Specific Implementation Details
 
@@ -212,15 +252,19 @@ input ConversationUpdateInput {
       Conversation, Saved Results, Calibration, Eval Prompt, Run Eval, Files
 - [x] **State management** - Each section has independent content state
 
-### Phase 2: Tool Call Enhancement (CURRENT PRIORITY)
+### Phase 2: Four-Tab Restructure (CURRENT PRIORITY)
 
-- [ ] **Implement placeholder tool functions** - Connect to actual file
-      operations
-- [ ] **Enhanced tool call integration** - System Prompt and Input Variables
-      tool calls
-- [ ] **Test Conversation functionality** - Ephemeral chat interface for prompt
-      testing
-- [ ] **Saved Results implementation** - Save/load conversation outputs as JSONL
+- [ ] **Implement BfDs tab navigation** - Replace accordion with proper tab
+      interface
+- [ ] **Restructure SystemPromptTab** - Consolidate system prompt, input
+      variables, test conversation, saved results, and ground truth into single
+      tab
+- [ ] **Create CalibrateTab** - Grading interface for saved results with +3 to
+      -3 scale and descriptions
+- [ ] **Enhance EvalTab** - Multiple grader management and execution against
+      ground truth
+- [ ] **Implement FixTab** - Outlier analysis and iterative improvement
+      interface
 
 ### Phase 3: File Integration (NEXT)
 
@@ -322,14 +366,18 @@ getConversationFiles() -> Array<{name: string, size: number, modified: string}>
    persistence
 5. **E2E Testing**: ✅ Screenshot-based verification of accordion functionality
 
-### Phase 2 Goals (Tool Call Enhancement)
+### Phase 2 Goals (Four-Tab Restructure)
 
-1. **Tool Call Implementation**: Implement placeholder tool functions for real
-   workflow integration
-2. **Test Conversation**: Build ephemeral chat interface within accordion
-   section
-3. **Saved Results**: JSONL save/load functionality for conversation outputs
-4. **File Operations**: Connect accordion sections to actual file persistence
+1. **BfDs Tab Integration**: Replace accordion with proper tab navigation using
+   BfDs components
+2. **SystemPromptTab Enhancement**: Consolidate 5 accordion sections into
+   cohesive single-tab workflow
+3. **CalibrateTab Implementation**: Build grading interface with +3 to -3 scale
+   and ground truth generation
+4. **EvalTab Multi-Grader Support**: Support multiple graders per dimension with
+   execution capabilities
+5. **FixTab Outlier Analysis**: Results analysis and iterative improvement
+   interface
 
 ### Future Goals
 

@@ -14,7 +14,7 @@ export const guiCommand: Command = {
       boolean: ["dev", "build", "no-open", "help"],
       string: ["port", "conversations-dir"],
       default: {
-        port: "3000",
+        port: "4000",
       },
     });
 
