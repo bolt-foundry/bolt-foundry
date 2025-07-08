@@ -106,14 +106,15 @@ export function BfDsRadioExample() {
           </div>
         </BfDsForm>
         <BfDsCallout
-          message={notification.message}
           variant="success"
           details={notification.details}
           visible={notification.visible}
           onDismiss={() =>
             setNotification({ message: "", details: "", visible: false })}
           autoDismiss={5000}
-        />
+        >
+          {notification.message}
+        </BfDsCallout>
       </div>
 
       <div>
