@@ -340,6 +340,23 @@ ${msg.content}`;
     await this.writeWorkflowFile("eval-output.json", content);
   }
 
+  async getSavedResults(): Promise<string> {
+    return await this.readWorkflowFile("saved-results.jsonl");
+  }
+
+  async setSavedResults(content: string): Promise<void> {
+    await this.writeWorkflowFile("saved-results.jsonl", content);
+  }
+
+  async appendSavedResult(
+    completionData: Record<string, unknown>,
+  ): Promise<void> {
+    const existingResults = await this.getSavedResults();
+    const newLine = JSON.stringify(completionData) + "\n";
+    const updatedResults = existingResults + newLine;
+    await this.setSavedResults(updatedResults);
+  }
+
   async listFiles(): Promise<
     Array<{ name: string; size: number; modified: string }>
   > {
