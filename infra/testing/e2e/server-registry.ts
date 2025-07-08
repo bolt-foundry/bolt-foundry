@@ -39,7 +39,7 @@ export const E2E_SERVER_REGISTRY: Array<ServerRegistryEntry> = [
     ],
     server: {
       name: "aibff-gui",
-      serverPath: "./apps/aibff/gui/guiServer.ts",
+      serverPath: "./build/aibff-gui",
       defaultPort: 8001,
       envVar: "BF_E2E_AIBFF_GUI_URL",
       env: {
