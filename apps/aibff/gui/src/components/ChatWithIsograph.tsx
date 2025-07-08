@@ -457,21 +457,15 @@ Error formatting arguments: ${
             alignItems: "center",
           }}
         >
-          <a
-            href="/"
-            style={{
-              padding: "0.5rem 1rem",
-              backgroundColor: "#2a2b2c",
-              color: "#fafaff",
-              textDecoration: "none",
-              borderRadius: "0.25rem",
-              fontSize: "0.875rem",
-              fontWeight: 500,
-              display: "inline-block",
+          <BfDsButton
+            onClick={() => {
+              globalThis.location.href = "/";
             }}
+            variant="secondary"
+            size="small"
           >
             New Conversation
-          </a>
+          </BfDsButton>
         </div>
 
         {/* Messages */}
