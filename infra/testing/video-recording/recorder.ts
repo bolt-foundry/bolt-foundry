@@ -57,6 +57,20 @@ export async function startScreencastRecording(
 export async function stopScreencastRecording(
   page: Page,
   session: VideoRecordingSession,
+  videoOptions: VideoConversionOptions = {},
+): Promise<VideoConversionResult> {
+  // By default, convert to video with frame preservation
+  const defaultOptions: VideoConversionOptions = {
+    preserveFrames: true,
+    ...videoOptions,
+  };
+
+  return await stopScreencastRecordingWithVideo(page, session, defaultOptions);
+}
+
+export async function stopScreencastRecordingFramesOnly(
+  page: Page,
+  session: VideoRecordingSession,
 ): Promise<string> {
   const cdpSession = await page.target().createCDPSession();
 
@@ -87,7 +101,7 @@ export async function stopScreencastRecordingWithVideo(
   videoOptions: VideoConversionOptions = {},
 ): Promise<VideoConversionResult> {
   // First stop recording and save frames
-  const frameDir = await stopScreencastRecording(page, session);
+  const frameDir = await stopScreencastRecordingFramesOnly(page, session);
 
   // Then convert frames to video
   const videoResult = await convertFramesToVideo(frameDir, videoOptions);

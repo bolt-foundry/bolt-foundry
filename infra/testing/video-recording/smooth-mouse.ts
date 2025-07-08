@@ -6,7 +6,7 @@ export async function smoothMoveTo(
   page: Page,
   targetX: number,
   targetY: number,
-  duration = 1000,
+  pixelsPerSecond = 800, // Consistent movement speed
 ): Promise<void> {
   // Get current mouse position from our global state or default to center
   const currentPos = await page.evaluate(() => {
@@ -14,7 +14,16 @@ export async function smoothMoveTo(
     return stored || { x: 640, y: 360 }; // Default to center of 1280x720
   });
 
-  const steps = 20;
+  // Calculate distance and duration based on speed
+  const distance = Math.sqrt(
+    Math.pow(targetX - currentPos.x, 2) + Math.pow(targetY - currentPos.y, 2),
+  );
+  const duration = Math.max(
+    100,
+    Math.min(1500, (distance / pixelsPerSecond) * 1000),
+  ); // Min 100ms, max 1.5s
+
+  const steps = Math.max(5, Math.min(30, Math.ceil(duration / 50))); // 5-30 steps, ~50ms per step
   const stepDelay = duration / steps;
 
   for (let i = 0; i <= steps; i++) {
