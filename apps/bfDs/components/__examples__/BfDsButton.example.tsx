@@ -104,6 +104,18 @@ export function BfDsButtonExample() {
           <BfDsButton icon="back" iconOnly variant="ghost" />
         </div>
       </div>
+
+      <div>
+        <h3>Overlay Buttons</h3>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <BfDsButton overlay variant="primary">Primary Overlay</BfDsButton>
+          <BfDsButton overlay variant="secondary">Secondary Overlay</BfDsButton>
+          <BfDsButton overlay variant="outline">Outline Overlay</BfDsButton>
+          <BfDsButton overlay variant="ghost">Ghost Overlay</BfDsButton>
+          <BfDsButton overlay icon="arrowRight">With Icon</BfDsButton>
+          <BfDsButton overlay icon="burgerMenu" iconOnly />
+        </div>
+      </div>
     </div>
   );
 }
