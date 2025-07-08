@@ -54,33 +54,30 @@ export function BfDsCalloutExample() {
       <div>
         <h3>Static Examples</h3>
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <BfDsCallout
-            message="This is an informational message"
-            variant="info"
-          />
-          <BfDsCallout
-            message="Operation completed successfully!"
-            variant="success"
-          />
-          <BfDsCallout
-            message="Please review your settings"
-            variant="warning"
-          />
-          <BfDsCallout
-            message="An error occurred while processing"
-            variant="error"
-          />
+          <BfDsCallout variant="info">
+            This is an informational message
+          </BfDsCallout>
+          <BfDsCallout variant="success">
+            Operation completed successfully!
+          </BfDsCallout>
+          <BfDsCallout variant="warning">
+            Please review your settings
+          </BfDsCallout>
+          <BfDsCallout variant="error">
+            An error occurred while processing
+          </BfDsCallout>
         </div>
       </div>
 
       <div>
         <h3>With Details</h3>
         <BfDsCallout
-          message="Form submitted successfully"
           variant="success"
           details={JSON.stringify(sampleData, null, 2)}
           onDismiss={() => {}}
-        />
+        >
+          Form submitted successfully
+        </BfDsCallout>
       </div>
 
       <div>
@@ -146,11 +143,12 @@ export function BfDsCalloutExample() {
           {notifications.map((notification) => (
             <BfDsCallout
               key={notification.id}
-              message={notification.message}
               variant={notification.variant}
               details={notification.details}
               onDismiss={() => removeNotification(notification.id)}
-            />
+            >
+              {notification.message}
+            </BfDsCallout>
           ))}
         </div>
       </div>

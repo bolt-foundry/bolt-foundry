@@ -1,11 +1,10 @@
+import type * as React from "react";
 import { useEffect, useState } from "react";
 import { BfDsIcon } from "./BfDsIcon.tsx";
 
 export type BfDsCalloutVariant = "info" | "success" | "warning" | "error";
 
 export type BfDsCalloutProps = {
-  /** The main message to display */
-  message: string;
   /** Visual variant of the callout */
   variant?: BfDsCalloutVariant;
   /** Optional detailed content (like JSON data) */
@@ -23,7 +22,7 @@ export type BfDsCalloutProps = {
 };
 
 export function BfDsCallout({
-  message,
+  children,
   variant = "info",
   details,
   defaultExpanded = false,
@@ -31,7 +30,7 @@ export function BfDsCallout({
   onDismiss,
   autoDismiss = 0,
   className,
-}: BfDsCalloutProps) {
+}: React.PropsWithChildren<BfDsCalloutProps>) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [isVisible, setIsVisible] = useState(visible);
 
@@ -78,7 +77,9 @@ export function BfDsCallout({
           <BfDsIcon name={iconName} size="small" />
         </div>
         <div className="bfds-callout-content">
-          <div className="bfds-callout-message">{message}</div>
+          <div className="bfds-callout-message">
+            {children}
+          </div>
           {details && (
             <button
               className="bfds-callout-toggle"

@@ -67,12 +67,13 @@ export function BfDsListExample() {
           </BfDsListItem>
         </BfDsList>
         <BfDsCallout
-          message={notification.message}
           variant="info"
           visible={notification.visible}
           onDismiss={() => setNotification({ message: "", visible: false })}
           autoDismiss={3000}
-        />
+        >
+          {notification.message}
+        </BfDsCallout>
       </div>
 
       <div>
