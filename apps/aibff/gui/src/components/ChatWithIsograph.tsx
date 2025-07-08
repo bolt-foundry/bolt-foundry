@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { BfDsButton } from "@bfmono/apps/bfDs/components/BfDsButton.tsx";
+import { BfDsCallout } from "@bfmono/apps/bfDs/components/BfDsCallout.tsx";
 import { useRouter } from "../contexts/RouterContext.tsx";
 import { useGrader } from "../contexts/GraderContext.tsx";
 import { MessageContent } from "./MessageContent.tsx";
 import { MessageInputUI } from "./MessageInput.tsx";
-import { WorkflowPanel } from "./WorkflowPanel.tsx";
 import { getLogger } from "@bolt-foundry/logger";
 
 const logger = getLogger(import.meta);
@@ -371,55 +371,24 @@ Error formatting arguments: ${
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          height: "100vh",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#b8b8c0",
-        }}
-      >
-        Loading conversation...
+      <div className="chat-loading-container">
+        <BfDsCallout
+          variant="info"
+          message="Loading conversation..."
+        />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100vh",
-          backgroundColor: "#141516",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "2rem",
-        }}
-      >
-        <div
-          style={{
-            textAlign: "center",
-            maxWidth: "400px",
-          }}
-        >
-          <h2
-            style={{
-              color: "#ff6b6b",
-              marginBottom: "1rem",
-            }}
-          >
-            Conversation Not Found
-          </h2>
-          <p
-            style={{
-              color: "#b8b8c0",
-              marginBottom: "2rem",
-            }}
-          >
-            {error}
-          </p>
+      <div className="chat-error-container">
+        <BfDsCallout
+          variant="error"
+          message="Conversation Not Found - Unable to load the conversation. You can start a new one instead."
+          details={error}
+        />
+        <div className="chat-error-content" style={{ marginTop: "1rem" }}>
           <BfDsButton
             onClick={() => navigate("/")}
             variant="primary"
@@ -1057,9 +1026,6 @@ Generated at: ${new Date().toISOString()}`,
           disabled={isStreaming}
         />
       </div>
-
-      {/* Workflow Panel */}
-      <WorkflowPanel />
     </div>
   );
 }
