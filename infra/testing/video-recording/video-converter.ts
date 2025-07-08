@@ -8,6 +8,7 @@ export interface VideoConversionOptions {
   framerate?: number;
   quality?: "low" | "medium" | "high";
   deleteFrames?: boolean;
+  preserveFrames?: boolean;
 }
 
 export interface VideoConversionResult {
@@ -23,10 +24,14 @@ export async function convertFramesToVideo(
 ): Promise<VideoConversionResult> {
   const {
     outputFormat = "mp4",
-    framerate = 12, // Increased from 10 to 12 as base framerate
+    framerate = 24, // Increased to 24 fps for smoother video
     quality = "medium",
     deleteFrames = true,
+    preserveFrames = false,
   } = options;
+
+  // If preserveFrames is true, override deleteFrames to false
+  const shouldDeleteFrames = preserveFrames ? false : deleteFrames;
 
   // Generate output filename
   const outputPath = join(
@@ -61,7 +66,7 @@ export async function convertFramesToVideo(
     const result = await getVideoInfo(outputPath, frameDirectory);
 
     // Clean up frame files if requested
-    if (deleteFrames) {
+    if (shouldDeleteFrames) {
       await cleanupFrames(frameDirectory);
     }
 
@@ -94,7 +99,7 @@ function buildFFmpegArgs({
   const baseArgs = [
     "-y", // Overwrite output file
     "-framerate",
-    framerate.toString(),
+    "60", // Assume 60fps input from browser screencast
     "-i",
     framePattern,
   ];
@@ -105,9 +110,13 @@ function buildFFmpegArgs({
   // Format-specific settings
   const formatArgs = getFormatArgs(outputFormat);
 
+  // Add output framerate filter
+  const framerateFilter = ["-filter:v", `fps=${framerate}`];
+
   return [
     ...baseArgs,
     ...qualityArgs,
+    ...framerateFilter,
     ...formatArgs,
     outputPath,
   ];
