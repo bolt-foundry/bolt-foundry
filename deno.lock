@@ -114,6 +114,7 @@
     "npm:react@*": "19.1.0",
     "npm:react@19": "19.1.0",
     "npm:react@^19.1.0": "19.1.0",
+    "npm:vite@*": "6.3.5_@types+node@22.15.15_picomatch@4.0.2",
     "npm:vite@6": "6.3.5_@types+node@22.15.15_picomatch@4.0.2",
     "npm:zod@3": "3.25.75"
   },
