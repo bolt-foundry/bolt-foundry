@@ -21,6 +21,8 @@ export type BfDsButtonProps = {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   /** Additional CSS classes */
   className?: string;
+  /** URL to navigate to (for future link support) */
+  href?: string;
   /** Icon name or custom icon element */
   icon?: BfDsIconName | React.ReactNode;
   /** Position of icon relative to text */
@@ -38,6 +40,7 @@ export function BfDsButton({
   disabled = false,
   onClick,
   className,
+  href: _href,
   icon,
   iconPosition = "left",
   iconOnly = false,
@@ -47,6 +50,7 @@ export function BfDsButton({
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
     onClick?.(e);
+    // TODO: href navigation will be implemented later
   };
 
   const classes = [
