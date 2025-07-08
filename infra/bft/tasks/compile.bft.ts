@@ -12,28 +12,28 @@ async function compile(args: Array<string>): Promise<number> {
 Compile applications to single executable binaries.
 
 Available apps:
-  boltfoundry.com    Bolt Foundry landing page
+  boltfoundry-com    Bolt Foundry landing page
 
 Examples:
-  bft compile boltfoundry.com           # Compile boltfoundry.com to binary
-  bft compile boltfoundry.com --help    # Show app-specific help`);
+  bft compile boltfoundry-com           # Compile boltfoundry-com to binary
+  bft compile boltfoundry-com --help    # Show app-specific help`);
     return 0;
   }
 
   if (args.length === 0) {
     ui.error("Usage: bft compile <app-name>");
     ui.output("Available apps:");
-    ui.output("  boltfoundry.com    Bolt Foundry landing page");
+    ui.output("  boltfoundry-com    Bolt Foundry landing page");
     return 1;
   }
 
   const appName = args[0];
   const compileArgs = args.slice(1);
 
-  if (appName !== "boltfoundry.com") {
+  if (appName !== "boltfoundry-com") {
     ui.error(`Unknown app: ${appName}`);
     ui.output("Available apps:");
-    ui.output("  boltfoundry.com    Bolt Foundry landing page");
+    ui.output("  boltfoundry-com    Bolt Foundry landing page");
     return 1;
   }
 
@@ -43,7 +43,7 @@ Examples:
   });
 
   if (flags.help) {
-    ui.output(`Usage: bft compile boltfoundry.com
+    ui.output(`Usage: bft compile boltfoundry-com
 
 Compile Bolt Foundry landing page to single executable binary.
 This will build frontend assets and compile the server into a standalone binary.
@@ -51,12 +51,12 @@ This will build frontend assets and compile the server into a standalone binary.
 The binary will be output to: ./build/boltfoundry-com
 
 Examples:
-  bft compile boltfoundry.com    # Build assets and compile to binary`);
+  bft compile boltfoundry-com    # Build assets and compile to binary`);
     return 0;
   }
 
   const appPath =
-    new URL(import.meta.resolve("../../../apps/boltFoundry.com")).pathname;
+    new URL(import.meta.resolve("../../../apps/boltfoundry-com")).pathname;
   const buildDir = new URL(import.meta.resolve("../../../build")).pathname;
 
   // Ensure build directory exists
@@ -89,7 +89,7 @@ Examples:
 
     // Run the build command
     const buildCommand = new Deno.Command("bft", {
-      args: ["app", "boltfoundry.com", "--build"],
+      args: ["app", "boltfoundry-com", "--build"],
       stdout: "inherit",
       stderr: "inherit",
     });
@@ -105,7 +105,7 @@ Examples:
   ui.output("Compiling server to single binary...");
 
   const binaryPath = `${buildDir}/boltfoundry-com`;
-  const serverPath = `${appPath}/server.ts`;
+  const serverPath = `${appPath}/server.tsx`;
 
   const compileCommand = new Deno.Command("deno", {
     args: [
