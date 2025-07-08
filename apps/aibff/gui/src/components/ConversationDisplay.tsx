@@ -1,4 +1,7 @@
 import { iso } from "@bfmono/apps/aibff/gui/__generated__/__isograph/iso.ts";
+import { BfDsList } from "@bfmono/apps/bfDs/components/BfDsList.tsx";
+import { BfDsListItem } from "@bfmono/apps/bfDs/components/BfDsListItem.tsx";
+import { BfDsCallout } from "@bfmono/apps/bfDs/components/BfDsCallout.tsx";
 
 export const ConversationDisplay = iso(`
   field Query.ConversationDisplay @component {
@@ -19,22 +22,32 @@ export const ConversationDisplay = iso(`
       style={{ padding: "1rem", backgroundColor: "#1c1c1c", color: "#fafaff" }}
     >
       <h2>Conversations</h2>
-      {data.data.conversations.length === 0 ? <p>No conversations yet</p> : (
-        <ul>
-          {data.data.conversations.map((conv) => (
-            <li key={conv.id}>
-              <strong>Conversation {conv.id}</strong> - {conv.createdAt}
-              <ul>
-                {conv.messages.map((msg) => (
-                  <li key={msg.id}>
-                    [{msg.role}] {msg.content}
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
-      )}
+      {data.data.conversations.length === 0
+        ? (
+          <BfDsCallout variant="info">
+            No conversations yet
+          </BfDsCallout>
+        )
+        : (
+          <BfDsList>
+            {data.data.conversations.map((conv) => (
+              <BfDsListItem
+                key={conv.id}
+                expandContents={
+                  <BfDsList>
+                    {conv.messages.map((msg) => (
+                      <BfDsListItem key={msg.id}>
+                        [{msg.role}] {msg.content}
+                      </BfDsListItem>
+                    ))}
+                  </BfDsList>
+                }
+              >
+                <strong>Conversation {conv.id}</strong> - {conv.createdAt}
+              </BfDsListItem>
+            ))}
+          </BfDsList>
+        )}
     </div>
   );
 });
