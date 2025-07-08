@@ -15,5 +15,6 @@
     "react": "npm:react@^19.1.0",
     "react-dom": "npm:react-dom@^19.1.0",
     "react/jsx-runtime": "npm:react/jsx-runtime"
-  }
+  },
+  "exclude": ["static/build/"]
 }
