@@ -48,19 +48,13 @@ export async function convertFramesToVideo(
 
   try {
     // Run ffmpeg conversion
-    const command = new Deno.Command("ffmpeg", {
+    const { success } = await new Deno.Command("ffmpeg", {
       args: ffmpegArgs,
-      stdout: "piped",
-      stderr: "piped",
-    });
-
-    const process = command.spawn();
-    const { success, stdout: _stdout, stderr } = await process.output();
+    }).output();
 
     if (!success) {
-      const errorOutput = new TextDecoder().decode(stderr);
-      logger.error(`ffmpeg conversion failed: ${errorOutput}`);
-      throw new Error(`Video conversion failed: ${errorOutput}`);
+      logger.error(`ffmpeg conversion failed`);
+      throw new Error(`Video conversion failed`);
     }
 
     // Get video information
@@ -178,7 +172,7 @@ async function getVideoInfo(
     // Get duration using ffprobe if available, otherwise estimate
     let duration = 0;
     try {
-      const command = new Deno.Command("ffprobe", {
+      const { success, stdout } = await new Deno.Command("ffprobe", {
         args: [
           "-v",
           "quiet",
@@ -188,12 +182,8 @@ async function getVideoInfo(
           "csv=p=0",
           videoPath,
         ],
-        stdout: "piped",
-        stderr: "piped",
-      });
-
-      const process = command.spawn();
-      const { success, stdout } = await process.output();
+        stdout: "piped", // We need stdout for ffprobe to get the duration
+      }).output();
 
       if (success) {
         const output = new TextDecoder().decode(stdout).trim();
