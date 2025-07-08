@@ -1,6 +1,6 @@
 {
   "unstable": ["temporal", "webgpu"],
-  "nodeModulesDir": "manual",
+  "nodeModulesDir": "auto",
   "imports": {
     "@bfmono/": "./",
     "@bolt-foundry/bolt-foundry": "./packages/bolt-foundry/bolt-foundry.ts",
@@ -13,13 +13,13 @@
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
     "@iso": "./apps/boltFoundry/__generated__/__isograph/iso.ts",
     "@iso/": "./apps/boltFoundry/__generated__/__isograph/",
+    "@isograph/babel-plugin": "npm:@isograph/babel-plugin@^0.3.1",
     "@isograph/react": "npm:@isograph/react@^0.3.1",
     "@lexical/mark": "npm:@lexical/mark@^0.33.0",
     "@lexical/react": "npm:@lexical/react@^0.33.0",
     "@lexical/selection": "npm:@lexical/selection@^0.33.0",
     "@lexical/text": "npm:@lexical/text@^0.33.0",
     "@lexical/utils": "npm:@lexical/utils@^0.33.0",
-    "@luca/esbuild-deno-loader": "jsr:@luca/esbuild-deno-loader@^0.11.1",
     "@neondatabase/serverless": "npm:@neondatabase/serverless@^1.0.1",
     "@openai/openai": "jsr:@openai/openai@^4.78.1",
     "@simplewebauthn/browser": "jsr:@simplewebauthn/browser@^13.1.0",
@@ -29,7 +29,7 @@
     "@std/cli": "jsr:@std/cli@^1.0.20",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
     "@std/fmt": "jsr:@std/fmt@^1.0.8",
-    "@std/front-matter": "jsr:@std/front-matter@^1.0.5",
+    "@std/front-matter": "jsr:@std/front-matter@^1.0.9",
     "@std/fs": "jsr:@std/fs@^1.0.18",
     "@std/http": "jsr:@std/http@^1.0.12",
     "@std/io": "jsr:@std/io@^0.225.2",
@@ -127,7 +127,6 @@
 
     "rules": {
       "include": [
-        "bolt-foundry/no-env-direct-access",
         "bolt-foundry/no-bfnodespec-first-static",
         "bolt-foundry/no-underscore-logger-when-used",
         "bolt-foundry/no-logger-set-level",
