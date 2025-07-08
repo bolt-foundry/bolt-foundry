@@ -19,7 +19,7 @@ export interface TimeBasedRecordingSession {
 export async function startTimeBasedRecording(
   page: Page,
   name: string,
-  targetFps = 20, // Higher default FPS for smoother recording
+  targetFps = 24, // 24 fps for smooth video recording
   outputDir = "/tmp/videos",
 ): Promise<TimeBasedRecordingSession> {
   await ensureDir(outputDir);
