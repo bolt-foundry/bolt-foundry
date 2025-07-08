@@ -149,7 +149,7 @@ Examples:
     "run",
     "-A",
     "--watch",
-    new URL(import.meta.resolve("../../../apps/boltfoundry-com/server.ts"))
+    new URL(import.meta.resolve("../../../apps/boltfoundry-com/server.tsx"))
       .pathname,
     "--port",
     String(port),
