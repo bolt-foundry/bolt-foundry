@@ -27,6 +27,8 @@ export type BfDsButtonProps = {
   iconPosition?: "left" | "right";
   /** When true, shows only icon without text */
   iconOnly?: boolean;
+  /** When true, applies overlay styling, shows original variant on hover */
+  overlay?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function BfDsButton({
@@ -39,6 +41,7 @@ export function BfDsButton({
   icon,
   iconPosition = "left",
   iconOnly = false,
+  overlay = false,
   ...props
 }: BfDsButtonProps) {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -51,6 +54,7 @@ export function BfDsButton({
     `bfds-button--${variant}`,
     `bfds-button--${size}`,
     iconOnly && "bfds-button--icon-only",
+    overlay && "bfds-button--overlay",
     className,
   ].filter(Boolean).join(" ");
 

@@ -174,3 +174,59 @@ Deno.test("BfDsButton with all sizes", () => {
     );
   });
 });
+
+Deno.test("BfDsButton renders with overlay prop", () => {
+  const { doc } = render(
+    <BfDsButton overlay>
+      Overlay Button
+    </BfDsButton>,
+  );
+
+  const button = doc?.querySelector("button");
+  assertExists(button, "Button element should exist");
+  assertEquals(
+    button?.className.includes("bfds-button--overlay"),
+    true,
+    "Button should have overlay class",
+  );
+});
+
+Deno.test("BfDsButton renders with overlay and variant", () => {
+  const { doc } = render(
+    <BfDsButton overlay variant="secondary">
+      Secondary Overlay
+    </BfDsButton>,
+  );
+
+  const button = doc?.querySelector("button");
+  assertExists(button, "Button element should exist");
+  assertEquals(
+    button?.className.includes("bfds-button--overlay"),
+    true,
+    "Button should have overlay class",
+  );
+  assertEquals(
+    button?.className.includes("bfds-button--secondary"),
+    true,
+    "Button should have secondary variant class",
+  );
+});
+
+Deno.test("BfDsButton renders with overlay and icon", () => {
+  const { doc } = render(
+    <BfDsButton overlay icon="arrowRight">
+      Overlay with Icon
+    </BfDsButton>,
+  );
+
+  const button = doc?.querySelector("button");
+  const icon = doc?.querySelector("svg");
+
+  assertExists(button, "Button element should exist");
+  assertExists(icon, "Icon should be rendered");
+  assertEquals(
+    button?.className.includes("bfds-button--overlay"),
+    true,
+    "Button should have overlay class",
+  );
+});

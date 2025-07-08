@@ -12,6 +12,12 @@
   --bfds-background: #141516;
   --bfds-background-hover: #1f2021;
   --bfds-background-active: #2a2b2c;
+  --bfds-background-09: rgba(20, 21, 22, 0.9);
+  --bfds-background-08: rgba(20, 21, 22, 0.8);
+  --bfds-background-06: rgba(20, 21, 22, 0.6);
+  --bfds-background-04: rgba(20, 21, 22, 0.4);
+  --bfds-background-02: rgba(20, 21, 22, 0.2);
+  --bfds-background-01: rgba(20, 21, 22, 0.1);
 
   --bfds-text: #fafaff;
   --bfds-text-secondary: #b8b8c0;
@@ -320,6 +326,61 @@
 
 .bfds-button--ghost:active:not(:disabled) {
   background-color: var(--bfds-background-active);
+}
+
+/* Overlay buttons */
+.bfds-button--overlay {
+  background-color: var(--bfds-background-06);
+  color: var(--bfds-text);
+  border-color: var(--bfds-background-08);
+}
+
+.bfds-button--overlay.bfds-button--primary:hover:not(:disabled) {
+  background-color: var(--bfds-primary);
+  color: var(--bfds-background);
+  border-color: var(--bfds-primary);
+}
+
+.bfds-button--overlay.bfds-button--primary:active:not(:disabled) {
+  background-color: var(--bfds-primary-active);
+  color: var(--bfds-background);
+  border-color: var(--bfds-primary-active);
+}
+
+.bfds-button--overlay.bfds-button--secondary:hover:not(:disabled) {
+  background-color: var(--bfds-secondary);
+  color: var(--bfds-text);
+  border-color: var(--bfds-secondary);
+}
+
+.bfds-button--overlay.bfds-button--secondary:active:not(:disabled) {
+  background-color: var(--bfds-secondary-active);
+  color: var(--bfds-text);
+  border-color: var(--bfds-secondary-active);
+}
+
+.bfds-button--overlay.bfds-button--outline:hover:not(:disabled) {
+  background-color: transparent;
+  color: var(--bfds-primary);
+  border-color: var(--bfds-primary);
+}
+
+.bfds-button--overlay.bfds-button--outline:active:not(:disabled) {
+  background-color: var(--bfds-primary-06);
+  color: var(--bfds-primary);
+  border-color: var(--bfds-primary-06);
+}
+
+.bfds-button--overlay.bfds-button--ghost:hover:not(:disabled) {
+  background-color: var(--bfds-background);
+  color: var(--bfds-text);
+  border-color: var(--bfds-border);
+}
+
+.bfds-button--overlay.bfds-button--ghost:active:not(:disabled) {
+  background-color: var(--bfds-background-hover);
+  color: var(--bfds-text);
+  border-color: var(--bfds-border-hover);
 }
 
 /* Button icon spacing */
