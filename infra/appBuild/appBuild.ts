@@ -24,6 +24,34 @@ const defaultOptions: esbuild.BuildOptions = {
   assetNames: "assets/[name]-[hash]",
   plugins: [
     mdx(),
+    {
+      name: "import-map-resolver",
+      setup(build) {
+        build.onResolve({ filter: /^@bfmono\// }, (args) => {
+          const relativePath = args.path.replace(/^@bfmono\//, "");
+          const absolutePath =
+            new URL(`../../${relativePath}`, import.meta.url).pathname;
+          return { path: absolutePath, external: false };
+        });
+
+        build.onResolve({ filter: /^@iso$/ }, (_args) => {
+          const absolutePath = new URL(
+            "../../apps/boltFoundry/__generated__/__isograph/iso.ts",
+            import.meta.url,
+          ).pathname;
+          return { path: absolutePath, external: false };
+        });
+
+        build.onResolve({ filter: /^@iso\// }, (args) => {
+          const relativePath = args.path.replace(/^@iso\//, "");
+          const absolutePath = new URL(
+            `../../apps/boltFoundry/__generated__/__isograph/${relativePath}`,
+            import.meta.url,
+          ).pathname;
+          return { path: absolutePath, external: false };
+        });
+      },
+    },
   ],
   treeShaking: true,
 
