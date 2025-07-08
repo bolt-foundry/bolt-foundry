@@ -5,7 +5,7 @@ let
   # Import the latest nixos-unstable for any "bleeding-edge" packages you need.
   # Using specific commit from flake.nix for consistency
   unstablePkgs = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/9276d3225945c544c6efab8210686bd7612a9115.tar.gz";
+    url = "https://github.com/NixOS/nixpkgs/archive/1e968849c167dd400b51e2d87083d19242c1c315.tar.gz";
   }) {
     inherit (pkgs) system;          # guarantee we build for the same platform
   };
