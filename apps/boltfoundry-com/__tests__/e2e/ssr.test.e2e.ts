@@ -5,6 +5,7 @@ import {
 } from "@bfmono/infra/testing/e2e/setup.ts";
 import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { setupBoltFoundryComTest } from "../helpers.ts";
+import { smoothClick } from "@bfmono/infra/testing/video-recording/smooth-ui.ts";
 
 const logger = getLogger(import.meta);
 
@@ -12,11 +13,20 @@ Deno.test("SSR landing page loads and hydrates correctly", async () => {
   const context = await setupBoltFoundryComTest();
 
   try {
+    // Start video recording with conversion to MP4
+    const stopRecording = await context.startVideoRecording(
+      "ssr-hydration-demo",
+      {
+        outputFormat: "mp4" as const,
+        framerate: 24,
+        quality: "medium" as const,
+      },
+    );
+
     // Navigate to the home page
     await navigateTo(context, "/");
 
-    // Take screenshot after initial page load
-    await context.takeScreenshot("ssr-landing-page-initial");
+    // Remove manual screenshot - let video recording capture naturally
 
     // Wait for content to ensure page loaded
     const title = await context.page.title();
@@ -116,13 +126,76 @@ Deno.test("SSR landing page loads and hydrates correctly", async () => {
     // Test that the page is interactive (hydration worked)
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Give time for hydration
 
-    // Take screenshot after hydration
-    await context.takeScreenshot("ssr-landing-page-hydrated");
+    // Check if the counter is present and has initial value
+    const counterText = await context.page.evaluate(() => {
+      // Look for the specific paragraph containing "Counter:"
+      const paragraphs = Array.from(document.querySelectorAll("p"));
+      const counterParagraph = paragraphs.find((p) =>
+        p.textContent?.includes("Counter:")
+      );
+      return counterParagraph?.textContent;
+    });
+    logger.info(`Counter text found: "${counterText}"`);
+    assert(
+      counterText?.includes("Counter: 5"),
+      `Counter should start at 5 (server-rendered), but found: "${counterText}"`,
+    );
+
+    // Find and click the increment button using smooth UI
+    const incrementButton = await context.page.$("button");
+    assert(
+      incrementButton,
+      "Increment button should be visible",
+    );
+
+    // Click the button to test hydration and interactivity using smooth UI
+    await smoothClick(context, "button", { disabled: true });
+
+    // Wait a moment for React to update
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Verify the counter incremented (proving hydration worked)
+    const updatedCounterText = await context.page.evaluate(() => {
+      const paragraphs = Array.from(document.querySelectorAll("p"));
+      const counterParagraph = paragraphs.find((p) =>
+        p.textContent?.includes("Counter:")
+      );
+      return counterParagraph?.textContent;
+    });
+    assert(
+      updatedCounterText?.includes("Counter: 6"),
+      "Counter should increment to 6 after button click (hydration working)",
+    );
+
+    // Click again to further verify interactivity
+    await smoothClick(context, "button", { disabled: true });
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    const finalCounterText = await context.page.evaluate(() => {
+      const paragraphs = Array.from(document.querySelectorAll("p"));
+      const counterParagraph = paragraphs.find((p) =>
+        p.textContent?.includes("Counter:")
+      );
+      return counterParagraph?.textContent;
+    });
+    assert(
+      finalCounterText?.includes("Counter: 7"),
+      "Counter should increment to 7 after second click",
+    );
+
+    // Remove manual screenshot - let video recording capture naturally
 
     logger.info("SSR landing page test completed successfully");
+
+    // Stop video recording
+    const videoResult = await stopRecording();
+    if (videoResult) {
+      logger.info(`Video saved to: ${videoResult.videoPath}`);
+    } else {
+      logger.error("Video recording failed: No result returned");
+    }
   } catch (error) {
-    // Take screenshot on test failure
-    await context.takeScreenshot("ssr-landing-page-error");
+    // Remove manual screenshot on failure - video recording captures everything
     logger.error("SSR test failed:", error);
     throw error;
   } finally {
