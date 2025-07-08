@@ -15,6 +15,7 @@ import { BfDsCheckboxExample } from "../components/__examples__/BfDsCheckbox.exa
 import { BfDsRadioExample } from "../components/__examples__/BfDsRadio.example.tsx";
 import { BfDsToggleExample } from "../components/__examples__/BfDsToggle.example.tsx";
 import { BfDsCalloutExample } from "../components/__examples__/BfDsCallout.example.tsx";
+import { BfDsToastExample } from "../components/__examples__/BfDsToast.example.tsx";
 
 type ComponentSection = {
   id: string;
@@ -121,6 +122,13 @@ const componentSections: Array<ComponentSection> = [
     name: "Callout",
     description: "Notification system with variants and auto-dismiss",
     component: BfDsCalloutExample,
+    category: "Core",
+  },
+  {
+    id: "toast",
+    name: "Toast",
+    description: "Portal-based toast notifications in bottom-right corner",
+    component: BfDsToastExample,
     category: "Core",
   },
 ];
