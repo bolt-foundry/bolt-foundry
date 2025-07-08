@@ -116,6 +116,52 @@ export function BfDsButtonExample() {
           <BfDsButton overlay icon="burgerMenu" iconOnly />
         </div>
       </div>
+
+      <div>
+        <h3>Link Buttons</h3>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <BfDsButton href="https://example.com">
+            External Link (default _blank)
+          </BfDsButton>
+          <BfDsButton
+            href="https://github.com"
+            variant="outline"
+            icon="brand-github"
+          >
+            GitHub
+          </BfDsButton>
+          <BfDsButton href="/blog" variant="ghost" target="_self">
+            Internal Link (_self)
+          </BfDsButton>
+          <BfDsButton
+            href="mailto:hello@example.com"
+            variant="secondary"
+          >
+            Email
+          </BfDsButton>
+        </div>
+      </div>
+
+      <div>
+        <h3>Router Link Buttons (Future)</h3>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <BfDsButton link="/dashboard">Dashboard (Router Link)</BfDsButton>
+          <BfDsButton link="/settings" variant="outline" icon="settings">
+            Settings
+          </BfDsButton>
+          <BfDsButton link="/profile" variant="ghost">Profile</BfDsButton>
+        </div>
+        <p
+          style={{
+            fontSize: "0.875rem",
+            color: "var(--bfds-text-secondary)",
+            marginTop: "8px",
+          }}
+        >
+          Note: Router links currently render as regular anchor tags until React
+          Router integration is implemented.
+        </p>
+      </div>
     </div>
   );
 }
