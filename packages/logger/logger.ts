@@ -8,7 +8,6 @@ import log from "loglevel";
 //   stripAnsiCode,
 //   yellow,
 // } from "@std/fmt/colors";
-import logLevelPrefixPlugin from "loglevel-plugin-prefix";
 import { getConfigurationVariable } from "../get-configuration-var/get-configuration-var.ts";
 
 log.setDefaultLevel(log.levels.INFO);
@@ -103,50 +102,51 @@ function shouldEnableDebugForLogger(loggerName: string): boolean {
   });
 }
 
-if (!isBrowser()) {
+// Setup plugin for server-side logging (lazy-loaded to avoid bundling in browser)
+let pluginInitialized = false;
+
+async function initializeServerLogging() {
+  if (pluginInitialized || isBrowser()) return;
+
   const defaultLogLevelString = getConfigurationVariable("LOG_LEVEL") ?? "INFO";
   const defaultLogLevel =
     log.levels[defaultLogLevelString as keyof typeof log.levels];
   log.setDefaultLevel(defaultLogLevel);
-  logLevelPrefixPlugin.reg(log);
-  logLevelPrefixPlugin.apply(log, {
-    template: "%n%l:",
-    levelFormatter(level) {
-      if (globalLoggingDisabled) return "";
-      const LEVEL = level.toUpperCase();
-      return LEVEL;
-    },
-    nameFormatter(name) {
-      if (globalLoggingDisabled) return "";
-      const callerInfo = getCallerInfo();
-      return `↱ ${name || "global"}${callerInfo}\n`;
-    },
-  });
 
-  // logLevelPrefixPlugin.reg(log);
-  // logLevelPrefixPlugin.apply(log, {
-  //   template: "%l:",
-  //   levelFormatter(level) {
-  //     return level.toUpperCase();
-  //   },
-  //   nameFormatter(name) {
-  //     if (name === "github_annotations") return "";
-  //     return name ?? "";
-  //   },
-  //   // Use `_timestamp` so that Deno doesn't warn about unused variable
-  //   format(level, name, _timestamp, ...messages) {
-  //     if (name === "github_annotations" && level === "error") {
-  //       const msg = messages.join(" ");
-  //       return `::error::${msg}`;
-  //     }
-  //     return messages.join(" ");
-  //   },
-  // });
+  // Dynamically import the plugin to avoid bundling Node.js modules in browser builds
+  try {
+    const { default: logLevelPrefixPlugin } = await import(
+      "loglevel-plugin-prefix"
+    );
+    logLevelPrefixPlugin.reg(log);
+    logLevelPrefixPlugin.apply(log, {
+      template: "%n%l:",
+      levelFormatter(level) {
+        if (globalLoggingDisabled) return "";
+        const LEVEL = level.toUpperCase();
+        return LEVEL;
+      },
+      nameFormatter(name) {
+        if (globalLoggingDisabled) return "";
+        const callerInfo = getCallerInfo();
+        return `↱ ${name || "global"}${callerInfo}\n`;
+      },
+    });
+    pluginInitialized = true;
+  } catch {
+    // Fallback if plugin import fails
+    // Failed to load loglevel-plugin-prefix - fallback to standard logging
+  }
 }
 
 const loggerCache = new Map<string, Logger>();
 
 export function getLogger(importMeta: ImportMeta | string): Logger {
+  // Initialize server logging asynchronously (non-blocking)
+  initializeServerLogging().catch(() => {
+    // Server logging initialization failed - continuing with default logging
+  });
+
   let loggerName: string;
 
   if (typeof importMeta === "string") {
