@@ -1,1 +1,127 @@
 /* Minimal styles for aibff GUI */
+
+/* WorkflowTextArea container styling */
+.workflow-textarea-container {
+  padding: 1rem;
+}
+
+/* WorkflowPanel styling */
+.workflow-panel {
+  width: 400px;
+  height: 100vh;
+  background-color: #1a1b1c;
+  border-left: 1px solid #3a3b3c;
+  display: flex;
+  flex-direction: column;
+}
+
+.workflow-panel-save-section {
+  padding: 1rem;
+  border-top: 1px solid #3a3b3c;
+  background-color: #1a1b1c;
+}
+
+/* Chat loading and error containers */
+.chat-loading-container,
+.chat-error-container {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #141516;
+}
+
+.chat-error-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  text-align: center;
+}
+
+/* Message input styling */
+.message-input-container {
+  border-top: 1px solid #3a3b3c;
+  background-color: #1c1c1c;
+  padding: 1rem;
+}
+
+.message-input-form {
+  width: 100%;
+}
+
+.message-input-content {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+/* Grader editor styling */
+.grader-editor-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.grader-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #3a3b3c;
+}
+
+.grader-editor-title {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #fafaff;
+}
+
+.grader-editor-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.grader-editor-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.grader-editor-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* System prompt tab styling */
+.system-prompt-tab,
+.calibration-tab,
+.eval-tab {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.test-conversation-content {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.test-conversation-description {
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  color: #b8b8c0;
+}
+
+.test-conversation-ui {
+  flex: 1;
+  min-height: 0;
+}

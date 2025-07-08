@@ -416,6 +416,29 @@ function extractToolsFromMarkdown(markdown: string): Array<OpenAITool> {
   return tools;
 }
 
+// Helper function to check if a context value is meaningful
+function hasValue(value: unknown): boolean {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  if (typeof value === "string") {
+    return value.trim() !== "";
+  }
+  if (typeof value === "boolean") {
+    return true; // booleans are always meaningful
+  }
+  if (typeof value === "number") {
+    return !isNaN(value);
+  }
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  if (typeof value === "object") {
+    return Object.keys(value).length > 0;
+  }
+  return true; // for other types, assume they're meaningful
+}
+
 function renderDeck(
   deckFileSystemPath: string,
   context: Record<string, unknown>,
@@ -460,7 +483,9 @@ function renderDeck(
 
   // Add context Q&A pairs in the order they were defined in the deck
   for (const [key, definition] of Object.entries(extractedContext)) {
-    if (key in context && definition.assistantQuestion) {
+    if (
+      key in context && definition.assistantQuestion && hasValue(context[key])
+    ) {
       messages.push(
         { role: "assistant", content: definition.assistantQuestion },
         { role: "user", content: String(context[key]) },
@@ -528,8 +553,76 @@ function renderDeck(
   return request;
 }
 
+function renderDeckAsMarkdown(
+  deckFileSystemPath: string,
+  context: Record<string, unknown>,
+): string {
+  const openAiRequest = renderDeck(deckFileSystemPath, context, {});
+  return formatAsMarkdown(openAiRequest);
+}
+
+function formatAsMarkdown(request: OpenAICompletionRequest): string {
+  const lines: Array<string> = [];
+
+  // Add system message as main content
+  const systemMessage = request.messages.find((m) => m.role === "system");
+  if (systemMessage) {
+    lines.push(systemMessage.content);
+    lines.push("");
+  }
+
+  // Add context variables as conversation
+  const contextMessages = request.messages.filter((m) => m.role !== "system");
+  if (contextMessages.length > 0) {
+    lines.push("## Context Variables");
+    lines.push("");
+
+    for (let i = 0; i < contextMessages.length; i += 2) {
+      const assistantMsg = contextMessages[i];
+      const userMsg = contextMessages[i + 1];
+
+      if (assistantMsg && userMsg) {
+        lines.push(`**Assistant**: ${assistantMsg.content}`);
+        lines.push(`**User**: ${userMsg.content}`);
+        lines.push("");
+      }
+    }
+  }
+
+  // Add tools if present
+  if (request.tools && request.tools.length > 0) {
+    lines.push("## Tools");
+    lines.push("");
+
+    for (const tool of request.tools) {
+      lines.push(`### ${tool.function.name}`);
+      lines.push(`- **Description**: ${tool.function.description}`);
+
+      if (tool.function.parameters && tool.function.parameters.properties) {
+        lines.push(`- **Parameters**:`);
+        for (
+          const [paramName, paramDef] of Object.entries(
+            tool.function.parameters.properties,
+          )
+        ) {
+          const param = paramDef as Record<string, unknown>;
+          const description = param.description
+            ? ` - ${param.description}`
+            : "";
+          const type = param.type ? ` (${param.type})` : "";
+          lines.push(`  - \`${paramName}\`${type}${description}`);
+        }
+      }
+
+      lines.push("");
+    }
+  }
+
+  return lines.join("\n").trim();
+}
+
 // Export functions and types for use by other modules
-export { processMarkdownIncludes, renderDeck };
+export { processMarkdownIncludes, renderDeck, renderDeckAsMarkdown };
 export type { ProcessedMarkdown, Sample };
 
 export const renderCommand: Command = {
@@ -537,11 +630,31 @@ export const renderCommand: Command = {
   description: "Render a deck file to see the generated prompt structure",
   run: async (args: Array<string>) => {
     if (args.length === 0) {
-      ui.printLn("Usage: aibff render <deck.md>");
+      ui.printLn("Usage: aibff render <deck.md> [--format=json|markdown]");
       Deno.exit(1);
     }
 
-    const deckPath = args[0];
+    // Parse arguments
+    let deckPath = "";
+    let format = "json"; // Default format
+
+    for (const arg of args) {
+      if (arg.startsWith("--format=")) {
+        const formatValue = arg.slice(9);
+        if (formatValue !== "json" && formatValue !== "markdown") {
+          ui.printErr("Error: --format must be either 'json' or 'markdown'");
+          Deno.exit(1);
+        }
+        format = formatValue;
+      } else if (!deckPath) {
+        deckPath = arg;
+      }
+    }
+
+    if (!deckPath) {
+      ui.printErr("Error: No deck file specified");
+      Deno.exit(1);
+    }
 
     try {
       const deckContent = await Deno.readTextFile(deckPath);
@@ -569,9 +682,13 @@ export const renderCommand: Command = {
       }
 
       // Render the deck with context injection
-      const openAiRequest = renderDeck(deckPath, contextValues, {});
-
-      ui.printLn(JSON.stringify(openAiRequest, null, 2));
+      if (format === "markdown") {
+        const markdownOutput = renderDeckAsMarkdown(deckPath, contextValues);
+        ui.printLn(markdownOutput);
+      } else {
+        const openAiRequest = renderDeck(deckPath, contextValues, {});
+        ui.printLn(JSON.stringify(openAiRequest, null, 2));
+      }
     } catch (error) {
       if (error instanceof Deno.errors.NotFound) {
         ui.printErr(`Error: File not found: ${deckPath}`);

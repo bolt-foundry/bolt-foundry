@@ -11,7 +11,7 @@ import { setupAibffGuiTest } from "./helpers.ts";
 
 const logger = getLogger(import.meta);
 
-Deno.test.ignore(
+Deno.test(
   "aibff GUI loads successfully with routing and Isograph",
   async () => {
     const context = await setupAibffGuiTest();
