@@ -42,12 +42,21 @@ async function startServer(server: ServerConfig): Promise<string> {
   logger.info(`Starting ${server.name} server on port ${port}...`);
 
   // Start the server process
-  const command = new Deno.Command("deno", {
-    args: ["run", "-A", server.serverPath, "--port", port.toString()],
-    env: { ...Deno.env.toObject(), ...server.env },
-    stdout: "piped",
-    stderr: "piped",
-  });
+  const isBinary = !server.serverPath.endsWith(".ts") &&
+    !server.serverPath.endsWith(".tsx");
+  const command = isBinary
+    ? new Deno.Command(server.serverPath, {
+      args: ["--port", port.toString()],
+      env: { ...Deno.env.toObject(), ...server.env },
+      stdout: "piped",
+      stderr: "piped",
+    })
+    : new Deno.Command("deno", {
+      args: ["run", "-A", server.serverPath, "--port", port.toString()],
+      env: { ...Deno.env.toObject(), ...server.env },
+      stdout: "piped",
+      stderr: "piped",
+    });
 
   const process = command.spawn();
   runningServers.set(server.name, process);
@@ -182,6 +191,31 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
         );
       }
       logger.info("✅ Build completed successfully");
+
+      // Check if any required servers need their binaries compiled
+      for (const server of requiredServers) {
+        if (
+          !server.serverPath.endsWith(".ts") &&
+          !server.serverPath.endsWith(".tsx")
+        ) {
+          try {
+            await Deno.stat(server.serverPath);
+          } catch {
+            // Binary doesn't exist, need to compile it
+            logger.info(`🔨 Compiling ${server.name} binary...`);
+            if (server.name === "aibff-gui") {
+              const compileResult = await runShellCommand([
+                "bft",
+                "compile",
+                "aibff-gui",
+              ]);
+              if (compileResult !== 0) {
+                throw new Error(`Failed to compile ${server.name} binary`);
+              }
+            }
+          }
+        }
+      }
 
       // Start all required servers
       for (const server of requiredServers) {
