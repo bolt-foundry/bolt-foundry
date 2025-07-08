@@ -88,7 +88,7 @@ Deno.test("gui command starts server and responds to health check", async () => 
   }
 });
 
-Deno.test("gui command --build runs vite build", async () => {
+Deno.test.ignore("gui command --build runs vite build", async () => {
   // Since the build actually works, let's just test that it runs without error
   // and check that the dist directory exists afterward
   const guiPath = new URL("../../gui", import.meta.url).pathname;

@@ -1,0 +1,8 @@
+{
+  "schema": "./schema.graphql",
+  "project_root": ".",
+  "artifact_directory": "./__generated__",
+  "options": {
+    "include_file_extensions_in_import_statements": true
+  }
+}

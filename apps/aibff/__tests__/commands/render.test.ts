@@ -184,3 +184,122 @@ A simple test deck for rendering.`;
     await Deno.remove(tempDir, { recursive: true });
   }
 });
+
+Deno.test("render command - renders deck as markdown", async () => {
+  let output = "";
+  // deno-lint-ignore no-console
+  const originalPrintln = console.log;
+
+  // Mock console.log to capture output
+  // deno-lint-ignore no-console
+  console.log = (msg: string) => {
+    output += msg + "\n";
+  };
+
+  // Create a temporary test deck file
+  const tempDir = await Deno.makeTempDir();
+  const deckPath = join(tempDir, "test.deck.md");
+  const deckContent = `# Test Deck
+
+A simple test deck for rendering.
+
+## Test Section
+
+This is a test specification.`;
+
+  await Deno.writeTextFile(deckPath, deckContent);
+
+  try {
+    await renderCommand.run([deckPath, "--format=markdown"]);
+  } finally {
+    // Restore original function
+    // deno-lint-ignore no-console
+    console.log = originalPrintln;
+
+    // Clean up
+    await Deno.remove(tempDir, { recursive: true });
+  }
+
+  // Check that output is markdown format
+  assertStringIncludes(output, "# Test Deck");
+  assertStringIncludes(output, "A simple test deck for rendering.");
+  assertStringIncludes(output, "## Test Section");
+  // Should not contain JSON formatting
+  assertEquals(output.includes('"messages"'), false);
+  assertEquals(output.includes('"role"'), false);
+});
+
+Deno.test("render command - validates format parameter", async () => {
+  let errorOutput = "";
+  // deno-lint-ignore no-console
+  const originalPrintErr = console.error;
+  const originalExit = Deno.exit;
+
+  // Mock console.error to capture output
+  // deno-lint-ignore no-console
+  console.error = (msg: string) => {
+    errorOutput += msg + "\n";
+  };
+
+  // Mock Deno.exit
+  let exitCode: number | undefined;
+  // deno-lint-ignore no-explicit-any
+  (Deno as any).exit = (code: number) => {
+    exitCode = code;
+    throw new Error("exit");
+  };
+
+  try {
+    await renderCommand.run(["test.md", "--format=invalid"]);
+  } catch (e) {
+    if (e instanceof Error && e.message !== "exit") throw e;
+  }
+
+  // Restore original functions
+  // deno-lint-ignore no-console
+  console.error = originalPrintErr;
+  Deno.exit = originalExit;
+
+  assertStringIncludes(
+    errorOutput,
+    "Error: --format must be either 'json' or 'markdown'",
+  );
+  assertEquals(exitCode, 1);
+});
+
+Deno.test("render command - defaults to json format", async () => {
+  let output = "";
+  // deno-lint-ignore no-console
+  const originalPrintln = console.log;
+
+  // Mock console.log to capture output
+  // deno-lint-ignore no-console
+  console.log = (msg: string) => {
+    output += msg + "\n";
+  };
+
+  // Create a temporary test deck file
+  const tempDir = await Deno.makeTempDir();
+  const deckPath = join(tempDir, "test.deck.md");
+  const deckContent = `# Test Deck
+
+A simple test deck for rendering.`;
+
+  await Deno.writeTextFile(deckPath, deckContent);
+
+  try {
+    await renderCommand.run([deckPath]); // No format specified
+  } finally {
+    // Restore original function
+    // deno-lint-ignore no-console
+    console.log = originalPrintln;
+
+    // Clean up
+    await Deno.remove(tempDir, { recursive: true });
+  }
+
+  // Should output JSON by default
+  const parsed = JSON.parse(output);
+  assertEquals(typeof parsed, "object");
+  assertEquals(Array.isArray(parsed.messages), true);
+});
