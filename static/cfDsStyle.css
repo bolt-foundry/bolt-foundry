@@ -37,8 +37,7 @@ hr {
   color: var(--alwaysLight);
 }
 
-a,
-a:visited {
+a {
   color: var(--secondaryColor);
   text-decoration: none;
   cursor: pointer;
