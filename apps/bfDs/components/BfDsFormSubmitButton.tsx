@@ -16,9 +16,11 @@ export function BfDsFormSubmitButton({
   children,
   ...props
 }: BfDsFormSubmitButtonProps) {
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+  ) => {
     // Call custom onClick first if provided
-    onClick?.(e);
+    onClick?.(e as React.MouseEvent<HTMLButtonElement>);
 
     // Let the form handle submission if we're in form context
     // The form's onSubmit will be called automatically by the form element

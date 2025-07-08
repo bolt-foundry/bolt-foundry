@@ -18,11 +18,11 @@ export type BfDsButtonProps = {
   /** Disables button interaction */
   disabled?: boolean;
   /** Click event handler */
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+  ) => void;
   /** Additional CSS classes */
   className?: string;
-  /** URL to navigate to (for future link support) */
-  href?: string;
   /** Icon name or custom icon element */
   icon?: BfDsIconName | React.ReactNode;
   /** Position of icon relative to text */
@@ -31,6 +31,12 @@ export type BfDsButtonProps = {
   iconOnly?: boolean;
   /** When true, applies overlay styling, shows original variant on hover */
   overlay?: boolean;
+  /** URL to navigate to (renders as anchor tag) */
+  href?: string;
+  /** Target attribute for links (defaults to _blank when href is provided) */
+  target?: "_blank" | "_self" | "_parent" | "_top" | string;
+  /** React Router link path (not implemented yet, falls back to anchor tag) */
+  link?: string;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function BfDsButton({
@@ -45,9 +51,14 @@ export function BfDsButton({
   iconPosition = "left",
   iconOnly = false,
   overlay = false,
+  href,
+  target = "_blank",
+  link,
   ...props
 }: BfDsButtonProps) {
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+  ) => {
     if (disabled) return;
     onClick?.(e);
     // TODO: href navigation will be implemented later
@@ -78,9 +89,40 @@ export function BfDsButton({
     )
     : null;
 
+  // TODO: Change to React Router Link component when implemented
+  if (link) {
+    return (
+      <a
+        href={link}
+        className={classes}
+        onClick={handleClick}
+        target="_self"
+      >
+        {iconPosition === "left" && iconElement}
+        {!iconOnly && children}
+        {iconPosition === "right" && iconElement}
+      </a>
+    );
+  }
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        className={classes}
+        onClick={handleClick}
+        target={target}
+      >
+        {iconPosition === "left" && iconElement}
+        {!iconOnly && children}
+        {iconPosition === "right" && iconElement}
+      </a>
+    );
+  }
+
   return (
     <button
-      {...props}
+      {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
       className={classes}
       disabled={disabled}
       onClick={handleClick}
