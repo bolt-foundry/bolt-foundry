@@ -1532,3 +1532,59 @@
 .bfds-toggle--large.bfds-toggle--checked .bfds-toggle-thumb {
   transform: translateX(24px);
 }
+
+/* Toast Styles */
+.bfds-toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  max-width: 400px;
+  width: 100%;
+}
+
+.bfds-toast {
+  pointer-events: auto;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+.bfds-toast--visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.bfds-toast--hidden {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* Toast callout styling adjustments */
+.bfds-toast .bfds-callout {
+  margin: 0;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  min-width: 320px;
+  max-width: 400px;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 480px) {
+  .bfds-toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+  }
+  
+  .bfds-toast .bfds-callout {
+    min-width: auto;
+    max-width: none;
+  }
+}
