@@ -329,4 +329,25 @@ export const bftDefinition = {
     "Sapling proxy with enhanced commit and amend (smart validation)",
   fn: slCommand,
   aiSafe: isSlCommandSafe,
+  helpText: `Usage: bft sl <subcommand> [arguments...]
+
+Sapling proxy with enhanced commit and amend functionality.
+
+Enhanced commands:
+  commit      Create commit with smart validation
+              Usage: bft sl commit -m "message" [--skip-precommit] [--no-submit] [files...]
+  amend       Amend commit with smart validation
+              Usage: bft sl amend [--skip-precommit] [args...]
+
+All other Sapling commands are passed through unchanged.
+
+Examples:
+  bft sl status                              # Show repository status
+  bft sl commit -m "Add feature"             # Create commit with validation
+  bft sl commit -m "Fix bug" --skip-precommit # Skip pre-commit validation
+  bft sl amend                               # Amend last commit with validation
+  bft sl diff                                # Show changes
+  bft sl log                                 # Show commit history
+
+For help on standard Sapling commands, use: bft sl <command> --help`,
 } satisfies TaskDefinition;
