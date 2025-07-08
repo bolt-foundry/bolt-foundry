@@ -92,6 +92,16 @@ as part of the 2025-06-25 design system migration.
   - **Accessibility**: ARIA attributes, keyboard navigation, semantic HTML
   - **Multiple states**: disabled, required, checked/unchecked variants
   - **TypeScript-first**: Strong typing with proper prop interfaces
+- [x] **BfDsCallout** and **BfDsToast** notification system with:
+  - **BfDsCallout**: Versatile notification component with 4 semantic variants
+  - **BfDsToast**: Portal-based toast notifications with animation support
+  - **BfDsToastProvider**: React context provider for global toast management
+  - **Auto-dismiss functionality**: Configurable timeout with countdown display
+  - **Expandable details**: JSON data and complex information display
+  - **Animation system**: Smooth entrance/exit transitions with CSS transforms
+  - **Portal rendering**: Toasts render in dedicated DOM portal for proper
+    stacking
+  - **Complete alert() replacement**: Modern UX replacing browser alert dialogs
 - [x] CSS variables system for theming with additional form states (error,
       success, focus)
 - [x] Separate example files pattern (`Component.example.tsx`)
@@ -118,7 +128,7 @@ as part of the 2025-06-25 design system migration.
   - [x] ~~Radio~~ ✅ **Completed** (BfDsRadio with flexible layouts)
   - [x] ~~Toggle~~ ✅ **Completed** (BfDsToggle with smooth animations)
   - [x] ~~Toast/Notification~~ ✅ **Completed** (BfDsCallout with variants and
-        auto-dismiss)
+        auto-dismiss, plus BfDsToast system with portal rendering)
   - [ ] Modal
 - [x] **Enhanced List components**:
   - [x] ~~Expandable/collapsible list sections~~ ✅ **Completed** (BfDsListItem
@@ -166,6 +176,8 @@ apps/bfDs/
 │   ├── BfDsRadio.tsx (flexible layouts)
 │   ├── BfDsToggle.tsx (animations)
 │   ├── BfDsCallout.tsx (notification variants)
+│   ├── BfDsToast.tsx (portal-based toast notifications)
+│   ├── BfDsToastProvider.tsx (toast context provider)
 │   └── __examples__/
 │       ├── BfDsButton.example.tsx
 │       ├── BfDsIcon.example.tsx
@@ -180,7 +192,8 @@ apps/bfDs/
 │       ├── BfDsCheckbox.example.tsx
 │       ├── BfDsRadio.example.tsx
 │       ├── BfDsToggle.example.tsx
-│       └── BfDsCallout.example.tsx
+│       ├── BfDsCallout.example.tsx
+│       └── BfDsToast.example.tsx
 ├── lib/
 │   └── icons.ts (80+ icon definitions)
 ├── demo/
