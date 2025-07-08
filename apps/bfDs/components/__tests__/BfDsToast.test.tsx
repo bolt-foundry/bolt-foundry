@@ -22,30 +22,35 @@ function TestToastComponent() {
   return (
     <div>
       <button
+        type="button"
         data-testid="show-info-toast"
         onClick={() => showToast("Info message")}
       >
         Show Info Toast
       </button>
       <button
+        type="button"
         data-testid="show-success-toast"
         onClick={() => showToast("Success message", { variant: "success" })}
       >
         Show Success Toast
       </button>
       <button
+        type="button"
         data-testid="show-warning-toast"
         onClick={() => showToast("Warning message", { variant: "warning" })}
       >
         Show Warning Toast
       </button>
       <button
+        type="button"
         data-testid="show-error-toast"
         onClick={() => showToast("Error message", { variant: "error" })}
       >
         Show Error Toast
       </button>
       <button
+        type="button"
         data-testid="show-custom-toast"
         onClick={() =>
           showToast("Custom message", {
@@ -57,12 +62,14 @@ function TestToastComponent() {
         Show Custom Toast
       </button>
       <button
+        type="button"
         data-testid="hide-toast"
         onClick={() => hideToast("custom-toast")}
       >
         Hide Toast
       </button>
       <button
+        type="button"
         data-testid="clear-all-toasts"
         onClick={() => clearAllToasts()}
       >
@@ -260,7 +267,7 @@ Deno.test("BfDsToastProvider can hide specific toast", () => {
   });
 
   // Verify toast exists
-  let toast = doc?.querySelector(".bfds-toast");
+  const toast = doc?.querySelector(".bfds-toast");
   assertExists(toast, "Toast should exist after showing");
 
   // Hide specific toast
@@ -370,7 +377,7 @@ Deno.test("useBfDsToast throws error outside provider", () => {
 
   try {
     const TestComponent = () => {
-      const { showToast } = useBfDsToast();
+      const { showToast: _showToast } = useBfDsToast();
       return <div>Test</div>;
     };
 

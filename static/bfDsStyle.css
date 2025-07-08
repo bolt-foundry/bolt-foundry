@@ -40,6 +40,23 @@
   
   --bfds-focus: #3b82f6;
   --bfds-focus-outline: rgba(59, 130, 246, 0.3);
+
+  /* Callout variant colors */
+  --bfds-callout-info-bg: #1a1f2e;
+  --bfds-callout-info-border: #2d3748;
+  --bfds-callout-info-text: #93c5fd;
+
+  --bfds-callout-success-bg: #1a2320;
+  --bfds-callout-success-border: #2d4a32;
+  --bfds-callout-success-text: #86efac;
+
+  --bfds-callout-warning-bg: #2a1f1a;
+  --bfds-callout-warning-border: #4a3728;
+  --bfds-callout-warning-text: #fcd34d;
+
+  --bfds-callout-error-bg: #2a1a1a;
+  --bfds-callout-error-border: #4a2d2d;
+  --bfds-callout-error-text: #fca5a5;
 }
 
 /* List */
@@ -1390,6 +1407,21 @@
   }
 }
 
+@keyframes bfds-callout-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.bfds-callout--animating-out {
+  animation: bfds-callout-fade-out 0.3s ease-in-out forwards;
+}
+
 .bfds-callout-header {
   display: flex;
   align-items: flex-start;
@@ -1435,16 +1467,64 @@
   border: none;
   color: inherit;
   cursor: pointer;
-  padding: 6px;
-  margin: -6px;
+  padding: 10px;
+  margin: -10px;
   border-radius: 4px;
   opacity: 0.6;
   flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  min-height: 36px;
 }
 
 .bfds-callout-dismiss:hover {
   opacity: 1;
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.bfds-callout-countdown {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.bfds-callout-countdown-ring {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+}
+
+.bfds-callout-countdown-track {
+  opacity: 0.2;
+}
+
+.bfds-callout-countdown-progress {
+  transition: stroke-dashoffset 0.1s ease-out;
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+
+.bfds-callout-countdown-ring--paused .bfds-callout-countdown-progress {
+  opacity: 0.7;
+  animation: bfds-countdown-paused-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes bfds-countdown-paused-pulse {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 0.4;
+  }
 }
 
 .bfds-callout-details {
@@ -1467,27 +1547,27 @@
 /* Callout variants */
 
 .bfds-callout--info {
-  background-color: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: #93c5fd;
+  background-color: var(--bfds-callout-info-bg);
+  border-color: var(--bfds-callout-info-border);
+  color: var(--bfds-callout-info-text);
 }
 
 .bfds-callout--success {
-  background-color: rgba(34, 197, 94, 0.1);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: #86efac;
+  background-color: var(--bfds-callout-success-bg);
+  border-color: var(--bfds-callout-success-border);
+  color: var(--bfds-callout-success-text);
 }
 
 .bfds-callout--warning {
-  background-color: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: #fcd34d;
+  background-color: var(--bfds-callout-warning-bg);
+  border-color: var(--bfds-callout-warning-border);
+  color: var(--bfds-callout-warning-text);
 }
 
 .bfds-callout--error {
-  background-color: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
+  background-color: var(--bfds-callout-error-bg);
+  border-color: var(--bfds-callout-error-border);
+  color: var(--bfds-callout-error-text);
 }
 
 /* Toggle sizes */

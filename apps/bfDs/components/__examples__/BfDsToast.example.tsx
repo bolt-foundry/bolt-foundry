@@ -1,6 +1,8 @@
-import type * as React from "react";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { BfDsButton } from "../BfDsButton.tsx";
 import { BfDsToastProvider, useBfDsToast } from "../BfDsToastProvider.tsx";
+
+const logger = getLogger(import.meta);
 
 function ToastDemoContent() {
   const { showToast, clearAllToasts } = useBfDsToast();
@@ -56,7 +58,7 @@ function ToastDemoContent() {
           variant="primary"
           onClick={() =>
             showToast(
-              "This toast will disappear in 10 seconds",
+              "This toast will disappear in 10 seconds - watch the countdown! Hover to pause.",
               { timeout: 10000, variant: "info" },
             )}
         >
@@ -95,6 +97,17 @@ function ToastDemoContent() {
         >
           With Details
         </BfDsButton>
+
+        <BfDsButton
+          variant="ghost"
+          onClick={() =>
+            showToast(
+              "Quick countdown demo - 3 seconds!",
+              { timeout: 3000, variant: "warning" },
+            )}
+        >
+          Quick Countdown (3s)
+        </BfDsButton>
       </div>
 
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
@@ -128,7 +141,7 @@ function ToastDemoContent() {
               variant: "info",
               id: "persistent-toast",
             });
-            console.log("Created toast with ID:", id);
+            logger.info("Created toast with ID:", id);
           }}
         >
           Custom ID Toast
@@ -141,7 +154,7 @@ function ToastDemoContent() {
               "Toast with callback",
               {
                 variant: "success",
-                onDismiss: () => console.log("Toast was dismissed!"),
+                onDismiss: () => logger.info("Toast was dismissed!"),
               },
             )}
         >
@@ -167,6 +180,13 @@ function ToastDemoContent() {
           <li>Toasts auto-dismiss after 5 seconds by default</li>
           <li>Use details prop for expandable JSON/text content</li>
           <li>Set timeout to 0 to disable auto-dismiss</li>
+          <li>
+            Countdown ring appears around close button showing remaining time
+          </li>
+          <li>
+            Hover over a toast to pause the countdown (ring will pulse when
+            paused)
+          </li>
         </ul>
       </div>
     </div>

@@ -51,7 +51,7 @@ export function BfDsToastProvider({ children }: React.PropsWithChildren) {
       message,
       variant: options.variant || "info",
       details: options.details,
-      timeout: options.timeout || 5000, // Default 5 second timeout
+      timeout: options.timeout !== undefined ? options.timeout : 5000, // Default 5 second timeout, but allow 0
       onDismiss: options.onDismiss,
     };
 
