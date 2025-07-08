@@ -8,8 +8,12 @@
   "compilerOptions": {
     "lib": ["ES2022", "DOM", "DOM.Iterable", "deno.ns"],
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
-    "jsxImportSourceTypes": "@types/react"
+    "jsxImportSource": "npm:react",
+    "jsxImportSourceTypes": "npm:@types/react@^19"
   },
-  "imports": {}
+  "imports": {
+    "react": "npm:react@^19.1.0",
+    "react-dom": "npm:react-dom@^19.1.0",
+    "react/jsx-runtime": "npm:react/jsx-runtime"
+  }
 }
