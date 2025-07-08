@@ -12,38 +12,43 @@ async function compile(args: Array<string>): Promise<number> {
 Compile applications to single executable binaries.
 
 Available apps:
-  boltfoundry.com    Bolt Foundry landing page
+  boltfoundry-com    Bolt Foundry landing page
+  aibff-gui          aibff GUI application
 
 Examples:
-  bft compile boltfoundry.com           # Compile boltfoundry.com to binary
-  bft compile boltfoundry.com --help    # Show app-specific help`);
+  bft compile boltfoundry-com           # Compile boltfoundry-com to binary
+  bft compile aibff-gui                 # Compile aibff GUI to binary
+  bft compile boltfoundry-com --help    # Show app-specific help`);
     return 0;
   }
 
   if (args.length === 0) {
     ui.error("Usage: bft compile <app-name>");
     ui.output("Available apps:");
-    ui.output("  boltfoundry.com    Bolt Foundry landing page");
+    ui.output("  boltfoundry-com    Bolt Foundry landing page");
+    ui.output("  aibff-gui          aibff GUI application");
     return 1;
   }
 
   const appName = args[0];
   const compileArgs = args.slice(1);
 
-  if (appName !== "boltfoundry.com") {
+  if (appName !== "boltfoundry-com" && appName !== "aibff-gui") {
     ui.error(`Unknown app: ${appName}`);
     ui.output("Available apps:");
-    ui.output("  boltfoundry.com    Bolt Foundry landing page");
+    ui.output("  boltfoundry-com    Bolt Foundry landing page");
+    ui.output("  aibff-gui          aibff GUI application");
     return 1;
   }
 
-  // Handle boltfoundry.com compilation
+  // Parse flags
   const flags = parseArgs(compileArgs, {
     boolean: ["help"],
   });
 
   if (flags.help) {
-    ui.output(`Usage: bft compile boltfoundry.com
+    if (appName === "boltfoundry-com") {
+      ui.output(`Usage: bft compile boltfoundry-com
 
 Compile Bolt Foundry landing page to single executable binary.
 This will build frontend assets and compile the server into a standalone binary.
@@ -51,13 +56,35 @@ This will build frontend assets and compile the server into a standalone binary.
 The binary will be output to: ./build/boltfoundry-com
 
 Examples:
-  bft compile boltfoundry.com    # Build assets and compile to binary`);
+  bft compile boltfoundry-com    # Build assets and compile to binary`);
+    } else if (appName === "aibff-gui") {
+      ui.output(`Usage: bft compile aibff-gui
+
+Compile aibff GUI application to single executable binary.
+This will compile the aibff GUI server into a standalone binary.
+
+The binary will be output to: ./build/aibff-gui
+
+Examples:
+  bft compile aibff-gui          # Compile aibff GUI to binary`);
+    }
     return 0;
   }
 
-  const appPath =
-    new URL(import.meta.resolve("../../../apps/boltFoundry.com")).pathname;
   const buildDir = new URL(import.meta.resolve("../../../build")).pathname;
+
+  if (appName === "boltfoundry-com") {
+    return await compileBoltFoundryCom(buildDir);
+  } else if (appName === "aibff-gui") {
+    return await compileAibffGui(buildDir);
+  }
+
+  return 1;
+}
+
+async function compileBoltFoundryCom(buildDir: string): Promise<number> {
+  const appPath =
+    new URL(import.meta.resolve("../../../apps/boltfoundry-com")).pathname;
 
   // Ensure build directory exists
   try {
@@ -89,7 +116,7 @@ Examples:
 
     // Run the build command
     const buildCommand = new Deno.Command("bft", {
-      args: ["app", "boltfoundry.com", "--build"],
+      args: ["app", "boltfoundry-com", "--build"],
       stdout: "inherit",
       stderr: "inherit",
     });
@@ -105,7 +132,92 @@ Examples:
   ui.output("Compiling server to single binary...");
 
   const binaryPath = `${buildDir}/boltfoundry-com`;
-  const serverPath = `${appPath}/server.ts`;
+  const serverPath = `${appPath}/server.tsx`;
+
+  const compileCommand = new Deno.Command("deno", {
+    args: [
+      "compile",
+      "--allow-all",
+      "--include",
+      "dist",
+      "--output",
+      binaryPath,
+      serverPath,
+    ],
+    cwd: appPath,
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+
+  const compileResult = compileCommand.outputSync();
+
+  if (!compileResult.success) {
+    ui.error("Binary compilation failed");
+    return 1;
+  }
+
+  ui.output(`✅ Successfully compiled to: ${binaryPath}`);
+  ui.output("");
+  ui.output("To run the binary:");
+  ui.output(`  ${binaryPath}`);
+  ui.output(`  ${binaryPath} --help`);
+  ui.output(`  ${binaryPath} --port 4000`);
+
+  return 0;
+}
+
+async function compileAibffGui(buildDir: string): Promise<number> {
+  const appPath =
+    new URL(import.meta.resolve("../../../apps/aibff/gui")).pathname;
+
+  // Ensure build directory exists
+  try {
+    await Deno.mkdir(buildDir, { recursive: true });
+  } catch (error) {
+    if (!(error instanceof Deno.errors.AlreadyExists)) {
+      ui.error(
+        `Failed to create build directory: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+      return 1;
+    }
+  }
+
+  // Run build process to ensure latest code is compiled
+  ui.output("Building aibff GUI dependencies...");
+  const buildCommand = new Deno.Command("bft", {
+    args: ["build"],
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+
+  const buildResult = buildCommand.outputSync();
+  if (!buildResult.success) {
+    ui.error("Build failed");
+    return 1;
+  }
+
+  // Build the frontend assets
+  ui.output("Building aibff GUI frontend assets...");
+  const frontendBuildCommand = new Deno.Command("deno", {
+    args: ["task", "build"],
+    cwd: appPath,
+    stdout: "inherit",
+    stderr: "inherit",
+  });
+
+  const frontendBuildResult = frontendBuildCommand.outputSync();
+  if (!frontendBuildResult.success) {
+    ui.error("Frontend build failed");
+    return 1;
+  }
+
+  // Compile the GUI server to binary
+  ui.output("Compiling aibff GUI server to single binary...");
+
+  const binaryPath = `${buildDir}/aibff-gui`;
+  const serverPath = `${appPath}/guiServer.ts`;
 
   const compileCommand = new Deno.Command("deno", {
     args: [

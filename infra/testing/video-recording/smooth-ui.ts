@@ -49,6 +49,101 @@ async function maybeScreenshot(
   }
 }
 
+// Add recording throbber to keep screencast active during pauses
+export async function addRecordingThrobber(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    if (document.getElementById("recording-throbber")) {
+      // Recording throbber already exists
+      return; // Already exists
+    }
+
+    // Creating recording throbber
+
+    const throbber = document.createElement("div");
+    throbber.id = "recording-throbber";
+    throbber.style.cssText = `
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      background: #ff0000;
+      border-radius: 50%;
+      z-index: 2147483647;
+      animation: recording-pulse 1s infinite;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    `;
+
+    const style = document.createElement("style");
+    style.textContent = `
+      @keyframes recording-pulse {
+        0% {
+          opacity: 0;
+        }
+        50% {
+          opacity: 0.01;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+    document.body.appendChild(throbber);
+
+    // Function to attach throbber to cursor
+    function attachThrobberToCursor() {
+      const cursor = document.getElementById("e2e-cursor-overlay");
+      const throbber = document.getElementById("recording-throbber");
+
+      if (cursor && throbber) {
+        const cursorRect = cursor.getBoundingClientRect();
+        throbber.style.left = cursorRect.left + cursorRect.width / 2 + "px";
+        throbber.style.top = cursorRect.top + cursorRect.height / 2 + "px";
+      }
+    }
+
+    // Attach throbber to cursor position initially
+    attachThrobberToCursor();
+
+    // Update throbber position when cursor moves
+    const updateThrobberPosition = () => {
+      attachThrobberToCursor();
+    };
+
+    // Listen for mouse movement to update throbber position
+    document.addEventListener("mousemove", updateThrobberPosition);
+
+    // Also update position periodically in case cursor moves programmatically
+    const positionInterval = setInterval(updateThrobberPosition, 100);
+
+    // Store cleanup function globally
+    (globalThis as unknown as { __cleanupRecordingThrobber?: () => void })
+      .__cleanupRecordingThrobber = () => {
+        document.removeEventListener("mousemove", updateThrobberPosition);
+        clearInterval(positionInterval);
+      };
+
+    // Recording throbber created and attached to cursor
+  });
+}
+
+export async function removeRecordingThrobber(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    // Clean up event listeners and intervals
+    const global = globalThis as unknown as {
+      __cleanupRecordingThrobber?: () => void;
+    };
+    if (global.__cleanupRecordingThrobber) {
+      global.__cleanupRecordingThrobber();
+      delete global.__cleanupRecordingThrobber;
+    }
+
+    const throbber = document.getElementById("recording-throbber");
+    if (throbber) throbber.remove();
+  });
+}
+
 export async function smoothClick(
   context: SmoothUIContext | Page,
   selector: string,
@@ -79,8 +174,8 @@ export async function smoothClick(
 
     await smoothMoveTo(page, centerX, centerY);
 
-    // Brief pause to let hover state settle and be visible
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Pause after movement to let hover state settle
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     // Show click animation
     try {
@@ -89,15 +184,23 @@ export async function smoothClick(
       // Cursor overlay might not be available
     }
 
+    // Brief pause before actual click for visual feedback
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
     await page.mouse.click(centerX, centerY);
+
+    // Pause after click to show the click effect
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     // Reset cursor style after click
     try {
-      await new Promise((resolve) => setTimeout(resolve, 200));
       await setCursorStyle(page, "default");
     } catch {
       // Cursor overlay might not be available
     }
+
+    // Final pause to let UI state settle after click
+    await new Promise((resolve) => setTimeout(resolve, 200));
   } else {
     // Fast mode: direct click without animations
     await element.click();
@@ -135,7 +238,7 @@ export async function smoothType(
   if (clickFirst) {
     await smoothClick(context, selector, { disabled: true }); // Don't double-screenshot
     if (smoothEnabled) {
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
   }
 

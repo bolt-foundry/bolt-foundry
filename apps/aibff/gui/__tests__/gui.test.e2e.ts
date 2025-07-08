@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno test -A
+#!/usr/bin/env bft e2e
 
 import { assert, assertEquals } from "@std/assert";
 import { delay } from "@std/async";
@@ -7,9 +7,155 @@ import {
   navigateTo,
   teardownE2ETest,
 } from "@bfmono/infra/testing/e2e/setup.ts";
+import type { VideoConversionOptions as _VideoConversionOptions } from "@bfmono/infra/testing/video-recording/video-converter.ts";
 import { setupAibffGuiTest } from "./helpers.ts";
+import {
+  type smoothClick as _smoothClick,
+  smoothClickText,
+} from "@bfmono/infra/testing/video-recording/smooth-ui.ts";
+import { checkCursorVisibility } from "@bfmono/infra/testing/video-recording/cursor-overlay.ts";
 
 const logger = getLogger(import.meta);
+
+Deno.test(
+  "aibff GUI tabbed interface works correctly",
+  async () => {
+    const context = await setupAibffGuiTest();
+
+    try {
+      // Start video recording with conversion to MP4
+      const stopRecording = await context.startVideoRecordingWithConversion(
+        "aibff-gui-tabs-demo",
+        {
+          outputFormat: "mp4" as const,
+          framerate: 12,
+          quality: "medium" as const,
+        },
+      );
+
+      // Navigate to the GUI
+      await navigateTo(context, "/");
+
+      // Take initial screenshot
+      await context.takeScreenshot("aibff-gui-tabs-initial");
+
+      // Re-inject cursor overlay after navigation since it gets wiped out
+      const { injectCursorOverlay } = await import(
+        "@bfmono/infra/testing/video-recording/cursor-overlay.ts"
+      );
+      await injectCursorOverlay(context.page);
+
+      // Check cursor visibility
+      await checkCursorVisibility(context.page);
+
+      // Wait for the loading to complete and UI to be ready
+      await context.page.waitForFunction(
+        () => {
+          const bodyText = document.body.textContent || "";
+          return !bodyText.includes("Loading conversation...");
+        },
+        { timeout: 10000 },
+      );
+
+      // Wait for tabs to appear
+      await context.page.waitForFunction(
+        () => {
+          const elements = Array.from(document.querySelectorAll("*"));
+          return elements.some((el) =>
+            el.textContent?.includes("System Prompt") ||
+            el.textContent?.includes("Calibrate") ||
+            el.textContent?.includes("Eval") ||
+            el.textContent?.includes("Fix")
+          );
+        },
+        { timeout: 10000 },
+      );
+
+      // Wait for React to hydrate
+      await delay(2000);
+
+      logger.info("Testing tab navigation...");
+
+      // Check that all four tabs exist
+      const tabsExist = await context.page.evaluate(() => {
+        const elements = Array.from(document.querySelectorAll("*"));
+        const systemPromptTab = elements.some((el) =>
+          el.textContent?.includes("System Prompt")
+        );
+        const calibrateTab = elements.some((el) =>
+          el.textContent?.includes("Calibrate")
+        );
+        const evalTab = elements.some((el) => el.textContent?.includes("Eval"));
+        const fixTab = elements.some((el) => el.textContent?.includes("Fix"));
+
+        // Debug: log all text content to understand what's actually in the DOM
+        // console.log statements removed for lint compliance
+
+        return { systemPromptTab, calibrateTab, evalTab, fixTab };
+      });
+
+      assert(tabsExist.systemPromptTab, "System Prompt tab should exist");
+      assert(tabsExist.calibrateTab, "Calibrate tab should exist");
+      assert(tabsExist.evalTab, "Eval tab should exist");
+      assert(tabsExist.fixTab, "Fix tab should exist");
+
+      // Test clicking on Calibrate tab with smooth UI
+      await smoothClickText(context, "Calibrate");
+      await delay(1000);
+      await context.takeScreenshot("aibff-gui-tabs-calibrate");
+
+      // Test clicking on Eval tab with smooth UI
+      await smoothClickText(context, "Eval");
+      await delay(1000);
+      await context.takeScreenshot("aibff-gui-tabs-eval");
+
+      // Test clicking on Fix tab with smooth UI
+      await smoothClickText(context, "Fix");
+      await delay(1000);
+      await context.takeScreenshot("aibff-gui-tabs-fix");
+
+      // Test clicking back to System Prompt tab with smooth UI
+      await smoothClickText(context, "System Prompt");
+      await delay(1000);
+      await context.takeScreenshot("aibff-gui-tabs-system-prompt");
+
+      // Verify System Prompt tab content is shown
+      const systemPromptContentVisible = await context.page.evaluate(() => {
+        const allText = document.body.textContent || "";
+        return allText.includes("Define the system prompt for the AI") ||
+          allText.includes("Input Variables") ||
+          allText.includes("Test Conversation");
+      });
+
+      assert(
+        systemPromptContentVisible,
+        "System Prompt tab content should be visible",
+      );
+
+      logger.info("Tab navigation test completed successfully");
+
+      // Take final screenshot
+      await context.takeScreenshot("aibff-gui-tabs-completed");
+
+      // Stop video recording
+      const videoResult = await stopRecording();
+      if (videoResult) {
+        logger.info(
+          `Video recording saved: ${videoResult.videoPath} (${videoResult.duration}s, ${videoResult.fileSize} bytes)`,
+        );
+      }
+
+      logger.info("aibff GUI tabbed interface test completed successfully");
+    } catch (error) {
+      // Take error screenshot
+      await context.takeScreenshot("aibff-gui-tabs-error");
+      logger.error("Tabbed interface test failed:", error);
+      throw error;
+    } finally {
+      await teardownE2ETest(context);
+    }
+  },
+);
 
 Deno.test.ignore(
   "aibff GUI loads successfully with routing and Isograph",
