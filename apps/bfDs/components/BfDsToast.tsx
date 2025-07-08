@@ -29,19 +29,10 @@ function BfDsToastComponent({ toast, onRemove, index }: BfDsToastProps) {
     // Show toast after a brief delay to allow for entrance animation
     const showTimer = setTimeout(() => setIsVisible(true), 10);
 
-    // Auto-dismiss if timeout is set
-    let dismissTimer: number;
-    if (toast.timeout && toast.timeout > 0) {
-      dismissTimer = setTimeout(() => {
-        handleDismiss();
-      }, toast.timeout);
-    }
-
     return () => {
       clearTimeout(showTimer);
-      if (dismissTimer) clearTimeout(dismissTimer);
     };
-  }, [toast.timeout]);
+  }, []);
 
   const handleDismiss = () => {
     setIsVisible(false);
@@ -71,9 +62,9 @@ function BfDsToastComponent({ toast, onRemove, index }: BfDsToastProps) {
       <BfDsCallout
         variant={toast.variant}
         details={toast.details}
-        visible={true}
+        visible
         onDismiss={handleDismiss}
-        autoDismiss={0} // We handle auto-dismiss at the toast level
+        autoDismiss={toast.timeout || 0} // Pass timeout to callout for countdown display
       >
         {toast.message}
       </BfDsCallout>
@@ -92,7 +83,7 @@ export function BfDsToastContainer(
   const toastRoot = document.getElementById("toast-root");
 
   if (!toastRoot) {
-    console.warn("Toast root element not found");
+    // Toast root element not found - this is expected during SSR or if toast-root div is missing
     return null;
   }
 

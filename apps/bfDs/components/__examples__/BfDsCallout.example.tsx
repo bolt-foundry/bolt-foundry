@@ -1,5 +1,8 @@
 import { useState } from "react";
+import { getLogger } from "@bfmono/packages/logger/logger.ts";
 import { BfDsCallout, type BfDsCalloutVariant } from "../BfDsCallout.tsx";
+
+const logger = getLogger(import.meta);
 
 export function BfDsCalloutExample() {
   const [notifications, setNotifications] = useState<
@@ -8,6 +11,7 @@ export function BfDsCalloutExample() {
       message: string;
       variant: BfDsCalloutVariant;
       details?: string;
+      autoDismiss?: number;
     }>
   >([]);
   const [nextId, setNextId] = useState(1);
@@ -16,9 +20,12 @@ export function BfDsCalloutExample() {
     message: string,
     variant: BfDsCalloutVariant,
     details?: string,
+    autoDismiss?: number,
   ) => {
     setNotifications(
-      (prev) => [...prev, { id: nextId, message, variant, details }],
+      (
+        prev,
+      ) => [...prev, { id: nextId, message, variant, details, autoDismiss }],
     );
     setNextId((prev) => prev + 1);
   };
@@ -81,6 +88,21 @@ export function BfDsCalloutExample() {
       </div>
 
       <div>
+        <h3>With Auto-dismiss and Countdown</h3>
+        <BfDsCallout
+          variant="info"
+          autoDismiss={10000}
+          onDismiss={() => logger.info("Auto-dismissed")}
+        >
+          This callout will auto-dismiss in 10 seconds. Notice the countdown
+          ring around the close button.
+          <strong>
+            Try hovering over this callout to pause the countdown!
+          </strong>
+        </BfDsCallout>
+      </div>
+
+      <div>
         <h3>Dynamic Notifications</h3>
         <div
           style={{
@@ -137,6 +159,26 @@ export function BfDsCalloutExample() {
           >
             Add with Details
           </button>
+          <button
+            type="button"
+            onClick={() =>
+              addNotification(
+                "Auto-dismiss in 5 seconds",
+                "warning",
+                undefined,
+                5000,
+              )}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "var(--bfds-primary)",
+              color: "var(--bfds-background)",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Add Auto-dismiss
+          </button>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -145,6 +187,7 @@ export function BfDsCalloutExample() {
               key={notification.id}
               variant={notification.variant}
               details={notification.details}
+              autoDismiss={notification.autoDismiss}
               onDismiss={() => removeNotification(notification.id)}
             >
               {notification.message}
