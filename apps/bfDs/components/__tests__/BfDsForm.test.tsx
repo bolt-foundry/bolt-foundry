@@ -1,6 +1,7 @@
 import { render } from "@bfmono/infra/testing/ui-testing.ts";
 import { assertEquals, assertExists } from "@std/assert";
 import { BfDsForm, useBfDsFormContext } from "../BfDsForm.tsx";
+import { BfDsButton } from "../BfDsButton.tsx";
 
 // Helper component to test the form context
 function FormContextDisplay() {
@@ -207,5 +208,23 @@ Deno.test("BfDsForm renders children correctly", () => {
     secondChild?.textContent,
     "Second child",
     "Second child should have correct content",
+  );
+});
+
+Deno.test("BfDsButton has type='button' by default to prevent form submission", () => {
+  const { doc } = render(
+    <BfDsForm initialData={{}}>
+      <BfDsButton>Regular Button</BfDsButton>
+    </BfDsForm>,
+  );
+
+  const button = doc?.querySelector("button");
+  assertExists(button, "Button should exist");
+  
+  // Verify button has type="button" to prevent accidental form submission
+  assertEquals(
+    button?.getAttribute("type"),
+    "button",
+    "BfDsButton should have type='button' by default to prevent form submission",
   );
 });

@@ -123,6 +123,7 @@ export function BfDsButton({
   return (
     <button
       {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+      type={props.type ?? "button"}
       className={classes}
       disabled={disabled}
       onClick={handleClick}
