@@ -258,14 +258,14 @@ async function resolveTestFiles(
 export async function e2eCommand(options: Array<string>): Promise<number> {
   // Parse command line arguments
   const parsed = parseArgs(options, {
-    boolean: ["build", "verbose", "headless"],
-    string: ["headless"],
+    boolean: ["build", "verbose", "show-browser"],
+    string: ["show-browser"],
     alias: {
       b: "build",
       v: "verbose",
     },
     default: {
-      headless: true,
+      "show-browser": false,
       verbose: false,
     },
     unknown: () => {
@@ -274,7 +274,7 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     },
   });
 
-  const shouldForceHeadless = parsed.headless !== false;
+  const shouldShowBrowser = parsed["show-browser"] === true;
   const verbose = parsed.verbose;
 
   // Acquire E2E lock to prevent concurrent runs
@@ -284,7 +284,7 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
 
   // Get remaining args for deno test (excluding our parsed flags)
   const denoTestOptions = options.filter((opt) =>
-    !opt.startsWith("--headless") && opt !== "--build" && opt !== "-b" &&
+    !opt.startsWith("--show-browser") && opt !== "--build" && opt !== "-b" &&
     opt !== "--verbose" && opt !== "-v"
   );
 
@@ -292,15 +292,15 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     !opt.startsWith("--") && !opt.startsWith("-") && opt.endsWith(".e2e.ts")
   );
 
-  // Set headless mode via environment variable
-  if (shouldForceHeadless) {
-    Deno.env.set("BF_E2E_HEADLESS", "true");
-    logger.debug(
-      "🕶️  Running in headless mode (use --headless=false to see browser)",
-    );
+  // Set browser visibility via environment variable
+  if (shouldShowBrowser) {
+    Deno.env.set("BF_E2E_SHOW_BROWSER", "true");
+    logger.debug("🖥️  Running with visible browser (--show-browser)");
   } else {
-    Deno.env.set("BF_E2E_HEADLESS", "false");
-    logger.debug("🖥️  Running with visible browser (--headless=false)");
+    Deno.env.set("BF_E2E_SHOW_BROWSER", "false");
+    logger.debug(
+      "🕶️  Running in headless mode (use --show-browser to see browser)",
+    );
   }
 
   // Set up cleanup handler
@@ -443,7 +443,7 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
 
 export const bftDefinition = {
   description:
-    "Run end-to-end tests. Options: --headless=false, --verbose/-v, --build/-b, plus all deno test flags (--no-check, etc.)",
+    "Run end-to-end tests. Options: --show-browser, --verbose/-v, --build/-b, plus all deno test flags (--no-check, etc.)",
   fn: e2eCommand,
   aiSafe: true,
 } satisfies TaskDefinition;
