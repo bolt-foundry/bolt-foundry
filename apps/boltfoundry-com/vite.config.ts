@@ -13,9 +13,19 @@ export default defineConfig({
       port: 5001, // Dynamic port will be set by CLI
     },
   },
+  build: {
+    rollupOptions: {
+      input: new URL(import.meta.resolve("./ClientRoot.tsx")).pathname,
+      output: {
+        dir: new URL(import.meta.resolve("./static/build")).pathname,
+        entryFileNames: "ClientRoot.js",
+        format: "es",
+      },
+    },
+  },
   resolve: {
     alias: {
-      "@bfmono/": new URL(import.meta.resolve("../../../")).pathname,
+      "@bfmono/": "../..",
     },
   },
   publicDir: new URL(import.meta.resolve("../../../static")).pathname,
