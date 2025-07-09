@@ -140,12 +140,12 @@ export async function setupE2ETest(options: {
       "http://localhost:8000";
   }
 
-  // Force headless mode for consistency and performance
-  // Only allow override via BF_E2E_HEADLESS environment variable
+  // Run in headless mode by default for consistency and performance
+  // Only show browser when explicitly requested via BF_E2E_SHOW_BROWSER environment variable
   let headless: boolean;
-  const headlessEnv = getConfigurationVariable("BF_E2E_HEADLESS");
-  if (headlessEnv !== undefined) {
-    headless = headlessEnv !== "false";
+  const showBrowserEnv = getConfigurationVariable("BF_E2E_SHOW_BROWSER");
+  if (showBrowserEnv !== undefined) {
+    headless = showBrowserEnv !== "true";
   } else {
     // Always default to headless for automated testing
     headless = true;
