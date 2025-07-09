@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/bft-safety-hook.ts"
+            "command": "bft safety"
           }
         ]
       },
@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/block-generated-files-hook.ts"
+            "command": "bft blockGeneratedFiles"
           }
         ]
       }
