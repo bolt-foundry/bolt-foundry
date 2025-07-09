@@ -18,6 +18,7 @@ export async function runShellCommand(
   additionalEnv: Record<string, string> = {},
   useSpinner = true,
   silent = false,
+  inheritOutput = true,
 ): Promise<number> {
   const env = { ...Deno.env.toObject(), ...additionalEnv };
 
@@ -33,8 +34,8 @@ export async function runShellCommand(
 
   const cmd = new Deno.Command(commandArray[0], {
     args: commandArray.slice(1),
-    stdout: "inherit",
-    stderr: "inherit",
+    stdout: inheritOutput ? "inherit" : "piped",
+    stderr: inheritOutput ? "inherit" : "piped",
     cwd,
     env,
   });

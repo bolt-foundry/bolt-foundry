@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-env --allow-read --allow-write --allow-net --watch
+#!/usr/bin/env -S deno run --allow-env --allow-read --allow-write --allow-net
 
 import { getConfigurationVariable } from "@bolt-foundry/get-configuration-var";
 import { parseArgs } from "@std/cli";
@@ -463,6 +463,164 @@ const routes = [
     },
   },
   {
+    pattern: new URLPattern({ pathname: "/api/test-chat/stream" }),
+    handler: async (request: Request) => {
+      // Parse the test conversation from request body
+      const { messages, systemPrompt, inputVariables } = await request.json();
+
+      if (!systemPrompt) {
+        return new Response("System prompt is required", { status: 400 });
+      }
+
+      try {
+        // Create the request for OpenRouter API
+        const openAiRequest = {
+          model: "openai/gpt-4o",
+          stream: true,
+          messages: [
+            // Use the provided system prompt instead of deck
+            {
+              role: "system",
+              content: systemPrompt,
+            },
+            // Add conversation messages
+            ...messages.map((m: ChatMessage) => ({
+              role: m.role,
+              content: m.content,
+            })),
+          ],
+        };
+
+        // Call OpenRouter API with streaming
+        const apiKey = getConfigurationVariable("OPENROUTER_API_KEY");
+        if (!apiKey) {
+          return new Response("OpenRouter API key not configured", {
+            status: 500,
+          });
+        }
+
+        const finalRequest = {
+          ...openAiRequest,
+          stream: true,
+        };
+
+        // Log the final request (excluding sensitive data)
+        logger.debug("Final test request to OpenRouter:", {
+          model: finalRequest.model,
+          messages: finalRequest.messages?.length,
+          stream: finalRequest.stream,
+        });
+
+        const openRouterResponse = await fetch(
+          "https://openrouter.ai/api/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json",
+              "HTTP-Referer": "https://github.com/boltfoundry/bolt-foundry",
+              "X-Title": "aibff GUI Test Chat",
+            },
+            body: JSON.stringify(finalRequest),
+          },
+        );
+
+        if (!openRouterResponse.ok) {
+          return new Response("Failed to get AI response", { status: 500 });
+        }
+
+        // Create SSE stream
+        const encoder = new TextEncoder();
+        let assistantMessage = "";
+
+        const body = new ReadableStream({
+          async start(controller) {
+            const reader = openRouterResponse.body!.getReader();
+            const decoder = new TextDecoder();
+            let buffer = "";
+
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const line of lines) {
+                  if (line.startsWith("data: ")) {
+                    const data = line.slice(6);
+                    if (data === "[DONE]") {
+                      controller.enqueue(
+                        encoder.encode("data: [DONE]\n\n"),
+                      );
+                      break;
+                    }
+
+                    try {
+                      const parsed = JSON.parse(data);
+                      logger.debug("OpenRouter SSE chunk:", {
+                        hasChoices: !!parsed.choices,
+                        choicesLength: parsed.choices?.length || 0,
+                        firstChoice: parsed.choices?.[0],
+                        delta: parsed.choices?.[0]?.delta,
+                        rawData: data.substring(0, 200),
+                      });
+
+                      const delta = parsed.choices?.[0]?.delta;
+
+                      // Handle content
+                      if (delta?.content) {
+                        assistantMessage += delta.content;
+                        logger.debug(
+                          "Sending content chunk:",
+                          delta.content.substring(0, 50),
+                        );
+                        controller.enqueue(
+                          encoder.encode(
+                            `data: ${
+                              JSON.stringify({ content: delta.content })
+                            }\n\n`,
+                          ),
+                        );
+                      } else {
+                        logger.debug("No content in delta:", { delta, parsed });
+                      }
+                    } catch (error) {
+                      logger.error(
+                        "Failed to parse OpenRouter SSE data:",
+                        error,
+                        "Raw data:",
+                        data.substring(0, 100),
+                      );
+                    }
+                  }
+                }
+              }
+            } catch (error) {
+              logger.error("Test chat stream error:", error);
+              controller.error(error);
+            } finally {
+              controller.close();
+            }
+          },
+        });
+
+        return new Response(body, {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+          },
+        });
+      } catch (error) {
+        logger.error("Test chat stream error:", error);
+        return new Response("Internal server error", { status: 500 });
+      }
+    },
+  },
+  {
     pattern: new URLPattern({
       pathname: "/api/conversations/:conversationId/save",
     }),
@@ -774,7 +932,9 @@ if (isDev && vitePort) {
     `Proxying frontend requests to Vite at http://localhost:${vitePort}`,
   );
 }
-logger.println("Watching for file changes...");
+if (isDev) {
+  logger.println("Watching for file changes...");
+}
 
 // Wait for server to finish
 await server.finished;
