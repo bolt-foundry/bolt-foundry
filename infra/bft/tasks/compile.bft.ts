@@ -12,38 +12,38 @@ async function compile(args: Array<string>): Promise<number> {
 Compile applications to single executable binaries.
 
 Available apps:
-  boltfoundry.com    Bolt Foundry landing page
+  boltfoundry-com    Bolt Foundry landing page
 
 Examples:
-  bft compile boltfoundry.com           # Compile boltfoundry.com to binary
-  bft compile boltfoundry.com --help    # Show app-specific help`);
+  bft compile boltfoundry-com           # Compile boltfoundry-com to binary
+  bft compile boltfoundry-com --help    # Show app-specific help`);
     return 0;
   }
 
   if (args.length === 0) {
     ui.error("Usage: bft compile <app-name>");
     ui.output("Available apps:");
-    ui.output("  boltfoundry.com    Bolt Foundry landing page");
+    ui.output("  boltfoundry-com    Bolt Foundry landing page");
     return 1;
   }
 
   const appName = args[0];
   const compileArgs = args.slice(1);
 
-  if (appName !== "boltfoundry.com") {
+  if (appName !== "boltfoundry-com") {
     ui.error(`Unknown app: ${appName}`);
     ui.output("Available apps:");
-    ui.output("  boltfoundry.com    Bolt Foundry landing page");
+    ui.output("  boltfoundry-com    Bolt Foundry landing page");
     return 1;
   }
 
-  // Handle boltfoundry.com compilation
+  // Handle boltfoundry-com compilation
   const flags = parseArgs(compileArgs, {
-    boolean: ["help"],
+    boolean: ["help", "quiet"],
   });
 
   if (flags.help) {
-    ui.output(`Usage: bft compile boltfoundry.com
+    ui.output(`Usage: bft compile boltfoundry-com
 
 Compile Bolt Foundry landing page to single executable binary.
 This will build frontend assets and compile the server into a standalone binary.
@@ -51,12 +51,12 @@ This will build frontend assets and compile the server into a standalone binary.
 The binary will be output to: ./build/boltfoundry-com
 
 Examples:
-  bft compile boltfoundry.com    # Build assets and compile to binary`);
+  bft compile boltfoundry-com    # Build assets and compile to binary`);
     return 0;
   }
 
   const appPath =
-    new URL(import.meta.resolve("../../../apps/boltFoundry.com")).pathname;
+    new URL(import.meta.resolve("../../../apps/boltfoundry-com")).pathname;
   const buildDir = new URL(import.meta.resolve("../../../build")).pathname;
 
   // Ensure build directory exists
@@ -74,24 +74,27 @@ Examples:
   }
 
   // Check if assets are built, if not, build them
-  const distPath = `${appPath}/dist`;
+  const staticBuildPath = `${appPath}/static/build`;
   let assetsExist = false;
 
   try {
-    const stat = await Deno.stat(distPath);
+    const stat = await Deno.stat(staticBuildPath);
     assetsExist = stat.isDirectory;
   } catch {
-    // dist directory doesn't exist
+    // static/build directory doesn't exist
   }
 
   if (!assetsExist) {
-    ui.output("Assets not found, building frontend first...");
+    if (!flags.quiet) {
+      ui.output("Assets not found, building frontend first...");
+    }
 
-    // Run the build command
-    const buildCommand = new Deno.Command("bft", {
-      args: ["app", "boltfoundry.com", "--build"],
-      stdout: "inherit",
-      stderr: "inherit",
+    // Run Vite build directly (same as bft app --build)
+    const buildCommand = new Deno.Command("deno", {
+      args: ["run", "-A", "--node-modules-dir", "npm:vite", "build"],
+      cwd: appPath,
+      stdout: flags.quiet ? "null" : "inherit",
+      stderr: flags.quiet ? "null" : "inherit",
     });
 
     const buildResult = buildCommand.outputSync();
@@ -102,24 +105,43 @@ Examples:
   }
 
   // Compile the server to binary
-  ui.output("Compiling server to single binary...");
+  if (!flags.quiet) {
+    ui.output("Compiling server to single binary...");
+  }
 
   const binaryPath = `${buildDir}/boltfoundry-com`;
-  const serverPath = `${appPath}/server.ts`;
+  const serverPath = `${appPath}/server.tsx`;
+
+  // Remove old binary if it exists
+  try {
+    await Deno.remove(binaryPath);
+    if (!flags.quiet) {
+      ui.output("Removed existing binary");
+    }
+  } catch (error) {
+    if (!(error instanceof Deno.errors.NotFound)) {
+      ui.error(
+        `Failed to remove existing binary: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+      return 1;
+    }
+  }
 
   const compileCommand = new Deno.Command("deno", {
     args: [
       "compile",
       "--allow-all",
       "--include",
-      "dist",
+      "static",
       "--output",
       binaryPath,
       serverPath,
     ],
     cwd: appPath,
-    stdout: "inherit",
-    stderr: "inherit",
+    stdout: flags.quiet ? "null" : "inherit",
+    stderr: flags.quiet ? "null" : "inherit",
   });
 
   const compileResult = compileCommand.outputSync();
@@ -129,12 +151,14 @@ Examples:
     return 1;
   }
 
-  ui.output(`✅ Successfully compiled to: ${binaryPath}`);
-  ui.output("");
-  ui.output("To run the binary:");
-  ui.output(`  ${binaryPath}`);
-  ui.output(`  ${binaryPath} --help`);
-  ui.output(`  ${binaryPath} --port 4000`);
+  if (!flags.quiet) {
+    ui.output(`✅ Successfully compiled to: ${binaryPath}`);
+    ui.output("");
+    ui.output("To run the binary:");
+    ui.output(`  ${binaryPath}`);
+    ui.output(`  ${binaryPath} --help`);
+    ui.output(`  ${binaryPath} --port 4000`);
+  }
 
   return 0;
 }
