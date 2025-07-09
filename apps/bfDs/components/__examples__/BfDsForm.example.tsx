@@ -9,6 +9,7 @@ import { BfDsCheckbox } from "../BfDsCheckbox.tsx";
 import { BfDsRadio } from "../BfDsRadio.tsx";
 import { BfDsToggle } from "../BfDsToggle.tsx";
 import { BfDsFormSubmitButton } from "../BfDsFormSubmitButton.tsx";
+import { BfDsButton } from "../BfDsButton.tsx";
 
 const { useState } = React;
 const logger = getLogger(import.meta);
