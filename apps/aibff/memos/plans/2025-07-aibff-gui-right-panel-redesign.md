@@ -2,7 +2,7 @@
 
 **Date:** 2025-07-02 (Updated: 2025-07-08)\
 **Status:** Phase 2 Complete - Four-Tab Interface Implemented\
-**Phase:** Video Recording Enhanced
+**Phase:** System Prompt Tab Accordion Redesign
 
 ## Overview
 
@@ -43,16 +43,15 @@ Successfully implemented radio-style accordion with 8 sections:
 
 Successfully transitioned from accordion to clean 4-tab interface:
 
-1. **System Prompt Tab** - Consolidated workflow with 5 detailed sections:
+1. **System Prompt Tab** - Accordion workflow with 3 core sections:
    - System Prompt editor with AI behavior definition
    - Input Variables for JSONL prompt testing
    - Test Conversation for ephemeral testing
-   - Saved Results for conversation outputs
-   - Ground Truth for graded samples with explanations
 
 2. **Calibrate Tab** - Grading interface for ground truth generation:
+   - Saved Results for conversation outputs
+   - Ground Truth for graded samples with explanations
    - +3 to -3 scale grading with descriptive explanations
-   - Ground truth data collection workflow
 
 3. **Eval Tab** - Multiple grader management:
    - Support for multiple graders per dimension
@@ -113,23 +112,21 @@ WorkflowPanel (updated root component)
 
 #### Tab 1: System Prompt
 
-**Purpose**: Core prompt development and testing **Content**: Consolidates first
-3 accordion sections:
+**Purpose**: Core prompt development and testing **Content**: Accordion layout
+with 3 core sections:
 
 - System Prompt editor
 - Input Variables (JSONL format)
 - Test Conversation (ephemeral chat interface)
-- Saved Results (conversation save/load)
-- Ground Truth (graded samples with explanations)
 
 #### Tab 2: Calibrate
 
 **Purpose**: Sample grading and ground truth generation **Content**:
 
-- Display saved conversation results
+- Saved Results (conversation save/load)
+- Ground Truth (graded samples with explanations)
 - Grading interface (+3 to -3 scale)
 - Description field for grading rationale
-- Move graded samples to ground truth collection
 
 #### Tab 3: Eval
 
@@ -302,6 +299,18 @@ input ConversationUpdateInput {
       screenshot verification
 - [x] **Video Recording** - ✅ Enhanced video recording with cursor overlay and
       smooth UI interactions
+
+### Phase 2.5: System Prompt Tab Accordion Redesign (CURRENT)
+
+- [ ] **System Prompt Tab Accordion** - Replace fixed-height sections with
+      accordion layout
+- [ ] **Move Saved Results to Calibrate** - Relocate saved results section from
+      system prompt to calibrate tab
+- [ ] **Move Ground Truth to Calibrate** - Relocate ground truth section from
+      system prompt to calibrate tab
+- [ ] **Update State Management** - Reorganize state variables to match new tab
+      structure
+- [ ] **Update E2E Tests** - Ensure tests work with new accordion layout
 
 ### Phase 3: File Integration (NEXT)
 

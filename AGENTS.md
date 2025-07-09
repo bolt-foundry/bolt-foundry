@@ -13,14 +13,7 @@ symlink to this file for compatibility with Claude Code (claude.ai/code).
 
 ## Essential Commands
 
-```bash
-bft build              # Full project build
-bft test               # Run tests
-bft e2e --build        # Run end-to-end tests
-bft ci                 # Full CI pipeline
-bft devTools           # Start development environment
-bft ai                 # List AI-safe commands
-```
+For available commands, run `bft help` or check the documentation.
 
 ## Key Resources
 
@@ -47,7 +40,7 @@ bft ai                 # List AI-safe commands
 1. **No MDX** - Use plain Markdown (`.md`) only
 2. **No direct env access** - Use `packages/get-configuration-var/`
 3. **Test first** - Follow TDD practices in testing card
-4. **Use BFT commands** - Prefer `bft` over direct commands
+4. **Use BFT commands** - Check available commands with `bft help`
 5. **TypeScript array syntax** - Always use `Array<T>` instead of `T[]` for
    array types (e.g., `Array<BfDsLiteTabItem>` not `BfDsLiteTabItem[]`)
 
