@@ -48,12 +48,14 @@ Deno.test.ignore("Video recording proof of concept", async () => {
     assert(title.length > 0, "Page title should not be empty");
 
     // Stop video recording
-    const videoPath = await stopRecording();
+    const videoResult = await stopRecording();
 
-    if (videoPath) {
-      logger.info(`Video recording completed successfully: ${videoPath}`);
+    if (videoResult) {
+      logger.info(
+        `Video recording completed successfully: ${videoResult.videoPath}`,
+      );
       assert(
-        videoPath.includes("poc-test"),
+        videoResult.videoPath.includes("poc-test"),
         "Video path should contain test name",
       );
     } else {
