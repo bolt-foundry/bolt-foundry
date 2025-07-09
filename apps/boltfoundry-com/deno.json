@@ -1,10 +1,4 @@
 {
-  "tasks": {
-    "dev": "deno run -A --node-modules-dir npm:vite",
-    "build": "deno run -A --node-modules-dir npm:vite build",
-    "preview": "deno run -A --node-modules-dir npm:vite preview",
-    "serve": "deno run --allow-net --allow-read jsr:@std/http@1/file-server dist/"
-  },
   "compilerOptions": {
     "lib": ["ES2022", "DOM", "DOM.Iterable", "deno.ns"],
     "jsx": "react-jsx",
@@ -15,5 +9,6 @@
     "react": "npm:react@^19.1.0",
     "react-dom": "npm:react-dom@^19.1.0",
     "react/jsx-runtime": "npm:react/jsx-runtime"
-  }
+  },
+  "exclude": ["static/build/"]
 }
