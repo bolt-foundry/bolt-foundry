@@ -6,6 +6,7 @@
  */
 
 import { globToRegExp } from "@std/path/glob-to-regexp";
+import { relative } from "@std/path";
 
 export interface ServerConfig {
   /** Unique identifier for this server */
@@ -38,9 +39,12 @@ export const E2E_SERVER_REGISTRY: Array<ServerRegistryEntry> = [
     ],
     server: {
       name: "aibff-gui",
-      serverPath: "./apps/aibff/gui/guiServer.ts",
+      serverPath: "./apps/aibff/gui/main.ts",
       defaultPort: 8001,
       envVar: "BF_E2E_AIBFF_GUI_URL",
+      env: {
+        "BF_MODE": "production",
+      },
     },
   },
   {
@@ -50,7 +54,7 @@ export const E2E_SERVER_REGISTRY: Array<ServerRegistryEntry> = [
     ],
     server: {
       name: "boltfoundry-com",
-      serverPath: "./apps/boltfoundry-com/server.ts",
+      serverPath: "./apps/boltfoundry-com/server.tsx",
       defaultPort: 8002,
       envVar: "BF_E2E_BOLTFOUNDRY_COM_URL",
     },
@@ -65,11 +69,18 @@ export function getRequiredServers(
 ): Array<ServerConfig> {
   const requiredServers = new Set<ServerConfig>();
 
+  // Get project root from import.meta.resolve
+  const projectRoot = new URL("../../../", import.meta.url).pathname;
+
   for (const testFile of testFiles) {
+    // Normalize path to be relative to project root
+    const normalizedPath = relative(projectRoot, testFile);
+
     for (const entry of E2E_SERVER_REGISTRY) {
       const isMatch = entry.testPatterns.some((pattern) => {
         const regex = globToRegExp(pattern);
-        return regex.test(testFile);
+        const matches = regex.test(normalizedPath);
+        return matches;
       });
 
       if (isMatch) {
@@ -77,7 +88,6 @@ export function getRequiredServers(
       }
     }
   }
-
   return Array.from(requiredServers);
 }
 
