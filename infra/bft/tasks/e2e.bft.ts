@@ -155,8 +155,14 @@ async function startServer(
       stderr: "piped",
     });
   } else {
+    // Use production mode for boltfoundry-com to serve built assets
+    const args = ["run", "-A", server.serverPath, "--port", port.toString()];
+    if (server.name === "boltfoundry-com") {
+      args.push("--mode", "production");
+    }
+
     command = new Deno.Command("deno", {
-      args: ["run", "-A", server.serverPath, "--port", port.toString()],
+      args,
       env: { ...Deno.env.toObject(), ...server.env },
       stdout: "piped",
       stderr: "piped",
@@ -289,16 +295,12 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
   // Set headless mode via environment variable
   if (shouldForceHeadless) {
     Deno.env.set("BF_E2E_HEADLESS", "true");
-    if (verbose) {
-      logger.info(
-        "🕶️  Running in headless mode (use --headless=false to see browser)",
-      );
-    }
+    logger.debug(
+      "🕶️  Running in headless mode (use --headless=false to see browser)",
+    );
   } else {
     Deno.env.set("BF_E2E_HEADLESS", "false");
-    if (verbose) {
-      logger.info("🖥️  Running with visible browser (--headless=false)");
-    }
+    logger.debug("🖥️  Running with visible browser (--headless=false)");
   }
 
   // Set up cleanup handler
@@ -328,12 +330,6 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
       return 0;
     }
 
-    logger.info(
-      `📁 Found ${testFiles.length} test file${
-        testFiles.length === 1 ? "" : "s"
-      }`,
-    );
-
     // Determine which servers are needed
     const requiredServers = getRequiredServers(testFiles);
 
@@ -344,21 +340,21 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
         }: ${requiredServers.map((s) => s.name).join(", ")}`,
       );
 
-      // Build before starting servers to ensure latest code
-      logger.info("🔨 Building project...");
+      // Compile boltfoundry-com before starting servers
+      logger.info("🔨 Compiling boltfoundry-com...");
       const buildResult = await runShellCommand(
-        ["bft", "build"],
+        ["bft", "compile", "boltfoundry-com", "--quiet"],
         Deno.cwd(),
         {},
         true,
-        !verbose,
+        true, // Always suppress output for cleaner logs
       );
       if (buildResult !== 0) {
         throw new Error(
-          "Build failed - cannot start servers with outdated code",
+          "boltfoundry-com compilation failed - cannot start servers",
         );
       }
-      logger.info("✅ Build completed");
+      logger.info("✅ boltfoundry-com compiled");
 
       // Check if any required servers need their binaries compiled
       for (const server of requiredServers) {
@@ -393,19 +389,22 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
       }
 
       // Start all required servers
-      logger.info("🚀 Starting servers...");
       for (const server of requiredServers) {
         const serverUrl = await startServer(server, verbose);
         // Set environment variable for the server
         Deno.env.set(server.envVar, serverUrl);
-        logger.info(`✅ ${server.name} ready at ${serverUrl}`);
+        logger.debug(`✅ ${server.name} ready at ${serverUrl}`);
       }
     } else {
       logger.info("🎯 No servers required for these tests");
     }
 
     // Run E2E tests
-    logger.info("🧪 Running tests...");
+    logger.info(
+      `🧪 Running ${testFiles.length} test file${
+        testFiles.length === 1 ? "" : "s"
+      }...`,
+    );
 
     const testArgs = ["deno", "test", "-A"];
 
@@ -418,7 +417,13 @@ export async function e2eCommand(options: Array<string>): Promise<number> {
     // Add resolved test files
     testArgs.push(...testFiles);
 
-    testResult = await runShellCommand(testArgs);
+    testResult = await runShellCommand(
+      testArgs,
+      Deno.cwd(),
+      {},
+      true,
+      !verbose, // Suppress output unless verbose mode
+    );
 
     if (testResult === 0) {
       logger.info("✅ All tests passed!");
