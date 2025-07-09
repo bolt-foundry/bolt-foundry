@@ -1,24 +1,18 @@
-import "./App.css";
+import { Router, Routes } from "./Router.tsx";
+import { Home } from "./components/Home.tsx";
+import { UIDemo } from "./components/UIDemo.tsx";
 
-function App() {
+function App({ initialPath }: { initialPath?: string }) {
+  const routes = [
+    { path: "/", component: Home },
+    { path: "/ui", component: UIDemo },
+  ];
+
   return (
     <div className="app">
-      <header className="app-header">
-        <h1>Bolt Foundry</h1>
-        <p>Coming Soon</p>
-      </header>
-      <main className="app-main">
-        <section className="hello-world">
-          <h2>Hello World!</h2>
-          <p>
-            This is the Phase 1 implementation of the Bolt Foundry landing page.
-          </p>
-          <p>Architecture foundation established with Vite + Deno + React.</p>
-        </section>
-      </main>
-      <footer className="app-footer">
-        <p>&copy; 2025 Bolt Foundry. All rights reserved.</p>
-      </footer>
+      <Router initialPath={initialPath}>
+        <Routes routes={routes} />
+      </Router>
     </div>
   );
 }
