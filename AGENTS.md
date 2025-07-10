@@ -11,17 +11,6 @@ symlink to this file for compatibility with Claude Code (claude.ai/code).
 - **Task Runner**: `bft <command>` (Bolt Foundry Tool)
 - **Package Management**: npm (NOT deno install - see below)
 
-## Essential Commands
-
-```bash
-bft build              # Full project build
-bft test               # Run tests
-bft e2e --build        # Run end-to-end tests
-bft ci                 # Full CI pipeline
-bft devTools           # Start development environment
-bft ai                 # List AI-safe commands
-```
-
 ## Key Resources
 
 **Development Practices:**
