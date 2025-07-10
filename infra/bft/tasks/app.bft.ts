@@ -30,7 +30,7 @@ async function app(args: Array<string>): Promise<number> {
     boolean: ["dev", "build", "no-open", "help"],
     string: ["port"],
     default: {
-      port: "3000",
+      port: "4000",
     },
   });
 
@@ -42,7 +42,7 @@ Launch the Bolt Foundry landing page
 Options:
   --dev              Run in development mode with Vite HMR
   --build            Build assets without starting server
-  --port             Specify server port (default: 3000)
+  --port             Specify server port (default: 4000)
   --no-open          Don't auto-open browser on startup
   --help             Show this help message
 

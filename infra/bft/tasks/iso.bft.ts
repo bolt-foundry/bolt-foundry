@@ -14,6 +14,7 @@ export async function isoCommand(options: Array<string>): Promise<number> {
   const workingDirs = [
     "apps/boltFoundry",
     "apps/aibff/gui",
+    "apps/boltfoundry-com",
   ];
 
   let overallResult = 0;

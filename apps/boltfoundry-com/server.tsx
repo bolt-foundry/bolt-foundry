@@ -5,6 +5,7 @@ import { getLogger } from "@bolt-foundry/logger";
 import { renderToReadableStream } from "react-dom/server";
 import { ServerRenderedPage } from "./server/components/ServerRenderedPage.tsx";
 import App from "./src/App.tsx";
+import { yoga } from "./server/graphql/server.ts";
 
 const logger = getLogger(import.meta);
 
@@ -57,7 +58,7 @@ const assetPaths = loadAssetPaths();
 const flags = parseArgs(Deno.args, {
   string: ["port", "mode", "vite-port"],
   default: {
-    port: "3000",
+    port: "4000",
     mode: "production",
   },
 });
@@ -75,7 +76,7 @@ const vitePort = flags["vite-port"] ? parseInt(flags["vite-port"]) : undefined;
 const routes = [
   {
     pattern: new URLPattern({ pathname: "/health" }),
-    handler: () => {
+    handler: (request: Request) => {
       const healthInfo = {
         status: "OK",
         timestamp: new Date().toISOString(),
@@ -89,6 +90,12 @@ const routes = [
       });
     },
   },
+  {
+    pattern: new URLPattern({ pathname: "/graphql" }),
+    handler: async (request: Request) => {
+      return await yoga.handleRequest(request, {});
+    },
+  },
 ];
 
 const handler = async (request: Request): Promise<Response> => {
@@ -97,7 +104,7 @@ const handler = async (request: Request): Promise<Response> => {
   // Try to match against defined routes
   for (const route of routes) {
     if (route.pattern.test(url)) {
-      return await route.handler();
+      return await route.handler(request);
     }
   }
 
