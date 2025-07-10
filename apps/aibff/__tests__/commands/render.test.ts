@@ -1,20 +1,17 @@
 import { assertEquals, assertStringIncludes } from "@std/assert";
 import { renderCommand } from "@bfmono/apps/aibff/commands/render.ts";
 import { join } from "@std/path";
+import { createCapturingUI, ui } from "@bfmono/packages/cli-ui/cli-ui.ts";
 
 // Test removed - render command doesn't show help, just exits
 
-Deno.test("render command - treats --help as deck file", async () => {
-  let errorOutput = "";
-  // deno-lint-ignore no-console
-  const originalPrintErr = console.error;
+Deno.test("render command - shows help with --help flag", async () => {
+  const captureUI = createCapturingUI();
+  const originalUI = { ...ui };
   const originalExit = Deno.exit;
 
-  // Mock console.error to capture output
-  // deno-lint-ignore no-console
-  console.error = (msg: string) => {
-    errorOutput += msg + "\n";
-  };
+  // Replace ui methods with capturing versions
+  Object.assign(ui, captureUI);
 
   // Mock Deno.exit
   let exitCode: number | undefined;
@@ -31,25 +28,25 @@ Deno.test("render command - treats --help as deck file", async () => {
   }
 
   // Restore original functions
-  // deno-lint-ignore no-console
-  console.error = originalPrintErr;
+  Object.assign(ui, originalUI);
   Deno.exit = originalExit;
 
-  // Since --help is treated as a file path, it should show file not found error
-  assertStringIncludes(errorOutput, "Error: File not found: --help");
+  // Should show help message
+  const infoMessages = captureUI.captured
+    .filter((m) => m.type === "info")
+    .map((m) => m.message)
+    .join("\n");
+  assertStringIncludes(infoMessages, "Usage: aibff render");
+  assertStringIncludes(infoMessages, "--context-file");
   assertEquals(exitCode, 1);
 });
 
 Deno.test("render command - renders deck successfully", async () => {
-  let output = "";
-  // deno-lint-ignore no-console
-  const originalPrintLn = console.log;
+  const captureUI = createCapturingUI();
+  const originalUI = { ...ui };
 
-  // Mock console.log to capture output
-  // deno-lint-ignore no-console
-  console.log = (msg: string) => {
-    output += msg + "\n";
-  };
+  // Replace ui methods with capturing versions
+  Object.assign(ui, captureUI);
 
   // Create a temporary test deck file
   const tempDir = await Deno.makeTempDir();
@@ -59,29 +56,28 @@ Deno.test("render command - renders deck successfully", async () => {
   await renderCommand.run([deckPath]);
 
   // Restore original functions
-  // deno-lint-ignore no-console
-  console.log = originalPrintLn;
+  Object.assign(ui, originalUI);
 
   // Clean up
   await Deno.remove(tempDir, { recursive: true });
 
   // Should output JSON with messages array
-  const result = JSON.parse(output);
+  const outputMessages = captureUI.captured
+    .filter((m) => m.type === "output")
+    .map((m) => m.message)
+    .join("\n");
+  const result = JSON.parse(outputMessages);
   assertEquals(Array.isArray(result.messages), true);
   assertEquals(result.messages[0].role, "system");
 });
 
 Deno.test("render command - handles non-existent file", async () => {
-  let errorOutput = "";
-  // deno-lint-ignore no-console
-  const originalPrintErr = console.error;
+  const captureUI = createCapturingUI();
+  const originalUI = { ...ui };
   const originalExit = Deno.exit;
 
-  // Mock console.error to capture output
-  // deno-lint-ignore no-console
-  console.error = (msg: string) => {
-    errorOutput += msg + "\n";
-  };
+  // Replace ui methods with capturing versions
+  Object.assign(ui, captureUI);
 
   // Mock Deno.exit
   let exitCode: number | undefined;
@@ -98,24 +94,23 @@ Deno.test("render command - handles non-existent file", async () => {
   }
 
   // Restore original functions
-  // deno-lint-ignore no-console
-  console.error = originalPrintErr;
+  Object.assign(ui, originalUI);
   Deno.exit = originalExit;
 
-  assertStringIncludes(errorOutput, "Error: File not found:");
+  const errorMessages = captureUI.captured
+    .filter((m) => m.type === "error")
+    .map((m) => m.message)
+    .join("\n");
+  assertStringIncludes(errorMessages, "File not found:");
   assertEquals(exitCode, 1);
 });
 
 Deno.test("render command - renders deck as JSON", async () => {
-  let output = "";
-  // deno-lint-ignore no-console
-  const originalPrintln = console.log;
+  const captureUI = createCapturingUI();
+  const originalUI = { ...ui };
 
-  // Mock console.log to capture output
-  // deno-lint-ignore no-console
-  console.log = (msg: string) => {
-    output += msg + "\n";
-  };
+  // Replace ui methods with capturing versions
+  Object.assign(ui, captureUI);
 
   // Create a temporary test deck file
   const tempDir = await Deno.makeTempDir();
@@ -134,29 +129,28 @@ This is a test specification.`;
     await renderCommand.run([deckPath]);
   } finally {
     // Restore original function
-    // deno-lint-ignore no-console
-    console.log = originalPrintln;
+    Object.assign(ui, originalUI);
 
     // Clean up
     await Deno.remove(tempDir, { recursive: true });
   }
 
   // Check that output is valid JSON with proper formatting
-  const parsed = JSON.parse(output);
+  const outputMessages = captureUI.captured
+    .filter((m) => m.type === "output")
+    .map((m) => m.message)
+    .join("\n");
+  const parsed = JSON.parse(outputMessages);
   assertEquals(typeof parsed, "object");
-  assertStringIncludes(output, "  "); // Should have indentation for JSON output
+  assertStringIncludes(outputMessages, "  "); // Should have indentation for JSON output
 });
 
 Deno.test("render command - outputs to stdout", async () => {
-  let output = "";
-  // deno-lint-ignore no-console
-  const originalPrintln = console.log;
+  const captureUI = createCapturingUI();
+  const originalUI = { ...ui };
 
-  // Mock console.log to capture output
-  // deno-lint-ignore no-console
-  console.log = (msg: string) => {
-    output += msg + "\n";
-  };
+  // Replace ui methods with capturing versions
+  Object.assign(ui, captureUI);
 
   // Create a temporary directory
   const tempDir = await Deno.makeTempDir();
@@ -172,13 +166,16 @@ A simple test deck for rendering.`;
     await renderCommand.run([deckPath]);
 
     // Verify output was written to stdout
-    const parsed = JSON.parse(output);
+    const outputMessages = captureUI.captured
+      .filter((m) => m.type === "output")
+      .map((m) => m.message)
+      .join("\n");
+    const parsed = JSON.parse(outputMessages);
     assertEquals(typeof parsed, "object");
     assertEquals(Array.isArray(parsed.messages), true);
   } finally {
     // Restore original function
-    // deno-lint-ignore no-console
-    console.log = originalPrintln;
+    Object.assign(ui, originalUI);
 
     // Clean up
     await Deno.remove(tempDir, { recursive: true });
